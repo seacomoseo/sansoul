@@ -1,0 +1,53 @@
+{{- $type := .type -}}
+{{- if in (slice "categories" "tags" "authors") .type -}}
+  {{- $type = "taxonomies" -}}
+{{- end -}}
+{{- $pages := .pages -}}
+{{ if eq $type "events" }}
+  {{ $pages = sort .pages "Params.date_ini" "desc" }}
+{{ end }}
+{{- $articles := merge
+  site.Data.articles.common
+  (index site.Data.articles $type)
+  (.articles | default dict)
+-}}
+
+{{- $items := slice -}}
+{{- range $pages -}}
+
+  {{- $description := .Params.description | default .Summary -}}
+  {{- $image       := .Params.image       | default $articles.image -}}
+  {{- $icon_id     := $articles.icon -}}
+  {{- $icon_type   := $articles.icon_type -}}
+  {{- if not $icon_id | and $icon_type -}}
+    {{- $tax       := index site.Data.utilities.taxonomies .Type -}}
+    {{- $icon_id    = $tax.icon -}}
+  {{- end -}}
+  {{- $icon_type    = $icon_type | default "bottom" -}}
+
+  {{- $items = $items
+    | append (dict
+      "Page"        .
+      "title"       .Title
+      "description" $description
+      "link"        .RelPermalink
+      "image"       $image
+      "icon"        $icon_id
+      "icon_type"   $icon_type
+    )
+  -}}
+
+{{- end -}}
+
+<div class="{{ if not .container }}container container--{{ $articles.size | default `md` }}{{ end }} summaries__{{ .type }}">
+  {{- partial "types/columns"
+    (merge
+      (merge $articles (dict "items" $items))
+      (dict
+        "container"    (.size | default $articles.size | default "md")
+        "first"        false
+        "padding_hide" false
+      )
+    )
+  -}}
+</div>

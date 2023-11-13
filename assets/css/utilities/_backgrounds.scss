@@ -1,0 +1,213 @@
+
+// bg-opacity
+
+:root,
+.bg {             --bg-opacity: 1; }
+.bg-opacity-0 {   --bg-opacity: 0; }
+.bg-opacity-10 {  --bg-opacity: .1; }
+.bg-opacity-20 {  --bg-opacity: .2; }
+.bg-opacity-30 {  --bg-opacity: .3; }
+.bg-opacity-40 {  --bg-opacity: .4; }
+.bg-opacity-50 {  --bg-opacity: .5; }
+.bg-opacity-60 {  --bg-opacity: .6; }
+.bg-opacity-70 {  --bg-opacity: .7; }
+.bg-opacity-80 {  --bg-opacity: .8; }
+.bg-opacity-90 {  --bg-opacity: .9; }
+.bg-opacity-100 { --bg-opacity: 1; }
+
+
+// bg-color
+
+.bg-main {       --bg-rgb: #{ hexToRGB($main) }; }
+.bg-main-light { --bg-rgb: #{ hexToRGB($main-light) }; }
+.bg-main-dark {  --bg-rgb: #{ hexToRGB($main-dark) }; }
+.bg-alt {        --bg-rgb: #{ hexToRGB($alt) }; }
+.bg-alt-light {  --bg-rgb: #{ hexToRGB($alt-light) }; }
+.bg-alt-dark {   --bg-rgb: #{ hexToRGB($alt-dark) }; }
+.bg-link {       --bg-rgb: #{ hexToRGB($link) }; }
+.bg-link-light { --bg-rgb: #{ hexToRGB($link-light) }; }
+.bg-link-dark {  --bg-rgb: #{ hexToRGB($link-dark) }; }
+.bg-white {      --bg-rgb: #{ hexToRGB($white) }; }
+.bg-light {      --bg-rgb: #{ hexToRGB($light) }; }
+.bg-grey {       --bg-rgb: #{ hexToRGB($grey) }; }
+.bg-dark {       --bg-rgb: #{ hexToRGB($dark) }; }
+.bg-black {      --bg-rgb: #{ hexToRGB($black) }; }
+
+:root,
+html,
+body,
+.bg-main,
+.bg-main-light,
+.bg-main-dark,
+.bg-alt,
+.bg-alt-light,
+.bg-alt-dark,
+.bg-link,
+.bg-link-light,
+.bg-link-dark,
+.bg-white,
+.bg-grey,
+.bg-light,
+.bg-dark,
+.bg-black {
+  --bg-color: rgba(var(--bg-rgb), var(--bg-opacity, 1));
+  background-color: var(--bg-color);
+}
+
+
+// bg-gradient
+
+.bg-gradient-main {       --bg-gradient-rgb: #{ hexToRGB($main) }; }
+.bg-gradient-main-light { --bg-gradient-rgb: #{ hexToRGB($main-light) }; }
+.bg-gradient-main-dark {  --bg-gradient-rgb: #{ hexToRGB($main-dark) }; }
+.bg-gradient-alt {        --bg-gradient-rgb: #{ hexToRGB($alt) }; }
+.bg-gradient-alt-light {  --bg-gradient-rgb: #{ hexToRGB($alt-light) }; }
+.bg-gradient-alt-dark {   --bg-gradient-rgb: #{ hexToRGB($alt-dark) }; }
+.bg-gradient-link {       --bg-gradient-rgb: #{ hexToRGB($link) }; }
+.bg-gradient-link-light { --bg-gradient-rgb: #{ hexToRGB($link-light) }; }
+.bg-gradient-link-dark {  --bg-gradient-rgb: #{ hexToRGB($link-dark) }; }
+.bg-gradient-white {      --bg-gradient-rgb: #{ hexToRGB($white) }; }
+.bg-gradient-light {      --bg-gradient-rgb: #{ hexToRGB($light) }; }
+.bg-gradient-grey {       --bg-gradient-rgb: #{ hexToRGB($grey) }; }
+.bg-gradient-dark {       --bg-gradient-rgb: #{ hexToRGB($dark) }; }
+.bg-gradient-black {      --bg-gradient-rgb: #{ hexToRGB($black) }; }
+
+:root,
+html,
+body,
+.bg-gradient-main,
+.bg-gradient-main-light,
+.bg-gradient-main-dark,
+.bg-gradient-alt,
+.bg-gradient-alt-light,
+.bg-gradient-alt-dark,
+.bg-gradient-link,
+.bg-gradient-link-light,
+.bg-gradient-link-dark,
+.bg-gradient-white,
+.bg-gradient-light,
+.bg-gradient-grey,
+.bg-gradient-dark,
+.bg-gradient-black {
+  --bg-gradient-color: rgba(var(--bg-gradient-rgb), var(--bg-opacity));
+  --bg-gradient-color-0: rgba(var(--bg-gradient-rgb), 0);
+}
+
+.bg-gradient-linear-b {   --bg-gradient: #{ linear-gradient(        var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-t {   --bg-gradient: #{ linear-gradient(0deg,   var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-r {   --bg-gradient: #{ linear-gradient(90deg,  var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-l {   --bg-gradient: #{ linear-gradient(270deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-tr {  --bg-gradient: #{ linear-gradient(45deg,  var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-br {  --bg-gradient: #{ linear-gradient(135deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-tl {  --bg-gradient: #{ linear-gradient(315deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-linear-bl {  --bg-gradient: #{ linear-gradient(225deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-radial {     --bg-gradient: #{ radial-gradient(        var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-circle {     --bg-gradient: #{ radial-gradient(circle, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
+.bg-gradient-radial-alt { --bg-gradient: #{ radial-gradient(        var(--bg-gradient-color),   var(--bg-gradient-color-0)) }; }
+.bg-gradient-circle-alt { --bg-gradient: #{ radial-gradient(circle, var(--bg-gradient-color),   var(--bg-gradient-color-0)) }; }
+
+.bg-gradient-linear-b,
+.bg-gradient-linear-t,
+.bg-gradient-linear-r,
+.bg-gradient-linear-l,
+.bg-gradient-linear-tr,
+.bg-gradient-linear-br,
+.bg-gradient-linear-tl,
+.bg-gradient-linear-bl,
+.bg-gradient-radial,
+.bg-gradient-circle,
+.bg-gradient-radial-alt,
+.bg-gradient-circle-alt {
+  background-image: var(--bg-gradient);
+}
+
+
+:root {
+  --radius-bg: #{ $radius };
+}
+
+// bg-color like-bg-cover (sub of %bg-cover)
+
+.bg-color {
+  @include like-bg-cover;
+  content: '';
+  z-index: -1;
+  background-color: var(--bg-color);
+  background-image: var(--bg-gradient);
+  @include radius(var(--radius-bg));
+}
+
+
+// bg-figure
+
+.bg-figure {
+  @include like-bg-cover;
+  @include radius(var(--radius-bg));
+  overflow: hidden;
+  > video {
+    height: 100%;
+    width: 100%;
+  }
+}
+.bg-figure-image {
+  &, img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+.bg-figure-video-parent {
+  @media (min-aspect-ratio: 16/9) {
+    min-height: 56.25vw;
+  }
+}
+.bg-figure-video {
+  height: 100%;
+  width: 1000%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  > iframe {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@if not $parallax {
+  .bg--image-fixed {
+    .container {
+      // z-index: 1; // Fix .bg--image-fixed stepping on top links in Safari
+    }
+    > .bg-figure {
+      clip-path: inset(0);
+      // z-index: 0; // Fix stepping on top links in Safari
+      .bg-figure-image {
+        position: fixed;
+        top: 0;
+      }
+    }
+    &.column {
+      .bg-figure-image {
+        @include radius(var(--radius-bg));
+      }
+    }
+  }
+}
+
+
+// opacity
+
+.opacity-0 {   opacity: 0; }
+.opacity-10 {  opacity: .1; }
+.opacity-20 {  opacity: .2; }
+.opacity-30 {  opacity: .3; }
+.opacity-40 {  opacity: .4; }
+.opacity-50 {  opacity: .5; }
+.opacity-60 {  opacity: .6; }
+.opacity-70 {  opacity: .7; }
+.opacity-80 {  opacity: .8; }
+.opacity-90 {  opacity: .9; }
+.opacity-100 { opacity: 1; }

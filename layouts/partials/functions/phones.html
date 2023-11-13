@@ -1,0 +1,26 @@
+{{ $phones := slice }}
+
+{{ range where site.Pages "Params.sections" "!=" nil }}
+  {{ range partial "functions/sections-all" . }}
+    {{ range .rows }}
+      {{ if eq .type "contact" }}
+        {{ range .data }}
+          {{ if eq .type "phone" | or (eq .type "whatsapp") }}
+            {{ $phones = $phones | append .label }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $callnow_buttons := partial "functions/lang-param" (dict "parent" "menu" "param" "callnow_buttons" "default" slice) }}
+{{- with $callnow_buttons -}}
+  {{- range . -}}
+    {{ if eq .type "phone" | or (eq .type "whatsapp") }}
+      {{ $phones = $phones | append .label }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{ return uniq $phones }}

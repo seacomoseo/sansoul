@@ -1,0 +1,74 @@
+
+{{- $alt          := .Text -}}
+{{- $ratio        := "" -}}
+{{- $span         := "" -}}
+{{- $figure_class := "content__figure" -}}
+{{- $image_class  := "image" -}}
+
+{{- if in .Text "float" -}}
+
+  {{- $figure_class = print $figure_class " content__figure--float" -}}
+  {{- if in .Text "float-right" -}}
+    {{- $figure_class = print $figure_class " content__figure--float-right" -}}
+  {{- end -}}
+  {{- $alt = $alt | replaceRE `float(-right)?` `` -}}
+  {{- $span = 2 -}}
+
+{{- else -}}
+
+  {{- with site.Data.articles.content.border -}}
+    {{- $image_class  = print $image_class " image--border" -}}
+    {{- if ne . "main" -}}
+      {{- $image_class = print $image_class " " . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{/*  RATIO IN TEXT, EXAMPLE: ![3x2](example.jpg)  */}}
+  {{- with where site.Data.options.ratio "value" .Text -}}
+    {{- $ratio       = $.Text -}}
+    {{- $image_class = print $image_class " image--" $ratio -}}
+    {{- $alt         = false -}}
+  {{- end -}}
+
+{{- end -}}
+
+<figure class="{{ $figure_class }}" {{ $aux := `` }}
+  {{- if in .Text `float` -}}
+    {{- $img_shape := resources.Get (print `/media/` .Destination) -}}
+    {{- if in .Destination `.svg` -}}
+    {{- else -}}
+      {{- $img_shape =
+        (
+          (
+            $img_shape
+            | images.Filter (images.Gamma -1)
+          ).Resize
+          (print 100 `x webp q10`)
+          | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`)
+        )
+      -}}
+    {{- end -}}
+    style="--shape:url({{- $img_shape.RelPermalink -}})"
+  {{- end -}}
+>
+
+  <div class="{{ $image_class }}">
+    {{- partial "components/image"
+      (dict
+        "class" "image__inner"
+        "src"       .Destination
+        "ratio"     $ratio
+        "alt"       $alt
+        "container" "sm"
+        "span"      $span
+      )
+    -}}
+  </div>
+
+  {{- with .Title -}}
+    <figcaption class="content__figcaption">
+      {{- . -}}
+    </figcaption>
+  {{- end -}}
+
+</figure>

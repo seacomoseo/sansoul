@@ -1,0 +1,129 @@
+.review {
+  display: flex;
+  flex-direction: column;
+}
+.review__globe {
+  // @include font-cursive;
+  position: relative;
+  @include bg-cover;
+  --column-padding: .5em;
+  padding: var(--column-padding);
+  height: 100%;
+  display: flex;
+  gap: .125em;
+  background-image: unset;
+  &:after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: .75em solid transparent;
+    border-top-color: var(--bg-color);
+    border-bottom: 0;
+    position: absolute;
+    bottom: -.7em;
+    left: 2.25em;
+  }
+  &.bg-gradient-linear-b,
+  &.bg-gradient-linear-l,
+  &.bg-gradient-linear-br,
+  &.bg-gradient-linear-bl,
+  &.bg-gradient-radial,
+  &.bg-gradient-circle {
+    &:after {
+      border-top-color: var(--bg-gradient-color);
+    }
+  }
+}
+.review__icon {
+  flex-shrink: 0;
+  color: var(--main);
+  align-self: flex-start;
+  width: 1.5em;
+  height: 1.5em;
+  z-index: 1;
+  @if $chamfer and $buttons-rounded {
+    margin: .5em 0;
+  } @else if $buttons-rounded {
+    margin: .25em 0;
+  }
+}
+.review__icon--right {
+  align-self: flex-end;
+}
+.review__text {
+  margin: 0;
+  padding-block: 1em;
+  display: grid;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-height: 20em;
+  overflow-y: auto;
+  --mask-image: linear-gradient(transparent, #000 1.5em, #000 calc(100% - 1.5em),transparent);
+  -webkit-mask-image: var(--mask-image);
+  mask-image: var(--mask-image);
+}
+.review__author {
+  display: flex;
+  align-items: center;
+  // order: 2;
+  margin: 1.5em 1em 1em;
+}
+.review__globe.shadow ~ .review__author {
+  .review__figure {
+    filter: drop-shadow($shadow)
+  }
+}
+.review__figure {
+  flex-shrink: 0;
+  position: relative;
+  width: 4em;
+  height: 4em;
+  padding: .125em;
+  --bg-color: var(--main);
+  @include bg-cover;
+  .bg-color {
+    @if $icon-buttons-rounded {
+      @include circle;
+    } @else {
+      @include radius(.125em);
+    }
+  }
+}
+.review__figure-image {
+  position: absolute;
+  display: block;
+  width: calc(100% - .25em);
+  height: calc(100% - .25em);
+  object-fit: cover;
+  background-color: var(--bg-color);
+  @if $icon-buttons-rounded {
+    @include circle;
+  } @else {
+    @include radius;
+  }
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+.review__person {
+  margin-left: .5em;
+  min-height: 4em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.review__title {
+  margin-bottom: .125em;
+}
+.review__subtitle {
+  font-size: .875em;
+  svg {
+    color: #f7bc33;
+  }
+}
+.row--reviews + .row--columns:last-child {
+  margin-top: -3em;
+}

@@ -1,0 +1,270 @@
+
+// Colors by backgrounds
+
+:root,
+html,
+body,
+.bg-link,
+.bg-link-light,
+.bg-link-dark,
+.bg-main,
+.bg-main-light,
+.bg-main-dark,
+.bg-alt,
+.bg-alt-light,
+.bg-alt-dark,
+.bg-white,
+.bg-light,
+.bg-grey,
+.bg-dark,
+.bg-black {
+  // Bases
+  --link: #{ $link };
+  --link-text: #{ $link-contrast-neutral };
+  --main: #{ $main };
+  --main-text: #{ $main-contrast-neutral };
+  --alt: #{ $alt };
+  --alt-text: #{ $alt-contrast-neutral };
+  --grey: #{ $grey };
+  --grey-text: #{ $grey-contrast-neutral };
+  --light: #{ $light };
+  --light-text: #{ $text };
+  --dark: #{ $dark };
+  --dark-text: #{ $light };
+  --invert: var(--dark);
+  --invert-text: var(--dark-text);
+  --hover: var(--alt);
+  --hover-text: var(--alt-text);
+  --active: var(--grey);
+  --active-text: var(--grey-text);
+  // Texts
+  color: var(--text);
+  --text: #{ $text };
+  --title: var(--dark);
+  --subtitle: var(--alt);
+  --border: var(--alt);
+}
+
+// Texts
+.bg-white:not([class*="bg-gradient"]) {
+  --text: #767676;
+}
+.bg-black,
+.bg-dark,
+.bg-grey,
+.bg-main-dark,
+.bg-alt-dark,
+.bg-link-dark {
+  --text: #{ $white };
+  --title: #{ $white };
+  --subtitle: #{ $white };
+  --border: #{ $alt-light };
+}
+.bg-main {
+  --text: #{ $main-contrast-neutral };
+  --title: #{ $main-contrast-neutral };
+  --subtitle: #{ $main-contrast-neutral };
+  --border: #{ text-contrast($main, $light, $grey) };
+}
+.bg-alt {
+  --text: #{ $alt-contrast-neutral };
+  --title: #{ $alt-contrast-neutral };
+  --subtitle: #{ $alt-contrast-neutral };
+  --border: #{ text-contrast($alt, $light, $grey) };
+}
+.bg-link {
+  --text: #{ $link-contrast-neutral };
+  --title: #{ $link-contrast-neutral };
+  --subtitle: #{ $link-contrast-neutral };
+  --border: #{ text-contrast($link, $light, $grey) };
+}
+
+// Link and Main
+@if $link == $main {
+  .bg-main,
+  .bg-link {
+    --link: var(--alt);
+    --link-text: var(--alt-text);
+    --main: var(--alt);
+    --main-text: var(--alt-text);
+    --hover: var(--invert);
+    --hover-text: var(--invert-text);
+  }
+} @else {
+  .bg-link {
+    @if $link != $main {
+      --link: var(--main);
+      --link-text: var(--main-text);
+    }
+  }
+  .bg-main {
+    @if $main != $link {
+      --main: var(--link);
+      --main-text: var(--link-text);
+    }
+  }
+}
+
+// Alt and Hover
+.alt,
+.bg-alt {
+  // like active
+  --hover: var(--grey);
+  --hover-text: var(--grey-text);
+  // like invert
+  --active: var(--invert);
+  --active-text: var(--invert-text);
+}
+.bg-alt {
+  // like link
+  --alt: var(--link);
+  --alt-text: var(--link-text);
+}
+.bg-grey {
+  // like dark
+  --grey: var(--dark);
+  --grey-text: var(--dark-text);
+}
+
+// Active
+.bg-grey {
+  // like invert
+  --active: var(--invert);
+  --active-text: var(--invert-text);
+}
+
+// Light
+.bg-light {
+  --light: #{ $white };
+}
+
+// Dark
+.bg-dark {
+  --dark: #{ $black };
+}
+
+// Invert
+@mixin invert-light($color) {
+  @if text-contrast($color) == $white {
+    --invert: var(--light);
+    --invert-text: var(--light-text);
+  }
+}
+.bg-link-dark,
+.bg-main-dark,
+.bg-alt-dark,
+.bg-grey,
+.bg-dark,
+.bg-black { @include invert-light($black); }
+.bg-main {  @include invert-light($main); }
+.bg-alt {   @include invert-light($alt); }
+.bg-link {  @include invert-light($link); }
+.bg-grey {  @include invert-light($grey); }
+
+// Contrast Background
+@mixin link-contrast($bg) {
+  @if $link-contrast-bg and $link-contrast-neutral == text-contrast($bg) {
+    --link: #{ $link-contrast-colored };
+    --link-text: #{ $bg };
+  }
+}
+@mixin main-contrast($bg) {
+  @if $main-contrast-bg and $main-contrast-neutral == text-contrast($bg) {
+    --main: #{ $main-contrast-colored };
+    --main-text: #{ $bg };
+  }
+}
+@mixin alt-contrast($bg) {
+  @if $alt-contrast-bg and $alt-contrast-neutral == text-contrast($bg) {
+    --alt: #{ $alt-contrast-colored };
+    --alt-text: #{ $bg };
+  }
+}
+
+// Background link, main and alt in light and dark
+// @if not $link-contrast-bg {
+//   .bg-link-light { @include link-contrast($white); }
+//   .bg-link-dark {  @include link-contrast($dark); }
+// }
+// @if not $main-contrast-bg {
+//   .bg-main-light { @include main-contrast($white); }
+//   .bg-main-dark {  @include main-contrast($dark); }
+// }
+// @if not $alt-contrast-bg {
+//   .bg-alt-light { @include alt-contrast($white); }
+//   .bg-alt-dark {  @include alt-contrast($dark); }
+// }
+
+// Background lights and darks if contrast active
+@if $main-contrast-bg or $alt-contrast-bg or $link-contrast-bg {
+  .bg-white,
+  .bg-light,
+  .bg-link-light,
+  .bg-main-light,
+  .bg-alt-light {
+    @include link-contrast($white);
+    @include main-contrast($white);
+    @include alt-contrast($white);
+  }
+  .bg-black,
+  .bg-dark,
+  .bg-grey,
+  .bg-link-dark,
+  .bg-main-dark,
+  .bg-alt-dark {
+    @include link-contrast($dark);
+    @include main-contrast($dark);
+    @include alt-contrast($dark);
+  }
+  .bg-link {
+    @include link-contrast(text-contrast($main-contrast-neutral));
+    @include link-contrast(text-contrast($alt-contrast-neutral));
+  }
+  .bg-main {
+    @include link-contrast(text-contrast($alt-contrast-neutral));
+    @include link-contrast(text-contrast($link-contrast-neutral));
+  }
+  .bg-alt {
+    @include link-contrast(text-contrast($main-contrast-neutral));
+    @include link-contrast(text-contrast($link-contrast-neutral));
+  }
+}
+
+
+// Bases
+
+button,
+.button,
+.link {
+  --base: var(--link);
+  --base-text: var(--link-text);
+}
+:root,
+.main {
+  --base: var(--main);
+  --base-text: var(--main-text);
+}
+.alt {
+  --base: var(--alt);
+  --base-text: var(--alt-text);
+}
+.light {
+  --base: var(--light);
+  --base-text: var(--light-text);
+}
+.dark {
+  --base: var(--dark);
+  --base-text: var(--dark-text);
+}
+.invert {
+  --base: var(--invert);
+  --base-text: var(--invert-text);
+}
+.whatsapp {
+  --base: #25d366;
+  --base-text: #fff;
+  --hover: #128c7e;
+  --hover-text: #fff;
+  --active: #075e54;
+  --active-text: #fff;
+}

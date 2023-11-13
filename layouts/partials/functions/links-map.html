@@ -1,0 +1,13 @@
+{{ $linksMap := slice }}
+{{ range where site.Pages "Params.sections" "!=" nil }}
+  {{ range partial "functions/sections-all" . }}
+    {{ range .rows }}
+      {{ if eq .type "contact" }}
+        {{ with .map.link }}
+          {{ $linksMap = $linksMap | append . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return uniq $linksMap }}

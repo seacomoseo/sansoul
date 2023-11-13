@@ -1,0 +1,245 @@
+
+# default with option in cms
+
+Paginate: 24
+buildFuture: false
+logo: logo.png
+
+languages:
+  es:
+    weight: 1
+    languageName: Español
+    params: { flag: 🇪🇸 }
+    paginatePath: pagina
+    permalinks:
+      page:
+        pages: :slug
+        blog: :slug
+        events: evento/:year/:month/:day/:slug
+        products: producto/:slug
+        categories: categoria/:slug
+        tags: etiqueta/:slug
+        authors: autor/:slug
+      section:
+        pages: paginas
+        blog: blog
+        events: eventos
+        products: productos
+        categories: categorias
+        tags: etiquetas
+        authors: autores
+  en:
+    weight: 2
+    languageName: English
+    params: { flag: 🇬🇧 }
+    paginatePath: page
+    permalinks:
+      page:
+        pages: :slug
+        blog: :slug
+        events: event/:year/:month/:day/:slug
+        products: product/:slug
+        categories: category/:slug
+        tags: tag/:slug
+        authors: author/:slug
+      section:
+        pages: pages
+        blog: blog
+        events: events
+        products: products
+        categories: categories
+        tags: tags
+        authors: authors
+
+defaultContentLanguage: es
+disableLanguages:
+- en
+
+module:
+  mounts:
+  # robots and redirects
+  - source: data/robots.md
+    target: assets/robots.txt
+  - source: data/redirects.md
+    target: assets/_redirects
+  # sections
+  - source: content.es/sections
+    target: assets/sections.es
+    lang: es
+  - source: content.en/sections
+    target: assets/sections.en
+    lang: en
+  # modals
+  - source: content.es/modals
+    target: assets/modals.es
+    lang: es
+  - source: content.en/modals
+    target: assets/modals.en
+    lang: en
+  # prebuild products
+  - source: themes/sansoul/prebuild/public/products/es
+    target: content/products
+    lang: es
+  - source: themes/sansoul/prebuild/public/products/en
+    target: content/products
+    lang: en
+  # prebuild categories
+  - source: themes/sansoul/prebuild/public/categories/es
+    target: content/categories
+    lang: es
+  - source: themes/sansoul/prebuild/public/categories/en
+    target: content/categories
+    lang: en
+  # data
+  - source: data
+    target: data
+    includeFiles: '**.yml'
+  # assets
+  - source: assets
+    target: assets
+
+  # parents es
+  - source: content.es/_index/pages.md
+    target: content/pages/_index.md
+    lang: es
+  - source: content.es/_index/blog.md
+    target: content/blog/_index.md
+    lang: es
+  - source: content.es/_index/events.md
+    target: content/events/_index.md
+    lang: es
+  - source: content.es/_index/products.md
+    target: content/products/_index.md
+    lang: es
+  - source: content.es/_index/tags.md
+    target: content/tags/_index.md
+    lang: es
+  - source: content.es/_index/categories.md
+    target: content/categories/_index.md
+    lang: es
+  - source: content.es/_index/authors.md
+    target: content/authors/_index.md
+    lang: es
+  # parents en
+  - source: content.en/_index/pages.md
+    target: content/pages/_index.md
+    lang: en
+  - source: content.en/_index/blog.md
+    target: content/blog/_index.md
+    lang: en
+  - source: content.en/_index/events.md
+    target: content/events/_index.md
+    lang: en
+  - source: content.en/_index/products.md
+    target: content/products/_index.md
+    lang: en
+  - source: content.en/_index/tags.md
+    target: content/tags/_index.md
+    lang: en
+  - source: content.en/_index/categories.md
+    target: content/categories/_index.md
+    lang: en
+  - source: content.en/_index/authors.md
+    target: content/authors/_index.md
+    lang: en
+
+  # content project
+  - source: content.es
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: es
+  - source: content.en
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: en
+  # content theme
+  - source: themes/sansoul/content.es
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: es
+  - source: themes/sansoul/content.en
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: en
+
+# default without option in cms
+
+summaryLength: 15
+enableRobotsTXT: true
+removePathAccents: true
+
+taxonomies: {}
+
+disableKinds:
+- taxonomy
+- term
+
+related:
+  includeNewer: true
+  threshold: 80
+  toLower: true
+  indices:
+  - name: date
+    weight: 10
+  - name: categories
+    weight: 80
+  - name: tags
+    weight: 80
+  - name: author
+    weight: 80
+
+outputs:
+  home: [HTML, RSS, JSON]
+  page: [HTML]
+  section: [HTML]
+  taxonomy: [HTML]
+  term: [HTML]
+
+mediaTypes:
+  application/rss+xml:
+    suffixes: [xml]
+
+outputFormats:
+  RSS:
+    mediaType: application/rss+xml
+    baseName: feed
+    permalinkable: true
+
+markup:
+  tableOfContents:
+    ordered: true
+    endLevel: 6
+  goldmark:
+    renderer:
+      unsafe: true
+    parser:
+      attribute:
+        block: true
+
+frontmatter:
+  date:
+  - date
+  - date_ini
+  lastmod:
+  - lastmod
+  - :git
+  - date
+  - publishDate
+
+security:
+  exec:
+    allow:
+    - ^dart-sass-embedded$
+    - ^go$
+    - ^npx$
+    - ^postcss$
+    - ^babel$
+
+ignoreErrors:
+- error-remote-getcsv
+
+caches:
+  getcsv:
+    maxAge: 0
+
+timeout: 240s

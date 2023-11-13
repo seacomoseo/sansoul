@@ -1,0 +1,122 @@
+@keyframes menu-bar-1 {
+  0% {
+    transform: rotate(-45deg);
+  }
+  50% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(-$menu-bar-gap);
+  }
+}
+@keyframes menu-bar-2 {
+  0%, 50% {
+    background-color: transparent;
+  }
+}
+@keyframes menu-bar-3 {
+  0% {
+    transform: rotate(45deg);
+  }
+  50% {
+    transform: none;
+  }
+  100% {
+    transform: translateY($menu-bar-gap);
+  }
+}
+@keyframes menu-bar-active-1 {
+  0% {
+    transform: translateY(-$menu-bar-gap);
+  }
+  50% {
+    transform: none;
+  }
+  100% {
+    transform: rotate(-45deg);
+  }
+}
+@keyframes menu-bar-active-2 {
+  50%, 100% {
+    background-color: transparent;
+  }
+}
+@keyframes menu-bar-active-3 {
+  0% {
+    transform: translateY($menu-bar-gap);
+  }
+  50% {
+    transform: none;
+  }
+  100% {
+    transform: rotate(45deg);
+  }
+}
+@keyframes copied {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%);
+    visibility: visible;
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-1em) translateX(-50%);
+    visibility: visible;
+  }
+  99% {
+    opacity: 0;
+    transform: translateY(-2em) translateX(-50%);
+    visibility: visible;
+  }
+  100% {
+    visibility: hidden;
+  }
+}
+@keyframes show-up {
+  0% {
+    transform: translateY(3rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes spin {
+  to{
+    transform: rotate(360deg);
+  }
+}
+@keyframes awesome-rotate {
+  0% {
+    transform: perspective(600px) rotateX(15deg) rotateY(30deg) rotateZ(-15deg);
+  }
+  100% {
+    transform: perspective(600px) rotateX(15deg) rotateY(-15deg) rotateZ(-10deg);
+  }
+}
+@keyframes draw {
+  5%,
+  20% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-width: .125em;
+  }
+  0%,
+  25%,
+  100% {
+    fill-opacity: 1;
+    stroke-opacity: 0;
+    stroke-width: 0;
+  }
+  //
+  .01%,
+  5% {
+    stroke-dashoffset: 800%;
+  }
+  0%,
+  50%,
+  100% {
+    stroke-dashoffset: 0%;
+  }
+}

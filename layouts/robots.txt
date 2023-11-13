@@ -1,0 +1,11 @@
+User-agent: *
+
+{{ with resources.Get "robots.txt" }}
+  {{- .Content }}
+{{ end }}
+
+{{- if in site.BaseURL "netlify" | or (in site.BaseURL "gitlab") }}
+Disallow: /
+{{- end }}
+
+Sitemap: {{ site.BaseURL }}/sitemap.xml

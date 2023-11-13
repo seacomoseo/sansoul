@@ -1,0 +1,118 @@
+
+{{- $class := .class | default "" -}}
+{{- with .font_alt -}}
+  {{- $class = print $class " button--font-alt" -}}
+{{- end -}}
+
+{{- $icon  := "" -}}
+{{- with .icon -}}
+  {{- $icon = partial "components/icon" (dict "icon" . "emoji" $.emoji) -}}
+{{- end -}}
+
+{{- if .link | or (eq .label "none") -}}
+
+  {{- $label       := .label | default (i18n `more`)  -}}
+  {{- $anchor      := cond (ne .anchor .label) .anchor false  -}}
+  {{- $external    := strings.HasPrefix .link "http" -}}
+  {{- $page_title  := "" -}}
+  {{- $lightbox    := findRE `\.(jpg|png|gif|webp|svg)` .link -}}
+  {{- $noindex     := (.noindex | default false)  -}}
+  {{- $anchor_link := strings.HasPrefix .link "#" -}}
+  {{- $button      := ne .button "none" -}}
+  {{- if $button -}}
+    {{- with .button -}}
+      {{- $class = print $class " " . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if not $external | and (not $anchor_link) | and (not .noindex) -}}
+    {{- $linkCleaned  := .link | replaceRE `#.*` `` -}}
+    {{- $pages        := where site.Pages "RelPermalink" $linkCleaned -}}
+    {{- $pageInternal := index $pages 0 | default site.Home -}}
+    {{- with $pageInternal -}}
+      {{- if .Params.noindex -}}
+        {{- $noindex = true -}}
+      {{- else -}}
+        {{- $page_title = .Params.title_seo | default .Title -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $noindex = true -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if findRE `^(mailto|tel):` .link -}}
+    {{- $noindex = true -}}
+  {{- end -}}
+
+  {{/*  Change noindex to false if explicit set false  */}}
+  {{- if $noindex | and (eq .noindex false) -}}
+    {{- $noindex = false -}}
+  {{- end -}}
+
+  {{- $is_data_more := not $noindex
+    | and ($anchor
+      | or ((not .label)
+        | and (.label_alt
+          | or $page_title
+        )
+      )
+    )
+  -}}
+  {{- $final_label := $anchor
+    | default .label
+    | default .label_alt
+    | default $page_title
+    | default (i18n "more")
+  -}}
+
+  {{- $start_slash := .link | findRE `^/` -}}
+  {{- $link        := .link -}}
+  {{- if eq .link "none" -}}
+    {{- $link       = "" -}}
+  {{- else if .link -}}
+    {{- if not $external | and (not $anchor_link) | and (not $start_slash) -}}
+      {{- with resources.Get ((print "/media/" .link) | replaceRE `\#.*$` ``) -}}
+        {{- $link     = .RelPermalink -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $not_link := $noindex | or $lightbox | or ((eq .label "none") | and (not .link)) -}}
+  {{- if $not_link -}}
+    {{- "<" | safeHTML -}}
+      {{- cond    $button "button" "i" -}}
+      {{- with    $class    }} class="{{ . }}"{{ end -}}
+      {{- if      $lightbox }} data-lightbox="{{ $link | safeURL }}"
+      {{- else if $link     }} data-{{ cond $external `b` `h` }}="{{ $link | safeURL | base64Encode }}"
+      {{- end -}}
+      {{- if      eq .label `none` }} title="{{ $final_label }}"{{ end -}}
+    >
+  {{- else -}}
+    <a {{ if $button | or $class | or $is_data_more -}}
+         class="{{ cond $button `button` `` }} {{- with $class }} {{ . }}{{ end }}"
+       {{- end -}}
+      {{- `` | safeHTMLAttr }} href="{{ $link | safeURL }}"
+      {{- if $external }} target="_blank" rel="noopener"{{ end -}}
+      {{- if eq .label `none` }} title="{{ $final_label }}"{{ end -}}
+    >
+  {{- end -}}
+
+  {{- $icon -}}
+
+  {{- if eq .label "none" -}}
+  {{- else if $is_data_more -}}
+    <i data-more="{{ $label }}"><i>{{ $final_label }}</i></i>
+  {{- else -}}
+    {{- partial "components/ofuscate" $label -}}
+  {{- end -}}
+
+  {{- "</" | safeHTML }} {{- cond (not $not_link) "a" (cond $button "button" "i") -}} >
+
+{{- else -}}
+
+  {{- with $class }}<i class="{{ . }}">{{ end -}}
+    {{- $icon -}}
+    {{- partial "components/ofuscate" (.label | default "") -}}
+  {{- with $class }}</i>{{ end -}}
+
+{{- end -}}

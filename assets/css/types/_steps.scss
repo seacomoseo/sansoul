@@ -1,0 +1,174 @@
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  width: fit-content;
+}
+:root          { --steps-size: 5em; }
+.steps--size-1 { --steps-size: 3em; }
+.steps--size-2 { --steps-size: 4em; }
+.steps--size-3 { --steps-size: 5em; }
+.steps--size-4 { --steps-size: #{ fluid-size(80px, 120px) }; }
+.steps--size-5 { --steps-size: #{ fluid-size(80px, 150px) }; }
+.steps--size-6 { --steps-size: #{ fluid-size(80px, 180px) }; }
+.step {
+  display: flex;
+  gap: fluid-size(16px, 36px);
+}
+.step__axis-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &:after {
+    content: '';
+    display: block;
+    width: var(--outline);
+    height: 100%;
+    min-height: 2em;
+    background-color: var(--base);
+    @if $chamfer and $icon-buttons-rounded {
+      transform: translateY(-.25em);
+      box-shadow: 0 .5em 0 var(--base);
+    }
+  }
+}
+.step:last-child {
+  .step__axis-wrap:after {
+    content: none;
+  }
+  .step__content {
+    padding-bottom: 0;
+  }
+}
+.step__axis {
+  flex-shrink: 0;
+  flex-grow: 0;
+  width: var(--steps-size);
+  height: var(--steps-size);
+  padding: var(--outline);
+  background-color: var(--base);
+  overflow: hidden;
+  z-index: 0;
+  @if $chamfer {
+    @if $icon-buttons-rounded {
+      @include circle;
+    } @else if $radius > 0.01 {
+      @include radius(.25em, fluid-size(20px, 37px));
+    }
+  } @else if $radius > 0.01 {
+    @include circle;
+  }
+}
+.step__figure {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @if $buttons-outline {
+    background-color: var(--bg-color);
+  } @else {
+    background-color: var(--main);
+  }
+  @if $chamfer {
+    @if $icon-buttons-rounded {
+      @include circle;
+    } @else if $radius > 0.01 {
+      @include radius(0em, fluid-size(20px, 37px));
+    }
+  } @else if $radius > 0.01 {
+    // box-shadow: inset $shadow;
+    overflow: hidden;
+    @include circle;
+  }
+}
+.step__figure-image {
+  &, img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 1;
+    ~ .step__icon,
+    ~ .step__number {
+      filter: drop-shadow($shadow);
+      color: $white;
+    }
+  }
+}
+.step__icon {
+  width: 50%;
+  height: 50%;
+  fill: currentColor;
+  z-index: 3;
+  @if $buttons-outline {
+    color: var(--main);
+  } @else {
+    color: var(--main-text);
+  }
+}
+.step__number {
+  font-family: $font-family-title;
+  font-style: $font-style-title;
+  font-weight: $font-weight-title;
+  line-height: 1;
+  font-size: calc(var(--steps-size) * .5);
+  color: var(--main-text);
+  z-index: 3;
+}
+.step:after,
+.step__content {
+  width: 100%;
+  align-self: center;
+}
+.step__content {
+  padding: .5em 0 2em;
+  text-align: left;
+  .underline:after {
+    margin-left: 0;
+  }
+  .buttons {
+    justify-content: flex-start;
+  }
+}
+.step {
+  h3 {
+    margin: 0;
+  }
+  .description {
+    &:not(:first-child) {
+      margin-top: 1em;
+    }
+  }
+}
+@media (min-width: $screen-md) {
+  .steps {
+    width: auto;
+  }
+  .step {
+    &:after {
+      content: '';
+    }
+    &:nth-child(2n+1) {
+      .step__content {
+        order: -1;
+        text-align: right;
+        .underline:after {
+          margin-left: auto;
+          margin-right: 0;
+        }
+        .buttons {
+          justify-content: flex-end;
+        }
+      }
+    }
+    &:nth-child(2n) {
+      &:after {
+        order: -1;
+      }
+    }
+  }
+}

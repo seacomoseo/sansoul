@@ -1,0 +1,21 @@
+{{- $location := .Params.location -}}
+{{- $address  := .Params.address -}}
+{{- $label    := $location -}}
+{{- with $location -}}
+  {{- if $address -}}
+    {{- $label  = replace (print . " - " $address) "<nil>" "" -}}
+  {{- end -}}
+  {{- $link  := print "https://maps.google.com/maps?q=" ($label | urlquery) -}}
+  <p class="buttons">
+    {{- partial "components/link" (dict
+      "link"      $link
+      "button"    "link"
+      "font_alt"  true
+      "icon"      "location-dot"
+      "emoji"     "📍"
+      "label"     $label
+      "noindex"   true
+    ) -}}
+  </p>
+  <iframe loading="lazy" data-src="{{ $link }}&z=15&output=embed" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+{{- end -}}

@@ -1,0 +1,15 @@
+{{ $items := slice }}
+{{ $sub   := 1 }}
+{{ if .more }}
+  {{ $items =
+    (partial "functions/lang-param" (dict "parent" "menu" "param" "more" "default" slice))
+    | append (page.Params.menu.items.more | default slice)
+  }}
+  {{ $sub = 0 }}
+{{ else }}
+  {{ $items =
+    (partial "functions/lang-param" (dict "parent" "menu" "param" "normal" "default" slice))
+    | append (page.Params.menu.items.normal | default slice)
+  }}
+{{ end }}
+{{ return $items }}

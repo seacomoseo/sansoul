@@ -1,0 +1,73 @@
+.container {
+  --num-container-paddings: 2;
+  --max-container-width: calc(100% - 2em);
+  --container-width: calc(100% - 2em);
+  --container-padding: 1em;
+  --container-inner: calc(var(--container-width) - var(--container-padding) * 2);
+  --box-padding: var(--container-padding);
+  --box-width:   var(--container-width);
+  --box-inner:   var(--container-inner);
+  padding-inline: var(--container-padding);
+  margin-inline: auto;
+  position: relative;
+  width: 100%;
+  max-width: var(--container-width);
+}
+.container--xs { --container-width: #{ fluid-size($screen-min, $container-width-max-xs) }; --max-container-width: #{ $container-width-max-xs / 1px }; }
+.container--sm { --container-width: #{ fluid-size($screen-min, $container-width-max-sm) }; --max-container-width: #{ $container-width-max-sm / 1px }; }
+.container--md { --container-width: #{ fluid-size($screen-min, $container-width-max-md) }; --max-container-width: #{ $container-width-max-md / 1px }; }
+.container--lg { --container-width: #{ fluid-size($screen-min, $container-width-max-lg) }; --max-container-width: #{ $container-width-max-lg / 1px }; }
+.container--xl { --container-width: #{ fluid-size($screen-min, $container-width-max-xl) }; --max-container-width: #{ $container-width-max-xl / 1px }; }
+
+.container.bg {
+  --num-container-paddings: 4;
+  --container-padding: #{ fluid-size(16px, 18px * 2) };
+  padding: var(--container-padding);
+  @include bg-cover(fluid-size(16px, 18px * 2));
+}
+.container--xs.bg { --container-width: #{ fluid-size(288px, $container-width-max-xs) }; }
+.container--sm.bg { --container-width: #{ fluid-size(288px, $container-width-max-sm) }; }
+.container--md.bg { --container-width: #{ fluid-size(288px, $container-width-max-md) }; }
+.container--lg.bg { --container-width: #{ fluid-size(288px, $container-width-max-lg - $font-size-max * 2) }; --num-container-paddings: 6; }
+.container--xl.bg { --container-width: #{ fluid-size(288px, $container-width-max-xl - $font-size-max * 2) }; --num-container-paddings: 6; }
+
+
+// .container {
+//   --size-min: #{ $screen-min / 16px };
+//   --num-container-paddings: 2;
+//   --max-container-width: calc(100% - 2em);
+//   --container-width: var(--fluid-size);
+//   --container-padding: 1em;
+//   --container-inner: calc(var(--container-width) - var(--container-padding) * 2);
+//   --box-padding: var(--container-padding);
+//   --box-width:   var(--container-width);
+//   --box-inner:   var(--container-inner);
+//   padding-inline: var(--container-padding);
+//   margin-inline: auto;
+//   position: relative;
+//   width: 100%;
+//   max-width: var(--container-width);
+// }
+// .container--xs { --size-max: #{ $container-width-max-xs / 18px }; --max-container-width: #{ $container-width-max-xs / 1px }; }
+// .container--sm { --size-max: #{ $container-width-max-sm / 18px }; --max-container-width: #{ $container-width-max-sm / 1px }; }
+// .container--md { --size-max: #{ $container-width-max-md / 18px }; --max-container-width: #{ $container-width-max-md / 1px }; }
+// .container--lg { --size-max: #{ $container-width-max-lg / 18px }; --max-container-width: #{ $container-width-max-lg / 1px }; }
+// .container--xl { --size-max: #{ $container-width-max-xl / 18px }; --max-container-width: #{ $container-width-max-xl / 1px }; }
+
+// .container.bg {
+//   --size-min: #{ 288px / 16px };
+//   --num-container-paddings: 4;
+//   --container-padding: #{ fluid-size(16px, 18px * 2) };
+//   padding: var(--container-padding);
+//   @include bg-cover(fluid-size(16px, 18px * 2));
+// }
+// .container--xs.bg { --size-max: #{ $container-width-max-xs / 18px }; }
+// .container--sm.bg { --size-max: #{ $container-width-max-sm / 18px }; }
+// .container--md.bg { --size-max: #{ $container-width-max-md / 18px }; }
+// .container--lg.bg { --size-max: #{ $container-width-max-lg / 18px - $font-size-max * 2 / 18px }; --num-container-paddings: 6; }
+// .container--xl.bg { --size-max: #{ $container-width-max-xl / 18px - $font-size-max * 2 / 18px }; --num-container-paddings: 6; }
+
+// .container--fluid,
+// .container--fluid.bg {
+//   --container-width: calc(100% - 2em);
+// }

@@ -1,0 +1,94 @@
+{{- $vars := dict -}}
+{{- with site.Data -}}
+  {{- $vars = dict
+    "design-colors-base-white"         (.design.colors.base.white               | default "#fff")
+    "design-colors-base-light"         (.design.colors.base.light               | default "#eee")
+    "design-colors-base-dark"          (.design.colors.base.dark                | default "#282525")
+    "design-colors-base-black"         (.design.colors.base.black               | default "#000")
+    "design-colors-base-grey"          (.design.colors.base.grey                | default "#767676")
+    "design-colors-main-color"         (.design.colors.main.color               | default "#abd4ed")
+    "design-colors-alt-color"          (cond (eq .design.colors.alt.color "#fff") "" .design.colors.alt.color)
+    "design-colors-link-color"         (cond (eq .design.colors.link.color "#fff") (.design.colors.main.color | default "#abd4ed") .design.colors.link.color)
+
+    "design-colors-main-light"         (cond (eq .design.colors.main.light "#fff") "" .design.colors.main.light)
+    "design-colors-alt-light"          (cond (eq .design.colors.alt.light  "#fff") "" .design.colors.alt.light)
+    "design-colors-link-light"         (cond (eq .design.colors.link.light "#fff") "" .design.colors.link.light)
+
+    "design-colors-main-dark"          (cond (eq .design.colors.main.dark  "#fff") "" .design.colors.main.dark)
+    "design-colors-alt-dark"           (cond (eq .design.colors.alt.dark   "#fff") "" .design.colors.alt.dark)
+    "design-colors-link-dark"          (cond (eq .design.colors.link.dark  "#fff") "" .design.colors.link.dark)
+
+    "design-colors-main-contrast-text" (in (slice "all" "text") .design.colors.main.contrast | string)
+    "design-colors-alt-contrast-text"  (in (slice "all" "text") .design.colors.alt.contrast  | string)
+    "design-colors-link-contrast-text" (in (slice "all" "text") .design.colors.link.contrast | string)
+
+    "design-colors-main-contrast-bg"   (in (slice "all" "bg") .design.colors.main.contrast   | string)
+    "design-colors-alt-contrast-bg"    (in (slice "all" "bg") .design.colors.alt.contrast    | string)
+    "design-colors-link-contrast-bg"   (in (slice "all" "bg") .design.colors.link.contrast   | string)
+
+    "menu-screen_sticky"               (.menu.screen_sticky                     | default 0)
+
+    "design-fonts-base-family"         (.design.fonts.base.family               | default "Montserrat")
+    "design-fonts-title-family"        (.design.fonts.title.family              | default "Montserrat")
+    "design-fonts-cursive-family"      (.design.fonts.cursive.family            | default "Dancing Script")
+    "design-fonts-base-weight"         (.design.fonts.base.weight               | default 200)
+    "design-fonts-title-weight"        (.design.fonts.title.weight              | default 800)
+    "design-fonts-cursive-weight"      (.design.fonts.cursive.weight            | default 400)
+    "design-fonts-base-strong"         (.design.fonts.base.strong               | default 0)
+    "design-fonts-title-strong"        (.design.fonts.title.strong              | default 0)
+    "design-fonts-cursive-strong"      (.design.fonts.cursive.strong            | default 0)
+    "design-fonts-base-italic"         (cond (not .design.fonts.base.italic)    "normal" "italic")
+    "design-fonts-title-italic"        (cond (not .design.fonts.title.italic)   "normal" "italic")
+    "design-fonts-cursive-italic"      (cond (not .design.fonts.cursive.italic) "normal" "italic")
+    "design-fonts-base-line-height"    (.design.fonts.base.line_height          | default 1.25)
+    "design-fonts-title-line-height"   (.design.fonts.title.line_height         | default 1.25)
+    "design-fonts-cursive-line-height" (.design.fonts.cursive.line_height       | default 1.25)
+    "design-fonts-title-top"           (.design.fonts.title.top                 | default 0)
+    "design-fonts-cursive-top"         (.design.fonts.cursive.top               | default 0)
+    "design-fonts-blockquote_cursive"  (.design.fonts.blockquote_cursive        | string)
+
+    "design-emoji-duotone"             (eq .design.icons.type   "duotone"       | string)
+    "design-emoji-scale"               (in .design.icons.emojis "-scale"        | string)
+    "design-menu-bar"                  (cond (eq .design.icons.type "thin"   ) .1
+                                       (cond (eq .design.icons.type "light"  ) .15
+                                       (cond (eq .design.icons.type "regular") .2
+                                                                               .25
+                                       )))
+
+    "design-rounded-radius"            (.design.rounded.radius                  | default 0)
+    "design-rounded-chamfer"           (.design.rounded.chamfer                 | string)
+
+    "design-buttons-sides_round"       (.design.buttons.sides_round             | string)
+    "design-buttons-icon_circle"       (.design.buttons.icon_circle             | string)
+    "design-buttons-deep"              (.design.buttons.deep                    | string)
+    "design-buttons-outline"           (.design.buttons.outline                 | string)
+    "design-buttons-font_base"         (.design.buttons.font_base               | string)
+
+    "design-shadow-left"               (.design.shadow.left                     | default 0)
+    "design-shadow-top"                (.design.shadow.top                      | default 0)
+    "design-shadow-blur"               (.design.shadow.blur                     | default 0)
+    "design-shadow-color"              (.design.shadow.color                    | default "black")
+    "design-shadow-opacity"            (.design.shadow.opacity                  | default 0.25)
+    "design-lightbox_overlay-opacity"  (.design.lightbox_overlay.opacity        | default 0.8)
+    "design-lightbox_overlay-color"    (.design.lightbox_overlay.color          | default "black")
+    "design-performance-showup"        (.design.performance.showup              | string)
+    "design-performance-parallax"      (.design.performance.parallax            | string)
+    "article-search"                   (.articles.content.search                | string)
+    "menu-google_translate"            (.menu.google_translate                  | string)
+    "copied"                           (i18n "copied")
+    | merge (partial "svg/dividers" .)
+  -}}
+{{- end -}}
+
+{{- $styles := resources.Get (print "css/styles." .Lang ".scss")
+  | resources.ExecuteAsTemplate (print site.Home.RelPermalink "css/styles.scss") .
+-}}
+{{- with $styles -}}
+  {{- if hugo.IsProduction -}}
+    {{- $styles = . | toCSS (dict "vars" $vars) | fingerprint | postCSS | resources.PostProcess -}}
+  {{- else -}}
+    {{- $styles = . | toCSS (dict "vars" $vars "enableSourceMap" true) | fingerprint -}}
+  {{- end -}}
+{{- end -}}
+
+<link rel="stylesheet" href="{{ $styles.RelPermalink }}">

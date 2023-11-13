@@ -1,0 +1,131 @@
+{{- $js := .js -}}
+{{- range where site.Pages "Params.sections" "!=" nil -}}
+  {{- $page       := . -}}
+  {{- $slug       := .Params.slug -}}
+  {{- $page_emoji := (index site.Data.utilities.taxonomies .Type).emoji -}}
+  {{- $sections := partial "functions/sections-all" . -}}
+  {{- range $k, $v := $sections -}}
+    {{- $id            := .id -}}
+    {{- $section_name  := i18n "header" -}}
+    {{- if eq .id "footer" }}
+      {{- $section_name = i18n "footer" -}}
+    {{- else if $k }}
+      {{ $section_name  = .menu
+        | default .anchor
+        | default .title
+        | default .id
+        | default .file
+      }}
+    {{- end -}}
+    {{- $section_emoji  := "🧩" -}}
+    {{- if .modal }}
+      {{- $section_emoji = "🪟" -}}
+    {{- end -}}
+    {{ $num := 1 }}
+    {{- range $row_k, $row := .rows -}}
+      {{- if eq .type "contact" -}}
+        {{- with .form -}}
+          {{- $form_num      := cond (eq $num 1) "" (print "_" $num) -}}
+          {{- $id_form       := replace (print $slug "_" $id $form_num) "-" "_" -}}
+          {{- $netlify_forms := not .action -}}
+          {{- $action        := .action | default "/" -}}
+          {{/*  HEAD  */}}
+          {{- if $js -}}
+            {{- $name_js_form := print "form_" $id_form -}}
+            const {{ $name_js_form }} = document.getElementById('{{ $name_js_form }}');
+            {{ $name_js_form }} && {{ $name_js_form }}.insertAdjacentHTML('beforeend', ` {{- "" -}}
+              <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" target="_blank"> {{- "" -}}
+                <input type="hidden" name="form-name" value="{{ $id_form }}">
+          {{- else -}}
+            <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" netlify name="{{ $id_form }}">
+          {{- end -}}
+              <input type="hidden" name="subject" data-remove-prefix value="{{ i18n `form` }} {{ $page_emoji }} {{ $page.Title }} {{ $section_emoji }} {{ $section_name }} {{- if $form_num }} 📌 {{ $num }}{{ end }}" />
+          {{ $num = add $num 1 }}
+          {{/*  INPUTS  */}}
+          {{- range .items -}}
+            {{- $type := .type -}}
+            {{- $full := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6") | or .full) " contact__full" "" -}}
+            <div class="contact__form-item {{ $full }}">
+              {{ if site.Data.design.rounded.chamfer | and ($type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox")) }}
+                <div class="contact__form-item-border
+                  {{- if eq $type `textarea` }} contact__form-item-border--textarea{{ end }}
+                  {{- if $type | in (slice `radio` `checkbox`) }} contact__form-item-border--fieldset{{ end -}}
+                "></div>
+              {{ end }}
+              {{- if $type | in (slice "text" "email" "tel" "number" "date" "time" "file") -}}
+                {{- $onfocus := false -}}
+                {{- if (eq $type "date" | or (eq $type "time")) | and $js -}}
+                  {{- $onfocus = true -}}
+                {{- end -}}
+                <input class="contact__form-input" type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}" name="{{ .name }}" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{ if .required }}novalidate{{ end }} {{ if $onfocus }}onfocus="(this.type='{{ $type }}')"{{ end }} {{ with .accept }}accept="{{ . }}"{{ end }}>
+              {{- else if $type | eq "hidden" -}}
+                <input class="contact__form-hidden" type="hidden" name="{{ .name }}" value="{{ .placeholder }}">
+              {{- else if $type | eq "textarea" -}}
+                <textarea class="contact__form-textarea" name="{{ .name }}" rows="3" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{ if .required }}novalidate{{ end }}></textarea>
+              {{- else if $type | eq "select" -}}
+                <select class="contact__form-select" name="{{ .name }}" {{ if .required }}novalidate{{ end }}>
+                  <option value="">{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</option>
+                  {{- range .options -}}
+                    <option value="{{ .option }}">{{ .option }}</option>
+                  {{- end -}}
+                </select>
+              {{- else if $type | in (slice "radio" "checkbox") -}}
+                {{- $name := .name -}}
+                {{- $is_checkbox := eq $type "checkbox" -}}
+                <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
+                  <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
+                  {{- range $option_k, $option := .options -}}
+                    {{- $name_option := cond (and $is_checkbox $netlify_forms) (print $name " " $option_k) $name -}}
+                    <label class="contact__form-label">{{ "" -}}
+                      <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name_option }}" value="{{ .option }}">
+                      {{- .option -}}
+                    </label>
+                  {{- end -}}
+                </fieldset>
+              {{- else if $type | eq "h3" -}}
+                <h3 class="contact__form-title contact__full">{{ .name | markdownify }}</h3>
+              {{- else if $type | eq "h4" -}}
+                <h4 class="contact__form-title contact__full">{{ .name | markdownify }}</h4>
+              {{- else if $type | eq "h5" -}}
+                <h5 class="contact__form-title contact__full">{{ .name | markdownify }}</h5>
+              {{- else if $type | eq "h6" -}}
+                <h6 class="contact__form-title contact__full">{{ .name | markdownify }}</h6>
+              {{- else if $type | eq "description" -}}
+                <div class="contact__form-description description">
+                  {{- partial "functions/md" (dict "content" .name "not_header_links" true) -}}
+                </div>
+              {{- end -}}
+              {{- with .hint -}}
+                <div class="contact__form-hint description align-left">
+                  {{- partial "functions/md" (dict "content" . "not_header_links" true) -}}
+                </div>
+              {{- end -}}
+            </div>
+          {{- end -}}
+          {{/*  FOOTER  */}}
+              {{- "" -}}
+              <button class="contact__form-button contact__full" type="submit" name="submit">
+                {{- partial "components/icon" (dict "icon" "paper-plane" "emoji" "📨") -}}
+                <i>{{ i18n "send" }}</i>
+                {{- "" -}}
+              </button>
+              {{- "" -}}
+              <label class="contact__form-label contact__form-label--accept">
+                {{- "" -}}
+                <input  class="contact__form-checkbox" type="checkbox" value="true">
+                {{- i18n "send-check" 1 -}}
+                <i data-b="{{ print ($.Page.GetPage `pages/privacy`).RelPermalink `#` (i18n `send-check-link`) | base64Encode }}">
+                  {{- i18n "send-check" -}}
+                </i>
+                {{- "" -}}
+              </label>
+              {{- "" -}}
+            </form>
+          {{- if $js -}}
+            `);
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

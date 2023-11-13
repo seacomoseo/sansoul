@@ -1,0 +1,248 @@
+.section {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--pt, 0px) + var(--pt-divider, 0px));
+  padding-bottom: calc(var(--pb, 0px) + var(--pb-divider, 0px));
+}
+
+// Section Header padding top and all sections full screen height
+body {
+  --full-height-section: calc(100vh - var(--menu-height, 0em));
+  --pt-divider-header: var(--menu-height, 0em) - var(--menu-py, 0em) + var(--pt-extra, 0em);
+}
+// Get menu height
+.body-menu:not(.body-menu--transparent) {              // not transparent
+  --menu-height: 0em;     // not logo
+  --pt-extra: 2em;
+  &.body-menu--logo {
+    --menu-height: 3.5em;
+    --pt-divider-header: 0em;
+  }
+}
+body:not(.body-menu),
+.body-menu--transparent {
+  --full-height-section: 100vh;
+  --menu-height: 0em;     // not logo
+  --pt-extra: 2em;
+  &.body-menu--logo {
+    --menu-height: 6.75em;
+    --pt-extra: 0em;
+  }
+}
+@if $screen-menu-sticky > 0px {
+  @media (min-width: $screen-menu-sticky) {
+    .body-menu:not(.aux):not(.aux) {
+      --menu-height: 6.8em;
+      --pt-extra: 0em;
+    }
+    .body-menu:not(.body-menu--transparent) {
+      --pt-divider-header: 0em;
+    }
+  }
+}
+.section--full-screen {
+  min-height: var(--full-height-section);
+}
+.section--header {
+  --pt-divider: var(--pt-divider-header);
+}
+// Section Header
+.body-menu--logo .section--header .section__header .section__title i {
+  font-size: 1.25em;
+}
+// end
+
+:root         { --icon-size: 6em; }
+.icon--size-1 { --icon-size: 3em; }
+.icon--size-2 { --icon-size: 4em; }
+.icon--size-3 { --icon-size: 5em; }
+.icon--size-4 { --icon-size: 6em; }
+.icon--size-5 { --icon-size: 7em; }
+.icon--size-6 { --icon-size: 8em; }
+.section__icon--top {
+  display: block;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  color: var(--base);
+  margin: .5em auto 0;
+}
+.section__icon--top,
+.image {
+  + .section__header {
+    margin-top: 1.5em;
+  }
+}
+.modal .section__header:first-child {
+  margin-top: 1.5em;
+}
+.section__header {
+  font-size: 1em;
+  margin-bottom: 3em;
+}
+.section__header            + .description:not(:last-child) {
+  margin-bottom: 3em;
+}
+.section__header:not(.hide) + .description {
+  margin-top: -1.5em;
+}
+.section__header.hide       + .description {
+  margin-top: 1.5em;
+}
+.section__title {
+  display: flex;
+  justify-content: left;
+  gap: 1em;
+  h1, h2, h3 {
+    > a {
+      color: inherit;
+      &:hover,
+      &:focus {
+        color: var(--hover);
+      }
+      &:active {
+        color: var(--active);
+      }
+    }
+  }
+  > i {
+    font-size: 2em;
+  }
+  h2, h3 {
+    margin: 0
+  }
+}
+.section__icon {
+  font-size: 2.125em;
+  order: -1;
+  color: var(--base);
+}
+.section__title--icon-bottom {
+  gap: 0;
+  flex-direction: column;
+  align-items: center;
+  .section__icon {
+    order: 0;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    margin: .25rem 0;
+    --radius: #{ $menu-bar };
+    &:before,
+    &:after {
+      content: '';
+      display: inline-block;
+      width: 1em;
+      height: $menu-bar-double;
+      background-color: var(--base);
+      @include radius;
+    }
+  }
+}
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+}
+.align-center {
+  .section__title {
+    text-align: center;
+  }
+  .section__title--side {
+    text-align: left;
+  }
+}
+
+
+// PADDINGS HIDE
+
+.section--paddings-hide {
+  &.section {
+    padding: 0;
+    .container {
+      margin: auto;
+    }
+  }
+  &.modal {
+    .container {
+      padding: 0;
+    }
+  }
+  .container--fluid {
+    padding: 0;
+    --container-width: 100%;
+    .slider {
+      .columns.columns--gap-0 {
+        --column-width: calc(100vw / var(--columns));
+      }
+      @if $radius {
+        .image__inner {
+          @include hide-radius;
+        }
+        .columns--gap-0.slider__items .bg-figure {
+          &, .bg-figure-image, img {
+            @include hide-radius;
+          }
+        }
+      }
+    }
+  }
+  .section__header {
+    @include ofuscate;
+  }
+  .slider__bullets {
+    position: absolute;
+    bottom: 0;
+    z-index: 60;
+    width: 100%;
+    padding: 0 1em;
+  }
+  .slider__arrows {
+    margin: 0;
+  }
+  .slider__arrow {
+    position: absolute;
+    z-index: 60;
+    margin-top: -1.5em;
+    top: 50%;
+  }
+  .slider__arrow--left {
+    left: 1em;
+  }
+  .slider__arrow--right {
+    right: 1em;
+  }
+  .row:last-child {
+    > .buttons {
+      position: absolute;
+      bottom: 1em;
+      width: 100%;
+      > button,
+      > .button {
+        position: relative;
+        z-index: 60;
+      }
+    }
+    .gallery-wrap .bg-color,
+    .gallery {
+      &, &:before {
+        @include hide-radius;
+      }
+    }
+  }
+}
+
+
+// CONTAINER BG RADIUS MIN
+
+@if $radius > 0.01 {
+  .container.bg--radius-min {
+    .bg-color,
+    .bg-figure,
+    &.column--card .column__content,
+    .image:not(.content__figure *),
+    .image__inner:not(.content__figure *) {
+      --radius-padding: 0em;
+    }
+  }
+}

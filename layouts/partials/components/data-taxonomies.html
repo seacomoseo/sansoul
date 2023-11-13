@@ -1,0 +1,23 @@
+{{- $show_categories := true -}}
+{{- with .item.column -}}
+  {{- $show_categories = not .hide_categories -}}
+{{- end -}}
+
+{{- if $show_categories -}}
+  {{- with index .item.page.Params .type -}}
+    {{- $name := index site.Data.utilities.taxonomies $.type -}}
+    {{- range . -}}
+      {{- $tax_page := page.GetPage (print $.type `/` .) -}}
+      <i class="data__item">
+        {{- partial "components/icon" (dict "class" "data__icon" "icon" $name.icon "emoji" $name.emoji) -}}
+        {{- if $.item.column -}}
+          {{- $tax_page.Title -}}
+        {{- else -}}
+          <i data-h="{{ $tax_page.RelPermalink | base64Encode }}">
+            {{- $tax_page.Title -}}
+          </i>
+        {{- end -}}
+      </i>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

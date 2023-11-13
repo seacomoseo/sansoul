@@ -1,0 +1,171 @@
+@if $screen-menu-sticky > 0px {
+  @media (min-width: $screen-menu-sticky) {
+    .menu__toggle--sticky,
+    .menu__backover--sticky {
+      display: none;
+    }
+    .menu--sticky {
+      position: sticky;
+      max-width: none;
+      width: 100%;
+      height: auto;
+      overflow-y: visible;
+      padding: 0;
+      transform: none;
+      transition: background-color .3s, filter .3s;
+      // Fix the left corner without small shadow
+      &:before {
+        content: '';
+        position: absolute;
+        left: -$shadow-left;
+        width: $shadow-left;
+        height: 100%;
+        background-color: inherit;
+      }
+      .menu__title {
+        display: none;
+      }
+      .menu__items {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 100%;
+        transition: padding .3s;
+      }
+      .menu__item {
+        padding: 0 .5em;
+        position: relative;
+        flex-grow: 0;
+      }
+      .menu__item--more {
+        // &.menu__item--more--active,
+        &:focus,
+        &:hover {
+          > .menu__link > svg {
+            transform: rotate(45deg);
+          }
+        }
+      }
+      .menu__item--more,
+      .menu__item--lang {
+        margin-top: 0;
+        .menu__subitems {
+          right: 0;
+        }
+      }
+      .menu__item--lang {
+        > .menu__link > i {
+          display: none;
+        }
+      }
+      .menu__link {
+        padding: .75em .125em;
+        transition: padding .3s, color .3s, background-size .3s;
+      }
+      .menu__item--logo {
+        margin: 0 auto 0 0;
+        display: block;
+      }
+      .menu__link--logo {
+        height: 1.25em;
+        box-sizing: content-box;
+        transition: height .3s, padding .3s, background-size .3s;
+      }
+      .menu__logo-image {
+        &, img {
+          height: 100%;
+          width: auto;
+        }
+      }
+      .menu__button {
+        margin: .306em 0;
+        @if $buttons-3d {
+          margin-bottom: .125em;
+        }
+      }
+      .menu__link {
+        > svg {
+          font-size: 1em;
+        }
+      }
+      .menu__subitems {
+        position: absolute;
+        top: 100%;
+        margin: 0;
+        margin-right: 0;
+        padding-inline: 1em;
+        @if $chamfer {
+          background-color: var(--bg-color);
+        }
+        @include radius;
+        @if $radius > 0.01 {
+          --radius-top: 0em;
+        }
+        @if ($radius > 1 or ($radius > 0.01 and $buttons-rounded)) {
+          --radius: 1em;
+          --radius-padding: 1em;
+        } @else if $radius > 1 {
+          --radius: 1em;
+          --radius-padding: 1em;
+        } @else if $radius > 0.01 {
+          --radius-padding: 1em;
+        }
+        max-height: 0;
+        .menu__item {
+          padding: 0;
+        }
+        .menu__link {
+          width: max-content;
+          min-width: 100%;
+        }
+        .menu__button {
+          margin: .5em 0;
+        }
+        .menu__item:last-child > .menu__button {
+          margin-bottom: 0;
+        }
+      }
+      .menu__item:hover {
+        .menu__subitems {
+          max-height: calc(100vh - 5.8em);
+          overflow-y: auto;
+          padding-bottom: 1em;
+        }
+      }
+    }
+    .body-menu--transparent {
+      .menu--sticky {
+        position: fixed;
+      }
+    }
+    .body-top {
+      --menu-py: 2em;
+      .menu--sticky {
+        .menu__items {
+          padding-block: var(--menu-py);
+        }
+        .menu__subitems {
+          .menu__items {
+            padding-block: 0;
+          }
+        }
+        .menu__link--logo {
+          height: 2.75em;
+          padding: 0;
+        }
+      }
+      &.body-menu--transparent {
+        .menu--sticky {
+          background-color: transparent;
+          filter: none;
+        }
+      }
+    }
+  }
+}
+.menu__item--lang {
+  svg {
+    border-radius: 50%;
+  }
+}

@@ -1,0 +1,230 @@
+.gallery-wrap {
+  @include bg-cover(.5em);
+  padding: .5em;
+  .gallery--gap {
+    gap: .5em;
+  }
+}
+.gallery {
+  @include radius;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.gallery--gap {
+  gap: 1em;
+}
+.gallery__item {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.gallery:not(.gallery--grayscale) > {
+  .gallery__item:hover > .gallery__image {
+    transform: scale(1.125) rotate(2deg);
+  }
+  .gallery__item:nth-child(2n):hover > .gallery__image {
+    transform: scale(1.125) rotate(-2deg);
+  }
+}
+.gallery__image {
+  &, > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    transition: filter .3s, transform .3s;
+    fill: initial;
+  }
+}
+.gallery__item,
+.gallery__expand {
+  position: relative;
+  transform: none;
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+  }
+  // Remove button 3D styles
+  &:not(#aux) {
+    &:after,
+    &:focus,
+    &:active,
+    &:hover,
+    &:focus:after,
+    &:active:after,
+    &:hover:after {
+      background-color: transparent;
+      transform: none;
+      @if $chamfer {
+        clip-path: none;
+      } @else {
+        border-radius: 0;
+      }
+    }
+    &:before {
+      @if $chamfer {
+        clip-path: none;
+      } @else {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+}
+
+
+// HORIZONTAL MODE
+
+.gallery--alt {
+  display: flex;
+  flex-wrap: wrap;
+  .gallery__item {
+    position: relative;
+    flex-grow: 1;
+    width: calc(1em * var(--gallery-item-width));
+    flex-grow: var(--gallery-item-width);
+    &:before {
+      content: '';
+      display: block;
+      padding-bottom: var(--gallery-item-height);
+    }
+  }
+  .gallery__image {
+    &, > img {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      vertical-align: bottom;
+    }
+  }
+  .gallery__expand {
+    flex-grow: 999999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--main);
+    svg {
+      font-size: 2em;
+      z-index: 60;
+    }
+    &, &:before {
+      z-index: auto;
+    }
+  }
+  &.gallery--gap {
+    gap: .5em;
+  }
+}
+
+
+// MAX COLUMNS
+
+@media (min-width: $screen-sm) {
+  .gallery--columns-{
+    &3, &5, &6 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    &4 {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+}
+@media (min-width: $screen-md) {
+  .gallery--columns-{
+    &5, &6 {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+}
+@media (min-width: $screen-lg) {
+  .gallery--columns-{
+    &5 {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
+    &6 {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+  }
+}
+
+
+// MODAL
+
+.gallery-modal__items:not(.gallery--alt) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  @include radius;
+  &.gallery--alt {
+    .gallery__item {
+      width: calc(.5em * var(--gallery-item-width));
+      flex-grow: calc(.5 * var(--gallery-item-width));
+    }
+  }
+}
+.gallery-modal__item-wrap {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.gallery-modal__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+
+// IMAGE SIZE / OBJECT FIT
+
+.gallery--size-cover {
+  .gallery__image,
+  .gallery-modal__image {
+    &, > img {
+      object-fit: cover;
+    }
+  }
+}
+// :not(.gallery-wrap) {
+//   > .gallery--size-cover {
+//     @include hide-radius;
+//   }
+// }
+
+
+// GRAYSCALE
+
+.gallery--grayscale {
+  .gallery__item:not(:hover) {
+    .gallery__image {
+      &, > img {
+        filter: grayscale(1);
+      }
+    }
+  }
+}
+
+
+// SIMPLE LIGHTBOX
+.sl-close,
+.sl-prev,
+.sl-next {
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    transform: none;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+}

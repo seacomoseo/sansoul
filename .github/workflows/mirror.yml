@@ -1,0 +1,19 @@
+name: Mirror to Bitbucket
+on: [push]
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        lfs: true
+    - run: git config lfs.allowincompletepush true
+    - name: Push
+      uses: heussd/mirror-to-bitbucket-github-action@v2
+      with:
+        username: lorensansol
+        spacename: lorensansol-backup
+        repository: sansoul
+        password: ${{ secrets.BITBUCKET_TOKEN }}

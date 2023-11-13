@@ -1,0 +1,44 @@
+{{ $parents  := slice }}
+
+{{ range slice
+  "/" 
+  "pages"
+  "categories"
+  "tags"
+  "authors"
+  "blog"
+  "events"
+  "products"
+}}
+  {{ with page.GetPage . }}
+    {{ if .RegularPages | or .IsHome }}
+      {{ $tax := index site.Data.utilities.taxonomies .Type }}
+      <h2>
+        {{ partial "components/link" (dict
+          "link"      .RelPermalink
+          "button"    "none"
+          "icon"      $tax.icon
+          "emoji"     $tax.emoji
+          "label"     .Title
+          "anchor"    (partial "functions/anchor-page" .)
+          "noindex"   .Params.noindex
+        ) }}
+      </h2>
+      {{ with .RegularPages }}
+        <ul>
+          {{ range sort . "Params.date_ini" "desc" }}
+            <li>
+              {{ partial "components/link" (dict
+                "link"      .RelPermalink
+                "button"    "none"
+                "label"     .Title
+                "anchor"    (partial "functions/anchor-page" .)
+                "noindex"   .Params.noindex
+              ) }}
+            </li>
+          {{ end }}
+        </ul>
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}

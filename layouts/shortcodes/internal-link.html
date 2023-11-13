@@ -1,0 +1,14 @@
+{{- $param     := index .Params 0 -}}
+{{- $page      := page.GetPage (print "pages/" $param) -}}
+{{- $title     := $page.Title -}}
+{{- $link      := $page.RelPermalink -}}
+{{- $nofollow  := ` "nofollow"` -}}
+{{- if eq $param "index" -}}
+  {{- $title    =  replace site.BaseURL "https://" "" -}}
+  {{- $link     = site.Home.RelPermalink -}}
+  {{- $nofollow = "" -}}
+{{- end -}}
+
+{{- partial "functions/md" (dict
+  "content" (print "[" $title "](" $link $nofollow ")")
+) -}}

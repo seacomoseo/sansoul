@@ -1,0 +1,293 @@
+
+// MAIN
+
+.image {
+  @include radius;
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  .section__icon--top {
+    color: $white;
+    filter: drop-shadow($shadow);
+    margin: 0;
+    position: absolute;
+    top: calc(50% - var(--icon-size) / 2);
+    left: calc(50% - var(--icon-size) / 2);
+    z-index: 2;
+  }
+}
+.image__inner {
+  @include radius;
+  position: relative;
+  max-width: 100%;
+  width: auto; // for svg that have width
+  height: auto;
+  fill: initial;
+}
+svg.image__inner {
+  height: 100%;
+  &:not([width]) {
+    width: var(--box-inner);
+  }
+}
+
+// IMAGE ALIGN
+
+.image--left {
+  justify-content: flex-start;
+  margin-left: 0;
+}
+.image--right {
+  justify-content: flex-end;
+  margin-right: 0;
+}
+
+
+// IMAGE TYPES
+
+.image--gradient {
+  aspect-ratio: var(--image-ratio, 16/9);
+  background-image: linear-gradient($main, rgba($main, 0));
+}
+
+
+// IMAGE TYPES
+
+.image--3x2,
+.image--2x3,
+.image--16x9,
+.image--9x16,
+.image--18x6,
+.image--6x18,
+.image--2x1,
+.image--1x2,
+.image--4x3,
+.image--3x4,
+.image--1x1,
+.image--circle {
+  --image-ratio: 1; // like height for 1x1 and circle
+  width: 100%;
+  .image__inner {
+    width: 100%;
+    &, img {
+      aspect-ratio: var(--image-ratio);
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+}
+
+
+// IMAGE X*Y
+
+.image--3x2 {  --image-ratio: 3/2; }
+.image--2x3 {  --image-ratio: 2/3; }
+.image--16x9 { --image-ratio: 16/9; }
+.image--9x16 { --image-ratio: 9/16; }
+.image--18x6 { --image-ratio: 18/6; }
+.image--6x18 { --image-ratio: 6/18; }
+.image--2x1 {  --image-ratio: 2/1; }
+.image--1x2 {  --image-ratio: 1/2; }
+.image--4x3 {  --image-ratio: 4/3; }
+.image--3x4 {  --image-ratio: 3/4; }
+
+
+// IMAGE BORDER
+
+.image--border {
+  background-color: var(--base);
+  --image-border-width: .5em;
+  padding: var(--image-border-width);
+  .image__inner {
+    --radius-padding: calc(var(--image-border-width) * -1);
+    // background-color: var(--bg-color);
+  }
+  picture[style] {
+    background-image: none;
+  }
+}
+
+
+// IMAGE CONTAIN
+
+.image--contain {
+  .image__inner {
+    display: grid;
+    place-content: center;
+    background-image: none;
+    img {
+      // height: auto;
+      // max-height: calc(var(--box-width) * var(--image-ratio));
+      object-fit: contain;
+    }
+  }
+  &:not(.image--inset:not(.image--border)) {
+    .image__inner {
+      img {
+        @include radius;
+      }
+    }
+  }
+}
+
+
+// IMAGE INSET
+
+.image--inset {
+  &, svg.image__inner:not([width]) {
+    width: var(--box-width);
+  }
+  margin:
+    calc(var(--box-padding) * -1)
+    calc(var(--box-padding) * -1)
+    calc(max(var(--box-padding), 1em) - 1em);
+  @if $radius > 0.01 {
+    &, .image__inner {
+      --radius-padding: var(--box-padding);
+      --radius-bottom: 0em;
+    }
+    &.image--border {
+      .image__inner {
+        --radius-padding: calc(var(--box-padding) - var(--image-border-width));
+      }
+    }
+  }
+}
+
+
+// FOR IFRAME
+
+iframe.image__inner {
+  width: var(--box-inner);
+}
+.image--inset {
+  iframe.image__inner {
+    width: calc(var(--box-width) + var(--box-padding) * 2);
+  }
+}
+.content {
+  iframe.image__inner {
+    width: calc(var(--box-width) + var(--box-padding) * 2);
+  }
+}
+// .image {
+//   &:not(
+//     .image--3x2,
+//     .image--2x3,
+//     .image--16x9,
+//     .image--9x16,
+//     .image--18x6,
+//     .image--6x18,
+//     .image--2x1,
+//     .image--1x2,
+//     .image--4x3,
+//     .image--3x4,
+//     .image--1x1,
+//     .image--circle
+//   ) {
+//     &.image--border {
+//       iframe.image__inner {
+//         width: var(--box-inner);
+//         height: calc(var(--box-inner) * .5625);
+//         max-width: calc((var(--box-inner) - 1em));
+//         max-height: calc((var(--box-inner) - 1em) * .5625); // 16x9
+//       }
+//     }
+//     &.image--inset {
+//       iframe.image__inner {
+//         width: calc(var(--box-width) + var(--box-padding) * 2);
+//         height: calc((var(--box-width) + var(--box-padding) * 2) * .5625); // 16x9
+//       }
+//       &.image--border {
+//         iframe.image__inner {
+//           max-width: calc(var(--box-width) - 1em + var(--box-padding) * 2);
+//           max-height: calc((var(--box-width) - 1em + var(--box-padding) * 2) * .5625); // 16x9
+//         }
+//       }
+//     }
+//   }
+// }
+
+
+// move here for priority
+
+
+// IMAGE CIRCLE
+
+.image--circle {
+  &, .image__inner {
+    &:not(.aux) { // only for priority
+      @include circle;
+    }
+  }
+}
+
+
+// IMAGE WITH ICON TOP
+
+.image--icon-top .image__inner {
+  overflow: hidden;
+  &:after {
+    content: '';
+    @include like-bg-cover;
+    background-color: $dark;
+    opacity: .5;
+  }
+}
+
+
+// IFRAME POSTER
+
+[data-iframe] {
+  &:after {
+    content: '';
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 48'%3E%3Cpath d='M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z' fill='%23#{ str-slice(#{ $link }, 2) }'/%3E%3Cpath d='M45 24 27 14v20' fill='%23#{ str-slice(#{ $link-contrast-neutral }, 2) }'/%3E%3C/svg%3E");
+    display: block;
+    width: 68px;
+    height: 48px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    filter: drop-shadow($shadow)
+  }
+}
+
+
+// SVG EXCEPTIONS
+
+.container:not(.bg) >,
+.column:not(.bg) {
+  .image--svg:not(.image--border):not(.description *) { // svg image without radius when not background
+    overflow: unset;
+    &, > .image__inner {
+      @include hide-radius;
+    }
+  }
+}
+/*! purgecss start ignore */
+img[src*=".svg"].image__inner {
+  object-fit: contain;
+}
+/*! purgecss end ignore */
+
+
+// SECTION IMAGE WITH PADDING HIDE
+
+.section--paddings-hide > .container--fluid {
+  > .image,
+  .columns--gap-0.slider__items .image:not(.description *) {
+    overflow: unset;
+    &, > .image__inner {
+      @include hide-radius;
+    }
+  }
+}

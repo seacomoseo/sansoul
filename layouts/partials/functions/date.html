@@ -1,0 +1,14 @@
+{{ $date := "" }}
+{{ with .date }}
+  {{ if eq $.type "events" }}
+    {{ $icon   := partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
+    {{ $format := print "Monday, 2 Jan 2006 - 15:04" }}
+    {{ $date    = . | time.Format $format | title }}
+    {{ $hour   := $date | replaceRE `.*(\d\d:\d\d)$` `$1` }}
+    {{ $hour    = cond (eq $hour "00:00") "" (print $icon " " $hour) }}
+    {{ $date    = $date | replaceRE `-.*` $hour | safeHTML }}
+  {{ else }}
+    {{ $date    = . | time.Format "2 Jan 2006" | title }}
+  {{ end }}
+{{ end }}
+{{ return $date }}

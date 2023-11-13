@@ -1,0 +1,5 @@
+{{- if findRE `[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,10}` . -}}
+  <i class="ofuscate">{{ . | base64Encode }}</i>
+{{- else -}}
+  <i>{{ . }}</i>
+{{- end -}}

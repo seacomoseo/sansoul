@@ -1,0 +1,72 @@
+.toc {
+  padding-bottom: 0;
+  ol {
+    text-align: left;
+    counter-reset: item;
+    padding-left: 0;
+    margin: 0;
+  }
+  li{
+    display: table-row;
+    &:before {
+      @include font-base-bold;
+      content: counters(item, ".") ". ";
+      counter-increment: item;
+      display: table-cell;
+      color: var(--link, $link);
+      padding-right: .25em;
+      // text-align: right;
+      padding-top: .75em;
+      white-space: nowrap;
+    }
+  }
+  nav > ol > li:first-child:before {
+    padding-top: 0;
+  }
+  a {
+    color: inherit;
+  }
+  svg {
+    color: var(--main);
+  }
+}
+.toc__box {
+  display: table;
+  margin-right: auto;
+  padding: 2em 1.5em;
+  filter: drop-shadow($shadow);
+  @include bg-cover;
+}
+.bg-white .toc__box.bg-white {
+  @if $chamfer {
+    .bg-color {
+      --radius-padding: -.125em;
+      top: .125em;
+      left: .125em;
+      width: calc(100% - .125em * 2);
+      height: calc(100% - .125em * 2);
+    }
+    &:after {
+      @include like-bg-cover;
+      content: '';
+      z-index: -2;
+      background-color: $light;
+      clip-path: var(--chamfer);
+    }
+  } @else {
+    .bg-color {
+      border: .125em $light solid;
+    }
+  }
+}
+.align-center {
+  .toc__box {
+    margin-left: auto;
+  }
+}
+.align-right {
+  .toc__box {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}

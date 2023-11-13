@@ -1,0 +1,53 @@
+{{ $items          := slice }}
+{{ $menu           := site.Data.menu }}
+{{ $in_more        := $menu.langs_in_more }}
+{{ $out            := $menu.langs_out }}
+{{ $show_langs     := (.more | and ($in_more | and (not $out)))
+  | or ((not .more) | and ((not $in_more) | or $out))
+  | or .no_sticky
+}}
+{{ $show_translate := (.more | and $in_more)
+  | or ((not .more) | and (not $in_more))
+  | or .no_sticky
+}}
+
+{{ with page }}
+
+  {{ if $show_translate }}
+    {{ if $menu.google_translate }}
+      {{ $items = $items | append (dict
+        "icon"      "earth-americas"
+        "emoji"     "🌎"
+        "label"     (i18n "languages" 1)
+        "translate" true
+      ) }}
+    {{ end }}
+  {{ end }}
+
+  {{ if $show_langs }}
+    {{ if .IsTranslated }}
+      {{ range .AllTranslations }}
+        {{ $items = $items | append (dict
+          "link"     .Permalink
+          "icon"     (print "flag-" .Lang)
+          "emoji"    (i18n .Lang)
+          "label"    .Language.LanguageName
+          "title"    (print .Language.LanguageName ": " .Title)
+          "ofuscate" true
+          "lang"     .Lang
+        ) }}
+      {{ end }}
+      {{ if not $out }}
+        {{ $items = slice (dict
+          "icon"     "globe"
+          "emoji"    "🌐"
+          "label"    (i18n "languages")
+          "items"    $items
+        ) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+{{ end }}
+
+{{ return $items }}

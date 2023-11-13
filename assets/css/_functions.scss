@@ -1,0 +1,26 @@
+
+@function fluid-size($size-min, $size-max) {
+  $slope: ($size-max - $size-min) / ($screen-max - $screen-min);
+  $slope: $slope * $slope / $slope;
+  $y-axis-intersection: (- $screen-min * $slope + $size-min) / 16px * 1rem;
+  $preferred-size: calc(#{$y-axis-intersection} + #{$slope * 100vw});
+  @if $size-min < $size-max  {
+    @return clamp($size-min, $preferred-size, $size-max);
+  } @else {
+    @return unquote('min(#{$size-min}, max(#{$preferred-size}, #{$size-max}))');
+  }
+}
+
+@function text-contrast($n, $lighter:$white, $darker:$dark) {
+  $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
+  $light-color: round((red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000);
+  @if abs($color-brightness) < ($light-color/2){
+    @return $lighter;
+  } @else {
+    @return $darker;
+  }
+}
+
+@function hexToRGB($hex) {
+  @return red($hex), green($hex), blue($hex);
+}

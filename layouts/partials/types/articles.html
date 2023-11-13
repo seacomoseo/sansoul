@@ -1,0 +1,32 @@
+{{ $kind  := .kind | default "blog" }}
+{{ $pages := (page.GetPage $kind).Pages }}
+{{ if eq $kind "events" }}
+  {{ $pages = sort $pages "Params.date_ini" "desc" }}
+{{ end }}
+{{ with .categories }}{{ $pages = where $pages "Params.categories" "intersect" . }}{{ end }}
+{{ with .tags       }}{{ $pages = where $pages "Params.tags" "intersect" . }}{{ end }}
+{{ with .author     }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
+{{ $firsts_pages     := ($pages | first (.max | default 99)) }}
+
+<div class="articles">
+
+  {{ partial "types/article-columns"
+    (dict
+      "articles"  .
+      "pages"     $firsts_pages
+      "type"      $kind
+      "container" .container
+    )
+  }}
+
+  {{ if gt (len $pages) (len $firsts_pages) }}
+    <div class="buttons">
+      <button data-h="{{ print `/` $kind `/` | base64Encode }}" title="{{ i18n `more` }} {{ i18n $kind }}">
+        {{- partial "components/icon" (dict "icon" "plus") -}}
+        <i>{{ i18n "more" }}</i>
+        {{- "" -}}
+      </button>
+    </div>
+  {{ end }}
+
+</div>

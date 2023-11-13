@@ -1,0 +1,35 @@
+.underline {
+  --radius: #{ $menu-bar };
+  &:after {
+    content: '';
+    display: block;
+    width: 2em;
+    height: $menu-bar-double;
+    background-color: var(--main);
+    margin: .125em auto .25em;
+    @include radius;
+  }
+}
+.hide .underline:after {
+  content: none;
+}
+.underline a,
+a.underline {
+  background-image: none;
+}
+.align-right .underline:after {
+  margin-right: 0;
+}
+.align-left .underline:after {
+  margin-left: 0;
+}
+@media (min-width: $screen-xl) {
+  .align--xl-right .underline:after {
+    margin-right: 0;
+    margin-left: auto;
+  }
+  .align--xl-left .underline:after {
+    margin-left: 0;
+    margin-right: auto;
+  }
+}

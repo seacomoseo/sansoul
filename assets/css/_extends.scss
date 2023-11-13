@@ -1,0 +1,15 @@
+// Animations
+%draw {
+  stroke: var(--text);
+  animation: draw 10s -.5s both;
+  stroke-dasharray: 800%;
+  stroke-dashoffset: 800%;
+}
+%draw-infinite {
+  @extend %draw;
+  animation-iteration-count: infinite;
+}
+%awesome-rotate {
+  animation: awesome-rotate 5s infinite linear alternate-reverse;
+  transform-style: preserve-3d;
+}

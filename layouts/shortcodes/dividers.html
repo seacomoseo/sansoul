@@ -1,0 +1,18 @@
+<style>
+  .divider--example {
+    --pt-divider: calc(var(--container-inner) * .2);
+    height: var(--pt-divider);
+    background-color: var(--main);
+    margin: 0;
+    width: 100%;
+  }
+</style>
+
+{{ range site.Data.options.divider }}
+  <h3 id="divider-{{ .value }}">
+    <a href="#divider-{{ .value }}">{{ .value }}</a>
+    <br>
+    {{ .label }}
+  </h3>
+  <div class="divider divider--{{ .value }} divider--example"></div>
+{{ end }}

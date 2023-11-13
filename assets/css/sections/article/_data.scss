@@ -1,0 +1,30 @@
+.data {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5em 1em;
+}
+.data__item {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  font-size: small;
+  [data-h] {
+    @include font-title;
+  }
+}
+.data__icon {
+  color: var(--main);
+}
+time .data__icon {
+  margin-left: .25em;
+}
+.align-center {
+  .data {
+    justify-content: center;
+  }
+}
+.align-right {
+  .data {
+    justify-content: flex-end;
+  }
+}

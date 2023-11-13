@@ -1,0 +1,88 @@
+{{ $articles            := site.Data.articles }}
+{{ $articles_blog       := merge $articles.common $articles.blog       }}
+{{ $articles_events     := merge $articles.common $articles.events     }}
+{{ $articles_products   := merge $articles.common $articles.products   }}
+{{ $articles_taxonomies := merge $articles.common $articles.taxonomies }}
+{{ $filename            := page.File.TranslationBaseName }}
+
+{{ with page }}
+
+  {{ $types := slice }}
+  {{ if .IsSection }}
+    {{ $pages := .Pages }}
+    {{ if not (
+        (in (slice "blog" "authors") .Type | and $articles_blog.slider)
+        | or $articles_taxonomies.slider
+      )
+    }}
+      {{ partial "functions/pagination" .
+        | replaceRE `\n|\s{2,}|<li.*?>|</li>` ``
+        | replaceRE `<ul class="pagination pagination-default">` `<div class="pagination buttons">`
+        | replaceRE `</ul>` `</div>`
+        | replaceRE `page-link` `button button--sm`
+        | replaceRE `span` `i`
+        | safeHTML
+      }}
+      {{ $pages = .Paginator.Pages }}
+    {{ end }}
+    {{ $types = slice (dict "type" .Type "pages" $pages) }}
+    {{/*
+      {{ $pages = (.Paginate $pages).Pages }}
+      {{ $paginator := .Paginate $pages }} <!-- FOR PAGES, IN "TERMS" NOT RULE -->
+      {{ $paginator := $pages.Paginator }} <!-- FOR NO PAGES, LIKE PARENT -->
+    */}}
+  {{ else }}
+    {{ $blog       := (.GetPage "blog"      ).Pages }}
+    {{ $events     := (.GetPage "events"    ).Pages }}
+    {{ $products   := (.GetPage "products"  ).Pages }}
+    {{ $categories := (.GetPage "categories").Pages }}
+    {{ $tags       := (.GetPage "tags"      ).Pages }}
+
+    {{ if      eq .Type "blog" }}
+      {{ $blog       = $blog.Related     (dict "document" .) | first ($articles_blog.num     | default 3) }}
+      {{ $events     = false }}
+      {{ $products   = false }}
+      {{ $categories = false }}
+      {{ $tags       = false }}
+    {{ else if eq .Type "events" }}
+      {{ $blog       = false }}
+      {{ $events     = $events.Related   (dict "document" .) | first ($articles_events.num   | default 3) }}
+      {{ $products   = false }}
+      {{ $categories = false }}
+      {{ $tags       = false }}
+    {{ else if eq .Type "products" }}
+      {{ $blog       = false }}
+      {{ $events     = false }}
+      {{ $products   = $products.Related (dict "document" .) | first ($articles_products.num | default 3) }}
+      {{ $categories = false }}
+      {{ $tags       = false }}
+    {{ else if eq .Type "authors" }}
+      {{ $blog       = where $blog   "Params.author" $filename }}
+      {{ $events     = where $events "Params.author" $filename }}
+      {{ $products   = false }}
+      {{ $categories = false }}
+      {{ $tags       = false }}
+    {{ else if in (slice "categories" "tags") .Type }}
+      {{ $blog       = where $blog       (print "Params." .Type) "intersect" (slice $filename) }}
+      {{ $events     = where $events     (print "Params." .Type) "intersect" (slice $filename) }}
+      {{ $products   = where $products   (print "Params." .Type) "intersect" (slice $filename) }}
+      {{ $categories = where $categories (print "Params." .Type) "intersect" (slice $filename) }}
+      {{ $tags       = where $tags       (print "Params." .Type) "intersect" (slice $filename) }}
+    {{ end }}
+
+    {{ $types = slice }}
+    {{ with $blog       }}{{ $types = $types | append (dict "type" "blog"       "pages" .) }}{{ end }}
+    {{ with $events     }}{{ $types = $types | append (dict "type" "events"     "pages" .) }}{{ end }}
+    {{ with $products   }}{{ $types = $types | append (dict "type" "products"   "pages" .) }}{{ end }}
+    {{ with $categories }}{{ $types = $types | append (dict "type" "categories" "pages" .) }}{{ end }}
+    {{ with $tags       }}{{ $types = $types | append (dict "type" "tags"       "pages" .) }}{{ end }}
+  {{ end }}
+
+  {{ range $types }}
+    {{ if not $.IsSection | and $.related }}
+      {{ partial "sections/article/related" (dict "type" .type) }}
+    {{ end }}
+    {{ partial "types/article-columns" (dict "pages" .pages "type" .type) }}
+  {{ end }}
+
+{{ end }}

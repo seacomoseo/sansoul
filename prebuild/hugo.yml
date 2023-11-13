@@ -1,0 +1,51 @@
+params:
+  json:
+    products: ''
+    categories: ''
+  csv:
+    products: ''
+    categories: ''
+  pairings:
+    title: title
+    title_seo: title_seo
+    slug: slug
+    price: price
+    description: description
+    image: image
+    categories: categories
+    tags: tags
+    author: author
+    toc: toc
+    draft: draft
+    noindex: noindex
+    date: date
+    lastmod: lastmod
+    translationKey: translationKey
+    content: content
+
+disableKinds:
+- sitemap
+- taxonomy
+- term
+
+outputs:
+  home:
+  - html
+
+ignoreErrors:
+- error-remote-getcsv
+
+caches:
+  getcsv:
+    maxAge: 0
+
+theme: []
+
+module:
+  mounts:
+  - source: assets
+    target: assets
+  - source: ../../../prebuid/products.html
+    target: assets/products.html
+  - source: ../../../prebuid/categories.html
+    target: assets/categories.html

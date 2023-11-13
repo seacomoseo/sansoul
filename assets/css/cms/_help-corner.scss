@@ -1,0 +1,245 @@
+// HELP CORNER
+
+.languages,
+.help-corner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 1rem;
+  gap: 1rem;
+  filter: var(--shadow);
+  &, a, button, .deploy-status {
+    display: flex;
+  }
+  a,
+  .deploy-status,
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+  a,
+  button,
+  .deploy-status {
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 0 0 2px white;
+    transition: box-shadow .3s;
+  }
+  a:hover,
+  button:hover,
+  .deploy-status:hover,
+  .lang-active {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #3a69c7;
+  }
+}
+.languages {
+  left: auto;
+  right: 0;
+}
+.help-corner {
+  z-index: 999999;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 1rem 18px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  svg {
+    padding: 4px;
+    fill: currentColor;
+  }
+}
+.deploy-status {
+  color: #313d3f;
+  box-shadow: 0 0 0 2px #313d3f;
+  position: relative;
+  cursor: pointer;
+  svg {
+    animation: spin 10s linear infinite;
+    width: auto;
+    height: auto;
+    z-index: 1;
+  }
+  &:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: inherit;
+    border-radius: 50%;
+  }
+  &.timer:before {
+    content: '';
+    background: transparent;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    border-radius: 50%;
+    // Animation
+    background-image: conic-gradient(#3a69c7 var(--angle), transparent 0deg 360deg);
+    animation: 5s animate 5s linear alternate infinite;
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes animate {
+	to {
+		--angle: 360deg;
+	}
+}
+
+@property --angle {
+	syntax: "<angle>"; /* this can be angle or percentage */
+	initial-value: 0deg;
+	inherits: false;
+}
+
+.info {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  width: 384px;
+  min-width: 284px;
+  max-width: calc(100vw - 2rem);
+  background-color: var(--input, #fff);
+  border: 1px solid var(--bg, transparent);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  &:before,
+  &:after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    bottom: -1rem;
+    left: 0;
+    width: 100%;
+    height: 1rem;
+  }
+  &:after {
+    content: '';
+    bottom: -12px;
+    left: 6px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top: 12px solid var(--input, #fff);
+    border-bottom: 0;
+  }
+}
+.info__close {
+  display: none;
+}
+.help-corner:hover .info {
+  display: unset;
+}
+.info__sub-wrap {
+  max-height: calc(100vh - 39px * 2 - 46px);
+  overflow: hidden auto;
+}
+.info__text {
+  font-size: small;
+  word-break: break-word;
+  margin-bottom: 1rem;
+}
+.info__status {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.info__status-success {
+  background-color: #BEF9C6;
+}
+.info__status-building {
+  background-color: #F6E0A5;
+}
+.info__status-canceled {
+  background-color: #D2D5DB;
+}
+.info__status-error {
+  background-color: #F4BCBA;
+}
+.info__status > * {
+  border-radius: 5px;
+  font-weight: 500;
+  color: #313d3f;
+  padding: 1px 10px;
+  // display: flex;
+  // align-items: center;
+  // position: relative;
+  // gap: 5px;
+  // svg {
+  //   fill: currentColor;
+  //   color: inherit;
+  //   width: 1rem;
+  //   height: 1rem;
+  //   flex-shrink: 0;
+  //   flex-grow: 0;
+  //   vertical-align: sub;
+  //   // font-size: 1.25rem;
+  // }
+}
+.info__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 4px;
+  > :not(.aux) {
+    border-radius: 5px;
+    height: 18px;
+    color: #fff;
+    padding: 0px 15px 0px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: auto;
+    height: auto;
+    flex-grow: 1;
+    cursor: pointer;
+  }
+  .google-spreadsheets-link {
+    background-color: #188038;
+    width: 100%;
+    &:hover {
+      background-color: #2a8947;
+    }
+    &:focus {
+      background-color: #4f9e67;
+    }
+  }
+  .git-link {
+    background-color: #f1502f;
+  }
+  .netlify-link {
+    background-color: #32e6e2;
+    color: #0c2a2a;
+  }
+  .rebuild {
+    background-color: #0c2a2a;
+  }
+  .rebuild[disabled] {
+    cursor: not-allowed;
+    background-color: #a9a9a9;
+    opacity: .6;
+  }
+}
+
+
+// Help corner in botton menu mobile of Static CMS
+// @media (max-width: 767px) {
+//   .help-corner {
+//     margin-left: 12.5vw;
+//   }
+// }

@@ -1,0 +1,10 @@
+{{/*  FOOTER LIKE SECTION BY YAML FILES  */}}
+{{ $sections := dict }}
+{{ if fileExists (print "content." site.Home.Lang "/" .type "/" .file ".yml") }}
+  {{ with resources.Get (print .type "." site.Home.Lang "/" .file ".yml") }}
+    {{ with unmarshal . }}
+      {{ $sections = merge . (.more | default dict) (dict "more" nil) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $sections }}

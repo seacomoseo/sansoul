@@ -1,0 +1,24 @@
+{{- $id    := .Attributes.id | replaceRE `^-|<.+?>|_|#` `` | urlize -}}
+{{- $icons := .Text| findRE `icon-[\w-]+` -}}
+{{- range $icons -}}
+  {{- $id = $id | replaceRE (print "-" .) `` -}}
+{{- end -}}
+
+{{- $articles := site.Data.articles.content -}}
+{{- $class := "" -}}
+{{- if ($articles.underline | and (eq .Level 2)) -}}
+  {{- $class = "underline" -}}
+{{- end -}}
+{{- if ($articles.uppercase | and (eq .Level 2)) -}}
+  {{- $class = print $class "uppercase" -}}
+{{- end -}}
+{{- with .Attributes.class -}}
+  {{- $class = print $class (replace . "." " ") -}}
+{{- end -}}
+
+<h{{ .Level }} class="content__heading {{ $class }}" id="{{ $id }}">
+  <a class="content__heading-link" href="#{{ $id }}">
+    {{- .Text | safeHTML -}}
+    {{- if in $class "underline" }}<br>{{ end -}}
+  </a>
+</h{{ .Level }}>

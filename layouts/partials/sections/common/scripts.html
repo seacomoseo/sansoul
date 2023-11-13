@@ -1,0 +1,60 @@
+{{ $js := slice }}
+{{ $js = $js | append (resources.Get "js/scrollbar.js") }}
+{{ $js = $js | append (resources.Get "js/load-script.js") }}
+{{ $js = $js | append (resources.Get "js/load-style.js") }}
+{{ $js = $js | append (resources.Get "js/scroll-behavior-smooth.js") }}
+{{ $js = $js | append (resources.Get "js/scroll-shot.js") }}
+{{ if site.Data.design.performance.showup }}
+  {{ $js = $js | append (resources.Get "js/scroll-show.js") }}
+{{ end }}
+{{ $js = $js | append (resources.Get "js/scroll-top.js") }}
+{{ $js = $js | append (resources.Get "js/scroll-to-top.js") }}
+{{ $js = $js | append (resources.Get "js/scroll-to-offset.js") }}
+{{ $js = $js | append (resources.Get "js/lazy-load.js") }}
+{{ $js = $js | append (resources.Get "js/ofuscate-links.js") }}
+{{ $js = $js | append (resources.Get "js/mails.js") }}
+{{ if site.Data.design.performance.parallax }}
+  {{ $js = $js | append (resources.Get "js/parallax.js") }}
+{{ end }}
+{{ $js = $js | append (resources.Get "js/modal.js") }}
+{{ $js = $js | append (resources.Get "js/menu-toggle.js") }}
+{{ $js = $js | append (resources.Get "js/menu-scroll-spy.js") }}
+{{ $js = $js | append (resources.Get "js/iframe-poster.js") }}
+{{ $js = $js | append (resources.Get "js/video-mute.js") }}
+{{ $js = $js | append (resources.Get "js/gss.js") }}
+{{ if site.GetPage "pages/cookies" }}
+  {{ $js = $js | append (resources.Get "js/cookies.js") }}
+{{ end }}
+{{ $js = $js | append (resources.Get "js/collapse.js") }}
+{{ $js = $js | append (resources.Get "js/slider.js") }}
+{{ $js = $js | append (resources.Get "js/form-load.js") }}
+{{ $js = $js | append (resources.Get "js/form-validate.js") }}
+{{ if partial "functions/lang-param" (dict "parent" "config" "param" "disqus" "default" false) }}
+  {{ $js = $js | append (resources.Get "js/comments.js") }}
+{{ end }}
+{{ if partial "functions/lang-param" (dict "parent" "menu" "param" "google_translate" "default" false) }}
+  {{ $js = $js | append (resources.Get "js/google-translate.js") }}
+{{ end }}
+{{ $js = $js | append (resources.Get "js/netlify-identity.js") }}
+{{ $js = $js | append (resources.Get "js/simple-lightbox.js") }}
+{{ $js = $js | append (resources.Get "js/prerender.js") }}
+{{ if hugo.IsProduction }}
+  {{ if partial "functions/lang-param" (dict "parent" "config" "param" "google_analytics" "default" false) }}
+    {{ $js = $js | append (resources.Get "js/ga4.js") }}
+  {{ end }}
+{{ end }}
+{{ $js = $js | append (resources.Get "js/custom.js") }}
+{{ $js = $js | append (resources.Get "js/custom-string.js") }}
+
+{{ $js = $js
+  | resources.Concat (print "js/scripts." .Lang ".js")
+  | resources.ExecuteAsTemplate (print site.Home.RelPermalink "js/scripts.js") .
+}}
+
+{{ if hugo.IsProduction }}
+  {{ $js = $js | babel (dict "minified" true "noComments" true "compact" true) | fingerprint }}
+{{ else }}
+  {{ $js = $js | fingerprint }}
+{{ end }}
+
+<script src="{{ $js.RelPermalink }}" defer></script>

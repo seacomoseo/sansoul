@@ -1,0 +1,40 @@
+<section class="social--share">
+  <h2 class="social__title">{{ i18n "share" 1 }}</h2>
+  <div class="buttons">
+    {{- $networks := (slice
+      (dict
+        "link" (print `https://www.facebook.com/sharer.php?u=` .Permalink)
+        "title" (print (i18n "share") " Facebook")
+        "icon" "facebook-f"
+      )
+      (dict
+        "link" (print `https://twitter.com/share?url=` .Permalink `&text=` .Title)
+        "title" (print (i18n "share") " Twitter")
+        "icon" "twitter"
+      )
+      (dict
+        "link" (print `https://wa.me/?text=` .Permalink)
+        "title" (print (i18n "share") " WhatsApp")
+        "icon" "whatsapp"
+      )
+      (dict
+        "link" (print `mailto:?body=` .Permalink `%0D%0A` .Title)
+        "title" (print (i18n "share") " Email")
+        "icon" "envelope"
+        "emoji" "✉"
+      )
+    ) -}}
+    {{- range $networks -}}
+      {{- partial "components/link" (dict
+        "class"   "button--icon"
+        "link"    .link
+        "button"  "link"
+        "icon"    .icon
+        "emoji"   .emoji
+        "label"   .title
+        "anchor"  ""
+        "noindex" true
+      ) -}}
+    {{- end -}}
+  </div>
+</section>

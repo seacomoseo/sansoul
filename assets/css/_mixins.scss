@@ -1,0 +1,266 @@
+// FONTS
+
+// Font Base
+@mixin font-base {
+  font-family: $font-family-base;
+  font-style: $font-style-base;
+  font-weight: $font-weight-base;
+  line-height: $line-height-base;
+}
+// Font Base Bold
+@mixin font-base-bold {
+  @if $font-weight-bold-base > 0 {
+    font-weight: $font-weight-bold-base;
+  } @else {
+    @include font-title;
+  }
+}
+// Font Title
+@mixin font-title {
+  font-family: $font-family-title;
+  font-style: $font-style-title;
+  font-weight: $font-weight-title;
+  line-height: $line-height-title;
+  @if $top-title != 0 {
+    &:not(strong, a) {
+      transform: translateY(#{ $top-title }em);
+      > svg,
+      &.underline:after {
+        transform: translateY(-#{ $top-title }em);
+      }
+    }
+  }
+  @if $font-weight-bold-title > 0 {
+    strong,
+    .strong {
+      font-weight: $font-weight-bold-title;
+    }
+  }
+}
+// Font Cursive
+@mixin font-cursive {
+  font-family: $font-family-cursive;
+  font-style: $font-style-cursive;
+  font-weight: $font-weight-cursive;
+  line-height: $line-height-cursive;
+  @if $top-cursive {
+    &:not(strong, a) {
+      position: relative;
+      top: #{ $top-cursive }em;
+      > svg {
+        margin-top: -#{ $top-cursive }em;
+      }
+    }
+  }
+  @if $font-weight-bold-cursive > 0 {
+    strong,
+    .strong {
+      font-weight: $font-weight-bold-cursive;
+    }
+  }
+}
+// Font Quotes
+@mixin font-quotes {
+  @if $blockquote-cursive {
+    @include font-cursive;
+  } @else {
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.25;
+  }
+}
+
+
+// LINKS HOVER, FOCUS AND ACTIVE
+
+@mixin link {
+  color: var(--link);
+  text-decoration: none;
+  cursor: pointer;
+  background-image: linear-gradient(180deg, transparent calc(100% - var(--outline)), var(--link) 0);
+  background-repeat: no-repeat;
+  background-size: 0 100%;
+  transition: background-size, color;
+  transition-duration: .3s;
+  &:hover,
+  &:focus {
+    @include link-hover;
+  }
+  &:active {
+    @include link-active;
+  }
+}
+@mixin link-hover {
+  color: var(--hover);
+  background-size: 100% 100%;
+}
+@mixin link-active {
+  color: var(--active);
+}
+
+
+// RADIUS
+
+@mixin radius($padding:0em, $r:$radius) {
+  @if $radius > 0.01 {
+    @if $r != $radius {
+      --radius: #{ $r };
+    }
+    @if $padding != 0em {
+      --radius-padding: #{ $padding };
+    }
+    @if $chamfer {
+      clip-path: var(--chamfer);
+    } @else {
+      border-radius: var(--radius-end);
+    }
+  }
+}
+@mixin circle {
+  @if $chamfer {
+    clip-path: var(--diamond);
+  } @else {
+    border-radius: 50%;
+  }
+}
+@mixin hide-radius {
+  @if $radius > 0.01 {
+    @if $chamfer {
+      clip-path: none;
+    } @else {
+      border-radius: 0;
+    }
+  }
+}
+
+
+// BACKGROUND COLOR LIKE COVER (conect to sub .bg-color)
+
+@mixin bg-cover($r:false) {
+  @if $r and $radius > 0.01 {
+    --radius-bg: #{ $r };
+  }
+  position: relative;
+  background-color: transparent;
+  background-image: none;
+  z-index: 0;
+  &:not([class*="bg-gradient"]) {
+    --bg-gradient: none;
+  }
+}
+
+
+// EXPAND CHILD ELEMENT LIKE BACKGROUND COVER
+
+@mixin like-bg-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+// OFUSCATE
+
+@mixin ofuscate {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-indent: -1000vw;
+  z-index: -1;
+}
+
+
+// BUTTON HOVER, FOCUS AND ACTIVE (for Column item with only a button and withouth links)
+
+@mixin button-hover() {
+  @if $buttons-outline {
+    color: var(--base);
+  } @else {
+    color: var(--base-text);
+  }
+  --base: var(--hover);
+  --base-text: var(--hover-text);
+  @if $buttons-3d {
+    transform: translateY(-.125em);
+    &:after {
+      transform: translateY(.125em);
+    }
+    @if $chamfer {
+      filter: drop-shadow(($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color);
+    } @else {
+      &:after {
+        box-shadow: ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color;
+      }
+    }
+  }
+}
+@mixin button-active() {
+  @if $buttons-outline {
+    color: var(--base);
+  } @else {
+    color: var(--base-text);
+  }
+  --base: var(--active);
+  --base-text: var(--active-text);
+  @if $buttons-3d {
+    filter: none;
+    transform: none;
+    &:after {
+      transform: none;
+      box-shadow: 0 0 0 $shadow-color;
+    }
+  }
+}
+
+
+// COLUMN HOVER, FOCUS AND ACTIVE (for Search result item)
+
+@mixin column-hover {
+  &.shadow {
+    filter: drop-shadow(($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color);
+    @if $buttons-3d {
+      transform: translateY(-.125em);
+      &.column--button-hide {
+        > .bg-color--3d {
+          transform: translateY(.125em);
+        }
+      }
+    } @else {
+      transform: translateY(-$shadow-top / 2);
+    }
+  }
+  .image__inner:not(.image__inner--hover) {
+    transform: scale(1.125);
+  }
+  .column__link {
+    @include link-hover;
+  }
+  .column__button {
+    @include button-hover;
+  }
+}
+
+@mixin column-active {
+  &.shadow {
+    filter: none;
+    transform: none;
+    @if $buttons-3d {
+      &.column--button-hide {
+        > .bg-color--3d {
+          transform: none;
+        }
+      }
+    }
+  }
+  .column__link {
+    @include link-active;
+  }
+  .column__button {
+    @include button-active;
+  }
+}

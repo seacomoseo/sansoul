@@ -1,0 +1,17 @@
+{{- $there_are_authors := gt (len (page.GetPage "authors").Pages) 1 -}}
+{{- if $there_are_authors -}}
+  {{- with .page.Params.author -}}
+    {{- with $.GetPage (print "authors/" .) -}}
+      <i class="data__item">
+        {{- partial "components/icon" (dict "class" "data__icon" "icon" "user" "alt" "👤") -}}
+        {{- if $.column -}}
+          {{- .Title -}}
+        {{- else -}}
+          <i data-h="{{ .RelPermalink | base64Encode }}">
+            {{- .Title -}}
+          </i>
+        {{- end -}}
+      </i>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

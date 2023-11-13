@@ -1,0 +1,78 @@
+.divider {
+          --divider-flip-y: var(--pt-divider,5.5em);
+          --divider-mask: var(--divider), linear-gradient(transparent var(--divider-flip-y), black 0);
+          mask-image: var(--divider-mask);
+  -webkit-mask-image: var(--divider-mask);
+  -webkit-mask-size: 100% var(--pt-divider,5.5em), 100%;
+          mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+          mask-position: top;
+  -webkit-mask-position: top;
+          margin-top: calc(var(--pt-divider) * -1)
+}
+.divider--flip-y {
+          --divider-flip-y: 0;
+          mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+.divider--ratio {
+          --divider-height: var(--divider-ratio-height);
+}
+
+$dividers: (
+  'wavy':               $divider-wavy,
+  'wavy-op':            $divider-wavy-op,
+  'wavy-op-alt':        $divider-wavy-op-alt,
+  'wavy-dashed':        $divider-wavy-dashed,
+  'wavy-alt':           $divider-wavy-alt,
+  'triangle':           $divider-triangle,
+  'triangle-side':      $divider-triangle-side,
+  'tilt':               $divider-tilt,
+  'tilt-op':            $divider-tilt-op,
+  'tear':               $divider-tear,
+  'tear-alt':           $divider-tear-alt,
+  'snowflakes':         $divider-snowflakes,
+  'music':              $divider-music,
+  'mountain':           $divider-mountain,
+  'iceberg':            $divider-iceberg,
+  'half-circle':        $divider-half-circle,
+  'fire':               $divider-fire,
+  'fan-op':             $divider-fan-op,
+  'fall':               $divider-fall,
+  'drip':               $divider-drip,
+  'dents':              $divider-dents,
+  'christmas-trees':    $divider-christmas-trees,
+  'curve':              $divider-curve,
+  'curve-side':         $divider-curve-side,
+  'clouds':             $divider-clouds,
+  'clouds-op':          $divider-clouds-op,
+  'city':               $divider-city,
+  'bubles':             $divider-bubles,
+  'brush':              $divider-brush,
+  'book':               $divider-book,
+  'arrow':              $divider-arrow,
+  'arrow-two':          $divider-arrow-two,
+  'arrow-three':        $divider-arrow-three,
+  'arrow-side':         $divider-arrow-side,
+  'arrow-side-rounded': $divider-arrow-side-rounded,
+  'arrow-op':           $divider-arrow-op,
+  'arrow-op-alt':       $divider-arrow-op-alt,
+  'arrow-four':         $divider-arrow-four,
+);
+
+@each $name, $data in $dividers {
+  .divider--#{$name} {
+    --divider: url("data:image/svg+xml,%3Csvg #{ $data }");
+  }
+  .divider--x-#{$name} {
+    --divider: url("data:image/svg+xml,%3Csvg style='transform:scale(-1,1) ' #{ $data }");
+  }
+
+  .divider--y-#{$name} {
+    --divider: url("data:image/svg+xml,%3Csvg style='transform:scale(1,-1) ' #{ $data }");
+  }
+
+  .divider--xy-#{$name} {
+    --divider: url("data:image/svg+xml,%3Csvg style='transform:scale(-1,-1) ' #{ $data }");
+  }
+}

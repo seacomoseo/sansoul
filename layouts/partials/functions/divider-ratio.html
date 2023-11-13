@@ -1,0 +1,16 @@
+{{/* $divider_ratio := site.Data.utilities.divider_ratio */}}
+{{ $divider_ratio := slice
+  "half-circle"
+  "bubles"
+  "fire"
+  "snowflakes"
+  "christmas-trees"
+  "fall"
+  "music"
+  "city"
+}}
+{{ $is_divider_ratio := false }}
+{{ if in $divider_ratio . }}
+  {{ $is_divider_ratio = true }}
+{{ end }}
+{{ return $is_divider_ratio }}

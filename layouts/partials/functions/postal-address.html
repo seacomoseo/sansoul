@@ -1,0 +1,18 @@
+{{ $return := "-" }}
+{{ if gt (len .) 1 }}
+  {{ $return =
+    print
+      .streetAddress ", "
+      .postalCode " "
+      (cond
+        (eq .addressLocality .addressRegion)
+        .addressLocality
+        (print
+          .addressLocality ", "
+          .addressRegion
+        )
+      )
+    | replaceRE "<nil>" ""
+  }}
+{{ end }}
+{{ return $return }}

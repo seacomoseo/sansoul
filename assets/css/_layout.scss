@@ -1,0 +1,482 @@
+:root {
+  --divider-height: 5.5em;
+  --divider-ratio-height: calc(var(--container-inner, 100vw) * .2);
+  // duotone
+  --dt-main: currentColor;
+  --dt-main-op: 1;
+  --dt-alt: currentColor;
+  --dt-alt-op: .5;
+  --form-control-color: var(--alt);
+  --form-control-disabled: #959495;
+  --outline: #{ $menu-bar-double };
+}
+*, :before, :after {
+  box-sizing: border-box;
+}
+/*! purgecss start ignore */
+:where(
+  .columns
+) {
+  // changing variables
+  // --size-min: 3.125; // 50px
+  // --size-max: 16.667; // 300px
+  // fixed variables
+  --screen-max: #{ $screen-max / 18px };
+  --screen-min: #{ $screen-min / 16px };
+  --real-size-min: calc(min(var(--size-min), var(--size-max)) * 1em);
+  --real-size-max: calc(max(var(--size-min), var(--size-max)) * 1em);
+  --preferred-size: calc(
+    (var(--size-min) * 1em)
+    + (var(--size-max) - var(--size-min))
+      * ((100vw - var(--screen-min) * 1em) / (var(--screen-max) - var(--screen-min)))
+  );
+  --fluid-size: clamp(var(--real-size-min), var(--preferred-size), var(--real-size-max));
+  // Like a SCSS function
+  // --slope: calc((var(--size-max) - var(--size-min)) / (var(--screen-max) - var(--screen-min)));
+  // --y-axis-intersection: calc(var(--screen-min) * -1 * var(--slope) + var(--size-min));
+  // --size-preferred: calc(var(--y-axis-intersection) * 1px + (var(--slope) * 100vw));
+  // --fluid-size: clamp(var(--size-min) * 1px, var(--size-preferred), var(--size-max) * 1px)
+}
+/*! purgecss end ignore */
+@if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
+  /*! purgecss start ignore */
+  :where(
+    .menu__toggle-bar,
+    .menu--sticky .menu__subitems,
+    .section__title--icon-bottom .section__icon,
+    .underline,
+    iframe,
+    table,
+    pre,
+    button,
+    .button,
+    .bg-color,
+    :not(.section) > .bg-figure,
+    .image,
+    .image__inner,
+    .image--contain img,
+    .column.bg--radius-min,
+    .bg--image-fixed,
+    .bg--image-fixed.column .bg-figure-image,
+    .column--card .column__content,
+    .pill-bottom .column__content,
+    .columns--group-radius,
+    .gallery,
+    .gallery-modal__items,
+    .review__figure-image,
+    .step__axis,
+    .step__figure,
+    .author-box__figure,
+    .author-box__figure-image,
+    .contact__email-option-copy i,
+    .contact__form-error,
+    .contact__form-submit,
+    .contact__form-item,
+    .contact__form-item-border,
+    .contact__form-fill-inputs *:where(
+      input:not([type="checkbox"], [type="radio"]),
+      textarea,
+      select
+    ),
+    .callnow__caption,
+    .bg-white .toc__box.bg-white
+  ) {
+    --radius: #{ $radius };
+    --radius-padding: 0em;
+    --radius-top: var(--radius-calc);
+    --radius-bottom: var(--radius-calc);
+    @if $chamfer {
+      --radius-calc: calc((((var(--radius) + var(--radius-padding)) / .7071) - var(--radius-padding)) * .7071);
+      --chamfer: polygon(
+        var(--radius-top) 0%,
+        calc(100% - var(--radius-top)) 0%,
+        100% var(--radius-top),
+        100% calc(100% - var(--radius-bottom)),
+        calc(100% - var(--radius-bottom)) 100%,
+        var(--radius-bottom) 100%,
+        0% calc(100% - var(--radius-bottom)),
+        0% var(--radius-top)
+      );
+      --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      // Outline
+      --radius-outline: calc((((var(--radius) + var(--outline)) / .7071) - var(--outline)) * .7071);
+      --chamfer-outline: polygon(
+        var(--radius) 0%,
+        calc(100% - var(--radius)) 0%,
+        100% var(--radius),
+        100% calc(100% - var(--radius)),
+        calc(100% - var(--radius)) 100%,
+        var(--radius) 100%,
+        0% calc(100% - var(--radius)),
+        0% var(--radius)
+        ,
+        var(--radius) 0%
+        ,
+        var(--radius-outline) var(--outline),
+        var(--outline) var(--radius-outline),
+        var(--outline) calc(100% - var(--radius-outline)),
+        var(--radius-outline) calc(100% - var(--outline)),
+        calc(100% - var(--radius-outline)) calc(100% - var(--outline)),
+        calc(100% - var(--outline)) calc(100% - var(--radius-outline)),
+        calc(100% - var(--outline)) var(--radius-outline),
+        calc(100% - var(--radius-outline)) var(--outline)
+        ,
+        var(--radius-outline) var(--outline)
+      );
+      --chamfer-int-outline: polygon(
+        var(--radius-outline) var(--outline),
+        var(--outline) var(--radius-outline),
+        var(--outline) calc(100% - var(--radius-outline)),
+        var(--radius-outline) calc(100% - var(--outline)),
+        calc(100% - var(--radius-outline)) calc(100% - var(--outline)),
+        calc(100% - var(--outline)) calc(100% - var(--radius-outline)),
+        calc(100% - var(--outline)) var(--radius-outline),
+        calc(100% - var(--radius-outline)) var(--outline)
+      );
+      --outline-diamond: calc(var(--outline) / .7071);
+      --diamond-outline: polygon(
+        50% 0%, 100% 50%, 50% 100%, 0% 50%
+        ,
+        50% 0%
+        ,
+        50% var(--outline-diamond),
+        var(--outline-diamond) 50%,
+        50% calc(100% - var(--outline-diamond)),
+        calc(100% - var(--outline-diamond)) 50%
+        ,
+        50% var(--outline-diamond)
+      );
+    } @else {
+      --radius-calc: calc(var(--radius) + var(--radius-padding));
+      --radius-end: var(--radius-top) var(--radius-top) var(--radius-bottom) var(--radius-bottom);
+    }
+  }
+  /*! purgecss end ignore */
+}
+html {
+  font-size: $font-size-min;
+  scroll-behavior: smooth;
+  @include font-base;
+  overflow-x: hidden;
+}
+body {
+  font-size: $font-size-base;
+  color: var(--text, $text);
+  background-color: $light;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  // hyphens: auto;
+}
+a {
+  @include link;
+}
+strong,
+.strong,
+.button--font-alt:not(.button, button) > i,
+dt,
+sup,
+sub,
+legend {
+  @include font-base-bold;
+}
+i {
+  font-style: inherit;
+}
+s,
+del {
+  color: var(--subtitle);
+}
+figure {
+  margin-inline: 0;
+}
+picture {
+  overflow: hidden;
+}
+picture,
+img {
+  max-width: 100%;
+  height: auto;
+}
+picture[style] {
+  background-image: var(--pre-bg);
+}
+picture > img {
+  display: block;
+  margin: 0 auto;
+}
+video {
+  object-fit: cover;
+  object-position: center;
+}
+p {
+  margin: 0 0 1em;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+ul {
+  padding-left: 1.125em;
+}
+h1, h2, h3, h4, h5, h6 {
+  @include font-title;
+  display: block;
+  font-size: $font-size-title;
+  margin-top: 0;
+  margin-bottom: fluid-size(16px, 18px);
+  color: $dark;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+h1 { font-size: 2em; }
+h2 { font-size: 1.8em; }
+h3 { font-size: 1.6em; }
+h4 { font-size: 1.4em; }
+h5 { font-size: 1.2em; }
+h6 { font-size: 1em; }
+header,
+section {
+  position: relative;
+  padding-top: 3em;
+  padding-bottom: 3em;
+  // overflow: hidden;
+}
+input:not([type="checkbox"], [type="radio"]),
+textarea,
+select,
+fieldset {
+  --outline: 1px;
+  display: block;
+  padding: .5625em 1em .84375em;
+  background-color: transparent;
+  border: var(--outline) solid transparent;
+  border-bottom: var(--outline) solid var(--border);
+  outline: none;
+  transition: border .1s;
+  font-weight: $font-weight-base;
+  color: inherit;
+  &:focus {
+    border-color: var(--main);
+  }
+  &::placeholder {
+    color: var(--text);
+    opacity: .5;
+  }
+}
+input:not([type="checkbox"], [type="radio"]),
+select {
+  height: 2.5em;
+}
+textarea {
+  min-height: 5.72em;
+  resize: none;
+}
+select {
+  appearance: none;
+  cursor: pointer;
+  background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='grey' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right 1em center;
+  background-size: .5em .625em;
+  padding-right: 2.125em;
+}
+fieldset {
+  border: 1px var(--border) dashed;
+  color: inherit;
+  border-radius: $radius;
+}
+legend {
+  color: var(--subtitle);
+  padding: 0 .25em;
+  margin-left: -.25em;
+}
+[type='radio'],
+[type="checkbox"] {
+  /* Remove most all native input styles */
+  appearance: none;
+  /* For iOS < 15 */
+  // background-color: var(--form-background);
+  background-color: $white;
+  /* Not removed via appearance */
+  margin: 0;
+
+  font: inherit;
+  color: currentColor;
+  width: 1em;
+  height: 1em;
+  border: 0.15em solid var(--form-control-color);
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+
+  display: inline-grid;
+  place-content: center;
+  position: relative;
+  top: .0625em;
+  &:checked {
+    --form-control-color: green;
+  }
+}
+[type='radio']:before,
+[type="checkbox"]:before {
+  content: '';
+  width: 0.7em;
+  height: 0.7em;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: .12s transform ease-in-out;
+  box-shadow: inset 1em 1em var(--form-control-color);
+  /* Windows High Contrast Mode */
+  background-color: CanvasText;
+}
+[type='radio']:checked:before,
+[type="checkbox"]:checked:before {
+  transform: scale(1);
+}
+[type='radio']:focus,
+[type="checkbox"]:focus {
+  outline: Max(2px, 0.15em) solid var(--main);
+  outline-offset: Max(2px, 0.15em);
+}
+[type='radio']:disabled,
+[type="checkbox"]:disabled {
+  --form-control-color: var(--form-control-disabled);
+  color: var(--form-control-disabled);
+  cursor: not-allowed;
+}
+[type='radio'] {
+  border-radius: 50%;
+}
+table {
+  @include radius;
+  border-collapse: collapse;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+  white-space: nowrap;
+  word-break: normal;
+  margin-right: auto;
+}
+th, td {
+  padding: .5em 1em;
+  &:first-child {
+    white-space: normal;
+    position: sticky;
+    left: 0;
+    background: inherit;
+    text-align: left;
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: block;
+      width: 1px;
+      height: 100%;
+      background-color: rgba($grey, .125);
+    }
+  }
+}
+tr {
+  background-color: $white;
+  &:nth-child(2n) {
+    background-color: $main-light;
+  }
+  &:hover {
+    color: $white;
+    background-color: $main-dark;
+  }
+}
+thead tr {
+  color: $main-contrast-neutral;
+  background-color: $main;
+  svg {
+    fill: $main-contrast-neutral;
+  }
+}
+/*! purgecss start ignore */
+iframe {
+  @include radius;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  &:not(#aux) {
+    border: none;
+    object-fit: initial;
+  }
+}
+/*! purgecss end ignore */
+svg {
+  fill: currentColor;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+// [*|href^="/draws.svg"] {
+//   color: $main;
+// }
+pre {
+  @include radius;
+}
+:not(pre) > code  {
+  background-color: $main;
+  color: $main-contrast-neutral;
+  padding: 0 0.3em;
+  @if $chamfer and $radius >= 0.1 {
+    border-radius: 0.1em;
+  } @else {
+    border-radius: $radius;
+  }
+  > svg {
+    color: inherit;
+  }
+}
+.hide {
+  @include ofuscate;
+}
+.lcp {
+  width: calc(100vw - .5em);
+  height: calc(100vh - .5em);
+  position: absolute;
+  // z-index: 1000;
+}
+[data-more] {
+  position: relative;
+  &:before {
+    content: attr(data-more);
+  }
+  i {
+    @include ofuscate;
+  }
+}
+
+/*! purgecss start ignore */
+#search__form ~ {
+  article,
+  section {
+    display: none;
+  }
+}
+.compare {
+  [*|href="/draws.svg#xmark"] {
+    color: red;
+    fill: red;
+  }
+  [*|href="/draws.svg#check"] {
+    color: green;
+    fill: green;
+  }
+}
+::selection {
+  color: $main-contrast-neutral;
+  background: $main;
+}
+/*! purgecss end ignore */
+
+.compare {
+  td, th {
+    &:not(:first-child) {
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{{ $country := partial "functions/lang-param" (dict "parent" "config" "param" "country") }}
+
+{{ if not $country }}
+  {{ with partial "functions/locations" . }}
+    {{ $country = (index . 0).addressCountry }}
+  {{ else }}
+    {{ $country = "España" }}
+  {{ end }}
+{{ end }}
+
+{{ return $country }}

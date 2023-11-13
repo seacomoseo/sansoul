@@ -1,0 +1,39 @@
+.author-box {
+  display: flex;
+  max-width: 35em;
+  margin-left: auto;
+  margin-right: auto;
+}
+.author-box__figure {
+  padding: .25em;
+  margin: .125em 1em auto 0;
+  flex-shrink: 0;
+  background-color: var(--main);
+  @if $icon-buttons-rounded {
+    @if $chamfer {
+      padding: .25em * .7071;
+    }
+    @include circle;
+  } @else {
+    @include radius(.25em);
+  }
+}
+.author-box__figure-image {
+  display: block;
+  background-color: var(--bg-color);
+  padding: 0.25em;
+  &, img {
+    box-sizing: content-box;
+    object-fit: cover;
+    width: 80px;
+    height: 80px;
+    @if $icon-buttons-rounded {
+      @include circle;
+    } @else {
+      @include radius;
+    }
+    &[style] {
+      background-image: none;
+    }
+  }
+}

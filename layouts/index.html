@@ -1,0 +1,77 @@
+{{/* /layouts/_default/baseof */}}
+{{- define "none" -}}
+
+  {{/*  FILES  */}}
+  {{- $multihost := ne
+    (index .AllTranslations 0).Site.BaseURL
+    (index .AllTranslations 1).Site.BaseURL
+    | and .IsTranslated
+  -}}
+  {{- $cms_config_path          := print .RelPermalink `admin/config.yml` -}}
+  {{- $cms_index_path           := print .RelPermalink `admin/index.html` -}}
+  {{- $google_file_verification := (partial "functions/lang-param" (dict "parent" "config" "param" "google_file_verification")) -}}
+  {{- $draws_path               := `/draws.svg` -}}
+  {{- $redirects_path           := `/_redirects` -}}
+  {{- if $multihost -}}
+    {{- $cms_config_path  = print `../` .Lang `/admin/config.yml` -}}
+    {{- $cms_index_path   = print `../` .Lang `/admin/index.html` -}}
+    {{- if hugo.IsProduction -}}
+      {{- $draws_path     = `../draws.svg` -}}
+      {{- $redirects_path = `../_redirects` -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $resources := slice
+    (dict   "resource" `draws.svg`                     "path" $draws_path)
+    (dict   "resource" `redirects.html`                "path" $redirects_path)
+  -}}
+  {{- with $google_file_verification -}}
+    {{- $resources = $resources | append
+      (dict "resource" `google-site-verification.html` "path" .)
+    -}}
+  {{- end -}}
+  {{- if site.Data.config.cms -}}
+    {{- $resources = $resources | append
+      (dict "resource" `cms-config.html`               "path" $cms_config_path)
+      (dict "resource" `cms-index.html`                "path" $cms_index_path)
+    -}}
+  {{- end -}}
+  {{- if not hugo.IsProduction | and site.Data.config.cms -}}
+    {{- $resources = $resources | append
+      (dict "resource" `cms-config.html`               "path" (print .RelPermalink `admin/config.json`))
+    -}}
+  {{- end -}}
+  {{- range $resources -}}
+    {{- $resource := (
+      resources.Get .resource
+      | resources.ExecuteAsTemplate .path page
+    ).Permalink -}}
+  {{- end -}}
+
+  {{/*  PROCESS ALL IMAGES  */}}
+  {{- with readDir "assets/media" -}}
+    {{- range . -}}
+      {{- if .Name | findRE `\.pdf$` -}}
+        {{- $pdf := resources.Get (print "/media/" .Name) -}}
+        {{- $pdf  = $pdf.RelPermalink -}}
+      {{- end -}}
+      {{- if hugo.IsProduction | and site.Data.config.process_all_images -}}
+        {{- if .Name | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` -}}
+          {{- $image := resources.Get (print "/media/" .Name) -}}
+          {{/*  IF THUMBNAILS  */}}
+          {{/*
+            {{- if .Name | findRE `\.svg$` -}}
+              {{- $image = $image.RelPermalink -}}
+            {{- else -}}
+              {{- $image = ($image.Fit "151x85 webp" | resources.Copy (print "/media/thumbnails/" .Name ".webp")).RelPermalink -}}
+            {{- end -}}
+          */}}
+          {{/*  ELSE  */}}
+          {{- $image  = $image.RelPermalink -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{/*  CUSTOM  */}}
+  {{- partial "custom" . -}}
+{{- end -}}

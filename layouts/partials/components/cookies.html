@@ -1,0 +1,42 @@
+{{- with site.GetPage "pages/cookies" -}}
+  <aside class="cookies bg bg-{{ partial `functions/lang-param` (dict `parent` `menu` `param` `color` `default` `white`) }} description">
+    <div class="bg-color"></div>
+    {{/*
+      <p class="h5">¿Aceptas cookies? {{ partial "components/icon" (dict "icon" "cookie" "emoji" "🍪") }}</p>
+      <p>Usamos cookies de terceros, analizando tus hábitos de navegación, para mejorar nuestros servicios y facilitar la navegación. Si continúas navegando, consideramos que aceptas su uso.</p>
+      <button class="cookies__button-read button button--sm light" data-h="{{ print `/legal/#` (i18n `cookies`) | base64Encode }}">{{ partial "components/icon" (dict "icon" "plus") }}{{ i18n "cookies-more" }}</button>{{ "" -}}
+      <button class="cookies__button-acept button--sm">{{ partial "components/icon" (dict "icon" "check") }}OK</button>
+    */}}
+    <p class="cookies__messaje">
+      {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
+      {{- partial "functions/md" (dict "content" (i18n "cookies-message" 1) "inline" true) -}}
+    </p>
+    <div class="cookies__wrap">
+      <div class="cookies__checks">
+        {{- range $key, $label := split (i18n "cookies-message") "," -}}
+          <label class="contact__form-label">
+            {{- "" -}}
+            <input class="contact__form-checkbox" type="checkbox" name="cookies" value="{{ . | urlize }}" {{ if not $key }}disabled checked{{ end }}>
+            {{- . -}}
+          </label>
+        {{- end -}}
+      </div>
+      <div class="cookies__buttons">
+        {{- "" -}}
+        {{/*
+          <button class="button--sm button--font-alt light" data-h="{{ . | base64Encode }}">
+            <i>{{ i18n "cookies-more" }}</i>
+          </button>
+        */}}
+        {{- "" -}}
+        {{- "" -}} <button class="cookies__button-acept button--sm button--font-alt light">
+        {{- "" -}}   <i>{{ i18n "cookies-accept" }}</i>
+        {{- "" -}} </button>
+        {{- "" -}} <button class="cookies__button-acept cookies__button-acept--all button--sm">
+        {{- "" -}}   <i>{{ i18n "cookies-accept-all" }}</i>
+        {{- "" -}} </button>
+        {{- "" -}}
+      </div>
+    </div>
+  </aside>
+{{- end -}}

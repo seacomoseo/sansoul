@@ -1,0 +1,114 @@
+@if $google-translate {
+  /*! purgecss start ignore */
+  .google-translate {
+    display: none;
+  }
+  #google_translate_element {
+    margin: -0.75em 0;
+    .goog-te-gadget {
+      font-size: inherit;
+      font-family: inherit;
+      font-size: 0;
+      color: inherit;
+      > span {
+        display: none;
+      }
+    }
+    .goog-te-combo {
+      width: auto;
+      margin: 0;
+      padding: 0 1em 0 0;
+      background-position: 100%;
+      font-family: inherit;
+      font-size: fluid-size(16px, 18px);
+      border-width: .0625em;
+      border-bottom-color: transparent;
+      &:focus {
+        border-bottom-color: var(--main);
+      }
+    }
+    .goog-logo-link {
+      display: none;
+    }
+  }
+  body[style] {
+    top: 0 !important;
+  }
+  #goog-gt-tt {
+    display: none !important;
+  }
+  font.goog-text-highlight {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  .button-google-translate {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 1em;
+    display: flex;
+    opacity: 0;
+    transform: translateY(4em);
+    transition: transform, opacity;
+    transition-duration: .5s;
+    z-index: 100;
+    @if not $buttons-3d {
+      button {
+        filter: drop-shadow($shadow);
+      }
+    }
+    svg:first-child {
+      position: absolute;
+      opacity: .3;
+    }
+  }
+  // Active
+  [class="skiptranslate"]:not(#goog-gt-tt) {
+    position: fixed;
+    --gt-right: 0em;
+    right: var(--gt-right);
+    bottom: 0;
+    margin: 1em;
+    width: 3em;
+    height: 3em;
+    overflow: hidden;
+    z-index: 110;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    opacity: 0;
+    &:not([style*="display"]) {
+      ~ .button-google-translate {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    > iframe {
+      left: calc(18px - var(--gt-right));
+      top: calc(100vh - 15px);
+      transform-origin: right bottom;
+      transform: scale(3.6);
+    }
+  }
+  iframe.goog-te-banner-frame {
+    position: absolute;
+    top: -12px;
+    left: auto;
+    right: -10px;
+    width: 1024px;
+  }
+  body:not(.body-top) {
+    .button-google-translate {
+      transform: translate(-4em, 4em);
+    }
+    [class="skiptranslate"]:not(#goog-gt-tt) {
+      --gt-right: 4em;
+      &:not([style*="display"]) {
+        ~ .button-google-translate {
+          opacity: 1;
+          transform: translateX(-4em);
+        }
+      }
+    }
+
+  }
+  /*! purgecss end ignore */
+}

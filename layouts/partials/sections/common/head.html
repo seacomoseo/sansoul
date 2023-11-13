@@ -1,0 +1,164 @@
+<meta charset="utf-8">
+{{ "<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->" | safeHTML }}
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+
+{{ $title := "" }}
+{{ with .Params.title_seo }}
+  {{ $title = . }}
+{{ else }}
+  {{ $title = partial "functions/anchor-page" . }}
+{{ end }}
+
+<title>{{ $title }}</title>
+
+{{ $description := "" }}
+{{ with .Description }}
+  {{ $description = . }}
+{{ else }}
+  {{ if .IsPage | and .Content }}
+    {{ $description = .Summary }}
+  {{ end }}
+{{ end }}
+
+{{ with $description | plainify | truncate 155 }}
+  <meta name="description" content="{{ . }}">
+  <meta property="og:description" content="{{ . }}">
+{{ end }}
+<meta property="og:site_name" content="{{ partial `functions/lang-param` (dict `parent` `config` `param` `title`) }}">
+
+{{ $url := .Permalink }}
+{{ if .IsHome }}
+  {{ $url = print site.BaseURL site.Home.RelPermalink }}
+  <meta property="og:type" content="website">
+{{ else }}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ $title }}">
+  {{ with .Date }}<meta property="article:published_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}" />{{ end }}
+  {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}" />{{ end }}
+{{ end }}
+
+{{ with .Lastmod }}<meta property="og:updated_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />{{ end }}
+<meta property="og:url" content="{{ $url }}">
+<meta property="og:locale" content="{{ site.Language }}">
+<meta name="twitter:card" content="summary_large_image">
+
+{{ $image_og := "" }}
+{{ $site_logo := partial "functions/lang-param" (dict "parent" "config" "param" "logo") }}
+{{ if .Params.image }}
+  {{ if in .Params.image ".svg" }}
+    {{ $image_og = print site.BaseURL "/media/logo.png" }}
+  {{ else if partial "functions/is-iframe" .Params.image }}
+    {{ $image_og = partial "functions/iframe-poster" .Params.image }}
+  {{ else if in .Params.image "http" }}
+    {{ $image_og = .Params.image }}
+  {{ else }}
+    {{ with resources.Get (print "/media/" .Params.image) }}
+      {{ $image_og = .Permalink }}
+    {{ end }}
+  {{ end }}
+{{ else if (in $site_logo "svg") }}
+  {{ $image_og = print site.BaseURL "/media/logo.png" }}
+{{ else if $site_logo }}
+  {{ $image_og = print site.BaseURL $site_logo }}
+{{ end }}
+
+<meta property="og:image" content="{{ $image_og | default `/media/logo.png` }}">
+<meta name="theme-color" content="{{ site.Data.design.colors.main.color }}">
+
+<link rel="canonical" href="{{ $url }}">
+
+{{ if .IsTranslated }}
+  {{ range .AllTranslations }}
+    <link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
+  {{ end }}
+{{ end }}
+
+{{ if .Params.noindex }}
+  <meta name="robots" content="noindex">
+{{ end }}
+
+{{ with partial "functions/lang-param" (dict "parent" "config" "param" "google_site_verification") }}
+  <meta name="google-site-verification" content="{{ . }}">
+{{ end }}
+
+{{- if hugo.IsProduction -}}
+  {{- with partial "functions/lang-param" (dict "parent" "config" "param" "google_analytics") -}}
+    <script>
+      // GA4 base
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      // GA4 function
+      function googleAnalytics() {
+        if (!document.querySelector(`script[src^='https://www.googletagmanager.com/']`)) {
+          // Load GA4 script
+          var ga = document.createElement('script');
+          ga.async = true;
+          ga.src = 'https://www.googletagmanager.com/gtag/js?id={{ . }}';
+          document.head.appendChild(ga);
+          // GA4 tags
+          gtag('js', new Date());
+          gtag('config', '{{ . }}');
+        }
+      }
+      // If is not bot and if cookies law
+      const isBot = navigator.userAgent.toLowerCase().match(/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/)
+      if (!isBot
+        {{- if not (partial "functions/lang-param" (dict "parent" "config" "param" "analytics_pagespeed" "default" false)) }} && !(navigator.userAgent.indexOf("Chrome-Lighthouse") == -1) {{ end -}}
+        {{- if site.Data.config.cookies_legal }} && localStorage.controlcookieanalytics {{ end -}}
+      ) {
+        googleAnalytics();
+      }
+    </script>
+  {{- end -}}
+{{- end -}}
+
+<script type="application/ld+json">
+  {{- partial "sections/common/schema" . | safeJS -}}
+</script>
+
+{{ partial "sections/common/style" . }}
+
+{{ with index (where (readDir "assets/media") "Name" "favicon.ico") 0 }}
+  <link rel="icon" sizes="any" href="{{ (resources.Get `/media/favicon.ico` | resources.Copy `/favicon.ico`).RelPermalink }}">
+{{ end }}
+{{ $favicon := resources.Get "/media/icon.png" }}
+{{ with resources.Get "/media/icon.svg" }}
+  <link rel="icon" type="image/svg+xml" href="{{ .RelPermalink }}">
+{{ else }}
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ ($favicon.Resize `32x32` | resources.Copy `/media/favicon-32x32.png`).RelPermalink | safeURL }}">
+{{ end }}
+{{ if hugo.IsProduction }}
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ ($favicon.Resize `192x192` | resources.Copy `/media/favicon-192x192.png`).RelPermalink | safeURL }}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ ($favicon.Resize `512x512` | resources.Copy `/media/favicon-512x512.png`).RelPermalink | safeURL }}">
+  <link rel="apple-touch-icon" href="{{ ($favicon.Resize `180x180` | resources.Copy `/media/favicon-180x180.png`).RelPermalink | safeURL }}">
+{{ end }}
+
+{{ with site.Home.OutputFormats.Get "RSS" }}
+  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Data.config.title }}">
+{{ end }}
+
+{{ if site.Data.design.fonts.google }}
+  {{ with site.Data.design.fonts }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {{ $google_url := "https://fonts.googleapis.com/css2" }}
+    {{ range $key, $value := slice .base .title .cursive }}
+      {{ if .family }}
+        {{ $google_url = print
+          $google_url
+          (cond (not $key) "?" "&")
+          "family=" .family
+          (cond
+            (not .italic)
+            (print ":wght@" .weight (cond (not .strong) "" (print ";" .strong)))
+            (print ":ital,wght@1," .weight (cond (not .strong) "" (print ";1," .strong)))
+          )
+        }}
+      {{ end }}
+    {{ end }}
+    {{ $google_url = print ($google_url | safeHTML) "&display=swap" }}
+    <link rel="preload" href="{{ $google_url }}" as="style">
+    <link href="{{ $google_url }}" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="{{ $google_url }}" rel="stylesheet"></noscript>
+  {{ end }}
+{{ end }}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="{{ .Lang }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ i18n "cms" }} · {{ partial "functions/lang-param" (dict "parent" "config" "param" "title") }}</title>
+  <meta name="robots" content="noindex">
+  {{/*  <link href="config.json" type="text/ymal" rel="cms-config-url">  */}}
+
+  {{/*  STYLES  */}}
+  {{ $styles := resources.Get "css/cms.scss" | resources.ExecuteAsTemplate (print "css/cms." .Lang ".scss") (i18n "login") }}
+  {{ with $styles }}
+    {{ if hugo.IsProduction }}
+      {{ $styles = . | toCSS (dict "vars" (dict "login" (i18n "login"))) | fingerprint | postCSS | resources.PostProcess }}
+    {{ else }}
+      {{ $styles = . | toCSS (dict "vars" (dict "login" (i18n "login")) "enableSourceMap" true) | fingerprint }}
+    {{ end }}
+  {{ end }}
+  <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+
+</head>
+<body>
+
+  {{/*  HELP CORNER  */}}
+  {{ partial "cms/help-corner" . }}
+
+  {{/*  STATIC CMS  */}}
+  <script src="https://unpkg.com/@staticcms/app@^4.0.0-beta.4/dist/static-cms-app.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@staticcms/app@^4.0.0-beta.4/dist/main.css" />
+
+  {{/*  DECAP CMS  */}}
+  {{/*  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>  */}}
+  {{/*  DARK MODE  */}}
+  {{/*  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nats-ji/netlify-cms-dark-mode@master/dark.min.css">  */}}
+
+  {{/*  IMAGES GRID VIEW  */}}
+  {{/*
+  {{ if site.Data.config.lfs }}
+    <style>
+      {{ partial "cms/images-grid-view" . }}
+    </style>
+  {{ end }}
+  */}}
+
+  <script>
+    window.addEventListener('load', () => {
+
+      // REWRITE IMAGES SRC
+      {{/*
+      {{ if site.Data.config.lfs }}
+        {{ partial "cms/rewrite-images-src.js" . }}
+      {{ end }}
+      */}}
+
+      // MARKDOWN WIDGET CUSTOM STYLES
+      {{/*  CMS.registerRemarkPlugin({ settings: { bullet: '-', quote: "'" } })  */}}
+
+      // DEPLOY STATUS
+      {{ partial "cms/deploy-status.js" . }}
+
+      // CUSTOM BOOLEAN WIDGET
+      {{ partial "cms/custom-boolean.js" . }}
+
+      // STATIC CMS
+      CMS.init()
+
+      // NETLIFY IDENTITY
+      function loadScript (url) {
+        if (!document.querySelector(`script[src='${url}']`)) {
+          const s = document.createElement('script')
+          s.src = url
+          document.head.appendChild(s)
+        }
+      }
+      setTimeout(
+        loadScript ('https://identity.netlify.com/v1/netlify-identity-widget.js')
+        , 5000
+      )
+    })
+  </script>
+
+</body>
+</html>

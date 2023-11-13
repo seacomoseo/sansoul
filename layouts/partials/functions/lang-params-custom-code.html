@@ -1,0 +1,31 @@
+{{ $value := "" }}
+{{ $Page := page }}
+
+{{ with $Page.Site.Data.config }}
+
+  {{ $lang_params := "" }}
+  {{ with index . $Page.Lang }}
+    {{ with .custom_code }}
+      {{ with index . $.params }}
+        {{ with .code }}
+          {{ $lang_params = . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ with $lang_params }}
+    {{ $value = . }}
+  {{ else }}
+    {{ with .custom_code }}
+      {{ with index . $.params }}
+        {{ with .code }}
+          {{ $value = . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+{{ end }}
+
+{{ return $value }}

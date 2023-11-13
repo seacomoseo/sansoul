@@ -1,0 +1,7 @@
+{{ $id := .id
+  | default (.menu | urlize)
+  | default (.anchor | urlize)
+  | default (.title | urlize)
+  | default .file
+}}
+{{ return $id }}

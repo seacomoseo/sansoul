@@ -1,0 +1,11 @@
+<i class="data__item">
+  {{- $tax := index site.Data.utilities.taxonomies .page.Type -}}
+  {{- partial "components/icon" (dict "class" "data__icon" "icon" $tax.icon "emoji" $tax.emoji) -}}
+  {{- if $.column -}}
+      {{- i18n .page.Type 1 -}}
+  {{- else -}}
+    <i data-h="{{ (page.GetPage page.Type).RelPermalink | base64Encode }}">
+      {{- i18n .page.Type 1 -}}
+    </i>
+  {{- end -}}
+</i>

@@ -1,0 +1,212 @@
+#nc-root {
+
+  .CMS_Login_button {
+    text-indent: -9999em;
+    &:after {
+      content: '#{ $login }';
+      text-indent: 0;
+    }
+  }
+
+// Help corner in botton menu mobile
+  @media (max-width: 767px) {
+    .CMS_BottomNavigation_root:before {
+      content: '';
+      width: 54px;
+    }
+  }
+  // Padding for help corner
+  .CMS_Sidebar_content,
+  .CMS_Editor_content-wrapper {
+    padding-bottom: 4rem;
+  }
+
+  // REMOVE ICONS
+
+  // .CMS_NavLink_icon,
+  // .CMS_Collection_header-icon {
+  //   display: none;
+  // }
+
+
+  // FIELDS
+
+  .CMS_Field_root,
+  .CMS_WidgetObject_root,
+  .CMS_WidgetList_field-wrapper,
+  .CMS_WidgetList_multi-field-item {
+    margin: 0 auto;
+    border-width: .0625rem;
+    border-radius: .5rem;
+    padding: .5rem .75rem;
+    border-color: var(--border);
+    background-color: var(--bg);
+    max-width: calc(100vw - 1rem);
+    width: 100%;
+    filter: var(--shadow);
+  }
+  // Gap of fields and margin of parents
+  .CMS_EditorControlPane_root,
+  .CMS_WidgetObject_fields,
+  .CMS_WidgetObject_list-root,
+  .CMS_WidgetList_fields {
+    display: grid;
+    gap: 1rem;
+    margin-block: 1em;
+    overflow: visible;
+  }
+  .CMS_WidgetObject_list-root {
+    margin-left: 0.5rem;
+  }
+  // Remove paddings
+  .CMS_Field_wrapper,
+  .CMS_WidgetObject_root,
+  .CMS_WidgetList_field-wrapper,
+  .CMS_WidgetList_multi-field-item {
+    > * {
+      padding-inline: 0;
+    }
+    > :first-child {
+      padding-top: 0;
+    }
+    > :last-child {
+      padding-bottom: 0;
+    }
+  }
+  .CMS_WidgetList_ListItem_expand-button {
+    padding: 0;
+  }
+  .CMS_WidgetObject_expand {
+    padding-bottom: 0;
+    align-items: center;
+  }
+  .CMS_WidgetObject_summary {
+    line-height: 1.25rem;
+  }
+  // List item controls ajust
+  .CMS_WidgetList_ListItem_single-field-controls {
+    top: 3rem;
+    height: 2rem;
+  }
+  // Margins
+  .CMS_WidgetObject_fields,
+  .CMS_WidgetList_ListItem_content {
+    margin-left: -.25em;
+    > .CMS_EditorControl_root {
+      margin-left: .5rem;
+    }
+  }
+  // Move toggle arrow to left in lists
+  .CMS_WidgetList_expand-button-icon {
+    order: -1;
+  }
+  // Remove bottom line from list item
+  .CMS_WidgetList_ListItem_not-open-placeholder {
+    display: none;
+  }
+
+
+  // TEXT, SELECT AND RELATION FIELDS
+
+  .CMS_TextField_input,
+  .CMS_TextArea_input,
+  .CMS_Select_input,
+  .CMS_Autocomplete_root {
+    background-color: var(--input);
+    color: var(--text);
+    margin: .375rem 0;
+    padding: .375rem .625rem;
+    border: .0625rem solid var(--border);
+    border-radius: .25rem;
+    min-height: 2.5rem;
+  }
+  // Cursos like text in text fields
+  .CMS_TextField_root > .CMS_TextField_input {
+    cursor: initial;
+  }
+
+
+  // COLOR FIELDS
+
+  .CMS_WidgetColor_color-swatch {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin-right: .75rem;
+    border-radius: .25rem;
+  }
+
+
+  // BOOLEAN FIELDS
+
+  .CMS_WidgetBoolean_root {
+    &, .CMS_Field_inline-wrapper {
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .CMS_Label_root {
+      max-width: calc(100% - 44px - 0.5rem);
+    }
+    .CMS_Hint_root {
+      order: 2;
+    }
+  }
+
+
+  // CUSTOM BOOLEAN FIELDS
+
+  .CMS_WidgetBoolnew_root {
+    .CMS_Label_root {
+      max-width: calc(100% - 5.375rem);
+    }
+  }
+  .CMS_Switch_toggle {
+    background-color: var(--warning-main);
+  }
+  .CMS_Switch_input:checked + .CMS_Switch_toggle {
+    background-color: var(--success-main);
+  }
+  .CMS_Switch_clear {
+    opacity: 1;
+  }
+  .CMS_Field_disabled {
+    .CMS_Switch_toggle {
+      background-color: var(--common-gray);
+    }
+    .CMS_Switch_clear {
+      opacity: 0;
+    }
+  }
+
+
+  // IMAGE FIELDS
+
+  .CMS_Image_root:not(.CMS_Image_empty) {
+    max-height: 20rem;
+  }
+
+
+  // HINT LINKS
+
+  // Hint links underline
+  .CMS_Hint_link {
+    text-decoration: underline;
+  }
+
+
+  // Alternate items with colors
+
+  .CMS_WidgetList_multi-field-item {
+    background-color: var(--list-color);
+    &:nth-child(1n) { --list-color: var(--color-brown); }
+    &:nth-child(2n) { --list-color: var(--color-orange); }
+    &:nth-child(3n) { --list-color: var(--color-yellow); }
+    &:nth-child(4n) { --list-color: var(--color-green); }
+    &:nth-child(5n) { --list-color: var(--color-blue); }
+    &:nth-child(6n) { --list-color: var(--color-purple); }
+    &:nth-child(7n) { --list-color: var(--color-pink); }
+    &:nth-child(8n) { --list-color: var(--color-red); }
+    &:nth-child(9n) { --list-color: var(--color-grey); }
+  }
+
+}

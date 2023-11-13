@@ -1,0 +1,49 @@
+.emoji {
+  @extend svg;
+  line-height: 1em;
+}
+@if $emoji-scale {
+  .emoji {
+    --hue: #{ hue($main) };
+    --hue-back: #{ mix($dark, $main, 30%) };
+    filter:
+      sepia(1)
+      hue-rotate(calc(var(--hue) - 50deg))
+      brightness(0.7)
+      contrast(2.5)
+      drop-shadow(0 0.0625em 0 var(--hue-back));
+  }
+  button,
+  .button {
+    > .emoji {
+      --hue: #{ hue($link) };
+      --hue-back: #{ mix($dark, $link, 30%) };
+    }
+    &.main {
+      > .emoji {
+        --hue: #{ hue($main) };
+        --hue-back: #{ mix($dark, $main, 30%) };
+      }
+    }
+    &.alt {
+      > .emoji {
+        --hue: #{ hue($alt) };
+        --hue-back: #{ mix($dark, $alt, 30%) };
+      }
+    }
+    &.light,
+    &.dark {
+      > .emoji {
+        --hue-back: #{ $grey };
+        filter:
+          grayscale(1)
+          drop-shadow(0 0.0625em 0 var(--hue-back));
+      }
+    }
+    &.dark {
+      > .emoji {
+        --hue-back: #{ $grey };
+      }
+    }
+  }
+}

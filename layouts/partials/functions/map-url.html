@@ -1,0 +1,7 @@
+{{ $postalAddress := partial "functions/postal-address" . }}
+{{ $name := "" }}
+{{ if .name }}
+  {{ $name = print .name ", " }}
+{{ end }}
+{{ $query := print $name $postalAddress | replaceRE "<nil>" "" | urlquery }}
+{{ return (print "https://maps.google.com/maps?q=" $query) }}

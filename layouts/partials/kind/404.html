@@ -1,0 +1,54 @@
+{{- $home := site.Home }}
+{{- $multihost := ne
+  (index $home.AllTranslations 0).Site.BaseURL
+  (index $home.AllTranslations 1).Site.BaseURL
+  | and $home.IsTranslated
+-}}
+{{- $AllTranslations := cond $multihost $home.AllTranslations (slice $home) -}}
+<section class="error-404">
+  {{ range $AllTranslations }}
+    <div class="container container--sm">
+      <div class="error-404__wrap">
+        {{- if $multihost -}}
+          {{- partial "components/icon" (dict
+            "class" "error-404__lang"
+            "icon" (print "flag-" .Lang)
+          ) -}}
+        {{- end }}
+        {{ partial "components/icon" (dict
+          "class" "error-404__icon"
+          "icon" "face-awesome"
+          "emoji" "😅"
+        ) }}
+        <h1 class="error-404__title">
+          {{- i18n "404-title" -}}
+        </h1>
+        <div class="error-404__text">
+          <p>{{ i18n "404-sub" 1 }}</p>
+          <p>{{ i18n "404-sub" }}:</p>
+        </div>
+      </div>
+      <p class="buttons error-404__buttons">
+        {{- if gt (len site.RegularPages) 6 | and site.Data.articles.content.search -}}
+          <button data-h="{{ (site.GetPage `search`).Permalink | base64Encode }}">
+            {{- partial "components/icon" (dict
+              "icon" "magnifying-glass"
+              "emoji" "🔍"
+            ) -}}
+            <i>{{ (site.GetPage "search").Title }}</i>
+            {{- "" -}}
+          </button>
+        {{- end -}}
+        <a class="button" href="{{ site.Home.Permalink }}">
+          {{- partial "components/icon" (dict
+            "icon" "house"
+            "emoji" "🏠"
+          ) -}}
+          <i>{{ site.Home.Title }}</i>
+          {{- "" -}}
+        </a>
+        {{- "" -}}
+      </p>
+    </div>
+  {{- end -}}
+</section>

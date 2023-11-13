@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="{{ .Lang }}">
+
+  {{- $sectioned              := eq .Type "page" | and (ne .Kind "404") -}}
+  {{- $sectioned_menu         := and $sectioned (not .Params.header_article) -}}
+
+  {{- $menu                   := merge site.Data.menu (.Params.menu | default dict) -}}
+  {{- $body_menu              := "" -}}
+  {{- $body_menu_logo         := "" -}}
+  {{- if not $menu.hide -}}
+    {{- $body_menu             = " body-menu" -}}
+    {{- if (and (not $sectioned) $menu.articles_sticky) | or (and $sectioned_menu $menu.logo) -}}
+      {{- $body_menu_logo      = " body-menu--logo" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $body_menu_transparent  := cond (not ($menu.transparent | and ($sectioned_menu | or ((not $sectioned) | and $body_menu_logo)))) "" " body-menu--transparent" -}}
+
+  {{- $bg_color               := site.Data.articles.content.color | default `light` -}}
+  {{- if $sectioned -}}
+    {{- with $menu.color -}}
+      {{- $bg_color            = . -}}
+    {{- end -}}
+  {{- end -}}
+
+  <head>
+    {{- partial "sections/common/head" . -}}
+    {{- $context := . -}}
+    {{- with partial "functions/lang-params-custom-code" (dict "params" "html_head") -}}
+      {{- (. | resources.FromString (print "aux_html_head." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_head." $.Lang) $context).Content | safeHTML -}}
+    {{- end -}}
+  </head>
+
+  <body
+    id="body-{{ cond .IsHome .Params.slug (.RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-`) }}"
+    class="kind-{{ .Kind }} type-{{ .Type }} section-{{ .Section }} bg bg-{{ $bg_color }} body-top {{- $body_menu }} {{- $body_menu_logo }} {{- $body_menu_transparent }}"
+  >
+    <img width="8000" height="8000" alt="fondo-transparente" class="lcp" decoding="sync" loading="eager" src="data:image/svg+xml;base64,
+      {{- `<svg width='8000' height='8000' viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg'></svg>` | base64Encode -}}
+    ">
+
+    {{/*  LOGO  */}}
+    {{ if (not $sectioned) | or ($sectioned | and (.Params.header_article | or $menu.logo)) }}
+      {{ partial "sections/common/logo" . }}
+    {{ end }}
+
+    {{/*  MENU  */}}
+    {{ if ne .Kind "404" }}
+      {{ partial "sections/common/menu" . }}
+    {{ end }}
+
+    {{/*  HEADER SECTIONED  */}}
+    {{ if $sectioned }}
+      {{ partial "kind/sectioned" (dict "header" true) }}
+    {{ end }}
+
+    {{/*  MAIN  */}}
+    <main id="{{ i18n `main` }}"
+      {{- if not $sectioned -}}
+        {{- with (index (partial `functions/footer` .) 0) -}}
+          {{- if .divider -}}
+            class="footer--divider
+              {{- if partial `functions/divider-ratio` .divider }}-ratio{{ end -}}
+            "
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    >
+      {{ if eq .Kind "404" }}
+        {{ partial "kind/404" . }}
+      {{ else if $sectioned }}
+        {{ partial "kind/sectioned" (dict "header" false) }}
+      {{ else }}
+        {{ partial "kind/article" . }}
+      {{ end }}
+    </main>
+
+    {{/*  FOOTER  */}}
+    {{ partial "kind/sectioned" (dict "footer" true "sectioned" $sectioned) }}
+
+    {{/*  PRE BODY END  */}}
+    {{ partial "components/button-up" . }}
+    {{ if ne .Kind "404" }}{{ partial "components/cookies" . }}{{ end }}
+    {{ if $sectioned }}{{ partial "components/buttons-callnow" . }}{{ end }}
+    {{ if $menu.google_translate }}
+      {{ partial "components/button-google-translate" . }}
+    {{ end }}
+    {{ partial "sections/common/scripts" . }}
+    {{ with partial "functions/lang-params-custom-code" (dict "params" "html_body") }}
+      {{ (. | resources.FromString (print "aux_html_body." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $context).Content | safeHTML }}
+    {{ end }}
+  </body>
+</html>
+{{- block "none" . }}{{ end }}
