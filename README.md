@@ -5,26 +5,6 @@
 
 # TO DO LIST
 
-- divider
-  - https://codepen.io/chriscoyier/pen/xxGQqRp
-  - https://blog.logrocket.com/css-mask-image-property/
-```css
-.section {
-  mask-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/sun.svg), linear-gradient(to bottom, transparent 50%, black 0);
-  mask-size: 100vmin;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-mode: match-source;
-  mask-composite: exclude;
-}
-```
-```xml
-  <view id="divider-wavy_" viewBox="0 141 1280 140"/><use href="#divider-wavy" y="141"></use>
-  <view id="divider-wavy_x" viewBox="0 281 1280 140"/><use href="#divider-wavy" y="281" style="transform:scale(-1,1);transform-origin:center"></use>
-  <view id="divider-wavy_y" viewBox="0 421 1280 140"/><use href="#divider-wavy" y="421" style="transform:scale(1,-1);transform-origin:center"></use>
-  <view id="divider-wavy_xy" viewBox="0 561 1280 140"/><use href="#divider-wavy" y="561" style="transform:scale(-1,-1);transform-origin:center"></use>
-```
-
 - cms
   - pros
     - widget conditions
@@ -36,11 +16,10 @@
   - contra
     - booleanos se guardan forzosamente -> custom widget
     - style demasiado compacto -> css
-    - markdown en hint's no funciona -> ahora si, aunque los enlaces no son clicables
+    - markdown en hint's no funciona -> ahora si
     - no tiene flujo editorial -> ahora si, aunque faltan los enlaces y estados de las vistas previas
 - cms
   - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
-  - breack images with lfs
   - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
   - probar i18n
   - quitar "(opcional)" de las etiquetas
