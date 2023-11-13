@@ -1,6 +1,6 @@
 # SanSoul Hugo Theme
 
-[![sansoul](/assets/media/logo.png)](https://gitlab.com/lorensansol/sansoul)
+[![sansoul](/assets/media/logo.png)](https://github.com/lorensansol/sansoul)
 
 
 # TO DO LIST
