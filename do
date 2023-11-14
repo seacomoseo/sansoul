@@ -197,26 +197,29 @@ then
 elif [ $1 = multilang ]
 then
 
-  echo "${STI} IF MULTILANG ${STE}"
   lang=$(grep '^defaultContentLanguage:' ./hugo.yml | awk '{print $2}')
   if [ -e "./public/${lang}/404.html" ]
   then
-    echo "${STI} COPY 404 FILE IN ROOT ${STE}"
+    echo "${STI} MULTILANG: COPY 404 FILE IN ROOT ${STE}"
     cp ./public/${lang}/404.html ./public/
   fi
 
-elif [ $1 = hugo-netlify-development ]
+elif [ $1 = hugo-development ]
 then
+
+  hugo version
 
   sh do prebuild
 
-  echo "${STI} RUN HUGO FOR NETLIFY WITHOUT OPTIMIZATIONS ${STE}"
+  echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml
 
   sh do multilang
 
-elif [ $1 = hugo-netlify-production ]
+elif [ $1 = hugo-production ]
 then
+
+  hugo version
 
   sh do prebuild
 
@@ -225,23 +228,23 @@ then
   cp ./themes/sansoul/babel.config.js ./
   cp ./themes/sansoul/postcss.config.js ./
 
-  echo "${STI} RUN HUGO FOR NETLIFY WITH OPTIMIZATIONS ${STE}"
+  echo "${STI} RUN HUGO PRODUCTION ${STE}"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
 
   sh do draws-purge
 
   sh do multilang
 
-elif [ $1 = hugo-netlify ]
+elif [ $1 = hugo ]
 then
 
   # Deploy with environement
   development=$(grep '^development:' ./data/config.yml | awk '{print $2}')
   if test "$development" = "true"
   then
-    sh do hugo-netlify-development
+    sh do hugo-development
   else
-    sh do hugo-netlify-production
+    sh do hugo-production
   fi
 
 else
