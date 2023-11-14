@@ -71,13 +71,6 @@ then
   echo "${STI} HUGO SERVER ${STE}"
   hugo server --config themes/sansoul/hugo.default.yml,hugo.yml
 
-# hugo build in local with theme config
-elif [ $1 = hugo ]
-then
-
-  echo "${STI} HUGO LOCAL ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
-
 # create woff2 and scss by font files
 elif [ $1 = normalize ]
 then
@@ -204,6 +197,14 @@ then
     cp ./public/${lang}/404.html ./public/
   fi
 
+# hugo build in local with theme config
+elif [ $1 = hugo-local ]
+then
+
+  echo "${STI} HUGO LOCAL ${STE}"
+  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
+
+# hugo build as developement environement
 elif [ $1 = hugo-development ]
 then
 
@@ -216,6 +217,7 @@ then
 
   sh do multilang
 
+# hugo build as production environement
 elif [ $1 = hugo-production ]
 then
 
@@ -235,6 +237,7 @@ then
 
   sh do multilang
 
+# hugo check environement
 elif [ $1 = hugo ]
 then
 
