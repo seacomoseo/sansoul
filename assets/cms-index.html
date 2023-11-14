@@ -25,11 +25,11 @@
   {{ partial "cms/help-corner" . }}
 
   {{/*  SVELTIA CMS  */}}
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+  {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}
 
   {{/*  STATIC CMS  */}}
-  {{/*  <script src="https://unpkg.com/@staticcms/app@^4.0.0-beta.4/dist/static-cms-app.js"></script>  */}}
-  {{/*  <link rel="stylesheet" href="https://unpkg.com/@staticcms/app@^4.0.0-beta.4/dist/main.css" />  */}}
+  <script src="https://unpkg.com/@staticcms/app@^4.0.0-beta.4/dist/static-cms-app.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@staticcms/app@^4.0.0-beta.4/dist/main.css" />
 
   {{/*  DECAP CMS  */}}
   {{/*  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>  */}}
@@ -59,13 +59,13 @@
       {{/*  CMS.registerRemarkPlugin({ settings: { bullet: '-', quote: "'" } })  */}}
 
       // DEPLOY STATUS
-      {{/*  {{ partial "cms/deploy-status.js" . }}  */}}
+      {{ partial "cms/deploy-status.js" . }}
 
       // CUSTOM BOOLEAN WIDGET
-      {{/*  {{ partial "cms/custom-boolean.js" . }}  */}}
+      {{ partial "cms/custom-boolean.js" . }}
 
       // STATIC CMS
-      {{/*  CMS.init()  */}}
+      CMS.init()
 
       // NETLIFY IDENTITY
       function loadScript (url) {
