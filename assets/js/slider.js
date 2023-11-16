@@ -114,7 +114,7 @@ sliders && sliders.forEach(slider => {
   function slidersControlsView () {
     const arrowsGroup = slider.querySelector('.slider__arrows')
     const bulletsGroup = slider.querySelector('.slider__bullets')
-    if (track.offsetWidth >= items.offsetWidth) {
+    if (slider.offsetWidth >= items.offsetWidth) {
       if (arrowsGroup) arrowsGroup.style.display = 'none'
       if (bulletsGroup) bulletsGroup.style.display = 'none'
       if (track) track.style.overflowX = 'hidden'
