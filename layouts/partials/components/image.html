@@ -77,7 +77,7 @@
           {{- if .alt }}
             alt="{{ .alt }}"
           {{- else }}
-            alt="{{ .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `(\?|\&|\=)` ` ` | replaceRE `^(.+)\..*$` `$1` }}"
+            alt="{{ .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `(\?|\&|\=)` ` ` | replaceRE `^(.+)\..*$` `$1` | replaceRE `/` ` ` }}"
           {{- end }}
           decoding="async"
           {{- if not .notlazy }} loading="lazy"{{ end -}}
@@ -178,7 +178,7 @@
             <img
               {{ with .class }} class="{{ . }}"{{ end }}
               src="{{ ($svg_minify | resources.FromString $svg_src).RelPermalink | safeURL }}"
-              alt="{{ if .alt }}{{ .alt }}{{ else }}{{ $file | replaceRE `^(.+)\..*$` `$1` }}{{ end }}"
+              alt="{{ if .alt }}{{ .alt }}{{ else }}{{ $file | replaceRE `^(.+)\..*$` `$1` | replaceRE `/` ` ` }}{{ end }}"
               width="{{ $svg_width }}"
               height="{{ $svg_height }}"
               decoding="async"
@@ -392,7 +392,7 @@
 
           <img
             src="{{ $image_img.RelPermalink | safeURL }}"
-            alt="{{ with .alt }}{{ . }}{{ else }}{{ .src | replaceRE `^(.+)\..*$` `$1` }}{{ end }}"
+            alt="{{ with .alt }}{{ . }}{{ else }}{{ .src | replaceRE `^(.+)\..*$` `$1` | replaceRE `/` ` ` }}{{ end }}"
             width="{{ $image_img.Width }}"
             height="{{ $image_img.Height }}"
             decoding="async"

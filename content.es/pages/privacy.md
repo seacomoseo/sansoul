@@ -173,7 +173,7 @@ Para constatar que se encuentra en la página web de nuestra empresa, la direcci
 
 **Implantar HTTPS**. Cualquier sistema de ventas o reservas trabaja con datos privados de clientes, tanto personales como bancarios. Por eso, es esencial que nuestro sistema implemente el [protocolo de web segura (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") para que estos datos se transmitan cifrados. Esto nos permitirá preservar la integridad y confidencialidad de los datos de nuestros clientes, salvaguardando la reputación de nuestro negocio.
 
-## Formularios: Cláusula de Protección de Datos
+## Formularios: Cláusula de Protección de Datos {#formularios}
 
 **{{< legal name >}}**, es una empresa titular del sitio web **{{< legal web >}}**, con domicilio **{{< legal location >}}** (en adelante, "**la empresa**").
 

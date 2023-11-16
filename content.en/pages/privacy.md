@@ -148,7 +148,7 @@ To verify that it is on the website of our company, the "URL" address begins wit
 
 **Implement https**. Any sales or reserves system works with private data of customers, both personal and banking. Therefore, it is essential that our system implements the [web protocol Segura (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") so that these data are transmitted encrypted. This will allow us to preserve the integrity and confidentiality of our clients' data, safeguarding the reputation of our business.
 
-## Forms: Data Protection Clause
+## Forms: Data Protection Clause {#forms}
 
 **{{< legal name >}}**, It is a company, whose main activity is the trade of stainless products and services, and is the owner of the website **{{< legal web >}}** ( From now on, the website), domiciled **{{< legal location >}}** (hereinafter, "**The company**").
 
