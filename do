@@ -34,7 +34,7 @@ then
   git fetch
 
   echo "${STI} SANSOUL CHECKOUT ORIGIN/MAIN ${STE}"
-  git checkout origin/main
+  git checkout -B main origin/main
 
   echo "${STI} BRANCH MAIN -F ${STE}"
   git branch main -f
