@@ -67,20 +67,22 @@ function fetchDeploymentStatus(badge, production) {
 const interval = 5000 // 5 seconds
 setInterval(checkDeploymentStatus, interval)
 
-rebuildButton.addEventListener('click', () => {
-  // Make an HTTP POST request to the Netlify webhook
-  fetch('{{ site.Params.netlify_hook }}', {
-    method: 'POST'
+{{ with getenv "HUGO_BUILD_HOOK" }}
+  rebuildButton.addEventListener('click', () => {
+    // Make an HTTP POST request to the Netlify webhook
+    fetch('{{ . }}', {
+      method: 'POST'
+    })
+    .then(response => {
+      if (response.status === 200) {
+        console.log('Rebuild start')
+        checkDeploymentStatus()
+      } else {
+        console.log('There was a problem starting the reconstruction')
+      }
+    })
   })
-  .then(response => {
-    if (response.status === 200) {
-      console.log('Rebuild start')
-      checkDeploymentStatus()
-    } else {
-      console.log('There was a problem starting the reconstruction')
-    }
-  })
-})
+{{ end }}
 
 CMS.registerEventListener({
   name: 'postSave',
