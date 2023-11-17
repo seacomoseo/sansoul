@@ -84,9 +84,9 @@
     {{- $flip_x           := cond (not .flip_x) "" "x" -}}
     {{- $flips            := cond (or .flip_x .flip_y) (print "-" $flip_x $flip_y) "" -}}
     {{- $section_divider   = print "divider divider-" $flips "-" .divider $flip_y_ -}}
-    {{- if partial `functions/divider-ratio` .divider -}}
+    {{/*  {{- if partial `functions/divider-ratio` .divider -}}
       {{- $section_divider = print $section_divider " divider--ratio" -}}
-    {{- end -}}
+    {{- end -}}  */}}
   {{- end -}}
 {{- end -}}
 {{- if $modal -}}
