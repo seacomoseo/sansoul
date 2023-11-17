@@ -36,12 +36,6 @@ then
   echo "${STI} SANSOUL CHECKOUT ORIGIN/MAIN ${STE}"
   git checkout -B main origin/main
 
-  echo "${STI} BRANCH MAIN -F ${STE}"
-  git branch main -f
-
-  echo "${STI} SANSOUL CHECKOUT MAIN ${STE}"
-  git checkout main
-
   echo "${STI} SANSOUL ADD ${STE}"
   git add .
 
