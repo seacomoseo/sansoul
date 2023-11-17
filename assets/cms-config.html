@@ -1,5 +1,6 @@
 {{/*  VARIABLES  */}}
 
+{{- $local            := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
 {{- $options          := site.Data.options -}}
 {{- $taxonomies       := site.Data.utilities.taxonomies -}}
 {{- $fontawesome_link := print "[fontawesome.com](https://fontawesome.com/search?o=r&s=" (site.Data.design.icons.type | default "solid") "&f=brands%2Cclassic)" -}}
@@ -1994,28 +1995,35 @@
     "branch"      `main`
     "site_domain" (site.BaseURL | replaceRE "^https?://" "")
   )
+  "local_backend"  $local
   "media_folder"  `assets/media`
   "public_folder" ``
   "media_library"    (dict
-    "max_file_size"  512000000
-    "folder_support" true
+  "max_file_size"  512000000
+  "folder_support" true
   )
 )
 | merge (cond
-  (not (partial "functions/lang-param" (dict "parent" "config" "param" "cms_editorial_workflow" "default" false)))
+  $local
+  (dict
+    "site_url" site.BaseURL
+  )
   (cond
-    (not (partial "functions/lang-param" (dict "parent" "config" "param" "development" "default" false)))
-    (dict
-      "site_url"     site.BaseURL
-      "display_url"  (print site.Home.Permalink)
+    (not (partial "functions/lang-param" (dict "parent" "config" "param" "cms_editorial_workflow" "default" false)))
+    (cond
+      (not (partial "functions/lang-param" (dict "parent" "config" "param" "development" "default" false)))
+      (dict
+        "site_url"    site.BaseURL
+        "display_url" (print site.Home.Permalink)
+      )
+      (dict
+        "site_url"    (print "https://" site.Params.netlify_name ".netlify.app/")
+      )
     )
     (dict
+      "publish_mode" "editorial_workflow"
       "site_url"     (print "https://" site.Params.netlify_name ".netlify.app/")
     )
-  )
-  (dict
-    "publish_mode" "editorial_workflow"
-    "site_url"     (print "https://" site.Params.netlify_name ".netlify.app/")
   )
 )
 | merge (cond
@@ -2025,16 +2033,6 @@
       "structure"      `multiple_folders`
       "locales"        $langs
       "default_locale" .Site.Language.Lang
-    )
-  )
-  dict
-)
-| merge (cond
-  false
-  (dict
-    "local_backend"   (dict
-      "url"           `http://localhost:1313/api/v1`
-      "allowed_hosts" (slice "localhost" "127.0.0.1")
     )
   )
   dict

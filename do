@@ -250,6 +250,14 @@ then
     sh do hugo-production
   fi
 
+# cms + hugo local
+elif [ $1 = local ]
+then
+
+  export HUGO_CMS_LOCAL=true
+  npx @staticcms/proxy-server &
+  sh do server
+
 else
 
   echo "'$1' no es un parámetro válido"
