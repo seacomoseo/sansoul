@@ -38,11 +38,6 @@
   {{/*  DARK MODE  */}}
   {{/*  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nats-ji/netlify-cms-dark-mode@master/dark.min.css">  */}}
 
-  {{/*  NETLIFY IDENTITY  */}}
-  {{ if not $local }}
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  {{ end }}
-
   {{/*  IMAGES GRID VIEW  */}}
   {{/*
   {{ if site.Data.config.lfs }}
@@ -53,43 +48,45 @@
   */}}
 
   <script>
-    window.addEventListener('load', () => {
+    // REWRITE IMAGES SRC
+    {{/*
+    {{ if site.Data.config.lfs }}
+      {{ partial "cms/rewrite-images-src.js" . }}
+    {{ end }}
+    */}}
 
-      // REWRITE IMAGES SRC
-      {{/*
-      {{ if site.Data.config.lfs }}
-        {{ partial "cms/rewrite-images-src.js" . }}
-      {{ end }}
-      */}}
+    // MARKDOWN WIDGET CUSTOM STYLES
+    {{/*  CMS.registerRemarkPlugin({ settings: { bullet: '-', quote: "'" } })  */}}
 
-      // MARKDOWN WIDGET CUSTOM STYLES
-      {{/*  CMS.registerRemarkPlugin({ settings: { bullet: '-', quote: "'" } })  */}}
+    // DEPLOY STATUS
+    {{ cond $local "" (partial "cms/deploy-status.js" .) }}
 
-      // DEPLOY STATUS
-      {{ cond $local "" (partial "cms/deploy-status.js" .) }}
+    // CUSTOM BOOLEAN WIDGET
+    {{ partial "cms/custom-boolean.js" . }}
 
-      // CUSTOM BOOLEAN WIDGET
-      {{ partial "cms/custom-boolean.js" . }}
+    // STATIC CMS
+    CMS.init()
 
-      // STATIC CMS
-      CMS.init()
-
-      // NETLIFY IDENTITY
-      {{/*
-      function loadScript (url) {
-        if (!document.querySelector(`script[src='${url}']`)) {
-          const s = document.createElement('script')
-          s.src = url
-          document.head.appendChild(s)
-        }
+    // NETLIFY IDENTITY
+    {{/*
+    function loadScript (url) {
+      if (!document.querySelector(`script[src='${url}']`)) {
+        const s = document.createElement('script')
+        s.src = url
+        document.head.appendChild(s)
       }
-      setTimeout(
-        loadScript ('https://identity.netlify.com/v1/netlify-identity-widget.js')
-        , 5000
-      )
-      */}}
-    })
+    }
+    setTimeout(
+      loadScript ('https://identity.netlify.com/v1/netlify-identity-widget.js')
+      , 5000
+    )
+    */}}
   </script>
+
+  {{/*  NETLIFY IDENTITY  */}}
+  {{ if not $local }}
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  {{ end }}
 
 </body>
 </html>
