@@ -20,6 +20,11 @@
   {{ end }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
 
+  {{/*  NETLIFY IDENTITY  */}}
+  {{ if not $local }}
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  {{ end }}
+
 </head>
 <body>
 
@@ -82,11 +87,6 @@
     )
     */}}
   </script>
-
-  {{/*  NETLIFY IDENTITY  */}}
-  {{ if not $local }}
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  {{ end }}
 
 </body>
 </html>
