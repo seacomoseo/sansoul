@@ -70,7 +70,7 @@ elif [ $1 = normalize ]
 then
 
   echo "${STI} NORMALIZE YAML AND MARKDOWN FILES ${STE}"
-  python3 ../_tools/yaml_normalize.py
+  python3 ../_tools/others/yaml-normalize.py
 
 # create woff2 and scss by font files
 elif [ $1 = fonts ]
