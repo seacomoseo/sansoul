@@ -38,7 +38,7 @@ sliders && sliders.forEach(slider => {
     const observerScroll = new IntersectionObserver(callbackScroll, {
       root: slider,
       rootMargin: `0% 0%`,
-      threshold: 1
+      threshold: .99
     })
     children.forEach(e => {
       observerScroll.observe(e)
