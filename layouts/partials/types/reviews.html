@@ -78,10 +78,12 @@
               </div>
             {{- end -}}
             <div class="review__person">
-              <h3 class="review__title h4">{{ .title | markdownify }}</h3>
-              <p class="review__subtitle">
-                {{- .subtitle | markdownify -}}
-              </p>
+              {{- with .title -}}
+                <h3 class="review__title h4">{{ . | markdownify }}</h3>
+              {{- end -}}
+              {{- with .subtitle -}}
+                <p class="review__subtitle">{{ . | markdownify }}</p>
+              {{- end -}}
               <p class="review__stars">
                 {{- print
                   (partial "components/icon" (dict "icon" "star-fill"))
