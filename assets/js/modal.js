@@ -11,6 +11,7 @@ function openModal (target) {
     target.focus()
   // }, 10)
   // document.documentElement.classList.add('modal__active')
+  target.scrollTo({top: 0})
 }
 
 // Close

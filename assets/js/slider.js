@@ -3,7 +3,6 @@ const sliders = document.querySelectorAll('.slider')
 
 sliders && sliders.forEach(slider => {
   const track = slider.querySelector('.slider__track')
-  const trackWidth = () => track.offsetWidth - parseFloat(getComputedStyle(document.body)['font-size'].replace('px', ''))
   const items = slider.querySelector('.slider__items')
   const children = [...items.children]
   const bullets = slider.querySelectorAll('.slider__bullet')
@@ -38,7 +37,7 @@ sliders && sliders.forEach(slider => {
       })
     const observerScroll = new IntersectionObserver(callbackScroll, {
       root: slider,
-      rootMargin: '0% -108px'
+      rootMargin: '0% -216px'
     })
     children.forEach(e => {
       observerScroll.observe(e)
@@ -48,7 +47,8 @@ sliders && sliders.forEach(slider => {
   function scrollToItem (item) {
     const itemLeft = item.offsetLeft
     const itemWidth = item.offsetWidth
-    const scrollLeft = itemLeft - (trackWidth() - itemWidth) / 2
+    const sliderWidth = slider.offsetWidth // - parseFloat(getComputedStyle(document.body)['font-size'].replace('px', ''))
+    const scrollLeft = itemLeft - (sliderWidth - itemWidth) / 2
     track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
   }
 
