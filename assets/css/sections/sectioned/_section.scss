@@ -4,6 +4,11 @@
   align-items: center;
   padding-top: calc(var(--pt, 0px) + var(--pt-divider, 0px));
   padding-bottom: calc(var(--pb, 0px) + var(--pb-divider, 0px));
+  @include bg-cover;
+  &, > .bg-color {
+    z-index: unset;
+    @include hide-radius;
+  }
 }
 
 // Section Header padding top and all sections full screen height
@@ -12,7 +17,7 @@ body {
   --pt-divider-header: var(--menu-height, 0em) - var(--menu-py, 0em) + var(--pt-extra, 0em);
 }
 // Get menu height
-.body-menu:not(.body-menu--transparent) {              // not transparent
+.body-menu:not(.body-menu--transparent) { // not transparent
   --menu-height: 0em;     // not logo
   --pt-extra: 2em;
   &.body-menu--logo {
@@ -222,14 +227,12 @@ body:not(.body-menu),
   }
   .row:last-child {
     > .buttons {
-      position: absolute;
-      bottom: 1em;
+      margin: 0;
+      height: 0;
       width: 100%;
-      > button,
-      > .button {
-        position: relative;
-        z-index: 60;
-      }
+      transform: translateY(-8em);
+      position: relative;
+      z-index: 60;
     }
     .gallery-wrap .bg-color,
     .gallery {

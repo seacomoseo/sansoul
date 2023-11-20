@@ -1,22 +1,27 @@
 .divider {
-          --divider-flip-y: var(--pt-divider,5.5em);
-          --divider-mask: var(--divider), linear-gradient(transparent var(--divider-flip-y), black 0);
-          mask-image: var(--divider-mask);
-  -webkit-mask-image: var(--divider-mask);
-  -webkit-mask-size: 100% var(--pt-divider,5.5em), 100%;
-          mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-          mask-position: top;
-  -webkit-mask-position: top;
-          margin-top: calc(var(--pt-divider) * -1)
+  --divider-flip-y: var(--pt-divider, 5.5em);
+  --divider-mask: var(--divider), linear-gradient(transparent var(--divider-flip-y), black 0);
+  margin-top: calc(var(--pt-divider, 0px) * -1);
+  &.section--paddings-hide,
+  > .bg-color {
+            mask-image: var(--divider-mask);
+    -webkit-mask-image: var(--divider-mask);
+    -webkit-mask-size: 100% var(--pt-divider, 5.5em), 100%;
+            mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+            mask-position: top;
+    -webkit-mask-position: top;
+  }
 }
 .divider--flip-y {
-          --divider-flip-y: 0;
-          mask-composite: exclude;
-  -webkit-mask-composite: xor;
+  --divider-flip-y: 0;
+  > .bg-color {
+            mask-composite: exclude;
+    -webkit-mask-composite: xor;
+  }
 }
 .divider--ratio {
-          --divider-height: var(--divider-ratio-height);
+  --divider-height: var(--divider-ratio-height);
 }
 
 $dividers: (

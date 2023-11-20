@@ -15,7 +15,7 @@
 {{- $section_bg_color    := "bg-white" -}}
 {{- if not $modal -}}
   {{- with .color -}}
-    {{- $section_bg_color   = print "bg-" . -}}
+    {{- $section_bg_color = print "bg-" . -}}
   {{- end -}}
 {{- end -}}
 {{- if .bg -}}
@@ -60,21 +60,21 @@
   {{- if ne .padding_bottom nil -}}
     {{- $section_padding_bottom      = print "pb-" .padding_bottom -}}
   {{- end -}}
-  {{- with .prev -}}
-    {{- if .divider -}}
-      {{- $section_padding_top_divider = print "pt-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") -}}
-    {{- end -}}
+{{- end -}}
+{{- with .prev -}}
+  {{- if .divider -}}
+    {{- $section_padding_top_divider = print "pt-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") -}}
   {{- end -}}
-  {{- if .divider | and (not $footer) -}}
-    {{- $section_padding_bottom_divider = print "pb-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") -}}
-  {{- end -}}
-  {{- if $header
-    | and (not page.Params.menu.hide)
-    | and (not page.Params.menu.hide_sticky)
-    | and (not page.Params.header_article)
-  -}}
-    {{- $section_padding_top_divider = "pt-divider" -}}
-  {{- end -}}
+{{- end -}}
+{{- if .divider | and (not $footer) -}}
+  {{- $section_padding_bottom_divider = print "pb-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") -}}
+{{- end -}}
+{{- if $header
+  | and (not page.Params.menu.hide)
+  | and (not page.Params.menu.hide_sticky)
+  | and (not page.Params.header_article)
+-}}
+  {{- $section_padding_top_divider = "pt-divider" -}}
 {{- end -}}
 {{- $section_divider    := "" -}}
 {{- with .prev -}}
@@ -131,27 +131,38 @@
   {{- if $modal }} hidden="until-found"{{ end -}}
 >
 
-  {{ if not $modal }}
-    {{/*  BACKGROUND IMAGE  */}}
-    {{ if .bg }}
-      {{ $bg_image_opacity  := cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) }}
-      {{ $bg_image_parallax := cond (not (.parallax | and .bg | and (not $parallax_fixed))) "" "parallax" }}
-      <div class="bg-figure {{ $bg_image_opacity }} {{ $bg_image_parallax }}">
-        {{ if partial `functions/is-iframe` .bg }}
-          <div class="bg-figure-video">
-        {{ end }}
-          {{ partial "components/image" (dict
-            "class"   "bg-figure-image"
-            "src"     .bg
-            "notlazy" $header
-            "bg"      true
-          ) }}
-        {{ if partial `functions/is-iframe` .bg }}
-          </div>
-        {{ end }}
-      </div>
-    {{ end }}
-  {{ end }}
+  {{/*  BACKGROUND COLOR AND IMAGE  */}}
+  {{- if not $modal -}}
+    {{- $bg_image          := "" -}}
+    {{- $bg_image_opacity  := "" -}}
+    {{- $bg_image_parallax := "" -}}
+    {{- if .bg -}}
+      {{- $bg_image          = "bg-figure" -}}
+      {{- $bg_image_opacity  = cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) -}}
+      {{- $bg_image_parallax = cond (not (.parallax | and .bg | and (not $parallax_fixed))) "" "parallax" -}}
+    {{- end -}}
+
+    {{- $bg := delimit (slice
+      "bg-color"
+      $bg_image
+      $bg_image_parallax
+      | uniq) " "
+    -}}
+    <div class="{{ $bg }}">
+      {{- if partial `functions/is-iframe` .bg -}}
+        <div class="bg-figure-video">
+      {{- end -}}
+        {{- partial "components/image" (dict
+          "class"   (delimit (slice "bg-figure-image" $bg_image_opacity) " ")
+          "src"     .bg
+          "notlazy" $header
+          "bg"      true
+        ) -}}
+      {{- if partial `functions/is-iframe` .bg -}}
+        </div>
+      {{- end -}}
+    </div>
+  {{- end -}}
 
   {{/*  CONTAINER CLASS  */}}
   {{- $container_modal := cond $modal "modal__container" "" -}}
