@@ -12,7 +12,7 @@ if (parallaxElements[0]) {
     const partialHeight = window.innerHeight / speed
     const pos = parentTop / speed - partialHeight
     e.style.transform = `translateY(${pos}px)`
-    // e.style.height = `calc(100% + ${partialHeight * 2}px)` // => calc(110% + 10vh)
+    // e.style.height = `calc(100% + ${partialHeight * 2}px)` // => calc(110% + 10lvh)
   }
 
   // Toggle class parallax--scroll when element is in viewport

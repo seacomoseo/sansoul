@@ -8,7 +8,7 @@
 
 // Section Header padding top and all sections full screen height
 body {
-  --full-height-section: calc(100vh - var(--menu-height, 0em));
+  --full-height-section: calc(100lvh - var(--menu-height, 0em));
   --pt-divider-header: var(--menu-height, 0em) - var(--menu-py, 0em) + var(--pt-extra, 0em);
 }
 // Get menu height
@@ -22,7 +22,7 @@ body {
 }
 body:not(.body-menu),
 .body-menu--transparent {
-  --full-height-section: 100vh;
+  --full-height-section: 100lvh;
   --menu-height: 0em;     // not logo
   --pt-extra: 2em;
   &.body-menu--logo {
