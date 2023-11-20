@@ -20,6 +20,8 @@
 {{ end }}
 
 {{ $content = $content
+  | replaceRE `==icon(.+?)==` `<mark class="sign">icon$1</mark>`
+  | replaceRE `==(.+?)==` `<mark>$1</mark>`
   | replaceRE `icon-([\w-]+)` `<svg><use xlink:href='/draws.svg#$1'></use></svg>`
   | replaceRE `\n` `∫`
   | replaceRE `<p>[∫\s]*(<a class="button|<button)` `<p class="buttons">$1`
