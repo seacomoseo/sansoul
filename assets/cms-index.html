@@ -81,6 +81,7 @@
     // NETLIFY IDENTITY
     {{ if not $local }}
       if (identityToken) {
+        // Reload script for fix invitation
         function loadScript (url) {
           const s = document.createElement('script')
           s.src = url

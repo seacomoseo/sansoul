@@ -37,7 +37,8 @@ sliders && sliders.forEach(slider => {
       })
     const observerScroll = new IntersectionObserver(callbackScroll, {
       root: slider,
-      rootMargin: '0% -216px'
+      rootMargin: `0% 0%`,
+      threshold: 1
     })
     children.forEach(e => {
       observerScroll.observe(e)
@@ -54,12 +55,12 @@ sliders && sliders.forEach(slider => {
 
   function scrollToNear (item, side) {
     const trackLeft = track.scrollLeft
-    const firstWidth = item.offsetWidth
+    const itemWidth = item.offsetWidth
     let scrollLeft
     if (side === 'left') {
-      scrollLeft = trackLeft - firstWidth
+      scrollLeft = trackLeft - itemWidth
     } else {
-      scrollLeft = trackLeft + firstWidth
+      scrollLeft = trackLeft + itemWidth
     }
     track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
   }
