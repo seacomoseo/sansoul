@@ -67,10 +67,9 @@ function fetchDeploymentStatus(badge, production) {
 const interval = 5000 // 5 seconds
 setInterval(checkDeploymentStatus, interval)
 
-{{ with getenv "HUGO_BUILD_HOOK" }}
+{{ with site.Params.hook }}
   rebuildButton.addEventListener('click', () => {
-    // Make an HTTP POST request to the Netlify webhook
-    fetch('{{ . }}', {
+    fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + '{{ . }}'), {
       method: 'POST'
     })
     .then(response => {
