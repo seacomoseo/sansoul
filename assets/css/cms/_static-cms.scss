@@ -34,7 +34,8 @@
   .CMS_Field_root,
   .CMS_WidgetObject_root,
   .CMS_WidgetList_field-wrapper,
-  .CMS_WidgetList_multi-field-item {
+  .CMS_WidgetList_sortable-item,
+  .CMS_WidgetCode_root {
     margin: 0 auto;
     border-width: .0625rem;
     border-radius: .5rem;
@@ -44,6 +45,16 @@
     max-width: calc(100vw - 1rem);
     width: 100%;
     filter: var(--shadow);
+    // Remove paddings
+    > * {
+      padding-inline: 0;
+    }
+    > :first-child {
+      padding-top: 0;
+    }
+    > :last-child {
+      padding-bottom: 0;
+    }
   }
   // Gap of fields and margin of parents
   .CMS_EditorControlPane_root,
@@ -58,21 +69,6 @@
   .CMS_WidgetObject_list-root {
     margin-left: 0.5rem;
   }
-  // Remove paddings
-  .CMS_Field_wrapper,
-  .CMS_WidgetObject_root,
-  .CMS_WidgetList_field-wrapper,
-  .CMS_WidgetList_multi-field-item {
-    > * {
-      padding-inline: 0;
-    }
-    > :first-child {
-      padding-top: 0;
-    }
-    > :last-child {
-      padding-bottom: 0;
-    }
-  }
   .CMS_WidgetList_ListItem_expand-button {
     padding: 0;
   }
@@ -85,7 +81,9 @@
   }
   // List item controls ajust
   .CMS_WidgetList_ListItem_single-field-controls {
+    position: absolute;
     top: 3rem;
+    right: 1.25em;
     height: 2rem;
   }
   // Margins
@@ -96,8 +94,9 @@
       margin-left: .5rem;
     }
   }
-  // Move toggle arrow to left in lists
-  .CMS_WidgetList_expand-button-icon {
+  // Move toggle arrow to left in lists and codes
+  .CMS_WidgetList_expand-button-icon,
+  .CMS_WidgetCode_expand-button-icon {
     order: -1;
   }
   // Remove bottom line from list item
@@ -194,19 +193,31 @@
   }
 
 
-  // Alternate items with colors
+  // OBJECT FIELDS
 
-  .CMS_WidgetList_multi-field-item {
+  .CMS_WidgetObject_root,
+  .CMS_WidgetList_field-wrapper {
+    background-color: var(--color-blue);
+  }
+
+
+  // Alternate items with colors
+  .CMS_WidgetList_sortable-item {
     background-color: var(--list-color);
     &:nth-child(1n) { --list-color: var(--color-brown); }
     &:nth-child(2n) { --list-color: var(--color-orange); }
     &:nth-child(3n) { --list-color: var(--color-yellow); }
     &:nth-child(4n) { --list-color: var(--color-green); }
-    &:nth-child(5n) { --list-color: var(--color-blue); }
-    &:nth-child(6n) { --list-color: var(--color-purple); }
-    &:nth-child(7n) { --list-color: var(--color-pink); }
-    &:nth-child(8n) { --list-color: var(--color-red); }
-    &:nth-child(9n) { --list-color: var(--color-grey); }
+    &:nth-child(5n) { --list-color: var(--color-purple); }
+    &:nth-child(6n) { --list-color: var(--color-pink); }
+    &:nth-child(7n) { --list-color: var(--color-red); }
+    &:nth-child(8n) { --list-color: var(--color-grey); }
+  }
+
+  // Widget list add button
+  .CMS_WidgetList_add-button {
+    color: var(--primary-contrast-color);
+    background: var(--primary-main);
   }
 
 }
