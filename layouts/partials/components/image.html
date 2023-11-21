@@ -17,21 +17,21 @@
     {{- if .src | findRE `\.(mp4|mov|avi|webm)` -}}
       {{- $src    := .src | replaceRE `.poster\=([\w\d\.-]+)|\#mute` `` -}}
       {{- $poster := "" -}}
-      {{ if in .src "poster=" }}
+      {{- if in .src "poster=" -}}
         {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([\w\d\.-]+).*$` `$1`) -}}
-      {{ end }}
+      {{- end -}}
       {{- with resources.Get $poster }}
         {{- if hugo.IsProduction }}
           {{- $file  := $poster | replaceRE `(.+)\..+` `$1` -}}
           {{- $poster = .Resize (print .Width "x" " webp") -}}
           {{- $poster = $poster | resources.Copy (print $file `-` .Width `x` .Height `.webp`) -}}
           {{- $poster = $poster.RelPermalink -}}
-        {{ else }}
+        {{- else -}}
           {{- $poster = .RelPermalink -}}
-        {{ end }}
-      {{ else }}
+        {{- end -}}
+      {{- else -}}
         {{- $poster = "" -}}
-      {{ end }}
+      {{- end -}}
       <video
         {{ with .class }} class="{{ . }}"{{ end }}
         {{- if .notlazy | and $mute }} muted loop autoplay playsinline
@@ -201,7 +201,7 @@
             {{- $svg | safeHTML -}}
           {{- end -}}
         {{- else -}}
-          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use xlink:href="/draws.svg#{{ $file | replaceRE `\.svg` `` }}"></use></svg>
+          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use xlink:href="/draws.svg#{{ $file | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
         {{- end -}}
       {{- end -}}
     {{- else -}}

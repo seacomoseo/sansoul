@@ -18,38 +18,36 @@
     {{ partialCached (print "svg/emojis/" (replace . "-scale" "") ".svg") . }}
   {{ end }}
   <!-- svg files -->
-  {{- with readDir "assets/media" -}}
-    {{- range . -}}
-      {{- if eq (path.Ext .Name) ".svg" -}}{{ `
-  ` }}
-        {{- $svg := (resources.Get (print "/media/" .Name) | minify).Content -}}
-        {{- if not ($svg | findRE `svg-src|animat|xlink|</linearGradient>|</style>`) -}}
-          {{- $svg_head := $svg | findRE `<svg (.*?)>` -}}
-          {{- $svg_head = index $svg_head 0 -}}
-          {{- $svg_width := $svg_head | findRE ` width="(.+?)"` -}}
-          {{- $svg_height := $svg_head | findRE ` height="(.+?)"` -}}
-          {{- $svg_is_viewBox := $svg_head | findRE ` viewBox="(.+?)"` -}}
-          {{- $svg_viewBox := "" -}}
-          {{- if $svg_width | and $svg_height | and (not $svg_is_viewBox) -}}
-            {{- $svg_width = index $svg_width 0 | replaceRE ` width="|"` `` -}}
-            {{- $svg_height = index $svg_height 0 | replaceRE ` height="|"` `` -}}
-            {{- $svg_viewBox = print ` viewBox="0 0 ` $svg_width ` ` $svg_height `"` -}}
-          {{- end -}}
-          {{- $svg_head = $svg_head | replaceRE ` (xmlns|data-name|width|height)=".+?"` `` -}}
-          {{- $svg
-            | replaceRE `<svg (.*?)>` $svg_head
-            | replaceRE
-              `<svg (.*?)>(.+?)</svg>`
-              (print
-                `<symbol id="` (replace .Name `.svg` ``) `" `
-                (cond (in $svg `preserveAspectRatio`) `` `preserveAspectRatio="xMidYMid meet" `)
-                $svg_viewBox ` $1>$2</symbol>`
-              )
-          -}}
-        {{- end -}}
+  {{- $files := partial "functions/media-files" (dict "ext" (slice "svg")) -}}
+  {{- range $files -}}
+    {{ `
+` }}
+    {{- $svg := (resources.Get . | minify).Content -}}
+    {{- if not ($svg | findRE `svg-src|animat|xlink|</linearGradient>|</style>`) -}}
+      {{- $svg_head := $svg | findRE `<svg (.*?)>` -}}
+      {{- $svg_head = index $svg_head 0 -}}
+      {{- $svg_width := $svg_head | findRE ` width="(.+?)"` -}}
+      {{- $svg_height := $svg_head | findRE ` height="(.+?)"` -}}
+      {{- $svg_is_viewBox := $svg_head | findRE ` viewBox="(.+?)"` -}}
+      {{- $svg_viewBox := "" -}}
+      {{- if $svg_width | and $svg_height | and (not $svg_is_viewBox) -}}
+        {{- $svg_width = index $svg_width 0 | replaceRE ` width="|"` `` -}}
+        {{- $svg_height = index $svg_height 0 | replaceRE ` height="|"` `` -}}
+        {{- $svg_viewBox = print ` viewBox="0 0 ` $svg_width ` ` $svg_height `"` -}}
       {{- end -}}
+      {{- $svg_head = $svg_head | replaceRE ` (xmlns|data-name|width|height)=".+?"` `` -}}
+      {{- $svg
+        | replaceRE `<svg (.*?)>` $svg_head
+        | replaceRE
+          `<svg (.*?)>(.+?)</svg>`
+          (print
+            `<symbol id="` (. | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-`) `" `
+            (cond (in $svg `preserveAspectRatio`) `` `preserveAspectRatio="xMidYMid meet" `)
+            $svg_viewBox ` $1>$2</symbol>`
+          )
+      -}}
     {{- end -}}
-  {{- end }}
+  {{- end -}}
   {{/* SVG FILES LIKE SYMBOLS IN DRAW.SVG
   */}}
 </svg>
