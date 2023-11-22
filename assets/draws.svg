@@ -21,7 +21,7 @@
   {{- $files := partial "functions/media-files" (dict "ext" (slice "svg")) -}}
   {{- range $files -}}
     {{ `
-` }}
+  ` }}
     {{- $svg := (resources.Get . | minify).Content -}}
     {{- if not ($svg | findRE `svg-src|animat|xlink|</linearGradient>|</style>`) -}}
       {{- $svg_head := $svg | findRE `<svg (.*?)>` -}}
