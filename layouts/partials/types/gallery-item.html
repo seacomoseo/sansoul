@@ -35,13 +35,13 @@
 {{- end -}}
 
 {{- if .lightbox -}}
-  <div class="gallery__item" data-lightbox="{{ $image }}"
+  <div class="gallery__item" data-lightbox="{{ $image }}" tabindex="0"
 {{- else if .link -}}
   <a class="gallery__item" href="{{ .link }}"
     {{- if $external }} target="_blank" rel="noopener"{{ end }}
     title="{{ .image | replaceRE `\..+$` `` }}"
 {{- else -}}
-  <div class="gallery__item"
+  <div class="gallery__item" tabindex="0"
 {{- end -}}
   {{- if .alt -}}
     style="--gallery-item-width:{{ $style_width }};--gallery-item-height:{{ $style_height }}%"

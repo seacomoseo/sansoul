@@ -27,7 +27,7 @@
     {{ with .iframe }}
 
       {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
-        <div data-b="{{ $.map_url | base64Encode }}">
+        <div data-b="{{ $.map_url | base64Encode }}" tabindex="0" role="link">
           {{ partial "components/image" (dict
             "class"     $class
             "src"       .

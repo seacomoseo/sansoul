@@ -19,7 +19,7 @@
 {{ with site -}}
   <aside class="logo {{- with $bg }} bg-{{ . }}{{ end }}">
     <div class="container container--{{ $container }}">
-      <div class="logo__link" data-h="{{ `/` | base64Encode }}">
+      <div class="logo__link" data-h="{{ `/` | base64Encode }}" tabindex="0" role="link">
         {{- with $logo -}}
           {{- partial "components/image"
             (dict

@@ -30,24 +30,27 @@
       </div>
       <p class="buttons error-404__buttons">
         {{- if gt (len site.RegularPages) 6 | and site.Data.articles.content.search -}}
-          <button data-h="{{ (site.GetPage `search`).Permalink | base64Encode }}">
-            {{- partial "components/icon" (dict
-              "icon" "magnifying-glass"
-              "emoji" "🔍"
-            ) -}}
-            <i>{{ (site.GetPage "search").Title }}</i>
-            {{- "" -}}
-          </button>
-        {{- end -}}
-        <a class="button" href="{{ site.Home.Permalink }}">
-          {{- partial "components/icon" (dict
-            "icon" "house"
-            "emoji" "🏠"
+          {{- partial "components/link" (dict
+            "class"   ""
+            "link"    (site.GetPage "search").Permalink
+            "button"  "link"
+            "icon"    "magnifying-glass"
+            "emoji"   "🔍"
+            "label"   (site.GetPage "search").Title
+            "anchor"  ""
+            "noindex" true
           ) -}}
-          <i>{{ site.Home.Title }}</i>
-          {{- "" -}}
-        </a>
-        {{- "" -}}
+        {{- end -}}
+        {{- partial "components/link" (dict
+          "class"   ""
+          "link"    site.Home.Permalink
+          "button"  "link"
+          "icon"    "house"
+          "emoji"   "🏠"
+          "label"   site.Home.Title
+          "anchor"  ""
+          "noindex" false
+        ) -}}
       </p>
     </div>
   {{- end -}}

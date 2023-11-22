@@ -64,10 +64,16 @@
 {{- if $is_two_buttons -}}
   <div class="buttons">
     {{- if $is_button_more -}}
-      <a class="button" href="#{{ $id }}">
-        {{- partial "components/icon" (dict "icon" "plus") -}}
-        {{- i18n "more" -}}
-      </a>
+      {{- partial "components/link" (dict
+        "class"   "button"
+        "link"    (print "#" $id)
+        "button"  "link"
+        "icon"    "plus"
+        "emoji"   "➕"
+        "label"   (i18n "more")
+        "anchor"  ""
+        "noindex" false
+      ) -}}
     {{- end -}}
     {{- if $is_button_custom -}}
       {{- if .link -}}

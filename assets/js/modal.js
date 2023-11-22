@@ -26,20 +26,20 @@ function closeModal (changeHash) {
       history.replaceState('', '', location.pathname + location.search)
     }
   }
-  const modalOpen = document.querySelector('dialog[open]')
+  const modalOpen = document.querySelector('dialog[open].modal')
   if (modalOpen) {
     modalOpen.classList.add('modal--hide')
     setTimeout(() => {
       modalOpen.close()
-      modalOpen.setAttribute('hidden', 'until-found')
       modalOpen.classList.remove('modal--hide')
+      modalOpen.setAttribute('hidden', 'until-found')
     }, 300)
   }
 }
 
 // Nav modals
 function prevNextModal (prev) {
-  // const modalActive = document.querySelector('dialog[open]')
+  // const modalActive = document.querySelector('dialog[open].modal')
   // let modalPrevNext
   // if (prev) {
   //   modalPrevNext = modalActive.previousElementSibling
@@ -54,9 +54,9 @@ function prevNextModal (prev) {
   // }
   let modalButtonPrevNext
   if (prev) {
-    modalButtonPrevNext = document.querySelector('dialog[open] .modal__prev')
+    modalButtonPrevNext = document.querySelector('dialog[open].modal .modal__prev')
   } else {
-    modalButtonPrevNext = document.querySelector('dialog[open] .modal__next')
+    modalButtonPrevNext = document.querySelector('dialog[open].modal .modal__next')
   }
   if (modalButtonPrevNext) modalButtonPrevNext.click()
 }

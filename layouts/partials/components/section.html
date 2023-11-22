@@ -499,19 +499,26 @@
   {{/*  COOKIES AND SITEMAP LINK  */}}
   {{- if ne page.Kind "404" | and $footer -}}
     <div class="footer__float">
-      <i class="cookies__toggle" data-h title="{{ i18n `cookies-notice` }}">
-        {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
-      </i>
+      {{- partial "components/link" (dict
+        "class"   "cookies__toggle"
+        "link"    "none"
+        "button"  "none"
+        "icon"    "cookie-bite"
+        "emoji"   "🍪"
+        "label"   "none"
+        "anchor"  (i18n "cookies-notice")
+        "noindex" true
+      ) -}}
       {{ with page.GetPage "pages/sitemap" }}
         {{ partial "components/link" (dict
-          "class"     "footer__sitemap"
-          "link"      .RelPermalink
-          "button"    "none"
-          "icon"      "map"
-          "emoji"     "🗺"
-          "label"     "none"
-          "anchor"    .Title
-          "noindex"   (not page.IsHome)
+          "class"   "footer__sitemap"
+          "link"    .RelPermalink
+          "button"  "none"
+          "icon"    "map"
+          "emoji"   "🗺"
+          "label"   "none"
+          "anchor"  .Title
+          "noindex" (not page.IsHome)
         ) }}
       {{- end -}}
     </div>

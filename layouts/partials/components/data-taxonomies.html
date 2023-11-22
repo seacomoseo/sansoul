@@ -13,9 +13,12 @@
         {{- if $.item.column -}}
           {{- $tax_page.Title -}}
         {{- else -}}
-          <i data-h="{{ $tax_page.RelPermalink | base64Encode }}">
-            {{- $tax_page.Title -}}
-          </i>
+          {{- partial "components/link" (dict
+            "link"    $tax_page.RelPermalink
+            "button"  "none"
+            "label"   $tax_page.Title
+            "noindex" true
+          ) -}}
         {{- end -}}
       </i>
     {{- end -}}

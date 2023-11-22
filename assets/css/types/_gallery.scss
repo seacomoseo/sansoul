@@ -21,11 +21,23 @@
   overflow: hidden;
 }
 .gallery:not(.gallery--grayscale) > {
-  .gallery__item:hover > .gallery__image {
-    transform: scale(1.125) rotate(2deg);
+  .gallery__item {
+    &:hover,
+    &:focus,
+    &:active {
+      > .gallery__image {
+        transform: scale(1.125) rotate(2deg);
+      }
+    }
   }
-  .gallery__item:nth-child(2n):hover > .gallery__image {
-    transform: scale(1.125) rotate(-2deg);
+  .gallery__item:nth-child(2n) {
+    &:hover,
+    &:focus,
+    &:active {
+      > .gallery__image {
+        transform: scale(1.125) rotate(-2deg);
+      }
+    }
   }
 }
 .gallery__image {
@@ -204,7 +216,7 @@
 // GRAYSCALE
 
 .gallery--grayscale {
-  .gallery__item:not(:hover) {
+  .gallery__item:not(:hover, :focus, :active) {
     .gallery__image {
       &, > img {
         filter: grayscale(1);

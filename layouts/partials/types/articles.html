@@ -21,11 +21,16 @@
 
   {{ if gt (len $pages) (len $firsts_pages) }}
     <div class="buttons">
-      <button data-h="{{ print `/` $kind `/` | base64Encode }}" title="{{ i18n `more` }} {{ i18n $kind }}">
-        {{- partial "components/icon" (dict "icon" "plus") -}}
-        <i>{{ i18n "more" }}</i>
-        {{- "" -}}
-      </button>
+      {{- partial "components/link" (dict
+        "class"     ""
+        "link"      (print "/" $kind "/")
+        "button"    "link"
+        "icon"      "plus"
+        "emoji"     "➕"
+        "label"     (i18n "more")
+        "anchor"    (print (i18n "more") " " (i18n $kind))
+        "noindex"   true
+      ) -}}
     </div>
   {{ end }}
 

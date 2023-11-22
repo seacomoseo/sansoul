@@ -2,10 +2,13 @@
   {{- $tax := index site.Data.utilities.taxonomies .page.Type -}}
   {{- partial "components/icon" (dict "class" "data__icon" "icon" $tax.icon "emoji" $tax.emoji) -}}
   {{- if $.column -}}
-      {{- i18n .page.Type 1 -}}
+    {{- i18n .page.Type 1 -}}
   {{- else -}}
-    <i data-h="{{ (page.GetPage page.Type).RelPermalink | base64Encode }}">
-      {{- i18n .page.Type 1 -}}
-    </i>
+    {{- partial "components/link" (dict
+      "link"    (page.GetPage page.Type).RelPermalink
+      "button"  "none"
+      "label"   (i18n .page.Type 1)
+      "noindex" true
+    ) -}}
   {{- end -}}
 </i>

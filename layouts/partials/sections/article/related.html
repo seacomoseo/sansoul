@@ -23,14 +23,16 @@
         {{ end }}
         {{ range $catags }}
           {{ with . }}
-            {{ $icon_name := cond (eq .Type "tags") "tags" "bookmark" }}
-            {{ $icon_name_alt := cond (eq .Type "tags") "🏷" "🔖" }}
-            {{ $icon := partial "components/icon" (dict "icon" $icon_name "emoji" $icon_name_alt) }}
-            {{- if .Params.noindex -}}
-              <button data-h="{{ .RelPermalink | base64Encode }}">{{ $icon }}<i>{{ .Title }}</i></button>
-            {{- else -}}
-              <a class="button" href="{{ .RelPermalink }}">{{ $icon }}<i>{{ .Title }}</i></a>
-            {{- end -}}
+            {{ $icon  := cond (eq .Type "tags") "tags" "bookmark" }}
+            {{ $emoji := cond (eq .Type "tags") "🏷" "🔖" }}
+            {{- partial "components/link" (dict
+              "link"    .RelPermalink
+              "button"  "link"
+              "icon"    $icon
+              "emoji"   $emoji
+              "label"   .Title
+              "noindex" .Params.noindex
+            ) -}}
           {{ end }}
         {{ end }}
       </div>

@@ -7,9 +7,12 @@
         {{- if $.column -}}
           {{- .Title -}}
         {{- else -}}
-          <i data-h="{{ .RelPermalink | base64Encode }}">
-            {{- .Title -}}
-          </i>
+          {{- partial "components/link" (dict
+            "link"    .RelPermalink
+            "button"  "none"
+            "label"   .Title
+            "noindex" true
+          ) -}}
         {{- end -}}
       </i>
     {{- end -}}

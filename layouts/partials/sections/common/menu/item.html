@@ -21,7 +21,7 @@
     {{- end -}}
 
     <li class="menu__item
-      {{- if eq .link page.RelPermalink }} menu__item--active{{ end -}}
+      {{- if eq .link page.RelPermalink | and (not .IsHome) }} menu__item--active{{ end -}}
       {{- if .more }} menu__item--more{{ end -}}
       {{- if .lang  }} menu__item--lang{{ end -}}
       "

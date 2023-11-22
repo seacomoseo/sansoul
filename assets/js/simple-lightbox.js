@@ -8,6 +8,7 @@ function lightbox () {
     lbItems.forEach(lbItem => {
       const lbGroup = lbItem.closest('.row, .container > .description, section.content')
       lbGroups.push(lbGroup)
+      lbItem.addEventListener('keydown', e => e.key === 'Enter' && lbItem.click())
     })
     lbGroups = [...new Set(lbGroups)]
     lbGroups.forEach(lbGroup => {
