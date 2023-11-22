@@ -2,6 +2,7 @@
   --divider-flip-y: var(--pt-divider, 5.5em);
   --divider-mask: var(--divider), linear-gradient(transparent var(--divider-flip-y), black 0);
   margin-top: calc(var(--pt-divider, 0px) * -1);
+  &.map,
   &.section--paddings-hide,
   > .bg-color {
             mask-image: var(--divider-mask);
@@ -15,6 +16,8 @@
 }
 .divider--flip-y {
   --divider-flip-y: 0;
+  &.map,
+  &.section--paddings-hide,
   > .bg-color {
             mask-composite: exclude;
     -webkit-mask-composite: xor;

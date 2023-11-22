@@ -326,7 +326,7 @@
     object-fit: cover;
     object-position: center;
   }
-  &.map--divider {
+  &.divider {
     --pt-divider: var(--divider-height);
     // Because maybe the parent section habe .divider--ratio
     --divider-height: 5.5em;
@@ -345,14 +345,14 @@
       overflow: hidden;
     }
     --pb-divider: 0px;
-  }
-  .map--divider {
-    filter: none;
-    @if $radius > 0.01 {
-      --radius-top: 0em;
-    }
-    &.divider--ratio {
-      --divider-height: calc(var(--box-inner) * .2);
+    .divider {
+      filter: none;
+      @if $radius > 0.01 {
+        --radius-top: 0em;
+      }
+      &.divider--ratio {
+        --divider-height: calc(var(--box-inner) * .2);
+      }
     }
   }
 }

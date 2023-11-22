@@ -3,6 +3,7 @@
 
 const menu = document.querySelector('.menu')
 if (menu) {
+  const menuSticky = document.querySelector('.menu--sticky')
   const menuToggleButton = document.querySelector('.menu__toggle')
   const menuBackover = document.querySelector('.menu__backover')
   const menuLinks = document.querySelectorAll('.menu__link:not(.menu__item--more > .menu__link, .menu__link--translate), .menu__button')
@@ -13,8 +14,10 @@ if (menu) {
     document.documentElement.classList.add('menu__active')
   }
   function menuClose() {
-    document.documentElement.classList.remove('menu__active')
-    setTimeout(() => menu.setAttribute('hidden', 'until-found'), 300)
+    if (!menuSticky || window.innerWidth < menuBreackPoint) {
+      document.documentElement.classList.remove('menu__active')
+      setTimeout(() => menu.setAttribute('hidden', 'until-found'), 300)
+    }
   }
   function menuToggle() {
     const isMenuClose = document.querySelector('.menu[hidden="until-found"]')

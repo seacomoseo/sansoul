@@ -12,7 +12,7 @@
       {{- $flip_y  := cond .flip_y "" "y" -}}
       {{- $flip_x  := cond .flip_x "" "x" -}}
       {{- $flips   := cond (or (not .flip_x) (not .flip_y)) (print "-" $flip_x $flip_y) "" -}}
-      {{- $divider  = print "map--divider divider divider-" $flips "-" .divider $flip_y_ -}}
+      {{- $divider  = print "divider divider-" $flips "-" .divider $flip_y_ -}}
       {{- if partial `functions/divider-ratio` .divider -}}
         {{- $divider = print $divider " divider--ratio" -}}
       {{- end -}}
