@@ -41,6 +41,7 @@
       .menu__item--more {
         // &.menu__item--more--active,
         &:focus,
+        &:focus-within,
         &:hover {
           > .menu__link > svg {
             transform: rotate(45deg);
@@ -126,11 +127,15 @@
           margin-bottom: 0;
         }
       }
-      .menu__item:hover {
-        .menu__subitems {
-          max-height: calc(100lvh - 5.8em);
-          overflow-y: auto;
-          padding-bottom: 1em;
+      .menu__item {
+        &:hover,
+        &:focus,
+        &:focus-within {
+          .menu__subitems {
+            max-height: calc(100lvh - 5.8em);
+            overflow-y: auto;
+            padding-bottom: 1em;
+          }
         }
       }
     }
