@@ -7,26 +7,22 @@ if (menu) {
   const menuBackover = document.querySelector('.menu__backover')
   const menuLinks = document.querySelectorAll('.menu__link:not(.menu__item--more > .menu__link, .menu__link--translate), .menu__button')
   function menuOpen() {
-    document.documentElement.classList.add('menu__active')
     menu.removeAttribute('hidden')
     menu.focus()
+    document.documentElement.classList.add('menu__active')
   }
   function menuClose() {
     if (window.innerWidth < {{ site.Data.menu.screen_sticky | default 0 }}) {
       document.documentElement.classList.remove('menu__active')
-      menu.classList.add('menu--hide')
-      setTimeout(() => {
-        menu.classList.remove('menu--hide')
-        menu.setAttribute('hidden', 'until-found')
-      }, 300)
+      setTimeout(() => menu.setAttribute('hidden', 'until-found'), 300)
     }
   }
   function menuToggle() {
     const isMenuOpen = document.querySelector('.menu[hidden="until-found"]')
     if (isMenuOpen) {
-      menuClose()
-    } else {
       menuOpen()
+    } else {
+      menuClose()
     }
   }
   function menuVisibility() {
