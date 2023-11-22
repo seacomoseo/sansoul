@@ -75,42 +75,38 @@
     left: calc(50% - .75em);
   }
 }
-.contact__email:hover,
-.contact__email-button:hover +,
-.contact__email-button:focus + {
-  .contact__email-options {
-    transform: translate(-50%, 0);
-    visibility: visible;
-    opacity: 1;
-    transition: opacity .3s, transform .3s, visibility 0s step-end;
-  }
+.contact__email:hover .contact__email-options,
+.contact__email-button:focus + .contact__email-options,
+.contact__email-options:focus-within {
+  transform: translate(-50%, 0);
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .3s, transform .3s, visibility 0s step-end;
 }
-.contact__email-option-copy {
-  &:focus {
-    i {
-      @if $chamfer {
-        @if $radius > 1 or $buttons-rounded {
-          --radius: 1em;
-        }
+.contact__email-option-copy--active {
+  i {
+    @if $chamfer {
+      @if $radius > 1 or $buttons-rounded {
+        --radius: 1em;
       }
-      &:after {
-        content: $copy;
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        padding: .25em 1em;
-        min-height: 2em;
-        display: flex;
-        align-items: center;
-        color: $white;
-        background-color: $dark;
-        @include radius;
-        @if not $chamfer {
-          filter: drop-shadow($shadow);
-        }
-        animation: copied 1s ease 0s forwards;
+    }
+    &:after {
+      content: $copy;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      padding: .25em 1em;
+      min-height: 2em;
+      display: flex;
+      align-items: center;
+      color: $white;
+      background-color: $dark;
+      @include radius;
+      @if not $chamfer {
+        filter: drop-shadow($shadow);
       }
+      animation: copied 1s ease 0s forwards;
     }
   }
 }
