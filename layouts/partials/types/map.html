@@ -8,11 +8,10 @@
 
     {{- $divider := "" -}}
     {{- if .divider -}}
-      {{- $flip_y_ := cond .flip_y "" " divider--flip-y" -}}
       {{- $flip_y  := cond .flip_y "" "y" -}}
       {{- $flip_x  := cond .flip_x "" "x" -}}
       {{- $flips   := cond (or (not .flip_x) (not .flip_y)) (print "-" $flip_x $flip_y) "" -}}
-      {{- $divider  = print "divider divider-" $flips "-" .divider $flip_y_ -}}
+      {{- $divider  = print "divider divider-" $flips "-" .divider -}}
       {{- if partial `functions/divider-ratio` .divider -}}
         {{- $divider = print $divider " divider--ratio" -}}
       {{- end -}}

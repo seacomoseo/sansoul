@@ -79,11 +79,10 @@
 {{- $section_divider    := "" -}}
 {{- with .prev -}}
   {{- if .divider -}}
-    {{- $flip_y_          := cond (not .flip_y) "" " divider--flip-y" -}}
     {{- $flip_y           := cond (not .flip_y) "" "y" -}}
     {{- $flip_x           := cond (not .flip_x) "" "x" -}}
     {{- $flips            := cond (or .flip_x .flip_y) (print "-" $flip_x $flip_y) "" -}}
-    {{- $section_divider   = print "divider divider-" $flips "-" .divider $flip_y_ -}}
+    {{- $section_divider   = print "divider divider-" $flips "-" .divider -}}
     {{/*  {{- if partial `functions/divider-ratio` .divider -}}
       {{- $section_divider = print $section_divider " divider--ratio" -}}
     {{- end -}}  */}}

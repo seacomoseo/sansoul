@@ -68,7 +68,8 @@
     (cond (not $key) (dict "id" "header") dict)
   ) }}
 
-  {{/*  If contact with map  */}}
+  {{/*  If contact with map (in last row) -> not flip_y  */}}
+  {{/*
   {{- $section_ := index $section 0 -}}
   {{- if ne $section_.id "footer" -}}
     {{- if $section_.flip_y -}}
@@ -78,7 +79,8 @@
             {{- if .map.active -}}
               {{- $section = slice (merge
                 $section_
-                (dict "flip_y" false)
+                (dict "flip_y" (not $section_.flip_y))
+                (dict "flip_x" (not $section_.flip_x))
               ) -}}
             {{- end -}}
           {{- end -}}
@@ -86,6 +88,7 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+  */}}
 
   {{/*  FINAL  */}}
   {{ range $section }}
