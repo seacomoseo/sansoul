@@ -78,12 +78,12 @@
     {{ partial "kind/sectioned" (dict "footer" true "sectioned" $sectioned) }}
 
     {{/*  PRE BODY END  */}}
-    {{ partial "components/button-up" . }}
     {{ if ne .Kind "404" }}{{ partial "components/cookies" . }}{{ end }}
     {{ if $sectioned }}{{ partial "components/buttons-callnow" . }}{{ end }}
     {{ if $menu.google_translate }}
       {{ partial "components/button-google-translate" . }}
     {{ end }}
+    {{ partial "components/button-up" . }}
     {{ partial "sections/common/scripts" . }}
     {{ with partial "functions/lang-params-custom-code" (dict "params" "html_body") }}
       {{ (. | resources.FromString (print "aux_html_body." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $context).Content | safeHTML }}
