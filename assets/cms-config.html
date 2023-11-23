@@ -128,7 +128,7 @@
 {{- $columns_span    := dict "label" `Ancho en Número de Columnas`      "name" `span`         "widget" `select`  "required" false "options" $options.columns -}}
 {{- $grow            := dict "label" `Rellenar Ancho`                   "name" `grow`         "widget" `boolnew` "required" false "hint" "Rellenar el ancho de contenedor aumentando el ancho de los elementos o columnas (no aplica si se activa carrusel)" -}}
 {{- $columns_gap     := dict "label" `Márgenes entre Elementos`         "name" `gap`          "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 1 "max" 5 -}}
-{{- $columns_padding := dict "label" `Márgenes internos en el Elemento` "name" `padding`      "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 1 "max" 5 -}}
+{{- $columns_padding := dict "label" `Márgenes internos en el Elemento` "name" `padding`      "widget" `number`  "required" false "value_type" `float` "step" 0.25 "min" 0 "max" 6 -}}
 {{- $hide_radius     := dict "label" `Quitar Esquinas Redondeadas`      "name" `hide_radius`  "widget" `boolnew` "required" false "hint" "Quitar esquinas redondeadas en cada elemento" -}}
 {{- $group_radius    := dict "label" `Esquinas Redondeadas en Conjunto` "name" `group_radius` "widget" `boolnew` "required" false "hint" "Esquinas redondeadas en el conjunto de elementos (no recomendado activar sin desactivar el anterior)" -}}
 {{- $pill            := dict "label" `Modo Píldora`                     "name" `pill`         "widget" `boolnew` "required" false "hint" "Redondea la parte superior e inferior" -}}

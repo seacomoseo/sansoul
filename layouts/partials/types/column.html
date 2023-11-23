@@ -105,7 +105,12 @@
   -}}
   {{- $parallax_fixed          := not site.Data.design.performance.parallax -}}
   {{- $item_bg_image_fixed     := cond (not ($bg_image_src | and .parallax | and $parallax_fixed)) "" "bg--image-fixed" -}}
-  {{- $item_padding            := cond (eq .padding nil)   "" (print "column--padding-" .padding) -}}
+  {{- $item_padding            := "" -}}
+  {{- if eq .padding 0 -}}
+    {{- $item_padding           = print "column--padding-0" -}}
+  {{- else if .padding -}}
+    {{- $item_padding           = print "column--padding-" (mul 100 (.padding | float)) -}}
+  {{- end -}}
   {{- $item_hide_radius        := cond (not $radius)       "column--hide-radius" "" -}}
   {{- $item_shadow             := cond (not $shadow)       "" "shadow" -}}
 
