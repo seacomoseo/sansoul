@@ -317,10 +317,9 @@
 
 .map {
   @include hide-radius;
-  --margin-map-side: calc((var(--container-inner) - 100vw) / 2);
   --margin-map-bottom: calc(0px - var(--pb, 0px) - var(--pb-divider, 0px) - var(--container-padding));
-  margin: 2em var(--margin-map-side) var(--margin-map-bottom);
-  width: calc(100% - var(--margin-map-side) * 2);
+  margin: 2em var(--container-margin-side) var(--margin-map-bottom);
+  width: calc(100% - var(--container-margin-side) * 2);
   height: calc(20em + var(--divider-height, 0px) + var(--pb-divider, 0px));
   img {
     object-fit: cover;
@@ -337,7 +336,7 @@
 }
 .container.bg {
   .map {
-    --margin-map-side: 0em;
+    --container-margin-side: 0em;
     --margin-map-bottom: 0em;
     filter: drop-shadow($shadow);
     @include radius;
