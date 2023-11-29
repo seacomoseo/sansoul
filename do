@@ -58,6 +58,16 @@ then
   echo "${STI} SUBMODULE UPDATE ${STE}"
   git submodule update --recursive --remote
 
+# pull of repository and update the submodules
+elif [ $1 = du ]
+then
+
+  echo "${STI} DO DOWN ${STE}"
+  sh do down
+
+  echo "${STI} DO UP ${STE}"
+  sh do up
+
 # hugo server with theme config
 elif [ $1 = server ]
 then
