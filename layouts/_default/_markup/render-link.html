@@ -8,7 +8,7 @@
 {{- if strings.HasPrefix .Text "btn" -}}
   {{- $other  := .Text | replaceRE `^btn-?([\w-]*).*` `$1` -}}
   {{- $button  =  replace $other "-font-alt" "" | replaceRE `^.+?(main|alt|link|light|dark|invert|whatsapp).*` `$1` -}}
-  {{- range $other | findRE `icon|font-alt` -}}
+  {{- range $other | findRE `icon|font-alt|sm` -}}
     {{- $class = print $class " button--" . -}}
   {{- end -}}
 {{- end -}}
