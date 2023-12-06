@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
       e.setAttribute('loop', '')
       e.setAttribute('autoplay', '')
       e.setAttribute('playsinline', '')
-      e.play()
+      e.onloadedmetadata = () => e.play()
     },
     undefined
   )
