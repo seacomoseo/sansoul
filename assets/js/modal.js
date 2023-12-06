@@ -10,13 +10,13 @@ function openModal (target) {
     target.showModal()
     target.focus()
   // }, 10)
-  // document.documentElement.classList.add('modal__active')
+  document.documentElement.classList.add('modal__active')
   target.scrollTo({top: 0})
 }
 
 // Close
 function closeModal (changeHash) {
-  // document.documentElement.classList.remove('modal__active')
+  document.documentElement.classList.remove('modal__active')
   // Remove hash
   if (!changeHash && location.hash) {
     if (hasLastSection) {
