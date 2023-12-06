@@ -88,13 +88,15 @@ addEventListener('hashchange', e => {
   closeModal(true)
   if (target && target.classList.contains('modal')) {
     // Save the last seccion hash
-    const isHasOld = document.querySelector('#' + hashOld)
-    if (isHasOld) {
-      if (isHasOld.classList.contains('section')) {
-        hasLastSection = '#' + hashOld
-      // Only need check other hashes not sections and not modals when click, scroll and load
-      // } else {
-      //   hasLastSection = '#' + hashOld
+    if (hashOld) {
+      const isHasOld = document.querySelector('#' + hashOld.replace('=', ''))
+      if (isHasOld) {
+        if (isHasOld.classList.contains('section')) {
+          hasLastSection = '#' + hashOld
+        // Only need check other hashes not sections and not modals when click, scroll and load
+        // } else {
+        //   hasLastSection = '#' + hashOld
+        }
       }
     }
     openModal(target)

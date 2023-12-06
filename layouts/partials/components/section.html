@@ -7,9 +7,12 @@
 
 {{/*  SECTION CLASS  */}}
 {{- $section_type        := cond $modal "modal" "section" -}}
-{{- $section_header      := cond $header "section--header" (print $section_type "--" (add .key 1)) -}}
+{{- $section_header      := cond $header "section--header" (print "section--" (add .key 1)) -}}
 {{- if $footer -}}
   {{- $section_header     = "section--footer" -}}
+{{- end -}}
+{{- if $modal -}}
+  {{- $section_header     = print $section_header "__modal--" (add .k 1) -}}
 {{- end -}}
 {{- $section_full_screen := cond (not .full_screen) "" "section--full-screen" -}}
 {{- $section_bg_color    := "bg-white" -}}

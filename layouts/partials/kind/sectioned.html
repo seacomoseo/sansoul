@@ -78,7 +78,7 @@
 
   {{/*  MODALS  */}}
   {{- range $k, $v := .modals -}}
-    {{- partial "components/section" (merge . (dict "key" $k)) -}}
+    {{- partial "components/section" (merge . (dict "key" $key "k" $k)) -}}
   {{- end -}}
 
 {{ end }}
