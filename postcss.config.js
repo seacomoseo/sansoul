@@ -8,7 +8,6 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
     'type',
     'hidden',
     'hidden-scroll',
-    'modal--hide',
     /sl-.+/,
     /data-.+/,
     /active$/,
