@@ -1,10 +1,14 @@
 <style>
   .divider--example {
+    position: relative;
     --pt-divider: calc(var(--container-inner) * .2);
     height: var(--pt-divider);
-    background-color: var(--main);
     margin: 0;
     width: 100%;
+  }
+  .divider--example .bg-color {
+    background-color: var(--main);
+    border-radius: 0;
   }
 </style>
 
@@ -14,5 +18,5 @@
     <br>
     {{ .label }}
   </h3>
-  <div class="divider divider--{{ .value }} divider--example"></div>
+  <div class="divider divider--{{ .value }} divider--example"><div class="bg-color"></div></div>
 {{ end }}
