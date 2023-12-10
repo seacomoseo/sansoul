@@ -1439,12 +1439,12 @@
               "name"           `file`
               "widget"         `relation`
               "options_length" 100
-              "collection"     (print `sections.` .Lang)
+              "collection"     (print `sections-` .Lang)
               "value_field"    "{{slug}}"
               "search_fields"  (slice "{{slug}}")
               "display_fields" (slice "{{slug}}")
               "required"       false
-              "hint"           (print "Indica una [sección previamente creada](#/collections/sections." .Lang ")")
+              "hint"           (print "Indica una [sección previamente creada](#/collections/sections-" .Lang ")")
             )
             (dict
               "label"          `Ventanas Modales`
@@ -1462,12 +1462,12 @@
                   "name"           `file`
                   "widget"         `relation`
                   "options_length" 100
-                  "collection"     (print `modals.` .Lang)
+                  "collection"     (print `modals-` .Lang)
                   "value_field"    "{{slug}}"
                   "search_fields"  (slice "{{slug}}")
                   "display_fields" (slice "{{slug}}")
                   "required"       false
-                  "hint"           (print "Indica una [sección previamente creada](#/collections/sections." .Lang ")")
+                  "hint"           (print "Indica una [modal previamente creada](#/collections/modals-" .Lang ")")
                 )
               )
             )
@@ -1476,6 +1476,16 @@
       )
     )
   -}}
+  {{/*
+    "nested"           (dict
+      "depth"   100
+      "summary" "{{title}}"
+      "path"    (dict
+        "widget"     `string`
+        "index_file" `_index`
+      )
+    )
+  */}}
   {{- $colections_langs = $colections_langs | append
     (dict
       "label"            (print $flag ($taxonomies.sections.emoji) " " (i18n "sections"))

@@ -1434,12 +1434,12 @@
               "name"           `file`
               "widget"         `relation`
               "options_length" 100
-              "collection"     (print `sections.` .Lang)
+              "collection"     (print `sections-` .Lang)
               "value_field"    "{{slug}}"
               "search_fields"  (slice "{{slug}}")
               "display_fields" (slice "{{slug}}")
               "required"       false
-              "hint"           (print "Indica una [sección previamente creada](#/collections/sections." .Lang ")")
+              "hint"           (print "Indica una [sección previamente creada](#/collections/sections-" .Lang ")")
             )
             (dict
               "label"          `Ventanas Modales`
@@ -1457,12 +1457,12 @@
                   "name"           `file`
                   "widget"         `relation`
                   "options_length" 100
-                  "collection"     (print `modals.` .Lang)
+                  "collection"     (print `modals-` .Lang)
                   "value_field"    "{{slug}}"
                   "search_fields"  (slice "{{slug}}")
                   "display_fields" (slice "{{slug}}")
                   "required"       false
-                  "hint"           (print "Indica una [sección previamente creada](#/collections/sections." .Lang ")")
+                  "hint"           (print "Indica una [modal previamente creada](#/collections/modals-" .Lang ")")
                 )
               )
             )

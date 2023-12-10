@@ -1360,12 +1360,12 @@
               "name"           `file`
               "widget"         `relation`
               "options_length" 100
-              "collection"     (print `sections.` .Lang)
+              "collection"     (print `sections-` .Lang)
               "value_field"    "{{slug}}"
               "search_fields"  (slice "{{slug}}")
               "display_fields" (slice "{{slug}}")
               "required"       false
-              "hint"           (print "Indica una [sección previamente creada](#/collections/sections." .Lang ")")
+              "hint"           (print "Indica una [sección previamente creada](#/collections/sections-" .Lang ")")
             )
             (dict
               "label"          `Ventanas Modales`
@@ -1387,7 +1387,7 @@
                   "search_fields"  (slice "{{slug}}")
                   "display_fields" (slice "{{slug}}")
                   "required"       false
-                  "hint"           (print "Indica una [sección previamente creada](#/collections/sections." .Lang ")")
+                  "hint"           (print "Indica una [modal previamente creada](#/collections/modals-" .Lang ")")
                 )
               )
             )
@@ -1400,7 +1400,7 @@
     (dict
       "label"            (print $flag ($taxonomies.sections.emoji) " " (i18n "sections"))
       "label_singular"   (i18n "sections" 1)
-      "name"             (print `sections.` .Lang)
+      "name"             (print `sections-` .Lang)
       "description"      `Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.`
       "identifier_field" `id`
       "extension"        `yml`

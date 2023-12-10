@@ -21,20 +21,41 @@
 - cms
   - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
   - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
-  - probar i18n
   - quitar "(opcional)" de las etiquetas
+  - i18n
+    # Required and can be one of multiple_folders, multiple_files or single_file
+    # multiple_folders - persists files in `<folder>/<locale>/<slug>.<extension>`
+    # multiple_files - persists files in `<folder>/<slug>.<locale>.<extension>`
+    # single_file - persists a single file in `<folder>/<slug>.<extension>`
+    structure: multiple_folders
+  - editorial workflow previews get status deploy and links
+    - https://api.netlify.com/api/v1/badges/30021f24-3d47-42ac-8b61-fe843fed3414/deploy-status?branch=deploy-preview-4
+    - https://api.netlify.com/api/v1/badges/30021f24-3d47-42ac-8b61-fe843fed3414/deploy-status?branch=cms/sections-es/contacto
+    - https://decapcms.org/docs/deploy-preview-links/
+    - https://decapcms.org/docs/configuration-options/#preview_path_date_field
+    - https://deploy-preview-966.staticcms.org/docs/cms-events
+  - remove nulls
+  - widget
+    - color none
+    - list
+      - collapse only items, not all list
+    - image/file external url
+      - try custom widget with fusion
+  - preSave
+    - Campos de texto sin contenido: undefined (para campos no requeridos en colecciones que se puedan añadir archivos)
+      - https://deploy-preview-966.staticcms.org/docs/cms-events#pre-save-event
 + UI Visual RPA
-	- NewProject
-		- https://app.netlify.com/sites/ssndental/configuration/deploys#branches-and-deploy-contexts
+  - NewProject
+    - https://app.netlify.com/sites/ssndental/configuration/deploys#branches-and-deploy-contexts
     - Configure
     - Branch deploys: All
     - Deploy Previews: None
-	- EndDomainProject
-		- SearchConsole
-			- Add property: click last Continue
-		- Netlify
-			- Set SSL
-	- file:///Users/lorensansol/Mi%20unidad/⚡%20Sea%20Como%20SEO/🤖%20UI.Vision/ui.vision.html?direct=1¯o=VALEVALE&macro=SanSoul/VarsToFile&cmd_var1&savelog=log1.txt
+  - EndDomainProject
+    - SearchConsole
+      - Add property: click last Continue
+    - Netlify
+      - Set SSL
+  - file:///Users/lorensansol/Mi%20unidad/⚡%20Sea%20Como%20SEO/🤖%20UI.Vision/ui.vision.html?direct=1¯o=VALEVALE&macro=SanSoul/VarsToFile&cmd_var1&savelog=log1.txt
 - sansoul
   - example.yml all files
   - partials/\*.html
@@ -45,8 +66,8 @@
   - pages/\*.md > sections
 - check
   - ¿Añadir `.button` en `button` y quitar este de css? (16 de scss vs 44 de html)
-	- `form.fill_inputs > site.data.design.inputs.fill`
-	- `form.items > form` (ojo `actions`)
+  - `form.fill_inputs > site.data.design.inputs.fill`
+  - `form.items > form` (ojo `actions`)
 
 - grid.html in article and partial from sectioned
 - button in shpreadsheet (and CMS?) to build
