@@ -5,9 +5,6 @@
 
 # TO DO LIST
 
-- Custom pages
-  - try logo and menu
-  - `_index/custom.md` in all projects
 - cms
   - config split in partials
   - pros
