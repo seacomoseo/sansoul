@@ -12,13 +12,13 @@
   {{- with partial "functions/lang-param" (dict "parent" "config" "param" "legal_location") -}}
     {{- . -}}
   {{- else -}}
-    {{- $postalAddress := index (partial "functions/locations" .) 0 | default "-" -}}
+    {{- $postalAddress := index (partial "functions/contact-data" .).locations 0 | default "-" -}}
     {{- partial "functions/postal-address" $postalAddress -}}
   {{- end -}}
 {{- else if eq $param "email" -}}
   <i class="ofuscate">
     {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_email")
-      | default (index (partial "functions/mails" .) 0)
+      | default (index (partial "functions/contact-data" .).mails 0)
       | default "mail@mail.com"
       | base64Encode
     -}}

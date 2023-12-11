@@ -13,7 +13,7 @@ translationKey: cookies
 Política de Cookies
 {.subtitle}
 
-**{{< legal name >}}** informa acerca del uso de las cookies en su página web: **{{< legal web >}}**
+**{{% legal name %}}** informa acerca del uso de las cookies en su página web: **{{% legal web %}}**
 
 ## ¿Qué son las cookies?
 
@@ -64,13 +64,13 @@ Además, también puede gestionar el almacén de cookies en su navegador a trav�
 
 A continuación, se identifican las cookies que están siendo utilizadas en este portal, así como su tipología y función:
 
-**{{< legal web >}}** asume que usted acepta el uso de cookies. No obstante, muestra información sobre su Política de cookies en la parte inferior o superior de cualquier página del portal con cada inicio de sesión con el objeto de que usted sea consciente.
+**{{% legal web %}}** asume que usted acepta el uso de cookies. No obstante, muestra información sobre su Política de cookies en la parte inferior o superior de cualquier página del portal con cada inicio de sesión con el objeto de que usted sea consciente.
 
 Ante esta información es posible llevar a cabo las siguientes acciones:
 
 - **Aceptar cookies:** No se volverá a visualizar este aviso al acceder a cualquier página del portal durante la presente sesión.
 - **Rechazar cookies:** Se oculta el aviso en la presente página.
-- **Configurar:** Podrá obtener más información sobre qué son las cookies, conocer la Política de cookies de **{{< legal web >}}** y modificar la configuración de su navegador.
+- **Configurar:** Podrá obtener más información sobre qué son las cookies, conocer la Política de cookies de **{{% legal web %}}** y modificar la configuración de su navegador.
 
 Esta web utiliza cookies analíticas para recabar estadísticas sobre la actividad del usuario al visitar la página y la actividad general de la misma. La información recopilada es anónima y permite optimizar la navegación por nuestra página web y garantizar el mejor servicio al usuario. Utilizamos cookies propias y de terceros (Google Analytics) para el análisis de nuestra página. El usuario puede excluir su actividad mediante los sistemas de exclusión facilitados por las herramientas analíticas.Generar un identificador de usuario único, que es el que se utiliza para hacer recuento de cuántas veces visita el sitio un usuario, así como la fecha de la primera y la última vez que visitó la web. Registrar la fecha y hora de acceso a cualquiera de las páginas del Sitio. Comprobar la necesidad de mantener la sesión de un usuario abierta o crear una nueva. Identificar la sesión del usuario, para recoger la ubicación geográfica aproximada del ordenador que accede al Sitio con efectos estadísticos.
 
@@ -80,8 +80,8 @@ Esta web utiliza cookies analíticas para recabar estadísticas sobre la activid
 
 | Cookie | Nombre | Propósito | Propietario | Más información |
 | --- | --- | --- | --- | --- |
-| HTTP(ESTADISTICA) | \_ga | 2 años. Registra una identificación única que se utiliza para generar datos estadísticos acerca de cómo utiliza el visitante el sitio web. Datos enviados a EEUU, país no adecuado al RGPD. | {{< legal web >}} | [{{< legal web >}}]({{< legal https >}}) |
-| HTTP(ESTADISTICA) | \_ga\_# | 2 años. Recopila sobre un número de veces que un usuario ha visitado el sitio web, además de las fechas de la primera visita y de las más recientes. Utilizada por Google Analytics. Datos enviados a EEUU, país no adecuado al RGPD. | frutasberi.com | [{{< legal web >}}]({{< legal https >}}) |
+| HTTP(ESTADISTICA) | \_ga | 2 años. Registra una identificación única que se utiliza para generar datos estadísticos acerca de cómo utiliza el visitante el sitio web. Datos enviados a EEUU, país no adecuado al RGPD. | {{% legal web %}} | [{{% legal web %}}]({{% legal https %}}) |
+| HTTP(ESTADISTICA) | \_ga\_# | 2 años. Recopila sobre un número de veces que un usuario ha visitado el sitio web, además de las fechas de la primera visita y de las más recientes. Utilizada por Google Analytics. Datos enviados a EEUU, país no adecuado al RGPD. | frutasberi.com | [{{% legal web %}}]({{% legal https %}}) |
 | Pixel. Sesión. | \_ads/ga-audiences | Sesión. Utilizada por Google AdWords para reconectar con visitantes que tienen posibilidades de convertirse en clientes , se basa en el comportamiento on-line del cliente a través de las webs. Datos enviados a EEUU, país no adecuado al RGPD. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 | HTTP(Marketing) | NID | 6 meses. Registra una identificación única que identifica el dispositivo de un usuario que vuelve. La identificación se utiliza para anuncios específicos. Datos enviados a EEUU, país NO adecuado al RGPD. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 
@@ -89,9 +89,9 @@ Esta web utiliza cookies analíticas para recabar estadísticas sobre la activid
 
 Si usted sigue navegando después de haberle informado sobre nuestra Política de cookies entendemos que acepta la utilización de las cookies. Al acceder a este sitio web o aplicación por primera vez, verá una ventana donde se le informa de la utilización de las cookies y donde puede consultar esta política de cookies. Si usted consiente la utilización de cookies, continúa navegando o hace clic en algún link se entenderá que usted ha consentido nuestra política de cookies y, por tanto, la instalación de las mismas en su equipo o dispositivo.
 
-Además del uso de nuestras cookies propias, permitimos a terceros establecer cookies y acceder a ellas en su ordenador. El consentimiento del uso de las cookies de esta **{{< legal name >}}** está ligado a la navegación por este sitio web.
+Además del uso de nuestras cookies propias, permitimos a terceros establecer cookies y acceder a ellas en su ordenador. El consentimiento del uso de las cookies de esta **{{% legal name %}}** está ligado a la navegación por este sitio web.
 
-Para cualquier consulta sobre el uso de cookies en nuestro sitio web puedes dirigirte al email **{{< legal email >}}**.
+Para cualquier consulta sobre el uso de cookies en nuestro sitio web puedes dirigirte al email **{{% legal email %}}**.
 
 ## Cambios en la Política de Cookies
 

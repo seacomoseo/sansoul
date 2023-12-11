@@ -25,11 +25,11 @@
   {{ $socialLinks = $socialLinks | append .link }}
 {{ end }}
 
-{{/*  Get linksMap, locations and phones  */}}
+{{/*  Get links_map, locations and phones  */}}
 
-{{- $linksMap   := partial "functions/links-map" . -}}
-{{- $locations  := partial "functions/locations" . -}}
-{{- $phones_pre := partial "functions/phones"    . -}}
+{{- $links_map  := (partial "functions/contact-data" .).links_map -}}
+{{- $locations  := (partial "functions/contact-data" .).locations -}}
+{{- $phones_pre := (partial "functions/contact-data" .).phones -}}
 
 {{/*  All phones variations  */}}
 {{ $phones := slice }}
@@ -55,9 +55,9 @@
   {{ end }}
 {{ end }}
 
-{{/*  Address, hasMap and geo by locations  */}}
+{{/*  Address, has_map and geo by locations  */}}
 {{ $address := slice }}
-{{ $hasMap  := $linksMap }}
+{{ $has_map := $links_map }}
 {{ $geo     := slice }}
 {{ with $locations }}
   {{ range . }}
@@ -70,15 +70,17 @@
         "addressRegion"   (.addressRegion   | default "")
         "addressCountry"  (.addressCountry  | default "")
       ) }}
-      {{ $hasMap = $hasMap | append (print
+      {{ $has_map = $has_map | append (print
         "https://maps.google.com/maps/search/"
-        .name " "
-        .streetAddress ", "
-        .postalCode " "
-        .addressLocality ", "
-        .addressRegion
-        | replaceRE "<nil>" ""
-        | urlquery
+        (print
+          .name " "
+          .streetAddress ", "
+          .postalCode " "
+          .addressLocality ", "
+          .addressRegion
+          | replaceRE "<nil>" ""
+          | urlquery
+        )
       ) }}
     {{ end }}
     {{ with .coordinates }}
@@ -140,7 +142,7 @@
   "address"        $address
   "location"       (dict
     "@type" "Place"
-    "hasMap" $hasMap
+    "hasMap" $has_map
     "geo"    $geo
   )
 }}

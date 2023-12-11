@@ -1,14 +1,15 @@
-{{- $menu := merge site.Data.menu (.Params.menu | default dict) -}}
+{{- $params := partial "functions/page-params" . -}}
+{{- $menu   := merge site.Data.menu ($params.menu | default dict) -}}
 
 {{- if not $menu.hide -}}
 
   {{/*  VARIABLES  */}}
-  {{- $sectioned    := eq .Type "page" | and (ne .Kind "404") -}}
-  {{- $sticky       := ne .Params.sections nil -}}
+  {{- $sectioned    := partial "functions/is-sectioned" . -}}
+  {{- $sticky       := ne $params.sections nil -}}
   {{- $logo         := $menu.logo -}}
   {{ if (and (not $sectioned) $menu.articles_sticky) | or (and $sectioned $menu.logo) -}}
     {{- $sticky      = true -}}
-  {{- else if .Params.header_article | or $menu.hide_sticky | or (not $menu.screen_sticky) -}}
+  {{- else if $params.header_article | or $menu.hide_sticky | or (not $menu.screen_sticky) -}}
     {{- $sticky      = false -}}
   {{- end -}}
   {{ if and (not $logo) (not $sectioned) $menu.articles_sticky -}}
@@ -43,7 +44,7 @@
 
 
   {{/*  SECTIONS TO ITEMS  */}}
-  {{ if eq page.Type "page" | and (not $menu.hide_anchors) }}
+  {{ if $sectioned | and (not $menu.hide_anchors) }}
 
     {{ with where $sections "button" "!=" "hide" }}
       {{ range . }}
@@ -163,7 +164,7 @@
                   "container" "sm"
                   "span"      6
                 ) }}
-                <i class="hide">{{ site.Home.Params.title_seo | default site.Home.Params.title }}</i>
+                <i class="hide">{{ site.Home.Params.title_seo | default site.Home.Params.title | markdownify }}</i>
               </a>
             </li>
           {{ end }}

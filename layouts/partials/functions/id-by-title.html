@@ -1,7 +1,8 @@
 {{ $id := .id
-  | default (.menu | urlize)
-  | default (.anchor | urlize)
-  | default (.title | urlize)
+  | default .menu
+  | default .anchor
+  | default .title
   | default .file
 }}
+{{ $id = $id | markdownify | urlize }}
 {{ return $id }}

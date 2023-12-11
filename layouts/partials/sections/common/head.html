@@ -4,7 +4,7 @@
 
 {{ $title := "" }}
 {{ with .Params.title_seo }}
-  {{ $title = . }}
+  {{ $title = . | markdownify }}
 {{ else }}
   {{ $title = partial "functions/anchor-page" . }}
 {{ end }}
@@ -19,6 +19,7 @@
     {{ $description = .Summary }}
   {{ end }}
 {{ end }}
+{{ $description = $description | markdownify }}
 
 {{ with $description | plainify | truncate 155 }}
   <meta name="description" content="{{ . }}">

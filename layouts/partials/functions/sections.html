@@ -1,10 +1,10 @@
 {{ $config         := site.Data.sections }}
-{{ $page           := .Params }}
+{{ $page           := partial "functions/page-params" . }}
 {{ $sections_final := slice }}
+{{ $sections       := slice }}
 
 {{/*  SECTIONS BY YAML FILES  */}}
-{{ $sections  := slice }}
-{{ range .Params.sections }}
+{{ range $page.sections }}
   {{ $section := . }}
   {{ with partial "functions/section-by-file" (dict "file" .file "type" "sections") }}
     {{ $sections = $sections | append (merge . $section) }}

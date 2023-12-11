@@ -212,7 +212,7 @@
     "name"           `items`
     "widget"         `list`
     "collapsed"      true
-    "summary"        "Subelemento: {{fields.title}}"
+    "summary"        "Subelemento: {{fields.label}}"
     "allow_add"      true
     "required"       false
     "fields"         (slice
@@ -226,8 +226,8 @@
     )
   )
 -}}
-{{- $menu_items_normal  := dict "label" `Elementos Manuales Normales`     "name" `normal` "label_singular" `Elemento` "widget" `list` "collapsed" true "summary" "Elemento: {{fields.title}}" "allow_add" true "required" false "fields" $menu_item_fields "hint" "Éstos elementos aparecerán en todos los menús" -}}
-{{- $menu_items_more    := dict "label" `Elementos Manuales al Desplegar` "name" `more`   "label_singular" `Elemento` "widget" `list` "collapsed" true "summary" "Elemento: {{fields.title}}" "allow_add" true "required" false "fields" $menu_item_fields "hint" "Éstos elementos aparecerán en todos los menús como subelementos desplegables en 'Más'" -}}
+{{- $menu_items_normal  := dict "label" `Elementos Manuales Normales`     "name" `normal` "label_singular" `Elemento` "widget" `list` "collapsed" true "summary" "Elemento: {{fields.label}}" "allow_add" true "required" false "fields" $menu_item_fields "hint" "Éstos elementos aparecerán en todos los menús" -}}
+{{- $menu_items_more    := dict "label" `Elementos Manuales al Desplegar` "name" `more`   "label_singular" `Elemento` "widget" `list` "collapsed" true "summary" "Elemento: {{fields.label}}" "allow_add" true "required" false "fields" $menu_item_fields "hint" "Éstos elementos aparecerán en todos los menús como subelementos desplegables en 'Más'" -}}
 {{- $menu_items_callnow :=
   (dict
     "label"          `Botones Esquina`
@@ -314,14 +314,15 @@
 {{/*  ARTICLES TYPE (MODEL)  */}}
 
 {{- $options_tax := slice -}}
-{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"    ) }}{{ end -}}
-{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Seccionadas") }}{{ end -}}
-{{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"       ) }}{{ end -}}
-{{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"    ) }}{{ end -}}
-{{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"  ) }}{{ end -}}
-{{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías" ) }}{{ end -}}
-{{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"  ) }}{{ end -}}
-{{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"    ) }}{{ end -}}
+{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"       ) }}{{ end -}}
+{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Seccionadas"   ) }}{{ end -}}
+{{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"          ) }}{{ end -}}
+{{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"       ) }}{{ end -}}
+{{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"     ) }}{{ end -}}
+{{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías"    ) }}{{ end -}}
+{{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"     ) }}{{ end -}}
+{{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"       ) }}{{ end -}}
+{{- if (.GetPage "custom"    ) }}{{ $options_tax = $options_tax | append (dict "value" "custom"     "label" "Personalizadas") }}{{ end -}}
 
 {{- $relation_categories := cond (not (.GetPage "categories")) "hidden" "relation" -}}
 {{- $relation_tags       := cond (not (.GetPage "tags"      )) "hidden" "relation" -}}
@@ -1162,10 +1163,11 @@
     )
   )
   $data_articles_common
-  (merge $data_articles_common (dict "label" `📰 Listas tipo Blog`       "name" `blog`))
-  (merge $data_articles_common (dict "label" `📅 Listas tipo Eventos`    "name" `events`))
-  (merge $data_articles_common (dict "label" `📦 Listas tipo Productos`  "name" `products`))
-  (merge $data_articles_common (dict "label" `🏷 Listas tipo Taxonomías` "name" `taxonomies`))
+  (merge $data_articles_common (dict "label" `📰 Listas tipo Blog`           "name" `blog`))
+  (merge $data_articles_common (dict "label" `📅 Listas tipo Eventos`        "name" `events`))
+  (merge $data_articles_common (dict "label" `📦 Listas tipo Productos`      "name" `products`))
+  (merge $data_articles_common (dict "label" `🏷 Listas tipo Taxonomías`     "name" `taxonomies`))
+  (merge $data_articles_common (dict "label" `*️⃣ Listas tipo Presonalizadas` "name" `custom`))
 -}}
 
 {{/*  IF MULTILANGUAJE  */}}
@@ -1205,54 +1207,7 @@
 {{- $colections_langs     := slice -}}
 {{- range slice . | append .Translations -}}
 
-  {{- $languajes_permalinks = $languajes_permalinks | append
-    (dict
-      "label"     (print .Site.Params.flag " " .Language.LanguageName)
-      "name"      .Lang
-      "widget"    `object`
-      "collapsed" true
-      "fields"    (slice
-        (dict
-          "label"     `Enlaces Permanentes`
-          "name"      `permalinks`
-          "widget"    `object`
-          "collapsed" true
-          "fields"    (slice
-            (dict
-              "label"     `Artículos Hijo`
-              "name"      `page`
-              "widget"    `object`
-              "collapsed" true
-              "fields"    (slice
-                (dict "label" `Páginas`    "name" `pages`      "widget" `string`)
-                (dict "label" `Blog`       "name" `blog`       "widget" `string`)
-                (dict "label" `Eventos`    "name" `events`     "widget" `string`)
-                (dict "label" `Productos`  "name" `products`   "widget" `string`)
-                (dict "label" `Categorías` "name" `categories` "widget" `string`)
-                (dict "label" `Etiquetas`  "name" `tags`       "widget" `string`)
-                (dict "label" `Autores`    "name" `authors`    "widget" `string`)
-              )
-            )
-            (dict
-              "label"     `Artículos Padre`
-              "name"      `section`
-              "widget"    `object`
-              "collapsed" true
-              "fields"    (slice
-                (dict "label" `Páginas`    "name" `pages`      "widget" `string`)
-                (dict "label" `Blog`       "name" `blog`       "widget" `string`)
-                (dict "label" `Eventos`    "name" `events`     "widget" `string`)
-                (dict "label" `Productos`  "name" `products`   "widget" `string`)
-                (dict "label" `Categorías` "name" `categories` "widget" `string`)
-                (dict "label" `Etiquetas`  "name" `tags`       "widget" `string`)
-                (dict "label" `Autores`    "name" `authors`    "widget" `string`)
-              )
-            )
-          )
-        )
-      )
-    )
-  -}}
+  {{- $languajes_permalinks = $languajes_permalinks | append (partial "cms/config/languajes-permalinks" .) -}}
 
   {{/*  MAIN PAGES ELEMENTS  */}}
   {{- $p_title          := dict "label" `Título`             "name" `title`       "widget" `string`   "i18n" true                                              "hint" "Ejemplo: 'Día de paseo por el nuevo barrio'" -}}
@@ -1295,6 +1250,52 @@
       $p_body
     )
   -}}
+
+  {{- $section_menu     := partial "cms/config/section-menu" (slice $menu_items_normal $menu_items_more) -}}
+  {{- $section_sections := partial "cms/config/section-sections" . -}}
+
+  {{- $lang := .Lang -}}
+  {{- $types_files := slice -}}
+  {{- range slice
+    "pages"
+    "blog"
+    "events"
+    "products"
+    "categories"
+    "tags"
+    "authors"
+    "custom"
+  -}}
+    {{- $types_files = $types_files | append (dict
+      "file"      (print "content." $lang "/_index/" . ".md")
+      "extension" `md`
+      "label"     (print (index $taxonomies .).emoji " " (i18n .))
+      "name"      (print "types-" .)
+      "fields"    ($types_fields | append
+        (cond (ne "custom" .)
+          slice
+          (dict
+            "label"     `Plantilla`
+            "name"      `template`
+            "widget"    `object`
+            "collapsed" true
+            "required"  false
+            "hint"      `Estas opciones y estructuras se aplicarán a cada una de las páginas personalizadas.`
+            "fields"    (slice
+              $section_header_article
+              $section_menu
+              $sections_design_general
+              $sections_design_alternate
+              $sections_design_modals
+              $section_sections
+            )
+          )
+        )
+      )
+      | merge (cond (ne "custom" .) dict (dict "hint" `Estas opciones y estructuras se aplicarán a cada una de las páginas personalizadas.`))
+    ) -}}
+  {{- end -}}
+
   {{- $colections_langs = $colections_langs | append
     (dict
       "label"           (print $flag `📚 Tipos`)
@@ -1302,57 +1303,7 @@
       "description"     `Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE: Artículos se consideran todos los tipos de páginas excepto las Seccionadas y sus Secciones y Modales correspondientes.`
       "sortable_fields" (dict "fields" slice)
       "editor"          (dict "preview" false)
-      "files"           (slice
-        (dict
-          "file"      (print `content.` .Lang `/_index/pages.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.pages.emoji) " " (i18n "pages"))
-          "name"      `types-pages`
-          "fields"    $types_fields
-        )
-        (dict
-          "file"      (print `content.` .Lang `/_index/blog.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.blog.emoji) " " (i18n "blog"))
-          "name"      `types-blog`
-          "fields"    $types_fields
-        )
-        (dict
-          "file"      (print `content.` .Lang `/_index/events.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.events.emoji) " " (i18n "events"))
-          "name"      `types-events`
-          "fields"    $types_fields
-        )
-        (dict
-          "file"      (print `content.` .Lang `/_index/products.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.products.emoji) " " (i18n "products"))
-          "name"      `types-products`
-          "fields"    $types_fields
-        )
-        (dict
-          "file"      (print `content.` .Lang `/_index/categories.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.categories.emoji) " " (i18n "categories"))
-          "name"      `types-categories`
-          "fields"    $types_fields
-        )
-        (dict
-          "file"      (print `content.` .Lang `/_index/tags.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.tags.emoji) " " (i18n "tags"))
-          "name"      `types-tags`
-          "fields"    $types_fields
-        )
-        (dict
-          "file"      (print `content.` .Lang `/_index/authors.md`)
-          "extension" `md`
-          "label"     (print ($taxonomies.authors.emoji) " " (i18n "authors"))
-          "name"      `types-authors`
-          "fields"    $types_fields
-        )
-      )
+      "files"           $types_files
     )
   -}}
 
@@ -1396,83 +1347,11 @@
         $p_noindex
         $p_translationKey
         $section_header_article
-        (dict
-          "label"     `Menú`
-          "name"      `menu`
-          "widget"    `object`
-          "collapsed" true
-          "required"  false
-          "fields"    (slice
-            (dict "label" `Logo`                  "name" `logo`         "widget" `image`   "required" false "max_file_size" 512000000)
-            (dict "label" `Ocultar`               "name" `hide`         "widget" `boolnew` "required" false)
-            (dict "label" `Ocultar Pegado`        "name" `hide_sticky`  "widget" `boolnew` "required" false "hint" "Deja el menú accesible solamente mediante botón de hamburguesa")
-            (dict "label" `Ocultar Modales`       "name" `hide_modals`  "widget" `boolnew` "required" false "hint" "Ocultar enlaces hacia secciones de tipo modal como subelementos desplegables (recomendado si hay muchos)")
-            (dict "label" `Ocultar Enlaces Ancla` "name" `hide_anchors` "widget" `boolnew` "required" false "hint" "Oculta todos los enlaces que llevan a cada sección")
-            (dict
-              "label"     `Elementos del Menú`
-              "name"      `items`
-              "widget"    `object`
-              "collapsed" true
-              "required"  false
-              "fields"    (slice
-                $menu_items_normal
-                $menu_items_more
-              )
-            )
-          )
-        )
+        $section_menu
         $sections_design_general
         $sections_design_alternate
         $sections_design_modals
-        (dict
-          "label"          `Secciones`
-          "label_singular" `Sección`
-          "name"           `sections`
-          "widget"         `list`
-          "collapsed"      true
-          "summary"        "{{fields.file}}"
-          "allow_add"      true
-          "required"       false
-          "fields"         (slice
-            (dict
-              "label"          `Archivo`
-              "name"           `file`
-              "widget"         `relation`
-              "options_length" 100
-              "collection"     (print `sections-` .Lang)
-              "value_field"    "{{slug}}"
-              "search_fields"  (slice "{{slug}}")
-              "display_fields" (slice "{{slug}}")
-              "required"       false
-              "hint"           (print "Indica una [sección previamente creada](#/collections/sections-" .Lang ")")
-            )
-            (dict
-              "label"          `Ventanas Modales`
-              "label_singular" `Ventana Modal`
-              "name"           `modals`
-              "widget"         `list`
-              "collapsed"      true
-              "summary"        "{{fields.file}}"
-              "allow_add"      true
-              "required"       false
-              "hint"          "Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **ejemplo**: '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión"
-              "fields"         (slice
-                (dict
-                  "label"          `Archivo`
-                  "name"           `file`
-                  "widget"         `relation`
-                  "options_length" 100
-                  "collection"     (print `modals-` .Lang)
-                  "value_field"    "{{slug}}"
-                  "search_fields"  (slice "{{slug}}")
-                  "display_fields" (slice "{{slug}}")
-                  "required"       false
-                  "hint"           (print "Indica una [modal previamente creada](#/collections/modals-" .Lang ")")
-                )
-              )
-            )
-          )
-        )
+        $section_sections
       )
     )
   -}}
@@ -1962,6 +1841,51 @@
           $p_noindex
           $p_translationKey
           $p_body
+        )
+      )
+    -}}
+  {{- end -}}
+  {{- if .GetPage "custom" -}}
+    {{- $colections_langs = $colections_langs | append
+      (dict
+        "label"            (print $flag ($taxonomies.custom.emoji) " " (i18n "custom"))
+        "label_singular"   (i18n "custom" 1)
+        "name"             (print `custom-` .Lang)
+        "description"      `Páginas personalizadas por secciones.`
+        "identifier_field" `slug`
+        "folder"           (print `content.` .Lang `/custom`)
+        "create"           true
+        "slug"             "{{fields.slug}}"
+        "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+        "summary"          "{{title}}"
+        "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+        "view_filters"     (dict
+          "filters" (slice
+            (dict "name" `published` "label" `Publicados` "field" `draft`   "pattern" false)
+            (dict "name" `drafts`    "label" `Borradores` "field" `draft`   "pattern" true)
+            (dict "name" `index`     "label" `Index`      "field" `noindex` "pattern" false)
+            (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex` "pattern" true)
+          )
+        )
+        "view_groups"      (dict
+          "groups" (slice
+            (dict "name" `year`      "label" `Año`        "field" `commit_date` "pattern" `^\d{4}`)
+            (dict "name" `month`     "label" `Mes`        "field" `commit_date` "pattern" `^\d{4}-\d{2}`)
+            (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex`)
+            (dict "name" `drafts`    "label" `Borradores` "field" `draft`)
+          )
+        )
+        "editor"           (dict "preview" false)
+        "fields"           (slice
+          $p_title
+          $p_title_seo
+          $p_slug
+          $p_description
+          $p_image
+          $p_draft
+          $p_noindex
+          $p_translationKey
+          | append (partial "cms/config/custom-params" .)
         )
       )
     -}}

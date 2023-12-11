@@ -350,14 +350,15 @@
 {{/*  ARTICLES MODEL  */}}
 
 {{- $options_tax := slice -}}
-{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"    ) }}{{ end -}}
-{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Seccionadas") }}{{ end -}}
-{{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"       ) }}{{ end -}}
-{{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"    ) }}{{ end -}}
-{{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"  ) }}{{ end -}}
-{{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías" ) }}{{ end -}}
-{{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"  ) }}{{ end -}}
-{{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"    ) }}{{ end -}}
+{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"       ) }}{{ end -}}
+{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Seccionadas"   ) }}{{ end -}}
+{{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"          ) }}{{ end -}}
+{{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"       ) }}{{ end -}}
+{{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"     ) }}{{ end -}}
+{{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías"    ) }}{{ end -}}
+{{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"     ) }}{{ end -}}
+{{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"       ) }}{{ end -}}
+{{- if (.GetPage "custom"    ) }}{{ $options_tax = $options_tax | append (dict "value" "custom"     "label" "Personalizadas") }}{{ end -}}
 
 {{- $relation_categories := cond (not (.GetPage "categories")) "hidden" "relation" -}}
 {{- $relation_tags       := cond (not (.GetPage "tags"      )) "hidden" "relation" -}}
@@ -1092,10 +1093,11 @@
     )
   )
   $data_articles_common
-  (merge $data_articles_common (dict "label" `📰 Listas tipo Blog`       "name" `blog`))
-  (merge $data_articles_common (dict "label" `📅 Listas tipo Eventos`    "name" `events`))
-  (merge $data_articles_common (dict "label" `📦 Listas tipo Productos`  "name" `products`))
-  (merge $data_articles_common (dict "label" `🏷 Listas tipo Taxonomías` "name" `taxonomies`))
+  (merge $data_articles_common (dict "label" `📰 Listas tipo Blog`           "name" `blog`))
+  (merge $data_articles_common (dict "label" `📅 Listas tipo Eventos`        "name" `events`))
+  (merge $data_articles_common (dict "label" `📦 Listas tipo Productos`      "name" `products`))
+  (merge $data_articles_common (dict "label" `🏷 Listas tipo Taxonomías`     "name" `taxonomies`))
+  (merge $data_articles_common (dict "label" `*️⃣ Listas tipo Presonalizadas` "name" `custom`))
 -}}
 
 {{/*  IF MULTILANGUAJE  */}}
@@ -1152,13 +1154,14 @@
               "widget"    `object`
               "collapsed" true
               "fields"    (slice
-                (dict "label" `Páginas`    "name" `pages`      "widget" `string` "required" false)
-                (dict "label" `Blog`       "name" `blog`       "widget" `string` "required" false)
-                (dict "label" `Eventos`    "name" `events`     "widget" `string` "required" false)
-                (dict "label" `Productos`  "name" `products`   "widget" `string` "required" false)
-                (dict "label" `Categorías` "name" `categories` "widget" `string` "required" false)
-                (dict "label" `Etiquetas`  "name" `tags`       "widget" `string` "required" false)
-                (dict "label" `Autores`    "name" `authors`    "widget" `string` "required" false)
+                (dict "label" `Páginas`        "name" `pages`      "widget" `string` "required" false)
+                (dict "label" `Blog`           "name" `blog`       "widget" `string` "required" false)
+                (dict "label" `Eventos`        "name" `events`     "widget" `string` "required" false)
+                (dict "label" `Productos`      "name" `products`   "widget" `string` "required" false)
+                (dict "label" `Categorías`     "name" `categories` "widget" `string` "required" false)
+                (dict "label" `Etiquetas`      "name" `tags`       "widget" `string` "required" false)
+                (dict "label" `Autores`        "name" `authors`    "widget" `string` "required" false)
+                (dict "label" `Personalizadas` "name" `custom`     "widget" `string` "required" false)
               )
             )
             (dict
@@ -1167,13 +1170,14 @@
               "widget"    `object`
               "collapsed" true
               "fields"    (slice
-                (dict "label" `Páginas`    "name" `pages`      "widget" `string` "required" false)
-                (dict "label" `Blog`       "name" `blog`       "widget" `string` "required" false)
-                (dict "label" `Eventos`    "name" `events`     "widget" `string` "required" false)
-                (dict "label" `Productos`  "name" `products`   "widget" `string` "required" false)
-                (dict "label" `Categorías` "name" `categories` "widget" `string` "required" false)
-                (dict "label" `Etiquetas`  "name" `tags`       "widget" `string` "required" false)
-                (dict "label" `Autores`    "name" `authors`    "widget" `string` "required" false)
+                (dict "label" `Páginas`        "name" `pages`      "widget" `string` "required" false)
+                (dict "label" `Blog`           "name" `blog`       "widget" `string` "required" false)
+                (dict "label" `Eventos`        "name" `events`     "widget" `string` "required" false)
+                (dict "label" `Productos`      "name" `products`   "widget" `string` "required" false)
+                (dict "label" `Categorías`     "name" `categories` "widget" `string` "required" false)
+                (dict "label" `Etiquetas`      "name" `tags`       "widget" `string` "required" false)
+                (dict "label" `Autores`        "name" `authors`    "widget" `string` "required" false)
+                (dict "label" `Personalizadas` "name" `custom`     "widget" `string` "required" false)
               )
             )
           )
@@ -1278,6 +1282,13 @@
           "extension" `md`
           "label"     (print ($taxonomies.authors.emoji) " " (i18n "authors"))
           "name"      `types.authors`
+          "fields"    $types_fields
+        )
+        (dict
+          "file"      (print `content.` .Lang `/_index/custom.md`)
+          "extension" `md`
+          "label"     (print ($taxonomies.custom.emoji) " " (i18n "custom"))
+          "name"      `types.custom`
           "fields"    $types_fields
         )
       )
@@ -1851,6 +1862,52 @@
           (dict "label" `Mes`        "field" `commit_date` "pattern" `^\d{4}-\d{2}`)
           (dict "label" `NoIndex`    "field" `noindex`)
           (dict "label" `Borradores` "field" `draft`)
+        )
+        "editor"           (dict "preview" false)
+        "fields"           (slice
+          $p_title
+          $p_title_seo
+          $p_slug
+          $p_description
+          $p_image
+          $p_toc
+          $p_draft
+          $p_noindex
+          $p_translationKey
+          $p_body
+        )
+      )
+    -}}
+  {{- end -}}
+  {{- if .GetPage "custom" -}}
+    {{- $colections_langs = $colections_langs | append
+      (dict
+        "label"            (print $flag ($taxonomies.custom.emoji) " " (i18n "custom"))
+        "label_singular"   (i18n "custom" 1)
+        "name"             (print `custom-` .Lang)
+        "description"      `Páginas personalizadas por secciones.`
+        "identifier_field" `slug`
+        "folder"           (print `content.` .Lang `/custom`)
+        "create"           true
+        "slug"             "{{fields.slug}}"
+        "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+        "summary"          "{{title}}"
+        "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+        "view_filters"     (dict
+          "filters" (slice
+            (dict "name" `published` "label" `Publicados` "field" `draft`   "pattern" false)
+            (dict "name" `drafts`    "label" `Borradores` "field" `draft`   "pattern" true)
+            (dict "name" `index`     "label" `Index`      "field" `noindex` "pattern" false)
+            (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex` "pattern" true)
+          )
+        )
+        "view_groups"      (dict
+          "groups" (slice
+            (dict "name" `year`      "label" `Año`        "field" `commit_date` "pattern" `^\d{4}`)
+            (dict "name" `month`     "label" `Mes`        "field" `commit_date` "pattern" `^\d{4}-\d{2}`)
+            (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex`)
+            (dict "name" `drafts`    "label" `Borradores` "field" `draft`)
+          )
         )
         "editor"           (dict "preview" false)
         "fields"           (slice

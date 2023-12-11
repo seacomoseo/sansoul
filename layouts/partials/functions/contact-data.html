@@ -1,0 +1,44 @@
+{{ $links_map := slice }}
+{{ $locations := slice }}
+{{ $mails     := slice }}
+{{ $phones    := slice }}
+
+{{ range partial "functions/list-sectioned-pages" . }}
+  {{ range partial "functions/sections-all" . }}
+    {{ range .rows }}
+      {{ if eq .type "contact" }}
+
+        {{ with .map.link }}
+          {{ $links_map = $links_map | append . }}
+        {{ end }}
+
+        {{ range .data }}
+          {{ if eq .type "address" }}
+            {{ $locations = $locations | append (merge . (dict "active" true)) }}
+          {{ else if eq .type "mail" }}
+            {{ $mails = $mails | append .label }}
+          {{ else if eq .type "phone" | or (eq .type "whatsapp") }}
+            {{ $phones = $phones | append .label }}
+          {{ end }}
+        {{ end }}
+
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $callnow_buttons := partial "functions/lang-param" (dict "parent" "menu" "param" "callnow_buttons" "default" slice) }}
+{{- with $callnow_buttons -}}
+  {{- range . -}}
+    {{ if eq .type "phone" | or (eq .type "whatsapp") }}
+      {{ $phones = $phones | append .label }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{ return dict
+  "links_map" (uniq $links_map)
+  "locations" (uniq $locations)
+  "mails"     (uniq $mails)
+  "phones"    (uniq $phones)
+}}

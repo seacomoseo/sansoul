@@ -55,7 +55,8 @@
   {{- end -}}
   
 	{{- $contents := .Plain -}}
-  {{- if .Params.sections -}}
+  {{- $params   := partial "functions/page-params" . -}}
+  {{- if $params.sections -}}
     {{- with partial "functions/sections-and-modals" . -}}
       {{- $contents = printf "%v\n" .
         | replaceRE `\w+?:|map\[|\[|\]|\{|\}|true|false|string|interface|\n` ``

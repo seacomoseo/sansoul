@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
 
-  {{- $sectioned              := eq .Type "page" | and (ne .Kind "404") -}}
-  {{- $sectioned_menu         := and $sectioned (not .Params.header_article) -}}
+  {{- $sectioned              := partial "functions/is-sectioned" . -}}
+  {{- $params                 := partial "functions/page-params" . -}}
+  {{- $sectioned_menu         := and $sectioned (not $params.header_article) -}}
 
-  {{- $menu                   := merge site.Data.menu (.Params.menu | default dict) -}}
+  {{- $menu                   := merge site.Data.menu ($params.menu | default dict) -}}
   {{- $body_menu              := "" -}}
   {{- $body_menu_logo         := "" -}}
   {{- if not $menu.hide -}}
@@ -39,7 +40,7 @@
     ">
 
     {{/*  LOGO  */}}
-    {{ if (not $sectioned) | or ($sectioned | and (.Params.header_article | or $menu.logo)) }}
+    {{ if (not $sectioned) | or ($sectioned | and ($params.header_article | or $menu.logo)) }}
       {{ partial "sections/common/logo" . }}
     {{ end }}
 

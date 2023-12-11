@@ -85,7 +85,7 @@
       {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}"
       {{- else if $link            }} data-{{ cond $external `b` `h` }}="{{ $link | safeURL | base64Encode }}"
       {{- end -}}
-      {{- if      eq .label `none` }} title="{{ $final_label }}"{{ end -}}
+      {{- if      eq .label `none` }} title="{{ $final_label | markdownify }}"{{ end -}}
       {{- if      not $button      }} tabindex="0" role="link"{{ end -}}
     >
   {{- else -}}
@@ -94,7 +94,7 @@
        {{- end -}}
       {{- `` | safeHTMLAttr }} href="{{ $link | safeURL }}"
       {{- if $external }} target="_blank" rel="noopener"{{ end -}}
-      {{- if eq .label `none` }} title="{{ $final_label }}"{{ end -}}
+      {{- if eq .label `none` }} title="{{ $final_label | markdownify }}"{{ end -}}
     >
   {{- end -}}
 
@@ -102,9 +102,9 @@
 
   {{- if eq .label "none" -}}
   {{- else if $is_data_more -}}
-    <i data-more="{{ $label }}"><i>{{ $final_label }}</i></i>
+    <i data-more="{{ $label | markdownify }}"><i>{{ $final_label | markdownify }}</i></i>
   {{- else -}}
-    {{- partial "components/ofuscate" $label -}}
+    {{- partial "components/ofuscate" $label | markdownify -}}
   {{- end -}}
 
   {{- "</" | safeHTML }} {{- cond (not $not_link) "a" (cond $button "button" "i") -}} >
@@ -113,7 +113,7 @@
 
   {{- with $class }}<i class="{{ . }}">{{ end -}}
     {{- $icon -}}
-    {{- partial "components/ofuscate" (.label | default "") -}}
+    {{- partial "components/ofuscate" (.label | markdownify | default "") -}}
   {{- with $class }}</i>{{ end -}}
 
 {{- end -}}

@@ -1,0 +1,13 @@
+{{ $page_params := .Params }}
+
+{{ if partial "functions/is-sectioned" . }}
+  {{ if eq .Type "custom" }}
+    {{ with site.GetPage "custom" }}
+      {{ with .Params.template }}
+        {{ $page_params = merge $page_params . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $page_params }}

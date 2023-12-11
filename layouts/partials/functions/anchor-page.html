@@ -1,6 +1,6 @@
 {{ $anchor := .Params.title_seo }}
 
-{{ if eq .Type "page" }}
+{{ if partial "functions/is-sectioned" . }}
   {{ with partial "functions/sections" . }}
     {{ with index . 0 }}
       {{ $anchor = .anchor | default .title | default $anchor }}
@@ -8,6 +8,6 @@
   {{ end }}
 {{ end }}
 
-{{ $anchor = $anchor | default .Title }}
+{{ $anchor = $anchor | default .Title | markdownify }}
 
 {{ return $anchor }}

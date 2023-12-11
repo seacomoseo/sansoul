@@ -72,10 +72,11 @@
 {{- if .divider | and (not $footer) -}}
   {{- $section_padding_bottom_divider = print "pb-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") -}}
 {{- end -}}
+{{- $params := partial "functions/page-params" page -}}
 {{- if $header
-  | and (not page.Params.menu.hide)
-  | and (not page.Params.menu.hide_sticky)
-  | and (not page.Params.header_article)
+  | and (not $params.menu.hide)
+  | and (not $params.menu.hide_sticky)
+  | and (not $params.header_article)
 -}}
   {{- $section_padding_top_divider = "pt-divider" -}}
 {{- end -}}
@@ -474,7 +475,7 @@
       {{/*  FOOTER IN 404  */}}
       <div class="description">
         {{- partial "functions/md" (dict
-          "content" "- icon-copyright [{{< legal web >}}](/) \n{.list-inline}"
+          "content" "- icon-copyright [{{% legal web %}}](/) \n{.list-inline}"
           "not_header_links" true
         ) -}}
       </div>

@@ -35,7 +35,7 @@
 <body>
 
   {{/*  HELP CORNER  */}}
-  {{ cond $local "" (partial "cms/help-corner" .) }}
+  {{ cond $local "" (partial "cms/index/help-corner" .) }}
 
   {{/*  SVELTIA CMS  */}}
   {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}
@@ -53,7 +53,7 @@
   {{/*
   {{ if site.Data.config.lfs }}
     <style>
-      {{ partial "cms/images-grid-view" . }}
+      {{ partial "cms/index/images-grid-view" . }}
     </style>
   {{ end }}
   */}}
@@ -62,7 +62,7 @@
     // REWRITE IMAGES SRC
     {{/*
     {{ if site.Data.config.lfs }}
-      {{ partial "cms/rewrite-images-src.js" . }}
+      {{ partial "cms/index/rewrite-images-src.js" . }}
     {{ end }}
     */}}
 
@@ -70,10 +70,10 @@
     {{/*  CMS.registerRemarkPlugin({ settings: { bullet: '-', quote: "'" } })  */}}
 
     // DEPLOY STATUS
-    {{ cond $local "" (partial "cms/deploy-status.js" .) }}
+    {{ cond $local "" (partial "cms/index/deploy-status.js" .) }}
 
     // CUSTOM BOOLEAN WIDGET
-    {{ partial "cms/custom-boolean.js" . }}
+    {{ partial "cms/index/custom-boolean.js" . }}
 
     // STATIC CMS
     CMS.init()

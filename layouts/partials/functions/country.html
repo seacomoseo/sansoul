@@ -1,7 +1,7 @@
 {{ $country := partial "functions/lang-param" (dict "parent" "config" "param" "country") }}
 
 {{ if not $country }}
-  {{ with partial "functions/locations" . }}
+  {{ with (partial "functions/contact-data" .).locations }}
     {{ $country = (index . 0).addressCountry }}
   {{ else }}
     {{ $country = "España" }}

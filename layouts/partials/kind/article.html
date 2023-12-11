@@ -1,5 +1,5 @@
 {{ $isTerm    := in (slice "authors" "categories" "tags") .Type }}
-{{ $isPost    := not .IsSection | and (eq .Type "blog") }}
+{{ $isBlog    := not .IsSection | and (eq .Type "blog") }}
 {{ $isEvent   := not .IsSection | and (eq .Type "events") }}
 {{ $isProduct := not .IsSection | and (eq .Type "products") }}
 
@@ -38,10 +38,10 @@
   </section>
 {{ end }}
 
-{{ if $isPost | or ((not .IsSection) | and .Content) }}
+{{ if $isBlog | or ((not .IsSection) | and .Content) }}
   <aside>
     <div class="container container--sm">
-      {{ if $isPost }}
+      {{ if $isBlog }}
         {{ partial "sections/blog/author-box" . }}
         {{ partial "sections/blog/comments" . }}
       {{ end }}
@@ -52,7 +52,7 @@
   </aside>
 {{ end }}
 
-{{ if $isPost | or $isProduct | or $isEvent }}
+{{ if $isBlog | or $isProduct | or $isEvent }}
   <aside class="related">
     {{ partial "sections/article/summaries" (dict "related" true) }}
   </aside>

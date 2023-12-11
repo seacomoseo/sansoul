@@ -13,7 +13,7 @@ translationKey: cookies
 Cookies Policy
 {.subtitle}
 
-**{{< legal name >}}** informs about the use of cookies on its website: **{{< legal web >}}**
+**{{% legal name %}}** informs about the use of cookies on its website: **{{% legal web %}}**
 
 ## What are cookies?
 
@@ -64,13 +64,13 @@ In addition, you can also manage the cookies warehouse in your browser through t
 
 Next, cookies that are being used in this portal are identified, as well as their typology and function:
 
-**{{< legal web >}}** assumes that you accept the use of cookies. However, it shows information about your cookies policy at the bottom or higher of any portal page with each login in order to be aware.
+**{{% legal web %}}** assumes that you accept the use of cookies. However, it shows information about your cookies policy at the bottom or higher of any portal page with each login in order to be aware.
 
 Given this information, it is possible to carry out the following actions:
 
 - **Accept cookies:** This notice will not be visualized when accessing any page of the portal during this session.
 - **Reject cookies:** The notice is hidden on the present page.
-- **Configure:** You can get more information about what cookies are, know the cookies policy of **{{< legal web >}}** and modify the configuration of your browser.
+- **Configure:** You can get more information about what cookies are, know the cookies policy of **{{% legal web %}}** and modify the configuration of your browser.
 
 This website uses analytical cookies to collect statistics on user activity when visiting the page and its general activity. The information collected is anonymous and allows to optimize navigation by our website and guarantee the best user service. We use our own and third parties (Google Analytics) for the analysis of our page. The user can exclude their activity through the exclusion systems provided by the analytical tools. Give a single user identifier, which is used to count how many times the site is visited by a user, as well as the date of the first and The last time he visited the web. Record the date and time of access to any of the site pages. Check the need to keep an open user's session or create a new one. Identify the user's session, to collect the approximate geographical location of the computer that accesses the site with statistical effects.
 
@@ -80,8 +80,8 @@ This website uses analytical cookies to collect statistics on user activity when
 
 | Cookie | Name | Purpose | Owner | More information |
 | --- | --- | --- | --- | --- |
-| HTTP(ESTADISTICA) | \_ga | 2 years. Record a unique identification that is used to generate statistical data on how the visitor uses the website. Data sent to the US, country not appropriate to GDPR. | {{< legal web >}} | [{{< legal web >}}]({{< legal https >}}) |
-| HTTP(STATISTICS) | \_ga\_# | 2 years. It collects on a number of times a user has visited the website, in addition to the dates of the first visit and the most recent. Used by Google Analytics. Data sent to the US, country not appropriate to GDPR. | frutasberi.com | [{{< legal web >}}]({{< legal https >}}) |
+| HTTP(ESTADISTICA) | \_ga | 2 years. Record a unique identification that is used to generate statistical data on how the visitor uses the website. Data sent to the US, country not appropriate to GDPR. | {{% legal web %}} | [{{% legal web %}}]({{% legal https %}}) |
+| HTTP(STATISTICS) | \_ga\_# | 2 years. It collects on a number of times a user has visited the website, in addition to the dates of the first visit and the most recent. Used by Google Analytics. Data sent to the US, country not appropriate to GDPR. | frutasberi.com | [{{% legal web %}}]({{% legal https %}}) |
 | Pixel. Session. | \_ads/ga-audiences | Session. Used by Google Adwords to reconnect with visitors who have the possibility of becoming customers, it is based on the client's online behavior through the websites. Data sent to the US, country not appropriate to GDPR. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 | HTTP(Marketing) | NID | 6 months. Record a unique identification that identifies the device of a user. Identification is used for specific ads. Data sent to the US, country not appropriate to GDPR. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 
@@ -89,9 +89,9 @@ This website uses analytical cookies to collect statistics on user activity when
 
 If you keep sailing after having informed you about our cookies policy we understand that you accept the use of cookies. When accessing this website or application for the first time, you will see a window where you are informed of the use of cookies and where you can consult this cookies policy. If you consent to the use of cookies, continue to browse or click on a link, it will be understood that you have consented our cookies policy and, therefore, the installation of them in your equipment or device.
 
-In addition to the use of our own cookies, we allow third parties to establish cookies and access them on their computer. The consent of the use of cookies of this **{{< legal name >}}** is linked to navigation by this website.
+In addition to the use of our own cookies, we allow third parties to establish cookies and access them on their computer. The consent of the use of cookies of this **{{% legal name %}}** is linked to navigation by this website.
 
-For any query on the use of cookies on our website you can go to the email **{{< legal email >}}**.
+For any query on the use of cookies on our website you can go to the email **{{% legal email %}}**.
 
 ## Changes in cookies policy
 

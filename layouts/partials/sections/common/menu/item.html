@@ -4,9 +4,9 @@
   {{- if .lang | or ((or .icon .emoji) | and (not .label)) -}}
     {{- $hide_icons = false -}}
   {{- end -}}
-  {{- $icon       := cond $hide_icons "" .icon -}}
-  {{- $emoji      := cond $hide_icons "" .emoji -}}
-  {{- $label      := .menu | default .label -}}
+  {{- $icon  := cond $hide_icons "" .icon -}}
+  {{- $emoji := cond $hide_icons "" .emoji -}}
+  {{- $label := .menu | default .label -}}
 
   {{- if or $label $icon $emoji -}}
 

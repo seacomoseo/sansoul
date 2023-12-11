@@ -85,7 +85,7 @@
 
 // Pages with Sections Media Sizes
 
-{{ range where site.Pages "Params.sections" "!=" nil }}
+{{ range partial "functions/list-sectioned-pages" . }}
   {{ $id       := cond .IsHome .Params.slug (.RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-`) }}
   {{ $sections := partial "functions/sections-all" . }}
   {{ range $key, $value := $sections }}

@@ -1,5 +1,5 @@
 {{- $js := .js -}}
-{{- range where site.Pages "Params.sections" "!=" nil -}}
+{{ range partial "functions/list-sectioned-pages" . }}
   {{- $page       := . -}}
   {{- $slug       := .Params.slug -}}
   {{- $page_emoji := (index site.Data.utilities.taxonomies .Type).emoji -}}

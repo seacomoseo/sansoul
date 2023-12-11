@@ -2,6 +2,7 @@
 {{ $articles_blog       := merge $articles.common $articles.blog       }}
 {{ $articles_events     := merge $articles.common $articles.events     }}
 {{ $articles_products   := merge $articles.common $articles.products   }}
+{{ $articles_custom     := merge $articles.common $articles.custom     }}
 {{ $articles_taxonomies := merge $articles.common $articles.taxonomies }}
 {{ $filename            := page.File.TranslationBaseName }}
 
@@ -35,6 +36,7 @@
     {{ $blog       := (.GetPage "blog"      ).Pages }}
     {{ $events     := (.GetPage "events"    ).Pages }}
     {{ $products   := (.GetPage "products"  ).Pages }}
+    {{ $custom     := (.GetPage "custom"    ).Pages }}
     {{ $categories := (.GetPage "categories").Pages }}
     {{ $tags       := (.GetPage "tags"      ).Pages }}
 
@@ -56,6 +58,12 @@
       {{ $products   = $products.Related (dict "document" .) | first ($articles_products.num | default 3) }}
       {{ $categories = false }}
       {{ $tags       = false }}
+    {{ else if eq .Type "custom" }}
+      {{ $blog       = false }}
+      {{ $events     = false }}
+      {{ $custom     = $custom.Related   (dict "document" .) | first ($articles_custom.num | default 3) }}
+      {{ $categories = false }}
+      {{ $tags       = false }}
     {{ else if eq .Type "authors" }}
       {{ $blog       = where $blog   "Params.author" $filename }}
       {{ $events     = where $events "Params.author" $filename }}
@@ -66,6 +74,7 @@
       {{ $blog       = where $blog       (print "Params." .Type) "intersect" (slice $filename) }}
       {{ $events     = where $events     (print "Params." .Type) "intersect" (slice $filename) }}
       {{ $products   = where $products   (print "Params." .Type) "intersect" (slice $filename) }}
+      {{ $custom     = where $custom     (print "Params." .Type) "intersect" (slice $filename) }}
       {{ $categories = where $categories (print "Params." .Type) "intersect" (slice $filename) }}
       {{ $tags       = where $tags       (print "Params." .Type) "intersect" (slice $filename) }}
     {{ end }}
@@ -74,6 +83,7 @@
     {{ with $blog       }}{{ $types = $types | append (dict "type" "blog"       "pages" .) }}{{ end }}
     {{ with $events     }}{{ $types = $types | append (dict "type" "events"     "pages" .) }}{{ end }}
     {{ with $products   }}{{ $types = $types | append (dict "type" "products"   "pages" .) }}{{ end }}
+    {{ with $custom     }}{{ $types = $types | append (dict "type" "custom"     "pages" .) }}{{ end }}
     {{ with $categories }}{{ $types = $types | append (dict "type" "categories" "pages" .) }}{{ end }}
     {{ with $tags       }}{{ $types = $types | append (dict "type" "tags"       "pages" .) }}{{ end }}
   {{ end }}

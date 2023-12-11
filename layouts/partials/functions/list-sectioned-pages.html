@@ -1,0 +1,10 @@
+{{ $section_pages := slice }}
+
+{{ range site.Pages }}
+  {{ $params := partial "functions/page-params" . }}
+  {{ if ne $params.sections nil }}
+    {{ $section_pages = $section_pages | append . }}
+  {{ end }}
+{{ end }}
+
+{{ return $section_pages }}

@@ -20,6 +20,7 @@ languages:
         categories: categoria/:slug
         tags: etiqueta/:slug
         authors: autor/:slug
+        custom: :slug
       section:
         pages: paginas
         blog: blog
@@ -28,6 +29,7 @@ languages:
         categories: categorias
         tags: etiquetas
         authors: autores
+        custom: personalizadas
   en:
     weight: 2
     languageName: English
@@ -42,6 +44,7 @@ languages:
         categories: category/:slug
         tags: tag/:slug
         authors: author/:slug
+        custom: :slug
       section:
         pages: pages
         blog: blog
@@ -50,6 +53,7 @@ languages:
         categories: categories
         tags: tags
         authors: authors
+        custom: custom
 
 defaultContentLanguage: es
 disableLanguages:
@@ -120,6 +124,9 @@ module:
   - source: content.es/_index/authors.md
     target: content/authors/_index.md
     lang: es
+  - source: content.es/_index/custom.md
+    target: content/custom/_index.md
+    lang: es
   # parents en
   - source: content.en/_index/pages.md
     target: content/pages/_index.md
@@ -141,6 +148,9 @@ module:
     lang: en
   - source: content.en/_index/authors.md
     target: content/authors/_index.md
+    lang: en
+  - source: content.es/_index/custom.md
+    target: content/custom/_index.md
     lang: en
 
   # content project

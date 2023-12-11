@@ -1,11 +1,12 @@
-{{- $sectioned   := eq .Type "page" | and (ne .Kind "404") -}}
-{{- $menu        := merge site.Data.menu (.Params.menu | default dict) -}}
-{{- $logo        := $menu.logo | default site.Data.articles.content.logo -}}
-{{- $bg          := "" -}}
-{{- $container   := "sm" -}}
+{{- $params    := partial "functions/page-params" . -}}
+{{- $sectioned := partial "functions/is-sectioned" . -}}
+{{- $menu      := merge site.Data.menu ($params.menu | default dict) -}}
+{{- $logo      := $menu.logo | default site.Data.articles.content.logo -}}
+{{- $bg        := "" -}}
+{{- $container := "sm" -}}
 {{- if not $menu.hide | and ((and (not $sectioned) $menu.articles_sticky) | or (and $sectioned $menu.logo)) -}}
-  {{- $bg          = $menu.color -}}
-  {{- $container   = $menu.size_sticky | default "lg" -}}
+  {{- $bg        = $menu.color -}}
+  {{- $container = $menu.size_sticky | default "lg" -}}
 {{- else -}}
   {{- with partial "functions/sections" . -}}
     {{- with index . 0 -}}
