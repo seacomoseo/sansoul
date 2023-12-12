@@ -133,10 +133,12 @@ function formValidate (form) {
 
   if (valid) {
     formError && formError.remove()
-    const netlifyForm = form.action === location.origin + '/'
+    const action = window.atob(form.action.replace(location.origin + '/', ''))
     const isFileType = form.querySelector('[type="file"]')
-    const gForm = form.action.indexOf('docs.google.com/forms') !== -1
-    if (!netlifyForm && !gForm) {
+    const netlifyForm = action === '/'
+    const googleForm = action.indexOf('docs.google.com/forms') !== -1
+    const formSubmitCo = action.indexOf('formsubmit.co') !== -1
+    if (!netlifyForm && !googleForm && !formSubmitCo) {
       formGA4(form)
       return true
     } else {
@@ -159,16 +161,16 @@ function formValidate (form) {
         formSubmit.innerHTML = '<svg><use xlink:href="/draws.svg#circle-xmark"></use></svg> ' + closeIcon + ' {{ i18n "form-submit" }}<br><svg><use xlink:href="/draws.svg#circle-info"></use></svg> ' + error
       }
       let formOptions = { method: 'POST' }
-      if (isFileType) {
+      if (isFileType || formSubmitCo) {
         formOptions.timeout = 30000
         formOptions.body = new FormData(form)
       } else {
         formOptions.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
         formOptions.body = new URLSearchParams(new FormData(form)).toString()
       }
-      if (gForm) formOptions.mode = 'no-cors'
+      if (googleForm) formOptions.mode = 'no-cors'
       // Send by AJAX
-      fetch(form.action, formOptions)
+      fetch(action, formOptions)
         .then(response => {
           if (!response.ok) {
             throw new Error('HTTP status ' + response.status)
@@ -176,7 +178,7 @@ function formValidate (form) {
         })
         .then(response => { formSubmitOk(form) })
         .catch(error => {
-          if (gForm && error == 'Error: HTTP status 0') {
+          if (googleForm && error == 'Error: HTTP status 0') {
             formSubmitOk(form)
           } else {
             formSubmitError (error)

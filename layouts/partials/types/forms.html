@@ -28,18 +28,27 @@
           {{- $form_num      := cond (eq $num 1) "" (print "_" $num) -}}
           {{- $id_form       := replace (print $slug "_" $id $form_num) "-" "_" -}}
           {{- $netlify_forms := not .action -}}
-          {{- $action        := .action | default "/" -}}
+          {{- $formsubmit_co := in .action "formsubmit.co" -}}
+          {{- $action        := .action | default "/" | base64Encode -}}
+          {{- $subject       := print (i18n "form") " " $page_emoji " " $page.Title " " $section_emoji " " $section_name (cond (not $form_num) "" (print " 📌 " $num)) -}}
           {{/*  HEAD  */}}
           {{- if $js -}}
             {{- $name_js_form := print "form_" $id_form -}}
             const {{ $name_js_form }} = document.getElementById('{{ $name_js_form }}');
             {{ $name_js_form }} && {{ $name_js_form }}.insertAdjacentHTML('beforeend', ` {{- "" -}}
               <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" target="_blank"> {{- "" -}}
-                <input type="hidden" name="form-name" value="{{ $id_form }}">
+                {{- if $netlify_forms -}}
+                  <input type="hidden" name="form-name" value="{{ $id_form }}">
+                {{- end -}}
           {{- else -}}
-            <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" netlify name="{{ $id_form }}">
+            <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" {{- if $netlify_forms }} netlify{{ end }} name="{{ $id_form }}">
           {{- end -}}
-              <input type="hidden" name="subject" data-remove-prefix value="{{ i18n `form` }} {{ $page_emoji }} {{ $page.Title }} {{ $section_emoji }} {{ $section_name }} {{- if $form_num }} 📌 {{ $num }}{{ end }}" />
+            {{- if $netlify_forms -}}
+              <input type="hidden" name="subject" value="{{ $subject }}" data-remove-prefix>
+            {{- else if $formsubmit_co -}}
+              <input type="hidden" name="_subject" value="{{ $subject }}">
+              <input type="hidden" name="_template" value="box">
+            {{- end -}}
           {{ $num = add $num 1 }}
           {{/*  INPUTS  */}}
           {{- range .items -}}
