@@ -38,6 +38,8 @@ function toogleBodyTop (option) {
   if (option === 'add') {
     document.body.classList.add('body-top')
     menuChangeColor(true)
+    // Remove hash
+    history.replaceState('', '', '/')
   } else {
     document.body.classList.remove('body-top')
     menuChangeColor(false)

@@ -9,7 +9,8 @@ if(isSectionedPage) {
     e => {
       // When load if hash is section
       const hashIsNotModal = document.querySelector((location.hash || 'none') + ':not(.modal)')
-      if (hashIsNotModal || !location.hash) {
+      const bodyTop = document.querySelector('body.body-top')
+      if ((hashIsNotModal || !location.hash) && !bodyTop) {
         if(!menuItemActive) {
           // Remove menu item active
           const menuItemsActive = document.querySelectorAll('.menu__item--active')
