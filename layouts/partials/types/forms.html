@@ -36,7 +36,7 @@
             {{- $name_js_form := print "form_" $id_form -}}
             const {{ $name_js_form }} = document.getElementById('{{ $name_js_form }}');
             {{ $name_js_form }} && {{ $name_js_form }}.insertAdjacentHTML('beforeend', ` {{- "" -}}
-              <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" target="_blank" {{ if $formsubmit_co -}} enctype="multipart/form-data"{{ end }}> {{- "" -}}
+              <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" target="_blank"> {{- "" -}}
                 {{- if $netlify_forms -}}
                   <input type="hidden" name="form-name" value="{{ $id_form }}">
                 {{- end -}}
