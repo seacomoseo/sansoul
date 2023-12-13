@@ -111,7 +111,7 @@ function formValidate (form) {
   form.querySelectorAll('[type="file"]').forEach(input => {
     if (input.files.length > 0) {
       const file = input.files[0];
-      if (file.size > 8 * 1024 * 1024) {
+      if (file.size > 5 * 1024 * 1024) {
         input.style.borderColor = 'red'
         formError.innerHTML += '<li>{{ i18n "form-error-file" }}: <strong>' + input.placeholder.replace(' *', '') + '</strong></li>'
         valid = false
