@@ -92,7 +92,11 @@
       {{- $mp4  := "" -}}
       {{- $webm := "" -}}
       {{- if not (in .src ".webm") -}}
-        {{- $mp4  = $src.RelPermalink -}}
+        {{- with $src -}}
+          {{- with .RelPermalink -}}
+            {{- $mp4  = . -}}
+          {{- end -}}
+        {{- end -}}
         {{- with resources.Get ($path | replaceRE `\.(mp4|mov|avi)$` `.webm`) -}}
           {{- $webm = .RelPermalink -}}
         {{- end -}}
