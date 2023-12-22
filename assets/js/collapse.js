@@ -35,7 +35,7 @@ function collapse (click) {
   if (buttonIconTarget && buttonIconActive !== buttonIconTarget) {
     buttonIconTarget.classList.add('collapse__button-icon--active')
     // Scroll to self with offset
-    // setTimeout( () => scrollToOffset(buttonIconTarget) , 300 )
+    // setTimeout( () => scrollTo(buttonIconTarget) , 300 )
   }
 }
 

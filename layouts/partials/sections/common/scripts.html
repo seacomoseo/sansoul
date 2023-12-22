@@ -2,16 +2,15 @@
 {{ $js = $js | append (resources.Get "js/scrollbar.js") }}
 {{ $js = $js | append (resources.Get "js/load-script.js") }}
 {{ $js = $js | append (resources.Get "js/load-style.js") }}
-{{ $js = $js | append (resources.Get "js/scroll-behavior-smooth.js") }}
 {{ $js = $js | append (resources.Get "js/scroll-shot.js") }}
 {{ if site.Data.design.performance.showup }}
   {{ $js = $js | append (resources.Get "js/scroll-show.js") }}
 {{ end }}
 {{ $js = $js | append (resources.Get "js/scroll-top.js") }}
 {{ $js = $js | append (resources.Get "js/scroll-to-top.js") }}
-{{ $js = $js | append (resources.Get "js/scroll-to-offset.js") }}
+{{ $js = $js | append (resources.Get "js/scroll-to.js") }}
 {{ $js = $js | append (resources.Get "js/lazy-load.js") }}
-{{ $js = $js | append (resources.Get "js/ofuscate-links.js") }}
+{{ $js = $js | append (resources.Get "js/open-links.js") }}
 {{ $js = $js | append (resources.Get "js/mails.js") }}
 {{ if site.Data.design.performance.parallax }}
   {{ $js = $js | append (resources.Get "js/parallax.js") }}

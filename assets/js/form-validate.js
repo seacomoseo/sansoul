@@ -189,7 +189,7 @@ function formValidate (form) {
     }
   } else {
     // alert('Completa correctamente los campos requeridos')
-    scrollToOffset(formError)
+    scrollTo(formError)
     return false
   }
 }

@@ -8,10 +8,11 @@ window.addEventListener('load', () => {
     e => {
       e.removeAttribute('preload')
       e.removeAttribute('data-mute')
-      e.setAttribute('muted', '')
-      e.setAttribute('loop', '')
-      e.setAttribute('autoplay', '')
       e.setAttribute('playsinline', '')
+      e.muted = true
+      e.loop = true
+      e.autoplay = true
+      e.playsinline = true
       e.play()
     },
     undefined
