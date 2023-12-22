@@ -28,6 +28,7 @@
           {{- $form_num      := cond (eq $num 1) "" (print "_" $num) -}}
           {{- $id_form       := replace (print $slug "_" $id $form_num) "-" "_" -}}
           {{- $netlify_forms := not .action -}}
+          {{- $googleForm    := in .action "docs.google.com/forms" -}}
           {{- $formsubmit_co := in .action "formsubmit.co" -}}
           {{- $action        := .action | default "/" | base64Encode -}}
           {{- $subject       := print (i18n "form") " " $page_emoji " " $page.Title " " $section_emoji " " $section_name (cond (not $form_num) "" (print " 📌 " $num)) -}}
@@ -36,7 +37,7 @@
             {{- $name_js_form := print "form_" $id_form -}}
             const {{ $name_js_form }} = document.getElementById('{{ $name_js_form }}');
             {{ $name_js_form }} && {{ $name_js_form }}.insertAdjacentHTML('beforeend', ` {{- "" -}}
-              <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" target="_blank"> {{- "" -}}
+              <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" onsubmit="return formValidate(this)" target="_blank" {{ if $formsubmit_co -}} enctype="multipart/form-data"{{ end }}> {{- "" -}}
                 {{- if $netlify_forms -}}
                   <input type="hidden" name="form-name" value="{{ $id_form }}">
                 {{- end -}}
@@ -48,6 +49,8 @@
             {{- else if $formsubmit_co -}}
               <input type="hidden" name="_subject" value="{{ $subject }}">
               <input type="hidden" name="_template" value="table">
+              {{/*  <input type="hidden" name="_captcha" value="false">  */}}
+              {{/*  <input type="hidden" name="_next" value="{{ $page.Permalink }}#{{ $id }}">  */}}
             {{- end -}}
           {{ $num = add $num 1 }}
           {{/*  INPUTS  */}}
@@ -84,7 +87,7 @@
                 <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
                   <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
                   {{- range $option_k, $option := .options -}}
-                    {{- $name_option := cond (and $is_checkbox $netlify_forms) (print $name " " $option_k) $name -}}
+                    {{- $name_option := cond (and $is_checkbox (not $googleForm)) (print $name " " (add 1 $option_k)) $name -}}
                     <label class="contact__form-label">{{ "" -}}
                       <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name_option }}" value="{{ .option }}">
                       {{- .option -}}

@@ -2,7 +2,10 @@
 
 let formError, formSubmit
 
-function formGA4 (form) {
+function formSubmited (form) {
+  const customEventSubmit = new CustomEvent('submited_' + form.parentElement.id)
+  document.dispatchEvent(customEventSubmit)
+  // GA$
   {{ if hugo.IsProduction }}
     {{ with partial "functions/lang-param" (dict "parent" "config" "param" "google_analytics") }}
       gtag('event', 'contact_form_submit', {
@@ -133,14 +136,19 @@ function formValidate (form) {
 
   if (valid) {
     formError && formError.remove()
-    const action = window.atob(form.action.replace(location.origin + '/', ''))
+    const actionEncoded = form.action.replace(location.origin + '/', '')
+    const action = window.atob(actionEncoded)
     const isFileType = form.querySelector('[type="file"]')
     const netlifyForm = action === '/'
     const googleForm = action.indexOf('docs.google.com/forms') !== -1
     const formSubmitCo = action.indexOf('formsubmit.co') !== -1
     if (!netlifyForm && !googleForm && !formSubmitCo) {
-      formGA4(form)
-      return true
+      form.action = action
+      // like form.submit()
+      const submitFormFunction = Object.getPrototypeOf(form).submit
+      submitFormFunction.call(form)
+      form.action = actionEncoded
+      formSubmited(form)
     } else {
       formSubmit && formSubmit.remove()
       formSubmit = document.createElement('p')
@@ -152,9 +160,7 @@ function formValidate (form) {
       function formSubmitOk (form) {
         formSubmit.classList.add('contact__form-submit--ok')
         formSubmit.innerHTML = '<svg><use xlink:href="/draws.svg#circle-check"></use></svg> ' + closeIcon + ' {{ i18n "form-submit" 1 }}'
-        formGA4(form)
-        const customEventSubmit = new CustomEvent('submited_' + form.parentElement.id)
-        document.dispatchEvent(customEventSubmit)
+        formSubmited(form)
       }
       function formSubmitError (error) {
         formSubmit.classList.add('contact__form-submit--error')
@@ -184,12 +190,10 @@ function formValidate (form) {
             formSubmitError (error)
           }
         })
-
-      return false
     }
   } else {
     // alert('Completa correctamente los campos requeridos')
     scrollTo(formError)
-    return false
   }
+  return false
 }
