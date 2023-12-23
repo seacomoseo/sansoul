@@ -80,8 +80,8 @@ This website uses analytical cookies to collect statistics on user activity when
 
 | Cookie | Name | Purpose | Owner | More information |
 | --- | --- | --- | --- | --- |
-| HTTP(ESTADISTICA) | \_ga | 2 years. Record a unique identification that is used to generate statistical data on how the visitor uses the website. Data sent to the US, country not appropriate to GDPR. | {{% legal web %}} | [{{% legal web %}}]({{% legal https %}}) |
-| HTTP(STATISTICS) | \_ga\_# | 2 years. It collects on a number of times a user has visited the website, in addition to the dates of the first visit and the most recent. Used by Google Analytics. Data sent to the US, country not appropriate to GDPR. | frutasberi.com | [{{% legal web %}}]({{% legal https %}}) |
+| HTTP(ESTADISTICA) | \_ga | 2 years. Record a unique identification that is used to generate statistical data on how the visitor uses the website. Data sent to the US, country not appropriate to GDPR. | google.com | [{{% legal web %}}]({{% legal https %}}) |
+| HTTP(STATISTICS) | \_ga\_# | 2 years. It collects on a number of times a user has visited the website, in addition to the dates of the first visit and the most recent. Used by Google Analytics. Data sent to the US, country not appropriate to GDPR. | google.com | [{{% legal web %}}]({{% legal https %}}) |
 | Pixel. Session. | \_ads/ga-audiences | Session. Used by Google Adwords to reconnect with visitors who have the possibility of becoming customers, it is based on the client's online behavior through the websites. Data sent to the US, country not appropriate to GDPR. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 | HTTP(Marketing) | NID | 6 months. Record a unique identification that identifies the device of a user. Identification is used for specific ads. Data sent to the US, country not appropriate to GDPR. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 
