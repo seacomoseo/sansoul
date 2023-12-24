@@ -172,9 +172,10 @@
     {{ if $bg_image_src }}
       {{ $bg_image_opacity  := cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) }}
       {{ $bg_image_parallax := cond (not (.parallax | and $bg_image_src | and (not $parallax_fixed))) "" " parallax" }}
+      {{- $image_grayscale := cond (not .grayscale) "" " image--grayscale" -}}
       <div class="bg-figure {{ $bg_image_opacity }} {{ $bg_image_parallax }}">
           {{ partial "components/image" (dict
-            "class"     "bg-figure-image"
+            "class"     (print "bg-figure-image" $image_grayscale)
             "src"       $bg_image_src
             "container" $.container
             "span"      $item_columns_span
