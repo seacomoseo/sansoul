@@ -20,13 +20,17 @@
   height: 100%;
   overflow: hidden;
 }
+:root {
+  --gallery-image-hover-transform: scale(1.125) rotate(2deg);
+  --gallery-image-hover-transform-odd: scale(1.125) rotate(-2deg);
+}
 .gallery:not(.gallery--grayscale) > {
   .gallery__item {
     &:hover,
     &:focus,
     &:active {
       > .gallery__image {
-        transform: scale(1.125) rotate(2deg);
+        transform: var(--gallery-image-hover-transform);
       }
     }
   }
@@ -35,7 +39,7 @@
     &:focus,
     &:active {
       > .gallery__image {
-        transform: scale(1.125) rotate(-2deg);
+        transform: var(--gallery-image-hover-transform-odd);
       }
     }
   }

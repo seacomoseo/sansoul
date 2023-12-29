@@ -54,13 +54,15 @@
         <div class="review">
           <div class="{{ $review_class }}">
             <div class="bg-color"></div>
-            {{- partial "components/icon" (dict "class" "review__icon" "icon" "quote-left") -}}
+            {{- $icon       := .icon | default "quote-left" -}}
+            {{- $icon_right := .icon_right | default .icon | default "quote-right" -}}
+            {{- partial "components/icon" (dict "class" "review__icon" "icon" $icon) -}}
             <blockquote class="review__text">
               <div class="description">
                 {{- partial "functions/md" (dict "content" .description "not_header_links" true) -}}
               </div>
             </blockquote>
-            {{- partial "components/icon" (dict "class" "review__icon review__icon--right" "icon" "quote-right") -}}
+            {{- partial "components/icon" (dict "class" "review__icon review__icon--right" "icon" $icon_right) -}}
           </div>
           <div class="review__author">
             {{- if .image -}}

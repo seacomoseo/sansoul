@@ -55,8 +55,8 @@
         {{- else if eq .type "phone" -}}
           {{- $class   = "contact__phone" -}}
           {{- $link    = print "tel:+" $num -}}
-          {{- $icon    = "phone" -}}
-          {{- $emoji   = "📞" -}}
+          {{- $icon    = .icon | default "phone" -}}
+          {{- $emoji   = .icon | default "📞" -}}
           {{- $label   = i18n "callnow-phone" 1 -}}
           {{- $noindex = true -}}
         {{- else if eq .type "whatsapp" -}}

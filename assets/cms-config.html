@@ -239,7 +239,7 @@
     "allow_add"      true
     "required"       false
     "types"     (slice
-      (dict "label" `Teléfono` "name" `phone`    "widget" `object` "fields" (slice $contact_label_phone $button_color))
+      (dict "label" `Teléfono` "name" `phone`    "widget" `object` "fields" (slice $contact_label_phone $button_color $icon_id))
       (dict "label" `WhatsApp` "name" `whatsapp` "widget" `object` "fields" (slice $contact_label_phone $button_color))
       (dict
         "label"  `Personalizado`
@@ -679,6 +679,8 @@
             $slider_interval
             $slider_hide_bullets
             $slider_hide_arrows
+            (merge $icon_id (dict "label" `Icono Izquierda` "name" `icon`))
+            (merge $icon_id (dict "label" `Icono Derecha`   "name" `icon_right`))
           )
         )
         (dict
@@ -724,7 +726,7 @@
                 $contact_full
               )
             )
-            (dict "label" `Teléfono`            "name" `phone`    "widget" `object` "required" false "fields" (slice $contact_label $contact_full $button_color $button_font_alt))
+            (dict "label" `Teléfono`            "name" `phone`    "widget" `object` "required" false "fields" (slice $contact_label $contact_full $button_color $button_font_alt $icon_id))
             (dict "label" `WhatsApp`            "name" `whatsapp` "widget" `object` "required" false "fields" (slice $contact_label $contact_full $button_color $button_font_alt))
             (dict "label" `eMail`               "name" `mail`     "widget" `object` "required" false "fields" (slice $contact_label $contact_full $button_color $button_font_alt))
             (dict "label" `Dirección`           "name" `address`  "widget" `object` "required" false "fields" ($contact_address_fields | append $contact_full $button_color $button_font_alt))
