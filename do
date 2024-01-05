@@ -86,29 +86,70 @@ then
 elif [ $1 = fonts ]
 then
 
-  echo "${STI} GO _TOOLS ${STE}"
-  cd ../_tools
+  SRC_DIR="assets/fonts"
+  DEST_DIR="static/fonts"
+  CSS_FILE="assets/css/_fonts.scss"
 
-  echo "${STI} CHANGE DOMAIN IN GULP FILE ${STE}"
-  sed -i ".bak" "s/^const domain = '.*'/const domain = '${PROYECT}'/g" gulpfile.js
+  # Create output dir if not exist
+  mkdir -p $DEST_DIR
 
-  echo "${STI} REMOVE .BAK ${STE}"
-  rm *.bak
+  # Each font
+  for font in $SRC_DIR/*; do
+    if [ -f "$font" ]; then
+      filename=$(basename "$font" | cut -d. -f1)
+      filename_min=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
+      fontname=$(fc-scan --format "%{family}" "$font")
+      if [ -z "$fontname" ]; then
+        fontname="$filename"
+      elif [[ $fontname == *,* ]]; then
+        fontname=${fontname%%,*}
+      fi
 
-  echo "${STI} GULP FONTS ${STE}"
-  gulp fonts
+      type=$(fc-scan --format "%{style}" "$font")
 
-  echo "${STI} GO PROJECT ${STE}"
-  cd "../${PROYECT}"
+      style="normal"
+      if [[ $type == *"Italic"* ]]; then
+        style="italic"
+      fi
 
-  echo "${STI} ADD FONT DISPLAY SWAP ${STE}"
-  cat static/fonts/*.css | perl -p -e "s/\}/    font-display: swap;\n}\n/gm" > assets/css/_fonts.scss
+      weight="400"
+      if [[ $type == "Thin"* ]]; then
+        weight="100"
+      elif [[ $type == "ExtraLight"* ]]; then
+        weight="200"
+      elif [[ $type == "Light"* ]]; then
+        weight="300"
+      elif [[ $type == "Regular"* ]]; then
+        weight="400"
+      elif [[ $type == "Medium"* ]]; then
+        weight="500"
+      elif [[ $type == "SemiBold"* ]]; then
+        weight="600"
+      elif [[ $type == "Bold"* ]]; then
+        weight="700"
+      elif [[ $type == "ExtraBold"* ]]; then
+        weight="800"
+      elif [[ $type == "Black"* ]]; then
+        weight="900"
+      fi
 
-  echo "${STI} REMOVE FONTS IN CSS EXCEPT WOFF2 ${STE}"
-  perl -p0i -e 's/    src: url...fonts.(.*?).eot..;(.|\n)*?;/    src: url("\/fonts\/$1.woff2") format("woff2");/gm' assets/css/_fonts.scss
+      # To woff2
+      woff2_compress "$font"
+      mv "$SRC_DIR/$filename.woff2" "$DEST_DIR/$filename_min.woff2"
 
-  echo "${STI} REMOVE FONT FILES EXCEPT WOFF2 ${STE}"
-  rm static/fonts/*.{svg,eot,woff,ttf,css}
+      # Add to CSS
+      echo \
+"@font-face {
+  font-family: '$fontname';
+  src: url('/fonts/$filename_min.woff2') format('woff2');
+  font-style: $style;
+  font-weight: $weight;
+  font-display: swap;
+}" >> $CSS_FILE
+
+      echo "${STI} Converted $font to $woff2_file ${STE}"
+    fi
+  done
 
 # remove binary files from history
 elif [ $1 = clean ]
