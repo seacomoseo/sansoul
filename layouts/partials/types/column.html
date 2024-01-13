@@ -155,10 +155,8 @@
   {{/*  ITEM  */}}
   <div class="{{ $item_class }}"
     {{- if not $slider_active | and (not $.first) | and $showup }} data-showup {{ end -}}
-    {{- if $lightbox -}}
-      data-lightbox="{{ $link | safeURL }}" data-h {{/* data-h to give link style */}}
-    {{- else if $button_unike_link -}}
-      data-{{ cond $external `b` `h` }}="{{ $link | base64Encode }}"
+    {{- if $lightbox                                            }} data-lightbox="{{ $link | safeURL }}" data-h {{/* data-h to give link style */}}
+    {{- else if $button_unike_link                              }} data-{{ cond $external `b` `h` }}="{{ $link | base64Encode }}"
     {{- end -}}
   >
 
