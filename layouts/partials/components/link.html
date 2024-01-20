@@ -12,7 +12,7 @@
 {{- if .link | or (eq .label "none") -}}
 
   {{- $label       := .label | default (i18n `more`)  -}}
-  {{- $anchor      := cond (ne .anchor .label) .anchor false  -}}
+  {{- $anchor      := cond (ne .anchor .label) .anchor "" -}}
   {{- $external    := strings.HasPrefix .link "http" -}}
   {{- $page_title  := "" -}}
   {{- $lightbox    := findRE `\.(jpg|png|gif|webp|svg)` .link -}}
@@ -26,14 +26,14 @@
   {{- end -}}
 
   {{- if not $external | and (not $anchor_link) | and (not .noindex) -}}
-    {{- $linkCleaned  := .link | replaceRE `#.*` `` -}}
-    {{- $pages        := where site.Pages "RelPermalink" $linkCleaned -}}
-    {{- $pageInternal := index $pages 0 | default site.Home -}}
-    {{- with $pageInternal -}}
+    {{- $link_cleaned  := .link | replaceRE `#.*` `` -}}
+    {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
+    {{- $page_internal := index $pages 0 | default site.Home -}}
+    {{- with $page_internal -}}
       {{- if .Params.noindex -}}
         {{- $noindex = true -}}
       {{- else -}}
-        {{- $page_title = .Params.title_seo | default .Title -}}
+        {{- $page_title = partial "functions/anchor-page" . -}}
       {{- end -}}
     {{- else -}}
       {{- $noindex = true -}}
