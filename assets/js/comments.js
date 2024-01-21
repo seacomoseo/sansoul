@@ -23,14 +23,12 @@ function showComments () {
 }
 
 // Lazy-Load show comments
-scrollShot(
-  '0%',
-  '.comments',
+scrollShot({
+  rootMargin: '0%',
+  query: '.comments',
   // () => document.querySelector('.comments__show').remove(),
-  undefined,
-  () => {
+  doStart: () => {
     loadComments()
     showComments()
-  },
-  undefined
-)
+  }
+})

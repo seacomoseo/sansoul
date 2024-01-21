@@ -1,5 +1,5 @@
 // SCROLL-SHOT FUNCTION
-function scrollShot (windowMargin, selectorCSS, doOnLoad = () => undefined, doStart, doEnd = undefined) {
+function scrollShot ({ rootMargin, query, doOnLoad = () => null, doStart, doEnd = null }) {
   const callbackScroll = (entries, observer) =>
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -11,10 +11,8 @@ function scrollShot (windowMargin, selectorCSS, doOnLoad = () => undefined, doSt
         doEnd(entry.target)
       }
     })
-  const observerScroll = new window.IntersectionObserver(callbackScroll, {
-    rootMargin: windowMargin
-  })
-  document.querySelectorAll(selectorCSS).forEach(nodo => {
+  const observerScroll = new window.IntersectionObserver(callbackScroll, { rootMargin })
+  document.querySelectorAll(query).forEach(nodo => {
     observerScroll.observe(nodo)
     doOnLoad(nodo)
   })

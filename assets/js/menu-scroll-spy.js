@@ -2,11 +2,10 @@
 const isSectionedPage = document.querySelector('body.type-page')
 const menuItemActive  = document.querySelector('.menu__item--active')
 if(isSectionedPage) {
-  scrollShot(
-    '-50% 0% -50%',
-    '.section[id]:not(footer),#header',
-    undefined,
-    e => {
+  scrollShot({
+    rootMargin: '-50% 0% -50%',
+    query: '.section[id]:not(footer),#header',
+    doStart: e => {
       // When load if hash is section
       const hashIsNotModal = document.querySelector((location.hash || 'none') + ':not(.modal)')
       const bodyTop = document.querySelector('body.body-top')
@@ -28,6 +27,6 @@ if(isSectionedPage) {
         history.replaceState('', '', hash)
       }
     },
-    () => undefined
-  )
+    doEnd: () => null // For not unobserve
+  })
 }

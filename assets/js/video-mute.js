@@ -1,11 +1,10 @@
 // Require scroll-shot.js
 // When load DOM and sources
 window.addEventListener('load', () => {
-  scrollShot(
-    '0%',
-    '[data-mute]',
-    undefined,
-    e => {
+  scrollShot({
+    rootMargin: '0%',
+    query: '[data-mute]',
+    doStart: e => {
       e.removeAttribute('preload')
       e.removeAttribute('data-mute')
       e.setAttribute('playsinline', '')
@@ -14,7 +13,6 @@ window.addEventListener('load', () => {
       e.autoplay = true
       e.playsinline = true
       e.play()
-    },
-    undefined
-  )
+    }
+  })
 })

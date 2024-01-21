@@ -1,10 +1,9 @@
 // google spreadsheets
 
-scrollShot(
-  '600px 0%',
-  '[data-gss]',
-  undefined,
-  e => {
+scrollShot({
+  rootMargin: '600px 0%',
+  query: '[data-gss]',
+  doStart: e => {
     const url = e.dataset.gss
     const xhr = new XMLHttpRequest()
     xhr.open('GET', url, true)
@@ -16,6 +15,5 @@ scrollShot(
       document.querySelectorAll('.row-header-shim').forEach(e => e.remove())
     }
     xhr.send()
-  },
-  undefined
-)
+  }
+})

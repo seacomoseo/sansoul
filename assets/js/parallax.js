@@ -16,13 +16,12 @@ if (parallaxElements[0]) {
   }
 
   // Toggle class parallax--scroll when element is in viewport
-  scrollShot(
-    '0%',
-    '.parallax > *:first-child',
-    undefined,
-    e => e.classList.add('parallax--scroll'),
-    e => e.classList.remove('parallax--scroll')
-  )
+  scrollShot({
+    rootMargin: '0%',
+    query: '.parallax > *:first-child',
+    doStart: e => e.classList.add('parallax--scroll'),
+    doEnd: e => e.classList.remove('parallax--scroll')
+  })
 
   window.addEventListener('scroll', () => {
     parallaxElements.forEach(e => e.classList.contains('parallax--scroll') ? parallax(e) : null)

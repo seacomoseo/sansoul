@@ -46,10 +46,10 @@ function toogleBodyTop (option) {
   }
 }
 
-scrollShot(
-  '20% 0% -120%',
-  'body',
-  toogleBodyTop,
-  toogleBodyTop,
-  () => toogleBodyTop('add')
-)
+scrollShot({
+  rootMargin: '20% 0% -120%',
+  query: 'body',
+  doOnLoad: toogleBodyTop,
+  doStart: toogleBodyTop,
+  doEnd: () => toogleBodyTop('add')
+})

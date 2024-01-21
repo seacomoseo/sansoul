@@ -30,10 +30,8 @@ function lightbox () {
   }
 }
 
-scrollShot(
-  '0%',
-  '[data-lightbox]',
-  () => {},
-  gallery => loadScript('/js/simple-lightbox.min.js', lightbox),
-  undefined
-)
+scrollShot({
+  rootMargin: '0%',
+  query: '[data-lightbox]',
+  doStart: gallery => loadScript('/js/simple-lightbox.min.js', lightbox)
+})
