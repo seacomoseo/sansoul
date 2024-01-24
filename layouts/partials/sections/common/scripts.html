@@ -8,10 +8,6 @@
 {{ $screenSticky      := site.Data.menu.screen_sticky | default 0 }}
 {{ $i18nVideo         := i18n `video` }}
 {{ $isLangEn          := eq .Lang "en" -}}
-{{ $formsLoad         := partial "types/forms" (dict "js" true "Page" .Page)
-  | replaceRE `\s{2,}` ` `
-  | replaceRE `\n` ``
-}}
 {{ $formErrorSingleQuotes := i18n "form-error-single-quotes" }}
 {{ $formErrorRequiredOne  := i18n "form-error-required" 1 }}
 {{ $formErrorRequired     := i18n "form-error-required" }}
@@ -21,8 +17,12 @@
 {{ $formErrorAcept        := i18n "form-error-acept" }}
 {{ $formSubmitOne         := i18n "form-submit" 1 }}
 {{ $formSubmitOther       := i18n "form-submit" }}
-{{ $custom            := "" -}}
-{{ $customString      := "" -}}
+{{ $formsLoad    := partial "types/forms" (dict "js" true "Page" .Page)
+  | replaceRE `\s{2,}` ` `
+  | replaceRE `\n` ``
+}}
+{{ $custom       := (resources.Get "js/custom.js").Content -}}
+{{ $customString := "" -}}
 
 {{ if site.Data.design.performance.showup }}
   {{ $isScrollShow = true -}}
@@ -50,10 +50,6 @@
   {{ end }}
 {{ end }}
 
-{{ with readFile "assets/js/custom.js" }}
-  {{ $custom = . }}
-{{ end }}
-
 {{ with partial "functions/lang-params-custom-code" (dict "params" "js") }}
   {{ $customString =
     (.
@@ -63,6 +59,8 @@
     | safeJS
   -}}
 {{ end }}
+
+{{ $asTemplate := print $formsLoad $custom $customString }}
 
 
 {{ $opts := dict
@@ -98,7 +96,10 @@
   {{ $opts = merge $opts (dict "minify" true) }}
 {{ end }}
 
-{{ $js := resources.Get "js/_index.js" | js.Build $opts }}
+{{ $js := resources.Get "js/_index.js"
+  | resources.ExecuteAsTemplate (print "aux_scripts." $.Lang) $asTemplate
+  | js.Build $opts
+}}
 
 {{ if hugo.IsProduction }}
   {{ $js = $js | fingerprint }}

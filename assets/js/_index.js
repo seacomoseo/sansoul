@@ -6,12 +6,8 @@ import {
   isCookies,
   disqusId,
   isGoogleTranslate,
-  googleAnalyticsId,
-  formsLoad,
-  custom,
-  customString
+  googleAnalyticsId
 } from '@params'
-import { scrollShot } from './scroll-shot.js'
 import { initScrollbar } from './scrollbar.js'
 import { initScrollShow } from './scroll-show.js'
 import { initScrollTop } from './scroll-top.js'
@@ -56,7 +52,6 @@ initGss()
 if (isCookies) initCookies()
 initCollapse()
 initSliders()
-eval(formsLoad)
 initFormValidate()
 if (disqusId) initComments()
 if (isGoogleTranslate) initGoogleTranslate()
@@ -64,5 +59,4 @@ initNetlifyIdentity()
 initSimpleLightbox()
 initPrerender()
 if (googleAnalyticsId) initGa4()
-eval(custom)
-eval(customString)
+{{ . }}
