@@ -11,6 +11,7 @@ import {
   custom,
   customString
 } from '@params'
+import { scrollShot } from './scroll-shot.js'
 import { initScrollbar } from './scrollbar.js'
 import { initScrollShow } from './scroll-show.js'
 import { initScrollTop } from './scroll-top.js'
