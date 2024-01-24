@@ -272,7 +272,6 @@ then
 
   echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
   cp ./themes/sansoul/package.json ./
-  cp ./themes/sansoul/babel.config.js ./
   cp ./themes/sansoul/postcss.config.js ./
 
   echo "${STI} RUN HUGO PRODUCTION ${STE}"

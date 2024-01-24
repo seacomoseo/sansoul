@@ -4,7 +4,7 @@ fixedsearch — Super fast, client side search for Hugo.io with Fusejs.io
 based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
 -------------------------------------------------------------- */
 
-let fixedsearch = (function () {
+(function () {
   const searchForm = document.getElementById('search__form') // search form
   const searchInput = document.getElementById('search__input') // input box for search
   const searchSubmit = document.getElementById('search__submit') // form submit button
@@ -26,8 +26,9 @@ let fixedsearch = (function () {
     // console.log(event); // DEBUG
     // Ctrl + / to show or hide Search
     // if (event.metaKey && event.which === 191) {
+    // eslint-disable-next-line
     if (event.ctrlKey && event.which === 191) {
-      search_toggle_focus(e) // toggle visibility of search box
+      searchToggleFocus(e) // toggle visibility of search box
     }
   })
 
@@ -38,17 +39,17 @@ let fixedsearch = (function () {
     // Allow ESC (27) to close search box
     if (e.keyCode === 27) {
       searchFocus = true // make sure toggle removes focus
-      search_toggle_focus(e)
+      searchToggleFocus(e)
     }
 
     // DOWN (40) arrow
     if (e.keyCode === 40) {
       if (resultsAvailable) {
         e.preventDefault() // stop window from scrolling
-        if (document.activeElement === searchInput) { first.focus() } // if the currently focused element is the main input --> focus the first <li>
-        else if (document.activeElement === last) { first.focus() } // if we're at the bottom, loop to the start
-        // else if ( document.activeElement === last ) { last.focus(); } // if we're at the bottom, stay there
-        else { document.activeElement.parentElement.nextSibling.firstElementChild.focus() } // otherwise select the next search result
+        if (document.activeElement === searchInput) first.focus() // if the currently focused element is the main input --> focus the first <li>
+        else if (document.activeElement === last) first.focus() // if we're at the bottom, loop to the start
+        // else if ( document.activeElement === last ) last.focus() // if we're at the bottom, stay there
+        else document.activeElement.parentElement.nextSibling.firstElementChild.focus() // otherwise select the next search result
       }
     }
 
@@ -56,9 +57,9 @@ let fixedsearch = (function () {
     if (e.keyCode === 38) {
       if (resultsAvailable) {
         e.preventDefault() // stop window from scrolling
-        if (document.activeElement === searchInput) { searchInput.focus() } // If we're in the input box, do nothing
-        else if (document.activeElement === first) { searchInput.focus() } // If we're at the first item, go to input box
-        else { document.activeElement.parentElement.previousSibling.firstElementChild.focus() } // Otherwise, select the search result above the current active one
+        if (document.activeElement === searchInput) searchInput.focus() // If we're in the input box, do nothing
+        else if (document.activeElement === first) searchInput.focus() // If we're at the first item, go to input box
+        else document.activeElement.parentElement.previousSibling.firstElementChild.focus() // Otherwise, select the search result above the current active one
       }
     }
 
@@ -72,7 +73,7 @@ let fixedsearch = (function () {
 
     // Use Backspace (8) to switch back to the search input
     if (e.keyCode === 8) {
-      if (document.activeElement != searchInput) {
+      if (document.activeElement !== searchInput) {
         e.preventDefault() // stop browser from going back in history
         searchInput.focus()
       }
@@ -83,14 +84,14 @@ let fixedsearch = (function () {
   Load our json data and builds fuse.js search index
   -------------------------------------------------------------- */
   searchForm.addEventListener('focusin', function (e) {
-    search_init() // try to load the search index
+    searchInit() // try to load the search index
   })
 
   /* --------------------------------------------------------------
   Make submit button toggle focus
   -------------------------------------------------------------- */
   searchForm.addEventListener('submit', function (e) {
-    search_toggle_focus(e)
+    searchToggleFocus(e)
     e.preventDefault()
     return false
   })
@@ -100,7 +101,7 @@ let fixedsearch = (function () {
   -------------------------------------------------------------- */
   searchForm.addEventListener('focusout', function (e) {
     if (e.relatedTarget === null) {
-      search_toggle_focus(e)
+      searchToggleFocus(e)
     } else if (e.relatedTarget.type === 'submit') {
       e.stopPropagation()
     }
@@ -109,7 +110,7 @@ let fixedsearch = (function () {
   /* --------------------------------------------------------------
   Toggle focus UI of form
   -------------------------------------------------------------- */
-  function search_toggle_focus (e) {
+  function searchToggleFocus (e) {
     // console.log(e); // DEBUG
     // order of operations is very important to keep focus where it should stay
     if (!searchFocus) {
@@ -128,7 +129,8 @@ let fixedsearch = (function () {
   /* --------------------------------------------------------------
   Fetch some json without jquery
   -------------------------------------------------------------- */
-  function fetch_JSON (path, callback) {
+  function fetchJSON (path, callback) {
+    // eslint-disable-next-line
     const httpRequest = new XMLHttpRequest()
     httpRequest.onreadystatechange = function () {
       if (httpRequest.readyState === 4) {
@@ -146,7 +148,7 @@ let fixedsearch = (function () {
   Load script
   based on https://stackoverflow.com/a/55451823
   -------------------------------------------------------------- */
-  function load_script (url) {
+  function loadScript (url) {
     return new Promise(function (resolve, reject) {
       const script = document.createElement('script')
       script.onerror = reject
@@ -164,12 +166,12 @@ let fixedsearch = (function () {
   Load our search index, only executed once
   on first call of search box (Ctrl + /)
   -------------------------------------------------------------- */
-  function search_init () {
+  function searchInit () {
     if (firstRun) {
-      load_script(location.origin + '/js/fuse.js').then(() => {
+      loadScript(window.location.origin + '/js/fuse.js').then(() => {
         searchInput.value = '' // reset default value
         firstRun = false // let's never do this again
-        fetch_JSON('{{ site.Home.RelPermalink }}index.json', function (data) {
+        fetchJSON('{{ site.Home.RelPermalink }}index.json', function (data) {
           const options = { // fuse.js options; check fuse.js website for details
             shouldSort: true,
             location: 0,
@@ -192,10 +194,11 @@ let fixedsearch = (function () {
             ]
           }
 
+          // eslint-disable-next-line
           fuse = new Fuse(data, options) // build the index from the json file
 
           searchInput.addEventListener('keyup', function (e) { // execute search as each character is typed
-            search_exec(this.value)
+            searchExec(this.value)
           })
           // console.log("index.json loaded"); // DEBUG
         })
@@ -208,13 +211,13 @@ let fixedsearch = (function () {
   a search query (for "term") every time a letter is typed
   in the search box
   -------------------------------------------------------------- */
-  function search_exec (term) {
+  function searchExec (term) {
     const results = fuse.search(term) // the actual query being run using fuse.js
-    let search_items = '' // our results bucket
+    let searchItems = '' // our results bucket
 
     if (results.length === 0) { // no results based on what was typed into the input box
       resultsAvailable = false
-      search_items = '{{ i18n "search-no-results" }}'
+      searchItems = '{{ i18n "search-no-results" }}'
     } else { // build our html
       for (const item in results.slice(0, 5)) { // only show first 5 results
         let searchItemImage = ''
@@ -261,7 +264,7 @@ let fixedsearch = (function () {
               </i>
             </div>`
         }
-        search_items = search_items +
+        searchItems = searchItems +
           `
           {{- $articles := site.Data.articles.common -}}
           {{- $design := site.Data.design -}}
@@ -311,23 +314,11 @@ let fixedsearch = (function () {
               ${searchItemReadingTime}
             </div>
         </article>`
-        // search_items = search_items + '<li class="search__result-item">' +
-        //   '<a class="search__result-link" href="' + results[item].item.link + '" tabindex="0">' +
-        //     '<div class="search__result-title">' + results[item].item.title + '</div>' +
-        //     // '<div class="search__result-date">' + results[item].item.date + '</div>' +
-        //     '<div class="search__result-card">' + results[item].item.card + '</div>' +
-        //     // '<div class="search__result-contents">' + results[item].item.contents + '</div>' +
-        //     // '<div class="search__result-type">'+ results[item].item.type +'</div>' +
-        //     // '<div class="search__result-categories">'+ results[item].item.categories.join(', ') +'</div>' +
-        //     // '<div class="search__result-tags">'+ results[item].item.tags.join(', ') +'</div>' +
-        //     // '<div class="search__result-author">'+ results[item].item.author +'</div>' +
-        //   '</a>' +
-        // '</li>';
       }
       resultsAvailable = true
     }
 
-    searchResults.innerHTML = search_items
+    searchResults.innerHTML = searchItems
     if (results.length > 0) {
       first = searchResults.firstChild.firstElementChild // first result container — used for checking against keyboard up/down location
       last = searchResults.lastChild.firstElementChild // last result container — used for checking against keyboard up/down location

@@ -1,5 +1,11 @@
 // SCROLL-SHOT FUNCTION
-function scrollShot ({ rootMargin, query, doOnLoad = () => null, doStart, doEnd = null }) {
+export function scrollShot ({
+  rootMargin,
+  query,
+  doOnLoad = () => null,
+  doStart,
+  doEnd = null
+}) {
   const callbackScroll = (entries, observer) =>
     entries.forEach(entry => {
       if (entry.isIntersecting) {

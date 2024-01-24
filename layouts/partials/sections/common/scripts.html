@@ -1,59 +1,106 @@
-{{ $js := slice }}
-{{ $js = $js | append (resources.Get "js/scrollbar.js") }}
-{{ $js = $js | append (resources.Get "js/load-script.js") }}
-{{ $js = $js | append (resources.Get "js/load-style.js") }}
-{{ $js = $js | append (resources.Get "js/scroll-shot.js") }}
+{{ $isCookies         := false -}}
+{{ $isScrollShow      := false -}}
+{{ $isParallax        := false }}
+{{ $disqusId          := "" }}
+{{ $isGoogleTranslate := false }}
+{{ $lang              := .Lang }}
+{{ $googleAnalyticsId := "" }}
+{{ $screenSticky      := site.Data.menu.screen_sticky | default 0 }}
+{{ $i18nVideo         := i18n `video` }}
+{{ $isLangEn          := eq .Lang "en" -}}
+{{ $formsLoad         := partial "types/forms" (dict "js" true "Page" .Page)
+  | replaceRE `\s{2,}` ` `
+  | replaceRE `\n` ``
+}}
+{{ $formErrorSingleQuotes := i18n "form-error-single-quotes" }}
+{{ $formErrorRequiredOne  := i18n "form-error-required" 1 }}
+{{ $formErrorRequired     := i18n "form-error-required" }}
+{{ $formErrorEmail        := i18n "form-error-email" }}
+{{ $formErrorNumber       := i18n "form-error-number" }}
+{{ $formErrorFile         := i18n "form-error-file" }}
+{{ $formErrorAcept        := i18n "form-error-acept" }}
+{{ $formSubmitOne         := i18n "form-submit" 1 }}
+{{ $formSubmitOther       := i18n "form-submit" }}
+{{ $custom            := "" -}}
+{{ $customString      := "" -}}
+
 {{ if site.Data.design.performance.showup }}
-  {{ $js = $js | append (resources.Get "js/scroll-show.js") }}
+  {{ $isScrollShow = true -}}
 {{ end }}
-{{ $js = $js | append (resources.Get "js/scroll-top.js") }}
-{{ $js = $js | append (resources.Get "js/scroll-to-top.js") }}
-{{ $js = $js | append (resources.Get "js/scroll-to.js") }}
-{{ $js = $js | append (resources.Get "js/lazy-load.js") }}
-{{ $js = $js | append (resources.Get "js/open-links.js") }}
-{{ $js = $js | append (resources.Get "js/mails.js") }}
+
 {{ if site.Data.design.performance.parallax }}
-  {{ $js = $js | append (resources.Get "js/parallax.js") }}
+  {{ $isParallax = true }}
 {{ end }}
-{{ $js = $js | append (resources.Get "js/modal.js") }}
-{{ $js = $js | append (resources.Get "js/menu-toggle.js") }}
-{{ $js = $js | append (resources.Get "js/menu-scroll-spy.js") }}
-{{ $js = $js | append (resources.Get "js/iframe-poster.js") }}
-{{ $js = $js | append (resources.Get "js/video-mute.js") }}
-{{ $js = $js | append (resources.Get "js/video-fullscreen.js") }}
-{{ $js = $js | append (resources.Get "js/gss.js") }}
+
 {{ if site.GetPage "pages/cookies" }}
-  {{ $js = $js | append (resources.Get "js/cookies.js") }}
+  {{ $isCookies = true }}
 {{ end }}
-{{ $js = $js | append (resources.Get "js/collapse.js") }}
-{{ $js = $js | append (resources.Get "js/slider.js") }}
-{{ $js = $js | append (resources.Get "js/form-load.js") }}
-{{ $js = $js | append (resources.Get "js/form-validate.js") }}
-{{ if partial "functions/lang-param" (dict "parent" "config" "param" "disqus" "default" false) }}
-  {{ $js = $js | append (resources.Get "js/comments.js") }}
+
+{{ with partial "functions/lang-param" (dict "parent" "config" "param" "disqus" "default" "") }}
+  {{ $disqusId = . }}
 {{ end }}
+
 {{ if partial "functions/lang-param" (dict "parent" "menu" "param" "google_translate" "default" false) }}
-  {{ $js = $js | append (resources.Get "js/google-translate.js") }}
+  {{ $isGoogleTranslate = true }}
 {{ end }}
-{{ $js = $js | append (resources.Get "js/netlify-identity.js") }}
-{{ $js = $js | append (resources.Get "js/simple-lightbox.js") }}
-{{ $js = $js | append (resources.Get "js/prerender.js") }}
+
 {{ if hugo.IsProduction }}
-  {{ if partial "functions/lang-param" (dict "parent" "config" "param" "google_analytics" "default" false) }}
-    {{ $js = $js | append (resources.Get "js/ga4.js") }}
+  {{ with partial "functions/lang-param" (dict "parent" "config" "param" "google_analytics" "default" "") }}
+    {{ $googleAnalyticsId = . }}
   {{ end }}
 {{ end }}
-{{ $js = $js | append (resources.Get "js/custom.js") }}
-{{ $js = $js | append (resources.Get "js/custom-string.js") }}
 
-{{ $js = $js
-  | resources.Concat (print "js/scripts." .Lang ".js")
-  | resources.ExecuteAsTemplate (print site.Home.RelPermalink "js/scripts.js") .
+{{ with readFile "assets/js/custom.js" }}
+  {{ $custom = . }}
+{{ end }}
+
+{{ with partial "functions/lang-params-custom-code" (dict "params" "js") }}
+  {{ $customString =
+    (.
+      | resources.FromString (print "aux_js." $.Lang)
+      | resources.ExecuteAsTemplate (print "aux_js." $.Lang) $.Page
+    ).Content
+    | safeJS
+  -}}
+{{ end }}
+
+
+{{ $opts := dict
+  "targetPath" (print site.Home.RelPermalink "js/scripts.js")
+  "params" (dict
+    "isCookies" $isCookies
+    "isScrollShow" $isScrollShow
+    "isParallax" $isParallax
+    "disqusId" $disqusId
+    "isGoogleTranslate" $isGoogleTranslate
+    "lang" $lang
+    "googleAnalyticsId" $googleAnalyticsId
+    "screenSticky" $screenSticky
+    "i18nVideo" $i18nVideo
+    "isLangEn" $isLangEn
+    "formsLoad" $formsLoad
+    "formErrorSingleQuotes" $formErrorSingleQuotes
+    "formErrorRequiredOne" $formErrorRequiredOne
+    "formErrorRequired" $formErrorRequired
+    "formErrorEmail" $formErrorEmail
+    "formErrorNumber" $formErrorNumber
+    "formErrorFile" $formErrorFile
+    "formErrorAcept" $formErrorAcept
+    "formSubmitOne" $formSubmitOne
+    "formSubmitOther" $formSubmitOther
+    "custom" $custom
+    "customString" $customString
+  )
 }}
 
 {{ if hugo.IsProduction }}
-  {{ $js = $js | babel (dict "minified" true "noComments" true "compact" true) | fingerprint }}
-{{ else }}
+  {{/*  "target" "es2015"  */}}
+  {{ $opts = merge $opts (dict "minify" true) }}
+{{ end }}
+
+{{ $js := resources.Get "js/_index.js" | js.Build $opts }}
+
+{{ if hugo.IsProduction }}
   {{ $js = $js | fingerprint }}
 {{ end }}
 

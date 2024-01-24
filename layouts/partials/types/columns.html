@@ -5,7 +5,12 @@
 {{- $showup        := site.Data.design.performance.showup -}}
 
 {{/*  COLUMNS CLASS  */}}
-{{- $num                   := .num | default (cond (le (len $items) 6) (len $items) 3) -}}
+
+{{- $items_span := 0 -}}
+{{- range $items -}}
+  {{- $items_span = add $items_span (.span | default 1) -}}
+{{- end -}}
+{{- $num                   := .num | default (cond (le $items_span 6) $items_span 3) -}}
 {{- $num                    = print "columns--" $num -}}
 {{- $num_xs                := cond (not .num_xs)        "" "columns--xs" -}}
 {{- $gap                   := cond (not .gap)           "" (print "columns--gap-" .gap) -}}
