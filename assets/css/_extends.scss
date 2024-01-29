@@ -1,7 +1,11 @@
 // Animations
+:root {
+  --draw-duration: 10s;
+  --draw-delay: -.5s;
+}
 %draw {
   stroke: var(--text);
-  animation: draw 10s -.5s both;
+  animation: draw var(--draw-duration) var(--draw-delay) both;
   stroke-dasharray: 800%;
   stroke-dashoffset: 800%;
 }
