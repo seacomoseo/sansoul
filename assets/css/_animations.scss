@@ -72,13 +72,16 @@
     visibility: hidden;
   }
 }
-@keyframes show-up {
+:root {
+  --show-from: translateY(3rem);
+}
+@keyframes show-from {
   0% {
-    transform: translateY(3rem);
+    transform: var(--show-from);
     opacity: 0;
   }
   100% {
-    transform: translateY(0);
+    transform: none;
     opacity: 1;
   }
 }
