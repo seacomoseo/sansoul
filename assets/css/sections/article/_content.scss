@@ -164,12 +164,9 @@
     padding-inline: 1.25em;
     width: fit-content;
     margin: 1em auto 2em;
-    &:last-child {
-      margin-bottom: 0;
-    }
     &:not(#aux) {
-      > svg:first-child,
-      > svg:last-child {
+      > svg.quote-left,
+      > svg.quote-right {
         margin: 0;
         height: $line-height-cursive * 1em;
       }
@@ -187,8 +184,8 @@
         content: '”';
       }
     }
-    > svg:first-child,
-    > svg:last-child,
+    > svg.quote-left,
+    > svg.quote-right,
     &:after,
     &:before {
       color: var(--main);
@@ -196,7 +193,7 @@
       top: 0;
       left: 0;
     }
-    > svg:last-child,
+    > svg.quote-right,
     &:after {
       top: unset;
       left: unset;
