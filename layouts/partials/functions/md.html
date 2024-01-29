@@ -22,6 +22,8 @@
 {{ $content = $content
   | replaceRE `==icon(.+?)==` `<mark class="sign">icon$1</mark>`
   | replaceRE `==(.+?)==` `<mark>$1</mark>`
+  | replaceRE `(?s)(<blockquote class="quotes.*?">)(.*?)(</blockquote>)` `$1 icon-quote-left $2 icon-quote-right $3`
+  | replaceRE `(?s)(<blockquote class="dittos.*?">)(.*?)(</blockquote>)` `$1 icon-ditto $2 icon-ditto $3`
   | replaceRE `icon-([\w-]+)` `<svg><use xlink:href='/draws.svg#$1'></use></svg>`
   | replaceRE `\n` `∫`
   | replaceRE `<p>[∫\s]*(<a class="button|<button)` `<p class="buttons">$1`

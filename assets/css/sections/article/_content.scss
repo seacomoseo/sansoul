@@ -155,28 +155,52 @@
     }
   }
   blockquote {
-    @include font-quotes;
+    &:not(h1, h2, h3, h4, h5, h6, .subtitle, .font-base) {
+      @include font-quotes;
+      font-size: larger;
+    }
     position: relative;
-    display: inline-block;
-    font-size: larger;
     color: var(--subtitle);
-    padding-inline: 2em;
-    margin: 1em 0em 2em;
+    padding-inline: 1.25em;
+    width: fit-content;
+    margin: 1em auto 2em;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &:not(#aux) {
+      > svg:first-child,
+      > svg:last-child {
+        margin: 0;
+        height: $line-height-cursive * 1em;
+      }
+    }
+    &:not(.quotes, .dittos) {
+      padding-inline: 1.5em;
+      &:after,
+      &:before {
+        font-size: 2em;
+        line-height: .625;
+        font-weight: 900;
+        content: '“';
+      }
+      &:after {
+        content: '”';
+      }
+    }
+    > svg:first-child,
+    > svg:last-child,
     &:after,
     &:before {
-      content: '“';
-      font-size: 4em;
-      font-weight: 900;
-      position: absolute;
-      top: -.375em;
-      left: -.125em;
       color: var(--main);
+      position: absolute;
+      top: 0;
+      left: 0;
     }
+    > svg:last-child,
     &:after {
-      content: '”';
       top: unset;
       left: unset;
-      bottom: -.75em;
+      bottom: 0;
       right: 0;
     }
     cite {
@@ -387,5 +411,8 @@ ol.align-right {
         }
       }
     }
+  }
+  .font-base {
+    @include font-base;
   }
 }
