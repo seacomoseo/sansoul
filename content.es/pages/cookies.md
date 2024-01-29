@@ -80,10 +80,10 @@ Esta web utiliza cookies analíticas para recabar estadísticas sobre la activid
 
 | Cookie | Nombre | Propósito | Propietario | Más información |
 | --- | --- | --- | --- | --- |
-| HTTP(ESTADISTICA) | \_ga | 2 años. Registra una identificación única que se utiliza para generar datos estadísticos acerca de cómo utiliza el visitante el sitio web. Datos enviados a EEUU, país no adecuado al RGPD. | google.com | [{{% legal web %}}]({{% legal https %}}) |
-| HTTP(ESTADISTICA) | \_ga\_# | 2 años. Recopila sobre un número de veces que un usuario ha visitado el sitio web, además de las fechas de la primera visita y de las más recientes. Utilizada por Google Analytics. Datos enviados a EEUU, país no adecuado al RGPD. | google.com | [{{% legal web %}}]({{% legal https %}}) |
-| Pixel. Sesión. | \_ads/ga-audiences | Sesión. Utilizada por Google AdWords para reconectar con visitantes que tienen posibilidades de convertirse en clientes , se basa en el comportamiento on-line del cliente a través de las webs. Datos enviados a EEUU, país no adecuado al RGPD. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
-| HTTP(Marketing) | NID | 6 meses. Registra una identificación única que identifica el dispositivo de un usuario que vuelve. La identificación se utiliza para anuncios específicos. Datos enviados a EEUU, país NO adecuado al RGPD. | google.com | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
+| HTTP (Estadística) | `_ga` | 2 años. Registra una identificación única que se utiliza para generar datos estadísticos acerca de cómo utiliza el visitante el sitio web. Datos enviados a EEUU, país no adecuado al RGPD. | `google.com` | [{{% legal web %}}]({{% legal https %}}) |
+| HTTP (Estadística) | `_ga_#` | 2 años. Recopila sobre un número de veces que un usuario ha visitado el sitio web, además de las fechas de la primera visita y de las más recientes. Utilizada por Google Analytics. Datos enviados a EEUU, país no adecuado al RGPD. | `google.com` | [{{% legal web %}}]({{% legal https %}}) |
+| Pixel. Sesión. | `_ads/ga-audiences` | Sesión. Utilizada por Google AdWords para reconectar con visitantes que tienen posibilidades de convertirse en clientes , se basa en el comportamiento on-line del cliente a través de las webs. Datos enviados a EEUU, país no adecuado al RGPD. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
+| HTTP (Marketing) | `NID` | 6 meses. Registra una identificación única que identifica el dispositivo de un usuario que vuelve. La identificación se utiliza para anuncios específicos. Datos enviados a EEUU, país NO adecuado al RGPD. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
 
 ## Aceptación de las cookies
 

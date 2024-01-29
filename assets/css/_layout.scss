@@ -347,34 +347,44 @@ legend {
 [type='radio'] {
   border-radius: 50%;
 }
+.table-inner {
+  display: flex;
+  justify-content: center;
+}
 table {
   @include radius;
   border-collapse: collapse;
-  width: max-content;
+  word-break: normal;
+  // white-space: nowrap;
+  // width: max-content;
   max-width: 100%;
   overflow-x: auto;
   display: block;
-  white-space: nowrap;
-  word-break: normal;
   margin-right: auto;
+  &:not(.table-sm) {
+    max-width: fluid-size($screen-min, $container-width-max-xl);
+    margin-inline: calc(var(--container-margin-side) + 1em);
+  }
 }
 th, td {
   padding: .5em 1em;
   &:first-child {
-    white-space: normal;
-    position: sticky;
-    left: 0;
-    background: inherit;
     text-align: left;
-    &:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: block;
-      width: 1px;
-      height: 100%;
-      background-color: rgba($grey, .125);
+    // white-space: normal;
+    @media (min-width: $screen-lg) {
+      position: sticky;
+      left: 0;
+      background: inherit;
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: block;
+        width: 1px;
+        height: 100%;
+        background-color: rgba($grey, .125);
+      }
     }
   }
 }
