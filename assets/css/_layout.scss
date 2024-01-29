@@ -371,10 +371,12 @@ th, td {
   &:first-child {
     text-align: left;
     // white-space: normal;
-    @media (min-width: $screen-lg) {
+    // @media (min-width: $screen-lg) {
       position: sticky;
       left: 0;
       background: inherit;
+      max-width: calc(var(--container-inner) / 2);
+      z-index: 1;
       &:after {
         content: '';
         position: absolute;
@@ -385,7 +387,7 @@ th, td {
         height: 100%;
         background-color: rgba($grey, .125);
       }
-    }
+    // }
   }
 }
 tr {
