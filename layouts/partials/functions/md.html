@@ -34,6 +34,7 @@
   | replaceRE `</li>` `</div></li>`
   | replaceRE `<p><figure(.+?)</figure></p>` `<figure$1</figure>`
   | replaceRE `<table(.+?)</table>` `<div class="table-inner shadow"><table$1</table></div>`
+  | replaceRE `<table class="` `<table class="bg-light `
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`
 }}
 
