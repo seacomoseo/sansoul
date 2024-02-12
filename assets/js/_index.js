@@ -8,6 +8,7 @@ import {
   isGoogleTranslate,
   googleAnalyticsId
 } from '@params'
+import { initNetlifyIdentity } from './netlify-identity.js'
 import { initScrollbar } from './scrollbar.js'
 import { initScrollShow } from './scroll-show.js'
 import { initScrollTop } from './scroll-top.js'
@@ -29,11 +30,11 @@ import { initSliders } from './sliders.js'
 import { initFormValidate } from './form-validate.js'
 import { initComments } from './comments.js'
 import { initGoogleTranslate } from './google-translate.js'
-import { initNetlifyIdentity } from './netlify-identity.js'
 import { initSimpleLightbox } from './simple-lightbox.js'
 import { initPrerender } from './prerender.js'
 import { initGa4 } from './ga4.js'
 
+initNetlifyIdentity()
 initScrollbar()
 if (isScrollShow) initScrollShow()
 initScrollTop()
@@ -55,7 +56,6 @@ initSliders()
 initFormValidate()
 if (disqusId) initComments()
 if (isGoogleTranslate) initGoogleTranslate()
-initNetlifyIdentity()
 initSimpleLightbox()
 initPrerender()
 if (googleAnalyticsId) initGa4()
