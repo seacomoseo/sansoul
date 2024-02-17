@@ -146,7 +146,7 @@ export function initFormValidate () {
 
         if (valid) {
           formError && formError.remove()
-          const actionEncoded = form.action.replace(window.location.origin + '/', '')
+          const actionEncoded = form.action.replace(window.location.href, '')
           let action = window.atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
           const netlifyForm = action === '/'
