@@ -149,7 +149,7 @@ export function initFormValidate () {
           const actionEncoded = form.action.replace(window.location.href, '')
           let action = window.atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
-          const netlifyForm = action === '/'
+          const netlifyForm = action === window.location.pathname
           const googleForm = action.includes('docs.google.com/forms')
           const formSubmitCo = action.includes('formsubmit.co')
           const formSubmitCoAjax = formSubmitCo && !isFileType

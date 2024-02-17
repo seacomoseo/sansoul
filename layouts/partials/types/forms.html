@@ -46,6 +46,7 @@
           {{- end -}}
             {{- if $netlify_forms -}}
               <input type="hidden" name="subject" value="{{ site.BaseURL | replaceRE `^https?://` `` }}: {{ $subject }}" data-remove-prefix>
+              <input type="hidden" name="url" value="{{ $page.Permalink }}">
             {{- else if $formsubmit_co -}}
               <input type="hidden" name="_subject" value="{{ $subject }}">
               <input type="hidden" name="_template" value="table">
