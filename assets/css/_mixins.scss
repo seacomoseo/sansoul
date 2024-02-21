@@ -124,10 +124,14 @@
     border-radius: 50%;
   }
 }
-@mixin hide-radius {
+@mixin hide-radius($section: false) {
   @if $radius > 0.01 {
     @if $chamfer {
-      clip-path: none;
+      @if $section {
+        clip-path: inset(0);
+      } @else {
+        clip-path: none;
+      }
     } @else {
       border-radius: 0;
     }
