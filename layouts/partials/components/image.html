@@ -220,7 +220,8 @@
           {{- if $image | findRE `\.jpe?g$`  -}}
             {{- with (resources.Get $image_min).Colors -}}
               {{- $colors := cond (eq (len .) 1) (slice (index . 0) `transparent`) . -}}
-              {{- "" }} style="--pre-bg:linear-gradient({{ delimit $colors `,` }})"
+              {{- ` ` | safeHTMLAttr -}}
+              style="--pre-bg:linear-gradient({{ delimit $colors `,` }})"
             {{- end -}}
           {{- end -}}
         >
