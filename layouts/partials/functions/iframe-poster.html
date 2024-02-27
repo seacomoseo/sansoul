@@ -1,7 +1,7 @@
 {{ $image := "" }}
 
 {{ $iframe_poster := "" }}
-{{ with . | findRE `poster=([\w\d\.-]+)` }}
+{{ with . | findRE `poster=([/\w\d\.-]+)` }}
   {{ with index . 0 }}
     {{ with replace . "poster=" "" }}
       {{ with resources.Get (print "/media/" .) }}

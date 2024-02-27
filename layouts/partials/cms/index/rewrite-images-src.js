@@ -8,7 +8,7 @@ let observer = new MutationObserver(mutations => {
       let src = e.innerText;
 
       if (src.match(/poster\=/g)) {
-        src = '/media/' + src.replace(/^.+?poster\=([\w\d\.-]+).*$/, `$1`);
+        src = '/media/' + src.replace(/^.+?poster\=([/\w\d\.-]+).*$/, `$1`);
         setStyle(e, src)
       } else if (src.match(/youtu\.be|youtube(-nocookie)?\.com/g)) {
         src =

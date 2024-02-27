@@ -11,7 +11,7 @@
       {{/*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}  */}}
       {{- $poster := "" -}}
       {{- if in $image "poster=" -}}
-        {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([\w\d\.-]+).*$` `$1`) -}}
+        {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([\w\d\.-]+/).*$` `$1`) -}}
       {{- else -}}
         {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
           {{- $path  := print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}
