@@ -398,7 +398,7 @@
       {{ if .description }}
         {{- $desc_align := print "align-" (.align | default (cond (not $header) "left" "center")) -}}
         <div class="description {{ $desc_align }}" {{- if not $header | and $showup }} data-showup{{ end }}>
-          {{- partial "functions/md" (dict "content" .description "not_header_links" $modal) -}}
+          {{- partial "functions/md" (dict "content" .description "not_header_links" $modal "nofollow" ($footer | and (not page.IsHome))) -}}
         </div>
       {{ end }}
 
