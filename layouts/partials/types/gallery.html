@@ -1,6 +1,6 @@
 {{- $items            := .items | default .images -}}
 {{- $id               := print .id "-mas" (cond (not .k) "" (print "-" .k)) -}}
-{{- $max_up           := gt (len (uniq $items)) (.max | default 99) -}}
+{{- $max_up           := gt (len (uniq $items)) (.max | default 9999) -}}
 {{- $button_icon      := (cond (eq .icon "none") "" (.icon | default "plus")) -}}
 {{- $is_button_expand := .alt | and (.images | or .link) | and (ne .button "hide") -}}
 {{- $is_button_more   := $max_up | and (not .alt) -}}
@@ -26,7 +26,7 @@
     {{- with .cover   }} gallery--size-cover {{ end -}}
     {{- if .grayscale }} gallery--grayscale{{ end -}}
   ">
-    {{- $items = first (.max | default 99) (uniq $items) -}}
+    {{- $items = first (.max | default 9999) (uniq $items) -}}
     {{- range $items -}}
       {{- $image := . -}}
       {{- $link  := "" -}}
