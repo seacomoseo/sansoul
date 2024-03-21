@@ -2,7 +2,7 @@
 {{ $section := dict }}
 {{ if .file }}
   {{ with index site.Data .type }}
-    {{ with index . $.file }}
+    {{ with index . (split $.file "/") }}
       {{ $section = . }}
     {{ end }}
   {{ end }}

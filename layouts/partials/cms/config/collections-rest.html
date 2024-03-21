@@ -6,7 +6,7 @@
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_TYPES"
   (dict
     "label"           `📚 Tipos`
-    "name"            (print `types-` .Lang)
+    "name"            `types`
     "description"     `Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE: Artículos se consideran todos los tipos de páginas excepto las Seccionadas y sus Secciones y Modales correspondientes.`
     "sortable_fields" (dict "fields" slice)
     "editor"          (dict "preview" false)
@@ -20,7 +20,7 @@
   (dict
     "label"            (print ($taxonomies.page.emoji) " " (i18n "page"))
     "label_singular"   (i18n "page" 1)
-    "name"             (print `page-` .Lang)
+    "name"             `page`
     "description"      `Páginas maquetables por secciones.`
     "identifier_field" `slug`
     "folder"            (print `content.` .Lang)
@@ -71,15 +71,14 @@
   (dict
     "label"            (print ($taxonomies.sections.emoji) " " (i18n "sections"))
     "label_singular"   (i18n "sections" 1)
-    "name"             (print `sections-` .Lang)
+    "name"             `sections`
     "description"      `Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.`
     "identifier_field" `id`
     "extension"        `yml`
     "folder"           (print `content.` .Lang `/sections`)
     "create"           true
     "nested"           (dict "depth" 5)
-    "slug"             "{{fields.id}}"
-    "summary"          "{{filename}}"
+    "summary"          "{{dirname}}{{dirname | ternary('/','')}}{{filename}}"
     "sortable_fields"  (dict "fields" (slice "commit_date" "slug" "id" "title"))
     "editor"           (dict "preview" false)
     "fields"           (slice
@@ -148,7 +147,7 @@
   (dict
     "label"            (print ($taxonomies.modals.emoji) " " (i18n "modals"))
     "label_singular"   (i18n "modals" 1)
-    "name"             (print `modals-` .Lang)
+    "name"             `modals`
     "description"      `Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un '#' delante del ID, **ejemplo**: '#reparaciones-mantenimiento').`
     "identifier_field" `id`
     "extension"        `yml`
@@ -156,7 +155,7 @@
     "create"           true
     "nested"           (dict "depth" 5)
     "slug"             "{{fields.id}}"
-    "summary"          "{{filename}}"
+    "summary"          "{{dirname}}{{dirname | ternary('/','')}}{{filename}}"
     "sortable_fields"  (dict "fields" (slice "commit_date" "slug" "id" "title"))
     "editor"           (dict "preview" false)
     "fields"           (slice
@@ -210,7 +209,7 @@
   (dict
     "label"            (print ($taxonomies.pages.emoji) " " (i18n "pages"))
     "label_singular"   (i18n "pages" 1)
-    "name"             (print `pages-` .Lang)
+    "name"             `pages`
     "description"      `Páginas básicas o normales (sin secciones).`
     "identifier_field" `slug`
     "folder"           (print `content.` .Lang `/pages`)
@@ -259,7 +258,7 @@
     (dict
       "label"            (print ($taxonomies.blog.emoji) " " (i18n "blog"))
       "label_singular"   (i18n "blog" 1)
-      "name"             (print `blog-` .Lang)
+      "name"             `blog`
       "description"      `Entradas del blog, con fechas, categorias, etiquetas y autores asignados.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/blog`)
@@ -316,7 +315,7 @@
     (dict
       "label"            (print ($taxonomies.events.emoji) " " (i18n "events"))
       "label_singular"   (i18n "events" 1)
-      "name"             (print `events-` .Lang)
+      "name"             `events`
       "description"      `Eventos con fechas de inicio y fin.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/events`)
@@ -377,7 +376,7 @@
     (dict
       "label"            (print ($taxonomies.products.emoji) " " (i18n "products"))
       "label_singular"   (i18n "products" 1)
-      "name"             (print `products-` .Lang)
+      "name"             `products`
       "description"      `Productos con categorias, etiquetas y variaciones.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/products`)
@@ -431,7 +430,7 @@
     (dict
       "label"            (print ($taxonomies.categories.emoji) " " (i18n "categories"))
       "label_singular"   (i18n "categories" 1)
-      "name"             (print `categories-` .Lang)
+      "name"             `categories`
       "description"      `Categorías asignadas a cada artículo. Es necesario crearlas aquí antes de poder asignarlas.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/categories`)
@@ -482,7 +481,7 @@
     (dict
       "label"            (print ($taxonomies.tags.emoji) " " (i18n "tags"))
       "label_singular"   (i18n "tags" 1)
-      "name"             (print `tags-` .Lang)
+      "name"             `tags`
       "description"      `Etiquetas asignadas a cada artículo. Es necesario crearlas aquí antes de poder asignarlas.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/tags`)
@@ -533,7 +532,7 @@
     (dict
       "label"            (print ($taxonomies.authors.emoji) " " (i18n "authors"))
       "label_singular"   (i18n "authors" 1)
-      "name"             (print `authors-` .Lang)
+      "name"             `authors`
       "description"      `Autores asignados a cada artículo. Es necesario crearlos aquí antes de poder asignarlos.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/authors`)
@@ -584,7 +583,7 @@
     (dict
       "label"            (print ($taxonomies.custom.emoji) " " (i18n "custom"))
       "label_singular"   (i18n "custom" 1)
-      "name"             (print `custom-` .Lang)
+      "name"             `custom`
       "description"      `Páginas personalizadas por secciones.`
       "identifier_field" `slug`
       "folder"           (print `content.` .Lang `/custom`)

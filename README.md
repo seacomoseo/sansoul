@@ -16,7 +16,7 @@
     - [/] En
       - [/] Hugo (example y sansoul.es)
       - [ ] CMS
-      - [ ] Todos los proyectos (`.yml`, `.md`, `custom.css` y `custom.js`)
+      - [ ] Todos los proyectos (`.yml`, `.md`, `custom.css`, `custom.js` y submodule `lorensansol/sansoul` > `seacomoseo/sansoul`)
     - [/] General
       - [x] Cambiar medidas con respecto al contenedor (container y columna) `cqw`
       - [x] `.contenedor { container-type: inline-size; }`
@@ -127,25 +127,9 @@
       - [x] `menu.hide_anchors` > `menu.hide_sections`
       - [x] `menu.show_modals` > `menu.hide_modals`
       - [x] `menu.langs_out` > `menu.langs_group`
-      - [ ] `sections.sectioned.menu` > `sections.common.menu`
-      - [ ] `menu` > `menu.header` with background section and container options
-      probar nested pages de static cms
-      mv partials sections
-      h1
-      menu stycky
-        baseof
-        css
-        js
-      shortcodes
-        comments
-        data
-        404
-        pagination
-        if
       - [x] Remove `data.menu`
       - [x] Remove `data.sections`
       - [x] Remove `data.modals`
-      - [ ] Remove `data.articles`
       - [x] Remove `kind/article` {{ partial "sections/article/summaries" (dict "related" true) }}
       - [x] Remove `kind/404`
       - [x] Remove `functions/is-sectioned`
@@ -160,11 +144,6 @@
         - [x] `data.templates._custom`
         - [x] `data.templates._articles`
         - [x] `data.templates._lists`
-      - [ ] `design.yml` > `styles.yml`
-      - [ ] `footer.divider`
-      - [ ] `menu.screen_sticky` > css with `@container` and add html class
-      - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
-      - [ ] Images src sizes
       - [x] [Objetos reusables en YAML](https://yaml.org/type/merge.html) + hacer 3 reemplazos del json:
         ```hugo
           | jsonify (dict "prefix" " " "indent" "  ")
@@ -173,6 +152,29 @@
           | replaceRE `\"(\*.+?)\"` ` $1 `
           | safeHTML
         ```
+      - [x] `sections.[es|en]/footer.yml` > `sections.[es|en]/base/footer.yml`
+      - [x] Nested sections
+      - [ ] mv partials sections
+      - [ ] h1
+      - [ ] Articles related type
+      - [ ] Shortcodes
+        - [ ] data
+        - [ ] pagination
+        - [ ] comments
+        - [ ] if
+      - [ ] Menu stycky
+        - [ ] baseof
+        - [ ] css
+        - [ ] js
+      - [ ] `footer.divider`
+      - [ ] Remove `data.articles` or update
+      - [ ] `design.yml` > `styles.yml`
+      - [ ] Remove `custom` type and rename `sectioned` > `custom`
+      - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
+      - [ ] cp `data/templates` > `themes/sansoul/data/templates`
+      - [ ] Images src sizes
+      - [ ] Reset `cookies`.md
+      - [ ] Reset `admin`.md
       - [ ] Comprobar enlaces ofuscados en Google Translate y la propia traducción
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
