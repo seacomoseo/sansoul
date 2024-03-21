@@ -1,0 +1,44 @@
+{{- $options := site.Data.options -}}
+
+{{- $options_tax := slice -}}
+{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"       ) }}{{ end -}}
+{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Seccionadas"   ) }}{{ end -}}
+{{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"          ) }}{{ end -}}
+{{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"       ) }}{{ end -}}
+{{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"     ) }}{{ end -}}
+{{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías"    ) }}{{ end -}}
+{{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"     ) }}{{ end -}}
+{{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"       ) }}{{ end -}}
+{{- if (.GetPage "custom"    ) }}{{ $options_tax = $options_tax | append (dict "value" "custom"     "label" "Personalizadas") }}{{ end -}}
+
+{{- $vars := slice
+  (dict "&OPTIONS_ALIGN_X"       $options.align_x)
+  (dict "&OPTIONS_ALIGN_Y"       $options.align_y)
+  (dict "&OPTIONS_ALIGN"         $options.align)
+  (dict "&OPTIONS_BOOLEAN"       $options.boolean)
+  (dict "&OPTIONS_COLOR_BASE"    $options.color_base)
+  (dict "&OPTIONS_COLOR_BASE_W"  (where (where $options.color_base "name" "!=" "none") "name" "!=" "whatsapp"))
+  (dict "&OPTIONS_COLOR_BASE_H"  ($options.color_base | append (dict "value" "hide" "label" "Ocultar Botón / Enlace")))
+  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color_base "name" "!=" "none"))
+  (dict "&OPTIONS_COLOR_BG"      $options.color_bg)
+  (dict "&OPTIONS_COLUMNS"       $options.columns)
+  (dict "&OPTIONS_CONTRAST"      $options.contrast)
+  (dict "&OPTIONS_COUNTRIES"     (index $options.countries .Lang))
+  (dict "&OPTIONS_DIVIDER"       $options.divider)
+  (dict "&OPTIONS_FONT_WEIGHT"   $options.font_weight)
+  (dict "&OPTIONS_GRADIENT"      $options.gradient)
+  (dict "&OPTIONS_ICON_TYPE"     $options.icon_type)
+  (dict "&OPTIONS_ICONS_TYPE"    $options.icons.type)
+  (dict "&OPTIONS_ICONS_EMOJIS"  $options.icons.emojis)
+  (dict "&OPTIONS_LANGS"         $options.langs)
+  (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
+  (dict "&OPTIONS_RATIO"         $options.ratio)
+  (dict "&OPTIONS_SIZES"         $options.sizes)
+  (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "ne" "fluid"))
+  (dict "&OPTIONS_TAX"           $options_tax)
+  (dict "&RELATION_CATEGORIES"   (cond (not (.GetPage "categories")) "hidden" "relation"))
+  (dict "&RELATION_TAGS"         (cond (not (.GetPage "tags"      )) "hidden" "relation"))
+  (dict "&RELATION_AUTHOR"       (cond (not (.GetPage "author"    )) "hidden" "relation"))
+-}}
+
+{{ return $vars }}

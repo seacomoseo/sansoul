@@ -1,4 +1,5 @@
-{{ if partial "functions/lang-param" (dict "parent" "config" "param" "disqus") }}
+{{ $config := partial "functions/config-lang" . }}
+{{ if $config.disqus }}
   <section class="comments">
     <div class="comments__content">
       <h2 class="comments__title">Comentarios</h2>

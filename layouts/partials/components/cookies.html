@@ -1,36 +1,40 @@
-{{- with site.GetPage "pages/cookies" -}}
-  <aside class="cookies bg bg-{{ partial `functions/lang-param` (dict `parent` `menu` `param` `color` `default` `white`) }} description">
-    <div class="bg-color"></div>
-    <p class="cookies__messaje">
-      {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
-      {{- partial "functions/md" (dict "content" (i18n "cookies-message" 1) "inline" true) -}}
-    </p>
-    <div class="cookies__wrap">
-      <div class="cookies__checks">
-        {{- range $key, $label := split (i18n "cookies-message") "," -}}
-          <label class="contact__form-label">
-            {{- "" -}}
-            <input class="contact__form-checkbox" type="checkbox" name="cookies" value="{{ . | urlize }}" {{ if not $key }}disabled checked{{ end }}>
-            {{- . -}}
-          </label>
-        {{- end -}}
+{{- if ne page.Kind "404" -}}
+  {{- $params := . -}}
+  {{- with site.GetPage "pages/cookies" -}}
+    {{- $color := $params.menu.color | default "white" -}}
+    <aside class="cookies bg bg-{{ $color }} description">
+      <div class="bg-color"></div>
+      <p class="cookies__messaje">
+        {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
+        {{- partial "functions/md" (dict "content" (i18n "cookies-message" 1) "inline" true) -}}
+      </p>
+      <div class="cookies__wrap">
+        <div class="cookies__checks">
+          {{- range $key, $label := split (i18n "cookies-message") "," -}}
+            <label class="contact__form-label">
+              {{- "" -}}
+              <input class="contact__form-checkbox" type="checkbox" name="cookies" value="{{ . | urlize }}" {{ if not $key }}disabled checked{{ end }}>
+              {{- . -}}
+            </label>
+          {{- end -}}
+        </div>
+        <div class="cookies__buttons">
+          {{- partial "components/link" (dict
+            "class"   "cookies__button-acept button--sm button--font-alt"
+            "link"    "none"
+            "button"  "light"
+            "label"   (i18n "cookies-accept")
+            "noindex" true
+          ) -}}
+          {{- partial "components/link" (dict
+            "class"   "cookies__button-acept button--sm cookies__button-acept--all"
+            "link"    "none"
+            "button"  "link"
+            "label"   (i18n "cookies-accept-all")
+            "noindex" true
+          ) -}}
+        </div>
       </div>
-      <div class="cookies__buttons">
-        {{- partial "components/link" (dict
-          "class"   "cookies__button-acept button--sm button--font-alt"
-          "link"    "none"
-          "button"  "light"
-          "label"   (i18n "cookies-accept")
-          "noindex" true
-        ) -}}
-        {{- partial "components/link" (dict
-          "class"   "cookies__button-acept button--sm cookies__button-acept--all"
-          "link"    "none"
-          "button"  "link"
-          "label"   (i18n "cookies-accept-all")
-          "noindex" true
-        ) -}}
-      </div>
-    </div>
-  </aside>
+    </aside>
+  {{- end -}}
 {{- end -}}

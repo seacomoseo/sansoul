@@ -1,13 +1,56 @@
-{{ $page_params := .Params }}
+{{ $p := dict }}
 
-{{ if partial "functions/is-sectioned" . }}
-  {{ if eq .Type "custom" }}
-    {{ with site.GetPage "custom" }}
-      {{ with .Params.template }}
-        {{ $page_params = merge $page_params . }}
+{{/*  COMMON TEMPLATE PARAMS  */}}
+{{ with site.Data.templates._ }}
+  {{ $p = merge . $p }}
+{{ end }}
+
+{{ if eq .Kind "404" }}
+
+  {{/*  404  */}}
+  {{ with site.Data.templates._404 }}
+    {{ $p = merge $p . }}
+  {{ end }}
+
+{{ else }}
+
+  {{/*  DEFAULT  */}}
+  {{ if eq .Type "page" }}
+    {{/*  CUSTOM  */}}
+    {{ with site.Data.templates._customs }}
+      {{ $p = merge $p . }}
+    {{ end }}
+  {{ else }}
+    {{ if eq .Kind "section" }}
+      {{/*  LISTS  */}}
+      {{ with site.Data.templates._lists }}
+        {{ $p = merge $p . }}
+      {{ end }}
+    {{ else }}
+      {{/*  ARTICLES  */}}
+      {{ with site.Data.templates._articles }}
+        {{ $p = merge $p . }}
+      {{ end }}
+      {{/*  ARTICLES PARENT  */}}
+      {{ with site.GetPage .Type }}
+        {{ with .Params.template }}
+          {{ with index site.Data.templates . }}
+            {{ $p = merge $p . }}
+          {{ end }}
+        {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}
+
+  {{/*  PAGE  */}}
+  {{ with .Params.template }}
+    {{ with index site.Data.templates . }}
+      {{ $p = merge $p . }}
+    {{ end }}
+  {{ end }}
+
 {{ end }}
 
-{{ return $page_params }}
+{{ $p = merge $p .Params }}
+
+{{ return $p }}

@@ -1,0 +1,14 @@
+{{- with page -}}
+  {{- with .Params.author -}}
+    {{- with page.GetPage (print "authors/" .) -}}
+      {{- $param := index $.Params 0 -}}
+      {{- if eq $param "description" -}}
+        {{ .Description }}
+      {{- else if eq $param "image" -}}
+        {{ .Params.image }}
+      {{- else -}}
+        {{ i18n "about" 1 }} [{{ .Title }}]({{ .RelPermalink -}})
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

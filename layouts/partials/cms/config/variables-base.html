@@ -1,0 +1,139 @@
+{{ return slice
+  (dict "&FONT_KEYS" (dict "widget" `object` "collapsed" true "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
+
+  (dict "&FONT_FIELD_FAMILY"      (dict "label" `Familia`         "name" `family`      "widget" `string` "hint" "Nombres válidos → [Google Fonts](https://fonts.google.com/)"))
+  (dict "&FONT_FIELD_WEIGHT"      (dict "label" `Grosor`          "name" `weight`      "widget" `select`  "default" 0 "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_FIELD_BOLD"        (dict "label" `Grosor Negrita`  "name" `bold`        "widget" `select`  "default" 0 "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_FIELD_ITALIC"      (dict "label" `Cursiva`         "name" `italic`      "widget" `boolean`))
+  (dict "&FONT_FIELD_LINE_HEIGHT" (dict "label" `Alto de Línea`   "name" `line_height` "widget" `number` "value_type" `float` "step" 0.01 "min" 0  "max" 3 "default" 1.25))
+  (dict "&FONT_FIELD_TOP"         (dict "label" `Ajuste Vertical` "name" `top`         "widget" `number` "value_type" `float` "step" 0.01 "min" -2 "max" 2 "required" false))
+
+  (dict "&FONT" (dict "<<" (slice
+    (dict "fields" (slice
+      `~FONT_FIELD_FAMILY`
+      `~FONT_FIELD_WEIGHT`
+      `~FONT_FIELD_BOLD`
+      `~FONT_FIELD_ITALIC`
+      `~FONT_FIELD_LINE_HEIGHT`
+    ))
+    `~FONT_KEYS`
+  )))
+  (dict "&FONT_TOP" (dict "<<" (slice
+    `~FONT_KEYS`
+    (dict "fields" (slice
+      `~FONT_FIELD_FAMILY`
+      `~FONT_FIELD_WEIGHT`
+      `~FONT_FIELD_BOLD`
+      `~FONT_FIELD_ITALIC`
+      `~FONT_FIELD_LINE_HEIGHT`
+      `~FONT_FIELD_TOP`
+    ))
+  )))
+
+  (dict "&BASE_COLOR"
+    (dict
+      "widget"    `object`
+      "collapsed" false
+      "fields"    (slice
+        (dict "label" `Color`          "name" `color`    "widget" `color`   "required" false "allow_input" true)
+        (dict "label" `Versión Clara`  "name" `light`    "widget" `color`   "required" false "allow_input" true)
+        (dict "label" `Versión Oscura` "name" `dark`     "widget" `color`   "required" false "allow_input" true)
+        (dict "label" `Contraste`      "name" `contrast` "widget" `select`  "required" false "options" `~OPTIONS_CONTRAST` "hint" "Opciones de cambio del color y textos de botones según el fondo")
+      )
+    )
+  )
+
+  (dict "&TITLE"                (dict "label" `Título`        "name" `title`       "widget" `string`   "required" false))
+  (dict "&TITLE_REQUIRED"       (dict "label" `Título`        "name" `title`       "widget" `string`))
+  (dict "&SUBTITLE"             (dict "label" `Subtítulo`     "name" `subtitle`    "widget" `string`   "required" false))
+  (dict "&DESCRIPTION"          (dict "label" `Descripción`   "name" `description` "widget" `markdown` "required" false "show_raw" true))
+  (dict "&DESCRIPTION_REQUIRED" (dict "label" `Descripción`   "name" `description` "widget" `markdown`                  "show_raw" true))
+  (dict "&PRICE"                (dict "label" `Precio`        "name" `price`       "widget" `string`   "required" false))
+  (dict "&ANCHOR"               (dict "label" `Título Oculto` "name" `anchor`      "widget" `string`   "required" false "hint" "Encabezado y Ancla/Anchor Oculto que tendrá el enlace del título y del menú (para SEO)"))
+
+  (dict "&TITLE_SIZE"       (dict "label" `Tamaño de Título`          "name" `title_size`        "widget" `number`  "required" false "value_type" `float` "step" 0.1 "min" 0.1 "max" 2))
+  (dict "&UPPERCASE"        (dict "label" `Título en Mayúsculas`      "name" `uppercase`         "widget" `boolnew` "required" false))
+  (dict "&UNDERLINE"        (dict "label" `Título Subrayado`          "name" `underline`         "widget" `boolnew` "required" false))
+  (dict "&READING_TIME"     (dict "label" `Mostrar Tiempo de Lectura` "name" `reading_time`      "widget" `boolnew` "required" false "hint" "Mostrar el tiempo estimado de lectura y número de palabras"))
+  (dict "&HIDE_DESCRIPTION" (dict "label" `Ocultar Descripciones`     "name" `hide_description`  "widget" `boolnew` "required" false "hint" "Ocultar descripciones en cada elemento de la rejilla"))
+  (dict "&HIDE_CATEGORIES"  (dict "label" `Ocultar Categorías`        "name" `hide_categories`   "widget" `boolnew` "required" false "hint" "Ocultar categorías y etiquetas en cada elemento de la rejilla"))
+
+  (dict "&IMAGE_SRC"       (dict "label" `Imagen`                          "name" `image`       "widget" `image`   "required" false "choose_url" true "max_file_size" 512000000 "hint" "Admite vídeo (incluido de youtube y vimeo) mediante URL (solamente el nombre de archivo subido previamente a **Medios**) 🔷 Para establecer la imagen de miniatura del vídeo, subir desde **Medios** una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp...) 🔷 En caso de ser un vídeo, puede establecerse una imagen de miniatura si a la URL se le añade al final '#poster=nombre-de-imagen.jpg' o, si es interno, subir desde **Medios** una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp...) 🔷 Se puede autoreproducir el vídeo dejándolo mudo añadiéndole al final de la URL '#mute' 🔷 Se pueden establecer marcas de inicio y final del vídeo en segundos añadiendo al final de la URL '#t=2,7' o '#t=2' para el inicio solamente"))
+  (dict "&IMAGE_SRC_HOVER" (dict "label" `Imagen Alternativa`              "name" `image_hover` "widget" `image`   "required" false "choose_url" true "max_file_size" 512000000 "hint" "Aparecerá al pasar el cursor por encima"))
+  (dict "&IMAGE_RATIO"     (dict "label" `Proporción de la Imagen`         "name" `ratio`       "widget" `select`  "required" false "options" `~OPTIONS_RATIO`                    "hint" "Normal por defecto"))
+  (dict "&IMAGE_CONTAIN"   (dict "label" `Imagen Ajustada a la Proporción` "name" `contain`     "widget" `boolnew` "required" false                                             "hint" "Para que no se recorte si se selecciona alguna proporción"))
+  (dict "&IMAGE_BORDER"    (dict "label" `Imagen Borde`                    "name" `border`      "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE_W`))
+  (dict "&IMAGE_INSET"     (dict "label" `Imagen Incrustada`               "name" `inset`       "widget" `boolnew` "required" false                                             "hint" "Las imágenes se incrustan en el elemento como si este no tuviese márgenes internos"))
+  (dict "&IMAGE_GRAYSCALE" (dict "label" `Imagen en Blanco y Negro`        "name" `grayscale`   "widget" `boolnew` "required" false                                             "hint" "Las imágenes recuperan el color al pasar el cursor por encima"))
+  (dict "&IMAGE_NO_VIDEO"  (dict "<<" (slice (dict "hint" "") `~IMAGE_SRC`)))
+  
+  (dict "&BORDER_COLOR"     (dict "label" `Color del Borde`              "name" `border`        "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE_W` "hint" "Color alternativo por defecto"))
+  (dict "&COLOR"            (dict "label" `Color del Fondo`              "name" `color`         "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BG`))
+  (dict "&GRADIENT_COLOR"   (dict "label" `Color de Gradiente del Fondo` "name" `gradient`      "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BG`))
+  (dict "&GRADIENT_TYPE"    (dict "label" `Tipo de Gradiente del Fondo`  "name" `gradient_type` "widget" `select`  "required" false "options" `~OPTIONS_GRADIENT`))
+  (dict "&PARALLAX"         (dict "label" `Parallax`                     "name" `parallax`      "widget" `boolnew` "required" false "hint" "Aplica un efecto fijo o de desplazamiento lento en la imagen de fondo al hacer scroll"))
+  (dict "&OPACITY"          (dict "label" `Opacidad de Fondo`            "name" `opacity`       "widget" `number`  "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  (dict "&BG_OPACITY"       (dict "label" `Opacidad de imagen de Fondo`  "name" `opacity`       "widget" `number`  "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  (dict "&COLOR_OPACITY"    (dict "label" `Opacidad de color de Fondo`   "name" `color_opacity` "widget" `number`  "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  (dict "&BACKGROUND_IMAGE" (dict "<<" (slice (dict "label" `Imagen de Fondo` "name" `bg`) `~IMAGE_SRC`)))
+  
+  (dict "&ICON_ID"    (dict "label" `Icono`           "name" `icon`       "widget" `string` "required" false "pattern" (slice "^[a-z-)+$" "Solo minúsculas y guiones medios; sin espacios, eñes, ni caracteres extraños") "hint" (print "Nombres válidos → " . " o emojis")))
+  (dict "&ICON_TYPE"  (dict "label" `Tipo de Icono`   "name" `icon_type`  "widget" `select` "required" false "options" `~OPTIONS_ICON_TYPE` "hint" "Arriba en grande, Lateral junto al texto y Abajo a modo de subrayado"))
+  (dict "&ICON_SIZE"  (dict "label" `Tamaño de Icono` "name" `icon_size`  "widget" `number` "required" false "value_type" `int` "step" 1 "min" 1 "max" 6))
+  (dict "&ICON_COLOR" (dict "label" `Color de Icono`  "name" `icon_color` "widget" `select` "required" false "options" `~OPTIONS_COLOR_BASE_W`))
+
+  (dict "&BUTTON_LICON"              (dict "<<" (slice (dict "label" `Icono del Enlace` "name" `licon`) `~ICON_ID`)))
+  (dict "&BUTTON_LINK"               (dict "label" `Enlace`                        "name" `link`     "widget" `string`  "required" false))
+  (dict "&BUTTON_LABEL"              (dict "label" `Texto del Enlace`              "name" `label`    "widget" `string`  "required" false))
+  (dict "&BUTTON_ANCHOR"             (dict "label" `Ancla del Enlace`              "name" `anchor`   "widget" `string`  "required" false "hint" "Texto/Anchor oculto que tendrá el enlace (para SEO)"))
+  (dict "&BUTTON_OFUSCATE"           (dict "label" `Enlace Ofuscado`               "name" `ofuscate` "widget" `boolnew` "required" false "hint" "Ésto hace que Google no considere el enlace como tal (para SEO)"))
+  (dict "&BUTTON_FONT_ALT"           (dict "label" `Fuente Alternativa del Enlace` "name" `font_alt` "widget" `boolnew` "required" false))
+  (dict "&BUTTON_GA4"                (dict "label" `GA4`                           "name" `ga4`      "widget" `boolnew` "required" false "hint" "Marcarlo como evento en Google Analytics 4 (para posterior conversión)"))
+  (dict "&BUTTON_COLOR"              (dict "label" `Color del Botón del Enlace`    "name" `button`   "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE`))
+  (dict "&BUTTON_COLOR_WITH_HIDE"    (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_H`) `~BUTTON_COLOR`)))
+  (dict "&BUTTON_COLOR_WITHOUT_NONE" (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_N`) `~BUTTON_COLOR`)))
+  
+  (dict "&PADDING_HIDE"   (dict "label" `Ocultar Márgenes Interiores` "name" `ph` "widget" `boolnew` "required" false))
+  (dict "&PADDING_TOP"    (dict "label" `Márgenes Interior Superior`  "name" `pt` "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 0 "max" 9))
+  (dict "&PADDING_BOTTOM" (dict "label" `Márgenes Interior Inferior`  "name" `pb` "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 0 "max" 9))
+  
+  (dict "&ALIGN"        (dict "label" `Alineación del Contenido`               "name" `align`    "widget" `select` "options" `~OPTIONS_ALIGN`                       "required" false))
+  (dict "&ALIGN_Y"      (dict "label" `Alineación Vertical de Elementos`       "name" `align_y`  "widget" `select` "options" `~OPTIONS_ALIGN_Y`                     "required" false))
+  (dict "&ALIGN_Y_SELF" (dict "label" `Alineación Vertical del Elemento`       "name" `align_y`  "widget" `select` "options" `~OPTIONS_ALIGN_Y`                     "required" false))
+  (dict "&ALIGN_X"      (dict "label" `Alineación Horizontal de Elementos`     "name" `align_x`  "widget" `select` "options" `~OPTIONS_ALIGN_X`                     "required" false))
+  (dict "&ALIGN_XL"     (dict "label" `Alineación del Contenido en Escritorio` "name" `align_xl` "widget" `select` "options" `~OPTIONS_ALIGN`                       "required" false "hint" "Alineación del contenido cuando el ancho de la ventana ≥ 1280px"))
+  (dict "&ORDER"        (dict "label" `Orden del Elemento en Escritorio`       "name" `order`    "widget" `number` "value_type" `int` "step" 1 "min" -20 "max" 20 "required" false "hint" "Orden del elemento cuando el ancho de la ventana ≥ 1280px"))
+  
+  (dict "&SHADOW"                   (dict "label" `Sombra`        "name" `shadow`      "widget" `boolnew` "required" false))
+  (dict "&HIDE_SHADOW"              (dict "label" `Quitar Sombra` "name" `hide_shadow` "widget" `boolnew` "required" false))
+  
+  (dict "&CONTAINER_SIZE"           (dict "label" `Tamaño del Contenedor`             "name" `size`                   "widget" `select` "options" `~OPTIONS_SIZES`    "required" false "hint" "Por defecto: Grande en Secciones, Pequeño en Modales"))
+  (dict "&CONTAINER_COLOR"          (dict "label" `Color del Contenedor`              "name" `container`              "widget" `select` "options" `~OPTIONS_COLOR_BG` "required" false))
+  (dict "&CONTAINER_GRADIENT_COLOR" (dict "label" `Color de Gradiente del Contenedor` "name" `container_gradient`     "widget" `select` "options" `~OPTIONS_COLOR_BG` "required" false))
+  (dict "&CONTAINER_GRADIENT_TYPE"  (dict "label" `Tipo de Gradiente del Contenedor`  "name" `container_grdient_type` "widget" `select` "options" `~OPTIONS_GRADIENT` "required" false))
+  (dict "&CONTAINER_OPACITY"        (dict "label" `Opacidad del Contenedor`           "name" `container_opacity`      "widget" `number` "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  
+  (dict "&SLIDER_ACTIVE"       (dict "label" `Activar Carrusel`             "name" `active`       "widget" `boolnew` "required" false                                       "hint" "Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)"))
+  (dict "&SLIDER_INTERVAL"     (dict "label" `Intervalo del Carrusel`       "name" `interval`     "widget" `number`  "required" false "value_type" `int` "min" 0 "step" 100 "hint" "Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)"))
+  (dict "&SLIDER_HIDE_BULLETS" (dict "label" `Ocultar Guías del Carrusel`   "name" `hide_bullets` "widget" `boolnew` "required" false))
+  (dict "&SLIDER_HIDE_ARROWS"  (dict "label" `Ocultar Flechas del Carrusel` "name" `hide_arrows`  "widget" `boolnew` "required" false))
+  
+  (dict "&COLUMNS_MAX"     (dict "label" `Número de Columnas`               "name" `columns`      "widget" `select`  "required" false "options" `~OPTIONS_COLUMNS`))
+  (dict "&COLUMNS_MIN"     (dict "label" `2 Columnas en Resolución Mínima`  "name" `columns_min`  "widget" `boolnew` "required" false))
+  (dict "&COLUMNS_SPAN"    (dict "label" `Ancho en Número de Columnas`      "name" `span`         "widget" `select`  "required" false "options" `~OPTIONS_COLUMNS`))
+  (dict "&GROW"            (dict "label" `Rellenar Ancho`                   "name" `grow`         "widget" `boolnew` "required" false "hint" "Rellenar el ancho de contenedor aumentando el ancho de los elementos o columnas (no aplica si se activa carrusel)"))
+  (dict "&COLUMNS_GAP"     (dict "label" `Márgenes entre Elementos`         "name" `gap`          "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 1 "max" 5))
+  (dict "&COLUMNS_PADDING" (dict "label" `Márgenes internos en el Elemento` "name" `padding`      "widget" `number`  "required" false "value_type" `float` "step" 0.25 "min" 0 "max" 6))
+  (dict "&HIDE_RADIUS"     (dict "label" `Quitar Esquinas Redondeadas`      "name" `hide_radius`  "widget" `boolnew` "required" false "hint" "Quitar esquinas redondeadas en cada elemento"))
+  (dict "&GROUP_RADIUS"    (dict "label" `Esquinas Redondeadas en Conjunto` "name" `group_radius` "widget" `boolnew` "required" false "hint" "Esquinas redondeadas en el conjunto de elementos (no recomendado activar sin desactivar el anterior)"))
+  (dict "&PILL"            (dict "label" `Modo Píldora`                     "name" `pill`         "widget" `boolnew` "required" false "hint" "Redondea la parte superior e inferior"))
+  (dict "&CARD"            (dict "label" `Modo Tarjeta`                     "name" `card`         "widget" `boolnew` "required" false "hint" "**BETA:** Utiliza la imagen como fondo + deja un margen superior para que se vea el fondo + alinea los contenido abajo y les añade un degradado a negro"))
+  
+  (dict "&GALLERY_MAX"      (dict "label" `Número Máximo de Elementos` "name" `max`      "widget" `number`                  "required" false "value_type" `int` "min" 1 "hint" "Número máximo de elementos visibles, para ver el resto aparecerá un botón '+ Más' para desplegar una ventana modal donde aparecerán"))
+  (dict "&GALLERY_COLUMNS"  (dict "label" `Número de Columnas`         "name" `num`      "widget" `number`                  "required" false "value_type" `int` "step" 1 "min" 1 "max" 6))
+  (dict "&GALLERY_ALT"      (dict "label" `Estilo Alternativo`         "name" `alt`      "widget" `boolnew`                 "required" false "hint" "Cambia el estilo de tipo a rejilla a filas"))
+  (dict "&GALLERY_WRAP"     (dict "label" `Envoltura`                  "name" `wrap`     "widget" `boolnew`                 "required" false "hint" "Añade una envoltura de color blanca alrededor del conjunto de imágenes, lo que aparenta bordes"))
+  (dict "&GALLERY_GAP"      (dict "label" `Márgenes entre Elementos`   "name" `gap`      "widget" `boolnew`                 "required" false))
+  (dict "&GALLERY_COVER"    (dict "label" `Recorte`                    "name" `cover`    "widget" `boolnew`                 "required" false "hint" "Recomendado para imágenes normales, no recomendado para logos e imágenes con transparencia de fondo"))
+  (dict "&GALLERY_IMAGES"   (dict "label" `Imágenes con Diapositivas`  "name" `images`   "widget" `image`   "multiple" true "choose_url" true "required" false "hint" "Sube varias imágenes de una vez que permiten hacer click para que se amplíen como pase de diapositivas"))
+}}

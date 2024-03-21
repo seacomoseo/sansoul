@@ -1,0 +1,113 @@
+{{- $image_src := .image -}}
+{{- if .card -}}
+  {{- $image_src  = "" -}}
+{{- end -}}
+
+{{/*  IMAGE INI  */}}
+{{ if $image_src }}
+  {{- $is_page := isset . "Page" -}}
+
+  {{/*  IFRAME POSTER  */}}
+  {{ $iframe_poster := "" }}
+  {{ if partial "functions/is-iframe" $image_src | and ((in $image_src "poster") | or $is_page) }}
+    {{ $iframe_poster = partial "functions/iframe-poster" $image_src }}
+  {{ end }}
+
+  {{/*  IMAGE CLASS  */}}
+  {{- $hover     := cond (not .image_hover) "" "image--hover"           -}}
+  {{- $contain   := cond (not .contain)     "" "image--contain"         -}}
+  {{- $inset     := cond (not .inset)       "" "image--inset"           -}}
+  {{- $grayscale := cond (not .grayscale)   "" "image--grayscale"       -}}
+  {{- $ratio     := cond (not .ratio)       "" (print "image--" .ratio) -}}
+  {{- $border    := cond (not .border)      "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
+  {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
+  {{- $svg       := cond (in $image_src ".svg") "image--svg" "" -}}
+
+  {{- $page_type     := .Page.Type | default "common" -}}
+  {{- if in (slice "categories" "tags" "authors") $page_type -}}
+    {{- $page_type    = "taxonomies" -}}
+  {{- end -}}
+  {{- $articles      := site.Data.articles.common -}}
+  {{- with index site.Data.articles $page_type -}}
+    {{- $articles     = merge $articles . -}}
+  {{- end -}}
+  {{- $gradient  := false -}}
+  {{- if eq $image_src "gradient"
+    | or (
+      and
+      $is_page
+      $image_src
+      .contain
+      (eq $articles.image "gradient")
+    )
+  -}}
+    {{- $gradient = true -}}
+  {{- end -}}
+
+  {{- $class := delimit (slice
+    "image"
+    $ratio
+    $contain
+    $border
+    $inset
+    $hover
+    $svg
+    $icon_top
+    $grayscale
+    | uniq) " "
+  -}}
+
+  {{- $attr  := ""  -}}
+  {{- if or .image_min .image_max -}}
+    {{- $attr = print ` style="--image-min:` (.image_min | default 10) `;--image-max:` (.image_max | default 18) `"` -}}
+  {{- end -}}
+
+  <div class="{{ $class }}" {{- $attr| safeHTMLAttr }}>
+
+    {{- if $gradient -}}
+      <div class="image__inner image__inner--gradient"></div>
+    {{- end -}}
+
+    {{ partial "components/image" (dict
+      "class"      "image__inner"
+      "src"        (cond
+        (not $iframe_poster)
+        $image_src
+        $iframe_poster
+      )
+      "ratio"       .ratio
+      "contain"     .contain
+      "container"   $.container
+      "span"        .box_span
+      "columns_min" .columns_min
+      "notlazy"     $.first
+      | merge (cond (not ($iframe_poster | and (not $is_page)))
+        (dict)
+        (dict "iframe_src" (partial `functions/iframe-src` (merge . (dict `src` $image_src))))
+      )
+    ) }}
+
+    {{ if .image_hover }}
+      {{ partial "components/image" (dict
+        "class"       "image__inner image__inner--hover"
+        "src"         .image_hover
+        "ratio"       .ratio
+        "contain"     .contain
+        "container"   $.container
+        "span"        .box_span
+        "columns_min" .columns_min
+        "notlazy"     $.first
+      ) }}
+    {{ end }}
+
+{{ end }}
+
+{{/*  ICON TOP  */}}
+{{ if eq .icon_type "top" }}
+  {{ partial "components/box-icon" . }}
+{{ end }}
+
+{{/*  IMAGE END  */}}
+{{ if $image_src }}
+  </div>
+{{ end }}

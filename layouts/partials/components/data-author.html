@@ -4,7 +4,7 @@
     {{- with $.GetPage (print "authors/" .) -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" "user" "alt" "👤") -}}
-        {{- if $.column -}}
+        {{- if $.box -}}
           {{- .Title -}}
         {{- else -}}
           {{- partial "components/link" (dict

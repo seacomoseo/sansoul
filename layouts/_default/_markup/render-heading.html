@@ -16,8 +16,8 @@
   {{- $class = print $class (replace . "." " ") -}}
 {{- end -}}
 
-<h{{ .Level }} class="content__heading {{ $class }}" id="{{ $id }}">
-  <a class="content__heading-link" href="#{{ $id }}">
+<h{{ .Level }} class="description__heading {{ $class }}" id="{{ $id }}">
+  <a class="description__heading-link" href="#{{ $id }}">
     {{- .Text | safeHTML -}}
     {{- if in $class "underline" }}<br>{{ end -}}
   </a>

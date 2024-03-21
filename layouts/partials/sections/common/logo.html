@@ -1,52 +1,41 @@
-{{- $params    := partial "functions/page-params" . -}}
-{{- $sectioned := partial "functions/is-sectioned" . -}}
-{{- $menu      := merge site.Data.menu ($params.menu | default dict) -}}
-{{- $logo      := $menu.logo | default site.Data.articles.content.logo -}}
-{{- $bg        := "" -}}
-{{- $container := "sm" -}}
-{{- if not $menu.hide | and ((and (not $sectioned) $menu.articles_sticky) | or (and $sectioned $menu.logo)) -}}
-  {{- $bg        = $menu.color -}}
-  {{- $container = $menu.size_sticky | default "lg" -}}
-{{- else -}}
-  {{- with partial "functions/sections" . -}}
-    {{- with index . 0 -}}
-      {{- with .color -}}
-        {{- $bg = . -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-{{ with site -}}
-  <aside class="logo {{- with $bg }} bg-{{ . }}{{ end }}">
-    <div class="container container--{{ $container }}">
-      <div class="logo__link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link">
-        {{- with $logo -}}
-          {{- partial "components/image"
-            (dict
-              "svg_src"   true
-              "class"     "logo__image"
-              "src"       .
-              "alt"       (print "Logo " (partial "functions/lang-param" (dict "parent" "config" "param" "title")))
-              "container" $container
-              "span"      6
-              "notlazy"   true
-            )
-          -}}
-        {{- end -}}
-        {{- with .Data.articles.content -}}
-          {{ if .title | or .subtitle }}
+{{- with .menu -}}
+  {{- if ne .header "hide" -}}
+    {{- $config    := partial "functions/config-lang" . -}}
+    {{- $container := .size  | default "sm" -}}
+    {{- $color     := .color | default "white" -}}
+    {{- $align     := cond (ne .header_align `left`) (print " align-" .header_align) "" }}
+    {{- $logo      := $config.logo -}}
+    {{- $title     := $config.logo_title -}}
+    {{- $subtitle  := $config.logo_subtitle -}}
+    <header class="logo bg bg-{{ $color }}">
+      <div class="box container container--{{ $container }} {{- $align }}">
+        <div class="logo__link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link">
+          {{- with $logo -}}
+            {{- $alt := print "Logo " $config.title -}}
+            {{- partial "components/image"
+              (dict
+                "svg_src"   true
+                "class"     "logo__image"
+                "src"       .
+                "alt"       $alt
+                "container" $container
+                "span"      6
+                "notlazy"   true
+              )
+            -}}
+          {{- end -}}
+          {{ if $title | or $subtitle }}
             <div class="logo__titles">
-              {{- with .title -}}
+              {{- with $title -}}
                 <i class="logo__title h1">{{ . }}</i>
               {{- end -}}
-              {{- with .subtitle -}}
+              {{- with $subtitle -}}
                 <i class="logo__subtitle">{{ . }}</i>
               {{- end -}}
             </div>
           {{- end -}}
-        {{- end -}}
+        </div>
       </div>
-    </div>
-  </aside>
+    </header>
+  {{ end }}
 {{ end }}

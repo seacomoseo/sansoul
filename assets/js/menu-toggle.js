@@ -1,15 +1,12 @@
-import { screenSticky } from '@params'
+import { screenSticky } from './screen-sticky'
 
 export function initMenuToggle () {
   document.addEventListener('DOMContentLoaded', () => {
     const menu = document.querySelector('.menu')
 
     if (menu) {
-      const menuToggleButton = document.querySelector('.menu__toggle')
-      const menuBackover = document.querySelector('.menu__backover')
-      const menuLinks = document.querySelectorAll('.menu__link:not(.menu__item--more > .menu__link, .menu__link--translate), .menu__button')
-      const menuSticky = document.querySelector('.menu--sticky')
-      const menuBreackPoint = screenSticky
+      const menuSticky = document.querySelector('.body-menu--sticky')
+      const menuBreackPoint = screenSticky()
       const menuNoStickyVisibility = () => !menuSticky || window.innerWidth < menuBreackPoint
       function menuOpen () {
         menu.removeAttribute('hidden')
@@ -33,22 +30,28 @@ export function initMenuToggle () {
       function menuVisibility () {
         if (menuNoStickyVisibility()) {
           menu.setAttribute('hidden', 'until-found')
+          document.body.classList.remove('body-menu--sticky--active')
         } else {
           menu.removeAttribute('hidden')
+          document.body.classList.add('body-menu--sticky--active')
         }
       }
 
-      menuToggleButton.addEventListener('click', menuToggle)
-      menuBackover.addEventListener('click', menuClose)
-      menuLinks && menuLinks.forEach(e => e.addEventListener('click', menuClose))
+      // Listeners
+      document.addEventListener('click', e => {
+        const menuToggleButton = e.target.closest('.menu__toggle')
+        if (menuToggleButton) menuToggle()
+        const menuBackover = e.target.closest('.menu__backover')
+        if (menuBackover) menuClose()
+        const menuLink = e.target.closest('.menu__link, .menu__button')
+        if (menuLink) menuClose()
+      })
       document.addEventListener('keyup', e => e.keyCode === 27 && menuClose())
       window.addEventListener('hashchange', menuClose)
       window.addEventListener('resize', menuVisibility)
-      menuVisibility()
 
-      // Toggle more
-      // const menuMore = document.querySelector('.menu__item--more')
-      // menuMore && menuMore.addEventListener('click', () => menuMore.classList.toggle('menu__item--more--active'))
+      // Run when load
+      menuVisibility()
     }
   })
 }

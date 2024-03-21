@@ -1,0 +1,12 @@
+{{ $obj    := .obj | default dict }}
+{{ with $obj | jsonify }}
+  {{ $json := . }}
+  {{ with . | findRE `\{\{\%.+?\%\}\}` }}
+    {{ range . | uniq }}
+      {{ $param := . | markdownify | replaceRE `\"` `\"` }}
+      {{ $json   = $json | replaceRE . $param }}
+    {{ end }}
+    {{ $obj =  unmarshal $json }}
+  {{ end }}
+{{ end }}
+{{ return $obj }}

@@ -1,28 +1,33 @@
 {{- $param := index .Params 0 -}}
 {{- $two   := index .Params 1 -}}
-{{- if eq $param "name" -}}
-  {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_name")
-    | default (partial "functions/lang-param" (dict "parent" "config" "param" "title"))
-  -}}
-{{- else if eq $param "dni" -}}
-  {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_dni")
-    | default "00000000A"
-  -}}
-{{- else if eq $param "location" -}}
-  {{- with partial "functions/lang-param" (dict "parent" "config" "param" "legal_location") -}}
-    {{- . -}}
-  {{- else -}}
-    {{- $postalAddress := index (partial "functions/contact-data" .).locations 0 | default "-" -}}
-    {{- partial "functions/postal-address" $postalAddress -}}
+
+{{- if in (slice "name" "dni" "location" "email") $param -}}
+  {{- $config := partial "functions/config-lang" . -}}
+
+  {{- if eq $param "name" -}}
+    {{- $config.legal_name | default $config.title -}}
+  {{- else if eq $param "dni" -}}
+    {{- $config.legal_dni | default "00000000A" -}}
+  {{- else if eq $param "location" -}}
+    {{- with $config.legal_location -}}
+      {{- . -}}
+    {{- else -}}
+      {{- $postalAddress := index (partial "functions/contact-buttons" site).locations 0 | default "-" -}}
+      {{- partial "functions/postal-address" $postalAddress -}}
+    {{- end -}}
+  {{- else if eq $param "email" -}}
+    <i class="ofuscate">
+      {{- $email := $config.legal_email -}}
+      {{- if not $email -}}
+        {{- $email = index (partial "functions/contact-buttons" site).mails 0
+          | default "mail@mail.com"
+          | base64Encode
+        -}}
+      {{- end -}}
+      {{- $email -}}
+    </i>
   {{- end -}}
-{{- else if eq $param "email" -}}
-  <i class="ofuscate">
-    {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_email")
-      | default (index (partial "functions/contact-data" .).mails 0)
-      | default "mail@mail.com"
-      | base64Encode
-    -}}
-  </i>
+
 {{- else if eq $param "web" -}}
   {{- replace site.BaseURL "https://" "" -}}
 {{- else if eq $param "https" -}}

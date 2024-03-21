@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ i18n "cms" }} · {{ partial "functions/lang-param" (dict "parent" "config" "param" "title") }}</title>
+  <title>{{ i18n "cms" }} · {{ (partial "functions/config-lang" .).title }}</title>
   <meta name="robots" content="noindex">
   {{/*  <link href="config.json" type="text/ymal" rel="cms-config-url">  */}}
 
@@ -77,46 +77,6 @@
 
     // STATIC CMS
     CMS.init()
-
-    // PRE SAVE
-    const slugConverter = text => {
-      return text.toString().toLowerCase()
-        .replace(/[áàä]/, 'a')
-        .replace(/[éèë]/, 'e')
-        .replace(/[íìï]/, 'i')
-        .replace(/[óòö]/, 'o')
-        .replace(/[úùü]/, 'u')
-        .replace(/[ñ]/, 'n')
-        .replace(/[ç]/, 'c')
-        .replace(/[^\w\-]+/g, '-') // Reemplaza todos los caracteres que no sean palabra, guiones o números
-        .replace(/\-\-+/g, '-')    // Reemplaza múltiples - con un solo -
-        .replace(/^-+/, '')        // Trim - del inicio del texto
-        .replace(/-+$/, '')        // Trim - del final del texto
-    }
-    CMS.registerEventListener({
-      name: 'preSave',
-      handler: ({ data, collection, field }) => {
-        const d = data.entry.data
-        let dataObj = d
-        const notSlugCollections = [
-          'sonfig',
-          'types-{{ .Lang }}',
-          'sections-{{ .Lang }}',
-          'modals-{{ .Lang }}'
-        ]
-        if (!notSlugCollections.includes(collection)) {
-          dataObj.slug = slugConverter(d.slug || d.title)
-        }
-        if (collection == 'blog-{{ .Lang }}') {
-          dataObj.date = d.date || new Date().toLocaleDateString('sv-SE')
-        }
-        if (collection == 'events-{{ .Lang }}') {
-          if (date_ini) dataObj.date_ini = new Date(d.date_ini).toISOString().slice(0, 19)
-          if (date_end) dataObj.date_end = new Date(d.date_end).toISOString().slice(0, 19)
-        }
-        return dataObj
-      },
-    })
 
     // NETLIFY IDENTITY
     {{ if not $local }}

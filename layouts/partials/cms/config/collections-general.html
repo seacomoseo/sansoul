@@ -1,0 +1,139 @@
+{{/*  IF MULTILANGUAJE  */}}
+{{- $languajes_permalinks := slice -}}
+{{- range slice . | append .Translations -}}
+  {{- $languajes_permalinks = $languajes_permalinks | append (partial "cms/config/languajes-permalinks" .) -}}
+{{- end -}}
+
+{{/*  IF MULTIHOST  */}}
+{{- $multihost        := ne
+  (index .AllTranslations 0).Site.BaseURL
+  (index .AllTranslations 1).Site.BaseURL
+  | and .IsTranslated
+-}}
+
+{{ return slice (dict "&COLLECTION_GENERAL"
+  (dict
+    "label"           `✅ General`
+    "name"            `config`
+    "description"     `Opciones generales del sitio web`
+    "sortable_fields" (dict "fields" slice)
+    "editor"          (dict "preview" false)
+    "files"           (slice
+      (dict
+        "file"      `data/config.yml`
+        "extension" `yml`
+        "label"     `⚙️ Configuración General`
+        "name"      `data-config`
+        "fields"    (partial "cms/config/data-config-fields" .)
+      )
+      (dict
+        "file"      `data/design.yml`
+        "extension" `yml`
+        "label"     `🎨 Diseño General`
+        "name"      `data-design`
+        "fields"    (partial "cms/config/data-design-fields" .)
+      )
+      (dict
+        "file"      `data/sections.yml`
+        "extension" `yml`
+        "label"     `🧩 Diseño de Secciones`
+        "name"      `data-sections`
+        "fields"    (slice
+          `~SECTIONS_DESIGN_GENERAL`
+          `~SECTIONS_DESIGN_ALTERNATE`
+        )
+      )
+      (dict
+        "file"      `data/modals.yml`
+        "extension" `yml`
+        "label"     `🪟 Diseño de Modales`
+        "name"      `data-modals`
+        "fields"    `~MODALS_DESIGN_FIELDS`
+      )
+      (dict
+        "file"      `data/articles.yml`
+        "extension" `yml`
+        "label"     `📚 Diseño de Artículos`
+        "name"      `data-articles`
+        "fields"    (partial "cms/config/data-articles-fields" .)
+      )
+      (dict
+        "file"      `data/menu.yml`
+        "extension" `yml`
+        "label"     `🔗 Diseño de Menú`
+        "name"      `data-menu`
+        "fields"    (slice
+          (dict "label" `Logo`                              "name" `logo`                 "widget" `image`   "required" false "max_file_size" 512000000)
+          `~COLOR`
+          (dict "label" `Ancho de Despliegue`               "name" `screen_sticky`        "widget" `select`  "required" false "options" `~OPTIONS_SIZES_N_FLUID` "hint" "Es el ancho de la ventana a partir del cual el menú de las páginas seccionadas se mantiene desplegado en la parte superior 🔷 Si no se especifica, se mantendrá siempre plegado")
+          (dict "label" `Tamaño de Contenedor`              "name" `size_sticky`          "widget" `select`  "required" false "options" `~OPTIONS_SIZES`         "hint" "Es el ancho máximo del contenedor del menú desplegado de las páginas seccionadas")
+          (dict "label" `Desplegado en Artículos`           "name" `articles_sticky`      "widget" `boolean` "default" false)
+          (dict "label" `Inicio Transparente`               "name" `transparent`          "widget" `boolean` "default" false)
+          (dict "label" `Ocultar Enlaces Ancla`             "name" `hide_anchors`         "widget" `boolean` "default" false                                     "hint" "Oculta todos los enlaces que se generan de forma automática")
+          (dict "label" `Ocultar Iconos`                    "name" `hide_icons`           "widget" `boolean` "default" false)
+          (dict "label" `Mostrar Modales`                   "name" `show_modals`          "widget" `boolean` "default" false                                     "hint" "Mostrar enlaces hacia secciones de tipo modal como subelementos desplegables (no recomendado si hay muchos)")
+          (dict "label" `Enlace Automático al Blog`         "name" `show_blog_auto`       "widget" `boolean` "default" false                                     "hint" "Mostrar enlaces hacia entradas del blog automáticamente como subelementos desplegables en 'Más'")
+          (dict "label" `Enlace Automático a Productos`     "name" `show_products_auto`   "widget" `boolean` "default" false                                     "hint" "Mostrar enlaces hacia productos automáticamente como subelementos desplegables en 'Más'")
+          (dict "label" `Enlace Automático a Taxonomías`    "name" `show_taxonomies_auto` "widget" `boolean` "default" false                                     "hint" "Mostrar enlaces hacia taxonomías automáticamente como subelementos desplegables en 'Más'")
+          (dict "label" `Enlace Automático al Buscador`     "name" `search`               "widget" `boolean` "default" false                                     "hint" "Ofrece un buscador rápido para todos los contenidos que aparecerá enlazado en el menú")
+          (dict "label" `Traductor de Google`               "name" `google_translate`     "widget" `boolean` "default" false                                     "hint" "Añade en el menú la opción de traducir automáticamente a múltiples idiomas (no indexables por Google)")
+          (dict "label" `Idiomas y Traductor en Menú "Más"` "name" `langs_in_more`        "widget" `boolean` "default" false                                     "hint" "Cambia la ubicación de los enlaces de idiomas y traducción al desplegable 'Más'")
+          (dict "label" `Idiomas Desplegados`               "name" `langs_out`            "widget" `boolean` "default" false                                     "hint" "Muestra los idiomas directamente sin nombres, fuera del desplegable 'Más' aunque cambie la ubicación anterior")
+          (dict "label" `Ocultar Botones de Esquina`        "name" `callnow_hide`         "widget" `boolean` "default" false                                     "hint" "Botones de la Esquina Inferior Izquierda que se suelen utilizar para llamadas a la acción siempre visibles 🔷 Si está oculto y no se añaden a continuación, se usará el primer número de WhatsApp o de teléfono que se encuentre en alguna sección con botones contacto")
+          `~MENU_ITEMS_CALLNOW`
+          `~MENU_ITEMS_NORMAL`
+          `~MENU_ITEMS_MORE`
+        )
+      )
+      (dict
+        "file"      `hugo.yml`
+        "extension" `yml`
+        "label"     `💬 Idiomas`
+        "name"      `hugo`
+        "fields"    (slice
+          (dict "label" `URL Base`                 "name" `baseURL`     "widget" `hidden` "required" false)
+          (dict "label" `Artículos por Paginación` "name" `Paginate`    "widget" `hidden` "required" false "min" 2 "value_type" `int` "deafult" 24)
+          (dict "label" `Mostrar Noticias Futuras` "name" `buildFuture` "widget" `hidden` "required" false "deafult" false "hint" "Mostrar noticias con fechas futuras a la actual")
+          (dict "label" `Tema`                     "name" `theme`       "widget" `hidden` "required" false "default" (slice `sansoul`))
+          (dict
+            "label"     `Parámetros Generales`
+            "name"      `params`
+            "widget"    `hidden`
+            "collapsed" true
+            "fields"    (slice
+              (dict "label" `URL del proyecto en GitLab, GitHub u otro` "name" `git_url`      "widget" `hidden` "required" false)
+              (dict "label" `Nombre de Proyecto de Netlify`             "name" `netlify_name` "widget" `hidden` "required" false)
+              (dict "label" `ID de Proyecto de Netlify`                 "name" `netlify_id`   "widget" `hidden` "required" false)
+              (dict "label" `Enlace a Datos de Acceso`                  "name" `drive_link`   "widget" `hidden` "required" false)
+            )
+          )
+          (dict "label" `Idioma Principal`   "name" `defaultContentLanguage` "widget" `select`                            "required"  true  "options" `~OPTIONS_LANGS` "default" `es`                                                      "hint" "Español por defecto")
+          (dict "label" `Desactivar Idiomas` "name" `disableLanguages`       "widget" (cond $multihost `hidden` `select`) "required"  false "options" `~OPTIONS_LANGS` "default" site.Data.utilities.default_disable_langs "multiple" true "hint" "Todos menos el Español por defecto")
+          (dict "label" (i18n "languages")   "name" `languages`              "widget" `object`                            "collapsed" true  "fields"  $languajes_permalinks )
+        )
+      )
+      (dict
+        "file"      `data/redirects.md`
+        "extension" `md`
+        "label"     `↪️ Redirecciones`
+        "name"      `redirects`
+        "fields"    (slice
+          (dict "label" `Redirecciones` "name" `body` "widget" `text` "required" false
+            "hint" "Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)"
+          )
+        )
+      )
+      (dict
+        "file"      `data/robots.md`
+        "extension" `md`
+        "label"     `🤖 Robots.txt`
+        "name"      `robots`
+        "fields"    (slice
+          (dict "label" `robots.txt` "name" `body` "widget" `text` "required" false
+            "hint" "Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)"
+          )
+        )
+      )
+    )
+  )
+) }}

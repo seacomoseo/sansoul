@@ -1,0 +1,47 @@
+{{- if .color | or .gradient | or .bg -}}
+  {{- $bg_image          := "" -}}
+  {{- $bg_image_opacity  := "" -}}
+  {{- $bg_image_parallax := "" -}}
+  {{- $image_grayscale   := "" -}}
+
+  {{- if .bg -}}
+    {{- $bg_image          = "bg-figure" -}}
+    {{- $bg_image_opacity  = cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) -}}
+    {{- $bg_image_parallax = cond (not .parallax) "" (cond (or .box site.Data.design.performance.parallax) "parallax" "") -}}
+    {{- $image_grayscale   = cond (not .grayscale) "" "image--grayscale" -}}
+  {{- end -}}
+
+  {{- if .color | or .gradient -}}
+    {{- if and .link .shadow site.Data.design.buttons.deep -}}
+      <div class="bg-color bg-color--3d"></div>
+    {{- end -}}
+  {{- end -}}
+
+  {{- $class := delimit (slice
+    "bg-color"
+    $bg_image
+    $bg_image_parallax
+    | uniq) " "
+  -}}
+
+  <div class="{{ $class }}">
+    {{- if partial `functions/is-iframe` .bg -}}
+      <div class="bg-figure-video">
+    {{- end -}}
+      {{- partial "components/image" (dict
+        "class"     (delimit (slice "bg-figure-image" $bg_image_opacity $image_grayscale) " ")
+        "src"       .bg
+        "notlazy"   .header
+        "bg"        true
+        "container" $.container
+        "span"      .box_span
+      ) -}}
+    {{- if partial `functions/is-iframe` .bg -}}
+      </div>
+    {{- end -}}
+  </div>
+{{- end -}}
+
+{{- if .card -}}
+  <div class="bg-card"></div>
+{{- end -}}

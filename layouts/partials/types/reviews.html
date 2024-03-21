@@ -1,28 +1,28 @@
 {{ if .slider }}
-  <div class="slider" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
+  <div class="slider box__type" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
 {{ end }}
 
-<div class="reviews {{ if .slider }}slider__track{{ end }}">
+<div class="reviews {{ if .slider }}slider__track{{ else }}box__type{{ end }}">
 
   {{/*  REVIEWS CLASS  */}}
-  {{- $columns       := .num | default (cond (le (len .items) 6) (len .items) 3) -}}
-  {{- $columns        = print "columns--" $columns -}}
-  {{- $columns_xs    := cond (not .num_xs) "" "columns--xs" -}}
-  {{- $slider_active := cond (not .slider) "" "slider__items" -}}
+  {{- $columns_max := .columns | default (cond (le (len .reviews) 6) (len .reviews) 3) -}}
+  {{- $columns_max  = print "columns--" $columns_max -}}
+  {{- $columns_min := cond (not .columns_min) "" "columns--min" -}}
+  {{- $slider      := cond (not .slider) "" "slider__items" -}}
 
-  {{- $columns_class := delimit (slice
+  {{- $columns_class   := delimit (slice
     "columns"
-    $columns
-    $columns_xs
-    $slider_active
+    $columns_max
+    $columns_min
+    $slider
     | uniq) " "
   -}}
 
   {{- $showup := site.Data.design.performance.showup -}}
-  {{- $type   := . -}}
+  {{- $review := . -}}
   <div class="{{ $columns_class }}" {{- if $showup }} data-showup{{ end }}>
-    {{ range .items }}
-      {{- with merge $type . -}}
+    {{ range .reviews }}
+      {{- with merge $review . -}}
 
         {{/*  REVIEW ITEM CLASS  */}}
         {{- $bg_color := print
@@ -37,11 +37,11 @@
         {{- end -}}
         {{- $bg := cond (not $bg_color) "" "bg" -}}
         {{- $bg_opacity := cond (not (.opacity | and (ne .opacity 100))) "" (print "bg-opacity-" .opacity) }}
-        {{- $shadow := cond (not (.color | and (not .hide_shadow))) "" "shadow" -}}
+        {{- $shadow := cond (not (.color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
 
         {{- $review_class := delimit (slice
           "review__globe"
-          "column"
+          "box"
           $bg
           $bg_color
           $bg_gradient_color
@@ -56,13 +56,22 @@
             <div class="bg-color"></div>
             {{- $icon       := .icon | default "quote-left" -}}
             {{- $icon_right := .icon_right | default .icon | default "quote-right" -}}
-            {{- partial "components/icon" (dict "class" "review__icon" "icon" $icon) -}}
+            {{- partial "components/icon" (dict
+              "class" "review__icon"
+              "icon"  $icon
+            ) -}}
             <blockquote class="review__text">
               <div class="description">
-                {{- partial "functions/md" (dict "content" .description "not_header_links" true) -}}
+                {{- partial "functions/md" (dict
+                  "content"          .description
+                  "not_header_links" true
+                ) -}}
               </div>
             </blockquote>
-            {{- partial "components/icon" (dict "class" "review__icon review__icon--right" "icon" $icon_right) -}}
+            {{- partial "components/icon" (dict
+              "class" "review__icon review__icon--right"
+              "icon"  $icon_right
+            ) -}}
           </div>
           <div class="review__author">
             {{- if .image -}}
@@ -71,9 +80,9 @@
                 {{- partial "components/image"
                   (dict
                     "class" "review__figure-image"
-                    "src" .image
-                    "alt" .title
-                    "max" 136
+                    "src"   .image
+                    "alt"   .title
+                    "max"   136
                     "ratio" "1x1"
                   )
                 -}}
@@ -107,9 +116,9 @@
 {{ if .slider }}
   {{- partial "components/slider-buttons"
     (dict
-      "items" .items
+      "items"        (len .reviews)
       "hide_bullets" .hide_bullets
-      "hide_arrows" .hide_arrows
+      "hide_arrows"  .hide_arrows
     )
   -}}
   </div>

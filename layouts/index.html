@@ -9,7 +9,7 @@
   -}}
   {{- $cms_config_path          := print .RelPermalink `admin/config.yml` -}}
   {{- $cms_index_path           := print .RelPermalink `admin/index.html` -}}
-  {{- $google_file_verification := (partial "functions/lang-param" (dict "parent" "config" "param" "google_file_verification")) -}}
+  {{- $google_file_verification := (partial "functions/config-lang" .).google_file_verification -}}
   {{- $draws_path               := `/draws.svg` -}}
   {{- $redirects_path           := `/_redirects` -}}
   {{- if $multihost -}}

@@ -1,5 +1,5 @@
 // Load iframe player when hover mouse
-import { i18nVideo, isLangEn } from '@params'
+import { i18nVideo, lang } from '@params'
 import { loadScript } from './load-script'
 
 export function initIframePoster () {
@@ -13,7 +13,7 @@ export function initIframePoster () {
       const parent = iframeWrap.target.parentElement
       const isYoutube = src.match(/youtu\.be|youtube(-nocookie)?\.com/s)
       if (isYoutube) {
-        if (isLangEn) attrsEn = '&cc_load_policy=1&hl=en&cc_lang_pref=en'
+        if (lang == 'en') attrsEn = '&cc_load_policy=1&hl=en&cc_lang_pref=en'
         attrs =
           ` title="${i18nVideo} · Youtube"` +
           ` src="${src}${attrsEn}&autoplay=1&showinfo=0"` +

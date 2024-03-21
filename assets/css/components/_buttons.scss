@@ -22,7 +22,7 @@ button,
   color: var(--base-text);
   background-color: transparent;
   position: relative;
-  z-index: 0;
+  @extend %radius;
   &:before {
     content: '';
     background-image: none;
@@ -70,24 +70,9 @@ button,
     transition: color .1s;
   }
   > i {
-    @if $buttons-font-base {
-      @if $font-weight-bold-base > 0 {
-        @include font-base-bold;
-        text-transform: uppercase;
-      }
-    } @else {
-      @include font-title;
-      text-transform: uppercase;
-    }
+    @include font-button;
     line-height: 1.25;
     text-align: left;
-  }
-  &:hover,
-  &:focus {
-    @include button-hover;
-  }
-  &:active {
-    @include button-active;
   }
   @if $buttons-3d {
     transform: translateY(-.25em);
@@ -109,6 +94,71 @@ button,
     }
   }
   transition-duration: .1s;
+}
+
+
+// Hover, Focus and Active
+
+button,
+.button {
+  &:is(
+    :hover,
+    :focus,
+    .box:has(> .box__button):not(:has(
+      .box .box__button,
+      > .box__button ~ .box__button,
+      :is(a, [data-h], [data-b]):not(.box__button)
+    )):where(
+      :hover,
+      :focus
+    ) > .box__button
+  ) {
+    @if $buttons-outline {
+      color: var(--base);
+    } @else {
+      color: var(--base-text);
+    }
+    --base: var(--hover);
+    --base-text: var(--hover-text);
+    @if $buttons-3d {
+      transform: translateY(-.125em);
+      &:after {
+        transform: translateY(.125em);
+      }
+      @if $chamfer {
+        filter: drop-shadow($shadow-half);
+      } @else {
+        &:after {
+          box-shadow: $shadow-half;
+        }
+      }
+    }
+  }
+  &:is(
+    :active,
+    .box:has(> .box__button):not(:has(
+      .box .box__button,
+      > .box__button ~ .box__button,
+      :is(a, [data-h], [data-b]):not(.box__button)
+    )):active > .box__button,
+    .menu__button:where(.menu__item--active > *):not(:hover)
+  ) {
+    @if $buttons-outline {
+      color: var(--base);
+    } @else {
+      color: var(--base-text);
+    }
+    --base: var(--active);
+    --base-text: var(--active-text);
+    @if $buttons-3d {
+      filter: none;
+      transform: none;
+      &:after {
+        transform: none;
+        box-shadow: 0 0 0 $shadow-color;
+      }
+    }
+  }
 }
 
 
@@ -159,9 +209,8 @@ button,
 
 .button--font-alt {
   > i {
-    @include font-base;
+    @include font-button(alt);
     line-height: 1.25;
-    text-transform: none;
     @if $top-title != 0 {
       &:not(.aux) {
         transform: none;
@@ -170,15 +219,7 @@ button,
   }
   &:not(.button, button) {
     > i {
-      @if $buttons-font-base {
-        @if $font-weight-bold-base > 0 {
-          @include font-base-bold;
-          text-transform: uppercase;
-        }
-      } @else {
-        @include font-title;
-        text-transform: uppercase;
-      }
+      @include font-button;
     }
   }
 }
@@ -196,7 +237,7 @@ button,
 }
 
 
-// Border
+// Outline
 
 @if $buttons-outline {
   button,
@@ -242,9 +283,9 @@ button,
       }
     }
   }
+  // Float icon
   .menu__toggle,
   .callnow .button--icon,
-  .button-google-translate .button--icon,
   .button-up .button--icon,
   .modal__back,
   .modal__close--corner {

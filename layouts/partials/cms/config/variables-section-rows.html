@@ -1,0 +1,243 @@
+{{ return slice
+  (dict "&ITEM_CONDITION" (dict
+    "condition" (dict
+      "field"   `type`
+      "pattern" `^$`
+    )
+  ))
+  (dict "&MORE_CONDITION" (dict
+    "condition" (dict
+      "field"   `more`
+      "value"   true
+    )
+  ))
+
+  (dict "&ITEM_FIELDS" (slice
+    (dict "<<" (slice `~ITEM_CONDITION` `~TITLE`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~SUBTITLE`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~PRICE`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~ICON_ID`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~IMAGE_SRC`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~BACKGROUND_IMAGE`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~BUTTON_LINK`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~BUTTON_LABEL`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~BUTTON_ANCHOR`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~COLUMNS_SPAN`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~ORDER`))
+    (dict "<<" (slice `~ITEM_CONDITION` `~DESCRIPTION`))
+    (dict "<<" (slice `~ITEM_CONDITION` (dict "label" `Ver Más Opciones` "name" `more` "widget" `boolnew` "required" false)))
+    (dict "<<" (slice `~MORE_CONDITION` `~ICON_TYPE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~ICON_SIZE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~ICON_COLOR`))
+    (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_SRC_HOVER`))
+    (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_RATIO`))
+    (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_CONTAIN`))
+    (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_BORDER`))
+    (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_INSET`))
+    (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_GRAYSCALE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_LICON`))
+    (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_OFUSCATE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_FONT_ALT`))
+    (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_COLOR_WITH_HIDE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~COLOR`))
+    (dict "<<" (slice `~MORE_CONDITION` `~GRADIENT_COLOR`))
+    (dict "<<" (slice `~MORE_CONDITION` `~GRADIENT_TYPE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~COLOR_OPACITY`))
+    (dict "<<" (slice `~MORE_CONDITION` `~BG_OPACITY`))
+    (dict "<<" (slice `~MORE_CONDITION` `~PARALLAX`))
+    (dict "<<" (slice `~MORE_CONDITION` `~PILL`))
+    (dict "<<" (slice `~MORE_CONDITION` `~CARD`))
+    (dict "<<" (slice `~MORE_CONDITION` `~TITLE_SIZE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~UPPERCASE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~UNDERLINE`))
+    (dict "<<" (slice `~MORE_CONDITION` `~ALIGN`))
+    (dict "<<" (slice `~MORE_CONDITION` `~ALIGN_Y_SELF`))
+    (dict "<<" (slice `~MORE_CONDITION` `~ALIGN_XL`))
+    (dict "<<" (slice `~MORE_CONDITION` `~HIDE_RADIUS`))
+    (dict "<<" (slice `~MORE_CONDITION` `~COLUMNS_PADDING`))
+    (dict "<<" (slice `~MORE_CONDITION` `~SHADOW`))
+  ))
+
+  (dict "&COLUMNS_ITEMS" (dict
+    "label"          `Columnas`
+    "label_singular" `Columna`
+    "name"           `items`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "Columna {{fields.title}}"
+    "allow_add"      true
+    "required"       false
+    "condition"      (dict
+      "field"          `type`
+      "value"          `columns`
+    )
+    "fields"         `~ITEM_FIELDS`
+  ))
+  (dict "&COLUMNS_DESIGN" (dict
+    "label"     `Diseño de Todas las Columnas`
+    "hint"     `JARLLLLLL Diseño de Todas las Columnas`
+    "name"      `design`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "condition" (dict
+      "field"     `type`
+      "value"     `columns`
+    )
+    "fields"    (slice
+      `~COLUMNS_MAX`
+      `~COLUMNS_MIN`
+      `~COLUMNS_GAP`
+      `~GROW`
+      `~ICON_ID`
+      `~ICON_TYPE`
+      `~ICON_SIZE`
+      `~ICON_COLOR`
+      `~IMAGE_SRC`
+      `~IMAGE_SRC_HOVER`
+      `~IMAGE_RATIO`
+      `~IMAGE_CONTAIN`
+      `~IMAGE_BORDER`
+      `~IMAGE_INSET`
+      `~IMAGE_GRAYSCALE`
+      `~BUTTON_LINK`
+      `~BUTTON_LICON`
+      `~BUTTON_LABEL`
+      `~BUTTON_ANCHOR`
+      `~BUTTON_OFUSCATE`
+      `~BUTTON_FONT_ALT`
+      `~BUTTON_COLOR_WITH_HIDE`
+      `~COLOR`
+      `~GRADIENT_COLOR`
+      `~GRADIENT_TYPE`
+      `~COLOR_OPACITY`
+      `~BACKGROUND_IMAGE`
+      `~BG_OPACITY`
+      `~PARALLAX`
+      `~PILL`
+      `~CARD`
+      `~TITLE_SIZE`
+      `~UPPERCASE`
+      `~UNDERLINE`
+      `~ALIGN`
+      `~ALIGN_Y`
+      `~ALIGN_X`
+      `~COLUMNS_PADDING`
+      `~HIDE_SHADOW`
+      `~HIDE_RADIUS`
+      `~GROUP_RADIUS`
+      `~SLIDER_ACTIVE`
+      `~SLIDER_INTERVAL`
+      `~SLIDER_HIDE_BULLETS`
+      `~SLIDER_HIDE_ARROWS`
+    )
+  ))
+  
+  (dict "&SECTION_ROWS" (dict
+    "label"          `Filas`
+    "label_singular" `Fila`
+    "name"           `rows`
+    "widget"         `list`
+    "collapsed"      false
+    "allow_add"      true
+    "required"       false
+    "summary"        "HOLI {{fields.type}}"
+    "fields"          (slice
+      (dict
+        "label"    `Tipo`
+        "name"     `type`
+        "widget"   `select`
+        "required" false
+        "options" (slice
+          (dict "label" `Contenedor` "value" ``)
+          (dict "label" `Columnas` "value" `columns`)
+          (dict "label" `Pasos` "value" `steps`)
+        )
+      )
+      (dict "<<" (slice `~ITEM_CONDITION` `~TITLE`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~SUBTITLE`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~PRICE`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~ICON_ID`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~IMAGE_SRC`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~BACKGROUND_IMAGE`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~BUTTON_LINK`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~BUTTON_LABEL`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~BUTTON_ANCHOR`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~COLUMNS_SPAN`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~ORDER`))
+      (dict "<<" (slice `~ITEM_CONDITION` `~DESCRIPTION`))
+      (dict "<<" (slice `~ITEM_CONDITION` (dict "label" `Ver Más Opciones` "name" `more` "widget" `boolnew` "required" false)))
+      (dict "<<" (slice `~MORE_CONDITION` `~ICON_TYPE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~ICON_SIZE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~ICON_COLOR`))
+      (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_SRC_HOVER`))
+      (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_RATIO`))
+      (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_CONTAIN`))
+      (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_BORDER`))
+      (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_INSET`))
+      (dict "<<" (slice `~MORE_CONDITION` `~IMAGE_GRAYSCALE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_LICON`))
+      (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_OFUSCATE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_FONT_ALT`))
+      (dict "<<" (slice `~MORE_CONDITION` `~BUTTON_COLOR_WITH_HIDE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~COLOR`))
+      (dict "<<" (slice `~MORE_CONDITION` `~GRADIENT_COLOR`))
+      (dict "<<" (slice `~MORE_CONDITION` `~GRADIENT_TYPE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~COLOR_OPACITY`))
+      (dict "<<" (slice `~MORE_CONDITION` `~BG_OPACITY`))
+      (dict "<<" (slice `~MORE_CONDITION` `~PARALLAX`))
+      (dict "<<" (slice `~MORE_CONDITION` `~PILL`))
+      (dict "<<" (slice `~MORE_CONDITION` `~CARD`))
+      (dict "<<" (slice `~MORE_CONDITION` `~TITLE_SIZE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~UPPERCASE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~UNDERLINE`))
+      (dict "<<" (slice `~MORE_CONDITION` `~ALIGN`))
+      (dict "<<" (slice `~MORE_CONDITION` `~ALIGN_Y_SELF`))
+      (dict "<<" (slice `~MORE_CONDITION` `~ALIGN_XL`))
+      (dict "<<" (slice `~MORE_CONDITION` `~HIDE_RADIUS`))
+      (dict "<<" (slice `~MORE_CONDITION` `~COLUMNS_PADDING`))
+      (dict "<<" (slice `~MORE_CONDITION` `~SHADOW`))
+      `~COLUMNS_DESIGN`
+      `~COLUMNS_ITEMS`
+      (dict
+        "label"     `Diseño de Todos los Pasos`
+        "name"      `steps_design`
+        "widget"    `object`
+        "collapsed" true
+        "required"  false
+        "condition" (dict
+          "field" `type`
+          "value" `steps`
+        )
+        "fields"    (slice
+          `~BORDER_COLOR`
+          `~ICON_SIZE`
+          `~TITLE_SIZE`
+          `~UPPERCASE`
+          `~UNDERLINE`
+        )
+      )
+      (dict
+        "label"          `Pasos`
+        "label_singular" `Paso`
+        "name"           `steps`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Paso: {{fields.title}}"
+        "allow_add"      true
+        "required"       false
+        "condition" (dict
+          "field" `type`
+          "value" `steps`
+        )
+        "fields"         (slice
+          `~TITLE`
+          `~SUBTITLE`
+          `~DESCRIPTION`
+          `~ICON_ID`
+          `~IMAGE_NO_VIDEO`
+        )
+      )
+    )
+  ))
+}}

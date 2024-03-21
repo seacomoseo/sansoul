@@ -1,0 +1,403 @@
+.contact__buttons,
+.contact__form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  > * {
+    position: relative;
+    // min-width: 18rem;
+    // width: calc(50% - 1em);
+    flex-grow: 1;
+  }
+}
+@if $buttons-3d {
+  .contact__buttons {
+    gap: 1.25em 1em;
+  }
+}
+.contact__schedule,
+.contact__schedule-item {
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+.contact__schedule {
+  flex-wrap: wrap;
+  gap: .5em 1em;
+  padding: 0 .5em;
+  svg {
+    font-size: 1.5em;
+    color: var(--main);
+  }
+}
+.contact__schedule-item {
+  gap: .375em;
+}
+.contact__email {
+  position: relative;
+}
+.contact__email-button {
+  width: 100%;
+  height: 100%;
+}
+.contact__email-options {
+  @if $radius > 1 or $buttons-rounded {
+    @include radius-parent(2em - $radius);
+  } @else {
+    @include radius-parent(1em);
+  }
+  padding: 1em;
+  z-index: 1;
+  position: absolute;
+  bottom: calc(100% + .35em);
+  left: 50%;
+  width: max-content;
+  transform: translate(-50%, 1em);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .3s, transform .3s, visibility .3s step-end;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  filter: drop-shadow($shadow);
+  &:after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: .75em solid transparent;
+    border-top-color: var(--bg-color);
+    border-bottom: 0;
+    position: absolute;
+    bottom: -.7em;
+    left: calc(50% - .75em);
+  }
+}
+.contact__email:hover .contact__email-options,
+.contact__email-button:focus + .contact__email-options,
+.contact__email-options:focus-within {
+  transform: translate(-50%, 0);
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .3s, transform .3s, visibility 0s step-end;
+}
+.contact__email-option-copy--active {
+  i {
+    @if $chamfer {
+      @if $radius > 1 or $buttons-rounded {
+        --radius: 1em;
+      }
+    }
+    &:after {
+      content: $copy;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      padding: .25em 1em;
+      min-height: 2em;
+      display: flex;
+      align-items: center;
+      color: $white;
+      background-color: $dark;
+      @include radius;
+      @if not $chamfer {
+        filter: drop-shadow($shadow);
+      }
+      animation: copied 1s ease 0s forwards;
+    }
+  }
+}
+.contact__buttons {
+  a,
+  i:where(
+    [data-h],
+    [data-b]
+  ) {
+    display: inline-flex;
+    align-items: center;
+    gap: .375em;
+    text-align: left;
+    > svg {
+      color: var(--main);
+      font-size: 1.2em;
+    }
+  }
+}
+.contact__buttons > {
+  *:not(button, .button) {
+    justify-content: center;
+    &:not(.contact__email:has(> button.contact__email-button)) {
+      flex-grow: 0;
+    }
+  }
+  * > .contact__email-button:not(button, .button) {
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: .375em;
+    text-align: left;
+  }
+  .contact__br,
+  hr {
+    flex-grow: 0;
+    width: calc(100% - #{ $radius / 2 });
+    height: 0;
+  }
+  hr {
+    border: none;
+    border-bottom: 0.125em #aaa dashed;
+  }
+}
+.contact__buttons:has(.contact__br) {
+  margin-bottom: -1em;
+}
+.contact__buttons:has(.contact__br ~ .contact__br) {
+  margin-bottom: -2em;
+}
+.contact__buttons:has(.contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -3em;
+}
+.contact__buttons:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -4em;
+}
+.contact__buttons:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -5em;
+}
+.contact__br ~ {
+  * { top: -1em; }
+  .contact__br ~ {
+    * { top: -2em; }
+    .contact__br ~ {
+      * { top: -3em; }
+      .contact__br ~ {
+        * { top: -4em; }
+        .contact__br ~ {
+          * { top: -5em; }
+        }
+      }
+    }
+  }
+}
+.contact__custom:not(.button, button) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  gap: .5em;
+  padding: .5em 1.5em;
+  svg {
+    color: var(--main);
+  }
+}
+.contact__full {
+  width: calc(100% - 1em);
+}
+.contact__form-item > * {
+  width: 100%;
+}
+.contact__form-hidden {
+  display: none;
+}
+.contact__form-fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  padding: .5625em 1em .84375em;
+}
+.contact__form-label {
+  display: flex;
+  align-items: baseline;
+  gap: .5em;
+}
+.contact__form-description {
+  h3, h4, h5, h6 {
+    &:not(.aux) {
+      margin-top: .75em;
+    }
+  }
+}
+.contact__form-title {
+  margin: .5em 0 0;
+  text-align: center;
+}
+.contact__form-hint {
+  margin-top: .25em;
+  font-size: .75em;
+  color: var(--subtitle);
+  p, ul, ol {
+    &:not(:last-child) {
+      margin-bottom: .125em;
+    }
+  }
+  ul, ol {
+    > li:not(.aux) > div:not(.aux) {
+      padding-top: 0;
+    }
+  }
+}
+.contact__form-description,
+.contact__form-hint {
+  margin-left: $radius + .5em;
+  width: calc(100% - #{ $radius + .5em } * 2);
+}
+.contact__form-label--accept {
+  font-size: .75em;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1em;
+}
+/*! purgecss start ignore */
+.contact__form-error,
+.contact__form-submit {
+  color: $white;
+  background-color: red;
+  padding: 1em 1em 1em 2em;
+  scroll-margin-top: 3em;
+  @include radius;
+  svg.close {
+    float: right;
+    cursor: pointer;
+  }
+}
+.contact__form-submit {
+  margin-top: 1em;
+  padding: 1em;
+  background-color: grey;
+  svg {
+    position: relative;
+    top: .125em;
+    &.spin {
+      animation: spin 10s linear infinite;
+    }
+  }
+}
+.contact__form-submit--ok {
+  background-color: green;
+}
+.contact__form-submit--error {
+  background-color: red;
+}
+/*! purgecss end ignore */
+.content {
+  .contact__form {
+    display: none;
+  }
+}
+.contact__form-fill-inputs {
+  input:not([type="checkbox"], [type="radio"]),
+  textarea,
+  select {
+    @if $chamfer and $radius > .01 {
+      border: none;
+      @if not $buttons-rounded and $radius <= .01 {
+        border: var(--outline) var(--border) solid;
+        box-shadow: $shadow inset;
+      } @else {
+        @include radius;
+        clip-path: var(--chamfer-int-outline);
+      }
+    } @else {
+      border: var(--outline) var(--border) solid;
+      box-shadow: $shadow inset;
+      border-radius: $radius;
+    }
+    background-color: $white;
+    color: $dark;
+    &::placeholder {
+      color: #767676;
+    }
+  }
+  @if $chamfer and $radius > .01 {
+    fieldset {
+      border: none;
+    }
+    .contact__form-item {
+      position: relative;
+    }
+    .contact__form-item-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2.5em;
+      clip-path: var(--chamfer);
+      background-color: var(--border);
+    }
+    .contact__form-item-border--textarea {
+      min-height: 5.72em;
+    }
+    .contact__form-item-border--fieldset {
+      top: 0.6em;
+      height: calc(100% - 0.6em);
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        --outline: 1px;
+        clip-path: var(--chamfer-int-outline);
+        background-color: var(--bg-color);
+      }
+      ~ * {
+        position: relative;
+        z-index: 1;
+      }
+    }
+    legend {
+      background-color: var(--bg-color);
+    }
+  }
+}
+
+
+// MAP
+
+.map {
+  @include hide-radius;
+  --margin-map-bottom: calc(0px - var(--pb, 0px) - var(--pb-divider, 0px) - var(--box-padding));
+  margin: 0px var(--container-margin-side) var(--margin-map-bottom);
+  width: calc(100% - var(--container-margin-side) * 2);
+  min-height: 20em;
+  height: 100%;
+  img {
+    object-fit: cover;
+    object-position: center;
+  }
+  &.divider {
+    min-height: calc(20em + var(--divider-height, 0px) + var(--pb-divider, 0px));
+    --pt-divider: var(--divider-height);
+    // Because maybe the parent section habe .divider--ratio
+    --divider-height: 5.5em;
+    &.divider--ratio {
+      --divider-height: var(--divider-ratio-height);
+    }
+  }
+}
+.columns,
+.container.bg {
+  .map {
+    --container-margin-side: 0em;
+    --margin-map-bottom: 0em;
+    filter: drop-shadow($shadow);
+    @include radius;
+    @if $radius > 0.01 and not $chamfer {
+      overflow: hidden;
+    }
+    --pb-divider: 0px;
+    .divider {
+      filter: none;
+      @if $radius > 0.01 {
+        --radius-top: 0em;
+      }
+      &.divider--ratio {
+        --divider-height: calc(var(--box-inner) * .2);
+      }
+    }
+  }
+}

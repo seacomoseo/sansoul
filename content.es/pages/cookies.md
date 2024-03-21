@@ -3,7 +3,8 @@ title: Cookies
 title_seo: ''
 slug: cookies
 description: ''
-image: ''
+image: fondo.jpg
+author: admin
 toc: true
 draft: false
 noindex: true

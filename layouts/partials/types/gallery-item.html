@@ -1,7 +1,8 @@
 {{- $style_width  := "" -}}
 {{- $style_height := "" -}}
 {{- $image        := .image -}}
-{{- if .alt -}}
+{{- $columns      := .columns | default 2 -}}
+{{- if eq .type "rows" -}}
   {{- $width  := 200 -}}
   {{- $height := 100 -}}
   {{- with .image -}}
@@ -11,7 +12,7 @@
       {{/*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}  */}}
       {{- $poster := "" -}}
       {{- if in $image "poster=" -}}
-        {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([\w\d\.-]+/).*$` `$1`) -}}
+        {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
       {{- else -}}
         {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
           {{- $path  := print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}
@@ -50,7 +51,7 @@
     {{ end }}
 
   {{- end -}}
-  {{- $style_width  = lang.NumFmt 2 (div (mul (div (float $width) (float $height)) (div 600 .num)) 16) -}}
+  {{- $style_width  = lang.NumFmt 2 (div (mul (div (float $width) (float $height)) (div 600 $columns)) 16) -}}
   {{- $style_height = lang.NumFmt 2 (mul (div (float $height) (float $width)) 100) -}}
 {{- end -}}
 
@@ -72,7 +73,7 @@
 {{- else -}}
   <div class="gallery__item" tabindex="0"
 {{- end -}}
-  {{- if .alt -}}
+  {{- if eq .type `rows` -}}
     {{- ` ` | safeHTMLAttr -}}
     style="--gallery-item-width:{{ $style_width }};--gallery-item-height:{{ $style_height }}%"
   {{- end -}}
@@ -83,7 +84,7 @@
       "class"     "gallery__image"
       "src"       .image
       "container" $.container
-      "span"      $.num
+      "span"      $columns
     )
   -}}
 

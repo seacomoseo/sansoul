@@ -1,5 +1,5 @@
 </div>
-<div class="container container--md">
+<div class="box container container--md">
   <form
     id="search__form"
     class="noscript"
@@ -7,7 +7,7 @@
     onsubmit="event.preventDefault()"
     action="https://duckduckgo.com/?q={{ with site.BaseURL }}site:{{ . | urlize }}{{ end }}"
   >
-    <div class="search__bar container container--sm">
+    <div class="search__bar box container container--sm">
       <input id="search__input" name="q" tabindex="0" autocomplete="off" placeholder="{{ i18n `search` }}">
       {{/*
         <button id="search__submit" class="button--icon" type="submit">
@@ -15,14 +15,12 @@
         </button>
       */}}
     </div>
-    <div
-      id="search__results"
-      class="
-        {{- $articles := site.Data.articles.commons -}}
-        columns columns--{{ $articles.num | default 3 }}
-        {{- with $articles.num_xs }} columns--xs {{- end -}}
-      "
-    ></div>
+    {{- $articles := site.Data.articles.commons -}}
+    {{- $class    := print "columns columns--" ($articles.columns | default 3) -}}
+    {{- with $articles.columns_min }}
+      {{- $class   = print $class " columns--min" -}}
+    {{- end -}}
+    <div id="search__results" class="{{ $class }}"></div>
   </form>
   <script src="{{ `/js/fuse.js` | relURL }}" defer></script>
   {{ $js := resources.Get `/js/fixedsearch.js`
@@ -31,9 +29,3 @@
   }}
   {{ if hugo.IsProduction }}{{ $js = $js | minify }}{{ end }}
   <script src="{{ $js.RelPermalink }}" defer></script>
-
-{{- if partial "functions/lang-param" (dict "parent" "menu" "param" "google_translate" "default" false) -}}
-  <select class="google-translate" aria-label="Select">
-    <option value="">Selecct</option>
-  </select>
-{{- end -}}

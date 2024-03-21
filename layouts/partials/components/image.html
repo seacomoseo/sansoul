@@ -18,7 +18,7 @@
       {{- $src    := .src | replaceRE `.poster\=([/\w\d\.-]+)|\#mute` `` -}}
       {{- $poster := "" -}}
       {{- if in .src "poster=" -}}
-        {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([\w\d\.-]+/).*$` `$1`) -}}
+        {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
       {{- end -}}
       {{- with resources.Get $poster }}
         {{- if hugo.IsProduction }}
@@ -154,14 +154,14 @@
       {{- $src             = resources.Get (print "/media/" $file) -}}
       {{- if $src -}}
         {{- $svg          := $src.Content | replaceRE `\n` `` -}}
-        {{- $svg_head     := index ($svg  | findRE `<svg.*?>`) 0 -}}
+        {{- $svg_head     := index ($svg  | findRE `^<svg.*?>`) 0 -}}
         {{- $svg_width    := $svg_head    | findRE ` width="(.+?)"` -}}
         {{- $svg_height   := $svg_head    | findRE ` height="(.+?)"` -}}
         {{- $svg_not_size := false -}}
         {{- if $svg_width | and $svg_height -}}
           {{- $svg_width   = index $svg_width 0  | replaceRE  ` width="|"` `` -}}
           {{- $svg_height  = index $svg_height 0 | replaceRE ` height="|"` `` -}}
-        {{- else if $svg_head | findRE ` viewBox="(.+?)"` -}}
+        {{- else -}}
           {{- $view_box  := $svg_head
             | replaceRE
               `.*?viewBox="([\d\.-]+) ([\d\.-]+) ([\d\.-]+) ([\d\.-]+)".*`
@@ -171,11 +171,8 @@
           {{- $svg_width       = add (float (index $view_box_split 2)) (float (index $view_box_split 0)) | int -}}
           {{- $svg_height      = add (float (index $view_box_split 3)) (float (index $view_box_split 1)) | int -}}
           {{- $svg_not_size    = true -}}
-        {{- else -}}
-          {{- $svg_width  = 0 -}}
-          {{- $svg_height = 0 -}}
         {{- end -}}
-        {{- if $svg | findRE `svg-src|animat|xlink|</linearGradient>|</style>` | or (in .src "#src") -}}
+        {{- if $svg | findRE `svg-src|animat|href|</linearGradient>|</style>` | or (in .src "#src") -}}
           {{- if .svg_src | or ($svg | findRE `svg-src`) | or (in .src "#src") -}}
             {{- $svg_minify := ($src | minify).Content -}}
             {{- if $svg_not_size -}}
@@ -208,7 +205,7 @@
             {{- $svg | safeHTML -}}
           {{- end -}}
         {{- else -}}
-          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use xlink:href="/draws.svg#{{ $file | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
+          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use href="/draws.svg#{{ $file | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
         {{- end -}}
       {{- end -}}
     {{- else -}}
@@ -277,21 +274,28 @@
               */}}
 
               {{- $span              := .span | default 1 -}}
-              {{- $container_sizes   := dict "xs" 500 "sm" 720 "md" 960 "lg" 1164 "xl" 1404 "fluid" 1440 -}}
+              {{- $container_sizes   := dict
+                "xs"    500
+                "sm"    720
+                "md"    960
+                "lg"    1164
+                "xl"    1404
+                "fluid" 1440
+              -}}
               {{- $container         := .container | default `fluid` -}}
               {{- $container_max     := index $container_sizes $container -}}
-              {{/*  {{ $screens := slice 375 425 800 1024 1200 }}  */}}
-              {{- $screens           := slice 425 800 1200 -}}
+              {{/*  {{ $screens := slice 375 425 768 1024 1280 }}  */}}
+              {{- $screens           := slice 425 768 1280 -}}
               {{- if gt $span 2 -}}
-                {{- $screens          = slice 375 800 1200 -}}
+                {{- $screens          = slice 375 768 1280 -}}
               {{- end -}}
               {{- if eq $container "fluid" -}}
                 {{- $screens          = $screens | append 1440 -}}
               {{- end -}}
               {{- $screen_min        := 320 -}}
-              {{- $screen_max        := 1200 -}}
+              {{- $screen_max        := 1232 -}}
               {{- $size_min          := 320 -}}
-              {{- if .num_xs -}}
+              {{- if .columns_min -}}
                 {{- $size_min         = 160 -}}
               {{- end -}}
               {{- $size_max          := (div $container_max $span) | int -}}

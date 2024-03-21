@@ -1,1 +1,14 @@
-{{ return (partial "functions/sections-and-modals" . | append (partial "functions/footer" .)) }}
+{{- $sections := slice -}}
+
+{{ range partial "functions/sections" . | default slice }}
+  {{ $sections = $sections | append . }}
+  {{ with .modals }}
+    {{ range . }}
+      {{ $sections = $sections | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $sections = $sections | append (partial "functions/footer" .) }}
+
+{{ return $sections }}

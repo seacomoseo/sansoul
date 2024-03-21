@@ -11,6 +11,7 @@ languages:
     languageName: Español
     params: { flag: 🇪🇸 }
     paginatePath: pagina
+    contentDir: content.es
     permalinks:
       page:
         pages: :slug
@@ -35,6 +36,7 @@ languages:
     languageName: English
     params: { flag: 🇬🇧 }
     paginatePath: page
+    contentDir: content.en
     permalinks:
       page:
         pages: :slug
@@ -61,48 +63,34 @@ disableLanguages:
 
 module:
   mounts:
+
   # robots and redirects
-  - source: data/robots.md
+  - source: assets/robots.md
     target: assets/robots.txt
-  - source: data/redirects.md
+  - source: assets/redirects.md
     target: assets/_redirects
-  # sections
-  - source: content.es/sections
-    target: assets/sections.es
-    lang: es
-  - source: content.en/sections
-    target: assets/sections.en
-    lang: en
-  # modals
-  - source: content.es/modals
-    target: assets/modals.es
-    lang: es
-  - source: content.en/modals
-    target: assets/modals.en
-    lang: en
-  # prebuild products
-  - source: themes/sansoul/prebuild/public/products/es
-    target: content/products
-    lang: es
-  - source: themes/sansoul/prebuild/public/products/en
-    target: content/products
-    lang: en
-  # prebuild categories
-  - source: themes/sansoul/prebuild/public/categories/es
-    target: content/categories
-    lang: es
-  - source: themes/sansoul/prebuild/public/categories/en
-    target: content/categories
-    lang: en
-  # data
-  - source: data
-    target: data
-    includeFiles: '**.yml'
   # assets
   - source: assets
     target: assets
 
-  # parents es
+  # es
+  ## sections
+  - source: content.es/sections
+    target: data/sections
+    lang: es
+  ## modals
+  - source: content.es/modals
+    target: data/modals
+    lang: es
+  ## prebuild products
+  - source: themes/sansoul/prebuild/public/products/es
+    target: content/products
+    lang: es
+  ## prebuild categories
+  - source: themes/sansoul/prebuild/public/categories/es
+    target: content/categories
+    lang: es
+  ## parents es
   - source: content.es/_index/pages.md
     target: content/pages/_index.md
     lang: es
@@ -127,7 +115,35 @@ module:
   - source: content.es/_index/custom.md
     target: content/custom/_index.md
     lang: es
-  # parents en
+  ## content project
+  - source: content.es
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: es
+  ## content theme
+  - source: themes/sansoul/content.es
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: es
+
+  # en
+  ## sections
+  - source: content.en/sections
+    target: data/sections
+    lang: en
+  ## modals
+  - source: content.en/modals
+    target: data/modals
+    lang: en
+  ## prebuild products
+  - source: themes/sansoul/prebuild/public/products/en
+    target: content/products
+    lang: en
+  ## prebuild categories
+  - source: themes/sansoul/prebuild/public/categories/en
+    target: content/categories
+    lang: en
+  ## parents es
   - source: content.en/_index/pages.md
     target: content/pages/_index.md
     lang: en
@@ -149,28 +165,24 @@ module:
   - source: content.en/_index/authors.md
     target: content/authors/_index.md
     lang: en
-  - source: content.es/_index/custom.md
+  - source: content.en/_index/custom.md
     target: content/custom/_index.md
     lang: en
-
-  # content project
-  - source: content.es
-    target: content
-    excludeFiles: [_index, sections, modals]
-    lang: es
+  ## content project
   - source: content.en
     target: content
     excludeFiles: [_index, sections, modals]
     lang: en
-  # content theme
-  - source: themes/sansoul/content.es
-    target: content
-    excludeFiles: [_index, sections, modals]
-    lang: es
+  ## content theme
   - source: themes/sansoul/content.en
     target: content
     excludeFiles: [_index, sections, modals]
     lang: en
+
+  # data
+  - source: data
+    target: data
+
 
 # default without option in cms
 

@@ -1,10 +1,15 @@
-{{ $BaseURL := site.BaseURL }}
-{{ $isPost := eq .Type "blog" | and (not .IsSection) }}
+{{ $BaseURL  := site.BaseURL }}
+{{ $config   := partial "functions/config-lang" . }}
+{{ $isAuthor := eq .Type "authors" | and (not .IsSection) }}
+{{ $isPost   := eq .Type "blog"    | and (not .IsSection) }}
+{{ $isEvent  := eq .Type "events"  | and (not .IsSection) }}
 
-{{ $schema := slice }}
-{{ $schemaWebsite := dict }}
+{{ $schema             := slice }}
+{{ $schemaWebsite      := dict }}
 {{ $schemaOrganization := dict }}
-{{ $schemaPost := dict }}
+{{ $schemaAuthor       := dict }}
+{{ $schemaPost         := dict }}
+{{ $schemaEvent        := dict }}
 
 
 {{/*  SCHEMA WEBSITE  */}}
@@ -13,23 +18,20 @@
   "@context"      `http://schema.org`
   "@type"         `WebSite`
   "url"           (print $BaseURL "/")
-  "name"          (partial "functions/lang-param" (dict "parent" "config" "param" "title"))
-  "description"   (partial "functions/lang-param" (dict "parent" "config" "param" "description"))
+  "name"          $config.title
+  "description"   $config.description
 }}
 
 
 {{/*  SCHEMA ORGANIZATION  */}}
 
-{{ $socialLinks := slice }}
-{{ range partial "functions/lang-param" (dict "parent" "config" "param" "social" "default" slice) }}
-  {{ $socialLinks = $socialLinks | append .link }}
-{{ end }}
+{{/*  Get links_map, locations, phones and social links  */}}
 
-{{/*  Get links_map, locations and phones  */}}
-
-{{- $links_map  := (partial "functions/contact-data" .).links_map -}}
-{{- $locations  := (partial "functions/contact-data" .).locations -}}
-{{- $phones_pre := (partial "functions/contact-data" .).phones -}}
+{{- $contact_buttons := partial "functions/contact-buttons" site -}}
+{{- $links_map       := $contact_buttons.links_map -}}
+{{- $locations       := $contact_buttons.locations -}}
+{{- $phones_pre      := $contact_buttons.phones -}}
+{{- $socialLinks     := $contact_buttons.social -}}
 
 {{/*  All phones variations  */}}
 {{ $phones := slice }}
@@ -99,8 +101,7 @@
   "logo.png"
   "icon.png"
   "fondo.jpg"
-  (partial "functions/lang-param" (dict "parent" "config" "param" "logo"))
-  (partial "functions/lang-param" (dict "parent" "menu" "param" "logo") | default site.Data.articles.content.logo)
+  $config.logo
 }}
 {{ with where site.Pages "Params.image" "!=" nil }}
   {{ range . }}
@@ -121,7 +122,7 @@
 {{ end }}
 {{ $images = $images | uniq }}
 
-{{ $location_type   := partial "functions/lang-param" (dict "parent" "config" "param" "location_type" "default" (slice "Organization")) }}
+{{ $location_type   := $config.location_type | default (slice "Organization") }}
 {{ $additional_type := after 1 $location_type }}
 {{ $location_type    = index $location_type 0 }}
 
@@ -132,10 +133,10 @@
   "additionalType" $additional_type
   "logo"           (print $BaseURL "/media/logo.png")
   "image"          $images
-  "name"           (partial "functions/lang-param" (dict "parent" "config" "param" "title"))
-  "alternateName"  (partial "functions/lang-param" (dict "parent" "config" "param" "alternate_name" "default" slice))
-  "priceRange"     (partial "functions/lang-param" (dict "parent" "config" "param" "price_range"))
-  "description"    (partial "functions/lang-param" (dict "parent" "config" "param" "description"))
+  "name"           $config.title
+  "alternateName"  ($config.alternate_name | default slice)
+  "priceRange"     $config.price_range
+  "description"    $config.description
   "url"            (print $BaseURL "/")
   "sameAs"         $socialLinks
   "telephone"      $phones
@@ -146,6 +147,27 @@
     "geo"    $geo
   )
 }}
+
+
+{{/*  SCHEMA AUTHOR  */}}
+
+{{ if $isAuthor }}
+  {{ $author_image  := "" }}
+  {{ with resources.Get (print "/media/" .Params.image) }}
+    {{ $author_image = .Permalink }}
+  {{ end }}
+  {{ $schemaAuthor = dict
+    "@context"    `http://schema.org`
+    "@type"       `Person`
+    "name"        .Title
+    "description" .Description
+    "image"       $author_image
+    "url"         .Permalink
+    "jobTitle"    .Params.job_title
+    "sameAs"      (.Params.social | default slice)
+    "worksFor"    $schemaOrganization
+  }}
+{{ end }}
 
 
 {{/*  SCHEMA POST  */}}
@@ -162,7 +184,7 @@
   {{ end }}
 
   {{ $image := "" }}
-  {{ $site_logo := partial "functions/lang-param" (dict "parent" "config" "param" "logo") }}
+  {{ $site_logo := $config.logo }}
   {{ if .Params.image }}
     {{ $imageExternal := strings.HasPrefix .Params.image "http" }}
     {{ $image = .Params.image }}
@@ -193,14 +215,20 @@
     {{ $image = print $BaseURL $site_logo }}
   {{ end }}
 
-  {{ $author_page := .GetPage (.Params.author | default "authors/admin") }}
+  {{ $author_page  := .GetPage (print "authors/" .Params.author | default "authors/admin") }}
+  {{ $author_image := "" }}
+  {{ with resources.Get (print "/media/" $author_page.Params.image) }}
+    {{ $author_image = .Permalink }}
+  {{ end }}
   {{ $author := dict
     "author" (dict
       "@type"       `Person`
       "name"        $author_page.Title
       "description" $author_page.Description
-      "image"       (cond (not $author_page.Params.image) "" (print $BaseURL $author_page.Params.image))
+      "image"       $author_image
       "url"         $author_page.Permalink
+      "jobTitle"    $author_page.Params.job_title
+      "sameAs"      ($author_page.Params.social | default slice)
     )
   }}
 
@@ -223,10 +251,52 @@
 {{ end }}
 
 
+{{/*  SCHEMA EVENTS  */}}
+
+{{ if $isEvent }}
+  {{ $event_image  := "" }}
+  {{ with resources.Get (print "/media/" .Params.image) }}
+    {{ $event_image = .Permalink }}
+  {{ end }}
+  {{ $schemaEvent = dict
+    "@context"    `http://schema.org`
+    "@type"       `Event`
+    "name"        .Title
+    "performer"   .Params.artist
+    "description" .Description
+    "image"       $event_image
+    "url"         .Permalink
+    "startDate"   (dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_ini)
+    "endDate"     (dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_end)
+    "location"    (dict
+      "@type"       `Place`
+      "name"        .Params.location
+      "address"     .Params.address
+    )
+    "offers"      .Permalink
+    "offers"      (dict
+      "@type"         `Offer`
+      "url"           .Permalink
+      "price"         (.Params.price | default 0 | replaceRE `[^\d\.]` `` | float)
+      "priceCurrency" (.Params.currency | default "EUR")
+      "validFrom"     (dateFormat "2006-01-02T15:04:05Z07:00" now)
+      "availability"  "http://schema.org/InStock"
+    )
+    "organizer"   $schemaOrganization
+    "eventStatus"         "http://schema.org/EventScheduled"
+    "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"
+  }}
+{{ end }}
+
+
 {{/*  ALL SCHEMAS  */}}
 
 {{ if $isPost }}
   {{ $schema = slice $schemaPost $schemaWebsite }}
+{{ else if $isAuthor }}
+  {{ $schema = slice $schemaAuthor $schemaWebsite }}
+{{ else if $isEvent }}
+  {{ $schema = slice $schemaEvent $schemaWebsite }}
 {{ else }}
   {{ $schema = slice $schemaOrganization $schemaWebsite }}
 {{ end }}

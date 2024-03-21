@@ -9,13 +9,12 @@
 {{- $articles := merge
   site.Data.articles.common
   (index site.Data.articles $type)
-  (.articles | default dict)
+  (.box | default dict)
 -}}
 
-{{- $items := slice -}}
+{{- $boxes := slice -}}
 {{- range $pages -}}
-
-  {{- $description := .Params.description | default .Summary -}}
+  {{- $description := .Params.description | default .Summary | truncate 150 -}}
   {{- $image       := .Params.image       | default $articles.image -}}
   {{- $icon_id     := $articles.icon -}}
   {{- $icon_type   := $articles.icon_type -}}
@@ -25,7 +24,7 @@
   {{- end -}}
   {{- $icon_type    = $icon_type | default "bottom" -}}
 
-  {{- $items = $items
+  {{- $boxes = $boxes
     | append (dict
       "Page"        .
       "title"       .Title
@@ -36,18 +35,23 @@
       "icon_type"   $icon_type
     )
   -}}
-
 {{- end -}}
 
-<div class="{{ if not .container }}container container--{{ $articles.size | default `md` }}{{ end }} summaries__{{ .type }}">
-  {{- partial "types/columns"
+{{ if .is_article }}
+<div class="box container container--{{ $articles.size | default `md` }} summaries__{{ .type }}">
+{{ end }}
+
+  {{- partial "components/boxes"
     (merge
-      (merge $articles (dict "items" $items))
+      .
       (dict
-        "container"    (.size | default $articles.size | default "md")
-        "first"        false
-        "padding_hide" false
+        "box"       $articles
+        "boxes"     $boxes
+        "container" (.size | default $articles.size | default "md")
       )
     )
   -}}
+
+{{ if .is_article }}
 </div>
+{{ end }}

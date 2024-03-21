@@ -1,0 +1,7 @@
+{{- $param := index .Params 0 -}}
+{{- if eq $param "index" -}}
+  {{- replace site.BaseURL "https://" "" -}}
+{{- else -}}
+  {{- $page := page.GetPage (print "pages/" $param) -}}
+  {{- $page.Title -}}
+{{- end -}}

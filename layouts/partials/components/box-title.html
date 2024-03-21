@@ -1,0 +1,71 @@
+{{ $anchor := cond .main .anchor "" }}
+{{ $title  := $anchor | default .title | default .menu }}
+{{ if $title }}
+  {{ $title = partial "functions/md" (dict "content" $title "inline" true) }}
+
+  {{ $hn    := .hn | default (cond (not .link) .level "p") }}
+  {{ with $hn }}
+    {{ if ne . "p" }}
+      {{ $hn = print "h" . }}
+    {{ end }}
+  {{ end }}
+
+  {{ $link  := "" }}
+  {{ if not .like_article | and .main }}
+    {{ $link = cond .header page.RelPermalink (print "#" .id) }}
+  {{ end }}
+
+  {{/*  TITLE CLASS  */}}
+  {{ $hide       := cond (not ($title | and (not .title))) "" "hide" }}
+  {{ $title_link := cond (not .like_article) "" "box__title--link" }}
+  {{ $hs         := cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" "h6") }}
+  {{ $class      := delimit
+    (slice
+      "box__title"
+      $hide
+      $title_link
+      $hs
+    )
+    " "
+  }}
+
+  {{/*  TITLE  */}}
+  {{ print "<" $hn | safeHTML }}
+    class="{{ $class }}"
+  {{ ">" | safeHTML }}
+
+    {{/*  ICON SIDE  */}}
+    {{ if eq .icon_type "side" }}
+      {{ partial "components/box-icon" . }}
+    {{ end }}
+
+    {{/*  ANCHOR CLASS  */}}
+    {{ $box_link     := cond (not .like_article) "" "box__link" }}
+    {{ $uppercase    := cond (not .uppercase)    "" "uppercase" }}
+    {{ $underline    := cond (not .underline)    "" "underline" }}
+    {{ $anchor_class := delimit
+      (slice
+        $box_link
+        $uppercase
+        $underline
+      )
+      " "
+    }}
+
+    {{/*  ANCHOR  */}}
+    {{ partial "components/link"
+      (dict
+        "class"     $anchor_class
+        "link"      $link
+        "button"    "none"
+        "font_alt"  ""
+        "icon"      ""
+        "label"     (.title | default $anchor | markdownify)
+        "label_alt" ""
+        "anchor"    $anchor
+        "noindex"   .ofuscate
+      )
+    }}
+
+  {{ print "</" $hn ">" | safeHTML }}
+{{ end }}

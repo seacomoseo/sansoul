@@ -1,37 +1,17 @@
-{{- $params := partial "functions/page-params" . -}}
-{{- $menu   := merge site.Data.menu ($params.menu | default dict) -}}
+{{- if not .menu.hide -}}
 
-{{- if not $menu.hide -}}
+  {{- $items := slice -}}
+  {{- $logo  := "" -}}
+  {{ if .menu.logo -}}
+    {{- $config := partial "functions/config-lang" . -}}
+    {{- $logo    = $config.logo -}}
+  {{- end -}}
 
-  {{/*  VARIABLES  */}}
-  {{- $sectioned    := partial "functions/is-sectioned" . -}}
-  {{- $sticky       := ne $params.sections nil -}}
-  {{- $logo         := $menu.logo -}}
-  {{ if (and (not $sectioned) $menu.articles_sticky) | or (and $sectioned $menu.logo) -}}
-    {{- $sticky      = true -}}
-  {{- else if $params.header_article | or $menu.hide_sticky | or (not $menu.screen_sticky) -}}
-    {{- $sticky      = false -}}
-  {{- end -}}
-  {{ if and (not $logo) (not $sectioned) $menu.articles_sticky -}}
-    {{- $logo        = site.Data.articles.content.logo -}}
-  {{- end -}}
-  {{- $sections     := slice -}}
-  {{- with partial "functions/sections" . -}}
-    {{- $sections    = after 1 . -}}
-  {{- end -}}
-  {{- $show_modals  := $menu.show_modals -}}
-  {{- with $menu.hide_modals -}}
-    {{- $show_modals = not . -}}
-  {{- end -}}
-  {{- $normal := slice -}}
-  {{- $more   := slice -}}
-
-
-  {{/*  HOME LINK  */}}
+  {{/*  ITEM HOME LINK  */}}
   {{ if not $logo }}
-    {{ if not .IsHome | and (not $menu.hide_anchors) }}
+    {{ if not page.IsHome | and (not .menu.hide_anchors) }}
       {{ with site.Home }}
-        {{ $normal = $normal | append (dict
+        {{ $items = $items | append (dict
           "link"     .RelPermalink
           "icon"     "house"
           "emoji"    "🏠"
@@ -42,87 +22,32 @@
     {{ end }}
   {{ end }}
 
-
-  {{/*  SECTIONS TO ITEMS  */}}
-  {{ if $sectioned | and (not $menu.hide_anchors) }}
-
-    {{ with where $sections "button" "!=" "hide" }}
-      {{ range . }}
-        {{ if .menu | or .anchor | or .title | or (.icon | and .id) }}
-
-          {{ $item := partial "sections/common/menu/item-by-section" . }}
-
-          {{/*  MODALS TO SUBITEMS  */}}
-          {{ if $show_modals }}
-            {{ $items := slice }}
-            {{ with .modals }}
-              {{ range . }}
-                {{ $child := partial "sections/common/menu/item-by-section" . }}
-                {{ $items  = $items | append $child }}
-              {{ end }}
-            {{ end }}
-            {{ $item = (merge $item (dict "items" $items)) }}
-          {{ end }}
-
-          {{ $normal = $normal | append $item }}
-
-        {{ end }}
-      {{ end }}
-    {{ end }}
-
+  {{/*  ITEMS SECTIONS  */}}
+  {{ range partial "sections/common/menu/items-sections" . }}
+    {{ $items = $items | append . }}
   {{ end }}
 
+  {{/*  ITEMS CUSTOM  */}}
+  {{ range index .menu page.Lang }}
+    {{ $items = $items | append . }}
+  {{ end }}
 
-  {{/*  CUSTOM NORMAL ITEMS  */}}
-  {{ $items_custom_normal := partial "sections/common/menu/items-custom" (dict "more" false) }}
-  {{ range $items_custom_normal }}{{ $normal = $normal | append . }}{{ end }}
+  {{/*  ITEM LANGS  */}}
+  {{ if page.IsTranslated | and (not (.menu.items | jsonify | findRE `"link":"langs"`)) }}
+    {{ $items = $items | append (dict "link" "langs") }}
+  {{ end }}
 
-  {{/*  ANOTHER ITEMS  */}}
-  {{ $items_custom        := partial "sections/common/menu/items-custom" (dict "more" true) }}
-  {{ $items_auto          := partial "sections/common/menu/items-auto"   . }}
-  {{ $langs_normal_sticky := partial "sections/common/menu/langs"        (dict "more" false) }}
-  {{ $langs_more          := partial "sections/common/menu/langs"        (dict "more" true) }}
-  {{ $langs_normal        := partial "sections/common/menu/langs"        (dict "no_sticky" true) }}
-  {{ $item_search         := partial "sections/common/menu/search"       . }}
-
-  {{ if $sticky }}
-
-    {{/*  MORE ITEMS  */}}
-    {{ range $items_custom }}{{ $more = $more | append . }}{{ end }}
-    {{ range $items_auto   }}{{ $more = $more | append . }}{{ end }}
-    {{ $more = $more | append $item_search }}
-    {{ range $langs_more   }}{{ $more = $more | append . }}{{ end }}
-
-    {{/*  ADD MORE TO NORMAL ITEMS  */}}
-    {{ with $more }}
-      {{ $more = dict
-        "icon"  "plus"
-        "label" (i18n "more")
-        "items" .
-        "more"  true
-      }}
-      {{ $normal = $normal | append $more }}
-    {{ end }}
-
-    {{ range $langs_normal_sticky }}{{ $normal = $normal | append . }}{{ end }}
-
-  {{ else }}
-
-    {{/*  NORMAL NO STICKY ITEMS  */}}
-    {{ range $items_custom }}{{ $normal = $normal | append . }}{{ end }}
-    {{ range $items_auto   }}{{ $normal = $normal | append . }}{{ end }}
-    {{ $normal = $normal | append $item_search }}
-    {{ range $langs_normal }}{{ $normal = $normal | append . }}{{ end }}
-
+  {{/*  ITEM TRANSLATE  */}}
+  {{ if .menu.google_translate | and (not (.menu.items | jsonify | findRE `"link":"translate"`)) }}
+    {{ $items = $items | append (dict "link" "translate") }}
   {{ end }}
 
 
   {{/*  PRINT HTML  */}}
-
-  {{- if $normal -}}
+  {{- if $items -}}
 
     {{/*  MENU TOGGLE  */}}
-    <button class="menu__toggle button--icon {{ if $sticky }}menu__toggle--sticky{{ end }}">
+    <button class="menu__toggle button--icon">
       {{- "" }}<b class="menu__toggle-bar"></b>
       {{- "" }}<b class="menu__toggle-bar"></b>
       {{- "" }}<b class="menu__toggle-bar"></b>
@@ -134,18 +59,15 @@
     <div class="menu__backover"></div>
 
     {{/*  CLASS  */}}
-    {{- $menu_bg          := print "bg bg-" ($menu.color | default "white") -}}
-    {{- $menu_sticky      := cond $sticky "menu--sticky" "" -}}
-    {{- $menu_class       := delimit (slice
-      "menu"
-      $menu_bg
-      $menu_sticky
-      | uniq) " "
-    -}}
+    {{- $menu_class := print "menu bg bg-" (.menu.color | default "white") -}}
+    {{- $box_class  := "" -}}
+    {{ if .menu.sticky }}
+      {{- $box_class = print "container container--" (.menu.size | default "lg") -}}
+    {{ end }}
 
     {{/*  NAV  */}}
     <nav class="{{ $menu_class }}" hidden="until-found">
-      <div {{ if $sticky }}class="container container--{{ $menu.size_sticky | default `lg` }}"{{ end }}>
+      <div class="{{ $box_class }}">
 
         {{/*  HEADER  */}}
         <p class="menu__title h1 {{- with $logo }} menu__title--sublogo{{ end }}">{{ i18n "menu" }}</p>
@@ -170,8 +92,14 @@
           {{ end }}
 
           {{/*  ITEMS  */}}
-          {{ range $normal }}
-            {{ partial "sections/common/menu/item" . }}
+          {{ range $items }}
+            {{ partial "sections/common/menu/item" (merge
+              .
+              (dict
+                "hide_icons"  .menu.hide_icons
+                "langs_group" .menu.langs_group
+              )
+            ) }}
           {{ end }}
 
         </ul>

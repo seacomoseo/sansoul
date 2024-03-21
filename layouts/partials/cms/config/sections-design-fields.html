@@ -1,0 +1,64 @@
+{{ return slice
+  (dict "&SECTIONS_DESIGN_FIELDS" (slice
+    `~ICON_ID`
+    `~ICON_TYPE`
+    `~ICON_SIZE`
+    `~ICON_COLOR`
+    `~IMAGE_SRC`
+    `~IMAGE_RATIO`
+    `~IMAGE_CONTAIN`
+    `~IMAGE_BORDER`
+    `~IMAGE_INSET`
+    `~SECTION_IMAGE_MIN`
+    `~SECTION_IMAGE_MAX`
+    `~SECTION_IMAGE_ALIGN`
+    `~UPPERCASE`
+    `~UNDERLINE`
+    `~ALIGN`
+    `~SECTION_FULL`
+    `~PADDING_HIDE`
+    `~PADDING_TOP`
+    `~PADDING_BOTTOM`
+    `~COLOR`
+    `~GRADIENT_COLOR`
+    `~GRADIENT_TYPE`
+    `~BACKGROUND_IMAGE`
+    `~BG_OPACITY`
+    `~PARALLAX`
+    `~PILL`
+    `~CONTAINER_SIZE`
+    `~CONTAINER_COLOR`
+    `~CONTAINER_GRADIENT_COLOR`
+    `~CONTAINER_GRADIENT_TYPE`
+    `~CONTAINER_OPACITY`
+    `~HIDE_SHADOW`
+    `~DIVIDER_ID`
+    `~DIVIDER_FLIP_X`
+    `~DIVIDER_FLIP_Y`
+  ))
+  (dict "&MODALS_DESIGN_FIELDS" (slice
+    `~ICON_ID`
+    `~ICON_TYPE`
+    `~ICON_SIZE`
+    `~ICON_COLOR`
+    `~IMAGE_SRC`
+    `~IMAGE_RATIO`
+    `~IMAGE_CONTAIN`
+    `~IMAGE_BORDER`
+    `~IMAGE_INSET`
+    `~SECTION_IMAGE_MIN`
+    `~SECTION_IMAGE_MAX`
+    `~SECTION_IMAGE_ALIGN`
+    `~UPPERCASE`
+    `~UNDERLINE`
+    `~ALIGN`
+    `~COLOR`
+    `~GRADIENT_COLOR`
+    `~GRADIENT_TYPE`
+    `~PILL`
+    `~CONTAINER_SIZE`
+  ))
+  (dict "&SECTIONS_DESIGN_MODALS"    (dict "label" `Diseño de Modales`            "name" `modals`    "widget" `object` "collapsed" true "required" false "fields" `~MODALS_DESIGN_FIELDS`))
+  (dict "&SECTIONS_DESIGN_GENERAL"   (dict "label" `Diseño General de Secciones`  "name" `general`   "widget" `object` "collapsed" true "required" false "fields" `~SECTIONS_DESIGN_FIELDS`))
+  (dict "&SECTIONS_DESIGN_ALTERNATE" (dict "label" `Diseño de Secciones Alternas` "name" `alternate` "widget" `list`   "collapsed" true "required" false "fields" `~SECTIONS_DESIGN_FIELDS` "label_singular" `Sección` "summary" "{{fields.color}} {{fields.divider}}" "allow_add" true "required" false "hint" "Ejemplo: si hay 1 diseño, se alternarán entre las secciones pares; si hay 2, se alternarán cada 3 (el 1º se toma del general)…"))
+}}

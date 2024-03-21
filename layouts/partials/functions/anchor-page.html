@@ -1,26 +1,11 @@
 {{ $anchor := .Params.title_seo }}
 
-{{ if partial "functions/is-sectioned" . }}
-  {{ with partial "functions/sections" . }}
-    {{ with index . 0 }}
-      {{ $anchor = .anchor | default .title | default $anchor }}
-    {{ end }}
+{{ with partial "functions/sections" . }}
+  {{ with index . 0 }}
+    {{ $anchor = .anchor | default .title | default $anchor }}
   {{ end }}
 {{ end }}
 
 {{ $anchor = $anchor | default .Title }}
-
-{{ if in $anchor "{{" }}
-  {{ $regex  := `\{\{. param ([\w-]+?) .\}\}` }}
-  {{ $params := $anchor | findRE $regex }}
-  {{ range $params }}
-    {{ $param_name := . | replaceRE $regex `$1` }}
-    {{ $param      := index $.Params $param_name }}
-    {{ $anchor     = $anchor | replaceRE (print `\{\{. param ` $param_name ` .\}\}`) $param }}
-  {{ end }}
-{{ end }}
-
-{{ $anchor = $anchor | markdownify }}
-
 
 {{ return $anchor }}

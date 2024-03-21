@@ -1,0 +1,173 @@
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  width: fit-content;
+}
+:root          { --steps-size: 5em; }
+.steps--size-1 { --steps-size: 3em; }
+.steps--size-2 { --steps-size: 4em; }
+.steps--size-3 { --steps-size: 5em; }
+.steps--size-4 { @include fluid-size(--steps-size, 1em, 5, 6.67); }
+.steps--size-5 { @include fluid-size(--steps-size, 1em, 5, 8.33); }
+.steps--size-6 { @include fluid-size(--steps-size, 1em, 5, 10.0); }
+.step {
+  display: flex;
+  @include fluid-size(gap, 1em, 1, 2);
+}
+.step__axis-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &:after {
+    content: '';
+    display: block;
+    width: var(--outline);
+    height: 100%;
+    min-height: 2em;
+    background-color: var(--base);
+    @if $chamfer and $icon-buttons-rounded {
+      transform: translateY(-.25em);
+      box-shadow: 0 .5em 0 var(--base);
+    }
+  }
+}
+.step:last-child {
+  .step__axis-wrap:after {
+    content: none;
+  }
+  .step__content {
+    padding-bottom: 0;
+  }
+}
+.step__axis {
+  flex-shrink: 0;
+  flex-grow: 0;
+  width: var(--steps-size);
+  height: var(--steps-size);
+  padding: var(--outline);
+  background-color: var(--base);
+  overflow: hidden;
+  z-index: 0;
+  @if $icon-buttons-rounded {
+    @include circle;
+    @if $chamfer {
+      padding: calc(var(--outline) / .7071);
+    }
+  } @else if $radius > 0.01 {
+    // @include fluid-size(--step-axis-radius, 1em, .8, 2.055);
+    @include radius(.25em);
+  }
+}
+.step__figure {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @if $buttons-outline {
+    background-color: var(--bg-color);
+  } @else {
+    background-color: var(--main);
+  }
+  @if $icon-buttons-rounded {
+    @include circle;
+  } @else if $radius > 0.01 {
+    // @include fluid-size(--step-figure-radius, 1em, .8, 2.055);
+    @include radius(0em);
+  }
+  @if not $chamfer and $radius > 0.01 {
+    overflow: hidden;
+  }
+}
+.step__figure-image {
+  &, img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 1;
+    ~ .step__icon,
+    ~ .step__number {
+      filter: drop-shadow($shadow);
+      color: $white;
+    }
+  }
+}
+.step__icon {
+  width: 50%;
+  height: 50%;
+  fill: currentColor;
+  z-index: 3;
+  @if $buttons-outline {
+    color: var(--main);
+  } @else {
+    color: var(--main-text);
+  }
+}
+.step__number {
+  font-family: $font-family-title;
+  font-style: $font-style-title;
+  font-weight: $font-weight-title;
+  line-height: 1;
+  font-size: calc(var(--steps-size) * .5);
+  color: var(--main-text);
+  z-index: 3;
+}
+.step:after,
+.step__content {
+  width: 100%;
+  align-self: center;
+}
+.step__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: .5em 0 2em;
+  text-align: left;
+  .underline:after {
+    margin-left: 0;
+  }
+  .buttons {
+    justify-content: flex-start;
+  }
+}
+.step__title,
+.step__subtitle {
+  margin: 0;
+}
+.step__title + .step__subtitle {
+  margin-top: -1rem;
+}
+@media (min-width: $screen-md) {
+  .steps:not(.columns *) {
+    width: auto;
+    .step {
+      &:after {
+        content: '';
+      }
+      &:nth-child(2n+1) {
+        .step__content {
+          order: -1;
+          text-align: right;
+          .underline:after {
+            margin-left: auto;
+            margin-right: 0;
+          }
+          .buttons {
+            justify-content: flex-end;
+          }
+        }
+      }
+      &:nth-child(2n) {
+        &:after {
+          order: -1;
+        }
+      }
+    }
+  }
+}

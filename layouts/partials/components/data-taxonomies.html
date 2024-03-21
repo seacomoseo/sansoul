@@ -1,5 +1,5 @@
 {{- $show_categories := true -}}
-{{- with .item.column -}}
+{{- with .item.box -}}
   {{- $show_categories = not .hide_categories -}}
 {{- end -}}
 
@@ -10,7 +10,7 @@
       {{- $tax_page := page.GetPage (print $.type `/` .) -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" $name.icon "emoji" $name.emoji) -}}
-        {{- if $.item.column -}}
+        {{- if $.item.box -}}
           {{- $tax_page.Title -}}
         {{- else -}}
           {{- partial "components/link" (dict

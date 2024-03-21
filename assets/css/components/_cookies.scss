@@ -1,12 +1,11 @@
 .cookies {
-  @include bg-cover;
   @if $radius > 0.01  {
     @if $chamfer and $radius > 1 {
-      --radius-bg: #{ 1em - $radius };
+      --radius: #{ 1em - $radius };
     } @else if $radius > 1  {
-      --radius-bg: #{ 1.75em - $radius };
+      --radius: #{ 1.75em - $radius };
     } @else {
-      --radius-bg: .75em;
+      --radius: .75em;
     }
   }
   position: fixed;

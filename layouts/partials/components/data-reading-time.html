@@ -4,7 +4,7 @@
 {{- if .page.Content | and (ne .page.Type "events") -}}
 
   {{- $reading_time := "" -}}
-  {{- with .column -}}
+  {{- with .box -}}
     {{- $reading_time = .reading_time -}}
   {{- else -}}
     {{- $reading_time = site.Data.articles.content.reading_time -}}
@@ -14,11 +14,11 @@
     <i class="data__item">
       {{- partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") -}}
       {{- i18n "reading-time" .page.ReadingTime -}}
-      {{- if not .column }} {{ i18n "of-reading" }}{{ end -}}
+      {{- if not .box }} {{ i18n "of-reading" }}{{ end -}}
     </i>
   {{- end -}}
   {{/*
-    {{- if not .column -}}
+    {{- if not .box -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" "comment-dots" "emoji" "💬") -}}
         {{- i18n "word-count" .page.WordCount -}}

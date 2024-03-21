@@ -61,28 +61,43 @@ $options-colors: (
 
 
 // Screen
-$screen-min:             320px                     !default;
-$screen-max:             1200px                    !default; // 1440?
-$screen-xs:              375px                     !default;
-$screen-sm:              425px                     !default;
-$screen-md:              800px                     !default;
-$screen-lg:              1024px                    !default;
-$screen-xl:              1200px                    !default;
-$screen-menu-sticky:     $menu-screen_sticky * 1px !default;
-$container-width-max-xs: 500px                     !default;
-$container-width-max-sm: 720px                     !default;
-$container-width-max-md: 960px                     !default;
-$container-width-max-lg: 1200px                    !default;
-$container-width-max-xl: 1440px                    !default;
+$screen-min: 375px  !default;
+$screen-max: 1232px !default; // 1440?
+$screen-xs:  375px  !default;
+$screen-sm:  425px  !default;
+$screen-md:  768px  !default;
+$screen-lg:  1024px !default;
+$screen-xl:  1280px !default;
+$screens: (
+  xs: $screen-xs,
+  sm: $screen-sm,
+  md: $screen-md,
+  lg: $screen-lg,
+  xl: $screen-xl,
+);
+
+
+// Containers
+$container-width-max-xs: 512px  !default;
+$container-width-max-sm: 720px  !default;
+$container-width-max-md: 960px  !default;
+$container-width-max-lg: 1200px !default;
+$container-width-max-xl: 1440px !default;
+$containers: (
+  xs: $container-width-max-xs,
+  sm: $container-width-max-sm,
+  md: $container-width-max-md,
+  lg: $container-width-max-lg,
+  xl: $container-width-max-xl,
+);
 
 
 // Fonts
 // Fonts Size
-$font-size-min:       16px  !default;
-$font-size-max:       18px  !default;
-$font-size-base:      fluid-size($font-size-min, $font-size-max) !default;
-$font-size-title:     1em   !default;
-$font-size-cursive:   1.4em !default;
+$font-size-min:     16    !default;
+$font-size-max:     18    !default;
+$font-size-title:   1   !default;
+$font-size-cursive: 1.2 !default;
 // Fonts Family
 $font-family-base:         '#{ $design-fonts-base-family }'           !default;
 $font-family-title:        '#{ $design-fonts-title-family }'          !default;
@@ -92,9 +107,9 @@ $font-weight-base:         $design-fonts-base-weight                  !default;
 $font-weight-title:        $design-fonts-title-weight                 !default;
 $font-weight-cursive:      $design-fonts-cursive-weight               !default;
 // Fonts Weight Bold
-$font-weight-bold-base:    $design-fonts-base-strong                  !default;
-$font-weight-bold-title:   $design-fonts-title-strong                 !default;
-$font-weight-bold-cursive: $design-fonts-cursive-strong               !default;
+$font-weight-bold-base:    $design-fonts-base-bold                    !default;
+$font-weight-bold-title:   $design-fonts-title-bold                   !default;
+$font-weight-bold-cursive: $design-fonts-cursive-bold                 !default;
 // Fonts Style
 $font-style-base:          $design-fonts-base-italic                  !default;
 $font-style-title:         $design-fonts-title-italic                 !default;
@@ -122,19 +137,24 @@ $chamfer:                  $design-rounded-chamfer == 'true'       !default;
 
 
 // Buttons
-$buttons-rounded:          $design-buttons-sides_round == 'true'           !default;
-$icon-buttons-rounded:     $design-buttons-icon_circle == 'true'           !default;
-$buttons-3d:               $design-buttons-deep        == 'true'           !default;
-$buttons-outline:          $design-buttons-outline     == 'true'           !default;
-$buttons-font-base:        $design-buttons-font_base   == 'true'           !default;
+$buttons-rounded:             $design-buttons-sides_round         == 'true'        !default;
+$icon-buttons-rounded:        $design-buttons-icon_circle         == 'true'        !default;
+$buttons-3d:                  $design-buttons-deep                == 'true'        !default;
+$buttons-outline:             $design-buttons-outline             == 'true'        !default;
+$buttons-font-main:           $design-buttons-font_main                            !default;
+$buttons-font-main-bold:      $design-buttons-font_main_bold      == 'true'        !default;
+$buttons-font-main-uppercase: $design-buttons-font_main_uppercase == 'true'        !default;
+$buttons-font-alt:            $design-buttons-font_alt                             !default;
+$buttons-font-alt-bold:       $design-buttons-font_alt_bold       == 'true'        !default;
+$buttons-font-alt-uppercase:  $design-buttons-font_alt_uppercase  == 'true'        !default;
 @if $radius > 1.25em {
-  $radius:                 1.25em;
-  $buttons-rounded:        true;
+  $radius:                    1.25em;
+  $buttons-rounded:           true;
 }
 @if $buttons-rounded {
-  $icon-buttons-rounded:   true;
+  $icon-buttons-rounded:      true;
 }
-$menu-bar-gap:             if($icon-buttons-rounded and $chamfer, .375em, .5em) !default;
+$menu-bar-gap:                if($icon-buttons-rounded and $chamfer, .375em, .5em) !default;
 
 
 // Shadow
@@ -143,6 +163,7 @@ $shadow-top:   $design-shadow-top  * 1rem                                       
 $shadow-blur:  $design-shadow-blur * 1rem                                                   !default;
 $shadow-color: rgba(map-get($options-colors, $design-shadow-color), $design-shadow-opacity) !default;
 $shadow:       $shadow-left $shadow-top $shadow-blur $shadow-color                          !default;
+$shadow-half:  ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color        !default;
 
 
 // Simplelightbox

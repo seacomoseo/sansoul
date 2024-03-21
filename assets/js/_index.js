@@ -2,37 +2,36 @@
 
 import {
   isScrollShow,
-  isParallax,
   isCookies,
   disqusId,
   isGoogleTranslate,
   googleAnalyticsId
 } from '@params'
-import { initNetlifyIdentity } from './netlify-identity.js'
-import { initScrollbar } from './scrollbar.js'
-import { initScrollShow } from './scroll-show.js'
-import { initScrollTop } from './scroll-top.js'
-import { initScrollToHashWhenLoad } from './scroll-to.js'
-import { initLazyLoad } from './lazy-load.js'
-import { initOpenLinks } from './open-links.js'
-import { initMails } from './mails.js'
-import { initParallax } from './parallax.js'
-import { initModals } from './modals.js'
-import { initMenuToggle } from './menu-toggle.js'
-import { initMenuScrollSpy } from './menu-scroll-spy.js'
-import { initIframePoster } from './iframe-poster.js'
-import { initVideoMute } from './video-mute.js'
-import { initVideoFullscreen } from './video-fullscreen.js'
-import { initGss } from './gss.js'
-import { initCookies } from './cookies.js'
-import { initCollapse } from './collapse.js'
-import { initSliders } from './sliders.js'
-import { initFormValidate } from './form-validate.js'
-import { initComments } from './comments.js'
-import { initGoogleTranslate } from './google-translate.js'
-import { initSimpleLightbox } from './simple-lightbox.js'
-import { initPrerender } from './prerender.js'
-import { initGa4 } from './ga4.js'
+import { initNetlifyIdentity } from './netlify-identity'
+import { initScrollbar } from './scrollbar'
+import { initScrollShow } from './scroll-show'
+import { initScrollTop } from './scroll-top'
+import { initScrollToHashWhenLoad } from './scroll-to'
+import { initLazyLoad } from './lazy-load'
+import { initOpenLinks } from './open-links'
+import { initMails } from './mails'
+import { initParallax } from './parallax'
+import { initModals } from './modals'
+import { initMenuToggle } from './menu-toggle'
+import { initMenuScrollSpy } from './menu-scroll-spy'
+import { initIframePoster } from './iframe-poster'
+import { initVideoMute } from './video-mute'
+import { initVideoFullscreen } from './video-fullscreen'
+import { initGss } from './gss'
+import { initCookies } from './cookies'
+import { initCollapsible } from './collapsible'
+import { initSliders } from './sliders'
+import { initFormValidate } from './form-validate'
+import { initComments } from './comments'
+import { initGoogleTranslate } from './google-translate'
+import { initSimpleLightbox } from './simple-lightbox'
+import { initPrerender } from './prerender'
+import { initGa4 } from './ga4'
 
 initNetlifyIdentity()
 initScrollbar()
@@ -42,7 +41,7 @@ initScrollToHashWhenLoad()
 initLazyLoad()
 initOpenLinks()
 initMails()
-if (isParallax) initParallax()
+initParallax()
 initModals()
 initMenuToggle()
 initMenuScrollSpy()
@@ -51,11 +50,11 @@ initVideoMute()
 initVideoFullscreen()
 initGss()
 if (isCookies) initCookies()
-initCollapse()
+initCollapsible()
 initSliders()
 initFormValidate()
 if (disqusId) initComments()
-if (isGoogleTranslate) initGoogleTranslate()
+initGoogleTranslate()
 initSimpleLightbox()
 initPrerender()
 if (googleAnalyticsId) initGa4()

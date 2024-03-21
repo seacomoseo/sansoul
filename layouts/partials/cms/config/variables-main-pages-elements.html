@@ -1,0 +1,45 @@
+{{/*  (dict "&P_DATE"           (dict "label" `Fecha`              "name" `date`        "widget" `datetime` "i18n" true                                           "format" `yyyy-MM-dd`          "date_format" `yyyy-MM-dd`          "time_format" false))  */}}
+{{/*  (dict "&P_LASTMOD"        (dict "label" `Última Modifiación` "name" `lastmod`     "widget" `datetime` "i18n" true        "required" false "default" ``      "format" `yyyy-MM-dd`          "date_format" `yyyy-MM-dd`          "time_format" false    "hint" "Si no se indica nada, se tomará la fecha de modificación del archivo"))  */}}
+{{/*  (dict "&P_DATE_INI"       (dict "label" `Fecha Inicial`      "name" `date_ini`    "widget" `datetime` "i18n" `duplicate`                                    "format" `yyyy-MM-ddTHH:mm:ss` "date_format" `yyyy-MM-ddTHH:mm:ss` "time_format" true))  */}}
+{{/*  (dict "&P_DATE_END"       (dict "label" `Fecha Final`        "name" `date_end`    "widget" `datetime` "i18n" `duplicate` "required" false "default" ``      "format" `yyyy-MM-ddTHH:mm:ss` "date_format" `yyyy-MM-ddTHH:mm:ss` "time_format" true))  */}}
+
+{{ return slice
+  (dict "&P_TITLE"          (dict "label" `Título`             "name" `title`       "widget" `string`   "i18n" true                                              "hint" "Ejemplo: 'Día de paseo por el nuevo barrio'"))
+  (dict "&P_TITLE_SEO"      (dict "label" `Título SEO`         "name" `title_seo`   "widget" `string`   "i18n" true        "required" false "default" ``         "hint" "**Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google: 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔"))
+  (dict "&P_SLUG"           (dict "label" `Slug`               "name" `slug`        "widget" `string`   "i18n" true        "required" false                      "hint" "Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo:** para el título '*Paseo por el Nuevo Barrio por la Mañana*' puede quedar el slug '*paseo-nuevo-barrio-manana*'"))
+  (dict "&P_PRICE"          (dict "<<" (slice (dict "default" ``) `~PRICE`)))
+  (dict "&P_DESCRIPTION"    (dict "label" `Resumen`            "name" `description` "widget" `text`     "i18n" true        "required" false "default" ``         "hint" "Se utiliza para las miniaturas de las listas y para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google: llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥"))
+  (dict "&P_IMAGE"          (dict "label" `Imagen Principal`   "name" `image`       "widget" `image`    "i18n" `duplicate` "required" false "default" ``      "choose_url" true  "max_file_size" 512000000                            "hint" "**Nombre de archivo con mismo formato que 'slug'** 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir"))
+  (dict "&P_CAT"            (dict "label" `Categorías`         "name" `categories`  "widget" `relation` "i18n" `duplicate` "required" false "default" slice   "options_length" 100 "collection" `categories` "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" "Indica una o varias [categorías previamente creadas](#/collections/categories)"))
+  (dict "&P_TAG"            (dict "label" `Etiquetas`          "name" `tags`        "widget" `relation` "i18n" `duplicate` "required" false "default" slice   "options_length" 100 "collection" `tags`       "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" "Indica opcionalmente una o varias [etiquetas previamente creadas](#/collections/tags)"))
+  (dict "&P_AUT"            (dict "label" `Autor`              "name" `author`      "widget" `relation` "i18n" `duplicate` "required" false "default" ``      "options_length" 100 "collection" `authors`    "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" false "hint" "Indica un [autor previamente creado](#/collections/authors)"))
+  (dict "&P_TOC"            (dict "label" `Índice`             "name" `toc`         "widget" `boolean`  "i18n" `duplicate`                   "default" false      "hint" "Tabla de contenidos generada automáticamente mediante los encabezados del contenido"))
+  (dict "&P_DRAFT"          (dict "label" `Borrador`           "name" `draft`       "widget" `boolean`  "i18n" true                          "default" false      "hint" "Oculta la página"))
+  (dict "&P_NOINDEX"        (dict "label" `No Index`           "name" `noindex`     "widget" `boolean`  "i18n" true                          "default" false      "hint" "Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)"))
+  (dict "&P_JOB_TITLE"      (dict "label" `Cargo`              "name" `job_title`   "widget" `string`   "i18n" true                                               "hint" "Ejemplo: 'Podólogo Especialista'"))
+  (dict "&P_SOCIAL"         (dict
+    "label"          `Redes Sociales`
+    "label_singular" `Enlace`
+    "name"           `social`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.link}}"
+    "allow_add"      true
+    "required"       false
+    "hint"           "Enlaces hacia redes sociales"
+    "fields"         (slice
+      `~BUTTON_LINK`
+      `~ICON_ID`
+    )
+  ))
+  (dict "&P_DATE"           (dict "label" `Fecha`              "name" `date`           "widget" `string`   "i18n" true        "required" false "default" ``      "hint" "Formato: 2024-12-31 🔷 Si no se indica, se creará automáticamente en base al título"))
+  (dict "&P_LASTMOD"        (dict "label" `Última Modifiación` "name" `lastmod`        "widget" `string`   "i18n" true        "required" false "default" ``      "hint" "Formato: 2024-12-31"         ))
+  (dict "&P_DATE_INI"       (dict "label" `Fecha Inicial`      "name" `date_ini`       "widget" `string`   "i18n" `duplicate`                                    "hint" "Formato: 2024-12-31T24:59:59"))
+  (dict "&P_DATE_END"       (dict "label" `Fecha Final`        "name" `date_end`       "widget" `string`   "i18n" `duplicate` "required" false "default" ``      "hint" "Formato: 2024-12-31T24:59:59"))
+  (dict "&P_ARTIST"         (dict "label" `Artista/s`          "name" `artist`         "widget" `string`   "i18n" true        "required" false "default" ``          "hint" "Ejemplo: 'Manolo García'"))
+  (dict "&P_LOCATION"       (dict "label" `Ubicación`          "name" `location`       "widget" `string`   "i18n" true        "required" false "default" ``          "hint" "Ejemplo: 'Sala B'"))
+  (dict "&P_ADDRESS"        (dict "label" `Dirección`          "name" `address`        "widget" `string`   "i18n" true        "required" false "default" ``          "hint" "Ejemplo: 'Av. Ciclista Mariano Rojas, 20, 30008 Murcia'"))
+  (dict "&P_BODY"           (dict "label" `Contenido`          "name" `body`           "widget" `markdown` "i18n" true        "required" false "show_raw" true       "hint" (print "Los enlaces que empiecen por '**btn**' (opcionalmente seguido de '**-main**', '**-alt**', '**-light**', '**-dark**', '**-invert**', '**-font-alt**' o '**-icon**') se convertirán en botones 🔷 Se pueden usar iconos usando el texto '**icon-**' seguido de uno de los siguientes nombres válidos → " . (cond (not site.Data.design.icons.emojis) " o emojis" ""))))
+  (dict "&P_TRANSLATIONKEY" (dict "label" `ID Traducción`      "name" `translationKey` "widget" `string`   "i18n" `duplicate` "required" false                       "hint" "Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo:** ID Traducción = '*i-invented-it*' exactamente igual en la misma página en español ('*Me lo invento*'), en inglés ('*I invented it*') y en francés ('*Je l'ai inventé*')"))
+  (dict "&P_TRANSLATIONKEY_HIDDEN" (dict "label" `ID Traducción` "name" `translationKey` "widget" `hidden` "required" false))
+}}

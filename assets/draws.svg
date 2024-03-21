@@ -23,7 +23,7 @@
     {{ `
   ` }}
     {{- $svg := (resources.Get . | minify).Content -}}
-    {{- if not ($svg | findRE `svg-src|animat|xlink|</linearGradient>|</style>`) -}}
+    {{- if not ($svg | findRE `svg-src|animat|href|</linearGradient>|</style>`) -}}
       {{- $svg_head := $svg | findRE `<svg (.*?)>` -}}
       {{- $svg_head = index $svg_head 0 -}}
       {{- $svg_width := $svg_head | findRE ` width="(.+?)"` -}}

@@ -1,0 +1,26 @@
+{{ return slice
+  (dict
+    "label"     `General`
+    "name"      `general`
+    "widget"    `object`
+    "collapsed" true
+    "fields"    (slice
+      (dict "label" `Logo`      "name" `logo`     "widget" `image`  "required" false "max_file_size" 512000000 "choose_url" true)
+      (dict "label" `Título`    "name" `title`    "widget" `string` "required" false)
+      (dict "label" `Subtítulo` "name" `subtitle` "widget" `string` "required" false)
+      (dict "<<" (slice (dict "widget" `boolean` "required" true) `~UPPERCASE`))
+      (dict "<<" (slice (dict "widget" `boolean` "required" true) `~UNDERLINE`))
+      `~ALIGN`
+      (dict "label" `Color de Fondo de Artículos`   "name" `color`           "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BG` "default" `light`)
+      (dict "label" `Color de Fondo de los Índices` "name" `toc_color`       "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BG` "default" `white`)
+      (dict "<<" (slice (dict "label"  `Bordes en imágenes`) `~IMAGE_BORDER`))
+      (dict "<<" (slice (dict "widget" `boolean` "required" true) `~READING_TIME`))
+    )
+  )
+  `~DATA_ARTICLES_COMMON`
+  (dict "<<" (slice (dict "label" `📰 Listas tipo Blog`           "name" `blog`)       `~DATA_ARTICLES_COMMON`))
+  (dict "<<" (slice (dict "label" `📅 Listas tipo Eventos`        "name" `events`)     `~DATA_ARTICLES_COMMON`))
+  (dict "<<" (slice (dict "label" `📦 Listas tipo Productos`      "name" `products`)   `~DATA_ARTICLES_COMMON`))
+  (dict "<<" (slice (dict "label" `🏷 Listas tipo Taxonomías`     "name" `taxonomies`) `~DATA_ARTICLES_COMMON`))
+  (dict "<<" (slice (dict "label" `*️⃣ Listas tipo Presonalizadas` "name" `custom`)     `~DATA_ARTICLES_COMMON`))
+}}

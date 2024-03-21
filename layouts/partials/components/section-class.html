@@ -1,0 +1,114 @@
+{{ $type        := cond .modal "modal" "section" }}
+{{/*  {{ $key_class   := cond .header "section--header" (print "section--" .key) }}  */}}
+{{ $key_class   := cond .header "section--header" "" }}
+{{ if .footer }}
+  {{ $key_class  = "section--footer" }}
+{{ end }}
+{{/*
+{{ if .modal }}
+  {{ $key_class  = print $key_class "__modal--" (add .k 1) }}
+{{ end }}
+*/}}
+{{ $full        := cond (not .full) "" "section--full" }}
+{{ $bg_color    := "bg-white" }}
+{{ if not .modal }}
+  {{ with .color }}
+    {{ $bg_color = print "bg-" . }}
+  {{ end }}
+{{ end }}
+{{ if .bg }}
+  {{ $bg_color   = print $bg_color " bg-image" }}
+{{ end }}
+{{ $bg_gradient_color      := "" }}
+{{ $bg_gradient_type       := "" }}
+{{ if not .modal | and .gradient }}
+  {{ $bg_gradient_color     = print "bg-gradient-" .gradient }}
+  {{ $bg_gradient_type      = print "bg-gradient-" (.gradient_type | default "linear-b") }}
+{{ end }}
+{{ $bg_opacity             := "" }}
+{{ if (.color_opacity | and (ne .color_opacity 100)) | and ($bg_color | or $bg_gradient_color) }}
+  {{ $bg_opacity            = print "bg-opacity-" .color_opacity }}
+{{ end }}
+{{ $bg_image_fix           := cond (not (.bg | and .parallax | and (not site.Data.design.performance.parallax))) "" "bg--fix" }}
+{{ $bg                     := cond (not $bg_color) "" "bg" }}
+{{ $bg_video_parent        := "" }}
+{{ if partial `functions/is-iframe` .bg }}
+  {{ $bg_video_parent       = "bg-figure-video-parent" }}
+{{ end }}
+{{ $padding_hide           := "" }}
+{{ $padding_top            := "" }}
+{{ $padding_bottom         := "" }}
+{{ $padding_top_divider    := "" }}
+{{ $padding_bottom_divider := "" }}
+{{ if .footer }}
+  {{ $padding_top           = "pt-2" }}
+{{ end }}
+{{ if .ph }}
+  {{ $padding_hide          = "ph" }}
+  {{ $padding_top           = "" }}
+  {{ $padding_bottom        = "" }}
+{{ else }}
+  {{ if ne .pt nil }}
+    {{ $padding_top         = print "pt-" .pt }}
+  {{ end }}
+  {{ if ne .pb nil }}
+    {{ $padding_bottom      = print "pb-" .pb }}
+  {{ end }}
+{{ end }}
+{{ with .prev }}
+  {{ if .divider }}
+    {{ $padding_top_divider = print "pt-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") }}
+  {{ end }}
+{{ end }}
+{{ if .divider | and (not .footer) }}
+  {{ $padding_bottom_divider = print "pb-divider" (cond (partial `functions/divider-ratio` .divider) "--ratio" "") }}
+{{ end }}
+{{ $params := partial "functions/page-params" page }}
+{{ if .header
+  | and (not $params.menu.hide)
+  | and (not $params.menu.hide_sticky)
+  | and (not $params.header_article)
+}}
+  {{ $padding_top_divider = "pt-divider" }}
+{{ end }}
+{{ $divider    := "" }}
+{{ with .prev }}
+  {{ if .divider }}
+    {{ $flip_y           := cond (not .flip_y) "" "y" }}
+    {{ $flip_x           := cond (not .flip_x) "" "x" }}
+    {{ $flips            := cond (or .flip_x .flip_y) (print "-" $flip_x $flip_y) "" }}
+    {{ $divider   = print "divider divider-" $flips "-" .divider }}
+    {{/*  {{ if partial `functions/divider-ratio` .divider }}
+      {{ $divider = print $divider " divider--ratio" }}
+    {{ end }}  */}}
+  {{ end }}
+{{ end }}
+{{ if .modal }}
+  {{ $bg             = "" }}
+  {{ $bg_color       = "" }}
+  {{ $bg_image_fix   = "" }}
+  {{ $padding_top    = "" }}
+  {{ $padding_bottom = "" }}
+{{ end }}
+
+{{ $class := delimit (slice
+  $type
+  $key_class
+  $full
+  $bg
+  $bg_color
+  $bg_gradient_type
+  $bg_gradient_color
+  $bg_opacity
+  $bg_image_fix
+  $bg_video_parent
+  $padding_hide
+  $padding_top
+  $padding_bottom
+  $padding_top_divider
+  $padding_bottom_divider
+  $divider
+  | uniq) " "
+}}
+
+{{ return $class }}

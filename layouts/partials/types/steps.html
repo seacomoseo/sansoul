@@ -5,14 +5,14 @@
 {{ $border    := print " " (.border    | default "alt") }}
 {{ $uppercase := cond (not .uppercase) "" " uppercase" }}
 {{ $underline := cond (not .underline) "" " underline" }}
-<ul class="steps">
-  {{ range $key, $value := .items }}
+<ul class="steps box__type">
+  {{ range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">
       <div class="step__axis-wrap {{- $border }}">
         <div class="step__axis">
           <div class="step__figure">
             {{ with .image }}
-                {{ partial "components/image" (dict "class" "step__figure-image" "src" . "max" 342 "ratio" "1x1") }}
+              {{ partial "components/image" (dict "class" "step__figure-image" "src" . "max" 342 "ratio" "1x1") }}
             {{ end }}
             {{ with .icon }}
               {{ partial "components/icon" (dict "class" "step__icon" "icon" (. | default `forward`)) }}
@@ -26,19 +26,12 @@
       {{- $showup := site.Data.design.performance.showup -}}
       <div class="step__content" {{- if $showup }} data-showup{{ end }}>
         {{ with .title }}
-          {{ $section_title := "" }}
-          {{ with $.section }}
-            {{ $section_title = .title }}
-          {{ end }}
-          {{ $h := 3 }}
-          {{ if $.section_header | or ((not $.section_header) | and (not $section_title)) }}
-            {{ $h = 2 }}
-          {{ end }}
-          <h{{ $h }} class="h{{ $.title_size | default 4 }} {{- $uppercase }}{{ $underline }}">
+          {{ $hn := $.hn | default (add $.level 1) }}
+          <h{{ $hn }} class="step__title h{{ $.hs | default 4 }} {{- $uppercase }}{{ $underline }}">
             {{- . | markdownify -}}
-          </h{{ $h }}>
+          </h{{ $hn }}>
         {{ end }}
-        {{ with .subtitle }}<p class="subtitle">{{ . | markdownify }}</p>{{ end }}
+        {{ with .subtitle }}<p class="step__subtitle subtitle">{{ . | markdownify }}</p>{{ end }}
         {{ with .description }}
           <div class="description">
             {{ partial "functions/md" (dict "content" . "not_header_links" true) }}

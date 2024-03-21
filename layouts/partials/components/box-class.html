@@ -1,0 +1,111 @@
+
+{{- $no_content := .bg | and (not (or
+  .title
+  .subtitle
+  .description
+  .icon
+  .image_src
+  .button_is
+  .boxes
+  .steps
+  .images
+  .limages
+  .articles
+  .collapsibles
+  .reviews
+  .buttons
+  .social
+  .inputs
+  .map
+)) -}}
+
+{{ $container_is           := cond .main "container" "" }}
+{{ $container_modal        := cond (.main | and .modal) "modal__container" "" }}
+{{ $container_size         := cond (not .main) "" (
+  .size
+  | default (cond
+    (.ph | default false)
+    "fluid"
+    (cond .modal "sm" "lg")
+  )
+) }}
+{{ $container_size_class   := cond .main (print "container--" $container_size) "" }}
+
+{{ $box_key                := cond (not .main) (print "box--" (add .key 1)) "" }}
+
+{{ $box_align              := cond (not .align)    "" (print "align-" .align) }}
+{{ $box_align_y_self       := cond (not .align_y)  "" (print "align-self-" .align_y) }}
+{{ $box_align_xl           := cond (not .align_xl) "" (print "align--xl-" .align_xl) }}
+
+{{ $box_bg_color           := print
+  (cond (not .bg_color)     "" (print "bg-" .bg_color))
+  (cond (not .bg_image_src) "" " bg-image")
+}}
+{{ $box_bg_gradient_color  := "" }}
+{{ $box_bg_gradient_type   := "" }}
+{{ if .gradient }}
+  {{ $box_bg_gradient_color = print "bg-gradient-" .gradient }}
+  {{ $box_bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") }}
+{{ end }}
+{{ $box_bg                 := cond (not $box_bg_color) "" "bg" }}
+{{ $box_bg_opacity         := "" }}
+{{ if (.color_opacity | and (ne .color_opacity 100)) | and (.color | or .gradient) }}
+  {{ $box_bg_opacity        = print "bg-opacity-" .color_opacity }}
+{{ end }}
+{{/*
+{{ $box_bg_image_fix       := cond (not (.bg_image_src | and .parallax)) "" "bg--fix" }}
+*/}}
+
+{{ $box_padding            := "" }}
+{{ if ne .padding nil }}
+  {{ $box_padding           = print "box--padding-" (mul 100 (.padding | default 0 | float)) }}
+{{ end }}
+{{ $box_grow               := cond (not .grow)          "" "box--grow" }}
+
+{{ $box_hide_radius        := cond (not .hide_radius)   "" "box--hide-radius" }}
+{{ $box_shadow             := cond (not .hide_shadow)   "" "box--hide-shadow" }}
+{{ $box_span               := cond (not .span)          "" (print "box--span-" .span) }}
+{{ $box_order              := cond (not .order)         "" (print "order-" .order) }}
+{{ $box_ratio              := cond (not .box_ratio) (cond (not .card) (cond (not $no_content) "" "box--16x9") "box--2x3") (print "box--" .box_ratio) }}
+{{ $box_gap                := cond (eq .box_gap nil)    "" (print "box--gap-" .box_gap) }}
+{{/*  {{ if partial `functions/is-iframe` .bg_image_src }}bg-figure-video-parent {{ end }}  */}}
+{{ $box_card               := cond (not .card)          "" "box--card" }}
+{{ $box_pill_bottom        := cond (not .pill)          "" "pill-bottom" }}
+{{ $box_pill_top           := cond (eq .ratio "circle" | or .pill) "pill-top" "" }}
+{{ $box_button_hide        := cond (eq .button "hide")  "box--button-hide" "" }}
+{{ $box_slider             := cond (not (.slider | and (not .key))) "" "slider__item--active" }}
+
+{{ $box_class              := delimit
+  (slice
+    "box"
+    $box_key
+    $container_is
+    $container_modal
+    $container_size_class
+    $box_align
+    $box_align_y_self
+    $box_align_xl
+    $box_order
+    $box_bg
+    $box_bg_color
+    $box_bg_gradient_color
+    $box_bg_gradient_type
+    $box_bg_opacity
+    $box_grow
+    $box_ratio
+    $box_gap
+    $box_padding
+    $box_hide_radius
+    $box_shadow
+    $box_span
+    $box_pill_top
+    $box_pill_bottom
+    $box_button_hide
+    $box_card
+    $box_slider
+    | uniq
+  )
+  " "
+}}
+
+{{ return $box_class }}

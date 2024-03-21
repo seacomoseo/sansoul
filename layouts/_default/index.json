@@ -6,8 +6,8 @@
   (where
   (where
   (where
-  site.RegularPages.ByDate.Reverse
-  "Type" "not in"  (slice "json"))
+  site.Pages
+  "Kind" "ne" "section")
   "File.TranslationBaseName" "!=" "legal")
   "File.TranslationBaseName" "!=" "privacy")
   "File.TranslationBaseName" "!=" "cookies")
@@ -55,13 +55,16 @@
   {{- end -}}
   
 	{{- $contents := .Plain -}}
-  {{- $params   := partial "functions/page-params" . -}}
-  {{- if $params.sections -}}
-    {{- with partial "functions/sections-and-modals" . -}}
-      {{- $contents = printf "%v\n" .
-        | replaceRE `\w+?:|map\[|\[|\]|\{|\}|true|false|string|interface|\n` ``
-        | replaceRE "\u003cnil\u003e" ""
-      -}}
+  {{- if not $contents -}}
+	  {{- $contents = "" -}}
+    {{- range partial "functions/sections" . -}}
+      {{- range partial "functions/section-searchable" . -}}
+        {{- with .title       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+        {{- with .anchor      }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+        {{- with .subtitle    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+        {{- with .description }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+        {{- with .label       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
   

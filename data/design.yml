@@ -7,19 +7,24 @@ fonts:
   base:
     family: Montserrat
     weight: 200 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
-    strong: 800 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
+    bold: 600 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
     italic: false
+    line-height: 1.25
   cursive:
     family: Dancing Script
     weight: 400 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
-    strong: 800 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
+    bold: 800 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
     italic: false
+    line-height: 1.25
+    top: 0
   title:
     family: Montserrat
     weight: 800 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
-    strong: 800 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
+    bold: 0 # [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
     italic: false
-  blockquote_cursive: false
+    line-height: 1.25
+    top: 0
+  blockquote_cursive: true
 colors:
   main:
     color: '#bdd5ea'
@@ -49,8 +54,15 @@ buttons:
   sides: false
   icon_circle: false
   deep: false
-  border: false
-  font_base: false
+  outline: false
+  font_main:
+    type: base # [ base, title, cursive ]
+    bold: true
+    uppercase: true
+  font_alt:
+    type: base # [ base, title, cursive ]
+    bold: false
+    uppercase: false
 shadow:
   left: 0.25 # [ 0.00 - 99.00 ]
   top: 0.25 # [ 0.00 - 99.00 ]
@@ -60,10 +72,7 @@ shadow:
 lightbox_overlay:
   opacity: 0.8 # [ 0.00 - 1.00 ]
   color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
-footer:
-  divider: '' # https://sansoul.netlify.app/divisores/
-  flip_x: false
-  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
-  gradient: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
-  gradient_type: '' # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-  hide_seacomoseo: false
+performance:
+  showup: false
+  parallax: false
+  srcsetx2: true

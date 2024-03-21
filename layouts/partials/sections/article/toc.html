@@ -1,12 +1,12 @@
 {{ if .Params.toc }}
-  <section id="toc" class="toc">
-    <div class="container container--sm">
+  <nav id="toc" class="toc">
+    <div class="box container container--sm">
       <div class="toc__box bg bg-{{ site.Data.articles.content.toc_color | default `white` }}">
         <div class="bg-color"></div>
         <h2 class="h6">{{ i18n "toc" }}</h2>
         {{ $toc             := partial "functions/md" (dict "content" .TableOfContents) }}
         {{ $tocLinks        := $toc     | findRE `<a.+?</a>` }}
-        {{ $contentLinks    := .Content | findRE `<a class="content__heading-link" href="#.+?">` }}
+        {{ $contentLinks    := .Content | findRE `<a class="description__heading-link" href="#.+?">` }}
         {{ range $k, $value := $tocLinks }}
           {{ $contentLink   := index $contentLinks $k }}
           {{ $id            := $contentLink | replaceRE `.*"#(.+?)">` `$1` }}
@@ -16,7 +16,7 @@
         {{ $toc | safeHTML }}
       </div>
     </div>
-  </section>
+  </nav>
 {{ else }}
   <div id="toc"></div>
 {{ end }}

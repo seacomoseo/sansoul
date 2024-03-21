@@ -1,33 +1,42 @@
+.container {
+  text-align: center;
+}
 .align-center {
   text-align: center;
-  .section__title,
+  .logo__link,
+  .box__icon--bottom,
+  .box__title,
   .buttons {
     justify-content: center;
   }
 }
 .align-left {
   text-align: left;
-  .section__title,
+  .logo__link,
+  .box__icon--bottom,
+  .box__title,
   .buttons {
     justify-content: flex-start;
   }
-  .section__icon {
+  .box__icon {
     order: -1;
   }
-  .section__icon--top {
+  .box__icon--top {
     margin-left: 0;
   }
 }
 .align-right {
   text-align: right;
-  .section__title,
+  .logo__link,
+  .box__icon--bottom,
+  .box__title,
   .buttons {
     justify-content: flex-end;
   }
-  .section__icon {
+  .box__icon {
     order: 1;
   }
-  .section__icon--top {
+  .box__icon--top {
     margin-right: 0;
   }
 }
@@ -58,40 +67,43 @@
 @media (min-width: $screen-xl) {
   .align--xl-center {
     text-align: center;
-    .section__title,
+    .box__icon--bottom,
+    .box__title,
     .buttons {
       justify-content: center;
       align-items: center;
     }
-    .section__icon--top {
+    .box__icon--top {
       margin-inline: auto;
     }
   }
   .align--xl-left {
     text-align: left;
-    .section__title,
+    .box__icon--bottom,
+    .box__title,
     .buttons {
       justify-content: flex-start;
       // align-items: flex-start;
     }
-    .section__icon {
+    .box__icon {
       order: -1;
     }
-    .section__icon--top {
+    .box__icon--top {
       margin-left: 0;
     }
   }
   .align--xl-right {
     text-align: right;
-    .section__title,
+    .box__icon--bottom,
+    .box__title,
     .buttons {
       justify-content: flex-end;
       // align-items: flex-end;
     }
-    .section__icon {
+    .box__icon {
       order: 1;
     }
-    .section__icon--top {
+    .box__icon--top {
       margin-right: 0;
     }
   }
@@ -109,8 +121,8 @@
   .justify-space-around {
     justify-content: space-around;
   }
-  .justify-flex-star {
-    justify-content: flex-star;
+  .justify-flex-start {
+    justify-content: flex-start;
   }
   .justify-flex-end {
     justify-content: flex-end;

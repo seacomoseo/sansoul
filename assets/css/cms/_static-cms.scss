@@ -39,20 +39,27 @@
 
   // FIELDS
 
+  .CMS_Editor_content {
+    max-width: calc(100vw - 1rem);
+    margin-block: auto;
+  }
+  .CMS_Field_root {
+    align-items: flex-start;
+  }
   .CMS_Field_root,
   .CMS_WidgetObject_root,
   .CMS_WidgetList_field-wrapper,
   .CMS_WidgetList_sortable-item,
-  .CMS_WidgetCode_root {
-    margin: 0 auto;
+  .CMS_WidgetCode_root,
+  .CMS_Hint_root {
     border-width: .0625rem;
     border-radius: .5rem;
     padding: .5rem .75rem;
     border-color: var(--border);
     background-color: var(--bg);
-    max-width: calc(100vw - 1rem);
     width: 100%;
-    filter: var(--shadow);
+    // height: 100%;
+    box-shadow: var(--shadow);
     // Remove paddings
     > * {
       padding-inline: 0;
@@ -60,22 +67,31 @@
     > :first-child {
       padding-top: 0;
     }
-    > :last-child {
-      padding-bottom: 0;
-    }
+    // > :last-child {
+    //   padding-bottom: 0;
+    // }
+  }
+  .CMS_WidgetFileImage_root,
+  .CMS_WidgetFileImage_wrapper {
+    height: 100%;
+    border: none;
+    margin: 0;
   }
   // Gap of fields and margin of parents
   .CMS_EditorControlPane_root,
   .CMS_WidgetObject_fields,
   .CMS_WidgetObject_list-root,
   .CMS_WidgetList_fields {
-    display: grid;
-    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 1.5rem;
     margin-block: 1em;
     overflow: visible;
-  }
-  .CMS_WidgetObject_list-root {
-    margin-left: 0.5rem;
+    > * {
+      flex-grow: 1;
+      min-width: calc(50% - .75rem);
+    }
   }
   .CMS_WidgetList_ListItem_expand-button {
     padding: 0;
@@ -98,9 +114,10 @@
   .CMS_WidgetObject_fields,
   .CMS_WidgetList_ListItem_content {
     margin-left: -.25em;
-    > .CMS_EditorControl_root {
-      margin-left: .5rem;
-    }
+    padding-left: 0.5em;
+    // > .CMS_EditorControl_root {
+    //   margin-left: .5rem;
+    // }
   }
   // Move toggle arrow to left in lists and codes
   .CMS_WidgetList_expand-button-icon,
@@ -191,8 +208,9 @@
   .CMS_Image_root:not(.CMS_Image_empty) {
     max-height: 20rem;
   }
+  .CMS_WidgetFileImage_empty-content,
   .CMS_WidgetFileImage_content {
-    padding-inline: 0;
+    padding: 0.5rem 0 0.25rem;
   }
 
 
@@ -216,21 +234,23 @@
 
   .CMS_WidgetObject_root,
   .CMS_WidgetList_field-wrapper {
-    background-color: var(--color-blue);
+    background-color: var(--bgc);
+    --bgc: var(--bg);
   }
 
 
   // Alternate items with colors
   .CMS_WidgetList_sortable-item {
-    background-color: var(--list-color);
-    &:nth-child(1n) { --list-color: var(--color-brown); }
-    &:nth-child(2n) { --list-color: var(--color-orange); }
-    &:nth-child(3n) { --list-color: var(--color-yellow); }
-    &:nth-child(4n) { --list-color: var(--color-green); }
-    &:nth-child(5n) { --list-color: var(--color-purple); }
-    &:nth-child(6n) { --list-color: var(--color-pink); }
-    &:nth-child(7n) { --list-color: var(--color-red); }
-    &:nth-child(8n) { --list-color: var(--color-grey); }
+    background-color: var(--bgc);
+    &:nth-child(1n) { --bgc: var(--color-brown); }
+    &:nth-child(2n) { --bgc: var(--color-orange); }
+    &:nth-child(3n) { --bgc: var(--color-yellow); }
+    &:nth-child(4n) { --bgc: var(--color-green); }
+    &:nth-child(5n) { --bgc: var(--color-purple); }
+    &:nth-child(6n) { --bgc: var(--color-pink); }
+    &:nth-child(7n) { --bgc: var(--color-red); }
+    &:nth-child(8n) { --bgc: var(--color-grey); }
+    &:nth-child(9n) { --bgc: var(--color-blue); }
   }
 
   // Widget list add button
@@ -239,4 +259,118 @@
     background: var(--primary-main);
   }
 
+  // Label
+  .CMS_Label_root {
+    display: block;
+  }
+  // Remove (opcional)
+  [class*="_required"] .CMS_Label_root:after {
+    content: '✱';
+    color: var(--primary-main);
+    margin-left: 0.25em;
+  }
+  [data-testid*="(opcional)"] > {
+    *,
+    * > * {
+      > .CMS_Label_root:after {
+        content: '(opcional)';
+        margin-left: -5em;
+        margin-right: -10em;
+        color: var(--bg);
+        text-shadow:
+          -.5px 0 0 var(--bg),
+          .5px 0 0 var(--bg),
+          0 -.5px 0 var(--bg),
+          0 .5px 0 var(--bg);
+        // background-color: var(--bg);
+      }
+    }
+  }
+
+  // Hint float
+  .CMS_Hint_root {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    width: calc(100% + 2px);
+    padding: 0 .75rem .5rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-color: transparent;
+    border-top-width: 0;
+    height: auto;
+    z-index: 20;
+  }
+  .CMS_EditorControl_root:hover:not(:has(
+    :where(
+      .CMS_WidgetObject_root,
+      .CMS_WidgetObject_list-root,
+      .CMS_WidgetList_field-wrapper
+    ):hover
+  )) {
+    .CMS_Hint_root {
+      display: block;
+    }
+    :where(
+      .CMS_Field_root,
+      .CMS_WidgetCode_root
+    ):has(.CMS_Hint_root) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  :where(
+    .CMS_WidgetObject_root,
+    .CMS_WidgetList_sortable-item,
+    .CMS_WidgetList_field-wrapper
+  ):hover:not(:has(> .MuiCollapse-root:hover)) {
+    > .CMS_Hint_root {
+      display: block;
+    }
+    &:has(> .CMS_Hint_root) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  // Hint info in mobile
+  .CMS_EditorControl_root {
+    position: relative;
+    &:before {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      display: block;
+      width: 1rem;
+      height: 2rem;
+      z-index: 20;
+    }
+  }
+  .CMS_EditorControl_root
+  :where(
+    :where(
+      .CMS_Field_root,
+      .CMS_WidgetCode_root,
+    ):has(.CMS_Hint_root),
+    :where(
+      .CMS_WidgetObject_root,
+      .CMS_WidgetList_field-wrapper,
+      .CMS_WidgetList_sortable-item,
+    ):has(> .CMS_Hint_root)
+  ):after {
+    content: 'i';
+    font-size: 12px;
+    position: absolute;
+    top: calc(100% - 0.8125rem);
+    left: 0.0625rem;
+    padding: 0.125rem;
+    height: 0.75rem;
+    width: 0.75rem;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    background-color: var(--common-gray);
+    color: white;
+  }
 }

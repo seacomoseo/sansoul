@@ -1,5 +1,5 @@
 {{- $js := .js -}}
-{{ range partial "functions/list-sectioned-pages" . }}
+{{ range site.Pages }}
   {{- $page       := . -}}
   {{- $slug       := .Params.slug -}}
   {{- $page_emoji := (index site.Data.utilities.taxonomies .Type).emoji -}}
@@ -21,28 +21,30 @@
     {{- if .modal }}
       {{- $section_emoji = "🪟" -}}
     {{- end -}}
-    {{ $num := 1 }}
-    {{- range $row_k, $row := .rows -}}
-      {{- if eq .type "contact" -}}
-        {{- with .form -}}
-          {{- $form_num      := cond (eq $num 1) "" (print "_" $num) -}}
-          {{- $id_form       := replace (print $slug "_" $id $form_num) "-" "_" -}}
+    {{- with partial "functions/section-boxes-num" . -}}
+      {{- range . -}}
+        {{- if .inputs -}}
+          {{- $form_num      := print .lvl "_" .num -}}
+          {{- $form_num       = cond (eq $form_num "0_0") "" $form_num -}}
+          {{- $subject       := print (i18n "form") " " $page_emoji " " $page.Title " " $section_emoji " " $section_name (cond (not $form_num) "" (print " 📌 " $form_num)) -}}
+          {{- $id_form       := print (replace (print $slug "_" $id) "-" "_") (cond (not $form_num) "" (print "_" $form_num)) -}}
           {{- $netlify_forms := not .action -}}
           {{- $googleForm    := in .action "docs.google.com/forms" -}}
           {{- $formsubmit_co := in .action "formsubmit.co" -}}
           {{- $action        := .action | default $page.RelPermalink | base64Encode -}}
-          {{- $subject       := print (i18n "form") " " $page_emoji " " $page.Title " " $section_emoji " " $section_name (cond (not $form_num) "" (print " 📌 " $num)) -}}
+          {{- $inputs_fill   := site.Data.design.inputs.fill -}}
+          {{- $chamfer       := site.Data.design.rounded.chamfer -}}
           {{/*  HEAD  */}}
           {{- if $js -}}
             {{- $name_js_form := print "form_" $id_form -}}
             const {{ $name_js_form }} = document.getElementById('{{ $name_js_form }}');
             {{ $name_js_form }} && {{ $name_js_form }}.insertAdjacentHTML('beforeend', ` {{- "" -}}
-              <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" target="_blank" {{ if $formsubmit_co -}} enctype="multipart/form-data"{{ end }}> {{- "" -}}
+              <form class="contact__form {{- if $inputs_fill }} contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" target="_blank" {{ if $formsubmit_co -}} enctype="multipart/form-data"{{ end }}> {{- "" -}}
                 {{- if $netlify_forms -}}
                   <input type="hidden" name="form-name" value="{{ $id_form }}">
                 {{- end -}}
           {{- else -}}
-            <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" {{- if $netlify_forms }} netlify{{ end }} name="{{ $id_form }}">
+            <form class="contact__form {{- if $inputs_fill }} contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" {{- if $netlify_forms }} netlify{{ end }} name="{{ $id_form }}">
           {{- end -}}
             {{- if $netlify_forms -}}
               <input type="hidden" name="subject" value="{{ site.BaseURL | replaceRE `^https?://` `` }}: {{ $subject }}" data-remove-prefix>
@@ -53,15 +55,14 @@
               <input type="hidden" name="_captcha" value="false">
               {{/*  <input type="hidden" name="_next" value="{{ $page.Permalink }}#{{ $id }}">  */}}
             {{- end -}}
-          {{ $num = add $num 1 }}
           {{/*  INPUTS  */}}
-          {{- range .items -}}
+          {{- range .inputs -}}
             {{- $type := .type -}}
             {{- $full := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6") | or .full) " contact__full" "" -}}
             {{- if $type | ne "hidden" -}}
               <div class="contact__form-item {{ $full }}">
             {{ end }}
-              {{ if site.Data.design.rounded.chamfer | and ($type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox")) }}
+              {{ if $chamfer | and ($type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox")) }}
                 <div class="contact__form-item-border
                   {{- if eq $type `textarea` }} contact__form-item-border--textarea{{ end }}
                   {{- if $type | in (slice `radio` `checkbox`) }} contact__form-item-border--fieldset{{ end -}}
@@ -95,21 +96,19 @@
                     </label>
                   {{- end -}}
                 </fieldset>
-              {{- else if $type | eq "h3" -}}
-                <h3 class="contact__form-title contact__full">{{ .name | markdownify }}</h3>
-              {{- else if $type | eq "h4" -}}
-                <h4 class="contact__form-title contact__full">{{ .name | markdownify }}</h4>
-              {{- else if $type | eq "h5" -}}
-                <h5 class="contact__form-title contact__full">{{ .name | markdownify }}</h5>
-              {{- else if $type | eq "h6" -}}
-                <h6 class="contact__form-title contact__full">{{ .name | markdownify }}</h6>
+              {{- else if $type | findRE `^h\d` -}}
+                {{- print "<" $type " " | safeHTML -}}
+                class="contact__form-title contact__full"
+                {{- ">" -}}
+                {{- .name | markdownify -}}
+                {{- print "</" $type ">" | safeHTML -}}
               {{- else if $type | eq "description" -}}
                 <div class="contact__form-description description">
                   {{- partial "functions/md" (dict "content" .name "not_header_links" true) -}}
                 </div>
               {{- end -}}
               {{- with .hint -}}
-                <div class="contact__form-hint description align-left">
+                <div class="contact__form-hint description {{- if not ($type | findRE `^h\d`) }} align-left{{ end }}">
                   {{- partial "functions/md" (dict "content" . "not_header_links" true) -}}
                 </div>
               {{- end -}}

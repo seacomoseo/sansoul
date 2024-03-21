@@ -2,8 +2,8 @@
 {{- $container := (merge $articles.common (index $articles .type)).size | default "md" -}}
 
 {{ with page }}
-  <div class="container container--{{ $container }}">
-    <h2 class="related__title align-center">{{ i18n "related" }}</h2>
+  <div class="box container container--{{ $container }} align-center">
+    <h2 class="related__title">{{ i18n "related" }}</h2>
 
     {{ $categories := .Params.categories | default slice }}
     {{ $tags := .Params.tags | default slice }}

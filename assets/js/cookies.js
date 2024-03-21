@@ -24,7 +24,6 @@ export function initCookies () {
       }
     }
 
-    // Onclick cookies accept
     function cookiesAccept (c) {
       window.localStorage.controlcookie = window.localStorage.controlcookie || 0
       window.localStorage.controlcookie++
@@ -41,13 +40,17 @@ export function initCookies () {
         }
       }
     }
-    cookiesMessageAcept.forEach(e => e.addEventListener('click', c => cookiesAccept(c)))
+
+    document.addEventListener('click', e => {
+      // Onclick cookies accept
+      const cb = e.target.closest('.cookies__button-acept')
+      if (cb) cookiesAccept(cb)
+      // Onclick cookies message toggle
+      const ct = e.target.closest('.cookies__toggle')
+      if (ct) cookiesToggle()
+    })
 
     // Add class active from cookies message if cookies don't acept
     if (window.localStorage.controlcookie) cookiesClose()
-
-    // Onclick cookies message toggle
-    cookiesMessageToogle.addEventListener('click', cookiesToggle)
-    cookiesMessageToogle.addEventListener('keydown', e => e.key === 'Enter' && cookiesMessageToogle.click())
   }
 }

@@ -115,17 +115,13 @@ export function initModals () {
   })
 
   // When click
-  const elementClickToModalClose = document.querySelectorAll('.modal, .modal__close, .modal__close--corner')
-  elementClickToModalClose.forEach(e => {
-    e.addEventListener('click', click => {
-      if (
-        click.target.classList.contains('modal') ||
-        click.currentTarget.classList.contains('modal__close') ||
-        click.currentTarget.classList.contains('modal__close--corner')
-      ) {
-        closeModal()
-      }
-    })
+  document.addEventListener('click', e => {
+    const buttonClose = e.target.closest('.modal__close, .modal__close--corner')
+    const backover = e.target.classList.contains('modal')
+    if (buttonClose || backover) closeModal()
+    // Back
+    const back = e.target.closest('.modal__back')
+    if (back) window.history.back()
   })
 
   // When keyup escape
@@ -143,11 +139,4 @@ export function initModals () {
 
   // When keyup right
   document.addEventListener('keyup', e => e.keyCode === 39 && prevNextModal(false))
-
-  // When click in back
-  document.querySelectorAll('.modal__back').forEach(e => {
-    e.addEventListener('click', click => {
-      window.history.back()
-    })
-  })
 }

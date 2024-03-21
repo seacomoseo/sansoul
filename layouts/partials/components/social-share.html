@@ -3,24 +3,24 @@
   <div class="buttons">
     {{- $networks := (slice
       (dict
-        "link" (print `https://www.facebook.com/sharer.php?u=` .Permalink)
+        "link"  (print `https://www.facebook.com/sharer.php?u=` .Permalink)
         "title" (print (i18n "share") " Facebook")
-        "icon" "facebook-f"
+        "icon"  "facebook-f"
       )
       (dict
-        "link" (print `https://twitter.com/share?url=` .Permalink `&text=` .Title)
+        "link"  (print `https://twitter.com/share?url=` .Permalink `&text=` .Title)
         "title" (print (i18n "share") " Twitter")
-        "icon" "twitter"
+        "icon"  "twitter"
       )
       (dict
-        "link" (print `https://wa.me/?text=` .Permalink)
+        "link"  (print `https://wa.me/?text=` .Permalink)
         "title" (print (i18n "share") " WhatsApp")
-        "icon" "whatsapp"
+        "icon"  "whatsapp"
       )
       (dict
-        "link" (print `mailto:?body=` .Permalink `%0D%0A` .Title)
+        "link"  (print `mailto:?body=` .Permalink `%0D%0A` .Title)
         "title" (print (i18n "share") " Email")
-        "icon" "envelope"
+        "icon"  "envelope"
         "emoji" "✉"
       )
     ) -}}

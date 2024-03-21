@@ -1,10 +1,9 @@
-{{/*  SECTIONS WITH HEADER AND FOOTER  */}}
+{{/*  SECTIONS WITH FOOTER  */}}
 {{- $sections_raw :=
   partial "functions/sections" page
   | default slice
   | append (partial "functions/footer" .)
 -}}
-
 
 {{/*  ADD PREV/NEXT, IN MODALS TOO  */}}
 {{- $sections := slice -}}
@@ -60,14 +59,12 @@
 
 {{- end -}}
 
-{{/*  FILTER HEADER, FOOTER OR MAIN  */}}
+{{/*  FILTER FOOTER OR MAIN  */}}
 {{- $finals  := slice -}}
-{{- if .header -}}
-  {{- $finals = first 1 $sections -}}
-{{- else if .footer -}}
+{{- if .footer -}}
   {{- $finals = last 1 $sections -}}
 {{- else -}}
-  {{- $finals = after 1 (first (sub (len $sections) 1) $sections) -}}
+  {{- $finals = first (sub (len $sections) 1) $sections -}}
 {{- end -}}
 
 {{/*  PRINT  */}}

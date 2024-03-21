@@ -1,7 +1,0 @@
-{{ $is_secctioned :=
-  in (slice "page" "custom") .Type
-  | and (not .IsSection)
-  | and (ne .Kind "404")
-}}
-
-{{ return $is_secctioned }}

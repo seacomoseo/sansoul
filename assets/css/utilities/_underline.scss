@@ -1,5 +1,4 @@
 .underline {
-  --radius: #{ $menu-bar };
   &:after {
     content: '';
     display: block;
@@ -7,14 +6,15 @@
     height: $menu-bar-double;
     background-color: var(--main);
     margin: .125em auto .25em;
+    --radius: #{ $menu-bar };
     @include radius;
   }
 }
 .hide .underline:after {
   content: none;
 }
-.underline a,
-a.underline {
+.underline *,
+.underline:not(.aux) {
   background-image: none;
 }
 .align-right .underline:after {

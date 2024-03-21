@@ -1,0 +1,62 @@
+{{ return slice
+  (dict "label" `Título`                  "name" `title`                    "widget" `string`  "required" false)
+  (dict "label" `Descripción`             "name" `description`              "widget" `text`    "required" false )
+  (dict "label" `Logo`                    "name" `logo`                     "widget" `image`   "required" false "default" `logo.png` "max_file_size" 512000000)
+  (dict "label" `Nombre Legal`            "name" `legal_name`               "widget" `string`  "required" false "hint" "Para aviso legal")
+  (dict "label" `DNI / CIF`               "name" `legal_dni`                "widget" `string`  "required" false "hint" "Para aviso legal")
+  (dict "label" `Email`                   "name" `legal_email`              "widget" `string`  "required" false)
+  (dict "label" `Ubicación`               "name" `legal_location`           "widget" `string`  "required" false)
+  (dict "label" `País`                    "name" `country`                  "widget" `select`  "required" false "options" `~OPTIONS_COUNTRIES` "default" `España`)
+  (dict
+    "label"          `Tipo de Negocio`
+    "label_singular" `Tipo`
+    "name"           `location_type`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "Tipo: {{fields.type}}"
+    "allow_add"      true
+    "required"       false
+    "hint"           "Para datos estructurados 🔷 Se pueden añadir más de uno"
+    "fields"         (slice
+      (dict "label" `Tipo`      "name" `type`                               "widget" `select`  "required" false "options" `~OPTIONS_LOCATION_TYPE`)
+    )
+  )
+  (dict
+    "label"          `Títulos o Nombres Alternativos`
+    "label_singular" `Título/Nombre`
+    "name"           `alternate_name`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "Título/Nombre: {{fields.name}}"
+    "allow_add"      true
+    "required"       false
+    "hint"           "Para datos estructurados"
+    "fields"         (slice
+      (dict "label" `Nombre`    "name" `name`                               "widget" `string`  "required" false)
+    )
+  )
+  (dict "label" `Rango de Precios`        "name" `price_range`              "widget" `select`  "required" false "hint" "Para datos estructurados" "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
+  (dict "label" `Código Analytics`        "name" `google_analytics`         "widget" `string`  "required" false "hint" "Código de seguimiento de Google Analytics: UA-XXXXXXXX-X ; G-XXXXXXXXXX")
+  (dict "label" `Código Search Console`   "name" `google_site_verification` "widget" `string`  "required" false "hint" "Código de Verificación de Google Search Console")
+  (dict "label" `Archivo Search Console`  "name" `google_file_verification` "widget" `string`  "required" false "hint" "Nombre de Archivo de Verificación de Google Search Console 🔷 Ejemplo: google7467d923cbb3eb4c.html")
+  (dict "label" `Disqus`                  "name" `disqus`                   "widget" `string`  "required" false "hint" "Nombre corto del sistema de comentarios disqus.com")
+  (dict "label" `Cookies Legal`           "name" `cookies_legal`            "widget" `boolean`                  "hint" "Hace que se aplique la ley realmente a nivel técnico")
+  (dict "label" `Analytics PageSpeed`     "name" `analytics_pagespeed`      "widget" `hidden`                   "default" true)
+  (dict "label" `Procesar todas las imágenes` "name" `process_all_images`   "widget" `hidden`                   "default" false)
+  (dict "label" `CMS`                     "name" `cms`                      "widget" `hidden`                   "default" true)
+  (dict "label" `CMS con Flujo Editorial` "name" `cms_editorial_workflow`   "widget" `boolean`                  "hint" "Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)")
+  (dict "label" `Modo Desarrollo`         "name" `development`              "widget" `boolean`                  "hint" "Aplica los cambios más rápido en producción, pero empeora el rendimiento para los usuarios")
+  (dict
+    "label"     `Códigos Personalizados`
+    "name"      `custom_code`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      (dict "label" `HTML antes de </head>` "name" `html_head` "widget" `code` "required" false "default_language" `html`      )
+      (dict "label" `HTML antes de </body>` "name" `html_body` "widget" `code` "required" false "default_language" `html`      )
+      (dict "label" `CSS`                   "name" `css`       "widget" `code` "required" false "default_language" `css`       )
+      (dict "label" `Javascript`            "name" `js`        "widget" `code` "required" false "default_language" `javascript`)
+    )
+  )
+}}

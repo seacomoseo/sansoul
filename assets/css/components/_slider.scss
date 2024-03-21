@@ -7,7 +7,7 @@
   overflow-y: hidden;
   // margin: -.5em;
   // padding: .5em;
-  --margin-side: var(--container-margin-side);
+  --margin-side: min(var(--container-margin-side, -.5em), -.5em);
   margin: -2em var(--margin-side);
   padding: 2em calc(var(--margin-side) * -1);
   --mask-sides: linear-gradient(to right, transparent, #000 calc(var(--margin-side) * -1), #000 calc(100% - calc(var(--margin-side)) * -1),transparent);
@@ -17,9 +17,6 @@
   &::-webkit-scrollbar { /* Remove scrollbar in WebKit */
     display: none;
   }
-}
-.container.bg .slider__track {
-  --margin-side: calc(var(--container-padding) * -1);
 }
 
 .slider__items {

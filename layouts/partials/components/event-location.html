@@ -1,11 +1,22 @@
 {{- $location := .Params.location -}}
 {{- $address  := .Params.address -}}
-{{- $label    := $location -}}
+{{- with .Params.artist -}}
+  <p class="h5">
+    {{ i18n "artist" }}:
+    <i class="subtitle">{{ . }}</i>
+  </p>
+{{- end -}}
+{{- with .Params.price -}}
+  <p class="h5">
+    {{- i18n "price" -}}:
+    <i class="h4 price">{{ . }}</i>
+  </p>
+{{- end -}}
 {{- with $location -}}
   {{- if $address -}}
-    {{- $label  = replace (print . " - " $address) "<nil>" "" -}}
+    {{- $location  = replace (print . " - " $address) "<nil>" "" -}}
   {{- end -}}
-  {{- $link  := print "https://maps.google.com/maps?q=" ($label | urlquery) -}}
+  {{- $link  := print "https://maps.google.com/maps?q=" ($location | urlquery) -}}
   <p class="buttons">
     {{- partial "components/link" (dict
       "link"      $link
@@ -13,7 +24,7 @@
       "font_alt"  true
       "icon"      "location-dot"
       "emoji"     "📍"
-      "label"     $label
+      "label"     $location
       "noindex"   true
     ) -}}
   </p>

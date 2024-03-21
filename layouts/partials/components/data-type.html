@@ -1,7 +1,7 @@
 <i class="data__item">
   {{- $tax := index site.Data.utilities.taxonomies .page.Type -}}
   {{- partial "components/icon" (dict "class" "data__icon" "icon" $tax.icon "emoji" $tax.emoji) -}}
-  {{- if $.column -}}
+  {{- if $.box -}}
     {{- i18n .page.Type 1 -}}
   {{- else -}}
     {{- partial "components/link" (dict

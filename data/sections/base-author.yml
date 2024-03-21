@@ -1,0 +1,20 @@
+tag: aside
+if: author
+anchor: '{{% i18n authors 1 %}}'
+box:
+  columns: auto
+  columns_min: true
+  align_x: flex-start
+  align_y: top
+boxes:
+- image: '{{% author image %}}'
+  ratio: 1x1
+  border: main
+  contain: true
+- span: 4
+  box_gap: 0
+  align: left
+  title: '{{% author %}}'
+  underline: true
+  description: |
+    {{< author description >}}

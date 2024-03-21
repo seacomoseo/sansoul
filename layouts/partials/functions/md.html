@@ -22,9 +22,9 @@
 {{ $content = $content
   | replaceRE `==icon(.+?)==` `<mark class="sign">icon$1</mark>`
   | replaceRE `==(.+?)==` `<mark>$1</mark>`
-  | replaceRE `(?s)(<blockquote class="quotes.*?">)` `$1 <svg class="quote-left"><use xlink:href='/draws.svg#quote-left'></use></svg><svg class="quote-right"><use xlink:href='/draws.svg#quote-right'></use></svg>`
-  | replaceRE `(?s)(<blockquote class="dittos.*?">)` `$1 <svg class="quote-left"><use xlink:href='/draws.svg#ditto'></use></svg><svg class="quote-right"><use xlink:href='/draws.svg#ditto'></use></svg>`
-  | replaceRE `icon-([\w-]+)` `<svg><use xlink:href='/draws.svg#$1'></use></svg>`
+  | replaceRE `(?s)(<blockquote class="quotes.*?">)` `$1 <svg class="quote-left"><use href='/draws.svg#quote-left'></use></svg><svg class="quote-right"><use href='/draws.svg#quote-right'></use></svg>`
+  | replaceRE `(?s)(<blockquote class="dittos.*?">)` `$1 <svg class="quote-left"><use href='/draws.svg#ditto'></use></svg><svg class="quote-right"><use href='/draws.svg#ditto'></use></svg>`
+  | replaceRE `icon-([\w-]+)` `<svg><use href='/draws.svg#$1'></use></svg>`
   | replaceRE `\n` `∫`
   | replaceRE `<p( class="(.+?)")?>[∫\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
   | replaceRE `<i>(<svg.+?</svg>)(.*?)</i>` `$1<i>$2</i>`
@@ -33,18 +33,18 @@
   | replaceRE `<li><div>(∫|<p>)*(<svg>.+?</svg>) ` `<li class="li-svg">$2<div>$1`
   | replaceRE `</li>` `</div></li>`
   | replaceRE `<p><figure(.+?)</figure></p>` `<figure$1</figure>`
-  | replaceRE `<table(.+?)</table>` `<div class="table-inner shadow"><table$1</table></div>`
+  | replaceRE `<table(.+?)</table>` `<div class="table-inner"><table$1</table></div>`
   | replaceRE `<table class="` `<table class="bg-light `
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`
 }}
 
 {{ if .not_header_links }}
   {{ $content = $content
-    | replaceRE `(class="content__heading .*?") id=".*?">[\s\S\n]*?<a .*?"(>.*?)</a>` `$1$2`
+    | replaceRE `(class="description__heading .*?") id=".*?">[\s\S\n]*?<a .*?"(>.*?)</a>` `$1$2`
   }}
 {{ else }}
   {{ $content = $content
-    | replaceRE `(<a class="content__heading-link".+?)<br>(</a>)` `$1$2`
+    | replaceRE `(<a class="description__heading-link".+?)<br>(</a>)` `$1$2`
   }}
 {{ end }}
 

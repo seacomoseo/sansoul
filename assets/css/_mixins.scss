@@ -8,15 +8,16 @@
   line-height: $line-height-base;
 }
 // Font Base Bold
-@mixin font-base-bold {
+@mixin font-base-bold($hide-nested: false) {
+  @include font-base;
   @if $font-weight-bold-base > 0 {
     font-weight: $font-weight-bold-base;
   } @else {
-    @include font-title;
+    @include font-title($hide-nested);
   }
 }
 // Font Title
-@mixin font-title {
+@mixin font-title($hide-nested: false) {
   font-family: $font-family-title;
   font-style: $font-style-title;
   font-weight: $font-weight-title;
@@ -30,15 +31,24 @@
       }
     }
   }
-  @if $font-weight-bold-title > 0 {
-    strong,
-    .strong {
-      font-weight: $font-weight-bold-title;
+  @if not $hide-nested {
+    @if $font-weight-bold-title > 0 {
+      strong,
+      .strong {
+        font-weight: $font-weight-bold-title;
+      }
     }
   }
 }
+// Font Title Bold
+@mixin font-title-bold {
+  @include font-title(true);
+  @if $font-weight-bold-title > 0 {
+    font-weight: $font-weight-bold-title;
+  }
+}
 // Font Cursive
-@mixin font-cursive {
+@mixin font-cursive($hide-nested: false) {
   font-family: $font-family-cursive;
   font-style: $font-style-cursive;
   font-weight: $font-weight-cursive;
@@ -52,11 +62,55 @@
       }
     }
   }
-  @if $font-weight-bold-cursive > 0 {
-    strong,
-    .strong {
-      font-weight: $font-weight-bold-cursive;
+  @if not $hide-nested {
+    @if $font-weight-bold-cursive > 0 {
+      strong,
+      .strong {
+        font-weight: $font-weight-bold-cursive;
+      }
     }
+  }
+}
+// Font Cursive Bold
+@mixin font-cursive-bold {
+  @include font-cursive(true);
+  @if $font-weight-bold-cursive > 0 {
+    font-weight: $font-weight-bold-cursive;
+  }
+}
+// Font Button
+@mixin font-button($font: main) {
+  $font-type: $buttons-font-main;
+  $font-bold: $buttons-font-main-bold;
+  $font-uppercase: $buttons-font-main-uppercase;
+  @if $font == alt {
+    $font-type: $buttons-font-alt;
+    $font-bold: $buttons-font-alt-bold;
+    $font-uppercase: $buttons-font-alt-uppercase;
+  }
+
+  @if $font-bold {
+    @if $font-type == base {
+      @include font-base-bold(true);
+    } @else if $font-type == title {
+      @include font-title-bold;
+    } @else if $font-type == cursive {
+      @include font-cursive-bold;
+    }
+  } @else {
+    @if $font-type == base {
+      @include font-base;
+    } @else if $font-type == title {
+      @include font-title(true);
+    } @else if $font-type == cursive {
+      @include font-cursive(true);
+    }
+  }
+
+  @if $font-uppercase {
+    text-transform: uppercase;
+  } @else {
+    text-transform: unset;
   }
 }
 // Font Quotes
@@ -100,9 +154,24 @@
 }
 
 
+// FLUID SIZE
+
+@mixin fluid-size($name, $unit, $size-min, $size-max) {
+  #{$name}: calc(
+    clamp(
+      min(#{$size-min}, #{$size-max}),
+      ((#{$size-max} - #{$size-min}) / var(--run)) * (var(--vw) - var(--vw-min)) + #{$size-min},
+      max(#{$size-min}, #{$size-max})
+    )
+    * #{$unit}
+  );
+}
+
+
 // RADIUS
 
-@mixin radius($padding:0em, $r:$radius) {
+@mixin radius-parent($padding:0em, $r:$radius) {
+  @extend %radius;
   @if $radius > 0.01 {
     @if $r != $radius {
       --radius: #{ $r };
@@ -110,12 +179,20 @@
     @if $padding != 0em {
       --radius-padding: #{ $padding };
     }
+  }
+}
+@mixin radius-child {
+  @if $radius > 0.01 {
     @if $chamfer {
       clip-path: var(--chamfer);
     } @else {
       border-radius: var(--radius-end);
     }
   }
+}
+@mixin radius($padding:0em, $r:$radius) {
+  @include radius-parent($padding, $r);
+  @include radius-child;
 }
 @mixin circle {
   @if $chamfer {
@@ -131,22 +208,6 @@
     } @else {
       border-radius: 0;
     }
-  }
-}
-
-
-// BACKGROUND COLOR LIKE COVER (conect to sub .bg-color)
-
-@mixin bg-cover($r:false) {
-  @if $r and $radius > 0.01 {
-    --radius-bg: #{ $r };
-  }
-  position: relative;
-  background-color: transparent;
-  background-image: none;
-  z-index: 0;
-  &:not([class*="bg-gradient"]) {
-    --bg-gradient: none;
   }
 }
 
@@ -172,95 +233,4 @@
   height: 100%;
   text-indent: -1000vw;
   z-index: -1;
-}
-
-
-// BUTTON HOVER, FOCUS AND ACTIVE (for Column item with only a button and withouth links)
-
-@mixin button-hover() {
-  @if $buttons-outline {
-    color: var(--base);
-  } @else {
-    color: var(--base-text);
-  }
-  --base: var(--hover);
-  --base-text: var(--hover-text);
-  @if $buttons-3d {
-    transform: translateY(-.125em);
-    &:after {
-      transform: translateY(.125em);
-    }
-    @if $chamfer {
-      filter: drop-shadow(($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color);
-    } @else {
-      &:after {
-        box-shadow: ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color;
-      }
-    }
-  }
-}
-@mixin button-active() {
-  @if $buttons-outline {
-    color: var(--base);
-  } @else {
-    color: var(--base-text);
-  }
-  --base: var(--active);
-  --base-text: var(--active-text);
-  @if $buttons-3d {
-    filter: none;
-    transform: none;
-    &:after {
-      transform: none;
-      box-shadow: 0 0 0 $shadow-color;
-    }
-  }
-}
-
-
-// COLUMN HOVER, FOCUS AND ACTIVE (for Search result item)
-
-@mixin column-hover {
-  &.shadow {
-    filter: drop-shadow(($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color);
-    @if $buttons-3d {
-      transform: translateY(-.125em);
-      &.column--button-hide {
-        > .bg-color--3d {
-          transform: translateY(.125em);
-        }
-      }
-    } @else {
-      transform: translateY(-$shadow-top / 2);
-    }
-  }
-  .image__inner:not(.image__inner--hover) {
-    transform: scale(1.125);
-  }
-  .column__link {
-    @include link-hover;
-  }
-  .column__button {
-    @include button-hover;
-  }
-}
-
-@mixin column-active {
-  &.shadow {
-    filter: none;
-    transform: none;
-    @if $buttons-3d {
-      &.column--button-hide {
-        > .bg-color--3d {
-          transform: none;
-        }
-      }
-    }
-  }
-  .column__link {
-    @include link-active;
-  }
-  .column__button {
-    @include button-active;
-  }
 }

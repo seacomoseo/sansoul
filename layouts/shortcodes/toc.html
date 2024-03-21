@@ -1,0 +1,15 @@
+{{- if page.Params.toc -}}
+  {{ $toc               := partial "functions/md" (dict "content" page.TableOfContents) }}
+  {{ $tocLinks          := $toc     | findRE `<a.+?</a>` }}
+  {{ with $tocLinks }}
+    {{ $contentLinks    := page.Content | findRE `<a class="description__heading-link" href="#.+?">` }}
+    {{ range $k, $value := . }}
+      {{ $contentLink   := index $contentLinks $k }}
+      {{ $id            := $contentLink | replaceRE `.*"#(.+?)">` `$1` }}
+      {{ $link          := .            | replaceRE `"#.+?"` (print `"#` $id `"`) }}
+      {{ $toc            = replace $toc . $link }}
+    {{ end }}
+    {{ $toc            := $toc | replaceRE `(?s)<nav id="TableOfContents">.*?<ol>(.+?)</ol>.*?</nav>` `<ol id="toc">$1</ol>` }}
+    {{ $toc | safeHTML }}
+  {{ end }}
+{{- end -}}

@@ -29,7 +29,7 @@ const CustomBooleanControl = ({ label, value, onChange, field }) => {
   if (isNull) rootClassName += ' CMS_Field_disabled';
 
   return h('div', { className: rootClassName }, [
-    h('div', { className: 'CMS_Field_wrapper' }, [
+    h('div', { className: 'CMS_Field_wrapper', 'data-testid': '(opcional)' }, [
       h('div', { className: 'CMS_Field_inline-wrapper' }, [
         h('label', { className: 'CMS_Label_root CMS_Label_cursor-pointer CMS_Label_inline CMS_Field_label' }, label),
         h('button', {
@@ -79,7 +79,7 @@ const CustomBooleanPreview = ({ value }) => {
   if (isNull) rootClassName += ' CMS_Field_disabled';
 
   return h('div', { className: rootClassName }, [
-    h('div', { className: 'CMS_Field_wrapper' }, [
+    h('div', { className: 'CMS_Field_wrapper', 'data-testid': '(opcional)' }, [
       h('div', { className: 'CMS_Field_inline-wrapper' }, [
         h('label', { className: 'CMS_Label_root CMS_Label_cursor-pointer CMS_Label_inline' }, 'Custom Boolean'),
         h('label', { className: 'CMS_Switch_root CMS_WidgetBoolean_input' }, [

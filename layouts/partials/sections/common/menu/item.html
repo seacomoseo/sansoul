@@ -1,58 +1,82 @@
 {{- if ne .button "hide" -}}
+  {{- $sub := add ($.sub | default 0) 1 -}}
+  {{- if eq .link "langs" -}}
 
-  {{- $hide_icons := partial "functions/lang-param" (dict "parent" "menu" "param" "hide_icons" "default" false) -}}
-  {{- if .lang | or ((or .icon .emoji) | and (not .label)) -}}
-    {{- $hide_icons = false -}}
-  {{- end -}}
-  {{- $icon  := cond $hide_icons "" .icon -}}
-  {{- $emoji := cond $hide_icons "" .emoji -}}
-  {{- $label := .menu | default .label -}}
+    {{ range partial "sections/common/menu/langs" .langs_group }}
+      {{- partial "sections/common/menu/item" (merge . (dict "sub" $sub "hide_icons" $.hide_icons "ofuscate" $.ofuscate)) -}}
+    {{ end }}
 
-  {{- if or $label $icon $emoji -}}
+  {{- else -}}
 
-    {{- $class := "menu__link" -}}
-    {{- with .button -}}
-      {{- if ne . "none" -}}
-        {{- $class = "menu__button button--sm" -}}
+    {{- $item := . -}}
+    {{- if eq .link "translate" -}}
+      {{- $item = merge
+        (dict
+          "icon"      "earth-americas"
+          "emoji"     "🌎"
+          "label"     (i18n "languages" 1)
+          "translate" true
+        )
+        .
+        (dict "link" "")
+      -}}
+    {{- end -}}
+
+    {{- with $item -}}
+      {{- $hide_icons := $.hide_icons -}}
+      {{- if .lang | or ((or .icon .emoji) | and (not .label)) -}}
+        {{- $hide_icons = false -}}
       {{- end -}}
-    {{- end -}}
-    {{- with .translate -}}
-      {{- $class = print $class " menu__link--translate" -}}
-    {{- end -}}
+      {{- $icon  := cond (not $hide_icons) .icon "" -}}
+      {{- $emoji := cond (not $hide_icons) .emoji "" -}}
+      {{- $label := .menu | default .label -}}
 
-    <li class="menu__item
-      {{- if eq .link page.RelPermalink | and (not .IsHome) }} menu__item--active{{ end -}}
-      {{- if .more }} menu__item--more{{ end -}}
-      {{- if .lang  }} menu__item--lang{{ end -}}
-      "
-      {{- with .lang  }} lang="{{ . }}"  {{- end -}}
-      {{- with .title }} title="{{ . }}" {{- end -}}
-      {{- if $.more   }} tabindex="-1"   {{- end -}}
-    >
+      {{- if or $label $icon $emoji -}}
 
-      {{ partial "components/link" (dict
-        "class"    $class
-        "link"     .link
-        "button"   (.button | default "none")
-        "font_alt" .font_alt
-        "icon"     $icon
-        "emoji"    $emoji
-        "label"    $label
-        "anchor"   .anchor
-        "noindex"  .ofuscate
-      ) }}
-
-      {{- with .items -}}
-        {{- $sub := (add ($.sub | default 0) 1) -}}
-        <ul class="menu__{{ cond (eq $sub 0) `` `sub` }}items">
-          {{- range . -}}
-            {{- partial "sections/common/menu/item" (merge . (dict "sub"  $sub)) -}}
+        {{- $class := "menu__link" -}}
+        {{- with .button -}}
+          {{- if ne . "none" -}}
+            {{- $class = "menu__button button--sm" -}}
           {{- end -}}
-        </ul>
+        {{- end -}}
+        {{- with .translate -}}
+          {{- $class = print $class " menu__link--translate" -}}
+        {{- end -}}
+
+        <li class="menu__item
+          {{- if eq .link page.RelPermalink | and (not .IsHome) }} menu__item--active{{ end -}}
+          {{- if .lang   }} menu__item--lang{{ end -}}
+          {{- if .items  }} menu__item--subitems{{ end -}}
+          "
+          {{- with .lang  }} lang="{{ . }}"  {{- end -}}
+          {{- with .title }} title="{{ . }}" {{- end -}}
+          {{- if .items   }} tabindex="0"   {{- end -}}
+        >
+
+          {{ partial "components/link" (dict
+            "class"    $class
+            "link"     .link
+            "button"   (.button | default "none")
+            "font_alt" .font_alt
+            "icon"     $icon
+            "emoji"    $emoji
+            "label"    $label
+            "anchor"   .anchor
+            "noindex"  .ofuscate
+          ) }}
+
+          {{- with .items -}}
+            <ul class="menu__{{ cond (eq $sub 0) `` `sub` }}items">
+              {{- range . -}}
+                {{- partial "sections/common/menu/item" (merge . (dict "sub" $sub "hide_icons" $.hide_icons)) -}}
+              {{- end -}}
+            </ul>
+          {{- end -}}
+          
+        </li>
+
       {{- end -}}
-      
-    </li>
+    {{- end -}}
 
   {{- end -}}
-
 {{- end -}}

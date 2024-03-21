@@ -4,23 +4,25 @@ export function initMails () {
     mail.textContent = window.atob(mail.textContent)
   })
 
-  document.querySelectorAll('.contact__email-option-copy, .contact__email-option-send').forEach(emailCopyButtons => {
-    // emailCopyButtons.addEventListener('keydown', e => e.key === 'Enter' && emailCopyButtons.click())
-    emailCopyButtons.addEventListener('click', emailCopyButton => {
-      const button = emailCopyButton.currentTarget
-      const email = emailCopyButton.target
+  document.addEventListener('click', e => {
+    const emailCopyButton = e.target.closest(
+      '.contact__email-option-copy,' +
+      '.contact__email-option-send'
+    )
+    if (emailCopyButton) {
+      const email = emailCopyButton
         .closest('.contact__email')
         .querySelector('.ofuscate')
         .textContent
       // If copy button then copy in clipbard; if not then send email
-      if (button.classList[0].includes('copy')) {
+      if (emailCopyButton.classList[0].includes('copy')) {
         navigator.clipboard.writeText(email)
         const msg = 'contact__email-option-copy--active'
-        button.classList.add(msg)
-        setTimeout(() => button.classList.remove(msg), 1000)
+        emailCopyButton.classList.add(msg)
+        setTimeout(() => emailCopyButton.classList.remove(msg), 1000)
       } else {
         window.location.href = 'mailto:' + email
       }
-    })
+    }
   })
 }

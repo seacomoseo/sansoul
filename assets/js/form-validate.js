@@ -10,7 +10,7 @@ import {
   formSubmitOne,
   formSubmitOther
 } from '@params'
-import { scrollTo } from './scroll-to.js'
+import { scrollTo } from './scroll-to'
 
 export function initFormValidate () {
   window.addEventListener('load', () => {
@@ -38,7 +38,7 @@ export function initFormValidate () {
         const form = submit.target
         const closeIcon =
           '<svg class="close" onclick="this.parentElement.remove()">' +
-            '<use xlink:href="/draws.svg#xmark"></use>' +
+            '<use href="/draws.svg#xmark"></use>' +
           '</svg>'
         formSubmit && formSubmit.remove()
         formError && formError.remove()
@@ -167,19 +167,19 @@ export function initFormValidate () {
             formSubmit = document.createElement('p')
             formSubmit.classList.add('contact__form-submit')
             form.parentElement.append(formSubmit)
-            formSubmit.innerHTML = '<svg class="spin"><use xlink:href="/draws.svg#rotate"></use></svg> Enviando…'
+            formSubmit.innerHTML = '<svg class="spin"><use href="/draws.svg#rotate"></use></svg> Enviando…'
 
             // Response
             function formSubmitOk (form) {
               formSubmit.classList.add('contact__form-submit--ok')
-              formSubmit.innerHTML = `<svg><use xlink:href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOne}`
+              formSubmit.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOne}`
               formSubmited(form)
             }
             function formSubmitError (error) {
               formSubmit.classList.add('contact__form-submit--error')
               formSubmit.innerHTML =
-                `<svg><use xlink:href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitOther}<br>` +
-                `<svg><use xlink:href="/draws.svg#circle-info"></use></svg> ${error}`
+                `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitOther}<br>` +
+                `<svg><use href="/draws.svg#circle-info"></use></svg> ${error}`
             }
             const formOptions = { method: 'POST' }
             if (isFileType || formSubmitCo) {

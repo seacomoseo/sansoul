@@ -1,0 +1,132 @@
+.review {
+  display: flex;
+  flex-direction: column;
+}
+.review__globe {
+  // @include font-cursive;
+  position: relative;
+  --box-padding: .5em;
+  padding: var(--box-padding);
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: .125em;
+  background-image: unset;
+  &:after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: .75em solid transparent;
+    border-top-color: var(--bg-color);
+    border-bottom: 0;
+    position: absolute;
+    bottom: -.7em;
+    left: 1.25em + $radius;
+  }
+  &.bg-gradient-linear-b,
+  &.bg-gradient-linear-l,
+  &.bg-gradient-linear-br,
+  &.bg-gradient-linear-bl,
+  &.bg-gradient-radial,
+  &.bg-gradient-circle {
+    &:after {
+      border-top-color: var(--bg-gradient-color);
+    }
+  }
+}
+.review__icon {
+  flex-shrink: 0;
+  color: var(--main);
+  align-self: flex-start;
+  width: 1.5em;
+  height: 1.5em;
+  z-index: 1;
+  @if $chamfer and $buttons-rounded {
+    margin: .5em 0;
+  } @else if $buttons-rounded {
+    margin: .25em 0;
+  }
+}
+.review__icon--right {
+  align-self: flex-end;
+}
+.review__text {
+  margin: 0;
+  padding-block: 1em;
+  display: grid;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-height: 20em;
+  overflow-y: auto;
+  --mask-image: linear-gradient(transparent, #000 1.5em, #000 calc(100% - 1.5em),transparent);
+  -webkit-mask-image: var(--mask-image);
+  mask-image: var(--mask-image);
+}
+.review__author {
+  display: flex;
+  align-items: center;
+  // order: 2;
+  margin: 1.5em $radius 1em;
+  text-align: left;
+}
+.review__figure {
+  flex-shrink: 0;
+  position: relative;
+  @if $chamfer and $icon-buttons-rounded {
+    --author-p: #{ (.125em / .7071) };
+  } @else {
+    --author-p: .125em;
+  }
+  width: 4em;
+  height: 4em;
+  padding: var(--author-p);
+  --bg-color: var(--main);
+  filter: drop-shadow($shadow);
+  &:where(.review__globe.box--hide-shadow + .review__author *) {
+    filter: none;
+  }
+  .bg-color {
+    @if $icon-buttons-rounded {
+      @include circle;
+    } @else {
+      @include radius(.125em);
+    }
+  }
+}
+.review__figure-image {
+  position: absolute;
+  display: block;
+  width: calc(100% - var(--author-p) * 2);
+  height: calc(100% - var(--author-p) * 2);
+  object-fit: cover;
+  background-color: var(--bg-color);
+  @if $icon-buttons-rounded {
+    @include circle;
+  } @else {
+    @include radius;
+  }
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+.review__person {
+  margin-left: .5em;
+  min-height: 4em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.review__title {
+  margin-bottom: .125em;
+}
+.review__subtitle {
+  font-size: .875em;
+  margin-bottom: 0.25em;
+}
+.review__stars {
+  font-size: .875em;
+  color: #f7bc33;
+}

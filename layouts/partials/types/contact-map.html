@@ -1,0 +1,83 @@
+{{- if not .hide -}}
+
+  {{ $map_url    := slice }}
+  {{ $is_col_or_bg := slice }}
+  {{ range partial "functions/section-boxes-num" . }}
+    {{ range .buttons }}
+      {{ if eq .type "address" }}
+        {{ $map_url = $map_url | append . }}
+      {{ end }}
+    {{ end }}
+    {{ with .columns }}
+      {{ if gt . 1 }}
+        {{ $is_col_or_bg = true }}
+      {{ end }}
+    {{ end }}
+    {{ if or .color .gradient .bg }}
+      {{ $is_col_or_bg = true }}
+    {{ end }}
+  {{ end }}
+  {{ with index $map_url 0 }}
+    {{ $map_url = partial "functions/map-url" . }}
+  {{ end }}
+  {{ $link := .link | default $map_url }}
+
+  {{- if ne .link "hide" -}}
+    {{- with $link -}}
+      <div class="buttons box__type">
+        {{- partial "components/link" (dict
+          "class"     "contact__map"
+          "link"      .
+          "icon"      "location-dot"
+          "emoji"     "📍"
+          "label"     (i18n "expand-map")
+          "noindex"   true
+        ) -}}
+      </div>
+    {{- end -}}
+  {{- end -}}
+
+  {{- $divider := "" -}}
+  {{- if or (and (not $is_col_or_bg) .divider) (and $is_col_or_bg .map.divider) -}}
+    {{- $flip_y  := cond .flip_y "" "y" -}}
+    {{- $flip_x  := cond .flip_x "" "x" -}}
+    {{- $flips   := cond (or (not .flip_x) (not .flip_y)) (print "-" $flip_x $flip_y) "" -}}
+    {{- $divider  = print "divider divider-" $flips "-" .divider -}}
+    {{- if partial `functions/divider-ratio` .divider -}}
+      {{- $divider = print $divider " divider--ratio" -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $class := delimit (slice
+    "map"
+    (cond (eq .link "hide") "box__type" "")
+    $divider
+    | uniq) " "
+  -}}
+
+  {{ with .iframe }}
+
+    {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
+      <div data-b="{{ $map_url | base64Encode }}" tabindex="0" role="link">
+        {{ partial "components/image" (dict
+          "class"     $class
+          "src"       .
+          "alt"       (i18n "map")
+          "container" (cond (not $.container_bg) "" $.container)
+          "notlazy"   false
+        ) }}
+      </div>
+    {{ else }}
+      <iframe class="{{ $class }}" loading="lazy" data-src="{{ . }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+    {{ end }}
+
+  {{ else }}
+
+    {{ with $map_url }}
+      <iframe class="{{ $class }}" loading="lazy" data-src="{{ . }}&z=15&output=embed" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+    {{ end }}
+
+  {{ end }}
+
+
+{{- end -}}

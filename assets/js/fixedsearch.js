@@ -233,32 +233,32 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         }
         if (results[item].item.date) {
           searchItemType = `
-            <time class="data__item" >
+            <time class="data__box" >
               {{ partial "components/icon" (dict "class" "data__icon" "icon" "calendar" "emoji" "📅") }}
               ${results[item].item.date}
             </time>`
         } else {
           searchItemType = `
-            <i class="data__item">
-              <svg class="data__icon"><use xlink:href="/draws.svg#${results[item].item.icon}"></use></svg>
+            <i class="data__box">
+              <svg class="data__icon"><use href="/draws.svg#${results[item].item.icon}"></use></svg>
               ${results[item].item.type}
             </i>`
         }
         if (results[item].item.author) {
           searchItemAuthor = `
-            <i class="data__item">
+            <i class="data__box">
               {{ partial "components/icon" (dict "class" "data__icon" "icon" "user" "emoji" "👤") }}
               ${results[item].item.author}
             </i>`
         }
         if (results[item].item.reading_time !== '0 minutos' && results[item].item.reading_time !== '') {
           searchItemReadingTime = `
-            <div class="column__data">
-              <i class="data__item">
+            <div class="box__data">
+              <i class="data__box">
               {{ partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
                 ${results[item].item.reading_time}
               </i>
-              <i class="data__item">
+              <i class="data__box">
                 {{ partial "components/icon" (dict "class" "data__icon" "icon" "comment-dots" "emoji" "💬") }}
                 ${results[item].item.reading_words}
               </i>
@@ -271,48 +271,40 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
           <article
             class="
               search__result-item
-              column
-              column--button-hide
+              box
+              box--button-hide
               bg bg-{{ $articles.color }}
-              bg--radius-min
-              shadow
               align-{{ $articles.align | default "left" -}}
             "
             data-h
           >
             <a class="search__result-item-link" href="${results[item].item.link}"></a>
 
-            <div class="bg-color"></div>
             {{- if $design.buttons.deep | and $articles.color -}}
               <div class="bg-color bg-color--3d"></div>
             {{- end -}}
+            <div class="bg-color"></div>
 
-            <div class="column__content">
-              <div
-                class="
-                  image
-                  image--inset
-                  {{ print "image--" ($articles.ratio | default "16x9") }}
-                  {{ cond (not $articles.contain) "" "image--contain" }}
-                  {{ cond (ne $articles.image "gradient") "" "image--gradient" }}
-                "
-              >
-                ${searchItemImage}
-              </div>
-              <div class="column__header column__header--link">
-                <div class="section__title ">
-                  <p class="h6 ">
-                    <i class="column__link" data-h><i>${results[item].item.title}</i></i>
-                  </p>
-                </div>
-              </div>
-              ${searchItemText}
-              <div class="column__data">
-                ${searchItemType}
-                ${searchItemAuthor}
-              </div>
-              ${searchItemReadingTime}
+            <div
+              class="
+                image
+                image--inset
+                {{ print "image--" ($articles.ratio | default "16x9") }}
+                {{ cond (not $articles.contain) "" "image--contain" }}
+                {{ cond (ne $articles.image "gradient") "" "image--gradient" }}
+              "
+            >
+              ${searchItemImage}
             </div>
+            <p class="box__title box__title--link h6">
+              <i class="box__link" data-h><i>${results[item].item.title}</i></i>
+            </p>
+            ${searchItemText}
+            <div class="box__data">
+              ${searchItemType}
+              ${searchItemAuthor}
+            </div>
+            ${searchItemReadingTime}
         </article>`
       }
       resultsAvailable = true

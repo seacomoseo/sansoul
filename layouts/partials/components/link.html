@@ -82,12 +82,13 @@
     {{- "<" | safeHTML -}}
       {{- cond    $button "button" "i" -}}
       {{- with    $class           }} class="{{ . }}"{{ end -}}
-      {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}"
+      {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}" data-b
       {{- else if $link            }} data-{{ cond $external `b` `h` }}="{{ $link | safeURL | base64Encode }}"
       {{- end -}}
       {{- if      eq .label `none` }} title="{{ $final_label }}"{{ end -}}
       {{- if      not $button      }} tabindex="0" role="link"{{ end -}}
-    >
+      {{- if and (not $button) (not $link) }} data-b{{ end -}}
+    {{- ">" | safeHTML -}}
   {{- else -}}
     <a {{ if $button | or $class | or $is_data_more -}}
          class="{{ cond $button `button` `` }} {{- with $class }} {{ . }}{{ end }}"

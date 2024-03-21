@@ -1,11 +1,21 @@
-import { scrollTo } from './scroll-to.js'
+import { scrollTo } from './scroll-to'
 
 export function initOpenLinks () {
-  function openLink (url) {
+  function openLink (url, blank) {
+    if (blank) {
+      window.open(url, '_blank')
+    } else {
+      window.location.href = url
+    }
+  }
+  function processLink (urlIni, blank) {
+    // const isExternal = urlIni.match(/^https?:/) && !urlIni.startsWith(window.location.origin)
+    const url = urlIni.startsWith('/') ? window.location.origin + urlIni : urlIni
     const isHash = url.includes('#')
     if (isHash) {
       const path = url.split('#')[0]
-      const isCurrentPage = path === window.location.pathname || !path
+      // Fix Google Translate Subdomain links with hash
+      const isCurrentPage = path === window.location.href.replace('&_x_tr_hist', '')
       if (isCurrentPage) {
         const hash = url.split('#')[1]
         const target = document.getElementById(hash)
@@ -14,36 +24,48 @@ export function initOpenLinks () {
         }
         window.location.hash = hash
       } else {
-        window.location.href = url
+        openLink(url, blank)
       }
     } else {
-      window.location.href = url
+      openLink(url, blank)
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  // BODY CLICK
+  document.addEventListener('click', e => {
     // NORMAL LINKS
-    const links = document.querySelectorAll('[href*="#"]')
-    links.forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault()
-        const url = link.getAttribute('href')
-        openLink(url)
-      })
-    })
-
-    // OFUSCATE LINKS
-    document.querySelectorAll('[data-h],[data-b]').forEach(l => {
-      l.addEventListener('keydown', e => e.key === 'Enter' && l.click())
-      l.addEventListener('click', e => {
-        const t = e.currentTarget
-        if (t.dataset.b) {
-          window.open(window.atob(t.dataset.b), '_blank')
-        } else if (t.dataset.h) {
-          const url = window.atob(t.dataset.h)
-          openLink(url)
+    const link = e.target.closest('[href*="#"]:not(use,[href*="&_x_tr_hist=true"])') // Fix Google Translate Subdomain links with hash
+    if (link) {
+      e.preventDefault()
+      const url = link.getAttribute('href')
+      processLink(url)
+    } else {
+      // OFUSCATE LINKS
+      const ofuscateLink = e.target.closest('[data-h],[data-b]')
+      if (ofuscateLink) {
+        const l = ofuscateLink.dataset
+        if (l.b) {
+          processLink(window.atob(l.b), true)
+        } else if (l.h) {
+          processLink(window.atob(l.h))
         }
-      })
-    })
+      } else {
+        // BOX LINKS
+        const boxLink = e.target.closest(
+          '.box:has(> .box__button):not(:has(' +
+            '.box .box__button,' +
+            '> .box__button ~ .box__button,' +
+            ':is(a, [data-h], [data-b]):not(.box__button)' +
+          '))'
+        )
+        if (boxLink) {
+          console.log(boxLink.querySelector('.box__button'))
+          boxLink.querySelector('.box__button').click()
+        }
+      }
+    }
   })
+
+  // BODY KEY ENTER LIKE CLICK
+  document.addEventListener('keydown', e => e.key === 'Enter' && document.activeElement.click())
 }

@@ -1,4 +1,6 @@
+// VARIABLES
 :root {
+  // divider
   --divider-height: 5.5em;
   --divider-ratio-height: calc(var(--container-inner, 100vw) * .2);
   // duotone
@@ -6,83 +8,33 @@
   --dt-main-op: 1;
   --dt-alt: currentColor;
   --dt-alt-op: .5;
+  // form
   --form-control-color: var(--alt);
   --form-control-disabled: #959495;
+  // outline
   --outline: #{ $menu-bar-double };
+  // screen width
+  --vw-min: #{ $screen-min / 1px };
+  --vw-max: #{ $screen-max / 1px };
+  --vw: #{ $screen-min / 1px };
+  @media (min-width: $screen-xs) { --vw: #{ $screen-xs / 1px }; }
+  @media (min-width: $screen-sm) { --vw: #{ $screen-sm / 1px }; }
+  @media (min-width: $screen-md) { --vw: #{ $screen-md / 1px }; }
+  @media (min-width: $screen-lg) { --vw: #{ $screen-lg / 1px }; }
+  @media (min-width: $screen-xl) { --vw: #{ $screen-xl / 1px }; }
+  --run: calc(var(--vw-max) - var(--vw-min));
 }
-*, :before, :after {
-  box-sizing: border-box;
-}
-/*! purgecss start ignore */
-:where(
-  .columns
-) {
-  // changing variables
-  // --size-min: 3.125; // 50px
-  // --size-max: 16.667; // 300px
-  // fixed variables
-  --screen-max: #{ $screen-max / 18px };
-  --screen-min: #{ $screen-min / 16px };
-  --real-size-min: calc(min(var(--size-min), var(--size-max)) * 1em);
-  --real-size-max: calc(max(var(--size-min), var(--size-max)) * 1em);
-  --preferred-size: calc(
-    (var(--size-min) * 1em)
-    + (var(--size-max) - var(--size-min))
-      * ((100vw - var(--screen-min) * 1em) / (var(--screen-max) - var(--screen-min)))
-  );
-  --fluid-size: clamp(var(--real-size-min), var(--preferred-size), var(--real-size-max));
-  // Like a SCSS function
-  // --slope: calc((var(--size-max) - var(--size-min)) / (var(--screen-max) - var(--screen-min)));
-  // --y-axis-intersection: calc(var(--screen-min) * -1 * var(--slope) + var(--size-min));
-  // --size-preferred: calc(var(--y-axis-intersection) * 1px + (var(--slope) * 100vw));
-  // --fluid-size: clamp(var(--size-min) * 1px, var(--size-preferred), var(--size-max) * 1px)
-}
-/*! purgecss end ignore */
+
+// EXTENDS LIKE FUNCTIONS
 @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
-  /*! purgecss start ignore */
-  :where(
-    .menu__toggle-bar,
-    .menu--sticky .menu__subitems,
-    .section__title--icon-bottom .section__icon,
-    .underline,
-    iframe,
-    table,
-    pre,
-    button,
-    .button,
-    .bg-color,
-    :not(.section) > .bg-figure,
-    .image,
-    .image__inner,
-    .image--contain img,
-    .column.bg--radius-min,
-    .bg--image-fixed,
-    .bg--image-fixed.column .bg-figure-image,
-    .column--card .column__content,
-    .pill-bottom .column__content,
-    .columns--group-radius,
-    .gallery,
-    .gallery-modal__items,
-    .review__figure-image,
-    .step__axis,
-    .step__figure,
-    .author-box__figure,
-    .author-box__figure-image,
-    .contact__email-option-copy i,
-    .contact__form-error,
-    .contact__form-submit,
-    .contact__form-item,
-    .contact__form-item-border,
-    .contact__form-fill-inputs *:where(
-      input:not([type="checkbox"], [type="radio"]),
-      textarea,
-      select
-    ),
-    .callnow__caption,
-    .bg-white .toc__box.bg-white
-  ) {
+  %radius,
+  .body-menu--sticky .menu__subitems {
+    // radius
     --radius: #{ $radius };
     --radius-padding: 0em;
+    @if $chamfer {
+      --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
     --radius-top: var(--radius-calc);
     --radius-bottom: var(--radius-calc);
     @if $chamfer {
@@ -97,7 +49,6 @@
         0% calc(100% - var(--radius-bottom)),
         0% var(--radius-top)
       );
-      --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
       // Outline
       --radius-outline: calc((((var(--radius) + var(--outline)) / .7071) - var(--outline)) * .7071);
       --chamfer-outline: polygon(
@@ -151,16 +102,20 @@
       --radius-end: var(--radius-top) var(--radius-top) var(--radius-bottom) var(--radius-bottom);
     }
   }
-  /*! purgecss end ignore */
+}
+// END VARIABLES
+
+*, :before, :after {
+  box-sizing: border-box;
 }
 html {
-  font-size: $font-size-min;
+  @include fluid-size(font-size, 1px, $font-size-min, $font-size-max);
   scroll-behavior: smooth;
   @include font-base;
   overflow-x: hidden;
 }
 body {
-  font-size: $font-size-base;
+  font-size: var(--fsb);
   color: var(--text, $text);
   background-color: $light;
   word-break: break-word;
@@ -221,21 +176,23 @@ ul {
 h1, h2, h3, h4, h5, h6 {
   @include font-title;
   display: block;
-  font-size: $font-size-title;
   margin-top: 0;
-  margin-bottom: fluid-size(16px, 18px);
-  color: $dark;
+  margin-bottom: 1rem;
+  color: var(--title, $dark);
+  @include fluid-size(--fhs-pre, 1cqw, -.7, .3);
+  --fhs: calc(var(--fhs-pre) * var(--hs, 1) + var(--hs, 1) * #{ $font-size-title } * 1em);
+  font-size: var(--fhs);
   // text-wrap: balance;
   &:last-child {
     margin-bottom: 0;
   }
 }
-h1 { font-size: 2em; }
-h2 { font-size: 1.8em; }
-h3 { font-size: 1.6em; }
-h4 { font-size: 1.4em; }
-h5 { font-size: 1.2em; }
-h6 { font-size: 1em; }
+h1 { --hs: 2; }
+h2 { --hs: 1.8; }
+h3 { --hs: 1.6; }
+h4 { --hs: 1.4; }
+h5 { --hs: 1.2; }
+h6 { --hs: 1; }
 header,
 section {
   position: relative;
@@ -350,21 +307,22 @@ legend {
 .table-inner {
   display: flex;
   justify-content: center;
+  filter: drop-shadow($shadow);
 }
 table {
-  color: $text;
   @include radius;
   border-collapse: collapse;
   word-break: normal;
   // white-space: nowrap;
   // width: max-content;
   max-width: 100%;
+  color: var(--title);
   overflow-x: auto;
   display: block;
   margin-right: auto;
-  &:not(.table-sm, .container.bg *) {
-    max-width: fluid-size($screen-min, $container-width-max-xl);
-    margin-inline: calc(var(--container-margin-side) + 1em);
+  &:not(.table-sm, .container.bg *, .columns *) {
+    @include fluid-size(max-width, 1px, $screen-min / 1px, $container-width-max-xl / 1px);
+    margin-inline: calc(var(--container-margin-side) + 2em);
   }
 }
 th, td {
@@ -392,20 +350,20 @@ th, td {
   }
 }
 tr {
-  background-color: $white;
+  background-color: var(--bg-color);
   &:nth-child(2n) {
-    background-color: $main-light;
+    background-color: var(--tr2);
   }
   &:hover {
-    color: $white;
-    background-color: $main-dark;
+    color: var(--active-text);
+    background-color: var(--active);
   }
 }
 thead tr {
-  color: $main-contrast-neutral;
-  background-color: $main;
+  color: var(--main-text);
+  background-color: var(--main);
   svg {
-    fill: $main-contrast-neutral;
+    fill: var(--main-text);
   }
 }
 /*! purgecss start ignore */
@@ -427,15 +385,15 @@ svg {
   flex-shrink: 0;
   flex-grow: 0;
 }
-// [*|href^="/draws.svg"] {
+// [href^="/draws.svg"] {
 //   color: $main;
 // }
 pre {
   @include radius;
 }
 :not(pre) > code  {
-  background-color: $main;
-  color: $main-contrast-neutral;
+  background-color: var(--main);
+  color: var(--main-text);
   padding: 0 0.3em;
   @if $chamfer and $radius >= 0.1 {
     border-radius: 0.1em;
@@ -476,11 +434,11 @@ pre {
   }
 }
 .compare {
-  [*|href="/draws.svg#xmark"] {
+  [href="/draws.svg#xmark"] {
     color: red;
     fill: red;
   }
-  [*|href="/draws.svg#check"] {
+  [href="/draws.svg#check"] {
     color: green;
     fill: green;
   }

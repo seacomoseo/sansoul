@@ -1,13 +1,13 @@
+{{ $config := partial "functions/config-lang" . }}
+
 {{ $isCookies         := false -}}
 {{ $isScrollShow      := false -}}
-{{ $isParallax        := false }}
 {{ $disqusId          := "" }}
 {{ $isGoogleTranslate := false }}
-{{ $lang              := .Lang }}
 {{ $googleAnalyticsId := "" }}
-{{ $screenSticky      := site.Data.menu.screen_sticky | default 0 }}
 {{ $i18nVideo         := i18n `video` }}
-{{ $isLangEn          := eq .Lang "en" -}}
+{{ $lang              := page.Lang }}
+
 {{ $formErrorSingleQuotes := i18n "form-error-single-quotes" }}
 {{ $formErrorRequiredOne  := i18n "form-error-required" 1 }}
 {{ $formErrorRequired     := i18n "form-error-required" }}
@@ -17,10 +17,11 @@
 {{ $formErrorAcept        := i18n "form-error-acept" }}
 {{ $formSubmitOne         := i18n "form-submit" 1 }}
 {{ $formSubmitOther       := i18n "form-submit" }}
-{{ $formsLoad    := partial "types/forms" (dict "js" true "Page" .Page)
+{{ $formsLoad    := partial "types/forms" (dict "js" true "Page" page)
   | replaceRE `\s{2,}` ` `
   | replaceRE `\n` ``
 }}
+
 {{ $custom       := (resources.Get "js/custom.js").Content -}}
 {{ $customString := "" -}}
 
@@ -36,25 +37,25 @@
   {{ $isCookies = true }}
 {{ end }}
 
-{{ with partial "functions/lang-param" (dict "parent" "config" "param" "disqus" "default" "") }}
+{{ with $config.disqus }}
   {{ $disqusId = . }}
 {{ end }}
 
-{{ if partial "functions/lang-param" (dict "parent" "menu" "param" "google_translate" "default" false) }}
+{{ if .menu.google_translate }}
   {{ $isGoogleTranslate = true }}
 {{ end }}
 
 {{ if hugo.IsProduction }}
-  {{ with partial "functions/lang-param" (dict "parent" "config" "param" "google_analytics" "default" "") }}
+  {{ with $config.google_analytics }}
     {{ $googleAnalyticsId = . }}
   {{ end }}
 {{ end }}
 
-{{ with partial "functions/lang-params-custom-code" (dict "params" "js") }}
+{{ with $config.custom_code.js.code }}
   {{ $customString =
     (.
-      | resources.FromString (print "aux_js." $.Lang)
-      | resources.ExecuteAsTemplate (print "aux_js." $.Lang) $.Page
+      | resources.FromString (print "aux_js." page.Lang)
+      | resources.ExecuteAsTemplate (print "aux_js." page.Lang) page
     ).Content
     | safeJS
   -}}
@@ -66,27 +67,24 @@
 {{ $opts := dict
   "targetPath" (print site.Home.RelPermalink "js/scripts.js")
   "params" (dict
-    "isCookies" $isCookies
-    "isScrollShow" $isScrollShow
-    "isParallax" $isParallax
-    "disqusId" $disqusId
+    "isCookies"         $isCookies
+    "isScrollShow"      $isScrollShow
+    "disqusId"          $disqusId
     "isGoogleTranslate" $isGoogleTranslate
-    "lang" $lang
     "googleAnalyticsId" $googleAnalyticsId
-    "screenSticky" $screenSticky
-    "i18nVideo" $i18nVideo
-    "isLangEn" $isLangEn
-    "formsLoad" $formsLoad
+    "i18nVideo"         $i18nVideo
+    "lang"              $lang
+    "formsLoad"             $formsLoad
     "formErrorSingleQuotes" $formErrorSingleQuotes
-    "formErrorRequiredOne" $formErrorRequiredOne
-    "formErrorRequired" $formErrorRequired
-    "formErrorEmail" $formErrorEmail
-    "formErrorNumber" $formErrorNumber
-    "formErrorFile" $formErrorFile
-    "formErrorAcept" $formErrorAcept
-    "formSubmitOne" $formSubmitOne
-    "formSubmitOther" $formSubmitOther
-    "custom" $custom
+    "formErrorRequiredOne"  $formErrorRequiredOne
+    "formErrorRequired"     $formErrorRequired
+    "formErrorEmail"        $formErrorEmail
+    "formErrorNumber"       $formErrorNumber
+    "formErrorFile"         $formErrorFile
+    "formErrorAcept"        $formErrorAcept
+    "formSubmitOne"         $formSubmitOne
+    "formSubmitOther"       $formSubmitOther
+    "custom"       $custom
     "customString" $customString
   )
 }}
@@ -97,7 +95,7 @@
 {{ end }}
 
 {{ $js := resources.Get "js/_index.js"
-  | resources.ExecuteAsTemplate (print "aux_scripts." $.Lang) $asTemplate
+  | resources.ExecuteAsTemplate (print "aux_scripts." page.Lang) $asTemplate
   | js.Build $opts
 }}
 

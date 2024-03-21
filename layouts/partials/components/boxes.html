@@ -1,0 +1,118 @@
+{{- $boxes         := .boxes | default slice -}}
+{{- $box           := . -}}
+{{- $level         := .level -}}
+{{- $container     := .container -}}
+{{- $showup        := site.Data.design.performance.showup -}}
+
+{{- $columns       := .box.columns | default 1 -}}
+{{- if eq .box.columns "auto" -}}
+  {{- $boxes_span  := 0 -}}
+  {{- range $boxes -}}
+    {{- $boxes_span = add $boxes_span (.span | default 1) -}}
+  {{- end -}}
+  {{- $columns      = cond (le $boxes_span 6) $boxes_span 3 -}}
+{{- end -}}
+
+{{- $is_wrap       := or (ne $columns 1) .box.columns_min .box.slider -}}
+
+{{- with .box -}}
+  {{- if $is_wrap -}}
+    {{- $level        = add $.level 1 -}}
+
+    {{/*  CLASS  */}}
+    {{- $columns_max  := cond (ne $columns 1) (print "columns--" $columns) "" -}}
+    {{- $columns_min  := cond (not .columns_min)        "" "columns--min" -}}
+    {{/*  {{- $boxes_level  := print "columns--" (sub $level 1) -}}  */}}
+    {{- $gap          := cond (not .gap)           "" (print "columns--gap-" .gap) -}}
+    {{- if eq .gap 0 -}}
+      {{- $gap         = "columns--gap-0" -}}
+    {{- end -}}
+    {{- $gap_y        := cond (not .gap_y)         "" (print "columns--gap-ny-" .gap_y) -}}
+    {{- if eq .gap_y 0 -}}
+      {{- $gap_y       = "columns--gap-ny-0" -}}
+    {{- end -}}
+    {{- $direction    := cond (not (.direction | or (eq .direction "right"))) "" (print "columns--" .direction) -}}
+    {{- $group_radius := cond (not (.group_radius | and (not .slider))) "" "columns--radius" -}}
+    {{- $align_y      := cond (not .align_y)       "" (print "align-items-" .align_y) -}}
+    {{- $align_x      := cond (not .align_x)       "" (print "justify-" .align_x) -}}
+    {{- $slider_items := cond (not .slider)        "box__type" "slider__items" -}}
+
+    {{- $class := delimit (slice
+      "columns"
+      $columns_max
+      $columns_min
+      $gap
+      $gap_y
+      $direction
+      $group_radius
+      $align_y
+      $align_x
+      $slider_items
+      | uniq) " "
+    -}}
+
+    {{/*  SLIDER  */}}
+    {{ if .slider }}
+      <div class="slider box__type" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
+        <div class="slider__track">
+    {{ end }}
+
+    {{/*  BOXES  */}}
+    <div class="{{ $class }}" {{- if not .slider | and (not .first) | and $showup }} data-showup{{ end }}>
+  {{ end }}
+{{ end }}
+
+        {{ range $key, $value := $boxes }}
+        
+          {{/*  BOX  */}}
+          {{- partial "components/box" (merge
+            $.parent
+            (dict
+              "icon"     nil
+              "image"    nil
+              "link"     nil
+              "color"    nil
+              "gradient" nil
+              "bg"       nil
+              "padding"  nil
+              "pill"     nil
+              "align_x"  nil
+            )
+            $.box
+            .
+            (dict
+              "id"        $.id
+              "level"     $level
+              "key"       $key
+              "container" $container
+              "section"   $.section
+              "first"     $.first
+              "footer"    $.footer
+              "columns"   $columns
+              "is_wrap"   $is_wrap
+              "parent"    $.parent
+              "form_lvl"  $.form_lvl
+              "form_num"  (add $key 1)
+            )
+          ) -}}
+
+        {{ end }}
+
+{{- if $is_wrap -}}
+  {{- with .box -}}
+    </div>
+
+    {{/*  SLIDER BUTTONS  */}}
+    {{ if .slider }}
+      </div>
+        {{- partial "components/slider-buttons"
+          (dict
+            "items"        (len $boxes)
+            "hide_bullets" .hide_bullets
+            "hide_arrows"  .hide_arrows
+          )
+        -}}
+      </div>
+    {{ end }}
+  {{ end }}
+{{ end }}

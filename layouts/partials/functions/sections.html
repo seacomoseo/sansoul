@@ -1,19 +1,29 @@
-{{ $config         := site.Data.sections }}
-{{ $page           := partial "functions/page-params" . }}
+{{ $params         := partial "functions/page-params" . }}
 {{ $sections_final := slice }}
 {{ $sections       := slice }}
 
 {{/*  SECTIONS BY YAML FILES  */}}
-{{ range $page.sections }}
+{{ range $params.sections }}
   {{ $section := . }}
-  {{ with partial "functions/section-by-file" (dict "file" .file "type" "sections") }}
-    {{ $sections = $sections | append (merge . $section) }}
+  {{ with partial "functions/section-by-file" (merge . (dict "type" "sections")) }}
+    {{ $section = merge . $section }}
+  {{ end }}
+  {{ $if := true }}
+  {{ with $section.if }}
+    {{ if eq . "body" }}
+      {{ $if = $.RawContent }}
+    {{ else }}
+      {{ $if = index $.Params . }}
+    {{ end }}
+  {{ end }}
+  {{ if $if }}
+    {{ $sections = $sections | append $section }}
   {{ end }}
 {{ end }}
 
 {{/*  ALTERNATES  */}}
 {{ $alternates := dict }}
-{{ $alts       := $page.alternate | default $config.alternate }}
+{{ $alts       := $params.alternate }}
 {{ if gt (len $sections) 1 }}
   {{ with $alts }}
     {{ $len_alts := add (len .) 1 }}
@@ -34,17 +44,20 @@
   {{ $modals := slice }}
   {{ with .modals }}
     {{ range . }}
-      {{ $modal := dict }}
+      {{ $modal := . }}
       {{/*  MODAL BY YAML FILES  */}}
-      {{ with partial "functions/section-by-file" (dict "file" . "type" "modals") }}
-        {{ $modals = $modals | append (merge
-          (site.Data.modals  | default dict)
-          ($page.modals       | default dict)
-          .
-          $modal
-          (dict "modal" true)
-          (dict "id" (partial "functions/id-by-title" .))
-        ) }}
+      {{ with partial "functions/section-by-file" (dict "file" .file "type" "modals") }}
+        {{ $modals = $modals | append
+          (merge
+            ($params.modals  | default dict)
+            .
+            $modal
+            (dict
+              "modal" true
+              "id"    (partial "functions/id-by-title" .)
+            )
+          )
+        }}
       {{ end }}
     {{ end }}
   {{ end }}
@@ -59,8 +72,7 @@
 
   {{/*  SECTION  */}}
   {{ $section := slice (merge
-    ($config.general | default dict)
-    ($page.general   | default dict)
+    ($params.general | default dict)
     ($alternate      | default dict)
     .
     (dict "modals" $modals)
@@ -68,31 +80,10 @@
     (cond (not $key) (dict "id" "header") dict)
   ) }}
 
-  {{/*  If contact with map (in last row) -> not flip_y  */}}
-  {{/*
-  {{- $section_ := index $section 0 -}}
-  {{- if ne $section_.id "footer" -}}
-    {{- if $section_.flip_y -}}
-      {{- with $section_.rows -}}
-        {{- with index (last 1 .) 0 -}}
-          {{- if eq .type "contact" -}}
-            {{- if .map.active -}}
-              {{- $section = slice (merge
-                $section_
-                (dict "flip_y" (not $section_.flip_y))
-                (dict "flip_x" (not $section_.flip_x))
-              ) -}}
-            {{- end -}}
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  */}}
-
   {{/*  FINAL  */}}
   {{ range $section }}
-    {{ $sections_final = $sections_final | append . }}
+    {{ $section_final := partial "functions/replace-params" (dict "page" $.Page "obj" .) }}
+    {{ $sections_final = $sections_final | append $section_final }}
   {{ end }}
 
 {{ end }}

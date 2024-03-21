@@ -16,5 +16,6 @@
   )
 }}
 
+{{ $footer = partial "functions/replace-params" (dict "page" .Page "obj" $footer) }}
 
 {{ return slice $footer }}

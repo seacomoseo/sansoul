@@ -1,94 +1,103 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
 
-  {{- $sectioned              := partial "functions/is-sectioned" . -}}
-  {{- $params                 := partial "functions/page-params" . -}}
-  {{- $sectioned_menu         := and $sectioned (not $params.header_article) -}}
+  {{/*  VARIABLES  */}}
+  {{- $params := partial "functions/page-params" . -}}
+  {{- $config := partial "functions/config-lang" . -}}
 
+  {{/*  CUSTOM HTML HEAD  */}}
+  {{- $custom_html_head  := "" -}}
+  {{- with $config.custom_code.html_head.code -}}
+    {{- $custom_html_head = .
+      | resources.FromString (print "aux_html_head." $.Lang)
+      | resources.ExecuteAsTemplate (print "aux_html_head." $.Lang) $.Page
+    -}}
+    {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
+  {{- end -}}
+
+  {{/*  CUSTOM HTML BODY  */}}
+  {{- $custom_html_body  := "" -}}
+  {{- with $config.custom_code.html_body.code -}}
+    {{- $custom_html_body = .
+      | resources.FromString (print "aux_html_body." $.Lang)
+      | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $.Page
+    -}}
+    {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
+  {{- end -}}
+
+  {{/*  BODY ID  */}}
+  {{- $body_id := "" -}}
+  {{- if .IsHome -}}
+    {{- $body_id = .Params.slug -}}
+  {{- else -}}
+    {{- $body_id = .RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-` -}}
+  {{- end -}}
+  {{- $body_id = print "body-" $body_id -}}
+
+  {{/*  BODY MENU CLASS  */}}
+  {{- $sectioned_menu         := not $params.header_article -}}
   {{- $menu                   := merge site.Data.menu ($params.menu | default dict) -}}
   {{- $body_menu              := "" -}}
   {{- $body_menu_logo         := "" -}}
+  {{- $body_menu_sticky       := "" -}}
   {{- if not $menu.hide -}}
-    {{- $body_menu             = " body-menu" -}}
-    {{- if (and (not $sectioned) $menu.articles_sticky) | or (and $sectioned_menu $menu.logo) -}}
-      {{- $body_menu_logo      = " body-menu--logo" -}}
+    {{- $body_menu             = "body-menu" -}}
+    {{- $body_menu_sticky      = print "body-menu--sticky body-menu--sticky--" $menu.sticky -}}
+    {{- if $menu.articles_sticky | or (and $sectioned_menu $menu.logo) -}}
+      {{- $body_menu_logo      = "body-menu--logo" -}}
     {{- end -}}
   {{- end -}}
-  {{- $body_menu_transparent  := cond (not ($menu.transparent | and ($sectioned_menu | or ((not $sectioned) | and $body_menu_logo)))) "" " body-menu--transparent" -}}
+  {{- $body_menu_transparent  := cond (not ($menu.transparent | and ($sectioned_menu | or $body_menu_logo))) "" "body-menu--transparent" -}}
 
-  {{- $bg_color               := site.Data.articles.content.color | default `light` -}}
-  {{- if $sectioned -}}
-    {{- with $menu.color -}}
-      {{- $bg_color            = . -}}
-    {{- end -}}
-  {{- end -}}
+  {{/*  BODY CLASS  */}}
+  {{- $body_class := delimit
+    (slice
+      (print "kind-" .Kind)
+      (print "type-" .Type)
+      (print "section-" .Section)
+      "body-top"
+      $body_menu
+      $body_menu_logo
+      $body_menu_transparent
+      $body_menu_sticky
+    )
+    " "
+  -}}
 
+  {{/*  HEAD  */}}
   <head>
     {{- partial "sections/common/head" . -}}
-    {{- $context := . -}}
-    {{- with partial "functions/lang-params-custom-code" (dict "params" "html_head") -}}
-      {{- (. | resources.FromString (print "aux_html_head." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_head." $.Lang) $context).Content | safeHTML -}}
-    {{- end -}}
+    {{- $custom_html_head -}}
   </head>
 
-  <body
-    id="body-{{ cond .IsHome .Params.slug (.RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-`) }}"
-    class="kind-{{ .Kind }} type-{{ .Type }} section-{{ .Section }} bg bg-{{ $bg_color }} body-top {{- $body_menu }} {{- $body_menu_logo }} {{- $body_menu_transparent }}"
-  >
-    <img width="8000" height="8000" alt="fondo-transparente" class="lcp" decoding="sync" loading="eager" src="data:image/svg+xml;base64,
+  {{/*  MODY  */}}
+  <body id="{{ $body_id }}" class="{{ $body_class }}">
+
+    {{/*  IMAGE LCP  */}}
+    <img width="8000" height="8000" alt="xl" class="lcp" decoding="sync" loading="eager" src="data:image/svg+xml;base64,
       {{- `<svg width='8000' height='8000' viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg'></svg>` | base64Encode -}}
     ">
 
     {{/*  LOGO  */}}
-    {{ if (not $sectioned) | or ($sectioned | and ($params.header_article | or $menu.logo)) }}
-      {{ partial "sections/common/logo" . }}
-    {{ end }}
+    {{ partial "sections/common/logo" $params }}
 
     {{/*  MENU  */}}
-    {{ if ne .Kind "404" }}
-      {{ partial "sections/common/menu" . }}
-    {{ end }}
-
-    {{/*  HEADER SECTIONED  */}}
-    {{ if $sectioned }}
-      {{ partial "kind/sectioned" (dict "header" true) }}
-    {{ end }}
+    {{ partial "sections/common/menu" $params }}
 
     {{/*  MAIN  */}}
-    <main id="{{ i18n `main` }}"
-      {{- if not $sectioned -}}
-        {{- with (index (partial `functions/footer` .) 0) -}}
-          {{- if .divider -}}
-            class="footer--divider
-              {{- if partial `functions/divider-ratio` .divider }}-ratio{{ end -}}
-            "
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-    >
-      {{ if eq .Kind "404" }}
-        {{ partial "kind/404" . }}
-      {{ else if $sectioned }}
-        {{ partial "kind/sectioned" (dict "header" false) }}
-      {{ else }}
-        {{ partial "kind/article" . }}
-      {{ end }}
+    <main>
+      {{ partial "kind/sectioned" dict }}
     </main>
 
     {{/*  FOOTER  */}}
-    {{ partial "kind/sectioned" (dict "footer" true "sectioned" $sectioned) }}
+    {{ partial "kind/sectioned" (dict "footer" true) }}
 
     {{/*  PRE BODY END  */}}
-    {{ if ne .Kind "404" }}{{ partial "components/cookies" . }}{{ end }}
-    {{ if $sectioned }}{{ partial "components/buttons-callnow" . }}{{ end }}
-    {{ if $menu.google_translate }}
-      {{ partial "components/button-google-translate" . }}
-    {{ end }}
-    {{ partial "components/button-up" . }}
-    {{ partial "sections/common/scripts" . }}
-    {{ with partial "functions/lang-params-custom-code" (dict "params" "html_body") }}
-      {{ (. | resources.FromString (print "aux_html_body." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $context).Content | safeHTML }}
-    {{ end }}
+    {{ partial "components/cookies"         $params }}
+    {{ partial "components/buttons-callnow" $params }}
+    {{ partial "components/button-up"       .       }}
+    {{ partial "sections/common/scripts"    $params }}
+    {{ $custom_html_body }}
   </body>
 </html>
 {{- block "none" . }}{{ end }}

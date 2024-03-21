@@ -1,6 +1,6 @@
 <div class="slider__bullets {{- if .hide_bullets }} slider__bullets--hide{{ end }}">
-  {{- range $key, $value := .items -}}
-    <button class="slider__bullet" title="{{ i18n `slide` }} {{ add $key 1 }}"></button>
+  {{- range seq .items -}}
+    <button class="slider__bullet" title="{{ i18n `slide` }} {{ . }}"></button>
   {{- end -}}
 </div>
 <div class="slider__arrows {{- if .hide_arrows }} slider__arrows--hide{{ end }}">

@@ -92,7 +92,7 @@
     {{ if not $.IsSection | and $.related }}
       {{ partial "sections/article/related" (dict "type" .type) }}
     {{ end }}
-    {{ partial "types/article-columns" (dict "pages" .pages "type" .type) }}
+    {{ partial "types/article-columns" (dict "pages" .pages "type" .type "level" 1 "is_article" true) }}
   {{ end }}
 
 {{ end }}

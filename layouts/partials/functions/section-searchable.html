@@ -1,0 +1,11 @@
+{{ $boxes := slice . }}
+
+{{ range   (.boxes        | default slice)
+  | append (.steps        | default slice)
+  | append (.reviews      | default slice)
+  | append (.collapsibles | default slice)
+}}
+  {{ $boxes = $boxes | append (partial "functions/section-searchable" .) }}
+{{ end }}
+
+{{ return $boxes }}

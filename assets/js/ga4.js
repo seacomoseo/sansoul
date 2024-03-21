@@ -1,71 +1,47 @@
 export function initGa4 () {
-  const contactCallnowPhone = document.querySelectorAll('.callnow__phone')
-  const contactCallnowWhatsapp = document.querySelectorAll('.callnow__whatsapp')
-  const contactCallnowCustom = document.querySelectorAll('.callnow__custom--ga4')
-  const contactPhones = document.querySelectorAll('.contact__phone')
-  const contactWhatsapp = document.querySelectorAll('.contact__whatsapp')
-  const contactEmailCopy = document.querySelectorAll('.contact__email-option-copy')
-  const contactEmailSend = document.querySelectorAll('.contact__email-option-send')
-  const contactAddress = document.querySelectorAll('.contact__address')
-  const contactMap = document.querySelectorAll('.contact__map')
-  const contactCustom = document.querySelectorAll('.contact__custom--ga4')
-  const contactButtons = [
-    ...contactCallnowPhone,
-    ...contactCallnowWhatsapp,
-    ...contactCallnowCustom,
-    ...contactPhones,
-    ...contactWhatsapp,
-    ...contactEmailCopy,
-    ...contactEmailSend,
-    ...contactAddress,
-    ...contactMap,
-    ...contactCustom
-  ]
-
-  function ga4 (e) {
-    const button = e.currentTarget
+  function ga4 (b) {
     let ofuscateLink, category, label, value
 
-    if (button.href) {
-      value = button.href
-    } else if (button.dataset.b) {
-      ofuscateLink = button.dataset.b
-    } else if (button.dataset.h) {
-      ofuscateLink = button.dataset.h
+    if (b.href) {
+      value = b.href
+    } else if (b.dataset.b) {
+      ofuscateLink = b.dataset.b
+    } else if (b.dataset.h) {
+      ofuscateLink = b.dataset.h
     } else {
-      value = button.parentElement.previousElementSibling.textContent
+      value = b.parentElement.previousElementSibling.textContent
     }
 
     if (ofuscateLink) {
       const link = window.atob(ofuscateLink)
-      if (button.classList.contains('callnow__phone') || button.classList.contains('contact__phone')) {
+      if (b.classList.contains('callnow__phone') || b.classList.contains('contact__phone')) {
         value = link.replace('tel:+', '')
-      } else if (button.classList.contains('callnow__whatsapp') || button.classList.contains('contact__whatsapp')) {
+      } else if (b.classList.contains('callnow__whatsapp') || b.classList.contains('contact__whatsapp')) {
         value = link.replace('https://wa.me/', '')
       } else {
         value = link
       }
     }
 
-    if (button.classList.toString().search('callnow') !== -1) {
+    if (b.classList.toString().search('callnow') !== -1) {
       category = 'callnow'
     } else {
       category = 'contact'
     }
 
-    if (button.classList.toString().search('phone') !== -1) {
+    if (b.classList.toString().search('phone') !== -1) {
       label = 'phone'
-    } else if (button.classList.toString().search('whatsapp') !== -1) {
+    } else if (b.classList.toString().search('whatsapp') !== -1) {
       label = 'whatsapp'
-    } else if (button.classList.contains('contact__email-option-copy')) {
+    } else if (b.classList.contains('contact__email-option-copy')) {
       label = 'email_copy'
-    } else if (button.classList.contains('contact__email-option-send')) {
+    } else if (b.classList.contains('contact__email-option-send')) {
       label = 'email_send'
-    } else if (button.classList.contains('contact__address')) {
+    } else if (b.classList.contains('contact__address')) {
       label = 'address'
-    } else if (button.classList.contains('contact__map')) {
+    } else if (b.classList.contains('contact__map')) {
       label = 'map'
-    } else if (button.classList.toString().search('custom--ga4') !== -1) {
+    } else if (b.classList.toString().search('custom--ga4') !== -1) {
       label = 'custom'
     }
 
@@ -77,5 +53,19 @@ export function initGa4 () {
     })
   }
 
-  contactButtons.forEach(e => e.addEventListener('click', button => ga4(button)))
+  document.addEventListener('click', e => {
+    const b = e.target.closest(
+      '.callnow__phone,' +
+      '.callnow__whatsapp,' +
+      '.callnow__custom--ga4,' +
+      '.contact__phone,' +
+      '.contact__whatsapp,' +
+      '.contact__email-option-copy,' +
+      '.contact__email-option-send,' +
+      '.contact__address,' +
+      '.contact__map,' +
+      '.contact__custom--ga4'
+    )
+    if (b) ga4(b)
+  })
 }

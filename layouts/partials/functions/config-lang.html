@@ -1,0 +1,7 @@
+{{ $value := dict }}
+
+{{ with site.Data.config }}
+  {{ $value = merge . (index . site.Home.Lang) }}
+{{ end }}
+
+{{ return $value }}

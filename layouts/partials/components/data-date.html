@@ -10,7 +10,7 @@
     <time class="data__item" {{ printf `datetime="%s"` (dateFormat "2006-01-02T15:04:05Z07:00" $lastmod) | safeHTMLAttr }}>
       {{- partial "functions/date" (dict "date" $lastmod "type" .type) -}}
     </time>
-    {{- if ne .date $lastmod | and (not $.column) -}}
+    {{- if ne .date $lastmod | and (not $.box) -}}
       <s>{{ partial "functions/date" (dict "date" .date "type" .type) }}</s>
     {{- end -}}
   </i>
