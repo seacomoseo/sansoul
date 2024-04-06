@@ -6,7 +6,7 @@
   {{ $id := .src | replaceRE `^.+?(v=|be/)(.+?)(&|\?|$).*` `$2` }}
   {{ $t := .src | findRE `t\=\d+` }}{{ if $t }}{{ $t = index $t 0 | replaceRE `t\=` `` }}{{ end }}
   {{ $end := .src | findRE `end\=\d+` }}{{ if $end }}{{ $end = index $end 0 | replaceRE `end\=` `` }}{{ end }}
-  {{ $list := .src | findRE `list\=\w+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
+  {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
   {{ $src = print
     "https://www.youtube-nocookie.com/embed/"
     $id
