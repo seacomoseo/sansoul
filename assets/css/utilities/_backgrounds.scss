@@ -1,7 +1,6 @@
 
 // bg-opacity
 
-:root,
 .bg {             --bg-opacity: 1; }
 .bg-opacity-0 {   --bg-opacity: 0; }
 .bg-opacity-10 {  --bg-opacity: .1; }
@@ -33,9 +32,6 @@
 .bg-dark {       --bg-rgb: #{ hexToRGB($dark) }; }
 .bg-black {      --bg-rgb: #{ hexToRGB($black) }; }
 
-:root,
-html,
-body,
 .bg {
   --bg-color: rgba(var(--bg-rgb), var(--bg-opacity, 1));
 }
@@ -43,9 +39,6 @@ body,
 
 // bg-gradient
 
-:root,
-html,
-body,
 .bg {
   --bg-gradient-color: rgba(var(--bg-gradient-rgb), var(--bg-opacity));
   --bg-gradient-color-0: rgba(var(--bg-gradient-rgb), 0);
@@ -66,18 +59,18 @@ body,
 .bg-gradient-dark {       --bg-gradient-rgb: #{ hexToRGB($dark) }; }
 .bg-gradient-black {      --bg-gradient-rgb: #{ hexToRGB($black) }; }
 
-.bg-gradient-linear-b {   --bg-gradient: #{ linear-gradient(        var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-t {   --bg-gradient: #{ linear-gradient(0deg,   var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-r {   --bg-gradient: #{ linear-gradient(90deg,  var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-l {   --bg-gradient: #{ linear-gradient(270deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-tr {  --bg-gradient: #{ linear-gradient(45deg,  var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-br {  --bg-gradient: #{ linear-gradient(135deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-tl {  --bg-gradient: #{ linear-gradient(315deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-linear-bl {  --bg-gradient: #{ linear-gradient(225deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-radial {     --bg-gradient: #{ radial-gradient(        var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-circle {     --bg-gradient: #{ radial-gradient(circle, var(--bg-gradient-color-0), var(--bg-gradient-color)) }; }
-.bg-gradient-radial-alt { --bg-gradient: #{ radial-gradient(        var(--bg-gradient-color),   var(--bg-gradient-color-0)) }; }
-.bg-gradient-circle-alt { --bg-gradient: #{ radial-gradient(circle, var(--bg-gradient-color),   var(--bg-gradient-color-0)) }; }
+.bg-gradient-linear-b {   --bg-gradient: #{ linear-gradient(        var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-t {   --bg-gradient: #{ linear-gradient(0deg,   var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-r {   --bg-gradient: #{ linear-gradient(90deg,  var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-l {   --bg-gradient: #{ linear-gradient(270deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-tr {  --bg-gradient: #{ linear-gradient(45deg,  var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-br {  --bg-gradient: #{ linear-gradient(135deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-bl {  --bg-gradient: #{ linear-gradient(225deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-linear-tl {  --bg-gradient: #{ linear-gradient(315deg, var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-radial {     --bg-gradient: #{ radial-gradient(        var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-circle {     --bg-gradient: #{ radial-gradient(circle, var(--bg-gradient-color-0), var(--bg-gradient-color)) };   @extend %bg-gradient; }
+.bg-gradient-radial-alt { --bg-gradient: #{ radial-gradient(        var(--bg-gradient-color),   var(--bg-gradient-color-0)) }; @extend %bg-gradient; }
+.bg-gradient-circle-alt { --bg-gradient: #{ radial-gradient(circle, var(--bg-gradient-color),   var(--bg-gradient-color-0)) }; @extend %bg-gradient; }
 
 
 // Radius
@@ -99,6 +92,8 @@ body,
   @include like-bg-cover;
   z-index: -1;
   background-color: var(--bg-color);
+}
+%bg-gradient > .bg-color {
   background-image: var(--bg-gradient);
 }
 
@@ -141,6 +136,7 @@ body,
 
 @if not $parallax {
   .bg--fix {
+    filter: none; // If not, bg--fix not rule
     // .container {
     //   z-index: 1; // Fix .bg--fix stepping on top links in Safari
     // }

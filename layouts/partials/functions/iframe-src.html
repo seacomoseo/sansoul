@@ -1,20 +1,20 @@
-{{ $src := .src }}
-{{ $mute := cond (in .src "mute") true .bg }}
+{{ $src  := .src }}
+{{ $mute := cond (in .src "#mute") true .bg }}
 
 {{ if .src | findRE `youtu\.be|youtube\.com` }}
 
-  {{ $id := .src | replaceRE `^.+?(v=|be/)(.+?)(&|\?|$).*` `$2` }}
-  {{ $t := .src | findRE `t\=\d+` }}{{ if $t }}{{ $t = index $t 0 | replaceRE `t\=` `` }}{{ end }}
-  {{ $end := .src | findRE `end\=\d+` }}{{ if $end }}{{ $end = index $end 0 | replaceRE `end\=` `` }}{{ end }}
-  {{ $list := .src | findRE `list\=\w+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
+  {{ $id   := .src | replaceRE `^.+?(v=|be/)(.+?)(&|\?|#|$).*` `$2` }}
+  {{ $t    := .src | findRE `t\=\d+`       }}{{ if $t    }}{{ $t    = index $t    0 | replaceRE `t\=` ``    }}{{ end }}
+  {{ $end  := .src | findRE `end\=\d+`     }}{{ if $end  }}{{ $end  = index $end  0 | replaceRE `end\=` ``  }}{{ end }}
+  {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
   {{ $src = print
     "https://www.youtube-nocookie.com/embed/"
     $id
     "?rel=0&modestbranding=1"
     (cond (not $mute) "" (print "&autoplay=1&loop=1&mute=1&showinfo=0" (cond (not $list) (print "&playlist=" $id) "")))
-    (cond (not $t) "" (print "&start=" $t) )
-    (cond (not $end) "" (print "&end=" $end) )
-    (cond (not $list) "" (print "&list=" $list) )
+    (cond (not $t)    "" (print "&start=" $t) )
+    (cond (not $end)  "" (print "&end="   $end) )
+    (cond (not $list) "" (print "&list="  $list) )
   }}
 
 {{ else if in .src `vimeo.com` }}

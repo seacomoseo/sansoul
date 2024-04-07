@@ -35,19 +35,19 @@
   {{- $body_id = print "body-" $body_id -}}
 
   {{/*  BODY MENU CLASS  */}}
-  {{- $sectioned_menu         := not $params.header_article -}}
-  {{- $menu                   := merge site.Data.menu ($params.menu | default dict) -}}
-  {{- $body_menu              := "" -}}
-  {{- $body_menu_logo         := "" -}}
-  {{- $body_menu_sticky       := "" -}}
+  {{- $sectioned_menu        := not $params.header_article -}}
+  {{- $menu                  := merge site.Data.menu ($params.menu | default dict) -}}
+  {{- $body_menu             := "" -}}
+  {{- $body_menu_logo        := "" -}}
+  {{- $body_menu_sticky      := "" -}}
   {{- if not $menu.hide -}}
-    {{- $body_menu             = "body-menu" -}}
-    {{- $body_menu_sticky      = print "body-menu--sticky body-menu--sticky--" $menu.sticky -}}
+    {{- $body_menu            = "body-menu" -}}
+    {{- $body_menu_sticky     = print "body-menu--sticky body-menu--sticky--" $menu.sticky -}}
     {{- if $menu.articles_sticky | or (and $sectioned_menu $menu.logo) -}}
-      {{- $body_menu_logo      = "body-menu--logo" -}}
+      {{- $body_menu_logo     = "body-menu--logo" -}}
     {{- end -}}
   {{- end -}}
-  {{- $body_menu_transparent  := cond (not ($menu.transparent | and ($sectioned_menu | or $body_menu_logo))) "" "body-menu--transparent" -}}
+  {{- $body_menu_transparent := cond (not ($menu.transparent | and ($sectioned_menu | or $body_menu_logo))) "" "body-menu--transparent" -}}
 
   {{/*  BODY CLASS  */}}
   {{- $body_class := delimit
@@ -63,6 +63,8 @@
     )
     " "
   -}}
+  {{- $background := merge $params.background (dict "body" true "color" ($params.background.color | default "white")) -}}
+  {{- $body_class  = print $body_class " " (partial "components/section-class" $background) -}}
 
   {{/*  HEAD  */}}
   <head>
@@ -77,6 +79,9 @@
     <img width="8000" height="8000" alt="xl" class="lcp" decoding="sync" loading="eager" src="data:image/svg+xml;base64,
       {{- `<svg width='8000' height='8000' viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg'></svg>` | base64Encode -}}
     ">
+
+    {{/*  BACKGROUND  */}}
+    {{- partial "components/bg" $background -}}
 
     {{/*  LOGO  */}}
     {{ partial "sections/common/logo" $params }}

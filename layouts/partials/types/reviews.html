@@ -116,9 +116,10 @@
 {{ if .slider }}
   {{- partial "components/slider-buttons"
     (dict
-      "items"        (len .reviews)
-      "hide_bullets" .hide_bullets
-      "hide_arrows"  .hide_arrows
+      "items"   (len .reviews)
+      "bullets" .bullets
+      "arrows"  .arrows
+      "button"  .button
     )
   -}}
   </div>

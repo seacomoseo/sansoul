@@ -1,6 +1,6 @@
-{{ $type        := cond .modal "modal" "section" }}
+{{ $type        := cond (not .body) (cond (not .modal) "section" "modal") "" }}
 {{/*  {{ $key_class   := cond .header "section--header" (print "section--" .key) }}  */}}
-{{ $key_class   := cond .header "section--header" "" }}
+{{ $key_class   := cond (not .header) "" "section--header" }}
 {{ if .footer }}
   {{ $key_class  = "section--footer" }}
 {{ end }}
@@ -10,7 +10,7 @@
 {{ end }}
 */}}
 {{ $full        := cond (not .full) "" "section--full" }}
-{{ $bg_color    := "bg-white" }}
+{{ $bg_color    := "" }}
 {{ if not .modal }}
   {{ with .color }}
     {{ $bg_color = print "bg-" . }}
@@ -71,16 +71,23 @@
 }}
   {{ $padding_top_divider = "pt-divider" }}
 {{ end }}
-{{ $divider    := "" }}
+{{ $divider := "" }}
 {{ with .prev }}
   {{ if .divider }}
-    {{ $flip_y           := cond (not .flip_y) "" "y" }}
-    {{ $flip_x           := cond (not .flip_x) "" "x" }}
-    {{ $flips            := cond (or .flip_x .flip_y) (print "-" $flip_x $flip_y) "" }}
-    {{ $divider   = print "divider divider-" $flips "-" .divider }}
-    {{/*  {{ if partial `functions/divider-ratio` .divider }}
-      {{ $divider = print $divider " divider--ratio" }}
-    {{ end }}  */}}
+    {{ if or $.color $.gradient $.bg }}
+      {{ $flip_y   := cond (not .flip_y) "" "y" }}
+      {{ $flip_x   := cond (not .flip_x) "" "x" }}
+      {{ $flips    := "" }}
+      {{ if or .flip_x .flip_y }}
+        {{ $flips   = print "-" $flip_x $flip_y }}
+      {{ end }}
+      {{ $divider   = print "divider divider-" $flips "-" .divider }}
+      {{/*  {{ if partial `functions/divider-ratio` .divider }}
+        {{ $divider = print $divider " divider--ratio" }}
+      {{ end }}  */}}
+    {{ else }}
+      {{ $divider   = print "divider" }}
+    {{ end }}
   {{ end }}
 {{ end }}
 {{ if .modal }}

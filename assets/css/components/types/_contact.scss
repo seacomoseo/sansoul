@@ -385,18 +385,20 @@
     --container-margin-side: 0em;
     --margin-map-bottom: 0em;
     filter: drop-shadow($shadow);
-    @include radius;
     @if $radius > 0.01 and not $chamfer {
       overflow: hidden;
     }
+    * {
+      margin-top: 0;
+      height: 100%;
+    }
     --pb-divider: 0px;
     .divider {
-      filter: none;
-      @if $radius > 0.01 {
-        --radius-top: 0em;
-      }
       &.divider--ratio {
         --divider-height: calc(var(--box-inner) * .2);
+      }
+      @if $radius > 0.01 {
+        --radius-top: 0em;
       }
     }
   }

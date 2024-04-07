@@ -1,29 +1,53 @@
 .divider {
-  --divider-flip-y: var(--pt-divider, 5.5em);
-  --divider-mask: var(--divider), linear-gradient(transparent calc(var(--divider-flip-y) - .5px), black 0);
-  margin-top: calc(var(--pt-divider, 0px) * -1);
-  &.map,
+  margin-top: calc(var(--pt-divider, 5.5em) * -1);
+}
+.section:has(> .divider--next),
+.divider {
+  --divider-mask-image: var(--divider), linear-gradient(black, black);
+  --divider-mask-size: 100% var(--pt-divider, 5.5em), 100%;
+  --divider-mask-position: top, 0 var(--pt-divider, 5.5em);
+  &:where(.map *),
   &.ph,
   > .bg-color {
-            mask-image: var(--divider-mask);
-    -webkit-mask-image: var(--divider-mask);
-            mask-size: 100% var(--pt-divider, 5.5em), 100%;
-    -webkit-mask-size: 100% var(--pt-divider, 5.5em), 100%;
+            mask-image: var(--divider-mask-image);
+    -webkit-mask-image: var(--divider-mask-image);
+            mask-size: var(--divider-mask-size);
+    -webkit-mask-size: var(--divider-mask-size);
+            mask-position: var(--divider-mask-position);
+    -webkit-mask-position: var(--divider-mask-position);
             mask-repeat: no-repeat;
     -webkit-mask-repeat: no-repeat;
-            mask-position: top;
-    -webkit-mask-position: top;
   }
 }
-// .divider--flip-y {
-//   --divider-flip-y: 0;
-//   &.map,
-//   &.ph,
-//   > .bg-color {
-//             mask-composite: exclude;
-//     -webkit-mask-composite: xor;
-//   }
-// }
+.section:has(> .divider--next) {
+  .divider--next {
+    --divider-mask-image:
+      var(--divider),
+      linear-gradient(black, black),
+      var(--divider-next);
+    --divider-mask-size:
+      100% var(--pt-divider, 5.5em),
+      100% calc(100% - var(--pt-divider, 5.5em) - var(--pb-divider, 5.5em)),
+      100% var(--pb-divider, 5.5em);
+    --divider-mask-position:
+      top,
+      0 var(--pt-divider, 5.5em),
+      bottom;
+    //         mask-composite: exclude;
+    // -webkit-mask-composite: xor;
+  }
+  &:not(.divider) .divider--next {
+    --divider-mask-image:
+      linear-gradient(black, black),
+      var(--divider-next);
+    --divider-mask-size:
+      100% calc(100% - var(--pb-divider, 5.5em)),
+      100% var(--pb-divider, 5.5em);
+    --divider-mask-position:
+      top,
+      bottom;
+  }
+}
 .divider--ratio {
   --divider-height: var(--divider-ratio-height);
 }
@@ -72,6 +96,8 @@ $dividers: (
 $ini: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'";
 $prev: "%3Crect width='100%25' height='100%25' mask='url(%23a)'/%3E%3Cmask id='a'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E";
 $next: "%3C/mask%3E";
+$prev-ynvert: "%3Crect width='100%25' height='100%25' mask='url(%23a)'/%3E%3Cmask id='a'%3E%3Crect width='100%25' height='100%25'/%3E%3Cg fill='white'%3E";
+$next-ynvert: "%3C/g%3E%3C/mask%3E";
 $end: "%3C/svg%3E";
 
 @each $name, $data in $dividers {
@@ -90,6 +116,20 @@ $end: "%3C/svg%3E";
   }
   .divider--xy-#{$name} {
     --divider: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+  }
+
+  // invert
+  .divider--next--#{$name} {
+    --divider-next: url("#{ $ini } #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+  }
+  .divider--next--x-#{$name} {
+    --divider-next: url("#{ $ini } style='transform:scale(-1,1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+  }
+  .divider--next--y-#{$name} {
+    --divider-next: url("#{ $ini } style='transform:scale(1,-1)' #{ $viewbox }%3E#{ $prev-ynvert }#{ $divider }#{ $next-ynvert }#{ $end }");
+  }
+  .divider--next--xy-#{$name} {
+    --divider-next: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev-ynvert }#{ $divider }#{ $next-ynvert }#{ $end }");
   }
 
 }

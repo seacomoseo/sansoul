@@ -51,33 +51,35 @@
   {{- $class := delimit (slice
     "map"
     (cond (eq .link "hide") "box__type" "")
-    $divider
     | uniq) " "
   -}}
 
-  {{ with .iframe }}
+  <div class="{{ $class }}">
 
-    {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
-      <div data-b="{{ $map_url | base64Encode }}" tabindex="0" role="link">
-        {{ partial "components/image" (dict
-          "class"     $class
-          "src"       .
-          "alt"       (i18n "map")
-          "container" (cond (not $.container_bg) "" $.container)
-          "notlazy"   false
-        ) }}
-      </div>
+    {{ with .iframe }}
+
+      {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
+        <div data-b="{{ $map_url | base64Encode }}" tabindex="0" role="link">
+          {{ partial "components/image" (dict
+            "class"     $divider
+            "src"       .
+            "alt"       (i18n "map")
+            "container" (cond (not $.container_bg) "" $.container)
+            "notlazy"   false
+          ) }}
+        </div>
+      {{ else }}
+        <iframe class="{{ $divider }}" loading="lazy" data-src="{{ . }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+      {{ end }}
+
     {{ else }}
-      <iframe class="{{ $class }}" loading="lazy" data-src="{{ . }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+
+      {{ with $map_url }}
+        <iframe class="{{ $divider }}" loading="lazy" data-src="{{ . }}&z=15&output=embed" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+      {{ end }}
+
     {{ end }}
 
-  {{ else }}
-
-    {{ with $map_url }}
-      <iframe class="{{ $class }}" loading="lazy" data-src="{{ . }}&z=15&output=embed" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
-    {{ end }}
-
-  {{ end }}
-
+  </div>
 
 {{- end -}}

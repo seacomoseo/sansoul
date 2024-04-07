@@ -1,6 +1,10 @@
 .slider {
   position: relative;
 }
+
+
+// TRACK
+
 .slider__track {
   scroll-snap-type: x mandatory;
   overflow-x: auto;
@@ -18,6 +22,9 @@
     display: none;
   }
 }
+
+
+// ITEMS
 
 .slider__items {
   display: flex;
@@ -41,48 +48,65 @@
   //   // width: .1px;
   // }
 }
+
+
+// BULLETS
+
 .slider__bullets {
   display: flex;
   justify-content: center;
   gap: 0 .375em;
   margin-top: 1em;
   flex-wrap: wrap;
-  &.slider__bullets--hide {
-    display: none;
-  }
+}
+.slider__bullets--hide {
+  display: none;
 }
 .slider__bullet {
-  box-sizing: content-box;
   min-width: 2em;
   min-height: initial;
-  height: .1875em;
-  padding: 0;
-  background-clip: padding-box;
-  border: 0;
-  border-block: 1em solid transparent;
-  border-radius: 0;
-  transform: none;
-  filter: none;
-  transition: background-color .1s;
-  background-color: var(--active);
-  &:before,
+  padding: 1em 0;
+  --radius: min(#{ $radius / 2 }, #{ .1875em / 2 });
+  &:before {
+    height: .1875em;
+    position: relative;
+  }
+  &--active {
+    --base: var(--hover);
+  }
+  &:not(#aux) {
+    &:focus {
+      --base: var(--active);
+    }
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+      filter: none;
+      transform: none;
+    }
+  }
   &:after {
     content: none;
   }
-  &--active,
-  &:hover {
-    background-color: var(--alt);
-  }
-  &:focus {
-    background-color: var(--main);
-  }
-  &:hover,
-  &:focus,
-  &:active {
-    filter: none;
-    transform: none;
+}
+.slider__bullets--radius {
+  gap: 0;
+  .slider__bullet {
+    min-width: 2em;
+    height: 2em;
+    padding: .5em;
+    --radius: 50%;
+    &:before {
+      width: 1em;
+      height: 1em;
+    }
   }
 }
+
+
+// ARROWS
+
 .slider__arrows {
   display: flex;
   justify-content: center;
@@ -91,5 +115,33 @@
   margin-top: 1em;
   &.slider__arrows--hide {
     display: none;
+  }
+}
+.slider__arrows--float {
+  justify-content: space-between;
+  margin-top: 0;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 0;
+  .slider__arrow {
+    @include fluid-size(--slider-arrow-size, 1em, 2, 3);;
+    width: var(--slider-arrow-size);
+    height: var(--slider-arrow-size);
+    min-height: var(--slider-arrow-size);
+    &:where(.reviews ~ .slider__arrows > *) {
+      --slider-arrow-push: 4em;
+    }
+    top: calc(var(--slider-arrow-size) * -1 - var(--slider-arrow-push, 0em));
+    --slider-arrow-side: calc(var(--container-margin-side) *  1 + var(--slider-arrow-size) / 4);
+    > svg {
+      @include fluid-size(font-size, 1em, 1.5, 2);
+    }
+  }
+  .slider__arrow--left {
+    left: var(--slider-arrow-side);
+  }
+  .slider__arrow--right {
+    right: var(--slider-arrow-side);
   }
 }

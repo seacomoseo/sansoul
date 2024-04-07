@@ -35,10 +35,7 @@
 
   {{/*  BACKGROUND  */}}
   {{- if not $modal -}}
-    {{- partial "components/bg" (merge . (dict
-      "color" (.color | default "white")
-      "card"  nil
-    )) -}}
+    {{- partial "components/bg" (merge . (dict "card" nil)) -}}
   {{- end -}}
 
   {{/*  BOX  */}}

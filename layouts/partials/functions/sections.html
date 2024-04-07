@@ -72,7 +72,7 @@
 
   {{/*  SECTION  */}}
   {{ $section := slice (merge
-    ($params.general | default dict)
+    ($params.section | default dict)
     ($alternate      | default dict)
     .
     (dict "modals" $modals)

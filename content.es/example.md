@@ -8,23 +8,38 @@ draft: true
 noindex: true
 translationKey: ''
 header_article: false
+background:
+  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  gradient: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  gradient_type: '' # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
+  bg: ''
+  opacity: 100 # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+  parallax: true
 menu:
-  logo: logo.png
   hide: false
-  hide_sticky: false
-  hide_modals_subitems: false
-  hide_anchors: false
+  logo: false
+  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  sticky: '' # [ xs, sm, md, lg, xl, fluid ]
+  header: '' # [ hide, sticky, fix ] # he's hide when screen > sticky
+  header_align: '' # [ left, center, right ]
+  header_color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  size: '' # [ xs, sm, md, lg, xl, fluid ]
+  transparent: true
+  hide_sections: true
+  hide_modals: false
+  hide_icons: false
+  langs_group: false
+  google_translate: false
   es: []
-# like data.sections.general
-general: {}
-# like data.sections.alternate
+callnow:
+  hide: false
+  es: []
+section: {}
 alternate: []
-# like data.modals
 modal: {}
 sections:
-- # like section
-  title: Título de Cabecera
+- title: Título de Cabecera
 - file: example
   modals:
-  - example
+  - file: example
 ---

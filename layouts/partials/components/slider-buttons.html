@@ -1,14 +1,34 @@
-<div class="slider__bullets {{- if .hide_bullets }} slider__bullets--hide{{ end }}">
+{{- $bullets_class := "slider__bullets" -}}
+{{- if or (eq .bullets "hide") (eq .bullets "radius") -}}
+  {{- $bullets_class = print $bullets_class " slider__bullets--" .bullets -}}
+{{- end -}}
+
+{{- $arrows_class := "slider__arrows" -}}
+{{- if or (eq .arrows "hide") (eq .arrows "float") -}}
+  {{- $arrows_class = print $arrows_class " slider__arrows--" .arrows -}}
+{{- end -}}
+
+{{- $bullet_class := "slider__bullet" -}}
+{{- $arrow_class  := "slider__arrow button--icon" -}}
+{{- if or (ne .button "hide") (ne .button "none") -}}
+  {{- with .button -}}
+    {{- $bullet_class = print $bullet_class " " . -}}
+    {{- $arrow_class  = print $arrow_class  " " . -}}
+  {{- end -}}
+{{- end -}}
+
+<div class="{{ $bullets_class }}">
   {{- range seq .items -}}
-    <button class="slider__bullet" title="{{ i18n `slide` }} {{ . }}"></button>
+    <button class="{{ $bullet_class }}" title="{{ i18n `slide` }} {{ . }}"></button>
   {{- end -}}
 </div>
-<div class="slider__arrows {{- if .hide_arrows }} slider__arrows--hide{{ end }}">
-  <button class="slider__arrow slider__arrow--left button--icon" title="{{ i18n `slides` 1 }}">
+
+<div class="{{ $arrows_class }}">
+  <button class="{{ $arrow_class }} slider__arrow--left" title="{{ i18n `slides` 1 }}">
     {{- partial "components/icon" (dict "icon" "chevron-left") -}}
   </button>
   {{- "" -}}
-  <button class="slider__arrow slider__arrow--right button--icon" title="{{ i18n `slides` 2 }}">
+  <button class="{{ $arrow_class }} slider__arrow--right" title="{{ i18n `slides` 2 }}">
     {{- partial "components/icon" (dict "icon" "chevron-right") -}}
   </button>
 </div>

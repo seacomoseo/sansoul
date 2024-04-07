@@ -1,17 +1,37 @@
-{{- if .color | or .gradient | or .bg -}}
-  {{- $bg_image          := "" -}}
-  {{- $bg_image_opacity  := "" -}}
-  {{- $bg_image_parallax := "" -}}
-  {{- $image_grayscale   := "" -}}
+{{- if or .color .gradient .bg -}}
+  {{- $image     := "" -}}
+  {{- $opacity   := "" -}}
+  {{- $parallax  := "" -}}
+  {{- $grayscale := "" -}}
 
   {{- if .bg -}}
-    {{- $bg_image          = "bg-figure" -}}
-    {{- $bg_image_opacity  = cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) -}}
-    {{- $bg_image_parallax = cond (not .parallax) "" (cond (or .box site.Data.design.performance.parallax) "parallax" "") -}}
-    {{- $image_grayscale   = cond (not .grayscale) "" "image--grayscale" -}}
+    {{- $image     = "bg-figure" -}}
+    {{- $opacity   = cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) -}}
+    {{- $parallax  = cond (not .parallax) "" (cond (or .box site.Data.design.performance.parallax) "parallax" "") -}}
+    {{- $grayscale = cond (not .grayscale) "" "image--grayscale" -}}
   {{- end -}}
 
-  {{- if .color | or .gradient -}}
+  {{ $divider_next := "" }}
+  {{ if .divider | and (not .footer) }}
+    {{ with .next }}
+      {{ if not (or .color .gradient .bg) }}
+        {{ if .divider }}
+          {{ $flip_y      := cond (not .flip_y) "y" "" }}
+          {{ $flip_x      := cond (not .flip_x) "x" "" }}
+          {{ $flips       := "" }}
+          {{ if or $flip_x $flip_y }}
+            {{ $flips      = print "-" $flip_x $flip_y }}
+          {{ end }}
+          {{ $divider_next = print "divider--next divider--next-" $flips "-" .divider }}
+          {{/*  {{ if partial `functions/divider-ratio` .divider }}
+            {{ $divider = print $divider " divider--ratio" }}
+          {{ end }}  */}}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{- if or .color .gradient -}}
     {{- if and .link .shadow site.Data.design.buttons.deep -}}
       <div class="bg-color bg-color--3d"></div>
     {{- end -}}
@@ -19,8 +39,9 @@
 
   {{- $class := delimit (slice
     "bg-color"
-    $bg_image
-    $bg_image_parallax
+    $image
+    $parallax
+    $divider_next
     | uniq) " "
   -}}
 
@@ -29,7 +50,7 @@
       <div class="bg-figure-video">
     {{- end -}}
       {{- partial "components/image" (dict
-        "class"     (delimit (slice "bg-figure-image" $bg_image_opacity $image_grayscale) " ")
+        "class"     (delimit (slice "bg-figure-image" $opacity $grayscale) " ")
         "src"       .bg
         "notlazy"   .header
         "bg"        true

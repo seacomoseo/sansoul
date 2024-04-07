@@ -154,6 +154,12 @@
         ```
       - [x] `sections.[es|en]/footer.yml` > `sections.[es|en]/base/footer.yml`
       - [x] Nested sections
+      - [x] `hide_arrows` > `arrows: [bottom, float, hide]` (float styles in backtoroots.es)
+      - [x] `hide_bullets` > `bullets: [dash, radius, hide]` (float styles in backtoroots.es)
+      - [x] `data.templates.*.general` > `section`
+      - [x] Add `data.templates.*` > `background`
+      - [x] Remove default white color of sections
+      - [x] `footer.divider`
       - [ ] mv partials sections
       - [ ] h1
       - [ ] Articles related type
@@ -162,11 +168,10 @@
         - [ ] pagination
         - [ ] comments
         - [ ] if
-      - [ ] Menu stycky
+      - [ ] Menu sticky
         - [ ] baseof
         - [ ] css
         - [ ] js
-      - [ ] `footer.divider`
       - [ ] Remove `data.articles` or update
       - [ ] `design.yml` > `styles.yml`
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
