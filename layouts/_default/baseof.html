@@ -29,6 +29,16 @@
     {{- with partial "functions/lang-params-custom-code" (dict "params" "html_head") -}}
       {{- (. | resources.FromString (print "aux_html_head." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_head." $.Lang) $context).Content | safeHTML -}}
     {{- end -}}
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16461723932"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-16461723932');
+    </script>
   </head>
 
   <body
