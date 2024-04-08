@@ -99,6 +99,53 @@
     {{ with partial "functions/lang-params-custom-code" (dict "params" "html_body") }}
       {{ (. | resources.FromString (print "aux_html_body." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $context).Content | safeHTML }}
     {{ end }}
+    <script>
+      document.addEventListener('click', function(e) {
+    
+        if (e.target.closest('.contact__email-option-send')) {
+          gtag('event', 'conversion', {
+            'send_to': 'AW-16461723932/M_PlCOG5wqQZEJzyx6k9'
+          });
+        }
+    
+        if (e.target.closest('.callnow__whatsapp')) {
+          gtag('event', 'conversion', {
+            'send_to': 'AW-16461723932/2XcXCOOvwqQZEJzyx6k9'
+          });
+        }
+    
+        if (e.target.closest('.contact__phone')) {
+          gtag('event', 'conversion', {
+            'send_to': 'AW-16461723932/8MTJCP6qwaQZEJzyx6k9'
+          });
+        }
+    
+        if (e.target.closest('.contact__email-option-copy')) {
+          gtag('event', 'conversion', {
+            'send_to': 'AW-16461723932/AGgHCNWvwKQZEJzyx6k9'
+          });
+        }
+    
+      }, {
+        capture: true
+      });
+    
+    </script>
+    <script>
+      var x = 0;
+      var timer = setInterval(function() {
+        if (document.querySelectorAll('.contact__form-submit').length > 0 && window.location.href.includes('contact')) {
+          if (x == 0) {
+            gtag('event', 'conversion', {
+              'send_to': 'AW-16461723932/uXeHCIHSwaQZEJzyx6k9'
+            });
+            x = 1;
+          }
+          clearInterval(timer);
+        }
+      }, 1000);
+    
+    </script>
   </body>
 </html>
 {{- block "none" . }}{{ end }}
