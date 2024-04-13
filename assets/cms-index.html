@@ -19,15 +19,12 @@
     {{ end }}
   {{ end }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+  <style>
+    {{ partial "cms/index/icons.css" . }}
+  </style>
 
   {{/*  NETLIFY IDENTITY  */}}
   {{ if not $local }}
-    <script>
-      let identityToken = false
-      if (window.location.hash.indexOf('_token=') >= 0) {
-        identityToken = true
-      }
-    </script>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   {{ end }}
 
@@ -59,8 +56,8 @@
   */}}
 
   <script>
-    // REWRITE IMAGES SRC
     {{/*
+    // REWRITE IMAGES SRC
     {{ if site.Data.config.lfs }}
       {{ partial "cms/index/rewrite-images-src.js" . }}
     {{ end }}
@@ -71,29 +68,13 @@
 
     // DEPLOY STATUS
     {{ cond $local "" (partial "cms/index/deploy-status.js" .) }}
-
-    // CUSTOM BOOLEAN WIDGET
-    {{ partial "cms/index/custom-boolean.js" . }}
-
+        
     // STATIC CMS
     CMS.init()
 
-    // NETLIFY IDENTITY
-    {{ if not $local }}
-      if (identityToken) {
-        // Reload script for fix invitation
-        function loadScript (url) {
-          const s = document.createElement('script')
-          s.src = url
-          document.head.appendChild(s)
-        }
-        setTimeout(
-          loadScript ('https://identity.netlify.com/v1/netlify-identity-widget.js')
-          , 5000
-        )
-      }
-    {{ end }}
+    {{ partial "cms/index/custom-widgets.js" . }}
+    {{ partial "cms/index/pre-save.js" . }}
+    {{ cond $local (partial "cms/index/netlify-identity.js" .) "" }}
   </script>
-
 </body>
 </html>

@@ -5,7 +5,7 @@
 {{/*  TYPES  */}}
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_TYPES"
   (dict
-    "label"           `📚 Tipos`
+    "label"           `Tipos`
     "name"            `types`
     "description"     `Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE: Artículos se consideran todos los tipos de páginas excepto las Seccionadas y sus Secciones y Modales correspondientes.`
     "sortable_fields" (dict "fields" slice)
@@ -18,7 +18,7 @@
 {{/*  SECTIONED  */}}
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_SECTIONED"
   (dict
-    "label"            (print ($taxonomies.page.emoji) " " (i18n "page"))
+    "label"            (i18n "page")
     "label_singular"   (i18n "page" 1)
     "name"             `page`
     "description"      `Páginas maquetables por secciones.`
@@ -69,7 +69,7 @@
 {{/*  SECTIONS  */}}
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_SECTIONS"
   (dict
-    "label"            (print ($taxonomies.sections.emoji) " " (i18n "sections"))
+    "label"            (i18n "sections")
     "label_singular"   (i18n "sections" 1)
     "name"             `sections`
     "description"      `Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.`
@@ -145,7 +145,7 @@
 {{/*  MODALS  */}}
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_MODALS"
   (dict
-    "label"            (print ($taxonomies.modals.emoji) " " (i18n "modals"))
+    "label"            (i18n "modals")
     "label_singular"   (i18n "modals" 1)
     "name"             `modals`
     "description"      `Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un '#' delante del ID, **ejemplo**: '#reparaciones-mantenimiento').`
@@ -207,7 +207,7 @@
 {{/*  PAGES  */}}
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_PAGES"
   (dict
-    "label"            (print ($taxonomies.pages.emoji) " " (i18n "pages"))
+    "label"            (i18n "pages")
     "label_singular"   (i18n "pages" 1)
     "name"             `pages`
     "description"      `Páginas básicas o normales (sin secciones).`
@@ -256,7 +256,7 @@
 {{ if .GetPage "blog" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_BLOG"
     (dict
-      "label"            (print ($taxonomies.blog.emoji) " " (i18n "blog"))
+      "label"            (i18n "blog")
       "label_singular"   (i18n "blog" 1)
       "name"             `blog`
       "description"      `Entradas del blog, con fechas, categorias, etiquetas y autores asignados.`
@@ -313,7 +313,7 @@
 {{ if .GetPage "events" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_EVENTS"
     (dict
-      "label"            (print ($taxonomies.events.emoji) " " (i18n "events"))
+      "label"            (i18n "events")
       "label_singular"   (i18n "events" 1)
       "name"             `events`
       "description"      `Eventos con fechas de inicio y fin.`
@@ -374,7 +374,7 @@
 {{ if .GetPage "products" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_PRODUCTS"
     (dict
-      "label"            (print ($taxonomies.products.emoji) " " (i18n "products"))
+      "label"            (i18n "products")
       "label_singular"   (i18n "products" 1)
       "name"             `products`
       "description"      `Productos con categorias, etiquetas y variaciones.`
@@ -428,7 +428,7 @@
 {{ if .GetPage "categories" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_CATEGORIES"
     (dict
-      "label"            (print ($taxonomies.categories.emoji) " " (i18n "categories"))
+      "label"            (i18n "categories")
       "label_singular"   (i18n "categories" 1)
       "name"             `categories`
       "description"      `Categorías asignadas a cada artículo. Es necesario crearlas aquí antes de poder asignarlas.`
@@ -479,7 +479,7 @@
 {{ if .GetPage "tags" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_TAGS"
     (dict
-      "label"            (print ($taxonomies.tags.emoji) " " (i18n "tags"))
+      "label"            (i18n "tags")
       "label_singular"   (i18n "tags" 1)
       "name"             `tags`
       "description"      `Etiquetas asignadas a cada artículo. Es necesario crearlas aquí antes de poder asignarlas.`
@@ -530,7 +530,7 @@
 {{ if .GetPage "authors" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_AUTHORS"
     (dict
-      "label"            (print ($taxonomies.authors.emoji) " " (i18n "authors"))
+      "label"            (i18n "authors")
       "label_singular"   (i18n "authors" 1)
       "name"             `authors`
       "description"      `Autores asignados a cada artículo. Es necesario crearlos aquí antes de poder asignarlos.`
@@ -581,7 +581,7 @@
 {{ if .GetPage "custom" }}
   {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_CUSTOM"
     (dict
-      "label"            (print ($taxonomies.custom.emoji) " " (i18n "custom"))
+      "label"            (i18n "custom")
       "label_singular"   (i18n "custom" 1)
       "name"             `custom`
       "description"      `Páginas personalizadas por secciones.`

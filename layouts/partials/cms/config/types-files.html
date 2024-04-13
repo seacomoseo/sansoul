@@ -13,7 +13,7 @@
   {{ $types_files = $types_files | append (dict
     "file"      (print "content/_index/" . ".md")
     "extension" `md`
-    "label"     (print (index $taxonomies .).emoji " " (i18n .))
+    "label"     (i18n .)
     "name"      (print "types-" .)
     "fields"    (slice
       `~P_TITLE`

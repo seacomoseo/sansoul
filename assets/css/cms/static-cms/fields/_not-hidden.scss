@@ -1,0 +1,16 @@
+// No hidden if param is set
+.CMS_EditorControl_hidden:is(
+  :has(.CMS_Widgetboolean_root:not(.CMS_Field_disabled)),
+  :has(input:not(
+    [value=""],
+    .CMS_Widgetboolean_root input
+  )),
+  :has(:is(
+    .CMS_WidgetMarkdown_plate-editor,
+    .CMS_TextArea_input,
+  ):not(:empty)),
+  :has(.CMS_Image_root),
+  :has(.CMS_WidgetList_fields),
+) {
+  display: block;
+}

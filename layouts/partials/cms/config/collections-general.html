@@ -13,7 +13,7 @@
 
 {{ return slice (dict "&COLLECTION_GENERAL"
   (dict
-    "label"           `✅ General`
+    "label"           `General`
     "name"            `config`
     "description"     `Opciones generales del sitio web`
     "sortable_fields" (dict "fields" slice)
@@ -22,21 +22,21 @@
       (dict
         "file"      `data/config.yml`
         "extension" `yml`
-        "label"     `⚙️ Configuración General`
+        "label"     `Configuración`
         "name"      `data-config`
         "fields"    (partial "cms/config/data-config-fields" .)
       )
       (dict
         "file"      `data/design.yml`
         "extension" `yml`
-        "label"     `🎨 Diseño General`
+        "label"     `Estilos`
         "name"      `data-design`
         "fields"    (partial "cms/config/data-design-fields" .)
       )
       (dict
         "file"      `data/sections.yml`
         "extension" `yml`
-        "label"     `🧩 Diseño de Secciones`
+        "label"     `Secciones`
         "name"      `data-sections`
         "fields"    (slice
           `~SECTIONS_DESIGN_GENERAL`
@@ -46,21 +46,21 @@
       (dict
         "file"      `data/modals.yml`
         "extension" `yml`
-        "label"     `🪟 Diseño de Modales`
+        "label"     `Modales`
         "name"      `data-modals`
         "fields"    `~MODALS_DESIGN_FIELDS`
       )
       (dict
         "file"      `data/articles.yml`
         "extension" `yml`
-        "label"     `📚 Diseño de Artículos`
+        "label"     `Listas`
         "name"      `data-articles`
         "fields"    (partial "cms/config/data-articles-fields" .)
       )
       (dict
         "file"      `data/menu.yml`
         "extension" `yml`
-        "label"     `🔗 Diseño de Menú`
+        "label"     `Menú`
         "name"      `data-menu`
         "fields"    (slice
           (dict "label" `Logo`                              "name" `logo`                 "widget" `image`   "required" false "max_file_size" 512000000)
@@ -88,7 +88,7 @@
       (dict
         "file"      `hugo.yml`
         "extension" `yml`
-        "label"     `💬 Idiomas`
+        "label"     `Idiomas`
         "name"      `hugo`
         "fields"    (slice
           (dict "label" `URL Base`                 "name" `baseURL`     "widget" `hidden` "required" false)
@@ -115,7 +115,7 @@
       (dict
         "file"      `data/redirects.md`
         "extension" `md`
-        "label"     `↪️ Redirecciones`
+        "label"     `Redirecciones`
         "name"      `redirects`
         "fields"    (slice
           (dict "label" `Redirecciones` "name" `body` "widget" `text` "required" false
@@ -126,7 +126,7 @@
       (dict
         "file"      `data/robots.md`
         "extension" `md`
-        "label"     `🤖 Robots.txt`
+        "label"     `Robots.txt`
         "name"      `robots`
         "fields"    (slice
           (dict "label" `robots.txt` "name" `body` "widget" `text` "required" false

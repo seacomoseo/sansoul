@@ -1,12 +1,12 @@
 {{ return slice
-  (dict "&SECTION_HEADER_ARTICLE" (dict "label" `Encabezado Sencillo`                "name" `header_article` "widget" `boolnew` "required" false "hint" "Añade el mismo encabezado que hay en el contenido sencillo y blog (también deja el menú accesible solamente mediante botón de hamburguesa)"))
+  (dict "&SECTION_HEADER_ARTICLE" (dict "label" `Encabezado Sencillo`                "name" `header_article` "widget" `boolean` "required" false "hint" "Añade el mismo encabezado que hay en el contenido sencillo y blog (también deja el menú accesible solamente mediante botón de hamburguesa)"))
   (dict "&SECTION_ID"             (dict "label" `ID`                                 "name" `id`             "widget" `string`  "required" false "pattern" (slice "^[a-z-)+$" `Corto 🔷 Descriptivo 🔷 Sin palabras irrelevantes (de, por, para, el…) 🔷 En minúsculas 🔷 Sin espacios (guiones medios en su lugar) 🔷 Sin eñes (enes en su lugar) 🔷 Sin caracteres extraños ni barras bajas 🔷 Ejemplo: preguntas-frecuentes`) "hint" "Identificador personalizado 🔷 **Obligatorio para crear este archivo**, pero una vez creado, este campo se puede cambiar o incluso quitar 🔷 Es importante que sea único"))
-  (dict "&SECTION_FULL"           (dict "label" `Alto Mínimo de Pantalla`            "name" `full`           "widget" `boolnew` "required" false))
+  (dict "&SECTION_FULL"           (dict "label" `Alto Mínimo de Pantalla`            "name" `full`           "widget" `boolean` "required" false))
   (dict "&SECTION_IMAGE_MIN"      (dict "label" `Ancho de Imagen en Ventana Pequeña` "name" `image_min`      "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 0 "max" 18))
   (dict "&SECTION_IMAGE_MAX"      (dict "label" `Ancho de Imagen en Ventana Grande`  "name" `image_max`      "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 0 "max" 60))
   (dict "&SECTION_IMAGE_ALIGN"    (dict "label" `Alineación de la Imagen`            "name" `image_align`    "widget" `select`  "required" false "options" `~OPTIONS_ALIGN`))
 
   (dict "&DIVIDER_ID"     (dict "label" `Divisor`                    "name" `divider` "widget" `select`  "required" false "options" `~OPTIONS_DIVIDER` "multiple" false "hint" "Visibles en → [sansoul.netlify.app/divisores/](https://sansoul.netlify.app/divisores/)"))
-  (dict "&DIVIDER_FLIP_X" (dict "label" `Voltear Divisor Horizontal` "name" `flip_x`  "widget" `boolnew` "required" false))
-  (dict "&DIVIDER_FLIP_Y" (dict "label" `Voltear Divisor Vertical`   "name" `flip_y`  "widget" `boolnew` "required" false "hint" "Esto desplaza el divisor desde la parte inferior de la sección actual hacia la parte superior de la sección siguiente"))
+  (dict "&DIVIDER_FLIP_X" (dict "label" `Voltear Divisor Horizontal` "name" `flip_x`  "widget" `boolean` "required" false))
+  (dict "&DIVIDER_FLIP_Y" (dict "label" `Voltear Divisor Vertical`   "name" `flip_y`  "widget" `boolean` "required" false "hint" "Esto desplaza el divisor desde la parte inferior de la sección actual hacia la parte superior de la sección siguiente"))
 }}

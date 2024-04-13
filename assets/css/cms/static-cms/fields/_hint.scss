@@ -1,0 +1,93 @@
+// Float
+.CMS_Hint_root {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -1px;
+  width: calc(100% + 2px);
+  padding: 0 .75rem .5rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top-color: transparent;
+  border-top-width: 0;
+  height: auto;
+  z-index: 20;
+}
+.CMS_EditorControl_root:hover:not(:has(
+  :where(
+    .CMS_WidgetObject_root,
+    .CMS_WidgetObject_list-root,
+    .CMS_WidgetList_field-wrapper
+  ):hover
+)) {
+  .CMS_Hint_root {
+    display: block;
+  }
+  :where(
+    .CMS_Field_root,
+    .CMS_WidgetCode_root
+  ):has(.CMS_Hint_root) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+:where(
+  .CMS_WidgetObject_root,
+  .CMS_WidgetList_sortable-item,
+  .CMS_WidgetList_field-wrapper
+):hover:not(:has(> .MuiCollapse-root:hover)) {
+  > .CMS_Hint_root {
+    display: block;
+  }
+  &:has(> .CMS_Hint_root) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+// Links underline
+.CMS_Hint_link {
+  text-decoration: underline;
+}
+
+// Info
+.CMS_EditorControl_root
+:where(
+  :where(
+    .CMS_Field_root,
+    .CMS_WidgetCode_root,
+  ):has(.CMS_Hint_root),
+  :where(
+    .CMS_WidgetObject_root,
+    .CMS_WidgetList_field-wrapper,
+    .CMS_WidgetList_sortable-item,
+  ):has(> .CMS_Hint_root)
+):after {
+  content: 'i';
+  font-size: 12px;
+  position: absolute;
+  top: calc(100% - 0.8125rem);
+  left: 0.0625rem;
+  padding: 0.125rem;
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  background-color: var(--common-gray);
+  color: var(--bg);
+}
+// Front for touch over the info in mobile
+.CMS_EditorControl_root {
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    display: block;
+    width: 1rem;
+    height: 2rem;
+    z-index: 20;
+  }
+}

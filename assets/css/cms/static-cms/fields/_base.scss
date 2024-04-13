@@ -1,0 +1,52 @@
+// Parent
+.CMS_Editor_content {
+  max-width: calc(100vw - 1rem);
+  margin-block: auto;
+}
+
+// Box background
+.CMS_Field_root {
+  align-items: flex-start;
+}
+.CMS_Field_root,
+.CMS_WidgetObject_root,
+.CMS_WidgetList_field-wrapper,
+.CMS_WidgetList_sortable-item,
+.CMS_WidgetCode_root,
+.CMS_Hint_root {
+  border-width: .0625rem;
+  border-radius: .5rem;
+  padding: .5rem .75rem;
+  border-color: var(--border);
+  background-color: var(--bg);
+  width: 100%;
+  // height: 100%;
+  box-shadow: var(--shadow);
+  // Remove paddings
+  > * {
+    padding-inline: 0;
+  }
+  > :first-child {
+    padding-top: 0;
+  }
+  // > :last-child {
+  //   padding-bottom: 0;
+  // }
+}
+
+// Gap of fields and margin of parents
+.CMS_EditorControlPane_root,
+.CMS_WidgetObject_fields,
+.CMS_WidgetObject_list-root,
+.CMS_WidgetList_fields {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1.5rem;
+  margin-block: 1em;
+  overflow: visible;
+  > * {
+    flex-grow: 1;
+    min-width: calc(50% - .75rem);
+  }
+}

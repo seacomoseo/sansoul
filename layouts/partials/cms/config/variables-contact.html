@@ -1,8 +1,8 @@
 {{ return slice
   (dict "&CONTACT_LABEL"           (dict "<<" (slice (dict "label" `Texto`) `~BUTTON_LABEL`)))
   (dict "&CONTACT_LABEL_PHONE"     (dict "label" `Número de Teléfono`            "name" `label`           "widget" `string`))
-  (dict "&CONTACT_FULL"            (dict "label" `Ancho Completo`                "name" `full`            "widget" `boolnew` "required" false))
-  (dict "&CONTACT_ADDRESS_ACTIVE"  (dict "label" `Mostrar el Botón de Ubicación` "name" `active`          "widget" `boolnew` "required" false "hint" "Si está desmarcado, los datos se usarán igualmente en el marcado interno para el SEO"))
+  (dict "&CONTACT_FULL"            (dict "label" `Ancho Completo`                "name" `full`            "widget" `boolean` "required" false))
+  (dict "&CONTACT_ADDRESS_ACTIVE"  (dict "label" `Mostrar el Botón de Ubicación` "name" `active`          "widget" `boolean` "required" false "hint" "Si está desmarcado, los datos se usarán igualmente en el marcado interno para el SEO"))
   (dict "&CONTACT_ADDRESS_NAME"    (dict "label" `Nombre en Google Maps`         "name" `name`            "widget" `string`  "required" false))
   (dict "&CONTACT_STREETADDRESS"   (dict "label" `Calle`                         "name" `streetAddress`   "widget" `string`  "required" false))
   (dict "&CONTACT_POSTALCODE"      (dict "label" `Código Postal`                 "name" `postalCode`      "widget" `number`  "required" false "value_type" `int` "min" 10000 "max" 99999))
@@ -25,7 +25,7 @@
   (dict "&FORM_NAME"        (dict "label" `Nombre`    "name" `name`        "widget" `string`                    "hint" "Nombre que tendrá el campo"))
   (dict "&FORM_PLACEHOLDER" (dict "label" `Resumen`   "name" `placeholder` "widget" `string`  "required" false  "hint" "Texto descriptivo del campo; Si no se especifica, se aplicará el nombre anterior"))
   (dict "&FORM_HINT"        (dict "label" `Leyenda`   "name" `hint`        "widget" `string`  "required" false  "hint" "Texto descriptivo del campo que aparece bajo éste"))
-  (dict "&FORM_REQUIRED"    (dict "label" `Requerido` "name" `required`    "widget" `boolnew` "required" false  "hint" "Si es obligatorio especificar el campo"))
+  (dict "&FORM_REQUIRED"    (dict "label" `Requerido` "name" `required`    "widget" `boolean` "required" false  "hint" "Si es obligatorio especificar el campo"))
   (dict "&FORM_OPTIONS"     (dict "label" `Opciones`  "name" `options`     "widget" `list`    "label_singular" `Opción` "summary" "Opción: {{fields.option}}" "collapsed" true "allow_add" true "fields" (slice (dict "label" `Opción` "name" `option` "widget" `string` "required" false))))
   (dict "&FORM_ACCEPT"      (dict "label" `Archivos`  "name" `accept`      "widget" `string`                    "hint" "Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas 🔷 Ejemplo: '.pdf,.png,.jpg,.jpeg'"))
   (dict "&FORM_FIELDS"      (slice

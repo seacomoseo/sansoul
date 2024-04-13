@@ -160,6 +160,21 @@
       - [x] Add `data.templates.*` > `background`
       - [x] Remove default white color of sections
       - [x] `footer.divider`
+      - [ ] `columns_min` > num type
+      - [ ] `opacity` > `alpha`
+      - [ ] class > variables css inline:
+        - [ ] `columns_min`
+        - [ ] `span`
+        - [ ] `span_min`
+        - [ ] `gap`
+        - [ ] `gap_y`
+        - [ ] `alpha`
+        - [ ] `order`
+        - [ ] `icon_size` (only box)
+      - [ ] Remove:
+        - [ ] `image_min`
+        - [ ] `image_max`
+        - [ ] `image_align`
       - [ ] mv partials sections
       - [ ] h1
       - [ ] Articles related type
@@ -172,8 +187,9 @@
         - [ ] baseof
         - [ ] css
         - [ ] js
-      - [ ] Remove `data.articles` or update
-      - [ ] `design.yml` > `styles.yml`
+      - [ ] `type: articles` > `type: lists`
+      - [ ] `data/articles.yml` > `data/lists.yml` or each `_index.*.list`
+      - [ ] `data/design.yml` > `data/styles.yml`
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
       - [ ] cp `data/templates` > `themes/sansoul/data/templates`

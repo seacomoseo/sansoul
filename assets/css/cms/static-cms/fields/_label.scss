@@ -1,0 +1,35 @@
+// Padding for labels and hints
+.CMS_Label_root,
+.CMS_Field_inline-wrapper {
+  padding: 0;
+}
+
+// Display
+.CMS_Label_root {
+  display: block;
+}
+
+// Required
+[class*="_required"] .CMS_Label_root:after {
+  content: '✱';
+  color: var(--primary-main);
+  margin-left: 0.25em;
+}
+// Remove (opcional)
+[data-testid*="(opcional)"] > {
+  *,
+  * > * {
+    > .CMS_Label_root:after {
+      content: '(opcional)';
+      margin-left: -5em;
+      margin-right: -10em;
+      color: var(--bg);
+      text-shadow:
+        -.5px 0 0 var(--bg),
+        .5px 0 0 var(--bg),
+        0 -.5px 0 var(--bg),
+        0 .5px 0 var(--bg);
+      // background-color: var(--bg);
+    }
+  }
+}
