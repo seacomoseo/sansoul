@@ -5,7 +5,7 @@
       .streetAddress ", "
       .postalCode " "
       (cond
-        (eq .addressLocality .addressRegion)
+        (eq .addressLocality .addressRegion | or (not .addressRegion))
         .addressLocality
         (print
           .addressLocality ", "
