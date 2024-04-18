@@ -17,11 +17,11 @@ gradient: grey # [ white, light, grey, grey-dark, dark, black, main-light, main-
 # like each box
 size: sm # [ xs, sm, md, lg, xl, fluid ]
 box_color: main-light # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
-box_color_opacity: 100 # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+box_color_alpha: 0 # [ 0.00 - 1.00 ]
 box_gradient: light # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
 box_gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 box_bg: fondo.jpg
-box_opacity: 100 # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+box_alpha: 0 # [ 0.00 - 1.00 ]
 box_parallax: true
 box_tag: div # [ section, header, footer, nav, article, aside, div ]
 # esentials not usuals
@@ -36,10 +36,10 @@ image_align: center # [ left, center, right ]
 ## bg
 full: true
 ph: false
-pt: 5 # [ 0 - 9 ]
-pb: 5 # [ 0 - 9 ]
+pt: 5 # [ >= 0.00 ]
+pb: 5 # [ >= 0.00 ]
 parallax: true
-box_gap: '' # [ 0 - 5 ]
+box_gap: '' # [ >= 0.00 ]
 tag: aside # [ section, header, footer, nav, article, aside, div ]
 ## divider
 divider: wavy-op
@@ -47,10 +47,10 @@ flip_x: true
 flip_y: true
 box:
   # boxes group
-  columns: 2 # [ 1 - 12, auto ]
-  columns_min: false
-  gap: '' # [ 0 - 5 ]
-  gap_y: '' # [ 0 - 3 ]
+  columns: 2 # [ 0 = auto, > 0.00 ]
+  columns_min: 1 # [ 0 = auto, > 0.00 ]
+  gap: '' # [ >= 0.00 ]
+  gap_y: '' # [ >= 0.00 ]
   direction: right # [ right, left, top, bottom ]
   group_radius: false
   slider: true
@@ -82,16 +82,16 @@ box:
   grayscale: false
   # bg
   color: black # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
-  color_opacity: '' # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+  color_alpha: '' # [ 0.00 - 1.00 ]
   gradient: light # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
   gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
   bg: logo.png
-  opacity: 20 # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+  alpha: .8 # [ 0.00 - 1.00 ]
   parallax: true
   grow: false
   box_ratio: 16x9 # [ 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1 ]
-  box_gap: '' # [ 0 - 5 ]
-  padding: '' # [ 0 - 6 (0.25) ]
+  box_gap: '' # [ >= 0.00 ]
+  padding: '' # [ >= 0.00 ]
   hide_shadow: true
   hide_radius: true
   pill: false
@@ -114,8 +114,8 @@ boxes:
   description: |
     Descripción de Caja
   order: -1 # [-20 - 20]
-  span: 2
-  span_min: 1
+  span: 2 # [ > 0.00 ]
+  span_min: 1 # [ > 0.00 ]
   # usuals
   icon: shield-virus # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
   image: fondo.jpg
@@ -208,12 +208,12 @@ boxes:
   gss_sheet: 1861644079
 - view: reviews
   review:
-    columns: 3 # [ 1 - 12, auto ]
-    columns_min: false
+    columns: 3 # [ 0 = auto, > 0.00 ]
+    columns_min: 1 # [ 0 = auto, > 0.00 ]
     color: black # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
     gradient: dark # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
     gradient_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-    opacity: 50 # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+    alpha: .5 # [ 0.00 - 1.00 ]
     hide_shadow: true
     slider: true
     interval: 2
@@ -254,6 +254,7 @@ boxes:
     button: button
     font_alt: false
   - view: address
+    label: ''
     name: Molando Ando
     streetAddress: Calle País de Nunca Jamás, 42
     postalCode: 30000

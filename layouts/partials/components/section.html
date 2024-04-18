@@ -16,22 +16,14 @@
   {{- end -}}
 {{- end -}}
 
-{{- $class := partial "components/section-class" (merge . (dict
+{{- $attr := partial "components/section-attr" (merge . (dict
   "header" $header
   "footer" $footer
   "modal"  $modal
 )) -}}
 
 {{/*  SECTION  */}}
-{{- print
-  "<"
-  $tag
-  (cond (not .id) "" (print ` id="` .id `"`))
-  ` class="` $class `"`
-  (cond $modal ` hidden="until-found"` "")
-  ">"
-  | safeHTML
--}}
+{{- print "<" $tag $attr ">" | safeHTML -}}
 
   {{/*  BACKGROUND  */}}
   {{- if not $modal -}}
@@ -46,10 +38,10 @@
       "key"           0
       "tag"           (cond $modal .tag           .box_tag)
       "bg"            (cond $modal .bg            .box_bg)
-      "opacity"       (cond $modal .opacity       .box_opacity)
+      "alpha"         (cond $modal .alpha         .box_alpha)
       "parallax"      (cond $modal .parallax      .box_parallax)
       "color"         (cond $modal .color         .box_color)
-      "color_opacity" (cond $modal .color_opacity .box_color_opacity)
+      "color_alpha"   (cond $modal .color_alpha   .box_color_alpha)
       "gradient"      (cond $modal .gradient      .box_gradient)
       "gradient_type" (cond $modal .gradient_type .box_gradient_type)
       "padding"       (cond $modal .padding       .box_padding)

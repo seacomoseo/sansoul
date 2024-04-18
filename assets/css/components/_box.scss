@@ -2,11 +2,11 @@
 .box {
   container: box / inline-size;
   position: relative;
+  display: flex;
+  flex-direction: column;
   max-width: 100%;
   padding: var(--box-padding);
   --box-inner: calc(100cqw - var(--box-padding) * 2);
-  display: flex;
-  flex-direction: column;
   --box-gap: 1rem;
   gap: var(--box-gap);
   &.bg {
@@ -79,59 +79,22 @@
   }
 }
 
-// Gap
-.box--gap-0 { --box-gap: 0rem; }
-.box--gap-1 { --box-gap: 1rem; }
-.box--gap-2 { --box-gap: 2rem; }
-.box--gap-3 { --box-gap: 3rem; }
-.box--gap-4 { --box-gap: 4rem; }
-.box--gap-5 { --box-gap: 5rem; }
-
 // Padding
 .container,
-.box:where(:not(.bg)),
-.box--padding-0   { --box-padding: 0.00em; }
-.box--padding-25  { --box-padding: 0.25em; }
-.box--padding-50  { --box-padding: 0.50em; }
-.box--padding-75  { --box-padding: 0.75em; }
-.box:where(.bg:not(.columns > *, [class*="box--padding-"])),
-.box--padding-100 { --box-padding: 1.00em; }
-.box--padding-125 { --box-padding: 1.25em; }
-.box--padding-150 { --box-padding: 1.50em; }
-.box--padding-175 { --box-padding: 1.75em; }
-.box--padding-200 { --box-padding: 2.00em; }
-.box--padding-225 { --box-padding: 2.25em; }
-.box--padding-250 { --box-padding: 2.50em; }
-.box--padding-275 { --box-padding: 2.75em; }
-.box--padding-300 { --box-padding: 3.00em; }
-.box--padding-325 { --box-padding: 3.25em; }
-.box--padding-350 { --box-padding: 3.50em; }
-.box--padding-375 { --box-padding: 3.75em; }
-.box--padding-400 { --box-padding: 4.00em; }
-.box--padding-425 { --box-padding: 4.25em; }
-.box--padding-450 { --box-padding: 4.50em; }
-.box--padding-475 { --box-padding: 4.75em; }
-.box--padding-500 { --box-padding: 5.00em; }
-.box--padding-525 { --box-padding: 5.25em; }
-.box--padding-550 { --box-padding: 5.50em; }
-.box--padding-575 { --box-padding: 5.75em; }
-.box--padding-600 { --box-padding: 6.00em; }
+.box:where(:not(.bg)) {
+  --box-padding: 0em;
+}
+.box:where(.bg:not(.columns > *, [class*="box--padding-"])) {
+  --box-padding: 1.00em;
+}
 
 // Span
-%box--span {
+.box--span {
+  --box-span-min: 1;
+  --box-span-max: 1;
+  @include fluid-size(--box-span, 1, var(--box-span-min), var(--box-span-max));
   --box-width: calc(var(--box-w) * var(--box-span) + var(--gap-width) * (var(--box-span) - 1));
 }
-.box--span-2 {  --box-span:  2; @extend %box--span; }
-.box--span-3 {  --box-span:  3; @extend %box--span; }
-.box--span-4 {  --box-span:  4; @extend %box--span; }
-.box--span-5 {  --box-span:  5; @extend %box--span; }
-.box--span-6 {  --box-span:  6; @extend %box--span; }
-.box--span-7 {  --box-span:  7; @extend %box--span; }
-.box--span-8 {  --box-span:  8; @extend %box--span; }
-.box--span-9 {  --box-span:  9; @extend %box--span; }
-.box--span-10 { --box-span: 10; @extend %box--span; }
-.box--span-11 { --box-span: 11; @extend %box--span; }
-.box--span-12 { --box-span: 12; @extend %box--span; }
 
 // Grow
 .box--grow {
@@ -283,13 +246,9 @@
   }
 }
 // Icon size
-:root         { --icon-size: 6em; }
-.icon--size-1 { --icon-size: 3em; }
-.icon--size-2 { --icon-size: 4em; }
-.icon--size-3 { --icon-size: 5em; }
-.icon--size-4 { --icon-size: 6em; }
-.icon--size-5 { --icon-size: 7em; }
-.icon--size-6 { --icon-size: 8em; }
+:root {
+  --icon-size: 6em;
+}
 
 // Title
 .box__title {

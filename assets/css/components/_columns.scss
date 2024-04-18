@@ -6,8 +6,8 @@
 
   --columns-min: 1;
   --columns-max: 1;
-  --columns-gap-min: 1;
-  --columns-gap-max: 2;
+  --columns-gap-min: min(var(--columns-gap-max), 1);
+  @include fluid-size(--columns-gap-max, 1, 1, 2);
 
   @include fluid-size(--gap-width, 1em, var(--columns-gap-min), var(--columns-gap-max));
   column-gap: var(--gap-width);
@@ -15,19 +15,24 @@
   --columns-gap-y: calc(var(--gap-width) * var(--columns-gap-ny));
   row-gap: var(--columns-gap-y);
 
-  @include fluid-size(--column-width, 1cqw, calc(100 / var(--columns-min)), calc(100 / var(--columns-max)));
+  @include fluid-size(--columns, 1, var(--columns-min), var(--columns-max));
+  --column-width: calc(100cqw / var(--columns));
 
   // gap per column (gc) = gap width * gap number / columns number
-  --gc-min: calc(var(--columns-gap-min) * (var(--columns-min) - 1) / var(--columns-min));
-  --gc-max: calc(var(--columns-gap-max) * (var(--columns-max) - 1) / var(--columns-max));
-  @include fluid-size(--gc, 1em, var(--gc-min), var(--gc-max));
+  --gc: calc(var(--gap-width) * (var(--columns) - 1) / var(--columns));
 
   --box-w: calc(var(--column-width) - var(--gc));
   --box-width: var(--box-w);
-  @include fluid-size(--box-padding, 1em, 1, 2);
+  --box-padding: calc(var(--columns-gap-max) * 1em);
 
   > * {
     width: var(--box-width);
+    @media (min-width: $screen-xl) {
+      order: var(--order, unset);
+    }
+  }
+  &:not(:has(> .bg)) {
+    --columns-gap-ny: 2;
   }
   &:not([class*="justify"]) {
     justify-content: center;
@@ -38,57 +43,13 @@
       flex-shrink: 1;
     }
   }
-  &:not([class*="columns--gap-ny-"], :has(> .bg)) {
-    --columns-gap-ny: 2;
-  }
 }
 
-.columns--min {
-  --columns-min: 2;
-  --columns-gap-min: min(var(--columns-gap-max), 1);
-}
-
-.columns--2 {  --columns-max: 2; }
-.columns--3 {  --columns-max: 3; }
-.columns--4 {  --columns-max: 4; }
-.columns--5 {  --columns-max: 5; }
-.columns--6 {  --columns-max: 6; }
-.columns--7 {  --columns-max: 7; }
-.columns--8 {  --columns-max: 8; }
-.columns--9 {  --columns-max: 9; }
-.columns--10 { --columns-max: 10; }
-.columns--11 { --columns-max: 11; }
-.columns--12 { --columns-max: 12; }
-
-// Default padding when column width is small
-.columns--3,
-.columns--4,
-.columns--5,
-.columns--6,
-.columns--7,
-.columns--8,
-.columns--9,
-.columns--10,
-.columns--11,
-.columns--12,
-.columns:where(
-  .container--xs > *,
-  .container--sm > *
-) {
+// Default padding and gap when columns is small (> 2 and container <= sm)
+.columns--sm {
   --columns-gap-max: 1;
   --box-padding: 1em;
 }
-
-.columns--gap-0 { --columns-gap-max: 0; }
-.columns--gap-1 { --columns-gap-max: 1; }
-.columns--gap-2 { --columns-gap-max: 2; }
-.columns--gap-3 { --columns-gap-max: 3; }
-.columns--gap-4 { --columns-gap-max: 4; }
-.columns--gap-5 { --columns-gap-max: 5; }
-.columns--gap-ny-0 { --columns-gap-ny: 0; }
-.columns--gap-ny-1 { --columns-gap-ny: 1; }
-.columns--gap-ny-2 { --columns-gap-ny: 2; }
-.columns--gap-ny-3 { --columns-gap-ny: 3; }
 
 .columns--left {
   flex-direction: row-reverse;

@@ -6,11 +6,17 @@
       <div class="bg-color"></div>
       <p class="cookies__messaje">
         {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
-        {{- partial "functions/md" (dict "content" (i18n "cookies-message" 1) "inline" true) -}}
+        <strong>{{ i18n "cookies-we-use" }}</strong>
+        {{- "" }} {{ i18n "cookies-message" }}. {{ "" -}}
+        {{- partial "components/link" (dict
+          "link"      "/cookies/"
+          "button"    "none"
+          "label"     (print (i18n "read-more") "…")
+        ) -}}
       </p>
       <div class="cookies__wrap">
         <div class="cookies__checks">
-          {{- range $key, $label := split (i18n "cookies-message") "," -}}
+          {{- range $key, $label := split (i18n "cookies-checks") "," -}}
             <label class="contact__form-label">
               {{- "" -}}
               <input class="contact__form-checkbox" type="checkbox" name="cookies" value="{{ . | urlize }}" {{ if not $key }}disabled checked{{ end }}>

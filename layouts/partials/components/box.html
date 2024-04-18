@@ -11,9 +11,7 @@
 {{- $group_radius  := .group_radius | and (not .slider) -}}
 
 {{- $box_span       := 1 -}}
-{{- if ge .columns .span -}}
-  {{- $box_span      = div (.columns | float) (.span | default 1) -}}
-{{- end -}}
+
 {{- $link           := .link -}}
 {{- $underline      := .underline | and (not (.icon | and (eq $icon_type "bottom"))) -}}
 
@@ -39,8 +37,9 @@
   .padding
   .pill
   .align
-  .align_xl
+  .align_max
   .align_x
+  .order
 -}}
 
 {{- if $is_wrap -}}
@@ -67,8 +66,8 @@
   {{- end -}}
   {{- $button_is := $link | and (ne .button "hide") -}}
 
-  {{/*  CLASS  */}}
-  {{- $box_class := partial "components/box-class" (merge . (dict
+  {{/*  ATTRIBUTES  */}}
+  {{- $box_attr  := partial "components/box-attr" (merge . (dict
     "main"          $main
     "modal"         $modal
     "bg_color"      $bg_color
@@ -78,19 +77,14 @@
     "button_is"     $button_is
     "radius"        $radius
     "shadow"        $shadow
+    "showup"        (and (not .slider) (not .first) $showup)
   )) -}}
-
-  {{/*  ATTRIBUTES  */}}
-  {{- $box_attr := "" -}}
-  {{- if not .slider | and (not $.first) | and $showup }}
-    {{- $box_attr = print $box_attr " data-showup" -}}
-  {{ end -}}
 
   {{/*  BOX  */}}
   {{- print
     "<"
     $tag
-    ` class="` $box_class `" `
+    " "
     $box_attr
     ">"
     | safeHTML

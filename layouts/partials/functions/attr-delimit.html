@@ -1,0 +1,17 @@
+
+{{ $return := slice }}
+{{ range .array }}
+  {{ if . }}
+    {{ $return = $return | append . }}
+  {{ end }}
+{{ end }}
+{{ with $return }}
+  {{ $return = delimit $return ($.delimit | default " ") }}
+  {{ if $.attr }}
+    {{ $return = print $.attr `="` $return `"` }}
+  {{ end }}
+{{ else }}
+  {{ $return = "" }}
+{{ end }}
+
+{{ return $return }}

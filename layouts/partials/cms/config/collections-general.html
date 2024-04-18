@@ -1,7 +1,7 @@
-{{/*  IF MULTILANGUAJE  */}}
-{{- $languajes_permalinks := slice -}}
+{{/*  IF MULTILANGUAGE  */}}
+{{- $languages_permalinks := slice -}}
 {{- range slice . | append .Translations -}}
-  {{- $languajes_permalinks = $languajes_permalinks | append (partial "cms/config/languajes-permalinks" .) -}}
+  {{- $languages_permalinks = $languages_permalinks | append (partial "cms/config/languages-permalinks" .) -}}
 {{- end -}}
 
 {{/*  IF MULTIHOST  */}}
@@ -10,6 +10,7 @@
   (index .AllTranslations 1).Site.BaseURL
   | and .IsTranslated
 -}}
+{{- $widget_disable_lang := cond $multihost `hidden` `select` -}}
 
 {{ return slice (dict "&COLLECTION_GENERAL"
   (dict
@@ -107,9 +108,9 @@
               (dict "label" `Enlace a Datos de Acceso`                  "name" `drive_link`   "widget" `hidden` "required" false)
             )
           )
-          (dict "label" `Idioma Principal`   "name" `defaultContentLanguage` "widget" `select`                            "required"  true  "options" `~OPTIONS_LANGS` "default" `es`                                                      "hint" "Español por defecto")
-          (dict "label" `Desactivar Idiomas` "name" `disableLanguages`       "widget" (cond $multihost `hidden` `select`) "required"  false "options" `~OPTIONS_LANGS` "default" site.Data.utilities.default_disable_langs "multiple" true "hint" "Todos menos el Español por defecto")
-          (dict "label" (i18n "languages")   "name" `languages`              "widget" `object`                            "collapsed" true  "fields"  $languajes_permalinks )
+          (dict "label" `Idioma Principal`   "name" `defaultContentLanguage` "widget" `select`             "required"  true  "options" `~OPTIONS_LANGS` "default" `es`                                                      "hint" "Español por defecto")
+          (dict "label" `Desactivar Idiomas` "name" `disableLanguages`       "widget" $widget_disable_lang "required"  false "options" `~OPTIONS_LANGS` "default" site.Data.utilities.default_disable_langs "multiple" true "hint" "Todos menos el Español por defecto")
+          (dict "label" (i18n "languages")   "name" `languages`              "widget" `object`             "collapsed" true  "fields"  $languages_permalinks )
         )
       )
       (dict

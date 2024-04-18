@@ -5,12 +5,20 @@
 {{- $showup        := site.Data.design.performance.showup -}}
 
 {{- $columns       := .box.columns | default 1 -}}
-{{- if eq .box.columns "auto" -}}
+{{- if eq .box.columns 0 -}}
   {{- $boxes_span  := 0 -}}
   {{- range $boxes -}}
     {{- $boxes_span = add $boxes_span (.span | default 1) -}}
   {{- end -}}
   {{- $columns      = cond (le $boxes_span 6) $boxes_span 3 -}}
+{{- end -}}
+{{- $columns_min   := .box.columns_min | default 1 -}}
+{{- if eq .box.columns_min 0 -}}
+  {{- $boxes_span  := 0 -}}
+  {{- range $boxes -}}
+    {{- $boxes_span = add $boxes_span (.span_min | default 1) -}}
+  {{- end -}}
+  {{- $columns_min  = cond (le $boxes_span 6) $boxes_span 3 -}}
 {{- end -}}
 
 {{- $is_wrap       := or (ne $columns 1) .box.columns_min .box.slider -}}
@@ -20,36 +28,56 @@
     {{- $level        = add $.level 1 -}}
 
     {{/*  CLASS  */}}
-    {{- $columns_max  := cond (ne $columns 1) (print "columns--" $columns) "" -}}
-    {{- $columns_min  := cond (not .columns_min)        "" "columns--min" -}}
+    {{- $columns_sm   := cond (or (gt $columns 2) (eq $container "xs") (eq $container "sm")) "columns--sm" "" -}}
     {{/*  {{- $boxes_level  := print "columns--" (sub $level 1) -}}  */}}
-    {{- $gap          := cond (not .gap)           "" (print "columns--gap-" .gap) -}}
-    {{- if eq .gap 0 -}}
-      {{- $gap         = "columns--gap-0" -}}
-    {{- end -}}
-    {{- $gap_y        := cond (not .gap_y)         "" (print "columns--gap-ny-" .gap_y) -}}
-    {{- if eq .gap_y 0 -}}
-      {{- $gap_y       = "columns--gap-ny-0" -}}
-    {{- end -}}
     {{- $direction    := cond (not (.direction | or (eq .direction "right"))) "" (print "columns--" .direction) -}}
     {{- $group_radius := cond (not (.group_radius | and (not .slider))) "" "columns--radius" -}}
-    {{- $align_y      := cond (not .align_y)       "" (print "align-items-" .align_y) -}}
-    {{- $align_x      := cond (not .align_x)       "" (print "justify-" .align_x) -}}
-    {{- $slider_items := cond (not .slider)        "box__type" "slider__items" -}}
+    {{- $align_y      := cond (not .align_y) "" (print "align-items-" .align_y) -}}
+    {{- $align_x      := cond (not .align_x) "" (print "justify-" .align_x) -}}
+    {{- $slider_items := cond (not .slider)  "box__type" "slider__items" -}}
 
-    {{- $class := delimit (slice
-      "columns"
-      $columns_max
-      $columns_min
-      $gap
-      $gap_y
-      $direction
-      $group_radius
-      $align_y
-      $align_x
-      $slider_items
-      | uniq) " "
-    -}}
+    {{- $class := partial "functions/attr-delimit" (dict
+      "attr"  "class"
+      "array" (slice
+        "columns"
+        $columns_sm
+        $direction
+        $group_radius
+        $align_y
+        $align_x
+        $slider_items
+      )
+    ) -}}
+
+
+    {{/*  STYLE  */}}
+    {{- $col_max := cond (eq $columns 1)     "" (print "--columns-max:" $columns) -}}
+    {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
+    {{- $gap     := cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap) -}}
+    {{- $gap_y   := cond (eq .gap_y nil)     "" (print "--columns-gap-ny:" .gap_y) -}}
+
+    {{ $style := partial "functions/attr-delimit" (dict
+      "attr"    "style"
+      "delimit" ";"
+      "array"   (slice
+        $col_max
+        $col_min
+        $gap
+        $gap_y
+      )
+    ) }}
+
+    {{/*  SHOWUP  */}}
+    {{ $showup := cond (and $showup (not .slider) (not .first)) "data-showup" "" }}
+
+    {{/*  JOIN ATTRIBUTES  */}}
+    {{ $attr := partial "functions/attr-delimit" (dict
+      "array" (slice
+        $class
+        $style
+        $showup
+      )
+    ) }}
 
     {{/*  SLIDER  */}}
     {{ if .slider }}
@@ -58,7 +86,7 @@
     {{ end }}
 
     {{/*  BOXES  */}}
-    <div class="{{ $class }}" {{- if not .slider | and (not .first) | and $showup }} data-showup{{ end }}>
+    <div {{ $attr | safeHTMLAttr }}>
   {{ end }}
 {{ end }}
 
@@ -81,18 +109,19 @@
             $.box
             .
             (dict
-              "id"        $.id
-              "level"     $level
-              "key"       $key
-              "container" $container
-              "section"   $.section
-              "first"     $.first
-              "footer"    $.footer
-              "columns"   $columns
-              "is_wrap"   $is_wrap
-              "parent"    $.parent
-              "form_lvl"  $.form_lvl
-              "form_num"  (add $key 1)
+              "id"          $.id
+              "level"       $level
+              "key"         $key
+              "container"   $container
+              "section"     $.section
+              "first"       $.first
+              "footer"      $.footer
+              "columns"     $columns
+              "columns_min" $columns_min
+              "is_wrap"     $is_wrap
+              "parent"      $.parent
+              "form_lvl"    $.form_lvl
+              "form_num"    (add $key 1)
             )
           ) -}}
 

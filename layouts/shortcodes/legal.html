@@ -12,8 +12,12 @@
     {{- with $config.legal_location -}}
       {{- . -}}
     {{- else -}}
-      {{- $postalAddress := index (partial "functions/contact-buttons" site).locations 0 | default "-" -}}
-      {{- partial "functions/postal-address" $postalAddress -}}
+      {{- $postalAddress := index (partial "functions/contact-buttons" site).locations 0 -}}
+      {{- $postalAddress.label
+        | default (partial "functions/postal-address" $postalAddress)
+        | default $config.country
+        | default "-"
+      -}}
     {{- end -}}
   {{- else if eq $param "email" -}}
     <i class="ofuscate">

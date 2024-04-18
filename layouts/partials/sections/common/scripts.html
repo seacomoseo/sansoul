@@ -8,15 +8,15 @@
 {{ $i18nVideo         := i18n `video` }}
 {{ $lang              := page.Lang }}
 
-{{ $formErrorSingleQuotes := i18n "form-error-single-quotes" }}
-{{ $formErrorRequiredOne  := i18n "form-error-required" 1 }}
-{{ $formErrorRequired     := i18n "form-error-required" }}
-{{ $formErrorEmail        := i18n "form-error-email" }}
-{{ $formErrorNumber       := i18n "form-error-number" }}
-{{ $formErrorFile         := i18n "form-error-file" }}
-{{ $formErrorAcept        := i18n "form-error-acept" }}
-{{ $formSubmitOne         := i18n "form-submit" 1 }}
-{{ $formSubmitOther       := i18n "form-submit" }}
+{{ $formErrorSingleQuotes   := i18n "form-error-single-quotes" }}
+{{ $formErrorRequiredFields := i18n "form-error-required-fields" }}
+{{ $formErrorRequiredCheck  := i18n "form-error-required-check" }}
+{{ $formErrorEmail          := i18n "form-error-email" }}
+{{ $formErrorNumber         := i18n "form-error-number" }}
+{{ $formErrorFile           := i18n "form-error-file" }}
+{{ $formErrorAcept          := i18n "form-error-acept" }}
+{{ $formSubmitOk            := i18n "form-submit-ok" }}
+{{ $formSubmitWrong         := i18n "form-submit-wrong" }}
 {{ $formsLoad    := partial "types/forms" (dict "js" true "Page" page)
   | replaceRE `\s{2,}` ` `
   | replaceRE `\n` ``
@@ -70,16 +70,16 @@
     "googleAnalyticsId" $googleAnalyticsId
     "i18nVideo"         $i18nVideo
     "lang"              $lang
-    "formsLoad"             $formsLoad
-    "formErrorSingleQuotes" $formErrorSingleQuotes
-    "formErrorRequiredOne"  $formErrorRequiredOne
-    "formErrorRequired"     $formErrorRequired
-    "formErrorEmail"        $formErrorEmail
-    "formErrorNumber"       $formErrorNumber
-    "formErrorFile"         $formErrorFile
-    "formErrorAcept"        $formErrorAcept
-    "formSubmitOne"         $formSubmitOne
-    "formSubmitOther"       $formSubmitOther
+    "formsLoad"               $formsLoad
+    "formErrorSingleQuotes"   $formErrorSingleQuotes
+    "formErrorRequiredFields" $formErrorRequiredFields
+    "formErrorRequiredCheck"  $formErrorRequiredCheck
+    "formErrorEmail"          $formErrorEmail
+    "formErrorNumber"         $formErrorNumber
+    "formErrorFile"           $formErrorFile
+    "formErrorAcept"          $formErrorAcept
+    "formSubmitOk"            $formSubmitOk
+    "formSubmitWrong"         $formSubmitWrong
     "custom"       $custom
     "customString" $customString
   )

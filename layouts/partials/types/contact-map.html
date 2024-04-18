@@ -48,11 +48,7 @@
     {{- end -}}
   {{- end -}}
 
-  {{- $class := delimit (slice
-    "map"
-    (cond (eq .link "hide") "box__type" "")
-    | uniq) " "
-  -}}
+  {{- $class := print "map" (cond (eq .link "hide") " box__type" "") -}}
 
   <div class="{{ $class }}">
 

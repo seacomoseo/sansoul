@@ -160,17 +160,27 @@
       - [x] Add `data.templates.*` > `background`
       - [x] Remove default white color of sections
       - [x] `footer.divider`
-      - [ ] `columns_min` > num type
-      - [ ] `opacity` > `alpha`
-      - [ ] class > variables css inline:
-        - [ ] `columns_min`
-        - [ ] `span`
-        - [ ] `span_min`
-        - [ ] `gap`
-        - [ ] `gap_y`
-        - [ ] `alpha`
-        - [ ] `order`
-        - [ ] `icon_size` (only box)
+      - [x] Add `font.size`
+      - [x] `align_xl` > `align_max`
+      - [x] delimit
+      - [x] `columns_min: true` > `columns_min: 2`
+      - [x] Add `span_min`
+      - [x] CMS add langs in sidebar
+      - [x] `opacity` > `alpha`
+      - [x] class > variables css inline:
+        - [x] `columns`
+        - [x] `columns_min`
+        - [x] `span`
+        - [x] `span_min`
+        - [x] `gap`
+        - [x] `gap_y`
+        - [x] `padding`
+        - [x] `alpha`
+        - [x] `order`
+        - [x] `icon_size` (only box)
+      - [ ] `.columns` > `.boxes`
+      - [ ] Rehuse `boxes` partial in `reviews`
+      - [ ] `.columns--gap-0`
       - [ ] Remove:
         - [ ] `image_min`
         - [ ] `image_max`
@@ -191,11 +201,14 @@
       - [ ] `data/articles.yml` > `data/lists.yml` or each `_index.*.list`
       - [ ] `data/design.yml` > `data/styles.yml`
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
+      - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`
       - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
       - [ ] cp `data/templates` > `themes/sansoul/data/templates`
       - [ ] Images src sizes
       - [ ] Reset `cookies`.md
       - [ ] Reset `admin`.md
+      - [ ] Remove nth-childs classes
+      - [ ] `T` in CMS labels and hints
       - [ ] Comprobar enlaces ofuscados en Google Translate y la propia traducción
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?

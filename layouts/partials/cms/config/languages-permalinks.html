@@ -1,5 +1,5 @@
 {{ return dict
-  "label"     (print .Site.Params.flag " " .Language.LanguageName)
+  "label"     (index (where site.Data.options.langs "value" .Lang) 0).label
   "name"      .Lang
   "widget"    `object`
   "collapsed" true

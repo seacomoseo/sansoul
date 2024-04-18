@@ -13,7 +13,7 @@ background:
   gradient: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
   gradient_type: '' # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
   bg: ''
-  opacity: 100 # [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ]
+  alpha: 0 # [ 0.00 - 1.00 ]
   parallax: true
 menu:
   hide: false

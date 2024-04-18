@@ -11,7 +11,7 @@ export function initScrollTop () {
   let menuStickyBgBefore, menuStickyBgAfter, elementToChange
   if (sectionHeader && menuSticky) {
     menuStickyBgBefore = sectionHeader.classList.value
-      .replace(/\sbg-(color|gradient|opacity|image)[\w-]*/g, '')
+      .replace(/\sbg-(color|gradient|alpha|image)[\w-]*/g, '')
       .replace(/.*?(bg-[\w-]*).*/g, '$1')
     menuStickyBgAfter = menuSticky.classList.value
       .replace(/.*?(bg-[\w-]*).*/g, '$1')

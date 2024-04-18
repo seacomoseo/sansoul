@@ -1,32 +1,28 @@
 const withResetButton = (OriginalComponent) => {
   return ({ label, value, onChange, ...props }) => {
-    // const [key, setKey] = window.useState(Date.now())
-
     const isSet = value !== undefined
     const isDefault = props.field.default !== undefined
 
     let wrapClass = isSet ? 'is-set' : 'is-not-set'
-    if (isDefault || value === '') wrapClass = 'id-default'
-    // if (!isSet) wrapClass = wrapClass + ' is-empty'
+    if (isDefault || value === '') wrapClass = 'is-default'
+    if (!isSet) wrapClass = wrapClass + ' is-empty'
 
-    let isButton = isSet
-    if (isDefault && props.field.default === value) isButton = false
-    if (isDefault && props.field.widget === 'boolean') isButton = false
+    let isButton = isSet && !isDefault
+    // if (isDefault && props.field.default === value) isButton = false
+    // if (isDefault && props.field.widget === 'boolean') isButton = false
     if (props.forSingleList) isButton = false
 
     const handleReset = (e) => {
-      const reset = props.field.required || props.field.default !== undefined
-        ? props.field.default
-        : undefined
-      onChange(reset)
-      // setTimeout(() => {
-      //   onChange(reset)
-      //   setKey(Date.now())
-      //   setTimeout(() => {
-      //     onChange(reset)
-      //   }, 1500)
-      // }, 1500)
-      // const widgetWrap = e.target.closest('.CMS_EditorControl_root')
+      if (props.field.widget === 'image') {
+        const widgetWrap = e.target.closest('.CMS_EditorControl_root')
+        const remove = widgetWrap.querySelector('[data-testid="remove-upload"]')
+        if (remove) remove.click()
+        setTimeout(() => onChange(undefined), 500)
+        console.log(remove)
+      } else {
+        onChange(undefined)
+      }
+      console.log(label, value, props)
       // let remove
       // setTimeout(() => {
       //   if (['string', 'text', ''].includes(props.field.widget)) {
@@ -45,14 +41,8 @@ const withResetButton = (OriginalComponent) => {
       //       remove.firstChild.remove()
       //       remove.firstChild.remove()
       //     }
-      //   } else if (props.field.widget === 'image') {
-      //     remove = widgetWrap.querySelector('[data-testid="remove-upload"]')
-      //     if (remove) remove.click()
-      //     setTimeout(() => onChange(reset), 500)
-      //   }
-      //   console.log(remove)
+      //   } else {}
       // }, 1000)
-      console.log(label, value, props)
     }
 
     return h('div',
@@ -82,16 +72,16 @@ const withResetButton = (OriginalComponent) => {
 }
 const widgets = [
   'boolean',
-  'code',
+  // 'code',
   'color',
   'datetime',
-  'file',
+  // 'file',
   'image',
   'list',
   'map',
   'markdown',
   'number',
-  'relation',
+  // 'relation',
   'select',
   'string',
   'text'

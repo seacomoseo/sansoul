@@ -1,17 +1,21 @@
-{{ $type        := cond (not .body) (cond (not .modal) "section" "modal") "" }}
+{{ $modal := .modal | default false }}
+{{ $type  := cond (not .body) (cond (not $modal) "section" "modal") "" }}
+
+{{/*  CLASS  */}}
+
 {{/*  {{ $key_class   := cond .header "section--header" (print "section--" .key) }}  */}}
 {{ $key_class   := cond (not .header) "" "section--header" }}
 {{ if .footer }}
   {{ $key_class  = "section--footer" }}
 {{ end }}
 {{/*
-{{ if .modal }}
+{{ if $modal }}
   {{ $key_class  = print $key_class "__modal--" (add .k 1) }}
 {{ end }}
 */}}
 {{ $full        := cond (not .full) "" "section--full" }}
 {{ $bg_color    := "" }}
-{{ if not .modal }}
+{{ if not $modal }}
   {{ with .color }}
     {{ $bg_color = print "bg-" . }}
   {{ end }}
@@ -21,13 +25,9 @@
 {{ end }}
 {{ $bg_gradient_color      := "" }}
 {{ $bg_gradient_type       := "" }}
-{{ if not .modal | and .gradient }}
+{{ if not $modal | and .gradient }}
   {{ $bg_gradient_color     = print "bg-gradient-" .gradient }}
   {{ $bg_gradient_type      = print "bg-gradient-" (.gradient_type | default "linear-b") }}
-{{ end }}
-{{ $bg_opacity             := "" }}
-{{ if (.color_opacity | and (ne .color_opacity 100)) | and ($bg_color | or $bg_gradient_color) }}
-  {{ $bg_opacity            = print "bg-opacity-" .color_opacity }}
 {{ end }}
 {{ $bg_image_fix           := cond (not (.bg | and .parallax | and (not site.Data.design.performance.parallax))) "" "bg--fix" }}
 {{ $bg                     := cond (not $bg_color) "" "bg" }}
@@ -36,24 +36,10 @@
   {{ $bg_video_parent       = "bg-figure-video-parent" }}
 {{ end }}
 {{ $padding_hide           := "" }}
-{{ $padding_top            := "" }}
-{{ $padding_bottom         := "" }}
 {{ $padding_top_divider    := "" }}
 {{ $padding_bottom_divider := "" }}
-{{ if .footer }}
-  {{ $padding_top           = "pt-2" }}
-{{ end }}
 {{ if .ph }}
   {{ $padding_hide          = "ph" }}
-  {{ $padding_top           = "" }}
-  {{ $padding_bottom        = "" }}
-{{ else }}
-  {{ if ne .pt nil }}
-    {{ $padding_top         = print "pt-" .pt }}
-  {{ end }}
-  {{ if ne .pb nil }}
-    {{ $padding_bottom      = print "pb-" .pb }}
-  {{ end }}
 {{ end }}
 {{ with .prev }}
   {{ if .divider }}
@@ -90,32 +76,86 @@
     {{ end }}
   {{ end }}
 {{ end }}
-{{ if .modal }}
+{{ if $modal }}
   {{ $bg             = "" }}
   {{ $bg_color       = "" }}
   {{ $bg_image_fix   = "" }}
-  {{ $padding_top    = "" }}
-  {{ $padding_bottom = "" }}
 {{ end }}
 
-{{ $class := delimit (slice
-  $type
-  $key_class
-  $full
-  $bg
-  $bg_color
-  $bg_gradient_type
-  $bg_gradient_color
-  $bg_opacity
-  $bg_image_fix
-  $bg_video_parent
-  $padding_hide
-  $padding_top
-  $padding_bottom
-  $padding_top_divider
-  $padding_bottom_divider
-  $divider
-  | uniq) " "
-}}
+{{- $class := partial "functions/attr-delimit" (dict
+  "attr"  "class"
+  "array" (slice
+    $type
+    $key_class
+    $full
+    $bg
+    $bg_color
+    $bg_gradient_type
+    $bg_gradient_color
+    $bg_image_fix
+    $bg_video_parent
+    $padding_hide
+    $padding_top_divider
+    $padding_bottom_divider
+    $divider
+    | append (.body_class | default slice)
+  )
+) -}}
 
-{{ return $class }}
+
+{{/*  ATTRIBUTES  */}}
+
+{{ $bg_alpha          := "" }}
+{{ if and (.color_alpha | and (ne .color_alpha 100)) ($bg_color | or $bg_gradient_color) }}
+  {{ $bg_alpha         = print "--bg-alpha:" .color_alpha }}
+{{ end }}
+{{ $padding_top       := "" }}
+{{ $padding_bottom    := "" }}
+{{ if .ph }}
+  {{ $padding_top      = "" }}
+  {{ $padding_bottom   = "" }}
+{{ else }}
+  {{ if ne .pt nil }}
+    {{ $padding_top    = print "--pt:" .pt "em" }}
+  {{ end }}
+  {{ if ne .pb nil }}
+    {{ $padding_bottom = print "--pb:" .pb "em" }}
+  {{ end }}
+{{ end }}
+{{ if $modal }}
+  {{/*  {{ $bg_color_alpha = "" }}  */}}
+  {{ $padding_top      = "" }}
+  {{ $padding_bottom   = "" }}
+{{ end }}
+
+{{ $style := partial "functions/attr-delimit" (dict
+  "attr"    "style"
+  "delimit" ";"
+  "array"   (slice
+    $bg_alpha
+    $padding_top
+    $padding_bottom
+  )
+) }}
+
+
+{{/*  HIDDEN  */}}
+{{ $hidden := cond $modal `hidden="until-found"` "" }}
+
+
+{{/*  ID  */}}
+{{ $id := cond (not .id) "" (print ` id="` .id `"`) }}
+
+
+{{/*  JOIN  */}}
+{{ $attr := partial "functions/attr-delimit" (dict
+  "array" (slice
+    $id
+    $class
+    $style
+    $hidden
+  )
+) }}
+
+
+{{ return $attr }}

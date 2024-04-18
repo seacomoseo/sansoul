@@ -5,7 +5,7 @@
     {{ $items = $items | append (dict
       "link"     .Permalink
       "icon"     (print "flag-" .Lang)
-      "emoji"    (i18n .Lang)
+      "emoji"    (i18n "flag")
       "label"    .Language.LanguageName
       "title"    (print .Language.LanguageName ": " .Title)
       "ofuscate" true

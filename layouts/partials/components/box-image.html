@@ -44,18 +44,19 @@
     {{- $gradient = true -}}
   {{- end -}}
 
-  {{- $class := delimit (slice
-    "image"
-    $ratio
-    $contain
-    $border
-    $inset
-    $hover
-    $svg
-    $icon_top
-    $grayscale
-    | uniq) " "
-  -}}
+  {{- $class := partial "functions/attr-delimit" (dict
+    "array" (slice
+      "image"
+      $ratio
+      $contain
+      $border
+      $inset
+      $hover
+      $svg
+      $icon_top
+      $grayscale
+    )
+  ) -}}
 
   {{- $attr  := ""  -}}
   {{- if or .image_min .image_max -}}

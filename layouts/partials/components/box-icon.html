@@ -1,27 +1,33 @@
 {{- if .icon -}}
+  {{/*  CLASS  */}}
   {{- $icon_size := "" -}}
-  {{- with .icon_size -}}
-    {{- $icon_size = print "icon--size-" . -}}
-  {{- end -}}
-  {{- $icon_type  := cond (not .icon_type | or (eq .icon_type "side")) "" (print "box__icon--" .icon_type) -}}
-  {{- $icon_size  := cond (not .icon_size) "" (print "icon--size-" .icon_size) -}}
+  {{- $icon_type  := cond (or (not .icon_type) (eq .icon_type "side")) "" (print "box__icon--" .icon_type) -}}
   {{- $icon_color := .icon_color | default "main" -}}
-  {{- $icon_class := delimit (slice
-    "box__icon"
-    $icon_type
-    $icon_size
-    $icon_color
-    | uniq) " "
-  -}}
+  {{- $class := partial "functions/attr-delimit" (dict
+    "attr"  "class"
+    "array" (slice
+      "box__icon"
+      $icon_type
+      $icon_size
+      $icon_color
+    )
+  ) -}}
+
+  {{/*  STYLE  */}}
+  {{- $icon_size := cond (and (not .icon_size) (ne .icon_size 6)) "" (print "--icon-size:" .icon_size "em") -}}
+  {{- $style     := cond (not $icon_size) "" (print ` style="` $icon_size `"`) -}}
+
+  {{/*  ATTRIBUTES  */}}
+  {{- $attr := print $class $style -}}
 
   {{- if ne $.icon_type "top" -}}
-    <div class="{{- $icon_class -}}">
+    <div {{ $attr | safeHTMLAttr }}>
       {{- partial "components/icon" (dict "icon" .icon) -}}
     </div>
   {{- else -}}
     {{- partial "components/icon" (dict
-      "class" $icon_class
-      "icon"  .icon
+      "attr" $attr
+      "icon" .icon
     ) -}}
   {{- end -}}
 {{- end -}}

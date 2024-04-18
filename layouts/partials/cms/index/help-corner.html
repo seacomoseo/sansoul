@@ -12,7 +12,7 @@
         <span class="info__status-canceled">{{ i18n `deploy-status-canceled` }}</span>
         <span class="info__status-error">{{ i18n `deploy-status-error` }}</span>
       </p>
-      <p class="info__text">{{ i18n `google-spreadsheets-info` 1 }}{{ with site.Params.drive_mails }} ({{ i18n `google-spreadsheets-info` }} <strong>{{ . }}</strong>){{ end }}:</p>
+      <p class="info__text">{{ i18n `google-spreadsheets-info` }}{{ with site.Params.drive_mails }} ({{ i18n `google-spreadsheets-info-view` }} <strong>{{ . }}</strong>){{ end }}:</p>
       <div class="info__buttons">
         <a class="google-spreadsheets-link" href="{{ site.Params.drive_link }}" target="_blank">
           <svg><use href="/draws.svg#google-drive"></use></svg>

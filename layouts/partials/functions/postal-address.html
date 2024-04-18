@@ -1,18 +1,20 @@
-{{ $return := "-" }}
-{{ if gt (len .) 1 }}
-  {{ $return =
-    print
-      .streetAddress ", "
-      .postalCode " "
-      (cond
-        (eq .addressLocality .addressRegion)
-        .addressLocality
-        (print
-          .addressLocality ", "
-          .addressRegion
+{{ $return := "" }}
+{{ with . }}
+  {{ if gt (len .) 1 }}
+    {{ $return =
+      print
+        .streetAddress ", "
+        .postalCode " "
+        (cond
+          (eq .addressLocality .addressRegion | or (not .addressRegion))
+          .addressLocality
+          (print
+            .addressLocality ", "
+            .addressRegion
+          )
         )
-      )
-    | replaceRE "<nil>" ""
-  }}
+      | replaceRE "<nil>" ""
+    }}
+  {{ end }}
 {{ end }}
 {{ return $return }}

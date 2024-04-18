@@ -1,18 +1,13 @@
 
 // bg-opacity
 
-.bg {             --bg-opacity: 1; }
-.bg-opacity-0 {   --bg-opacity: 0; }
-.bg-opacity-10 {  --bg-opacity: .1; }
-.bg-opacity-20 {  --bg-opacity: .2; }
-.bg-opacity-30 {  --bg-opacity: .3; }
-.bg-opacity-40 {  --bg-opacity: .4; }
-.bg-opacity-50 {  --bg-opacity: .5; }
-.bg-opacity-60 {  --bg-opacity: .6; }
-.bg-opacity-70 {  --bg-opacity: .7; }
-.bg-opacity-80 {  --bg-opacity: .8; }
-.bg-opacity-90 {  --bg-opacity: .9; }
-.bg-opacity-100 { --bg-opacity: 1; }
+.bg {
+  --bg-alpha: 0;
+  --bg-opacity: calc(1 - var(--bg-alpha));
+}
+.alpha > .bg-figure-image {
+  opacity: calc(1 - var(--alpha, 0));
+}
 
 
 // bg-color
@@ -155,18 +150,3 @@
     }
   }
 }
-
-
-// opacity
-
-.opacity-0 {   opacity: 0; }
-.opacity-10 {  opacity: .1; }
-.opacity-20 {  opacity: .2; }
-.opacity-30 {  opacity: .3; }
-.opacity-40 {  opacity: .4; }
-.opacity-50 {  opacity: .5; }
-.opacity-60 {  opacity: .6; }
-.opacity-70 {  opacity: .7; }
-.opacity-80 {  opacity: .8; }
-.opacity-90 {  opacity: .9; }
-.opacity-100 { opacity: 1; }

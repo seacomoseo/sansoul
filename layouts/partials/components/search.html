@@ -8,7 +8,7 @@
     action="https://duckduckgo.com/?q={{ with site.BaseURL }}site:{{ . | urlize }}{{ end }}"
   >
     <div class="search__bar box container container--sm">
-      <input id="search__input" name="q" tabindex="0" autocomplete="off" placeholder="{{ i18n `search` }}">
+      <input id="search__input" name="q" tabindex="0" autocomplete="off" placeholder="{{ i18n `search-write` }}">
       {{/*
         <button id="search__submit" class="button--icon" type="submit">
           {{- partial "components/icon" (dict "icon" "magnifying-glass" "emoji" "🔍") -}}
@@ -18,7 +18,7 @@
     {{- $articles := site.Data.articles.commons -}}
     {{- $class    := print "columns columns--" ($articles.columns | default 3) -}}
     {{- with $articles.columns_min }}
-      {{- $class   = print $class " columns--min" -}}
+      {{- $class   = print $class " columns--min-" . -}}
     {{- end -}}
     <div id="search__results" class="{{ $class }}"></div>
   </form>

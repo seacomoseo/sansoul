@@ -21,6 +21,7 @@
   {{ end }}
 {{ end }}
 
+{{/*  CLASS  */}}
 {{ $class := "" }}
 {{ with .class }}
   {{ $class = print ` class="` . `"` }}
@@ -29,11 +30,14 @@
   {{ $class = print ` class="` (cond (not .class) `` .class) ` emoji"` }}
 {{ end }}
 
+{{/*  ATTRIBUTES  */}}
+{{- $attr := cond (not .attr ) $class (print " " .attr) -}}
+
 {{ $svg := not $emoji | or $icons.emojis }}
 {{ if $svg }}
-  {{ $svg = print `<svg` $class `><use href="/draws.svg#` $icon `"></use></svg>` | safeHTML }}
+  {{ $svg = print `<svg` $attr `><use href="/draws.svg#` $icon `"></use></svg>` | safeHTML }}
 {{ else }}
-  {{ $svg = print `<b` $class `>` .icon `</b>` | safeHTML }}
+  {{ $svg = print `<b` $attr `>` .icon `</b>` | safeHTML }}
 {{ end }}
 
 {{ return $svg }}

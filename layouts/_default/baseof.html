@@ -50,21 +50,26 @@
   {{- $body_menu_transparent := cond (not ($menu.transparent | and ($sectioned_menu | or $body_menu_logo))) "" "body-menu--transparent" -}}
 
   {{/*  BODY CLASS  */}}
-  {{- $body_class := delimit
-    (slice
-      (print "kind-" .Kind)
-      (print "type-" .Type)
-      (print "section-" .Section)
-      "body-top"
-      $body_menu
-      $body_menu_logo
-      $body_menu_transparent
-      $body_menu_sticky
-    )
-    " "
+  {{- $body_class := slice
+    (print "kind-" .Kind)
+    (print "type-" .Type)
+    (print "section-" .Section)
+    "body-top"
+    $body_menu
+    $body_menu_logo
+    $body_menu_transparent
+    $body_menu_sticky
   -}}
-  {{- $background := merge $params.background (dict "body" true "color" ($params.background.color | default "white")) -}}
-  {{- $body_class  = print $body_class " " (partial "components/section-class" $background) -}}
+
+  {{/*  BODY ATTRIBUTES  */}}
+  {{- $background := merge $params.background (dict
+    "body"  true
+    "color" ($params.background.color | default "white"))
+  -}}
+  {{- $body_attr  := partial "components/section-attr" (merge $background (dict
+    "id"         $body_id
+    "body_class" $body_class
+  )) -}}
 
   {{/*  HEAD  */}}
   <head>
@@ -73,7 +78,7 @@
   </head>
 
   {{/*  MODY  */}}
-  <body id="{{ $body_id }}" class="{{ $body_class }}">
+  <body {{ $body_attr | safeHTMLAttr }}>
 
     {{/*  IMAGE LCP  */}}
     <img width="8000" height="8000" alt="xl" class="lcp" decoding="sync" loading="eager" src="data:image/svg+xml;base64,

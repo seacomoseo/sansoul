@@ -1,14 +1,14 @@
 import {
   googleAnalyticsId,
   formErrorSingleQuotes,
-  formErrorRequiredOne,
-  formErrorRequired,
+  formErrorRequiredFields,
+  formErrorRequiredCheck,
   formErrorEmail,
   formErrorNumber,
   formErrorFile,
   formErrorAcept,
-  formSubmitOne,
-  formSubmitOther
+  formSubmitOk,
+  formSubmitWrong
 } from '@params'
 import { scrollTo } from './scroll-to'
 
@@ -78,7 +78,7 @@ export function initFormValidate () {
           if (!input.value) {
             input.style.borderColor = 'red'
             const placeholder = input.placeholder || input.children[0].textContent
-            formError.innerHTML += `<li>${formErrorRequiredOne}: <strong>${placeholder.replace(' *', '')}</strong></li>`
+            formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else {
             input.style = false
@@ -92,7 +92,7 @@ export function initFormValidate () {
           })
           if (!fieldsetValid) {
             fieldset.style.borderColor = 'red'
-            formError.innerHTML += `<li>${formErrorRequired}: <strong>${fieldset.children[0].textContent.replace(' *', '')}</strong></li>`
+            formError.innerHTML += `<li>${formErrorRequiredCheck}: <strong>${fieldset.children[0].textContent.replace(' *', '')}</strong></li>`
             valid = false
           } else {
             fieldset.style = false
@@ -172,13 +172,13 @@ export function initFormValidate () {
             // Response
             function formSubmitOk (form) {
               formSubmit.classList.add('contact__form-submit--ok')
-              formSubmit.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOne}`
+              formSubmit.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
               formSubmited(form)
             }
             function formSubmitError (error) {
               formSubmit.classList.add('contact__form-submit--error')
               formSubmit.innerHTML =
-                `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitOther}<br>` +
+                `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
                 `<svg><use href="/draws.svg#circle-info"></use></svg> ${error}`
             }
             const formOptions = { method: 'POST' }

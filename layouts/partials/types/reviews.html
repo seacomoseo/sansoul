@@ -1,3 +1,5 @@
+{{- $review := . -}}
+
 {{ if .slider }}
   <div class="slider box__type" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
 {{ end }}
@@ -5,22 +7,44 @@
 <div class="reviews {{ if .slider }}slider__track{{ else }}box__type{{ end }}">
 
   {{/*  REVIEWS CLASS  */}}
-  {{- $columns_max := .columns | default (cond (le (len .reviews) 6) (len .reviews) 3) -}}
-  {{- $columns_max  = print "columns--" $columns_max -}}
-  {{- $columns_min := cond (not .columns_min) "" "columns--min" -}}
-  {{- $slider      := cond (not .slider) "" "slider__items" -}}
+  {{- $slider        := cond (not .slider) "" " slider__items" -}}
+  {{- $columns_class := print `class="columns` $slider `"` -}}
 
-  {{- $columns_class   := delimit (slice
-    "columns"
-    $columns_max
-    $columns_min
-    $slider
-    | uniq) " "
-  -}}
 
-  {{- $showup := site.Data.design.performance.showup -}}
-  {{- $review := . -}}
-  <div class="{{ $columns_class }}" {{- if $showup }} data-showup{{ end }}>
+  {{/*  REVIEWS STYLE  */}}
+  {{- $columns_max   := .columns | default 1 -}}
+  {{- if eq .columns 0 -}}
+    {{- $columns_max  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- end -}}
+  {{- $columns_min   := .columns_min | default 1 -}}
+  {{- if eq .columns_min 0 -}}
+    {{- $columns_min  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- end -}}
+  {{- $col_max := cond (eq $columns_max 1) "" (print "--columns-max:" $columns_max) -}}
+  {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
+
+  {{ $columns_style := partial "functions/attr-delimit" (dict
+    "attr"    "style"
+    "delimit" ";"
+    "array"   (slice
+      $col_max
+      $col_min
+    )
+  ) }}
+
+  {{/*  REVIEWS SHOWUP  */}}
+  {{ $showup := cond (not site.Data.design.performance.showup) "" "data-showup" }}
+
+  {{/*  REVIEWS ATTRIBUTES JOIN  */}}
+  {{ $attr := partial "functions/attr-delimit" (dict
+    "array" (slice
+      $columns_class
+      $columns_style
+      $showup
+    )
+  ) }}
+  
+  <div {{ $attr | safeHTMLAttr }}>
     {{ range .reviews }}
       {{- with merge $review . -}}
 
@@ -30,26 +54,27 @@
           (cond (not .image) "" " bg-image")
         -}}
         {{- $bg_gradient_color := "" }}
-        {{- $bg_gradient_type := "" }}
+        {{- $bg_gradient_type  := "" }}
         {{- if .gradient -}}
           {{- $bg_gradient_color = print "bg-gradient-" .gradient -}}
-          {{- $bg_gradient_type = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
+          {{- $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
         {{- end -}}
-        {{- $bg := cond (not $bg_color) "" "bg" -}}
-        {{- $bg_opacity := cond (not (.opacity | and (ne .opacity 100))) "" (print "bg-opacity-" .opacity) }}
-        {{- $shadow := cond (not (.color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
+        {{- $bg         := cond (not $bg_color) "" "bg" -}}
+        {{- $bg_alpha   := cond (not .alpha) "" (print "bg-alpha-" .alpha) }}
+        {{- $shadow     := cond (not (.color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
 
-        {{- $review_class := delimit (slice
-          "review__globe"
-          "box"
-          $bg
-          $bg_color
-          $bg_gradient_color
-          $bg_gradient_type
-          $bg_opacity
-          $shadow
-          | uniq) " "
-        -}}
+        {{- $review_class := partial "functions/attr-delimit" (dict
+          "array" (slice
+            "review__globe"
+            "box"
+            $bg
+            $bg_color
+            $bg_gradient_color
+            $bg_gradient_type
+            $bg_alpha
+            $shadow
+          )
+        ) -}}
 
         <div class="review">
           <div class="{{ $review_class }}">

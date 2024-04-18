@@ -1,14 +1,14 @@
 {{- if or .color .gradient .bg -}}
   {{- $image     := "" -}}
-  {{- $opacity   := "" -}}
+  {{- $alpha     := "" -}}
   {{- $parallax  := "" -}}
   {{- $grayscale := "" -}}
 
   {{- if .bg -}}
     {{- $image     = "bg-figure" -}}
-    {{- $opacity   = cond (not (.opacity | and (ne .opacity 100))) "" (print "opacity-" .opacity) -}}
-    {{- $parallax  = cond (not .parallax) "" (cond (or .box site.Data.design.performance.parallax) "parallax" "") -}}
-    {{- $grayscale = cond (not .grayscale) "" "image--grayscale" -}}
+    {{- $alpha     = cond (not .alpha)     "" "alpha" -}}
+    {{- $parallax  = cond (not .parallax)  "" (cond (or .box site.Data.design.performance.parallax) "parallax" "") -}}
+    {{- $grayscale = cond (not .grayscale) "" " image--grayscale" -}}
   {{- end -}}
 
   {{ $divider_next := "" }}
@@ -37,20 +37,32 @@
     {{- end -}}
   {{- end -}}
 
-  {{- $class := delimit (slice
-    "bg-color"
-    $image
-    $parallax
-    $divider_next
-    | uniq) " "
-  -}}
+  {{/*  CLASS  */}}
+  {{- $class := partial "functions/attr-delimit" (dict
+    "attr"  "class"
+    "array" (slice
+      "bg-color"
+      $image
+      $alpha
+      $parallax
+      $divider_next
+    )
+  ) -}}
 
-  <div class="{{ $class }}">
+
+  {{/*  STYLE  */}}
+  {{- $alpha  = cond (not $alpha) "" (print "--alpha:" .alpha) -}}
+  {{- $style := cond (not $alpha) "" (print ` style="` $alpha `"`) -}}
+
+  {{/*  ATTRIBUTES  */}}
+  {{- $attr := print $class $style -}}
+
+  <div {{ $attr | safeHTMLAttr }}>
     {{- if partial `functions/is-iframe` .bg -}}
       <div class="bg-figure-video">
     {{- end -}}
       {{- partial "components/image" (dict
-        "class"     (delimit (slice "bg-figure-image" $opacity $grayscale) " ")
+        "class"     (print "bg-figure-image" $grayscale)
         "src"       .bg
         "notlazy"   .header
         "bg"        true

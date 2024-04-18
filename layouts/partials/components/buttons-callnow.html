@@ -56,7 +56,7 @@
             {{- $link    = print "tel:+" $num -}}
             {{- $icon    = .icon | default "phone" -}}
             {{- $emoji   = .icon | default "📞" -}}
-            {{- $label   = i18n "callnow-phone" 1 -}}
+            {{- $label   = i18n "callnow-phone" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "whatsapp" -}}
             {{- $class   = "callnow__whatsapp" -}}
@@ -64,7 +64,7 @@
             {{- $button  = cond (not .button) "whatsapp" $button -}}
             {{- $icon    = "whatsapp" -}}
             {{- $emoji   = "✆" -}}
-            {{- $label   = i18n "callnow-whatsapp" 1 -}}
+            {{- $label   = i18n "callnow-whatsapp" -}}
             {{- $noindex = true -}}
           {{- end -}}
 
