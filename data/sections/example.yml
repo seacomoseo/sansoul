@@ -47,8 +47,8 @@ flip_x: true
 flip_y: true
 box:
   # boxes group
-  columns: 2 # [ 0 = auto, > 0.00 ]
-  columns_min: 1 # [ 0 = auto, > 0.00 ]
+  columns: 2 # [ 0 = auto, > 0 ]
+  columns_min: 1 # [ 0 = auto, > 0 ]
   gap: '' # [ >= 0.00 ]
   gap_y: '' # [ >= 0.00 ]
   direction: right # [ right, left, top, bottom ]
@@ -63,14 +63,14 @@ box:
   # like boxes without esentials
   # text
   hn: '' # [ 1 - 6, p ]
-  hs: null # [ 1 - 6 ]
+  hs: '' # [ 0 - 6 ]
   uppercase: true
   underline: true
   align: left # [ left, center, right ]
   # icon
   icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
   icon_type: bottom # [ top, side, bottom ]
-  icon_size: '' # [ 1 - 6 ]
+  icon_size: 0 # [ 0 = auto, > 0.00 ]
   icon_color: '' # [ main, link, alt, light, dark, invert ]
   # image
   image: logo.png
@@ -113,7 +113,7 @@ boxes:
   price: 22 €
   description: |
     Descripción de Caja
-  order: -1 # [-20 - 20]
+  order: -1 # [ int ]
   span: 2 # [ > 0.00 ]
   span_min: 1 # [ > 0.00 ]
   # usuals
@@ -133,9 +133,9 @@ boxes:
 - view: steps
   step:
     border: link # [ main, link, alt, light, dark, invert ]
-    icon_size: '' # [ 1 - 6 ]
+    icon_size: 0 # [ 0 = auto, > 0.00 ]
     hn: '' # [ 1 - 6, p ]
-    hs: '' # [ 1 - 6 ]
+    hs: '' # [ 0 - 6 ]
     uppercase: true
     underline: true
   steps:
@@ -151,7 +151,7 @@ boxes:
       Descripción de Paso 2
 - view: gallery
   gallery:
-    columns: 4 # [ 1 - 6 ]
+    columns: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, columns ]
     wrap: true
     gap: true
@@ -179,7 +179,7 @@ boxes:
     link: /pagina-ejemplo/
 - view: articles
   articles:
-    type: '' # [pages, page, blog, events, products, categories, tags, authors, custom]
+    type: '' # [ pages, page, blog, events, products, categories, tags, authors ]
     categories: [general]
     tags: []
     author: admin
@@ -208,8 +208,8 @@ boxes:
   gss_sheet: 1861644079
 - view: reviews
   review:
-    columns: 3 # [ 0 = auto, > 0.00 ]
-    columns_min: 1 # [ 0 = auto, > 0.00 ]
+    columns: 3 # [ 0 = auto, > 0 ]
+    columns_min: 1 # [ 0 = auto, > 0 ]
     color: black # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
     gradient: dark # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
     gradient_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]

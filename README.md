@@ -209,6 +209,7 @@
       - [ ] Reset `admin`.md
       - [ ] Remove nth-childs classes
       - [ ] `T` in CMS labels and hints
+      - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
       - [ ] Comprobar enlaces ofuscados en Google Translate y la propia traducción
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
