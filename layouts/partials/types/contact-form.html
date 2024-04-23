@@ -1,4 +1,4 @@
-{{- $showup := site.Data.design.performance.showup -}}
+{{- $showup := site.Data.styles.performance.showup -}}
 {{- $form_num := print .form_lvl "_" .form_num -}}
 {{- $form_num  = cond (eq $form_num "0_0") "" $form_num -}}
 {{- $id_form  := print "form_" (replace (print page.Params.slug "_" .section.id) "-" "_") (cond (not $form_num) "" (print "_" $form_num)) -}}

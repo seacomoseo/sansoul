@@ -1,16 +1,8 @@
-.gallery-wrap {
-  --radius-padding: .5em;
-  padding: .5em;
-  margin-inline: -.5em;
-}
-.gallery {
+// GALLERY ITEMS
+
+.gallery__items {
   @include radius;
   overflow: hidden;
-  --columns-gap-min: 0;
-  --columns-gap-max: var(--columns-gap-min);
-}
-.gallery--gap {
-  --columns-gap-min: .5;
 }
 .gallery__item {
   display: block;
@@ -22,7 +14,7 @@
   --gallery-image-hover-transform: scale(1.125) rotate(2deg);
   --gallery-image-hover-transform-odd: scale(1.125) rotate(-2deg);
 }
-.gallery:not(.gallery--grayscale) > {
+.gallery:not(.gallery--grayscale) {
   .gallery__item {
     &:hover,
     &:focus,
@@ -95,10 +87,86 @@
   }
 }
 
+// GALLERY ROOT
+
+.gallery {
+  --gallery-gap: .5em;
+  .gallery__items {
+    gap: var(--gallery-gap);
+  }
+}
+.gallery.bg {
+  --radius-padding: var(--gallery-gap);
+  padding: var(--gallery-gap);
+  margin-inline: calc(-1 * var(--gallery-gap));
+}
+.gallery--ratio {
+  --gallery-ratio: 1;
+  .gallery__item {
+    aspect-ratio: var(--gallery-ratio);
+  }
+}
+
+// GRID MODE
+
+.gallery--grid {
+  --gallery-columns: 2;
+  .gallery__items {
+    display: grid;
+    grid-template-columns: repeat(var(--gallery-columns), 1fr);
+    // grid-template-columns: repeat(auto-fill, minmax(var(--box-width), .5fr));
+  }
+}
+
+
+// COLUMNS MODE
+
+.gallery--columns {
+  --gallery-columns: 2;
+  .gallery__items {
+    display: block;
+    columns: var(--gallery-columns);
+    &:not(.gallery.bg *) {
+      margin-bottom: calc(0em - var(--gallery-gap));
+    }
+    > * {
+      break-inside: avoid;
+      margin-inline: auto;
+      margin-bottom: var(--gallery-gap);
+    }
+  }
+}
+
+
+.gallery--columns-{
+  @media (min-width: $screen-sm) {
+    &5, &6 {
+      --gallery-columns: 3;
+    }
+  }
+  @media (min-width: $screen-md) {
+    &3 {
+      --gallery-columns: 3;
+    }
+    &4, &5, &6 {
+      --gallery-columns: 4;
+    }
+  }
+  @media (min-width: $screen-lg) {
+    &5 {
+      --gallery-columns: 5;
+    }
+    &6 {
+      --gallery-columns: 6;
+    }
+  }
+}
+
 
 // ROWS MODE
 
-.gallery--rows {
+.gallery--rows
+.gallery__items {
   display: flex;
   flex-wrap: wrap;
   .gallery__item {
@@ -133,9 +201,6 @@
     &, &:before {
       z-index: auto;
     }
-  }
-  &.gallery--gap {
-    gap: .5em;
   }
 }
 

@@ -23,22 +23,22 @@
   {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
   {{- $svg       := cond (in $image_src ".svg") "image--svg" "" -}}
 
-  {{- $page_type     := .Page.Type | default "common" -}}
+  {{- $page_type  := .Page.Type | default "_" -}}
   {{- if in (slice "categories" "tags" "authors") $page_type -}}
-    {{- $page_type    = "taxonomies" -}}
+    {{- $page_type = "taxonomies" -}}
   {{- end -}}
-  {{- $articles      := site.Data.articles.common -}}
-  {{- with index site.Data.articles $page_type -}}
-    {{- $articles     = merge $articles . -}}
+  {{- $lists      := site.Data.lists._ -}}
+  {{- with index site.Data.lists $page_type -}}
+    {{- $lists     = merge $lists . -}}
   {{- end -}}
-  {{- $gradient  := false -}}
+  {{- $gradient   := false -}}
   {{- if eq $image_src "gradient"
     | or (
       and
       $is_page
       $image_src
       .contain
-      (eq $articles.image "gradient")
+      (eq $lists.image "gradient")
     )
   -}}
     {{- $gradient = true -}}

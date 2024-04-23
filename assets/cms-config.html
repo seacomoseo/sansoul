@@ -1,6 +1,6 @@
 {{- $local            := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
 {{- $config           := partial "functions/config-lang" . -}}
-{{- $fontawesome_link := print "[fontawesome.com](https://fontawesome.com/search?o=r&s=" (site.Data.design.icons.type | default "solid") "&f=brands%2Cclassic)" -}}
+{{- $fontawesome_link := print "[fontawesome.com](https://fontawesome.com/search?o=r&s=" (site.Data.styles.icons.type | default "solid") "&f=brands%2Cclassic)" -}}
 {{- $langs := slice -}}
 {{- range .Site.Languages -}}
   {{- $langs = $langs | append .Lang -}}
@@ -26,14 +26,7 @@
 -}}
 
 {{/*  COLLECTIONS  */}}
-{{- $collections := slice
-  `~COLLECTION_GENERAL`
-  `~COLLECTION_TYPES`
-  `~COLLECTION_SECTIONED`
-  `~COLLECTION_SECTIONS`
-  `~COLLECTION_MODALS`
-  `~COLLECTION_PAGES`
-  -}}
+{{- $collections := slice -}}
 {{- if .GetPage "blog"       -}}{{ $collections = $collections | append `~COLLECTION_BLOG`       }}{{ end -}}
 {{- if .GetPage "events"     -}}{{ $collections = $collections | append `~COLLECTION_EVENTS`     }}{{ end -}}
 {{- if .GetPage "products"   -}}{{ $collections = $collections | append `~COLLECTION_PRODUCTS`   }}{{ end -}}
@@ -41,6 +34,14 @@
 {{- if .GetPage "tags"       -}}{{ $collections = $collections | append `~COLLECTION_TAGS`       }}{{ end -}}
 {{- if .GetPage "authors"    -}}{{ $collections = $collections | append `~COLLECTION_AUTHORS`    }}{{ end -}}
 {{- if .GetPage "custom"     -}}{{ $collections = $collections | append `~COLLECTION_CUSTOM`     }}{{ end -}}
+{{- $collections = $collections | append
+  `~COLLECTION_PAGES`
+  `~COLLECTION_SECTIONED`
+  `~COLLECTION_SECTIONS`
+  `~COLLECTION_MODALS`
+  `~COLLECTION_TYPES`
+  `~COLLECTION_GENERAL`
+-}}
 
 
 {{/*  FINAL CMS CONFIG ==============================================================================

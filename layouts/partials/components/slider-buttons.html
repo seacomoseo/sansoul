@@ -10,7 +10,7 @@
 
 {{- $bullet_class := "slider__bullet" -}}
 {{- $arrow_class  := "slider__arrow button--icon" -}}
-{{- if or (ne .button "hide") (ne .button "none") -}}
+{{- if and (ne .button "hide") (ne .button "none") -}}
   {{- with .button -}}
     {{- $bullet_class = print $bullet_class " " . -}}
     {{- $arrow_class  = print $arrow_class  " " . -}}
@@ -19,6 +19,9 @@
 
 <div class="{{ $bullets_class }}">
   {{- range seq .items -}}
+    {{- if eq . 1 -}}
+      {{- $bullet_class = print $bullet_class " slider__bullet--active" -}}
+    {{- end -}}
     <button class="{{ $bullet_class }}" title="{{ i18n `slide` }} {{ . }}"></button>
   {{- end -}}
 </div>

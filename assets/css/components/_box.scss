@@ -3,7 +3,7 @@
   container: box / inline-size;
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   max-width: 100%;
   padding: var(--box-padding);
   --box-inner: calc(100cqw - var(--box-padding) * 2);
@@ -11,6 +11,9 @@
   gap: var(--box-gap);
   &.bg {
     @include radius-parent(var(--box-padding));
+  }
+  > *:not(.box, .image) {
+    width: 100%;
   }
 }
 .box--hide-shadow {
@@ -84,7 +87,7 @@
 .box:where(:not(.bg)) {
   --box-padding: 0em;
 }
-.box:where(.bg:not(.columns > *, [class*="box--padding-"])) {
+.box:where(.bg:not(.boxes > *, [class*="box--padding-"])) {
   --box-padding: 1.00em;
 }
 
@@ -118,8 +121,8 @@
 .box--3x4 {  --box-ratio: 4/3;  @extend %box--ratio; }
 
 // Direction
-.columns--top,
-.columns--bottom {
+.boxes--top,
+.boxes--bottom {
   > .box--grow {
     margin-inline: 0;
     width: 100%;
@@ -136,7 +139,7 @@
     > :is(
       .image:not(.image--inset), /* Image */
       .box__button:not(.hide), /* Box button */
-      .map:is(*, .columns:last-child > .box:last-child > *), /* Map */
+      .map:is(*, .boxes:last-child > .box:last-child > *), /* Map */
     ):is(
       /* First child */
       :first-child,

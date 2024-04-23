@@ -31,6 +31,12 @@
       {{ with site.Data.templates.base.articles }}
         {{ $p = merge $p . }}
       {{ end }}
+      {{ if in (slice "categories" "tags" "authors") .Type }}
+        {{/*  TAXONOMIES  */}}
+        {{ with site.Data.templates.base.taxonomies }}
+          {{ $p = merge $p . }}
+        {{ end }}
+      {{ end }}
       {{/*  ARTICLES PARENT  */}}
       {{ with site.GetPage .Type }}
         {{ with .Params.template }}

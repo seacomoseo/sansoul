@@ -2,43 +2,50 @@
 {{- $button_icon      := (cond (eq .icon "none") "" (.icon | default "plus")) -}}
 {{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
 {{- $is_button_custom := .link | and (ne .type "rows") -}}
-{{- $showup         := site.Data.design.performance.showup -}}
 
-{{- $wrap_class := partial "functions/attr-delimit" (dict
+{{/*  CLASS  */}}
+{{- $class := partial "functions/attr-delimit" (dict
+  "attr"  "class"
   "array" (slice
-    (cond (not .wrap) "" "gallery-wrap")
-    (cond (not .wrap | or (eq .wrap "transparent")) "" (print "bg bg-" .wrap))
+    "box__type"
+    "gallery"
+    (print "gallery--" (.type | default "grid"))
+    (cond (or (eq .type "columns") (eq .type "grid") (not .type)) (print "gallery--columns-" (.columns | default 2)) "")
+    (cond (not .ratio)      "" "gallery--ratio")
+    (cond (not .contain)    "" "gallery--contain")
+    (cond (not .grayscale)  "" "gallery--grayscale")
+    (cond (not .color | or (eq .color "transparent")) "" (print "bg bg-" .color))
   )
 ) -}}
 
-<div class="box__type {{ $wrap_class }}" {{- if $showup }} data-showup{{ end }}>
-  {{- if .wrap | and (ne .wrap "transparent") -}}
+{{/*  STYLE  */}}
+{{ $style := partial "functions/attr-delimit" (dict
+  "attr"    "style"
+  "delimit" ";"
+  "array"   (slice
+    (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
+    (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
+  )
+) }}
+
+{{/*  SHOWUP  */}}
+{{- $showup := cond (not site.Data.styles.performance.showup) "" "data-showup" -}}
+
+{{/*  JOIN ATTRIBUTES  */}}
+{{ $attr := partial "functions/attr-delimit" (dict
+  "array" (slice
+    $class
+    $style
+    $showup
+  )
+) }}
+
+<div {{ $attr | safeHTMLAttr }}>
+  {{- if .color | and (ne .color "transparent") -}}
     <div class="bg-color"></div>
   {{- end -}}
 
-  {{- $gap       := cond (not .gap)           "" "gallery--gap" }}
-  {{- $grayscale := cond (not .grayscale)     "" "gallery--grayscale" }}
-  {{- $contain   := cond (in .type "contain") "gallery--contain" "" }}
-  {{- $columns   := print "columns--" (.columns | default 2) }}
-  {{- if not .type | or (in .type "grid") }}
-    {{- $columns  = print $columns " columns columns--min-2 columns--grid" }}
-  {{- else if eq .type "columns" }}
-    {{- $columns  = print $columns " columns columns--min-2 columns--bottom" }}
-  {{- else if eq .type "rows" }}
-    {{- $columns  = print $columns " gallery--rows" }}
-  {{- end }}
-
-  {{- $class := partial "functions/attr-delimit" (dict
-    "array" (slice
-      "gallery"
-      $columns
-      $contain
-      $gap
-      $grayscale
-    )
-  ) -}}
-
-  <div class="{{ $class }}">
+  <div class="gallery__items">
     {{- range uniq $items -}}
       {{- $image := . -}}
       {{- $link  := "" -}}

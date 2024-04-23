@@ -7,7 +7,7 @@
   {{- if .bg -}}
     {{- $image     = "bg-figure" -}}
     {{- $alpha     = cond (not .alpha)     "" "alpha" -}}
-    {{- $parallax  = cond (not .parallax)  "" (cond (or .box site.Data.design.performance.parallax) "parallax" "") -}}
+    {{- $parallax  = cond (not .parallax)  "" (cond (or .box site.Data.styles.performance.parallax) "parallax" "") -}}
     {{- $grayscale = cond (not .grayscale) "" " image--grayscale" -}}
   {{- end -}}
 
@@ -32,7 +32,7 @@
   {{ end }}
 
   {{- if or .color .gradient -}}
-    {{- if and .link .shadow site.Data.design.buttons.deep -}}
+    {{- if and .link .shadow site.Data.styles.buttons.deep -}}
       <div class="bg-color bg-color--3d"></div>
     {{- end -}}
   {{- end -}}

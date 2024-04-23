@@ -1,0 +1,66 @@
+{{ $list  := . }}
+{{ $types := .types | default (slice
+  "blog"
+  "events"
+  "products"
+  "categories"
+  "tags"
+  "authors"
+  "pages"
+  "page"
+) }}
+{{ $types_lot := gt (len $types) 1 }}
+
+{{ range $types }}
+  {{ $type   := . }}
+  {{ $parent := page.GetPage . }}
+  {{ $pages  := $parent.Pages }}
+  {{ if eq . "related" }}
+    {{ $type   = page.Type }}
+    {{ $parent = page.GetPage page.Type }}
+    {{ $pages  = $parent.Pages.Related (dict "document" page) }}
+  {{ end }}
+  {{ if eq . "events" }}
+    {{ $pages = sort $pages "Params.date_ini" "desc" }}
+  {{ end }}
+  {{ with $.categories }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.categories" "intersect" . }}{{ end }}{{ end }}
+  {{ with $.tags       }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.tags"       "intersect" . }}{{ end }}{{ end }}
+  {{ with $.author     }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
+  {{ $firsts_pages     := ($pages | first ($.max | default 99)) }}
+
+  {{ if len $pages }}
+    {{/*
+    {{ if $types_lot }}
+      <p class="list-title h4">{{ $parent.Title }}</p>
+    {{ end }}
+    */}}
+
+    {{ partial "types/list"
+      (merge
+        $list
+        (dict
+          "type"    $type
+          "pages"   $firsts_pages
+          "related" (eq . "related")
+        )
+      )
+    }}
+
+    {{ if gt (len $pages) (len $firsts_pages) }}
+      <div class="buttons">
+        {{- partial "components/link"
+          (dict
+            "class"   ""
+            "link"    $parent.RelPermalink
+            "button"  "link"
+            "icon"    "plus"
+            "emoji"   "➕"
+            "label"   (i18n "more")
+            "anchor"  (print (i18n "more") " " (i18n .))
+            "noindex" true
+          )
+        -}}
+      </div>
+    {{ end }}
+  {{ end }}
+{{ end }}

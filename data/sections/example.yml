@@ -1,3 +1,4 @@
+name: Ejemplo
 id: seccion
 # esentials
 title: Título de Sección
@@ -39,18 +40,20 @@ ph: false
 pt: 5 # [ >= 0.00 ]
 pb: 5 # [ >= 0.00 ]
 parallax: true
-box_gap: '' # [ >= 0.00 ]
+box_gap: null # [ >= 0.00 ]
 tag: aside # [ section, header, footer, nav, article, aside, div ]
 ## divider
 divider: wavy-op
 flip_x: true
 flip_y: true
+view: [] # [ esentials, usuals, , title, anchor, subtitle, description, , icon, image, bg, color, gradient, size, box_color, box_color_alpha, box_gradient, box_gradient_type, box_bg, box_alpha, box_parallax, box_tag, menu, button, font_alt, full, ph, pt, pb, parallax, box_gap, tag, , divider, flip_x, flip_y, , box, boxes, step, steps, gallery, images, limages, lists, collapsible, collapsibles, gss, review, reviews, buttons, form, map, social ]
+if: '' # [ 'param name', body, related ]
 box:
   # boxes group
   columns: 2 # [ 0 = auto, > 0 ]
   columns_min: 1 # [ 0 = auto, > 0 ]
-  gap: '' # [ >= 0.00 ]
-  gap_y: '' # [ >= 0.00 ]
+  gap: null # [ >= 0.00 ]
+  gap_y: null # [ >= 0.00 ]
   direction: right # [ right, left, top, bottom ]
   group_radius: false
   slider: true
@@ -90,8 +93,8 @@ box:
   parallax: true
   grow: false
   box_ratio: 16x9 # [ 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1 ]
-  box_gap: '' # [ >= 0.00 ]
-  padding: '' # [ >= 0.00 ]
+  box_gap: null # [ >= 0.00 ]
+  padding: null # [ >= 0.00 ]
   hide_shadow: true
   hide_radius: true
   pill: false
@@ -124,14 +127,12 @@ boxes:
   label: Sección
   anchor: Anchor
   # rest in each box
-- view: columns
-  box:
+- box:
     # like father
   boxes:
   - title: Título de SubCaja 1
   - title: Título de SubCaja 2
-- view: steps
-  step:
+- step:
     border: link # [ main, link, alt, light, dark, invert ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
     hn: '' # [ 1 - 6, p ]
@@ -149,12 +150,13 @@ boxes:
     subtitle: Subtítulo de Paso 2
     description: |
       Descripción de Paso 2
-- view: gallery
-  gallery:
+- gallery:
     columns: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, columns ]
-    wrap: true
-    gap: true
+    color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+    gap: 0 # [ >= 0.00 ]
+    ratio: 1/1 # [ int/int ]
+    contain: true
     grayscale: true
     link: /pagina-ejemplo/
     licon: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
@@ -177,20 +179,20 @@ boxes:
     link: /
   - image: https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=512&q=60
     link: /pagina-ejemplo/
-- view: articles
-  articles:
-    type: '' # [ pages, page, blog, events, products, categories, tags, authors ]
+- list:
+    types: [] # [ blog, events, products, categories, tags, authors, pages, page, related ]
     categories: [general]
     tags: []
     author: admin
+    date_ini: ''
+    date_end: ''
     max: 4
   box:
     # like box and...
     hide_description: false
     hide_categories: false
     reading_time: false
-- view: collapsible
-  collapsible:
+- collapsible:
     button: '' # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
     licon: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
@@ -203,11 +205,9 @@ boxes:
   - title: Título Desplegable 1
     description: |
       Descripción Desplegable 1
-- view: gss
-  gss: 2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C
+- gss: 2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C
   gss_sheet: 1861644079
-- view: reviews
-  review:
+- review:
     columns: 3 # [ 0 = auto, > 0 ]
     columns_min: 1 # [ 0 = auto, > 0 ]
     color: black # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
@@ -231,29 +231,28 @@ boxes:
     image: fondo.jpg
     description: |
       Descripción Reseña 2
-- view: buttons
-  buttons:
-  - view: schedule
+- buttons:
+  - type: schedule
     days: Días
     hours: Horas
     full: false
-  - view: br
-  - view: phone # [phone, whatsapp, mail]
+  - type: br
+  - type: phone # [phone, whatsapp, mail]
     label: 123456789
     full: false
     button: link # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
-  - view: whatsapp
+  - type: whatsapp
     label: 123456789
     full: false
     button: whatsapp # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
-  - view: mail
+  - type: mail
     label: ejemplo@gmail.com
     full: false
     button: button
     font_alt: false
-  - view: address
+  - type: address
     label: ''
     name: Molando Ando
     streetAddress: Calle País de Nunca Jamás, 42
@@ -266,15 +265,15 @@ boxes:
     button: link # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
     hide: false
-  - view: h3
+  - type: h3
     label: Encabezado h3
-  - view: h4
+  - type: h4
     label: Encabezado h4
-  - view: h5
+  - type: h5
     label: Encabezado h5
-  - view: h6
+  - type: h6
     label: Encabezado h6
-  - view: custom
+  - type: custom
     link: '#principal'
     icon: person-from-portal
     label: Personalizado
@@ -284,48 +283,47 @@ boxes:
     button: light # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
     ga4: false
-  - view: hr
-- view: form
-  action: ''
+  - type: hr
+- action: ''
   inputs:
-  - view: text
+  - type: text
     name: Text
     placeholder: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
     required: false
-  - view: email
+  - type: email
     name: Email
     placeholder: Correo
     required: false
-  - view: tel
+  - type: tel
     name: Tel
     placeholder: Teléfono
     required: false
-  - view: number
+  - type: number
     name: Number
     placeholder: Número
     required: false
-  - view: date
+  - type: date
     name: Date
     placeholder: Fecha
     required: false
-  - view: time
+  - type: time
     name: Time
     placeholder: Tiempo
     required: false
-  - view: textarea
+  - type: textarea
     name: Textarea
     placeholder: Mensaje
     required: false
-  - view: hidden
+  - type: hidden
     name: Hidden
     placeholder: Oculto
     required: false
-  - view: h3
+  - type: h3
     name: Encabezado
-  - view: description
+  - type: description
     name: Descripción
-  - view: select
+  - type: select
     name: Select
     placeholder: Seleción
     required: true
@@ -333,7 +331,7 @@ boxes:
     - option: Seleción Opción 1
     - option: Seleción Opción 2
     - option: Seleción Opción 3
-  - view: radio
+  - type: radio
     name: Radio
     placeholder: Radios
     required: true
@@ -341,7 +339,7 @@ boxes:
     - option: Radio Opción 1
     - option: Radio Opción 2
     - option: Radio Opción 3
-  - view: checkbox
+  - type: checkbox
     name: Checkbox
     placeholder: Checkboxes
     required: true
@@ -349,8 +347,7 @@ boxes:
     - option: Checkbox Opción 1
     - option: Checkbox Opción 2
     - option: Checkbox Opción 3
-- view: map
-  map:
+- map:
     hide: false
     link: https://g.page/webmurcia
     iframe: ''

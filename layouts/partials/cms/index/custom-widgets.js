@@ -7,7 +7,7 @@ const withResetButton = (OriginalComponent) => {
     if (isDefault || value === '') wrapClass = 'is-default'
     if (!isSet) wrapClass = wrapClass + ' is-empty'
 
-    let isButton = isSet && !isDefault
+    let isButton = isSet && !isDefault && !props.field.required
     // if (isDefault && props.field.default === value) isButton = false
     // if (isDefault && props.field.widget === 'boolean') isButton = false
     if (props.forSingleList) isButton = false

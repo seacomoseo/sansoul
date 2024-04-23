@@ -2,208 +2,6 @@
 {{ $colections_rest := slice }}
 
 
-{{/*  TYPES  */}}
-{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_TYPES"
-  (dict
-    "label"           `Tipos`
-    "name"            `types`
-    "description"     `Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE: Artículos se consideran todos los tipos de páginas excepto las Seccionadas y sus Secciones y Modales correspondientes.`
-    "sortable_fields" (dict "fields" slice)
-    "editor"          (dict "preview" false)
-    "files"           (partial "cms/config/types-files" $taxonomies)
-  )
-) }}
-
-
-{{/*  SECTIONED  */}}
-{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_SECTIONED"
-  (dict
-    "label"            (i18n "page")
-    "label_singular"   (i18n "page" 1)
-    "name"             `page`
-    "description"      `Páginas maquetables por secciones.`
-    "identifier_field" `slug`
-    "folder"            (print `content.` .Lang)
-    "create"            true
-    "slug"             "{{fields.slug}}"
-    "preview_path"      (print site.Home.RelPermalink "{{fields.slug}}/")
-    "summary"           "{{title}}"
-    "sortable_fields"   (dict "fields" (slice "commit_date" "title"))
-    "view_filters"      (dict
-      "filters" (slice
-        (dict "name" `published` "label" `Publicados` "field" `draft`   "pattern" false)
-        (dict "name" `drafts`    "label" `Borradores` "field" `draft`   "pattern" true)
-        (dict "name" `index`     "label" `Index`      "field" `noindex` "pattern" false)
-        (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex` "pattern" true)
-      )
-    )
-    "view_groups"       (dict
-      "groups" (slice
-        (dict "name" `year`      "label" `Año`        "field" `commit_date` "pattern" `^\d{4}`)
-        (dict "name" `month`     "label" `Mes`        "field" `commit_date` "pattern" `^\d{4}-\d{2}`)
-        (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex`)
-        (dict "name" `drafts`    "label" `Borradores` "field" `draft`)
-      )
-    )
-    "editor"            (dict "preview" false )
-    "fields"            (slice
-      `~P_TITLE`
-      `~P_TITLE_SEO`
-      `~P_SLUG`
-      `~P_DESCRIPTION`
-      `~P_IMAGE`
-      `~P_DRAFT`
-      `~P_NOINDEX`
-      `~P_TRANSLATIONKEY`
-      `~SECTION_HEADER_ARTICLE`
-      `~SECTION_MENU`
-      `~SECTIONS_DESIGN_GENERAL`
-      `~SECTIONS_DESIGN_ALTERNATE`
-      `~SECTIONS_DESIGN_MODALS`
-      `~SECTION_SECTIONS`
-    )
-  )
-) }}
-
-
-{{/*  SECTIONS  */}}
-{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_SECTIONS"
-  (dict
-    "label"            (i18n "sections")
-    "label_singular"   (i18n "sections" 1)
-    "name"             `sections`
-    "description"      `Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.`
-    "identifier_field" `id`
-    "extension"        `yml`
-    "folder"           (print `content.` .Lang `/sections`)
-    "create"           true
-    "nested"           (dict "depth" 5)
-    "summary"          "{{dirname}}{{dirname | ternary('/','')}}{{filename}}"
-    "sortable_fields"  (dict "fields" (slice "commit_date" "slug" "id" "title"))
-    "editor"           (dict "preview" false)
-    "fields"           (slice
-      `~SECTION_ID`
-      `~TITLE`
-      `~ANCHOR`
-      `~SUBTITLE`
-      `~ICON_ID`
-      `~IMAGE_SRC`
-      `~BACKGROUND_IMAGE`
-      `~COLOR`
-      `~GRADIENT_COLOR`
-      `~CONTAINER_SIZE`
-      `~DESCRIPTION`
-      (dict
-        "label"     `Más`
-        "name"      `more`
-        "widget"    `object`
-        "collapsed" true
-        "required"  false
-        "hint"      `Más opciones de la Sección`
-        "fields"    (slice
-          (dict "<<" (slice (dict "label" `Imagen de Fondo` "name" `bg`)             `~IMAGE_SRC`))
-          (dict "<<" (slice (dict "label" `Texto del Enlace del Menú` "name" `menu`) `~BUTTON_LABEL`))
-          (dict "<<" (slice (dict "label" `Color del Botón del Enlace del Menú`)     `~BUTTON_COLOR_WITH_HIDE`))
-          (dict "<<" (slice (dict "label" `Fuente Alternativa del Enlace del Menú`)  `~BUTTON_FONT_ALT`))
-          `~ICON_TYPE`
-          `~ICON_SIZE`
-          `~ICON_COLOR`
-          `~IMAGE_RATIO`
-          `~IMAGE_CONTAIN`
-          `~IMAGE_BORDER`
-          `~IMAGE_INSET`
-          `~SECTION_IMAGE_MIN`
-          `~SECTION_IMAGE_MAX`
-          `~SECTION_IMAGE_ALIGN`
-          `~GRADIENT_TYPE`
-          `~OPACITY`
-          `~PARALLAX`
-          `~UPPERCASE`
-          `~UNDERLINE`
-          `~ALIGN`
-          `~SECTION_FULL`
-          `~PADDING_HIDE`
-          `~PADDING_TOP`
-          `~PADDING_BOTTOM`
-          `~CONTAINER_COLOR`
-          `~CONTAINER_GRADIENT_COLOR`
-          `~CONTAINER_GRADIENT_TYPE`
-          `~CONTAINER_OPACITY`
-          `~HIDE_SHADOW`
-          `~PILL`
-          `~DIVIDER_ID`
-          `~DIVIDER_FLIP_X`
-          `~DIVIDER_FLIP_Y`
-        )
-      )
-      `~SECTION_ROWS`
-    )
-  )
-) }}
-
-
-{{/*  MODALS  */}}
-{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_MODALS"
-  (dict
-    "label"            (i18n "modals")
-    "label_singular"   (i18n "modals" 1)
-    "name"             `modals`
-    "description"      `Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un '#' delante del ID, **ejemplo**: '#reparaciones-mantenimiento').`
-    "identifier_field" `id`
-    "extension"        `yml`
-    "folder"           (print `content.` .Lang `/modals`)
-    "create"           true
-    "nested"           (dict "depth" 5)
-    "slug"             "{{fields.id}}"
-    "summary"          "{{dirname}}{{dirname | ternary('/','')}}{{filename}}"
-    "sortable_fields"  (dict "fields" (slice "commit_date" "slug" "id" "title"))
-    "editor"           (dict "preview" false)
-    "fields"           (slice
-      `~SECTION_ID`
-      `~TITLE`
-      `~ANCHOR`
-      `~SUBTITLE`
-      `~ICON_ID`
-      `~IMAGE_SRC`
-      `~COLOR`
-      `~GRADIENT_COLOR`
-      `~CONTAINER_SIZE`
-      `~DESCRIPTION`
-      (dict
-        "label"     `Más`
-        "name"      `more`
-        "widget"    `object`
-        "collapsed" true
-        "required"  false
-        "hint"      `Más opciones de la Ventana Modal`
-        "fields"    (slice
-          (dict "<<" (slice (dict "label" `Texto del Enlace del Menú` "name" `menu`) `~BUTTON_LABEL`))
-          (dict "<<" (slice (dict "label" `Color del Botón del Enlace del Menú`)     `~BUTTON_COLOR_WITH_HIDE`))
-          (dict "<<" (slice (dict "label" `Fuente Alternativa del Enlace del Menú`)  `~BUTTON_FONT_ALT`))
-          `~ICON_TYPE`
-          `~ICON_SIZE`
-          `~ICON_COLOR`
-          `~IMAGE_RATIO`
-          `~IMAGE_CONTAIN`
-          `~IMAGE_BORDER`
-          `~IMAGE_INSET`
-          `~SECTION_IMAGE_MIN`
-          `~SECTION_IMAGE_MAX`
-          `~SECTION_IMAGE_ALIGN`
-          `~GRADIENT_TYPE`
-          `~UPPERCASE`
-          `~UNDERLINE`
-          `~ALIGN`
-          `~PADDING_HIDE`
-          `~PILL`
-        )
-      )
-      `~SECTION_ROWS`
-    )
-  )
-) }}
-
-
 {{/*  PAGES  */}}
 {{ $colections_rest = $colections_rest | append (dict "&COLLECTION_PAGES"
   (dict
@@ -575,6 +373,211 @@
     )
   ) }}
 {{ end }}
+
+
+{{/*  SECTIONED  */}}
+{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_SECTIONED"
+  (dict
+    "label"            (i18n "page")
+    "label_singular"   (i18n "page" 1)
+    "name"             `page`
+    "description"      `Páginas maquetables por secciones.`
+    "identifier_field" `slug`
+    "folder"            (print `content.` .Lang)
+    "create"            true
+    "slug"             "{{fields.slug}}"
+    "preview_path"      (print site.Home.RelPermalink "{{fields.slug}}/")
+    "summary"           "{{title}}"
+    "sortable_fields"   (dict "fields" (slice "commit_date" "title"))
+    "view_filters"      (dict
+      "filters" (slice
+        (dict "name" `published` "label" `Publicados` "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" `Borradores` "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`      "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"       (dict
+      "groups" (slice
+        (dict "name" `year`      "label" `Año`        "field" `commit_date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" `Mes`        "field" `commit_date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`    "field" `noindex`)
+        (dict "name" `drafts`    "label" `Borradores` "field" `draft`)
+      )
+    )
+    "editor"            (dict "preview" false )
+    "fields"            (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY`
+      `~SECTION_HEADER_ARTICLE`
+      `~SECTION_MENU`
+      `~SECTIONS_DESIGN_GENERAL`
+      `~SECTIONS_DESIGN_ALTERNATE`
+      `~SECTIONS_DESIGN_MODALS`
+      `~SECTION_SECTIONS`
+    )
+  )
+) }}
+
+
+{{/*  SECTIONS  */}}
+{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_SECTIONS"
+  (dict
+    "label"            (i18n "sections")
+    "label_singular"   (i18n "sections" 1)
+    "name"             `sections`
+    "description"      `Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.`
+    "identifier_field" `name`
+    "extension"        `yml`
+    "folder"           (print `content.` .Lang `/sections`)
+    "create"           true
+    "nested"           (dict "depth" 5)
+    "slug"             "{{fields.name}}"
+    "summary"          "{{dirname | upper}}{{dirname | ternary('/','')}}{{name}}"
+    "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id" "title"))
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~SECTION_NAME`
+      `~SECTION_ID`
+      `~TITLE`
+      `~ANCHOR`
+      `~SUBTITLE`
+      `~ICON_ID`
+      `~IMAGE_SRC`
+      `~BACKGROUND_IMAGE`
+      `~COLOR`
+      `~GRADIENT_COLOR`
+      `~CONTAINER_SIZE`
+      `~DESCRIPTION`
+      (dict
+        "label"     `Más`
+        "name"      `more`
+        "widget"    `object`
+        "collapsed" true
+        "required"  false
+        "hint"      `Más opciones de la Sección`
+        "fields"    (slice
+          (dict "<<" (slice (dict "label" `Imagen de Fondo` "name" `bg`)             `~IMAGE_SRC`))
+          (dict "<<" (slice (dict "label" `Texto del Enlace del Menú` "name" `menu`) `~BUTTON_LABEL`))
+          (dict "<<" (slice (dict "label" `Color del Botón del Enlace del Menú`)     `~BUTTON_COLOR_WITH_HIDE`))
+          (dict "<<" (slice (dict "label" `Fuente Alternativa del Enlace del Menú`)  `~BUTTON_FONT_ALT`))
+          `~ICON_TYPE`
+          `~ICON_SIZE`
+          `~ICON_COLOR`
+          `~IMAGE_RATIO`
+          `~IMAGE_CONTAIN`
+          `~IMAGE_BORDER`
+          `~IMAGE_INSET`
+          `~SECTION_IMAGE_MIN`
+          `~SECTION_IMAGE_MAX`
+          `~SECTION_IMAGE_ALIGN`
+          `~GRADIENT_TYPE`
+          `~OPACITY`
+          `~PARALLAX`
+          `~UPPERCASE`
+          `~UNDERLINE`
+          `~ALIGN`
+          `~SECTION_FULL`
+          `~PADDING_HIDE`
+          `~PADDING_TOP`
+          `~PADDING_BOTTOM`
+          `~CONTAINER_COLOR`
+          `~CONTAINER_GRADIENT_COLOR`
+          `~CONTAINER_GRADIENT_TYPE`
+          `~CONTAINER_OPACITY`
+          `~HIDE_SHADOW`
+          `~PILL`
+          `~DIVIDER_ID`
+          `~DIVIDER_FLIP_X`
+          `~DIVIDER_FLIP_Y`
+        )
+      )
+      `~SECTION_ROWS`
+    )
+  )
+) }}
+
+
+{{/*  MODALS  */}}
+{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_MODALS"
+  (dict
+    "label"            (i18n "modals")
+    "label_singular"   (i18n "modals" 1)
+    "name"             `modals`
+    "description"      `Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un '#' delante del ID, **ejemplo**: '#reparaciones-mantenimiento').`
+    "identifier_field" `name`
+    "extension"        `yml`
+    "folder"           (print `content.` .Lang `/modals`)
+    "create"           true
+    "nested"           (dict "depth" 5)
+    "slug"             "{{fields.name}}"
+    "summary"          "{{dirname | upper}}{{dirname | ternary(' / ','')}}{{name}}"
+    "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id" "title"))
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~SECTION_NAME`
+      `~SECTION_ID`
+      `~TITLE`
+      `~ANCHOR`
+      `~SUBTITLE`
+      `~ICON_ID`
+      `~IMAGE_SRC`
+      `~COLOR`
+      `~GRADIENT_COLOR`
+      `~CONTAINER_SIZE`
+      `~DESCRIPTION`
+      (dict
+        "label"     `Más`
+        "name"      `more`
+        "widget"    `object`
+        "collapsed" true
+        "required"  false
+        "hint"      `Más opciones de la Ventana Modal`
+        "fields"    (slice
+          (dict "<<" (slice (dict "label" `Texto del Enlace del Menú` "name" `menu`) `~BUTTON_LABEL`))
+          (dict "<<" (slice (dict "label" `Color del Botón del Enlace del Menú`)     `~BUTTON_COLOR_WITH_HIDE`))
+          (dict "<<" (slice (dict "label" `Fuente Alternativa del Enlace del Menú`)  `~BUTTON_FONT_ALT`))
+          `~ICON_TYPE`
+          `~ICON_SIZE`
+          `~ICON_COLOR`
+          `~IMAGE_RATIO`
+          `~IMAGE_CONTAIN`
+          `~IMAGE_BORDER`
+          `~IMAGE_INSET`
+          `~SECTION_IMAGE_MIN`
+          `~SECTION_IMAGE_MAX`
+          `~SECTION_IMAGE_ALIGN`
+          `~GRADIENT_TYPE`
+          `~UPPERCASE`
+          `~UNDERLINE`
+          `~ALIGN`
+          `~PADDING_HIDE`
+          `~PILL`
+        )
+      )
+      `~SECTION_ROWS`
+    )
+  )
+) }}
+
+
+{{/*  TYPES  */}}
+{{ $colections_rest = $colections_rest | append (dict "&COLLECTION_TYPES"
+  (dict
+    "label"           `Tipos`
+    "name"            `types`
+    "description"     `Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE: Artículos se consideran todos los tipos de páginas excepto las Seccionadas y sus Secciones y Modales correspondientes.`
+    "sortable_fields" (dict "fields" slice)
+    "editor"          (dict "preview" false)
+    "files"           (partial "cms/config/types-files" $taxonomies)
+  )
+) }}
 
 
 {{ return $colections_rest }}

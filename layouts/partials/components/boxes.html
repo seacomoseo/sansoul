@@ -2,7 +2,7 @@
 {{- $box           := . -}}
 {{- $level         := .level -}}
 {{- $container     := .container -}}
-{{- $showup        := site.Data.design.performance.showup -}}
+{{- $showup        := site.Data.styles.performance.showup -}}
 
 {{- $columns       := .box.columns | default 1 -}}
 {{- if eq .box.columns 0 -}}
@@ -28,10 +28,10 @@
     {{- $level        = add $.level 1 -}}
 
     {{/*  CLASS  */}}
-    {{- $columns_sm   := cond (or (gt $columns 2) (eq $container "xs") (eq $container "sm")) "columns--sm" "" -}}
-    {{/*  {{- $boxes_level  := print "columns--" (sub $level 1) -}}  */}}
-    {{- $direction    := cond (not (.direction | or (eq .direction "right"))) "" (print "columns--" .direction) -}}
-    {{- $group_radius := cond (not (.group_radius | and (not .slider))) "" "columns--radius" -}}
+    {{- $columns_sm   := cond (or (gt $columns 2) (eq $container "xs") (eq $container "sm")) "boxes--sm" "" -}}
+    {{/*  {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */}}
+    {{- $direction    := cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction) -}}
+    {{- $group_radius := cond (not (.group_radius | and (not .slider))) "" "boxes--radius" -}}
     {{- $align_y      := cond (not .align_y) "" (print "align-items-" .align_y) -}}
     {{- $align_x      := cond (not .align_x) "" (print "justify-" .align_x) -}}
     {{- $slider_items := cond (not .slider)  "box__type" "slider__items" -}}
@@ -39,7 +39,7 @@
     {{- $class := partial "functions/attr-delimit" (dict
       "attr"  "class"
       "array" (slice
-        "columns"
+        "boxes"
         $columns_sm
         $direction
         $group_radius

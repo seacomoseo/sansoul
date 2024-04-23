@@ -266,21 +266,21 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         }
         searchItems = searchItems +
           `
-          {{- $articles := site.Data.articles.common -}}
-          {{- $design := site.Data.design -}}
+          {{- $lists  := site.Data.lists.common -}}
+          {{- $styles := site.Data.styles -}}
           <article
             class="
               search__result-item
               box
               box--button-hide
-              bg bg-{{ $articles.color }}
-              align-{{ $articles.align | default "left" -}}
+              bg bg-{{ $lists.color }}
+              align-{{ $lists.align | default "left" -}}
             "
             data-h
           >
             <a class="search__result-item-link" href="${results[item].item.link}"></a>
 
-            {{- if $design.buttons.deep | and $articles.color -}}
+            {{- if $styles.buttons.deep | and $lists.color -}}
               <div class="bg-color bg-color--3d"></div>
             {{- end -}}
             <div class="bg-color"></div>
@@ -289,9 +289,9 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               class="
                 image
                 image--inset
-                {{ print "image--" ($articles.ratio | default "16x9") }}
-                {{ cond (not $articles.contain) "" "image--contain" }}
-                {{ cond (ne $articles.image "gradient") "" "image--gradient" }}
+                {{ print "image--" ($lists.ratio | default "16x9") }}
+                {{ cond (not $lists.contain) "" "image--contain" }}
+                {{ cond (ne $lists.image "gradient") "" "image--gradient" }}
               "
             >
               ${searchItemImage}

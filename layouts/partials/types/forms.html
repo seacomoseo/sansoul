@@ -32,8 +32,8 @@
           {{- $googleForm    := in .action "docs.google.com/forms" -}}
           {{- $formsubmit_co := in .action "formsubmit.co" -}}
           {{- $action        := .action | default $page.RelPermalink | base64Encode -}}
-          {{- $inputs_fill   := site.Data.design.inputs.fill -}}
-          {{- $chamfer       := site.Data.design.rounded.chamfer -}}
+          {{- $inputs_fill   := site.Data.styles.inputs.fill -}}
+          {{- $chamfer       := site.Data.styles.rounded.chamfer -}}
           {{/*  HEAD  */}}
           {{- if $js -}}
             {{- $name_js_form := print "form_" $id_form -}}

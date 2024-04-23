@@ -103,7 +103,7 @@ export function initSliders () {
         }
         // eslint-disable-next-line
         const observerScroll = new IntersectionObserver(callbackScroll, {
-          root: slider,
+          root: track,
           rootMargin: '0% 0%',
           threshold: 0.99
         })

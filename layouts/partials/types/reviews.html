@@ -8,7 +8,7 @@
 
   {{/*  REVIEWS CLASS  */}}
   {{- $slider        := cond (not .slider) "" " slider__items" -}}
-  {{- $columns_class := print `class="columns` $slider `"` -}}
+  {{- $columns_class := print `class="boxes` $slider `"` -}}
 
 
   {{/*  REVIEWS STYLE  */}}
@@ -33,7 +33,7 @@
   ) }}
 
   {{/*  REVIEWS SHOWUP  */}}
-  {{ $showup := cond (not site.Data.design.performance.showup) "" "data-showup" }}
+  {{ $showup := cond (not site.Data.styles.performance.showup) "" "data-showup" }}
 
   {{/*  REVIEWS ATTRIBUTES JOIN  */}}
   {{ $attr := partial "functions/attr-delimit" (dict
@@ -66,7 +66,6 @@
         {{- $review_class := partial "functions/attr-delimit" (dict
           "array" (slice
             "review__globe"
-            "box"
             $bg
             $bg_color
             $bg_gradient_color

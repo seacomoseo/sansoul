@@ -12,6 +12,8 @@
   {{ with $section.if }}
     {{ if eq . "body" }}
       {{ $if = $.RawContent }}
+    {{ else if eq . "related" }}
+      {{ $if = ($.Page.GetPage $.Page.Type).Pages.Related (dict "document" $.Page) }}
     {{ else }}
       {{ $if = index $.Params . }}
     {{ end }}

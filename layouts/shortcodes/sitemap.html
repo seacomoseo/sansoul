@@ -16,6 +16,7 @@
       {{ $tax := index site.Data.utilities.taxonomies .Type }}
       <h2>
         {{ partial "components/link" (dict
+          "class"     "sitemap-header-link"
           "link"      .RelPermalink
           "button"    "none"
           "icon"      $tax.icon

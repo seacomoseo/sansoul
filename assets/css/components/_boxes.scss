@@ -1,7 +1,8 @@
 // --box-padding
 // --box-inner
 
-.columns {
+.container,
+.boxes {
   display: flex;
 
   --columns-min: 1;
@@ -25,12 +26,6 @@
   --box-width: var(--box-w);
   --box-padding: calc(var(--columns-gap-max) * 1em);
 
-  > * {
-    width: var(--box-width);
-    @media (min-width: $screen-xl) {
-      order: var(--order, unset);
-    }
-  }
   &:not(:has(> .bg)) {
     --columns-gap-ny: 2;
   }
@@ -44,18 +39,25 @@
     }
   }
 }
+.boxes > *,
+.box {
+  width: var(--box-width, 100%);
+  @media (min-width: $screen-xl) {
+    order: var(--order, unset);
+  }
+}
 
 // Default padding and gap when columns is small (> 2 and container <= sm)
-.columns--sm {
+.boxes--sm {
   --columns-gap-max: 1;
   --box-padding: 1em;
 }
 
-.columns--left {
+.boxes--left {
   flex-direction: row-reverse;
 }
-.columns--top,
-.columns--bottom {
+.boxes--top,
+.boxes--bottom {
   display: block;
   columns: var(--box-width);
   &:not(.gallery-wrap *) {
@@ -67,41 +69,11 @@
     margin-bottom: var(--columns-gap-y);
   }
 }
-.columns--top {
+.boxes--top {
   direction: rtl;
 }
 
-.columns--grid {
-  display: grid;
-  // grid-template-columns: repeat(auto-fill, minmax(var(--box-width), .5fr));
-  --grid-columns: 2;
-  grid-template-columns: repeat(var(--grid-columns), 1fr);
-  &.columns--{
-    @media (min-width: $screen-sm) {
-      &5, &6 {
-        --grid-columns: 3;
-      }
-    }
-    @media (min-width: $screen-md) {
-      &3 {
-        --grid-columns: 3;
-      }
-      &4, &5, &6 {
-        --grid-columns: 4;
-      }
-    }
-    @media (min-width: $screen-lg) {
-      &5 {
-        --grid-columns: 5;
-      }
-      &6 {
-        --grid-columns: 6;
-      }
-    }
-  }
-}
-
-.columns--radius {
+.boxes--radius {
   overflow: hidden;
   @include radius(var(--box-padding));
 }

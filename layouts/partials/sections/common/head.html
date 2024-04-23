@@ -68,7 +68,7 @@
 <meta property="og:image" content="{{ $image_og | default `/media/logo.png` }}">
 
 {{/*  ANDROID THEME COLOR  */}}
-<meta name="theme-color" content="{{ site.Data.design.colors.main.color }}">
+<meta name="theme-color" content="{{ site.Data.styles.colors.main.color }}">
 
 {{/*  INDEXATION  */}}
 <link rel="canonical" href="{{ $url }}">
@@ -148,8 +148,8 @@
 {{ end }}
 
 {{/*  GOOGLE FONTS  */}}
-{{ if site.Data.design.fonts.google }}
-  {{ with site.Data.design.fonts }}
+{{ if site.Data.styles.fonts.google }}
+  {{ with site.Data.styles.fonts }}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{ $google_url := "https://fonts.googleapis.com/css2" }}

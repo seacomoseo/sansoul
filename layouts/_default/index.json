@@ -15,14 +15,14 @@
 -}}
 
   {{- $icon := index $data.utilities.taxonomies .Type -}}
-  {{- if $data.design.icons.emojis_default -}}
+  {{- if $data.styles.icons.emojis_default -}}
     {{- $icon = $icon.code -}}
   {{- else -}}
     {{- $icon = $icon.icon -}}
   {{- end -}}
 
   {{- $image := index $data.utilities.taxonomies .Type -}}
-  {{- if $data.design.icons.emojis_default -}}
+  {{- if $data.styles.icons.emojis_default -}}
     {{- $image = $image.code -}}
   {{- else -}}
     {{- $image = $image.icon -}}
@@ -38,6 +38,14 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+
+  {{- $type  := .Type -}}
+  {{- if in (slice "categories" "tags" "authors") .Type -}}
+    {{- $type = "taxonomies" -}}
+  {{- end -}}
+  {{- $type_list     := merge $data.lists._ (index $data.lists $type) -}}
+  {{- $reading_time  := cond (not $type_list.reading_time) "" (i18n "reading-time" .ReadingTime) -}}
+  {{- $reading_words := cond (not $type_list.reading_time) "" (i18n "word-count" .WordCount) -}}
 
 	{{- $categories := slice -}}
   {{- range .Params.categories -}}
@@ -77,8 +85,8 @@
     "date_end"      (partial "functions/date" (dict "date" (.Params.date_end)) "type" .Type)
     "contents"      $contents
     "image"         $image
-    "reading_time"  (cond ($data.articles.common.reading_time) (i18n `reading-time` .ReadingTime) "")
-    "reading_words" (cond ($data.articles.common.reading_time) (i18n `word-count` .WordCount) "")
+    "reading_time"  $reading_time
+    "reading_words" $reading_words
     "type"          (i18n .Type 1)
     "icon"          $icon
     "categories"    $categories

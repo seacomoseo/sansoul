@@ -5,7 +5,7 @@
     class="noscript"
     method="GET"
     onsubmit="event.preventDefault()"
-    action="https://duckduckgo.com/?q={{ with site.BaseURL }}site:{{ . | urlize }}{{ end }}"
+    action="https://duckduckgo.com/?q=site:{{ site.BaseURL | urlize }}"
   >
     <div class="search__bar box container container--sm">
       <input id="search__input" name="q" tabindex="0" autocomplete="off" placeholder="{{ i18n `search-write` }}">
@@ -15,10 +15,10 @@
         </button>
       */}}
     </div>
-    {{- $articles := site.Data.articles.commons -}}
-    {{- $class    := print "columns columns--" ($articles.columns | default 3) -}}
-    {{- with $articles.columns_min }}
-      {{- $class   = print $class " columns--min-" . -}}
+    {{- $lists  := site.Data.lists.commons -}}
+    {{- $class  := print "boxes boxes--columns-" ($lists.columns | default 3) -}}
+    {{- with $lists.columns_min }}
+      {{- $class = print $class " boxes--min-" . -}}
     {{- end -}}
     <div id="search__results" class="{{ $class }}"></div>
   </form>

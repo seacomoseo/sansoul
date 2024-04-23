@@ -45,13 +45,18 @@
           - [x] `design` > `step`
           - [x] `items` > `steps`
         - [x] `view: gallery`:
-          - [x] `design.alt` > `gallery.type` with 3 options: `grid`, `grid-contain`, `rows` and `columns`
+          - [x] `design.alt` > `gallery.type` with 3 options: `grid`, `rows` and `columns`
           - [x] `design` > `gallery`
           - [x] `items` > `limages`
+          - [x] `wrap` > `color`
+          - [x] `gap` boolean > float
+          - [x] Add `ratio` option
         - [x] `view: articles`:
           - [x] `design` > `box`
           - [x] `*` > `articles.*`
-          - [x] `articles.kind` > `articles.type`
+          - [x] `articles.kind` > `articles.types` and multiple select
+          - [x] Add `date_ini`
+          - [x] Add `date_end`
         - [x] `view: collapsibles`:
           - [x] `design` > `collapsible`
           - [x] `items` > `collapsibles`
@@ -178,16 +183,17 @@
         - [x] `alpha`
         - [x] `order`
         - [x] `icon_size` (only box)
-      - [ ] `.columns` > `.boxes`
-      - [ ] Rehuse `boxes` partial in `reviews`
-      - [ ] `.columns--gap-0`
-      - [ ] Remove:
-        - [ ] `image_min`
-        - [ ] `image_max`
-        - [ ] `image_align`
+      - [x] Add `sharp` option in `data.design.icons` (not for duotone)
+      - [x] Add `name` option in `sections`
+      - [x] `.columns` > `.boxes`
+      - [x] `type: articles` > `type: list`
+      - [x] `data/articles.yml` > `data/lists.yml`
+      - [x] `data/design.yml` > `data/styles.yml`
+      - [x] `summaries`
+        - [x] Articles related type
+      - [x] fix slider with button hide
       - [ ] mv partials sections
       - [ ] h1
-      - [ ] Articles related type
       - [ ] Shortcodes
         - [ ] data
         - [ ] pagination
@@ -197,12 +203,17 @@
         - [ ] baseof
         - [ ] css
         - [ ] js
-      - [ ] `type: articles` > `type: lists`
-      - [ ] `data/articles.yml` > `data/lists.yml` or each `_index.*.list`
-      - [ ] `data/design.yml` > `data/styles.yml`
+      - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`
-      - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
+      - [ ] Remove:
+        - [ ] `image_min`
+        - [ ] `image_max`
+        - [ ] `image_align`
+      - [ ] Rehuse `boxes` partial in `reviews`
+      - [ ] search template
+      - [ ] `search.html`
+      - [ ] `.columns--gap-0`
       - [ ] cp `data/templates` > `themes/sansoul/data/templates`
       - [ ] Images src sizes
       - [ ] Reset `cookies`.md

@@ -11,7 +11,7 @@
   .steps
   .images
   .limages
-  .articles
+  .lists
   .collapsibles
   .reviews
   .buttons
@@ -62,7 +62,7 @@
 {{ $box_card               := cond (not .card)                           "" "box--card" }}
 {{ $box_pill_bottom        := cond (not .pill)                           "" "pill-bottom" }}
 {{ $box_pill_top           := cond (not (or .pill (eq .ratio "circle"))) "" "pill-top" }}
-{{ $box_button_hide        := cond (ne .button "hide")                   ""  "box--button-hide" }}
+{{ $box_button_hide        := cond (ne .button "hide")                   "" "box--button-hide" }}
 {{ $box_slider             := cond (not (.slider | and (not .key)))      "" "slider__item--active" }}
 
 {{ $box_class := partial "functions/attr-delimit" (dict
@@ -87,8 +87,8 @@
     $box_shadow
     $box_pill_top
     $box_pill_bottom
-    $box_button_hide
     $box_card
+    $box_button_hide
     $box_slider
   )
 ) }}

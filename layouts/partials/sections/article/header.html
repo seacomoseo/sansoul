@@ -29,7 +29,7 @@
 {{- if .Params.image -}}
   <figure class="article__figure">
     {{- $class := "" -}}
-    {{- with site.Data.articles.content.border -}}
+    {{- with site.Data.lists.content.border -}}
       {{- $class = "image--border" -}}
       {{- if ne . "main" -}}
         {{- $class = print $class " " . -}}

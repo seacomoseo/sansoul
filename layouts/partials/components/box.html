@@ -7,7 +7,7 @@
 {{- $tag    := .tag | default "div" -}}
 
 {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
-{{- $showup        := site.Data.design.performance.showup -}}
+{{- $showup        := site.Data.styles.performance.showup -}}
 {{- $group_radius  := .group_radius | and (not .slider) -}}
 
 {{- $box_span       := 1 -}}
@@ -178,13 +178,13 @@
     ) -}}
   {{ end }}
 
-  {{/*  ARTICLES  */}}
-  {{ if .articles }}
-    {{- partial "types/articles" (merge
-      .articles
+  {{/*  LIST  */}}
+  {{ if .list }}
+    {{- partial "types/lists" (merge
+      .list
       .
       (dict
-        "articles"  nil
+        "list"      nil
         "container" $.container
         "level"     $level
       )

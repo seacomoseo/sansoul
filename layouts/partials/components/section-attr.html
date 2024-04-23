@@ -29,7 +29,7 @@
   {{ $bg_gradient_color     = print "bg-gradient-" .gradient }}
   {{ $bg_gradient_type      = print "bg-gradient-" (.gradient_type | default "linear-b") }}
 {{ end }}
-{{ $bg_image_fix           := cond (not (.bg | and .parallax | and (not site.Data.design.performance.parallax))) "" "bg--fix" }}
+{{ $bg_image_fix           := cond (not (.bg | and .parallax | and (not site.Data.styles.performance.parallax))) "" "bg--fix" }}
 {{ $bg                     := cond (not $bg_color) "" "bg" }}
 {{ $bg_video_parent        := "" }}
 {{ if partial `functions/is-iframe` .bg }}

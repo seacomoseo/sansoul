@@ -8,7 +8,7 @@ export function initSimpleLightbox () {
     function lightbox () {
       let lbGroups = []
       lbItems.forEach(lbItem => {
-        const lbGroup = lbItem.closest('.gallery, .box, .columns, .description, section.content')
+        const lbGroup = lbItem.closest('.gallery, .box, .boxes, .description, section.content')
         lbGroups.push(lbGroup)
       })
       lbGroups = [...new Set(lbGroups)]

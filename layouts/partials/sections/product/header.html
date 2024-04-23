@@ -10,7 +10,7 @@
 
 {{/*  DATA  */}}
 
-{{- $reading_time := site.Data.articles.content.reading_time | and .Content -}}
+{{- $reading_time := site.Data.lists.content.reading_time | and .Content -}}
 {{- $isPost := eq .Type "blog" | and (not .IsSection) -}}
 {{- if ($isPost | or $reading_time)
   | and (ne .File.TranslationBaseName "search")
@@ -41,7 +41,7 @@
 {{- if .Params.image -}}
   <figure class="article__figure">
     {{- $class := "" -}}
-    {{- with site.Data.articles.content.border -}}
+    {{- with site.Data.lists.content.border -}}
       {{- $class = "image--border" -}}
       {{- if ne . "main" -}}
         {{- $class = print $class " " . -}}

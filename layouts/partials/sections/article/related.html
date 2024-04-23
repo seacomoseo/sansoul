@@ -1,5 +1,5 @@
-{{- $articles := site.Data.articles -}}
-{{- $container := (merge $articles.common (index $articles .type)).size | default "md" -}}
+{{- $lists     := site.Data.lists -}}
+{{- $container := (merge $lists._ (index $lists .type)).size | default "md" -}}
 
 {{ with page }}
   <div class="box container container--{{ $container }} align-center">

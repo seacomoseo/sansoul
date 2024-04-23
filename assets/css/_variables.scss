@@ -1,37 +1,37 @@
 
 // Colors
 $text:                     #282525                           !default;
-$white:                    $design-colors-base-white         !default;
-$light:                    $design-colors-base-light         !default;
-$dark:                     $design-colors-base-dark          !default;
-$black:                    $design-colors-base-black         !default;
-$grey:                     $design-colors-base-grey          !default;
-$main:                     $design-colors-main-color         !default;
-$alt:                   if($design-colors-alt-color != '', $design-colors-alt-color, mix($white, $main, 50%)) !default;
-$link:                     $design-colors-link-color         !default;
+$white:                    $styles-colors-base-white         !default;
+$light:                    $styles-colors-base-light         !default;
+$dark:                     $styles-colors-base-dark          !default;
+$black:                    $styles-colors-base-black         !default;
+$grey:                     $styles-colors-base-grey          !default;
+$main:                     $styles-colors-main-color         !default;
+$alt:                   if($styles-colors-alt-color != '', $styles-colors-alt-color, mix($white, $main, 50%)) !default;
+$link:                     $styles-colors-link-color         !default;
 
-$main-light:            if($design-colors-main-light != '', $design-colors-main-light, mix($white, $main, 75%)) !default;
-$alt-light:             if($design-colors-alt-light != '',  $design-colors-alt-light,  mix($white, $alt,  75%)) !default;
-$link-light:            if($design-colors-link-light != '', $design-colors-link-light, mix($white, $link, 75%)) !default;
+$main-light:            if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
+$alt-light:             if($styles-colors-alt-light != '',  $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
+$link-light:            if($styles-colors-link-light != '', $styles-colors-link-light, mix($white, $link, 75%)) !default;
 
-$main-dark:             if($design-colors-main-dark  != '', $design-colors-main-dark,  mix($black, $main, 60%)) !default;
-$alt-dark:              if($design-colors-alt-dark  != '',  $design-colors-alt-dark,   mix($black, $alt,  60%)) !default;
-$link-dark:             if($design-colors-link-dark  != '', $design-colors-link-dark,  mix($black, $link, 60%)) !default;
+$main-dark:             if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
+$alt-dark:              if($styles-colors-alt-dark  != '',  $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
+$link-dark:             if($styles-colors-link-dark  != '', $styles-colors-link-dark,  mix($black, $link, 60%)) !default;
 
 $grey-contrast-neutral: text-contrast($grey)                !default;
-$main-contrast-neutral: if($design-colors-main-contrast-text == 'true', text-contrast($main), $white) !default;
-$alt-contrast-neutral:  if($design-colors-alt-contrast-text  == 'true', text-contrast($alt ), $white) !default;
-$link-contrast-neutral: if($design-colors-link-contrast-text == 'true', text-contrast($link), $white) !default;
+$main-contrast-neutral: if($styles-colors-main-contrast-text == 'true', text-contrast($main), $white) !default;
+$alt-contrast-neutral:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt ), $white) !default;
+$link-contrast-neutral: if($styles-colors-link-contrast-text == 'true', text-contrast($link), $white) !default;
 
 $grey-contrast-colored: text-contrast($grey, $light, $dark) !default;
-$main-contrast-colored: if($design-colors-main-contrast-text == 'true', text-contrast($main, $main-light, $main-dark), $main-light) !default;
-$alt-contrast-colored:  if($design-colors-alt-contrast-text  == 'true', text-contrast($alt,  $alt-light,  $alt-dark ), $alt-light ) !default;
-$link-contrast-colored: if($design-colors-link-contrast-text == 'true', text-contrast($link, $link-light, $link-dark), $link-light) !default;
+$main-contrast-colored: if($styles-colors-main-contrast-text == 'true', text-contrast($main, $main-light, $main-dark), $main-light) !default;
+$alt-contrast-colored:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt,  $alt-light,  $alt-dark ), $alt-light ) !default;
+$link-contrast-colored: if($styles-colors-link-contrast-text == 'true', text-contrast($link, $link-light, $link-dark), $link-light) !default;
 
 $grey-contrast-bg:      true                                           !default;
-$main-contrast-bg:      $design-colors-main-contrast-bg      == 'true' !default;
-$alt-contrast-bg:       $design-colors-alt-contrast-bg       == 'true' !default;
-$link-contrast-bg:      $design-colors-link-contrast-bg      == 'true' !default;
+$main-contrast-bg:      $styles-colors-main-contrast-bg      == 'true' !default;
+$alt-contrast-bg:       $styles-colors-alt-contrast-bg       == 'true' !default;
+$link-contrast-bg:      $styles-colors-link-contrast-bg      == 'true' !default;
 
 $white-3d:              mix($black, $white, 25%)            !default;
 $light-3d:              mix($black, $light, 25%)            !default;
@@ -94,59 +94,59 @@ $containers: (
 
 // Fonts
 // Fonts Family
-$font-family-base:         '#{ $design-fonts-base-family }'           !default;
-$font-family-title:        '#{ $design-fonts-title-family }'          !default;
-$font-family-cursive:      '#{ $design-fonts-cursive-family }'        !default;
+$font-family-base:         '#{ $styles-fonts-base-family }'           !default;
+$font-family-title:        '#{ $styles-fonts-title-family }'          !default;
+$font-family-cursive:      '#{ $styles-fonts-cursive-family }'        !default;
 // Fonts Weight
-$font-weight-base:         $design-fonts-base-weight                  !default;
-$font-weight-title:        $design-fonts-title-weight                 !default;
-$font-weight-cursive:      $design-fonts-cursive-weight               !default;
+$font-weight-base:         $styles-fonts-base-weight                  !default;
+$font-weight-title:        $styles-fonts-title-weight                 !default;
+$font-weight-cursive:      $styles-fonts-cursive-weight               !default;
 // Fonts Weight Bold
-$font-weight-bold-base:    $design-fonts-base-bold                    !default;
-$font-weight-bold-title:   $design-fonts-title-bold                   !default;
-$font-weight-bold-cursive: $design-fonts-cursive-bold                 !default;
+$font-weight-bold-base:    $styles-fonts-base-bold                    !default;
+$font-weight-bold-title:   $styles-fonts-title-bold                   !default;
+$font-weight-bold-cursive: $styles-fonts-cursive-bold                 !default;
 // Fonts Style
-$font-style-base:          $design-fonts-base-italic                  !default;
-$font-style-title:         $design-fonts-title-italic                 !default;
-$font-style-cursive:       $design-fonts-cursive-italic               !default;
+$font-style-base:          $styles-fonts-base-italic                  !default;
+$font-style-title:         $styles-fonts-title-italic                 !default;
+$font-style-cursive:       $styles-fonts-cursive-italic               !default;
 // Line Height
-$line-height-base:         $design-fonts-base-line-height             !default;
-$line-height-title:        $design-fonts-title-line-height            !default;
-$line-height-cursive:      $design-fonts-cursive-line-height          !default;
+$line-height-base:         $styles-fonts-base-line-height             !default;
+$line-height-title:        $styles-fonts-title-line-height            !default;
+$line-height-cursive:      $styles-fonts-cursive-line-height          !default;
 // Fonts Size
 $font-size-min:            16                                         !default;
 $font-size-max:            18                                         !default;
-$font-size-title:          $design-fonts-title-size                   !default;
-$font-size-cursive:        $design-fonts-cursive-size                 !default;
+$font-size-title:          $styles-fonts-title-size                   !default;
+$font-size-cursive:        $styles-fonts-cursive-size                 !default;
 // Fonts Style Top
-$top-title:                $design-fonts-title-top                    !default;
-$top-cursive:              $design-fonts-cursive-top                  !default;
+$top-title:                $styles-fonts-title-top                    !default;
+$top-cursive:              $styles-fonts-cursive-top                  !default;
 // Blockquote Cursive
-$blockquote-cursive:       $design-fonts-blockquote-cursive == 'true' !default;
+$blockquote-cursive:       $styles-fonts-blockquote-cursive == 'true' !default;
 
 
 // Icons Type
-$duotone:                  $design-emoji-duotone == 'true'         !default;
-$emoji-scale:              $design-emoji-scale   == 'true'         !default;
-$menu-bar-double:          $design-menu-bar * 1rem                 !default;
+$duotone:                  $styles-emoji-duotone == 'true'         !default;
+$emoji-scale:              $styles-emoji-scale   == 'true'         !default;
+$menu-bar-double:          $styles-menu-bar * 1rem                 !default;
 $menu-bar:                 $menu-bar-double / 2                    !default;
 
 // Rounded
-$radius:                   $design-rounded-radius * 1em            !default;
-$chamfer:                  $design-rounded-chamfer == 'true'       !default;
+$radius:                   $styles-rounded-radius * 1em            !default;
+$chamfer:                  $styles-rounded-chamfer == 'true'       !default;
 
 
 // Buttons
-$buttons-rounded:             $design-buttons-sides_round         == 'true'        !default;
-$icon-buttons-rounded:        $design-buttons-icon_circle         == 'true'        !default;
-$buttons-3d:                  $design-buttons-deep                == 'true'        !default;
-$buttons-outline:             $design-buttons-outline             == 'true'        !default;
-$buttons-font-main:           $design-buttons-font_main                            !default;
-$buttons-font-main-bold:      $design-buttons-font_main_bold      == 'true'        !default;
-$buttons-font-main-uppercase: $design-buttons-font_main_uppercase == 'true'        !default;
-$buttons-font-alt:            $design-buttons-font_alt                             !default;
-$buttons-font-alt-bold:       $design-buttons-font_alt_bold       == 'true'        !default;
-$buttons-font-alt-uppercase:  $design-buttons-font_alt_uppercase  == 'true'        !default;
+$buttons-rounded:             $styles-buttons-sides_round         == 'true'        !default;
+$icon-buttons-rounded:        $styles-buttons-icon_circle         == 'true'        !default;
+$buttons-3d:                  $styles-buttons-deep                == 'true'        !default;
+$buttons-outline:             $styles-buttons-outline             == 'true'        !default;
+$buttons-font-main:           $styles-buttons-font_main                            !default;
+$buttons-font-main-bold:      $styles-buttons-font_main_bold      == 'true'        !default;
+$buttons-font-main-uppercase: $styles-buttons-font_main_uppercase == 'true'        !default;
+$buttons-font-alt:            $styles-buttons-font_alt                             !default;
+$buttons-font-alt-bold:       $styles-buttons-font_alt_bold       == 'true'        !default;
+$buttons-font-alt-uppercase:  $styles-buttons-font_alt_uppercase  == 'true'        !default;
 @if $radius > 1.25em {
   $radius:                    1.25em;
   $buttons-rounded:           true;
@@ -158,23 +158,23 @@ $menu-bar-gap:                if($icon-buttons-rounded and $chamfer, .375em, .5e
 
 
 // Shadow
-$shadow-left:  $design-shadow-left * 1rem                                                   !default;
-$shadow-top:   $design-shadow-top  * 1rem                                                   !default;
-$shadow-blur:  $design-shadow-blur * 1rem                                                   !default;
-$shadow-color: rgba(map-get($options-colors, $design-shadow-color), $design-shadow-opacity) !default;
+$shadow-left:  $styles-shadow-left * 1rem                                                   !default;
+$shadow-top:   $styles-shadow-top  * 1rem                                                   !default;
+$shadow-blur:  $styles-shadow-blur * 1rem                                                   !default;
+$shadow-color: rgba(map-get($options-colors, $styles-shadow-color), $styles-shadow-opacity) !default;
 $shadow:       $shadow-left $shadow-top $shadow-blur $shadow-color                          !default;
 $shadow-half:  ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color        !default;
 
 
 // Simplelightbox
-$sl-overlay-opacity:    $design-lightbox_overlay-opacity                         !default;
-$sl-overlay-background: map-get($options-colors, $design-lightbox_overlay-color) !default;
+$sl-overlay-opacity:    $styles-lightbox_overlay-opacity                         !default;
+$sl-overlay-background: map-get($options-colors, $styles-lightbox_overlay-color) !default;
 $sl-navigation-color:   text-contrast($sl-overlay-background);
 
 
 // Other
-$showup:           $design-performance-showup   == 'true' !default;
-$parallax:         $design-performance-parallax == 'true' !default;
+$showup:           $styles-performance-showup   == 'true' !default;
+$parallax:         $styles-performance-parallax == 'true' !default;
 $search:           $article-search              == 'true' !default;
 $google-translate: $menu-google_translate       == 'true' !default;
 $copy:             '#{ $copied }'                         !default;

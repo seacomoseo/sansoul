@@ -2,16 +2,19 @@ tag: aside
 if: author
 anchor: '{{% i18n authors 1 %}}'
 box:
-  columns: 0
-  columns_min: 2
+  # columns: 1
+  # columns_min: 1
   align_x: flex-start
   align_y: top
 boxes:
-- image: '{{% author image %}}'
+- span: .2
+  span_min: .2
+  image: '{{% author image %}}'
   ratio: 1x1
   border: main
   contain: true
-- span: 4
+- span: .8
+  span_min: .8
   box_gap: 0
   align: left
   title: '{{% author %}}'

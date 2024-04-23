@@ -1,7 +1,7 @@
 {{ if .Params.toc }}
   <nav id="toc" class="toc">
     <div class="box container container--sm">
-      <div class="toc__box bg bg-{{ site.Data.articles.content.toc_color | default `white` }}">
+      <div class="toc__box bg bg-{{ site.Data.lists.content.toc_color | default `white` }}">
         <div class="bg-color"></div>
         <h2 class="h6">{{ i18n "toc" }}</h2>
         {{ $toc             := partial "functions/md" (dict "content" .TableOfContents) }}
