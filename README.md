@@ -192,24 +192,25 @@
       - [x] `summaries`
         - [x] Articles related type
       - [x] fix slider with button hide
-      - [ ] mv partials sections
-      - [ ] h1
-      - [ ] Shortcodes
-        - [ ] data
-        - [ ] pagination
-        - [ ] comments
-        - [ ] if
+      - [x] Remove:
+        - [x] `image_min`
+        - [x] `image_max`
+        - [x] `image_align`
+      - [x] if
+      - [x] data
+      - [x] pagination
+      - [x] Slider with padding inline
+      - [x] Slider fix interval stop general scroll
+      - [x] Slider arrows float prety
+      - [x] h1
       - [ ] Menu sticky
         - [ ] baseof
         - [ ] css
         - [ ] js
-      - [ ] Add `data` in `box` like multiselect: `[ reading_time, categories, ... ]`
+      - [ ] mv partials sections
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
-      - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`
-      - [ ] Remove:
-        - [ ] `image_min`
-        - [ ] `image_max`
-        - [ ] `image_align`
+      - [ ] Remove nth-childs classes
+      - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
       - [ ] Rehuse `boxes` partial in `reviews`
       - [ ] search template
       - [ ] `search.html`
@@ -218,10 +219,12 @@
       - [ ] Images src sizes
       - [ ] Reset `cookies`.md
       - [ ] Reset `admin`.md
-      - [ ] Remove nth-childs classes
+      - [ ] Check `forms` `actions`
+      - [ ] Check events
+      - [ ] Check comments
+      - [ ] Check Google Translate ofuscate links and la propia traducción
+      - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`
       - [ ] `T` in CMS labels and hints
-      - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
-      - [ ] Comprobar enlaces ofuscados en Google Translate y la propia traducción
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
   - [ ] ¿Quitar montaje de módulos de `hugo.default.yml`?

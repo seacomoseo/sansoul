@@ -14,6 +14,9 @@
       {{ $if = $.RawContent }}
     {{ else if eq . "related" }}
       {{ $if = ($.Page.GetPage $.Page.Type).Pages.Related (dict "document" $.Page) }}
+    {{ else if eq . "comments" }}
+      {{ $config := partial "functions/config-lang" . }}
+      {{ $if = $config.disqus }}
     {{ else }}
       {{ $if = index $.Params . }}
     {{ end }}

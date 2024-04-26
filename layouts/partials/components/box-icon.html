@@ -1,15 +1,11 @@
 {{- if .icon -}}
   {{/*  CLASS  */}}
-  {{- $icon_size := "" -}}
-  {{- $icon_type  := cond (or (not .icon_type) (eq .icon_type "side")) "" (print "box__icon--" .icon_type) -}}
-  {{- $icon_color := .icon_color | default "main" -}}
   {{- $class := partial "functions/attr-delimit" (dict
     "attr"  "class"
     "array" (slice
       "box__icon"
-      $icon_type
-      $icon_size
-      $icon_color
+      (cond (or (not .icon_type) (eq .icon_type "side")) "" (print "box__icon--" .icon_type))
+      (.icon_color | default "main")
     )
   ) -}}
 

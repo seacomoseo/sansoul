@@ -185,7 +185,6 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               'description',
               'contents',
               'reading_time',
-              'reading_words',
               'type',
               'categories',
               'tags',
@@ -233,34 +232,30 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         }
         if (results[item].item.date) {
           searchItemType = `
-            <time class="data__box" >
+            <time class="data__item" >
               {{ partial "components/icon" (dict "class" "data__icon" "icon" "calendar" "emoji" "📅") }}
               ${results[item].item.date}
             </time>`
         } else {
           searchItemType = `
-            <i class="data__box">
+            <i class="data__item">
               <svg class="data__icon"><use href="/draws.svg#${results[item].item.icon}"></use></svg>
               ${results[item].item.type}
             </i>`
         }
         if (results[item].item.author) {
           searchItemAuthor = `
-            <i class="data__box">
+            <i class="data__item">
               {{ partial "components/icon" (dict "class" "data__icon" "icon" "user" "emoji" "👤") }}
               ${results[item].item.author}
             </i>`
         }
         if (results[item].item.reading_time !== '0 minutos' && results[item].item.reading_time !== '') {
           searchItemReadingTime = `
-            <div class="box__data">
-              <i class="data__box">
+            <div class="data">
+              <i class="data__item">
               {{ partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
                 ${results[item].item.reading_time}
-              </i>
-              <i class="data__box">
-                {{ partial "components/icon" (dict "class" "data__icon" "icon" "comment-dots" "emoji" "💬") }}
-                ${results[item].item.reading_words}
               </i>
             </div>`
         }
@@ -300,7 +295,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               <i class="box__link" data-h><i>${results[item].item.title}</i></i>
             </p>
             ${searchItemText}
-            <div class="box__data">
+            <div class="data">
               ${searchItemType}
               ${searchItemAuthor}
             </div>

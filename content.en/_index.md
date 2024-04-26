@@ -8,6 +8,5 @@ draft: false
 noindex: false
 translationKey: home
 sections:
-- custom:
-    title: Hugo's SanSoul Theme
+- title: Hugo's SanSoul Theme
 ---

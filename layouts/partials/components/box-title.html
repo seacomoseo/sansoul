@@ -16,23 +16,18 @@
   {{ end }}
 
   {{/*  TITLE CLASS  */}}
-  {{ $hide       := cond (not ($title | and (not .title))) "" "hide" }}
-  {{ $title_link := cond (not .like_article) "" "box__title--link" }}
-  {{ $hs         := cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" "h6") }}
-  {{ $class      := delimit
-    (slice
+  {{ $class := partial "functions/attr-delimit" (dict
+    "attr"  "class"
+    "array" (slice
       "box__title"
-      $hide
-      $title_link
-      $hs
+      (cond (not ($title | and (not .title))) "" "hide")
+      (cond (not .like_article) "" "box__title--link")
+      (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" "h6"))
     )
-    " "
-  }}
+  ) }}
 
   {{/*  TITLE  */}}
-  {{ print "<" $hn | safeHTML }}
-    class="{{ $class }}"
-  {{ ">" | safeHTML }}
+  {{ print "<" $hn " " $class ">" | safeHTML }}
 
     {{/*  ICON SIDE  */}}
     {{ if eq .icon_type "side" }}
@@ -40,17 +35,13 @@
     {{ end }}
 
     {{/*  ANCHOR CLASS  */}}
-    {{ $box_link     := cond (not .like_article) "" "box__link" }}
-    {{ $uppercase    := cond (not .uppercase)    "" "uppercase" }}
-    {{ $underline    := cond (not .underline)    "" "underline" }}
-    {{ $anchor_class := delimit
-      (slice
-        $box_link
-        $uppercase
-        $underline
+    {{ $anchor_class := partial "functions/attr-delimit" (dict
+      "array" (slice
+        (cond (not .like_article) "" "box__link")
+        (cond (not .uppercase)    "" "uppercase")
+        (cond (not .underline)    "" "underline")
       )
-      " "
-    }}
+    ) }}
 
     {{/*  ANCHOR  */}}
     {{ partial "components/link"

@@ -4,66 +4,59 @@
 {{- $container     := .container -}}
 {{- $showup        := site.Data.styles.performance.showup -}}
 
-{{- $columns       := .box.columns | default 1 -}}
-{{- if eq .box.columns 0 -}}
-  {{- $boxes_span  := 0 -}}
-  {{- range $boxes -}}
-    {{- $boxes_span = add $boxes_span (.span | default 1) -}}
+{{- $columns       := 1 -}}
+{{- $columns_min   := 1 -}}
+{{- with .box -}}
+  {{- $columns      = .columns | default 1 -}}
+  {{- $columns_min  = .columns_min | default 1 -}}
+  {{- if eq .columns 0 -}}
+    {{- $boxes_span  := 0 -}}
+    {{- range $boxes -}}
+      {{- $boxes_span = add $boxes_span (.span | default 1) -}}
+    {{- end -}}
+    {{- $columns      = cond (le $boxes_span 6) $boxes_span 3 -}}
   {{- end -}}
-  {{- $columns      = cond (le $boxes_span 6) $boxes_span 3 -}}
-{{- end -}}
-{{- $columns_min   := .box.columns_min | default 1 -}}
-{{- if eq .box.columns_min 0 -}}
-  {{- $boxes_span  := 0 -}}
-  {{- range $boxes -}}
-    {{- $boxes_span = add $boxes_span (.span_min | default 1) -}}
+  {{- if eq .columns_min 0 -}}
+    {{- $boxes_span  := 0 -}}
+    {{- range $boxes -}}
+      {{- $boxes_span = add $boxes_span (.span_min | default 1) -}}
+    {{- end -}}
+    {{- $columns_min  = cond (le $boxes_span 6) $boxes_span 3 -}}
   {{- end -}}
-  {{- $columns_min  = cond (le $boxes_span 6) $boxes_span 3 -}}
 {{- end -}}
 
-{{- $is_wrap       := or (ne $columns 1) .box.columns_min .box.slider -}}
+{{- $is_wrap          := or (ne $columns 1) (ne $columns_min 1) -}}
 
 {{- with .box -}}
+  {{- $is_wrap         = or $is_wrap .slider -}}
   {{- if $is_wrap -}}
-    {{- $level        = add $.level 1 -}}
+    {{- $level         = add $.level 1 -}}
 
     {{/*  CLASS  */}}
-    {{- $columns_sm   := cond (or (gt $columns 2) (eq $container "xs") (eq $container "sm")) "boxes--sm" "" -}}
     {{/*  {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */}}
-    {{- $direction    := cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction) -}}
-    {{- $group_radius := cond (not (.group_radius | and (not .slider))) "" "boxes--radius" -}}
-    {{- $align_y      := cond (not .align_y) "" (print "align-items-" .align_y) -}}
-    {{- $align_x      := cond (not .align_x) "" (print "justify-" .align_x) -}}
-    {{- $slider_items := cond (not .slider)  "box__type" "slider__items" -}}
-
     {{- $class := partial "functions/attr-delimit" (dict
       "attr"  "class"
       "array" (slice
         "boxes"
-        $columns_sm
-        $direction
-        $group_radius
-        $align_y
-        $align_x
-        $slider_items
+        (cond (or (gt $columns 2) (eq $container "xs") (eq $container "sm")) "boxes--sm" "")
+        (cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction))
+        (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
+        (cond (not .align_y) "" (print "align-items-" .align_y))
+        (cond (not .align_x) "" (print "justify-" .align_x))
+        (cond (not .slider)  "box__type" "slider__items")
       )
     ) -}}
 
 
     {{/*  STYLE  */}}
-    {{- $col_max := cond (eq $columns 1)     "" (print "--columns-max:" $columns) -}}
-    {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
-    {{- $gap     := cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap) -}}
-    {{- $gap_y   := cond (eq .gap_y nil)     "" (print "--columns-gap-ny:" .gap_y) -}}
-
     {{ $style := partial "functions/attr-delimit" (dict
       "attr"    "style"
       "delimit" ";"
       "array"   (slice
-        $col_max
-        $col_min
-        $gap
-        $gap_y
+        (cond (eq $columns 1)     "" (print "--columns-max:" $columns))
+        (cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min))
+        (cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap))
+        (cond (eq .gap_y nil)     "" (print "--columns-gap-ny:" .gap_y))
       )
     ) }}
 
@@ -90,41 +83,46 @@
   {{ end }}
 {{ end }}
 
+        {{ $parent  := dict }}
+        {{ if not .article_list }}
+          {{ $parent = dict
+            "uppercase"   $box.uppercase
+            "underline"   $box.underline
+            "icon_type"   $box.icon_type
+            "icon_size"   $box.icon_size
+            "icon_color"  $box.icon_color
+            "ratio"       $box.ratio
+            "contain"     $box.contain
+            "border"      $box.border
+            "inset"       $box.inset
+            "grayscale"   $box.grayscale
+            "hide_shadow" $box.hide_shadow
+            "hide_radius" $box.hide_radius
+          }}
+        {{ end }}
+
         {{ range $key, $value := $boxes }}
-        
           {{/*  BOX  */}}
           {{- partial "components/box" (merge
-            $.parent
-            (dict
-              "icon"     nil
-              "image"    nil
-              "link"     nil
-              "color"    nil
-              "gradient" nil
-              "bg"       nil
-              "padding"  nil
-              "pill"     nil
-              "align_x"  nil
-            )
+            $parent
             $.box
             .
             (dict
-              "id"          $.id
-              "level"       $level
-              "key"         $key
-              "container"   $container
-              "section"     $.section
-              "first"       $.first
-              "footer"      $.footer
-              "columns"     $columns
-              "columns_min" $columns_min
-              "is_wrap"     $is_wrap
-              "parent"      $.parent
-              "form_lvl"    $.form_lvl
-              "form_num"    (add $key 1)
+              "id"           $.id
+              "level"        $level
+              "key"          $key
+              "container"    $container
+              "section"      $.section
+              "first"        $.first
+              "footer"       $.footer
+              "columns"      $columns
+              "columns_min"  $columns_min
+              "is_wrap"      $is_wrap
+              "form_lvl"     $.form_lvl
+              "form_num"     (add $key 1)
+              "article_list" $.article_list
             )
           ) -}}
-
         {{ end }}
 
 {{- if $is_wrap -}}

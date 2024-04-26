@@ -103,7 +103,7 @@
 ) -}}
 
 
-{{/*  ATTRIBUTES  */}}
+{{/*  STYLES  */}}
 
 {{ $bg_alpha          := "" }}
 {{ if and (.color_alpha | and (ne .color_alpha 100)) ($bg_color | or $bg_gradient_color) }}
@@ -147,7 +147,7 @@
 {{ $id := cond (not .id) "" (print ` id="` .id `"`) }}
 
 
-{{/*  JOIN  */}}
+{{/*  JOIN ATTRIBUTES  */}}
 {{ $attr := partial "functions/attr-delimit" (dict
   "array" (slice
     $id

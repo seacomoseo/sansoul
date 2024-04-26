@@ -44,8 +44,7 @@
     {{- $type = "taxonomies" -}}
   {{- end -}}
   {{- $type_list     := merge $data.lists._ (index $data.lists $type) -}}
-  {{- $reading_time  := cond (not $type_list.reading_time) "" (i18n "reading-time" .ReadingTime) -}}
-  {{- $reading_words := cond (not $type_list.reading_time) "" (i18n "word-count" .WordCount) -}}
+  {{- $reading_time  := cond (not $type_list._hide_reading_time) (i18n "reading-time" .ReadingTime) "" -}}
 
 	{{- $categories := slice -}}
   {{- range .Params.categories -}}
@@ -86,7 +85,6 @@
     "contents"      $contents
     "image"         $image
     "reading_time"  $reading_time
-    "reading_words" $reading_words
     "type"          (i18n .Type 1)
     "icon"          $icon
     "categories"    $categories

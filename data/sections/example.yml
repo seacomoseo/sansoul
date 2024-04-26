@@ -30,10 +30,6 @@ box_tag: div # [ section, header, footer, nav, article, aside, div ]
 menu: Texto del enlace del Menú
 button: link # [ main, link, alt, light, dark, invert, none, hide ]
 font_alt: true
-## image
-image_min: 5
-image_max: 10
-image_align: center # [ left, center, right ]
 ## bg
 full: true
 ph: false
@@ -191,7 +187,11 @@ boxes:
     # like box and...
     hide_description: false
     hide_categories: false
-    reading_time: false
+    hide_reading_time: false
+    data: row # [ hide, column, row, space ]
+    data_custom:
+    - icon: star
+      label: Ejemplaco
 - collapsible:
     button: '' # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
@@ -254,6 +254,7 @@ boxes:
     font_alt: false
   - type: address
     label: ''
+    address: ''
     name: Molando Ando
     streetAddress: Calle País de Nunca Jamás, 42
     postalCode: 30000

@@ -3,14 +3,14 @@
 
 {{- if .page.Content | and (ne .page.Type "events") -}}
 
-  {{- $reading_time := "" -}}
+  {{- $hide_reading_time := "" -}}
   {{- with .box -}}
-    {{- $reading_time = .reading_time -}}
+    {{- $hide_reading_time = .hide_reading_time -}}
   {{- else -}}
-    {{- $reading_time = site.Data.lists.content.reading_time -}}
+    {{- $hide_reading_time = site.Data.lists.content.hide_reading_time -}}
   {{- end -}}
 
-  {{- if $reading_time -}}
+  {{- if not $hide_reading_time -}}
     <i class="data__item">
       {{- partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") -}}
       {{- i18n "reading-time" .page.ReadingTime -}}

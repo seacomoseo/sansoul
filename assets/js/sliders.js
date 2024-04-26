@@ -1,3 +1,5 @@
+import { scrollShot } from './scroll-shot'
+
 export function initSliders () {
   const sliders = document.querySelectorAll('.slider')
 
@@ -38,44 +40,69 @@ export function initSliders () {
       track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
     }
 
-    function sideScroll (side, slider, track, children) {
-      const activeItems = slider.querySelectorAll('.slider__item--active')
-      const lastIndex = children.length - 1
-      let keyItem, keyIndex
+    function scrollToLeft (track, width) {
+      track.scrollTo({
+        left: width,
+        behavior: 'smooth'
+      })
+    }
+
+    function sideScroll (side, track, children) {
+      // Bit by bit
+      const trackChild = track.firstElementChild
+      const trackStyle = window.getComputedStyle(trackChild)
+      const trackWidth = trackChild.scrollWidth
+      const padding = parseFloat(trackStyle.getPropertyValue('padding-left')) * 2
+      const gap = parseFloat(trackStyle.getPropertyValue('gap'))
+      const elementWidth = children[0].scrollWidth
+      const scrollWidth = elementWidth + gap
       if (side === 'left') {
-        keyItem = activeItems[0]
-        keyIndex = indexOfItem(keyItem)
-        if (keyIndex === 0) {
-          scrollToItem(children[lastIndex], slider, track)
+        if (track.scrollLeft > 0) {
+          scrollToLeft(track, track.scrollLeft - scrollWidth)
         } else {
-          scrollToNear(keyItem, 'left', track)
+          scrollToLeft(track, trackWidth - scrollWidth)
         }
       } else {
-        keyItem = activeItems[activeItems.length - 1]
-        keyIndex = indexOfItem(keyItem)
-        if (keyIndex === lastIndex) {
-          scrollToItem(children[0], slider, track)
+        if (track.scrollLeft < (trackWidth - scrollWidth - padding)) {
+          scrollToLeft(track, track.scrollLeft + scrollWidth)
         } else {
-          scrollToNear(keyItem, 'right', track)
+          scrollToLeft(track, 0)
         }
       }
+      // Next no observer in center
+      // const activeItems = slider.querySelectorAll('.slider__item--active')
+      // const lastIndex = children.length - 1
+      // let keyItem, keyIndex
+      // if (side === 'left') {
+      //   keyItem = activeItems[0]
+      //   keyIndex = indexOfItem(keyItem)
+      //   if (keyIndex === 0) {
+      //     scrollToItem(children[lastIndex], slider, track)
+      //   } else {
+      //     scrollToNear(keyItem, 'left', track)
+      //   }
+      // } else {
+      //   keyItem = activeItems[activeItems.length - 1]
+      //   keyIndex = indexOfItem(keyItem)
+      //   if (keyIndex === lastIndex) {
+      //     scrollToItem(children[0], slider, track)
+      //   } else {
+      //     scrollToNear(keyItem, 'right', track)
+      //   }
+      // }
     }
 
     // CONTROLS VIEW
     function slidersControlsView () {
       sliders.forEach(slider => {
-        const track = slider.querySelector('.slider__track')
         const items = slider.querySelector('.slider__items')
-        const arrowsGroup = slider.querySelector('.slider__arrows')
-        const bulletsGroup = slider.querySelector('.slider__bullets')
-        if (slider.offsetWidth >= items.offsetWidth) {
-          if (arrowsGroup) arrowsGroup.style.display = 'none'
-          if (bulletsGroup) bulletsGroup.style.display = 'none'
-          if (track) track.style.overflowX = 'hidden'
+        const itemsStyle = window.getComputedStyle(items)
+        const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
+        const itemsWidth = items.offsetWidth - padding
+        if (slider.offsetWidth >= itemsWidth - 1) {
+          slider.classList.add('slider--static')
         } else {
-          if (arrowsGroup) arrowsGroup.style = false
-          if (bulletsGroup) bulletsGroup.style = false
-          if (track) track.style = false
+          slider.classList.remove('slider--static')
         }
       })
     }
@@ -92,7 +119,7 @@ export function initSliders () {
         const bullets = slider.querySelectorAll('.slider__bullet')
 
         // SCROLL-SHOT
-        function callbackScroll (entries, observer) {
+        function callbackScrollChildren (entries, observer) {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
               activeClass(entry.target, bullets)
@@ -102,24 +129,46 @@ export function initSliders () {
           })
         }
         // eslint-disable-next-line
-        const observerScroll = new IntersectionObserver(callbackScroll, {
-          root: track,
+        const observerScrollChildren = new IntersectionObserver(callbackScrollChildren, {
+          root: slider,
           rootMargin: '0% 0%',
           threshold: 0.99
         })
         children.forEach(e => {
-          observerScroll.observe(e)
+          observerScrollChildren.observe(e)
         })
 
         // INTERVALS
         const interval = slider.dataset.interval * 1000
         if (interval) {
-          let scrollInterval = setInterval(() => sideScroll('right', slider, track, children), interval)
+          let scrollInterval
+          // Set intervall if not static
+          function setSideScrollInterval () {
+            return setInterval(() => {
+              const isStatic = slider.classList.contains('slider--static')
+              if (!isStatic) {
+                sideScroll('right', track, children)
+              }
+            }, interval)
+          }
+          // Observer
+          function callbackScrollParent (entries, observer) {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                scrollInterval = setSideScrollInterval()
+              } else {
+                clearInterval(scrollInterval)
+              }
+            })
+          }
+          const observerScrollParent = new IntersectionObserver(callbackScrollParent, { rootMargin: '0% 0%' })
+          observerScrollParent.observe(slider)
+          // Mouse hover
           slider.addEventListener('mouseenter', () => {
             clearInterval(scrollInterval)
           })
           slider.addEventListener('mouseleave', () => {
-            scrollInterval = setInterval(() => sideScroll('right', slider, track, children), interval)
+            scrollInterval = setSideScrollInterval()
           })
         }
       })
@@ -137,8 +186,8 @@ export function initSliders () {
         const items = slider.querySelector('.slider__items')
         const children = [...items.children]
         if (bullet) scrollToItem(children[indexOfItem(bullet)], slider, track)
-        if (arrowLeft) sideScroll('left', slider, track, children)
-        if (arrowRight) sideScroll('right', slider, track, children)
+        if (arrowLeft) sideScroll('left', track, children)
+        if (arrowRight) sideScroll('right', track, children)
       }
     })
   }

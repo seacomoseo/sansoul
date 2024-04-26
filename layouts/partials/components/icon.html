@@ -31,7 +31,7 @@
 {{ end }}
 
 {{/*  ATTRIBUTES  */}}
-{{- $attr := cond (not .attr ) $class (print " " .attr) -}}
+{{- $attr := cond (not .attr) $class (print " " .attr) -}}
 
 {{ $svg := not $emoji | or $icons.emojis }}
 {{ if $svg }}

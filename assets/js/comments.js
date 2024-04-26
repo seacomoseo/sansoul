@@ -22,13 +22,13 @@ export function initComments () {
     // document.querySelector('.comments__load').remove();
   }
   function showComments () {
-    document.querySelector('.comments__content').classList.add('comments__content--show')
+    document.querySelector('#disqus_thread').classList.add('disqus-show')
   }
 
   // Lazy-Load show comments
   scrollShot({
     rootMargin: '0%',
-    query: '.comments',
+    query: '#disqus_thread',
     // () => document.querySelector('.comments__show').remove(),
     doStart: () => {
       loadComments()

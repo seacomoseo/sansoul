@@ -1,15 +1,14 @@
 {{- $options := site.Data.options -}}
 
 {{- $options_tax := slice -}}
-{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"       ) }}{{ end -}}
-{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Personalizadas") }}{{ end -}}
 {{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"          ) }}{{ end -}}
 {{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"       ) }}{{ end -}}
 {{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"     ) }}{{ end -}}
 {{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías"    ) }}{{ end -}}
 {{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"     ) }}{{ end -}}
 {{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"       ) }}{{ end -}}
-{{- if (.GetPage "custom"    ) }}{{ $options_tax = $options_tax | append (dict "value" "custom"     "label" "Personalizada_") }}{{ end -}}
+{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"       ) }}{{ end -}}
+{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Personalizadas") }}{{ end -}}
 
 {{- $vars := slice
   (dict "&OPTIONS_ALIGN_X"       $options.align_x)

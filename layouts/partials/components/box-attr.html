@@ -20,9 +20,7 @@
   .map
 )) }}
 
-{{ $container_is           := cond .main "container" "" }}
-{{ $container_modal        := cond (.main | and .modal) "modal__container" "" }}
-{{ $container_size         := cond (not .main) "" (
+{{ $container_size := cond (not .main) "" (
   .size
   | default (cond
     (.ph | default false)
@@ -30,66 +28,48 @@
     (cond .modal "sm" "lg")
   )
 ) }}
-{{ $container_size_class   := cond .main (print "container--" $container_size) "" }}
 
-{{ $box_key                := cond (not .main) (print "box--" (add .key 1)) "" }}
-
-{{ $box_align              := cond (not .align)     "" (print "align-" .align) }}
-{{ $box_align_y_self       := cond (not .align_y)   "" (print "align-self-" .align_y) }}
-{{ $box_align_max          := cond (not .align_max) "" (print "align--xl-" .align_max) }}
-
-{{ $box_bg_color           := print
+{{ $box_bg_color := print
   (cond (not .bg_color)     "" (print "bg-" .bg_color))
   (cond (not .bg_image_src) "" " bg-image")
 }}
-{{ $box_bg_gradient_color  := "" }}
-{{ $box_bg_gradient_type   := "" }}
-{{ if .gradient }}
-  {{ $box_bg_gradient_color = print "bg-gradient-" .gradient }}
-  {{ $box_bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") }}
-{{ end }}
-{{ $box_bg                 := cond (not $box_bg_color) "" "bg" }}
+
+{{ $box_ratio := cond
+  (not .card)
+  (cond (not $no_content) "" "box--16x9")
+  "box--2x3"
+}}
+
 {{/*
-{{ $box_bg_image_fix       := cond (not (.bg_image_src | and .parallax)) "" "bg--fix" }}
+{{ $box_bg_image_fix       := cond (not (.bg_image_src | and .parallax))               "" "bg--fix" }}
+{{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bg_image_src)) "" "bg-figure-video-parent" }}
 */}}
-{{ $box_span               := cond (and (not .span) (not .span_min))     "" "box--span" }}
-{{ $box_grow               := cond (not .grow)                           "" "box--grow" }}
-{{ $box_hide_radius        := cond (not .hide_radius)                    "" "box--hide-radius" }}
-{{ $box_shadow             := cond (not .hide_shadow)                    "" "box--hide-shadow" }}
-{{ $box_ratio              := cond (not .card) (cond (not $no_content)   "" "box--16x9") "box--2x3" }}
-{{ $box_ratio               = cond (not .box_ratio) $box_ratio (print "box--" .box_ratio) }}
-{{/*  {{ if partial `functions/is-iframe` .bg_image_src }}bg-figure-video-parent {{ end }}  */}}
-{{ $box_card               := cond (not .card)                           "" "box--card" }}
-{{ $box_pill_bottom        := cond (not .pill)                           "" "pill-bottom" }}
-{{ $box_pill_top           := cond (not (or .pill (eq .ratio "circle"))) "" "pill-top" }}
-{{ $box_button_hide        := cond (ne .button "hide")                   "" "box--button-hide" }}
-{{ $box_slider             := cond (not (.slider | and (not .key)))      "" "slider__item--active" }}
 
 {{ $box_class := partial "functions/attr-delimit" (dict
   "attr"  "class"
   "array" (slice
     "box"
-    $box_key
-    $container_is
-    $container_modal
-    $container_size_class
-    $box_span
-    $box_align
-    $box_align_y_self
-    $box_align_max
-    $box_bg
+    (cond .main                      "" (print "box--" (add .key 1)))
+    (cond (not .main)                "" "container")
+    (cond (not .main)                "" (print "container--" $container_size))
+    (cond (not (.main | and .modal)) "" "modal__container")
+    (cond (not .align)               "" (print "align-" .align))
+    (cond (not .align_y)             "" (print "align-self-" .align_y))
+    (cond (not .align_max)           "" (print "align--xl-" .align_max))
+    (cond (not $box_bg_color)        "" "bg")
     $box_bg_color
-    $box_bg_gradient_color
-    $box_bg_gradient_type
-    $box_grow
-    $box_ratio
-    $box_hide_radius
-    $box_shadow
-    $box_pill_top
-    $box_pill_bottom
-    $box_card
-    $box_button_hide
-    $box_slider
+    (cond (not .gradient)            "" (print "bg-gradient-" .gradient))
+    (cond (not .gradient)            "" (print "bg-gradient-" (.gradient_type | default "linear-r")))
+    (cond (and (not .span) (not .span_min))     "" "box--span")
+    (cond (not .grow)                           "" "box--grow")
+    (cond (not .box_ratio) $box_ratio (print "box--" .box_ratio))
+    (cond (not .hide_radius)                    "" "box--hide-radius")
+    (cond (not .hide_shadow)                    "" "box--hide-shadow")
+    (cond (not .card)                           "" "box--card")
+    (cond (not .pill)                           "" "pill-bottom")
+    (cond (not (or .pill (eq .ratio "circle"))) "" "pill-top")
+    (cond (ne .button "hide")                   "" "box--button-hide")
+    (cond (not (.slider | and (not .key)))      "" "slider__item--active")
   )
 ) }}
 
@@ -97,32 +77,28 @@
 {{/*  STYLE  */}}
 
 {{ $box_bg_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) }}
-{{ $box_bg_alpha  = cond (not $box_bg_alpha)                   "" (print "--bg-alpha:" .color_alpha) }}
-{{ $box_padding  := cond (eq .padding nil)                     "" (print "--box-padding:" .padding "em") }}
-{{ $box_span_max := cond (or (not .span) (eq .span 1))         "" (print "--box-span-max:" .span) }}
-{{ $box_span_min := cond (or (not .span_min) (eq .span_min 1)) "" (print "--box-span-min:" .span_min) }}
-{{ $box_order    := cond (not .order)                          "" (print "--order:" .order) }}
-{{ $box_gap      := cond (eq .box_gap nil)                     "" (print "--box-gap:" .box_gap "rem") }}
 
 {{ $box_style := partial "functions/attr-delimit" (dict
   "attr"    "style"
   "delimit" ";"
   "array"   (slice
-    $box_order
-    $box_bg_alpha
-    $box_gap
-    $box_padding
-    $box_span_max
-    $box_span_min
+    (cond (not $box_bg_alpha)                   "" (print "--bg-alpha:" .color_alpha))
+    (cond (not .order)                          "" (print "--order:" .order))
+    (cond (eq .box_gap nil)                     "" (print "--box-gap:" .box_gap "rem"))
+    (cond (eq .padding nil)                     "" (print "--box-padding:" .padding "em"))
+    (cond (or (not .span) (eq .span 1))         "" (print "--box-span-max:" .span))
+    (cond (or (not .span_min) (eq .span_min 1)) "" (print "--box-span-min:" .span_min))
   )
 ) }}
 
 
 {{/*  SHOWUP  */}}
+
 {{ $box_showup  := cond .showup "data-showup" "" }}
 
 
 {{/*  JOIN  */}}
+
 {{ $box_attr := partial "functions/attr-delimit" (dict
   "array" (slice
     $box_class

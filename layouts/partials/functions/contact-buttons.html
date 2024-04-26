@@ -4,7 +4,7 @@
 {{ $phones    := slice }}
 {{ $social    := slice }}
 
-{{ range site.Pages }}
+{{ range where site.Pages "Type" "ne" "events" }}
   {{ range partial "functions/sections-all" . }}
     {{ range partial "functions/section-boxes" . }}
 

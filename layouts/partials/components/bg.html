@@ -7,7 +7,7 @@
   {{- if .bg -}}
     {{- $image     = "bg-figure" -}}
     {{- $alpha     = cond (not .alpha)     "" "alpha" -}}
-    {{- $parallax  = cond (not .parallax)  "" (cond (or .box site.Data.styles.performance.parallax) "parallax" "") -}}
+    {{- $parallax  = cond (not .parallax)  "" (cond (not site.Data.styles.performance.parallax) "" "parallax") -}}
     {{- $grayscale = cond (not .grayscale) "" " image--grayscale" -}}
   {{- end -}}
 

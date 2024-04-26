@@ -33,7 +33,6 @@
 {{- if .GetPage "categories" -}}{{ $collections = $collections | append `~COLLECTION_CATEGORIES` }}{{ end -}}
 {{- if .GetPage "tags"       -}}{{ $collections = $collections | append `~COLLECTION_TAGS`       }}{{ end -}}
 {{- if .GetPage "authors"    -}}{{ $collections = $collections | append `~COLLECTION_AUTHORS`    }}{{ end -}}
-{{- if .GetPage "custom"     -}}{{ $collections = $collections | append `~COLLECTION_CUSTOM`     }}{{ end -}}
 {{- $collections = $collections | append
   `~COLLECTION_PAGES`
   `~COLLECTION_SECTIONED`

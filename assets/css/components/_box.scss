@@ -12,7 +12,7 @@
   &.bg {
     @include radius-parent(var(--box-padding));
   }
-  > *:not(.box, .image) {
+  > *:not(.box, .image, .map) {
     width: 100%;
   }
 }
@@ -259,7 +259,7 @@
   justify-content: center;
   gap: .25em;
   margin: 0;
-  > a:not(:hover, :focus, :active) {
+  > :is(a,[data-h],[data-b]):not(:hover, :focus, :active) {
     color: inherit;
   }
   // Remove underline if next is icon bottom
@@ -345,16 +345,8 @@
 }
 
 // Data
-.box__data {
-  margin: auto 0 0;
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: .5em 1em;
-}
-.box__title + .box__data {
-  margin-top: calc(-.75 * var(--box-gap));
+.box__title + .data {
+  margin-top: calc(.5rem - var(--box-gap));
 }
 
 // Button

@@ -29,9 +29,6 @@
   &:not(.image--border *) {
     --radius-end: inherit;
   }
-  &:is([style*="--image-"] > *) {
-    @include fluid-size(width, 1em, var(--image-min), var(--image-max));
-  }
 }
 svg.image__inner {
   height: 100%;
@@ -277,12 +274,12 @@ iframe.image__inner {
 // SVG EXCEPTIONS
 
 .box:not(.bg)
-> .image--svg:not(.image--border):not(.description *)
-> .image__inner { // svg image without radius when not background
+> .image:not(.image--border):not(.description *)
+> .image__inner:where(svg, img[src*=".svg"]) { // svg image without radius when not background
   overflow: unset;
   @include hide-radius;
 }
-.image--svg svg {
+svg.image__inner {
   width: 100%;
 }
 // SVG from IMG tag like SVG tag

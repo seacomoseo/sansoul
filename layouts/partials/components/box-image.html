@@ -21,7 +21,6 @@
   {{- $ratio     := cond (not .ratio)       "" (print "image--" .ratio) -}}
   {{- $border    := cond (not .border)      "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
   {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
-  {{- $svg       := cond (in $image_src ".svg") "image--svg" "" -}}
 
   {{- $page_type  := .Page.Type | default "_" -}}
   {{- if in (slice "categories" "tags" "authors") $page_type -}}
@@ -52,18 +51,12 @@
       $border
       $inset
       $hover
-      $svg
       $icon_top
       $grayscale
     )
   ) -}}
 
-  {{- $attr  := ""  -}}
-  {{- if or .image_min .image_max -}}
-    {{- $attr = print ` style="--image-min:` (.image_min | default 10) `;--image-max:` (.image_max | default 18) `"` -}}
-  {{- end -}}
-
-  <div class="{{ $class }}" {{- $attr| safeHTMLAttr }}>
+  <div class="{{ $class }}">
 
     {{- if $gradient -}}
       <div class="image__inner image__inner--gradient"></div>

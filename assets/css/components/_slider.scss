@@ -31,6 +31,8 @@
   flex-wrap: nowrap;
   width: fit-content;
   margin: 0 auto;
+  --aux-side-width: calc((var(--columns) - 1) / 2);
+  padding-inline: calc(var(--box-width) * var(--aux-side-width) + var(--gap-width) * (var(--aux-side-width) - 1) + var(--gap-width));
   > * {
     flex-shrink: 0;
     scroll-snap-align: center;
@@ -118,24 +120,26 @@
   }
 }
 .slider__arrows--float {
-  justify-content: space-between;
-  margin-top: 0;
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  height: 0;
+  margin: 0;
   .slider__arrow {
     @include fluid-size(--slider-arrow-size, 1em, 2, 3);;
     width: var(--slider-arrow-size);
-    height: var(--slider-arrow-size);
-    min-height: var(--slider-arrow-size);
+    height: 100%;
     &:where(.reviews ~ .slider__arrows > *) {
       --slider-arrow-push: 4em;
     }
-    top: calc(var(--slider-arrow-size) * -1 - var(--slider-arrow-push, 0em));
-    --slider-arrow-side: calc(var(--container-margin-side) *  1 + var(--slider-arrow-size) / 4);
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-image: radial-gradient(ellipse farthest-side at var(--slider-arrow-side-at, left), var(--bg-color), transparent);
+    --slider-arrow-side: var(--container-margin-side);
+    &::before,
+    &::after {
+      content: none;
+    }
     > svg {
       @include fluid-size(font-size, 1em, 1.5, 2);
+      color: var(--title);
     }
   }
   .slider__arrow--left {
@@ -143,5 +147,27 @@
   }
   .slider__arrow--right {
     right: var(--slider-arrow-side);
+    --slider-arrow-side-at: right;
+  }
+}
+.slider__bullets +
+.slider__arrows--float
+.slider__arrow {
+  height: calc(100% - 3.2em);
+}
+
+
+// STATIC
+
+.slider--static {
+  .slider__track {
+    overflow-x: hidden;
+  }
+  .slider__items {
+    padding-inline: 0;
+  }
+  .slider__bullets,
+  .slider__arrows {
+    display: none;
   }
 }

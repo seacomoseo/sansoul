@@ -1,4 +1,5 @@
 {{ $list  := . }}
+{{ $max   := .max | default 999 }}
 {{ $types := .types | default (slice
   "blog"
   "events"
@@ -23,10 +24,24 @@
   {{ if eq . "events" }}
     {{ $pages = sort $pages "Params.date_ini" "desc" }}
   {{ end }}
-  {{ with $.categories }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.categories" "intersect" . }}{{ end }}{{ end }}
-  {{ with $.tags       }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.tags"       "intersect" . }}{{ end }}{{ end }}
-  {{ with $.author     }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
-  {{ $firsts_pages     := ($pages | first ($.max | default 99)) }}
+  {{ $firsts_pages := $pages }}
+
+  {{ if and page.IsSection (eq (len $types) 1) (ne . "related") }}
+    {{ $firsts_pages = (page.Paginate $pages $max).Pages }}
+    {{ partial "functions/pagination" page
+      | replaceRE `\n|\s{2,}|<li.*?>|</li>` ``
+      | replaceRE `<ul class="pagination pagination-default">` `<div class="pagination buttons">`
+      | replaceRE `</ul>` `</div>`
+      | replaceRE `page-link` `button button--sm`
+      | replaceRE `span` `i`
+      | safeHTML
+    }}
+  {{ else }}
+    {{ with $.categories }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.categories" "intersect" . }}{{ end }}{{ end }}
+    {{ with $.tags       }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.tags"       "intersect" . }}{{ end }}{{ end }}
+    {{ with $.author     }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
+    {{ $firsts_pages = $pages | first $max }}
+  {{ end }}
 
   {{ if len $pages }}
     {{/*
@@ -46,7 +61,7 @@
       )
     }}
 
-    {{ if gt (len $pages) (len $firsts_pages) }}
+    {{ if and (not page.IsSection) (gt (len $pages) (len $firsts_pages)) }}
       <div class="buttons">
         {{- partial "components/link"
           (dict

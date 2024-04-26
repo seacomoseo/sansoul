@@ -21,19 +21,29 @@
       {{ $p = merge $p . }}
     {{ end }}
   {{ else }}
+    {{/*  ARTICLES  */}}
+    {{ with site.Data.templates.base.articles }}
+      {{ $p = merge $p . }}
+    {{ end }}
     {{ if eq .Kind "section" }}
       {{/*  LISTS  */}}
       {{ with site.Data.templates.base.lists }}
         {{ $p = merge $p . }}
       {{ end }}
     {{ else }}
-      {{/*  ARTICLES  */}}
-      {{ with site.Data.templates.base.articles }}
-        {{ $p = merge $p . }}
-      {{ end }}
       {{ if in (slice "categories" "tags" "authors") .Type }}
         {{/*  TAXONOMIES  */}}
         {{ with site.Data.templates.base.taxonomies }}
+          {{ $p = merge $p . }}
+        {{ end }}
+      {{ else if eq .Type "events" }}
+        {{/*  EVENTS  */}}
+        {{ with site.Data.templates.base.events }}
+          {{ $p = merge $p . }}
+        {{ end }}
+      {{ else if eq .Type "blog" }}
+        {{/*  BLOG  */}}
+        {{ with site.Data.templates.base.blog }}
           {{ $p = merge $p . }}
         {{ end }}
       {{ end }}
