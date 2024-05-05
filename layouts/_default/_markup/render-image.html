@@ -24,7 +24,7 @@
   {{- end -}}
 
   {{/*  RATIO IN TEXT, EXAMPLE: ![3x2](example.jpg)  */}}
-  {{- with where site.Data.options.ratio "value" .Text -}}
+  {{- if in site.Data.options.ratio .Text -}}
     {{- $ratio       = $.Text -}}
     {{- $image_class = print $image_class " image--" $ratio -}}
     {{- $alt         = false -}}

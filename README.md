@@ -203,6 +203,8 @@
       - [x] Slider fix interval stop general scroll
       - [x] Slider arrows float prety
       - [x] h1
+      - [x] new dividers
+      - [x] `fan-op` > `arrow-op-fan`
       - [ ] Menu sticky
         - [ ] baseof
         - [ ] css
@@ -210,6 +212,7 @@
       - [ ] mv partials sections
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
+      - [ ] schema and legal only by config, not crawl all site
       - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
       - [ ] Rehuse `boxes` partial in `reviews`
       - [ ] search template
@@ -328,9 +331,6 @@
   - `disableLanguages`
   - `mounts`
 - `./i18n/new.yml`
-- `./data/options/langs.yml`
+- `./data/options.yml` > `langs`
 - `./data/utilities/default_disable_langs.yml`
-- `./data/menu.yml`
-- `./data/config.yml`
-- `./content/*`
-- `./assets/sections.new`
+- `./content.new/`

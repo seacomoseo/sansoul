@@ -59,7 +59,7 @@ function fetchDeploymentStatus(badge, production) {
       deployStatus.classList.add('timer')
     })
     .catch((error) => {
-      console.error('Error al obtener el estado del despliegue:', error)
+      console.error('Error obtaining deployment status:', error)
     })
 }
 

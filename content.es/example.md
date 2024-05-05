@@ -18,13 +18,16 @@ background:
 menu:
   hide: false
   logo: false
-  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
   sticky: '' # [ xs, sm, md, lg, xl, fluid ]
   header: '' # [ hide, sticky, fix ] # he's hide when screen > sticky
   header_align: '' # [ left, center, right ]
-  header_color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
   size: '' # [ xs, sm, md, lg, xl, fluid ]
   transparent: true
+  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  gradient: '' # ¿?
+  gradient_type: '' # ¿?
+  bg: '' # ¿?
+  parallax: '' # ¿?
   hide_sections: true
   hide_modals: false
   hide_icons: false

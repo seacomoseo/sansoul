@@ -1,0 +1,150 @@
+{{- $review := . -}}
+
+{{ if .slider }}
+  <div class="slider box__block" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
+{{ end }}
+
+<div class="reviews {{ if .slider }}slider__track{{ else }}box__block{{ end }}">
+
+  {{/*  REVIEWS CLASS  */}}
+  {{- $slider        := cond (not .slider) "" " slider__items" -}}
+  {{- $columns_class := print `class="boxes` $slider `"` -}}
+
+
+  {{/*  REVIEWS STYLE  */}}
+  {{- $columns_max   := .columns | default 1 -}}
+  {{- if eq .columns 0 -}}
+    {{- $columns_max  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- end -}}
+  {{- $columns_min   := .columns_min | default 1 -}}
+  {{- if eq .columns_min 0 -}}
+    {{- $columns_min  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- end -}}
+  {{- $col_max := cond (eq $columns_max 1) "" (print "--columns-max:" $columns_max) -}}
+  {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
+
+  {{ $columns_style := partial "functions/attr-delimit" (dict
+    "attr"    "style"
+    "delimit" ";"
+    "array"   (slice
+      $col_max
+      $col_min
+    )
+  ) }}
+
+  {{/*  REVIEWS SHOWUP  */}}
+  {{ $showup := cond (not site.Data.styles.performance.showup) "" "data-showup" }}
+
+  {{/*  REVIEWS ATTRIBUTES JOIN  */}}
+  {{ $attr := partial "functions/attr-delimit" (dict
+    "array" (slice
+      $columns_class
+      $columns_style
+      $showup
+    )
+  ) }}
+  
+  <div {{ $attr | safeHTMLAttr }}>
+    {{ range .reviews }}
+      {{- with merge $review . -}}
+
+        {{/*  REVIEW ITEM CLASS  */}}
+        {{- $bg_color := print
+          (cond (not .color) "" (print "bg-" .color))
+          (cond (not .image) "" " bg-image")
+        -}}
+        {{- $bg_gradient_color := "" }}
+        {{- $bg_gradient_type  := "" }}
+        {{- if .gradient -}}
+          {{- $bg_gradient_color = print "bg-gradient-" .gradient -}}
+          {{- $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
+        {{- end -}}
+        {{- $bg         := cond (not $bg_color) "" "bg" -}}
+        {{- $bg_alpha   := cond (not .alpha) "" (print "bg-alpha-" .alpha) }}
+        {{- $shadow     := cond (not (.color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
+
+        {{- $review_class := partial "functions/attr-delimit" (dict
+          "array" (slice
+            "review__globe"
+            $bg
+            $bg_color
+            $bg_gradient_color
+            $bg_gradient_type
+            $bg_alpha
+            $shadow
+          )
+        ) -}}
+
+        <div class="review">
+          <div class="{{ $review_class }}">
+            <div class="bg-color"></div>
+            {{- $icon       := .icon | default "quote-left" -}}
+            {{- $icon_right := .icon_right | default .icon | default "quote-right" -}}
+            {{- partial "components/icon" (dict
+              "class" "review__icon"
+              "icon"  $icon
+            ) -}}
+            <blockquote class="review__text">
+              <div class="description">
+                {{- partial "functions/md" (dict
+                  "content"          .description
+                  "not_header_links" true
+                ) -}}
+              </div>
+            </blockquote>
+            {{- partial "components/icon" (dict
+              "class" "review__icon review__icon--right"
+              "icon"  $icon_right
+            ) -}}
+          </div>
+          <div class="review__author">
+            {{- if .image -}}
+              <div class="review__figure">
+                <div class="bg-color"></div>
+                {{- partial "components/image"
+                  (dict
+                    "class" "review__figure-image"
+                    "src"   .image
+                    "alt"   .title
+                    "max"   136
+                    "ratio" "1x1"
+                  )
+                -}}
+              </div>
+            {{- end -}}
+            <div class="review__person">
+              {{- with .title -}}
+                <h3 class="review__title h4">{{ . | markdownify }}</h3>
+              {{- end -}}
+              {{- with .subtitle -}}
+                <p class="review__subtitle">{{ . | markdownify }}</p>
+              {{- end -}}
+              <p class="review__stars">
+                {{- print
+                  (partial "components/icon" (dict "icon" "star-fill"))
+                  (partial "components/icon" (dict "icon" "star-fill"))
+                  (partial "components/icon" (dict "icon" "star-fill"))
+                  (partial "components/icon" (dict "icon" "star-fill"))
+                  (partial "components/icon" (dict "icon" "star-fill"))
+                  | safeHTML
+                -}}
+              </p>
+            </div>
+          </div>
+        </div>
+      {{- end -}}
+    {{ end }}
+  </div>
+</div>
+
+{{ if .slider }}
+  {{- partial "components/slider-buttons"
+    (dict
+      "items"   (len .reviews)
+      "bullets" .bullets
+      "arrows"  .arrows
+      "button"  .button
+    )
+  -}}
+  </div>
+{{ end }}

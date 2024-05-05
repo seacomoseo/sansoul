@@ -1,0 +1,41 @@
+{{- with .menu -}}
+  {{- if and .logo (ne .header "hide") -}}
+    {{- $config    := partial "functions/config-lang" . -}}
+    {{- $container := .size  | default "sm" -}}
+    {{- $color     := cond (ne .header "sticky") "" (print "bg bg-" (.color | default "white")) -}}
+    {{- $align     := cond (or (not .header_align) (eq .header_align `left`)) "" (print " align-" .header_align) }}
+    {{- $logo      := $config.logo -}}
+    {{- $title     := $config.logo_title -}}
+    {{- $subtitle  := $config.logo_subtitle -}}
+    <header class="logo {{ $color }}">
+      <div class="box container container--{{ $container }} {{- $align }}">
+        <div class="logo__link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link">
+          {{- with $logo -}}
+            {{- $alt := print "Logo " $config.title -}}
+            {{- partial "components/image"
+              (dict
+                "svg_src"   true
+                "class"     "logo__image"
+                "src"       .
+                "alt"       $alt
+                "container" $container
+                "span"      6
+                "notlazy"   true
+              )
+            -}}
+          {{- end -}}
+          {{ if $title | or $subtitle }}
+            <div class="logo__titles">
+              {{- with $title -}}
+                <i class="logo__title h1">{{ . }}</i>
+              {{- end -}}
+              {{- with $subtitle -}}
+                <i class="logo__subtitle">{{ . }}</i>
+              {{- end -}}
+            </div>
+          {{- end -}}
+        </div>
+      </div>
+    </header>
+  {{ end }}
+{{ end }}

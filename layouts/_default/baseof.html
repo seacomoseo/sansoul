@@ -35,19 +35,19 @@
   {{- $body_id = print "body-" $body_id -}}
 
   {{/*  BODY MENU CLASS  */}}
-  {{- $sectioned_menu        := not $params.header_article -}}
-  {{- $menu                  := merge site.Data.menu ($params.menu | default dict) -}}
-  {{- $body_menu             := "" -}}
-  {{- $body_menu_logo        := "" -}}
-  {{- $body_menu_sticky      := "" -}}
+  {{- $menu                     := $params.menu | default dict -}}
+  {{- $body_menu                := "" -}}
+  {{- $body_menu_logo           := "" -}}
+  {{- $body_menu_sticky         := "" -}}
+  {{- $body_menu_transparent    := "" -}}
   {{- if not $menu.hide -}}
-    {{- $body_menu            = "body-menu" -}}
-    {{- $body_menu_sticky     = print "body-menu--sticky body-menu--sticky--" $menu.sticky -}}
-    {{- if $menu.articles_sticky | or (and $sectioned_menu $menu.logo) -}}
-      {{- $body_menu_logo     = "body-menu--logo" -}}
+    {{- $body_menu               = "body-menu" -}}
+    {{- $body_menu_sticky        = cond (not $menu.sticky) "" (print "body-menu--sticky body-menu--sticky--" $menu.sticky) -}}
+    {{- if or $menu.logo (ne $menu.header "hide") -}}
+      {{- $body_menu_logo        = "body-menu--logo" -}}
+      {{- $body_menu_transparent = cond (not $menu.transparent) "" "body-menu--transparent" -}}
     {{- end -}}
   {{- end -}}
-  {{- $body_menu_transparent := cond (not ($menu.transparent | and ($sectioned_menu | or $body_menu_logo))) "" "body-menu--transparent" -}}
 
   {{/*  BODY CLASS  */}}
   {{- $body_class := slice
@@ -66,14 +66,14 @@
     "body"  true
     "color" ($params.background.color | default "white"))
   -}}
-  {{- $body_attr  := partial "components/section-attr" (merge $background (dict
+  {{- $body_attr  := partial "components/base/section-attr" (merge $background (dict
     "id"         $body_id
     "body_class" $body_class
   )) -}}
 
   {{/*  HEAD  */}}
   <head>
-    {{- partial "sections/common/head" . -}}
+    {{- partial "components/base/head" . -}}
     {{- $custom_html_head -}}
   </head>
 
@@ -89,24 +89,24 @@
     {{- partial "components/bg" $background -}}
 
     {{/*  LOGO  */}}
-    {{ partial "sections/common/logo" $params }}
+    {{ partial "components/base/logo" $params }}
 
     {{/*  MENU  */}}
-    {{ partial "sections/common/menu" $params }}
+    {{ partial "components/base/menu" $params }}
 
     {{/*  MAIN  */}}
     <main>
-      {{ partial "kind/sectioned" dict }}
+      {{ partial "components/base/sections" dict }}
     </main>
 
     {{/*  FOOTER  */}}
-    {{ partial "kind/sectioned" (dict "footer" true) }}
+    {{ partial "components/base/sections" (dict "footer" true) }}
 
     {{/*  PRE BODY END  */}}
     {{ partial "components/cookies"         $params }}
     {{ partial "components/buttons-callnow" $params }}
     {{ partial "components/button-up"       .       }}
-    {{ partial "sections/common/scripts"    $params }}
+    {{ partial "components/base/scripts"    $params }}
     {{ $custom_html_body }}
   </body>
 </html>

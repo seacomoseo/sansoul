@@ -1,9 +1,0 @@
-{{ $url_iframe := print
-  "https://docs.google.com/spreadsheets/d/e/"
-  .id
-  "/pubhtml?gid="
-  .id_sheet
-  "&single=true&chrome=false&widget=false&headers=false"
-}}
-
-<div class="gss box__type" {{- with $url_iframe }} data-gss="{{ . }}"{{ end }}></div>

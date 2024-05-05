@@ -1,10 +1,13 @@
 <style>
   .divider--example {
     position: relative;
-    --pt-divider: 20cqw;
-    height: var(--pt-divider);
-    margin: 0;
-    width: 100%;
+    --divider-height: min(12.5vw, 5.5em);
+    container: example / inline-size;
+    height: calc(var(--divider-height) + 5em);
+    --margin-side: min(var(--container-margin-side, -.5em), -.5em);
+    margin: 0 var(--margin-side);
+    --divider-gradient: linear-gradient(black, transparent);
+    --divider-mask-size: var(--divider-width) var(--divider-height), var(--divider-width) 5em;
   }
   .divider--example .bg-color {
     background-color: var(--main);
@@ -14,10 +17,10 @@
 </style>
 
 {{ range site.Data.options.divider }}
-  <h3 id="divider-{{ .value }}">
-    <a href="#divider-{{ .value }}">{{ .value }}</a>
+  <h3 id="divider-{{ . }}">
+    <a href="#divider-{{ . }}">{{ . }}</a>
     <br>
-    {{ .label }}
+    {{ i18n (print "option-divider-" .) }}
   </h3>
-  <div class="divider divider--{{ .value }} divider--example"><div class="bg-color"></div></div>
+  <div class="divider divider--{{ . }} divider--example"><div class="bg-color"></div></div>
 {{ end }}

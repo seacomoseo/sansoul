@@ -1,0 +1,635 @@
+{{ $colections := slice }}
+
+
+{{/*  BLOG  */}}
+{{ if .GetPage "blog" }}
+  {{ $colections = $colections | append (dict
+    "label"            (i18n "collection-blog")
+    "label_singular"   (i18n "collection-blog-singular")
+    "name"             `blog`
+    "description"      (i18n "collection-blog-description")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/blog`)
+    "create"           true
+    "slug"             "{{year}}-{{month}}-{{day}}-{{fields.slug}}"
+    "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+    "summary"          "{{date | date('YYYY-MM-DD')}} 🔷 {{title}}"
+    "sortable_fields"  (dict "fields" (slice "date" "lastmod" "commit_date" "title" "authors" "categories" "tags"))
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"      (dict
+      "groups" (slice
+        (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+        (dict "name" `category`  "label" (i18n "collection-categories-singular") "field" `categories`)
+        (dict "name" `tag`       "label" (i18n "collection-tags-singular")       "field" `tags`)
+        (dict "name" `author`    "label" (i18n "collection-author-singular")     "field" `author`)
+      )
+    )
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_CAT`
+      `~P_TAG`
+      `~P_AUT`
+      `~P_TOC`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_DATE`
+      `~P_LASTMOD`
+      `~P_TRANSLATIONKEY`
+      `~P_BODY`
+    )
+  ) }}
+{{ end }}
+
+
+{{/*  EVENTS  */}}
+{{ if .GetPage "events" }}
+  {{ $colections = $colections | append (dict
+    "label"            (i18n "collection-events")
+    "label_singular"   (i18n "collection-events-singular")
+    "name"             `events`
+    "description"      (i18n "collection-events-description")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/events`)
+    "create"           true
+    "slug"             "{{year}}-{{month}}-{{day}}-{{fields.slug}}"
+    "preview_path"     (print ((index (.GetPage "events").Pages 0).Permalink | replaceRE (print .Site.BaseURL `(.+?/).+`) `/$1`) "{{date_ini | date('YYYY/MM/DD')}}/{{fields.slug}}/")
+    "summary"          "{{date_ini}} 🔷 {{date_end}} 🔷 {{title}}"
+    "sortable_fields"  (dict "fields" (slice "date_ini" "date_end" "commit_date" "title" "authors" "categories" "tags"))
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"      (dict
+      "groups" (slice
+        (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+        (dict "name" `category`  "label" (i18n "collection-categories-singular") "field" `categories`)
+        (dict "name" `tag`       "label" (i18n "collection-tags-singular")       "field" `tags`)
+        (dict "name" `author`    "label" (i18n "collection-author-singular")     "field" `author`)
+      )
+    )
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_CAT`
+      `~P_TAG`
+      `~P_AUT`
+      `~P_TOC`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_DATE_INI`
+      `~P_DATE_END`
+      `~P_ARTIST`
+      `~P_LOCATION`
+      `~P_ADDRESS`
+      `~P_PRICE`
+      `~P_TRANSLATIONKEY`
+      `~P_BODY`
+    )
+  ) }}
+{{ end }}
+
+
+{{/*  PRODUCTS  */}}
+{{ if .GetPage "products" }}
+  {{ $colections = $colections | append (dict
+    "label"            (i18n "collection-products")
+    "label_singular"   (i18n "collection-products-singular")
+    "name"             `products`
+    "description"      (i18n "collection-products-description")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/products`)
+    "create"           true
+    "slug"             "{{fields.slug}}"
+    "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+    "summary"          "{{categories}} 🔷 {{title}}"
+    "sortable_fields"  (dict "fields" (slice "commit_date" "title" "authors" "categories" "tags"))
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"      (dict
+      "groups" (slice
+        (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+        (dict "name" `category`  "label" (i18n "collection-categories-singular") "field" `categories`)
+        (dict "name" `tag`       "label" (i18n "collection-tags-singular")       "field" `tags`)
+      )
+    )
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_PRICE`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_CAT`
+      `~P_TAG`
+      `~P_TOC`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY`
+      `~P_BODY`
+    )
+  ) }}
+{{ end }}
+
+
+{{/*  CATEGORIES  */}}
+{{ if .GetPage "categories" }}
+  {{ $colections = $colections | append (dict
+    "label"            (i18n "collection-categories")
+    "label_singular"   (i18n "collection-categories-singular")
+    "name"             `categories`
+    "description"      (i18n "collection-categories-description")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/categories`)
+    "create"           true
+    "slug"             "{{fields.slug}}"
+    "preview_path"     (print (((.GetPage "categories").GetPage "general").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
+    "summary"          "{{title}}"
+    "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"      (dict
+      "groups" (slice
+        (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+        (dict "name" `category`  "label" (i18n "collection-categories-singular") "field" `categories`)
+        (dict "name" `tag`       "label" (i18n "collection-tags-singular")       "field" `tags`)
+      )
+    )
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_CAT`
+      `~P_TAG`
+      `~P_TOC`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY`
+      `~P_BODY`
+    )
+  ) }}
+{{ end }}
+
+
+{{/*  TAGS  */}}
+{{ if .GetPage "tags" }}
+  {{ $colections = $colections | append (dict
+    "label"            (i18n "collection-tags")
+    "label_singular"   (i18n "collection-tags-singular")
+    "name"             `tags`
+    "description"      (i18n "collection-tags-description")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/tags`)
+    "create"           true
+    "slug"             "{{fields.slug}}"
+    "preview_path"     (print (((.GetPage "tags").GetPage "general").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
+    "summary"          "{{title}}"
+    "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"      (dict
+      "groups" (slice
+        (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+        (dict "name" `category`  "label" (i18n "collection-categories-singular") "field" `categories`)
+        (dict "name" `tag`       "label" (i18n "collection-tags-singular")       "field" `tags`)
+      )
+    )
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_CAT`
+      `~P_TAG`
+      `~P_TOC`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY`
+      `~P_BODY`
+    )
+  ) }}
+{{ end }}
+
+
+{{/*  AUTHORS  */}}
+{{ if .GetPage "authors" }}
+  {{ $colections = $colections | append (dict
+    "label"            (i18n "collection-authors")
+    "label_singular"   (i18n "collection-authors-singular")
+    "name"             `authors`
+    "description"      (i18n "collection-authors-description")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/authors`)
+    "create"           true
+    "slug"             "{{fields.slug}}"
+    "preview_path"     (print (((.GetPage "authors").GetPage "admin").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
+    "summary"          "{{title}}"
+    "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+      )
+    )
+    "view_groups"      (dict
+      "groups" (slice
+        (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+        (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+        (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+        (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+      )
+    )
+    "editor"           (dict "preview" false)
+    "fields"           (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_SLUG`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      `~P_TOC`
+      `~P_DRAFT`
+      `~P_NOINDEX`
+      `~P_JOB_TITLE`
+      `~P_SOCIAL`
+      `~P_TRANSLATIONKEY`
+      `~P_BODY`
+    )
+  ) }}
+{{ end }}
+
+
+{{/*  PAGES  */}}
+{{ $colections = $colections | append (dict
+  "label"            (i18n "collection-pages")
+  "label_singular"   (i18n "collection-pages-singular")
+  "name"             `pages`
+  "description"      (i18n "collection-pages-description")
+  "identifier_field" `slug`
+  "folder"           (print `content.` .Lang `/pages`)
+  "create"           true
+  "slug"             "{{fields.slug}}"
+  "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+  "summary"          "{{title}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+  "view_filters"     (dict
+    "filters" (slice
+      (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+      (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+      (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+      (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+    )
+  )
+  "view_groups"      (dict
+    "groups" (slice
+      (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+      (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+      (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+      (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+      (dict "name" `category`  "label" (i18n "collection-categories-singular") "field" `categories`)
+      (dict "name" `tag`       "label" (i18n "collection-tags-singular")       "field" `tags`)
+      (dict "name" `author`    "label" (i18n "collection-author-singular")     "field" `author`)
+    )
+  )
+  "editor"           (dict "preview" false )
+  "i18n"             true
+  "fields"           (slice
+    `~P_TITLE`
+    `~P_TITLE_SEO`
+    `~P_SLUG`
+    `~P_DESCRIPTION`
+    `~P_IMAGE`
+    `~P_CAT`
+    `~P_TAG`
+    `~P_AUT`
+    `~P_TOC`
+    `~P_DRAFT`
+    `~P_NOINDEX`
+    `~P_TRANSLATIONKEY`
+    `~P_BODY`
+  )
+) }}
+
+
+{{/*  PAGE  */}}
+{{ $colections = $colections | append (dict
+  "label"            (i18n "collection-page")
+  "label_singular"   (i18n "collection-page-singular")
+  "name"             `page`
+  "description"      (i18n "collection-page-description")
+  "identifier_field" `slug`
+  "folder"            (print `content.` .Lang)
+  "create"            true
+  "slug"             "{{fields.slug}}"
+  "preview_path"      (print site.Home.RelPermalink "{{fields.slug}}/")
+  "summary"           "{{title}}"
+  "sortable_fields"   (dict "fields" (slice "commit_date" "title"))
+  "view_filters"      (dict
+    "filters" (slice
+      (dict "name" `published` "label" (i18n "collection-filter-published") "field" `draft`   "pattern" false)
+      (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")    "field" `draft`   "pattern" true)
+      (dict "name" `index`     "label" `Index`                              "field" `noindex` "pattern" false)
+      (dict "name" `noindex`   "label" `NoIndex`                            "field" `noindex` "pattern" true)
+    )
+  )
+  "view_groups"       (dict
+    "groups" (slice
+    (dict "name" `year`      "label" (i18n "collection-filter-year")         "field" `date` "pattern" `^\d{4}`)
+    (dict "name" `month`     "label" (i18n "collection-filter-month")        "field" `date` "pattern" `^\d{4}-\d{2}`)
+    (dict "name" `noindex`   "label" `NoIndex`                               "field" `noindex`)
+    (dict "name" `drafts`    "label" (i18n "collection-filter-drafts")       "field" `draft`)
+    )
+  )
+  "editor"            (dict "preview" false )
+  "fields"            (slice
+    `~P_TITLE`
+    `~P_TITLE_SEO`
+    `~P_SLUG`
+    `~P_DESCRIPTION`
+    `~P_IMAGE`
+    `~P_DRAFT`
+    `~P_NOINDEX`
+    `~P_TRANSLATIONKEY`
+    `~SECTION_HEADER_ARTICLE`
+    `~SECTION_MENU`
+    `~SECTIONS_DESIGN_GENERAL`
+    `~SECTIONS_DESIGN_ALTERNATE`
+    `~SECTIONS_DESIGN_MODALS`
+    `~SECTION_SECTIONS`
+  )
+) }}
+
+
+{{/*  SECTIONS  */}}
+{{ $colections = $colections | append (dict
+  "label"            (i18n "collection-sections")
+  "label_singular"   (i18n "collection-sections-singular")
+  "name"             `sections`
+  "description"      (i18n "collection-sections-description")
+  "identifier_field" `name`
+  "extension"        `yml`
+  "folder"           (print `content.` .Lang `/sections`)
+  "create"           true
+  "nested"           (dict "depth" 5)
+  "slug"             "{{fields.name}}"
+  "summary"          "{{dirname | upper}}{{dirname | ternary('/','')}}{{name}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id" "title"))
+  "editor"           (dict "preview" false)
+  "fields"           (slice
+    `~SECTION_NAME`
+    `~SECTION_ID`
+    `~TITLE`
+    `~ANCHOR`
+    `~SUBTITLE`
+    `~ICON_ID`
+    `~IMAGE_SRC`
+    `~BACKGROUND_IMAGE`
+    `~COLOR`
+    `~GRADIENT_COLOR`
+    `~CONTAINER_SIZE`
+    `~DESCRIPTION`
+    (dict
+      "label"     `Más`
+      "name"      `more`
+      "widget"    `object`
+      "collapsed" true
+      "required"  false
+      "hint"      `Más opciones de la Sección`
+      "fields"    (slice
+        (dict "<<" (slice (dict "label" `Imagen de Fondo` "name" `bg`)             `~IMAGE_SRC`))
+        (dict "<<" (slice (dict "label" `Texto del Enlace del Menú` "name" `menu`) `~BUTTON_LABEL`))
+        (dict "<<" (slice (dict "label" `Color del Botón del Enlace del Menú`)     `~BUTTON_COLOR_WITH_HIDE`))
+        (dict "<<" (slice (dict "label" `Fuente Alternativa del Enlace del Menú`)  `~BUTTON_FONT_ALT`))
+        `~ICON_TYPE`
+        `~ICON_SIZE`
+        `~ICON_COLOR`
+        `~IMAGE_RATIO`
+        `~IMAGE_CONTAIN`
+        `~IMAGE_BORDER`
+        `~IMAGE_INSET`
+        `~GRADIENT_TYPE`
+        `~OPACITY`
+        `~PARALLAX`
+        `~UPPERCASE`
+        `~UNDERLINE`
+        `~ALIGN`
+        `~SECTION_FULL`
+        `~PADDING_HIDE`
+        `~PADDING_TOP`
+        `~PADDING_BOTTOM`
+        `~CONTAINER_COLOR`
+        `~CONTAINER_GRADIENT_COLOR`
+        `~CONTAINER_GRADIENT_TYPE`
+        `~CONTAINER_OPACITY`
+        `~HIDE_SHADOW`
+        `~PILL`
+        `~DIVIDER_ID`
+        `~DIVIDER_FLIP_X`
+        `~DIVIDER_FLIP_Y`
+      )
+    )
+    `~SECTION_ROWS`
+  )
+) }}
+
+
+{{/*  MODALS  */}}
+{{ $colections = $colections | append (dict
+  "label"            (i18n "collection-modals")
+  "label_singular"   (i18n "collection-modals-singular")
+  "name"             `modals`
+  "description"      (i18n "collection-modals-description")
+  "identifier_field" `name`
+  "extension"        `yml`
+  "folder"           (print `content.` .Lang `/modals`)
+  "create"           true
+  "nested"           (dict "depth" 5)
+  "slug"             "{{fields.name}}"
+  "summary"          "{{dirname | upper}}{{dirname | ternary(' / ','')}}{{name}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id" "title"))
+  "editor"           (dict "preview" false)
+  "fields"           (slice
+    `~SECTION_NAME`
+    `~SECTION_ID`
+    `~TITLE`
+    `~ANCHOR`
+    `~SUBTITLE`
+    `~ICON_ID`
+    `~IMAGE_SRC`
+    `~COLOR`
+    `~GRADIENT_COLOR`
+    `~CONTAINER_SIZE`
+    `~DESCRIPTION`
+    (dict
+      "label"     `Más`
+      "name"      `more`
+      "widget"    `object`
+      "collapsed" true
+      "required"  false
+      "hint"      `Más opciones de la Ventana Modal`
+      "fields"    (slice
+        (dict "<<" (slice (dict "label" `Texto del Enlace del Menú` "name" `menu`) `~BUTTON_LABEL`))
+        (dict "<<" (slice (dict "label" `Color del Botón del Enlace del Menú`)     `~BUTTON_COLOR_WITH_HIDE`))
+        (dict "<<" (slice (dict "label" `Fuente Alternativa del Enlace del Menú`)  `~BUTTON_FONT_ALT`))
+        `~ICON_TYPE`
+        `~ICON_SIZE`
+        `~ICON_COLOR`
+        `~IMAGE_RATIO`
+        `~IMAGE_CONTAIN`
+        `~IMAGE_BORDER`
+        `~IMAGE_INSET`
+        `~GRADIENT_TYPE`
+        `~UPPERCASE`
+        `~UNDERLINE`
+        `~ALIGN`
+        `~PADDING_HIDE`
+        `~PILL`
+      )
+    )
+    `~SECTION_ROWS`
+  )
+) }}
+
+
+{{/*  TYPES  */}}
+{{ $type_files := slice }}
+{{ range slice
+  "pages"
+  "blog"
+  "events"
+  "products"
+  "categories"
+  "tags"
+  "authors"
+}}
+  {{ $type_files = $type_files | append (dict
+    "file"      (print "content/_index/" . ".md")
+    "extension" `md`
+    "label"     (i18n (print "collection-" .))
+    "name"      .
+    "fields"    (slice
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      `~P_DESCRIPTION`
+      `~P_IMAGE`
+      | append
+      (cond (eq "pages" .) slice `~P_DRAFT`)
+      | append
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY_HIDDEN`
+      `~P_BODY`
+      | append
+      (cond (ne "custom" .)
+        slice
+        (dict
+          "label"     `Plantilla`
+          "name"      `template`
+          "widget"    `object`
+          "collapsed" true
+          "required"  false
+          "hint"      `Estas opciones y estructuras se aplicarán a cada una de las páginas personalizadas.`
+          "fields"    (slice
+            `~SECTION_HEADER_ARTICLE`
+            `~SECTION_MENU`
+            `~SECTIONS_DESIGN_GENERAL`
+            `~SECTIONS_DESIGN_ALTERNATE`
+            `~SECTIONS_DESIGN_MODALS`
+            `~SECTION_SECTIONS`
+          )
+        )
+      )
+    )
+    | merge (cond (ne "custom" .) dict (dict "hint" `Estas opciones y estructuras se aplicarán a cada una de las páginas personalizadas.`))
+  ) }}
+{{ end }}
+{{ $colections = $colections | append (dict
+  "label"           (i18n "collection-types")
+  "name"            `types`
+  "description"     (i18n "collection-types-description")
+  "sortable_fields" (dict "fields" slice)
+  "editor"          (dict "preview" false)
+  "files"           $type_files
+) }}
+
+
+{{/*  SETTINGS  */}}
+{{ $colections = $colections | append  (dict
+  "label"           (i18n "collection-settings")
+  "name"            `settings`
+  "sortable_fields" (dict "fields" slice)
+  "editor"          (dict "preview" false)
+  "files"           (slice
+    (dict "file" `data/config.yml`     "extension" `yml` "label" (i18n "collection-settings-config")    "name" `config`    "fields" (partial "cms/config/settings/config-fields" .))
+    (dict "file" `data/styles.yml`     "extension" `yml` "label" (i18n "collection-settings-styles")    "name" `styles`    "fields" (partial "cms/config/settings/styles-fields" .))
+    (dict "file" `data/lists.yml`      "extension" `yml` "label" (i18n "collection-settings-lists")     "name" `lists`     "fields" (partial "cms/config/settings/lists-fields" .))
+    (dict "file" `hugo.yml`            "extension" `yml` "label" (i18n "collection-settings-langs")     "name" `langs`     "fields" (partial "cms/config/settings/langs-fields" .))
+    (dict "file" `assets/redirects.md` "extension" `md`  "label" (i18n "collection-settings-redirects") "name" `redirects` "fields"
+      (slice (dict "label" (i18n "collection-settings-redirects") "name" `body` "widget" `text` "required" false "hint" (i18n "collection-settings-redirects-hint")))
+    )
+    (dict "file" `assets/robots.md`    "extension" `md`  "label" `Robots.txt`                          "name" `robots`    "fields"
+      (slice (dict "label" `robots.txt`                          "name" `body` "widget" `text` "required" false "hint" (i18n "collection-settings-robots-hint")))
+    )
+  )
+) }}
+
+
+{{ return $colections }}

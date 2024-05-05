@@ -19,7 +19,7 @@ CMS.registerEventListener({
     const d = data.entry.data
     const dataObj = d
     const notSlugCollections = [
-      'sonfig',
+      'settings',
       'types',
       'sections',
       'modals'

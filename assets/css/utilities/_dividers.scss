@@ -1,11 +1,69 @@
 .divider {
-  margin-top: calc(var(--pt-divider, 5.5em) * -1);
+  margin-top: calc(var(--divider-height) * -1);
+  --divider-gradient: linear-gradient(black, black);
 }
-.section:has(> .divider--next),
+@mixin divider-left($w, $s, $next) {
+  --divider-#{$next}: calc(((100cqw - #{$w}) / 2) + #{$w} / (#{$s} * 2) * (#{$s} - 1));
+}
+.section:where(:has(> .divider--next)),
 .divider {
-  --divider-mask-image: var(--divider), linear-gradient(black, black);
-  --divider-mask-size: 100% var(--pt-divider, 5.5em), 100%;
-  --divider-mask-position: top, 0 var(--pt-divider, 5.5em);
+  --divider-size: 1;
+  --divider-width: calc(var(--divider-height) * 8 * var(--divider-size));
+  @include divider-left(var(--divider-width), var(--divider-size), 'left');
+  --divider-top: 1px;
+  --divider-position: var(--divider-left) var(--divider-top);
+}
+.divider--next {
+  --divider-next-size: 1;
+  --divider-next-width: calc(var(--divider-height) * 8 * var(--divider-next-size));
+  @include divider-left(var(--divider-next-width), var(--divider-next-size), 'next-left');
+  --divider-next-top: calc(100% - 1px);
+  --divider-next-position: var(--divider-next-left) var(--divider-next-top);
+}
+// top only
+.divider {
+  --divider-mask-image:
+    var(--divider),
+    var(--divider-gradient);
+  --divider-mask-size:
+    var(--divider-width) var(--divider-height),
+    var(--divider-width);
+  --divider-mask-position:
+    var(--divider-position),
+    0 var(--divider-height);
+}
+// top and bottom
+.divider--next {
+  --divider-mask-image:
+    var(--divider),
+    var(--divider-gradient),
+    var(--divider-next);
+  --divider-mask-size:
+    var(--divider-width) var(--divider-height),
+    100% calc(100% - var(--divider-height) * 2),
+    var(--divider-next-width) var(--divider-height);
+  --divider-mask-position:
+    var(--divider-position),
+    0 var(--divider-height),
+    var(--divider-next-position);
+  //         mask-composite: exclude;
+  // -webkit-mask-composite: xor;
+}
+// bottom only
+.divider--next:where(.section:not(.divider) *) {
+  --divider-mask-image:
+    var(--divider-gradient),
+    var(--divider-next);
+  --divider-mask-size:
+    100% calc(100% - var(--divider-height)),
+    var(--divider-next-width) var(--divider-height);
+  --divider-mask-position:
+    0 0,
+    var(--divider-next-position);
+}
+// mask
+.section:where(:has(> .divider--next)),
+.divider {
   &:where(.map *),
   &.ph,
   > .bg-color {
@@ -15,121 +73,85 @@
     -webkit-mask-size: var(--divider-mask-size);
             mask-position: var(--divider-mask-position);
     -webkit-mask-position: var(--divider-mask-position);
-            mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
+            mask-repeat: repeat-x;
+    -webkit-mask-repeat: repeat-x;
   }
-}
-.section:has(> .divider--next) {
-  .divider--next {
-    --divider-mask-image:
-      var(--divider),
-      linear-gradient(black, black),
-      var(--divider-next);
-    --divider-mask-size:
-      100% var(--pt-divider, 5.5em),
-      100% calc(100% - var(--pt-divider, 5.5em) - var(--pb-divider, 5.5em)),
-      100% var(--pb-divider, 5.5em);
-    --divider-mask-position:
-      top,
-      0 var(--pt-divider, 5.5em),
-      bottom;
-    //         mask-composite: exclude;
-    // -webkit-mask-composite: xor;
-  }
-  &:not(.divider) .divider--next {
-    --divider-mask-image:
-      linear-gradient(black, black),
-      var(--divider-next);
-    --divider-mask-size:
-      100% calc(100% - var(--pb-divider, 5.5em)),
-      100% var(--pb-divider, 5.5em);
-    --divider-mask-position:
-      top,
-      bottom;
-  }
-}
-.divider--ratio {
-  --divider-height: var(--divider-ratio-height);
 }
 
-$dividers: (
-  wavy:               ($viewbox-wavy,               $divider-wavy),
-  wavy-op:            ($viewbox-wavy-op,            $divider-wavy-op),
-  wavy-op-alt:        ($viewbox-wavy-op-alt,        $divider-wavy-op-alt),
-  wavy-dashed:        ($viewbox-wavy-dashed,        $divider-wavy-dashed),
-  wavy-alt:           ($viewbox-wavy-alt,           $divider-wavy-alt),
-  triangle:           ($viewbox-triangle,           $divider-triangle),
-  triangle-side:      ($viewbox-triangle-side,      $divider-triangle-side),
-  tilt:               ($viewbox-tilt,               $divider-tilt),
-  tilt-op:            ($viewbox-tilt-op,            $divider-tilt-op),
-  tear:               ($viewbox-tear,               $divider-tear),
-  tear-alt:           ($viewbox-tear-alt,           $divider-tear-alt),
-  snowflakes:         ($viewbox-snowflakes,         $divider-snowflakes),
-  music:              ($viewbox-music,              $divider-music),
-  mountain:           ($viewbox-mountain,           $divider-mountain),
-  iceberg:            ($viewbox-iceberg,            $divider-iceberg),
-  half-circle:        ($viewbox-half-circle,        $divider-half-circle),
-  fire:               ($viewbox-fire,               $divider-fire),
-  fan-op:             ($viewbox-fan-op,             $divider-fan-op),
-  fall:               ($viewbox-fall,               $divider-fall),
-  drip:               ($viewbox-drip,               $divider-drip),
-  dents:              ($viewbox-dents,              $divider-dents),
-  christmas-trees:    ($viewbox-christmas-trees,    $divider-christmas-trees),
-  curve:              ($viewbox-curve,              $divider-curve),
-  curve-side:         ($viewbox-curve-side,         $divider-curve-side),
-  clouds:             ($viewbox-clouds,             $divider-clouds),
-  clouds-op:          ($viewbox-clouds-op,          $divider-clouds-op),
-  city:               ($viewbox-city,               $divider-city),
-  bubles:             ($viewbox-bubles,             $divider-bubles),
-  brush:              ($viewbox-brush,              $divider-brush),
-  book:               ($viewbox-book,               $divider-book),
-  arrow:              ($viewbox-arrow,              $divider-arrow),
-  arrow-two:          ($viewbox-arrow-two,          $divider-arrow-two),
-  arrow-three:        ($viewbox-arrow-three,        $divider-arrow-three),
-  arrow-side:         ($viewbox-arrow-side,         $divider-arrow-side),
-  arrow-side-rounded: ($viewbox-arrow-side-rounded, $divider-arrow-side-rounded),
-  arrow-op:           ($viewbox-arrow-op,           $divider-arrow-op),
-  arrow-op-alt:       ($viewbox-arrow-op-alt,       $divider-arrow-op-alt),
-  arrow-four:         ($viewbox-arrow-four,         $divider-arrow-four),
-);
+// paths
 
 $ini: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'";
-$prev: "%3Crect width='100%25' height='100%25' mask='url(%23a)'/%3E%3Cmask id='a'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E";
+$prev: "%3Crect width='100%25' height='100%25' mask='url(%23m)'/%3E%3Cmask id='m'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E";
 $next: "%3C/mask%3E";
-$prev-ynvert: "%3Crect width='100%25' height='100%25' mask='url(%23a)'/%3E%3Cmask id='a'%3E%3Crect width='100%25' height='100%25'/%3E%3Cg fill='white'%3E";
+$prev-ynvert: "%3Crect width='100%25' height='100%25' mask='url(%23m)'/%3E%3Cmask id='m'%3E%3Crect width='100%25' height='100%25'/%3E%3Cg fill='white'%3E";
 $next-ynvert: "%3C/g%3E%3C/mask%3E";
+$prev-flip: "%3Cg id='f'%3E";
+$next-flip: "%3C%2Fg%3E%3Cuse href='%23f' transform='scale%28-1%2C1%29' x='-2048'%2F%3E";
 $end: "%3C/svg%3E";
+$dividers: str-split($dividers-string, "|");
 
-@each $name, $data in $dividers {
+@each $divider in $dividers {
+  $data: str-split($divider, "~");
+  $name: nth($data, 1);
+  $size: nth($data, 2);
+  $repeat: nth($data, 3);
+  $paths: nth($data, 4);
 
-  $viewbox: nth($data, 1);
-  $divider: nth($data, 2);
-
+  $s: $size == '2';
+  $r: $repeat == 'true';
+  $width: 1024;
+  @if $s { $width: 2048; }
+  $viewbox: "viewBox='0 0 " + $width + " 128'";
+  @if $s {
+    $paths: $prev-flip + $paths + $next-flip;
+  }
+  
   .divider--#{$name} {
-    --divider: url("#{ $ini } #{ $viewbox }%3E#{ $divider }#{ $end }");
+    --divider: url("#{ $ini } #{ $viewbox }%3E#{ $paths }#{ $end }");
+    @if $s { --divider-size: 2; } @if not $r { --divider-width: calc(100% * var(--divider-size)); --divider-left: 0px; }
   }
   .divider--x-#{$name} {
-    --divider: url("#{ $ini } style='transform:scale(-1,1)' #{ $viewbox }%3E#{ $divider }#{ $end }");
+    --divider: url("#{ $ini } style='transform:scale(-1,1)' #{ $viewbox }%3E#{ $paths }#{ $end }");
+    @if $s { --divider-size: 2; } @if not $r { --divider-width: calc(100% * var(--divider-size)); --divider-left: 0px; }
   }
   .divider--y-#{$name} {
-    --divider: url("#{ $ini } style='transform:scale(1,-1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+    --divider: url("#{ $ini } style='transform:scale(1,-1)' #{ $viewbox }%3E#{ $prev }#{ $paths }#{ $next }#{ $end }");
+    @if $s { --divider-size: 2; } @if not $r { --divider-width: calc(100% * var(--divider-size)); --divider-left: 0px; }
   }
   .divider--xy-#{$name} {
-    --divider: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+    --divider: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev }#{ $paths }#{ $next }#{ $end }");
+    @if $s { --divider-size: 2; } @if not $r { --divider-width: calc(100% * var(--divider-size)); --divider-left: 0px; }
   }
 
-  // invert
+  // next (invert)
   .divider--next--#{$name} {
-    --divider-next: url("#{ $ini } #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+    --divider-next: url("#{ $ini } #{ $viewbox }%3E#{ $prev }#{ $paths }#{ $next }#{ $end }");
+    @if $s { --divider-next-size: 2; } @if not $r { --divider-next-width: calc(100% * var(--divider-next-size)); --divider-next-left: 0px; }
   }
   .divider--next--x-#{$name} {
-    --divider-next: url("#{ $ini } style='transform:scale(-1,1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
+    --divider-next: url("#{ $ini } style='transform:scale(-1,1)' #{ $viewbox }%3E#{ $prev }#{ $paths }#{ $next }#{ $end }");
+    @if $s { --divider-next-size: 2; } @if not $r { --divider-next-width: calc(100% * var(--divider-next-size)); --divider-next-left: 0px; }
   }
   .divider--next--y-#{$name} {
-    --divider-next: url("#{ $ini } style='transform:scale(1,-1)' #{ $viewbox }%3E#{ $prev-ynvert }#{ $divider }#{ $next-ynvert }#{ $end }");
+    --divider-next: url("#{ $ini } style='transform:scale(1,-1)' #{ $viewbox }%3E#{ $prev-ynvert }#{ $paths }#{ $next-ynvert }#{ $end }");
+    @if $s { --divider-next-size: 2; } @if not $r { --divider-next-width: calc(100% * var(--divider-next-size)); --divider-next-left: 0px; }
   }
   .divider--next--xy-#{$name} {
-    --divider-next: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev-ynvert }#{ $divider }#{ $next-ynvert }#{ $end }");
+    --divider-next: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev-ynvert }#{ $paths }#{ $next-ynvert }#{ $end }");
+    @if $s { --divider-next-size: 2; } @if not $r { --divider-next-width: calc(100% * var(--divider-next-size)); --divider-next-left: 0px; }
   }
 
+}
+
+.divider--gradient,
+.divider--x-gradient,
+.divider--y-gradient,
+.divider--xy-gradient {
+  --divider: linear-gradient(transparent, black);
+}
+.divider--next--gradient,
+.divider--next--x-gradient,
+.divider--next--y-gradient,
+.divider--next--xy-gradient {
+  --divider-next: linear-gradient(black, transparent);
 }

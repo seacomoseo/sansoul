@@ -12,14 +12,14 @@
 }}
   {{ with page.GetPage . }}
     {{ if .RegularPages | or .IsHome }}
-      {{ $tax := index site.Data.utilities.taxonomies .Type }}
+      {{ $parent_type := index site.Data.utilities.types .Type }}
       <h2>
         {{ partial "components/link" (dict
           "class"     "sitemap-header-link"
           "link"      .RelPermalink
           "button"    "none"
-          "icon"      $tax.icon
-          "emoji"     $tax.emoji
+          "icon"      $parent_type.icon
+          "emoji"     $parent_type.emoji
           "label"     .Title
           "anchor"    (partial "functions/anchor-page" .)
           "noindex"   .Params.noindex

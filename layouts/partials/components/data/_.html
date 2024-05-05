@@ -1,0 +1,15 @@
+{{- if eq .page.Type "blog" -}}
+  {{- partial "components/data/dates-blog" . -}}
+{{- else if eq .page.Type "events" -}}
+  {{- partial "components/data/dates-events" . -}}
+  {{- partial "components/data/location" . -}}
+  {{- partial "components/data/artist" . -}}
+  {{- partial "components/data/price" . -}}
+{{- else -}}
+  {{- partial "components/data/type" . -}}
+{{- end -}}
+{{- partial "components/data/job-title" . -}}
+{{- partial "components/data/reading-time" . -}}
+{{- partial "components/data/author" . -}}
+{{- partial "components/data/taxonomies" (dict "item" . "type" "categories") -}}
+{{- partial "components/data/taxonomies" (dict "item" . "type" "tags") -}}

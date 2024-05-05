@@ -12,22 +12,15 @@
   {{- end -}}
 
   {{ $divider_next := "" }}
-  {{ if .divider | and (not .footer) }}
-    {{ with .next }}
-      {{ if not (or .color .gradient .bg) }}
-        {{ if .divider }}
-          {{ $flip_y      := cond (not .flip_y) "y" "" }}
-          {{ $flip_x      := cond (not .flip_x) "x" "" }}
-          {{ $flips       := "" }}
-          {{ if or $flip_x $flip_y }}
-            {{ $flips      = print "-" $flip_x $flip_y }}
-          {{ end }}
-          {{ $divider_next = print "divider--next divider--next-" $flips "-" .divider }}
-          {{/*  {{ if partial `functions/divider-ratio` .divider }}
-            {{ $divider = print $divider " divider--ratio" }}
-          {{ end }}  */}}
-        {{ end }}
+  {{ if .next }}
+    {{ if and .divider (not .footer) (not (or .next.color .next.gradient .next.bg)) }}
+      {{ $flip_y      := cond (not .flip_y) "" "y" }}
+      {{ $flip_x      := cond (not .flip_x) "" "x" }}
+      {{ $flips       := "" }}
+      {{ if or $flip_x $flip_y }}
+        {{ $flips      = print "-" $flip_x $flip_y }}
       {{ end }}
+      {{ $divider_next = print "divider--next divider--next-" $flips "-" .divider }}
     {{ end }}
   {{ end }}
 

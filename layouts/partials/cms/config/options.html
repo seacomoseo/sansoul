@@ -1,16 +1,35 @@
-{{- $options := site.Data.options -}}
+{{ $options := dict }}
+{{ range $k, $v := site.Data.options }}
+  {{ $option_values := slice }}
+  {{ range . }}
+    {{ $option_values = $option_values | append
+      (dict
+        "value" .
+        "label" (i18n (print "option-" $k "-" .))
+      )
+    }}
+  {{ end }}
+  {{ $options = merge $options (dict $k $option_values) }}
+{{ end }}
 
-{{- $options_tax := slice -}}
-{{- if (.GetPage "blog"      ) }}{{ $options_tax = $options_tax | append (dict "value" "blog"       "label" "Blog"          ) }}{{ end -}}
-{{- if (.GetPage "events"    ) }}{{ $options_tax = $options_tax | append (dict "value" "events"     "label" "Eventos"       ) }}{{ end -}}
-{{- if (.GetPage "products"  ) }}{{ $options_tax = $options_tax | append (dict "value" "products"   "label" "Productos"     ) }}{{ end -}}
-{{- if (.GetPage "categories") }}{{ $options_tax = $options_tax | append (dict "value" "categories" "label" "Categorías"    ) }}{{ end -}}
-{{- if (.GetPage "tags"      ) }}{{ $options_tax = $options_tax | append (dict "value" "tags"       "label" "Etiquetas"     ) }}{{ end -}}
-{{- if (.GetPage "authors"   ) }}{{ $options_tax = $options_tax | append (dict "value" "authors"    "label" "Autores"       ) }}{{ end -}}
-{{- if (.GetPage "pages"     ) }}{{ $options_tax = $options_tax | append (dict "value" "pages"      "label" "Páginas"       ) }}{{ end -}}
-{{- if (.GetPage "page"      ) }}{{ $options_tax = $options_tax | append (dict "value" "page"       "label" "Personalizadas") }}{{ end -}}
+{{ $options_lists := slice }}
+{{ range slice
+  "blog"
+  "events"
+  "products"
+  "categories"
+  "tags"
+  "authors"
+  "pages"
+  "page"
+  "related"
+}}
+  {{ if $.GetPage . }}
+    {{ $options_lists = $options_lists | append (dict "value" . "label" (i18n (print "collection-" .) | default .)) }}
+  {{ end }}
+{{ end }}
 
-{{- $vars := slice
+{{ $vars := slice
   (dict "&OPTIONS_ALIGN_X"       $options.align_x)
   (dict "&OPTIONS_ALIGN_Y"       $options.align_y)
   (dict "&OPTIONS_ALIGN"         $options.align)
@@ -22,22 +41,22 @@
   (dict "&OPTIONS_COLOR_BG"      $options.color_bg)
   (dict "&OPTIONS_COLUMNS"       $options.columns)
   (dict "&OPTIONS_CONTRAST"      $options.contrast)
-  (dict "&OPTIONS_COUNTRIES"     (index $options.countries .Lang))
+  (dict "&OPTIONS_COUNTRIES"     (index site.Data.utilities.countries .Lang))
   (dict "&OPTIONS_DIVIDER"       $options.divider)
-  (dict "&OPTIONS_FONT_WEIGHT"   $options.font_weight)
+  (dict "&OPTIONS_FONT_WEIGHT"   site.Data.utilities.font_weight)
   (dict "&OPTIONS_GRADIENT"      $options.gradient)
   (dict "&OPTIONS_ICON_TYPE"     $options.icon_type)
-  (dict "&OPTIONS_ICONS_TYPE"    $options.icons.type)
-  (dict "&OPTIONS_ICONS_EMOJIS"  $options.icons.emojis)
+  (dict "&OPTIONS_ICONS_TYPE"    $options.icons_type)
+  (dict "&OPTIONS_ICONS_EMOJIS"  $options.icons_emojis)
   (dict "&OPTIONS_LANGS"         $options.langs)
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
   (dict "&OPTIONS_RATIO"         $options.ratio)
   (dict "&OPTIONS_SIZES"         $options.sizes)
   (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "ne" "fluid"))
-  (dict "&OPTIONS_TAX"           $options_tax)
+  (dict "&OPTIONS_LISTS"         $options_lists)
   (dict "&RELATION_CATEGORIES"   (cond (not (.GetPage "categories")) "hidden" "relation"))
   (dict "&RELATION_TAGS"         (cond (not (.GetPage "tags"      )) "hidden" "relation"))
   (dict "&RELATION_AUTHOR"       (cond (not (.GetPage "author"    )) "hidden" "relation"))
--}}
+}}
 
 {{ return $vars }}

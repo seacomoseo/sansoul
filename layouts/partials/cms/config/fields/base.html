@@ -1,0 +1,139 @@
+{{ return slice
+  (dict "&FONT_KEYS" (dict "widget" `object` "collapsed" true "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
+
+  (dict "&FONT_FIELD_FAMILY"      (dict "label" (i18n "field-family")      "name" `family`      "widget" `string`  "hint" (i18n "hint-family")))
+  (dict "&FONT_FIELD_WEIGHT"      (dict "label" (i18n "field-weight")      "name" `weight`      "widget" `select`  "default" 0 "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_FIELD_BOLD"        (dict "label" (i18n "field-bold")        "name" `bold`        "widget" `select`  "default" 0 "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_FIELD_ITALIC"      (dict "label" (i18n "field-italic")      "name" `italic`      "widget" `boolean` "default"  1.25))
+  (dict "&FONT_FIELD_LINE_HEIGHT" (dict "label" (i18n "field-line_height") "name" `line_height` "widget" `number`  "value_type" `float` "step" 0.01 "min" 0  "max" 3))
+  (dict "&FONT_FIELD_TOP"         (dict "label" (i18n "field-top")         "name" `top`         "widget" `number`  "value_type" `float` "step" 0.01 "min" -2 "max" 2 "required" false))
+
+  (dict "&FONT" (dict "<<" (slice
+    (dict "fields" (slice
+      `~FONT_FIELD_FAMILY`
+      `~FONT_FIELD_WEIGHT`
+      `~FONT_FIELD_BOLD`
+      `~FONT_FIELD_ITALIC`
+      `~FONT_FIELD_LINE_HEIGHT`
+    ))
+    `~FONT_KEYS`
+  )))
+  (dict "&FONT_TOP" (dict "<<" (slice
+    `~FONT_KEYS`
+    (dict "fields" (slice
+      `~FONT_FIELD_FAMILY`
+      `~FONT_FIELD_WEIGHT`
+      `~FONT_FIELD_BOLD`
+      `~FONT_FIELD_ITALIC`
+      `~FONT_FIELD_LINE_HEIGHT`
+      `~FONT_FIELD_TOP`
+    ))
+  )))
+
+  (dict "&BASE_COLOR"
+    (dict
+      "widget"    `object`
+      "collapsed" false
+      "fields"    (slice
+        (dict "label" (i18n "field-color")    "name" `color`    "widget" `color`  "required" false "default" `#fff` "allow_input" true)
+        (dict "label" (i18n "field-light")    "name" `light`    "widget" `color`  "required" false "default" `#fff` "allow_input" true)
+        (dict "label" (i18n "field-dark")     "name" `dark`     "widget" `color`  "required" false "default" `#fff` "allow_input" true)
+        (dict "label" (i18n "field-contrast") "name" `contrast` "widget" `select` "required" false "default" `#fff` "options" `~OPTIONS_CONTRAST` "hint" (i18n "hint-contrast"))
+      )
+    )
+  )
+
+  (dict "&TITLE"                (dict "label" (i18n "field-title")       "name" `title`       "widget" `string`   "required" false))
+  (dict "&TITLE_REQUIRED"       (dict "label" (i18n "field-title")       "name" `title`       "widget" `string`))
+  (dict "&SUBTITLE"             (dict "label" (i18n "field-subtitle")    "name" `subtitle`    "widget" `string`   "required" false))
+  (dict "&DESCRIPTION"          (dict "label" (i18n "field-description") "name" `description` "widget" `markdown` "required" false "show_raw" true))
+  (dict "&DESCRIPTION_REQUIRED" (dict "label" (i18n "field-description") "name" `description` "widget" `markdown`                  "show_raw" true))
+  (dict "&PRICE"                (dict "label" (i18n "field-price")       "name" `price`       "widget" `string`   "required" false))
+  (dict "&ANCHOR"               (dict "label" (i18n "field-anchor")      "name" `anchor`      "widget" `string`   "required" false "hint" (i18n "hint-anchor")))
+
+  (dict "&TITLE_SIZE"       (dict "label" (i18n "field-title_size")       "name" `title_size`       "widget" `number`  "required" false "value_type" `float` "step" 0.1 "min" 0.1 "max" 2))
+  (dict "&UPPERCASE"        (dict "label" (i18n "field-uppercase")        "name" `uppercase`        "widget" `boolean` "required" false))
+  (dict "&UNDERLINE"        (dict "label" (i18n "field-underline")        "name" `underline`        "widget" `boolean` "required" false))
+  (dict "&READING_TIME"     (dict "label" (i18n "field-reading_time")     "name" `reading_time`     "widget" `boolean` "required" false "hint" (i18n "hint-reading_time")))
+  (dict "&HIDE_DESCRIPTION" (dict "label" (i18n "field-hide_description") "name" `hide_description` "widget" `boolean` "required" false "hint" (i18n "hint-hide_description")))
+  (dict "&HIDE_CATEGORIES"  (dict "label" (i18n "field-hide_categories")  "name" `hide_categories`  "widget" `boolean` "required" false "hint" (i18n "hint-hide_categories")))
+
+  (dict "&IMAGE_SRC"       (dict "label" (i18n "field-image")       "name" `image`       "widget" `image`   "required" false "choose_url" true "max_file_size" 512000000 "hint" (i18n "hint-image")))
+  (dict "&IMAGE_SRC_HOVER" (dict "label" (i18n "field-image_hover") "name" `image_hover` "widget" `image`   "required" false "choose_url" true "max_file_size" 512000000 "hint" (i18n "hint-image_hover")))
+  (dict "&IMAGE_RATIO"     (dict "label" (i18n "field-ratio")       "name" `ratio`       "widget" `select`  "required" false "options" `~OPTIONS_RATIO`                  "hint" (i18n "hint-ratio")))
+  (dict "&IMAGE_CONTAIN"   (dict "label" (i18n "field-contain")     "name" `contain`     "widget" `boolean` "required" false                                             "hint" (i18n "hint-contain")))
+  (dict "&IMAGE_BORDER"    (dict "label" (i18n "field-border")      "name" `border`      "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE_W`))
+  (dict "&IMAGE_INSET"     (dict "label" (i18n "field-inset")       "name" `inset`       "widget" `boolean` "required" false                                             "hint" (i18n "hint-inset")))
+  (dict "&IMAGE_GRAYSCALE" (dict "label" (i18n "field-grayscale")   "name" `grayscale`   "widget" `boolean` "required" false                                             "hint" (i18n "hint-grayscale")))
+  (dict "&IMAGE_NO_VIDEO"  (dict "<<" (slice (dict "hint" (i18n "hint-border")) `~IMAGE_SRC`)))
+  
+  (dict "&BORDER_COLOR"     (dict "label" (i18n "field-border")        "name" `border`        "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE_W` "hint" (i18n "hint-parallax")))
+  (dict "&COLOR"            (dict "label" (i18n "field-color_bg")      "name" `color`         "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BG`))
+  (dict "&GRADIENT_COLOR"   (dict "label" (i18n "field-gradient")      "name" `gradient`      "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BG`))
+  (dict "&GRADIENT_TYPE"    (dict "label" (i18n "field-gradient_type") "name" `gradient_type` "widget" `select`  "required" false "options" `~OPTIONS_GRADIENT`))
+  (dict "&PARALLAX"         (dict "label" (i18n "field-parallax")      "name" `parallax`      "widget" `boolean` "required" false                                   "hint" (i18n "hint-icon")))
+  (dict "&OPACITY"          (dict "label" (i18n "field-opacity")       "name" `opacity`       "widget" `number`  "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  (dict "&BG_OPACITY"       (dict "label" (i18n "field-bg_opacity")    "name" `opacity`       "widget" `number`  "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  (dict "&COLOR_OPACITY"    (dict "label" (i18n "field-color_opacity") "name" `color_opacity` "widget" `number`  "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  (dict "&BACKGROUND_IMAGE" (dict "<<" (slice (dict "label" (i18n "field-bg") "name" `bg`) `~IMAGE_SRC`)))
+  
+  (dict "&ICON_ID"    (dict "label" (i18n "field-icon")       "name" `icon`       "widget" `string` "required" false "pattern" (slice "^[a-z-)+$" (i18n "pattern-icon")) "hint" (i18n "hint-icon")))
+  (dict "&ICON_TYPE"  (dict "label" (i18n "field-icon_type")  "name" `icon_type`  "widget" `select` "required" false "options" `~OPTIONS_ICON_TYPE` "hint" (i18n "hint-icon_type")))
+  (dict "&ICON_SIZE"  (dict "label" (i18n "field-icon_size")  "name" `icon_size`  "widget" `number` "required" false "value_type" `int` "step" 1 "min" 1 "max" 6))
+  (dict "&ICON_COLOR" (dict "label" (i18n "field-icon_color") "name" `icon_color` "widget" `select` "required" false "options" `~OPTIONS_COLOR_BASE_W`))
+
+  (dict "&BUTTON_LICON"              (dict "<<" (slice (dict "label" (i18n "field-licon") "name" `licon`) `~ICON_ID`)))
+  (dict "&BUTTON_LINK"               (dict "label" (i18n "field-link")        "name" `link`     "widget" `string`  "required" false))
+  (dict "&BUTTON_LABEL"              (dict "label" (i18n "field-label")       "name" `label`    "widget" `string`  "required" false))
+  (dict "&BUTTON_ANCHOR"             (dict "label" (i18n "field-link_anchor") "name" `anchor`   "widget" `string`  "required" false "hint" (i18n "hint-link_anchor")))
+  (dict "&BUTTON_OFUSCATE"           (dict "label" (i18n "field-ofuscate")    "name" `ofuscate` "widget" `boolean` "required" false "hint" (i18n "hint-ofuscate")))
+  (dict "&BUTTON_FONT_ALT"           (dict "label" (i18n "field-font_alt")    "name" `font_alt` "widget" `boolean` "required" false))
+  (dict "&BUTTON_GA4"                (dict "label" (i18n "field-ga4")         "name" `ga4`      "widget" `boolean` "required" false "hint" (i18n "hint-ga4")))
+  (dict "&BUTTON_COLOR"              (dict "label" (i18n "field-button")      "name" `button`   "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE`))
+  (dict "&BUTTON_COLOR_WITH_HIDE"    (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_H`) `~BUTTON_COLOR`)))
+  (dict "&BUTTON_COLOR_WITHOUT_NONE" (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_N`) `~BUTTON_COLOR`)))
+  
+  (dict "&PADDING_HIDE"   (dict "label" (i18n "field-ph") "name" `ph` "widget" `boolean` "required" false))
+  (dict "&PADDING_TOP"    (dict "label" (i18n "field-pt") "name" `pt` "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 0 "max" 9))
+  (dict "&PADDING_BOTTOM" (dict "label" (i18n "field-pb") "name" `pb` "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 0 "max" 9))
+  
+  (dict "&ALIGN"        (dict "label" (i18n "field-align")        "name" `align`     "widget" `select` "options" `~OPTIONS_ALIGN`                     "required" false))
+  (dict "&ALIGN_Y"      (dict "label" (i18n "field-align_y")      "name" `align_y`   "widget" `select` "options" `~OPTIONS_ALIGN_Y`                   "required" false))
+  (dict "&ALIGN_Y_SELF" (dict "label" (i18n "field-align_y_self") "name" `align_y`   "widget" `select` "options" `~OPTIONS_ALIGN_Y`                   "required" false))
+  (dict "&ALIGN_X"      (dict "label" (i18n "field-align_x")      "name" `align_x`   "widget" `select` "options" `~OPTIONS_ALIGN_X`                   "required" false))
+  (dict "&ALIGN_MAX"    (dict "label" (i18n "field-align_max")    "name" `align_max` "widget" `select` "options" `~OPTIONS_ALIGN`                     "required" false "hint" (i18n "hint-align_max")))
+  (dict "&ORDER"        (dict "label" (i18n "field-order")        "name" `order`     "widget" `number` "value_type" `int` "step" 1 "min" -20 "max" 20 "required" false "hint" (i18n "hint-order")))
+  
+  (dict "&SHADOW"                   (dict "label" (i18n "field-shadow")      "name" `shadow`      "widget" `boolean` "required" false))
+  (dict "&HIDE_SHADOW"              (dict "label" (i18n "field-hide_shadow") "name" `hide_shadow` "widget" `boolean` "required" false))
+  
+  (dict "&CONTAINER_SIZE"           (dict "label" (i18n "field-size")                   "name" `size`                   "widget" `select` "options" `~OPTIONS_SIZES`    "required" false "hint" (i18n "hint-size")))
+  (dict "&CONTAINER_COLOR"          (dict "label" (i18n "field-container")              "name" `container`              "widget" `select` "options" `~OPTIONS_COLOR_BG` "required" false))
+  (dict "&CONTAINER_GRADIENT_COLOR" (dict "label" (i18n "field-container_gradient")     "name" `container_gradient`     "widget" `select` "options" `~OPTIONS_COLOR_BG` "required" false))
+  (dict "&CONTAINER_GRADIENT_TYPE"  (dict "label" (i18n "field-container_grdient_type") "name" `container_grdient_type` "widget" `select` "options" `~OPTIONS_GRADIENT` "required" false))
+  (dict "&CONTAINER_OPACITY"        (dict "label" (i18n "field-container_opacity")      "name" `container_opacity`      "widget" `number` "required" false "value_type" `int` "step" 10 "min" 0 "max" 100))
+  
+  (dict "&SLIDER_ACTIVE"       (dict "label" (i18n "field-active")       "name" `active`       "widget" `boolean` "required" false                                       "hint" (i18n "hint-active")))
+  (dict "&SLIDER_INTERVAL"     (dict "label" (i18n "field-interval")     "name" `interval`     "widget" `number`  "required" false "value_type" `int` "min" 0 "step" 100 "hint" (i18n "hint-interval")))
+  (dict "&SLIDER_HIDE_BULLETS" (dict "label" (i18n "field-hide_bullets") "name" `hide_bullets` "widget" `boolean` "required" false))
+  (dict "&SLIDER_HIDE_ARROWS"  (dict "label" (i18n "field-hide_arrows")  "name" `hide_arrows`  "widget" `boolean` "required" false))
+  
+  (dict "&COLUMNS_MAX"      (dict "label" (i18n "field-columns")      "name" `columns`      "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0 "max" 12 "hint" (i18n "hint-columns")))
+  (dict "&COLUMNS_MIN"      (dict "label" (i18n "field-columns_min")  "name" `columns_min`  "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0 "max" 12 "hint" (i18n "hint-columns_min")))
+  (dict "&COLUMNS_SPAN"     (dict "label" (i18n "field-span")         "name" `span`         "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0 "max" 12))
+  (dict "&COLUMNS_SPAN_MIN" (dict "label" (i18n "field-span_min")     "name" `span_min`     "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0 "max" 12))
+  (dict "&GROW"             (dict "label" (i18n "field-grow")         "name" `grow`         "widget" `boolean` "required" false "hint" (i18n "hint-grow")))
+  (dict "&COLUMNS_GAP"      (dict "label" (i18n "field-gap")          "name" `gap`          "widget" `number`  "required" false "value_type" `int`   "step" 1    "min" 0 "max" 5))
+  (dict "&COLUMNS_PADDING"  (dict "label" (i18n "field-padding")      "name" `padding`      "widget" `number`  "required" false "value_type" `float` "step" 0.25 "min" 0 "max" 6))
+  (dict "&HIDE_RADIUS"      (dict "label" (i18n "field-hide_radius")  "name" `hide_radius`  "widget" `boolean` "required" false "hint" (i18n "hint-hide_radius")))
+  (dict "&GROUP_RADIUS"     (dict "label" (i18n "field-group_radius") "name" `group_radius` "widget" `boolean` "required" false "hint" (i18n "hint-group_radius")))
+  (dict "&PILL"             (dict "label" (i18n "field-pill")         "name" `pill`         "widget" `boolean` "required" false "hint" (i18n "hint-pill")))
+  (dict "&CARD"             (dict "label" (i18n "field-card")         "name" `card`         "widget" `boolean` "required" false "hint" (i18n "hint-card")))
+  
+  (dict "&GALLERY_COLUMNS"  (dict "label" (i18n "field-num")    "name" `num`    "widget" `number`  "required" false "value_type" `int` "step" 1 "min" 1 "max" 6))
+  (dict "&GALLERY_ALT"      (dict "label" (i18n "field-alt")    "name" `alt`    "widget" `boolean` "required" false                                   "hint" (i18n "hint-alt")))
+  (dict "&GALLERY_WRAP"     (dict "label" (i18n "field-wrap")   "name" `wrap`   "widget" `boolean` "required" false                                   "hint" (i18n "hint-wrap")))
+  (dict "&GALLERY_GAP"      (dict "label" (i18n "field-gap")    "name" `gap`    "widget" `boolean` "required" false))
+  (dict "&GALLERY_COVER"    (dict "label" (i18n "field-cover")  "name" `cover`  "widget" `boolean` "required" false                                   "hint" (i18n "hint-cover")))
+  (dict "&GALLERY_IMAGES"   (dict "label" (i18n "field-images") "name" `images` "widget" `image`   "required" false "multiple" true "choose_url" true "hint" (i18n "hint-images")))
+}}

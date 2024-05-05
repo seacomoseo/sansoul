@@ -1,0 +1,85 @@
+{{/*  IF MULTIHOST  */}}
+{{ $multihost        := ne
+  (index .AllTranslations 0).Site.BaseURL
+  (index .AllTranslations 1).Site.BaseURL
+  | and .IsTranslated
+}}
+{{ $widget_disable_lang := cond $multihost `hidden` `select` }}
+
+{{/*  LANGUAGES PERMALINKS  */}}
+{{ $languages_permalinks := slice }}
+{{ range slice . | append .Translations }}
+  {{ $languages_permalinks = $languages_permalinks | append
+    (dict
+      "label"     (i18n (print "option-langs-" .Lang))
+      "name"      .Lang
+      "widget"    `object`
+      "required"  false
+      "collapsed" true
+      "fields"    (slice
+        (dict
+          "label"     (i18n "collection-settings-langs-languages-permalinks")
+          "name"      `permalinks`
+          "widget"    `object`
+          "required"  false
+          "collapsed" true
+          "fields"    (slice
+            (dict
+              "label"     (i18n "collection-settings-langs-languages-page")
+              "name"      `page`
+              "widget"    `object`
+              "required"  false
+              "collapsed" true
+              "fields"    (slice
+                (dict "label" (i18n "collection-pages")      "name" `pages`      "widget" `string` "required" false "default" `:slug`)
+                (dict "label" (i18n "collection-blog")       "name" `blog`       "widget" `string` "required" false "default" `:slug`)
+                (dict "label" (i18n "collection-events")     "name" `events`     "widget" `string` "required" false "default" `event/:year/:month/:day/:slug`)
+                (dict "label" (i18n "collection-products")   "name" `products`   "widget" `string` "required" false "default" `product/:slug`)
+                (dict "label" (i18n "collection-categories") "name" `categories` "widget" `string` "required" false "default" `category/:slug`)
+                (dict "label" (i18n "collection-tags")       "name" `tags`       "widget" `string` "required" false "default" `tag/:slug`)
+                (dict "label" (i18n "collection-authors")    "name" `authors`    "widget" `string` "required" false "default" `author/:slug`)
+              )
+            )
+            (dict
+              "label"     (i18n "collection-settings-langs-languages-section")
+              "name"      `section`
+              "widget"    `object`
+              "required"  false
+              "collapsed" true
+              "fields"    (slice
+                (dict "label" (i18n "collection-pages")      "name" `pages`      "widget" `string` "required" false "default" `pages`)
+                (dict "label" (i18n "collection-blog")       "name" `blog`       "widget" `string` "required" false "default" `blog`)
+                (dict "label" (i18n "collection-events")     "name" `events`     "widget" `string` "required" false "default" `events`)
+                (dict "label" (i18n "collection-products")   "name" `products`   "widget" `string` "required" false "default" `products`)
+                (dict "label" (i18n "collection-categories") "name" `categories` "widget" `string` "required" false "default" `categories`)
+                (dict "label" (i18n "collection-tags")       "name" `tags`       "widget" `string` "required" false "default" `tags`)
+                (dict "label" (i18n "collection-authors")    "name" `authors`    "widget" `string` "required" false "default" `authors`)
+              )
+            )
+          )
+        )
+      )
+    )
+  }}
+{{ end }}
+
+{{/*  LANG FIELDS  */}}
+{{ return slice
+  (dict "name" `baseURL`     "widget" `hidden` "required" false)
+  (dict "name" `buildFuture` "widget" `hidden` "required" false "deafult" false)
+  (dict "name" `theme`       "widget" `hidden` "required" false "default" (slice `sansoul`))
+  (dict
+    "name"      `params`
+    "widget"    `hidden`
+    "collapsed" true
+    "fields"    (slice
+      (dict "name" `git_url`      "widget" `hidden` "required" false)
+      (dict "name" `netlify_name` "widget" `hidden` "required" false)
+      (dict "name" `netlify_id`   "widget" `hidden` "required" false)
+      (dict "name" `drive_link`   "widget" `hidden` "required" false)
+    )
+  )
+  (dict "label" (i18n "collection-settings-langs-defaultContentLanguage") "name" `defaultContentLanguage` "widget" `select`             "required" true  "options" `~OPTIONS_LANGS` "default" `es`)
+  (dict "label" (i18n "collection-settings-langs-disableLanguages")       "name" `disableLanguages`       "widget" $widget_disable_lang "required" false "options" `~OPTIONS_LANGS` "default" site.Data.utilities.default_disable_langs "multiple" true)
+  (dict "label" (i18n "collection-settings-langs-languages")              "name" `languages`              "widget" `object`             "required" false "collapsed" true  "fields" $languages_permalinks)
+}}

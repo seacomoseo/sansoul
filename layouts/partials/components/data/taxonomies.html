@@ -1,0 +1,26 @@
+{{- $show_categories := true -}}
+{{- with .item.box -}}
+  {{- $show_categories = not .hide_categories -}}
+{{- end -}}
+
+{{- if $show_categories -}}
+  {{- with index .item.page.Params .type -}}
+    {{- $name := index site.Data.utilities.types $.type -}}
+    {{- range . -}}
+      {{- $parent_type := page.GetPage (print $.type `/` .) -}}
+      <i class="data__item">
+        {{- partial "components/icon" (dict "class" "data__icon" "icon" $name.icon "emoji" $name.emoji) -}}
+        {{- if $.item.box -}}
+          {{- $parent_type.Title -}}
+        {{- else -}}
+          {{- partial "components/link" (dict
+            "link"    $parent_type.RelPermalink
+            "button"  "none"
+            "label"   $parent_type.Title
+            "noindex" true
+          ) -}}
+        {{- end -}}
+      </i>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

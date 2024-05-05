@@ -1,0 +1,51 @@
+{{- $type  := .type -}}
+{{- if in (slice "categories" "tags" "authors") .type -}}
+  {{- $type = "taxonomies" -}}
+{{- end -}}
+{{- $pages := .pages -}}
+{{ if eq $type "events" }}
+  {{ $pages = sort .pages "Params.date_ini" "desc" }}
+{{ end }}
+{{- $lists := merge
+  site.Data.lists._
+  (index site.Data.lists $type)
+  (cond .related site.Data.lists.related dict)
+  (.box | default dict)
+-}}
+
+{{- $boxes := slice -}}
+{{- range $pages -}}
+  {{- $description := .Params.description | default .Summary | truncate 150 -}}
+  {{- $image       := .Params.image       | default $lists.image -}}
+  {{- $icon_id     := $lists.icon -}}
+  {{- $icon_type   := $lists.icon_type -}}
+  {{- if not $icon_id | and $icon_type -}}
+    {{- $parent_type := index site.Data.utilities.types .Type -}}
+    {{- $icon_id     = $parent_type.icon -}}
+  {{- end -}}
+  {{- $icon_type    = $icon_type | default "bottom" -}}
+
+  {{- $boxes = $boxes
+    | append (dict
+      "Page"        .
+      "title"       .Title
+      "description" $description
+      "link"        .RelPermalink
+      "image"       $image
+      "icon"        $icon_id
+      "icon_type"   $icon_type
+    )
+  -}}
+{{- end -}}
+
+{{- partial "components/boxes/_"
+  (merge
+    .
+    (dict
+      "box"          $lists
+      "boxes"        $boxes
+      "container"    (.size | default $lists.size | default "md")
+      "article_list" true
+    )
+  )
+-}}

@@ -14,14 +14,14 @@
   "File.TranslationBaseName" "!=" "search")
 -}}
 
-  {{- $icon := index $data.utilities.taxonomies .Type -}}
+  {{- $icon := index $data.utilities.types .Type -}}
   {{- if $data.styles.icons.emojis_default -}}
     {{- $icon = $icon.code -}}
   {{- else -}}
     {{- $icon = $icon.icon -}}
   {{- end -}}
 
-  {{- $image := index $data.utilities.taxonomies .Type -}}
+  {{- $image := index $data.utilities.types .Type -}}
   {{- if $data.styles.icons.emojis_default -}}
     {{- $image = $image.code -}}
   {{- else -}}

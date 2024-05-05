@@ -1,0 +1,14 @@
+<i class="data__item">
+  {{- $type := index site.Data.utilities.types .page.Type -}}
+  {{- partial "components/icon" (dict "class" "data__icon" "icon" $type.icon "emoji" $type.emoji) -}}
+  {{- if $.box -}}
+    {{- i18n .page.Type 1 -}}
+  {{- else -}}
+    {{- partial "components/link" (dict
+      "link"    (page.GetPage page.Type).RelPermalink
+      "button"  "none"
+      "label"   (i18n .page.Type 1)
+      "noindex" true
+    ) -}}
+  {{- end -}}
+</i>

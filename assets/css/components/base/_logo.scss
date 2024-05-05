@@ -1,0 +1,110 @@
+.logo {
+  width: 100%;
+  @include fluid-size(padding-top, 1rem, 4, 3);
+  padding-bottom: 3em;
+  position: relative;
+  &.bg {
+    background-color: var(--bg-color);
+  }
+}
+.logo__link {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1em;
+  z-index: 1;
+  position: relative;
+}
+.logo__image {
+  &, img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 4em;
+    height: 4em;
+    fill: unset;
+  }
+}
+.logo__titles {
+  @include fluid-size(font-size, 1em, 0.75, 1);
+}
+.logo__title {
+  color: var(--main);
+  + .logo__subtitle {
+    margin-top: -.75em;
+  }
+}
+.logo__subtitle {
+  display: block;
+  font-size: 1.2em;
+  color: gray;
+}
+.body-menu--logo {
+  --menu-py: .75em;
+  .logo {
+    position: sticky;
+    top: 0;
+    padding-block: var(--menu-py);
+    transition: padding .3s;
+    z-index: 190;
+    &.bg {
+      filter: drop-shadow($shadow);
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      left: -$shadow-left;
+      width: $shadow-left;
+      height: 100%;
+      background-color: inherit;
+    }
+  }
+  .logo__link {
+    height: 2.25em;
+    max-width: calc(100% - 4em);
+  }
+  .logo__image {
+    height: 100%;
+    max-width: 100%;
+  }
+  .menu__toggle {
+    top: 0.375em;
+    @if not $buttons-3d {
+      filter: none;
+    }
+  }
+  &.body-menu--transparent {
+    .logo {
+      position: fixed;
+      transition: background-color .3s, padding .3s, filter .3s;
+    }
+    .logo__image {
+      transition: height .3s;
+    }
+    .menu__toggle {
+      transition: transform .3s, filter .3s;
+    }
+    --menu-py: .75em;
+    &.body-top {
+      --menu-py: 2.25em;
+      .logo {
+        background-color: transparent;
+        filter: none;
+      }
+      .logo__image {
+        height: 2.75em;
+      }
+      .menu__toggle {
+        transform: translateY(1.5em);
+        @if not $buttons-3d {
+          filter: drop-shadow($shadow);
+        }
+      }
+    }
+  }
+  .body-menu--sticky--active {
+    .logo {
+      display: none;
+    }
+  }
+}

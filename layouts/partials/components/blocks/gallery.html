@@ -1,0 +1,92 @@
+{{- $items            := .items | default .images -}}
+{{- $button_icon      := (cond (eq .icon "none") "" (.icon | default "plus")) -}}
+{{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
+{{- $is_button_custom := .link | and (ne .type "rows") -}}
+
+{{/*  CLASS  */}}
+{{- $class := partial "functions/attr-delimit" (dict
+  "attr"  "class"
+  "array" (slice
+    "box__block"
+    "gallery"
+    (print "gallery--" (.type | default "grid"))
+    (cond (or (eq .type "columns") (eq .type "grid") (not .type)) (print "gallery--columns-" (.columns | default 2)) "")
+    (cond (not .ratio)      "" "gallery--ratio")
+    (cond (not .contain)    "" "gallery--contain")
+    (cond (not .grayscale)  "" "gallery--grayscale")
+    (cond (not .color | or (eq .color "transparent")) "" (print "bg bg-" .color))
+  )
+) -}}
+
+{{/*  STYLE  */}}
+{{ $style := partial "functions/attr-delimit" (dict
+  "attr"    "style"
+  "delimit" ";"
+  "array"   (slice
+    (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
+    (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
+  )
+) }}
+
+{{/*  SHOWUP  */}}
+{{- $showup := cond (not site.Data.styles.performance.showup) "" "data-showup" -}}
+
+{{/*  JOIN ATTRIBUTES  */}}
+{{ $attr := partial "functions/attr-delimit" (dict
+  "array" (slice
+    $class
+    $style
+    $showup
+  )
+) }}
+
+<div {{ $attr | safeHTMLAttr }}>
+  {{- if .color | and (ne .color "transparent") -}}
+    <div class="bg-color"></div>
+  {{- end -}}
+
+  <div class="gallery__items">
+    {{- range uniq $items -}}
+      {{- $image := . -}}
+      {{- $link  := "" -}}
+      {{- if $.items -}}
+        {{- $image = .image -}}
+        {{- $link  = .link -}}
+      {{- end -}}
+      {{- partial "components/blocks/gallery-item" (dict
+        "image"     $image
+        "link"      $link
+        "type"      $.type
+        "lightbox"  (not $.items)
+        "columns"   ($.columns | default 2)
+        "container" $.container
+      ) -}}
+    {{- end -}}
+    {{- if $is_button_expand -}}
+      {{- partial "components/link" (dict
+        "class"     "gallery__expand"
+        "link"      .link
+        "button"    (.button | default "light")
+        "font_alt"  ""
+        "icon"      (cond (eq .licon "none") "" (.licon | default "plus"))
+        "label"     "none"
+        "anchor"    ""
+        "noindex"   .ofuscate
+      ) -}}
+    {{- end -}}
+  </div>
+</div>
+{{- if $is_button_custom -}}
+  <div class="buttons">
+    {{- partial "components/link" (dict
+      "class"    ""
+      "link"     .link
+      "button"   .button
+      "font_alt" .font_alt
+      "icon"     .icon
+      "label"    .label
+      "anchor"   .anchor
+      "noindex"  .ofuscate
+    ) -}}
+  </div>
+{{- end -}}

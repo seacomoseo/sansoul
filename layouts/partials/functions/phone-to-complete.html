@@ -2,7 +2,7 @@
 {{ $phone        := . | replaceRE `[^\d]` `` }}
 {{ $code         := "34" }}
 {{ $country      := partial "functions/country" . }}
-{{ $country_code := index site.Data.options.countries page.Lang }}
+{{ $country_code := index site.Data.utilities.countries page.Lang }}
 {{ if in . "+" }}
   {{ range $country_code }}
     {{ if findRE (print `^` .code) $phone }}

@@ -1,0 +1,10 @@
+{{- with .page.Params -}}
+  {{- if .date_ini -}}
+    {{- with .date_ini -}}
+      {{- partial "components/data/date" (dict "date" . "box" $.box "icon" "calendar-check" "type" "events") -}}
+    {{- end -}}
+    {{- with .date_end -}}
+      {{- partial "components/data/date" (dict "date" . "box" $.box "icon" "calendar-xmark" "type" "events") -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

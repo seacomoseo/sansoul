@@ -1,0 +1,34 @@
+{{- $items := slice -}}
+
+{{ if not .menu.hide_sections }}
+  {{- $sections  := slice -}}
+  {{- with partial "functions/sections" page -}}
+    {{- $sections = after 1 . -}}
+  {{- end -}}
+
+  {{ with where $sections "button" "!=" "hide" }}
+    {{ range . }}
+      {{ if .menu | or .anchor | or .title | or (.icon | and .id) }}
+
+        {{ $item := partial "components/base/menu/item-by-section" . }}
+
+        {{/*  MODALS TO SUBITEMS  */}}
+        {{ if not $.menu.hide_modals }}
+          {{ $subitems := slice }}
+          {{ with .modals }}
+            {{ range . }}
+              {{ $child   := partial "components/base/menu/item-by-section" . }}
+              {{ $subitems = $subitems | append $child }}
+            {{ end }}
+          {{ end }}
+          {{ $item = (merge $item (dict "items" $subitems)) }}
+        {{ end }}
+
+        {{ $items = $items | append $item }}
+
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $items }}
