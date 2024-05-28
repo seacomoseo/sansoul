@@ -111,3 +111,4 @@
 - `./data/config.yml`
 - `./content/*`
 - `./assets/sections.new`
+- `./assets/css/styles.new.scss`

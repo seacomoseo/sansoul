@@ -54,10 +54,35 @@ languages:
         tags: tags
         authors: authors
         custom: custom
+  fr:
+    weight: 3
+    languageName: Français
+    params: { flag: 🇫🇷 }
+    paginatePath: page
+    permalinks:
+      page:
+        pages: :slug
+        blog: :slug
+        events: evenement/:year/:month/:day/:slug
+        products: produit/:slug
+        categories: categorie/:slug
+        tags: etiquette/:slug
+        authors: auteur/:slug
+        custom: :slug
+      section:
+        pages: pages
+        blog: blog
+        events: evenements
+        products: produits
+        categories: categories
+        tags: etiquettes
+        authors: auteurs
+        custom: personnalise
 
 defaultContentLanguage: es
 disableLanguages:
 - en
+- fr
 
 module:
   mounts:
@@ -73,6 +98,9 @@ module:
   - source: content.en/sections
     target: assets/sections.en
     lang: en
+  - source: content.fr/sections
+    target: assets/sections.fr
+    lang: fr
   # modals
   - source: content.es/modals
     target: assets/modals.es
@@ -80,6 +108,9 @@ module:
   - source: content.en/modals
     target: assets/modals.en
     lang: en
+  - source: content.fr/modals
+    target: assets/modals.fr
+    lang: fr
   # prebuild products
   - source: themes/sansoul/prebuild/public/products/es
     target: content/products
@@ -87,6 +118,9 @@ module:
   - source: themes/sansoul/prebuild/public/products/en
     target: content/products
     lang: en
+  - source: themes/sansoul/prebuild/public/products/fr
+    target: content/products
+    lang: fr
   # prebuild categories
   - source: themes/sansoul/prebuild/public/categories/es
     target: content/categories
@@ -94,6 +128,9 @@ module:
   - source: themes/sansoul/prebuild/public/categories/en
     target: content/categories
     lang: en
+  - source: themes/sansoul/prebuild/public/categories/fr
+    target: content/categories
+    lang: fr
   # data
   - source: data
     target: data
@@ -152,6 +189,31 @@ module:
   - source: content.es/_index/custom.md
     target: content/custom/_index.md
     lang: en
+  # parents fr
+  - source: content.fr/_index/pages.md
+    target: content/pages/_index.md
+    lang: fr
+  - source: content.fr/_index/blog.md
+    target: content/blog/_index.md
+    lang: fr
+  - source: content.fr/_index/events.md
+    target: content/events/_index.md
+    lang: fr
+  - source: content.fr/_index/products.md
+    target: content/products/_index.md
+    lang: fr
+  - source: content.fr/_index/tags.md
+    target: content/tags/_index.md
+    lang: fr
+  - source: content.fr/_index/categories.md
+    target: content/categories/_index.md
+    lang: fr
+  - source: content.fr/_index/authors.md
+    target: content/authors/_index.md
+    lang: fr
+  - source: content.fr/_index/custom.md
+    target: content/custom/_index.md
+    lang: fr
 
   # content project
   - source: content.es
@@ -162,6 +224,10 @@ module:
     target: content
     excludeFiles: [_index, sections, modals]
     lang: en
+  - source: content.fr
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: fr
   # content theme
   - source: themes/sansoul/content.es
     target: content
@@ -171,6 +237,10 @@ module:
     target: content
     excludeFiles: [_index, sections, modals]
     lang: en
+  - source: themes/sansoul/content.fr
+    target: content
+    excludeFiles: [_index, sections, modals]
+    lang: fr
 
 # default without option in cms
 
