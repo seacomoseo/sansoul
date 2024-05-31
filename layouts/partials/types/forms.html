@@ -101,6 +101,9 @@
                       <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
                       {{- .option -}}
                     </label>
+                    {{- if and $is_checkbox (not $googleForm) $workersLGTN -}}
+                      <input class="contact__form-hidden" type="hidden" name="{{ $name }}" value="❌">
+                    {{- end -}}
                   {{- end -}}
                 </fieldset>
               {{- else if $type | eq "h3" -}}
