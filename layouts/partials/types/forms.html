@@ -93,9 +93,6 @@
                     {{- if and $is_checkbox (not $googleForm) -}}
                       {{- $name   = $option -}}
                       {{- $option = "✅" -}}
-                      {{- if $workersLGTN -}}
-                        <input class="contact__form-hidden" type="hidden" name="{{ $name }}" value="❌">
-                      {{- end -}}
                     {{- end -}}
                     <label class="contact__form-label">{{ "" -}}
                       <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
