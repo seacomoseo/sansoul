@@ -89,9 +89,9 @@
                 <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
                   <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
                   {{- range .options -}}
-                    {{- $option := .option -}}
+                    {{- $option := .value | default .option -}}
                     {{- if and $is_checkbox (not $googleForm) -}}
-                      {{- $name   = .option -}}
+                      {{- $name   = $option -}}
                       {{- $option = "✅" -}}
                       {{- if $workersLGTN -}}
                         <input class="contact__form-hidden" type="hidden" name="{{ $name }}" value="❌">
