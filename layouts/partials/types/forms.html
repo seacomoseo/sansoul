@@ -29,7 +29,6 @@
           {{- $id_form       := replace (print $slug "_" $id $form_num) "-" "_" -}}
           {{- $netlify_forms := not .action -}}
           {{- $googleForm    := in .action "docs.google.com/forms" -}}
-          {{- $workersLGTN   := in .action "lagrantribunomada.workers.dev" -}}
           {{- $formsubmit_co := in .action "formsubmit.co" -}}
           {{- $action        := .action | default $page.RelPermalink | base64Encode -}}
           {{- $subject       := print (i18n "form") " " $page_emoji " " $page.Title " " $section_emoji " " $section_name (cond (not $form_num) "" (print " 📌 " $num)) -}}
@@ -89,7 +88,7 @@
                 <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
                   <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
                   {{- range $option_k, $option := .options -}}
-                    {{- $name_option := cond (and $is_checkbox (not $googleForm) (not $workersLGTN)) (print $name " " (add 1 $option_k)) $name -}}
+                    {{- $name_option := cond (and $is_checkbox (not $googleForm)) (print $name " " (add 1 $option_k)) $name -}}
                     <label class="contact__form-label">{{ "" -}}
                       <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name_option }}" value="{{ .option }}">
                       {{- .option -}}
