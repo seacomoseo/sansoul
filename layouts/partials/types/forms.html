@@ -87,10 +87,14 @@
                 {{- $is_checkbox := eq $type "checkbox" -}}
                 <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
                   <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
-                  {{- range $option_k, $option := .options -}}
-                    {{- $name_option := cond (and $is_checkbox (not $googleForm)) (print $name " " (add 1 $option_k)) $name -}}
+                  {{- range .options -}}
+                    {{- $option := .option -}}
+                    {{- if and $is_checkbox (not $googleForm) -}}
+                      {{- $name   = .option -}}
+                      {{- $option = "✅" -}}
+                    {{- end -}}
                     <label class="contact__form-label">{{ "" -}}
-                      <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name_option }}" value="{{ .option }}">
+                      <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
                       {{- .option -}}
                     </label>
                   {{- end -}}
