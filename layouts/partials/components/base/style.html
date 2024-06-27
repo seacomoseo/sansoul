@@ -85,7 +85,7 @@
   -}}
 {{- end -}}
 
-{{- $styles := resources.Get (print "css/styles." .Lang ".scss")
+{{- $styles := resources.Get (print "css/styles.lang.scss")
   | resources.ExecuteAsTemplate (print site.Home.RelPermalink "css/styles.scss") .
 -}}
 {{- with $styles -}}

@@ -80,7 +80,7 @@
 
 // CUSTOM CONFIG
 {{ $config := partial "functions/config-lang" . }}
-{{ with $config.custom_code.css.code }}
+{{ with $config.others.custom_code.css }}
   {{-
     (.
       | resources.FromString (print "aux_css." $.Lang)

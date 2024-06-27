@@ -1,7 +1,7 @@
 /* All */
 .CMS_Table_body-cell-link:is(
   [href^="#/collections/config/entries/"],
-  [href^="#/collections/types/entries/"]
+  /* [href^="#/collections/types/entries/"] */
 ):before,
 .CMS_Collection_header-wrapper .CMS_Icon_root,
 .CMS_NavLink_icon:not([data-testid="sidebar-nav-Media"] *) {
@@ -15,7 +15,7 @@
 html[style*="--text-primary: #fff;"] :where(
   .CMS_Table_body-cell-link:is(
     [href^="#/collections/config/entries/"],
-    [href^="#/collections/types/entries/"]
+    /* [href^="#/collections/types/entries/"] */
   ):before,
   .CMS_Collection_header-wrapper .CMS_Icon_root,
   .CMS_NavLink_icon:not([data-testid="sidebar-nav-Media"] *)
@@ -41,37 +41,37 @@ html[style*="--text-primary: #fff;"] :where(
 
 /* Each new icon */
 /* Types */
-.CMS_Table_body-cell-link[href="#/collections/types/entries/blog"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/blog"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/blog/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/blog"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="newspaper" viewBox="0 0 512 512"><path d="M480 32H128C110.3 32 96 46.33 96 64v336C96 408.8 88.84 416 80 416S64 408.8 64 400V96H32C14.33 96 0 110.3 0 128v288c0 35.35 28.65 64 64 64h384c35.35 0 64-28.65 64-64V64C512 46.33 497.7 32 480 32zM272 416h-96C167.2 416 160 408.8 160 400C160 391.2 167.2 384 176 384h96c8.836 0 16 7.162 16 16C288 408.8 280.8 416 272 416zM272 320h-96C167.2 320 160 312.8 160 304C160 295.2 167.2 288 176 288h96C280.8 288 288 295.2 288 304C288 312.8 280.8 320 272 320zM432 416h-96c-8.836 0-16-7.164-16-16c0-8.838 7.164-16 16-16h96c8.836 0 16 7.162 16 16C448 408.8 440.8 416 432 416zM432 320h-96C327.2 320 320 312.8 320 304C320 295.2 327.2 288 336 288h96C440.8 288 448 295.2 448 304C448 312.8 440.8 320 432 320zM448 208C448 216.8 440.8 224 432 224h-256C167.2 224 160 216.8 160 208v-96C160 103.2 167.2 96 176 96h256C440.8 96 448 103.2 448 112V208z"/></svg>` | base64Encode -}}");
 }
-.CMS_Table_body-cell-link[href="#/collections/types/entries/events"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/events"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/events/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/events"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="calendar" viewBox="0 0 448 512"><path d="M96 32C96 14.33 110.3 0 128 0C145.7 0 160 14.33 160 32V64H288V32C288 14.33 302.3 0 320 0C337.7 0 352 14.33 352 32V64H400C426.5 64 448 85.49 448 112V160H0V112C0 85.49 21.49 64 48 64H96V32zM448 464C448 490.5 426.5 512 400 512H48C21.49 512 0 490.5 0 464V192H448V464z"/></svg>` | base64Encode -}}");
 }
-.CMS_Table_body-cell-link[href="#/collections/types/entries/products"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/products"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/products/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/products"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="box" viewBox="0 0 448 512"><path d="M50.73 58.53C58.86 42.27 75.48 32 93.67 32H208V160H0L50.73 58.53zM240 160V32H354.3C372.5 32 389.1 42.27 397.3 58.53L448 160H240zM448 416C448 451.3 419.3 480 384 480H64C28.65 480 0 451.3 0 416V192H448V416z"/></svg>` | base64Encode -}}");
 }
-.CMS_Table_body-cell-link[href="#/collections/types/entries/categories"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/categories"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/categories/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/categories"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="bookmark" viewBox="0 0 384 512"><path d="M384 48V512l-192-112L0 512V48C0 21.5 21.5 0 48 0h288C362.5 0 384 21.5 384 48z"/></svg>` | base64Encode -}}");
 }
-.CMS_Table_body-cell-link[href="#/collections/types/entries/tags"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/tags"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/tags/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/tags"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="tag" viewBox="0 0 448 512"><path d="M48 32H197.5C214.5 32 230.7 38.74 242.7 50.75L418.7 226.7C443.7 251.7 443.7 292.3 418.7 317.3L285.3 450.7C260.3 475.7 219.7 475.7 194.7 450.7L18.75 274.7C6.743 262.7 0 246.5 0 229.5V80C0 53.49 21.49 32 48 32L48 32zM112 176C129.7 176 144 161.7 144 144C144 126.3 129.7 112 112 112C94.33 112 80 126.3 80 144C80 161.7 94.33 176 112 176z"/></svg>` | base64Encode -}}");
 }
-.CMS_Table_body-cell-link[href="#/collections/types/entries/authors"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/authors"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/authors/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/authors"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="user" viewBox="0 0 448 512"><path d="M224 256c70.7 0 128-57.31 128-128s-57.3-128-128-128C153.3 0 96 57.31 96 128S153.3 256 224 256zM274.7 304H173.3C77.61 304 0 381.6 0 477.3c0 19.14 15.52 34.67 34.66 34.67h378.7C432.5 512 448 496.5 448 477.3C448 381.6 370.4 304 274.7 304z"/></svg>` | base64Encode -}}");
 }
-.CMS_Table_body-cell-link[href="#/collections/types/entries/pages"]:before,
+/* .CMS_Table_body-cell-link[href="#/collections/types/entries/pages"]:before, */
 .CMS_Collection_header-wrapper:has([href="#/collections/pages/new"]) .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/pages"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="file" viewBox="0 0 384 512"><path d="M0 64C0 28.65 28.65 0 64 0H224V128C224 145.7 238.3 160 256 160H384V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM256 128V0L384 128H256z"/></svg>` | base64Encode -}}");
@@ -98,10 +98,12 @@ html[style*="--text-primary: #fff;"] :where(
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="puzzle" viewBox="0 0 512 512"><path d="M256 160c0-17.67-14.33-32-32-32H208V96c0-17.67-14.33-32-32-32H64C28.65 64 0 92.65 0 128v144h80v-32c0-17.67 14.33-32 32-32s32 14.33 32 32v32h64V192H224C241.7 192 256 177.7 256 160zM0 448c0 35.35 28.65 64 64 64h144v-80h-32c-17.67 0-32-14.33-32-32s14.33-32 32-32h32v-64H0V448zM416 304h-48v32c0 17.67-14.33 32-32 32s-32-14.33-32-32v-32h-64V512H384c35.35 0 64-28.65 64-64v-112C448 318.3 433.7 304 416 304zM448 0h-112c-17.67 0-32 14.33-32 32v48h32c17.67 0 32 14.33 32 32s-14.33 32-32 32h-32v64h64V224c0 17.67 14.33 32 32 32s32-14.33 32-32V208H480c17.67 0 32-14.33 32-32V64C512 28.65 483.3 0 448 0z"/></svg>` | base64Encode -}}");
 }
 /* Parents Types */
+/*
 .CMS_Navbar_root:has([href^="#/collections/types"]) + .CMS_MainView_root #main-view .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/types"] .CMS_NavLink_icon {
   background-image: url("data:image/svg+xml;base64,{{ `<svg fill="#1976d2" xmlns="http://www.w3.org/2000/svg" id="rectangle-vertical-history" viewBox="0 0 576 512"><path d="M512 0C547.3 0 576 28.65 576 64V448C576 483.3 547.3 512 512 512H256C220.7 512 192 483.3 192 448V64C192 28.65 220.7 0 256 0H512zM96 72C96 58.75 106.7 48 120 48C133.3 48 144 58.75 144 72V440C144 453.3 133.3 464 120 464C106.7 464 96 453.3 96 440V72zM0 120C0 106.7 10.75 96 24 96C37.25 96 48 106.7 48 120V392C48 405.3 37.25 416 24 416C10.75 416 0 405.3 0 392V120z"/></svg>` | base64Encode -}}");
 }
+*/
 /* Settings */
 .CMS_Navbar_root:has([href^="#/collections/settings"]) + .CMS_MainView_root #main-view .CMS_Icon_root,
 .CMS_NavLink_link[href="#/collections/settings"] .CMS_NavLink_icon {
@@ -157,7 +159,7 @@ html[style*="--text-primary: #fff;"] :where(
 .CMS_Table_body-cell:first-child
 .CMS_Table_body-cell-link:is(
   [href^="#/collections/settings/entries/"],
-  [href^="#/collections/types/entries/"]
+  /* [href^="#/collections/types/entries/"] */
 ):before {
   content: '';
   width: 20px;

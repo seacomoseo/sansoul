@@ -91,7 +91,6 @@
       - [x] `menu.callnow_active` > `menu.callnow_hide`
       - [x] menu `screen_sticky` like `size_sticky` options
       - [x] Add `box_gap`
-      - [x] `config.social` > `boxes[social]`
       - [x] `principal|main` > id de la primera section
       - [x] `shadow` > `hide_shadow` and `hide_radius` like brother (in `boxes`, `box` and `review`)
       - [x] `full_screen` > `full` and `section--full-screen` > `section--full` 
@@ -142,6 +141,8 @@
       - [x] `data.menu.[lang].callnow_buttoms` > `$params.callnow.[lang]`
       - [x] `functions/lang-param` > `functions/config-lang`
       - [x] `functions/lang-params-custom-code` > `functions/config-lang`
+      - [x] `hugo.yml` > remove `languages.lang.permalinks` not custom (ojo `blog`, la mayoría tiene `page.blog: :slug`)
+      - [x] `hugo.yml` > replace `disableLanguages` to `languages.lang.disabled: false` (al revés, solo dejar `disabled: true` lo que no tiene `disableLanguages`)
       - [x] `$params` recursive from `baseof`
       - [x] ¿Constructor de tipos de páginas? (opción de `schema`)
         - [x] Crear sistema de plantillas, con `template` en cada página y en cada `_index`
@@ -151,7 +152,7 @@
         - [x] `data.templates._lists`
       - [x] [Objetos reusables en YAML](https://yaml.org/type/merge.html) + hacer 3 reemplazos del json:
         ```hugo
-          | jsonify (dict "prefix" " " "indent" "  ")
+          | jsonify (dict "prefix" "" "indent" "  ")
           | replaceRE `"\\u003c\\u003c":` " <<: "
           | replaceRE `\"\\u0026(.+?)\":` ` "$1": &$1 `
           | replaceRE `\"(\*.+?)\"` ` $1 `
@@ -205,6 +206,15 @@
       - [x] h1
       - [x] new dividers
       - [x] `fan-op` > `arrow-op-fan`
+      - [x] Remove `slug` from `content.*/_index/*`
+      - [x] `config` add `schema`
+      - [x] `config.location_type` > `config.schema.types`
+      - [x] `config.alternate_name` > `config.schema.alternateName`
+      - [x] `config.social` > `config.schema.sameAs`
+      - [x] `config.schema` add `phones` by `contact`
+      - [x] `config.schema` add `address` by `contact`
+      - [x] `config.schema` add `hasMap` by `contact`
+      - [x] schema and legal only by config, not crawl all site
       - [ ] Menu sticky
         - [ ] baseof
         - [ ] css
@@ -212,7 +222,6 @@
       - [ ] mv partials sections
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
-      - [ ] schema and legal only by config, not crawl all site
       - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
       - [ ] Rehuse `boxes` partial in `reviews`
       - [ ] search template
@@ -323,14 +332,11 @@
 
 # New language
 
-- `./hugo.yml` (in all projects and sansoul template)
-  - `disableLanguages: [en, … new]`
-  - `languages: [en, … new]`
-- `./hugo.default.yml`
-  - `languages`
-  - `disableLanguages`
-  - `mounts`
-- `./i18n/new.yml`
-- `./data/options.yml` > `langs`
-- `./data/utilities/default_disable_langs.yml`
-- `./content.new/`
+- `themes/sansoul`
+  - [x] `./hugo.default.yml`
+    - `languages`
+    - `mounts`
+  - [/] `./i18n/new.yml`
+  - [x] `./data/options.yml`
+    - `langs`
+  - [/] `./content.new/`

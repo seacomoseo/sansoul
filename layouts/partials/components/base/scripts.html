@@ -33,7 +33,7 @@
   {{ $isCookies = true }}
 {{ end }}
 
-{{ with $config.disqus }}
+{{ with $config.others.disqus }}
   {{ $disqusId = . }}
 {{ end }}
 
@@ -42,12 +42,12 @@
 {{ end }}
 
 {{ if hugo.IsProduction }}
-  {{ with $config.google_analytics }}
+  {{ with $config.others.google_analytics }}
     {{ $googleAnalyticsId = . }}
   {{ end }}
 {{ end }}
 
-{{ with $config.custom_code.js.code }}
+{{ with $config.others.custom_code.js }}
   {{ $customString =
     (.
       | resources.FromString (print "aux_js." page.Lang)

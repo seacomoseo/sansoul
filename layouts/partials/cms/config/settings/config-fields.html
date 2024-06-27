@@ -1,64 +1,156 @@
 {{ return slice
-  (dict "label" `Título`       "name" `title`          "required" false "widget" `string` "default" ``)
-  (dict "label" `Descripción`  "name" `description`    "required" false "widget" `text`   "default" ``)
-  (dict "label" `Logo`         "name" `logo`           "required" false "widget" `image`  "default" `logo.png` "max_file_size" 512000000)
-  (dict "label" `Nombre Legal` "name" `legal_name`     "required" false "widget" `string` "default" ``         "hint" "Para aviso legal")
-  (dict "label" `DNI / CIF`    "name" `legal_dni`      "required" false "widget" `string` "default" ``         "hint" "Para aviso legal")
-  (dict "label" `Email`        "name" `legal_email`    "required" false "widget" `string` "default" ``)
-  (dict "label" `Ubicación`    "name" `legal_location` "required" false "widget" `string` "default" ``)
-  (dict "label" `País`         "name" `country`        "required" false "widget" `select` "default" `España`   "options" `~OPTIONS_COUNTRIES`)
+  (dict "label" `Título`       "name" `title`          "required" false "widget" `string`)
+  (dict "label" `Descripción`  "name" `description`    "required" false "widget" `text`)
+  (dict "label" `Logo`         "name" `logo`           "required" false "widget" `image` "max_file_size" 512000000)
   (dict
-    "label"          `Tipo de Negocio`
-    "label_singular" `Tipo`
-    "name"           `location_type`
-    "widget"         `list`
-    "default"        (slice "Organization")
-    "collapsed"      true
-    "summary"        "Tipo: {{fields.type}}"
-    "allow_add"      true
-    "required"       false
-    "hint"           "Para datos estructurados 🔷 Se pueden añadir más de uno"
-    "fields"         (slice
-      (dict "label" `Tipo` "name" `type` "widget" `select` "required" false "options" `~OPTIONS_LOCATION_TYPE`)
+    "label"     `Legal`
+    "name"      `legal`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      "Información para rellenar datos en los avisos legales, de privacidad y de cookies"
+    "required"  false
+    "fields"    (slice
+      (dict "label" `Nombre Legal` "name" `name`     "required" false "widget" `string` "hint" "Para aviso legal")
+      (dict "label" `DNI / CIF`    "name" `dni`      "required" false "widget" `string` "hint" "Para aviso legal")
+      (dict "label" `Email`        "name" `email`    "required" false "widget" `string`)
+      (dict "label" `Ubicación`    "name" `location` "required" false "widget" `string`)
+      (dict "label" `País`         "name" `country`  "required" false "widget" `select` "options" `~OPTIONS_COUNTRIES`)
     )
   )
   (dict
-    "label"          `Títulos o Nombres Alternativos`
-    "label_singular" `Título/Nombre`
-    "name"           `alternate_name`
-    "widget"         `list`
-    "default"        slice
-    "collapsed"      true
-    "summary"        "Título/Nombre: {{fields.name}}"
-    "allow_add"      true
-    "required"       false
-    "hint"           "Para datos estructurados"
-    "fields"         (slice
-      (dict "label" `Nombre` "name" `name` "widget" `string` "required" false)
+    "label"     `Schema`
+    "name"      `schema`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      "Marcado de datos estructurados (útil para el SEO)"
+    "required"  false
+    "fields"    (slice
+      (dict
+        "label"          `Tipo de Negocio`
+        "label_singular" `Tipo`
+        "name"           `types`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Tipo: {{fields.type}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" `Tipo` "name" `type` "widget" `select` "required" false "options" `~OPTIONS_LOCATION_TYPE`)
+        )
+      )
+      (dict
+        "label"          `Títulos o Nombres Alternativos`
+        "label_singular" `Título/Nombre`
+        "name"           `alternateName`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Título/Nombre: {{fields.name}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" `Nombre` "name" `name` "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          `Redes Sociales`
+        "label_singular" `Enlace`
+        "name"           `sameAs`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Enlace: {{fields.link}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" `Enlace` "name" `link` "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          `Teléfonos`
+        "label_singular" `Teléfono`
+        "name"           `phones`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Teléfono: {{fields.phone}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" `Teléfono` "name" `phone` "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          `Direcciones`
+        "label_singular" `Dirección`
+        "name"           `address`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Dirección: {{fields.name}} {{fields.streetAddress}} {{fields.postalCode}} {{fields.addressLocality}} {{fields.addressRegion}} {{fields.addressCountry}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          `~CONTACT_ADDRESS_NAME`
+          `~CONTACT_STREETADDRESS`
+          `~CONTACT_POSTALCODE`
+          `~CONTACT_ADDRESSLOCALITY`
+          `~CONTACT_ADDRESSREGION`
+          `~CONTACT_ADDRESSCOUNTRY`
+          `~CONTACT_COORDINATES`
+        )
+      )
+      (dict
+        "label"          `Enlaces a Mapas`
+        "label_singular" `Enlace`
+        "name"           `hasMap`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "Enlace: {{fields.link}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" `Enlace` "name" `link` "widget" `string` "required" false)
+        )
+      )
+      (dict "label" `Rango de Precios`            "name" `price_range`              "widget" `select`  "required" false  "hint" "Para datos estructurados" "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
     )
   )
-  (dict "label" `Rango de Precios`            "name" `price_range`              "widget" `select`  "required" false "default" `€€`  "hint" "Para datos estructurados" "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
-  (dict "label" `Código Analytics`            "name" `google_analytics`         "widget" `string`  "required" false "default" ``    "hint" "Código de seguimiento de Google Analytics: UA-XXXXXXXX-X ; G-XXXXXXXXXX")
-  (dict "label" `Código Search Console`       "name" `google_site_verification` "widget" `string`  "required" false "default" ``    "hint" "Código de Verificación de Google Search Console")
-  (dict "label" `Archivo Search Console`      "name" `google_file_verification` "widget" `string`  "required" false "default" ``    "hint" "Nombre de Archivo de Verificación de Google Search Console 🔷 Ejemplo: google7467d923cbb3eb4c.html")
-  (dict "label" `Disqus`                      "name" `disqus`                   "widget" `string`  "required" false "default" ``    "hint" "Nombre corto del sistema de comentarios disqus.com")
-  (dict "label" `Cookies Legal`               "name" `cookies_legal`            "widget" `boolean` "required" false "default" false "hint" "Hace que se aplique la ley realmente a nivel técnico")
-  (dict "label" `Analytics PageSpeed`         "name" `analytics_pagespeed`      "widget" `hidden`  "required" false "default" true)
-  (dict "label" `Procesar todas las imágenes` "name" `process_all_images`       "widget" `hidden`  "required" false "default" false)
-  (dict "label" `CMS`                         "name" `cms`                      "widget" `hidden`  "required" false "default" true)
-  (dict "label" `CMS con Flujo Editorial`     "name" `cms_editorial_workflow`   "widget" `boolean` "required" false "default" false "hint" "Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)")
-  (dict "label" `Modo Desarrollo`             "name" `development`              "widget" `boolean` "required" false "default" false "hint" "Aplica los cambios más rápido en producción, pero empeora el rendimiento para los usuarios")
   (dict
-    "label"     `Códigos Personalizados`
-    "name"      `custom_code`
+    "label"     `Tipos de Artículos`
+    "name"      `langs`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      "Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. **IMPORTANTE:** Artículos se consideran todos los tipos de páginas excepto las Personalizadas y sus Secciones y Modales correspondientes."
+    "required"  false
+    "fields"    (partial "cms/config/settings/config-fields-types" .)
+  )
+  (dict
+    "label"     `Otros`
+    "name"      `others`
     "widget"    `object`
     "collapsed" true
     "required"  false
     "fields"    (slice
-      (dict "label" `HTML antes de </head>` "name" `html_head` "required" false "widget" `code` "default_language" `html`      )
-      (dict "label" `HTML antes de </body>` "name" `html_body` "required" false "widget" `code` "default_language" `html`      )
-      (dict "label" `CSS`                   "name" `css`       "required" false "widget" `code` "default_language" `css`       )
-      (dict "label" `Javascript`            "name" `js`        "required" false "widget" `code` "default_language" `javascript`)
+      (dict "label" `Código Analytics`            "name" `google_analytics`         "widget" `string`  "required" false "hint" "Código de seguimiento de Google Analytics: UA-XXXXXXXX-X ; G-XXXXXXXXXX")
+      (dict "label" `Código Search Console`       "name" `google_site_verification` "widget" `string`  "required" false "hint" "Código de Verificación de Google Search Console")
+      (dict "label" `Archivo Search Console`      "name" `google_file_verification` "widget" `string`  "required" false "hint" "Nombre de Archivo de Verificación de Google Search Console 🔷 Ejemplo: google7467d923cbb3eb4c.html")
+      (dict "label" `Disqus`                      "name" `disqus`                   "widget" `string`  "required" false "hint" "Nombre corto del sistema de comentarios disqus.com")
+      (dict "label" `Cookies Legal`               "name" `cookies_legal`            "widget" `boolean` "required" false "hint" "Hace que se aplique la ley realmente a nivel técnico")
+      (dict "label" `Analytics PageSpeed`         "name" `analytics_pagespeed`      "widget" `hidden`  "required" false)
+      (dict "label" `Procesar todas las imágenes` "name" `process_all_images`       "widget" `hidden`  "required" false)
+      (dict "label" `CMS`                         "name" `cms`                      "widget" `hidden`  "required" false)
+      (dict "label" `CMS con Flujo Editorial`     "name" `cms_editorial_workflow`   "widget" `boolean` "required" false "hint" "Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)")
+      (dict "label" `Modo Desarrollo`             "name" `development`              "widget" `boolean` "required" false "hint" "Aplica los cambios más rápido en producción, pero empeora el rendimiento para los usuarios")
+      (dict
+        "label"     `Códigos Personalizados`
+        "name"      `custom_code`
+        "widget"    `object`
+        "collapsed" true
+        "required"  false
+        "fields"    (slice
+          (dict "label" `HTML antes de </head>` "name" `html_head` "required" false "widget" `text` "default_language" `html`       "output_code_only" true)
+          (dict "label" `HTML antes de </body>` "name" `html_body` "required" false "widget" `text` "default_language" `html`       "output_code_only" true)
+          (dict "label" `CSS`                   "name" `css`       "required" false "widget" `text` "default_language" `css`        "output_code_only" true)
+          (dict "label" `Javascript`            "name" `js`        "required" false "widget" `text` "default_language" `javascript` "output_code_only" true)
+        )
+      )
     )
   )
 }}

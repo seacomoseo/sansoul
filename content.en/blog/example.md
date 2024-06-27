@@ -45,10 +45,6 @@ ___
 
 **This is text in bold**
 
-**This is text in bold**
-
-*This is text in italics*
-
 *This is text in italics*
 
 ~~Tacked~~
@@ -122,7 +118,7 @@ Online `code`
 In identized block (4 spaces)
 
 ```javascript
-// Algunos comentarios
+// Some comments
 Line 1 of code
 Line 2 of code
 Line 3 of Code
@@ -146,90 +142,90 @@ console.log(foo(5));
 
 ## Tables
 
-| Opción      | Descripción                              |
-| ----------- | ---------------------------------------- |
-| Datos       | Contenido de ejemplo de una celda.       |
-| Más datos   | Otro contenido de ejemplo de una celda.  |
-| Otros datos | Y más contenido de ejemplo de una celda. |
+| Option     | Description                   |
+| ---------- | ----------------------------- |
+| Data       | Sample cell contents.         |
+| More data  | Other sample cell content.    |
+| Other data | And more sample cell content. |
 
 Aligning the cells to the right
 
-| Opción      | Descripción                              |
-| ----------: | ---------------------------------------: |
-| Datos       | Contenido de ejemplo de una celda.       |
-| Más datos   | Otro contenido de ejemplo de una celda.  |
-| Otros datos | Y más contenido de ejemplo de una celda. |
+| Option     | Description                   |
+| ---------: | ----------------------------: |
+| Data       | Sample cell contents.         |
+| More data  | Other sample cell content.    |
+| Other data | And more sample cell content. |
 
 Focusing the cells
 
-| Opción      | Descripción                              |
-| :---------: | :--------------------------------------: |
-| Datos       | Contenido de ejemplo de una celda.       |
-| Más datos   | Otro contenido de ejemplo de una celda.  |
-| Otros datos | Y más contenido de ejemplo de una celda. |
+| Option     | Description                   |
+| :--------: | :---------------------------: |
+| Data       | Sample cell contents.         |
+| More data  | Other sample cell content.    |
+| Other data | And more sample cell content. |
 
 If added `{.compare}` at the end of the tables, the [icons](#icons) `check` they will have green color and `times` red:
 
-| Características | Netlify CMS | Forestry |
-| ------ | :------: | :-------: |
-| Interfaz limpia<br>(grupos…) | icon-xmark<br>desplegables | icon-check<br>deslizables |
-| Previsualizaciones | icon-xmark | icon-check |
-| Adaptado a móviles | icon-xmark | icon-check |
-| Sin límites de usuarios | icon-check | icon-xmark 3 |
-| Interfaz en español | icon-check | icon-xmark casi |
-| Permite imágenes externas | icon-check | icon-xmark |
-| Edición de código razonable | icon-check | icon-xmark |
-| Sistema independiente de terceros | icon-check | icon-xmark |
+| Features                        | Netlify CMS             | Forestry              |
+| ------------------------------- | :---------------------: | :-------------------: |
+| Clean interface<br>(drop-down…) | icon-xmark<br>drop-down | icon-check<br>sliders |
+| Previews                        | icon-xmark              | icon-check            |
+| Adapted to cell phones          | icon-xmark              | icon-check            |
+| No user limits                  | icon-check              | icon-xmark 3          |
+| English interface               | icon-check              | icon-xmark almost     |
+| Allows external images          | icon-check              | icon-xmark            |
+| Reasonable code editing         | icon-check              | icon-xmark            |
+| Third party independent system  | icon-check              | icon-xmark            |
 {.compare}
 
 ## Links
 
-Esto es un [enlace externo de texto](http://seacomoseo.com) (se abre en una ventana nueva).
+This is an [external text link](http://seacomoseo.com) (opens in a new window).
 
-Esto es un [enlace interno de texto](/blog/) (se abre en la misma ventana).
+This is an [internal text link](/blog/) (opens in the same window).
 
-Esto es un [enlace ofuscado](/blog/ "nofollow") (oculto de cara a google).
+This is an [obfuscated link](/blog/ "nofollow") (hidden from google).
 
 ### Footnotes page
 
-Enlace de nota primero[^first].
+Note link first [^first].
 
-Enlace de nota segundo[^second].
+Note link second [^second].
 
-Enlace de nota duplicado[^second].
+Note link duplicate[^second].
 
-[^first]: Texto de nota **que puede tener marcado** y múltiples párrafos.
+[^first]: Note text **which may have markup** and multiple paragraphs.
 
-[^second]: Otro texto de nota.
+[^second]: Other note text.
 
 ### Buttons
 
-Añadiendo `btn + espacio` delante de un enlace.
+Adding `btn + space` in front of a link.
 
-Si hay un botón al comienzo de la linea, éste y todos los que hayan se ajustarán en anchos y márgenes (**recomendado**):
+If there is a button at the beginning of the line, it and all buttons will be adjusted in widths and margins (**recommended**):
 
-[btn Botón 1](#botones)
-[btn Botón 2](#botones)
+[btn Button 1](#buttons).
+[btn Button 2](#buttons)
 
-Si no hay un botón al comienzo de la linea, éste y los siguientes saltan de línea, ocupan todo el ancho y no tendrán márgenes (**no recomendado**):
+If there is no button at the beginning of the line, this and the following buttons will jump the line, occupy the whole width and will have no margins (**not recommended**):
 
-Ésto es un botón: [btn Botón 1](#botones) [btn Botón 2](#botones)
+This is a button: [btn Button 1](#buttons) [btn Button 2](#buttons).
 
 ## Icons
 
-En cualquier lugar añadiendo como texto `icon-` + seguido de un emoji o del ID del icono deseado que se puede consultar en el siguiente botón:
+Anywhere adding as text `icon-` + followed by an emoji or the ID of the desired icon that can be consulted in the following button:
 
 [btn icon-font-awesome Font Awesome Icons](https://fontawesome.com/v6/icons?s=brands,solid).
 
-Ejemplos:
+Examples:
 
 - `star`: icon-star
 - `tag`: icon-tag
-- `house`: icon-house
-- Aquí hay un icono icon-apple de la famosa manzana
-- A continuación hay un botón con icono:
+- house`: icon-house
+- Here is an icon-apple icon of the famous apple
+- Below is a button with icon:
 
-[btn icon-star Botón](#icons)
+[btn icon-star Button](#icons)
 
 
 ## Images
@@ -237,16 +233,16 @@ Ejemplos:
 ![Minion](https://octodex.github.com/images/minion.png)
 ![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
 
-Imagen con enlace de nota de página
+Image with page note link
 
 ![Alt text](logo.png "Logo")
 
-Con la referencia a la URL después
+With URL reference after
 
 ## Iframes
 
-Así se incrustan vídeos de youtube o cualquier otra plataforma:
+This is how to embed videos from youtube or any other platform:
 
 ![](https://youtu.be/I8WU52s5PcQ)
 
-¡Hasta aquí!
+Up to here!

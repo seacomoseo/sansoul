@@ -26,11 +26,11 @@ Through the Website, **the provider** aims to provide the general public with in
 
 When access to certain content or services requires providing personal data, Users guarantee its veracity, accuracy, authenticity and validity. **The provider** will process the personal data provided by the Users in accordance with the provisions of the Privacy Policy. The User is responsible for the veracity of the data provided and **the provider** reserves the right to deny access to the services without prior notice, to those Users who have provided false information.
 
-The User agrees to use the website, its services and contents without contravening current legislation, good faith, generally accepted uses and public order. The User shall be liable to **the provider** or to third parties for any damages that may be caused as a result of the breach of said obligation.
+**The user** agrees to use the website, its services and contents without contravening current legislation, good faith, generally accepted uses and public order. The User shall be liable to **the provider** or to third parties for any damages that may be caused as a result of the breach of said obligation.
 
 The website may provide links to other third-party websites that have no relation with **the provider**. In these cases, **the provider** is not responsible for the contents or services that may be offered on these websites or for the measures of protection of personal data that these third parties may adopt.
 
-**The provider** reserves the right to modify, at any time and without prior notice, the presentation and configuration of the website, as well as the services and contents provided through it.
+**The user** reserves the right to modify, at any time and without prior notice, the presentation and configuration of the website, as well as the services and contents provided through it.
 
 The provision of the website services and contents has, in principle, an indefinite duration. However, **the provider** is authorized to terminate or suspend the provision of the services and contents of the website at any time.
 

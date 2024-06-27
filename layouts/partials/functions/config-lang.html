@@ -1,7 +1,12 @@
-{{ $value := dict }}
+{{ $default := dict }}
+{{ $self    := dict }}
 
-{{ with site.Data.config }}
-  {{ $value = merge . (index . site.Home.Lang) }}
+{{ with index site.Data (print "config." (index site.Languages 0)) }}
+  {{ $default = . }}
 {{ end }}
 
-{{ return $value }}
+{{ with index site.Data (print "config." site.Home.Lang) }}
+  {{ $self = . }}
+{{ end }}
+
+{{ return (merge $default $self) }}

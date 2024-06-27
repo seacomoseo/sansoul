@@ -63,7 +63,7 @@
       "max_file_size"  512000000
       "folder_support" true
     )
-    "logo_url"      (print "/media/" ($config.logo | default "logo.svg"))
+    "logo_url"      (print "/media/" ($config.logo | default "icon.png"))
     "locale"        .Lang
     "slug"          (dict
       "encoding"             `ascii`
@@ -96,9 +96,9 @@
       "site_url" site.BaseURL
     )
     (cond
-      (not ($config.cms_editorial_workflow))
+      (not ($config.others.cms_editorial_workflow))
       (cond
-        (not ($config.development))
+        (not ($config.others.development))
         (dict
           "site_url"    site.BaseURL
           "display_url" (print site.Home.Permalink)
@@ -129,7 +129,7 @@
 {{- if hugo.IsProduction -}}
   {{- $cms_config = $cms_config | jsonify -}}
 {{- else -}}
-  {{- $cms_config = $cms_config | jsonify (dict "prefix" " " "indent" "  ") -}}
+  {{- $cms_config = $cms_config | jsonify (dict "prefix" "" "indent" "  ") -}}
 {{- end -}}
 {{- $cms_config
   | replaceRE `"\\u003c\\u003c":` " <<: "

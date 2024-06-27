@@ -42,7 +42,7 @@
 {{- if hugo.IsProduction -}}
   {{- $schema = $schema | jsonify -}}
 {{- else -}}
-  {{- $schema = $schema | jsonify (dict "prefix" " " "indent" "  ") -}}
+  {{- $schema = $schema | jsonify (dict "prefix" "" "indent" "  ") -}}
 {{- end -}}
 <script type="application/ld+json">
   {{- $schema | safeJS -}}

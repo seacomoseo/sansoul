@@ -45,7 +45,22 @@ module:
   mounts:
   - source: assets
     target: assets
-  - source: ../../../prebuid/products.html
+  - source: ../../../prebuild/products.html
     target: assets/products.html
-  - source: ../../../prebuid/categories.html
+  - source: ../../../prebuild/categories.html
     target: assets/categories.html
+
+  - source: ../content.es
+    target: assets/content.es
+  - source: ../content.en
+    target: assets/content.en
+
+  - source: ../../../data
+    target: data
+    excludeFiles:
+    - sections
+    - templates
+    - utilities
+    - lists.yml
+    - options.yml
+    - styles.yml

@@ -25,17 +25,9 @@
 
 {{/*  SCHEMA ORGANIZATION  */}}
 
-{{/*  Get links_map, locations, phones and social links  */}}
-
-{{- $contact_buttons := partial "functions/contact-buttons" site -}}
-{{- $links_map       := $contact_buttons.links_map -}}
-{{- $locations       := $contact_buttons.locations -}}
-{{- $phones_pre      := $contact_buttons.phones -}}
-{{- $socialLinks     := $contact_buttons.social -}}
-
 {{/*  All phones variations  */}}
 {{ $phones := slice }}
-{{ with $phones_pre }}
+{{ with $config.schema.phones }}
   {{ range . }}
     {{ $complete_phone := partial "functions/phone-to-complete" . }}
     {{ $phoneClean     := $complete_phone | replaceRE `\+\d+ ` `` }}
@@ -57,11 +49,11 @@
   {{ end }}
 {{ end }}
 
-{{/*  Address, has_map and geo by locations  */}}
+{{/*  Address, hasMap and geo by locations  */}}
 {{ $address := slice }}
-{{ $has_map := $links_map }}
+{{ $hasMap  := slice }}
 {{ $geo     := slice }}
-{{ with $locations }}
+{{ with $config.schema.address }}
   {{ range . }}
     {{ if .streetAddress }}
       {{ $address = $address | append (dict
@@ -72,7 +64,7 @@
         "addressRegion"   (.addressRegion   | default "")
         "addressCountry"  (.addressCountry  | default "")
       ) }}
-      {{ $has_map = $has_map | append (print
+      {{ $hasMap = $hasMap | append (print
         "https://maps.google.com/maps/search/"
         (print
           .name " "
@@ -93,6 +85,11 @@
         "longitude" (index $cordinates 0)
       ) }}
     {{ end }}
+  {{ end }}
+{{ end }}
+{{ with $config.schema.hasMap }}
+  {{ range . }}
+    {{ $hasMap = $hasMap | append . }}
   {{ end }}
 {{ end }}
 
@@ -122,28 +119,28 @@
 {{ end }}
 {{ $images = $images | uniq }}
 
-{{ $location_type   := $config.location_type | default (slice "Organization") }}
-{{ $additional_type := after 1 $location_type }}
-{{ $location_type    = index $location_type 0 }}
+{{ $type           := $config.schema.types | default (slice "Organization") }}
+{{ $additionalType := after 1 $type }}
+{{ $type            = index $type 0 }}
 
 {{/*  Finish schema organization  */}}
 {{ $schemaOrganization = dict
   "@context"       `http://schema.org`
-  "@type"          $location_type
-  "additionalType" $additional_type
+  "@type"          $type
+  "additionalType" $additionalType
   "logo"           (print $BaseURL "/media/logo.png")
   "image"          $images
   "name"           $config.title
-  "alternateName"  ($config.alternate_name | default slice)
-  "priceRange"     $config.price_range
+  "alternateName"  ($config.schema.alternateName | default slice)
+  "priceRange"     $config.schema.priceRange
   "description"    $config.description
   "url"            (print $BaseURL "/")
-  "sameAs"         $socialLinks
+  "sameAs"         $config.schema.sameAs
   "telephone"      $phones
   "address"        $address
   "location"       (dict
     "@type" "Place"
-    "hasMap" $has_map
+    "hasMap" $hasMap
     "geo"    $geo
   )
 }}
@@ -304,7 +301,7 @@
 {{ if hugo.IsProduction }}
   {{ $schema = $schema | jsonify }}
 {{ else }}
-  {{ $schema = $schema | jsonify (dict "prefix" " " "indent" "  ") }}
+  {{ $schema = $schema | jsonify (dict "prefix" "" "indent" "  ") }}
 {{ end }}
 
 {{ return $schema }}

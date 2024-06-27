@@ -80,15 +80,13 @@
 {{ if .Params.noindex }}
   <meta name="robots" content="noindex">
 {{ end }}
-{{ with $config.google_site_verification }}
+{{ with $config.others.google_site_verification }}
   <meta name="google-site-verification" content="{{ . }}">
 {{ end }}
 
 {{/*  GOOGLE ANALYTICS  */}}
 {{- if hugo.IsProduction -}}
-  {{- with $config.google_analytics -}}
-    {{- $analytics_pagespeed := not $config.analytics_pagespeed -}}
-    {{- $cookies_legal       := site.Data.config.cookies_legal -}}
+  {{- with $config.others.google_analytics -}}
     <script>
       // GA4 base
       window.dataLayer = window.dataLayer || [];
@@ -109,8 +107,8 @@
       // If is not bot and if cookies law
       const isBot = navigator.userAgent.toLowerCase().match(/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/)
       if (!isBot
-        {{- if $analytics_pagespeed }} && !(navigator.userAgent.indexOf("Chrome-Lighthouse") == -1) {{ end -}}
-        {{- if $cookies_legal }} && localStorage.controlcookieanalytics {{ end -}}
+        {{- if $config.others.analytics_pagespeed_disable }} && !navigator.userAgent.includes("Chrome-Lighthouse") {{ end -}}
+        {{- if $config.others.cookies_legal               }} && localStorage.controlcookieanalytics                {{ end -}}
       ) {
         googleAnalytics();
       }
@@ -144,7 +142,7 @@
 
 {{/*  RSS  */}}
 {{ with site.Home.OutputFormats.Get "RSS" }}
-  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Data.config.title }}">
+  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $config.title }}">
 {{ end }}
 
 {{/*  GOOGLE FONTS  */}}

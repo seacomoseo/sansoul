@@ -3,32 +3,21 @@
 
 {{- if in (slice "name" "dni" "location" "email") $param -}}
   {{- $config := partial "functions/config-lang" . -}}
+  {{- $legal  := $config.legal -}}
 
   {{- if eq $param "name" -}}
-    {{- $config.legal_name | default $config.title -}}
+    {{- $legal.name | default $config.title -}}
   {{- else if eq $param "dni" -}}
-    {{- $config.legal_dni | default "00000000A" -}}
+    {{- $legal.dni | default "00000000A" -}}
   {{- else if eq $param "location" -}}
-    {{- with $config.legal_location -}}
+    {{- with $legal.location -}}
       {{- . -}}
     {{- else -}}
-      {{- $postalAddress := index (partial "functions/contact-buttons" site).locations 0 -}}
-      {{- $postalAddress.label
-        | default (partial "functions/postal-address" $postalAddress)
-        | default $config.country
-        | default "-"
-      -}}
+      {{- $legal.location | default $legal.country | default "-" -}}
     {{- end -}}
   {{- else if eq $param "email" -}}
     <i class="ofuscate">
-      {{- $email := $config.legal_email -}}
-      {{- if not $email -}}
-        {{- $email = index (partial "functions/contact-buttons" site).mails 0
-          | default "mail@mail.com"
-          | base64Encode
-        -}}
-      {{- end -}}
-      {{- $email -}}
+      {{- $legal.email | default "mail@mail.com" | base64Encode -}}
     </i>
   {{- end -}}
 

@@ -5,16 +5,20 @@ Paginate: 24
 buildFuture: false
 logo: logo.png
 
+defaultContentLanguage: es
+
 languages:
   es:
+    # baseURL: https://sansoul.netlify.com
+    contentDir: content.es
+    disabled: false
     weight: 1
     languageName: Español
     paginatePath: pagina
-    contentDir: content.es
     permalinks:
       page:
         pages: :slug
-        blog: :slug
+        blog: blog/:slug
         events: evento/:year/:month/:day/:slug
         products: producto/:slug
         categories: categoria/:slug
@@ -29,14 +33,16 @@ languages:
         tags: etiquetas
         authors: autores
   en:
+    # baseURL: https://es.sansoul.netlify.com
+    contentDir: content.en
+    disabled: true
     weight: 2
     languageName: English
     paginatePath: page
-    contentDir: content.en
     permalinks:
       page:
         pages: :slug
-        blog: :slug
+        blog: blog/:slug
         events: event/:year/:month/:day/:slug
         products: product/:slug
         categories: category/:slug
@@ -50,10 +56,102 @@ languages:
         categories: categories
         tags: tags
         authors: authors
-
-defaultContentLanguage: es
-disableLanguages:
-- en
+  fr:
+    # baseURL: https://fr.sansoul.netlify.com
+    contentDir: content.fr
+    disabled: true
+    weight: 3
+    languageName: Français
+    paginatePath: page
+    permalinks:
+      page:
+        pages: :slug
+        blog: blog/:slug
+        events: evenement/:year/:month/:day/:slug
+        products: produit/:slug
+        categories: categorie/:slug
+        tags: etiquette/:slug
+        authors: auteur/:slug
+      section:
+        pages: pages
+        blog: blog
+        events: evenements
+        products: produits
+        categories: categories
+        tags: tags
+        authors: auteurs
+  de:
+    # baseURL: https://de.sansoul.netlify.com
+    contentDir: content.de
+    disabled: true
+    weight: 4
+    languageName: Deutsch
+    paginatePath: seite
+    permalinks:
+      page:
+        pages: :slug
+        blog: blog/:slug
+        events: veranstaltung/:year/:month/:day/:slug
+        products: produkt/:slug
+        categories: kategorie/:slug
+        tags: tag/:slug
+        authors: autor/:slug
+      section:
+        pages: seiten
+        blog: blog
+        events: veranstaltungen
+        products: produkte
+        categories: kategorien
+        tags: tags
+        authors: autoren
+  pt:
+    # baseURL: https://pt.sansoul.netlify.com
+    contentDir: content.pt
+    disabled: true
+    weight: 5
+    languageName: Português
+    paginatePath: pagina
+    permalinks:
+      page:
+        pages: :slug
+        blog: blogue/:slug
+        events: evento/:year/:month/:day/:slug
+        products: produto/:slug
+        categories: categoria/:slug
+        tags: etiqueta/:slug
+        authors: autor/:slug
+      section:
+        pages: paginas
+        blog: blogue
+        events: eventos
+        products: produtos
+        categories: categorias
+        tags: etiquetas
+        authors: autores
+  it:
+    # baseURL: https://it.sansoul.netlify.com
+    contentDir: content.it
+    disabled: true
+    weight: 6
+    languageName: Italiano
+    paginatePath: pagina
+    permalinks:
+      page:
+        pages: :slug
+        blog: blog/:slug
+        events: evento/:year/:month/:day/:slug
+        products: prodotto/:slug
+        categories: categoria/:slug
+        tags: tag/:slug
+        authors: autore/:slug
+      section:
+        pages: pagine
+        blog: blog
+        events: eventi
+        products: prodotti
+        categories: categorie
+        tags: tag
+        authors: autori
 
 module:
   mounts:
@@ -76,45 +174,19 @@ module:
   - source: content.es/modals
     target: data/modals
     lang: es
-  ## prebuild products
-  - source: themes/sansoul/prebuild/public/products/es
-    target: content/products
-    lang: es
-  ## prebuild categories
-  - source: themes/sansoul/prebuild/public/categories/es
-    target: content/categories
-    lang: es
-  ## parents es
-  - source: content.es/_index/pages.md
-    target: content/pages/_index.md
-    lang: es
-  - source: content.es/_index/blog.md
-    target: content/blog/_index.md
-    lang: es
-  - source: content.es/_index/events.md
-    target: content/events/_index.md
-    lang: es
-  - source: content.es/_index/products.md
-    target: content/products/_index.md
-    lang: es
-  - source: content.es/_index/tags.md
-    target: content/tags/_index.md
-    lang: es
-  - source: content.es/_index/categories.md
-    target: content/categories/_index.md
-    lang: es
-  - source: content.es/_index/authors.md
-    target: content/authors/_index.md
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.es
+    target: content
     lang: es
   ## content project
   - source: content.es
     target: content
-    excludeFiles: [_index, sections, modals]
+    excludeFiles: [sections, modals]
     lang: es
   ## content theme
   - source: themes/sansoul/content.es
     target: content
-    excludeFiles: [_index, sections, modals]
+    excludeFiles: [sections, modals]
     lang: es
 
   # en
@@ -126,46 +198,116 @@ module:
   - source: content.en/modals
     target: data/modals
     lang: en
-  ## prebuild products
-  - source: themes/sansoul/prebuild/public/products/en
-    target: content/products
-    lang: en
-  ## prebuild categories
-  - source: themes/sansoul/prebuild/public/categories/en
-    target: content/categories
-    lang: en
-  ## parents es
-  - source: content.en/_index/pages.md
-    target: content/pages/_index.md
-    lang: en
-  - source: content.en/_index/blog.md
-    target: content/blog/_index.md
-    lang: en
-  - source: content.en/_index/events.md
-    target: content/events/_index.md
-    lang: en
-  - source: content.en/_index/products.md
-    target: content/products/_index.md
-    lang: en
-  - source: content.en/_index/tags.md
-    target: content/tags/_index.md
-    lang: en
-  - source: content.en/_index/categories.md
-    target: content/categories/_index.md
-    lang: en
-  - source: content.en/_index/authors.md
-    target: content/authors/_index.md
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.en
+    target: content
     lang: en
   ## content project
   - source: content.en
     target: content
-    excludeFiles: [_index, sections, modals]
+    excludeFiles: [sections, modals]
     lang: en
   ## content theme
   - source: themes/sansoul/content.en
     target: content
-    excludeFiles: [_index, sections, modals]
+    excludeFiles: [sections, modals]
     lang: en
+
+  # fr
+  ## sections
+  - source: content.fr/sections
+    target: data/sections
+    lang: fr
+  ## modals
+  - source: content.fr/modals
+    target: data/modals
+    lang: fr
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.fr
+    target: content
+    lang: fr
+  ## content project
+  - source: content.fr
+    target: content
+    excludeFiles: [sections, modals]
+    lang: fr
+  ## content theme
+  - source: themes/sansoul/content.fr
+    target: content
+    excludeFiles: [sections, modals]
+    lang: fr
+
+  # de
+  ## sections
+  - source: content.de/sections
+    target: data/sections
+    lang: de
+  ## modals
+  - source: content.de/modals
+    target: data/modals
+    lang: de
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.de
+    target: content
+    lang: de
+  ## content project
+  - source: content.de
+    target: content
+    excludeFiles: [sections, modals]
+    lang: de
+  ## content theme
+  - source: themes/sansoul/content.de
+    target: content
+    excludeFiles: [sections, modals]
+    lang: de
+
+  # pt
+  ## sections
+  - source: content.pt/sections
+    target: data/sections
+    lang: pt
+  ## modals
+  - source: content.pt/modals
+    target: data/modals
+    lang: pt
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.pt
+    target: content
+    lang: pt
+  ## content project
+  - source: content.pt
+    target: content
+    excludeFiles: [sections, modals]
+    lang: pt
+  ## content theme
+  - source: themes/sansoul/content.pt
+    target: content
+    excludeFiles: [sections, modals]
+    lang: pt
+
+  # it
+  ## sections
+  - source: content.it/sections
+    target: data/sections
+    lang: it
+  ## modals
+  - source: content.it/modals
+    target: data/modals
+    lang: it
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.it
+    target: content
+    lang: it
+  ## content project
+  - source: content.it
+    target: content
+    excludeFiles: [sections, modals]
+    lang: it
+  ## content theme
+  - source: themes/sansoul/content.it
+    target: content
+    excludeFiles: [sections, modals]
+    lang: it
 
   # data
   - source: data

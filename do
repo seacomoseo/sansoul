@@ -72,8 +72,10 @@ then
 elif [ $1 = server ]
 then
 
+  sh do prebuild
+
   echo "${STI} HUGO SERVER ${STE}"
-  hugo server --config themes/sansoul/hugo.default.yml,hugo.yml
+  hugo server --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
 # create woff2 and scss by font files
 elif [ $1 = normalize ]
@@ -216,20 +218,17 @@ then
 elif [ $1 = prebuild ]
 then
 
-  if [ -e "hugo.prebuild.yml" ]
-  then
-    echo "${STI} GO SANSOUL PREBUILD ${STE}"
-    cd themes/sansoul/prebuild
+  echo "${STI} GO SANSOUL PREBUILD ${STE}"
+  cd themes/sansoul/prebuild
 
-    echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
-    rm -r public
+  echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
+  rm -r public
 
-    echo "${STI} RUN HUGO PREBUILD ${STE}"
-    hugo --config ../../../hugo.yml,hugo.yml,../../../hugo.prebuild.yml
+  echo "${STI} RUN HUGO PREBUILD ${STE}"
+  hugo --config ../../../hugo.yml,hugo.yml,../../../hugo.prebuild.yml
 
-    echo "${STI} GO PROJECT ${STE}"
-    cd ../../..
-  fi
+  echo "${STI} GO PROJECT ${STE}"
+  cd ../../..
 
 # if multilang, copy 404 file in root
 elif [ $1 = multilang ]
@@ -246,8 +245,10 @@ then
 elif [ $1 = hugo-local ]
 then
 
+  sh do prebuild
+
   echo "${STI} HUGO LOCAL ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
+  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
 # hugo build as developement environement
 elif [ $1 = hugo-development ]
@@ -258,7 +259,7 @@ then
   sh do prebuild
 
   echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
-  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml
+  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
   sh do multilang
 
@@ -275,7 +276,7 @@ then
   cp ./themes/sansoul/postcss.config.js ./
 
   echo "${STI} RUN HUGO PRODUCTION ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
+  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
   sh do draws-purge
 

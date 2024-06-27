@@ -1,11 +1,12 @@
-{{- $local := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
+{{- $local  := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
+{{- $config := partial "functions/config-lang" . -}}
 
 <!doctype html>
 <html lang="{{ .Lang }}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ i18n "cms" }} · {{ (partial "functions/config-lang" .).title }}</title>
+  <title>{{ i18n "cms" }} · {{ $config.title }}</title>
   <meta name="robots" content="noindex">
   {{/*  <link href="config.json" type="text/ymal" rel="cms-config-url">  */}}
 
@@ -48,7 +49,7 @@
 
   {{/*  IMAGES GRID VIEW  */}}
   {{/*
-  {{ if site.Data.config.lfs }}
+  {{ if $config.lfs }}
     <style>
       {{ partial "cms/index/images-grid-view" . }}
     </style>
@@ -58,7 +59,7 @@
   <script>
     {{/*
     // REWRITE IMAGES SRC
-    {{ if site.Data.config.lfs }}
+    {{ if $config.lfs }}
       {{ partial "cms/index/rewrite-images-src.js" . }}
     {{ end }}
     */}}

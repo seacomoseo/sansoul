@@ -152,8 +152,9 @@ export function initFormValidate () {
           const netlifyForm = action === window.location.pathname
           const googleForm = action.includes('docs.google.com/forms')
           const formSubmitCo = action.includes('formsubmit.co')
+          const workersLGTN = action.includes('lagrantribunomada.workers.dev')
           const formSubmitCoAjax = formSubmitCo && !isFileType
-          if (!netlifyForm && !googleForm && !formSubmitCoAjax) {
+          if (!netlifyForm && !googleForm && !formSubmitCoAjax && !workersLGTN) {
             if (formSubmitCo) action = action.replace('/ajax', '')
             form.action = action
             // like form.submit()

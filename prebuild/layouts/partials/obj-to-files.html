@@ -3,7 +3,7 @@
     {{ $template := resources.Get (print $.base ".html") }}
     {{ if $template }}
       {{ $slug := index . site.Params.pairings.slug }}
-      {{ $filename := print $.base "/" site.Home.Lang "/" (urlize $slug) ".md" }}
+      {{ $filename := print "content." site.Home.Lang "/" $.base "/" (urlize $slug) ".md" }}
       {{ $file := $template | resources.ExecuteAsTemplate $filename (dict "obj" .) }}
       {{ $build := $file.RelPermalink }}
     {{ end }}

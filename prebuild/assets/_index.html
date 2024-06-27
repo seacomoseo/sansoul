@@ -1,0 +1,10 @@
+---
+title: '{{ .title | default "" }}'
+title_seo: '{{ .title_seo | default "" }}'
+description: '{{ .description | default "" }}'
+image: '{{ .image | default "" }}'
+draft: {{ .draft | default false }}
+noindex: {{ .noindex | default false }}
+translationKey: '{{ .type | default "" }}'
+---
+{{ .content | default "" }}

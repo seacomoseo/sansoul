@@ -80,7 +80,7 @@
                 <select class="contact__form-select" name="{{ .name }}" {{ if .required }}novalidate{{ end }}>
                   <option value="">{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</option>
                   {{- range .options -}}
-                    <option value="{{ .option }}">{{ .option }}</option>
+                    <option value="{{ .value | default .option }}">{{ .option }}</option>
                   {{- end -}}
                 </select>
               {{- else if $type | in (slice "radio" "checkbox") -}}
@@ -88,12 +88,19 @@
                 {{- $is_checkbox := eq $type "checkbox" -}}
                 <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
                   <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
-                  {{- range $option_k, $option := .options -}}
-                    {{- $name_option := cond (and $is_checkbox (not $googleForm)) (print $name " " (add 1 $option_k)) $name -}}
+                  {{- range .options -}}
+                    {{- $option := .value | default .option -}}
+                    {{- if and $is_checkbox (not $googleForm) -}}
+                      {{- $name   = $option -}}
+                      {{- $option = "✅" -}}
+                    {{- end -}}
                     <label class="contact__form-label">{{ "" -}}
-                      <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name_option }}" value="{{ .option }}">
+                      <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
                       {{- .option -}}
                     </label>
+                    {{- if and $is_checkbox (not $googleForm) -}}
+                      <input type="hidden" name="{{ $name }}" value="❌">
+                    {{- end -}}
                   {{- end -}}
                 </fieldset>
               {{- else if $type | findRE `^h\d` -}}

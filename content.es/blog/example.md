@@ -14,7 +14,7 @@ date: 2020-01-01
 lastmod: 2021-01-01
 translationKey: example
 ---
-Ésto es un párrafo de ejemplo:
+Il s'agit d'un exemple de paragraphe :
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
@@ -44,10 +44,6 @@ ___
 ## Énfasis
 
 **Esto es texto en negrita**
-
-**Esto es texto en negrita**
-
-*Esto es texto en cursiva*
 
 *Esto es texto en cursiva*
 
@@ -170,16 +166,16 @@ Centrando las celdas
 
 Si se le añade `{.compare}` al final de las tablas, los [iconos](#iconos) `check` tendrán color verde y los `times` rojo:
 
-| Características | Netlify CMS | Forestry |
-| ------ | :------: | :-------: |
-| Interfaz limpia<br>(grupos…) | icon-xmark<br>desplegables | icon-check<br>deslizables |
-| Previsualizaciones | icon-xmark | icon-check |
-| Adaptado a móviles | icon-xmark | icon-check |
-| Sin límites de usuarios | icon-check | icon-xmark 3 |
-| Interfaz en español | icon-check | icon-xmark casi |
-| Permite imágenes externas | icon-check | icon-xmark |
-| Edición de código razonable | icon-check | icon-xmark |
-| Sistema independiente de terceros | icon-check | icon-xmark |
+| Características                   | Netlify CMS                | Forestry                  |
+| --------------------------------- | :------------------------: | :-----------------------: |
+| Interfaz limpia<br>(grupos…)      | icon-xmark<br>desplegables | icon-check<br>deslizables |
+| Previsualizaciones                | icon-xmark                 | icon-check                |
+| Adaptado a móviles                | icon-xmark                 | icon-check                |
+| Sin límites de usuarios           | icon-check                 | icon-xmark 3              |
+| Interfaz en español               | icon-check                 | icon-xmark casi           |
+| Permite imágenes externas         | icon-check                 | icon-xmark                |
+| Edición de código razonable       | icon-check                 | icon-xmark                |
+| Sistema independiente de terceros | icon-check                 | icon-xmark                |
 {.compare}
 
 ## Enlaces

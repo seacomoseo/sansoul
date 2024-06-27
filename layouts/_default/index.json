@@ -97,5 +97,5 @@
 {{- if hugo.IsProduction -}}
   {{- $index | jsonify -}}
 {{- else -}}
-  {{- $index | jsonify (dict "prefix" " " "indent" "  ") -}}
+  {{- $index | jsonify (dict "prefix" "" "indent" "  ") -}}
 {{- end -}}

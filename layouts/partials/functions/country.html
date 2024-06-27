@@ -1,8 +1,8 @@
 {{ $config  := partial "functions/config-lang" . }}
-{{ $country := $config.country }}
+{{ $country := $config.legal.country }}
 
 {{ if not $country }}
-  {{ with (partial "functions/contact-buttons" site).locations }}
+  {{ with $config.schema.address }}
     {{ $country = (index . 0).addressCountry }}
   {{ else }}
     {{ $country = "España" }}

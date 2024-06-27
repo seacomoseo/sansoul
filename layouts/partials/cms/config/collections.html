@@ -550,7 +550,7 @@
 ) }}
 
 
-{{/*  TYPES  */}}
+{{/*  TYPES
 {{ $type_files := slice }}
 {{ range slice
   "pages"
@@ -609,6 +609,7 @@
   "editor"          (dict "preview" false)
   "files"           $type_files
 ) }}
+*/}}
 
 
 {{/*  SETTINGS  */}}
@@ -618,10 +619,10 @@
   "sortable_fields" (dict "fields" slice)
   "editor"          (dict "preview" false)
   "files"           (slice
-    (dict "file" `data/config.yml`     "extension" `yml` "label" (i18n "collection-settings-config")    "name" `config`    "fields" (partial "cms/config/settings/config-fields" .))
+    (dict "file" `data/config.es.yml`  "extension" `yml` "label" (i18n "collection-settings-config")    "name" `config`    "fields" (partial "cms/config/settings/config-fields" .) "i18n" (dict "structure" `multiple_files`))
     (dict "file" `data/styles.yml`     "extension" `yml` "label" (i18n "collection-settings-styles")    "name" `styles`    "fields" (partial "cms/config/settings/styles-fields" .))
     (dict "file" `data/lists.yml`      "extension" `yml` "label" (i18n "collection-settings-lists")     "name" `lists`     "fields" (partial "cms/config/settings/lists-fields" .))
-    (dict "file" `hugo.yml`            "extension" `yml` "label" (i18n "collection-settings-langs")     "name" `langs`     "fields" (partial "cms/config/settings/langs-fields" .))
+    (dict "file" `data/langs.yml`      "extension" `yml` "label" (i18n "collection-settings-langs")     "name" `langs`     "fields" (partial "cms/config/settings/langs-fields" .))
     (dict "file" `assets/redirects.md` "extension" `md`  "label" (i18n "collection-settings-redirects") "name" `redirects` "fields"
       (slice (dict "label" (i18n "collection-settings-redirects") "name" `body` "widget" `text` "required" false "hint" (i18n "collection-settings-redirects-hint")))
     )
