@@ -25,30 +25,6 @@
 
 {{/*  SCHEMA ORGANIZATION  */}}
 
-{{/*  All phones variations  */}}
-{{ $phones := slice }}
-{{ with $config.schema.phones }}
-  {{ range . }}
-    {{ $complete_phone := partial "functions/phone-to-complete" . }}
-    {{ $phoneClean     := $complete_phone | replaceRE `\+\d+ ` `` }}
-    {{ $phoneOne       := $phoneClean     | replaceRE `^(.{3})(.{3})(.{3})` `$1 $2 $3` }}
-    {{ $phoneTwo       := $phoneClean     | replaceRE `^(.{3})(.{2})(.{2})(.{2})` `$1 $2 $3 $4` }}
-    {{ $pre            := $complete_phone | replaceRE `^(\+\d+).*` `$1` }}
-    {{ $phoneCleanAlt  := print $pre $phoneClean }}
-    {{ $phoneOneAlt    := print $pre " " $phoneOne }}
-    {{ $phoneTwoAlt    := print $pre " " $phoneTwo }}
-    {{ $phones = $phones
-      | append $phoneClean
-      | append $phoneOne
-      | append $phoneTwo
-      | append $phoneCleanAlt
-      | append $phoneOneAlt
-      | append $phoneTwoAlt
-      | uniq
-    }}
-  {{ end }}
-{{ end }}
-
 {{/*  Address, hasMap and geo by locations  */}}
 {{ $address := slice }}
 {{ $hasMap  := slice }}
@@ -56,22 +32,23 @@
 {{ with $config.schema.address }}
   {{ range . }}
     {{ if .streetAddress }}
-      {{ $address = $address | append (dict
-        "@type"           "PostalAddress"
-        "streetAddress"   (.streetAddress   | default "")
-        "postalCode"      (.postalCode      | default "")
-        "addressLocality" (.addressLocality | default "")
-        "addressRegion"   (.addressRegion   | default "")
-        "addressCountry"  (.addressCountry  | default "")
+      {{ $address = $address | append (dict "@type" "PostalAddress"
+        "name"            .name
+        "streetAddress"   .streetAddress
+        "postalCode"      .postalCode
+        "addressLocality" .addressLocality
+        "addressRegion"   .addressRegion
+        "addressCountry"  .addressCountry
       ) }}
-      {{ $hasMap = $hasMap | append (print
+      {{ $hasMap = $hasMap | append .hasMap | append (print
         "https://maps.google.com/maps/search/"
         (print
-          .name " "
+          .name ", "
           .streetAddress ", "
           .postalCode " "
           .addressLocality ", "
-          .addressRegion
+          .addressRegion ", "
+          .addressCountry
           | replaceRE "<nil>" ""
           | urlquery
         )
@@ -87,17 +64,10 @@
     {{ end }}
   {{ end }}
 {{ end }}
-{{ with $config.schema.hasMap }}
-  {{ range . }}
-    {{ $hasMap = $hasMap | append . }}
-  {{ end }}
-{{ end }}
 
 {{/*  Images  */}}
 {{ $images_slice := slice
-  "logo.png"
   "icon.png"
-  "fondo.jpg"
   $config.logo
 }}
 {{ with where site.Pages "Params.image" "!=" nil }}
@@ -119,29 +89,50 @@
 {{ end }}
 {{ $images = $images | uniq }}
 
-{{ $type           := $config.schema.types | default (slice "Organization") }}
-{{ $additionalType := after 1 $type }}
-{{ $type            = index $type 0 }}
+{{/*  Opening Hours Specification  */}}
+{{ $openHoursSpec := slice }}
+{{ with $config.schema.openingHoursSpecification }}
+  {{ range . }}
+    {{ $item := . }}
+    {{ range .dayOfWeek | default (slice "none") }}
+      {{ $dayOfWeek    := cond (eq . "none") dict (dict "dayOfWeek" (print "https://schema.org/" .)) }}
+      {{ $openHoursSpec = $openHoursSpec | append (merge $item $dayOfWeek) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/*  Types  */}}
+{{ $types          := $config.schema.types | default (slice "Organization") }}
+{{ $type           := index $types 0 }}
+{{ $additionalType := after 1 $types }}
 
 {{/*  Finish schema organization  */}}
 {{ $schemaOrganization = dict
-  "@context"       `http://schema.org`
-  "@type"          $type
-  "additionalType" $additionalType
-  "logo"           (print $BaseURL "/media/logo.png")
-  "image"          $images
-  "name"           $config.title
-  "alternateName"  ($config.schema.alternateName | default slice)
-  "priceRange"     $config.schema.priceRange
-  "description"    $config.description
-  "url"            (print $BaseURL "/")
-  "sameAs"         $config.schema.sameAs
-  "telephone"      $phones
-  "address"        $address
-  "location"       (dict
-    "@type" "Place"
+  "@context"                  `http://schema.org`
+  "@type"                     $type
+  "additionalType"            $additionalType
+  "logo"                      (print $BaseURL "/media/logo.png")
+  "image"                     $images
+  "name"                      $config.title
+  "alternateName"             ($config.schema.alternateName | default slice)
+  "priceRange"                $config.schema.priceRange
+  "description"               $config.description
+  "url"                       (print $BaseURL "/")
+  "sameAs"                    $config.schema.sameAs
+  "openingHours"              $config.schema.openingHours
+  "openingHoursSpecification" $openHoursSpec
+  "telephone"                 (partial "functions/phone-variations" $config.schema.phones)
+  "address"                   $address
+  "location"                  (dict
+    "@type"  "Place"
     "hasMap" $hasMap
     "geo"    $geo
+  )
+  "aggregateRating"           (dict
+    "@type"       "AggregateRating"
+    "bestRating"  5
+    "ratingCount" $config.schema.aggregateRating.ratingCount
+    "ratingValue" $config.schema.aggregateRating.ratingValue
   )
 }}
 

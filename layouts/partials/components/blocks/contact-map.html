@@ -17,7 +17,8 @@
       {{ $is_col_or_bg = true }}
     {{ end }}
   {{ end }}
-  {{ with index $map_url 0 }}
+  {{ $address  := cond (not .address) (index $map_url 0) . }}
+  {{ with $address }}
     {{ $map_url = partial "functions/map-url" . }}
   {{ end }}
   {{ $link := .link | default $map_url }}

@@ -213,7 +213,17 @@
       - [x] `config.social` > `config.schema.sameAs`
       - [x] `config.schema` add `phones` by `contact`
       - [x] `config.schema` add `address` by `contact`
-      - [x] `config.schema` add `hasMap` by `contact`
+      - [x] `config.schema` add `address.hasMap` by `contact`
+      - [x] `config.schema` add `openingHours` by `contact`
+      - [x] `config.schema` add `openingHoursSpecification` by `contact`
+      - [x] `config.schema` add `aggregateRating`
+      - [x] `config.legal_name` > `config.legal.name`
+      - [x] `config.legal_dni` > `config.legal.dni`
+      - [x] `config.legal_email` > `config.legal.email`
+      - [x] `config.legal_location` > `config.legal.location`
+      - [x] `config.country` > `config.legal.country`
+      - [x] `config.yml` > `config.es.yml`
+      - [x] `hugo.yml` > `languages` > `data/langs.yml`
       - [x] schema and legal only by config, not crawl all site
       - [ ] Menu sticky
         - [ ] baseof

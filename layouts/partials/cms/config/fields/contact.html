@@ -1,25 +1,14 @@
 {{ return slice
   (dict "&CONTACT_LABEL"           (dict "<<" (slice (dict "label" `Texto`) `~BUTTON_LABEL`)))
-  (dict "&CONTACT_LABEL_PHONE"     (dict "label" `Número de Teléfono`            "name" `label`           "widget" `string`))
-  (dict "&CONTACT_FULL"            (dict "label" `Ancho Completo`                "name" `full`            "widget" `boolean` "required" false))
-  (dict "&CONTACT_ADDRESS_ACTIVE"  (dict "label" `Mostrar el Botón de Ubicación` "name" `active`          "widget" `boolean` "required" false "hint" "Si está desmarcado, los datos se usarán igualmente en el marcado interno para el SEO"))
-  (dict "&CONTACT_ADDRESS_NAME"    (dict "label" `Nombre en Google Maps`         "name" `name`            "widget" `string`  "required" false))
-  (dict "&CONTACT_STREETADDRESS"   (dict "label" `Calle`                         "name" `streetAddress`   "widget" `string`  "required" false))
-  (dict "&CONTACT_POSTALCODE"      (dict "label" `Código Postal`                 "name" `postalCode`      "widget" `number`  "required" false "value_type" `int` "min" 10000 "max" 99999))
-  (dict "&CONTACT_ADDRESSLOCALITY" (dict "label" `Localidad`                     "name" `addressLocality` "widget" `string`  "required" false))
-  (dict "&CONTACT_ADDRESSREGION"   (dict "label" `Región`                        "name" `addressRegion`   "widget" `string`  "required" false))
-  (dict "&CONTACT_ADDRESSCOUNTRY"  (dict "label" `País`                          "name" `addressCountry`  "widget" `string`  "required" false))
-  (dict "&CONTACT_COORDINATES"     (dict "label" `Coordenadas`                   "name" `coordinates`     "widget" `map`     "required" false))
-  (dict "&CONTACT_HIDDEN"          (dict "label" `hidden`                        "name" `hidden`          "widget" `hidden`  "required" false))
+  (dict "&CONTACT_LABEL_PHONE"     (dict "label" `Número de Teléfono`            "name" `label`   "widget" `string`))
+  (dict "&CONTACT_FULL"            (dict "label" `Ancho Completo`                "name" `full`    "widget" `boolean` "required" false))
+  (dict "&CONTACT_ADDRESS_LABEL"   (dict "label" `Dirección para Mostrar`        "name" `label`   "widget" `string`  "required" false))
+  (dict "&CONTACT_ADDRESS"         (dict "label" `Dirección para Enlazar`        "name" `address` "widget" `string`  "required" false))
+  (dict "&CONTACT_HASMAP"          (dict "label" `Enlace a Mapa`                 "name" `hasMap`  "widget" `string`  "required" false))
+  (dict "&CONTACT_HIDDEN"          (dict "label" `hidden`                        "name" `hidden`  "widget" `hidden`  "required" false))
   (dict "&CONTACT_ADDRESS_FIELDS"  (slice
-    `~CONTACT_ADDRESS_ACTIVE`
-    `~CONTACT_ADDRESS_NAME`
-    `~CONTACT_STREETADDRESS`
-    `~CONTACT_POSTALCODE`
-    `~CONTACT_ADDRESSLOCALITY`
-    `~CONTACT_ADDRESSREGION`
-    `~CONTACT_ADDRESSCOUNTRY`
-    `~CONTACT_COORDINATES`
+    `~CONTACT_ADDRESS_LABEL`
+    `~CONTACT_ADDRESS`
   ))
 
   (dict "&FORM_NAME"        (dict "label" `Nombre`    "name" `name`        "widget" `string`                    "hint" "Nombre que tendrá el campo"))

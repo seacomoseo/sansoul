@@ -31,7 +31,7 @@
         "name"           `types`
         "widget"         `list`
         "collapsed"      true
-        "summary"        "Tipo: {{fields.type}}"
+        "summary"        "{{fields.type}}"
         "allow_add"      true
         "required"       false
         "fields"         (slice
@@ -40,11 +40,11 @@
       )
       (dict
         "label"          `Títulos o Nombres Alternativos`
-        "label_singular" `Título/Nombre`
+        "label_singular" `Título / Nombre`
         "name"           `alternateName`
         "widget"         `list`
         "collapsed"      true
-        "summary"        "Título/Nombre: {{fields.name}}"
+        "summary"        "{{fields.name}}"
         "allow_add"      true
         "required"       false
         "fields"         (slice
@@ -57,7 +57,7 @@
         "name"           `sameAs`
         "widget"         `list`
         "collapsed"      true
-        "summary"        "Enlace: {{fields.link}}"
+        "summary"        "{{fields.link}}"
         "allow_add"      true
         "required"       false
         "fields"         (slice
@@ -70,7 +70,7 @@
         "name"           `phones`
         "widget"         `list`
         "collapsed"      true
-        "summary"        "Teléfono: {{fields.phone}}"
+        "summary"        "{{fields.phone}}"
         "allow_add"      true
         "required"       false
         "fields"         (slice
@@ -83,33 +83,35 @@
         "name"           `address`
         "widget"         `list`
         "collapsed"      true
-        "summary"        "Dirección: {{fields.name}} {{fields.streetAddress}} {{fields.postalCode}} {{fields.addressLocality}} {{fields.addressRegion}} {{fields.addressCountry}}"
+        "summary"        "{{fields.name}} {{fields.streetAddress}} {{fields.postalCode}} {{fields.addressLocality}} {{fields.addressRegion}} {{fields.addressCountry}}"
         "allow_add"      true
         "required"       false
-        "fields"         (slice
-          `~CONTACT_ADDRESS_NAME`
-          `~CONTACT_STREETADDRESS`
-          `~CONTACT_POSTALCODE`
-          `~CONTACT_ADDRESSLOCALITY`
-          `~CONTACT_ADDRESSREGION`
-          `~CONTACT_ADDRESSCOUNTRY`
-          `~CONTACT_COORDINATES`
-        )
+        "fields"         `~SCHEMA_ADDRESS_FIELDS`
       )
       (dict
-        "label"          `Enlaces a Mapas`
-        "label_singular" `Enlace`
-        "name"           `hasMap`
+        "label"          `Horarios`
+        "label_singular" `Horario`
+        "name"           `openingHoursSpecification`
         "widget"         `list`
         "collapsed"      true
-        "summary"        "Enlace: {{fields.link}}"
+        "summary"        "{{fields.dayOfWeek}} {{fields.opens}}-{{fields.closes}}"
         "allow_add"      true
         "required"       false
+        "fields"         `~SCHEMA_OPENINGHOURS_FIELDS`
+      )
+      (dict
+        "label"          `Reseñas`
+        "label_singular" `Reseña`
+        "name"           `aggregateRating`
+        "widget"         `object`
+        "collapsed"      true
+        "required"       false
         "fields"         (slice
-          (dict "label" `Enlace` "name" `link` "widget" `string` "required" false)
+          (dict "label" `Número`         "name" `ratingCount` "widget" `number` "required" false "value_type" `int`   "min" 0)
+          (dict "label" `Valor Promedio` "name" `ratingValue` "widget" `number` "required" false "value_type" `float` "min" 0 "max" 5 "step" 0.1)
         )
       )
-      (dict "label" `Rango de Precios`            "name" `price_range`              "widget" `select`  "required" false  "hint" "Para datos estructurados" "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
+      (dict "label" `Rango de Precios` "name" `priceRange` "widget" `select` "required" false  "hint" "Para datos estructurados" "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
     )
   )
   (dict

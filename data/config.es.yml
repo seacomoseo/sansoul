@@ -23,8 +23,21 @@ schema:
     addressRegion: ''
     addressCountry: ''
     coordinates: '' # '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
-  hasMap: []
+    hasMap: ''
+  openingHours: []
+  # - Mo-Fr 10:00-19:00
+  # - Sa 10:00-22:00
+  # - Tu,Th 10:00-21:00
+  openingHoursSpecification: []
+  # - dayOfWeek: Saturday
+  #   validFrom: 2014-12-24
+  #   validThrough: 2014-12-25
+  #   opens: 9:00
+  #   closes: 11:00
   price_range: '' # [ €, €€, €€€, $, $$, $$$ ]
+  aggregateRating:
+    ratingCount: 0 # [ > 0, int ]
+    ratingValue: 0 # [ 0 - 5, float ]
 types:
   pages: {}
   blog:

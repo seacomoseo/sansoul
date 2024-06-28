@@ -1,0 +1,32 @@
+{{ return slice
+  (dict "&SCHEMA_ADDRESS_NAME"    (dict "label" `Nombre en Google Maps`         "name" `name`            "widget" `string`  "required" false))
+  (dict "&SCHEMA_STREETADDRESS"   (dict "label" `Calle`                         "name" `streetAddress`   "widget" `string`  "required" false))
+  (dict "&SCHEMA_POSTALCODE"      (dict "label" `Código Postal`                 "name" `postalCode`      "widget" `number`  "required" false "value_type" `int` "min" 10000 "max" 99999))
+  (dict "&SCHEMA_ADDRESSLOCALITY" (dict "label" `Localidad`                     "name" `addressLocality` "widget" `string`  "required" false))
+  (dict "&SCHEMA_ADDRESSREGION"   (dict "label" `Región`                        "name" `addressRegion`   "widget" `string`  "required" false))
+  (dict "&SCHEMA_ADDRESSCOUNTRY"  (dict "label" `País`                          "name" `addressCountry`  "widget" `string`  "required" false "hint" "Recomendado usar [código de país de 2 letras](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)"))
+  (dict "&SCHEMA_COORDINATES"     (dict "label" `Coordenadas`                   "name" `coordinates`     "widget" `map`     "required" false))
+  (dict "&SCHEMA_HASMAP"          (dict "label" `Enlace a Mapa`                 "name" `hasMap`          "widget" `string`  "required" false))
+  (dict "&SCHEMA_ADDRESS_FIELDS"  (slice
+    `~SCHEMA_ADDRESS_NAME`
+    `~SCHEMA_STREETADDRESS`
+    `~SCHEMA_POSTALCODE`
+    `~SCHEMA_ADDRESSLOCALITY`
+    `~SCHEMA_ADDRESSREGION`
+    `~SCHEMA_ADDRESSCOUNTRY`
+    `~SCHEMA_COORDINATES`
+    `~SCHEMA_HASMAP`
+  ))
+  (dict "&SCHEMA_DAYOFWEEK"    (dict "label" `Días de la Semana` "name" `dayOfWeek`    "widget" `select`  "required" false "multiple" true "options" `~OPTIONS_DAYOFWEEK`))
+  (dict "&SCHEMA_OPENS"        (dict "label" `Apertura`          "name" `opens`        "widget" `string`  "required" false))
+  (dict "&SCHEMA_CLOSES"       (dict "label" `Cierre`            "name" `closes`       "widget" `string`  "required" false))
+  (dict "&SCHEMA_VALIDFROM"    (dict "label" `Válido Desde`      "name" `validFrom`    "widget" `string`  "required" false))
+  (dict "&SCHEMA_VALIDTHROUGH" (dict "label" `Válido Hasta`      "name" `validThrough` "widget" `string`  "required" false))
+  (dict "&SCHEMA_OPENINGHOURS_FIELDS" (slice
+    `~SCHEMA_DAYOFWEEK`
+    `~SCHEMA_OPENS`
+    `~SCHEMA_CLOSES`
+    `~SCHEMA_VALIDFROM`
+    `~SCHEMA_VALIDTHROUGH`
+  ))
+}}

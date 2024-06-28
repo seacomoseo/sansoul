@@ -55,7 +55,7 @@
             {{- $link    = partial "functions/map-url" . -}}
             {{- $icon    = "location-dot" -}}
             {{- $emoji   = "📍" -}}
-            {{- $label   = .label | default (partial "functions/postal-address" .) -}}
+            {{- $label   = .label | default .address -}}
             {{- $noindex = true -}}
           {{- end -}}
 

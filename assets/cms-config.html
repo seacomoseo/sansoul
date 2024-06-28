@@ -10,6 +10,7 @@
 {{/*  VARIABLES  */}}
 {{- $vars := (partial "cms/config/options" .)
   | append   (partial "cms/config/fields/base" .)
+  | append   (partial "cms/config/fields/schema" .)
   | append   (partial "cms/config/fields/contact" .)
   | append   (partial "cms/config/fields/section-design" .)
   | append   (partial "cms/config/fields/data-menu" .)
