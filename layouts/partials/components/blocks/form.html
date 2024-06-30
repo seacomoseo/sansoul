@@ -2,4 +2,4 @@
 {{- $form_num := print .form_lvl "_" .form_num -}}
 {{- $form_num  = cond (eq $form_num "0_0") "" $form_num -}}
 {{- $id_form  := print "form_" (replace (print page.Params.slug "_" .section.id) "-" "_") (cond (not $form_num) "" (print "_" $form_num)) -}}
-<div id="{{ $id_form }}" class="contact__form-wrap box__block" {{- if $showup }} data-showup{{ end }}></div>
+<div id="{{ $id_form }}" class="form__wrap box__block" {{- if $showup }} data-showup{{ end }}></div>

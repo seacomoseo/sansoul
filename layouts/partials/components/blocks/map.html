@@ -1,0 +1,30 @@
+{{- with .map -}}
+
+  <div class="map box__block">
+
+    {{ if strings.HasPrefix . "http" }}
+
+      {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
+        <div data-b="{{ print `/media/` . | base64Encode }}" tabindex="0" role="link">
+          {{ partial "components/image" (dict
+            "src"       .
+            "alt"       (i18n "map")
+            "container" (cond (not $.container_bg) "" $.container)
+            "notlazy"   false
+          ) }}
+        </div>
+      {{ else }}
+        <iframe loading="lazy" data-src="{{ . }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+      {{ end }}
+
+    {{ else }}
+
+      {{ with partial "functions/map-url" . }}
+        <iframe loading="lazy" data-src="{{ . }}&z=15&output=embed" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+      {{ end }}
+
+    {{ end }}
+
+  </div>
+
+{{- end -}}

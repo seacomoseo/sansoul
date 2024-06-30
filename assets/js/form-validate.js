@@ -14,7 +14,7 @@ import { scrollTo } from './scroll-to'
 
 export function initFormValidate () {
   window.addEventListener('load', () => {
-    const forms = document.querySelectorAll('.contact__form')
+    const forms = document.querySelectorAll('.form')
     let formError, formSubmit
 
     function formSubmited (form) {
@@ -22,7 +22,7 @@ export function initFormValidate () {
       document.dispatchEvent(customEventSubmit)
       if (googleAnalyticsId) {
         // eslint-disable-next-line
-        gtag('event', 'contact_form_submit', {
+        gtag('event', 'form_submit', {
           event_category: 'contact',
           event_label: 'form',
           value: form.parentElement.id
@@ -43,7 +43,7 @@ export function initFormValidate () {
         formSubmit && formSubmit.remove()
         formError && formError.remove()
         formError = document.createElement('ul')
-        formError.classList.add('contact__form-error')
+        formError.classList.add('form__error')
         formError.innerHTML += closeIcon
         form.parentElement.prepend(formError)
 
@@ -134,7 +134,7 @@ export function initFormValidate () {
           }
         })
 
-        const accept = form.querySelector('.contact__form-label--accept')
+        const accept = form.querySelector('.form__label--accept')
         if (!accept) valid = false
         if (!accept.querySelector('[type="checkbox"]').checked) {
           accept.style.color = 'red'
@@ -166,18 +166,18 @@ export function initFormValidate () {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
             formSubmit && formSubmit.remove()
             formSubmit = document.createElement('p')
-            formSubmit.classList.add('contact__form-submit')
+            formSubmit.classList.add('form__submit')
             form.parentElement.append(formSubmit)
             formSubmit.innerHTML = '<svg class="spin"><use href="/draws.svg#rotate"></use></svg> Enviando…'
 
             // Response
             function formSubmitOk (form) {
-              formSubmit.classList.add('contact__form-submit--ok')
+              formSubmit.classList.add('form__submit--ok')
               formSubmit.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
               formSubmited(form)
             }
             function formSubmitError (error) {
-              formSubmit.classList.add('contact__form-submit--error')
+              formSubmit.classList.add('form__submit--error')
               formSubmit.innerHTML =
                 `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
                 `<svg><use href="/draws.svg#circle-info"></use></svg> ${error}`

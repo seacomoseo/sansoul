@@ -1,0 +1,168 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  > * {
+    position: relative;
+    flex-grow: 1;
+  }
+}
+.form__item > * {
+  width: 100%;
+}
+.form__hidden {
+  display: none;
+}
+.form__fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  padding: .5625em 1em .84375em;
+}
+.form__label {
+  display: flex;
+  align-items: baseline;
+  gap: .5em;
+}
+.form__description {
+  h3, h4, h5, h6 {
+    &:not(.aux) {
+      margin-top: .75em;
+    }
+  }
+}
+.form__title {
+  margin: .5em 0 0;
+  text-align: center;
+}
+.form__hint {
+  margin-top: .25em;
+  font-size: .75em;
+  color: var(--subtitle);
+  p, ul, ol {
+    &:not(:last-child) {
+      margin-bottom: .125em;
+    }
+  }
+  ul, ol {
+    > li:not(.aux) > div:not(.aux) {
+      padding-top: 0;
+    }
+  }
+}
+.form__description,
+.form__hint {
+  margin-left: $radius + .5em;
+  width: calc(100% - #{ $radius + .5em } * 2);
+}
+.form__label--accept {
+  font-size: .75em;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1em;
+}
+/*! purgecss start ignore */
+.form__error,
+.form__submit {
+  color: $white;
+  background-color: red;
+  padding: 1em 1em 1em 2em;
+  scroll-margin-top: 3em;
+  @include radius;
+  svg.close {
+    float: right;
+    cursor: pointer;
+  }
+}
+.form__submit {
+  margin-top: 1em;
+  padding: 1em;
+  background-color: grey;
+  svg {
+    position: relative;
+    top: .125em;
+    &.spin {
+      animation: spin 10s linear infinite;
+    }
+  }
+}
+.form__submit--ok {
+  background-color: green;
+}
+.form__submit--error {
+  background-color: red;
+}
+/*! purgecss end ignore */
+.content {
+  .form {
+    display: none;
+  }
+}
+.form__fill-inputs {
+  input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+  textarea,
+  select {
+    @if $chamfer and $radius > .01 {
+      border: none;
+      @if not $buttons-rounded and $radius <= .01 {
+        border: var(--outline) var(--border) solid;
+        box-shadow: $shadow inset;
+      } @else {
+        @include radius;
+        clip-path: var(--chamfer-int-outline);
+      }
+    } @else {
+      border: var(--outline) var(--border) solid;
+      box-shadow: $shadow inset;
+      border-radius: $radius;
+    }
+    background-color: $white;
+    color: $dark;
+    &::placeholder {
+      color: #767676;
+    }
+  }
+  @if $chamfer and $radius > .01 {
+    fieldset {
+      border: none;
+    }
+    .form__item {
+      position: relative;
+    }
+    .form__item-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2.5em;
+      clip-path: var(--chamfer);
+      background-color: var(--border);
+    }
+    .form__item-border--textarea {
+      min-height: 5.72em;
+    }
+    .form__item-border--fieldset {
+      top: 0.6em;
+      height: calc(100% - 0.6em);
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        --outline: 1px;
+        clip-path: var(--chamfer-int-outline);
+        background-color: var(--bg-color);
+      }
+      ~ * {
+        position: relative;
+        z-index: 1;
+      }
+    }
+    legend {
+      background-color: var(--bg-color);
+    }
+  }
+}

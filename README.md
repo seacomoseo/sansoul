@@ -69,14 +69,20 @@
           - [x] `design` > `review`
           - [x] `items` > `reviews`
         - [x] `view: contact`:
-          - [x] `data` > `buttons`
-            - [x] `address.active` > `address.hide`
+          - [x] `data` > `contact`
+            - [x] `address.active` > remove
+            - [x] `address.streetAddress` > remove
+            - [x] `address.postalCode` > remove
+            - [x] `address.addressLocality` > remove
+            - [x] `address.addressRegion` > remove
+            - [x] `address.addressCountry` > remove
+            - [x] `address.coordinates` > remove
+            - [ ] Add `anchor`
           - [x] `form`
             - [x] `form.action` > `action`
             - [x] `form.items` > `inputs`
             - [x] `fill_inputs` > remove
-          - [x] `map`
-            - [x] `active` > `hide`
+          - [x] `map` > obj to string with address and remove children (if whant map like a section, create a section with only this)
       - [x] Cambiar etiquetas HTML
         - [x] `aside.logo` > `header.logo`
         - [x] Artículos:
@@ -225,6 +231,12 @@
       - [x] `config.yml` > `config.es.yml`
       - [x] `hugo.yml` > `languages` > `data/langs.yml`
       - [x] schema and legal only by config, not crawl all site
+      - [x] `.button-up` > `.up`
+      - [x] `.button-callnow` > `.callnow`
+      - [x] `.contact__form-` > `.form__`
+      - [x] `.contact__form` > `.form`
+      - [x] `.contact__buttons-` > `.contact__`
+      - [x] `.contact__buttons` > `.contact`
       - [ ] Menu sticky
         - [ ] baseof
         - [ ] css

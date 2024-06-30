@@ -39,8 +39,6 @@ export function initGa4 () {
       label = 'email_send'
     } else if (b.classList.contains('contact__address')) {
       label = 'address'
-    } else if (b.classList.contains('contact__map')) {
-      label = 'map'
     } else if (b.classList.toString().search('custom--ga4') !== -1) {
       label = 'custom'
     }
@@ -63,7 +61,6 @@ export function initGa4 () {
       '.contact__email-option-copy,' +
       '.contact__email-option-send,' +
       '.contact__address,' +
-      '.contact__map,' +
       '.contact__custom--ga4'
     )
     if (b) ga4(b)

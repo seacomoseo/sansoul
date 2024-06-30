@@ -211,21 +211,21 @@
     ) -}}
   {{ end }}
 
-  {{/*  CONTACT SOCIAL  */}}
+  {{/*  SOCIAL  */}}
   {{ if .social }}
-    {{- partial "components/blocks/contact-social" . -}}
+    {{- partial "components/blocks/social" . -}}
   {{ end }}
 
-  {{/*  CONTACT BUTTONS  */}}
-  {{ if .buttons }}
-    {{- partial "components/blocks/contact-buttons" . -}}
+  {{/*  CONTACT  */}}
+  {{ if .contact }}
+    {{- partial "components/blocks/contact" . -}}
   {{ end }}
 
-  {{/*  CONTACT FORM  */}}
+  {{/*  FORM  */}}
   {{ $form_lvl := .form_lvl | default 0 }}
   {{ $form_num := .form_num | default 0 }}
   {{ if .inputs }}
-    {{- partial "components/blocks/contact-form" (merge
+    {{- partial "components/blocks/form" (merge
       .
       (dict
         "form_lvl" $form_lvl
@@ -234,9 +234,9 @@
     ) -}}
   {{ end }}
 
-  {{/*  CONTACT MAP  */}}
+  {{/*  MAP  */}}
   {{ if .map }}
-    {{- partial "components/blocks/contact-map" (merge . .section .map) -}}
+    {{- partial "components/blocks/map" . -}}
   {{ end }}
 
   {{/*  GSS  */}}

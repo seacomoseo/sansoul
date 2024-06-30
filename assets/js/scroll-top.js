@@ -1,4 +1,4 @@
-// Required by .body-menu--sticky-** and .button-up
+// Required by .body-menu--sticky-** and .up
 import { screenSticky } from './screen-sticky'
 import { scrollShot } from './scroll-shot'
 import { scrollTo } from './scroll-to'

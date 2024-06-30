@@ -17,9 +17,9 @@
       <div class="cookies__wrap">
         <div class="cookies__checks">
           {{- range $key, $label := split (i18n "cookies-checks") "," -}}
-            <label class="contact__form-label">
+            <label class="form__label">
               {{- "" -}}
-              <input class="contact__form-checkbox" type="checkbox" name="cookies" value="{{ . | urlize }}" {{ if not $key }}disabled checked{{ end }}>
+              <input class="form__checkbox" type="checkbox" name="cookies" value="{{ . | urlize }}" {{ if not $key }}disabled checked{{ end }}>
               {{- . -}}
             </label>
           {{- end -}}

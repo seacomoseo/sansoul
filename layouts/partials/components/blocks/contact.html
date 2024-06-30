@@ -2,8 +2,8 @@
 {{- $box    := . -}}
 
 {{/*  DATA  */}}
-{{- with .buttons -}}
-  <div class="contact__buttons box__block" {{- if $showup }} data-showup{{ end }}>
+{{- with .contact -}}
+  <div class="contact box__block" {{- if $showup }} data-showup{{ end }}>
     {{- range . -}}
       {{- with merge $box . -}}
 
@@ -52,10 +52,10 @@
             {{- $noindex = true -}}
           {{- else if eq .type "address" -}}
             {{- $class   = "contact__address" -}}
-            {{- $link    = partial "functions/map-url" . -}}
+            {{- $link    = partial "functions/map-url" (.anchor | default .label) -}}
             {{- $icon    = "location-dot" -}}
             {{- $emoji   = "📍" -}}
-            {{- $label   = .label | default .address -}}
+            {{- $label   = .label | default .anchor -}}
             {{- $noindex = true -}}
           {{- end -}}
 
@@ -127,7 +127,7 @@
         {{- else if findRE `^h\d$` .type -}}
 
           {{- $h := replace .type "h" "" -}}
-          <h {{- $h }} class="contact__form-title contact__full">{{ .label | markdownify }}</h {{- $h }}>
+          <h {{- $h }} class="form__title contact__full">{{ .label | markdownify }}</h {{- $h }}>
 
         {{- else if eq .type "hr" -}}
 

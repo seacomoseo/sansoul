@@ -1,1 +1,1 @@
-{{ return print "https://maps.google.com/maps?q=" (.address | default .label | replaceRE "<nil>" "" | urlquery) }}
+{{ return print "https://maps.google.com/maps?q=" (. | replaceRE "<nil>" "" | urlquery) }}
