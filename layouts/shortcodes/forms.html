@@ -1,1 +1,21 @@
-{{ partial "components/blocks/forms" (dict "js" false "Page" .Page) }}
+{{- $forms := slice -}}
+{{- range $k, $page := site.Pages -}}
+  {{- $sections := partial "functions/sections-all" . -}}
+  {{- range $key, $section := $sections -}}
+    {{- with partial "functions/section-boxes-num" . -}}
+      {{- range . -}}
+        {{- if and .inputs (not .action) -}}
+          {{- $forms = $forms | append (partial "components/blocks/form" (merge . (dict
+            "shortcode" true
+            "page"      $page
+            "section"   $section
+            "id"        $section.id
+          ))) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range uniq $forms -}}
+  {{- . -}}
+{{- end -}}

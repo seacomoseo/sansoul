@@ -8,20 +8,6 @@
 {{ $i18nVideo         := i18n `video` }}
 {{ $lang              := page.Lang }}
 
-{{ $formErrorSingleQuotes   := i18n "form-error-single-quotes" }}
-{{ $formErrorRequiredFields := i18n "form-error-required-fields" }}
-{{ $formErrorRequiredCheck  := i18n "form-error-required-check" }}
-{{ $formErrorEmail          := i18n "form-error-email" }}
-{{ $formErrorNumber         := i18n "form-error-number" }}
-{{ $formErrorFile           := i18n "form-error-file" }}
-{{ $formErrorAcept          := i18n "form-error-acept" }}
-{{ $formSubmitOk            := i18n "form-submit-ok" }}
-{{ $formSubmitWrong         := i18n "form-submit-wrong" }}
-{{ $formsLoad    := partial "components/blocks/forms" (dict "js" true "Page" page)
-  | replaceRE `\s{2,}` ` `
-  | replaceRE `\n` ``
-}}
-
 {{ $custom       := (resources.Get "js/custom.js").Content -}}
 {{ $customString := "" -}}
 
@@ -57,7 +43,7 @@
   -}}
 {{ end }}
 
-{{ $asTemplate := print $formsLoad $custom $customString }}
+{{ $asTemplate := print $custom $customString }}
 
 
 {{ $opts := dict
@@ -70,18 +56,17 @@
     "googleAnalyticsId" $googleAnalyticsId
     "i18nVideo"         $i18nVideo
     "lang"              $lang
-    "formsLoad"               $formsLoad
-    "formErrorSingleQuotes"   $formErrorSingleQuotes
-    "formErrorRequiredFields" $formErrorRequiredFields
-    "formErrorRequiredCheck"  $formErrorRequiredCheck
-    "formErrorEmail"          $formErrorEmail
-    "formErrorNumber"         $formErrorNumber
-    "formErrorFile"           $formErrorFile
-    "formErrorAcept"          $formErrorAcept
-    "formSubmitOk"            $formSubmitOk
-    "formSubmitWrong"         $formSubmitWrong
-    "custom"       $custom
-    "customString" $customString
+    "custom"            $custom
+    "customString"      $customString
+    "formErrorSingleQuotes"   (i18n "form-error-single-quotes")
+    "formErrorRequiredFields" (i18n "form-error-required-fields")
+    "formErrorRequiredCheck"  (i18n "form-error-required-check")
+    "formErrorEmail"          (i18n "form-error-email")
+    "formErrorNumber"         (i18n "form-error-number")
+    "formErrorFile"           (i18n "form-error-file")
+    "formErrorAcept"          (i18n "form-error-acept")
+    "formSubmitOk"            (i18n "form-submit-ok")
+    "formSubmitWrong"         (i18n "form-submit-wrong")
   )
 }}
 

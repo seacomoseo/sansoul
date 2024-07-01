@@ -101,9 +101,13 @@
           }}
         {{ end }}
 
+        {{ $form_num := 0 }}
         {{ range $key, $value := $boxes }}
+          {{ if .inputs }}
+            {{ $form_num = add $form_num 1 }}
+          {{ end }}
           {{/*  BOX  */}}
-          {{- partial "components/boxes/box" (merge
+          {{ partial "components/boxes/box" (merge
             $parent
             $.box
             .
@@ -118,11 +122,13 @@
               "columns"      $columns
               "columns_min"  $columns_min
               "is_wrap"      $is_wrap
+              "lvl"          $.lvl
+              "num"          (add $key 1)
               "form_lvl"     $.form_lvl
-              "form_num"     (add $key 1)
+              "form_num"     $form_num
               "article_list" $.article_list
             )
-          ) -}}
+          ) }}
         {{ end }}
 
 {{- if $is_wrap -}}
