@@ -234,7 +234,7 @@ then
 elif [ $1 = multilang ]
 then
 
-  lang=$(grep '^defaultContentLanguage:' ./hugo.yml | awk '{print $2}')
+  lang=$(grep '^defaultContentLanguage:' ./data/langs.yml | awk '{print $2}' || echo 'es')
   if [ -e "./public/${lang}/404.html" ]
   then
     echo "${STI} MULTILANG: COPY 404 FILE IN ROOT ${STE}"
