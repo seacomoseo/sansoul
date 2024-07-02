@@ -34,7 +34,7 @@
   $section_name
   (cond (eq $num 1) "" (print " 📌 " $num))
   -}}
-{{- $form_id       := print "form-" .id (cond (eq $num 1) "" (print "-" $num)) -}}
+{{- $form_id       := print "form-" (cond (eq .id "header") .page.Params.slug .id) (cond (eq $num 1) "" (print "-" $num)) -}}
 {{- $netlify_forms := not .action -}}
 {{- $googleForm    := in .action "docs.google.com/forms" -}}
 {{- $formsubmit_co := in .action "formsubmit.co" -}}
