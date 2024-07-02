@@ -20,12 +20,6 @@ export function initFormValidate () {
     function formSubmited (form) {
       const customEventSubmit = new CustomEvent('submited-' + form.id)
       document.dispatchEvent(customEventSubmit)
-      console.log('BINGO!')
-      console.log('event', 'contact_form_submit', {
-        event_category: 'contact',
-        event_label: 'form',
-        value: form.id
-      })
       if (googleAnalyticsId) {
         // eslint-disable-next-line
         gtag('event', 'contact_form_submit', {
@@ -155,7 +149,7 @@ export function initFormValidate () {
           const actionEncoded = form.action.replace(window.location.href.split('#')[0], '')
           let action = window.atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
-          const netlifyForm = action === window.location.pathname
+          const netlifyForm = action === `/${form.id}`
           const googleForm = action.includes('docs.google.com/forms')
           const formSubmitCo = action.includes('formsubmit.co')
           const workersLGTN = action.includes('lagrantribunomada.workers.dev')
