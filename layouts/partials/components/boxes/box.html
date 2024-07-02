@@ -6,11 +6,6 @@
 {{- $level  := .level | default (cond $header 1 (cond $modal 3 2)) -}}
 {{- $tag    := .tag | default "div" -}}
 
-{{ $lvl       := .lvl | default 0 }}
-{{ $num       := .num | default 0 }}
-{{ $form_lvl  := .form_lvl | default 0 }}
-{{ $form_num  := .form_num | default 0 }}
-
 {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
 {{- $showup        := site.Data.styles.performance.showup -}}
 {{- $group_radius  := .group_radius | and (not .slider) -}}
@@ -228,17 +223,9 @@
 
   {{/*  FORM  */}}
   {{ if .inputs }}
-    {{ $form_lvl = add $form_lvl 1 }}
-    {{ $form_num = $form_num | default 1 }}
     {{- partial "components/blocks/form" (merge
       .
-      (dict
-        "lvl"       $lvl
-        "num"       $num
-        "form_lvl"  $form_lvl
-        "form_num"  $form_num
-        "page"      page
-      )
+      (dict "page" page )
     ) -}}
   {{ end }}
 
@@ -257,11 +244,8 @@
     {{- partial "components/boxes/_" (merge
       .
       (dict
-        "level"    $level
-        "first"    (eq .key 0)
-        "lvl"      (add $lvl 1)
-        "num"      $num
-        "form_lvl" $form_lvl
+        "level" $level
+        "first" (eq .key 0)
       )
     ) -}}
   {{ end }}

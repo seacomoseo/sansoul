@@ -18,14 +18,20 @@ export function initFormValidate () {
     let formError, formSubmit
 
     function formSubmited (form) {
-      const customEventSubmit = new CustomEvent('submited_' + form.parentElement.id)
+      const customEventSubmit = new CustomEvent('submited-' + form.id)
       document.dispatchEvent(customEventSubmit)
+      console.log('BINGO!')
+      console.log('event', 'contact_form_submit', {
+        event_category: 'contact',
+        event_label: 'form',
+        value: form.id
+      })
       if (googleAnalyticsId) {
         // eslint-disable-next-line
-        gtag('event', 'form_submit', {
+        gtag('event', 'contact_form_submit', {
           event_category: 'contact',
           event_label: 'form',
-          value: form.parentElement.id
+          value: form.id
         })
       }
     }
@@ -45,7 +51,7 @@ export function initFormValidate () {
         formError = document.createElement('ul')
         formError.classList.add('form__error')
         formError.innerHTML += closeIcon
-        form.parentElement.prepend(formError)
+        form.prepend(formError)
 
         form.querySelectorAll(
           '[type="text"],' +
@@ -167,8 +173,8 @@ export function initFormValidate () {
             formSubmit && formSubmit.remove()
             formSubmit = document.createElement('p')
             formSubmit.classList.add('form__submit')
-            form.parentElement.append(formSubmit)
             formSubmit.innerHTML = '<svg class="spin"><use href="/draws.svg#rotate"></use></svg> Enviando…'
+            form.append(formSubmit)
 
             // Response
             function formSubmitOk (form) {

@@ -237,6 +237,7 @@
       - [x] `.contact__form` > `.form`
       - [x] `.contact__buttons-` > `.contact__`
       - [x] `.contact__buttons` > `.contact`
+      - [x] `submited_` > `submited-`
       - [ ] Menu sticky
         - [ ] baseof
         - [ ] css

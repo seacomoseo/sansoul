@@ -3,6 +3,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
+  scroll-margin-top: 3em;
   > * {
     position: relative;
     flex-grow: 1;
@@ -69,6 +70,8 @@
   background-color: red;
   padding: 1em 1em 1em 2em;
   scroll-margin-top: 3em;
+  width: 100%;
+  text-align: left;
   @include radius;
   svg.close {
     float: right;
@@ -94,9 +97,9 @@
   background-color: red;
 }
 /*! purgecss end ignore */
-// #search__form ~ .form {
-//   display: none;
-// }
+#search__form ~ .form {
+  display: none;
+}
 .form__fill-inputs {
   input:not([type="checkbox"], [type="radio"], [type="hidden"]),
   textarea,

@@ -2,7 +2,7 @@
 {{- range $k, $page := site.Pages -}}
   {{- $sections := partial "functions/sections-all" . -}}
   {{- range $key, $section := $sections -}}
-    {{- with partial "functions/section-boxes-num" . -}}
+    {{- with partial "functions/section-boxes" . -}}
       {{- range . -}}
         {{- if and .inputs (not .action) -}}
           {{- $forms = $forms | append (partial "components/blocks/form" (merge . (dict

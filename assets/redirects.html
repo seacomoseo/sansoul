@@ -16,13 +16,8 @@
 /tag/* /etiqueta/:splat
 /aut/* /autor/:splat
 
-{{ $multihost := ne
-  (index .AllTranslations 0).Site.BaseURL
-  (index .AllTranslations 1).Site.BaseURL
-}}
-
 {{- if .IsTranslated -}}
-  {{- if $multihost -}}
+  {{- if hugo.IsMultihost -}}
 # multihost
     {{- range .AllTranslations }}
       {{- $siteBaseURL := .Site.BaseURL }}
@@ -33,6 +28,7 @@
 {{ .Site.BaseURL }}/404.html /{{ .Lang }}/404 404!
 {{ .Site.BaseURL }}/404 /{{ .Lang }}/404.html 404!
 {{ .Site.BaseURL }}/* /{{ .Lang }}/:splat 200
+{{ .Site.BaseURL }}/* /{{ .Lang }}/404.html 404
     {{- end }}
   {{- else }}
 # multilanguage

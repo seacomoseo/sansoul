@@ -16,27 +16,31 @@
   {{- $section_emoji = "🪟" -}}
 {{- end -}}
 
-{{- $form_num      := print .lvl "_" .num -}}
-{{- $form_num       = cond (eq $form_num "0_0") "" $form_num -}}
-{{- $form_num       = cond (not $form_num) "" (print "_" $form_num) -}}
-{{- $subject_num   := print .form_lvl "_" .form_num -}}
-{{- $subject_num    = cond (eq $subject_num "1_1") "" $subject_num -}}
-{{- $subject       := print
+{{- $num := 0 -}}
+{{- range partial "functions/section-boxes" .section -}}
+  {{- if .inputs -}}
+    {{- $num = add $num 1 -}}
+    {{- if eq .inputs $.inputs -}}
+      {{- break -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $subject := print
   (i18n "form") " "
   $page_emoji " "
   .page.Title " "
   $section_emoji " "
   $section_name
-  (cond (not $subject_num) "" (print " 📌 " $subject_num))
+  (cond (eq $num 1) "" (print " 📌 " $num))
   -}}
-{{/*  {{- $form_name     := print "form" (replace .page.RelPermalink "/" "_") .id $form_num -}}  */}}
-{{- $form_id       := print "form_" .id $form_num -}}
+{{- $form_id       := print "form-" .id (cond (eq $num 1) "" (print "-" $num)) -}}
 {{- $netlify_forms := not .action -}}
 {{- $googleForm    := in .action "docs.google.com/forms" -}}
 {{- $formsubmit_co := in .action "formsubmit.co" -}}
 {{- $inputs_fill   := site.Data.styles.inputs.fill -}}
 {{- $chamfer       := site.Data.styles.rounded.chamfer -}}
-{{- $action        := .action | default $form_id -}}
+{{- $action        := .action | default (print "/" $form_id) -}}
 
 
 {{/*  HEAD  */}}
@@ -168,4 +172,5 @@
     {{- "" -}}
   </label>
   {{- "" -}}
+
 </form>

@@ -3,17 +3,12 @@
   {{- $config := partial "functions/config-lang" . -}}
 
   {{/*  FILES  */}}
-  {{- $multihost := ne
-    (index .AllTranslations 0).Site.BaseURL
-    (index .AllTranslations 1).Site.BaseURL
-    | and .IsTranslated
-  -}}
   {{- $cms_config_path          := print .RelPermalink `admin/config.yml` -}}
   {{- $cms_index_path           := print .RelPermalink `admin/index.html` -}}
   {{- $google_file_verification := (partial "functions/config-lang" .).others.google_file_verification -}}
   {{- $draws_path               := `/draws.svg` -}}
   {{- $redirects_path           := `/_redirects` -}}
-  {{- if $multihost -}}
+  {{- if hugo.IsMultihost -}}
     {{- $cms_config_path  = print `../` .Lang `/admin/config.yml` -}}
     {{- $cms_index_path   = print `../` .Lang `/admin/index.html` -}}
     {{- if hugo.IsProduction -}}
@@ -75,4 +70,7 @@
 
   {{/*  CUSTOM  */}}
   {{- partial "custom" . -}}
+{{- end -}}
+{{- range .AllTranslations | collections.Reverse -}}
+{{- .Lang -}}<br><br>
 {{- end -}}

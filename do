@@ -230,17 +230,17 @@ then
   echo "${STI} GO PROJECT ${STE}"
   cd ../../..
 
-# if multilang, copy 404 file in root
-elif [ $1 = multilang ]
-then
+# # if multilang, copy 404 file in root
+# elif [ $1 = multilang ]
+# then
 
-  lang=$(grep '^defaultContentLanguage:' ./data/langs.yml | awk '{print $2}' || echo 'es')
-  lang=${lang:-es}
-  if [ -e "./public/${lang}/404.html" ]
-  then
-    echo "${STI} MULTILANG: COPY 404 FILE IN ROOT ${STE}"
-    cp ./public/${lang}/404.html ./public/
-  fi
+#   lang=$(grep '^defaultContentLanguage:' ./data/langs.yml | awk '{print $2}' || echo 'es')
+#   lang=${lang:-es}
+#   if [ -e "./public/${lang}/404.html" ]
+#   then
+#     echo "${STI} MULTILANG: COPY 404 FILE IN ROOT ${STE}"
+#     cp ./public/${lang}/404.html ./public/
+#   fi
 
 # hugo build in local with theme config
 elif [ $1 = hugo-local ]
