@@ -493,7 +493,7 @@ pre {
 
 .compare {
   td, th {
-    &:not(:first-child) {
+    &:not(:first-child, [rowspan] + *) {
       text-align: center;
     }
   }
