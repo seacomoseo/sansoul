@@ -177,8 +177,8 @@ export function initFormValidate () {
             form.append(formSubmit)
 
             // Response
-            function formSubmitOk (form) {
-              formSubmit.classList.add('form__submit--ok')
+            function formSubmitSuccess (form) {
+              formSubmit.classList.add('form__submit--success')
               formSubmit.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
               formSubmited(form)
             }
@@ -204,10 +204,10 @@ export function initFormValidate () {
                   throw new Error('HTTP status ' + response.status)
                 }
               })
-              .then(response => { formSubmitOk(form) })
+              .then(response => { formSubmitSuccess(form) })
               .catch(error => {
                 if (googleForm && error === 'Error: HTTP status 0') {
-                  formSubmitOk(form)
+                  formSubmitSuccess(form)
                 } else {
                   formSubmitError(error)
                 }
