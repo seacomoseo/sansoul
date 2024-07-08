@@ -14,6 +14,7 @@
   {{- $label       := .label | default (i18n `more`)  -}}
   {{- $anchor      := cond (ne .anchor .label) .anchor "" -}}
   {{- $external    := strings.HasPrefix .link "http" -}}
+  {{- $_blank      := not (not ._blank) -}}
   {{- $page_title  := "" -}}
   {{- $lightbox    := findRE `\.(jpg|png|gif|webp|svg)` .link -}}
   {{- $noindex     := (.noindex | default false)  -}}
@@ -83,7 +84,7 @@
       {{- cond    $button "button" "i" -}}
       {{- with    $class           }} class="{{ . }}"{{ end -}}
       {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}"
-      {{- else if $link            }} data-{{ cond $external `b` `h` }}="{{ $link | safeURL | base64Encode }}"
+      {{- else if $link            }} data-{{ cond (or $external $_blank) `b` `h` }}="{{ $link | safeURL | base64Encode }}"
       {{- end -}}
       {{- if      eq .label `none` }} title="{{ $final_label }}"{{ end -}}
       {{- if      not $button      }} tabindex="0" role="link"{{ end -}}
@@ -93,7 +94,7 @@
          class="{{ cond $button `button` `` }} {{- with $class }} {{ . }}{{ end }}"
        {{- end -}}
       {{- `` | safeHTMLAttr }} href="{{ $link | safeURL }}"
-      {{- if $external }} target="_blank" rel="noopener"{{ end -}}
+      {{- if or $external $_blank }} target="_blank" rel="noopener"{{ end -}}
       {{- if eq .label `none` }} title="{{ $final_label }}"{{ end -}}
     >
   {{- end -}}

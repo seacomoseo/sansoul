@@ -137,10 +137,7 @@
               <label class="contact__form-label contact__form-label--accept">
                 {{- "" -}}
                 <input  class="contact__form-checkbox" type="checkbox" value="true">
-                {{- i18n "send-check" 1 -}}
-                <i data-b="{{ print ($.Page.GetPage `pages/privacy`).RelPermalink `#` (i18n `send-check-link`) | base64Encode }}" tabindex="0" role="link">
-                  {{- i18n "send-check" -}}
-                </i>
+                {{- partial "functions/md" (dict "content" (i18n "send-check") "not_header_links" true) -}}
                 {{- "" -}}
               </label>
               {{- "" -}}
