@@ -57,6 +57,8 @@
           - [x] `articles.kind` > `articles.types` and multiple select
           - [x] Add `date_ini`
           - [x] Add `date_end`
+          - [ ] `date_ini` > `start`
+          - [ ] `date_end` > `end`
         - [x] `view: collapsibles`:
           - [x] `design` > `collapsible`
           - [x] `items` > `collapsibles`
@@ -77,7 +79,7 @@
             - [x] `address.addressRegion` > remove
             - [x] `address.addressCountry` > remove
             - [x] `address.coordinates` > remove
-            - [ ] Add `anchor`
+            - [x] Add `anchor`
           - [x] `form`
             - [x] `form.action` > `action`
             - [x] `form.items` > `inputs`
@@ -215,14 +217,13 @@
       - [x] Remove `slug` from `content.*/_index/*`
       - [x] `config` add `schema`
       - [x] `config.location_type` > `config.schema.types`
-      - [x] `config.alternate_name` > `config.schema.alternateName`
-      - [x] `config.social` > `config.schema.sameAs`
+      - [x] `config.alternate_name` > `config.schema.alternate_names`
+      - [x] `config.social` > `config.schema.same_as`
       - [x] `config.schema` add `phones` by `contact`
       - [x] `config.schema` add `address` by `contact`
-      - [x] `config.schema` add `address.hasMap` by `contact`
-      - [x] `config.schema` add `openingHours` by `contact`
-      - [x] `config.schema` add `openingHoursSpecification` by `contact`
-      - [x] `config.schema` add `aggregateRating`
+      - [x] `config.schema` add `address.lnik` by `contact`
+      - [x] `config.schema` add `open` by `contact`
+      - [x] `config.schema` add `rating`
       - [x] `config.legal_name` > `config.legal.name`
       - [x] `config.legal_dni` > `config.legal.dni`
       - [x] `config.legal_email` > `config.legal.email`
@@ -238,6 +239,17 @@
       - [x] `.contact__buttons-` > `.contact__`
       - [x] `.contact__buttons` > `.contact`
       - [x] `submited_` > `submited-`
+      - [x] `cms/config/fields`
+        - [x] `FONT` and `BASE_COLOR` > `cms/config/settings/styles`
+        - [x] `LISTS` > `cms/config/settings/lists`
+        - [x] `CONTACT` + `FORM` + `MAP` + `SECTION` + `DIVIDER` > i18n
+      - [ ] `cms/config/base`
+      - [ ] `cms/config/collections`
+      - [ ] `cms/config/boxes`
+      - [ ] Probar selector de `templates` en cms
+      - [ ] `date_ini` > `start`
+      - [ ] `date_end` > `end`
+      - [ ] `parallax` boolean > options? [ `none`, `smooth`, `fix` ]
       - [ ] Menu sticky
         - [ ] baseof
         - [ ] css
@@ -260,6 +272,7 @@
       - [ ] Check Google Translate ofuscate links and la propia traducción
       - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`
       - [ ] `T` in CMS labels and hints
+      - [ ] `styles.performance.srcsetx2`
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
   - [ ] ¿Quitar montaje de módulos de `hugo.default.yml`?
@@ -349,7 +362,6 @@
 - not solution:
   - video not cover in grid__item
   - paginator not rule in "terms" of sections (maybe in taxonomies)
-  - geo coordinates not rule in netlifycms
   - src svgs (lazyload) spaces imposible change for %20 with minify
 
 

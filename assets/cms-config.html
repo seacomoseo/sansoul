@@ -9,19 +9,16 @@
 
 {{/*  VARIABLES  */}}
 {{- $vars := (partial "cms/config/options" .)
-  | append   (partial "cms/config/fields/base" .)
-  | append   (partial "cms/config/fields/schema" .)
-  | append   (partial "cms/config/fields/contact" .)
-  | append   (partial "cms/config/fields/section-design" .)
-  | append   (partial "cms/config/fields/data-menu" .)
-  | append   (partial "cms/config/fields/data-articles-common" .)
-  | append   (partial "cms/config/fields/section-rows" .)
-  
-  | append   (partial "cms/config/fields/sections-design" .)
-  | append   (partial "cms/config/fields/main-pages-elements" $fontawesome_link)
-  
-  | append   (partial "cms/config/section-menu" (slice `~MENU_ITEMS_NORMAL` `~MENU_ITEMS_MORE`))
-  | append   (partial "cms/config/section-sections" .)
+  | append   (partial "cms/config/fields" .)
+  | append   (partial "cms/config/boxes" .)
+  | append   (partial "cms/config/base" .)
+  | append   (partial "cms/config/p" $fontawesome_link)
+  | append   (partial "cms/config/settings/config-types" .)
+  | append   (partial "cms/config/settings/config" .)
+  | append   (partial "cms/config/settings/styles" .)
+  | append   (partial "cms/config/settings/lists" .)
+  | append   (partial "cms/config/settings/langs" .)
+  | append   (partial "cms/config/collections" .)
 -}}
 
 
@@ -88,7 +85,7 @@
         "indentSeq"    false
       )
     )
-    "collections"   (partial "cms/config/collections" .)
+    "collections"   `~COLLECTIONS`
   )
   | merge
   (cond

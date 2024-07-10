@@ -27,34 +27,37 @@
 
 {{/*  Address, hasMap and geo by locations  */}}
 {{ $address := slice }}
-{{ $hasMap  := slice }}
+{{ $has_map := slice }}
 {{ $geo     := slice }}
 {{ with $config.schema.address }}
   {{ range . }}
-    {{ if .streetAddress }}
+    {{ if .street }}
       {{ $address = $address | append (dict "@type" "PostalAddress"
         "name"            .name
-        "streetAddress"   .streetAddress
-        "postalCode"      .postalCode
-        "addressLocality" .addressLocality
-        "addressRegion"   .addressRegion
-        "addressCountry"  .addressCountry
+        "streetAddress"   .street
+        "postalCode"      .pc
+        "addressLocality" .locality
+        "addressRegion"   .region
+        "addressCountry"  .country
       ) }}
-      {{ $hasMap = $hasMap | append .hasMap | append (print
+      {{ $has_map = $has_map | append (print
         "https://maps.google.com/maps/search/"
         (print
-          .name ", "
-          .streetAddress ", "
-          .postalCode " "
-          .addressLocality ", "
-          .addressRegion ", "
-          .addressCountry
+          .name     ", "
+          .street   ", "
+          .pc       " "
+          .locality ", "
+          .region   ", "
+          .country
           | replaceRE "<nil>" ""
           | urlquery
         )
       ) }}
     {{ end }}
-    {{ with .coordinates }}
+    {{ with .link }}
+      {{ $has_map = $has_map | append . }}
+    {{ end }}
+    {{ with .geo }}
       {{ $cordinates := (unmarshal .).coordinates }}
       {{ $geo = $geo | append (dict
         "@type"     "GeoCoordinates"
@@ -90,49 +93,54 @@
 {{ $images = $images | uniq }}
 
 {{/*  Opening Hours Specification  */}}
-{{ $openHoursSpec := slice }}
-{{ with $config.schema.openingHoursSpecification }}
+{{ $open := slice }}
+{{ with $config.schema.open }}
   {{ range . }}
     {{ $item := . }}
-    {{ range .dayOfWeek | default (slice "none") }}
-      {{ $dayOfWeek    := cond (eq . "none") dict (dict "dayOfWeek" (print "https://schema.org/" .)) }}
-      {{ $openHoursSpec = $openHoursSpec | append (merge $item $dayOfWeek) }}
+    {{ range .days | default (slice "none") }}
+      {{ if ne . "none" }}
+        {{ $day := dict "dayOfWeek" (print "https://schema.org/" (. | title)) }}
+        {{ with $item.opens  }}{{ $day = merge $day (dict "opens" .) }}{{ end }}
+        {{ with $item.closes }}{{ $day = merge $day (dict "closes" .) }}{{ end }}
+        {{ with $item.from   }}{{ $day = merge $day (dict "validFrom" .) }}{{ end }}
+        {{ with $item.to     }}{{ $day = merge $day (dict "validThrough" .) }}{{ end }}
+        {{ $open = $open | append $day }}
+      {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}
 
 {{/*  Types  */}}
-{{ $types          := $config.schema.types | default (slice "Organization") }}
-{{ $type           := index $types 0 }}
-{{ $additionalType := after 1 $types }}
+{{ $types           := $config.schema.types | default (slice "Organization") }}
+{{ $type            := index $types 0 }}
+{{ $additional_yype := after 1 $types }}
 
 {{/*  Finish schema organization  */}}
 {{ $schemaOrganization = dict
   "@context"                  `http://schema.org`
   "@type"                     $type
-  "additionalType"            $additionalType
+  "additionalType"            $additional_yype
   "logo"                      (print $BaseURL "/media/logo.png")
   "image"                     $images
   "name"                      $config.title
-  "alternateName"             ($config.schema.alternateName | default slice)
-  "priceRange"                $config.schema.priceRange
+  "alternateName"             ($config.schema.alternate_names | default slice)
+  "priceRange"                $config.schema.prices
   "description"               $config.description
   "url"                       (print $BaseURL "/")
-  "sameAs"                    $config.schema.sameAs
-  "openingHours"              $config.schema.openingHours
-  "openingHoursSpecification" $openHoursSpec
+  "sameAs"                    $config.schema.same_as
+  "openingHoursSpecification" $open
   "telephone"                 (partial "functions/phone-variations" $config.schema.phones)
   "address"                   $address
   "location"                  (dict
     "@type"  "Place"
-    "hasMap" $hasMap
+    "hasMap" $has_map
     "geo"    $geo
   )
   "aggregateRating"           (dict
-    "@type"       "AggregateRating"
+    "@type"       "aggregateRating"
     "bestRating"  5
-    "ratingCount" $config.schema.aggregateRating.ratingCount
-    "ratingValue" $config.schema.aggregateRating.ratingValue
+    "ratingCount" $config.schema.rating.count
+    "ratingValue" $config.schema.rating.value
   )
 }}
 
@@ -152,7 +160,7 @@
     "image"       $author_image
     "url"         .Permalink
     "jobTitle"    .Params.job_title
-    "sameAs"      (.Params.social | default slice)
+    "same_as"      (.Params.social | default slice)
     "worksFor"    $schemaOrganization
   }}
 {{ end }}
@@ -216,7 +224,7 @@
       "image"       $author_image
       "url"         $author_page.Permalink
       "jobTitle"    $author_page.Params.job_title
-      "sameAs"      ($author_page.Params.social | default slice)
+      "same_as"      ($author_page.Params.social | default slice)
     )
   }}
 

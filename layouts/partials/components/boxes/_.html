@@ -103,24 +103,27 @@
 
         {{ range $key, $value := $boxes }}
           {{/*  BOX  */}}
-          {{ partial "components/boxes/box" (merge
-            $parent
-            $.box
-            .
-            (dict
-              "id"           $.id
-              "level"        $level
-              "key"          $key
-              "container"    $container
-              "section"      $.section
-              "first"        $.first
-              "footer"       $.footer
-              "columns"      $columns
-              "columns_min"  $columns_min
-              "is_wrap"      $is_wrap
-              "article_list" $.article_list
-            )
-          ) }}
+          {{ $if := partial "functions/if" (dict "Page" page "if" .if) }}
+          {{ if $if }}
+            {{ partial "components/boxes/box" (merge
+              $parent
+              $.box
+              .
+              (dict
+                "id"           $.id
+                "level"        $level
+                "key"          $key
+                "container"    $container
+                "section"      $.section
+                "first"        $.first
+                "footer"       $.footer
+                "columns"      $columns
+                "columns_min"  $columns_min
+                "is_wrap"      $is_wrap
+                "article_list" $.article_list
+              )
+            ) }}
+          {{ end }}
         {{ end }}
 
 {{- if $is_wrap -}}

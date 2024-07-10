@@ -1,0 +1,173 @@
+{{ return dict "&SETTINGS_CONFIG" (slice
+  (dict "label" (i18n "collection-settings-config-title")       "name" `title`          "required" false "widget" `string`)
+  (dict "label" (i18n "collection-settings-config-description") "name" `description`    "required" false "widget" `text`)
+  (dict "label" (i18n "collection-settings-config-logo")        "name" `logo`           "required" false "widget" `image` "max_file_size" 512000000)
+  (dict
+    "label"     (i18n "collection-settings-config-legal")
+    "name"      `legal`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      (i18n "collection-settings-config-legal-hint")
+    "required"  false
+    "fields"    (slice
+      (dict "label" (i18n "collection-settings-config-legal-name")     "name" `name`     "required" false "widget" `string`)
+      (dict "label" (i18n "collection-settings-config-legal-dni")      "name" `dni`      "required" false "widget" `string`)
+      (dict "label" (i18n "collection-settings-config-legal-email")    "name" `email`    "required" false "widget" `string`)
+      (dict "label" (i18n "collection-settings-config-legal-location") "name" `location` "required" false "widget" `string`)
+      (dict "label" (i18n "collection-settings-config-legal-country")  "name" `country`  "required" false "widget" `select` "options" `~OPTIONS_COUNTRIES`)
+    )
+  )
+  (dict
+    "label"     (i18n "collection-settings-config-schema")
+    "name"      `schema`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      (i18n "collection-settings-config-schema-hint")
+    "required"  false
+    "fields"    (slice
+      (dict
+        "label"          (i18n "collection-settings-config-schema-types")
+        "label_singular" (i18n "collection-settings-config-schema-types")
+        "name"           `types`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.type}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-types") "name" `type` "widget" `select` "required" false "options" `~OPTIONS_LOCATION_TYPE`)
+        )
+      )
+      (dict
+        "label"          (i18n "collection-settings-config-schema-alternate_names")
+        "label_singular" (i18n "collection-settings-config-schema-alternate_names-singular")
+        "name"           `alternate_names`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.name}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-alternate_names-singular") "name" `name` "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          (i18n "collection-settings-config-schema-same_as")
+        "label_singular" (i18n "collection-settings-config-schema-same_as-singular")
+        "name"           `same_as`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.link}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-same_as-singular") "name" `link` "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          (i18n "collection-settings-config-schema-phones")
+        "label_singular" (i18n "collection-settings-config-schema-phones-singular")
+        "name"           `phones`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.phone}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-phones-singular") "name" `phone` "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          (i18n "collection-settings-config-schema-address")
+        "label_singular" (i18n "collection-settings-config-schema-address-singular")
+        "name"           `address`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.name}} {{fields.street}} {{fields.pc}} {{fields.locality}} {{fields.region}} {{fields.country}} {{fields.link}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-address-name")     "name" `name`     "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-address-street")   "name" `street`   "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-address-pc")       "name" `pc`       "widget" `number` "required" false "value_type" `int` "min" 10000 "max" 99999)
+          (dict "label" (i18n "collection-settings-config-schema-address-locality") "name" `locality` "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-address-region")   "name" `region`   "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-address-country")  "name" `country`  "widget" `string` "required" false "hint" (i18n "collection-settings-config-schema-address-country-hint"))
+          (dict "label" (i18n "collection-settings-config-schema-address-geo")      "name" `geo`      "widget" `map`    "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-address-link")     "name" `link`     "widget" `string` "required" false)
+        )
+      )
+      (dict
+        "label"          (i18n "collection-settings-config-schema-open")
+        "label_singular" (i18n "collection-settings-config-schema-open-singular")
+        "name"           `open`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.days}} {{fields.opens}}-{{fields.closes}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-open-days")   "name" `days`   "widget" `select` "required" false "multiple" true "options" `~OPTIONS_DAYS`)
+          (dict "label" (i18n "collection-settings-config-schema-open-opens")  "name" `opens`  "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-open-closes") "name" `closes` "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-open-from")   "name" `from`   "widget" `string` "required" false "hint" (i18n "collection-settings-config-schema-open-valid-hint"))
+          (dict "label" (i18n "collection-settings-config-schema-open-to")     "name" `to`     "widget" `string` "required" false "hint" (i18n "collection-settings-config-schema-open-valid-hint"))
+        )
+      )
+      (dict
+        "label"          (i18n "collection-settings-config-schema-rating")
+        "label_singular" (i18n "collection-settings-config-schema-rating-singular")
+        "name"           `rating`
+        "widget"         `object`
+        "collapsed"      true
+        "required"       false
+        "fields"         (slice
+          (dict "label" (i18n "collection-settings-config-schema-rating-count") "name" `count` "widget" `number` "required" false "value_type" `int`   "min" 0)
+          (dict "label" (i18n "collection-settings-config-schema-rating-value") "name" `value` "widget" `number` "required" false "value_type" `float` "min" 0 "max" 5 "step" 0.1)
+        )
+      )
+      (dict "label" (i18n "collection-settings-config-schema-prices") "name" `prices` "widget" `select` "required" false "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
+    )
+  )
+  (dict
+    "label"     (i18n "collection-settings-config-langs")
+    "name"      `langs`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      (i18n "collection-settings-config-langs-hint")
+    "required"  false
+    "fields"    `~SETTINGS_CONFIG_TYPES`
+  )
+  (dict
+    "label"     (i18n "collection-settings-config-others")
+    "name"      `others`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      (dict "label" (i18n "collection-settings-config-others-google_analytics")         "name" `google_analytics`         "widget" `string`  "required" false "hint" (i18n "collection-settings-config-others-google_analytics-hint"))
+      (dict "label" (i18n "collection-settings-config-others-google_site_verification") "name" `google_site_verification` "widget" `string`  "required" false "hint" (i18n "collection-settings-config-others-google_site_verification-hint"))
+      (dict "label" (i18n "collection-settings-config-others-google_file_verification") "name" `google_file_verification` "widget" `string`  "required" false "hint" (i18n "collection-settings-config-others-google_file_verification-hint"))
+      (dict "label" (i18n "collection-settings-config-others-disqus")                   "name" `disqus`                   "widget" `string`  "required" false "hint" (i18n "collection-settings-config-others-disqus-hint"))
+      (dict "label" (i18n "collection-settings-config-others-cookies_legal")            "name" `cookies_legal`            "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-others-cookies_legal-hint"))
+      (dict "label" (i18n "collection-settings-config-others-analytics_pagespeed")      "name" `analytics_pagespeed`      "widget" `hidden`  "required" false)
+      (dict "label" (i18n "collection-settings-config-others-process_all_images")       "name" `process_all_images`       "widget" `hidden`  "required" false)
+      (dict "label" (i18n "collection-settings-config-others-cms")                      "name" `cms`                      "widget" `hidden`  "required" false)
+      (dict "label" (i18n "collection-settings-config-others-cms_editorial_workflow")   "name" `cms_editorial_workflow`   "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-others-cms_editorial_workflow-hint"))
+      (dict "label" (i18n "collection-settings-config-others-development")              "name" `development`              "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-others-development-hint"))
+      (dict
+        "label"     (i18n "collection-settings-config-others-custom_code")
+        "name"      `custom_code`
+        "widget"    `object`
+        "collapsed" true
+        "required"  false
+        "fields"    (slice
+          (dict "label" (i18n "collection-settings-config-others-custom_code-html_head") "name" `html_head` "required" false "widget" `text` "default_language" `html`       "output_code_only" true)
+          (dict "label" (i18n "collection-settings-config-others-custom_code-html_body") "name" `html_body` "required" false "widget" `text` "default_language" `html`       "output_code_only" true)
+          (dict "label" (i18n "collection-settings-config-others-custom_code-css")       "name" `css`       "required" false "widget" `text` "default_language" `css`        "output_code_only" true)
+          (dict "label" (i18n "collection-settings-config-others-custom_code-js")        "name" `js`        "required" false "widget" `text` "default_language" `javascript` "output_code_only" true)
+        )
+      )
+    )
+  )
+) }}

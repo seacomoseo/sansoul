@@ -51,6 +51,9 @@
       `~P_LASTMOD`
       `~P_TRANSLATIONKEY`
       `~P_BODY`
+      `~P_TEMPLATE`
+      `~P_BASE`
+      `~P_CUSTOM`
     )
   ) }}
 {{ end }}
@@ -110,6 +113,9 @@
       `~P_PRICE`
       `~P_TRANSLATIONKEY`
       `~P_BODY`
+      `~P_TEMPLATE`
+      `~P_BASE`
+      `~P_CUSTOM`
     )
   ) }}
 {{ end }}
@@ -162,6 +168,9 @@
       `~P_NOINDEX`
       `~P_TRANSLATIONKEY`
       `~P_BODY`
+      `~P_TEMPLATE`
+      `~P_BASE`
+      `~P_CUSTOM`
     )
   ) }}
 {{ end }}
@@ -213,6 +222,9 @@
       `~P_NOINDEX`
       `~P_TRANSLATIONKEY`
       `~P_BODY`
+      `~P_TEMPLATE`
+      `~P_BASE`
+      `~P_CUSTOM`
     )
   ) }}
 {{ end }}
@@ -264,6 +276,9 @@
       `~P_NOINDEX`
       `~P_TRANSLATIONKEY`
       `~P_BODY`
+      `~P_TEMPLATE`
+      `~P_BASE`
+      `~P_CUSTOM`
     )
   ) }}
 {{ end }}
@@ -313,6 +328,9 @@
       `~P_SOCIAL`
       `~P_TRANSLATIONKEY`
       `~P_BODY`
+      `~P_TEMPLATE`
+      `~P_BASE`
+      `~P_CUSTOM`
     )
   ) }}
 {{ end }}
@@ -366,6 +384,9 @@
     `~P_NOINDEX`
     `~P_TRANSLATIONKEY`
     `~P_BODY`
+    `~P_TEMPLATE`
+    `~P_BASE`
+    `~P_CUSTOM`
   )
 ) }}
 
@@ -409,12 +430,14 @@
     `~P_DRAFT`
     `~P_NOINDEX`
     `~P_TRANSLATIONKEY`
-    `~SECTION_HEADER_ARTICLE`
-    `~SECTION_MENU`
-    `~SECTIONS_DESIGN_GENERAL`
-    `~SECTIONS_DESIGN_ALTERNATE`
-    `~SECTIONS_DESIGN_MODALS`
-    `~SECTION_SECTIONS`
+    `~BASE_HEADER_ARTICLE`
+    `~BASE_BACKGROUND`
+    `~BASE_MENU`
+    `~BASE_CALLNOW`
+    `~BASE_SECTION`
+    `~BASE_ALTERNATE`
+    `~BASE_MODALS`
+    `~BASE_SECTIONS`
   )
 ) }}
 
@@ -431,7 +454,7 @@
   "create"           true
   "nested"           (dict "depth" 5)
   "slug"             "{{fields.name}}"
-  "summary"          "{{dirname | upper}}{{dirname | ternary('/','')}}{{name}}"
+  "summary"          "{{dirname | upper}}{{dirname | ternary(' / ','')}}{{name}}"
   "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id" "title"))
   "editor"           (dict "preview" false)
   "fields"           (slice
@@ -550,66 +573,32 @@
 ) }}
 
 
-{{/*  TYPES
-{{ $type_files := slice }}
-{{ range slice
-  "pages"
-  "blog"
-  "events"
-  "products"
-  "categories"
-  "tags"
-  "authors"
-}}
-  {{ $type_files = $type_files | append (dict
-    "file"      (print "content/_index/" . ".md")
-    "extension" `md`
-    "label"     (i18n (print "collection-" .))
-    "name"      .
-    "fields"    (slice
-      `~P_TITLE`
-      `~P_TITLE_SEO`
-      `~P_DESCRIPTION`
-      `~P_IMAGE`
-      | append
-      (cond (eq "pages" .) slice `~P_DRAFT`)
-      | append
-      `~P_NOINDEX`
-      `~P_TRANSLATIONKEY_HIDDEN`
-      `~P_BODY`
-      | append
-      (cond (ne "custom" .)
-        slice
-        (dict
-          "label"     `Plantilla`
-          "name"      `template`
-          "widget"    `object`
-          "collapsed" true
-          "required"  false
-          "hint"      `Estas opciones y estructuras se aplicarán a cada una de las páginas personalizadas.`
-          "fields"    (slice
-            `~SECTION_HEADER_ARTICLE`
-            `~SECTION_MENU`
-            `~SECTIONS_DESIGN_GENERAL`
-            `~SECTIONS_DESIGN_ALTERNATE`
-            `~SECTIONS_DESIGN_MODALS`
-            `~SECTION_SECTIONS`
-          )
-        )
-      )
-    )
-    | merge (cond (ne "custom" .) dict (dict "hint" `Estas opciones y estructuras se aplicarán a cada una de las páginas personalizadas.`))
-  ) }}
-{{ end }}
+{{/*  TEMPLATES  */}}
 {{ $colections = $colections | append (dict
-  "label"           (i18n "collection-types")
-  "name"            `types`
-  "description"     (i18n "collection-types-description")
-  "sortable_fields" (dict "fields" slice)
-  "editor"          (dict "preview" false)
-  "files"           $type_files
+  "label"            (i18n "collection-templates")
+  "label_singular"   (i18n "collection-templates-singular")
+  "name"             `templates`
+  "description"      (i18n "collection-templates-description")
+  "identifier_field" `title`
+  "extension"        `yml`
+  "folder"           `data/templates`
+  "create"           true
+  "nested"           (dict "depth" 5)
+  "summary"          "{{dirname | upper}}{{dirname | ternary(' / ','')}}{{title}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+  "editor"           (dict "preview" false)
+  "fields"            (slice
+    `~P_TITLE`
+    `~BASE_HEADER_ARTICLE`
+    `~BASE_BACKGROUND`
+    `~BASE_MENU_TEMPLATE`
+    `~BASE_CALLNOW_TEMPLATE`
+    `~BASE_SECTION`
+    `~BASE_ALTERNATE`
+    `~BASE_MODALS`
+    `~BASE_SECTIONS`
+  )
 ) }}
-*/}}
 
 
 {{/*  SETTINGS  */}}
@@ -619,10 +608,10 @@
   "sortable_fields" (dict "fields" slice)
   "editor"          (dict "preview" false)
   "files"           (slice
-    (dict "file" `data/config.es.yml`  "extension" `yml` "label" (i18n "collection-settings-config")    "name" `config`    "fields" (partial "cms/config/settings/config-fields" .) "i18n" (dict "structure" `multiple_files`))
-    (dict "file" `data/styles.yml`     "extension" `yml` "label" (i18n "collection-settings-styles")    "name" `styles`    "fields" (partial "cms/config/settings/styles-fields" .))
-    (dict "file" `data/lists.yml`      "extension" `yml` "label" (i18n "collection-settings-lists")     "name" `lists`     "fields" (partial "cms/config/settings/lists-fields" .))
-    (dict "file" `data/langs.yml`      "extension" `yml` "label" (i18n "collection-settings-langs")     "name" `langs`     "fields" (partial "cms/config/settings/langs-fields" .))
+    (dict "file" `data/config.es.yml`  "extension" `yml` "label" (i18n "collection-settings-config")    "name" `config`    "fields" `~SETTINGS_CONFIG` "i18n" (dict "structure" `multiple_files`))
+    (dict "file" `data/styles.yml`     "extension" `yml` "label" (i18n "collection-settings-styles")    "name" `styles`    "fields" `~SETTINGS_STYLES`)
+    (dict "file" `data/lists.yml`      "extension" `yml` "label" (i18n "collection-settings-lists")     "name" `lists`     "fields" `~SETTINGS_LISTS`)
+    (dict "file" `data/langs.yml`      "extension" `yml` "label" (i18n "collection-settings-langs")     "name" `langs`     "fields" `~SETTINGS_LANGS`)
     (dict "file" `assets/redirects.md` "extension" `md`  "label" (i18n "collection-settings-redirects") "name" `redirects` "fields"
       (slice (dict "label" (i18n "collection-settings-redirects") "name" `body` "widget" `text` "required" false "hint" (i18n "collection-settings-redirects-hint")))
     )
@@ -632,5 +621,4 @@
   )
 ) }}
 
-
-{{ return $colections }}
+{{ return dict "&COLLECTIONS" $colections }}

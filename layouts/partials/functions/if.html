@@ -1,0 +1,14 @@
+{{ $if := true }}
+{{ with .if }}
+  {{ if eq . "body" }}
+    {{ $if = $.Page.RawContent }}
+  {{ else if eq . "related" }}
+    {{ $if = ($.Page.GetPage $.Page.Type).Pages.Related (dict "document" $.Page) }}
+  {{ else if eq . "comments" }}
+    {{ $config := partial "functions/config-lang" . }}
+    {{ $if = $config.others.disqus }}
+  {{ else }}
+    {{ $if = index $.Page.Params (split . ".") }}
+  {{ end }}
+{{ end }}
+{{ return $if }}

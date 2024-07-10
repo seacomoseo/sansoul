@@ -1,0 +1,295 @@
+{{ $colections    := slice }}
+
+
+{{/*  HEADER_ARTICLE  */}}
+{{ $colections = $colections | append
+  (dict "&BASE_HEADER_ARTICLE" (dict
+    "label"    `Encabezado Sencillo`
+    "name"     `header_article`
+    "widget"   `boolean`
+    "required" false
+    "hint"     "Añade el mismo encabezado que hay en el contenido sencillo y blog (también deja el menú accesible solamente mediante botón de hamburguesa)"
+  ))
+}}
+
+
+{{/*  BACKGROUND  */}}
+{{ $colections = $colections | append
+  (dict "&BASE_BACKGROUND" (dict
+    "label"     `Fondo de Página`
+    "name"      `background`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      `~COLOR`
+      `~GRADIENT_COLOR`
+      `~GRADIENT_TYPE`
+      `~BACKGROUND_IMAGE`
+      `~BG_OPACITY`
+      `~PARALLAX`
+    )
+  ))
+}}
+
+
+{{/*  MENU  */}}
+{{ $menu_langs  := slice }}
+{{ range site.Languages }}
+  {{ $menu_langs = $menu_langs | append (dict "<<" (slice
+    (dict "name" .Lang)
+    (dict "label" (print "Elementos " (i18n (print "option-langs-" .Lang))))
+    `~MENU_ITEMS`
+  )) }}
+{{ end }}
+{{ $colections = $colections | append
+  (dict "&MENU_ITEMS"  (dict
+    "label"          `Elementos`
+    "name"           `items`
+    "label_singular" `Elemento`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.label}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      `~BUTTON_LINK`
+      `~ICON_ID`
+      `~BUTTON_LABEL`
+      `~BUTTON_ANCHOR`
+      `~BUTTON_OFUSCATE`
+      `~BUTTON_FONT_ALT`
+      `~BUTTON_COLOR`
+      (dict
+        "label"          `Subelementos`
+        "label_singular" `Subelemento`
+        "name"           `items`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.label}}"
+        "allow_add"      true
+        "required"       false
+        "fields"         (slice
+          `~BUTTON_LINK`
+          `~ICON_ID`
+          `~BUTTON_LABEL`
+          `~BUTTON_ANCHOR`
+          `~BUTTON_OFUSCATE`
+          `~BUTTON_FONT_ALT`
+          `~BUTTON_COLOR`
+        )
+      )
+    )
+  ))
+  (dict "&MENU_LOGO"         (dict "label" `Logo`                  "name" `logo`         "widget" `image`   "required" false "max_file_size" 512000000))
+  (dict "&MENU_HIDE"         (dict "label" `Ocultar`               "name" `hide`         "widget" `boolean` "required" false))
+  (dict "&MENU_HIDE_STICKY"  (dict "label" `Ocultar Pegado`        "name" `hide_sticky`  "widget" `boolean` "required" false "hint" "Deja el menú accesible solamente mediante botón de hamburguesa"))
+  (dict "&MENU_HIDE_MODALS"  (dict "label" `Ocultar Modales`       "name" `hide_modals`  "widget" `boolean` "required" false "hint" "Ocultar enlaces hacia secciones de tipo modal como subelementos desplegables (recomendado si hay muchos)"))
+  (dict "&MENU_HIDE_ANCHORS" (dict "label" `Ocultar Enlaces Ancla` "name" `hide_anchors` "widget" `boolean` "required" false "hint" "Oculta todos los enlaces que llevan a cada sección"))
+  (dict "&BASE_MENU" (dict
+    "label"     `Menú`
+    "name"      `menu`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "i18n"      true
+    "fields"    (slice
+      `~MENU_LOGO`
+      `~MENU_HIDE`
+      `~MENU_HIDE_STICKY`
+      `~MENU_HIDE_MODALS`
+      `~MENU_HIDE_ANCHORS`
+      `~MENU_ITEMS`
+    )
+  ))
+  (dict "&BASE_MENU_TEMPLATE" (dict
+    "<<" (slice
+      (dict "fields" (slice
+        `~MENU_LOGO`
+        `~MENU_HIDE`
+        `~MENU_HIDE_STICKY`
+        `~MENU_HIDE_MODALS`
+        `~MENU_HIDE_ANCHORS`
+        | append $menu_langs
+      ))
+      (dict "i18n" false)
+      `~BASE_MENU`
+    )
+  ))
+}}
+
+
+{{/*  CALLNOW  */}}
+{{ $callnow_langs  := slice }}
+{{ range site.Languages }}
+  {{ $callnow_langs = $callnow_langs | append (dict "<<" (slice
+    (dict "name" .Lang)
+    (dict "label" (print "Elementos " (i18n (print "option-langs-" .Lang))))
+    `~CALLNOW_ITEMS`
+  )) }}
+{{ end }}
+{{ $colections = $colections | append
+  (dict "&CALLNOW_HIDE" (dict "label" `Ocultar` "name" `hide` "widget" `boolean` "required" false))
+  (dict "&CALLNOW_ITEMS" (dict
+    "label"          `Botones`
+    "label_singular" `Botón`
+    "name"           `items`
+    "widget"         `list`
+    "summary"        "{{fields.label}}"
+    "collapsed"      true
+    "allow_add"      true
+    "required"       false
+    "types"     (slice
+      (dict "label" `Teléfono` "name" `phone`    "widget" `object` "fields" (slice `~CONTACT_LABEL_PHONE` `~BUTTON_COLOR` `~ICON_ID`))
+      (dict "label" `WhatsApp` "name" `whatsapp` "widget" `object` "fields" (slice `~CONTACT_LABEL_PHONE` `~BUTTON_COLOR`))
+      (dict
+        "label"  `Personalizado`
+        "name"   `custom`
+        "widget" `object`
+        "fields" (slice
+          `~BUTTON_LINK`
+          `~ICON_ID`
+          `~CONTACT_LABEL`
+          `~BUTTON_OFUSCATE`
+          `~BUTTON_COLOR_WITHOUT_NONE`
+          `~BUTTON_GA4`
+        )
+      )
+    )
+  ))
+  (dict "&BASE_CALLNOW" (dict
+    "label"     `Botones de Esquina`
+    "name"      `callnow`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "i18n"      true
+    "fields"    (slice
+      `~CALLNOW_HIDE`
+      `~CALLNOW_ITEMS`
+    )
+  ))
+  (dict "&BASE_CALLNOW_TEMPLATE" (dict
+    "<<" (slice
+      (dict "fields" (slice
+        `~CALLNOW_HIDE`
+        | append $callnow_langs
+      ))
+      (dict "i18n" false)
+      `~BASE_CALLNOW`
+    )
+  ))
+}}
+
+
+{{/*  SECTIONS  */}}
+{{ $colections = $colections | append
+  (dict "&SECTIONS_FIELDS" (slice
+    `~ICON_ID`
+    `~ICON_TYPE`
+    `~ICON_SIZE`
+    `~ICON_COLOR`
+    `~IMAGE_SRC`
+    `~IMAGE_RATIO`
+    `~IMAGE_CONTAIN`
+    `~IMAGE_BORDER`
+    `~IMAGE_INSET`
+    `~UPPERCASE`
+    `~UNDERLINE`
+    `~ALIGN`
+    `~SECTION_FULL`
+    `~PADDING_HIDE`
+    `~PADDING_TOP`
+    `~PADDING_BOTTOM`
+    `~COLOR`
+    `~GRADIENT_COLOR`
+    `~GRADIENT_TYPE`
+    `~BACKGROUND_IMAGE`
+    `~BG_OPACITY`
+    `~PARALLAX`
+    `~PILL`
+    `~CONTAINER_SIZE`
+    `~CONTAINER_COLOR`
+    `~CONTAINER_GRADIENT_COLOR`
+    `~CONTAINER_GRADIENT_TYPE`
+    `~CONTAINER_OPACITY`
+    `~HIDE_SHADOW`
+    `~DIVIDER_ID`
+    `~DIVIDER_FLIP_X`
+    `~DIVIDER_FLIP_Y`
+  ))
+  (dict "&MODALS_FIELDS" (slice
+    `~ICON_ID`
+    `~ICON_TYPE`
+    `~ICON_SIZE`
+    `~ICON_COLOR`
+    `~IMAGE_SRC`
+    `~IMAGE_RATIO`
+    `~IMAGE_CONTAIN`
+    `~IMAGE_BORDER`
+    `~IMAGE_INSET`
+    `~UPPERCASE`
+    `~UNDERLINE`
+    `~ALIGN`
+    `~COLOR`
+    `~GRADIENT_COLOR`
+    `~GRADIENT_TYPE`
+    `~PILL`
+    `~CONTAINER_SIZE`
+  ))
+  (dict "&BASE_SECTION"   (dict "label" `Diseño Común de Secciones`    "name" `section`   "widget" `object` "collapsed" true "required" false "fields" `~SECTIONS_FIELDS`))
+  (dict "&BASE_ALTERNATE" (dict "label" `Diseño de Secciones Alternas` "name" `alternate` "widget" `list`   "collapsed" true "required" false "fields" `~SECTIONS_FIELDS` "label_singular" `Sección` "allow_add" true "required" false "hint" "Ejemplo: si hay 1 diseño, se alternarán entre las secciones pares; si hay 2, se alternarán cada 3 (el 1º se toma del general)…"))
+  (dict "&BASE_MODALS"    (dict "label" `Diseño de Modales`            "name" `modals`    "widget" `object` "collapsed" true "required" false "fields" `~MODALS_FIELDS`))
+  (dict "&BASE_SECTIONS"          (dict
+    "label"          `Secciones`
+    "label_singular" `Sección`
+    "name"           `sections`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.file}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      (dict
+        "label"          `Archivo`
+        "name"           `file`
+        "widget"         `relation`
+        "options_length" 100
+        "collection"     `sections`
+        "value_field"    "{{slug}}"
+        "search_fields"  (slice "{{slug}}")
+        "display_fields" (slice "{{slug}}")
+        "required"       false
+        "hint"           (print "Indica una [sección previamente creada](#/collections/sections-" .Lang ")")
+      )
+      (dict
+        "label"          `Ventanas Modales`
+        "label_singular" `Ventana Modal`
+        "name"           `modals`
+        "widget"         `list`
+        "collapsed"      true
+        "summary"        "{{fields.file}}"
+        "allow_add"      true
+        "required"       false
+        "hint"          "Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **ejemplo**: '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión"
+        "fields"         (slice
+          (dict
+            "label"          `Archivo`
+            "name"           `file`
+            "widget"         `relation`
+            "options_length" 100
+            "collection"     `modals`
+            "value_field"    "{{slug}}"
+            "search_fields"  (slice "{{slug}}")
+            "display_fields" (slice "{{slug}}")
+            "required"       false
+            "hint"           (print "Indica una [modal previamente creada](#/collections/modals-" .Lang ")")
+          )
+        )
+      )
+    )
+  ))
+}}
+
+
+{{ return $colections }}

@@ -78,6 +78,7 @@ const widgets = [
   // 'file',
   'image',
   'list',
+  'keyvalue',
   'map',
   'markdown',
   'number',

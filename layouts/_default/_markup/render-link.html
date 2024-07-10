@@ -1,6 +1,6 @@
 
 {{- $label := .Text | replaceRE `^btn[\w-]* ` `` -}}
-{{- $anchor   := .Title | replaceRE `^nofollow\s?` `` -}}
+{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` `` -}}
 {{- $noindex  := cond (strings.HasPrefix .Title "nofollow") true nil -}}
 
 {{- $button   := "none" -}}
@@ -29,4 +29,5 @@
   "label"   $label
   "anchor"  $anchor
   "noindex" $noindex
+  "_blank"  (in .Title "_blank")
 ) -}}

@@ -64,6 +64,9 @@
       {{ $p = merge $p . }}
     {{ end }}
   {{ end }}
+  {{ with .Params.base }}
+    {{ $p = merge $p . (dict "base" nil) }}
+  {{ end }}
 
 {{ end }}
 

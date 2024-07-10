@@ -64,9 +64,7 @@ copy-clipboard: Copiar en portapapeles
 copied: ¡Copiado!
 send-email: Enviar email en mi app
 send: Enviar
-send-check: Consiento el tratamiento de mis datos.
-read-more: Leer más
-send-check-link: formularios
+send-check: Consiento el tratamiento de mis datos. [Leer más…](/privacidad/#formularios "_blank")
 form: Formulario
 form-submit-ok: Formulario recibido. ¡Gracias!
 form-submit-wrong: Algo salió mal…
@@ -108,24 +106,60 @@ collection-filter-published: Publicados
 collection-filter-drafts: Borradores
 collection-filter-year: Año
 collection-filter-month: Mes
-collection-settings: Ajustes
-collection-settings-config: Configuración
-collection-settings-styles: Estilos
-collection-settings-lists: Listas
-collection-settings-langs: Idiomas
-collection-settings-langs-defaultContentLanguage: Idioma Principal
-collection-settings-langs-defaultContentLanguageInSubdir: Idioma Principal en Subcarpeta
-collection-settings-langs-disabled: Desactivar
-collection-settings-langs-weight: Orden / Posición
-collection-settings-langs-languageName: Nombre del Idioma
-collection-settings-langs-paginatePath: Enlace Permanente de Paginación
-collection-settings-langs-slug: Slug
-collection-settings-langs-slug-hint: Es el final de la URL o enlace de la página padre de este tipo
-collection-settings-langs-permalinks: Enlaces Permanentes
-collection-settings-langs-permalinks-hint: Es la URL o enlace de las páginas hijo de este tipo, requiere **:slug**, que se sustituye por el slug de cada página
-collection-settings-redirects: Redirecciones
-collection-settings-redirects-hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
-collection-settings-robots-hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
+# main-pages
+collection-p-title: Título
+collection-p-title-hint: Ejemplo → "Día de paseo por el nuevo barrio"
+collection-p-title_seo: Título SEO
+collection-p-title_seo-hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+collection-p-slug: Slug
+collection-p-slug-hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 ****Ejemplo →**** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
+collection-p-description: Resumen
+collection-p-description-hint: Se utiliza para las miniaturas de las listas y para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+collection-p-image: Imagen Principal
+collection-p-image-hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
+collection-p-categories: Categorías
+collection-p-categories-hint: Indica una o varias [categorías previamente creadas](#/collections/categories)
+collection-p-tags: Etiquetas
+collection-p-tags-hint: Indica opcionalmente una o varias [etiquetas previamente creadas](#/collections/tags)
+collection-p-author: Autor
+collection-p-author-hint: Indica un [autor previamente creado](#/collections/authors)
+collection-p-toc: Índice
+collection-p-toc-hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
+collection-p-draft: Borrador
+collection-p-draft-hint: Oculta la página
+collection-p-noindex: No Index
+collection-p-noindex-hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
+collection-p-job_title: Cargo
+collection-p-job_title-hint: Ejemplo → "Podólogo Especialista"
+collection-p-social: Redes Sociales
+collection-p-social-singular: Enlace a Red Social
+collection-p-date: Fecha
+collection-p-date-hint: Formato → 2024-12-31 🔷 Si no se indica, se creará automáticamente con la fecha de hoy
+collection-p-lastmod: Última Modifiación
+collection-p-lastmod-hint: Formato → 2024-12-31
+collection-p-date_ini: Fecha Inicial
+collection-p-date_ini-hint: Formato → 2024-12-31T24:59:59
+collection-p-date_end: Fecha Final
+collection-p-date_end-hint: Formato → 2024-12-31T24:59:59
+collection-p-artist: Artista/s
+collection-p-artist-hint: Ejemplo → "Manolo García"
+collection-p-location: Ubicación
+collection-p-location-hint: Ejemplo → "Sala B"
+collection-p-address: Dirección
+collection-p-address-hint: Ejemplo → "Av. Ciclista Mariano Rojas, 20, 30008 Murcia"
+collection-p-body: Contenido
+collection-p-body-hint: print "Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**-main**", "**-alt**", "**-light**", "**-dark**", "**-invert**", "**-font-alt**" o "**-icon**") se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon-**" seguido de uno de los siguientes nombres válidos → " . (cond (not site.Data.styles.icons.emojis) " o emojis" "")
+collection-p-translationKey: ID Traducción
+collection-p-translationKey-hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
+collection-p-template: Plantilla
+collection-p-template-hint: Indica una [plantilla previamente creada](#/collections/templates)
+collection-p-base: Base
+collection-p-base-hint: Estas opciones y estructuras sobreescriben las de las plantillas
+collection-p-custom: Parámetros de Página Personalizados
+collection-p-custom-key_label: Clave
+collection-p-custom-value_label: Valor
+collection-p-custom-hint: Aquí puedes añadir parámetros para luego utilizar en las secciones de plantillas con "**\{\{% param custom.ejemplo %\}\}**"
+# types
 collection-blog: Blog
 collection-blog-singular: Entrada
 collection-blog-description: Páginas básicas o normales (sin secciones).
@@ -156,9 +190,209 @@ collection-sections-singular: Sección
 collection-sections-description: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
 collection-modals: Modales
 collection-modals-singular: Modal
-collection-modals-description: 'Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un "#" delante del ID, **ejemplo**: "#reparaciones-mantenimiento").'
+collection-modals-description: Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un "#" delante del ID, **Ejemplo →** "#reparaciones-mantenimiento").
+collection-templates: Plantillas
+collection-templates-singular: Plantilla
+collection-templates-description: Plantillas para asignar a cada página y tipos de páginas. Es necesario crearlas aquí antes de poder asignarlas.
 collection-types: Tipos
-collection-types-description: 'Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE: Artículos se consideran todos los tipos de páginas excepto las Personalizadas y sus Secciones y Modales correspondientes.'
+collection-types-description: Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE → Artículos se consideran todos los tipos de páginas excepto las Personalizadas y sus Secciones y Modales correspondientes.
+# settings
+collection-settings: Ajustes
+collection-settings-config: Configuración
+collection-settings-config-title: Título
+collection-settings-config-description: Descripción
+collection-settings-config-logo: Logo
+collection-settings-config-legal: Legal
+collection-settings-config-legal-hint: Información para rellenar datos en los avisos legales, de privacidad y de cookies
+collection-settings-config-legal-name: Nombre Legal
+collection-settings-config-legal-dni: DNI / CIF
+collection-settings-config-legal-email: Email
+collection-settings-config-legal-location: Ubicación
+collection-settings-config-legal-country: País
+collection-settings-config-schema: Schema
+collection-settings-config-schema-hint: Marcado de datos estructurados (útil para el SEO)
+collection-settings-config-schema-types: Tipo de Negocio
+collection-settings-config-schema-alternate_names: Títulos o Nombres Alternativos
+collection-settings-config-schema-alternate_names-singular: Título / Nombre Alternativo
+collection-settings-config-schema-same_as: Redes Sociales
+collection-settings-config-schema-same_as-singular: Enlace a Red Social
+collection-settings-config-schema-phones: Teléfonos
+collection-settings-config-schema-phones-singular: Teléfono
+collection-settings-config-schema-address: Direcciones
+collection-settings-config-schema-address-singular: Dirección
+collection-settings-config-schema-address-name: Nombre en Google Maps
+collection-settings-config-schema-address-street: Calle
+collection-settings-config-schema-address-pc: Código Postal
+collection-settings-config-schema-address-locality: Localidad
+collection-settings-config-schema-address-region: Región
+collection-settings-config-schema-address-country: País
+collection-settings-config-schema-address-country-hint: Recomendado usar [código de país de 2 letras](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+collection-settings-config-schema-address-geo: Coordenadas
+collection-settings-config-schema-address-link: Enlace a Mapa
+collection-settings-config-schema-open: Horarios
+collection-settings-config-schema-open-singular: Horario
+collection-settings-config-schema-open-days: Días de la Semana
+collection-settings-config-schema-open-opens: Apertura
+collection-settings-config-schema-open-closes: Cierre
+collection-settings-config-schema-open-from: Válido Desde
+collection-settings-config-schema-open-to: Válido Hasta
+collection-settings-config-schema-open-valid-hint: Formato → 2024-12-31
+collection-settings-config-schema-rating: Reseñas
+collection-settings-config-schema-rating-singular: Reseña
+collection-settings-config-schema-rating-count: Número de Reseñas
+collection-settings-config-schema-rating-value: Valor Promedio (máximo 5)
+collection-settings-config-schema-prices: Rango de Precios
+collection-settings-config-langs: Tipos de Artículos
+collection-settings-config-langs-hint: Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. **IMPORTANTE:** Artículos se consideran todos los tipos de páginas excepto las Personalizadas y sus Secciones y Modales correspondientes.
+collection-settings-config-others: Otros
+collection-settings-config-others-google_analytics: Código Analytics
+collection-settings-config-others-google_analytics-hint: 'Código de seguimiento de Google Analytics 🔷 Ejemplo → G-XXXXXXXXXX'
+collection-settings-config-others-google_site_verification: Código Search Console
+collection-settings-config-others-google_site_verification-hint: Código de Verificación de Google Search Console
+collection-settings-config-others-google_file_verification: Archivo Search Console
+collection-settings-config-others-google_file_verification-hint: Nombre de Archivo de Verificación de Google Search Console 🔷 **Ejemplo →** google7467d923cbb3eb4c.html
+collection-settings-config-others-disqus: Disqus
+collection-settings-config-others-disqus-hint: Nombre corto del sistema de comentarios disqus.com
+collection-settings-config-others-cookies_legal: Cookies Legal
+collection-settings-config-others-cookies_legal-hint: Hace que se aplique la ley realmente a nivel técnico
+collection-settings-config-others-analytics_pagespeed: Analytics PageSpeed
+collection-settings-config-others-process_all_images: Procesar todas las imágenes
+collection-settings-config-others-cms: CMS
+collection-settings-config-others-cms_editorial_workflow: CMS con Flujo Editorial
+collection-settings-config-others-cms_editorial_workflow-hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
+collection-settings-config-others-development: Modo Desarrollo
+collection-settings-config-others-development-hint: Aplica los cambios más rápido en producción, pero empeora el rendimiento para los usuarios
+collection-settings-config-others-custom_code: Códigos Personalizados
+collection-settings-config-others-custom_code-html_head: HTML antes de </head>
+collection-settings-config-others-custom_code-html_body: HTML antes de </body>
+collection-settings-config-others-custom_code-css: CSS
+collection-settings-config-others-custom_code-js: Javascript
+collection-settings-styles: Estilos
+collection-settings-styles-icons: Iconos
+collection-settings-styles-icons-type: Tipo de Iconos
+collection-settings-styles-icons-sharp: Iconos Afilados
+collection-settings-styles-icons-emojis: Tipo de Emojis
+collection-settings-styles-icons-emojis_default: Cambiar iconos base por emojis
+collection-settings-styles-fonts: Fuentes
+collection-settings-styles-fonts-google: Google Fonts
+collection-settings-styles-fonts-google-hint: Activar Fuentes de Google
+collection-settings-styles-fonts-base: Fuente Base
+collection-settings-styles-fonts-cursive: Manuscrita
+collection-settings-styles-fonts-title: Títulos
+collection-settings-styles-fonts-blockquote_cursive: Citas Manuscritas
+collection-settings-styles-fonts-blockquote_cursive-hint: Citas con Fuente Manuscrita ; Desactivadas se usará 'Times New Roman' cursiva
+collection-settings-styles-colors: Colores
+collection-settings-styles-colors-main: Principal
+collection-settings-styles-colors-alt: Alternativo
+collection-settings-styles-colors-alt-hint: Usado para subtítulos, bordes y como seleccionable
+collection-settings-styles-colors-link: Enlaces
+collection-settings-styles-colors-link-hint: Color para los enlaces y botones por defecto 🔷 Si no se especifica, se considerará igual que el principal
+collection-settings-styles-base: Base
+collection-settings-styles-base-white: Blanco
+collection-settings-styles-base-light: Claro
+collection-settings-styles-base-grey: Gris
+collection-settings-styles-base-dark: Oscuro
+collection-settings-styles-base-black: Negro
+collection-settings-styles-rounded: Esquinas Redondeadas
+collection-settings-styles-rounded-radius: Radio
+collection-settings-styles-rounded-radius-hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas 🔷 Si el valor es 0 no se redondea nada 🔷 Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas 🔷 Máximo 1.25
+collection-settings-styles-rounded-chamfer: Chaflán
+collection-settings-styles-rounded-chamfer-hint: Cambia las esquinas redondeadas por chaflanes (cortes rectos)
+collection-settings-styles-buttons: Botones
+collection-settings-styles-buttons-font_main: Fuente Principal
+collection-settings-styles-buttons-font_alt: Fuente Alternativa
+collection-settings-styles-buttons-sides_round: Laterales Redondos
+collection-settings-styles-buttons-sides_round-hint: Redondea las esquinas hasta el máximo
+collection-settings-styles-buttons-icon_circle: Iconos Círculares
+collection-settings-styles-buttons-icon_circle-hint: Redondea las esquinas hasta convertir en círculos los que solamente tienen un icono grande
+collection-settings-styles-buttons-deep: 3D
+collection-settings-styles-buttons-deep-hint: Efecto 3D o de profundidad
+collection-settings-styles-buttons-outline: Borde y Hueco
+collection-settings-styles-buttons-outline-hint: Deja bordes sólidos y rellenos transparente
+collection-settings-styles-buttons-type: Tipo
+collection-settings-styles-buttons-bold: Negrita
+collection-settings-styles-buttons-uppercase: Mayúsculas
+collection-settings-styles-inputs: Campos de Formularios
+collection-settings-styles-inputs-fill: Rellenos
+collection-settings-styles-inputs-fill-hint: Aplica un fondo de color blanco con esquinas redondeadas en cada campo simple
+collection-settings-styles-shadow: Sombras
+collection-settings-styles-shadow-left: Posición Horizontal
+collection-settings-styles-shadow-top: Posición Vertical
+collection-settings-styles-shadow-blur: Difuminado
+collection-settings-styles-shadow-opacity: Opacidad
+collection-settings-styles-lightbox_overlay: Fondo de Diapositivas
+collection-settings-styles-lightbox_overlay-opacity: Opacidad
+collection-settings-styles-performance: Rendimiento
+collection-settings-styles-performance-hint: Desactivar cada opción mejora el rendimiento (considerable para dispositivos poco potentes)
+collection-settings-styles-performance-showup: Aparecer
+collection-settings-styles-performance-showup-hint: Efecto de aparecer al hacer scroll en todos los elementos
+collection-settings-styles-performance-parallax: Parallax
+collection-settings-styles-performance-parallax-hint: Cambia los efectos de fondo fijado por desplazamientos suaves al hacer scroll en las secciones (en los bloques siempre es suave)
+collection-settings-lists: Listas
+collection-settings-lists-_: Todas
+collection-settings-lists-blog: Blog
+collection-settings-lists-events: Eventos
+collection-settings-lists-products: Productos
+collection-settings-lists-taxonomies: Taxonomías
+collection-settings-lists-pages: Páginas
+collection-settings-lists-page: Personalizadas
+collection-settings-lists-related: Relacionados
+collection-settings-langs: Idiomas
+collection-settings-langs-default: Idioma Principal
+collection-settings-langs-default_subdir: Idioma Principal en Subcarpeta
+collection-settings-langs-disabled: Desactivar
+collection-settings-langs-weight: Orden / Posición
+collection-settings-langs-name: Nombre del Idioma
+collection-settings-langs-paginate: Enlace Permanente de Paginación
+collection-settings-langs-slug: Slug
+collection-settings-langs-slug-hint: Es el final de la URL o enlace de la página padre de este tipo
+collection-settings-langs-permalinks: Enlaces Permanentes
+collection-settings-langs-permalinks-hint: Es la URL o enlace de las páginas hijo de este tipo, requiere **:slug**, que se sustituye por el slug de cada página
+collection-settings-langs-draft-hint: Oculta la página padre y todas sus hijas
+collection-settings-langs-template: Plantilla para Páginas Hijas
+collection-settings-langs-template-hint: Indica una [plantilla previamente creada](#/collections/templates) 🔷 Esta se aplicará a cada una de las páginas hijas
+collection-settings-langs-base: Base para Páginas Hijas
+collection-settings-langs-base-hint: Estas opciones y estructuras se aplicarán a cada una de las páginas hijas
+collection-settings-redirects: Redirecciones
+collection-settings-redirects-hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
+collection-settings-robots-hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
+
+
+
+# # base / template
+# base-header_article:
+# base-base-background:
+# # menu
+# base-menu-hide:
+# base-menu-logo:
+# base-menu-sticky:
+# base-menu-header:
+# base-menu-header_align:
+# base-menu-size:
+# base-menu-transparent:
+# base-menu-color:
+# base-menu-gradient:
+# base-menu-gradient_type:
+# base-menu-bg:
+# base-menu-parallax:
+# base-menu-hide_sections:
+# base-menu-hide_modals:
+# base-menu-hide_icons:
+# base-menu-langs_group:
+# base-menu-google_translate:
+# base-menu-es:
+# # callnow
+# base-callnow:
+# base-callnow-hide:
+# base-callnow-es:
+# # sections
+# base-section:
+# base-alternate:
+# base-modal:
+# base-sections:
+
+
+
 # fields
 field-family: Familia
 field-weight: Grosor
@@ -244,6 +478,28 @@ field-alt: Estilo Alternativo
 field-wrap: Envoltura
 field-cover: Recorte
 field-images: Imágenes con Diapositivas
+field-contact_label: Texto
+field-contact_phone: Número de Teléfono
+field-contact_full: Ancho Completo
+field-contact_address: Dirección para Mostrar
+field-contact_anchor: Dirección para Enlazar
+field-contact_hidden: hidden
+field-form_name: Nombre
+field-form_placeholder: Resumen
+field-form_hint: Leyenda
+field-form_required: Requerido
+field-form_options: Opciones
+field-form_option: Opción
+field-form_value: Valor
+field-form_accept: Archivos
+field-map: Mapa
+field-section_name: Nombre
+field-section_id: ID
+field-section_full: Alto Mínimo = Pantalla
+field-divider: Divisor
+field-flip_x: Voltear Divisor Horizontal
+field-flip_y: Voltear Divisor Vertical
+# hints
 hint-family: Nombres válidos → [Google Fonts](https://fonts.google.com/)
 hint-contrast: Opciones de cambio del color y textos de botones según el fond
 hint-anchor: Encabezado y Ancla/Anchor Oculto que tendrá el enlace del título y del menú (para SEO)
@@ -265,7 +521,7 @@ hint-ofuscate: Ésto hace que Google no considere el enlace como tal (para SEO)
 hint-ga4: Marcarlo como evento en Google Analytics 4 (para posterior conversión)
 hint-align_max: Alineación del contenido cuando el ancho de la ventana ≥ 1280px
 hint-order: Orden del elemento cuando el ancho de la ventana ≥ 1280px
-hint-size: 'Por defecto: Grande en Secciones, Pequeño en Modales'
+hint-size: Por defecto → **Grande** en Secciones, **Pequeño** en Modales
 hint-active: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
 hint-interval: Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)
 hint-columns: 0 = se calcula automático según el número de elementos y sus anchos
@@ -279,7 +535,19 @@ hint-alt: Cambia el estilo de tipo a rejilla a filas
 hint-wrap: Añade una envoltura de color blanca alrededor del conjunto de imágenes, lo que aparenta bordes
 hint-cover: Recomendado para imágenes normales, no recomendado para logos e imágenes con transparencia de fondo
 hint-images: Sube varias imágenes de una vez que permiten hacer click para que se amplíen como pase de diapositivas
-pattern-icon: Solo minúsculas y guiones medios; sin espacios, eñes, ni caracteres extraños
+hint-form_name: Nombre que tendrá el campo
+hint-form_placeholder: Texto descriptivo del campo; Si no se especifica, se aplicará el nombre anterior
+hint-form_hint: Texto descriptivo del campo que aparece bajo éste
+hint-form_required: Si es obligatorio especificar el campo
+hint-form_option: La opción que verá el usuario
+hint-form_value: El resultado que veremos al recibir el formulario
+hint-form_accept: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas 🔷 **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
+hint-map: Indicar la dirección 🔷 También se puede colocar una URL de iframe o imagen
+hint-section_name: Nombre del archivo
+hint-section_id: Identificador único 🔷 Debe ser único (no repetirse) entre todas las secciones 🔷 Corto 🔷 Descriptivo 🔷 Sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** preguntas-frecuentes
+hint-divider: Visibles en → [sansoul.netlify.app/divisores/](https://sansoul.netlify.app/divisores/)
+# patterns
+pattern: En minúsculas 🔷 Sin espacios (guiones medios en su lugar) 🔷 Sin eñes (enes en su lugar) 🔷 Sin caracteres extraños ni barras bajas
 # options
 option-langs-es: 🇪🇸 Español
 option-langs-en: 🇬🇧 Inglés
@@ -304,6 +572,7 @@ option-color_base-dark: Oscuro
 option-color_base-invert: Invertido (Claro u Oscuro según fondo)
 option-color_base-whatsapp: WhatsApp
 option-color_base-none: Sin Color (tipo Enlace simple)
+option-color_base-hide: Ocultar Botón / Enlace
 option-divider-arrow-four: Flecha 4 Puntas
 option-divider-arrow-op-alt: Flecha con Opacidad Alternativa
 option-divider-arrow-op-fan: Flecha con Opacidad en Abanico
@@ -422,6 +691,9 @@ option-icons_type-duotone: Duotonos
 option-icons_emojis-twemoji: Twemoji (Twiter)
 option-icons_emojis-twemoji-scale: Twemoji (Twiter) con escalado de colores
 option-icons_emojis-noto-bw: Noto (Android) en monocromo
+option-buttons_type-base: Base
+option-buttons_type-title: Título
+option-buttons_type-cursive: Cursiva
 option-sizes-xs: Muy Pequeño
 option-sizes-sm: Pequeño
 option-sizes-md: Mediano
@@ -430,13 +702,13 @@ option-sizes-xl: Muy Grande
 option-sizes-fluid: Fluido
 option-ratio-normal: Normal
 option-ratio-circle: Circular
-option-dayOfWeek-Monday: Lunes
-option-dayOfWeek-Tuesday: Martes
-option-dayOfWeek-Wednesday: Miércoles
-option-dayOfWeek-Thursday: Jueves
-option-dayOfWeek-Friday: Viernes
-option-dayOfWeek-Saturday: Sábado
-option-dayOfWeek-Sunday: Domingo
+option-days-monday: Lunes
+option-days-tuesday: Martes
+option-days-wednesday: Miércoles
+option-days-thursday: Jueves
+option-days-friday: Viernes
+option-days-saturday: Sábado
+option-days-sunday: Domingo
 option-location_type-Organization: Organización
 option-location_type-Airline: → Aerolínea
 option-location_type-Consortium: → Consorcio

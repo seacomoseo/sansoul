@@ -3,7 +3,7 @@
 
 {{ if not $country }}
   {{ with $config.schema.address }}
-    {{ $country = (index . 0).addressCountry }}
+    {{ $country = (index . 0).country }}
   {{ else }}
     {{ $country = "España" }}
   {{ end }}

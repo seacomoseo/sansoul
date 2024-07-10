@@ -1,0 +1,59 @@
+{{ $default := dict }}
+{{ with readFile "./themes/sansoul/hugo.default.yml" }}
+  {{ with unmarshal . }}
+    {{ $default = .languages }}
+  {{ end }}
+{{ end }}
+
+{{ $type_files := slice }}
+{{ range slice
+  "pages"
+  "blog"
+  "events"
+  "products"
+  "categories"
+  "tags"
+  "authors"
+}}
+  {{ $lang       := index $default page.Lang }}
+  {{ $permalinks := $lang.permalinks }}
+  {{ $type_files = $type_files | append (dict
+    "label"     (i18n (print "collection-" .))
+    "name"      .
+    "widget"    `object`
+    "required"  false
+    "collapsed" true
+    "fields"    (slice
+      (dict "label" (i18n "collection-p-title")      "name" `title`     "widget" `string` "i18n" true "required" false)
+      (dict "label" (i18n "collection-p-title_seo")  "name" `title_seo` "widget" `string` "i18n" true "required" false "hint" (i18n "collection-p-title_seo-hint"))
+      (dict
+        "label"    (i18n "collection-settings-langs-slug")
+        "name"     `slug`
+        "widget"   `string`
+        "required" false
+        "hint"     (print (i18n "collection-settings-langs-slug-hint") " 🔷 " (i18n "default") ": **" (index $permalinks.section .) "**")
+      )
+      (dict
+        "label"    (i18n "collection-settings-langs-permalinks")
+        "name"     `permalinks`
+        "widget"   `string`
+        "required" false
+        "hint"     (print (i18n "collection-settings-langs-permalinks-hint") " 🔷 " (i18n "default") ": **" (index $permalinks.page .) "**")
+      )
+      (dict "label" (i18n "collection-p-description") "name" `description` "widget" `text`     "i18n" true        "required" false         "hint" (i18n "collection-p-description-hint"))
+      (dict "label" (i18n "collection-p-image")       "name" `image`       "widget" `image`    "i18n" `duplicate` "required" false      "choose_url" true  "max_file_size" 512000000 "hint" (i18n "collection-p-image-hint"))
+      | append
+      (cond
+        (eq "pages" .)
+        slice
+        (dict "label" (i18n "collection-p-draft")     "name" `draft`       "widget" `boolean`  "i18n" true        "required" false         "hint" (i18n "collection-settings-langs-draft-hint"))
+      )
+      | append
+      (dict "label" (i18n "collection-p-noindex")     "name" `noindex`     "widget" `boolean`  "i18n" true        "required" false         "hint" (i18n "collection-p-noindex-hint"))
+      `~P_BODY`
+      (dict "<<" (slice (dict "label" (i18n "collection-settings-langs-template") "hint" (i18n "collection-settings-langs-template-hint")) `~P_TEMPLATE`))
+      (dict "<<" (slice (dict "label" (i18n "collection-settings-langs-base")     "hint" (i18n "collection-settings-langs-base-hint"))     `~P_BASE`))
+    )
+  ) }}
+{{ end }}
+{{ return dict "&SETTINGS_CONFIG_TYPES" $type_files }}

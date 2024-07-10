@@ -1,6 +1,6 @@
 {{ return slice
-  (dict "&DATA_ARTICLES_COMMON" (dict
-    "label"     `Todas`
+  (dict "&LISTS" (dict
+    "label"     (i18n "collection-settings-lists-_")
     "name"      `_`
     "widget"    `object`
     "collapsed" true
@@ -47,5 +47,15 @@
       `~SLIDER_HIDE_BULLETS`
       `~SLIDER_HIDE_ARROWS`
     )
+  ))
+  (dict "&SETTINGS_LISTS" (slice
+    `~LISTS`
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-blog")       "name" `blog`)       `~LISTS`))
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-events")     "name" `events`)     `~LISTS`))
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-products")   "name" `products`)   `~LISTS`))
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-taxonomies") "name" `taxonomies`) `~LISTS`))
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-pages")      "name" `pages`)      `~LISTS`))
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-page")       "name" `page`)       `~LISTS`))
+    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-related")    "name" `related`)    `~LISTS`))
   ))
 }}

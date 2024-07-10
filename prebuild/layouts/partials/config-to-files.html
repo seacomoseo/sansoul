@@ -2,7 +2,7 @@
   {{ $languages := dict }}
 
   {{ range $lang, $lang_value := . }}
-    {{ if not (in $lang "defaultContentLanguage") }}
+    {{ if not (in $lang "default") }}
       {{ $language := dict }}
 
       {{ with index site.Data (print "config." $lang) }}
@@ -48,11 +48,11 @@
       {{ $languages = merge $languages $language
         (dict
           $lang (merge
-            (cond (ne nil .baseURL)      (dict "baseURL"      .baseURL)      dict)
-            (cond (ne nil .disabled)     (dict "disabled"     .disabled)     dict)
-            (cond (ne nil .weight)       (dict "weight"       .weight)       dict)
-            (cond (ne nil .languageName) (dict "languageName" .languageName) dict)
-            (cond (ne nil .paginatePath) (dict "paginatePath" .paginatePath) dict)
+            (cond (ne nil .baseURL)  (dict "baseURL"      .baseURL)  dict)
+            (cond (ne nil .disabled) (dict "disabled"     .disabled) dict)
+            (cond (ne nil .weight)   (dict "weight"       .weight)   dict)
+            (cond (ne nil .name)     (dict "languageName" .name)     dict)
+            (cond (ne nil .paginate) (dict "paginatePath" .paginate) dict)
           )
         )
       }}
@@ -64,9 +64,9 @@
   {{ if $template }}
     {{ $file   := $template | resources.ExecuteAsTemplate "langs.yml"
       (dict
-        "defaultContentLanguage" (.defaultContentLanguage | default "es")
-        "defaultContentLanguageInSubdir" .defaultContentLanguageInSubdir
-        "languages" $languages
+        "defaultContentLanguage"         (.default | default "es")
+        "defaultContentLanguageInSubdir" .default_subdir
+        "languages"                      $languages
       )
     }}
     {{ $build  := $file.RelPermalink }}

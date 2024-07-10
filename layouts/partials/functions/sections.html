@@ -8,19 +8,7 @@
   {{ with partial "functions/section-by-file" (merge . (dict "type" "sections")) }}
     {{ $section = merge . $section }}
   {{ end }}
-  {{ $if := true }}
-  {{ with $section.if }}
-    {{ if eq . "body" }}
-      {{ $if = $.RawContent }}
-    {{ else if eq . "related" }}
-      {{ $if = ($.Page.GetPage $.Page.Type).Pages.Related (dict "document" $.Page) }}
-    {{ else if eq . "comments" }}
-      {{ $config := partial "functions/config-lang" . }}
-      {{ $if = $config.others.disqus }}
-    {{ else }}
-      {{ $if = index $.Params . }}
-    {{ end }}
-  {{ end }}
+  {{ $if := partial "functions/if" (dict "Page" $.Page "if" $section.if) }}
   {{ if $if }}
     {{ $sections = $sections | append $section }}
   {{ end }}
