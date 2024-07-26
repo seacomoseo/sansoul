@@ -69,19 +69,8 @@
 {{ end }}
 
 {{/*  Images  */}}
-{{ $images_slice := slice
-  "icon.png"
-  $config.logo
-}}
-{{ with where site.Pages "Params.image" "!=" nil }}
-  {{ range . }}
-    {{ with .Params.image }}
-      {{ $images_slice = $images_slice | append . }}
-    {{ end }}
-  {{ end }}
-{{ end }}
 {{ $images := slice }}
-{{ range $images_slice | uniq }}
+{{ range $config.schema.images | append "icon.png" | uniq }}
   {{ if . | and (not (strings.HasPrefix . "http")) }}
     {{ with resources.Get (print "/media/" .) }}
       {{ $images = $images | append .Permalink }}

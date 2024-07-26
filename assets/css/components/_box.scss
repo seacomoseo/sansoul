@@ -94,7 +94,7 @@
 // Span
 .box--span {
   --box-span-min: 1;
-  --box-span-max: 1;
+  --box-span-max: var(--box-span-min, 1);
   @include fluid-size(--box-span, 1, var(--box-span-min), var(--box-span-max));
   --box-width: calc(var(--box-w) * var(--box-span) + var(--gap-width) * (var(--box-span) - 1));
 }

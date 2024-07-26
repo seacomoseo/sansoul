@@ -1,110 +1,165 @@
-.logo {
-  width: 100%;
-  @include fluid-size(padding-top, 1rem, 4, 3);
-  padding-bottom: 3em;
-  position: relative;
-  &.bg {
-    background-color: var(--bg-color);
-  }
-}
-.logo__link {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 1em;
-  z-index: 1;
-  position: relative;
-}
-.logo__image {
-  &, img {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    max-height: 4em;
-    height: 4em;
-    fill: unset;
-  }
-}
-.logo__titles {
-  @include fluid-size(font-size, 1em, 0.75, 1);
-}
-.logo__title {
-  color: var(--main);
-  + .logo__subtitle {
-    margin-top: -.75em;
-  }
-}
-.logo__subtitle {
-  display: block;
-  font-size: 1.2em;
-  color: gray;
-}
-.body-menu--logo {
+.body-menu--logo:not(.body-menu--sticky--active) {
   --menu-py: .75em;
-  .logo {
-    position: sticky;
-    top: 0;
-    padding-block: var(--menu-py);
-    transition: padding .3s;
-    z-index: 190;
-    &.bg {
-      filter: drop-shadow($shadow);
-    }
-    &:before {
-      content: '';
-      position: absolute;
-      left: -$shadow-left;
-      width: $shadow-left;
-      height: 100%;
-      background-color: inherit;
-    }
-  }
-  .logo__link {
-    height: 2.25em;
-    max-width: calc(100% - 4em);
-  }
-  .logo__image {
-    height: 100%;
-    max-width: 100%;
-  }
   .menu__toggle {
     top: 0.375em;
+    transition: top .3s, filter .3s;
     @if not $buttons-3d {
       filter: none;
     }
   }
-  &.body-menu--transparent {
+  .logo {
+    top: 0;
+    width: 100%;
+    padding-block: var(--menu-py);
+    transition: background-color .3s, filter .3s;
+    z-index: 190;
+    &.bg {
+      background-color: var(--bg-color);
+    }
+    .container {
+      justify-content: flex-start;
+    }
+  }
+  .logo__link {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1em;
+    z-index: 1;
+    position: relative;
+    height: 2.25em;
+    @include fluid-size(--margin-toggle-right, 1em, 4, 0);
+    max-width: calc(100% - var(--margin-toggle-right, 4em));
+    @media (min-width: 540px) {
+      --margin-toggle-right: 0em;
+    }
+    &:is(.container.align-center *) {
+      justify-content: center;
+    }
+    &:is(.container.align-right *) {
+      justify-content: flex-end;
+    }
+  }
+  .logo__image {
+    &, img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 4em;
+      height: 100%;
+      fill: unset;
+    }
+    flex-shrink: 0;
+    transition: height .3s;
+  }
+  .logo__titles {
+    font-size: 0.67em;
+    text-align: left;
+    transition: font-size .3s;
+  }
+  .logo__title {
+    color: var(--title);
+    + .logo__subtitle {
+      margin-top: -1.25em;
+    }
+  }
+  .logo__subtitle {
+    display: block;
+    font-size: 1.2em;
+    color: var(--subtitle);
+  }
+
+  // BODY-TOP
+  // TRANSPARENT NO STICKY
+  &.body-top,
+  &.body-menu--transparent:not(.body-menu--logo--sticky) {
+    --menu-py: 2.25em;
+    .logo__image {
+      height: 4em;
+    }
+    .logo__titles {
+      font-size: 1em;
+    }
+    .menu__toggle {
+      top: 1.875em;
+      @if not $buttons-3d {
+        filter: drop-shadow($shadow);
+      }
+    }
+  }
+
+  // STICKY
+  &.body-menu--logo--sticky {
     .logo {
       position: fixed;
-      transition: background-color .3s, padding .3s, filter .3s;
+      &.bg {
+        // Fix the left corner
+        filter: drop-shadow(0 $shadow-top $shadow-blur $shadow-color);
+      }
+    }
+  }
+
+  // NOT STICKY
+  &:not(.body-menu--logo--sticky) {
+    .logo {
+      position: sticky;
+    }
+  }
+
+  // NO TRANSPARENT
+  &:not(.body-menu--transparent) {
+    .logo {
+      transition: padding .3s;
+    }
+  }
+
+  // NO TRANSPARENT STICKY
+  &:not(.body-menu--transparent).body-menu--logo--sticky {
+    .logo {
+      position: sticky;
+    }
+  }
+
+  // NO TRANSPARENT NO STICKY
+  &:not(.body-menu--transparent, .body-menu--logo--sticky) {
+    .logo {
+      position: relative;
+    }
+  }
+
+  // TRANSPARENT
+  &.body-menu--transparent {
+    .logo {
+      transition: background-color .3s, filter .3s, padding .3s;
     }
     .logo__image {
       transition: height .3s;
     }
-    .menu__toggle {
-      transition: transform .3s, filter .3s;
-    }
-    --menu-py: .75em;
-    &.body-top {
-      --menu-py: 2.25em;
-      .logo {
-        background-color: transparent;
-        filter: none;
-      }
-      .logo__image {
-        height: 2.75em;
-      }
-      .menu__toggle {
-        transform: translateY(1.5em);
-        @if not $buttons-3d {
-          filter: drop-shadow($shadow);
-        }
-      }
+  }
+
+  // TRANSPARENT NOT STICKY
+  &.body-menu--transparent:not(.body-menu--logo--sticky) {
+    .logo {
+      position: absolute;
+      background-color: transparent;
+      filter: none;
     }
   }
-  .body-menu--sticky--active {
+
+  // TRANSPARENT BODY-TOP STICKY
+  &.body-menu--transparent.body-top.body-menu--logo--sticky {
     .logo {
-      display: none;
+      // position: sticky;
+      background-color: transparent;
+      filter: none;
     }
+  }
+}
+
+
+// NOT LOGO STICKY
+.body-menu--sticky--active {
+  .logo {
+    display: none;
   }
 }

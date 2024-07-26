@@ -12,14 +12,6 @@
       "lang"     .Lang
     ) }}
   {{ end }}
-  {{ if . }}
-    {{ $items = slice (dict
-      "icon"     "globe"
-      "emoji"    "🌐"
-      "label"    (i18n "languages")
-      "items"    $items
-    ) }}
-  {{ end }}
 {{ end }}
 
 {{ return $items }}

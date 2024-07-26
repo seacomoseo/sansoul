@@ -125,7 +125,7 @@
       - [x] `data.redirects.md` > `assets.redirects.md`
       - [x] `aricles.content.title` > `config.logo_title`
       - [x] `aricles.content.subtitle` > `config.logo_subtitle`
-      - [x] `header_article` > `menu.header` with background section and container options
+      - [x] `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
       - [x] `menu.items.normal` > `menu.items` and `menu.items.more` like item with `label: Más` + `icon: plus` + `items`
       - [x] Remove `menu.articles_sticky`
       - [x] Remove `menu.show_blog_auto`
@@ -138,7 +138,7 @@
       - [x] `menu.size_sticky` > `menu.size`
       - [x] `menu.hide_anchors` > `menu.hide_sections`
       - [x] `menu.show_modals` > `menu.hide_modals`
-      - [x] `menu.langs_out` > `menu.langs_group`
+      - [x] Remove `menu.langs_out`
       - [x] Remove `data.menu`
       - [x] Remove `data.sections`
       - [x] Remove `data.modals`
@@ -243,17 +243,16 @@
         - [x] `FONT` and `BASE_COLOR` > `cms/config/settings/styles`
         - [x] `LISTS` > `cms/config/settings/lists`
         - [x] `CONTACT` + `FORM` + `MAP` + `SECTION` + `DIVIDER` > i18n
+      - [x] `section` > `alternate` first section
+      - [x] `alternate` > `section` after 1 section
+      - [x] Menu sticky
       - [ ] `cms/config/base`
       - [ ] `cms/config/collections`
       - [ ] `cms/config/boxes`
       - [ ] Probar selector de `templates` en cms
-      - [ ] `date_ini` > `start`
+      - [ ] `date_ini` > `ini`
       - [ ] `date_end` > `end`
       - [ ] `parallax` boolean > options? [ `none`, `smooth`, `fix` ]
-      - [ ] Menu sticky
-        - [ ] baseof
-        - [ ] css
-        - [ ] js
       - [ ] mv partials sections
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
@@ -271,8 +270,7 @@
       - [ ] Check comments
       - [ ] Check Google Translate ofuscate links and la propia traducción
       - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`
-      - [ ] `T` in CMS labels and hints
-      - [ ] `styles.performance.srcsetx2`
+      - [ ] `styles.performance`
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
   - [ ] ¿Quitar montaje de módulos de `hugo.default.yml`?

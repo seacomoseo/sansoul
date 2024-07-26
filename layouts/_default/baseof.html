@@ -35,17 +35,19 @@
   {{- $body_id = print "body-" $body_id -}}
 
   {{/*  BODY MENU CLASS  */}}
-  {{- $menu                     := $params.menu | default dict -}}
-  {{- $body_menu                := "" -}}
-  {{- $body_menu_logo           := "" -}}
-  {{- $body_menu_sticky         := "" -}}
-  {{- $body_menu_transparent    := "" -}}
-  {{- if not $menu.hide -}}
-    {{- $body_menu               = "body-menu" -}}
-    {{- $body_menu_sticky        = cond (not $menu.sticky) "" (print "body-menu--sticky body-menu--sticky--" $menu.sticky) -}}
-    {{- if or $menu.logo (ne $menu.header "hide") -}}
-      {{- $body_menu_logo        = "body-menu--logo" -}}
-      {{- $body_menu_transparent = cond (not $menu.transparent) "" "body-menu--transparent" -}}
+  {{- $menu                  := $params.menu | default dict -}}
+  {{- $body_menu             := "" -}}
+  {{- $body_menu_logo        := "" -}}
+  {{- $body_menu_sticky      := "" -}}
+  {{- $body_menu_logo_sticky := "" -}}
+  {{- $body_menu_transparent := "" -}}
+  {{- with $menu -}}
+    {{- if not .hide -}}
+      {{- $body_menu                 = "body-menu" -}}
+      {{- $body_menu_logo            = cond (not .logo)        "" "body-menu--logo" -}}
+      {{- $body_menu_sticky          = cond (not .sticky)      "" (print "body-menu--sticky body-menu--sticky--" .sticky) -}}
+      {{- $body_menu_logo_sticky = cond (not .logo_sticky)     "" "body-menu--logo--sticky" -}}
+      {{- $body_menu_transparent     = cond (not .transparent) "" "body-menu--transparent" -}}
     {{- end -}}
   {{- end -}}
 
@@ -57,8 +59,9 @@
     "body-top"
     $body_menu
     $body_menu_logo
-    $body_menu_transparent
     $body_menu_sticky
+    $body_menu_logo_sticky
+    $body_menu_transparent
   -}}
 
   {{/*  BODY ATTRIBUTES  */}}

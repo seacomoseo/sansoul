@@ -28,18 +28,32 @@
   {{ end }}
 
   {{/*  ITEMS CUSTOM  */}}
-  {{ range index .menu page.Lang }}
+  {{ $custom := dict }}
+  {{ with .menu }}
+    {{ with .items }}
+      {{ $custom = . }}
+    {{ else }}
+      {{ with index . page.Lang }}
+        {{ $custom = . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ range $custom }}
     {{ $items = $items | append . }}
   {{ end }}
 
   {{/*  ITEM LANGS  */}}
-  {{ if page.IsTranslated | and (not (.menu.items | jsonify | findRE `"link":"langs"`)) }}
-    {{ $items = $items | append (dict "link" "langs") }}
+  {{ if page.IsTranslated }}
+    {{ if not ($custom | jsonify | findRE `"link":"langs"`) }}
+      {{ $items = $items | append (dict "link" "langs") }}
+    {{ end }}
   {{ end }}
 
   {{/*  ITEM TRANSLATE  */}}
-  {{ if .menu.google_translate | and (not (.menu.items | jsonify | findRE `"link":"translate"`)) }}
-    {{ $items = $items | append (dict "link" "translate") }}
+  {{ if .menu.google_translate }}
+    {{ if not ($custom | jsonify | findRE `"link":"translate"`) }}
+      {{ $items = $items | append (dict "link" "translate") }}
+    {{ end }}
   {{ end }}
 
 
@@ -93,13 +107,7 @@
 
           {{/*  ITEMS  */}}
           {{ range $items }}
-            {{ partial "components/base/menu/item" (merge
-              .
-              (dict
-                "hide_icons"  .menu.hide_icons
-                "langs_group" .menu.langs_group
-              )
-            ) }}
+            {{ partial "components/base/menu/item" (merge . (dict "hide_icons" .menu.hide_icons)) }}
           {{ end }}
 
         </ul>

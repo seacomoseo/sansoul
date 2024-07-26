@@ -1,13 +1,33 @@
-import { screenSticky } from './screen-sticky'
-
 export function initMenuToggle () {
-  document.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('load', () => {
     const menu = document.querySelector('.menu')
 
     if (menu) {
       const menuSticky = document.querySelector('.body-menu--sticky')
-      const menuBreackPoint = screenSticky()
-      const menuNoStickyVisibility = () => !menuSticky || window.innerWidth < menuBreackPoint
+      const breackPoint = screenSticky()
+      const menuNoStickyVisibility = () => !menuSticky || window.innerWidth < breackPoint
+
+      function screenSticky () {
+        let size = 0
+        if (document.querySelector('.body-menu--sticky--xs')) size = 375
+        else if (document.querySelector('.body-menu--sticky--sm')) size = 425
+        else if (document.querySelector('.body-menu--sticky--md')) size = 768
+        else if (document.querySelector('.body-menu--sticky--lg')) size = 1024
+        else if (document.querySelector('.body-menu--sticky--xl')) size = 1280
+        else if (document.querySelector('.body-menu--sticky--auto')) {
+          menu.removeAttribute('hidden')
+          document.body.classList.add('body-menu--sticky--calculate')
+          //
+          const menuItems = [...document.querySelector('.menu__items').children]
+          menuItems.forEach(e => { size += e.offsetWidth })
+          const superiorNumbers = [768, 1024, 1280].filter(num => num > size)
+          size = Math.min(...superiorNumbers)
+          //
+          menu.setAttribute('hidden', 'until-found')
+          document.body.classList.remove('body-menu--sticky--calculate')
+        }
+        return size
+      }
       function menuOpen () {
         menu.removeAttribute('hidden')
         menu.focus()

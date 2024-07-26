@@ -14,9 +14,16 @@
   {{ end }}
 {{ end }}
 
-{{/*  ALTERNATES  */}}
+{{/*  SECTIONS STYLES  */}}
+{{ $first      := dict }}
 {{ $alternates := dict }}
-{{ $alts       := $params.alternate }}
+{{ $alts       := dict }}
+{{ with $params.section }}
+  {{ $first     = index . 0 }}
+  {{ if gt (len .) 1 }}
+    {{ $alts    = after 1 . }}
+  {{ end }}
+{{ end }}
 {{ if gt (len $sections) 1 }}
   {{ with $alts }}
     {{ $len_alts := add (len .) 1 }}
@@ -65,8 +72,8 @@
 
   {{/*  SECTION  */}}
   {{ $section := slice (merge
-    ($params.section | default dict)
-    ($alternate      | default dict)
+    ($first     | default dict)
+    ($alternate | default dict)
     .
     (dict "modals" $modals)
     (dict "id" (partial "functions/id-by-title" .))

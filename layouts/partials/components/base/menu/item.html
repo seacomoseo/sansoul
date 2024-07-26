@@ -2,7 +2,7 @@
   {{- $sub := add ($.sub | default 0) 1 -}}
   {{- if eq .link "langs" -}}
 
-    {{ range partial "components/base/menu/langs" .langs_group }}
+    {{ range partial "components/base/menu/langs" . }}
       {{- partial "components/base/menu/item" (merge . (dict "sub" $sub "hide_icons" $.hide_icons "ofuscate" $.ofuscate)) -}}
     {{ end }}
 
@@ -14,7 +14,7 @@
         (dict
           "icon"      "earth-americas"
           "emoji"     "🌎"
-          "label"     (i18n "translator")
+          "label"     (i18n "translate")
           "translate" true
         )
         .

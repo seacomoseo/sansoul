@@ -114,6 +114,7 @@
           (dict "label" (i18n "collection-settings-config-schema-open-to")     "name" `to`     "widget" `string` "required" false "hint" (i18n "collection-settings-config-schema-open-valid-hint"))
         )
       )
+      (dict "label" (i18n "collection-settings-config-schema-prices") "name" `prices` "widget" `select` "required" false "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
       (dict
         "label"          (i18n "collection-settings-config-schema-rating")
         "label_singular" (i18n "collection-settings-config-schema-rating-singular")
@@ -126,7 +127,7 @@
           (dict "label" (i18n "collection-settings-config-schema-rating-value") "name" `value` "widget" `number` "required" false "value_type" `float` "min" 0 "max" 5 "step" 0.1)
         )
       )
-      (dict "label" (i18n "collection-settings-config-schema-prices") "name" `prices` "widget" `select` "required" false "options" (slice "€" "€€" "€€€" "$" "$$" "$$$"))
+      (dict "label" (i18n "collection-settings-config-schema-images") "name" `images` "widget" `image` "required" false "multiple" true "choose_url" true)
     )
   )
   (dict

@@ -9,8 +9,8 @@ noindex: true
 translationKey: ''
 header_article: false
 background:
-  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
-  gradient: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
+  gradient: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
   gradient_type: '' # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
   bg: ''
   alpha: 0 # [ 0.00 - 1.00 ]
@@ -18,27 +18,23 @@ background:
 menu:
   hide: false
   logo: false
-  sticky: '' # [ xs, sm, md, lg, xl, fluid ]
-  header: '' # [ hide, sticky, fix ] # he's hide when screen > sticky
-  header_align: '' # [ left, center, right ]
+  sticky: '' # [ auto, xs, sm, md, lg, xl, none ]
+  logo_sticky: false # color, gradient and bg is only active with this and when screen < sticky
+  logo_align: '' # [ left, center, right ]
   size: '' # [ xs, sm, md, lg, xl, fluid ]
   transparent: true
-  color: '' # [ white, light, grey, grey-dark, dark, black, main-light, main-dark, alt-light, alt-dark ]
+  color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
   gradient: '' # ¿?
   gradient_type: '' # ¿?
-  bg: '' # ¿?
-  parallax: '' # ¿?
   hide_sections: true
   hide_modals: false
   hide_icons: false
-  langs_group: false
-  google_translate: false
-  es: []
+  google_translate: false # `link: translate` in `items|es` to relocate it
+  es: [] # `link: langs` to relocate langs
 callnow:
   hide: false
   es: []
-section: {}
-alternate: []
+section: []
 modal: {}
 sections:
 - title: Título de Cabecera

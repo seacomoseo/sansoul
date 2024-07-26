@@ -1,8 +1,14 @@
-{{- $boxes         := .boxes | default slice -}}
-{{- $box           := . -}}
-{{- $level         := .level -}}
-{{- $container     := .container -}}
-{{- $showup        := site.Data.styles.performance.showup -}}
+{{- $level     := .level -}}
+{{- $container := .container -}}
+{{- $showup    := site.Data.styles.performance.showup -}}
+{{- $box       := . -}}
+{{- $boxes     := slice -}}
+{{- range .boxes | default slice -}}
+  {{- $if := partial "functions/if" (dict "Page" page "if" .if) -}}
+  {{- if $if -}}
+    {{- $boxes  = $boxes | append . -}}
+  {{- end -}}
+{{- end -}}
 
 {{- $columns       := 1 -}}
 {{- $columns_min   := 1 -}}
@@ -12,7 +18,7 @@
   {{- if eq .columns 0 -}}
     {{- $boxes_span  := 0 -}}
     {{- range $boxes -}}
-      {{- $boxes_span = add $boxes_span (.span | default 1) -}}
+      {{- $boxes_span = add $boxes_span (.span | default .span_min | default 1) -}}
     {{- end -}}
     {{- $columns      = cond (le $boxes_span 6) $boxes_span 3 -}}
   {{- end -}}
@@ -103,27 +109,24 @@
 
         {{ range $key, $value := $boxes }}
           {{/*  BOX  */}}
-          {{ $if := partial "functions/if" (dict "Page" page "if" .if) }}
-          {{ if $if }}
-            {{ partial "components/boxes/box" (merge
-              $parent
-              $.box
-              .
-              (dict
-                "id"           $.id
-                "level"        $level
-                "key"          $key
-                "container"    $container
-                "section"      $.section
-                "first"        $.first
-                "footer"       $.footer
-                "columns"      $columns
-                "columns_min"  $columns_min
-                "is_wrap"      $is_wrap
-                "article_list" $.article_list
-              )
-            ) }}
-          {{ end }}
+          {{ partial "components/boxes/box" (merge
+            $parent
+            $.box
+            .
+            (dict
+              "id"           $.id
+              "level"        $level
+              "key"          $key
+              "container"    $container
+              "section"      $.section
+              "first"        $.first
+              "footer"       $.footer
+              "columns"      $columns
+              "columns_min"  $columns_min
+              "is_wrap"      $is_wrap
+              "article_list" $.article_list
+            )
+          ) }}
         {{ end }}
 
 {{- if $is_wrap -}}
