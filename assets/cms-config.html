@@ -1382,8 +1382,9 @@
       "extension"        `yml`
       "folder"           (print `content.` .Lang `/sections`)
       "create"           true
+      "nested"           (dict "depth" 5)
       "slug"             "{{fields.id}}"
-      "summary"          "{{filename}}"
+      "summary"          "{{dirname}}{{dirname | ternary(' ➡️ ','')}}{{filename}}"
       "sortable_fields"  (dict "fields" (slice "commit_date" "slug" "id" "title"))
       "editor"           (dict "preview" false)
       "fields"           (slice
@@ -1937,7 +1938,7 @@
     "site_domain" (site.BaseURL | replaceRE "^https?://" "")
   )
   "local_backend"  $local
-  "media_folder"  `assets/media`
+  "media_folder"  `assets/media/`
   "public_folder" ``
   "media_library"    (dict
   "max_file_size"  512000000
