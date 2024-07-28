@@ -1,54 +1,131 @@
+{{- $dividers := partial "svg/dividers" . -}}
+{{- $len      := len $dividers -}}
+{{- $width    := mul 8 2048 -}}
+{{- $height   := mul $len 128 -}}
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-  {{ $i := site.Data.styles.icons }}
-  <!-- flags https://hatscripts.github.io/circle-flags/gallery -->
-  {{ if .IsTranslated }}
-    {{ partialCached "svg/flags.svg" . }}
-  {{ end }}
-  <!-- icons 6.1.1 -->
-  {{ partialCached (print "svg/icons/" (cond (and $i.sharp (ne $i.type "duotone")) "sharp-" "") ($i.type | default "solid") ".svg") . }}
-  <symbol id="star-fill" viewBox="0 0 576 512"><path d="M381.2 150.3L524.9 171.5C536.8 173.2 546.8 181.6 550.6 193.1C554.4 204.7 551.3 217.3 542.7 225.9L438.5 328.1L463.1 474.7C465.1 486.7 460.2 498.9 450.2 506C440.3 513.1 427.2 514 416.5 508.3L288.1 439.8L159.8 508.3C149 514 135.9 513.1 126 506C116.1 498.9 111.1 486.7 113.2 474.7L137.8 328.1L33.58 225.9C24.97 217.3 21.91 204.7 25.69 193.1C29.46 181.6 39.43 173.2 51.42 171.5L195 150.3L259.4 17.97C264.7 6.954 275.9-.0391 288.1-.0391C300.4-.0391 311.6 6.954 316.9 17.97L381.2 150.3z"/></symbol>
-  <!-- signs -->
-  <symbol id="sign-simple" viewBox="0 0 500 150" preserveAspectRatio="none"><path d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7"></path></symbol>
-  <symbol id="sign-circle" viewBox="0 0 500 150" preserveAspectRatio="none"><path d="M325,18C228.7-8.3,118.5,8.3,78,21C22.4,38.4,4.6,54.6,5.6,77.6c1.4,32.4,52.2,54,142.6,63.7 c66.2,7.1,212.2,7.5,273.5-8.3c64.4-16.6,104.3-57.6,33.8-98.2C386.7-4.9,179.4-1.4,126.3,20.7"></path></symbol>
-  <!-- brands -->
-  {{ partialCached (print "svg/icons/brands.svg") . }}
-  {{ partialCached (print "svg/icons/brands-" ($i.type | default "solid") ".svg") . }}
-  <!-- emojis 14.0 -->
-  {{ with $i.emojis }}
-    {{ partialCached (print "svg/emojis/" (replace . "-scale" "") ".svg") . }}
-  {{ end }}
-  <!-- svg files -->
-  {{- $files := partial "functions/media-files" (dict "ext" (slice "svg")) -}}
-  {{- range $files -}}
-    {{ `
-  ` }}
-    {{- $svg := (resources.Get . | minify).Content -}}
-    {{- if not ($svg | findRE `svg-src|animat|href|</linearGradient>|</style>`) -}}
-      {{- $svg_head := $svg | findRE `<svg (.*?)>` -}}
-      {{- $svg_head = index $svg_head 0 -}}
-      {{- $svg_width := $svg_head | findRE ` width="(.+?)"` -}}
-      {{- $svg_height := $svg_head | findRE ` height="(.+?)"` -}}
-      {{- $svg_is_viewBox := $svg_head | findRE ` viewBox="(.+?)"` -}}
-      {{- $svg_viewBox := "" -}}
-      {{- if $svg_width | and $svg_height | and (not $svg_is_viewBox) -}}
-        {{- $svg_width = index $svg_width 0 | replaceRE ` width="|"` `` -}}
-        {{- $svg_height = index $svg_height 0 | replaceRE ` height="|"` `` -}}
-        {{- $svg_viewBox = print ` viewBox="0 0 ` $svg_width ` ` $svg_height `"` -}}
-      {{- end -}}
-      {{- $svg_head = $svg_head | replaceRE ` (xmlns|data-name|width|height)=".+?"` `` -}}
-      {{- $svg
-        | replaceRE `<svg (.*?)>` $svg_head
-        | replaceRE
-          `<svg (.*?)>(.+?)</svg>`
-          (print
-            `<symbol id="` (. | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-`) `" `
-            (cond (in $svg `preserveAspectRatio`) `` `preserveAspectRatio="xMidYMid meet" `)
-            $svg_viewBox ` $1>$2</symbol>`
-          )
-      -}}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{ $width }} {{ $height }}" preserveAspectRatio="none">
+
+{{- "" -}}
+
+{{/*  <!-- DIVIDERS -->  */}}
+
+{{- "" -}} <style>
+{{- "" -}}   .d{transform:translate(calc(var(--x, 0) * 2048px), calc(var(--y, 0) * 128px)) scale(var(--fx, 1), var(--fy, 1));transform-origin:center;transform-box:fill-box}
+{{- "" -}}   .c{transform:scale(-1,1);x:-2048}
+{{- "" -}}   .b use:nth-child(1){--x:0;--fx:1;--fy:1}
+{{- "" -}}   .b use:nth-child(2){--x:1;--fx:-1;--fy:1}
+{{- "" -}}   .b use:nth-child(3){--x:2;--fx:1;--fy:-1}
+{{- "" -}}   .b use:nth-child(4){--x:3;--fx:-1;--fy:-1}
+{{- "" -}}   mask use{--y:0}
+{{- "" -}}   mask rect{fill:#fff}
+{{- "" -}}   mask rect,mask+rect{width:8192px;height:128px}
+{{- "" -}}   mask+rect{transform:translate(8192px,calc(var(--y, 0) * 128px))}
+{{- "" -}} </style>
+
+{{- "" }}
+{{ range $k, $v := $dividers -}}
+{{- $n           := add $k 1 -}}
+{{- $s           := mul .size 1024 -}}
+	{{- "" -}} <g id="div-{{ .id }}" style="--y:{{ $k }}{{ if eq .size 2 }};--s:{{ .size }}{{ end }}">
+	{{- "" -}}   <defs>
+	{{- "" -}}     <g class="d" id="d-{{ .id }}">
+	{{- "" -}}      {{ if eq .size 2 }}
+	{{- "" -}}         <g id="c-{{ .id }}">{{ .paths }}</g>
+	{{- "" -}}         <use class="c" href="#c-{{ .id }}"/>
+	{{- "" -}}      {{ else }}
+	{{- "" -}}        {{ .paths }}
+	{{- "" -}}      {{ end }}
+	{{- "" -}}     </g>
+	{{- "" -}}   </defs>
+	{{- "" -}}   <g class="b" id="b-{{ .id }}">
+	{{- "" -}}     <use href="#d-{{ .id }}"/>
+	{{- "" -}}     <use href="#d-{{ .id }}"/>
+	{{- "" -}}     <use href="#d-{{ .id }}"/>
+	{{- "" -}}     <use href="#d-{{ .id }}"/>
+	{{- "" -}}   </g>
+	{{- "" -}}   <mask id="f-{{ .id }}"><rect/><use href="#b-{{ .id }}"/></mask>
+	{{- "" -}}   <rect mask="url(#f-{{ .id }})"/>
+	{{- "" -}} </g>
+
+	{{- "" -}}
+	{{/*
+		<rect x="{{ mul 2048 0 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="blue"/>
+		<rect x="{{ mul 2048 1 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="green"/>
+		<rect x="{{ mul 2048 2 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="yellow"/>
+		<rect x="{{ mul 2048 3 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="orange"/>
+		<rect x="{{ mul 2048 4 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="red"/>
+		<rect x="{{ mul 2048 5 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="purple"/>
+		<rect x="{{ mul 2048 6 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="gray"/>
+		<rect x="{{ mul 2048 7 }}" y="{{ sub (mul $n 128) 128 }}" width="{{ $s }}" height="128" opacity=".5" fill="black"/>
+	*/}}
+
+	{{- "" -}} <view viewBox="{{ mul 2048 0 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-pr"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 1 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-prx"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 2 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-ney"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 3 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-nexy"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 4 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-ne"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 5 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-nex"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 6 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-pry"/>
+	{{- "" -}} <view viewBox="{{ mul 2048 7 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-prxy"/>
+{{ end -}}
+
+
+{{/*  <!-- SYMBOLS -->  */}}
+
+{{- $i := site.Data.styles.icons }}
+{{/*  <!-- flags https://hatscripts.github.io/circle-flags/gallery -->  */}}
+{{- if .IsTranslated -}}
+  {{- partialCached "svg/flags.svg" . -}}
+{{- end -}}
+
+{{/*  <!-- icons 6.1.1 -->  */}}
+{{ partialCached (print "svg/icons/" (cond (and $i.sharp (ne $i.type "duotone")) "sharp-" "") ($i.type | default "solid") ".svg") . }}
+<symbol id="star-fill" viewBox="0 0 576 512"><path d="M381.2 150.3L524.9 171.5C536.8 173.2 546.8 181.6 550.6 193.1C554.4 204.7 551.3 217.3 542.7 225.9L438.5 328.1L463.1 474.7C465.1 486.7 460.2 498.9 450.2 506C440.3 513.1 427.2 514 416.5 508.3L288.1 439.8L159.8 508.3C149 514 135.9 513.1 126 506C116.1 498.9 111.1 486.7 113.2 474.7L137.8 328.1L33.58 225.9C24.97 217.3 21.91 204.7 25.69 193.1C29.46 181.6 39.43 173.2 51.42 171.5L195 150.3L259.4 17.97C264.7 6.954 275.9-.0391 288.1-.0391C300.4-.0391 311.6 6.954 316.9 17.97L381.2 150.3z"/></symbol>
+
+{{/*  <!-- signs -->  */}}
+<symbol id="sign-simple" viewBox="0 0 500 150" preserveAspectRatio="none"><path d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7"></path></symbol>
+<symbol id="sign-circle" viewBox="0 0 500 150" preserveAspectRatio="none"><path d="M325,18C228.7-8.3,118.5,8.3,78,21C22.4,38.4,4.6,54.6,5.6,77.6c1.4,32.4,52.2,54,142.6,63.7 c66.2,7.1,212.2,7.5,273.5-8.3c64.4-16.6,104.3-57.6,33.8-98.2C386.7-4.9,179.4-1.4,126.3,20.7"></path></symbol>
+
+{{/*  <!-- brands -->  */}}
+{{- partialCached (print "svg/icons/brands.svg") . }}
+{{- partialCached (print "svg/icons/brands-" ($i.type | default "solid") ".svg") . }}
+
+{{/*  <!-- emojis 14.0 -->  */}}
+{{- with $i.emojis -}}
+  {{- partialCached (print "svg/emojis/" (replace . "-scale" "") ".svg") . -}}
+{{- end -}}
+
+{{/*  <!-- svg files -->  */}}
+{{- $files := partial "functions/media-files" (dict "ext" (slice "svg")) -}}
+{{- range $files -}}
+  {{ `
+` }}
+  {{- $svg := (resources.Get . | minify).Content -}}
+  {{- if not ($svg | findRE `svg-src|animat|href|</linearGradient>|</style>`) -}}
+    {{- $svg_head := $svg | findRE `<svg (.*?)>` -}}
+    {{- $svg_head = index $svg_head 0 -}}
+    {{- $svg_width := $svg_head | findRE ` width="(.+?)"` -}}
+    {{- $svg_height := $svg_head | findRE ` height="(.+?)"` -}}
+    {{- $svg_is_viewBox := $svg_head | findRE ` viewBox="(.+?)"` -}}
+    {{- $svg_viewBox := "" -}}
+    {{- if $svg_width | and $svg_height | and (not $svg_is_viewBox) -}}
+      {{- $svg_width = index $svg_width 0 | replaceRE ` width="|"` `` -}}
+      {{- $svg_height = index $svg_height 0 | replaceRE ` height="|"` `` -}}
+      {{- $svg_viewBox = print ` viewBox="0 0 ` $svg_width ` ` $svg_height `"` -}}
     {{- end -}}
+    {{- $svg_head = $svg_head | replaceRE ` (xmlns|data-name|width|height)=".+?"` `` -}}
+    {{- $svg
+      | replaceRE `<svg (.*?)>` $svg_head
+      | replaceRE
+        `<svg (.*?)>(.+?)</svg>`
+        (print
+          `<symbol id="` (. | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-`) `" `
+          (cond (in $svg `preserveAspectRatio`) `` `preserveAspectRatio="xMidYMid meet" `)
+          $svg_viewBox ` $1>$2</symbol>`
+        )
+    -}}
   {{- end -}}
-  {{/* SVG FILES LIKE SYMBOLS IN DRAW.SVG
-  */}}
+{{- end -}}
+
+{{/* */}}
 </svg>

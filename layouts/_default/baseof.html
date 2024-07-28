@@ -69,7 +69,7 @@
     "body"  true
     "color" ($params.background.color | default "white"))
   -}}
-  {{- $body_attr  := partial "components/base/section-attr" (merge $background (dict
+  {{- $body_attr  := partial "components/base/sections/attr" (merge $background (dict
     "id"         $body_id
     "body_class" $body_class
   )) -}}
@@ -95,15 +95,15 @@
     {{ partial "components/base/logo" $params }}
 
     {{/*  MENU  */}}
-    {{ partial "components/base/menu" $params }}
+    {{ partial "components/base/menu/_" $params }}
 
     {{/*  MAIN  */}}
     <main>
-      {{ partial "components/base/sections" dict }}
+      {{ partial "components/base/sections/_" dict }}
     </main>
 
     {{/*  FOOTER  */}}
-    {{ partial "components/base/sections" (dict "footer" true) }}
+    {{ partial "components/base/sections/_" (dict "footer" true) }}
 
     {{/*  PRE BODY END  */}}
     {{ partial "components/cookies"         $params }}

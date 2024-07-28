@@ -11,19 +11,6 @@
     {{- $grayscale = cond (not .grayscale) "" " image--grayscale" -}}
   {{- end -}}
 
-  {{ $divider_next := "" }}
-  {{ if .next }}
-    {{ if and .divider (not .footer) (not (or .next.color .next.gradient .next.bg)) }}
-      {{ $flip_y      := cond (not .flip_y) "" "y" }}
-      {{ $flip_x      := cond (not .flip_x) "" "x" }}
-      {{ $flips       := "" }}
-      {{ if or $flip_x $flip_y }}
-        {{ $flips      = print "-" $flip_x $flip_y }}
-      {{ end }}
-      {{ $divider_next = print "divider--next divider--next-" $flips "-" .divider }}
-    {{ end }}
-  {{ end }}
-
   {{- if or .color .gradient -}}
     {{- if and .link .shadow site.Data.styles.buttons.deep -}}
       <div class="bg-color bg-color--3d"></div>
@@ -38,7 +25,6 @@
       $image
       $alpha
       $parallax
-      $divider_next
     )
   ) -}}
 

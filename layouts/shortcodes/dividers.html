@@ -17,10 +17,19 @@
 </style>
 
 {{ range site.Data.options.divider }}
+  {{ $class := "" }}
+  {{ $style := "" }}
+  {{ with partial "components/divider-attr" (dict "section" (dict "divider" .) "next" false) }}
+    {{ $class = .class }}
+    {{ $style = .style }}
+  {{ end }}
+
   <h3 id="divider-{{ . }}">
     <a href="#divider-{{ . }}">{{ . }}</a>
     <br>
     {{ i18n (print "option-divider-" .) }}
   </h3>
-  <div class="divider divider--{{ . }} divider--example"><div class="bg-color"></div></div>
+  <div class="divider--example {{ $class }}" style="{{ $style | safeCSS }}">
+    <div class="bg-color"></div>
+  </div>
 {{ end }}

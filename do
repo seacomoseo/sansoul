@@ -168,51 +168,37 @@ then
 
 # COMMANDS FOR DEPLOY
 
-# purge svg draws for online (when up to gitlab)
-#    used draws
-#      fin all files in public folder
-#      xargs: in each
-#      grep: get draws.svg#id by regex
-#      sort
-#      unique
-#      sed regex replace: remove draws.svg# prefix
-#      join with pipeline
-#      sed regex replace: remove last pipeline
-#      save in used draws auxiliar file
-#    use the used draws auxiliar file like a variable
-#    custom draws file
-#      cat: get file draws
-#      grep: filter only used draws
-#      sed: add xml and svg data format in first line
-#      sed: add svg close tag in last line
-#      save as draws_temp.svg
-#    save draws_temp.svg as draws.svg
-#    if the file generated is empty, write "null"
-#    remove draws_temp.svg and used draws auxiliar file
+# purge svg draws for online (when up to git)
 elif [ $1 = draws-purge ]
 then
 
   echo "${STI} DRAWS PURGE ${STE}"
-  PATH_DRAWS=public/draws.svg
-  PATH_DRAWS_TEMP=public/draws_temp.svg
+  FILE=public/draws.svg
+  TEMP=temp.svg
+  IDSF=ids.txt
+  # Collect id's
   find ./public/ -type f -iname "*.*" | \
     xargs grep -Eoh "draws.svg\#(\w|-|\.)+" | \
     sort | \
     uniq | \
-    sed "s/^draws.svg\#//g" | \
+    sed -E 's/^draws\.svg#|-(pr|ne)x?y?$//g' | \
     tr "\n" "|" | \
-    sed "s/\|$$//g" > \
-    USED_DRAWS.txt
-  USED_DRAWS=`cat USED_DRAWS.txt`
-  cat ${PATH_DRAWS} | \
-    grep -Eo "^  <symbol id=\"(${USED_DRAWS})\".*</symbol>" | \
-    sed '1s/^/<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http:\/\/www.w3.org\/2000\/svg" style="display: none;">/g' | \
-    sed '$s/>$/><\/svg>/g' > \
-    ${PATH_DRAWS_TEMP}
-  cat ${PATH_DRAWS_TEMP} > \
-    ${PATH_DRAWS}
-  [ -s ${PATH_DRAWS} ] || echo "null" > ${PATH_DRAWS}
-  rm ${PATH_DRAWS_TEMP} USED_DRAWS.txt
+    sed -E 's/\|$//g' > \
+    ${IDSF}
+  IDS=`cat ${IDSF}`
+  # Filter original file
+  head -n 2 ${FILE} > ${TEMP}
+  cat ${FILE} | \
+    grep -Eo "^<(symbol|g) id=\"(${IDS})\".+$" >> \
+    ${TEMP}
+  echo "</svg>" >> ${TEMP}
+  # Replace original with filtered
+  cat ${TEMP} > \
+    ${FILE}
+  # If it has no content paint "null"
+  [ -s ${FILE} ] || echo "null" > ${FILE}
+  # Delete temporary files
+  rm ${TEMP} ${IDSF}
 
 # enter in to prebuild folder, build hugo and go back
 elif [ $1 = prebuild ]

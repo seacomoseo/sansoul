@@ -14,6 +14,8 @@
 {{ end }}
 */}}
 {{ $full        := cond (not .full) "" "section--full" }}
+
+{{/*  Background  */}}
 {{ $bg_color    := "" }}
 {{ if not $modal }}
   {{ with .color }}
@@ -35,6 +37,13 @@
 {{ if partial `functions/is-iframe` .bg }}
   {{ $bg_video_parent       = "bg-figure-video-parent" }}
 {{ end }}
+{{ if $modal }}
+  {{ $bg             = "" }}
+  {{ $bg_color       = "" }}
+  {{ $bg_image_fix   = "" }}
+{{ end }}
+
+{{/*  Paddings  */}}
 {{ $padding_hide           := "" }}
 {{ $padding_top_divider    := "" }}
 {{ $padding_bottom_divider := "" }}
@@ -57,26 +66,31 @@
 }}
   {{ $padding_top_divider = "pt-divider" }}
 {{ end }}
-{{ $divider := "" }}
+
+{{/*  Divider Prev  */}}
+{{ $divider       := "" }}
+{{ $divider_style := "" }}
 {{ with .prev }}
   {{ if .divider }}
     {{ if or $.color $.gradient $.bg }}
-      {{ $flip_y   := cond (not .flip_y) "" "y" }}
-      {{ $flip_x   := cond (not .flip_x) "" "x" }}
-      {{ $flips    := "" }}
-      {{ if or .flip_x .flip_y }}
-        {{ $flips   = print "-" $flip_x $flip_y }}
+      {{ with partial "components/divider-attr" (dict "section" . "next" false) }}
+        {{ $divider       = .class }}
+        {{ $divider_style = .style }}
       {{ end }}
-      {{ $divider   = print "divider divider-" $flips "-" .divider }}
-    {{ else }}
-      {{ $divider   = print "divider" }}
     {{ end }}
   {{ end }}
 {{ end }}
-{{ if $modal }}
-  {{ $bg             = "" }}
-  {{ $bg_color       = "" }}
-  {{ $bg_image_fix   = "" }}
+
+{{/*  Divider Next  */}}
+{{ $divider_next       := "" }}
+{{ $divider_next_style := "" }}
+{{ if .next }}
+  {{ if and .divider (not .footer) (not (or .next.color .next.gradient .next.bg)) }}
+    {{ with partial "components/divider-attr" (dict "section" . "next" true) }}
+      {{ $divider_next       = .class }}
+      {{ $divider_next_style = .style }}
+    {{ end }}
+  {{ end }}
 {{ end }}
 
 {{- $class := partial "functions/attr-delimit" (dict
@@ -95,6 +109,7 @@
     $padding_top_divider
     $padding_bottom_divider
     $divider
+    $divider_next
     | append (.body_class | default slice)
   )
 ) -}}
@@ -132,6 +147,8 @@
     $bg_alpha
     $padding_top
     $padding_bottom
+    $divider_style
+    $divider_next_style
   )
 ) }}
 

@@ -14,12 +14,12 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
     /^search__result-/
   ],
   defaultExtractor: (content) => {
-      let els = JSON.parse(content).htmlElements;
-      return els.tags.concat(els.classes, els.ids);
+    const els = JSON.parse(content).htmlElements
+    return els.tags.concat(els.classes, els.ids)
   }
-});
+})
 
-const autoprefixer = require('autoprefixer')({});
+const autoprefixer = require('autoprefixer')({})
 
 const cssnano = require('cssnano')({
   preset: ['default', {
@@ -29,6 +29,6 @@ const cssnano = require('cssnano')({
 
 module.exports = {
   plugins: [
-    ...(process.env.HUGO_ENVIRONMENT === 'production' ? [ purgecss, autoprefixer, cssnano ] : [])
+    ...(process.env.HUGO_ENVIRONMENT === 'production' ? [purgecss, autoprefixer, cssnano] : [])
   ]
-};
+}

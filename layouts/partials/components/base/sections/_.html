@@ -71,11 +71,11 @@
 {{ range $key, $final := $finals }}
 
   {{/* SECTION  */}}
-  {{- partial "components/base/section" (merge . (dict "key" $key)) -}}
+  {{- partial "components/base/sections/section" (merge . (dict "key" $key)) -}}
 
   {{/*  MODALS  */}}
   {{- range $k, $v := .modals -}}
-    {{- partial "components/base/section" (merge . (dict "key" $key "k" $k)) -}}
+    {{- partial "components/base/sections/section" (merge . (dict "key" $key "k" $k)) -}}
   {{- end -}}
 
 {{ end }}

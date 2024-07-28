@@ -126,18 +126,18 @@
 
 {{/*  FAVICON  */}}
 {{ with index (where (readDir "assets/media") "Name" "favicon.ico") 0 }}
-  <link rel="icon" sizes="any" href="{{ (resources.Get `/media/favicon.ico` | resources.Copy `/favicon.ico`).RelPermalink }}">
+  <link rel="icon" sizes="any" href="{{ (resources.Get `/media/base/favicon.ico` | resources.Copy `/favicon.ico`).RelPermalink }}">
 {{ end }}
-{{ $favicon := resources.Get "/media/icon.png" }}
-{{ with resources.Get "/media/icon.svg" }}
+{{ $favicon := resources.Get "/media/base/icon.png" }}
+{{ with resources.Get "/media/base/icon.svg" }}
   <link rel="icon" type="image/svg+xml" href="{{ .RelPermalink }}">
 {{ else }}
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ ($favicon.Resize `32x32` | resources.Copy `/media/favicon-32x32.png`).RelPermalink | safeURL }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ ($favicon.Resize `32x32` | resources.Copy `/media/base/favicon-32x32.png`).RelPermalink | safeURL }}">
 {{ end }}
 {{ if hugo.IsProduction }}
-  <link rel="icon" type="image/png" sizes="192x192" href="{{ ($favicon.Resize `192x192` | resources.Copy `/media/favicon-192x192.png`).RelPermalink | safeURL }}">
-  <link rel="icon" type="image/png" sizes="512x512" href="{{ ($favicon.Resize `512x512` | resources.Copy `/media/favicon-512x512.png`).RelPermalink | safeURL }}">
-  <link rel="apple-touch-icon" href="{{ ($favicon.Resize `180x180` | resources.Copy `/media/favicon-180x180.png`).RelPermalink | safeURL }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ ($favicon.Resize `192x192` | resources.Copy `/media/base/favicon-192x192.png`).RelPermalink | safeURL }}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ ($favicon.Resize `512x512` | resources.Copy `/media/base/favicon-512x512.png`).RelPermalink | safeURL }}">
+  <link rel="apple-touch-icon" href="{{ ($favicon.Resize `180x180` | resources.Copy `/media/base/favicon-180x180.png`).RelPermalink | safeURL }}">
 {{ end }}
 
 {{/*  RSS  */}}

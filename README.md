@@ -246,6 +246,9 @@
       - [x] `section` > `alternate` first section
       - [x] `alternate` > `section` after 1 section
       - [x] Menu sticky
+      - [x] mv partials sections
+      - [x] dividers in `draws.svg`
+      - [x] Fix `draws-purge` script
       - [ ] `cms/config/base`
       - [ ] `cms/config/collections`
       - [ ] `cms/config/boxes`
@@ -253,7 +256,6 @@
       - [ ] `date_ini` > `ini`
       - [ ] `date_end` > `end`
       - [ ] `parallax` boolean > options? [ `none`, `smooth`, `fix` ]
-      - [ ] mv partials sections
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
       - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it

@@ -1,0 +1,37 @@
+{{ $class := print "divider" (cond .next "--next" "") }}
+{{ $style := "" }}
+
+{{ with .section }}
+  {{ with where (partial "svg/dividers" .) "id" .divider }}
+    {{ with index . 0 }}
+      {{ if eq .size 2 }}
+        {{ $class = print $class " divider" (cond $.next "--next" "") "--size" }}
+      {{ end }}
+      {{ if not .repeat }}
+        {{ $class = print $class " divider" (cond $.next "--next" "") "--not-repeat" }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ $flip_y := cond (not .flip_y) "" "y" }}
+  {{ $flip_x := cond (not .flip_x) "" "x" }}
+  {{ $flips  := "" }}
+  {{ if or .flip_x .flip_y }}
+    {{ $flips = print $flip_x $flip_y }}
+  {{ end }}
+
+  {{ $style     = print "--divider" (cond $.next "-next" "") ": url(/draws.svg#div-" .divider "-" (cond $.next "ne" "pr") $flips ")" }}
+  {{ if eq .divider "gradient" }}
+    {{ if $.next }}
+      {{ $style = "--divider-next: linear-gradient(black, transparent)" }}
+    {{ else }}
+      {{ $style = "--divider: linear-gradient(transparent, black)" }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+
+{{ return dict
+  "class" $class
+  "style" $style
+}}

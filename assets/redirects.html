@@ -3,18 +3,8 @@
 {{- end }}
 
 # general
-/home/ /
-/inicio/ /
-/_inicio/ /
 /index.php /
 /index.php/* /:splat
-/img/* /media/:splat
-/cat/ /categorias/
-/tag/ /etiquetas/
-/aut/ /autores/
-/cat/* /categoria/:splat
-/tag/* /etiqueta/:splat
-/aut/* /autor/:splat
 
 {{- if .IsTranslated -}}
   {{- if hugo.IsMultihost -}}
@@ -33,7 +23,6 @@
   {{- else }}
 # multilanguage
     {{- range .Translations }}
-/{{ .Lang }}/home/ /{{ .Lang }}/ 301!
 /{{ .Lang }}/404.html /{{ .Lang }}/404 404!
 /{{ .Lang }}/404 /{{ .Lang }}/404.html 404!
 /{{ .Lang }}/* /{{ .Lang }}/404.html 404
