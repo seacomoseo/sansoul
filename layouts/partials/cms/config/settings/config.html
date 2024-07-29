@@ -1,7 +1,16 @@
 {{ return dict "&SETTINGS_CONFIG" (slice
-  (dict "label" (i18n "collection-settings-config-title")       "name" `title`          "required" false "widget" `string`)
-  (dict "label" (i18n "collection-settings-config-description") "name" `description`    "required" false "widget" `text`)
-  (dict "label" (i18n "collection-settings-config-logo")        "name" `logo`           "required" false "widget" `image` "max_file_size" 512000000)
+  (dict
+    "label"     (i18n "collection-settings-config-menu")
+    "name"      `menu`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      (dict "label" (i18n "collection-settings-config-menu-logo")     "name" `logo`     "required" false "widget" `image` "max_file_size" 512000000)
+      (dict "label" (i18n "collection-settings-config-menu-title")    "name" `title`    "required" false "widget" `string`)
+      (dict "label" (i18n "collection-settings-config-menu-subtitle") "name" `subtitle` "required" false "widget" `string`)
+    )
+  )
   (dict
     "label"     (i18n "collection-settings-config-legal")
     "name"      `legal`
@@ -39,29 +48,33 @@
         )
       )
       (dict
-        "label"          (i18n "collection-settings-config-schema-alternate_names")
-        "label_singular" (i18n "collection-settings-config-schema-alternate_names-singular")
-        "name"           `alternate_names`
+        "label"          (i18n "collection-settings-config-schema-names")
+        "label_singular" (i18n "collection-settings-config-schema-names")
+        "name"           `names`
         "widget"         `list`
         "collapsed"      true
         "summary"        "{{fields.name}}"
         "allow_add"      true
         "required"       false
+        "hint"           (i18n "collection-settings-config-schema-names-hint")
         "fields"         (slice
-          (dict "label" (i18n "collection-settings-config-schema-alternate_names-singular") "name" `name` "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-names") "name" `name` "widget" `string` "required" false)
         )
       )
+      (dict "label" (i18n "collection-settings-config-schema-description") "name" `description` "required" false "widget" `text`)
+      (dict "label" (i18n "collection-settings-config-schema-logo")        "name" `logo`        "required" false "widget" `image` "max_file_size" 512000000)
+      (dict "label" (i18n "collection-settings-config-schema-images")      "name" `images`      "required" false "widget" `image` "multiple" true "choose_url" true)
       (dict
-        "label"          (i18n "collection-settings-config-schema-same_as")
-        "label_singular" (i18n "collection-settings-config-schema-same_as-singular")
-        "name"           `same_as`
+        "label"          (i18n "collection-settings-config-schema-social")
+        "label_singular" (i18n "collection-settings-config-schema-social-singular")
+        "name"           `social`
         "widget"         `list`
         "collapsed"      true
         "summary"        "{{fields.link}}"
         "allow_add"      true
         "required"       false
         "fields"         (slice
-          (dict "label" (i18n "collection-settings-config-schema-same_as-singular") "name" `link` "widget" `string` "required" false)
+          (dict "label" (i18n "collection-settings-config-schema-social-singular") "name" `link` "widget" `string` "required" false)
         )
       )
       (dict
@@ -127,17 +140,40 @@
           (dict "label" (i18n "collection-settings-config-schema-rating-value") "name" `value` "widget" `number` "required" false "value_type" `float` "min" 0 "max" 5 "step" 0.1)
         )
       )
-      (dict "label" (i18n "collection-settings-config-schema-images") "name" `images` "widget" `image` "required" false "multiple" true "choose_url" true)
     )
   )
   (dict
-    "label"     (i18n "collection-settings-config-langs")
-    "name"      `langs`
+    "label"     (i18n "collection-settings-config-favicon")
+    "name"      `favicon`
     "widget"    `object`
     "collapsed" true
-    "hint"      (i18n "collection-settings-config-langs-hint")
+    "required"  false
+    "fields"    (slice
+      (dict "label" (i18n "collection-settings-config-favicon-svg") "name" `svg` "required" false "widget" `image` "max_file_size" 512000000)
+      (dict "label" (i18n "collection-settings-config-favicon-png") "name" `png` "required" false "widget" `image` "max_file_size" 512000000)
+      (dict "label" (i18n "collection-settings-config-favicon-ico") "name" `ico` "required" false "widget" `file`  "max_file_size" 512000000)
+    )
+  )
+  (dict
+    "label"     (i18n "collection-settings-config-types")
+    "name"      `types`
+    "widget"    `object`
+    "collapsed" true
+    "hint"      (i18n "collection-settings-config-types-hint")
     "required"  false
     "fields"    `~SETTINGS_CONFIG_TYPES`
+  )
+  (dict
+    "label"     (i18n "collection-settings-config-cms")
+    "name"      `cms`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      (dict "label" (i18n "collection-settings-config-cms-logo")      "name" `logo`      "widget" `image`   "required" false "max_file_size" 512000000)
+      (dict "label" (i18n "collection-settings-config-cms-editorial") "name" `editorial` "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-cms-editorial-hint"))
+      (dict "label" (i18n "collection-settings-config-cms-disable")   "name" `cms`       "widget" `hidden`  "required" false)
+    )
   )
   (dict
     "label"     (i18n "collection-settings-config-others")
@@ -153,8 +189,6 @@
       (dict "label" (i18n "collection-settings-config-others-cookies_legal")            "name" `cookies_legal`            "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-others-cookies_legal-hint"))
       (dict "label" (i18n "collection-settings-config-others-analytics_pagespeed")      "name" `analytics_pagespeed`      "widget" `hidden`  "required" false)
       (dict "label" (i18n "collection-settings-config-others-process_all_images")       "name" `process_all_images`       "widget" `hidden`  "required" false)
-      (dict "label" (i18n "collection-settings-config-others-cms")                      "name" `cms`                      "widget" `hidden`  "required" false)
-      (dict "label" (i18n "collection-settings-config-others-cms_editorial_workflow")   "name" `cms_editorial_workflow`   "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-others-cms_editorial_workflow-hint"))
       (dict "label" (i18n "collection-settings-config-others-development")              "name" `development`              "widget" `boolean` "required" false "hint" (i18n "collection-settings-config-others-development-hint"))
       (dict
         "label"     (i18n "collection-settings-config-others-custom_code")

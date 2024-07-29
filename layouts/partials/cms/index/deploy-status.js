@@ -9,7 +9,7 @@ function checkDeploymentStatus() {
   // Main / production branch
   fetchDeploymentStatus(badgeUrl, true)
 
-  {{ if site.Data.config.others.cms_editorial_workflow }}
+  {{ if site.Data.config.cms.editorial }}
     // Nav link
     const previewLink = document.querySelector('.CMS_Navbar_site-url')
     if (previewLink.href) {

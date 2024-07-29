@@ -6,7 +6,7 @@
   {{- $legal  := $config.legal -}}
 
   {{- if eq $param "name" -}}
-    {{- $legal.name | default $config.title -}}
+    {{- $legal.name | default (index $config.schema.names 0) -}}
   {{- else if eq $param "dni" -}}
     {{- $legal.dni | default "00000000A" -}}
   {{- else if eq $param "location" -}}

@@ -17,24 +17,35 @@
 {{ end }}
 {{ $description = $description | markdownify }}
 
-{{ $image_og := "" }}
-{{ $site_logo := $config.logo }}
-{{ if .Params.image }}
-  {{ if in .Params.image ".svg" }}
-    {{ $image_og = print site.BaseURL "/media/logo.png" }}
-  {{ else if partial "functions/is-iframe" .Params.image }}
-    {{ $image_og = partial "functions/iframe-poster" .Params.image }}
-  {{ else if in .Params.image "http" }}
-    {{ $image_og = .Params.image }}
+{{ $image_og  := "" }}
+{{ $site_logo := print
+  site.BaseURL
+  "/media/"
+  ((cond (in $config.schema.logo "svg") "" $config.schema.logo)
+    | default (cond (in $config.menu.logo "svg") "" $config.menu.logo)
+    | default (cond (in $config.cms.logo "svg") "" $config.cms.logo)
+    | default $config.favicon.png
+    | default "base/icon.png"
+  )
+}}
+{{ with .Params.image }}
+  {{ if in . ".svg" }}
+    {{ $image_og = $site_logo }}
+  {{ else if partial "functions/is-iframe" . }}
+    {{ $image_og = partial "functions/iframe-poster" . }}
+  {{ else if in . "http" }}
+    {{ $image_og = . }}
   {{ else }}
-    {{ with resources.Get (print "/media/" .Params.image) }}
+    {{ with resources.Get (print "/media/" .) }}
       {{ $image_og = .Permalink }}
     {{ end }}
   {{ end }}
-{{ else if (in $site_logo "svg") }}
-  {{ $image_og = print site.BaseURL "/media/logo.png" }}
-{{ else if $site_logo }}
-  {{ $image_og = print site.BaseURL $site_logo }}
+{{ else }}
+  {{ if (in $site_logo "svg") }}
+    {{ $image_og = print site.BaseURL "/media/base/logo.png" }}
+  {{ else if $site_logo }}
+    {{ $image_og = $site_logo }}
+  {{ end }}
 {{ end }}
 
 {{/*  BASIC  */}}
@@ -50,7 +61,7 @@
 {{ end }}
 
 {{/*  OPEN GRAPH  */}}
-<meta property="og:site_name" content="{{ $config.title }}">
+<meta property="og:site_name" content="{{ index $config.schema.names 0 }}">
 {{ $url := .Permalink }}
 {{ if .IsHome }}
   {{ $url = print site.BaseURL site.Home.RelPermalink }}
@@ -125,24 +136,21 @@
 {{ partial "components/base/style" . }}
 
 {{/*  FAVICON  */}}
-{{ with index (where (readDir "assets/media") "Name" "favicon.ico") 0 }}
-  <link rel="icon" sizes="any" href="{{ (resources.Get `/media/base/favicon.ico` | resources.Copy `/favicon.ico`).RelPermalink }}">
+{{ with resources.Get (print "/media/" ($config.favicon.ico | default "base/favicon.ico")) }}
+  <link rel="icon" sizes="any" href="{{ (. | resources.Copy `/favicon.ico`).RelPermalink }}">
 {{ end }}
-{{ $favicon := resources.Get "/media/base/icon.png" }}
-{{ with resources.Get "/media/base/icon.svg" }}
-  <link rel="icon" type="image/svg+xml" href="{{ .RelPermalink }}">
-{{ else }}
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ ($favicon.Resize `32x32` | resources.Copy `/media/base/favicon-32x32.png`).RelPermalink | safeURL }}">
+{{ with resources.Get (print "/media/" ($config.favicon.svg | default "base/icon.svg")) }}
+  <link rel="icon" type="image/svg+xml" href="{{ (. | resources.Copy `/favicon.svg`).RelPermalink | safeURL }}">
 {{ end }}
 {{ if hugo.IsProduction }}
-  <link rel="icon" type="image/png" sizes="192x192" href="{{ ($favicon.Resize `192x192` | resources.Copy `/media/base/favicon-192x192.png`).RelPermalink | safeURL }}">
-  <link rel="icon" type="image/png" sizes="512x512" href="{{ ($favicon.Resize `512x512` | resources.Copy `/media/base/favicon-512x512.png`).RelPermalink | safeURL }}">
-  <link rel="apple-touch-icon" href="{{ ($favicon.Resize `180x180` | resources.Copy `/media/base/favicon-180x180.png`).RelPermalink | safeURL }}">
+  {{ with resources.Get (print "/media/" ($config.favicon.png | default "base/icon.png")) }}
+    <link rel="icon apple-touch-icon" type="image/png" sizes="192x192" href="{{ (.Resize `192x192` | resources.Copy `/favicon.png`).RelPermalink | safeURL }}">
+  {{ end }}
 {{ end }}
 
 {{/*  RSS  */}}
 {{ with site.Home.OutputFormats.Get "RSS" }}
-  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $config.title }}">
+  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ index $config.schema.names 0 }}">
 {{ end }}
 
 {{/*  GOOGLE FONTS  */}}

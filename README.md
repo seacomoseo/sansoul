@@ -57,7 +57,7 @@
           - [x] `articles.kind` > `articles.types` and multiple select
           - [x] Add `date_ini`
           - [x] Add `date_end`
-          - [ ] `date_ini` > `start`
+          - [ ] `date_ini` > `ini`
           - [ ] `date_end` > `end`
         - [x] `view: collapsibles`:
           - [x] `design` > `collapsible`
@@ -217,18 +217,27 @@
       - [x] Remove `slug` from `content.*/_index/*`
       - [x] `config` add `schema`
       - [x] `config.location_type` > `config.schema.types`
-      - [x] `config.alternate_name` > `config.schema.alternate_names`
-      - [x] `config.social` > `config.schema.same_as`
+      - [x] `config.alternate_name` > `config.schema.names`
+      - [x] `config.title` > `config.schema.names`
+      - [x] `config.description` > `config.schema.description`
+      - [x] `config.logo` > `config.schema.logo`
+      - [x] `config.social` > `config.schema.social`
       - [x] `config.schema` add `phones` by `contact`
       - [x] `config.schema` add `address` by `contact`
       - [x] `config.schema` add `address.lnik` by `contact`
       - [x] `config.schema` add `open` by `contact`
       - [x] `config.schema` add `rating`
+      - [x] `config` add `favicon`
+      - [x] `config` add `menu`
       - [x] `config.legal_name` > `config.legal.name`
       - [x] `config.legal_dni` > `config.legal.dni`
       - [x] `config.legal_email` > `config.legal.email`
       - [x] `config.legal_location` > `config.legal.location`
       - [x] `config.country` > `config.legal.country`
+      - [x] `config` add `cms`
+      - [x] `config.cms_editorial_workflow` > `config.cms.editorial`
+      - [x] `config.cms_disable` > `config.cms.disable`
+      - [x] `config` add `cms.logo`
       - [x] `config.yml` > `config.es.yml`
       - [x] `hugo.yml` > `languages` > `data/langs.yml`
       - [x] schema and legal only by config, not crawl all site
@@ -249,16 +258,15 @@
       - [x] mv partials sections
       - [x] dividers in `draws.svg`
       - [x] Fix `draws-purge` script
+      - [x] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
+      - [ ] `parallax` boolean > options? [ `none`, `smooth`, `fix` ]
       - [ ] `cms/config/base`
       - [ ] `cms/config/collections`
       - [ ] `cms/config/boxes`
+      - [ ] Menu title in sticky
       - [ ] Probar selector de `templates` en cms
-      - [ ] `date_ini` > `ini`
-      - [ ] `date_end` > `end`
-      - [ ] `parallax` boolean > options? [ `none`, `smooth`, `fix` ]
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
-      - [ ] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
       - [ ] Rehuse `boxes` partial in `reviews`
       - [ ] search template
       - [ ] `search.html`

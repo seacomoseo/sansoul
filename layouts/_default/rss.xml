@@ -1,21 +1,23 @@
-{{- $pctx := . -}}
+{{- $config := partial "functions/config-lang" . -}}
+{{- $title  := index $config.schema.names 0 -}}
+{{- $pctx   := . -}}
 {{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
-{{- $pages := slice -}}
+{{- $pages  := slice -}}
 {{- if or $.IsHome $.IsSection -}}
   {{- $pages = $pctx.RegularPages -}}
 {{- else -}}
   {{- $pages = $pctx.Pages -}}
 {{- end -}}
-{{- $limit := .Site.Config.Services.RSS.Limit -}}
+{{- $limit  := .Site.Config.Services.RSS.Limit -}}
 {{- if ge $limit 1 -}}
   {{- $pages = $pages | first $limit -}}
 {{- end -}}
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ .Site.Data.config.title }}</title>
+    <title>{{ $title }}</title>
     <link>{{ .Permalink }}</link>
-    <description>{{ i18n "recent" }} {{ .Site.Data.config.title }}</description>
+    <description>{{ i18n "recent" }} {{ $title }}</description>
     <generator>Hugo -- gohugo.io</generator>{{ with .Site.Language }}
     <language>{{.}}</language>{{end}}{{ with .Site.Author.email }}
     <managingEditor>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with .Site.Author.email }}

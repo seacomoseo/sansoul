@@ -18,8 +18,8 @@
   "@context"      `http://schema.org`
   "@type"         `WebSite`
   "url"           (print $BaseURL "/")
-  "name"          $config.title
-  "description"   $config.description
+  "name"          (index $config.schema.names 0)
+  "description"   $config.schema.description
 }}
 
 
@@ -100,24 +100,25 @@
 {{ end }}
 
 {{/*  Types  */}}
-{{ $types           := $config.schema.types | default (slice "Organization") }}
-{{ $type            := index $types 0 }}
-{{ $additional_yype := after 1 $types }}
+{{ $types      := $config.schema.types | default (slice "Organization") }}
+{{ $type       := index $types 0 }}
+{{ $types_more := after 1 $types }}
+{{ $names      := $config.schema.names | default (slice "Name") }}
+{{ $name       := index $names 0 }}
+{{ $names_more := after 1 $names }}
 
 {{/*  Finish schema organization  */}}
 {{ $schemaOrganization = dict
   "@context"                  `http://schema.org`
   "@type"                     $type
-  "additionalType"            $additional_yype
-  "logo"                      (print $BaseURL "/media/logo.png")
+  "additionalType"            $types_more
+  "name"                      $name
+  "alternateName"             $names_more
+  "description"               $config.schema.description
+  "logo"                      $config.schema.logo
   "image"                     $images
-  "name"                      $config.title
-  "alternateName"             ($config.schema.alternate_names | default slice)
-  "priceRange"                $config.schema.prices
-  "description"               $config.description
   "url"                       (print $BaseURL "/")
-  "sameAs"                    $config.schema.same_as
-  "openingHoursSpecification" $open
+  "sameAs"                    $config.schema.social
   "telephone"                 (partial "functions/phone-variations" $config.schema.phones)
   "address"                   $address
   "location"                  (dict
@@ -125,8 +126,10 @@
     "hasMap" $has_map
     "geo"    $geo
   )
+  "openingHoursSpecification" $open
+  "priceRange"                $config.schema.prices
   "aggregateRating"           (dict
-    "@type"       "aggregateRating"
+    "@type"       "AggregateRating"
     "bestRating"  5
     "ratingCount" $config.schema.rating.count
     "ratingValue" $config.schema.rating.value
@@ -168,8 +171,8 @@
     {{ end }}
   {{ end }}
 
-  {{ $image := "" }}
-  {{ $site_logo := $config.logo }}
+  {{ $image     := "" }}
+  {{ $site_logo := $config.schema.logo }}
   {{ if .Params.image }}
     {{ $imageExternal := strings.HasPrefix .Params.image "http" }}
     {{ $image = .Params.image }}
