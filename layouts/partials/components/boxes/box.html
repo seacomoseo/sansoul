@@ -7,7 +7,7 @@
 {{- $tag    := .tag | default "div" -}}
 
 {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
-{{- $showup        := site.Data.styles.performance.showup -}}
+{{- $show          := site.Data.styles.performance.show -}}
 {{- $group_radius  := .group_radius | and (not .slider) -}}
 
 {{- $box_span       := 1 -}}
@@ -36,13 +36,14 @@
   .color
   .gradient
   .bg
+  .parallax
   .padding
   .pill
   .align
   .align_max
   .align_x
   .order
-  .box_gap
+  .gap_y
 -}}
 
 {{- if $is_wrap -}}
@@ -80,7 +81,7 @@
     "button_is"     $button_is
     "radius"        $radius
     "shadow"        $shadow
-    "showup"        (and (not .slider) (not .first) $showup)
+    "show"        (and (not .slider) (not .first) $show)
   )) -}}
 
   {{/*  BOX  */}}
@@ -167,6 +168,7 @@
       (dict
         "steps" .steps
         "level" $level
+        "show" .show
       )
     ) -}}
   {{ end }}
@@ -283,7 +285,7 @@
       {{- $class  = "box__button hide" -}}
       {{- $button = "none" -}}
       {{- $icon   = "" -}}
-      {{- $label  = .anchor | default .title -}}
+      {{- $label  = .anchor | default .hanchor | default .title -}}
     {{- end -}}
     {{/*  {{- if not $like_article -}}  */}}
       {{- partial "components/link" (dict

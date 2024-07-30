@@ -1,10 +1,11 @@
+{{- $show          := cond (not site.Data.styles.performance.show) "" " show" -}}
 {{- $page_emoji    := (index site.Data.utilities.types .page.Type).emoji -}}
 {{- $section_name  := i18n "header" -}}
 {{- if eq .id "footer" }}
   {{- $section_name = i18n "footer" -}}
 {{- else if ne .id "header" }}
-  {{ $section_name  = .section.menu
-    | default .section.anchor
+  {{ $section_name  = .section.menu_label
+    | default .section.hanchor
     | default .section.title
     | default .id
     | default .section.name
@@ -47,7 +48,7 @@
 
 <form
   id="{{ $form_id }}"
-  class="form {{- if $inputs_fill }} form__fill-inputs{{ end }} box__block"
+  class="form {{- if $inputs_fill }} form__fill-inputs{{ end }} box__block {{- $show }}"
   method="post"
   {{- if .shortcode -}}
     {{- if $netlify_forms }} netlify{{ end }}
@@ -58,7 +59,6 @@
     target="_blank"
     action="{{ $action | base64Encode }}"
   {{- end -}}
-  {{- if site.Data.styles.performance.showup }} data-showup{{ end -}}
 >
 
   {{/*  HIDDEN INPUTS  */}}
@@ -83,8 +83,9 @@
   {{/*  CUSTOM INPUTS  */}}
 
   {{- range .inputs -}}
-    {{- $type := .type -}}
-    {{- $full := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6") | or .full) " contact__full" "" -}}
+    {{- $type     := .type -}}
+    {{- $full     := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6") | or .full) " contact__full" "" -}}
+    {{- $required := cond (not .required) "" " data-required" | safeHTMLAttr -}}
     {{- if $type | ne "hidden" -}}
       <div class="form__item {{ $full }}">
     {{ end }}
@@ -99,11 +100,11 @@
         {{- if (eq $type "date" | or (eq $type "time")) | and (not .shortcode) -}}
           {{- $onfocus = true -}}
         {{- end -}}
-        <input class="form__input" type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}" name="{{ .name }}" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{ if .required }}novalidate{{ end }} {{ if $onfocus }}onfocus="(this.type='{{ $type }}')"{{ end }} {{ with .accept }}accept="{{ . }}"{{ end }}>
+        <input class="form__input" type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}" name="{{ .name }}" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }} {{ if $onfocus }}onfocus="(this.type='{{ $type }}')"{{ end }} {{ with .accept }}accept="{{ . }}"{{ end }}>
       {{- else if $type | eq "textarea" -}}
-        <textarea class="form__textarea" name="{{ .name }}" rows="3" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{ if .required }}novalidate{{ end }}></textarea>
+        <textarea class="form__textarea" name="{{ .name }}" rows="3" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }}></textarea>
       {{- else if $type | eq "select" -}}
-        <select class="form__select" name="{{ .name }}" {{ if .required }}novalidate{{ end }}>
+        <select class="form__select" name="{{ .name }}" {{- $required }}>
           <option value="">{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</option>
           {{- range .options -}}
             <option value="{{ .value | default .option }}">{{ .option }}</option>
@@ -112,7 +113,7 @@
       {{- else if $type | in (slice "radio" "checkbox") -}}
         {{- $name := .name -}}
         {{- $is_checkbox := eq $type "checkbox" -}}
-        <fieldset class="form__fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
+        <fieldset class="form__fieldset" {{- $required }}>{{ "" -}}
           <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
           {{- range .options -}}
             {{- $option := .value | default .option -}}
@@ -165,7 +166,10 @@
   <label class="form__label form__label--accept">
     {{- "" -}}
     <input  class="form__checkbox" type="checkbox" value="true">
-    {{- partial "functions/md" (dict "content" (i18n "send-check") "not_header_links" true) -}}
+    {{- "" -}}
+    <i>
+      {{- partial "functions/md" (dict "content" (i18n "send-check") "not_header_links" true "inline" true) -}}
+    </i>
     {{- "" -}}
   </label>
   {{- "" -}}

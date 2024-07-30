@@ -34,7 +34,7 @@
   (cond (not .bg_image_src) "" " bg-image")
 }}
 
-{{ $box_ratio := cond
+{{ $box_rate := cond
   (not .card)
   (cond (not $no_content) "" "box--16x9")
   "box--2x3"
@@ -60,9 +60,12 @@
     $box_bg_color
     (cond (not .gradient)            "" (print "bg-gradient-" .gradient))
     (cond (not .gradient)            "" (print "bg-gradient-" (.gradient_type | default "linear-r")))
+    (cond (or (not .parallax) (eq .parallax "none")) "" "parallax")
+    (cond (ne .parallax "box")                       "" "parallax--box")
+    (cond (ne .parallax "soft")                      "" "parallax--bg")
     (cond (and (not .span) (not .span_min))     "" "box--span")
     (cond (not .grow)                           "" "box--grow")
-    (cond (not .box_ratio) $box_ratio (print "box--" .box_ratio))
+    (cond (not .rate)                           $box_rate (print "box--" .rate))
     (cond (not .hide_radius)                    "" "box--hide-radius")
     (cond (not .hide_shadow)                    "" "box--hide-shadow")
     (cond (not .card)                           "" "box--card")
@@ -82,19 +85,15 @@
   "attr"    "style"
   "delimit" ";"
   "array"   (slice
-    (cond (not $box_bg_alpha)                   "" (print "--bg-alpha:" .color_alpha))
-    (cond (not .order)                          "" (print "--order:" .order))
-    (cond (eq .box_gap nil)                     "" (print "--box-gap:" .box_gap "rem"))
-    (cond (eq .padding nil)                     "" (print "--box-padding:" .padding "em"))
-    (cond (or (not .span) (eq .span 1))         "" (print "--box-span-max:" .span))
-    (cond (or (not .span_min) (eq .span_min 1)) "" (print "--box-span-min:" .span_min))
+    (cond (not $box_bg_alpha)                     "" (print "--bg-alpha:" .color_alpha))
+    (cond (not .order)                            "" (print "--order:" .order))
+    (cond (eq .gap_y nil)                         "" (print "--box-gap:" .gap_y "rem"))
+    (cond (eq .padding nil)                       "" (print "--box-padding:" .padding "em"))
+    (cond (or (not .span) (eq .span 1))           "" (print "--box-span-max:" .span))
+    (cond (or (not .span_min) (eq .span_min 1))   "" (print "--box-span-min:" .span_min))
+    (cond (not site.Data.styles.performance.show) "" "show")
   )
 ) }}
-
-
-{{/*  SHOWUP  */}}
-
-{{ $box_showup  := cond .showup "data-showup" "" }}
 
 
 {{/*  JOIN  */}}
@@ -103,7 +102,6 @@
   "array" (slice
     $box_class
     $box_style
-    $box_showup
   )
 ) }}
 

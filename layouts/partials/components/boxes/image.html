@@ -14,12 +14,12 @@
   {{ end }}
 
   {{/*  IMAGE CLASS  */}}
-  {{- $hover     := cond (not .image_hover) "" "image--hover"           -}}
-  {{- $contain   := cond (not .contain)     "" "image--contain"         -}}
-  {{- $inset     := cond (not .inset)       "" "image--inset"           -}}
-  {{- $grayscale := cond (not .grayscale)   "" "image--grayscale"       -}}
-  {{- $ratio     := cond (not .ratio)       "" (print "image--" .ratio) -}}
-  {{- $border    := cond (not .border)      "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
+  {{- $hover     := cond (not .hover)     "" "image--hover"           -}}
+  {{- $contain   := cond (not .contain)   "" "image--contain"         -}}
+  {{- $inset     := cond (not .inset)     "" "image--inset"           -}}
+  {{- $grayscale := cond (not .grayscale) "" "image--grayscale"       -}}
+  {{- $ratio     := cond (not .ratio)     "" (print "image--" .ratio) -}}
+  {{- $border    := cond (not .border)    "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
   {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
 
   {{- $page_type  := .Page.Type | default "_" -}}
@@ -81,10 +81,10 @@
       )
     ) }}
 
-    {{ if .image_hover }}
+    {{ if .hover }}
       {{ partial "components/image" (dict
         "class"       "image__inner image__inner--hover"
-        "src"         .image_hover
+        "src"         .hover
         "ratio"       .ratio
         "contain"     .contain
         "container"   $.container

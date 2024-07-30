@@ -1,7 +1,7 @@
 import { scrollShot } from './scroll-shot'
 
 export function initParallax () {
-  const parallaxElements = document.querySelectorAll('.parallax > *:first-child')
+  const parallaxElements = document.querySelectorAll('.parallax')
 
   if (parallaxElements[0]) {
     function doParallax (e) {
@@ -10,14 +10,13 @@ export function initParallax () {
       const parentTop = parent.getBoundingClientRect().top
       const partialHeight = window.innerHeight / speed
       const pos = parentTop / speed - partialHeight
-      e.style.transform = `translateY(${pos}px)`
-      // e.style.height = `calc(100% + ${partialHeight * 2}px)` // => calc(110% + 10lvh)
+      e.style.setProperty('--parallax-pos', pos)
     }
 
     // Toggle class parallax--scroll when element is in viewport
     scrollShot({
       rootMargin: '0%',
-      query: '.parallax > *:first-child',
+      query: '.parallax',
       doStart: e => e.classList.add('parallax--scroll'),
       doEnd: e => e.classList.remove('parallax--scroll')
     })

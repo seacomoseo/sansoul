@@ -1,13 +1,11 @@
 {{- if or .color .gradient .bg -}}
   {{- $image     := "" -}}
   {{- $alpha     := "" -}}
-  {{- $parallax  := "" -}}
   {{- $grayscale := "" -}}
 
   {{- if .bg -}}
     {{- $image     = "bg-figure" -}}
     {{- $alpha     = cond (not .alpha)     "" "alpha" -}}
-    {{- $parallax  = cond (not .parallax)  "" (cond (not site.Data.styles.performance.parallax) "" "parallax") -}}
     {{- $grayscale = cond (not .grayscale) "" " image--grayscale" -}}
   {{- end -}}
 
@@ -24,7 +22,6 @@
       "bg-color"
       $image
       $alpha
-      $parallax
     )
   ) -}}
 

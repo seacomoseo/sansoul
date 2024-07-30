@@ -1,9 +1,9 @@
-{{- $showup := site.Data.styles.performance.showup -}}
-{{- $box    := . -}}
+{{- $show := cond (not site.Data.styles.performance.show) "" " show" -}}
+{{- $box  := . -}}
 
 {{/*  DATA  */}}
 {{- with .contact -}}
-  <div class="contact box__block" {{- if $showup }} data-showup{{ end }}>
+  <div class="contact box__block {{- $show }}">
     {{- range . -}}
       {{- with merge $box . -}}
 
@@ -76,8 +76,8 @@
               ) -}}
           {{- if eq .type "mail" -}}
               {{ $bg := cond (eq $.section.color "white") "dark" "white" }}
-              <div class="contact__email-options bg bg-{{ $bg }}">
-                <div class="bg-color"></div>
+              <i class="contact__email-options bg bg-{{ $bg }}">
+                <i class="bg-color"></i>
                 {{- range slice
                   (dict
                     "class" "copy"
@@ -103,7 +103,7 @@
                     "noindex"   true
                   ) -}}
                 {{- end -}}
-              </div>
+              </i>
             </i>
           {{- end -}}
 

@@ -1,7 +1,7 @@
-{{- $showup   := site.Data.styles.performance.showup -}}
+{{- $show     := cond (not site.Data.styles.performance.show) "" " show" -}}
 {{- $button   := cond (ne .collapsible.button "none") .collapsible.button "" -}}
 {{- $fotn_alt := cond (not .collapsible.font_alt) "" "button--font-alt" -}}
-<div class="collapsibles box__block align-left" {{- if $showup }} data-showup{{ end }}>
+<div class="collapsibles box__block align-left {{- $show }}">
   {{- range .collapsibles -}}
     {{- with merge ($.collapsible | default dict) . -}}
       {{- $hn := .hn | default (add $.level 1) -}}

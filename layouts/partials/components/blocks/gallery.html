@@ -15,6 +15,7 @@
     (cond (not .contain)    "" "gallery--contain")
     (cond (not .grayscale)  "" "gallery--grayscale")
     (cond (not .color | or (eq .color "transparent")) "" (print "bg bg-" .color))
+    (cond (not site.Data.styles.performance.show)     "" "show")
   )
 ) -}}
 
@@ -28,15 +29,11 @@
   )
 ) }}
 
-{{/*  SHOWUP  */}}
-{{- $showup := cond (not site.Data.styles.performance.showup) "" "data-showup" -}}
-
 {{/*  JOIN ATTRIBUTES  */}}
 {{ $attr := partial "functions/attr-delimit" (dict
   "array" (slice
     $class
     $style
-    $showup
   )
 ) }}
 

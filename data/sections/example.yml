@@ -1,55 +1,106 @@
+## SECTION
+
 name: Ejemplo
 id: seccion
-# esentials
+# section-bg
+color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
+color_alpha: 0 # [ 0.00 - 1.00 ]
+gradient: grey # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
+gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
+bg: fondo.jpg
+alpha: 0 # [ 0.00 - 1.00 ]
+parallax: soft # [ none, fix, soft, box ]
+# section-paddings
+ph: false
+pt: 5 # [ >= 0.00 ]
+pb: 5 # [ >= 0.00 ]
+# section-divider
+divider: wavy-op
+flip_x: true
+flip_y: true
+## menu
+menu_label: Texto del enlace del Menú
+menu_button: link # [ main, link, alt, light, dark, invert, none, hide ]
+menu_font_alt: true
+# size
+full: true
+size: sm # [ xs, sm, md, lg, xl, fluid ]
+
+
+## CONTAINER
+
+# text
 title: Título de Sección
-anchor: Título oculto para SEO
+hanchor: Título oculto para SEO
 subtitle: Subtítulo de Sección
+price: 22 €
 description: |
   Descripción de [Sección](#seccion)
 
   [btn-light icon-link Botón con anchor icon-link](#seccion "hola k ase")
   [btn-dark  icon-link Botón sin anchor icon-link](#seccion)
-# usuals
-icon: puzzle-piece # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic # [ top, side, bottom ]
+hn: '' # [ 1 - 6, p ]
+hs: '' # [ 0 - 6 ]
+uppercase: true
+underline: true
+align: left # [ left, center, right ]
+# icon
+icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+icon_type: bottom # [ top, side, bottom ]
+icon_size: 0 # [ 0 = auto, > 0.00 ]
+icon_color: '' # [ main, link, alt, light, dark, invert ]
+# image
 image: logo.png
-bg: fondo.jpg
-color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
-gradient: grey # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
-if: '' # [ 'param name', body, related ]
-# like each box
-size: sm # [ xs, sm, md, lg, xl, fluid ]
-box_color: main-light # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
-box_color_alpha: 0 # [ 0.00 - 1.00 ]
+hover: fondo.jpg
+ratio: circle # [ normal, 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1, circle ]
+contain: false
+border: main # [ main, link, alt, light, dark, invert ]
+inset: true
+grayscale: false
+# button
+link: /legal/
+licon: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+label: Legal
+anchor: Aviso Legal
+ofuscate: false
+button: none # [ main, link, alt, light, dark, invert, none, hide ]
+font_alt: true
+# bg
+box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
+box_color_alpha: '' # [ 0.00 - 1.00 ]
 box_gradient: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
 box_gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-box_bg: fondo.jpg
-box_alpha: 0 # [ 0.00 - 1.00 ]
-box_parallax: true
-box_tag: div # [ section, header, footer, nav, article, aside, div ]
-# esentials not usuals
-## menu
-menu: Texto del enlace del Menú
-button: link # [ main, link, alt, light, dark, invert, none, hide ]
-font_alt: true
-## bg
-full: true
-ph: false
-pt: 5 # [ >= 0.00 ]
-pb: 5 # [ >= 0.00 ]
-parallax: true
-box_gap: null # [ >= 0.00 ]
+box_bg: logo.png
+box_alpha: .8 # [ 0.00 - 1.00 ]
+box_parallax: '' # [ none, soft, box ]
+# box
+rate: 16x9 # [ 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1 ]
+gap_y: null # [ >= 0.00 ]
+padding: null # [ >= 0.00 ]
+hide_shadow: true
+hide_radius: true
+pill: false
+card: false
+# list
+data: row # [ hide, column, row, space ]
+data_custom:
+- icon: star
+  label: Ejemplaco
+# others
+if: '' # [ 'param name', body, related ]
 tag: aside # [ section, header, footer, nav, article, aside, div ]
-## divider
-divider: wavy-op
-flip_x: true
-flip_y: true
-view: [] # [ esentials, usuals, , title, anchor, subtitle, description, , icon, image, bg, color, gradient, size, box_color, box_color_alpha, box_gradient, box_gradient_type, box_bg, box_alpha, box_parallax, box_tag, menu, button, font_alt, full, ph, pt, pb, parallax, box_gap, tag, , divider, flip_x, flip_y, , box, boxes, step, steps, gallery, images, limages, lists, collapsible, collapsibles, gss, review, reviews, buttons, form, map, social ]
+# view
+view: [] # [ all, section-bg, section-paddings, section-divider, size ] AND [ text, icon, image, button, bg, box, list, others ]
+
+
+## BOXES
+
 box:
-  # boxes group
+  # group
   columns: 2 # [ 0 = auto, > 0 ]
   columns_min: 1 # [ 0 = auto, > 0 ]
   gap: null # [ >= 0.00 ]
-  gap_y: null # [ >= 0.00 ]
+  gap_ny: null # [ >= 0.00 ]
   direction: right # [ right, left, top, bottom ]
   group_radius: false
   slider: true
@@ -58,77 +109,31 @@ box:
   arrows: '' # [ bottom, float, hide ]
   align_y: top # [ stretch, top, center, bottom ]
   align_x: flex-end # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
-  # each box
-  # like boxes without esentials
-  # text
-  hn: '' # [ 1 - 6, p ]
-  hs: '' # [ 0 - 6 ]
-  uppercase: true
-  underline: true
-  align: left # [ left, center, right ]
-  # icon
-  icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-  icon_type: bottom # [ top, side, bottom ]
-  icon_size: 0 # [ 0 = auto, > 0.00 ]
-  icon_color: '' # [ main, link, alt, light, dark, invert ]
-  # image
-  image: logo.png
-  image_hover: fondo.jpg
-  ratio: circle # [ normal, 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1, circle ]
-  contain: false
-  border: main # [ main, link, alt, light, dark, invert ]
-  inset: true
-  grayscale: false
-  # bg
-  color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
-  color_alpha: '' # [ 0.00 - 1.00 ]
-  gradient: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
-  gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-  bg: logo.png
-  alpha: .8 # [ 0.00 - 1.00 ]
-  parallax: true
-  grow: false
-  box_ratio: 16x9 # [ 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1 ]
-  box_gap: null # [ >= 0.00 ]
-  padding: null # [ >= 0.00 ]
-  hide_shadow: true
-  hide_radius: true
-  pill: false
-  card: false
-  # button
-  link: /legal/
-  licon: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-  label: Legal
-  anchor: Aviso Legal
-  ofuscate: false
-  button: none # [ main, link, alt, light, dark, invert, none, hide ]
-  font_alt: true
+  # add same to container
+  # + withouth others
+  # + remove `box_` of bg keys
+  # + view
+  view: [] # [ all, group, text, icon, image, button, bg, box, list ]
 boxes:
 - title: Título de Caja 1
-- title: Título de Caja 2
-- # esentials
-  title: Título de Caja 3
-  subtitle: Subtítulo de Caja
-  price: 22 €
-  description: |
-    Descripción de Caja
+  # add same to container
+  # + remove `box_` of bg keys
+  # + box
   order: -1 # [ int ]
   span: 2 # [ > 0.00 ]
   span_min: 1 # [ > 0.00 ]
-  # usuals
-  icon: shield-virus # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-  image: fondo.jpg
-  bg: fondo.jpg
-  link: '#seccion'
-  label: Sección
-  anchor: Anchor
-  if: '' # [ 'param name', body, related ]
-  # rest in each box
-- box:
-    # like father
-  boxes:
+  grow: false
+  # + view
+  view: [] # [ all, text, icon, image, button, bg, box, list, others ]
+- title: Título de Caja 2
+- title: Título de Caja 3
+- boxes:
   - title: Título de SubCaja 1
   - title: Título de SubCaja 2
+
+
+## TYPES
+
 - step:
     border: link # [ main, link, alt, light, dark, invert ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
@@ -147,6 +152,9 @@ boxes:
     subtitle: Subtítulo de Paso 2
     description: |
       Descripción de Paso 2
+
+###
+
 - gallery:
     columns: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, columns ]
@@ -176,6 +184,9 @@ boxes:
     link: /
   - image: https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=512&q=60
     link: /pagina-ejemplo/
+
+###
+
 - list:
     types: [] # [ blog, events, products, categories, tags, authors, pages, page, related ]
     categories: [general]
@@ -185,14 +196,14 @@ boxes:
     date_end: ''
     max: 4
   box:
-    # like box and...
+    # add like box
+    # + list
     hide_description: false
     hide_categories: false
     hide_reading_time: false
-    data: row # [ hide, column, row, space ]
-    data_custom:
-    - icon: star
-      label: Ejemplaco
+
+###
+
 - collapsible:
     button: '' # [ main, link, alt, light, dark, invert, none ]
     font_alt: false
@@ -206,8 +217,14 @@ boxes:
   - title: Título Desplegable 1
     description: |
       Descripción Desplegable 1
+
+###
+
 - gss: 2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C
   gss_sheet: 1861644079
+
+###
+
 - review:
     columns: 3 # [ 0 = auto, > 0 ]
     columns_min: 1 # [ 0 = auto, > 0 ]
@@ -232,6 +249,9 @@ boxes:
     image: fondo.jpg
     description: |
       Descripción Reseña 2
+
+###
+
 - contact:
   - type: schedule
     days: Días
@@ -278,6 +298,9 @@ boxes:
     font_alt: false
     ga4: false
   - type: hr
+
+###
+
 - action: ''
   inputs:
   - type: text
@@ -350,9 +373,15 @@ boxes:
       value: Checkbox Valor 2
     - option: Checkbox Opción 3
       value: Checkbox Valor 3
-- map: Molando Ando, Calle País de Nunca Jamás, 42, 30000 Murcia, España
+
+###
+
 - social:
   - link: https://www.facebook.com/QuantumFracture
   - link: https://www.instagram.com/quantumfracture/
   - link: https://mastersoflol.com/collections/quantumfracture?YTC
     icon: star
+
+###
+
+- map: Molando Ando, Calle País de Nunca Jamás, 42, 30000 Murcia, España

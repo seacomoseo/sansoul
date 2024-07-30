@@ -1,6 +1,5 @@
 {{- $level     := .level -}}
 {{- $container := .container -}}
-{{- $showup    := site.Data.styles.performance.showup -}}
 {{- $box       := . -}}
 {{- $boxes     := slice -}}
 {{- range .boxes | default slice -}}
@@ -62,19 +61,16 @@
         (cond (eq $columns 1)     "" (print "--columns-max:" $columns))
         (cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min))
         (cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap))
-        (cond (eq .gap_y nil)     "" (print "--columns-gap-ny:" .gap_y))
+        (cond (eq .gap_ny nil)    "" (print "--columns-gap-ny:" .gap_ny))
+        (cond (not site.Data.styles.performance.show) "" "show")
       )
     ) }}
-
-    {{/*  SHOWUP  */}}
-    {{ $showup := cond (and $showup (not .slider) (not .first)) "data-showup" "" }}
 
     {{/*  JOIN ATTRIBUTES  */}}
     {{ $attr := partial "functions/attr-delimit" (dict
       "array" (slice
         $class
         $style
-        $showup
       )
     ) }}
 

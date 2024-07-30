@@ -5,6 +5,7 @@
 {{ $border    := print " " (.border    | default "alt") }}
 {{ $uppercase := cond (not .uppercase) "" " uppercase" }}
 {{ $underline := cond (not .underline) "" " underline" }}
+{{ $show      := cond (not site.Data.styles.performance.show) "" " show" }}
 <ul class="steps box__block">
   {{ range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">
@@ -23,8 +24,7 @@
           </div>
         </div>
       </div>
-      {{- $showup := site.Data.styles.performance.showup -}}
-      <div class="step__content" {{- if $showup }} data-showup{{ end }}>
+      <div class="step__content {{- $show }}">
         {{ with .title }}
           {{ $hn := $.hn | default (add $.level 1) }}
           <h{{ $hn }} class="step__title h{{ $.hs | default 4 }} {{- $uppercase }}{{ $underline }}">

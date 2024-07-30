@@ -4,7 +4,7 @@ export function scrollTo (element) {
   element.scrollIntoView({ behavior: 'smooth' })
 }
 
-// SCROLL IF IS HASH WHEN LOAD (FIX SHOWUP)
+// SCROLL IF IS HASH WHEN LOAD (FIX SHOW)
 export function initScrollToHashWhenLoad (element) {
   if (isScrollShow) {
     if (window.location.hash) {

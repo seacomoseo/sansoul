@@ -67,7 +67,7 @@
     {{- range partial "functions/sections" . -}}
       {{- range partial "functions/section-searchable" . -}}
         {{- with .title       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-        {{- with .anchor      }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+        {{- with .hanchor     }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
         {{- with .subtitle    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
         {{- with .description }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
         {{- with .label       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}

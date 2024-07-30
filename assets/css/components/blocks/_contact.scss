@@ -3,15 +3,16 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
+  @if $buttons-3d {
+    row-gap: 1.25em;
+  }
   > * {
     position: relative;
     flex-grow: 1;
   }
 }
-@if $buttons-3d {
-  .contact {
-    gap: 1.25em 1em;
-  }
+.social + .contact {
+  margin-top: var(--box-gap);
 }
 .contact__schedule,
 .contact__schedule-item {

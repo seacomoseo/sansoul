@@ -65,15 +65,15 @@ export function initFormValidate () {
         })
 
         form.querySelectorAll(
-          '[type="text"][novalidate],' +
-          '[type="email"][novalidate],' +
-          '[type="tel"][novalidate],' +
-          '[type="number"][novalidate],' +
-          '[type="date"][novalidate],' +
-          '[type="time"][novalidate],' +
-          '[type="file"][novalidate],' +
-          'textarea[novalidate],' +
-          'select[novalidate]'
+          '[type="text"][data-required],' +
+          '[type="email"][data-required],' +
+          '[type="tel"][data-required],' +
+          '[type="number"][data-required],' +
+          '[type="date"][data-required],' +
+          '[type="time"][data-required],' +
+          '[type="file"][data-required],' +
+          'textarea[data-required],' +
+          'select[data-required]'
         ).forEach(input => {
           if (!input.value) {
             input.style.borderColor = 'red'

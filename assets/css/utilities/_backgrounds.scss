@@ -128,25 +128,3 @@
     width: 100%;
   }
 }
-
-@if not $parallax {
-  .bg--fix {
-    filter: none; // If not, bg--fix not rule
-    // .container {
-    //   z-index: 1; // Fix .bg--fix stepping on top links in Safari
-    // }
-    > .bg-figure {
-      clip-path: inset(0);
-      // z-index: 0; // Fix stepping on top links in Safari
-      .bg-figure-image {
-        position: fixed;
-        top: 0;
-      }
-    }
-    &.box {
-      .bg-figure-image {
-        @include radius-child;
-      }
-    }
-  }
-}

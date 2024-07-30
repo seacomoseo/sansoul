@@ -1,6 +1,6 @@
 {{ $id := .id
-  | default (.menu | markdownify)
-  | default (.anchor | markdownify)
+  | default (.menu_label | markdownify)
+  | default (.hanchor | markdownify)
   | default (.title | markdownify)
   | default .name
   | default .file

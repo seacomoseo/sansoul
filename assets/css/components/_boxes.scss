@@ -1,12 +1,10 @@
-// --box-padding
-// --box-inner
-
 .container,
 .boxes {
   display: flex;
 
   --columns-min: 1;
   --columns-max: var(--columns-min, 1);
+
   --columns-gap-min: min(var(--columns-gap-max), 1);
   @include fluid-size(--columns-gap-max, 1, 1, 2);
 
@@ -15,16 +13,6 @@
   --columns-gap-ny: 1;
   --columns-gap-y: calc(var(--gap-width) * var(--columns-gap-ny));
   row-gap: var(--columns-gap-y);
-
-  @include fluid-size(--columns, 1, var(--columns-min), var(--columns-max));
-  --column-width: calc(100cqw / var(--columns));
-
-  // gap per column (gc) = gap width * gap number / columns number
-  --gc: calc(var(--gap-width) * (var(--columns) - 1) / var(--columns));
-
-  --box-w: calc(var(--column-width) - var(--gc));
-  --box-width: var(--box-w);
-  --box-padding: calc(var(--columns-gap-max) * 1em);
 
   &:not(:has(> .bg)) {
     --columns-gap-ny: 2;
@@ -40,10 +28,27 @@
   }
 }
 .boxes > *,
+.box,
+.boxes--top,
+.boxes--bottom {
+  @include fluid-size(--columns, 1, var(--columns-min), var(--columns-max));
+  --column-width: calc(100cqw / var(--columns));
+
+  // gap per column (gc) = gap width * gap number / columns number
+  --gc: calc(var(--gap-width) * (var(--columns) - 1) / var(--columns));
+
+  --box-w: calc(var(--column-width) - var(--gc));
+  --box-width: var(--box-w);
+  --box-padding: calc(var(--columns-gap-max) * 1em);
+}
+.boxes > *,
 .box {
   width: var(--box-width, 100%);
   @media (min-width: $screen-xl) {
     order: var(--order, unset);
+  }
+  > .box {
+    --columns: 1;
   }
 }
 

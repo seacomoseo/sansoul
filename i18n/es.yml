@@ -329,14 +329,10 @@ collection-settings-styles-shadow-left: Posición Horizontal
 collection-settings-styles-shadow-top: Posición Vertical
 collection-settings-styles-shadow-blur: Difuminado
 collection-settings-styles-shadow-opacity: Opacidad
-collection-settings-styles-lightbox_overlay: Fondo de Diapositivas
-collection-settings-styles-lightbox_overlay-opacity: Opacidad
 collection-settings-styles-performance: Rendimiento
 collection-settings-styles-performance-hint: Desactivar cada opción mejora el rendimiento (considerable para dispositivos poco potentes)
-collection-settings-styles-performance-showup: Aparecer
-collection-settings-styles-performance-showup-hint: Efecto de aparecer al hacer scroll en todos los elementos
-collection-settings-styles-performance-parallax: Parallax
-collection-settings-styles-performance-parallax-hint: Cambia los efectos de fondo fijado por desplazamientos suaves al hacer scroll en las secciones (en los bloques siempre es suave)
+collection-settings-styles-performance-show: Aparecer en Todos
+collection-settings-styles-performance-show-hint: Activar efecto de aparecer al hacer scroll en todos los elementos
 collection-settings-lists: Listas
 collection-settings-lists-_: Todas
 collection-settings-lists-blog: Blog
@@ -379,11 +375,9 @@ collection-settings-robots-hint: Tutorial → [Guía del archivo robots.txt](htt
 # base-menu-header_align:
 # base-menu-size:
 # base-menu-transparent:
-# base-menu-color:
-# base-menu-gradient:
-# base-menu-gradient_type:
-# base-menu-bg:
-# base-menu-parallax:
+# # base-menu-color:
+# # base-menu-gradient:
+# # base-menu-gradient_type:
 # base-menu-hide_sections:
 # base-menu-hide_modals:
 # base-menu-hide_icons:
@@ -395,7 +389,6 @@ collection-settings-robots-hint: Tutorial → [Guía del archivo robots.txt](htt
 # base-callnow-es:
 # # sections
 # base-section:
-# base-alternate:
 # base-modal:
 # base-sections:
 
@@ -419,21 +412,21 @@ field-price: Precio
 field-anchor: Título Oculto
 field-title_size: Tamaño de Título
 field-uppercase: Título en Mayúsculas
+field-ratio: Proporción de la Imagen
+field-contain: Imagen Ajustada a la Proporción
 field-underline: Título Subrayado
 field-reading_time: Mostrar Tiempo de Lectura
 field-hide_description: Ocultar Descripciones
 field-hide_categories: Ocultar Categorías
 field-image: Imagen
-field-image_hover: Imagen Alternativa
-field-ratio: Proporción de la Imagen
-field-contain: Imagen Ajustada a la Proporción
+field-hover: Imagen Alternativa
 field-border: Color del Borde
 field-inset: Imagen Incrustada
 field-grayscale: Imagen en Blanco y Negro
 field-color_bg: Color del Fondo
 field-gradient: Color de Gradiente del Fondo
 field-gradient_type: Tipo de Gradiente del Fondo
-field-parallax: Parallax
+field-parallax: Paralaje
 field-opacity: Opacidad de Fondo
 field-bg_opacity: Opacidad de imagen de Fondo
 field-color_opacity: Opacidad de color de Fondo
@@ -510,18 +503,18 @@ field-flip_y: Voltear Divisor Vertical
 # hints
 hint-family: Nombres válidos → [Google Fonts](https://fonts.google.com/)
 hint-contrast: Opciones de cambio del color y textos de botones según el fond
+hint-ratio: Normal por defecto
+hint-contain: Para que no se recorte si se selecciona alguna proporción
 hint-anchor: Encabezado y Ancla/Anchor Oculto que tendrá el enlace del título y del menú (para SEO)
 hint-reading_time: Mostrar el tiempo estimado de lectura y número de palabras
 hint-hide_description: Ocultar descripciones en cada elemento de la rejilla
 hint-hide_categories: Ocultar categorías y etiquetas en cada elemento de la rejilla
 hint-image: Admite vídeo (incluido de youtube y vimeo) mediante URL (solamente el nombre de archivo subido previamente a **Medios**) 🔷 Para establecer la imagen de miniatura del vídeo, subir desde **Medios** una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp...) 🔷 En caso de ser un vídeo, puede establecerse una imagen de miniatura si a la URL se le añade al final '#poster=nombre-de-imagen.jpg' o, si es interno, subir desde **Medios** una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp...) 🔷 Se puede autoreproducir el vídeo dejándolo mudo añadiéndole al final de la URL '#mute' 🔷 Se pueden establecer marcas de inicio y final del vídeo en segundos añadiendo al final de la URL '#t=2,7' o '#t=2' para el inicio solamente
-hint-image_hover: Aparecerá al pasar el cursor por encima
-hint-ratio: Normal por defecto
-hint-contain: Para que no se recorte si se selecciona alguna proporción
+hint-hover: Aparecerá al pasar el cursor por encima
 hint-inset: Las imágenes se incrustan en el elemento como si este no tuviese márgenes internos
 hint-grayscale: Las imágenes recuperan el color al pasar el cursor por encima
 hint-border: Color alternativo por defecto
-hint-parallax: Aplica un efecto fijo o de desplazamiento lento en la imagen de fondo al hacer scroll
+hint-parallax: Aplica un efecto fijo o de desplazamiento lento al hacer scroll
 hint-icon: Nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
 hint-icon_type: Arriba en grande, Lateral junto al texto y Abajo a modo de subrayado
 hint-link_anchor: Texto/Anchor oculto que tendrá el enlace (para SEO)
@@ -563,6 +556,10 @@ option-langs-fr: 🇫🇷 Francés
 option-langs-de: 🇩🇪 Alemán
 option-langs-pt: 🇵🇹 Portugués
 option-langs-it: 🇮🇹 Italiano
+option-align_y-stretch: Sin Alinear (alto completo)
+option-align_y-top: Arriba
+option-align_y-center: Centrado
+option-align_y-bottom: Abajo
 option-align-left: Izquierda
 option-align-center: Centrado
 option-align-right: Derecha
@@ -581,6 +578,69 @@ option-color_base-invert: Invertido (Claro u Oscuro según fondo)
 option-color_base-whatsapp: WhatsApp
 option-color_base-none: Sin Color (tipo Enlace simple)
 option-color_base-hide: Ocultar Botón / Enlace
+option-color_bg-main: Principal
+option-color_bg-main-light: Principal Claro
+option-color_bg-main-dark: Principal Oscuro
+option-color_bg-alt: Alternativo
+option-color_bg-alt-light: Alternativo Claro
+option-color_bg-alt-dark: Alternativo Oscuro
+option-color_bg-link: Enlace
+option-color_bg-link-light: Enlace Claro
+option-color_bg-link-dark: Enlace Oscuro
+option-color_bg-white: Blanco
+option-color_bg-light: Claro
+option-color_bg-grey: Gris
+option-color_bg-dark: Oscuro
+option-color_bg-black: Negro
+option-contrast-none: Nada · Nada cambia (textos de botones blancos)
+option-contrast-all: Todo · Cambia tanto el color como los textos de botones (garantiza buen contraste)
+option-contrast-text: Texto · Sólo cambian los textos de botones
+option-contrast-bg: Fondo · El color y los textos de botones cambian sólo en fondos oscuros
+option-parallax-none: Desactivado
+option-parallax-fix: Fijo en el Fondo
+option-parallax-soft: Suave en el Fondo
+option-parallax-box: Suave en la Caja
+option-gradient-linear-b: Linear Abajo
+option-gradient-linear-t: Linear Arriba
+option-gradient-linear-r: Linear Derecha
+option-gradient-linear-l: Linear Izquierda
+option-gradient-linear-tr: Linear Arriba-Derecha
+option-gradient-linear-br: Linear Abajo-Derecha
+option-gradient-linear-tl: Linear Arriba-Izquierda
+option-gradient-linear-bl: Linear Abajo-Izquierda
+option-gradient-circle: Circular
+option-gradient-circle-alt: Circular Invertido
+option-gradient-radial: Radial
+option-gradient-radial-alt: Radial Invertido
+option-icon_type-top: Arriba
+option-icon_type-side: Lateral
+option-icon_type-bottom: Abajo
+option-icons_type-thin: Finos
+option-icons_type-light: Ligeros
+option-icons_type-regular: Normales
+option-icons_type-solid: Sólidos
+option-icons_type-duotone: Duotonos
+option-icons_emojis-twemoji: Twemoji (Twiter)
+option-icons_emojis-twemoji-scale: Twemoji (Twiter) con escalado de colores
+option-icons_emojis-noto-bw: Noto (Android) en monocromo
+option-buttons_type-base: Base
+option-buttons_type-title: Título
+option-buttons_type-cursive: Cursiva
+option-ratio-normal: Normal
+option-ratio-circle: Circular
+option-sizes-xs: Muy Pequeño
+option-sizes-sm: Pequeño
+option-sizes-md: Mediano
+option-sizes-lg: Grande
+option-sizes-xl: Muy Grande
+option-sizes-fluid: Fluido
+option-days-monday: Lunes
+option-days-tuesday: Martes
+option-days-wednesday: Miércoles
+option-days-thursday: Jueves
+option-days-friday: Viernes
+option-days-saturday: Sábado
+option-days-sunday: Domingo
 option-divider-arrow-four: Flecha 4 Puntas
 option-divider-arrow-op-alt: Flecha con Opacidad Alternativa
 option-divider-arrow-op-fan: Flecha con Opacidad en Abanico
@@ -649,79 +709,14 @@ option-divider-wavy-alt: Ondas Alternativas
 option-divider-wavy-jump: Ondas con Salto
 option-divider-wavy-op-alt-rep: Ondas con Opacidad Alternativas Repetidas
 option-divider-wavy-op-alt: Ondas con Opacidad Alternativas
+option-location_type-Corporation: → Corporación
+option-location_type-EducationalOrganization: → Organización Educativa
 option-divider-wavy-op: Ondas con Opacidad
 option-divider-wavy-rep: Ondas Repetidas
 option-divider-wavy: Ondas
-option-align_y-stretch: Sin Alinear (alto completo)
-option-align_y-top: Arriba
-option-align_y-center: Centrado
-option-align_y-bottom: Abajo
-option-contrast-none: Nada · Nada cambia (textos de botones blancos)
-option-contrast-all: Todo · Cambia tanto el color como los textos de botones (garantiza buen contraste)
-option-contrast-text: Texto · Sólo cambian los textos de botones
-option-contrast-bg: Fondo · El color y los textos de botones cambian sólo en fondos oscuros
-option-color_bg-main: Principal
-option-color_bg-main-light: Principal Claro
-option-color_bg-main-dark: Principal Oscuro
-option-color_bg-alt: Alternativo
-option-color_bg-alt-light: Alternativo Claro
-option-color_bg-alt-dark: Alternativo Oscuro
-option-color_bg-link: Enlace
-option-color_bg-link-light: Enlace Claro
-option-color_bg-link-dark: Enlace Oscuro
-option-color_bg-white: Blanco
-option-color_bg-light: Claro
-option-color_bg-grey: Gris
-option-color_bg-dark: Oscuro
-option-color_bg-black: Negro
-option-gallery_size-cover: Recortado
-option-gallery_size-contain: Completo
-option-icon_type-top: Arriba
-option-icon_type-side: Lateral
-option-icon_type-bottom: Abajo
-option-gradient-linear-b: Linear Abajo
-option-gradient-linear-t: Linear Arriba
-option-gradient-linear-r: Linear Derecha
-option-gradient-linear-l: Linear Izquierda
-option-gradient-linear-tr: Linear Arriba-Derecha
-option-gradient-linear-br: Linear Abajo-Derecha
-option-gradient-linear-tl: Linear Arriba-Izquierda
-option-gradient-linear-bl: Linear Abajo-Izquierda
-option-gradient-circle: Circular
-option-gradient-circle-alt: Circular Invertido
-option-gradient-radial: Radial
-option-gradient-radial-alt: Radial Invertido
-option-icons_type-thin: Finos
-option-icons_type-light: Ligeros
-option-icons_type-regular: Normales
-option-icons_type-solid: Sólidos
-option-icons_type-duotone: Duotonos
-option-icons_emojis-twemoji: Twemoji (Twiter)
-option-icons_emojis-twemoji-scale: Twemoji (Twiter) con escalado de colores
-option-icons_emojis-noto-bw: Noto (Android) en monocromo
-option-buttons_type-base: Base
-option-buttons_type-title: Título
-option-buttons_type-cursive: Cursiva
-option-sizes-xs: Muy Pequeño
-option-sizes-sm: Pequeño
-option-sizes-md: Mediano
-option-sizes-lg: Grande
-option-sizes-xl: Muy Grande
-option-sizes-fluid: Fluido
-option-ratio-normal: Normal
-option-ratio-circle: Circular
-option-days-monday: Lunes
-option-days-tuesday: Martes
-option-days-wednesday: Miércoles
-option-days-thursday: Jueves
-option-days-friday: Viernes
-option-days-saturday: Sábado
-option-days-sunday: Domingo
 option-location_type-Organization: Organización
 option-location_type-Airline: → Aerolínea
 option-location_type-Consortium: → Consorcio
-option-location_type-Corporation: → Corporación
-option-location_type-EducationalOrganization: → Organización Educativa
 option-location_type-CollegeOrUniversity: → → Colegio o Universidad
 option-location_type-ElementarySchool: → → Escuela Primaria
 option-location_type-HighSchool: → → Escuela Secundaria

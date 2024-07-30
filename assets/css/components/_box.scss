@@ -199,11 +199,11 @@
 .box__block {
   margin-top: 0;
 }
-.box__block:not(
+.box__block:where(:not(
   :first-child,
   .bg-color + *,
   .box__title.hide + *
-) {
+)) {
   margin-top: Max(calc(var(--box-gap) * 3), 3em);
 }
 

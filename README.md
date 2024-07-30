@@ -187,7 +187,7 @@
         - [x] `span`
         - [x] `span_min`
         - [x] `gap`
-        - [x] `gap_y`
+        - [x] `gap_ny`
         - [x] `padding`
         - [x] `alpha`
         - [x] `order`
@@ -259,11 +259,24 @@
       - [x] dividers in `draws.svg`
       - [x] Fix `draws-purge` script
       - [x] Move `icon` and `logo` from `assets` to `assets/base`, and remove almost every process of it
-      - [ ] `parallax` boolean > options? [ `none`, `smooth`, `fix` ]
+      - [x] `box_gap` > `gap_y`
+      - [x] `box_ratio` > `rate`
+      - [x] `image_hover` > `hover`
+      - [x] `anchor` in section > `hanchor`
+      - [x] `menu` in section > `menu_label`
+      - [x] `button` in section > `menu_button`
+      - [x] `font_alt` in section > `menu_font_alt`
+      - [x] `[data-showup]` > `.show`
+      - [x] `styles.performance.showup` > `styles.performance.show`
+      - [x] `parallax` boolean > options? [ `none`, `smooth`, `fix`, `box` ]
+      - [x] `parallax` en los bloques siempre es suave
+      - [ ] Fix lightbox
       - [ ] `cms/config/base`
       - [ ] `cms/config/collections`
       - [ ] `cms/config/boxes`
+      - [ ] `menu-gradient`
       - [ ] Menu title in sticky
+      - [ ] Images src sizes
       - [ ] Probar selector de `templates` en cms
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
@@ -272,7 +285,6 @@
       - [ ] `search.html`
       - [ ] `.columns--gap-0`
       - [ ] cp `data/templates` > `themes/sansoul/data/templates`
-      - [ ] Images src sizes
       - [ ] Reset `cookies`.md
       - [ ] Reset `admin`.md
       - [ ] Check `forms` `actions`

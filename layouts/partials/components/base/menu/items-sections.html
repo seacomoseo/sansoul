@@ -6,9 +6,9 @@
     {{- $sections = after 1 . -}}
   {{- end -}}
 
-  {{ with where $sections "button" "!=" "hide" }}
+  {{ with where $sections "menu_button" "!=" "hide" }}
     {{ range . }}
-      {{ if .menu | or .anchor | or .title | or (.icon | and .id) }}
+      {{ if .menu_label | or .hanchor | or .title | or (.icon | and .id) }}
 
         {{ $item := partial "components/base/menu/item-by-section" . }}
 

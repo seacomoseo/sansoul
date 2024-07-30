@@ -31,16 +31,18 @@
   {{ $bg_gradient_color     = print "bg-gradient-" .gradient }}
   {{ $bg_gradient_type      = print "bg-gradient-" (.gradient_type | default "linear-b") }}
 {{ end }}
-{{ $bg_image_fix           := cond (not (.bg | and .parallax | and (not site.Data.styles.performance.parallax))) "" "bg--fix" }}
 {{ $bg                     := cond (not $bg_color) "" "bg" }}
+{{ $bg_image_fix           := cond (not (and .bg (eq .parallax "fix")))        "" "bg--fix" }}
+{{ $bg_parallax            := cond (not (and .bg (eq .parallax "soft"))) "" "parallax parallax--bg" }}
 {{ $bg_video_parent        := "" }}
 {{ if partial `functions/is-iframe` .bg }}
   {{ $bg_video_parent       = "bg-figure-video-parent" }}
 {{ end }}
 {{ if $modal }}
-  {{ $bg             = "" }}
-  {{ $bg_color       = "" }}
-  {{ $bg_image_fix   = "" }}
+  {{ $bg           = "" }}
+  {{ $bg_color     = "" }}
+  {{ $bg_image_fix = "" }}
+  {{ $bg_parallax  = "" }}
 {{ end }}
 
 {{/*  Paddings  */}}
@@ -104,6 +106,7 @@
     $bg_gradient_type
     $bg_gradient_color
     $bg_image_fix
+    $bg_parallax
     $bg_video_parent
     $padding_hide
     $padding_top_divider

@@ -14,7 +14,7 @@ background:
   gradient_type: '' # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
   bg: ''
   alpha: 0 # [ 0.00 - 1.00 ]
-  parallax: true
+  parallax: '' # [ none, fix, soft, box ]
 menu:
   hide: false
   logo: false

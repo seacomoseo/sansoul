@@ -22,6 +22,7 @@
   {{- end -}}
   {{- $col_max := cond (eq $columns_max 1) "" (print "--columns-max:" $columns_max) -}}
   {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
+  {{- $show    := cond (not site.Data.styles.performance.show) "" "show" -}}
 
   {{ $columns_style := partial "functions/attr-delimit" (dict
     "attr"    "style"
@@ -29,18 +30,15 @@
     "array"   (slice
       $col_max
       $col_min
+      $show
     )
   ) }}
-
-  {{/*  REVIEWS SHOWUP  */}}
-  {{ $showup := cond (not site.Data.styles.performance.showup) "" "data-showup" }}
 
   {{/*  REVIEWS ATTRIBUTES JOIN  */}}
   {{ $attr := partial "functions/attr-delimit" (dict
     "array" (slice
       $columns_class
       $columns_style
-      $showup
     )
   ) }}
   
