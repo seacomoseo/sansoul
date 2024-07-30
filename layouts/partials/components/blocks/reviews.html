@@ -8,7 +8,8 @@
 
   {{/*  REVIEWS CLASS  */}}
   {{- $slider        := cond (not .slider) "" " slider__items" -}}
-  {{- $columns_class := print `class="boxes` $slider `"` -}}
+  {{- $show          := cond (not site.Data.styles.performance.show) "" "show" -}}
+  {{- $columns_class := print `class="boxes` $slider $show `"` -}}
 
 
   {{/*  REVIEWS STYLE  */}}
@@ -22,7 +23,6 @@
   {{- end -}}
   {{- $col_max := cond (eq $columns_max 1) "" (print "--columns-max:" $columns_max) -}}
   {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
-  {{- $show    := cond (not site.Data.styles.performance.show) "" "show" -}}
 
   {{ $columns_style := partial "functions/attr-delimit" (dict
     "attr"    "style"

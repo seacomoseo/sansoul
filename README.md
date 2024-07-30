@@ -270,10 +270,11 @@
       - [x] `styles.performance.showup` > `styles.performance.show`
       - [x] `parallax` boolean > options? [ `none`, `smooth`, `fix`, `box` ]
       - [x] `parallax` en los bloques siempre es suave
-      - [ ] Fix lightbox
       - [ ] `cms/config/base`
       - [ ] `cms/config/collections`
       - [ ] `cms/config/boxes`
+      - [ ] Fix purgecss
+      - [ ] Fix lightbox
       - [ ] `menu-gradient`
       - [ ] Menu title in sticky
       - [ ] Images src sizes

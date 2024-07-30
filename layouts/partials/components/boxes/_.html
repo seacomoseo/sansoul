@@ -49,6 +49,7 @@
         (cond (not .align_y) "" (print "align-items-" .align_y))
         (cond (not .align_x) "" (print "justify-" .align_x))
         (cond (not .slider)  "box__block" "slider__items")
+        (cond (not site.Data.styles.performance.show) "" "show")
       )
     ) -}}
 
@@ -62,7 +63,6 @@
         (cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min))
         (cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap))
         (cond (eq .gap_ny nil)    "" (print "--columns-gap-ny:" .gap_ny))
-        (cond (not site.Data.styles.performance.show) "" "show")
       )
     ) }}
 

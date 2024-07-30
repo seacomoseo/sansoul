@@ -29,6 +29,6 @@ const cssnano = require('cssnano')({
 
 module.exports = {
   plugins: [
-    ...(process.env.HUGO_ENVIRONMENT === 'production' ? [purgecss, autoprefixer, cssnano] : [])
+    ...(process.env.HUGO_ENVIRONMENT === 'production' ? [cssnano, purgecss, autoprefixer] : [])
   ]
 }
