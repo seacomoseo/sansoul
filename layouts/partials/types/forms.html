@@ -45,7 +45,7 @@
             <form class="contact__form {{ if .fill_inputs }}contact__form-fill-inputs{{ end }}" method="post" action="{{ $action }}" {{- if $netlify_forms }} netlify{{ end }} name="{{ $id_form }}">
           {{- end -}}
             {{- if $netlify_forms -}}
-              <input type="hidden" name="subject" value="{{ site.BaseURL | replaceRE `^https?://` `` }}: {{ $subject }}" data-remove-prefix>
+              <input type="hidden" name="subject" value="{{ site.BaseURL | replaceRE `^https?://|$` `` }}: {{ $subject }}" data-remove-prefix>
               <input type="hidden" name="url" value="{{ $page.Permalink }}#{{ print `form_` $id_form }}">
             {{- else if $formsubmit_co -}}
               <input type="hidden" name="_subject" value="{{ $subject }}">
