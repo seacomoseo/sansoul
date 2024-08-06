@@ -15,8 +15,41 @@ import { scrollTo } from './scroll-to.js'
 export function initFormValidate () {
   window.addEventListener('load', () => {
     const forms = document.querySelectorAll('.contact__form')
+    const closeIcon =
+      '<svg class="close" onclick="this.parentElement.remove()">' +
+        '<use xlink:href="/draws.svg#xmark"></use>' +
+      '</svg>'
     let formError, formSubmit
 
+    // Change checkbox value and checked pre and post get form data
+    function changeCheckbox (form, prev) {
+      const checkboxes = form.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        if (prev) {
+          if (!checkbox.checked) {
+            checkbox.value = '❌'
+            checkbox.checked = true
+          }
+        } else {
+          if (checkbox.value === '❌') {
+            checkbox.value = '✅'
+            checkbox.checked = false
+          }
+        }
+      })
+    }
+    // Response
+    function formSubmitOk (form) {
+      formSubmit.classList.add('contact__form-submit--ok')
+      formSubmit.innerHTML = `<svg><use xlink:href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOne}`
+      formSubmited(form)
+    }
+    function formSubmitError (error) {
+      formSubmit.classList.add('contact__form-submit--error')
+      formSubmit.innerHTML =
+        `<svg><use xlink:href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitOther}<br>` +
+        `<svg><use xlink:href="/draws.svg#circle-info"></use></svg> ${error}`
+    }
     function formSubmited (form) {
       const customEventSubmit = new CustomEvent('submited_' + form.parentElement.id)
       document.dispatchEvent(customEventSubmit)
@@ -36,10 +69,6 @@ export function initFormValidate () {
 
         let valid = true
         const form = submit.target
-        const closeIcon =
-          '<svg class="close" onclick="this.parentElement.remove()">' +
-            '<use xlink:href="/draws.svg#xmark"></use>' +
-          '</svg>'
         formSubmit && formSubmit.remove()
         formError && formError.remove()
         formError = document.createElement('ul')
@@ -170,18 +199,7 @@ export function initFormValidate () {
             form.parentElement.append(formSubmit)
             formSubmit.innerHTML = '<svg class="spin"><use xlink:href="/draws.svg#rotate"></use></svg> Enviando…'
 
-            // Response
-            function formSubmitOk (form) {
-              formSubmit.classList.add('contact__form-submit--ok')
-              formSubmit.innerHTML = `<svg><use xlink:href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOne}`
-              formSubmited(form)
-            }
-            function formSubmitError (error) {
-              formSubmit.classList.add('contact__form-submit--error')
-              formSubmit.innerHTML =
-                `<svg><use xlink:href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitOther}<br>` +
-                `<svg><use xlink:href="/draws.svg#circle-info"></use></svg> ${error}`
-            }
+            changeCheckbox(form, true)
             const formOptions = { method: 'POST' }
             if (isFileType || formSubmitCo) {
               formOptions.timeout = 30000
@@ -191,6 +209,8 @@ export function initFormValidate () {
               formOptions.body = new URLSearchParams(new FormData(form)).toString()
             }
             if (googleForm) formOptions.mode = 'no-cors'
+            changeCheckbox(form, false)
+
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {

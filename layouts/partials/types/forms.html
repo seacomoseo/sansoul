@@ -83,23 +83,21 @@
                   {{- end -}}
                 </select>
               {{- else if $type | in (slice "radio" "checkbox") -}}
-                {{- $name := .name -}}
+                {{- $name   := .name -}}
+                {{- $legend := .placeholder | default .name -}}
                 {{- $is_checkbox := eq $type "checkbox" -}}
                 <fieldset class="contact__form-fieldset" {{ if .required }}novalidate{{ end }}>{{ "" -}}
-                  <legend>{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</legend>
+                  <legend>{{ $legend }}{{ if .required }} *{{ end }}</legend>
                   {{- range .options -}}
                     {{- $option := .value | default .option -}}
                     {{- if and $is_checkbox (not $googleForm) -}}
-                      {{- $name   = $option -}}
+                      {{- $name   = .value | default (print $legend " ➡️ " $option) -}}
                       {{- $option = "✅" -}}
                     {{- end -}}
                     <label class="contact__form-label">{{ "" -}}
                       <input class="contact__form-{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
                       {{- .option -}}
                     </label>
-                    {{- if and $is_checkbox (not $googleForm) -}}
-                      <input type="hidden" name="{{ $name }}" value="❌">
-                    {{- end -}}
                   {{- end -}}
                 </fieldset>
               {{- else if $type | eq "h3" -}}
