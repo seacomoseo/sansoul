@@ -1,75 +1,22 @@
-import {
-  isScrollShow,
-  isCookies,
-  disqusId,
-  googleAnalyticsId
-} from '@params'
-import { initNetlifyIdentity } from './netlify-identity'
-import { initScrollbar } from './scrollbar'
-import { initScrollTop } from './scroll-top'
-import { initScrollToHashWhenLoad } from './scroll-to'
-import { initLazyLoad } from './lazy-load'
-import { initOpenLinks } from './open-links'
-import { initMails } from './mails'
-import { initParallax } from './parallax'
-import { initModals } from './modals'
-import { initMenuToggle } from './menu-toggle'
-import { initMenuScrollSpy } from './menu-scroll-spy'
-import { initIframePoster } from './iframe-poster'
-import { initVideoMute } from './video-mute'
-import { initVideoFullscreen } from './video-fullscreen'
-import { initGss } from './gss'
-import { initCollapsible } from './collapsible'
-import { initSliders } from './sliders'
-import { initFormValidate } from './form-validate'
-import { initGoogleTranslate } from './google-translate'
-import { initSimpleLightbox } from './simple-lightbox'
-import { initPrerender } from './prerender'
-
-initNetlifyIdentity()
-initScrollbar()
-initScrollTop()
-initScrollToHashWhenLoad()
-initLazyLoad()
-initOpenLinks()
-initMails()
-initParallax()
-initModals()
-initMenuToggle()
-initMenuScrollSpy()
-initIframePoster()
-initVideoMute()
-initVideoFullscreen()
-initGss()
-initCollapsible()
-initSliders()
-initFormValidate()
-initGoogleTranslate()
-initSimpleLightbox()
-initPrerender()
-// Importaciones condicionales
-if (isScrollShow) {
-  import('./scroll-show').then(({ initScrollShow }) => {
-    initScrollShow()
-  })
-}
-
-if (isCookies) {
-  import('./cookies').then(({ initCookies }) => {
-    initCookies()
-  })
-}
-
-if (disqusId) {
-  import('./comments').then(({ initComments }) => {
-    initComments()
-  })
-}
-
-if (googleAnalyticsId) {
-  import('./ga4').then(({ initGa4 }) => {
-    initGa4()
-  })
-}
-// eslint-disable-next-line
-{{ . }}
+/* eslint-disable */
+import('./netlify-identity') .then(m => m.initNetlifyIdentity()      )
+import('./resize-window')    .then(m => m.initResizeWindow()         )
+import('./scroll-top')       .then(m => m.initScrollTop()            )
+import('./scroll-to')        .then(m => m.initScrollToHashWhenLoad() )
+import('./lazy-load')        .then(m => m.initLazyLoad()             )
+import('./open-links')       .then(m => m.initOpenLinks()            )
+import('./mails')            .then(m => m.initMails()                )
+import('./parallax')         .then(m => m.initParallax()             )
+import('./modals')           .then(m => m.initModals()               )
+import('./menu-toggle')      .then(m => m.initMenuToggle()           )
+import('./menu-scroll-spy')  .then(m => m.initMenuScrollSpy()        )
+import('./iframe-poster')    .then(m => m.initIframePoster()         )
+import('./video-mute')       .then(m => m.initVideoMute()            )
+import('./video-fullscreen') .then(m => m.initVideoFullscreen()      )
+import('./gss')              .then(m => m.initGss()                  )
+import('./collapsible')      .then(m => m.initCollapsible()          )
+import('./sliders')          .then(m => m.initSliders()              )
+import('./form-validate')    .then(m => m.initFormValidate()         )
+import('./google-translate') .then(m => m.initGoogleTranslate()      )
+import('./simple-lightbox')  .then(m => m.initSimpleLightbox()       )
+import('./prerender')        .then(m => m.initPrerender()            )

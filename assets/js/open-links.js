@@ -60,7 +60,6 @@ export function initOpenLinks () {
           '))'
         )
         if (boxLink) {
-          console.log(boxLink.querySelector('.box__button'))
           boxLink.querySelector('.box__button').click()
         }
       }

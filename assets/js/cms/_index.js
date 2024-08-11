@@ -1,14 +1,8 @@
+/* eslint-disable */
 import { local } from '@params'
-import { initDeployStatus } from './deploy-status'
-import { initCustomWidgets } from './custom-widgets'
-import { initPreSave } from './pre-save'
-import { initNavLinks } from './nav-links'
-import { initNetlifyIdentity } from './netlify-identity'
-
-if (!local) initDeployStatus()
-// eslint-disable-next-line
+if (!local) import('./deploy-status')   .then(m => m.initDeployStatus()   )
 CMS.init()
-initCustomWidgets()
-initPreSave()
-initNavLinks()
-if (local) initNetlifyIdentity()
+            import('./custom-widgets')  .then(m => m.initCustomWidgets()  )
+            import('./pre-save')        .then(m => m.initPreSave()        )
+            import('./nav-links')       .then(m => m.initNavLinks()       )
+if (local)  import('./netlify-identity').then(m => m.initNetlifyIdentity())

@@ -95,9 +95,15 @@ export function initSliders () {
     // CONTROLS VIEW
     function slidersControlsView () {
       document.querySelectorAll('.slider').forEach(slider => {
-        console.log(slider)
         const items = slider.querySelector('.slider__items')
         const itemsStyle = window.getComputedStyle(items, '')
+        const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
+        const itemsWidth = items.offsetWidth - padding
+        if (slider.offsetWidth >= itemsWidth - 1) {
+          slider.classList.add('slider--static')
+        } else {
+          slider.classList.remove('slider--static')
+        }
       })
     }
     window.addEventListener('resize', slidersControlsView)

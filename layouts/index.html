@@ -25,7 +25,7 @@
   {{- end -}}
   {{- if not $config.cms.disable -}}
     {{- $resources = $resources | append
-      (dict "partial" `cms/index/_`              "path" $cms_index_path)
+      (dict "partial" `cms/index`              "path" $cms_index_path)
     -}}
   {{- end -}}
   {{- range $resources -}}

@@ -281,14 +281,20 @@
       - [x] `data.langs` > `data.config.langs` and all params in `data.config` (less `favicon`, `cms` and hidden) > `data.config.langs`
       - [x] Translate CMS
       - [x] New `de`, `it` and `pt` translates
+      - [x] Fix slider
+      - [x] Fix lightbox
       - [ ] Fix purgecss
-      - [ ] Fix slider
-      - [ ] Fix lightbox
+        - ∑
+        - (,)
+        - Remove has and not?
+        - Split where and is?
+        - max 112k
+        - min 74k
+      - [ ] Images src sizes
       - [ ] Filter `list` by `date_ini` and `date_end`
       - [ ] 404 js
       - [ ] `menu-gradient`
       - [ ] Menu title in sticky
-      - [ ] Images src sizes
       - [ ] `images` in `product` and `event`
       - [ ] `pairings` > array with type (string, slice, number)?
       - [ ] Probar selector de `templates` en cms
@@ -311,19 +317,6 @@
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
   - [ ] ¿Quitar montaje de módulos de `hugo.default.yml`?
   - [ ] ¿Quitar `translationKey` de cada archivo `.md` y del CMS?
-- cms
-  - config split in partials
-  - pros
-    - widget conditions
-    - multiple images
-    - media subfolders
-    - multiple list with only one field = array of strings
-    - versión móvil
-    - i18n?
-  - contra
-    - booleanos se guardan forzosamente -> custom widget
-    - style demasiado compacto -> css
-    - Flujo editorial sin los enlaces y estados de las vistas previas
 - cms
   - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
   - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
@@ -351,7 +344,7 @@
     - Campos de texto sin contenido: undefined (para campos no requeridos en colecciones que se puedan añadir archivos)
       - https://deploy-preview-966.staticcms.org/docs/cms-events#pre-save-event
 
-- Diferencias
+- Diferencias CMS
   - Less important
   - Static CMS
     - ❌ i18n folder (edit in other lang panel)

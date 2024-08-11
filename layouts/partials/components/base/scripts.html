@@ -1,49 +1,46 @@
 {{ $config := partial "functions/config-lang" . }}
 
-{{ $isCookies         := false -}}
-{{ $isScrollShow      := false -}}
-{{ $disqusId          := "" }}
-{{ $isGoogleTranslate := false }}
-{{ $googleAnalyticsId := "" }}
-{{ $i18nVideo         := i18n "video" }}
-{{ $lang              := page.Lang }}
-
-{{ $custom       := (resources.Get "js/custom.js").Content -}}
+{{ $is_cookies          := false }}
+{{ $is_scroll_show      := false }}
+{{ $disqus_id           := "" }}
+{{ $is_google_translate := false }}
+{{ $ga4_id              := "" }}
+{{ $i18n_video          := i18n "video" }}
+{{ $lang                := page.Lang }}
 
 {{ if site.Data.styles.performance.show }}
-  {{ $isScrollShow = true -}}
+  {{ $is_scroll_show = true }}
 {{ end }}
 
 {{ if site.GetPage "pages/cookies" }}
-  {{ $isCookies = true }}
+  {{ $is_cookies = true }}
 {{ end }}
 
 {{ with $config.disqus }}
-  {{ $disqusId = . }}
+  {{ $disqus_id = . }}
 {{ end }}
 
 {{ if .menu.google_translate }}
-  {{ $isGoogleTranslate = true }}
+  {{ $is_google_translate = true }}
 {{ end }}
 
 {{ if hugo.IsProduction }}
   {{ with $config.google_analytics }}
-    {{ $googleAnalyticsId = . }}
+    {{ $ga4_id = . }}
   {{ end }}
 {{ end }}
 
 
+{{/*  OPTIONS  */}}
+
 {{ $opts := dict
   "targetPath" (print site.Home.RelPermalink "js/scripts.js")
   "params" (dict
-    "isCookies"         $isCookies
-    "isScrollShow"      $isScrollShow
-    "disqusId"          $disqusId
-    "isGoogleTranslate" $isGoogleTranslate
-    "googleAnalyticsId" $googleAnalyticsId
-    "i18nVideo"         $i18nVideo
+    "disqusId"          $disqus_id
+    "isGoogleTranslate" $is_google_translate
+    "googleAnalyticsId" $ga4_id
+    "i18nVideo"         $i18n_video
     "lang"              $lang
-    "custom"            $custom
     "formErrorSingleQuotes"   (i18n "form_error_single_quotes")
     "formErrorRequiredFields" (i18n "form_error_required_fields")
     "formErrorRequiredCheck"  (i18n "form_error_required_check")
@@ -60,10 +57,29 @@
   {{ $opts = merge $opts (dict "minify" true) }}
 {{ end }}
 
-{{ $js := resources.Get "js/_index.js"
-  | resources.ExecuteAsTemplate "aux_scripts" $custom
-  | js.Build $opts
-  | fingerprint
+
+{{/*  RESOURCES  */}}
+
+{{ $_index := resources.Get "js/_index.js" }}
+{{ $custom := resources.Get "js/custom.js" }}
+
+{{ $maybe_srcs := slice
+  (dict "path" "scroll-show" "if" $is_scroll_show "func" "ScrollShow")
+  (dict "path" "cookies"     "if" $is_cookies     "func" "Cookies"   )
+  (dict "path" "comments"    "if" $disqus_id      "func" "Comments"  )
+  (dict "path" "ga4"         "if" $ga4_id         "func" "Ga4"       )
 }}
+{{ $conditional_srcs := slice }}
+{{ range $maybe_srcs }}
+  {{ $src  := "" }}
+  {{ if .if }}
+    {{ $src = print "import('./" .path "').then(m => m.init" .func "())" }}
+  {{ end }}
+  {{ $src   = $src | resources.FromString (print "aux_" .path ".js") }}
+  {{ $conditional_srcs = $conditional_srcs | append $src }}
+{{ end }}
+
+{{ $js := slice $_index | append $conditional_srcs | append $custom | resources.Concat "js/scripts.js" }}
+{{ $js  = $js | js.Build $opts | fingerprint }}
 
 <script src="{{ $js.RelPermalink }}" defer></script>

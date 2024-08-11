@@ -69,9 +69,17 @@ then
   sh do up
 
 # hugo server with theme config
+elif [ $1 = rm-public ]
+then
+
+  echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
+  rm -r public
+
+# hugo server with theme config
 elif [ $1 = server ]
 then
 
+  sh do rm-public
   sh do prebuild
 
   echo "${STI} HUGO SERVER ${STE}"
@@ -242,19 +250,11 @@ then
 #     cp ./public/${lang}/404.html ./public/
 #   fi
 
-# hugo build in local with theme config
-elif [ $1 = hugo-local ]
-then
-
-  sh do prebuild
-
-  echo "${STI} HUGO LOCAL ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
-
 # hugo build as developement environement
 elif [ $1 = hugo-development ]
 then
 
+  sh do rm-public
   sh do prebuild
 
   # remove cache directories
@@ -267,6 +267,7 @@ then
 elif [ $1 = hugo-production ]
 then
 
+  sh do rm-public
   sh do prebuild
 
   echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"

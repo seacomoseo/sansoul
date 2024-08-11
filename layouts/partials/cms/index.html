@@ -35,7 +35,7 @@
   <link href="{{ $resource.RelPermalink }}" type="text/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
-  {{ $vars   := merge (partial "cms/index/icons" .) $trans_css }}
+  {{ $vars   := merge (partial "cms/icons" .) $trans_css }}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsProduction)
     | fingerprint
@@ -54,7 +54,7 @@
 <body style="--login: '{{ $t.login }}'">
 
   {{/*  HELP CORNER  */}}
-  {{ cond $local "" (partial "cms/index/help-corner" .) }}
+  {{ cond $local "" (partial "cms/help-corner" .) }}
 
   {{/*  SVELTIA CMS  */}}
   {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { tReset } from '@params'
 
 export function initCustomWidgets () {
@@ -36,11 +37,9 @@ export function initCustomWidgets () {
           const remove = widgetWrap.querySelector('[data-testid="remove-upload"]')
           if (remove) remove.click()
           setTimeout(() => onChange(undefined), 500)
-          console.log(remove)
         } else {
           onChange(undefined)
         }
-        console.log(label, value, props)
         // let remove
         // setTimeout(() => {
         //   if (['string', 'text', ''].includes(widget)) {
@@ -63,26 +62,22 @@ export function initCustomWidgets () {
         // }, 1000)
       }
 
-      // eslint-disable-next-line
       return h('div',
         {
           className: wrapClass,
           'data-view': (name === 'view' ? value : undefined)
         },
         [
-          // eslint-disable-next-line
           hint && h('div', {
             className: 'hint-info',
             tabindex: 0
           }),
-          // eslint-disable-next-line
           h(OriginalComponent, {
             label: label.replace(/\s\([^(]+?\)$/g, ''),
             value,
             onChange,
             ...props
           }),
-          // eslint-disable-next-line
           isButton && h('button',
             {
               className: 'button--reset',
@@ -90,10 +85,8 @@ export function initCustomWidgets () {
               type: 'button',
               onClick: handleReset
             },
-            // eslint-disable-next-line
             h('svg',
               { className: 'CMS_IconButton_icon CMS_Autocomplete_button-icon', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false', fill: 'currentColor', xmlns: 'http://www.w3.org/2000/svg' },
-              // eslint-disable-next-line
               [h('path', { d: 'M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' })]
             )
           )
@@ -120,10 +113,8 @@ export function initCustomWidgets () {
     'text'
   ]
   widgets.forEach(widget => {
-    // eslint-disable-next-line
     const ExistingControl = CMS.getWidget(widget).control
     const CustomControl = withResetButton(ExistingControl)
-    // eslint-disable-next-line
     CMS.registerWidget(widget, CustomControl)
   })
 }

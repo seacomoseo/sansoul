@@ -3,16 +3,17 @@
 
 {{/*  CLASS  */}}
 
-{{/*  {{ $key_class   := cond .header "section--header" (print "section--" .key) }}  */}}
-{{ $key_class   := cond (not .header) "" "section--header" }}
-{{ if .footer }}
-  {{ $key_class  = "section--footer" }}
+{{/*  Key (lightbox need it)  */}}
+{{ $key_class  := print "section--" .key }}
+{{ if .header }}
+  {{ $key_class = "section--header" }}
+{{ else if .footer }}
+  {{ $key_class = "section--footer" }}
+{{ else if $modal }}
+  {{ $key_class = print "modal--" (add .k 1) }}
 {{ end }}
-{{/*
-{{ if $modal }}
-  {{ $key_class  = print $key_class "__modal--" (add .k 1) }}
-{{ end }}
-*/}}
+
+{{/*  Full  */}}
 {{ $full        := cond (not .full) "" "section--full" }}
 
 {{/*  Background  */}}

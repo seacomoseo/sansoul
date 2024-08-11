@@ -8,17 +8,17 @@ export function initSimpleLightbox () {
     function lightbox () {
       let lbGroups = []
       lbItems.forEach(lbItem => {
-        const lbGroup = lbItem.closest('.gallery, .box, .boxes, .description, section.content')
+        const lbGroup = lbItem.closest('.gallery, .box, .boxes, .description, .menu__items')
         lbGroups.push(lbGroup)
       })
       lbGroups = [...new Set(lbGroups)]
       lbGroups.forEach(lbGroup => {
-        const lbSection = lbGroup.closest('section, .section, .modal')
-        const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?(section--[\w-]+).*$/, '$1') : ''
+        const lbSection = lbGroup.closest('.menu, .section, .modal')
+        const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?((section|modal)--[\w-]+|menu).*$/, '$1') : ''
         const lbBox = lbGroup.closest('.box')
         const lbGroupBox = lbBox ? '.' + lbBox.classList.value.replace(/^.*?(box(--\d+)?).*$/, '$1').replace(' ', '.') : ''
         // eslint-disable-next-line
-        const localImages = new SimpleLightbox(lbGroupSection + ' ' + lbGroupBox + ' [data-lightbox]', { sourceAttr: 'data-lightbox' })
+        const localImages = new SimpleLightbox(`${lbGroupSection} ${lbGroupBox} [data-lightbox]`, { sourceAttr: 'data-lightbox' })
         // Gallery expand button open first child
         document.addEventListener('click', e => {
           const galleryExpand = e.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
