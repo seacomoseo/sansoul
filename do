@@ -285,12 +285,12 @@ elif [ $1 = hugo ]
 then
 
   # Deploy with environement
-  development=$(grep '^development:' ./data/config.yml | awk '{print $2}')
+  development=$(grep '^\s\sdevelopment:' ./data/config.yml | awk '{print $2}')
   if test "$development" = "true"
   then
-    time sh do hugo-development
+    sh do hugo-development
   else
-    time sh do hugo-production
+    sh do hugo-production
   fi
 
 # cms + hugo local
