@@ -83,6 +83,7 @@
 {{- with $css -}}
   {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction)) | fingerprint -}}
   {{- if hugo.IsProduction -}}
+    {{/*  {{- $css = $css | minify | postCSS | resources.PostProcess -}}  */}}
     {{- $css = $css | minify -}}
   {{- end -}}
 {{- end -}}

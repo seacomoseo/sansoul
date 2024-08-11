@@ -180,7 +180,8 @@ then
 elif [ $1 = css-purge ]
 then
 
-  time node ./themes/sansoul/css-purge.js
+  echo "${STI} CSS PURGE ${STE}"
+  node ./themes/sansoul/css-purge.js
 
 # like purge css
 elif [ $1 = yml ]
@@ -277,6 +278,7 @@ then
   echo "${STI} RUN HUGO PRODUCTION ${STE}"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
+  sh do css-purge
   sh do draws-purge
 
   # sh do multilang

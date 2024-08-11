@@ -98,7 +98,7 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     for (const line of lines) {
       // Omitir líneas que empiecen por @, { y }
       if (/^[@{}]/.test(line)) {
-        // processedLines.push(line)
+        processedLines.push(line)
       } else {
         // Separar por comas que no estén entre paréntesis
         const selectors = splitPorComas(line)
@@ -112,13 +112,11 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
             selectorCleaned = selectorCleaned.replace(/\([^()]*\)/g, '')
           }
 
-          selectorCleaned = selectorCleaned
-            .replace(/^.*[\s>+~]/g, '') // Quita todos los selectores excepto el último
-            // .replace(/(^|[^\s]):(is|where|not|has)/g, '') // Eliminar pseudo selectores
+          selectorCleaned = selectorCleaned.replace(/^.*[\s>+~]/g, '') // Quita todos los selectores excepto el último
 
           // Si es un elemento genérico o está entre las clases, ids y etiquetas html
           if (elementsRegex.test(selectorCleaned)) {
-            processedSelectors.push(selectorCleaned)
+            processedSelectors.push(selector)
           }
         }
         processedSelectors.join(',')
@@ -129,12 +127,12 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
 
     // Unir las líneas procesadas
     result = processedLines.join('\n')
-    // .replace(/\}\n\{.+\}/g, '}') // Eliminar propiedades huérfanas
-    // .replace(/^@media.+\{\n\}/g, '') // Eliminar mediaqueries huérfanas
-    // .replace(/\n/g, '') // Eliminar saltos de linea
+      .replace(/\n\n\{.+/gm, '') // Eliminar propiedades huérfanas
+      .replace(/^@media.+\{\n\}\n/gm, '') // Eliminar mediaqueries huérfanas
+      .replace(/\n/g, '') // Eliminar saltos de linea
 
-    // Guardar resultado
-    fs.writeFile('processed_styles.css', result, 'utf8', (err) => {
+    // Guardar resultado # 'processed_styles.css'
+    fs.writeFile(cssFilePath, result, 'utf8', (err) => {
       if (err) throw err
       console.log('Archivo procesado guardado como processed_styles.css')
     })
