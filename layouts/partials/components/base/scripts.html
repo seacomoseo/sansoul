@@ -34,8 +34,9 @@
 {{/*  OPTIONS  */}}
 
 {{ $opts := dict
+  "minify"     hugo.IsProduction
   "targetPath" (print site.Home.RelPermalink "js/scripts.js")
-  "params" (dict
+  "params"     (dict
     "disqusId"          $disqus_id
     "isGoogleTranslate" $is_google_translate
     "googleAnalyticsId" $ga4_id
@@ -52,10 +53,6 @@
     "formSubmitWrong"         (i18n "form_submit_wrong")
   )
 }}
-
-{{ if hugo.IsProduction }}
-  {{ $opts = merge $opts (dict "minify" true) }}
-{{ end }}
 
 
 {{/*  RESOURCES  */}}
@@ -81,5 +78,9 @@
 
 {{ $js := slice $_index | append $conditional_srcs | append $custom | resources.Concat "js/scripts.js" }}
 {{ $js  = $js | js.Build $opts | fingerprint }}
+
+{{ if hugo.IsProduction }}
+  {{ $js = $js | minify }}
+{{ end }}
 
 <script src="{{ $js.RelPermalink }}" defer></script>

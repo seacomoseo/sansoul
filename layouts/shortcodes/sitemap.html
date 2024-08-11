@@ -11,7 +11,7 @@
   "products"
 }}
   {{ with page.GetPage . }}
-    {{ if .RegularPages | or .IsHome }}
+    {{ if or .RegularPages .IsHome }}
       {{ $parent_type := index site.Data.utilities.types .Type }}
       <h2>
         {{ partial "components/link" (dict

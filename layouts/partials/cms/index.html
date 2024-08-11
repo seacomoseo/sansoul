@@ -37,7 +37,7 @@
   {{/*  STYLES  */}}
   {{ $vars   := merge (partial "cms/icons" .) $trans_css }}
   {{ $styles := resources.Get "css/cms.scss"
-    | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsProduction)
+    | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction))
     | fingerprint
   }}
   {{ if hugo.IsProduction }}
@@ -65,8 +65,9 @@
 
   {{/*  CUSTOM SCRIPT  */}}
   {{ $opts := dict
+    "minify"     hugo.IsProduction
     "targetPath" (print site.Home.RelPermalink "js/cms.js")
-    "params" (dict
+    "params"     (dict
       "editorial"    site.Data.config.cms.editorial
       "hook"         site.Params.hook
       "netlifyId"    (site.Params.netlify_id | default "sansoul")
@@ -75,9 +76,6 @@
       "local"        $local
     )
   }}
-  {{ if hugo.IsProduction }}
-    {{ $opts = merge $opts (dict "minify" true) }}
-  {{ end }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}
   {{ if hugo.IsProduction }}
     {{ $js = $js | minify }}

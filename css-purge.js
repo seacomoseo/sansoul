@@ -85,14 +85,15 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
 
     // Sustituciones iniciales
     let result = data
-      .replace(/\n\s*/g, '')
-      .replace(/(\()\s/g, '$1')
-      .replace(/\s(\))/g, '$1')
-      .replace(/(\})/g, '$1\n')
-      .replace(/(@media[^{]*\{)/g, '$1\n')
-      .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1')
-      .replace(/\/\*.*?\*\//g, '')
-      .replace(/^([^@].+\{)/g, '\n$1')
+      .replace(/\n\s*/g, '') // Quitar saltos de línea + posibles espacios
+      .replace(/(\()\s/g, '$1') // Quitar espacio que precede a `(`
+      .replace(/\s(\))/g, '$1') // Quitar espacio que antecede a `)`
+      .replace(/(\})/g, '$1\n') // Añadir salto de línea después de `}`
+      .replace(/(@media[^{]*\{)/g, '$1\n') // Añadir salto de línea después de `@media...{`
+      .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1') // Quitar salto de línea que precede a `@keyframes` e hijos
+      .replace(/\/\*.*?\*\//g, '') // Quitar comentarios
+      // .replace(/^([^@].+\{)/g, '\n$1') // Añadir salto de línea antes de cualquier línea que NO empiece por `@` y que contenga `{`
+      // .replace(/^([^@].+)\{/g, '$1\n{') // Añadir salto de línea antes del primer `{` en línea que NO empiece por `@`
 
     // Procesar línea por línea
     const lines = result.split('\n')
@@ -142,10 +143,10 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     }
 
     // Unir las líneas procesadas
-    result = processedLines.join('\n')
+    // result = processedLines.join('\n')
       // .replace(/\}\n\{.+\}/g, '}')
       // .replace(/,*\n\{/g, '{')
-      .replace(/^@media.+\{\n\}/g, '')
+      // .replace(/^@media.+\{\n\}/g, '')
       // .replace(/(@|\{|\}).*/g, '')
 
     // Guardar resultado

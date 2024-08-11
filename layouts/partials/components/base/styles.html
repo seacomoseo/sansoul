@@ -81,7 +81,7 @@
 
 {{- $css := resources.Get (print "css/styles.scss") -}}
 {{- with $css -}}
-  {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsProduction) | fingerprint -}}
+  {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction)) | fingerprint -}}
   {{- if hugo.IsProduction -}}
     {{- $css = $css | minify | postCSS | resources.PostProcess -}}
   {{- end -}}
