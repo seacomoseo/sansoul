@@ -70,7 +70,7 @@ Face à ces informations, il est possible de réaliser les actions suivantes :
 
 - **Accepter les cookies :** Cet avis ne sera plus affiché lorsque vous accédez à une page du portail pendant la session actuelle.
 - **Rejeter les cookies :** L'avis est caché sur la page actuelle.
-- **Configurer :** Vous pourrez obtenir plus d'informations sur ce que sont les cookies, consulter la Politique de cookies de **{{% legal web %}}** et modifier les paramètres de votre navigateur.
+<!-- - **Configurer :** Vous pourrez obtenir plus d'informations sur ce que sont les cookies, consulter la Politique de cookies de **{{% legal web %}}** et modifier les paramètres de votre navigateur. -->
 
 Ce site utilise des cookies analytiques pour recueillir des statistiques sur l'activité des utilisateurs lorsqu'ils visitent la page et l'activité générale de celle-ci. Les informations collectées sont anonymes et permettent d'optimiser la navigation sur notre site web et de garantir le meilleur service possible. Nous utilisons des cookies propres et tiers (Google Analytics) pour l'analyse de notre page. L'utilisateur peut exclure son activité via les systèmes d'exclusion fournis par les outils analytiques. Générer un identifiant utilisateur unique, qui est utilisé pour compter combien de fois un utilisateur visite le site, ainsi que la date de la première et de la dernière visite du site. Enregistrer la date et l'heure d'accès à l'une des pages du site. Vérifier la nécessité de maintenir la session d'un utilisateur ouverte ou de créer une nouvelle. Identifier la session de l'utilisateur, pour collecter la localisation géographique approximative de l'ordinateur qui accède au site à des fins statistiques.
 

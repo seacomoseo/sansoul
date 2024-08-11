@@ -70,7 +70,7 @@ In response to this information, you can take the following actions:
 
 - **Accept cookies:** This notice will not be displayed again when accessing any page of the portal during the current session.
 - **Reject cookies:** The notice will be hidden on the current page.
-- **Configure:** You can obtain more information about what cookies are, review the cookie policy of **{{% legal web %}}**, and modify your browser settings.
+<!-- - **Configure:** You can obtain more information about what cookies are, review the cookie policy of **{{% legal web %}}**, and modify your browser settings. -->
 
 This site uses analytical cookies to collect statistics on user activity when visiting the site and the general activity of the site itself. The information collected is anonymous and allows optimizing navigation on our website and ensuring the best service to the user. We use both first-party and third-party cookies (Google Analytics) for analyzing our site. Users can exclude their activity via the exclusion systems provided by analytical tools. Generate a unique user identifier, which is used to count how many times a user visits the site, as well as the date of the first and last visit. Record the date and time of access to any page of the site. Check the need to keep a user's session open or create a new one. Identify the user's session to collect the approximate geographical location of the computer accessing the site for statistical purposes.
 

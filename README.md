@@ -281,6 +281,7 @@
       - [x] `data.langs` > `data.config.langs` and all params in `data.config` (less `favicon`, `cms` and hidden) > `data.config.langs`
       - [x] Translate CMS
       - [x] New `de`, `it` and `pt` translates
+      - [x] Cookies small
       - [x] Fix slider
       - [x] Fix lightbox
       - [ ] Fix purgecss

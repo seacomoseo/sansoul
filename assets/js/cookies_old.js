@@ -2,10 +2,10 @@ import { googleAnalyticsId } from '@params'
 
 export function initCookies () {
   const cookiesMessage = document.querySelector('.cookies')
-  const cookiesButtons = document.querySelectorAll('.cookies__button')
-  const cookiesToogle = document.querySelector('.cookies__toggle')
+  const cookiesMessageAcept = document.querySelectorAll('.cookies__button-acept')
+  const cookiesMessageToogle = document.querySelector('.cookies__toggle')
 
-  if (cookiesMessage && cookiesButtons && cookiesToogle) {
+  if (cookiesMessage && cookiesMessageAcept && cookiesMessageToogle) {
     function cookiesOpen () {
       cookiesMessage.removeAttribute('hidden')
       cookiesMessage.querySelector('[data-b]').focus()
@@ -28,8 +28,10 @@ export function initCookies () {
       window.localStorage.controlcookie = window.localStorage.controlcookie || 0
       window.localStorage.controlcookie++
       cookiesClose()
-      const aceptAll = c.classList.value.includes('cookies__button--acept')
-      if (aceptAll) {
+      // If acept all or if not acept all and if analytics ckecked
+      const aceptAll = c.target.classList.value.includes('cookies__button-acept--all')
+      const analyticsCkecked = document.querySelector('[value="de-analisis"]').checked
+      if (aceptAll || (!aceptAll && analyticsCkecked)) {
         window.localStorage.controlcookieanalytics = window.localStorage.controlcookieanalytics || 0
         window.localStorage.controlcookieanalytics++
         if (googleAnalyticsId) {
@@ -41,7 +43,7 @@ export function initCookies () {
 
     document.addEventListener('click', e => {
       // Onclick cookies accept
-      const cb = e.target.closest('.cookies__button')
+      const cb = e.target.closest('.cookies__button-acept')
       if (cb) cookiesAccept(cb)
       // Onclick cookies message toggle
       const ct = e.target.closest('.cookies__toggle')

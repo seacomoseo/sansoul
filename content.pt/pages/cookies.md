@@ -70,7 +70,7 @@ Diante dessas informações, é possível realizar as seguintes ações:
 
 - **Aceitar cookies:** Este aviso não será mais exibido ao acessar qualquer página do portal durante a sessão atual.
 - **Rejeitar cookies:** O aviso é ocultado na página atual.
-- **Configurar:** Você poderá obter mais informações sobre o que são cookies, conhecer a Política de Cookies de **{{% legal web %}}** e modificar as configurações do seu navegador.
+<!-- - **Configurar:** Você poderá obter mais informações sobre o que são cookies, conhecer a Política de Cookies de **{{% legal web %}}** e modificar as configurações do seu navegador. -->
 
 Este site utiliza cookies analíticos para coletar estatísticas sobre a atividade do usuário ao visitar a página e a atividade geral da mesma. As informações coletadas são anônimas e permitem otimizar a navegação no nosso site e garantir o melhor serviço ao usuário. Utilizamos cookies próprios e de terceiros (Google Analytics) para a análise do nosso site. O usuário pode excluir sua atividade através dos sistemas de exclusão fornecidos pelas ferramentas analíticas. Gerar um identificador único de usuário, que é utilizado para contar quantas vezes um usuário visita o site, bem como a data da primeira e última vez que visitou o site. Registrar a data e hora de acesso a qualquer página do site. Verificar a necessidade de manter a sessão de um usuário aberta ou criar uma nova. Identificar a sessão do usuário, para coletar a localização geográfica aproximada do computador que acessa o site com efeitos estatísticos.
 
