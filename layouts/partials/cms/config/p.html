@@ -1,24 +1,24 @@
 {{ $t := partial "functions/i18n" . }}
 
-{{/*  (dict "&P_DATE"           (dict "label" `Fecha`              "name" `date`        "widget" `datetime` "i18n" true                                           "format" `yyyy-MM-dd`          "date_format" `yyyy-MM-dd`          "time_format" false))  */}}
-{{/*  (dict "&P_LASTMOD"        (dict "label" `Última Modifiación` "name" `lastmod`     "widget" `datetime` "i18n" true        "required" false "default" ``      "format" `yyyy-MM-dd`          "date_format" `yyyy-MM-dd`          "time_format" false    "hint" "Si no se indica nada, se tomará la fecha de modificación del archivo"))  */}}
-{{/*  (dict "&P_DATE_INI"       (dict "label" `Fecha Inicial`      "name" `date_ini`    "widget" `datetime` "i18n" `duplicate`                                    "format" `yyyy-MM-ddTHH:mm:ss` "date_format" `yyyy-MM-ddTHH:mm:ss` "time_format" true))  */}}
-{{/*  (dict "&P_DATE_END"       (dict "label" `Fecha Final`        "name" `date_end`    "widget" `datetime` "i18n" `duplicate` "required" false "default" ``      "format" `yyyy-MM-ddTHH:mm:ss` "date_format" `yyyy-MM-ddTHH:mm:ss` "time_format" true))  */}}
+{{/*  (dict "&P_DATE"           (dict "label" `Fecha`              "name" `date`        "widget" `datetime` "i18n" true        "required" false "format" `yyyy-MM-dd`          "date_format" `yyyy-MM-dd`          "time_format" false))  */}}
+{{/*  (dict "&P_LASTMOD"        (dict "label" `Última Modifiación` "name" `lastmod`     "widget" `datetime` "i18n" true        "required" false "format" `yyyy-MM-dd`          "date_format" `yyyy-MM-dd`          "time_format" false    "hint" "Si no se indica nada, se tomará la fecha de modificación del archivo"))  */}}
+{{/*  (dict "&P_DATE_INI"       (dict "label" `Fecha Inicial`      "name" `date_ini`    "widget" `datetime` "i18n" `duplicate` "required" false "format" `yyyy-MM-ddTHH:mm:ss` "date_format" `yyyy-MM-ddTHH:mm:ss` "time_format" true))  */}}
+{{/*  (dict "&P_DATE_END"       (dict "label" `Fecha Final`        "name" `date_end`    "widget" `datetime` "i18n" `duplicate` "required" false "format" `yyyy-MM-ddTHH:mm:ss` "date_format" `yyyy-MM-ddTHH:mm:ss` "time_format" true))  */}}
 
 {{ return slice
-  (dict "&P_TITLE"          (dict "label" $t.collection_p_title       "name" `title`       "widget" `string`   "i18n" true                         "default" ``       "hint" $t.collection_p_title_hint))
-  (dict "&P_TITLE_SEO"      (dict "label" $t.collection_p_title_seo   "name" `title_seo`   "widget" `string`   "i18n" true        "required" false "default" ``       "hint" $t.collection_p_title_seo_hint))
-  (dict "&P_SLUG"           (dict "label" $t.collection_p_slug        "name" `slug`        "widget" `string`   "i18n" true        "required" false "default" ``       "hint" $t.collection_p_slug_hint))
-  (dict "&P_PRICE"          (dict "<<" (slice (dict "default" ``) `~BOX_PRICE`)))
-  (dict "&P_DESCRIPTION"    (dict "label" $t.collection_p_description "name" `description` "widget" `text`     "i18n" true        "required" false "default" ``       "hint" $t.collection_p_description_hint))
-  (dict "&P_IMAGE"          (dict "label" $t.collection_p_image       "name" `image`       "widget" `image`    "i18n" `duplicate` "required" false "default" ``    "choose_url" true  "max_file_size" 512000000                            "hint" $t.collection_p_image_hint))
-  (dict "&P_CAT"            (dict "label" $t.collection_p_categories  "name" `categories`  "widget" `relation` "i18n" `duplicate` "required" false "default" slice "options_length" 100 "collection" `categories` "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" $t.collection_p_categories_hint))
-  (dict "&P_TAG"            (dict "label" $t.collection_p_tags        "name" `tags`        "widget" `relation` "i18n" `duplicate` "required" false "default" slice "options_length" 100 "collection" `tags`       "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" $t.collection_p_tags_hint))
-  (dict "&P_AUT"            (dict "label" $t.collection_p_author      "name" `author`      "widget" `relation` "i18n" `duplicate` "required" false "default" ``    "options_length" 100 "collection" `authors`    "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" false "hint" $t.collection_p_author_hint))
-  (dict "&P_TOC"            (dict "label" $t.collection_p_toc         "name" `toc`         "widget" `boolean`  "i18n" `duplicate`                  "default" false    "hint" $t.collection_p_toc_hint))
-  (dict "&P_DRAFT"          (dict "label" $t.collection_p_draft       "name" `draft`       "widget" `boolean`  "i18n" true                         "default" false    "hint" $t.collection_p_draft_hint))
-  (dict "&P_NOINDEX"        (dict "label" $t.collection_p_noindex     "name" `noindex`     "widget" `boolean`  "i18n" true                         "default" false    "hint" $t.collection_p_noindex_hint))
-  (dict "&P_JOB_TITLE"      (dict "label" $t.collection_p_job_title   "name" `job_title`   "widget" `string`   "i18n" true                         "default" ``       "hint" $t.collection_p_job_title_hint))
+  (dict "&P_TITLE"          (dict "label" $t.collection_p_title       "name" `title`       "widget" `string`   "i18n" true        "default" ``     "hint" $t.collection_p_title_hint))
+  (dict "&P_TITLE_SEO"      (dict "label" $t.collection_p_title_seo   "name" `title_seo`   "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_title_seo_hint))
+  (dict "&P_SLUG"           (dict "label" $t.collection_p_slug        "name" `slug`        "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_slug_hint))
+  (dict "&P_PRICE"          (dict "<<" (slice dict `~BOX_PRICE`)))
+  (dict "&P_DESCRIPTION"    (dict "label" $t.collection_p_description "name" `description` "widget" `text`     "i18n" true        "required" false "hint" $t.collection_p_description_hint))
+  (dict "&P_IMAGE"          (dict "label" $t.collection_p_image       "name" `image`       "widget" `image`    "i18n" `duplicate` "required" false "hint" $t.collection_p_image_hint       "choose_url" true  "max_file_size" 512000000))
+  (dict "&P_CAT"            (dict "label" $t.collection_p_categories  "name" `categories`  "widget" `relation` "i18n" `duplicate` "required" false "hint" $t.collection_p_categories_hint  "options_length" 100 "collection" `categories` "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true ))
+  (dict "&P_TAG"            (dict "label" $t.collection_p_tags        "name" `tags`        "widget" `relation` "i18n" `duplicate` "required" false "hint" $t.collection_p_tags_hint        "options_length" 100 "collection" `tags`       "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true ))
+  (dict "&P_AUT"            (dict "label" $t.collection_p_author      "name" `author`      "widget" `relation` "i18n" `duplicate` "required" false "hint" $t.collection_p_author_hint      "options_length" 100 "collection" `authors`    "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" false))
+  (dict "&P_TOC"            (dict "label" $t.collection_p_toc         "name" `toc`         "widget" `boolean`  "i18n" `duplicate` "required" false "hint" $t.collection_p_toc_hint))
+  (dict "&P_DRAFT"          (dict "label" $t.collection_p_draft       "name" `draft`       "widget" `boolean`  "i18n" true        "required" false "hint" $t.collection_p_draft_hint))
+  (dict "&P_NOINDEX"        (dict "label" $t.collection_p_noindex     "name" `noindex`     "widget" `boolean`  "i18n" true        "required" false "hint" $t.collection_p_noindex_hint))
+  (dict "&P_JOB_TITLE"      (dict "label" $t.collection_p_job_title   "name" `job_title`   "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_job_title_hint))
   (dict "&P_SOCIAL"         (dict
     "label"          $t.collection_p_social
     "label_singular" $t.collection_p_social_singular
@@ -28,21 +28,18 @@
     "summary"        "{{fields.link}}"
     "allow_add"      true
     "required"       false
-    "fields"         (slice
-      (dict "<<" (slice (dict "default" ``) `~BOX_BUTTON_LINK`))
-      (dict "<<" (slice (dict "default" ``) `~BOX_ICON_ID`))
-    )
+    "fields"         (slice `~BOX_BUTTON_LINK`)
   ))
-  (dict "&P_DATE"           (dict "label" $t.collection_p_date           "name" `date`           "widget" `string`   "i18n" true        "required" false "default" ``    "hint" $t.collection_p_date_hint))
-  (dict "&P_LASTMOD"        (dict "label" $t.collection_p_lastmod        "name" `lastmod`        "widget" `string`   "i18n" true        "required" false "default" ``    "hint" $t.collection_p_lastmod_hint))
-  (dict "&P_DATE_INI"       (dict "label" $t.collection_p_date_ini       "name" `date_ini`       "widget" `string`   "i18n" `duplicate`                  "default" ``    "hint" $t.collection_p_date_ini_hint))
-  (dict "&P_DATE_END"       (dict "label" $t.collection_p_date_end       "name" `date_end`       "widget" `string`   "i18n" `duplicate` "required" false "default" ``    "hint" $t.collection_p_date_end_hint))
-  (dict "&P_ARTIST"         (dict "label" $t.collection_p_artist         "name" `artist`         "widget" `string`   "i18n" true        "required" false "default" ``    "hint" $t.collection_p_artist_hint))
-  (dict "&P_LOCATION"       (dict "label" $t.collection_p_location       "name" `location`       "widget" `string`   "i18n" true        "required" false "default" ``    "hint" $t.collection_p_location_hint))
-  (dict "&P_ADDRESS"        (dict "label" $t.collection_p_address        "name" `address`        "widget" `string`   "i18n" true        "required" false "default" ``    "hint" $t.collection_p_address_hint))
-  (dict "&P_BODY"           (dict "label" $t.collection_p_body           "name" `body`           "widget" `markdown` "i18n" true        "required" false "show_raw" true "hint" $t.collection_p_body_hint))
-  (dict "&P_TRANSLATIONKEY" (dict "label" $t.collection_p_translationKey "name" `translationKey` "widget" `string`   "i18n" `duplicate` "required" false "default" ``    "hint" $t.collection_p_translationKey_hint))
-  (dict "&P_TEMPLATE"       (dict "label" $t.collection_p_template       "name" `template`       "widget" `relation` "i18n" `duplicate` "required" false "options_length" 100 "collection" `templates` "value_field" "{{slug}}" "search_fields" (slice "{{name}}") "display_fields" (slice "{{name}}") "hint" $t.collection_p_template_hint))
+  (dict "&P_DATE"           (dict "label" $t.collection_p_date           "name" `date`           "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_date_hint))
+  (dict "&P_LASTMOD"        (dict "label" $t.collection_p_lastmod        "name" `lastmod`        "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_lastmod_hint))
+  (dict "&P_DATE_INI"       (dict "label" $t.collection_p_date_ini       "name" `date_ini`       "widget" `string`   "i18n" `duplicate` "required" false "hint" $t.collection_p_date_ini_hint))
+  (dict "&P_DATE_END"       (dict "label" $t.collection_p_date_end       "name" `date_end`       "widget" `string`   "i18n" `duplicate` "required" false "hint" $t.collection_p_date_end_hint))
+  (dict "&P_ARTIST"         (dict "label" $t.collection_p_artist         "name" `artist`         "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_artist_hint))
+  (dict "&P_LOCATION"       (dict "label" $t.collection_p_location       "name" `location`       "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_location_hint))
+  (dict "&P_ADDRESS"        (dict "label" $t.collection_p_address        "name" `address`        "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_address_hint))
+  (dict "&P_BODY"           (dict "label" $t.collection_p_body           "name" `body`           "widget" `markdown` "i18n" true        "required" false "hint" $t.collection_p_body_hint           "show_raw" true))
+  (dict "&P_TRANSLATIONKEY" (dict "label" $t.collection_p_translationKey "name" `translationKey` "widget" `string`   "i18n" `duplicate` "required" false "hint" $t.collection_p_translationKey_hint))
+  (dict "&P_TEMPLATE"       (dict "label" $t.collection_p_template       "name" `template`       "widget" `relation` "i18n" `duplicate` "required" false "hint" $t.collection_p_template_hint       "options_length" 100 "collection" `templates` "value_field" "{{slug}}" "search_fields" (slice "{{name}}") "display_fields" (slice "{{name}}")))
   (dict "&P_CUSTOM" (dict
     "label"       $t.collection_p_custom
     "name"        `custom`

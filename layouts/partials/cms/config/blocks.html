@@ -1,6 +1,13 @@
 {{ $t := partial "functions/i18n" . }}
-{{ return slice
 
+{{ $list_fields := slice `~BOX_LIST_TYPES` }}
+{{ if (site.GetPage "categories").Pages }}{{ $list_fields = $list_fields | append `~BOX_LIST_CATEGORIES` }}{{ end }}
+{{ if (site.GetPage "tags"      ).Pages }}{{ $list_fields = $list_fields | append `~BOX_LIST_TAGS`       }}{{ end }}
+{{ if (site.GetPage "authors"   ).Pages }}{{ $list_fields = $list_fields | append `~BOX_LIST_AUTHORS`    }}{{ end }}
+{{ $list_fields = $list_fields | append `~BOX_LIST_MAX` }}
+
+
+{{ return slice
 
   (dict "&BOX_LIST_TYPES"      (dict "label" $t.box_list_types       "name" `types`      "widget" `select`   "required" false "multiple"   true        "options" `~OPTIONS_LISTS`))
   (dict "&BOX_LIST_CATEGORIES" (dict "label" $t.box_list_categories  "name" `categories` "widget" `relation` "required" false "i18n"       `duplicate` "options_length" 100 "collection" `categories` "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" $t.box_list_categories_hint))
@@ -13,13 +20,7 @@
     "widget"    `object`
     "collapsed" false
     "required"  false
-    "fields"    (slice
-      `~BOX_LIST_TYPES`
-      `~BOX_LIST_CATEGORIES`
-      `~BOX_LIST_TAGS`
-      `~BOX_LIST_AUTHORS`
-      `~BOX_LIST_MAX`
-    )
+    "fields"    $list_fields
   ))
 
 
@@ -192,7 +193,7 @@
   (dict "&BOX_CONTACT_FULL"            (dict "label" $t.box_contact_full        "name" `full`   "widget" `boolean` "required" false))
   (dict "&BOX_CONTACT_ADDRESS_LABEL"   (dict "label" $t.box_contact_address     "name" `label`  "widget" `string`  "required" false))
   (dict "&BOX_CONTACT_ADDRESS_ANCHOR"  (dict "label" $t.box_contact_anchor      "name" `anchor` "widget" `string`  "required" false "hint" $t.box_contact_anchor_hint))
-  (dict "&BOX_CONTACT_HIDDEN"          (dict "label" `hidden`                         "name" `hidden` "widget" `hidden`  "required" false))
+  (dict "&BOX_CONTACT_HIDDEN"          (dict "label" `hidden`                   "name" `hidden` "widget" `hidden`  "required" false))
   (dict "&BOX_CONTACT" (dict
     "label"          $t.box_contact
     "label_singular" $t.box_contact_singular

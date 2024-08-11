@@ -4,17 +4,17 @@
 
 
 {{/*  BLOG  */}}
-{{ if .GetPage "blog" }}
+{{ with .GetPage "blog" }}
   {{ $colections = $colections | append (dict
     "label"            $t.collection_blog
     "label_singular"   $t.collection_blog_singular
     "name"             `blog`
     "description"      $t.collection_blog_description
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/blog`)
+    "folder"           (print `content.` $.Lang `/blog`)
     "create"           true
     "slug"             "{{year}}-{{month}}-{{day}}-{{fields.slug}}"
-    "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+    "preview_path"     (print site.Home.RelPermalink "/blog/{{fields.slug}}/")
     "summary"          "{{date | date('YYYY-MM-DD')}} 🔷 {{title}}"
     "sortable_fields"  (dict "fields" (slice "date" "lastmod" "commit_date" "title" "authors" "categories" "tags"))
     "view_filters"     (dict
@@ -61,17 +61,17 @@
 
 
 {{/*  EVENTS  */}}
-{{ if .GetPage "events" }}
+{{ with .GetPage "events" }}
   {{ $colections = $colections | append (dict
     "label"            $t.collection_events
     "label_singular"   $t.collection_events_singular
     "name"             `events`
     "description"      $t.collection_events_description
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/events`)
+    "folder"           (print `content.` $.Lang `/events`)
     "create"           true
     "slug"             "{{year}}-{{month}}-{{day}}-{{fields.slug}}"
-    "preview_path"     (print ((index (.GetPage "events").Pages 0).Permalink | replaceRE (print .Site.BaseURL `(.+?/).+`) `/$1`) "{{date_ini | date('YYYY/MM/DD')}}/{{fields.slug}}/")
+    "preview_path"     (print ((index .Pages 0).Permalink | replaceRE (print site.BaseURL `(.+?/).+`) `/$1`) "{{date_ini | date('YYYY/MM/DD')}}/{{fields.slug}}/")
     "summary"          "{{date_ini}} 🔷 {{date_end}} 🔷 {{title}}"
     "sortable_fields"  (dict "fields" (slice "date_ini" "date_end" "commit_date" "title" "authors" "categories" "tags"))
     "view_filters"     (dict
@@ -122,17 +122,17 @@
 
 
 {{/*  PRODUCTS  */}}
-{{ if .GetPage "products" }}
+{{ with .GetPage "products" }}
   {{ $colections = $colections | append (dict
     "label"            $t.collection_products
     "label_singular"   $t.collection_products_singular
     "name"             `products`
     "description"      $t.collection_products_description
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/products`)
+    "folder"           (print `content.` $.Lang `/products`)
     "create"           true
     "slug"             "{{fields.slug}}"
-    "preview_path"     (print site.Home.RelPermalink "{{fields.slug}}/")
+    "preview_path"     (print site.Home.RelPermalink "/producto/{{fields.slug}}/")
     "summary"          "{{categories}} 🔷 {{title}}"
     "sortable_fields"  (dict "fields" (slice "commit_date" "title" "authors" "categories" "tags"))
     "view_filters"     (dict
@@ -176,17 +176,17 @@
 
 
 {{/*  CATEGORIES  */}}
-{{ if .GetPage "categories" }}
+{{ with .GetPage "categories" }}
   {{ $colections = $colections | append (dict
     "label"            $t.collection_categories
     "label_singular"   $t.collection_categories_singular
     "name"             `categories`
     "description"      $t.collection_categories_description
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/categories`)
+    "folder"           (print `content.` $.Lang `/categories`)
     "create"           true
     "slug"             "{{fields.slug}}"
-    "preview_path"     (print (((.GetPage "categories").GetPage "general").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
+    "preview_path"     (print ((.GetPage "general").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
     "summary"          "{{title}}"
     "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
     "view_filters"     (dict
@@ -229,17 +229,17 @@
 
 
 {{/*  TAGS  */}}
-{{ if .GetPage "tags" }}
+{{ with .GetPage "tags" }}
   {{ $colections = $colections | append (dict
     "label"            $t.collection_tags
     "label_singular"   $t.collection_tags_singular
     "name"             `tags`
     "description"      $t.collection_tags_description
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/tags`)
+    "folder"           (print `content.` $.Lang `/tags`)
     "create"           true
     "slug"             "{{fields.slug}}"
-    "preview_path"     (print (((.GetPage "tags").GetPage "general").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
+    "preview_path"     (print ((.GetPage "general").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
     "summary"          "{{title}}"
     "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
     "view_filters"     (dict
@@ -282,17 +282,17 @@
 
 
 {{/*  AUTHORS  */}}
-{{ if .GetPage "authors" }}
+{{ with .GetPage "authors" }}
   {{ $colections = $colections | append (dict
     "label"            $t.collection_authors
     "label_singular"   $t.collection_authors_singular
     "name"             `authors`
     "description"      $t.collection_authors_description
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/authors`)
+    "folder"           (print `content.` $.Lang `/authors`)
     "create"           true
     "slug"             "{{fields.slug}}"
-    "preview_path"     (print (((.GetPage "authors").GetPage "admin").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
+    "preview_path"     (print ((.GetPage "admin").RelPermalink | replaceRE `^/(.+?/).+/$` `$1`) "{{fields.slug}}/")
     "summary"          "{{title}}"
     "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
     "view_filters"     (dict
@@ -365,7 +365,6 @@
     )
   )
   "editor"           (dict "preview" false )
-  "i18n"             true
   "fields"           (slice
     `~P_TITLE`
     `~P_TITLE_SEO`

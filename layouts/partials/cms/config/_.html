@@ -39,6 +39,15 @@
 {{ end }}
 
 
+{{ $i18n := dict
+  "i18n" (dict
+    "structure"      false
+    "locales"        $langs
+    "default_locale" .Lang
+  )
+}}
+
+
 {{/*  FINAL CMS CONFIG ==============================================================================
   EMAIL+PASS LOGIN WITH NETLIFY IDENTITY
     https://decapcms.org/docs/git-gateway-backend/
@@ -87,11 +96,6 @@
       "encoding"             `ascii`
       "clean_accents"        true
       "sanitize_replacement" `-`
-    )
-    "i18n" (dict
-      "structure"      `multiple_folders`
-      "locales"        $langs
-      "default_locale" .Lang
     )
     "yaml"          (dict
       "parseOptions"    (dict

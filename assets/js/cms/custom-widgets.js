@@ -13,7 +13,6 @@ export function initCustomWidgets () {
 
       let wrapClass = isSet ? 'is-set' : 'is-not-set'
       if (isDefault || value === '') wrapClass = 'is-default'
-      if (!isSet) wrapClass = wrapClass + ' is-empty'
       wrapClass = `name-${name} ${wrapClass}`
       // wrapClass = `widget-${widget} name-${name} ${wrapClass}`
 
@@ -29,6 +28,17 @@ export function initCustomWidgets () {
       ]
       if (widgetsNotButton.includes(widget)) {
         isButton = false
+      }
+
+      // Fix `types` and `view` select widgets
+      if (widget === 'object') {
+        if (typeof value === 'object') {
+          if (value.types === '' || value.view === '') {
+            if (Object.keys(value).length === 1) {
+              wrapClass = `name-${name} is-not-set`
+            }
+          }
+        }
       }
 
       const handleReset = (e) => {

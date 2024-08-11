@@ -19,50 +19,36 @@ const findCssFile = (dir, pattern) => {
   throw new Error(`No se encontró ningún archivo que coincida con el patrón: ${pattern}`)
 }
 
-// Patrón de expresión regular para dividir por comas fuera de paréntesis
-const splitByCommasOutsideParentheses = (line) => {
-  const result = []
-  let startIndex = 0
-  let parenCount = 0
+// Función para hacer split en las comas que no estén dentro de paréntesis
+const splitPorComas = (texto) => {
+  const resultado = []
+  let profundidad = 0
+  let segmento = ''
 
-  for (let i = 0; i < line.length; i++) {
-    if (line[i] === '(') {
-      parenCount++
-    } else if (line[i] === ')') {
-      parenCount--
-    } else if (line[i] === ',' && parenCount === 0) {
-      result.push(line.substring(startIndex, i).trim())
-      startIndex = i + 1
+  for (let i = 0; i < texto.length; i++) {
+    const char = texto[i]
+
+    if (char === '(') {
+      profundidad++
+    } else if (char === ')') {
+      profundidad--
+    }
+
+    // Si encontramos una coma y no estamos dentro de paréntesis, hacemos un split
+    if (char === ',' && profundidad === 0) {
+      resultado.push(segmento.trim())
+      segmento = ''
+    } else {
+      segmento += char
     }
   }
 
-  // Añadir el fragmento final
-  result.push(line.substring(startIndex).trim())
-
-  return result
-}
-
-// Patrón de expresión regular para obtener el último elemento
-const elementsWithoutPseu = (line) => {
-  const result = []
-  let startIndex = 0
-  let parenCount = 0
-
-  for (let i = 0; i < line.length; i++) {
-    if (/:(not|where|is|has)\(/g.test(line[i])) {
-      parenCount++
-    } else if (line[i] === ')') {
-      parenCount--
-    } else if (/[\s>~+]/g.test(line[i]) && parenCount === 0) {
-      result.push(line.substring(startIndex, i).trim())
-      startIndex = i + 1
-    }
+  // Añadir el último segmento si existe
+  if (segmento) {
+    resultado.push(segmento.trim())
   }
 
-  // Añadir el fragmento final
-  result.push(line.substring(startIndex).trim())
-
-  return result.at(-1)
+  return resultado
 }
 
 // Encontrar el archivo CSS
@@ -76,8 +62,18 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
   const tags = elements.tags.join('|')
   const classes = elements.classes.join('|')
   const ids = elements.ids.join('|')
+  const safelist = [
+    'active',
+    'hidden',
+    '\\.sl-',
+    '\\.form__submit',
+    '\\.form__error',
+    '\\.show--will',
+    '\\.search__result-item-link',
+    '\\.cookies--hide'
+  ].join('|')
 
-  const elementsRegex = new RegExp(`\\*|\\[|(^|[ ,>~+(])(:|${tags})|\\.(${classes})|#(${ids})`, 'g')
+  const elementsRegex = new RegExp(`(^|\\.|\\])(\\*|\\[.+\\]|:[\\w:-]+|(${tags})|\\.(${classes})|#(${ids}))($|=|:|\\[|\\]|\\.)|${safelist}`, 'g')
 
   // Leer archivo CSS
   fs.readFile(cssFilePath, 'utf8', (err, data) => {
@@ -86,14 +82,14 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     // Sustituciones iniciales
     let result = data
       .replace(/\n\s*/g, '') // Quitar saltos de línea + posibles espacios
-      .replace(/(\()\s/g, '$1') // Quitar espacio que precede a `(`
-      .replace(/\s(\))/g, '$1') // Quitar espacio que antecede a `)`
-      .replace(/(\})/g, '$1\n') // Añadir salto de línea después de `}`
-      .replace(/(@media[^{]*\{)/g, '$1\n') // Añadir salto de línea después de `@media...{`
-      .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1') // Quitar salto de línea que precede a `@keyframes` e hijos
+      .replace(/(\()\s/g, '$1') // Quitar espacio que precede a (
+      .replace(/\s(\))/g, '$1') // Quitar espacio que antecede a )
+      .replace(/(\})/g, '$1\n') // Añadir salto de línea después de }
+      .replace(/(@media[^{]*\{)/g, '$1\n') // Añadir salto de línea después de @media...{
+      .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1') // Quitar salto de línea que precede a @keyframes e hijos
       .replace(/\/\*.*?\*\//g, '') // Quitar comentarios
-      // .replace(/^([^@].+\{)/g, '\n$1') // Añadir salto de línea antes de cualquier línea que NO empiece por `@` y que contenga `{`
-      // .replace(/^([^@].+)\{/g, '$1\n{') // Añadir salto de línea antes del primer `{` en línea que NO empiece por `@`
+      .replace(/^([^@]+?)\{/gm, '$1\n{') // Añadir salto de línea antes del primer { en línea que NO empiece ni tenga @
+      // .replace(/,(?![^()]*\))(?![^{}]*\})/g, ',\n') // Añadir salto de línea despues de cada coma que no esté entre () ni {}
 
     // Procesar línea por línea
     const lines = result.split('\n')
@@ -102,52 +98,40 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     for (const line of lines) {
       // Omitir líneas que empiecen por @, { y }
       if (/^[@{}]/.test(line)) {
-        processedLines.push(line)
+        // processedLines.push(line)
       } else {
-        // Sustituir * dentro de :not() por ∑
-        // line = line.replace(/:not\(([^)]*)\*([^)]*)\)/g, ':not($1∑$2)')
+        // Separar por comas que no estén entre paréntesis
+        const selectors = splitPorComas(line)
 
-        // Split por comas fuera de paréntesis
-        const splitLines = splitByCommasOutsideParentheses(line)
+        // Procesar selector por selector
+        const processedSelectors = []
+        for (const selector of selectors) {
+          // Elimina todo lo que está dentro de los paréntesis más externos
+          let selectorCleaned = selector
+          while (/\([^()]*\)/.test(selectorCleaned)) {
+            selectorCleaned = selectorCleaned.replace(/\([^()]*\)/g, '')
+          }
 
-        // Conservar líneas que contengan alguna de las clases, ids, etiquetas HTMLs
-        // const filteredLines = splitLines.filter(splitLine => elementsRegex.test(splitLine))
+          selectorCleaned = selectorCleaned
+            .replace(/^.*[\s>+~]/g, '') // Quita todos los selectores excepto el último
+            // .replace(/(^|[^\s]):(is|where|not|has)/g, '') // Eliminar pseudo selectores
 
-        const filteredLines = []
-        let processedSplitLine = false
-        for (const splitLine of splitLines) {
-          // Comprueba solamente el último elemento del selector
-          const lastElement = elementsWithoutPseu(splitLine)
-          // const lastElement =
-          //   splitLine
-          //     .replace(/:(not|where|is|has)\(.+?\)/g, '')
-          //     .replace(/:(not|where|is|has)\(.+?\)/g, '')
-          //     .replace(/:(not|where|is|has)\(.+?\)/g, '')
-          //     .replace(/:(not|where|is|has)\(.+?\)/g, '')
-          //     .replace(/.+[\s>~+](.+)/g, '$1')
-          // Conservar líneas que contengan alguna de las clases, ids, etiquetas HTMLs
-          if (elementsRegex.test(lastElement)) {
-            // processedSplitLine = true
-            filteredLines.push(splitLine)
+          // Si es un elemento genérico o está entre las clases, ids y etiquetas html
+          if (elementsRegex.test(selectorCleaned)) {
+            processedSelectors.push(selectorCleaned)
           }
         }
-        // if (processedSplitLine) {
-        //   filteredLines.push(line)
-        // }
+        processedSelectors.join(',')
 
-        if (filteredLines.length > 0) {
-          // processedLines.push(filteredLines.join(','))
-          filteredLines.forEach(l => { processedLines.push(l + ',') })
-        }
+        processedLines.push(processedSelectors)
       }
     }
 
     // Unir las líneas procesadas
-    // result = processedLines.join('\n')
-      // .replace(/\}\n\{.+\}/g, '}')
-      // .replace(/,*\n\{/g, '{')
-      // .replace(/^@media.+\{\n\}/g, '')
-      // .replace(/(@|\{|\}).*/g, '')
+    result = processedLines.join('\n')
+    // .replace(/\}\n\{.+\}/g, '}') // Eliminar propiedades huérfanas
+    // .replace(/^@media.+\{\n\}/g, '') // Eliminar mediaqueries huérfanas
+    // .replace(/\n/g, '') // Eliminar saltos de linea
 
     // Guardar resultado
     fs.writeFile('processed_styles.css', result, 'utf8', (err) => {

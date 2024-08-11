@@ -2,7 +2,7 @@
   {{- $type := index site.Data.utilities.types .page.Type -}}
   {{- partial "components/icon" (dict "class" "data__icon" "icon" $type.icon "emoji" $type.emoji) -}}
   {{- if $.box -}}
-    {{- i18n .page.Type 1 -}}
+    {{- (page.GetPage .page.Type).Title -}}
   {{- else -}}
     {{- partial "components/link" (dict
       "link"    (page.GetPage page.Type).RelPermalink
