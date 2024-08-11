@@ -278,9 +278,8 @@ then
   echo "${STI} RUN HUGO PRODUCTION ${STE}"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
-  sh do css-purge
+  # sh do css-purge
   sh do draws-purge
-
   # sh do multilang
 
 # hugo check environement
