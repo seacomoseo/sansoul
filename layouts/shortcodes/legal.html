@@ -1,14 +1,14 @@
 {{- $param := index .Params 0 -}}
 {{- $two   := index .Params 1 -}}
 
-{{- if in (slice "name" "dni" "location" "email") $param -}}
+{{- if in (slice "name" "nif" "location" "email") $param -}}
   {{- $config := partial "functions/config-lang" . -}}
   {{- $legal  := $config.legal -}}
 
   {{- if eq $param "name" -}}
-    {{- $legal.name | default (index $config.schema.names 0) -}}
-  {{- else if eq $param "dni" -}}
-    {{- $legal.dni | default "00000000A" -}}
+    {{- $legal.name | default $config.title | default site.Data.schema.title -}}
+  {{- else if eq $param "nif" -}}
+    {{- $legal.nif | default "00000000A" -}}
   {{- else if eq $param "location" -}}
     {{- with $legal.location -}}
       {{- . -}}
@@ -22,7 +22,7 @@
   {{- end -}}
 
 {{- else if eq $param "web" -}}
-  {{- replace site.BaseURL "https://" "" -}}
+  {{- site.BaseURL | replaceRE "^(https?:)?//|/$" "" -}}
 {{- else if eq $param "https" -}}
   {{- site.BaseURL -}}
 {{- end -}}

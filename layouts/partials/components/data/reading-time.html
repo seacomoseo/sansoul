@@ -13,15 +13,15 @@
   {{- if not $hide_reading_time -}}
     <i class="data__item">
       {{- partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") -}}
-      {{- i18n "reading-time" .page.ReadingTime -}}
-      {{- if not .box }} {{ i18n "of-reading" }}{{ end -}}
+      {{- i18n "reading_time" .page.ReadingTime -}}
+      {{- if not .box }} {{ i18n "of_reading" }}{{ end -}}
     </i>
   {{- end -}}
   {{/*
     {{- if not .box -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" "comment-dots" "emoji" "💬") -}}
-        {{- i18n "word-count" .page.WordCount -}}
+        {{- i18n "word_count" .page.WordCount -}}
       </i>
     {{- end -}}
   */}}

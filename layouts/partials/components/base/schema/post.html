@@ -1,0 +1,71 @@
+{{ $schema  := dict }}
+{{ $is_post := eq .Type "blog" | and (not .IsSection) }}
+
+{{ if $is_post }}
+
+  {{/*  Image  */}}
+  {{ $image := "" }}
+  {{ $image_external := strings.HasPrefix .Params.image "http" }}
+  {{ with .Params.image }}
+    {{ if not $image_external }}
+      {{ $image_url := resources.Get (print "/media/" .) }}
+      {{ with $image_url }}
+        {{ $image = .Permalink }}
+      {{ end }}
+    {{ else }}
+      {{ $image = partial "functions/iframe-poster" . | default . }}
+    {{ end }}
+  {{ else }}
+    {{ $image := site.Data.schema.logo }}
+    {{ if not $image }}
+      {{ $config := partial "functions/config-lang" . }}
+      {{ $image   = $config.menu.logo
+        | default $config.favicon.svg
+        | default $config.favicon.png
+        | default "base/icon.png"
+      }}
+    {{ end }}
+    {{ $image = print site.BaseURL "/media/" $image }}
+  {{ end }}
+  {{ if $image }}
+    {{ $image_width  := 1280 }}
+    {{ $image_height := 960 }}
+    {{ if not (in $image ".svg" | or $image_external) | and $image }}
+      {{ with resources.Get (print "/media/" $image) }}
+        {{ $image_width  = $image.Width }}
+        {{ $image_height = $image.Height }}
+      {{ end }}
+    {{ end }}
+    {{ $image = dict
+      "@type"  "ImageObject"
+      "url"    $image
+      "width"  $image_width
+      "height" $image_height
+    }}
+  {{ end }}
+
+  {{/*  Author  */}}
+  {{ $author_page := .GetPage (print "authors/" .Params.author | default "authors/admin") }}
+  {{ $author      := partial "components/base/schema/author" (dict "page" $author_page "from_post" true) }}
+
+  {{/*  Schema  */}}
+  {{ $schema = dict
+    "@context" `http://schema.org`
+    "@type"    `BlogPosting`
+    "mainEntityOfPage" (dict
+      "@type" `WebPage`
+      "@id"   site.BaseURL
+    )
+    "headline"      .Title
+    "description"   (.Description | default .Summary)
+    "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+    "dateModified"  (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+    "publisher"     (partial "components/base/schema/organization" site.Data.schema)
+    "image"         $image
+    "author"        $author
+  }}
+  {{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ end }}
+
+{{ return $schema }}

@@ -1,0 +1,16 @@
+{{ $lists := slice }}
+{{ range slice
+  "blog"
+  "events"
+  "products"
+  "categories"
+  "tags"
+  "authors"
+  "pages"
+  "page"
+}}
+  {{ if site.GetPage . }}
+    {{ $lists = $lists | append . }}
+  {{ end }}
+{{ end }}
+{{ return $lists }}

@@ -1,0 +1,67 @@
+{{ $config   := partial "functions/config-lang" . }}
+{{ $schema   := dict }}
+{{ $is_event := eq .Type "events"  | and (not .IsSection) }}
+
+{{ if $is_event }}
+
+  {{/*  Dates  */}}
+  {{ $date_ini := dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_ini }}
+  {{ $date_end := dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_end }}
+
+  {{/*  Image  */}}
+  {{ $image  := "" }}
+  {{ with resources.Get (print "/media/" .Params.image) }}
+    {{ $image = .Permalink }}
+  {{ end }}
+
+  {{/*  Location  */}}
+  {{ $location := dict }}
+  {{ with .Params }}
+    {{ if or .location .address }}
+      {{ $location = dict
+        "location" (dict
+          "@type"   `Place`
+          "name"    .location
+          "address" .address
+        )
+      }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  offers  */}}
+  {{ $offers := dict }}
+  {{ with .Params }}
+    {{ if or .locpriceation .currency }}
+      {{ $offers = dict
+        "offers" (dict
+          "@type"         `Offer`
+          "url"           $.Permalink
+          "price"         (.price | default 0)
+          "priceCurrency" ($config.currency | default "EUR")
+          "validFrom"     (dateFormat "2006-01-02T15:04:05Z07:00" now)
+          "availability"  "http://schema.org/InStock"
+        )
+      }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Schema  */}}
+  {{ $schema = dict
+    "@context"            `http://schema.org`
+    "@type"               `Event`
+    "name"                .Title
+    "performer"           .Params.artist
+    "description"         .Description
+    "url"                 .Permalink
+    "startDate"           $date_ini
+    "endDate"             $date_end
+    "image"               $image
+    "location"            $location
+    "offers"              $offers
+    "organizer"           (partial "components/base/schema/organization" site.Data.schema)
+    "eventStatus"         "http://schema.org/EventScheduled"
+    "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"
+  }}
+{{ end }}
+
+{{ return $schema }}

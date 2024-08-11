@@ -231,7 +231,7 @@
             {{/*  CONTAIN  */}}
             {{- if not .contain -}}
               {{- with .ratio -}}
-                {{- if ne . "normal" -}}
+                {{- if ne . "auto" -}}
                   {{- $ratio        := cond (eq "circle" .) "1x1" . -}}
                   {{- $ratio         = split $ratio "x" -}}
                   {{- $width_aim    := index $ratio 0 | float -}}

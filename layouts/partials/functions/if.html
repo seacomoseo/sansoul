@@ -6,7 +6,7 @@
     {{ $if = ($.Page.GetPage $.Page.Type).Pages.Related (dict "document" $.Page) }}
   {{ else if eq . "comments" }}
     {{ $config := partial "functions/config-lang" . }}
-    {{ $if = $config.others.disqus }}
+    {{ $if = $config.disqus }}
   {{ else }}
     {{ $if = index $.Page.Params (split . ".") }}
   {{ end }}

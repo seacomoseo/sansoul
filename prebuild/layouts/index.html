@@ -1,24 +1,2 @@
-{{/*  CONFIG TO FILES  */}}
-{{- partial "config-to-files" . -}}
-
-{{/*  JSON TO FILES  */}}
-{{- with site.Params.json -}}
-  {{- range $type, $value := . -}}
-    {{- with . -}}
-      {{- with getJSON . -}}
-        {{- partial "obj-to-files" (dict "obj" . "base" $type) -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-{{/*  CSV TO FILES  */}}
-{{- with site.Params.csv -}}
-  {{- range $type, $value := . -}}
-    {{- with . -}}
-      {{- with partial "csv-to-obj" . -}}
-        {{- partial "obj-to-files" (dict "obj" . "base" $type) -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- partial "files-by-config" . -}}
+{{- partial "files-by-src" . -}}

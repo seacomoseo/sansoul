@@ -1,0 +1,7 @@
+{{ $file  := transform.Remarshal "yaml" .obj }}
+{{ with .content }}
+  {{ $file = print "---\n" $file "---\n" . }}
+{{ end }}
+{{ $file   = $file | resources.FromString .path }}
+{{ $build := $file.RelPermalink }}
+{{ return "" }}

@@ -30,7 +30,7 @@ Somos una empresa que ha nacido con la intención de satisfacer las necesidades 
 ## ¿Quién es el Responsable del tratamiento de sus datos?
 
 - Nombre: **{{% legal name %}}**
-- NIF: **{{% legal dni %}}**
+- NIF: **{{% legal nif %}}**
 - Domicilio: **{{% legal location %}}**
 - Correo electrónico: **{{% legal email %}}**
 

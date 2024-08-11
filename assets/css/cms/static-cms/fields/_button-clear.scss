@@ -1,3 +1,4 @@
+// button reset
 .is-not-set:after {
   content: '○';
   color: var(--common-gray);
@@ -12,13 +13,19 @@
   height: 1rem;
   width: 1rem;
 }
-.CMS_EditorControl_root[aria-label^="boolean"] {
+// boolean
+[aria-label="boolean field"] {
   .is-not-set:after,
   .button--reset {
     top: .875rem;
     right: .5rem;
   }
 }
+// select
+[aria-label="select field"] > .is-not-set .CMS_Select_label {
+  display: none;
+}
+// rest
 .is-empty :is(
   input,
   textarea,

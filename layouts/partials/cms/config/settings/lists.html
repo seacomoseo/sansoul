@@ -1,61 +1,22 @@
+{{ $t := partial "functions/i18n" . }}
+
 {{ return slice
   (dict "&LISTS" (dict
-    "label"     (i18n "collection-settings-lists-_")
-    "name"      `_`
+    "label"     $t.collection_settings_lists_all
+    "name"      `all`
     "widget"    `object`
     "collapsed" true
     "required"  false
-    "fields"    (slice
-      `~CONTAINER_SIZE`
-      `~COLUMNS_MAX`
-      `~COLUMNS_MIN`
-      `~COLUMNS_GAP`
-      `~TITLE_SIZE`
-      `~UPPERCASE`
-      `~UNDERLINE`
-      `~ICON_ID`
-      `~ICON_TYPE`
-      `~ICON_SIZE`
-      `~ICON_COLOR`
-      `~IMAGE_SRC`
-      `~IMAGE_SRC_HOVER`
-      `~IMAGE_RATIO`
-      `~IMAGE_CONTAIN`
-      `~IMAGE_BORDER`
-      `~IMAGE_INSET`
-      `~IMAGE_GRAYSCALE`
-      `~ALIGN`
-      `~ALIGN_Y`
-      `~ALIGN_X`
-      `~COLUMNS_PADDING`
-      `~COLOR`
-      `~GRADIENT_COLOR`
-      `~GRADIENT_TYPE`
-      `~COLOR_OPACITY`
-      `~PILL`
-      `~CARD`
-      `~HIDE_SHADOW`
-      `~HIDE_DESCRIPTION`
-      `~HIDE_CATEGORIES`
-      `~READING_TIME`
-      `~BUTTON_LICON`
-      `~BUTTON_LABEL`
-      `~BUTTON_COLOR_WITH_HIDE`
-      `~BUTTON_FONT_ALT`
-      `~SLIDER_ACTIVE`
-      `~SLIDER_INTERVAL`
-      `~SLIDER_HIDE_BULLETS`
-      `~SLIDER_HIDE_ARROWS`
-    )
+    "fields"    `~BOX_FIELDS`
   ))
   (dict "&SETTINGS_LISTS" (slice
     `~LISTS`
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-blog")       "name" `blog`)       `~LISTS`))
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-events")     "name" `events`)     `~LISTS`))
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-products")   "name" `products`)   `~LISTS`))
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-taxonomies") "name" `taxonomies`) `~LISTS`))
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-pages")      "name" `pages`)      `~LISTS`))
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-page")       "name" `page`)       `~LISTS`))
-    (dict "<<" (slice (dict "label" (i18n "collection-settings-lists-related")    "name" `related`)    `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_blog       "name" `blog`)       `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_events     "name" `events`)     `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_products   "name" `products`)   `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_taxonomies "name" `taxonomies`) `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_pages      "name" `pages`)      `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_page       "name" `page`)       `~LISTS`))
+    (dict "<<" (slice (dict "label" $t.collection_settings_lists_related    "name" `related`)    `~LISTS`))
   ))
 }}

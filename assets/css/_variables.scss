@@ -7,15 +7,15 @@ $dark:                     $styles-colors-base-dark          !default;
 $black:                    $styles-colors-base-black         !default;
 $grey:                     $styles-colors-base-grey          !default;
 $main:                     $styles-colors-main-color         !default;
-$alt:                   if($styles-colors-alt-color != '', $styles-colors-alt-color, mix($white, $main, 50%)) !default;
+$alt:                   if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
 $link:                     $styles-colors-link-color         !default;
 
 $main-light:            if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
-$alt-light:             if($styles-colors-alt-light != '',  $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
+$alt-light:             if($styles-colors-alt-light  != '', $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
 $link-light:            if($styles-colors-link-light != '', $styles-colors-link-light, mix($white, $link, 75%)) !default;
 
 $main-dark:             if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
-$alt-dark:              if($styles-colors-alt-dark  != '',  $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
+$alt-dark:              if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
 $link-dark:             if($styles-colors-link-dark  != '', $styles-colors-link-dark,  mix($black, $link, 60%)) !default;
 
 $grey-contrast-neutral: text-contrast($grey)                !default;
@@ -161,6 +161,7 @@ $menu-bar-gap:                if($icon-buttons-rounded and $chamfer, .375em, .5e
 $shadow-left:  $styles-shadow-left * 1rem                                                   !default;
 $shadow-top:   $styles-shadow-top  * 1rem                                                   !default;
 $shadow-blur:  $styles-shadow-blur * 1rem                                                   !default;
+$styles-shadow-opacity: 1 - $styles-shadow-alpha                                            !default;
 $shadow-color: rgba(map-get($options-colors, $styles-shadow-color), $styles-shadow-opacity) !default;
 $shadow:       $shadow-left $shadow-top $shadow-blur $shadow-color                          !default;
 $shadow-half:  ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color        !default;
@@ -174,6 +175,4 @@ $sl-navigation-color:   $white !default;
 
 // Other
 $show:             $styles-performance-show == 'true' !default;
-$search:           $article-search          == 'true' !default;
 $google-translate: $menu-google_translate   == 'true' !default;
-$copy:             '#{ $copied }'                     !default;

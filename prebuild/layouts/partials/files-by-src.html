@@ -1,0 +1,77 @@
+{{ $result := "" }}
+{{ range site.Data.config.langs }}
+  {{ $lang := .lang }}
+  {{ range .remote }}
+    {{ $csv      := .csv }}
+    {{ $index    := .index }}
+    {{ $type     := .type | default "pages" }}
+    {{ $pairings := .pairings | default "pages" }}
+    {{ with .src }}
+      {{ with resources.GetRemote . }}
+        {{ with .Err }}
+          {{ warnf "%s" . }}
+        {{ else }}
+
+          {{ $data := unmarshal . }}
+          {{ if $csv }}
+            {{ $data = partial "csv" $data }}
+          {{ end }}
+          {{ with $index }}
+            {{ $data = index $data (split . ".") }}
+          {{ end }}
+          {{ with $data }}
+            {{/*  TO FILES  */}}
+            {{ range . }}
+              {{ $slug       := index . (split ($pairings.slug       | default "slug"       ) ".") | default ""     }}
+              {{ $content    := index . (split ($pairings.content    | default "content"    ) ".") | default ""     }}
+              {{ $images     := index . (split ($pairings.images     | default "images"     ) ".") | default slice  }}
+              {{ $categories := index . (split ($pairings.categories | default "categories" ) ".") | default slice  }}
+              {{ $tags       := index . (split ($pairings.tags       | default "tags"       ) ".") | default slice  }}
+              {{ $social     := index . (split ($pairings.social     | default "social"     ) ".") | default slice  }}
+              {{ if not (reflect.IsSlice $categories) }}{{ $categories = split $categories ","  }}{{ end  }}
+              {{ if not (reflect.IsSlice $tags      ) }}{{ $tags       = split $tags       ","  }}{{ end  }}
+              {{ if not (reflect.IsSlice $social    ) }}{{ $social     = split $social     ","  }}{{ end  }}
+              {{ $obj        := dict
+                "slug"          $slug
+                "images"        $images
+                "categories"    $categories
+                "tags"          $tags
+                "social"        $social
+                "title"         (index . (split ($pairings.title      | default "title"      ) ".") | default ""   )
+                "title_seo"     (index . (split ($pairings.title_seo  | default "title_seo"  ) ".") | default ""   )
+                "price"         (index . (split ($pairings.price      | default "price"      ) ".") | default 0    )
+                "description"   (index . (split ($pairings.descriptio | default "description") ".") | default ""   )
+                "image"         (index . (split ($pairings.image      | default "image"      ) ".") | default ""   )
+                "author"        (index . (split ($pairings.author     | default "author"     ) ".") | default ""   )
+                "job_title"     (index . (split ($pairings.job_title  | default "job_title"  ) ".") | default ""   )
+                "artist"        (index . (split ($pairings.artist     | default "artist"     ) ".") | default ""   )
+                "location"      (index . (split ($pairings.location   | default "location"   ) ".") | default ""   )
+                "address"       (index . (split ($pairings.address    | default "address"    ) ".") | default ""   )
+                "toc"           (index . (split ($pairings.toc        | default "toc"        ) ".") | default false)
+                "draft"         (index . (split ($pairings.draft      | default "draft"      ) ".") | default false)
+                "noindex"       (index . (split ($pairings.noindex    | default "noindex"    ) ".") | default false)
+                "date"          (index . (split ($pairings.date       | default "date"       ) ".") | default ""   )
+                "lastmod"       (index . (split ($pairings.lastmod    | default "lastmod"    ) ".") | default ""   )
+                "date_ini"      (index . (split ($pairings.date_ini   | default "date_ini"   ) ".") | default ""   )
+                "date_end"      (index . (split ($pairings.date_end   | default "date_end"   ) ".") | default ""   )
+              }}
+              {{ $path := print "content." $lang "/" $type "/" (urlize $slug) ".md" }}
+              {{ partial "file-by-obj" (dict "obj" $obj "content" $content "path" $path) }}
+
+            {{ end }}
+
+            {{/*  PRINT  */}}
+            {{ $result = . | jsonify (dict "prefix" "" "indent" "  ") }}
+
+          {{ end }}
+
+        {{ end }}
+      {{ else }}
+        {{ errorf "Unable to get remote resource %q" . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $result }}
+{{/*  {{ return "" }}  */}}

@@ -25,7 +25,7 @@
           {{- $icon = "share-nodes" -}}
         {{- end -}}
       {{- end -}}
-      {{ $label := print (i18n `follow-us`) " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` `$2`) | title }}
+      {{ $label := print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` `$2`) | title }}
       {{- partial "components/link" (dict
         "class"   "button--icon"
         "link"    .

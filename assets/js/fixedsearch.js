@@ -216,7 +216,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
 
     if (results.length === 0) { // no results based on what was typed into the input box
       resultsAvailable = false
-      searchItems = '{{ i18n "search-no-results" }}'
+      searchItems = '{{ i18n "search_no_results" }}'
     } else { // build our html
       for (const item in results.slice(0, 5)) { // only show first 5 results
         let searchItemImage = ''

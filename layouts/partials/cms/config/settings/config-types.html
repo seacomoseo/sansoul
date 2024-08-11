@@ -1,3 +1,5 @@
+{{ $t := partial "functions/i18n" . }}
+
 {{ $default := dict }}
 {{ with readFile "./themes/sansoul/hugo.default.yml" }}
   {{ with unmarshal . }}
@@ -18,41 +20,40 @@
   {{ $lang       := index $default page.Lang }}
   {{ $permalinks := $lang.permalinks }}
   {{ $type_files = $type_files | append (dict
-    "label"     (i18n (print "collection-" .))
+    "label"     (index $t (print "collection_" .))
     "name"      .
     "widget"    `object`
     "required"  false
     "collapsed" true
     "fields"    (slice
-      (dict "label" (i18n "collection-p-title")      "name" `title`     "widget" `string` "i18n" true "required" false)
-      (dict "label" (i18n "collection-p-title_seo")  "name" `title_seo` "widget" `string` "i18n" true "required" false "hint" (i18n "collection-p-title_seo-hint"))
+      (dict "label" $t.collection_p_title      "name" `title`     "widget" `string` "i18n" true "required" false)
+      (dict "label" $t.collection_p_title_seo  "name" `title_seo` "widget" `string` "i18n" true "required" false "hint" $t.collection_p_title_seo_hint)
       (dict
-        "label"    (i18n "collection-settings-langs-slug")
+        "label"    $t.collection_settings_config_types_slug
         "name"     `slug`
         "widget"   `string`
         "required" false
-        "hint"     (print (i18n "collection-settings-langs-slug-hint") " 🔷 " (i18n "default") ": **" (index $permalinks.section .) "**")
+        "hint"     (print $t.collection_settings_config_types_slug_hint " 🔷 " $t.default ": **" (index $permalinks.section .) "**")
       )
       (dict
-        "label"    (i18n "collection-settings-langs-permalinks")
+        "label"    $t.collection_settings_config_types_permalinks
         "name"     `permalinks`
         "widget"   `string`
         "required" false
-        "hint"     (print (i18n "collection-settings-langs-permalinks-hint") " 🔷 " (i18n "default") ": **" (index $permalinks.page .) "**")
+        "hint"     (print $t.collection_settings_config_types_permalinks_hint " 🔷 " $t.default ": **" (index $permalinks.page .) "**")
       )
-      (dict "label" (i18n "collection-p-description") "name" `description` "widget" `text`     "i18n" true        "required" false         "hint" (i18n "collection-p-description-hint"))
-      (dict "label" (i18n "collection-p-image")       "name" `image`       "widget" `image`    "i18n" `duplicate` "required" false      "choose_url" true  "max_file_size" 512000000 "hint" (i18n "collection-p-image-hint"))
+      (dict "label" $t.collection_p_description "name" `description` "widget" `text`     "i18n" true        "required" false         "hint" $t.collection_p_description_hint)
+      (dict "label" $t.collection_p_image       "name" `image`       "widget" `image`    "i18n" `duplicate` "required" false      "choose_url" true  "max_file_size" 512000000 "hint" $t.collection_p_image_hint)
       | append
       (cond
         (eq "pages" .)
         slice
-        (dict "label" (i18n "collection-p-draft")     "name" `draft`       "widget" `boolean`  "i18n" true        "required" false         "hint" (i18n "collection-settings-langs-draft-hint"))
+        (dict "label" $t.collection_p_draft     "name" `draft`       "widget" `boolean`  "i18n" true        "required" false         "hint" $t.collection_settings_config_types_draft_hint)
       )
       | append
-      (dict "label" (i18n "collection-p-noindex")     "name" `noindex`     "widget" `boolean`  "i18n" true        "required" false         "hint" (i18n "collection-p-noindex-hint"))
+      (dict "label" $t.collection_p_noindex     "name" `noindex`     "widget" `boolean`  "i18n" true        "required" false         "hint" $t.collection_p_noindex_hint)
       `~P_BODY`
-      (dict "<<" (slice (dict "label" (i18n "collection-settings-langs-template") "hint" (i18n "collection-settings-langs-template-hint")) `~P_TEMPLATE`))
-      (dict "<<" (slice (dict "label" (i18n "collection-settings-langs-base")     "hint" (i18n "collection-settings-langs-base-hint"))     `~P_BASE`))
+      (dict "<<" (slice (dict "label" $t.collection_settings_config_types_template "hint" $t.collection_settings_config_types_template_hint) `~P_TEMPLATE`))
     )
   ) }}
 {{ end }}

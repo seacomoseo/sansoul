@@ -2,8 +2,8 @@
 {{ $country := $config.legal.country }}
 
 {{ if not $country }}
-  {{ with $config.schema.address }}
-    {{ $country = (index . 0).country }}
+  {{ with site.Data.schema.address }}
+    {{ $country = .country }}
   {{ else }}
     {{ $country = "España" }}
   {{ end }}

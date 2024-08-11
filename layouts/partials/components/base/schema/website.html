@@ -1,0 +1,11 @@
+{{ $config := partial "functions/config-lang" . }}
+
+{{ $schema := dict
+  "@context"      `http://schema.org`
+  "@type"         `WebSite`
+  "url"           (print site.BaseURL "/")
+  "name"          $config.title
+  "description"   $config.description
+}}
+
+{{ return $schema }}

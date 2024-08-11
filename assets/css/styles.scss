@@ -79,15 +79,3 @@
 
 // CUSTOM FILE
 @import '_custom';
-
-// CUSTOM CONFIG
-{{ $config := partial "functions/config-lang" . }}
-{{ with $config.others.custom_code.css }}
-  {{-
-    (.
-      | resources.FromString (print "aux_css." $.Lang)
-      | resources.ExecuteAsTemplate (print "aux_css." $.Lang) $.Page
-    ).Content
-    | safeCSS
-  -}}
-{{ end }}

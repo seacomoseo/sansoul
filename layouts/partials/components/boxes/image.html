@@ -1,6 +1,6 @@
-{{- $image_src := .image -}}
+{{- $image_src  := .image | plainify -}}
 {{- if .card -}}
-  {{- $image_src  = "" -}}
+  {{- $image_src = "" -}}
 {{- end -}}
 
 {{/*  IMAGE INI  */}}
@@ -8,7 +8,7 @@
   {{- $is_page := isset . "Page" -}}
 
   {{/*  IFRAME POSTER  */}}
-  {{ $iframe_poster := "" }}
+  {{ $iframe_poster  := "" }}
   {{ if partial "functions/is-iframe" $image_src | and ((in $image_src "poster") | or $is_page) }}
     {{ $iframe_poster = partial "functions/iframe-poster" $image_src }}
   {{ end }}
@@ -22,11 +22,11 @@
   {{- $border    := cond (not .border)    "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
   {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
 
-  {{- $page_type  := .Page.Type | default "_" -}}
+  {{- $page_type  := .Page.Type | default "all" -}}
   {{- if in (slice "categories" "tags" "authors") $page_type -}}
     {{- $page_type = "taxonomies" -}}
   {{- end -}}
-  {{- $lists      := site.Data.lists._ -}}
+  {{- $lists      := site.Data.lists.all -}}
   {{- with index site.Data.lists $page_type -}}
     {{- $lists     = merge $lists . -}}
   {{- end -}}
@@ -84,7 +84,7 @@
     {{ if .hover }}
       {{ partial "components/image" (dict
         "class"       "image__inner image__inner--hover"
-        "src"         .hover
+        "src"         (.hover | plainify)
         "ratio"       .ratio
         "contain"     .contain
         "container"   $.container

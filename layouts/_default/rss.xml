@@ -1,5 +1,5 @@
 {{- $config := partial "functions/config-lang" . -}}
-{{- $title  := index $config.schema.names 0 -}}
+{{- $title  := $config.schema.title -}}
 {{- $pctx   := . -}}
 {{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
 {{- $pages  := slice -}}

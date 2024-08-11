@@ -1,7 +1,13 @@
 import { isScrollShow } from '@params'
 
-export function scrollTo (element) {
-  element.scrollIntoView({ behavior: 'smooth' })
+export function disableEnableParallax () {
+  document.body.classList.add('disable-parallax')
+  setTimeout(() => { document.body.classList.remove('disable-parallax') }, 1000)
+}
+
+export function scrollTo (targetElement) {
+  disableEnableParallax()
+  targetElement.scrollIntoView({ behavior: 'smooth' })
 }
 
 // SCROLL IF IS HASH WHEN LOAD (FIX SHOW)

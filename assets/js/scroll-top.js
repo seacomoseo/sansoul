@@ -68,8 +68,7 @@ export function initScrollTop () {
           }
         }
         scrollTo(target)
-        const isSectionedPage = document.querySelector('body.type-page')
-        if (window.location.hash && !isSectionedPage) {
+        if (window.location.hash) {
           // Remove hash
           window.history.replaceState('', '', window.location.pathname + window.location.search)
         }

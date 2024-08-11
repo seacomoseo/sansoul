@@ -1,0 +1,140 @@
+{{ $config := partial "functions/config-lang" . }}
+{{ $schema := dict }}
+
+{{/*  Types  */}}
+{{ $types      := .types | default (slice "Organization") }}
+{{ $type       := index $types 0 }}
+{{ $types_more := after 1 $types }}
+
+{{/*  Names  */}}
+{{ $names      := .names | default (slice "Name") }}
+{{ $name       := index $names 0 }}
+{{ $names_more := after 1 $names }}
+
+{{/*  URL  */}}
+{{ $url := .url | default (print site.BaseURL "/") }}
+
+{{/*  Address, hasMap and geo by locations  */}}
+{{ $address := dict }}
+{{ $has_map := "" }}
+{{ $geo     := dict }}
+{{ with .address }}
+  {{ if .street }}
+    {{ $address = dict
+      "@type"           "PostalAddress"
+      "name"            .name
+      "streetAddress"   .street
+      "postalCode"      .pc
+      "addressLocality" .locality
+      "addressRegion"   .region
+      "addressCountry"  .country
+    }}
+    {{ $address = partial "functions/schema-obj" $address }}
+    {{ $has_map = print
+      "https://maps.google.com/maps/search/"
+      (print
+        .name     ", "
+        .street   ", "
+        .pc       " "
+        .locality ", "
+        .region   ", "
+        .country
+        | replaceRE "<nil>" ""
+        | urlquery
+      )
+    }}
+  {{ end }}
+  {{ with .link }}
+    {{ $has_map = . }}
+  {{ end }}
+  {{ with .geo }}
+    {{ $cordinates := (unmarshal .).coordinates }}
+    {{ $geo = dict
+      "@type"     "GeoCoordinates"
+      "latitude"  (index $cordinates 1)
+      "longitude" (index $cordinates 0)
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  Phones  */}}
+{{ $phones := partial "functions/phone-variations" .phones }}
+
+{{/*  Images  */}}
+{{ $images := slice }}
+{{ range .images | append "icon.png" | uniq }}
+  {{ if . | and (not (strings.HasPrefix . "http")) }}
+    {{ with resources.Get (print "/media/" .) }}
+      {{ $images = $images | append .Permalink }}
+    {{ end }}
+  {{ else if . }}
+    {{ $images = $images | append . }}
+  {{ end }}
+{{ end }}
+{{ $images = $images | uniq }}
+
+{{/*  Opening Hours Specification  */}}
+{{ $open := slice }}
+{{ with .open }}
+  {{ range . }}
+    {{ $item := . }}
+    {{ range .days | default (slice "none") }}
+      {{ if ne . "none" }}
+        {{ $day := dict "dayOfWeek" (print "https://schema.org/" (. | title)) }}
+        {{ with $item.opens  }}{{ $day = merge $day (dict "opens" .) }}{{ end }}
+        {{ with $item.closes }}{{ $day = merge $day (dict "closes" .) }}{{ end }}
+        {{ with $item.from   }}{{ $day = merge $day (dict "validFrom" .) }}{{ end }}
+        {{ with $item.to     }}{{ $day = merge $day (dict "validThrough" .) }}{{ end }}
+        {{ $open = $open | append $day }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/*  Rating  */}}
+{{ $rating := dict }}
+{{ with .rating }}
+  {{ if or .count .value }}
+    {{ $rating = dict
+      "aggregateRating" (dict
+        "@type"       "AggregateRating"
+        "bestRating"  5
+        "ratingCount" (.count | default nil)
+        "ratingValue" (.value | default nil)
+      )
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  Departments  */}}
+{{ $departments := slice }}
+{{ range .departments }}
+  {{ $departments = $departments | append (partial "components/base/schema/organization" .) }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema = dict
+  "@context"                  `http://schema.org`
+  "@type"                     $type
+  "additionalType"            $types_more
+  "name"                      $name
+  "alternateName"             $names_more
+  "image"                     $images
+  "url"                       $url
+  "telephone"                 $phones
+  "address"                   $address
+  "hasMap"                    $has_map
+  "geo"                       $geo
+  "openingHoursSpecification" $open
+  "aggregateRating"           $rating
+  "department"                $departments
+  "legalName"                 $config.legal.name
+  "taxID"                     $config.legal.nif
+  "description"               .description
+  "logo"                      .logo
+  "sameAs"                    .social
+  "priceRange"                .prices
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ return $schema }}

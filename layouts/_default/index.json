@@ -43,8 +43,8 @@
   {{- if in (slice "categories" "tags" "authors") .Type -}}
     {{- $type = "taxonomies" -}}
   {{- end -}}
-  {{- $type_list     := merge $data.lists._ (index $data.lists $type) -}}
-  {{- $reading_time  := cond (not $type_list._hide_reading_time) (i18n "reading-time" .ReadingTime) "" -}}
+  {{- $type_list     := merge $data.lists.all (index $data.lists $type) -}}
+  {{- $reading_time  := cond (not $type_list.hide_reading_time) (i18n "reading_time" .ReadingTime) "" -}}
 
 	{{- $categories := slice -}}
   {{- range .Params.categories -}}

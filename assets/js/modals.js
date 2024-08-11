@@ -108,7 +108,7 @@ export function initModals () {
     if (target && !target.classList.contains('modal')) {
       setTimeout(() => {
         if (windowPosition === window.scrollY) {
-          target.scrollIntoView({ behavior: 'smooth' })
+          scrollTo(target)
         }
       }, 300)
     }

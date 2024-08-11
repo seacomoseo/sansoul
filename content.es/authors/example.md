@@ -3,11 +3,11 @@ title: ''
 title_seo: ''
 slug: admin
 description: ''
-image: logo.png
+image: base/icon.png
+job_title: ''
+social: []
 toc: false
 draft: true
 noindex: true
-job_title: ''
-social: []
 translationKey: admin
 ---

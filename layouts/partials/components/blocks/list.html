@@ -7,7 +7,7 @@
   {{ $pages = sort .pages "Params.date_ini" "desc" }}
 {{ end }}
 {{- $lists := merge
-  site.Data.lists._
+  site.Data.lists.all
   (index site.Data.lists $type)
   (cond .related site.Data.lists.related dict)
   (.box | default dict)

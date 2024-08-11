@@ -1,0 +1,129 @@
+{{ $local            := eq (getenv "HUGO_CMS_LOCAL") "true" }}
+{{ $config           := site.Data.config }}
+{{ $fontawesome_link := print "[fontawesome.com](https://fontawesome.com/search?o=r&s=" (site.Data.styles.icons.type | default "solid") "&f=brands%2Cclassic)" }}
+{{ $langs := slice }}
+{{ range .Site.Languages }}
+  {{ $langs = $langs | append .Lang }}
+{{ end }}
+{{ $lang_cms := partial "functions/lang_cms" . }}
+
+
+{{/*  VARIABLES  */}}
+{{ $vars := (partial "cms/config/options" .)
+  | append  (partial "cms/config/boxes" .)
+  | append  (partial "cms/config/blocks" .)
+  | append  (partial "cms/config/sections" .)
+  | append  (partial "cms/config/base" .)
+  | append  (partial "cms/config/p" $fontawesome_link)
+  | append  (partial "cms/config/settings/config-types" .)
+  | append  (partial "cms/config/settings/config" .)
+  | append  (partial "cms/config/settings/schema" .)
+  | append  (partial "cms/config/settings/styles" .)
+  | append  (partial "cms/config/settings/lists" .)
+}}
+
+
+{{ $site_url      := "" }}
+{{ $publish_mode  := "" }}
+{{ $display_url   := "" }}
+{{ if $local }}
+  {{ $site_url     = site.BaseURL | replaceRE "^(https?:)?//|/$" "" }}
+{{ else if $config.cms.editorial }}
+  {{ $site_url     = print "https://" site.Params.netlify_name ".netlify.app/" }}
+  {{ $publish_mode = "editorial_workflow" }}
+{{ else if $config.others.development }}
+  {{ $site_url     = print "https://" site.Params.netlify_name ".netlify.app/" }}
+{{ else }}
+  {{ $site_url     = site.BaseURL | replaceRE "^(https?:)?//|/$" "" }}
+  {{ $display_url  = print site.Home.Permalink }}
+{{ end }}
+
+
+{{/*  FINAL CMS CONFIG ==============================================================================
+  EMAIL+PASS LOGIN WITH NETLIFY IDENTITY
+    https://decapcms.org/docs/git-gateway-backend/
+  "backend"       (dict
+    "name"        `git-gateway`
+    "branch"      `main`
+    "site_domain" (site.BaseURL | replaceRE "^(https?:)?//|/$" "")
+  )
+  BUTTON LOGIN WITH GITHUB
+    https://decapcms.org/docs/github-backend/
+  "backend" (dict
+    "name"  "github"
+    "repo"  (replace site.Params.git_url "https://github.com/" "")
+  )
+*/}}
+
+
+{{ $cms_config :=
+  (dict
+    "_variables"    $vars
+    "backend"       (dict
+      "name"        `git-gateway`
+      "branch"      `main`
+      "site_domain" (site.BaseURL | replaceRE "^(https?:)?//|/$" "")
+    )
+    "local_backend" $local
+    "media_folder"  `assets/media`
+    "public_folder" ``
+    "site_url"      $site_url
+    "display_url"   $display_url
+    "media_library" (dict
+      "max_file_size"  512000000
+      "folder_support" true
+    )
+    "logo_url"      (resources.Get (print "/media/"
+      ($config.cms.logo
+        | default $config.menu.logo
+        | default $config.schema.logo
+        | default $config.favicon.svg
+        | default $config.favicon.png
+        | default "base/icon.png"
+      )
+    )).RelPermalink
+    "locale"        $lang_cms
+    "slug"          (dict
+      "encoding"             `ascii`
+      "clean_accents"        true
+      "sanitize_replacement" `-`
+    )
+    "i18n" (dict
+      "structure"      `multiple_folders`
+      "locales"        $langs
+      "default_locale" .Lang
+    )
+    "yaml"          (dict
+      "parseOptions"    (dict
+        "simpleKeys" true
+      )
+      "documentOptions" (dict
+        "simpleKeys" true
+      )
+      "toStringOptions" (dict
+        "simpleKeys"   true
+        "singleQuote"  true
+        "defaultStyle" `|`
+        "blockQuote"   `literal`
+        "lineWidth"    0
+        "indent"       2
+        "indentSeq"    false
+      )
+    )
+    "collections"   (partial "cms/config/collections" .)
+  )
+  | jsonify
+  | replaceRE `"\\u003c\\u003c":` " <<: "
+  | replaceRE `\"\\u0026(.+?)\":` ` "$1": &$1 `
+  | replaceRE `\"~(.+?)\"` ` *$1 `
+}}
+{{ with $publish_mode }}
+  {{ $cms_config = merge $cms_config (dict "publish_mode" .) }}
+{{ end }}
+{{ $cms_config = print `aux: ` $cms_config | unmarshal }}
+{{ $cms_config = merge $cms_config.aux (dict "_variables" nil) }}
+{{ $cms_config = $cms_config | jsonify }}
+{{/*  
+{{ $cms_config = $cms_config.aux| jsonify (cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ")) }}
+*/}}
+{{ return $cms_config }}

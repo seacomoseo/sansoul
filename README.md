@@ -216,21 +216,19 @@
       - [x] `fan-op` > `arrow-op-fan`
       - [x] Remove `slug` from `content.*/_index/*`
       - [x] `config` add `schema`
-      - [x] `config.location_type` > `config.schema.types`
-      - [x] `config.alternate_name` > `config.schema.names`
-      - [x] `config.title` > `config.schema.names`
-      - [x] `config.description` > `config.schema.description`
-      - [x] `config.logo` > `config.schema.logo`
-      - [x] `config.social` > `config.schema.social`
-      - [x] `config.schema` add `phones` by `contact`
-      - [x] `config.schema` add `address` by `contact`
-      - [x] `config.schema` add `address.lnik` by `contact`
-      - [x] `config.schema` add `open` by `contact`
-      - [x] `config.schema` add `rating`
+      - [x] `config.location_type` > `schema.types`
+      - [x] `config.alternate_name` > `schema.names`
+      - [x] `config.logo` > `schema.logo`
+      - [x] `config.social` > `schema.social`
+      - [x] `schema` add `phones` by `contact`
+      - [x] `schema` add `address` by `contact`
+      - [x] `schema` add `address.lnik` by `contact`
+      - [x] `schema` add `open` by `contact`
+      - [x] `schema` add `rating`
       - [x] `config` add `favicon`
       - [x] `config` add `menu`
       - [x] `config.legal_name` > `config.legal.name`
-      - [x] `config.legal_dni` > `config.legal.dni`
+      - [x] `config.legal_dni` > `config.legal.nif`
       - [x] `config.legal_email` > `config.legal.email`
       - [x] `config.legal_location` > `config.legal.location`
       - [x] `config.country` > `config.legal.country`
@@ -270,14 +268,29 @@
       - [x] `styles.performance.showup` > `styles.performance.show`
       - [x] `parallax` boolean > options? [ `none`, `smooth`, `fix`, `box` ]
       - [x] `parallax` en los bloques siempre es suave
-      - [ ] `cms/config/base`
-      - [ ] `cms/config/collections`
-      - [ ] `cms/config/boxes`
+      - [x] Remove `config.others.custom_code.css`
+      - [x] Remove `config.others.custom_code.js`
+      - [x] `cms/config/base`
+      - [x] `cms/config/collections`
+      - [x] forms check ✅❌
+      - [x] `view` conditions in childs
+      - [x] `data.config.schema` > `data.schema`
+      - [x] Add `schema.department`
+      - [x] `cms/config/box`
+      - [x] CMS language by config
+      - [x] `data.langs` > `data.config.langs` and all params in `data.config` (less `favicon`, `cms` and hidden) > `data.config.langs`
+      - [x] Translate CMS
+      - [x] New `de`, `it` and `pt` translates
       - [ ] Fix purgecss
+      - [ ] Fix slider
       - [ ] Fix lightbox
+      - [ ] Filter `list` by `date_ini` and `date_end`
+      - [ ] 404 js
       - [ ] `menu-gradient`
       - [ ] Menu title in sticky
       - [ ] Images src sizes
+      - [ ] `images` in `product` and `event`
+      - [ ] `pairings` > array with type (string, slice, number)?
       - [ ] Probar selector de `templates` en cms
       - [ ] Remove `custom` type and rename `sectioned` > `custom`
       - [ ] Remove nth-childs classes
@@ -310,8 +323,7 @@
   - contra
     - booleanos se guardan forzosamente -> custom widget
     - style demasiado compacto -> css
-    - markdown en hint's no funciona -> ahora si
-    - no tiene flujo editorial -> ahora si, aunque faltan los enlaces y estados de las vistas previas
+    - Flujo editorial sin los enlaces y estados de las vistas previas
 - cms
   - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
   - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
@@ -338,52 +350,35 @@
   - preSave
     - Campos de texto sin contenido: undefined (para campos no requeridos en colecciones que se puedan añadir archivos)
       - https://deploy-preview-966.staticcms.org/docs/cms-events#pre-save-event
-+ UI Visual RPA
-  - NewProject
-    - https://app.netlify.com/sites/ssndental/configuration/deploys#branches-and-deploy-contexts
-    - Configure
-    - Branch deploys: All
-    - Deploy Previews: None
-  - EndDomainProject
-    - SearchConsole
-      - Add property: click last Continue
-    - Netlify
-      - Set SSL
-  - file:///Users/lorensansol/Mi%20unidad/⚡%20Sea%20Como%20SEO/🤖%20UI.Vision/ui.vision.html?direct=1¯o=VALEVALE&macro=SanSoul/VarsToFile&cmd_var1&savelog=log1.txt
-- sansoul
-  - example.yml all files
-  - partials/\*.html
-  - cms-config.html
-- projects
-  - sections/\*.yml
-  - data/sections.yml
-  - pages/\*.md > sections
-- check
-  - ¿Añadir `.button` en `button` y quitar este de css? (16 de scss vs 44 de html)
-  - `form.fill_inputs > site.data.design.inputs.fill`
 
-- grid.html in article and partial from sectioned
+- Diferencias
+  - Less important
+  - Static CMS
+    - ❌ i18n folder (edit in other lang panel)
+    - ❌ Image subfolders not show in image widgets
+    - ❌ `public_folder: ""` `"/"` coloca 1 barra antes del nombre de archivo
+    - ❌ Widget `select` with `multiple` create value `''` when load
+  - Sveltia CMS
+    - ✅ i18n
+    - ❌ `relation` widget impide cargar la colección
+    - ❌ `public_folder: ""` es igual que `media_folder`, y `"/"` coloca 2 barras antes del nombre de archivo
+    - ❌ Custom widgets (lists and booleans widgets force values)
+    - ❌ Media subfolders
+    - ❌ Nested collections
+    - ¿? Widget conditions
+    - Less important
+      - ❌ Login with Netlify Identity
+      - ❌ Mobile version (min-width: 480px)
+      - ❌ Multiple images
+      - ❌ Multiple list with only one field = array of strings
+      - ❌ Spanish UI
+      - ❌ Editorial workflow
+      - ❌ Widget keyvalue
+      - ✅ Disabling automatic deployments
+      - ✅ Pretty
+      - ✅ Local backend without `npx`
+
 - button in shpreadsheet (and CMS?) to build
-
----
-
-- underline_width
-- sitemap.html?
-- dark mode
-- screencast
-  - Forms
-  - Disqus
-  - Analytics
-  - Google My Business / Google Maps
-
-- gitlab pages subfolder
-  - script to add folder in the styles link (href="/sansoul.es/css/") in gitlab compiles
-  - change te links with base64Encode for .RelPermalink
-
-- not solution:
-  - video not cover in grid__item
-  - paginator not rule in "terms" of sections (maybe in taxonomies)
-  - src svgs (lazyload) spaces imposible change for %20 with minify
 
 
 # New language
@@ -396,3 +391,5 @@
   - [x] `./data/options.yml`
     - `langs`
   - [/] `./content.new/`
+  - [x] `./prebuild/hugo.yml`
+    - `module.mounts`

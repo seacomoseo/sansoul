@@ -1,12 +1,16 @@
+{{ $lang_default := partial "functions/lang_default" . }}
+{{ $t            := partial "functions/i18n" . }}
+
 {{/*  OPTIONS WITH TRANSLATE  */}}
 {{ $options := dict }}
 {{ range $k, $v := site.Data.options }}
   {{ $option_values := slice }}
   {{ range . }}
+    {{ $label := index $t (print "option-" $k "-" .) | default . }}
     {{ $option_values = $option_values | append
       (dict
         "value" .
-        "label" (i18n (print "option-" $k "-" .))
+        "label" $label
       )
     }}
   {{ end }}
@@ -14,48 +18,48 @@
 {{ end }}
 
 {{ $options_lists := slice }}
-{{ range slice
-  "blog"
-  "events"
-  "products"
-  "categories"
-  "tags"
-  "authors"
-  "pages"
-  "page"
-  "related"
-}}
-  {{ if $.GetPage . }}
-    {{ $options_lists = $options_lists | append (dict "value" . "label" (i18n (print "collection-" .) | default .)) }}
-  {{ end }}
+{{ range partial "functions/lists" . | append "related" }}
+  {{ $options_lists = $options_lists | append (dict "value" . "label" (index $t (print "collection-" .) | default .)) }}
 {{ end }}
 
 {{ $vars := slice
   (dict "&OPTIONS_LANGS"         $options.langs)
+  (dict "&OPTIONS_HN"            (where $options.hn "value" "in" (slice "1" "2" "3" "4" "5" "6" "p")))
+  (dict "&OPTIONS_HS"            (where $options.hn "value" "in" (slice "0" "1" "2" "3" "4" "5" "6")))
   (dict "&OPTIONS_ALIGN"         $options.align)
   (dict "&OPTIONS_ALIGN_X"       $options.align_x)
   (dict "&OPTIONS_ALIGN_Y"       $options.align_y)
   (dict "&OPTIONS_BUTTONS_TYPE"  $options.buttons_type)
-  (dict "&OPTIONS_COLOR_BASE"    $options.color_base)
-  (dict "&OPTIONS_COLOR_BASE_W"  (where (where $options.color_base "name" "!=" "none") "name" "!=" "whatsapp"))
-  (dict "&OPTIONS_COLOR_BASE_H"  ($options.color_base | append (dict "value" "hide" "label" (i18n "option-color_base-hide"))))
-  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color_base "name" "!=" "none"))
-  (dict "&OPTIONS_COLOR_BG"      $options.color_bg)
+  (dict "&OPTIONS_DIRECTION"     $options.direction)
+  (dict "&OPTIONS_BULLETS"       $options.bullets)
+  (dict "&OPTIONS_ARROWS"        $options.arrows)
+  (dict "&OPTIONS_COLOR_BASE"    (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "none")))
+  (dict "&OPTIONS_COLOR_BASE_W"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert")))
+  (dict "&OPTIONS_COLOR_BASE_H"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "none" "hide")))
+  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp")))
+  (dict "&OPTIONS_COLOR_BG"      (where $options.color "value" "in" (slice "main" "main-light" "main-dark" "alt" "alt-light" "alt-dark" "link" "link-light" "link-dark" "white" "light" "grey" "dark" "black")))
   (dict "&OPTIONS_CONTRAST"      $options.contrast)
-  (dict "&OPTIONS_PARALLAX"      $options.parallax)
-  (dict "&OPTIONS_PARALLAX_BOX"  (where $options.parallax "name" "!=" "fix"))
+  (dict "&OPTIONS_PARALLAX_SECT" (where $options.parallax "value" "!=" "box"))
+  (dict "&OPTIONS_PARALLAX_BOX"  (where $options.parallax "value" "!=" "fix"))
   (dict "&OPTIONS_GRADIENT"      $options.gradient)
   (dict "&OPTIONS_ICON_TYPE"     $options.icon_type)
   (dict "&OPTIONS_ICONS_TYPE"    $options.icons_type)
   (dict "&OPTIONS_ICONS_EMOJIS"  $options.icons_emojis)
   (dict "&OPTIONS_RATIO"         $options.ratio)
+  (dict "&OPTIONS_RATE"          (where $options.ratio "value" "!=" "circle"))
   (dict "&OPTIONS_SIZES"         $options.sizes)
-  (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "ne" "fluid"))
+  (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "!=" "fluid"))
   (dict "&OPTIONS_DAYS"          $options.days)
+  (dict "&OPTIONS_GALLERY_TYPES" $options.gallery_types)
+  (dict "&OPTIONS_VIEW_SECTION"  (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "container_bg" "paddings" "size" "divider" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
+  (dict "&OPTIONS_VIEW_MODAL"    (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "paddings" "size" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
+  (dict "&OPTIONS_VIEW_BOX"      (where $options.view "value" "in" (slice "all" "group" "text" "icon" "image" "button" "bg" "boxi" "list")))
+  (dict "&OPTIONS_VIEW_BOXES"    (where $options.view "value" "in" (slice "all" "text" "icon" "image" "button" "bg" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
   (dict "&OPTIONS_DIVIDER"       $options.divider)
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
   (dict "&OPTIONS_LISTS"         $options_lists)
-  (dict "&OPTIONS_COUNTRIES"     (index site.Data.utilities.countries .Lang))
+  (dict "&OPTIONS_TYPES"         (where $options_lists "value" "!=" "page"))
+  (dict "&OPTIONS_COUNTRIES"     (index site.Data.utilities.countries $lang_default))
   (dict "&OPTIONS_FONT_WEIGHT"   site.Data.utilities.font_weight)
   (dict "&RELATION_CATEGORIES"   (cond (not (.GetPage "categories")) "hidden" "relation"))
   (dict "&RELATION_TAGS"         (cond (not (.GetPage "tags"      )) "hidden" "relation"))

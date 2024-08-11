@@ -1,0 +1,290 @@
+{{ $t := partial "functions/i18n" . }}
+{{ return slice
+
+
+  (dict "&BOX_LIST_TYPES"      (dict "label" $t.box_list_types       "name" `types`      "widget" `select`   "required" false "multiple"   true        "options" `~OPTIONS_LISTS`))
+  (dict "&BOX_LIST_CATEGORIES" (dict "label" $t.box_list_categories  "name" `categories` "widget" `relation` "required" false "i18n"       `duplicate` "options_length" 100 "collection" `categories` "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" $t.box_list_categories_hint))
+  (dict "&BOX_LIST_TAGS"       (dict "label" $t.box_list_tags        "name" `tags`       "widget" `relation` "required" false "i18n"       `duplicate` "options_length" 100 "collection" `tags`       "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" true  "hint" $t.box_list_tags_hint))
+  (dict "&BOX_LIST_AUTHORS"    (dict "label" $t.box_list_authors     "name" `authors`    "widget" `relation` "required" false "i18n"       `duplicate` "options_length" 100 "collection" `authors`    "value_field" "{{slug}}" "search_fields" (slice "{{title}}") "display_fields" (slice "{{title}}") "multiple" false "hint" $t.box_list_authors_hint))
+  (dict "&BOX_LIST_MAX"        (dict "label" $t.box_list_max         "name" `max`        "widget" `number`   "required" false "value_type" `int`       "min" 1 "hint" $t.box_list_max_hint))
+  (dict "&BOX_LIST" (dict
+    "label"     $t.box_list
+    "name"      `list`
+    "widget"    `object`
+    "collapsed" false
+    "required"  false
+    "fields"    (slice
+      `~BOX_LIST_TYPES`
+      `~BOX_LIST_CATEGORIES`
+      `~BOX_LIST_TAGS`
+      `~BOX_LIST_AUTHORS`
+      `~BOX_LIST_MAX`
+    )
+  ))
+
+
+  (dict "&BOX_STEP_BORDER_COLOR"     (dict "label" $t.box_steps_border        "name" `border`        "widget" `select`  "required" false "options" `~OPTIONS_COLOR_BASE_W`))
+  (dict "&BOX_STEP" (dict
+    "label"     $t.box_step
+    "name"      `step`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      `~BOX_STEP_BORDER_COLOR`
+      `~BOX_ICON_SIZE`
+      `~BOX_HS`
+      `~BOX_HN`
+      `~BOX_UPPERCASE`
+      `~BOX_UNDERLINE`
+    )
+  ))
+  (dict "&BOX_STEPS" (dict
+    "label"          $t.box_steps
+    "label_singular" $t.box_steps_singular
+    "name"           `steps`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.title}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      `~BOX_TITLE`
+      `~BOX_SUBTITLE`
+      `~BOX_DESCRIPTION`
+      `~BOX_ICON_ID`
+      `~BOX_IMAGE_NO_VIDEO`
+    )
+  ))
+
+
+  (dict "&BOX_GALLERY_TYPE"  (dict "label" $t.box_gallery_type "name" `type` "widget" `select` "required" false "options" `~OPTIONS_GALLERY_TYPES`))
+  (dict "&BOX_GALLERY_RATIO" (dict "<<" (slice (dict "options" `~OPTIONS_RATE`) `~BOX_IMAGE_RATIO`)))
+  (dict "&BOX_GALLERY" (dict
+    "label"     $t.box_gallery
+    "name"      `gallery`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      `~BOX_COLUMNS_MAX`
+      `~BOX_GALLERY_TYPE`
+      `~BOX_BG_COLOR`
+      `~BOX_GAP`
+      `~BOX_GALLERY_RATIO`
+      `~BOX_IMAGE_CONTAIN`
+      `~BOX_IMAGE_GRAYSCALE`
+      `~BOX_BUTTON_LINK`
+      `~BOX_BUTTON_LICON`
+      `~BOX_BUTTON_LABEL`
+      `~BOX_BUTTON_ANCHOR`
+      `~BOX_BUTTON_OFUSCATE`
+      `~BOX_BUTTON_COLOR`
+      `~BOX_BUTTON_FONT_ALT`
+    )
+  ))
+  (dict "&BOX_GALLERY_IMAGES"  (dict
+    "label"      $t.box_gallery_images
+    "name"       `images`
+    "widget"     `image`
+    "required"   false
+    "multiple"   true
+    "choose_url" true
+    "hint"       $t.box_gallery_images_hint
+  ))
+  (dict "&BOX_GALLERY_LIMAGES" (dict
+    "label"          $t.box_gallery_limages
+    "label_singular" $t.box_gallery_limages_singular
+    "name"           `items`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.image}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      `~BOX_IMAGE_NO_VIDEO`
+      `~BOX_BUTTON_LINK`
+    )
+  ))
+
+
+  (dict "&BOX_COLLAPSIBLE" (dict
+    "label"     $t.box_collapsible
+    "name"      `collapsible`
+    "widget"    `object`
+    "collapsed" false
+    "required"  false
+    "fields"    (slice
+      `~BOX_BUTTON_COLOR`
+      `~BOX_BUTTON_FONT_ALT`
+      `~BOX_ICON_ID`
+    )
+  ))
+  (dict "&BOX_COLLAPSIBLES" (dict
+    "label"          $t.box_collapsibles
+    "label_singular" $t.box_collapsibles_singular
+    "name"           `collapsibles`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.title}}"
+    "allow_add"      true
+    "required"       false
+    "hint"           $t.box_collapsibles_hint
+    "fields"         (slice
+      `~BOX_ICON_ID`
+      `~BOX_TITLE`
+      `~BOX_DESCRIPTION`
+    )
+  ))
+
+
+  (dict "&BOX_GSS"       (dict "label" $t.box_gss       "name" `gss`       "widget" `string` "required" false "hint" $t.box_gss_hint))
+  (dict "&BOX_GSS_SHEET" (dict "label" $t.box_gss_sheet "name" `gss_sheet` "widget" `string` "required" false "hint" $t.box_gss_sheet_hint))
+
+
+  (dict "&BOX_REVIEW_ICON_LEFT"  (dict "<<" (slice (dict "label" $t.box_review_icon_left  "name" `icon`)       `~BOX_ICON_ID`)))
+  (dict "&BOX_REVIEW_ICON_RIGHT" (dict "<<" (slice (dict "label" $t.box_review_icon_right "name" `icon_right`) `~BOX_ICON_ID`)))
+  (dict "&BOX_REVIEW" (dict
+    "label"     $t.box_review
+    "name"      `review`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      `~BOX_COLUMNS_MAX`
+      `~BOX_COLUMNS_MIN`
+      `~BOX_BG_COLOR`
+      `~BOX_BG_GRADIENT_COLOR`
+      `~BOX_BG_GRADIENT_TYPE`
+      `~BOX_BG_ALPHA`
+      `~BOX_HIDE_SHADOW`
+      `~BOX_SLIDER_ACTIVE`
+      `~BOX_SLIDER_INTERVAL`
+      `~BOX_SLIDER_BULLETS`
+      `~BOX_SLIDER_ARROWS`
+      `~BOX_BUTTON_COLOR`
+      `~BOX_REVIEW_ICON_LEFT`
+      `~BOX_REVIEW_ICON_RIGHT`
+    )
+  ))
+  (dict "&BOX_REVIEWS" (dict
+    "label"          $t.box_reviews
+    "label_singular" $t.box_reviews_singular
+    "name"           `reviews`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.title}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      `~BOX_TITLE`
+      `~BOX_SUBTITLE`
+      `~BOX_IMAGE_NO_VIDEO`
+      `~BOX_DESCRIPTION`
+    )
+  ))
+
+
+  (dict "&BOX_CONTACT_DAYS"            (dict "label" $t.box_contact_days        "name" `days`   "widget" `string`  "required" false))
+  (dict "&BOX_CONTACT_HOURS"           (dict "label" $t.box_contact_hours       "name" `hours`  "widget" `string`  "required" false))
+  (dict "&BOX_CONTACT_LABEL"           (dict "label" $t.box_contact_label       "name" `label`  "widget" `string`  "required" false))
+  (dict "&BOX_CONTACT_LABEL_PHONE"     (dict "label" $t.box_contact_label_phone "name" `label`  "widget" `string`  "required" false))
+  (dict "&BOX_CONTACT_FULL"            (dict "label" $t.box_contact_full        "name" `full`   "widget" `boolean` "required" false))
+  (dict "&BOX_CONTACT_ADDRESS_LABEL"   (dict "label" $t.box_contact_address     "name" `label`  "widget" `string`  "required" false))
+  (dict "&BOX_CONTACT_ADDRESS_ANCHOR"  (dict "label" $t.box_contact_anchor      "name" `anchor` "widget" `string`  "required" false "hint" $t.box_contact_anchor_hint))
+  (dict "&BOX_CONTACT_HIDDEN"          (dict "label" `hidden`                         "name" `hidden` "widget" `hidden`  "required" false))
+  (dict "&BOX_CONTACT" (dict
+    "label"          $t.box_contact
+    "label_singular" $t.box_contact_singular
+    "name"           `contact`
+    "widget"         `list`
+    "summary"        "{{fields.label}}{{fields.days}} {{fields.hours}}"
+    "collapsed"      false
+    "allow_add"      true
+    "required"       false
+    "hint"           $t.box_contact_hint
+    "types"          (slice
+      (dict "label" $t.box_contact_schedule "name" `schedule` "widget" `object` "required" false "summary" "{{fields.days}} {{fields.hours}}" "fields" (slice `~BOX_CONTACT_DAYS` `~BOX_CONTACT_HOURS` `~BOX_CONTACT_FULL`))
+      (dict "label" $t.box_contact_phone    "name" `phone`    "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT` `~BOX_ICON_ID`))
+      (dict "label" $t.box_contact_whatsapp "name" `whatsapp` "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT`))
+      (dict "label" $t.box_contact_mail     "name" `mail`     "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT`))
+      (dict "label" $t.box_contact_address  "name" `address`  "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_ADDRESS_LABEL` `~BOX_CONTACT_ADDRESS_ANCHOR` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT`))
+      (dict "label" $t.box_contact_h3       "name" `h3`       "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
+      (dict "label" $t.box_contact_h4       "name" `h4`       "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
+      (dict "label" $t.box_contact_h5       "name" `h5`       "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
+      (dict "label" $t.box_contact_h6       "name" `h6`       "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
+      (dict "label" $t.box_contact_br       "name" `br`       "widget" `object` "required" false "summary" "{{fields.name}}"                  "fields" (slice `~BOX_CONTACT_HIDDEN`))
+      (dict "label" $t.box_contact_hr       "name" `hr`       "widget" `object` "required" false "summary" "{{fields.name}}"                  "fields" (slice `~BOX_CONTACT_HIDDEN`))
+      (dict "label" $t.box_contact_custom   "name" `custom`   "widget" `object` "required" false "summary" "{{fields.label}}"                 "fields" (slice `~BOX_BUTTON_LINK` `~BOX_ICON_ID` `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_ANCHOR` `~BOX_BUTTON_OFUSCATE` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT` `~BOX_BUTTON_GA4`))
+    )
+  ))
+  (dict "&BOX_SOCIAL" (dict
+    "label"          $t.box_social
+    "label_singular" $t.box_social_singular
+    "name"           `social`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.link}}"
+    "allow_add"      true
+    "required"       false
+    "hint"           $t.box_social_hint
+    "fields"         (slice
+      `~BOX_BUTTON_LINK`
+      `~BOX_ICON_ID`
+    )
+  ))
+
+
+  (dict "&BOX_FORM_NAME"        (dict "label" $t.box_form_inputs_name        "name" `name`        "widget" `string`  "required" false "hint" $t.box_form_inputs_name_hint))
+  (dict "&BOX_FORM_PLACEHOLDER" (dict "label" $t.box_form_inputs_placeholder "name" `placeholder` "widget" `string`  "required" false "hint" $t.box_form_inputs_placeholder_hint))
+  (dict "&BOX_FORM_HINT"        (dict "label" $t.box_form_inputs_hint        "name" `hint`        "widget" `string`  "required" false "hint" $t.box_form_inputs_hint_hint))
+  (dict "&BOX_FORM_REQUIRED"    (dict "label" $t.box_form_inputs_required    "name" `required`    "widget" `boolean` "required" false "hint" $t.box_form_inputs_required_hint))
+  (dict "&BOX_FORM_ACCEPT"      (dict "label" $t.box_form_inputs_accept      "name" `accept`      "widget" `string`  "required" false "hint" $t.box_form_inputs_accept_hint))
+  (dict "&BOX_FORM_OPTIONS"     (dict
+    "label"          $t.box_form_inputs_options
+    "label_singular" $t.box_form_inputs_option
+    "name"           `options`
+    "widget"         `list`
+    "summary"        "{{fields.option}}"
+    "collapsed"      true
+    "allow_add"      true
+    "fields"         (slice
+      (dict "label" $t.box_form_inputs_option "name" `option` "widget" `string` "required" false "hint" $t.box_form_inputs_option_hint)
+      (dict "label" $t.box_form_inputs_value  "name" `value`  "widget" `string` "required" false "hint" $t.box_form_inputs_value_hint)
+    )
+  ))
+  (dict "&BOX_FORM_ACTION" (dict "label" $t.box_form_action "name" `action` "widget" `string` "required" false))
+  (dict "&BOX_FORM_INPUTS" (dict
+    "label"          $t.box_form_inputs
+    "label_singular" $t.box_form_input
+    "name"           `inputs`
+    "widget"         `list`
+    "summary"        "{{fields.name}}"
+    "collapsed"      false
+    "allow_add"      true
+    "required"       false
+    "types"      (slice
+      (dict "label" $t.box_form_inputs_text        "name" `text`        "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL`)                     "hint" $t.box_form_inputs_text_hint)
+      (dict "label" $t.box_form_inputs_email       "name" `email`       "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL`)                     "hint" $t.box_form_inputs_email_hint)
+      (dict "label" $t.box_form_inputs_tel         "name" `tel`         "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL`)                     "hint" $t.box_form_inputs_tel_hint)
+      (dict "label" $t.box_form_inputs_number      "name" `number`      "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL`)                     "hint" $t.box_form_inputs_number_hint)
+      (dict "label" $t.box_form_inputs_date        "name" `date`        "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL`)                     "hint" $t.box_form_inputs_date_hint)
+      (dict "label" $t.box_form_inputs_time        "name" `time`        "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL`)                     "hint" $t.box_form_inputs_time_hint)
+      (dict "label" $t.box_form_inputs_textarea    "name" `textarea`    "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED`)                                         "hint" $t.box_form_inputs_textarea_hint)
+      (dict "label" $t.box_form_inputs_select      "name" `select`      "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_OPTIONS`) "hint" $t.box_form_inputs_select_hint)
+      (dict "label" $t.box_form_inputs_radio       "name" `radio`       "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_OPTIONS`)                     "hint" $t.box_form_inputs_radio_hint)
+      (dict "label" $t.box_form_inputs_checkbox    "name" `checkbox`    "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_OPTIONS`)                     "hint" $t.box_form_inputs_checkbox_hint)
+      (dict "label" $t.box_form_inputs_file        "name" `file`        "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_ACCEPT`)                      "hint" $t.box_form_inputs_file_hint)
+      (dict "label" $t.box_form_inputs_hidden      "name" `hidden`      "widget" `object` "required" false "fields" (slice `~BOX_FORM_NAME`)                                                                                                       "hint" $t.box_form_inputs_hidden_hint)
+      (dict "label" $t.box_form_inputs_h3          "name" `h3`          "widget" `object` "required" false "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
+      (dict "label" $t.box_form_inputs_h4          "name" `h4`          "widget" `object` "required" false "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
+      (dict "label" $t.box_form_inputs_h5          "name" `h5`          "widget" `object` "required" false "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
+      (dict "label" $t.box_form_inputs_h6          "name" `h6`          "widget" `object` "required" false "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
+      (dict "label" $t.box_form_inputs_description "name" `description` "widget" `object` "required" false "fields" (slice (dict "label" $t.box_contact_label "name" `name` "widget" `markdown` "show_raw" true) `~BOX_CONTACT_FULL`))
+    )
+  ))
+
+
+  (dict "&BOX_MAP" (dict "label" $t.box_map "name" `map` "widget" `string` "required" false "hint" $t.box_map_hint))
+
+}}

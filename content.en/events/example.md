@@ -15,7 +15,7 @@ date_end: 2023-08-05T13:55:49
 artist: Example Artist
 location: Sala B
 address: Av. Ciclista Mariano Rojas, 20, 30008 Murcia
-price: 30€
+price: 30
 translationKey: example
 ---
 Example of an event content

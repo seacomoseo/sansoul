@@ -22,7 +22,9 @@ button,
   color: var(--base-text);
   background-color: transparent;
   position: relative;
-  @extend %radius;
+  @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
+    @extend %radius;
+  }
   &:before {
     content: '';
     background-image: none;

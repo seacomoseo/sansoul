@@ -5,11 +5,10 @@
 {{ $disqusId          := "" }}
 {{ $isGoogleTranslate := false }}
 {{ $googleAnalyticsId := "" }}
-{{ $i18nVideo         := i18n `video` }}
+{{ $i18nVideo         := i18n "video" }}
 {{ $lang              := page.Lang }}
 
 {{ $custom       := (resources.Get "js/custom.js").Content -}}
-{{ $customString := "" -}}
 
 {{ if site.Data.styles.performance.show }}
   {{ $isScrollShow = true -}}
@@ -19,7 +18,7 @@
   {{ $isCookies = true }}
 {{ end }}
 
-{{ with $config.others.disqus }}
+{{ with $config.disqus }}
   {{ $disqusId = . }}
 {{ end }}
 
@@ -28,22 +27,10 @@
 {{ end }}
 
 {{ if hugo.IsProduction }}
-  {{ with $config.others.google_analytics }}
+  {{ with $config.google_analytics }}
     {{ $googleAnalyticsId = . }}
   {{ end }}
 {{ end }}
-
-{{ with $config.others.custom_code.js }}
-  {{ $customString =
-    (.
-      | resources.FromString (print "aux_js." page.Lang)
-      | resources.ExecuteAsTemplate (print "aux_js." page.Lang) page
-    ).Content
-    | safeJS
-  -}}
-{{ end }}
-
-{{ $asTemplate := print $custom $customString }}
 
 
 {{ $opts := dict
@@ -57,31 +44,26 @@
     "i18nVideo"         $i18nVideo
     "lang"              $lang
     "custom"            $custom
-    "customString"      $customString
-    "formErrorSingleQuotes"   (i18n "form-error-single-quotes")
-    "formErrorRequiredFields" (i18n "form-error-required-fields")
-    "formErrorRequiredCheck"  (i18n "form-error-required-check")
-    "formErrorEmail"          (i18n "form-error-email")
-    "formErrorNumber"         (i18n "form-error-number")
-    "formErrorFile"           (i18n "form-error-file")
-    "formErrorAcept"          (i18n "form-error-acept")
-    "formSubmitOk"            (i18n "form-submit-ok")
-    "formSubmitWrong"         (i18n "form-submit-wrong")
+    "formErrorSingleQuotes"   (i18n "form_error_single_quotes")
+    "formErrorRequiredFields" (i18n "form_error_required_fields")
+    "formErrorRequiredCheck"  (i18n "form_error_required_check")
+    "formErrorEmail"          (i18n "form_error_email")
+    "formErrorNumber"         (i18n "form_error_number")
+    "formErrorFile"           (i18n "form_error_file")
+    "formErrorAcept"          (i18n "form_error_acept")
+    "formSubmitOk"            (i18n "form_submit_ok")
+    "formSubmitWrong"         (i18n "form_submit_wrong")
   )
 }}
 
 {{ if hugo.IsProduction }}
-  {{/*  "target" "es2015"  */}}
   {{ $opts = merge $opts (dict "minify" true) }}
 {{ end }}
 
 {{ $js := resources.Get "js/_index.js"
-  | resources.ExecuteAsTemplate (print "aux_scripts." page.Lang) $asTemplate
+  | resources.ExecuteAsTemplate "aux_scripts" $custom
   | js.Build $opts
+  | fingerprint
 }}
-
-{{ if hugo.IsProduction }}
-  {{ $js = $js | fingerprint }}
-{{ end }}
 
 <script src="{{ $js.RelPermalink }}" defer></script>

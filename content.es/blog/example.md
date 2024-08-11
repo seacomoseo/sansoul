@@ -14,7 +14,7 @@ date: 2020-01-01
 lastmod: 2021-01-01
 translationKey: example
 ---
-Il s'agit d'un exemple de paragraphe :
+Este es un ejemplo de párrafo:
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
@@ -117,17 +117,15 @@ En línea `code`
 
 En bloque identado (4 espacios)
 
-```javascript
-// Algunos comentarios
-Línea 1 de código
-Línea 2 de código
-Línea 3 de código
-```
+    // Algunos comentarios
+    Línea 1 de código
+    Línea 2 de código
+    Línea 3 de código
 
 En bloque delimitado
 
 ```javascript
-Ejemplo de código...
+// Ejemplo de código...
 ```
 
 Marcando la sintaxis

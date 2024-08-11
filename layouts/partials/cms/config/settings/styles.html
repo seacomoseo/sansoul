@@ -1,32 +1,36 @@
-{{ return slice
-  (dict "&FONT_KEYS" (dict "widget" `object` "collapsed" true "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
+{{ $t := partial "functions/i18n" . }}
 
-  (dict "&FONT_FIELD_FAMILY"      (dict "label" (i18n "field-family")      "name" `family`      "widget" `string`  "hint" (i18n "hint-family")))
-  (dict "&FONT_FIELD_WEIGHT"      (dict "label" (i18n "field-weight")      "name" `weight`      "widget" `select`  "default" 0 "options" `~OPTIONS_FONT_WEIGHT`))
-  (dict "&FONT_FIELD_BOLD"        (dict "label" (i18n "field-bold")        "name" `bold`        "widget" `select`  "default" 0 "options" `~OPTIONS_FONT_WEIGHT`))
-  (dict "&FONT_FIELD_ITALIC"      (dict "label" (i18n "field-italic")      "name" `italic`      "widget" `boolean` "default"  1.25))
-  (dict "&FONT_FIELD_LINE_HEIGHT" (dict "label" (i18n "field-line_height") "name" `line_height` "widget" `number`  "value_type" `float` "step" 0.01 "min" 0  "max" 3))
-  (dict "&FONT_FIELD_TOP"         (dict "label" (i18n "field-top")         "name" `top`         "widget" `number`  "value_type" `float` "step" 0.01 "min" -2 "max" 2 "required" false))
+{{ return slice
+  (dict "&FONT_KEYS" (dict "widget" `object` "required" false "collapsed" true "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
+
+  (dict "&FONT_FAMILY"      (dict "label" $t.collection_settings_styles_fonts_family      "name" `family`      "widget" `string`  "required" false "hint" $t.collection_settings_styles_fonts_family_hint))
+  (dict "&FONT_WEIGHT"      (dict "label" $t.collection_settings_styles_fonts_weight      "name" `weight`      "widget" `select`  "required" false "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_BOLD"        (dict "label" $t.collection_settings_styles_fonts_bold        "name" `bold`        "widget" `select`  "required" false "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_ITALIC"      (dict "label" $t.collection_settings_styles_fonts_italic      "name" `italic`      "widget" `boolean` "required" false))
+  (dict "&FONT_LINE_HEIGHT" (dict "label" $t.collection_settings_styles_fonts_line_height "name" `line_height` "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0  "max" 3))
+  (dict "&FONT_SIZE"        (dict "label" $t.collection_settings_styles_fonts_size        "name" `size`        "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0  "max" 3))
+  (dict "&FONT_TOP"         (dict "label" $t.collection_settings_styles_fonts_top         "name" `top`         "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" -2 "max" 2))
 
   (dict "&FONT" (dict "<<" (slice
     (dict "fields" (slice
-      `~FONT_FIELD_FAMILY`
-      `~FONT_FIELD_WEIGHT`
-      `~FONT_FIELD_BOLD`
-      `~FONT_FIELD_ITALIC`
-      `~FONT_FIELD_LINE_HEIGHT`
+      `~FONT_FAMILY`
+      `~FONT_WEIGHT`
+      `~FONT_BOLD`
+      `~FONT_ITALIC`
+      `~FONT_LINE_HEIGHT`
     ))
     `~FONT_KEYS`
   )))
-  (dict "&FONT_TOP" (dict "<<" (slice
+  (dict "&FONT_WITH_TOP" (dict "<<" (slice
     `~FONT_KEYS`
     (dict "fields" (slice
-      `~FONT_FIELD_FAMILY`
-      `~FONT_FIELD_WEIGHT`
-      `~FONT_FIELD_BOLD`
-      `~FONT_FIELD_ITALIC`
-      `~FONT_FIELD_LINE_HEIGHT`
-      `~FONT_FIELD_TOP`
+      `~FONT_FAMILY`
+      `~FONT_WEIGHT`
+      `~FONT_BOLD`
+      `~FONT_ITALIC`
+      `~FONT_LINE_HEIGHT`
+      `~FONT_SIZE`
+      `~FONT_TOP`
     ))
   )))
 
@@ -34,139 +38,151 @@
     (dict
       "widget"    `object`
       "collapsed" false
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "field-color")    "name" `color`    "widget" `color`  "required" false "default" `#fff` "allow_input" true)
-        (dict "label" (i18n "field-light")    "name" `light`    "widget" `color`  "required" false "default" `#fff` "allow_input" true)
-        (dict "label" (i18n "field-dark")     "name" `dark`     "widget" `color`  "required" false "default" `#fff` "allow_input" true)
-        (dict "label" (i18n "field-contrast") "name" `contrast` "widget" `select` "required" false "default" `#fff` "options" `~OPTIONS_CONTRAST` "hint" (i18n "hint-contrast"))
+        (dict "label" $t.collection_settings_styles_colors_color    "name" `color`    "widget" `color`  "required" false "allow_input" true)
+        (dict "label" $t.collection_settings_styles_colors_light    "name" `light`    "widget" `color`  "required" false "allow_input" true)
+        (dict "label" $t.collection_settings_styles_colors_dark     "name" `dark`     "widget" `color`  "required" false "allow_input" true)
+        (dict "label" $t.collection_settings_styles_colors_contrast "name" `contrast` "widget" `select` "required" false "options" `~OPTIONS_CONTRAST` "hint" $t.collection_settings_styles_colors_contrast_hint)
       )
     )
   )
 
   (dict "&SETTINGS_STYLES" (slice
     (dict
-      "label"     (i18n "collection-settings-styles-icons")
+      "label"     $t.collection_settings_styles_icons
       "name"      `icons`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-icons-type")           "name" `type`            "widget" `select`  "required" false "options" `~OPTIONS_ICONS_TYPE` "default" `solid`)
-        (dict "label" (i18n "collection-settings-styles-icons-sharp")          "name" `sharp`           "widget" `boolean` "required" false)
-        (dict "label" (i18n "collection-settings-styles-icons-emojis")         "name" `emojis`          "widget" `select`  "required" false "options" `~OPTIONS_ICONS_EMOJIS`)
-        (dict "label" (i18n "collection-settings-styles-icons-emojis_default") "name" `emojis_default`  "widget" `boolean` "required" false)
+        (dict "label" $t.collection_settings_styles_icons_type           "name" `type`            "widget" `select`  "required" false "options" `~OPTIONS_ICONS_TYPE`)
+        (dict "label" $t.collection_settings_styles_icons_sharp          "name" `sharp`           "widget" `boolean` "required" false)
+        (dict "label" $t.collection_settings_styles_icons_emojis         "name" `emojis`          "widget" `select`  "required" false "options" `~OPTIONS_ICONS_EMOJIS`)
+        (dict "label" $t.collection_settings_styles_icons_emojis_default "name" `emojis_default`  "widget" `boolean` "required" false)
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-fonts")
+      "label"     $t.collection_settings_styles_fonts
       "name"      `fonts`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-fonts-google")             "name" `google`             "widget" `boolean` "default" true  "hint" (i18n "collection-settings-styles-fonts-google-hint"))
-        (dict "label" (i18n "collection-settings-styles-fonts-base")               "name" `base`               "<<" `~FONT`)
-        (dict "label" (i18n "collection-settings-styles-fonts-cursive")            "name" `cursive`            "<<" `~FONT_TOP`)
-        (dict "label" (i18n "collection-settings-styles-fonts-title")              "name" `title`              "<<" `~FONT_TOP`)
-        (dict "label" (i18n "collection-settings-styles-fonts-blockquote_cursive") "name" `blockquote_cursive` "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-fonts-blockquote_cursive-hint"))
+        (dict "label" $t.collection_settings_styles_fonts_google             "name" `google`             "widget" `boolean` "required" false "hint" $t.collection_settings_styles_fonts_google_hint)
+        (dict "label" $t.collection_settings_styles_fonts_base               "name" `base`               "<<" `~FONT`)
+        (dict "label" $t.collection_settings_styles_fonts_cursive            "name" `cursive`            "<<" `~FONT_WITH_TOP`)
+        (dict "label" $t.collection_settings_styles_fonts_title              "name" `title`              "<<" `~FONT_WITH_TOP`)
+        (dict "label" $t.collection_settings_styles_fonts_blockquote_cursive "name" `blockquote_cursive` "widget" `boolean` "required" false "hint" $t.collection_settings_styles_fonts_blockquote_cursive_hint)
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-colors")
+      "label"     $t.collection_settings_styles_colors
       "name"      `colors`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-colors-main") "name" `main` "<<" `~BASE_COLOR`)
-        (dict "label" (i18n "collection-settings-styles-colors-alt")  "name" `alt`  "<<" `~BASE_COLOR` "hint" (i18n "collection-settings-styles-colors-alt-hint"))
-        (dict "label" (i18n "collection-settings-styles-colors-link") "name" `link` "<<" `~BASE_COLOR` "hint" (i18n "collection-settings-styles-colors-link-hint"))
+        (dict "label" $t.collection_settings_styles_colors_main "name" `main` "<<" `~BASE_COLOR`)
+        (dict "label" $t.collection_settings_styles_colors_alt  "name" `alt`  "<<" `~BASE_COLOR` "hint" $t.collection_settings_styles_colors_alt_hint)
+        (dict "label" $t.collection_settings_styles_colors_link "name" `link` "<<" `~BASE_COLOR` "hint" $t.collection_settings_styles_colors_link_hint)
         (dict
-          "label"     (i18n "collection-settings-styles-base")
+          "label"     $t.collection_settings_styles_base
           "name"      `base`
           "widget"    `object`
           "collapsed" false
+          "required"  false
           "fields"    (slice
-            (dict "label" (i18n "collection-settings-styles-base-white") "name" `white` "widget" `color` "required" false "allow_input" true "default" `#fff`)
-            (dict "label" (i18n "collection-settings-styles-base-light") "name" `light` "widget" `color` "required" false "allow_input" true "default" `#eee`)
-            (dict "label" (i18n "collection-settings-styles-base-grey")  "name" `grey`  "widget" `color` "required" false "allow_input" true "default" `#767676`)
-            (dict "label" (i18n "collection-settings-styles-base-dark")  "name" `dark`  "widget" `color` "required" false "allow_input" true "default" `#282525`)
-            (dict "label" (i18n "collection-settings-styles-base-black") "name" `black` "widget" `color` "required" false "allow_input" true "default" `#000`)
+            (dict "label" $t.collection_settings_styles_base_white "name" `white` "widget" `color` "required" false "allow_input" true)
+            (dict "label" $t.collection_settings_styles_base_light "name" `light` "widget" `color` "required" false "allow_input" true)
+            (dict "label" $t.collection_settings_styles_base_grey  "name" `grey`  "widget" `color` "required" false "allow_input" true)
+            (dict "label" $t.collection_settings_styles_base_dark  "name" `dark`  "widget" `color` "required" false "allow_input" true)
+            (dict "label" $t.collection_settings_styles_base_black "name" `black` "widget" `color` "required" false "allow_input" true)
           )
         )
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-rounded")
+      "label"     $t.collection_settings_styles_rounded
       "name"      `rounded`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-rounded-radius")  "name" `radius`  "widget" `number`  "default"  0 "value_type" `float` "step" 0.01 "min" 0 "max" 1.25 "hint" (i18n "collection-settings-styles-rounded-radius-hint"))
-        (dict "label" (i18n "collection-settings-styles-rounded-chamfer") "name" `chamfer` "widget" `boolean` "default"  false                                                 "hint" (i18n "collection-settings-styles-rounded-chamfer-hint"))
+        (dict "label" $t.collection_settings_styles_rounded_radius  "name" `radius`  "widget" `number`  "required" false "value_type" `float` "step" 0.01 "min" 0 "max" 1.25 "hint" $t.collection_settings_styles_rounded_radius_hint)
+        (dict "label" $t.collection_settings_styles_rounded_chamfer "name" `chamfer` "widget" `boolean` "required" false                                                 "hint" $t.collection_settings_styles_rounded_chamfer_hint)
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-buttons")
+      "label"     $t.collection_settings_styles_buttons
       "name"      `buttons`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-buttons-sides_round") "name" `sides_round` "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-buttons-sides_round-hint"))
-        (dict "label" (i18n "collection-settings-styles-buttons-icon_circle") "name" `icon_circle` "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-buttons-icon_circle-hint"))
-        (dict "label" (i18n "collection-settings-styles-buttons-deep")        "name" `deep`        "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-buttons-deep-hint"))
-        (dict "label" (i18n "collection-settings-styles-buttons-outline")     "name" `outline`     "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-buttons-outline-hint"))
+        (dict "label" $t.collection_settings_styles_buttons_sides_round "name" `sides_round` "widget" `boolean` "required" false "hint" $t.collection_settings_styles_buttons_sides_round_hint)
+        (dict "label" $t.collection_settings_styles_buttons_icon_circle "name" `icon_circle` "widget" `boolean` "required" false "hint" $t.collection_settings_styles_buttons_icon_circle_hint)
+        (dict "label" $t.collection_settings_styles_buttons_deep        "name" `deep`        "widget" `boolean` "required" false "hint" $t.collection_settings_styles_buttons_deep_hint)
+        (dict "label" $t.collection_settings_styles_buttons_outline     "name" `outline`     "widget" `boolean` "required" false "hint" $t.collection_settings_styles_buttons_outline_hint)
         (dict
-          "label"     (i18n "collection-settings-styles-buttons-font_main")
+          "label"     $t.collection_settings_styles_buttons_font_main
           "name"      `font_main`
           "widget"    `object`
           "collapsed" true
+          "required"  false
           "fields"    (slice
-            (dict "label" (i18n "collection-settings-styles-buttons-type")      "name" `type`      "widget" `select`  "default" `light` "options" `~OPTIONS_BUTTONS_TYPE`)
-            (dict "label" (i18n "collection-settings-styles-buttons-bold")      "name" `bold`      "widget" `boolean` "default" false)
-            (dict "label" (i18n "collection-settings-styles-buttons-uppercase") "name" `uppercase` "widget" `boolean` "default" false)
+            (dict "label" $t.collection_settings_styles_buttons_type      "name" `type`      "widget" `select`  "required" false "options" `~OPTIONS_BUTTONS_TYPE`)
+            (dict "label" $t.collection_settings_styles_buttons_bold      "name" `bold`      "widget" `boolean` "required" false)
+            (dict "label" $t.collection_settings_styles_buttons_uppercase "name" `uppercase` "widget" `boolean` "required" false)
           )
         )
         (dict
-          "label"     (i18n "collection-settings-styles-buttons-font_alt")
+          "label"     $t.collection_settings_styles_buttons_font_alt
           "name"      `font_alt`
           "widget"    `object`
           "collapsed" true
+          "required"  false
           "fields"    (slice
-            (dict "label" (i18n "collection-settings-styles-buttons-type")      "name" `type`      "widget" `select`  "default" `light` "options" `~OPTIONS_BUTTONS_TYPE`)
-            (dict "label" (i18n "collection-settings-styles-buttons-bold")      "name" `bold`      "widget" `boolean` "default" false)
-            (dict "label" (i18n "collection-settings-styles-buttons-uppercase") "name" `uppercase` "widget" `boolean` "default" false)
+            (dict "label" $t.collection_settings_styles_buttons_type      "name" `type`      "widget" `select`  "required" false "options" `~OPTIONS_BUTTONS_TYPE`)
+            (dict "label" $t.collection_settings_styles_buttons_bold      "name" `bold`      "widget" `boolean` "required" false)
+            (dict "label" $t.collection_settings_styles_buttons_uppercase "name" `uppercase` "widget" `boolean` "required" false)
           )
         )
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-inputs")
+      "label"     $t.collection_settings_styles_inputs
       "name"      `inputs`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-inputs-fill") "name" `fill` "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-inputs-fill-hint"))
+        (dict "label" $t.collection_settings_styles_inputs_fill "name" `fill` "widget" `boolean` "required" false "hint" $t.collection_settings_styles_inputs_fill_hint)
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-shadow")
+      "label"     $t.collection_settings_styles_shadow
       "name"      `shadow`
       "widget"    `object`
       "collapsed" true
+      "required"  false
       "fields"    (slice
-        (dict "label" (i18n "collection-settings-styles-shadow-left")    "name" `left`    "widget" `number` "value_type" `float` "step" 0.05 "min" -1 "max" 1 "default" 0.25 "default" 0)
-        (dict "label" (i18n "collection-settings-styles-shadow-top")     "name" `top`     "widget" `number` "value_type" `float` "step" 0.05 "min" -1 "max" 1 "default" 0.25 "default" 0)
-        (dict "label" (i18n "collection-settings-styles-shadow-blur")    "name" `blur`    "widget" `number` "value_type" `float` "step" 0.05 "min" 0  "max" 1 "default" 0.25 "default" 0)
-        (dict "<<" (slice (dict "label" `Color`) `~COLOR`))
-        (dict "label" (i18n "collection-settings-styles-shadow-opacity") "name" `opacity` "widget" `number` "value_type" `float` "step" 0.05 "min" 0  "max" 1 "default" 0.25 "default" 0)
+        (dict "label" $t.collection_settings_styles_shadow_left  "name" `left`  "widget" `number` "required" false "value_type" `float` "step" 0.05 "min" -1 "max" 1)
+        (dict "label" $t.collection_settings_styles_shadow_top   "name" `top`   "widget" `number` "required" false "value_type" `float` "step" 0.05 "min" -1 "max" 1)
+        (dict "label" $t.collection_settings_styles_shadow_blur  "name" `blur`  "widget" `number` "required" false "value_type" `float` "step" 0.05 "min" 0  "max" 1)
+        (dict "<<" (slice (dict "label" $t.collection_settings_styles_shadow_color) `~BOX_BG_COLOR`))
+        (dict "label" $t.collection_settings_styles_shadow_alpha "name" `alpha` "widget" `number` "required" false "value_type" `float` "step" 0.05 "min" 0  "max" 1)
       )
     )
     (dict
-      "label"     (i18n "collection-settings-styles-performance")
+      "label"     $t.collection_settings_styles_performance
       "name"      `performance`
       "widget"    `object`
       "collapsed" true
-      "hint"      (i18n "collection-settings-styles-performance-hint")
+      "required"  false
+      "hint"      $t.collection_settings_styles_performance_hint
       "fields" (slice
-        (dict "label" (i18n "collection-settings-styles-performance-show")   "name" `show`   "widget" `boolean` "default" false "hint" (i18n "collection-settings-styles-performance-show-hint"))
+        (dict "label" $t.collection_settings_styles_performance_show   "name" `show`   "widget" `boolean` "required" false "hint" $t.collection_settings_styles_performance_show_hint)
       )
     )
   ))

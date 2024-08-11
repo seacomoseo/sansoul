@@ -6,29 +6,29 @@
     "styles-colors-base-dark"            (.styles.colors.base.dark                | default "#282525")
     "styles-colors-base-black"           (.styles.colors.base.black               | default "#000")
     "styles-colors-base-grey"            (.styles.colors.base.grey                | default "#767676")
-    "styles-colors-main-color"           (.styles.colors.main.color               | default "#abd4ed")
-    "styles-colors-alt-color"            (cond (eq .styles.colors.alt.color "#fff") "" .styles.colors.alt.color)
-    "styles-colors-link-color"           (cond (eq .styles.colors.link.color "#fff") (.styles.colors.main.color | default "#abd4ed") .styles.colors.link.color)
+    "styles-colors-main-color"           (.styles.colors.main.color               | default "#577399")
+    "styles-colors-alt-color"            (.styles.colors.alt.color                | default "")
+    "styles-colors-link-color"           (.styles.colors.link.color               | default .styles.colors.main.color | default "#577399")
 
-    "styles-colors-main-light"           (cond (eq .styles.colors.main.light "#fff") "" .styles.colors.main.light)
-    "styles-colors-alt-light"            (cond (eq .styles.colors.alt.light  "#fff") "" .styles.colors.alt.light)
-    "styles-colors-link-light"           (cond (eq .styles.colors.link.light "#fff") "" .styles.colors.link.light)
+    "styles-colors-main-light"           (.styles.colors.main.light               | default "")
+    "styles-colors-alt-light"            (.styles.colors.alt.light                | default "")
+    "styles-colors-link-light"           (.styles.colors.link.light               | default "")
 
-    "styles-colors-main-dark"            (cond (eq .styles.colors.main.dark  "#fff") "" .styles.colors.main.dark)
-    "styles-colors-alt-dark"             (cond (eq .styles.colors.alt.dark   "#fff") "" .styles.colors.alt.dark)
-    "styles-colors-link-dark"            (cond (eq .styles.colors.link.dark  "#fff") "" .styles.colors.link.dark)
+    "styles-colors-main-dark"            (.styles.colors.main.dark                | default "")
+    "styles-colors-alt-dark"             (.styles.colors.alt.dark                 | default "")
+    "styles-colors-link-dark"            (.styles.colors.link.dark                | default "")
 
-    "styles-colors-main-contrast-text"   (in (slice "all" "text") .styles.colors.main.contrast | string)
-    "styles-colors-alt-contrast-text"    (in (slice "all" "text") .styles.colors.alt.contrast  | string)
-    "styles-colors-link-contrast-text"   (in (slice "all" "text") .styles.colors.link.contrast | string)
+    "styles-colors-main-contrast-text"   (or (in (slice "all" "text") .styles.colors.main.contrast) (not .styles.colors.main.contrast) | not | not | string)
+    "styles-colors-alt-contrast-text"    (or (in (slice "all" "text") .styles.colors.alt.contrast ) (not .styles.colors.alt.contrast)  | not | not | string)
+    "styles-colors-link-contrast-text"   (or (in (slice "all" "text") .styles.colors.link.contrast) (not .styles.colors.link.contrast) | not | not | string)
 
-    "styles-colors-main-contrast-bg"     (in (slice "all" "bg") .styles.colors.main.contrast   | string)
-    "styles-colors-alt-contrast-bg"      (in (slice "all" "bg") .styles.colors.alt.contrast    | string)
-    "styles-colors-link-contrast-bg"     (in (slice "all" "bg") .styles.colors.link.contrast   | string)
+    "styles-colors-main-contrast-bg"     (or (in (slice "all" "bg")   .styles.colors.main.contrast) (not .styles.colors.main.contrast) | not | not | string)
+    "styles-colors-alt-contrast-bg"      (or (in (slice "all" "bg")   .styles.colors.alt.contrast ) (not .styles.colors.alt.contrast)  | not | not | string)
+    "styles-colors-link-contrast-bg"     (or (in (slice "all" "bg")   .styles.colors.link.contrast) (not .styles.colors.link.contrast) | not | not | string)
 
-    "styles-fonts-base-family"           (.styles.fonts.base.family               | default "Montserrat")
-    "styles-fonts-title-family"          (.styles.fonts.title.family              | default "Montserrat")
-    "styles-fonts-cursive-family"        (.styles.fonts.cursive.family            | default "Dancing Script")
+    "styles-fonts-base-family"           (.styles.fonts.base.family               | default "Arial")
+    "styles-fonts-title-family"          (.styles.fonts.title.family              | default "Arial")
+    "styles-fonts-cursive-family"        (.styles.fonts.cursive.family            | default "Arial")
     "styles-fonts-base-weight"           (.styles.fonts.base.weight               | default 200)
     "styles-fonts-title-weight"          (.styles.fonts.title.weight              | default 800)
     "styles-fonts-cursive-weight"        (.styles.fonts.cursive.weight            | default 400)
@@ -45,10 +45,10 @@
     "styles-fonts-cursive-size"          (.styles.fonts.cursive.size              | default 1)
     "styles-fonts-title-top"             (.styles.fonts.title.top                 | default 0)
     "styles-fonts-cursive-top"           (.styles.fonts.cursive.top               | default 0)
-    "styles-fonts-blockquote_cursive"    (.styles.fonts.blockquote_cursive        | string)
+    "styles-fonts-blockquote_cursive"    (.styles.fonts.blockquote_cursive        | not | not | string)
 
-    "styles-emoji-duotone"               (eq .styles.icons.type   "duotone"       | string)
-    "styles-emoji-scale"                 (in .styles.icons.emojis "-scale"        | string)
+    "styles-emoji-duotone"               (eq .styles.icons.type   "duotone"       | not | not | string)
+    "styles-emoji-scale"                 (in .styles.icons.emojis "-scale"        | not | not | string)
     "styles-menu-bar"                    (cond (eq .styles.icons.type "thin"   ) .1
                                          (cond (eq .styles.icons.type "light"  ) .15
                                          (cond (eq .styles.icons.type "regular") .2
@@ -56,41 +56,35 @@
                                          )))
 
     "styles-rounded-radius"              (.styles.rounded.radius                  | default 0)
-    "styles-rounded-chamfer"             (.styles.rounded.chamfer                 | string)
+    "styles-rounded-chamfer"             (.styles.rounded.chamfer                 | not | not | string)
 
-    "styles-buttons-sides_round"         (.styles.buttons.sides_round             | string)
-    "styles-buttons-icon_circle"         (.styles.buttons.icon_circle             | string)
-    "styles-buttons-deep"                (.styles.buttons.deep                    | string)
-    "styles-buttons-outline"             (.styles.buttons.outline                 | string)
+    "styles-buttons-sides_round"         (.styles.buttons.sides_round             | not | not | string)
+    "styles-buttons-icon_circle"         (.styles.buttons.icon_circle             | not | not | string)
+    "styles-buttons-deep"                (.styles.buttons.deep                    | not | not | string)
+    "styles-buttons-outline"             (.styles.buttons.outline                 | not | not | string)
     "styles-buttons-font_main"           (.styles.buttons.font_main.type          | default "base")
-    "styles-buttons-font_main_bold"      (.styles.buttons.font_main.bold          | string)
-    "styles-buttons-font_main_uppercase" (.styles.buttons.font_main.uppercase     | string)
+    "styles-buttons-font_main_bold"      (.styles.buttons.font_main.bold          | not | not | string)
+    "styles-buttons-font_main_uppercase" (.styles.buttons.font_main.uppercase     | not | not | string)
     "styles-buttons-font_alt"            (.styles.buttons.font_alt.type           | default "base")
-    "styles-buttons-font_alt_bold"       (.styles.buttons.font_alt.bold           | string)
-    "styles-buttons-font_alt_uppercase"  (.styles.buttons.font_alt.uppercase      | string)
+    "styles-buttons-font_alt_bold"       (.styles.buttons.font_alt.bold           | not | not | string)
+    "styles-buttons-font_alt_uppercase"  (.styles.buttons.font_alt.uppercase      | not | not | string)
 
     "styles-shadow-left"                 (.styles.shadow.left                     | default 0)
     "styles-shadow-top"                  (.styles.shadow.top                      | default 0)
     "styles-shadow-blur"                 (.styles.shadow.blur                     | default 0)
     "styles-shadow-color"                (.styles.shadow.color                    | default "black")
-    "styles-shadow-opacity"              (.styles.shadow.opacity                  | default 0.25)
-    "styles-performance-show"            (.styles.performance.show                | string)
-    "article-search"                     (.lists.content.search                   | string)
-    "menu-google_translate"              (.menu.google_translate                  | string)
-    "copied"                             (i18n "copied")
+    "styles-shadow-alpha"                (.styles.shadow.alpha                    | default 0)
+    "styles-performance-show"            (.styles.performance.show                | not | not | string)
+    "menu-google_translate"              (.menu.google_translate                  | not | not | string)
     -}}
-    {{/*  "dividers-string"                    (delimit (partial "svg/dividers-css" .) "|")  */}}
 {{- end -}}
 
-{{- $styles := resources.Get (print "css/styles.lang.scss")
-  | resources.ExecuteAsTemplate (print site.Home.RelPermalink "css/styles.scss") .
--}}
-{{- with $styles -}}
+{{- $css := resources.Get (print "css/styles.scss") -}}
+{{- with $css -}}
+  {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsProduction) | fingerprint -}}
   {{- if hugo.IsProduction -}}
-    {{- $styles = . | toCSS (dict "vars" $vars) | fingerprint | postCSS | resources.PostProcess -}}
-  {{- else -}}
-    {{- $styles = . | toCSS (dict "vars" $vars "enableSourceMap" true) | fingerprint -}}
+    {{- $css = $css | minify | postCSS | resources.PostProcess -}}
   {{- end -}}
 {{- end -}}
 
-<link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+<link rel="stylesheet" href="{{ $css.RelPermalink }}">

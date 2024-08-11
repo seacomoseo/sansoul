@@ -5,7 +5,7 @@
 
   {{- if .bg -}}
     {{- $image     = "bg-figure" -}}
-    {{- $alpha     = cond (not .alpha)     "" "alpha" -}}
+    {{- $alpha     = cond (not .alpha)     "" "bg-alpha" -}}
     {{- $grayscale = cond (not .grayscale) "" " image--grayscale" -}}
   {{- end -}}
 
@@ -27,8 +27,15 @@
 
 
   {{/*  STYLE  */}}
-  {{- $alpha  = cond (not $alpha) "" (print "--alpha:" .alpha) -}}
-  {{- $style := cond (not $alpha) "" (print ` style="` $alpha `"`) -}}
+  {{ $style := partial "functions/attr-delimit" (dict
+    "attr"    "style"
+    "delimit" ";"
+    "array"   (slice
+      (cond (not .alpha)       "" (print "--bg-alpha:"    .alpha))
+      (cond (not .color_alpha) "" (print "--color-alpha:" .color_alpha))
+    )
+  ) }}
+
 
   {{/*  ATTRIBUTES  */}}
   {{- $attr := print $class $style -}}

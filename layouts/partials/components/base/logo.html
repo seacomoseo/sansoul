@@ -19,7 +19,7 @@
       <div class="box container container--{{ $container }} {{- $align }}">
         <div class="logo__link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link">
           {{- with $logo -}}
-            {{- $alt := print "Logo " (index $config.schema.names 0) -}}
+            {{- $alt := print "Logo " $config.title -}}
             {{- partial "components/image"
               (dict
                 "svg_src"   true

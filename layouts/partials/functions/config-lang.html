@@ -1,12 +1,13 @@
+{{ $config  := site.Data.config }}
 {{ $default := dict }}
 {{ $self    := dict }}
 
-{{ with index site.Data (print "config." (index site.Languages 0)) }}
-  {{ $default = . }}
+{{ with where $config.langs "lang" (index site.Languages 0) }}
+  {{ $default = index . 0 }}
 {{ end }}
 
-{{ with index site.Data (print "config." site.Home.Lang) }}
-  {{ $self = . }}
+{{ with where $config.langs "lang" site.Home.Lang }}
+  {{ $self = index . 0 }}
 {{ end }}
 
-{{ return (merge $default $self) }}
+{{ return (merge $config $default $self (dict "langs" nil)) }}

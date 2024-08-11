@@ -21,7 +21,7 @@
 {{ $site_logo := print
   site.BaseURL
   "/media/"
-  ((cond (in $config.schema.logo "svg") "" $config.schema.logo)
+  ((cond (in site.Data.schema.logo "svg") "" site.Data.schema.logo)
     | default (cond (in $config.menu.logo "svg") "" $config.menu.logo)
     | default (cond (in $config.cms.logo "svg") "" $config.cms.logo)
     | default $config.favicon.png
@@ -61,7 +61,7 @@
 {{ end }}
 
 {{/*  OPEN GRAPH  */}}
-<meta property="og:site_name" content="{{ index $config.schema.names 0 }}">
+<meta property="og:site_name" content="{{ $config.title }}">
 {{ $url := .Permalink }}
 {{ if .IsHome }}
   {{ $url = print site.BaseURL site.Home.RelPermalink }}
@@ -91,13 +91,13 @@
 {{ if .Params.noindex }}
   <meta name="robots" content="noindex">
 {{ end }}
-{{ with $config.others.google_site_verification }}
+{{ with $config.google_site_verification }}
   <meta name="google-site-verification" content="{{ . }}">
 {{ end }}
 
 {{/*  GOOGLE ANALYTICS  */}}
 {{- if hugo.IsProduction -}}
-  {{- with $config.others.google_analytics -}}
+  {{- with $config.google_analytics -}}
     <script>
       // GA4 base
       window.dataLayer = window.dataLayer || [];
@@ -129,33 +129,36 @@
 
 {{/*  SCHEMA  */}}
 <script type="application/ld+json">
-  {{- partial "components/base/schema" . | safeJS -}}
+  {{- partial "components/base/schema/_" . | safeJS -}}
 </script>
 
 {{/*  CSS STYLES  */}}
 {{ partial "components/base/style" . }}
 
 {{/*  FAVICON  */}}
-{{ with resources.Get (print "/media/" ($config.favicon.ico | default "base/favicon.ico")) }}
+{{ $favicon_ico := resources.Get (print "/media/" ($config.favicon.ico | default "base/favicon.ico")) }}
+{{ with $favicon_ico }}
   <link rel="icon" sizes="any" href="{{ (. | resources.Copy `/favicon.ico`).RelPermalink }}">
 {{ end }}
-{{ with resources.Get (print "/media/" ($config.favicon.svg | default "base/icon.svg")) }}
+{{ $favicon_svg := resources.Get (print "/media/" ($config.favicon.svg | default "base/icon.svg")) }}
+{{ with $favicon_svg }}
   <link rel="icon" type="image/svg+xml" href="{{ (. | resources.Copy `/favicon.svg`).RelPermalink | safeURL }}">
 {{ end }}
-{{ if hugo.IsProduction }}
-  {{ with resources.Get (print "/media/" ($config.favicon.png | default "base/icon.png")) }}
+{{ if or hugo.IsProduction (not (and $favicon_ico $favicon_svg)) }}
+  {{ $favicon_png := resources.Get (print "/media/" ($config.favicon.png | default "base/icon.png")) }}
+  {{ with $favicon_png }}
     <link rel="icon apple-touch-icon" type="image/png" sizes="192x192" href="{{ (.Resize `192x192` | resources.Copy `/favicon.png`).RelPermalink | safeURL }}">
   {{ end }}
 {{ end }}
 
 {{/*  RSS  */}}
 {{ with site.Home.OutputFormats.Get "RSS" }}
-  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ index $config.schema.names 0 }}">
+  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $config.title }}">
 {{ end }}
 
 {{/*  GOOGLE FONTS  */}}
-{{ if site.Data.styles.fonts.google }}
-  {{ with site.Data.styles.fonts }}
+{{ with site.Data.styles.fonts }}
+  {{ if .google }}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{ $google_url := "https://fonts.googleapis.com/css2" }}

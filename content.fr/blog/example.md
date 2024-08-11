@@ -117,17 +117,15 @@ Dans la ligne `code`.
 
 Dans le bloc identifié (4 espaces)
 
-```javascript
-// Quelques commentaires
-Ligne 1 du code
-Ligne 2 du code
-Ligne 3 du code
-```
+    // Quelques commentaires
+    Ligne 1 du code
+    Ligne 2 du code
+    Ligne 3 du code
 
 Dans un bloc délimité
 
 ```javascript
-Exemple de code...
+// Exemple de code...
 ```
 
 Marquer la syntaxe

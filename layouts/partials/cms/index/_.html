@@ -1,0 +1,88 @@
+{{- $t            := partial "functions/i18n" . -}}
+{{- $lang_cms     := partial "functions/lang_cms" . -}}
+{{- $config       := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
+{{- $local        := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
+{{- $translations := slice -}}
+{{- $trans_css    := slice -}}
+{{- range site.Data.options.langs -}}
+  {{- $trans_css = merge $trans_css (dict . "") -}}
+{{- end -}}
+{{- range .Translations -}}
+  {{- $cms_link   := print .Site.Home.RelPermalink "admin/" -}}
+  {{- $translations = $translations | append (dict
+    "id"    .Lang
+    "title" .Language.LanguageName
+    "data"  $cms_link
+  ) -}}
+  {{- $trans_css = merge $trans_css (dict .Lang $cms_link ) -}}
+{{- end -}}
+
+<!doctype html>
+<html lang="{{ $lang_cms }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ $t.cms }} · {{ $config.title }}</title>
+  <meta name="robots" content="noindex">
+
+  {{/*  CONFIG FILE  */}}
+  {{ $path   := print .RelPermalink "admin/config.yml" }}
+  {{ if hugo.IsMultihost }}
+    {{ $path  = print "../" .Lang "/admin/config.yml" }}
+  {{ end }}
+  {{ $string   := partial "cms/config/_" page | string }}
+  {{ $resource := resources.FromString $path $string | fingerprint }}
+  <link href="{{ $resource.RelPermalink }}" type="text/yaml" rel="cms-config-url">
+
+  {{/*  STYLES  */}}
+  {{ $vars   := merge (partial "cms/index/icons" .) $trans_css }}
+  {{ $styles := resources.Get "css/cms.scss"
+    | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsProduction)
+    | fingerprint
+  }}
+  {{ if hugo.IsProduction }}
+    {{ $styles = $styles | minify }}
+  {{ end }}
+  <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+
+  {{/*  NETLIFY IDENTITY  */}}
+  {{ if not $local }}
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  {{ end }}
+
+</head>
+<body style="--login: '{{ $t.login }}'">
+
+  {{/*  HELP CORNER  */}}
+  {{ cond $local "" (partial "cms/index/help-corner" .) }}
+
+  {{/*  SVELTIA CMS  */}}
+  {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}
+
+  {{/*  STATIC CMS  */}}
+  <link rel="stylesheet" href="https://unpkg.com/@staticcms/app@^4.0.0/dist/main.css" />
+  <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
+
+  {{/*  CUSTOM SCRIPT  */}}
+  {{ $opts := dict
+    "targetPath" (print site.Home.RelPermalink "js/cms.js")
+    "params" (dict
+      "editorial"    site.Data.config.cms.editorial
+      "hook"         site.Params.hook
+      "netlifyId"    (site.Params.netlify_id | default "sansoul")
+      "tReset"       $t.reset
+      "translations" $translations
+      "local"        $local
+    )
+  }}
+  {{ if hugo.IsProduction }}
+    {{ $opts = merge $opts (dict "minify" true) }}
+  {{ end }}
+  {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}
+  {{ if hugo.IsProduction }}
+    {{ $js = $js | minify }}
+  {{ end }}
+  <script src="{{ $js.RelPermalink }}"></script>
+
+</body>
+</html>

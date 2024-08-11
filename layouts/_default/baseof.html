@@ -7,21 +7,17 @@
 
   {{/*  CUSTOM HTML HEAD  */}}
   {{- $custom_html_head  := "" -}}
-  {{- with $config.others.custom_code.html_head -}}
-    {{- $custom_html_head = .
-      | resources.FromString (print "aux_html_head." $.Lang)
-      | resources.ExecuteAsTemplate (print "aux_html_head." $.Lang) $.Page
-    -}}
+  {{- with $config.custom_html.head -}}
+    {{- $path            := print "aux_html_head." $.Lang -}}
+    {{- $custom_html_head = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
   {{- end -}}
 
   {{/*  CUSTOM HTML BODY  */}}
   {{- $custom_html_body  := "" -}}
-  {{- with $config.others.custom_code.html_body -}}
-    {{- $custom_html_body = .
-      | resources.FromString (print "aux_html_body." $.Lang)
-      | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $.Page
-    -}}
+  {{- with $config.custom_html.body -}}
+    {{- $path            := print "aux_html_body." $.Lang -}}
+    {{- $custom_html_body = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
   {{- end -}}
 

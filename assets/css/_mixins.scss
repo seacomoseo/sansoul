@@ -173,8 +173,8 @@
 // RADIUS
 
 @mixin radius-parent($padding:0em, $r:$radius) {
-  @extend %radius;
-  @if $radius > 0.01 {
+  @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
+    @extend %radius;
     @if $r != $radius {
       --radius: #{ $r };
     }

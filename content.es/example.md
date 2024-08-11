@@ -19,7 +19,7 @@ menu:
   hide: false
   logo: false
   sticky: '' # [ auto, xs, sm, md, lg, xl, none ]
-  logo_sticky: false # color, gradient and bg is only active with this and when screen < sticky
+  logo_sticky: false # color and gradient is only active with this and when screen < sticky
   logo_align: '' # [ left, center, right ]
   size: '' # [ xs, sm, md, lg, xl, fluid ]
   transparent: true
@@ -30,10 +30,37 @@ menu:
   hide_modals: false
   hide_icons: false
   google_translate: false # `link: translate` in `items|es` to relocate it
-  es: [] # `link: langs` to relocate langs
+  es: # `link: langs` to relocate langs
+  - link: ''
+    icon: 1 # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    label: ''
+    anchor: ''
+    ofuscate: true
+    button_color: none
+    font_alt: false
 callnow:
   hide: false
-  es: []
+  es:
+  - type: phone # [phone, whatsapp, mail]
+    label: 123456789
+    full: false
+    button: link # [ main, link, alt, light, dark, invert, none ]
+    font_alt: false
+  - type: whatsapp
+    label: 123456789
+    full: false
+    button: whatsapp # [ main, link, alt, light, dark, invert, none ]
+    font_alt: false
+  - type: custom
+    link: '#principal'
+    icon: person-from-portal
+    label: Personalizado
+    full: true
+    anchor: Mola Mazo
+    ofuscate: false
+    button: light # [ main, link, alt, light, dark, invert, none ]
+    font_alt: false
+    ga4: false
 section: []
 modal: {}
 sections:

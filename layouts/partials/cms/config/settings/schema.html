@@ -1,0 +1,135 @@
+{{ $t := partial "functions/i18n" . }}
+
+{{ $fields := slice
+  `~SCHEMA_TYPES`
+  `~SCHEMA_NAMES`
+  `~SCHEMA_DESCRIPTION`
+  `~SCHEMA_LOGO`
+  `~SCHEMA_URL`
+  `~SCHEMA_IMAGES`
+  `~SCHEMA_SOCIAL`
+  `~SCHEMA_PHONES`
+  `~SCHEMA_ADDRESS`
+  `~SCHEMA_OPEN`
+  `~SCHEMA_PRICES`
+  `~SCHEMA_RATING`
+}}
+
+{{ return slice
+  (dict "&SCHEMA_TYPES" (dict
+    "label"          $t.collection_settings_schema_types
+    "name"           `types`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.type}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_types "name" `type` "widget" `select` "required" false "options" `~OPTIONS_LOCATION_TYPE`)
+    )
+  ))
+  (dict "&SCHEMA_NAMES" (dict
+    "label"          $t.collection_settings_schema_names
+    "label_singular" $t.collection_settings_schema_names_singular
+    "name"           `names`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.name}}"
+    "allow_add"      true
+    "required"       false
+    "hint"           $t.collection_settings_schema_names_hint
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_names_singular "name" `name` "widget" `string` "required" false)
+    )
+  ))
+  (dict "&SCHEMA_DESCRIPTION" (dict "label" $t.collection_settings_schema_description "name" `description` "required" false "widget" `text`))
+  (dict "&SCHEMA_URL"         (dict "label" $t.collection_settings_schema_url         "name" `url`         "required" false "widget" `string` "hint" (print $t.default " → **" site.BaseURL "/**")))
+  (dict "&SCHEMA_LOGO"        (dict "label" $t.collection_settings_schema_logo        "name" `logo`        "required" false "widget" `image` "max_file_size" 512000000))
+  (dict "&SCHEMA_IMAGES"      (dict "label" $t.collection_settings_schema_images      "name" `images`      "required" false "widget" `image` "multiple" true "choose_url" true))
+  (dict "&SCHEMA_SOCIAL"      (dict
+    "label"          $t.collection_settings_schema_social
+    "label_singular" $t.collection_settings_schema_social_singular
+    "name"           `social`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.link}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_social_singular "name" `link` "widget" `string` "required" false)
+    )
+  ))
+  (dict "&SCHEMA_PHONES" (dict
+    "label"          $t.collection_settings_schema_phones
+    "label_singular" $t.collection_settings_schema_phones_singular
+    "name"           `phones`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.phone}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_phones_singular "name" `phone` "widget" `string` "required" false)
+    )
+  ))
+  (dict "&SCHEMA_ADDRESS" (dict
+    "label"          $t.collection_settings_schema_address
+    "label_singular" $t.collection_settings_schema_address_singular
+    "name"           `address`
+    "widget"         `object`
+    "collapsed"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_address_name     "name" `name`     "widget" `string` "required" false)
+      (dict "label" $t.collection_settings_schema_address_street   "name" `street`   "widget" `string` "required" false)
+      (dict "label" $t.collection_settings_schema_address_pc       "name" `pc`       "widget" `number` "required" false "value_type" `int` "min" 10000 "max" 99999)
+      (dict "label" $t.collection_settings_schema_address_locality "name" `locality` "widget" `string` "required" false)
+      (dict "label" $t.collection_settings_schema_address_region   "name" `region`   "widget" `string` "required" false)
+      (dict "label" $t.collection_settings_schema_address_country  "name" `country`  "widget" `string` "required" false "hint" $t.collection_settings_schema_address_country_hint)
+      (dict "label" $t.collection_settings_schema_address_geo      "name" `geo`      "widget" `map`    "required" false)
+      (dict "label" $t.collection_settings_schema_address_link     "name" `link`     "widget" `string` "required" false)
+    )
+  ))
+  (dict "&SCHEMA_OPEN" (dict
+    "label"          $t.collection_settings_schema_open
+    "label_singular" $t.collection_settings_schema_open_singular
+    "name"           `open`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.days}} {{fields.opens}}-{{fields.closes}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_open_days   "name" `days`   "widget" `select` "required" false "multiple" true "options" `~OPTIONS_DAYS`)
+      (dict "label" $t.collection_settings_schema_open_opens  "name" `opens`  "widget" `string` "required" false)
+      (dict "label" $t.collection_settings_schema_open_closes "name" `closes` "widget" `string` "required" false)
+      (dict "label" $t.collection_settings_schema_open_from   "name" `from`   "widget" `string` "required" false "hint" $t.collection_settings_schema_open_valid_hint)
+      (dict "label" $t.collection_settings_schema_open_to     "name" `to`     "widget" `string` "required" false "hint" $t.collection_settings_schema_open_valid_hint)
+    )
+  ))
+  (dict "&SCHEMA_PRICES" (dict "label" $t.collection_settings_schema_prices "name" `prices` "widget" `select` "required" false "options" (slice "€" "€€" "€€€" "$" "$$" "$$$")))
+  (dict "&SCHEMA_RATING" (dict
+    "label"          $t.collection_settings_schema_rating
+    "label_singular" $t.collection_settings_schema_rating_singular
+    "name"           `rating`
+    "widget"         `object`
+    "collapsed"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_settings_schema_rating_count "name" `count` "widget" `number` "required" false "value_type" `int`   "min" 0)
+      (dict "label" $t.collection_settings_schema_rating_value "name" `value` "widget" `number` "required" false "value_type" `float` "min" 0 "max" 5 "step" 0.1)
+    )
+  ))
+  (dict "&SCHEMA_DEPARTMENT" (dict
+    "label"          $t.collection_settings_schema_department
+    "label_singular" $t.collection_settings_schema_department_singular
+    "name"           `department`
+    "widget"         `list`
+    "collapsed"      true
+    "summary"        "{{fields.link}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         $fields
+  ))
+  (dict "&SETTINGS_SCHEMA" ($fields | append `~SCHEMA_DEPARTMENT`))
+}}

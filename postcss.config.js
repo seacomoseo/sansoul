@@ -19,16 +19,8 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
   }
 })
 
-const autoprefixer = require('autoprefixer')({})
-
-const cssnano = require('cssnano')({
-  preset: ['default', {
-    svgo: false
-  }]
-})
-
 module.exports = {
   plugins: [
-    ...(process.env.HUGO_ENVIRONMENT === 'production' ? [cssnano, purgecss, autoprefixer] : [])
+    ...(process.env.HUGO_ENVIRONMENT === 'production' ? [purgecss] : [])
   ]
 }

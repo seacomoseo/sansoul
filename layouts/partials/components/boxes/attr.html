@@ -65,7 +65,7 @@
     (cond (ne .parallax "soft")                      "" "parallax--bg")
     (cond (and (not .span) (not .span_min))          "" "box--span")
     (cond (not .grow)                                "" "box--grow")
-    (cond (not .rate)                                $box_rate (print "box--" .rate))
+    (cond (or (not .rate) (ne .rate "auto"))         $box_rate (print "box--" .rate))
     (cond (not .hide_radius)                         "" "box--hide-radius")
     (cond (not .hide_shadow)                         "" "box--hide-shadow")
     (cond (not .card)                                "" "box--card")

@@ -1,28 +1,3 @@
-params:
-  json:
-    products: ''
-    categories: ''
-  csv:
-    products: ''
-    categories: ''
-  pairings:
-    title: title
-    title_seo: title_seo
-    slug: slug
-    price: price
-    description: description
-    image: image
-    categories: categories
-    tags: tags
-    author: author
-    toc: toc
-    draft: draft
-    noindex: noindex
-    date: date
-    lastmod: lastmod
-    translationKey: translationKey
-    content: content
-
 disableKinds:
 - sitemap
 - taxonomy
@@ -32,35 +7,28 @@ outputs:
   home:
   - html
 
-ignoreErrors:
-- error-remote-getcsv
-
 caches:
-  getcsv:
+  getresource:
     maxAge: 0
 
 theme: []
 
 module:
   mounts:
-  - source: assets
-    target: assets
-  - source: ../../../prebuild/products.html
-    target: assets/products.html
-  - source: ../../../prebuild/categories.html
-    target: assets/categories.html
-
   - source: ../content.es
     target: assets/content.es
   - source: ../content.en
     target: assets/content.en
+  - source: ../content.fr
+    target: assets/content.fr
+  - source: ../content.de
+    target: assets/content.de
+  - source: ../content.pt
+    target: assets/content.pt
+  - source: ../content.it
+    target: assets/content.it
 
-  - source: ../../../data
-    target: data
-    excludeFiles:
-    - sections
-    - templates
-    - utilities
-    - lists.yml
-    - options.yml
-    - styles.yml
+  - source: ../../../data/config.yml
+    target: data/config.yml
+  - source: ../data/options.yml
+    target: data/options.yml

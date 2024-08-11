@@ -2,7 +2,7 @@
 {{ $style := "" }}
 
 {{ with .section }}
-  {{ with where (partial "svg/dividers" .) "id" .divider }}
+  {{ with where (partial "draws/dividers" .) "id" .divider }}
     {{ with index . 0 }}
       {{ if eq .size 2 }}
         {{ $class = print $class " divider" (cond $.next "--next" "") "--size" }}

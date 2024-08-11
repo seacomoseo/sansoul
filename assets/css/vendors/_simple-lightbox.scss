@@ -234,12 +234,6 @@ body.hidden-scroll {
     top: 50%;
     width: 40px;
     z-index: 1007;
-    @if $add-vendor-prefixes {
-        -webkit-animation: pulsate 1s ease-out infinite;
-        -moz-animation: pulsate 1s ease-out infinite;
-        -ms-animation: pulsate 1s ease-out infinite;
-        -o-animation: pulsate 1s ease-out infinite;
-    }
     animation: pulsate 1s ease-out infinite;
 }
 
@@ -252,27 +246,7 @@ body.hidden-scroll {
 }
 
 .sl-transition {
-    @if $add-vendor-prefixes {
-        transition: -moz-transform ease 200ms;
-        transition: -ms-transform ease 200ms;
-        transition: -o-transform ease 200ms;
-        transition: -webkit-transform ease 200ms;
-    }
     transition: transform ease 200ms;
-}
-
-@-webkit-keyframes pulsate {
-    0% {
-        transform: scale(.1);
-        opacity: 0.0;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1.2);
-        opacity: 0;
-    }
 }
 
 @keyframes pulsate {
@@ -286,49 +260,5 @@ body.hidden-scroll {
     100% {
         transform: scale(1.2);
         opacity: 0;
-    }
-}
-
-@if $add-vendor-prefixes {
-    @-moz-keyframes pulsate {
-        0% {
-            transform: scale(.1);
-            opacity: 0.0;
-        }
-        50% {
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1.2);
-            opacity: 0;
-        }
-    }
-
-    @-o-keyframes pulsate {
-        0% {
-            transform: scale(.1);
-            opacity: 0.0;
-        }
-        50% {
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1.2);
-            opacity: 0;
-        }
-    }
-
-    @-ms-keyframes pulsate {
-        0% {
-            transform: scale(.1);
-            opacity: 0.0;
-        }
-        50% {
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1.2);
-            opacity: 0;
-        }
     }
 }

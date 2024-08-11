@@ -8,7 +8,7 @@ export function initCookies () {
   if (cookiesMessage && cookiesMessageAcept && cookiesMessageToogle) {
     function cookiesOpen () {
       cookiesMessage.removeAttribute('hidden')
-      cookiesMessage.querySelector('[data-h]').focus()
+      cookiesMessage.querySelector('[data-b]').focus()
       setTimeout(() => cookiesMessage.classList.remove('cookies--hide'), 10)
     }
     function cookiesClose () {

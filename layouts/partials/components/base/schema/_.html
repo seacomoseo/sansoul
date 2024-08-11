@@ -1,0 +1,23 @@
+{{ $schema := dict }}
+
+{{ with partial "components/base/schema/post" . }}
+  {{ $schema = . }}
+{{ else }}
+  {{ with partial "components/base/schema/author" (dict "page" .) }}
+      {{ $schema = . }}
+  {{ else }}
+    {{ with partial "components/base/schema/event" . }}
+      {{ $schema = . }}
+    {{ else }}
+      {{ with partial "components/base/schema/organization" site.Data.schema }}
+        {{ $schema = . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $schema = slice $schema | append (partial "components/base/schema/website" .) }}
+
+{{ $opts  := cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ") }}
+{{ $schema = $schema | jsonify $opts }}
+
+{{ return $schema }}

@@ -117,17 +117,15 @@ Online `code`
 
 In identized block (4 spaces)
 
-```javascript
-// Some comments
-Line 1 of code
-Line 2 of code
-Line 3 of Code
-```
+    // Some comments
+    Line 1 of code
+    Line 2 of code
+    Line 3 of Code
 
 In a delimited block
 
 ```javascript
-Example of code ...
+// Example of code ...
 ```
 
 Marking the syntax

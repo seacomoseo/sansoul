@@ -3,44 +3,35 @@
   {{- $config := partial "functions/config-lang" . -}}
 
   {{/*  FILES  */}}
-  {{- $cms_config_path          := print .RelPermalink `admin/config.yml` -}}
-  {{- $cms_index_path           := print .RelPermalink `admin/index.html` -}}
-  {{- $google_file_verification := (partial "functions/config-lang" .).others.google_file_verification -}}
-  {{- $draws_path               := `/draws.svg` -}}
-  {{- $redirects_path           := `/_redirects` -}}
+  {{- $cms_index_path           := print .RelPermalink "admin/index.html" -}}
+  {{- $google_file_verification := $config.google_file_verification -}}
+  {{- $draws_path               := "/draws.svg" -}}
+  {{- $redirects_path           := "/_redirects" -}}
   {{- if hugo.IsMultihost -}}
-    {{- $cms_config_path  = print `../` .Lang `/admin/config.yml` -}}
-    {{- $cms_index_path   = print `../` .Lang `/admin/index.html` -}}
+    {{- $cms_index_path   = print "../" .Lang "/admin/index.html" -}}
     {{- if hugo.IsProduction -}}
-      {{- $draws_path     = `../draws.svg` -}}
-      {{- $redirects_path = `../_redirects` -}}
+      {{- $draws_path     = print ".." $draws_path -}}
+      {{- $redirects_path = print ".." $redirects_path -}}
     {{- end -}}
   {{- end -}}
   {{- $resources := slice
-    (dict   "resource" `draws.svg`                     "path" $draws_path)
-    (dict   "resource" `redirects.html`                "path" $redirects_path)
+    (dict   "partial" `draws/_`                  "path" $draws_path)
+    (dict   "partial" `redirects`                "path" $redirects_path)
   -}}
   {{- with $google_file_verification -}}
     {{- $resources = $resources | append
-      (dict "resource" `google-site-verification.html` "path" .)
+      (dict "partial" `google-site-verification` "path" .)
     -}}
   {{- end -}}
-  {{- if not $config.others.cms_disable -}}
+  {{- if not $config.cms.disable -}}
     {{- $resources = $resources | append
-      (dict "resource" `cms-config.html`               "path" $cms_config_path)
-      (dict "resource" `cms-index.html`                "path" $cms_index_path)
-    -}}
-  {{- end -}}
-  {{- if not hugo.IsProduction | and $config.cms -}}
-    {{- $resources = $resources | append
-      (dict "resource" `cms-config.html`               "path" (print .RelPermalink `admin/config.json`))
+      (dict "partial" `cms/index/_`              "path" $cms_index_path)
     -}}
   {{- end -}}
   {{- range $resources -}}
-    {{- $resource := (
-      resources.Get .resource
-      | resources.ExecuteAsTemplate .path page
-    ).Permalink -}}
+    {{ $string   := partial .partial page | string }}
+    {{ $resource := resources.FromString .path $string }}
+    {{ $resource.Publish }}
   {{- end -}}
 
   {{/*  PROCESS ALL PDF's  */}}

@@ -29,7 +29,7 @@ We are a company that was born with the intention of satisfying the needs of our
 
 Who is the Data Controller?
 Name: **{{% legal name %}}**
-NIF: **{{% legal dni %}}**
+NIF: **{{% legal nif %}}**
 Address: **{{% legal location %}}**
 Email: **{{% legal email %}}**
 The customer may contact to exercise their right to modification or elimination...

@@ -39,7 +39,7 @@
   {{ else }}
     {{ with $.categories }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.categories" "intersect" . }}{{ end }}{{ end }}
     {{ with $.tags       }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.tags"       "intersect" . }}{{ end }}{{ end }}
-    {{ with $.author     }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
+    {{ with $.authors    }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
     {{ $firsts_pages = $pages | first $max }}
   {{ end }}
 

@@ -1,0 +1,6 @@
+
+{{ $lang_cms := partial "functions/lang_cms" . }}
+{{ $path     := print "i18n/" $lang_cms ".yml" }}
+{{ $file     := readFile $path }}
+{{ $i18n     := unmarshal $file }}
+{{ return $i18n }}

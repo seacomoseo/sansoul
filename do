@@ -168,6 +168,18 @@ then
 
 # COMMANDS FOR DEPLOY
 
+# like purge css
+elif [ $1 = css-purge ]
+then
+
+  time node ./themes/sansoul/css-purge.js
+
+# like purge css
+elif [ $1 = yml ]
+then
+
+  time node ./themes/sansoul/check-yaml.js
+
 # purge svg draws for online (when up to git)
 elif [ $1 = draws-purge ]
 then
@@ -204,6 +216,8 @@ then
 elif [ $1 = prebuild ]
 then
 
+  hugo version
+
   echo "${STI} GO SANSOUL PREBUILD ${STE}"
   cd themes/sansoul/prebuild
 
@@ -211,7 +225,7 @@ then
   rm -r public
 
   echo "${STI} RUN HUGO PREBUILD ${STE}"
-  hugo --config ../../../hugo.yml,hugo.yml,../../../hugo.prebuild.yml
+  hugo --config ../../../hugo.yml,hugo.yml
 
   echo "${STI} GO PROJECT ${STE}"
   cd ../../..
@@ -241,20 +255,17 @@ then
 elif [ $1 = hugo-development ]
 then
 
-  hugo version
-
   sh do prebuild
+
+  # remove cache directories
+  rm -rf public resources
 
   echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
-  sh do multilang
-
 # hugo build as production environement
 elif [ $1 = hugo-production ]
 then
-
-  hugo version
 
   sh do prebuild
 
@@ -267,7 +278,7 @@ then
 
   sh do draws-purge
 
-  sh do multilang
+  # sh do multilang
 
 # hugo check environement
 elif [ $1 = hugo ]
@@ -277,9 +288,9 @@ then
   development=$(grep '^development:' ./data/config.yml | awk '{print $2}')
   if test "$development" = "true"
   then
-    sh do hugo-development
+    time sh do hugo-development
   else
-    sh do hugo-production
+    time sh do hugo-production
   fi
 
 # cms + hugo local

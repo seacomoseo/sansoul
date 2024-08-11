@@ -1,0 +1,9 @@
+{{ $lang := "es" }}
+{{ with site.Data.config }}
+  {{ with .cms }}
+    {{ with .lang }}
+      {{ $lang = . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $lang }}

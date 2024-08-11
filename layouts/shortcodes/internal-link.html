@@ -4,7 +4,7 @@
 {{- $link      := $page.RelPermalink -}}
 {{- $nofollow  := ` "nofollow"` -}}
 {{- if eq $param "index" -}}
-  {{- $title    =  replace site.BaseURL "https://" "" -}}
+  {{- $title    = site.BaseURL | replaceRE "^(https?:)?//|/$" "" -}}
   {{- $link     = site.Home.RelPermalink -}}
   {{- $nofollow = "" -}}
 {{- end -}}

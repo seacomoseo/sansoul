@@ -22,7 +22,11 @@ export function initParallax () {
     })
 
     window.addEventListener('scroll', () => {
-      parallaxElements.forEach(e => e.classList.contains('parallax--scroll') ? doParallax(e) : null)
+      parallaxElements.forEach(e => {
+        const parallaxScroll = e.classList.contains('parallax--scroll')
+        const disableParallax = document.body.classList.contains('disable-parallax')
+        if (parallaxScroll && !disableParallax) doParallax(e)
+      })
     })
 
     // Apply parallax function in first image in header to prevent "blink first scroll" efect

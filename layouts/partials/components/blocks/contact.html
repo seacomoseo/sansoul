@@ -76,7 +76,7 @@
               ) -}}
           {{- if eq .type "mail" -}}
               {{ $bg := cond (eq $.section.color "white") "dark" "white" }}
-              <i class="contact__email-options bg bg-{{ $bg }}">
+              <i class="contact__email-options bg bg-{{ $bg }}" style="--copied: '{{ i18n `copied` }}'">
                 <i class="bg-color"></i>
                 {{- range slice
                   (dict

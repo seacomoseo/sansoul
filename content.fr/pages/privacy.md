@@ -30,7 +30,7 @@ Nous sommes une entreprise née avec l'intention de satisfaire les besoins de no
 ## Qui est responsable du traitement de vos données ?
 
 - Nom : **{{% legal name %}}**
-- NIF : **{{% legal dni %}}**
+- NIF : **{{% legal nif %}}**
 - Adresse : **{{% legal location %}}**
 - Adresse électronique : **{{% legal email %}}****
 
@@ -173,7 +173,7 @@ Pour vérifier que vous êtes bien sur le site web de notre société, l'adresse
 
 **Mettre en œuvre HTTPS**. Tout système de vente ou de réservation utilise des données privées sur les clients, qu'il s'agisse de données personnelles ou de données bancaires. Il est donc essentiel que notre système mette en œuvre le [protocole web sécurisé (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") afin que ces données soient transmises de manière cryptée. Cela nous permettra de préserver l'intégrité et la confidentialité des données de nos clients et de sauvegarder la réputation de notre entreprise.
 
-## Formes : Clause de protection des données {#forms}
+## Formes : Clause de protection des données {#formes}
 
 **{{% legal name %}}**, est une société propriétaire du site web **{{% legal web %}}**, dont l'adresse est **{{% legal location %}}** (ci-après dénommée "**la société**").
 
