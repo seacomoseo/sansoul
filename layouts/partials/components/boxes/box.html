@@ -10,7 +10,8 @@
 {{- $show          := site.Data.styles.performance.show -}}
 {{- $group_radius  := .group_radius | and (not .slider) -}}
 
-{{- $box_span       := 1 -}}
+{{- $span_xl := mul .span_xl (.span     | default 1.00) -}}
+{{- $span_xs := mul .span_xs (.span_min | default 1.00) -}}
 
 {{- $link           := .link -}}
 {{- $underline      := .underline | and (not (.icon | and (eq $icon_type "bottom"))) -}}
@@ -31,7 +32,7 @@
 {{- $is_wrap := or
   .is_wrap
   .span
-  .span_min
+  .span_xs
   .tag
   .color
   .gradient
@@ -72,16 +73,16 @@
 
   {{/*  ATTRIBUTES  */}}
   {{- $box_attr  := partial "components/boxes/attr" (merge . (dict
-    "main"          $main
-    "modal"         $modal
-    "bg_color"      $bg_color
-    "bg_image_src"  $bg_image_src
-    "bg"            $bg
-    "image_src"     $image_src
-    "button_is"     $button_is
-    "radius"        $radius
-    "shadow"        $shadow
-    "show"          (and (not .slider) (not .first) $show)
+    "main"         $main
+    "modal"        $modal
+    "bg_color"     $bg_color
+    "bg_image_src" $bg_image_src
+    "bg"           $bg
+    "image_src"    $image_src
+    "button_is"    $button_is
+    "radius"       $radius
+    "shadow"       $shadow
+    "show"         (and (not .slider) (not .first) $show)
   )) -}}
 
   {{/*  BOX  */}}
@@ -96,11 +97,12 @@
 
     {{/*  BACKGROUND  */}}
     {{- partial "components/bg" (merge . (dict
-      "box_span" $box_span
       "color"    $bg_color
       "bg"       $bg_image_src
       "shadow"   $shadow
       "box"      true
+      "span_xl"  $span_xl
+      "span_xs"  $span_xs
     )) -}}
 
 {{- end -}}
@@ -108,7 +110,8 @@
   {{/*  IMAGE  */}}
   {{- partial "components/boxes/image" (merge . (dict
     "icon_type" $icon_type
-    "box_span"  $box_span
+    "span_xl"   $span_xl
+    "span_xs"   $span_xs
   )) -}}
 
   {{/*  TITLE  */}}
@@ -178,9 +181,11 @@
     {{- partial "components/blocks/gallery" (merge
       (.gallery | default dict)
       (dict
-        "limages"    .limages
-        "images"     .images
-        "container"  $.container
+        "limages"   .limages
+        "images"    .images
+        "container" .container
+        "span_xl"   $span_xl
+        "span_xs"   $span_xs
       )
     ) -}}
   {{ end }}
@@ -192,7 +197,8 @@
       .
       (dict
         "list"      nil
-        "container" $.container
+        "span_xl"   $span_xl
+        "span_xs"   $span_xs
         "level"     $level
       )
     ) -}}
@@ -234,7 +240,13 @@
 
   {{/*  MAP  */}}
   {{ if .map }}
-    {{- partial "components/blocks/map" . -}}
+    {{- partial "components/blocks/map" (merge
+      .
+      (dict
+        "span_xl" $span_xl
+        "span_xs" $span_xs
+      )
+    ) -}}
   {{ end }}
 
   {{/*  GSS  */}}
@@ -247,8 +259,10 @@
     {{- partial "components/boxes/_" (merge
       .
       (dict
-        "level" $level
-        "first" (eq .key 0)
+        "level"   $level
+        "first"   (eq .key 0)
+        "span_xl" $span_xl
+        "span_xs" $span_xs
       )
     ) -}}
   {{ end }}

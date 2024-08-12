@@ -1,7 +1,7 @@
 
 {{- $alt          := .Text -}}
 {{- $ratio        := "" -}}
-{{- $span         := "" -}}
+{{- $span_xl      := 1.0 -}}
 {{- $figure_class := "description__figure" -}}
 {{- $image_class  := "image" -}}
 
@@ -12,7 +12,7 @@
     {{- $figure_class = print $figure_class " description__figure--float-right" -}}
   {{- end -}}
   {{- $alt = $alt | replaceRE `float(-right)?` `` -}}
-  {{- $span = 2 -}}
+  {{- $span_xl = 0.5 -}}
 
 {{- else -}}
 
@@ -61,7 +61,8 @@
         "ratio"     $ratio
         "alt"       $alt
         "container" "sm"
-        "span"      $span
+        "span_xl"   $span_xl
+        "span_xs"   1
       )
     -}}
   </div>

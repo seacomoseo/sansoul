@@ -1,41 +1,19 @@
-{{- $level     := .level -}}
-{{- $container := .container -}}
-{{- $box       := . -}}
-{{- $boxes     := slice -}}
-{{- range .boxes | default slice -}}
-  {{- $if := partial "functions/if" (dict "Page" page "if" .if) -}}
-  {{- if $if -}}
-    {{- $boxes  = $boxes | append . -}}
-  {{- end -}}
-{{- end -}}
+{{- $columns := partial "functions/columns" (dict
+  "each"    .box
+  "items"   .boxes
+  "span_xl" .span_xl
+  "span_xs" .span_xs
+) -}}
+{{- $boxes   := $columns.items -}}
+{{- $box     := . -}}
+{{- $level   := .level -}}
 
-{{- $columns       := 1 -}}
-{{- $columns_min   := 1 -}}
-{{- with .box -}}
-  {{- $columns      = .columns | default 1 -}}
-  {{- $columns_min  = .columns_min | default 1 -}}
-  {{- if eq .columns 0 -}}
-    {{- $boxes_span  := 0 -}}
-    {{- range $boxes -}}
-      {{- $boxes_span = add $boxes_span (.span | default .span_min | default 1) -}}
-    {{- end -}}
-    {{- $columns      = cond (le $boxes_span 6) $boxes_span 3 -}}
-  {{- end -}}
-  {{- if eq .columns_min 0 -}}
-    {{- $boxes_span  := 0 -}}
-    {{- range $boxes -}}
-      {{- $boxes_span = add $boxes_span (.span_min | default 1) -}}
-    {{- end -}}
-    {{- $columns_min  = cond (le $boxes_span 6) $boxes_span 3 -}}
-  {{- end -}}
-{{- end -}}
-
-{{- $is_wrap          := or (ne $columns 1) (ne $columns_min 1) -}}
+{{- $is_wrap  := or (ne $columns.max 1) (ne $columns.min 1) -}}
 
 {{- with .box -}}
-  {{- $is_wrap         = or $is_wrap .slider -}}
+  {{- $is_wrap = or $is_wrap .slider -}}
   {{- if $is_wrap -}}
-    {{- $level         = add $.level 1 -}}
+    {{- $level = add $.level 1 -}}
 
     {{/*  CLASS  */}}
     {{/*  {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */}}
@@ -43,7 +21,7 @@
       "attr"  "class"
       "array" (slice
         "boxes"
-        (cond (or (gt $columns 2) (eq $container "xs") (eq $container "sm")) "boxes--sm" "")
+        (cond (or (gt $columns.max 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
         (cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction))
         (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
         (cond (not .align_y) "" (print "align-items-" .align_y))
@@ -58,8 +36,8 @@
       "attr"    "style"
       "delimit" ";"
       "array"   (slice
-        (cond (eq $columns 1)     "" (print "--columns-max:" $columns))
-        (cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min))
+        (cond (eq $columns.max 1) "" (print "--columns-max:" $columns.max))
+        (cond (eq $columns.min 1) "" (print "--columns-min:" $columns.min))
         (cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap))
         (cond (eq .gap_ny nil)    "" (print "--columns-gap-ny:" .gap_ny))
       )
@@ -112,12 +90,14 @@
               "id"           $.id
               "level"        $level
               "key"          $key
-              "container"    $container
+              "container"    $.container
+              "span_xl"      $columns.span_xl
+              "span_xs"      $columns.span_xs
               "section"      $.section
               "first"        $.first
               "footer"       $.footer
-              "columns"      $columns
-              "columns_min"  $columns_min
+              "columns"      $columns.max
+              "columns_min"  $columns.min
               "is_wrap"      $is_wrap
               "article_list" $.article_list
             )

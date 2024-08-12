@@ -97,8 +97,9 @@
                   "class"     "menu__logo-image"
                   "src"       .
                   "alt"       (partial "functions/anchor-page" site.Home)
-                  "container" "sm"
-                  "span"      6
+                  "container" ($.menu.size | default "lg")
+                  "span_xl"   0.25
+                  "span_xs"   1.00
                 ) }}
                 <i class="hide">{{ site.Home.Params.title_seo | default site.Home.Params.title | markdownify }}</i>
               </a>

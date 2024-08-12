@@ -1,0 +1,39 @@
+{{ $items    := slice }}
+{{ range .items | default slice }}
+  {{ $if := partial "functions/if" (dict "Page" page "if" .if) }}
+  {{ if $if }}
+    {{ $items = $items | append . }}
+  {{ end }}
+{{ end }}
+
+{{ $max   := 1 }}
+{{ $min   := 1 }}
+{{ with .each }}
+  {{ $max  = .columns     | default 1 }}
+  {{ $min  = .columns_min | default 1 }}
+  {{ if eq .columns 0 }}
+    {{ $span  := 0 }}
+    {{ range $items }}
+      {{ $span = add $span (.span | default .span_min | default 1) }}
+    {{ end }}
+    {{ $max  = cond (le $span 6) $span 3 }}
+  {{ end }}
+  {{ if eq .columns_min 0 }}
+    {{ $span  := 0 }}
+    {{ range $items }}
+      {{ $span = add $span (.span_min | default 1) }}
+    {{ end }}
+    {{ $min  = cond (le $span 6) $span 3 }}
+  {{ end }}
+{{ end }}
+
+{{ $span_xl := div .span_xl $max }}
+{{ $span_xs := div .span_xs $min }}
+
+{{ return dict
+  "max"     $max
+  "min"     $min
+  "items"   $items
+  "span_xl" $span_xl
+  "span_xs" $span_xs
+}}

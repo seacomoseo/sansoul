@@ -1,4 +1,13 @@
-{{- $items            := .items | default .images -}}
+{{- $columns     := partial "functions/columns" (dict
+  "items" .limages
+  "each"  (merge . (dict
+    "columns" .columns
+  ))
+  "span_xl" .span_xl
+  "span_xs" .span_xs
+) -}}
+{{- $items       := $columns.items | default slice | append .images -}}
+
 {{- $button_icon      := (cond (eq .icon "none") "" (.icon | default "plus")) -}}
 {{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
 {{- $is_button_custom := .link | and (ne .type "rows") -}}
@@ -10,7 +19,7 @@
     "box__block"
     "gallery"
     (print "gallery--" (.type | default "grid"))
-    (cond (or (eq .type "columns") (eq .type "grid") (not .type)) (print "gallery--columns-" (.columns | default 2)) "")
+    (cond (or (eq .type "columns") (eq .type "grid") (not .type)) (print "gallery--columns-" $columns.max) "")
     (cond (not .ratio)      "" "gallery--ratio")
     (cond (not .contain)    "" "gallery--contain")
     (cond (not .grayscale)  "" "gallery--grayscale")
@@ -46,7 +55,7 @@
     {{- range uniq $items -}}
       {{- $image := . -}}
       {{- $link  := "" -}}
-      {{- if $.items -}}
+      {{- if reflect.IsMap . -}}
         {{- $image = .image -}}
         {{- $link  = .link -}}
       {{- end -}}
@@ -54,9 +63,11 @@
         "image"     $image
         "link"      $link
         "type"      $.type
-        "lightbox"  (not $.items)
-        "columns"   ($.columns | default 2)
+        "lightbox"  (not $.limages)
+        "columns"   $columns.max
         "container" $.container
+        "span_xl"   $columns.span_xl
+        "span_xs"   $columns.span_xs
       ) -}}
     {{- end -}}
     {{- if $is_button_expand -}}

@@ -9,7 +9,9 @@
           {{ partial "components/image" (dict
             "src"       .
             "alt"       (i18n "map")
-            "container" (cond (not $.container_bg) "" $.container)
+            "container" $.container
+            "span_xl"   $.span_xl
+            "span_xs"   $.span_xs
             "notlazy"   false
           ) }}
         </div>
