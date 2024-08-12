@@ -3,7 +3,7 @@
 [![sansoul](/assets/media/logo.png)](https://github.com/lorensansol/sansoul)
 
 
-# TO DO LIST
+## TO DO LIST
 
 - [/] Quitar rows y columnas, todo son elementos (items) recursivos, cada grupo con un design común
   - [x] Comprobar primero
@@ -370,7 +370,7 @@
 - button in shpreadsheet (and CMS?) to build
 
 
-# New language
+## New language
 
 - `themes/sansoul`
   - [x] `./hugo.default.yml`
@@ -382,3 +382,103 @@
   - [/] `./content.new/`
   - [x] `./prebuild/hugo.yml`
     - `module.mounts`
+
+## Migrations
+
+```shell
+
+
+# Change submódules
+git submodule deinit -f themes/sansoul
+git rm -f themes/sansoul
+rm -rf .git/modules/themes/sansoul
+git submodule add https://github.com/seacomoseo/sansoul.git themes/sansoul
+git submodule update --init --recursive
+# Update files from sansoul
+cp ../sansoul.es/netlify.toml netlify.toml
+cp ../sansoul.es/package.json package.json
+cp ../sansoul.es/themes/sansoul/data/schema.yml data/schema.yml
+# Move and rename files
+mv ./data/redirects.md   ./assets/redirects.md
+mv ./data/robots.md      ./assets/robots.md
+mv ./data/articles.yml   ./data/lists.yml
+mv ./data/design.yml     ./data/styles.yml
+mv ./content.es/custom/* ./content.es/pages/   # and add template
+mv ./content.en/custom/* ./content.en/pages/   # and add template
+# Copy from to
+## ./hugo.languages.[lang].permalinks > ./data/config.langs.*.types
+## ./hugo.prebuild.params             > ./data/config.langs.*.remote
+cp ./data/config                      > ./data/schema
+## ./data/config                      > ./data/schema
+## ./content.[lang]/sections/contact  > ./data/schema
+## ./data/lists.content               > ./data/templates.__
+## ./data/lists.custom                > ./data/lists.pages
+## ./data/menu                        > ./data/templates.__
+## ./data/sections                    > ./data/templates.custom
+## ./data/modals                      > ./data/templates.custom
+## ./content-[lang].*.header_article  > ./content-[lang].*.menu.logo and logo_sticky
+## ./content-[lang].*.alternate       > ./content-[lang].*.section
+# Revise info
+## ./data/lists
+##   - common ?
+##   - blog ?
+##   - events ?
+##   - products ?
+##   - taxonomies ?
+##   - custom ?
+## base/icon.svg
+## base/icon.png
+# Clean files
+perl -0777 -i'' -pe 's/Paginate: .+?\n//igs'                       hugo.yml
+perl -0777 -i'' -pe 's/defaultContentLanguage:.+//igs'             hugo.yml
+
+perl -0777 -i'' -pe 's/ #.+//ig'                                   data/schema.yml
+perl -0777 -i'' -pe 's/department:.+//igs'                         data/schema.yml
+yq -i '.address.country = load("data/config.yml").country'         data/schema.yml
+yq -i '.types =           load("data/config.yml").location_type'   data/schema.yml
+yq -i '.names +=          [load("data/config.yml").title]'         data/schema.yml
+yq -i '.names +=          load("data/config.yml").alternate_name'  data/schema.yml
+yq -i '.social +=         load("data/config.yml").social'          data/schema.yml
+yq -i '.prices =          load("data/config.yml").price_range'     data/schema.yml
+perl -0777 -i'' -pe 's/(\n\s*)  - /$1- /igs'                       data/schema.yml
+perl -0777 -i'' -pe 's/\n# /\n/ig'                                 data/schema.yml
+perl -0777 -i'' -pe 's/(open:) ../$1/ig'                           data/schema.yml
+perl -0777 -i'' -pe 's/from.+?(opens)/$1/igs'                           data/schema.yml
+perl -0777 -i'' -pe 's/(prices: )../$€€/ig'                           data/schema.yml
+perl -0777 -i'' -pe 's/link: //ig'                                 data/schema.yml
+
+
+
+perl -0777 -i'' -pe 's/logo:/menu:\n  logo:/igs'                   data/config.yml
+perl -0777 -i'' -pe 's/legal_name:/legal:\n  name:/igs'            data/config.yml
+perl -0777 -i'' -pe 's/legal_/  /igs'                              data/config.yml
+perl -0777 -i'' -pe 's/country:.+?price_range:.+?\n//igs'          data/config.yml
+perl -0777 -i'' -pe 's/\ndisqus:.+?(\nen:|\n$)/$1/igs'             data/config.yml
+perl -0777 -i'' -pe 's/\n/\n  /igs'                                data/config.yml
+perl -0777 -i'' -pe 's/^(title:)/langs:\n- lang: es\n  $1/igs'     data/config.yml
+perl -0777 -i'' -pe 's/\n  en:/\n- lang: en/igs'                   data/config.yml
+perl -0777 -i'' -pe 's/\n    (title|description):/\n  $1:/igs'     data/config.yml
+
+
+
+
+
+perl -0777 -i'' -pe 's/(\n\s+top:)/\n    size: 1$1/igs'            data/styles.yml
+perl -0777 -i'' -pe 's/(\nshadow:)/\ninputs:\n  fill: false$1/igs' data/styles.yml
+perl -0777 -i'' -pe 's/font_base:.+/font_main:\n    type: title\n    bold: false\n    uppercase: true\n  font_alt:\n    type: base\n    bold: false\n    uppercase: false/ig' data/styles.yml
+perl -0777 -i'' -pe 's/opacity:/alpha:/igs'                        data/styles.yml # and calculate it
+perl -0777 -i'' -pe 's/lightbox_overlay:\n.+\n.+\n//ig'            data/styles.yml
+perl -0777 -i'' -pe 's/\n  parallax:.+//ig'                        data/styles.yml
+perl -0777 -i'' -pe 's/\n  srcsetx2:.+//ig'                        data/styles.yml
+perl -0777 -i'' -pe 's/common:/all:/igs'                           data/lists.yml
+perl -0777 -i'' -pe 's/custom:/pages:/igs'                         data/lists.yml
+perl -0777 -i'' -pe 's/content:(.|\n)+\n(common:)/$2/igs'          data/lists.yml
+perl -0777 -i'' -pe 's/\nheader_article:.+//ig'                    content.es/*.md
+perl -0777 -i'' -pe 's/\nheader_article:.+//ig'                    content.en/*.md
+perl -0777 -i'' -pe 's/\nmodals:/\nmodal:/igs'                     content.es/*.md
+perl -0777 -i'' -pe 's/\nmodals:/\nmodal:/igs'                     content.en/*.md
+perl -0777 -i'' -pe 's/(\n  - )/$1file: /igs'                      content.es/*.md
+perl -0777 -i'' -pe 's/(\n  - )/$1file: /igs'                      content.en/*.md
+
+
+```

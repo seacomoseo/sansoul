@@ -7,7 +7,6 @@ image: fondo.jpg
 draft: true
 noindex: true
 translationKey: ''
-header_article: false
 background:
   color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
   gradient: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]

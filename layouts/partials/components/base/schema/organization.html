@@ -77,17 +77,17 @@
 {{ $open := slice }}
 {{ with .open }}
   {{ range . }}
-    {{ $item := . }}
-    {{ range .days | default (slice "none") }}
-      {{ if ne . "none" }}
-        {{ $day := dict "dayOfWeek" (print "https://schema.org/" (. | title)) }}
-        {{ with $item.opens  }}{{ $day = merge $day (dict "opens" .) }}{{ end }}
-        {{ with $item.closes }}{{ $day = merge $day (dict "closes" .) }}{{ end }}
-        {{ with $item.from   }}{{ $day = merge $day (dict "validFrom" .) }}{{ end }}
-        {{ with $item.to     }}{{ $day = merge $day (dict "validThrough" .) }}{{ end }}
-        {{ $open = $open | append $day }}
-      {{ end }}
+    {{ $o    := slice }}
+    {{ $days := slice }}
+    {{ range .days }}
+      {{ $days = $days | append (print "https://schema.org/" (. | title)) }}
     {{ end }}
+    {{ with $days   }}{{ $o = merge $o (dict "dayOfWeek"    .) }}{{ end }}
+    {{ with .opens  }}{{ $o = merge $o (dict "opens"        .) }}{{ end }}
+    {{ with .closes }}{{ $o = merge $o (dict "closes"       .) }}{{ end }}
+    {{ with .from   }}{{ $o = merge $o (dict "validFrom"    .) }}{{ end }}
+    {{ with .to     }}{{ $o = merge $o (dict "validThrough" .) }}{{ end }}
+    {{ $open = $open | append $o }}
   {{ end }}
 {{ end }}
 
