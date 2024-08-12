@@ -14,7 +14,7 @@ translationKey: legal
 
 In conformità con l'articolo 10 della Legge 34/2002, sui Servizi della Società dell'Informazione e Commercio Elettronico, si informa che il titolare del sito web è:
 
-**{{% legal name %}}**, con sede legale in **{{% legal location %}}** e C.I.F n. **{{% legal nif %}}** (di seguito, **"il fornitore"**). Il presente avviso legale regola l'uso del sito web **{{% legal web %}}** (di seguito, il "sito web"). L'accesso al sito web è gratuito, salvo per quanto riguarda il costo della connessione tramite la rete di telecomunicazioni fornita dal fornitore di accesso contrattato dagli utenti.
+**{{% legal name %}}**, con sede legale in **{{% legal location %}}** e N.I.F. **{{% legal nif %}}** (di seguito, **"il fornitore"**). Il presente avviso legale regola l'uso del sito web **{{% legal web %}}** (di seguito, il "sito web"). L'accesso al sito web è gratuito, salvo per quanto riguarda il costo della connessione tramite la rete di telecomunicazioni fornita dal fornitore di accesso contrattato dagli utenti.
 
 **Il fornitore** vi dà il benvenuto e vi invita a leggere attentamente le Condizioni d'Uso di questo Sito Web (di seguito, le "condizioni generali d'uso") che descrivono i termini e le condizioni applicabili alla vostra navigazione sullo stesso, in conformità con quanto stabilito dalla normativa spagnola applicabile e in conformità con la **Legge 34/2002, dell'11 luglio, sui Servizi della Società dell'Informazione e del Commercio Elettronico (LSSI), in relazione al Regolamento Generale sulla Protezione dei Dati (RGPD) e alla Legge Organica 3/2018 sulla Protezione dei Dati e garanzia dei diritti digitali (LOPDGDD)**. Vi informiamo che:
 

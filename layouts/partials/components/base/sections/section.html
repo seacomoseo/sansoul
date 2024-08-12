@@ -27,7 +27,13 @@
 
   {{/*  BACKGROUND  */}}
   {{- if not $modal -}}
-    {{- partial "components/bg" (merge . (dict "card" nil)) -}}
+    {{- partial "components/bg" (merge
+      .
+      (dict
+        "card"      nil
+        "container" "fluid"
+      )
+    ) -}}
   {{- end -}}
 
   {{/*  BOX  */}}

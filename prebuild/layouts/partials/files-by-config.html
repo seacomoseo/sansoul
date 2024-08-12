@@ -4,15 +4,18 @@
   {{ range $k, $lang := site.Data.options.langs }}
     {{ $language := dict }}
     {{ $base_url := "" }}
-    {{ $enabled  := false }}
     {{ $paginate := false }}
+    {{ $enabled  := false }}
     {{ $weight   := 0 }}
 
-    {{ with index (where site.Data.config.langs "lang" $lang) 0 }}
-      {{ $config  := . }}
+    {{ $config_self := index (where site.Data.config.langs "lang" $lang) 0 }}
+    {{ with $config_self }}
+      {{/*  language's vars  */}}
       {{ $base_url = .baseURL }}
-      {{ $enabled  = not (.disabled | default false) }}
       {{ $paginate = .paginate }}
+      {{ $enabled  = not (.disabled | default false) }}
+
+      {{ $config  := . }}
       {{ with .types }}
         {{ range $type, $v := . }}
 
@@ -27,19 +30,23 @@
           {{ $type_config := index $config.types $type | default dict }}
           {{ $type_obj    := merge $default $type_config }}
           {{ with $type_obj }}
-            {{ $obj := dict 
-              "title"          (.title       | default "")
-              "title_seo"      (.title_seo   | default "")
-              "description"    (.description | default "")
-              "image"          (.image       | default "")
-              "draft"          (.draft       | default false)
-              "noindex"        (.noindex     | default false)
-              "translationKey" (.type        | default "")
+            {{ $config_default := index site.Data.config.langs 0 }}
+            {{ $config_mix     := merge $config_default $config_self }}
+            {{ $type_mix       := index $config_mix.types $type }}
+            {{ $obj            := dict 
+              "title"          (.title            | default ""   )
+              "title_seo"      (.title_seo        | default ""   )
+              "description"    (.description      | default ""   )
+              "image"          ($type_mix.image   | default ""   )
+              "draft"          ($type_mix.draft   | default false)
+              "noindex"        ($type_mix.noindex | default false)
+              "translationKey" (.type             | default ""   )
             }}
+            {{/*  file  */}}
             {{ partial "file-by-obj" (dict "obj" $obj "content" (.content | default "") "path" $path) }}
           {{ end }}
 
-          {{/*  CONFIG TO HUGO LANGUAGES  */}}
+          {{/*  language  */}}
           {{ with $type_obj.permalinks }}{{ $language = merge $language (dict $lang (dict "permalinks" (dict "page"    (dict $type .)))) }}{{ end }}
           {{ with $type_obj.slug       }}{{ $language = merge $language (dict $lang (dict "permalinks" (dict "section" (dict $type .)))) }}{{ end }}
 
@@ -47,12 +54,16 @@
       {{ end }}
     {{ end }}
 
+    {{/*  CONFIG TO HUGO LANGUAGES  */}}
+
+    {{/*  weight  */}}
     {{ range $kw, $v := site.Data.config.langs }}
       {{ if eq $lang .lang }}
         {{ $weight = add $kw 1 }}
       {{ end }}
     {{ end }}
 
+    {{/*  languages  */}}
     {{ $languages = merge $languages $language }}
     {{ with $base_url }}{{ $languages = merge $languages (dict $lang (dict "baseURL"       .))  }}{{ end }}
     {{ with $paginate }}{{ $languages = merge $languages (dict $lang (dict "paginatePath"  .))  }}{{ end }}
@@ -61,6 +72,7 @@
 
   {{ end }}
 
+  {{/*  default language  */}}
   {{ $obj := dict
     "defaultContentLanguage" ((index .langs 0).lang | default "es")
     "languages"              $languages
@@ -68,6 +80,8 @@
   {{ with .lang_default_subdir }}
     {{ $obj = merge $obj (dict "defaultContentLanguageInSubdir" .) }}
   {{ end }}
+
+  {{/*  file  */}}
   {{ partial "file-by-obj" (dict "obj" $obj "path" "langs.yml") }}
 
 {{ end }}

@@ -14,7 +14,7 @@ translationKey: legal
 
 Conformément à l'article 10 de la Loi 34/2002, sur les Services de la Société de l'Information et le Commerce Électronique, il est porté à votre connaissance que le titulaire du site web est :
 
-**{{% legal name %}}**, ayant son siège social à **{{% legal location %}}** et C.I.F nº **{{% legal nif %}}** (ci-après, **"le prestataire"**). Le présent avis légal régit l'utilisation du site web **{{% legal web %}}** (ci-après, le "site web"). L'accès au site web est gratuit, sauf en ce qui concerne le coût de la connexion via le réseau de télécommunications fourni par le fournisseur d'accès contracté par les utilisateurs.
+**{{% legal name %}}**, ayant son siège social à **{{% legal location %}}** N.I.F. nº **{{% legal nif %}}** (ci-après, **"le prestataire"**). Le présent avis légal régit l'utilisation du site web **{{% legal web %}}** (ci-après, le "site web"). L'accès au site web est gratuit, sauf en ce qui concerne le coût de la connexion via le réseau de télécommunications fourni par le fournisseur d'accès contracté par les utilisateurs.
 
 **Le prestataire** vous souhaite la bienvenue et vous invite à lire attentivement les Conditions Générales d'Utilisation de ce Site Web (ci-après, les "conditions générales d'utilisation") qui décrivent les termes et conditions applicables à votre navigation sur celui-ci, conformément à la réglementation espagnole en vigueur et en conformité avec la **Loi 34/2002, du 11 juillet, sur les Services de la Société de l'Information et le Commerce Électronique (LSSI), en relation avec le Règlement Général sur la Protection des Données (RGPD) et la Loi Organique 3/2018 de Protection des Données et garantie des droits numériques (LOPDGDD)**, nous vous informons que :
 

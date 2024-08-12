@@ -132,7 +132,7 @@ export function initSliders () {
         const observerScrollChildren = new IntersectionObserver(callbackScrollChildren, {
           root: slider,
           rootMargin: '0% 0%',
-          threshold: 0.99
+          threshold: 0.95
         })
         children.forEach(e => {
           observerScrollChildren.observe(e)

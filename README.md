@@ -285,7 +285,7 @@
       - [x] Fix slider
       - [x] Fix lightbox
       - [x] Fix purgecss
-      - [ ] Images src sizes
+      - [x] Images src sizes
       - [ ] Parents `draf`?
       - [ ] Filter `list` by `date_ini` and `date_end`
       - [ ] 404 js

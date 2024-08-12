@@ -14,7 +14,7 @@ translationKey: legal
 
 De conformidad con el artículo 10 de la Ley 34/2002, de Servicios de la Sociedad de la Información y Comercio Electrónico, se pone en su conocimiento que el titular del sitio web es:
 
-**{{% legal name %}}**, con domicilio social en **{{% legal location %}}** y C.I.F nº **{{% legal nif %}}** (en adelante, **"el prestador"** ). El presente aviso legal regula el uso de la página web **{{% legal web %}}** (en adelante, el "sitio web").El acceso a la página web es gratuito salvo en lo relativo al coste de la conexión a través de la red de telecomunicaciones suministrada por el proveedor de acceso contratado por los usuarios.
+**{{% legal name %}}**, con domicilio social en **{{% legal location %}}** y N.I.F. **{{% legal nif %}}** (en adelante, **"el prestador"** ). El presente aviso legal regula el uso de la página web **{{% legal web %}}** (en adelante, el "sitio web").El acceso a la página web es gratuito salvo en lo relativo al coste de la conexión a través de la red de telecomunicaciones suministrada por el proveedor de acceso contratado por los usuarios.
 
 **El prestador** le da la bienvenida y le invita a leer atentamente las Condiciones de Uso de este Sitio Web (en adelante, las "condiciones generales de uso") que describen los términos y condiciones que serán aplicables a su navegación por el mismo, de conformidad con lo establecido en la normativa española de aplicación y en cumplimiento de la **Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI), en relación con el Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018 de Protección de Datos y garantía de los derechos digitales (LOPDGDD)**, le informamos, que:
 

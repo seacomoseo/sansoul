@@ -14,7 +14,7 @@ translationKey: legal
 
 In accordance with Article 10 of Law 34/2002, on Information Society Services and Electronic Commerce, please be informed that the owner of the website is:
 
-**{{% legal name %}}**, with its registered office at **{{% legal location %}}** and C.I.F nº **{{% legal nif %}}** (hereinafter, **"the provider"**). This legal notice governs the use of the website **{{% legal web %}}** (hereinafter, the "website"). Access to the website is free except for the cost of connection through the telecommunications network provided by the access provider contracted by users.
+**{{% legal name %}}**, with its registered office at **{{% legal location %}}** and N.I.F. **{{% legal nif %}}** (hereinafter, **"the provider"**). This legal notice governs the use of the website **{{% legal web %}}** (hereinafter, the "website"). Access to the website is free except for the cost of connection through the telecommunications network provided by the access provider contracted by users.
 
 **The provider** welcomes you and invites you to carefully read the Terms of Use of this Website (hereinafter, the "general terms of use") which describe the terms and conditions that will apply to your browsing of it, in accordance with the applicable Spanish regulations and in compliance with the **Law 34/2002, of July 11, on Information Society Services and Electronic Commerce (LSSI), in relation to the General Data Protection Regulation (GDPR) and the Organic Law 3/2018 on Data Protection and guarantee of digital rights (LOPDGDD)**, we inform you that:
 

@@ -3,7 +3,7 @@
   container: box / inline-size;
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   max-width: 100%;
   padding: var(--box-padding);
   --box-inner: calc(100cqw - var(--box-padding) * 2);
@@ -327,7 +327,7 @@
 
 // Description
 .box__description {
-  margin: auto 0;
+  margin-block: auto;
   width: 100%;
   // em {
   //   @include font-base;
@@ -345,9 +345,9 @@
 }
 
 // Data
-.box__title + .data {
-  margin-top: calc(.5rem - var(--box-gap));
-}
+// .box__title + .data {
+//   margin-top: calc(.5rem - var(--box-gap));
+// }
 
 // Button
 .box__button {
@@ -358,10 +358,6 @@
     .box__title.hide + *
   ) {
     margin-bottom: auto;
-  }
-  // Last child
-  &:last-child {
-    margin-top: auto;
   }
   // Not background
   &:not(.bg > *) {

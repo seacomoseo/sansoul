@@ -1,6 +1,6 @@
 {{ $file  := transform.Remarshal "yaml" .obj }}
-{{ with .content }}
-  {{ $file = print "---\n" $file "---\n" . }}
+{{ if ne .content nil }}
+  {{ $file = print "---\n" $file "---\n" .content }}
 {{ end }}
 {{ $file   = $file | resources.FromString .path }}
 {{ $build := $file.RelPermalink }}

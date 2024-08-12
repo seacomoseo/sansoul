@@ -1,10 +1,9 @@
 export function initResizeWindow () {
-  const updateVw = () => {
+  const updateVw = (start) => {
     const vw = window.innerWidth
-    if (vw >= 375) {
-      document.body.style.setProperty('--vw', vw)
-    }
+    const cond = start === 'start' ? vw >= 375 : false
+    if (cond) document.body.style.setProperty('--vw', vw)
   }
-  updateVw()
+  updateVw('start')
   window.addEventListener('resize', updateVw)
 }
