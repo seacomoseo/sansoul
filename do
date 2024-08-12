@@ -271,14 +271,14 @@ then
   sh do rm-public
   sh do prebuild
 
-  echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
-  cp ./themes/sansoul/package.json ./
-  cp ./themes/sansoul/postcss.config.js ./
+  # echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
+  # cp ./themes/sansoul/package.json ./
+  # cp ./themes/sansoul/postcss.config.js ./
 
   echo "${STI} RUN HUGO PRODUCTION ${STE}"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/langs.yml
 
-  # sh do css-purge
+  sh do css-purge
   sh do draws-purge
   # sh do multilang
 

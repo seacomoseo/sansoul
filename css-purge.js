@@ -73,7 +73,7 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     '\\.cookies--hide'
   ].join('|')
 
-  const elementsRegex = new RegExp(`(^|\\.|\\])(\\*|\\[.+\\]|:[\\w:-]+|(${tags})|\\.(${classes})|#(${ids}))($|=|:|\\[|\\]|\\.)|${safelist}`, 'g')
+  const elementsRegex = new RegExp(`(^|\\.|\\])(\\*|\\[.+\\]|:[\\w:-]+|(${tags})|\\.(${classes})|#(${ids}))($|=|:|\\[|\\]|\\.)|${safelist}`)
 
   // Leer archivo CSS
   fs.readFile(cssFilePath, 'utf8', (err, data) => {
@@ -89,7 +89,6 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
       .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1') // Quitar salto de línea que precede a @keyframes e hijos
       .replace(/\/\*.*?\*\//g, '') // Quitar comentarios
       .replace(/^([^@]+?)\{/gm, '$1\n{') // Añadir salto de línea antes del primer { en línea que NO empiece ni tenga @
-      // .replace(/,(?![^()]*\))(?![^{}]*\})/g, ',\n') // Añadir salto de línea despues de cada coma que no esté entre () ni {}
 
     // Procesar línea por línea
     const lines = result.split('\n')
@@ -112,7 +111,8 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
             selectorCleaned = selectorCleaned.replace(/\([^()]*\)/g, '')
           }
 
-          selectorCleaned = selectorCleaned.replace(/^.*[\s>+~]/g, '') // Quita todos los selectores excepto el último
+          selectorCleaned = selectorCleaned
+            .replace(/^.*[\s>+~]/g, '') // Quita todos los selectores excepto el último
 
           // Si es un elemento genérico o está entre las clases, ids y etiquetas html
           if (elementsRegex.test(selectorCleaned)) {
@@ -129,12 +129,20 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     result = processedLines.join('\n')
       .replace(/\n\n\{.+/gm, '') // Eliminar propiedades huérfanas
       .replace(/^@media.+\{\n\}\n/gm, '') // Eliminar mediaqueries huérfanas
+
+    // Nombres de animaciones
+    const animations = [...result.matchAll(/animation(-name)?:([\w-]+)/g)].map(animation => animation[2]).join('|')
+    // Regex para @keyframes
+    const regexAnimations = new RegExp(`^@keyframes\\s(?!${animations})[\\w-]+\\{.+\n`, 'gm')
+    // Eliminar @keyframes no usados
+    result = result
+      .replace(regexAnimations, '')
       .replace(/\n/g, '') // Eliminar saltos de linea
 
-    // Guardar resultado # 'processed_styles.css'
+    // Guardar resultado
     fs.writeFile(cssFilePath, result, 'utf8', (err) => {
       if (err) throw err
-      console.log('Archivo procesado guardado como processed_styles.css')
+      console.log('Processed and saved css file')
     })
   })
 })

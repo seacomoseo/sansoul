@@ -284,15 +284,8 @@
       - [x] Cookies small
       - [x] Fix slider
       - [x] Fix lightbox
-      - [ ] Fix purgecss
-        - ∑
-        - (,)
-        - Remove has and not?
-        - Split where and is?
-        - max 112k
-        - min 74k
+      - [x] Fix purgecss
       - [ ] Images src sizes
-
       - [ ] Parents `draf`?
       - [ ] Filter `list` by `date_ini` and `date_end`
       - [ ] 404 js
