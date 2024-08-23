@@ -1,8 +1,4 @@
 {{- $taxonomy := index .Params 0 -}}
 {{- if eq $taxonomy page.Type -}}
-  {{- with page -}}
-    {{- with .File -}}
-      {{- .TranslationBaseName -}}
-    {{- end -}}
-  {{- end -}}
+  {{- page.File.TranslationBaseName -}}
 {{- end -}}

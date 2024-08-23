@@ -1,5 +1,5 @@
 {{- $param     := index .Params 0 -}}
-{{- $page      := page.GetPage (print "pages/" $param) -}}
+{{- $page      := site.GetPage "pages" $param -}}
 {{- $title     := $page.Title -}}
 {{- $link      := $page.RelPermalink -}}
 {{- $nofollow  := ` "nofollow"` -}}

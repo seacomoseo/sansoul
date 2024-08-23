@@ -35,8 +35,9 @@
   ) -}}
 {{- end -}}
 {{- $schema := dict
-  "@context"   `https://schema.org`
-  "@type"      `FAQPage`
+  "@context"   "https://schema.org"
+  "@type"      "FAQPage"
+  "@id"        (print page.Permalink "#schema-faq")
   "mainEntity" $schema_questions
 -}}
 {{- if hugo.IsProduction -}}

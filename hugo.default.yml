@@ -2,8 +2,10 @@
 # default with option in cms
 
 Paginate: 24
-buildFuture: false
-logo: logo.png
+buildFuture: true
+timeZone: Europe/Madrid
+params:
+  currency: EUR
 
 defaultContentLanguage: es
 
@@ -18,20 +20,8 @@ languages:
     permalinks:
       page:
         pages: :slug
-        blog: blog/:slug
-        events: evento/:year/:month/:day/:slug
-        products: producto/:slug
-        categories: categoria/:slug
-        tags: etiqueta/:slug
-        authors: autor/:slug
       section:
         pages: paginas
-        blog: blog
-        events: eventos
-        products: productos
-        categories: categorias
-        tags: etiquetas
-        authors: autores
   en:
     # baseURL: https://es.sansoul.netlify.com
     contentDir: content.en
@@ -42,20 +32,8 @@ languages:
     permalinks:
       page:
         pages: :slug
-        blog: blog/:slug
-        events: event/:year/:month/:day/:slug
-        products: product/:slug
-        categories: category/:slug
-        tags: tag/:slug
-        authors: author/:slug
       section:
         pages: pages
-        blog: blog
-        events: events
-        products: products
-        categories: categories
-        tags: tags
-        authors: authors
   fr:
     # baseURL: https://fr.sansoul.netlify.com
     contentDir: content.fr
@@ -66,20 +44,8 @@ languages:
     permalinks:
       page:
         pages: :slug
-        blog: blog/:slug
-        events: evenement/:year/:month/:day/:slug
-        products: produit/:slug
-        categories: categorie/:slug
-        tags: etiquette/:slug
-        authors: auteur/:slug
       section:
         pages: pages
-        blog: blog
-        events: evenements
-        products: produits
-        categories: categories
-        tags: tags
-        authors: auteurs
   de:
     # baseURL: https://de.sansoul.netlify.com
     contentDir: content.de
@@ -90,20 +56,8 @@ languages:
     permalinks:
       page:
         pages: :slug
-        blog: blog/:slug
-        events: veranstaltung/:year/:month/:day/:slug
-        products: produkt/:slug
-        categories: kategorie/:slug
-        tags: tag/:slug
-        authors: autor/:slug
       section:
         pages: seiten
-        blog: blog
-        events: veranstaltungen
-        products: produkte
-        categories: kategorien
-        tags: tags
-        authors: autoren
   pt:
     # baseURL: https://pt.sansoul.netlify.com
     contentDir: content.pt
@@ -114,20 +68,8 @@ languages:
     permalinks:
       page:
         pages: :slug
-        blog: blogue/:slug
-        events: evento/:year/:month/:day/:slug
-        products: produto/:slug
-        categories: categoria/:slug
-        tags: etiqueta/:slug
-        authors: autor/:slug
       section:
         pages: paginas
-        blog: blogue
-        events: eventos
-        products: produtos
-        categories: categorias
-        tags: etiquetas
-        authors: autores
   it:
     # baseURL: https://it.sansoul.netlify.com
     contentDir: content.it
@@ -138,20 +80,8 @@ languages:
     permalinks:
       page:
         pages: :slug
-        blog: blog/:slug
-        events: evento/:year/:month/:day/:slug
-        products: prodotto/:slug
-        categories: categoria/:slug
-        tags: tag/:slug
-        authors: autore/:slug
       section:
         pages: pagine
-        blog: blog
-        events: eventi
-        products: prodotti
-        categories: categorie
-        tags: tag
-        authors: autori
 
 module:
   mounts:
@@ -386,11 +316,11 @@ security:
     - ^npx$
     - ^postcss$
 
-ignoreErrors:
-- error-remote-getcsv
+# ignoreErrors:
+# - error-remote-getcsv
 
 caches:
-  getcsv:
+  getresource:
     maxAge: 0
 
 timeout: 240s

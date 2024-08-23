@@ -1,0 +1,552 @@
+all:
+  toc: true
+  background:
+    color: light
+  menu:
+    logo: true
+    logo_align: center
+    transparent: true
+    size: sm
+  section:
+  - size: sm
+  sections:
+  - file: base/header
+  - file: base/image
+  - file: base/toc
+  - file: base/content
+  - file: base/author
+  - file: base/comments
+  - file: base/address
+  - file: base/taxonomy
+  - file: base/parent
+  - file: base/share
+  - file: base/related
+  lists:
+    columns: 3
+    image: gradient
+    ratio: 16x9
+    inset: true
+    align: left
+    color: white
+    button: hide
+    hide_reading_time: true
+  related:
+    slider: true
+
+
+customs:
+
+- base: article
+  name: blog
+  icon: newspaper
+  emoji: 📰
+  related: true
+  breadcrumbs: categories
+  params:
+  - name: categories
+    type: relation
+    relation: categories
+    multiple: true
+    schema:
+    - articleSection
+    es:
+      label: Categorías
+      hint: Indica una o varias [categorías previamente creadas](#/collections/categories)
+    en:
+      label: Categories
+      hint: Specify one or more [previously created categories](#/collections/categories)
+    fr:
+      label: Catégories
+      hint: Indiquer une ou plusieurs [catégories préalablement créées](#/collections/categories)
+    de:
+      label: Kategorien
+      hint: Geben Sie eine oder mehrere [vorher erstellte Kategorien](#/collections/categories) an
+    pt:
+      label: Categorias
+      hint: Indique uma ou mais [categorias previamente criadas](#/collections/categories)
+    it:
+      label: Categorie
+      hint: Indica una o più [categorie precedentemente create](#/collections/categories)
+  - name: author
+    type: relation
+    relation: authors
+    multiple: false
+    schema:
+    - author
+    es:
+      label: Autor
+      hint: Indica un [autor previamente creado](#/collections/authors)
+    en:
+      label: Author
+      hint: Specify a [previously created author](#/collections/authors)
+    fr:
+      label: Auteur
+      hint: Indiquer un [auteur préalablement créé](#/collections/authors)
+    de:
+      label: Autor
+      hint: Geben Sie einen [vorher erstellten Autor](#/collections/authors) an
+    pt:
+      label: Autor
+      hint: Indique um [autor previamente criado](#/collections/authors)
+    it:
+      label: Autore
+      hint: Indica un [autore precedentemente creato](#/collections/authors)
+  es:
+    singular: Blog
+    title: Blog
+    slug: blog
+    permalinks: blog
+    description: Listado de entradas del blog
+    hint: Entradas del blog, con fechas, categorias y autores asignados.
+  en:
+    singular: Blog
+    title: Blog
+    slug: blog
+    permalinks: blog
+    description: List of blog posts
+    hint: Blog entries, with assigned dates, categories, and authors.
+  fr:
+    singular: Blog
+    title: Blog
+    slug: blog
+    permalinks: blog
+    description: Liste des articles de blog
+    hint: Articles du blog, avec dates, catégories et auteurs assignés.
+  de:
+    singular: Blog
+    title: Blog
+    slug: blog
+    permalinks: blog
+    description: Liste der Blogeinträge
+    hint: Blogbeiträge mit zugewiesenen Daten, Kategorien und Autoren.
+  pt:
+    singular: Blog
+    title: Blog
+    slug: blog
+    permalinks: blog
+    description: Lista de entradas do blog
+    hint: Entradas de blog, com datas, categorias e autores atribuídos.
+  it:
+    singular: Blog
+    title: Blog
+    slug: blog
+    permalinks: blog
+    description: Elenco delle voci del blog
+    hint: Articoli del blog, con date, categorie e autori assegnati.
+
+- base: event
+  name: events
+  icon: calendar
+  emoji: 📅
+  related: true
+  es:
+    singular: Evento
+    title: Eventos
+    slug: eventos
+    permalinks: evento/:year/:month/:day
+    description: Lista de eventos
+    hint: Eventos con fechas de inicio y fin.
+  en:
+    singular: Event
+    title: Events
+    slug: events
+    permalinks: event/:year/:month/:day
+    description: List of events
+    hint: Events with start and end dates.
+  fr:
+    singular: Événement
+    title: Evénements
+    slug: evenements
+    permalinks: evenement/:year/:month/:day
+    description: Liste des événements
+    hint: Événements avec dates de début et de fin.
+  de:
+    singular: Veranstaltung
+    title: Veranstaltungen
+    slug: veranstaltungen
+    permalinks: veranstaltung/:year/:month/:day
+    description: Liste der Veranstaltungen
+    hint: Veranstaltungen mit Anfangs- und Enddaten.
+  pt:
+    singular: Evento
+    title: Eventos
+    slug: eventos
+    permalinks: evento/:year/:month/:day
+    description: Lista de eventos
+    hint: Eventos com datas de início e términoEventos com datas de início e término.
+  it:
+    singular: Evento
+    title: Eventi
+    slug: eventi
+    permalinks: evento/:year/:month/:day
+    description: Elenco degli eventi
+    hint: Eventi con date di inizio e fine.
+
+- base: product
+  name: products
+  icon: tag
+  emoji: 🏷
+  related: true
+  breadcrumbs: categories
+  params:
+  - name: categories
+    type: relation
+    relation: categories
+    multiple: true
+    schema:
+    - articleSection
+    es:
+      label: Categorías
+      hint: Indica una o varias [categorías previamente creadas](#/collections/categories)
+    en:
+      label: Categories
+      hint: Specify one or more [previously created categories](#/collections/categories)
+    fr:
+      label: Catégories
+      hint: Indiquer une ou plusieurs [catégories préalablement créées](#/collections/categories)
+    de:
+      label: Kategorien
+      hint: Geben Sie eine oder mehrere [vorher erstellte Kategorien](#/collections/categories) an
+    pt:
+      label: Categorias
+      hint: Indique uma ou mais [categorias previamente criadas](#/collections/categories)
+    it:
+      label: Categorie
+      hint: Indica una o più [categorie precedentemente create](#/collections/categories)
+  es:
+    singular: Producto
+    title: Productos
+    slug: productos
+    permalinks: producto
+    description: Listado de productos
+    hint: Productos con categorias, etiquetas y variaciones.
+  en:
+    singular: Product
+    title: Products
+    slug: products
+    permalinks: product
+    description: List of products
+    hint: Products with categories, tags, and variations.
+  fr:
+    singular: Produit
+    title: Produits
+    slug: produits
+    permalinks: produit
+    description: Liste des produits
+    hint: Produits avec catégories, étiquettes et variations.
+  de:
+    singular: Produkt
+    title: Produkte
+    slug: produkte
+    permalinks: produkt
+    description: Liste der Produkte
+    hint: Produkte mit Kategorien, Schlagwörtern und Variationen.
+  pt:
+    singular: Produto
+    title: Produtos
+    slug: produtos
+    permalinks: produto
+    description: Lista de produtos
+    hint: Produtos com categorias, tags e variações.
+  it:
+    singular: Prodotto
+    title: Prodotti
+    slug: prodotti
+    permalinks: prodotto
+    description: Elenco dei prodotti
+    hint: Prodotti con categorie, tag e varianti.
+
+- base: taxonomy
+  name: categories
+  icon: bookmark
+  emoji: 🔖
+  params:
+  - name: categories
+    type: relation
+    relation: categories
+    multiple: true
+    schema:
+    - articleSection
+    es:
+      label: Categorías
+      hint: Indica una o varias [categorías previamente creadas](#/collections/categories)
+    en:
+      label: Categories
+      hint: Specify one or more [previously created categories](#/collections/categories)
+    fr:
+      label: Catégories
+      hint: Indiquer une ou plusieurs [catégories préalablement créées](#/collections/categories)
+    de:
+      label: Kategorien
+      hint: Geben Sie eine oder mehrere [vorher erstellte Kategorien](#/collections/categories) an
+    pt:
+      label: Categorias
+      hint: Indique uma ou mais [categorias previamente criadas](#/collections/categories)
+    it:
+      label: Categorie
+      hint: Indica una o più [categorie precedentemente create](#/collections/categories)
+  es:
+    singular: Categoría
+    title: Categorías
+    slug: categorias
+    permalinks: categoria
+    description: Listado de categorías
+    hint: Categorías asignadas a cada artículo. Es necesario crearlas aquí antes de poder asignarlas.
+  en:
+    singular: Category
+    title: Categories
+    slug: categories
+    permalinks: category
+    description: List of categories
+    hint: Categories assigned to each article. They need to be created here before they can be assigned.
+  fr:
+    singular: Catégorie
+    title: Catégories
+    slug: categories
+    permalinks: categorie
+    description: Liste des catégories
+    hint: Produits avec catégories, étiquettes et variations.
+  de:
+    singular: Kategorie
+    title: Kategorien
+    slug: kategorien
+    permalinks: kategorie
+    description: Liste der Kategorien
+    hint: Kategorien, die jedem Artikel zugewiesen sind. Sie müssen hier erstellt werden, bevor sie zugewiesen werden können.
+  pt:
+    singular: Categoria
+    title: Categorias
+    slug: categorias
+    permalinks: categoria
+    description: Lista de categorias
+    hint: Categorias atribuídas a cada artigo. Devem ser criadas aqui antes de poderem ser atribuídas.
+  it:
+    singular: Categoria
+    title: Categorie
+    slug: categorie
+    permalinks: categoria
+    description: Elenco delle categorie
+    hint: Categorie assegnate a ciascun articolo. Devono essere create qui prima di poterle assegnare.
+
+- base: person
+  name: authors
+  icon: user
+  emoji: 👤
+  es:
+    singular: Autor
+    title: Autores
+    slug: autores
+    permalinks: autor
+    description: Listado de autores
+    hint: Autores asignados a cada artículo. Es necesario crearlos aquí antes de poder asignarlos.
+  en:
+    singular: Author
+    title: Authors
+    slug: authors
+    permalinks: author
+    description: List of authors
+    hint: Authors assigned to each article. They need to be created here before they can be assigned.
+  fr:
+    singular: Auteur
+    title: Auteurs
+    slug: auteurs
+    permalinks: auteur
+    description: Liste des auteurs
+    hint: Auteurs assignés à chaque article. Ils doivent être créés ici avant de pouvoir être assignés.
+  de:
+    singular: Autor
+    title: Autoren
+    slug: autoren
+    permalinks: autor
+    description: Liste der Autoren
+    hint: Autoren, die jedem Artikel zugewiesen sind. Sie müssen hier erstellt werden, bevor sie zugewiesen werden können.
+  pt:
+    singular: Autor
+    title: Autores
+    slug: autores
+    permalinks: autor
+    description: Lista de autores
+    hint: Autores atribuídos a cada artigo. Devem ser criados aqui antes de poderem ser atribuídos.
+  it:
+    singular: Autore
+    title: Autori
+    slug: autori
+    permalinks: autore
+    description: Elenco degli autori
+    hint: Autori assegnati a ciascun articolo. Devono essere creati qui prima di poterli assegnare.
+
+- base: organization
+  name: organizations
+  icon: gear
+  emoji: ⚙️
+  es:
+    singular: Organización
+    title: Organizaciones
+    slug: organizaciones
+    permalinks: organizacion
+    description: Lista de organizaciones
+  en:
+    singular: Organization
+    title: Organizations
+    slug: organizations
+    permalinks: organization
+    description: List of organizations
+  fr:
+    singular: Organisation
+    title: Organisations
+    slug: organisations
+    permalinks: organisation
+    description: Liste des organisations
+  de:
+    singular: Organisation
+    title: Organisationen
+    slug: organisationen
+    permalinks: organisation
+    description: Liste der Organisationen
+  pt:
+    singular: Organização
+    title: Organizações
+    slug: organizacoes
+    permalinks: organizacao
+    description: Lista de organizações
+  it:
+    singular: Organizzazione
+    title: Organizzazioni
+    slug: organizzazioni
+    permalinks: organizzazione
+    description: Elenco delle organizzazioni
+
+- base: service
+  name: services
+  icon: wrench
+  emoji: 🔧
+  es:
+    singular: Servicio
+    title: Servicios
+    slug: servicios
+    permalinks: servicio
+    description: Lista de servicios
+  en:
+    singular: Service
+    title: Services
+    slug: services
+    permalinks: service
+    description: List of services
+  fr:
+    singular: Services
+    title: Services
+    slug: services
+    permalinks: services
+    description: Liste des services
+  de:
+    singular: Dienstleistung
+    title: Dienstleistungen
+    slug: dienstleistungen
+    permalinks: dienstleistung
+    description: Liste der Dienstleistungen
+  pt:
+    singular: Serviços
+    title: Serviços
+    slug: servicos
+    permalinks: servicos
+    description: Lista de serviços
+  it:
+    singular: Servizi
+    title: Servizi
+    slug: servizi
+    permalinks: servizi
+    description: Elenco dei servizi
+
+- base: page
+  name: pages
+  icon: file
+  emoji: 📄
+  es:
+    singular: Página
+    title: Páginas
+    slug: paginas
+    permalinks: ''
+    description: Lista de páginas
+    hint: Páginas básicas o normales
+  en:
+    singular: Page
+    title: Pages
+    slug: pages
+    permalinks: ''
+    description: Page list
+    hint: Basic or normal pages.
+  fr:
+    singular: Page
+    title: Pages
+    slug: pages
+    permalinks: ''
+    description: Liste des pages
+    hint: Pages basiques ou normales.
+  de:
+    singular: Seite
+    title: Seiten
+    slug: seiten
+    permalinks: ''
+    description: Liste der Seiten
+    hint: Einfache oder normale Seiten.
+  pt:
+    singular: Página
+    title: Páginas
+    slug: paginas
+    permalinks: ''
+    description: Lista de páginas
+    hint: Páginas básicas ou normais.
+  it:
+    singular: Pagina
+    title: Pagine
+    slug: pagine
+    permalinks: ''
+    description: Elenco pagine
+    hint: Pagine di base o normali.
+
+# - base: page # [ article, event, product, taxonomy, person, organization, service, page ]
+#   name: example # string
+#   icon: file
+#   emoji: 📄
+#   disabled: null # boolean
+#   noindex: null # boolean
+#   related: null # boolean
+#   breadcrumbs: null # string of relation name in params
+#   toc: null # boolean
+#   params:
+#   - name: null # string
+#     type: null # [ boolean, int, float, string, text, markdown, image, select, relation, list ]
+#     options: []
+#     # - label: null # string
+#     #   value: null # string
+#     list: [] # [ boolean, int, float, string, text, markdown, image, select, relation ]
+#     relation: null # string
+#     multiple: null # boolean
+#     schema: [] # strings
+#     es:
+#       label: null # string
+#       hint: null # string
+#   template:
+#     background: {}
+#     menu: []
+#     callnow: {}
+#     section: []
+#     modal: {}
+#     sections: []
+#     lists: {}
+#     related: {}
+#   es:
+#     singular: null # string
+#     title: null # string
+#     title_seo: null # string
+#     slug: null # string
+#     permalinks: null # string
+#     description: null # string
+#     hint: null # string
+#     image: null # string image path
+#     content: null # string block
+#   en: {}
+#   fr: {}
+#   de: {}
+#   pt: {}
+#   it: {}

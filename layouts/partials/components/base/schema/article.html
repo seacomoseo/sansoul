@@ -1,0 +1,69 @@
+{{/*  Thumbnail  */}}
+{{ $thumbnail  := (partial "components/base/schema/image" .).url }}
+
+{{/*  Organization  */}}
+{{ $organization := partial "components/base/schema/organization-id" . }}
+
+{{/*  People and Taxonomies  */}}
+{{ $authors    := slice }}
+{{ $taxonomies := slice }}
+{{ range .CurrentSection.Params.custom_params }}
+  {{ $schema := .schema }}
+  {{ if intersect $schema (slice "author" "articleSection") }}
+    {{ if eq .type "relation" }}
+      {{ $multiple := .multiple }}
+      {{ $relation := .relation }}
+      {{ with index page.Params .name }}
+        {{ $items  := . }}
+        {{ if not $multiple }}
+          {{ $items = slice . }}
+        {{ end }}
+        {{ range $items }}
+          {{ with site.GetPage $relation "/" . }}
+            {{ if in $schema "author" }}
+              {{ $type   := cond (eq .Params.base "person") "person" "page" }}
+              {{ $item   := partial (print "components/base/schema/" $type) . }}
+              {{ $authors = $authors | append $item }}
+            {{ end }}
+            {{ if in $schema "articleSection" }}
+              {{ $taxonomies = $taxonomies | append .Title }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ with index page.Params .name }}
+        {{ if in $schema "author" }}
+          {{ $authors    = $authors    | append . }}
+        {{ end }}
+        {{ if in $schema "articleSection" }}
+          {{ $taxonomies = $taxonomies | append . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if not $authors }}
+  {{ $authors = $organization }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"            "Article"
+  "@id"              (print .Permalink "#schema-article")
+  "headline"         .Title
+  "datePublished"    (.Date.Format "2006-01-02T15:04:05Z07:00")
+  "dateModified"     (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  "wordCount"        .WordCount
+  "thumbnailUrl"     $thumbnail
+  "inLanguage"       .Lang
+  "isPartOf"         (dict "@id" .Permalink)
+  "mainEntityOfPage" (dict "@id" .Permalink)
+  "image"            (dict "@id" (print .Permalink "#schema-image"))
+  "publisher"        $organization
+  "author"           $authors
+  "articleSection"   $taxonomies
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ return $schema }}

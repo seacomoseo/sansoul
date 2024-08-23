@@ -334,10 +334,10 @@
 
 {{/*  PAGES  */}}
 {{ $colections = $colections | append (dict
-  "label"            $t.collection_pages
-  "label_singular"   $t.collection_pages_singular
+  "label"            $t.collection_singles
+  "label_singular"   $t.collection_singles_singular
   "name"             `pages`
-  "description"      $t.collection_pages_description
+  "description"      $t.collection_singles_description
   "identifier_field" `slug`
   "folder"           (print `content.` .Lang `/pages`)
   "create"           true
@@ -387,10 +387,10 @@
 
 {{/*  PAGE  */}}
 {{ $colections = $colections | append (dict
-  "label"            $t.collection_page
-  "label_singular"   $t.collection_page_singular
+  "label"            $t.collection_single
+  "label_singular"   $t.collection_single_singular
   "name"             `page`
-  "description"      $t.collection_page_description
+  "description"      $t.collection_single_description
   "identifier_field" `slug`
   "folder"            (print `content.` .Lang)
   "create"            true

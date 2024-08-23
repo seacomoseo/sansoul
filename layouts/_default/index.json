@@ -1,32 +1,6 @@
-{{- $data := site.Data -}}
 {{- $index := slice -}}
-{{- range
-  (where
-  (where
-  (where
-  (where
-  (where
-  site.Pages
-  "Kind" "ne" "section")
-  "File.TranslationBaseName" "!=" "legal")
-  "File.TranslationBaseName" "!=" "privacy")
-  "File.TranslationBaseName" "!=" "cookies")
-  "File.TranslationBaseName" "!=" "search")
--}}
-
-  {{- $icon := index $data.utilities.types .Type -}}
-  {{- if $data.styles.icons.emojis_default -}}
-    {{- $icon = $icon.code -}}
-  {{- else -}}
-    {{- $icon = $icon.icon -}}
-  {{- end -}}
-
-  {{- $image := index $data.utilities.types .Type -}}
-  {{- if $data.styles.icons.emojis_default -}}
-    {{- $image = $image.code -}}
-  {{- else -}}
-    {{- $image = $image.icon -}}
-  {{- end -}}
+{{- $pages := where site.Pages "File.TranslationBaseName" "not in" (slice "legal" "privacy" "cookies" "search" "sitemap") -}}
+{{- range $k, $page := $pages -}}
 
   {{- $image := .Params.image -}}
   {{- if $image -}}
@@ -39,29 +13,7 @@
     {{- end -}}
   {{- end -}}
 
-  {{- $type  := .Type -}}
-  {{- if in (slice "categories" "tags" "authors") .Type -}}
-    {{- $type = "taxonomies" -}}
-  {{- end -}}
-  {{- $type_list     := merge $data.lists.all (index $data.lists $type) -}}
-  {{- $reading_time  := cond (not $type_list.hide_reading_time) (i18n "reading_time" .ReadingTime) "" -}}
-
-	{{- $categories := slice -}}
-  {{- range .Params.categories -}}
-    {{- $categories = $categories | append ($.GetPage (print "categories/" .)).Title -}}
-  {{- end -}}
-
-	{{- $tags := slice -}}
-  {{- range .Params.tags -}}
-    {{- $tags = $tags | append ($.GetPage (print "tags/" .)).Title -}}
-  {{- end -}}
-
-	{{- $author := "" -}}
-  {{- with .Params.author -}}
-    {{- $author = ($.GetPage (print "authors/" .)).Title -}}
-  {{- end -}}
-  
-	{{- $contents := .Plain -}}
+	{{- $contents  := .Plain -}}
   {{- if not $contents -}}
 	  {{- $contents = "" -}}
     {{- range partial "functions/sections" . -}}
@@ -74,23 +26,41 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+  {{- $contents = $contents | replaceRE ` \n\n \{\{.+?\}\}` "" -}}
   
-
-  {{- $index = $index | append (dict
+  {{- $summary := dict
     "title"         .Title
     "link"          .RelPermalink
     "description"   ((.Description | default .Plain) | markdownify | htmlUnescape | plainify | truncate 155)
-    "date"          (partial "functions/date" (dict "date" (.Params.Lastmod | default .Params.date_ini)) "type" .Type)
-    "date_end"      (partial "functions/date" (dict "date" (.Params.date_end)) "type" .Type)
+    "date"          (partial "functions/date" (dict "date" (.Params.Lastmod | default .Params.date_ini) "type" .Type))
+    "date_end"      (partial "functions/date" (dict "date" .Params.date_end "type" .Type))
     "contents"      $contents
     "image"         $image
-    "reading_time"  $reading_time
-    "type"          (i18n .Type 1)
-    "icon"          $icon
-    "categories"    $categories
-    "tags"          $tags
-    "author"        $author
-  ) -}}
+    "reading_time"  (i18n "reading_time" .ReadingTime)
+    "type"          .Type
+    "type_label"    .Params.singular
+    "icon"          (.Params.icon  | default "file-heart")
+    "emoji"         (.Params.emoji | default "📑")
+  -}}
+
+  {{- range .CurrentSection.Params.custom_params -}}
+    {{- if eq .type "relation" -}}
+      {{- $relation    := .relation -}}
+      {{- $taxonomies  := slice -}}
+      {{- $param       := index $page.Params .name -}}
+      {{- with $param -}}
+        {{- if not (reflect.IsSlice .) -}}
+          {{- $param = slice . -}}
+        {{- end -}}
+        {{- range $param -}}
+          {{- $taxonomies = $taxonomies | append (site.GetPage (print $relation "/" .)).Title -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $summary = merge $summary (dict .name (delimit $taxonomies ", ")) -}}
+    {{- end -}}
+  {{- end -}}
+  
+  {{- $index = $index | append $summary -}}
 
 {{- end -}}
 

@@ -2,6 +2,6 @@
 {{- if eq $param "index" -}}
   {{- site.BaseURL | replaceRE "^(https?:)?//|/$" "" -}}
 {{- else -}}
-  {{- $page := page.GetPage (print "pages/" $param) -}}
+  {{- $page := site.GetPage "pages" $param -}}
   {{- $page.Title -}}
 {{- end -}}

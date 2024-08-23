@@ -1,5 +1,5 @@
-{{- if eq .page.Type "authors" -}}
-  {{- with .page.Params.job_title -}}
+{{- if eq .Page.Params.base "person" -}}
+  {{- with .Page.Params.job_title -}}
     <i class="data__item">
       {{- partial "components/icon" (dict "class" "data__icon" "icon" "briefcase" "emoji" "💼") -}}
       <i>{{ . }}</i>

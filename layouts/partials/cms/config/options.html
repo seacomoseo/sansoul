@@ -18,9 +18,13 @@
 {{ end }}
 
 {{ $options_lists := slice }}
-{{ range partial "functions/lists" . | append "related" }}
-  {{ $options_lists = $options_lists | append (dict "value" . "label" (index $t (print "collection-" .) | default .)) }}
+{{ range site.Sections }}
+  {{ $options_lists = $options_lists | append (dict "value" .Type "label" .Title) }}
 {{ end }}
+{{ $options_lists = $options_lists | append
+  (dict "value" "/"       "label" $t.collection_single)
+  (dict "value" "related" "label" $t.related)
+}}
 
 {{ $vars := slice
   (dict "&OPTIONS_LANGS"         $options.langs)
@@ -58,7 +62,7 @@
   (dict "&OPTIONS_DIVIDER"       $options.divider)
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
   (dict "&OPTIONS_LISTS"         $options_lists)
-  (dict "&OPTIONS_TYPES"         (where $options_lists "value" "!=" "page"))
+  (dict "&OPTIONS_TYPES"         (where $options_lists "value" "not in" (slice "/" "related")))
   (dict "&OPTIONS_COUNTRIES"     (index site.Data.utilities.countries $lang_default))
   (dict "&OPTIONS_FONT_WEIGHT"   site.Data.utilities.font_weight)
   (dict "&RELATION_CATEGORIES"   (cond (not (.GetPage "categories")) "hidden" "relation"))

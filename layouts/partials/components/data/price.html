@@ -1,6 +1,6 @@
-{{- with .page.Params.price -}}
+{{- with .Page.Params.price -}}
   <i class="data__item">
     {{- partial "components/icon" (dict "class" "data__icon" "icon" "tag" "emoji" "🏷️") -}}
-    <i>{{ . }}</i>
+    <i>{{ . | lang.FormatCurrency 2 site.Params.currency }}</i>
   </i>
 {{- end -}}

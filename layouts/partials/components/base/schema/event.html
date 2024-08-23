@@ -1,67 +1,61 @@
-{{ $config   := partial "functions/config-lang" . }}
-{{ $schema   := dict }}
-{{ $is_event := eq .Type "events"  | and (not .IsSection) }}
+{{/*  Dates  */}}
+{{ $date_ini := dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_ini | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+{{ $date_end := dateFormat "2006-01-02T15:04:05Z07:00" (.Params.date_end | default .Params.date_ini) | replaceRE `T00.00.00[-+]\d\d.00` "" }}
 
-{{ if $is_event }}
-
-  {{/*  Dates  */}}
-  {{ $date_ini := dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_ini }}
-  {{ $date_end := dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_end }}
-
-  {{/*  Image  */}}
-  {{ $image  := "" }}
-  {{ with resources.Get (print "/media/" .Params.image) }}
-    {{ $image = .Permalink }}
+{{/*  Location  */}}
+{{ $location := dict }}
+{{ with .Params }}
+  {{ if or .location .address }}
+    {{ $location = dict
+      "location" (dict
+        "@type"   "Place"
+        "name"    .location
+        "address" .address
+      )
+    }}
   {{ end }}
+{{ end }}
 
-  {{/*  Location  */}}
-  {{ $location := dict }}
-  {{ with .Params }}
-    {{ if or .location .address }}
-      {{ $location = dict
-        "location" (dict
-          "@type"   `Place`
-          "name"    .location
-          "address" .address
-        )
-      }}
-    {{ end }}
-  {{ end }}
-
-  {{/*  offers  */}}
-  {{ $offers := dict }}
-  {{ with .Params }}
-    {{ if or .locpriceation .currency }}
-      {{ $offers = dict
-        "offers" (dict
-          "@type"         `Offer`
-          "url"           $.Permalink
-          "price"         (.price | default 0)
-          "priceCurrency" ($config.currency | default "EUR")
-          "validFrom"     (dateFormat "2006-01-02T15:04:05Z07:00" now)
-          "availability"  "http://schema.org/InStock"
-        )
-      }}
-    {{ end }}
-  {{ end }}
-
-  {{/*  Schema  */}}
-  {{ $schema = dict
-    "@context"            `http://schema.org`
-    "@type"               `Event`
-    "name"                .Title
-    "performer"           .Params.artist
-    "description"         .Description
-    "url"                 .Permalink
-    "startDate"           $date_ini
-    "endDate"             $date_end
-    "image"               $image
-    "location"            $location
-    "offers"              $offers
-    "organizer"           (partial "components/base/schema/organization" site.Data.schema)
-    "eventStatus"         "http://schema.org/EventScheduled"
-    "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"
+{{/*  Offers  */}}
+{{ $offers := dict }}
+{{ with .Params.price }}
+  {{ $offers  = dict
+    "@type"         "Offer"
+    "url"           $.Permalink
+    "price"         .
+    "priceCurrency" site.Params.currency
+    "validFrom"     (dateFormat "2006-01-02T15:04:05" now)
+    "availability"  "http://schema.org/InStock"
   }}
 {{ end }}
+
+{{/*  Performer  */}}
+{{ $artists := slice }}
+{{ range .Params.artists }}
+  {{ if or .name .type }}
+    {{ $artists = $artists | append (dict
+      "@type" (cond (eq .type "group") "PerformingGroup" "Person")
+      "name"  .name
+    ) }}
+  {{ end }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"               "Event"
+  "@id"                 (print .Permalink "#schema-event")
+  "name"                .Title
+  "description"         .Description
+  "url"                 .Permalink
+  "performer"           $artists
+  "location"            $location
+  "offers"              $offers
+  "startDate"           $date_ini
+  "endDate"             $date_end
+  "image"               (dict "@id" (print .Permalink "#schema-image"))
+  "organizer"           (partial "components/base/schema/organization-id" .)
+  "eventStatus"         "http://schema.org/EventScheduled"
+  "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"
+}}
 
 {{ return $schema }}

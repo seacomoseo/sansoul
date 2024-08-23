@@ -1,0 +1,14 @@
+{{ $relations := slice }}
+{{ range site.Sections }}
+  {{ range .Params.custom_params }}
+    {{ if eq .type "relation" }}
+      {{ $relations = $relations | append (dict
+        "name"     .name
+        "relation" .relation
+        "multiple" (.multiple | default false)
+      ) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $relations = uniq $relations }}
+{{ return $relations }}

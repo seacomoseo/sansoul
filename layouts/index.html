@@ -1,10 +1,9 @@
 {{/* /layouts/_default/baseof */}}
 {{- define "none" -}}
-  {{- $config := partial "functions/config-lang" . -}}
 
   {{/*  FILES  */}}
   {{- $cms_index_path           := print .RelPermalink "admin/index.html" -}}
-  {{- $google_file_verification := $config.google_file_verification -}}
+  {{- $google_file_verification := site.Params.google_file_verification -}}
   {{- $draws_path               := "/draws.svg" -}}
   {{- $redirects_path           := "/_redirects" -}}
   {{- if hugo.IsMultihost -}}
@@ -23,7 +22,7 @@
       (dict "partial" `google-site-verification` "path" .)
     -}}
   {{- end -}}
-  {{- if not $config.cms.disable -}}
+  {{- if not site.Data.config.cms.disable -}}
     {{- $resources = $resources | append
       (dict "partial" `cms/index`              "path" $cms_index_path)
     -}}
@@ -42,7 +41,7 @@
   {{- end -}}
   
   {{/*  PROCESS ALL IMAGES  */}}
-  {{- if hugo.IsProduction | and $config.others.process_all_images -}}
+  {{- if hugo.IsProduction | and site.Data.config.others.process_all_images -}}
     {{- $images := partial "functions/media-files" (dict "ext" (slice "jpeg" "jpg" "png" "gif" "webp" "avif" "svg")) -}}
     {{- range $images -}}
       {{- $image := resources.Get . -}}

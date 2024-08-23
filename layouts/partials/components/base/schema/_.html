@@ -1,21 +1,19 @@
-{{ $schema := dict }}
+{{ $schemas := slice
+  (partial "components/base/schema/website" .)
+  (partial "components/base/schema/page" .)
+  (partial "components/base/schema/image" .)
+  (partial "components/base/schema/organization" .)
+  (partial "components/base/schema/breadcrumbs" .)
+}}
 
-{{ with partial "components/base/schema/post" . }}
-  {{ $schema = . }}
-{{ else }}
-  {{ with partial "components/base/schema/author" (dict "page" .) }}
-      {{ $schema = . }}
-  {{ else }}
-    {{ with partial "components/base/schema/event" . }}
-      {{ $schema = . }}
-    {{ else }}
-      {{ with partial "components/base/schema/organization" site.Data.schema }}
-        {{ $schema = . }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
+{{ if in (slice "article" "event" "product" "person" "service") .Params.base }}
+  {{ $schemas = $schemas | append (partial (print "components/base/schema/" .Params.base) .) }}
 {{ end }}
-{{ $schema = slice $schema | append (partial "components/base/schema/website" .) }}
+
+{{ $schema := dict 
+  "@context" "http://schema.org"
+  "@graph"   $schemas
+}}
 
 {{ $opts  := cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ") }}
 {{ $schema = $schema | jsonify $opts }}

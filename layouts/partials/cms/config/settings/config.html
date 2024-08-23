@@ -53,40 +53,6 @@
       (dict "label" $t.collection_settings_config_paginate "name" `paginate` "widget" `string`  "required" false "hint" $t.collection_settings_config_paginate_hint)
       (dict "label" $t.collection_settings_config_currency "name" `currency` "widget" `string`  "required" false "hint" (print $t.default ": EUR"))
       (dict
-        "label"     $t.collection_settings_config_types
-        "name"      `types`
-        "widget"    `object`
-        "collapsed" true
-        "hint"      $t.collection_settings_config_types_hint
-        "required"  false
-        "fields"    `~SETTINGS_CONFIG_TYPES`
-      )
-      (dict
-        "label"          $t.collection_settings_config_remote
-        "label_singular" $t.collection_settings_config_remote_singular
-        "name"           `remote`
-        "widget"         `list`
-        "collapsed"      true
-        "summary"        "{{fields.src}}"
-        "allow_add"      true
-        "hint"           $t.collection_settings_config_remote_hint
-        "required"       false
-        "fields"    (slice
-          (dict "label" $t.collection_settings_config_remote_src   "name" `src`   "widget" `string`  "required" false)
-          (dict "label" $t.collection_settings_config_remote_csv   "name" `csv`   "widget" `boolean` "required" false)
-          (dict "label" $t.collection_settings_config_remote_index "name" `index` "widget" `string`  "required" false "hint" $t.collection_settings_config_remote_index_hint)
-          (dict "label" $t.collection_settings_config_remote_type  "name" `type`  "widget" `select`  "required" false "options" `~OPTIONS_TYPES`)
-          (dict
-            "label"       $t.collection_settings_config_remote_pairings
-            "name"        `pairings`
-            "widget"      `keyvalue`
-            "key_label"   $t.collection_settings_config_remote_pairings_key_label
-            "value_label" $t.collection_settings_config_remote_pairings_value_label
-            "required"    false
-          )
-        )
-      )
-      (dict
         "label"     $t.collection_settings_config_custom_html
         "name"      `custom_code`
         "widget"    `object`

@@ -4,10 +4,10 @@
 {{- end -}}
 
 {{- if $show_categories -}}
-  {{- with index .item.page.Params .type -}}
+  {{- with index .item.Page.Params .type -}}
     {{- $name := index site.Data.utilities.types $.type -}}
     {{- range . -}}
-      {{- $parent_type := page.GetPage (print $.type `/` .) -}}
+      {{- $parent_type := site.GetPage $.type . -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" $name.icon "emoji" $name.emoji) -}}
         {{- if $.item.box -}}

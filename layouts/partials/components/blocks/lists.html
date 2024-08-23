@@ -1,32 +1,31 @@
-{{ $list  := . }}
-{{ $max   := .max | default 999 }}
-{{ $types := .types | default (slice
-  "blog"
-  "events"
-  "products"
-  "categories"
-  "tags"
-  "authors"
-  "pages"
-  "page"
-) }}
-{{ $types_lot := gt (len $types) 1 }}
+{{ $list       := . }}
+{{ $max        := .max   | default 999 }}
+{{ $types      := .types | default slice }}
+{{ if not $types }}
+  {{ range site.Sections }}
+    {{ $types   = $types | append .Type }}
+  {{ end }}
+  {{ $types   = $types | append "/" }}
+{{ end }}
+
+{{/*  {{ $types_many := gt (len $types) 1 }}  */}}
 
 {{ range $types }}
   {{ $type   := . }}
-  {{ $parent := page.GetPage . }}
+  {{ $parent := site.GetPage . }}
   {{ $pages  := $parent.Pages }}
   {{ if eq . "related" }}
     {{ $type   = page.Type }}
-    {{ $parent = page.GetPage page.Type }}
+    {{ $parent = site.GetPage $type }}
     {{ $pages  = $parent.Pages.Related (dict "document" page) }}
   {{ end }}
-  {{ if eq . "events" }}
+  {{ if eq $parent.Params.base "event" }}
     {{ $pages = sort $pages "Params.date_ini" "desc" }}
   {{ end }}
   {{ $firsts_pages := $pages }}
 
   {{ if and page.IsSection (eq (len $types) 1) (ne . "related") }}
+    {{/*  PAGE PARENT  */}}
     {{ $firsts_pages = (page.Paginate $pages $max).Pages }}
     {{ partial "functions/pagination" page
       | replaceRE `\n|\s{2,}|<li.*?>|</li>` ``
@@ -37,30 +36,75 @@
       | safeHTML
     }}
   {{ else }}
-    {{ with $.categories }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.categories" "intersect" . }}{{ end }}{{ end }}
-    {{ with $.tags       }}{{ if ne "" (index . 0) }}{{ $pages = where $pages "Params.tags"       "intersect" . }}{{ end }}{{ end }}
-    {{ with $.authors    }}{{ $pages = where $pages "Params.author" "in" . }}{{ end }}
+    {{/*  PAGE RESTS  */}}
+    {{ $relations := partial "functions/relations" . }}
+    {{/*  Filter by relations  */}}
+    {{ range $relations }}
+      {{ $filenames := index $list .relation }}
+      {{ if $filenames }}
+        {{ if .multiple }}
+          {{ $filenames = slice | append $filenames }}
+        {{ end }}
+        {{ $pages = where $pages (print "Params." .name) (cond .multiple "intersect" "in") $filenames }}
+      {{ end }}
+    {{ end }}
+    {{/*  Maximum number of pages  */}}
     {{ $firsts_pages = $pages | first $max }}
   {{ end }}
 
   {{ if len $pages }}
     {{/*
-    {{ if $types_lot }}
+    {{ if $types_many }}
       <p class="list-title h4">{{ $parent.Title }}</p>
     {{ end }}
     */}}
 
-    {{ partial "components/blocks/list"
+    {{/*  TEMPLATE  */}}
+    {{- $template_all       := site.Data.types.all.lists -}}
+    {{- $template_type      := $parent.Params.lists -}}
+    {{- $template_related   := dict -}}
+    {{- if eq $type "related" -}}
+      {{- $template_related := merge
+        site.Data.types.all.related
+        $parent.Params.related
+      -}}
+    {{- end -}}
+    {{- $template_box       := $.box | default dict -}}
+    {{- $template           := merge
+      $template_all
+      $template_type
+      $template_related
+      $template_box
+    -}}
+
+    {{/*  PAGES TO BOXES  */}}
+    {{- $boxes   := slice -}}
+    {{- range $firsts_pages -}}
+      {{- $desc  := .Params.description | default .Summary | truncate 150 -}}
+      {{- $price := .Params.price | lang.FormatCurrency 2 site.Params.currency -}}
+      {{- $page  := merge .Params (dict
+        "Page"        .
+        "link"        .RelPermalink
+        "description" $desc
+        "price"       $price
+        "icon"        ""
+      ) -}}
+      {{- $boxes = $boxes | append $page -}}
+    {{- end -}}
+
+    {{/*  BOXES  */}}
+    {{- partial "components/boxes/_"
       (merge
         $list
         (dict
-          "type"    $type
-          "pages"   $firsts_pages
-          "related" (eq . "related")
+          "box"          $template
+          "boxes"        $boxes
+          "article_list" true
         )
       )
-    }}
+    -}}
 
+    {{/*  LAST BUTTON  */}}
     {{ if and (not page.IsSection) (gt (len $pages) (len $firsts_pages)) }}
       <div class="buttons">
         {{- partial "components/link"

@@ -1,0 +1,10 @@
+{{- with .Page.Params.artists -}}
+  <i class="data__item">
+    {{- partial "components/icon" (dict "class" "data__icon" "icon" "user-group" "emoji" "👺") -}}
+    {{- $artists := slice -}}
+    {{- range . -}}
+      {{- $artists = $artists | append .name -}}
+    {{- end -}}
+    <i>{{ delimit $artists ", " }}</i>
+  </i>
+{{- end -}}

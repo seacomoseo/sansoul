@@ -109,7 +109,7 @@
       - [x] `schema`
       - [x] `schema` de autores y eventos
       - [x] Add `job_title` and `social` in `authors`
-      - [x] Add `price` and `artist` in `events`
+      - [x] Add `price` and `artists` in `events`
       - [x] `articles`
       - [x] `title` + `link` each box (`like_article` or not)
       - [x] `pill`
@@ -136,8 +136,7 @@
       - [x] With `menu.google_translate`, add in a item `link: translate` where you want
       - [x] `menu.screen_sticky` > `menu.sticky`
       - [x] `menu.size_sticky` > `menu.size`
-      - [x] `menu.hide_anchors` > `menu.hide_sections`
-      - [x] `menu.show_modals` > `menu.hide_modals`
+      - [x] `menu.hide_anchors` > `menu.show_sections`
       - [x] Remove `menu.langs_out`
       - [x] Remove `data.menu`
       - [x] Remove `data.sections`
@@ -286,8 +285,19 @@
       - [x] Fix lightbox
       - [x] Fix purgecss
       - [x] Images src sizes
-      - [ ] Parents `draf`?
+      - [/] `cascade.type: single` en páginas únicas
+      - [/] `params` in each box
+      - [/] `data.config.langs.[lang].types` in `data.types`
+        - [x] Remove `tags`
+        - [x] `data/templates` > `data/types.templates`
+        - [x] `prebuild`
+          - [x] `types`
+          - [x] `hugo.default`
+      - [/] Remove `site.Data.list`
+      - [ ] Box `data`
       - [ ] Filter `list` by `date_ini` and `date_end`
+      - [ ] `i18n` editable in cms?
+      - [ ] `buildFuture`
       - [ ] 404 js
       - [ ] `menu-gradient`
       - [ ] Menu title in sticky
@@ -386,8 +396,6 @@
 ## Migrations
 
 ```shell
-
-
 # Change submódules
 git submodule deinit -f themes/sansoul
 git rm -f themes/sansoul
@@ -431,29 +439,30 @@ cp ./data/config                      > ./data/schema
 # Clean files
 perl -0777 -i'' -pe 's/Paginate: .+?\n//igs'                       hugo.yml
 perl -0777 -i'' -pe 's/defaultContentLanguage:.+//igs'             hugo.yml
-
 perl -0777 -i'' -pe 's/ #.+//ig'                                   data/schema.yml
 perl -0777 -i'' -pe 's/department:.+//igs'                         data/schema.yml
-yq -i '.address.country = load("data/config.yml").country'         data/schema.yml
 yq -i '.types =           load("data/config.yml").location_type'   data/schema.yml
 yq -i '.names +=          [load("data/config.yml").title]'         data/schema.yml
 yq -i '.names +=          load("data/config.yml").alternate_name'  data/schema.yml
+yq -i '.description =     load("data/config.yml").description'     data/schema.yml
+yq -i '.logo =            load("data/config.yml").logo'            data/schema.yml
+yq -i '.address.country = load("data/config.yml").country'         data/schema.yml
 yq -i '.social +=         load("data/config.yml").social'          data/schema.yml
 yq -i '.prices =          load("data/config.yml").price_range'     data/schema.yml
 perl -0777 -i'' -pe 's/(\n\s*)  - /$1- /igs'                       data/schema.yml
 perl -0777 -i'' -pe 's/\n# /\n/ig'                                 data/schema.yml
 perl -0777 -i'' -pe 's/(open:) ../$1/ig'                           data/schema.yml
-perl -0777 -i'' -pe 's/from.+?(opens)/$1/igs'                           data/schema.yml
-perl -0777 -i'' -pe 's/(prices: )../$€€/ig'                           data/schema.yml
-perl -0777 -i'' -pe 's/link: //ig'                                 data/schema.yml
-
-
-
+perl -0777 -i'' -pe 's/from.+?(opens)/$1/igs'                      data/schema.yml
+perl -0777 -i'' -pe 's/(- )link: /$1/ig'                           data/schema.yml
+perl -0777 -i'' -pe 's/\nurl: null//ig'                            data/schema.yml
+yq -i '.menu.logo =       load("data/lists.yml").content.logo'     data/config.yml
+perl -0777 -i'' -pe 's/(\n\s*)  - /$1- /igs'                       data/schema.yml
 perl -0777 -i'' -pe 's/logo:/menu:\n  logo:/igs'                   data/config.yml
 perl -0777 -i'' -pe 's/legal_name:/legal:\n  name:/igs'            data/config.yml
 perl -0777 -i'' -pe 's/legal_/  /igs'                              data/config.yml
 perl -0777 -i'' -pe 's/country:.+?price_range:.+?\n//igs'          data/config.yml
-perl -0777 -i'' -pe 's/\ndisqus:.+?(\nen:|\n$)/$1/igs'             data/config.yml
+perl -0777 -i'' -pe 's/disqus:.+?\n/types:\n  blog:\n    permalinks: :slug\n/igs' data/config.yml
+perl -0777 -i'' -pe 's/\ncookies_legal:.+?(\nen:|\n$)/$1/igs'      data/config.yml
 perl -0777 -i'' -pe 's/\n/\n  /igs'                                data/config.yml
 perl -0777 -i'' -pe 's/^(title:)/langs:\n- lang: es\n  $1/igs'     data/config.yml
 perl -0777 -i'' -pe 's/\n  en:/\n- lang: en/igs'                   data/config.yml
@@ -466,7 +475,8 @@ perl -0777 -i'' -pe 's/\n    (title|description):/\n  $1:/igs'     data/config.y
 perl -0777 -i'' -pe 's/(\n\s+top:)/\n    size: 1$1/igs'            data/styles.yml
 perl -0777 -i'' -pe 's/(\nshadow:)/\ninputs:\n  fill: false$1/igs' data/styles.yml
 perl -0777 -i'' -pe 's/font_base:.+/font_main:\n    type: title\n    bold: false\n    uppercase: true\n  font_alt:\n    type: base\n    bold: false\n    uppercase: false/ig' data/styles.yml
-perl -0777 -i'' -pe 's/opacity:/alpha:/igs'                        data/styles.yml # and calculate it
+perl -0777 -i'' -pe 's/opacity:/alpha:/igs'                        data/styles.yml
+yq -i '.shadow.alpha = 1 - (.shadow.alpha // 0)'                   data/styles.yml
 perl -0777 -i'' -pe 's/lightbox_overlay:\n.+\n.+\n//ig'            data/styles.yml
 perl -0777 -i'' -pe 's/\n  parallax:.+//ig'                        data/styles.yml
 perl -0777 -i'' -pe 's/\n  srcsetx2:.+//ig'                        data/styles.yml

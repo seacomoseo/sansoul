@@ -9,8 +9,10 @@ word_count:
   other: '{{ .Count }} palavras'
 of_reading: de leitura
 price: Preço
-artist: Artista/s
+artists: Artista/s
 toc: Índice
+image: Imagem
+author: Autor
 about: Sobre
 comments: Comentários
 share: Compartilhe!
@@ -122,12 +124,6 @@ collection_p_description: Resumo
 collection_p_description_hint: Usado para miniaturas em listas e para resultados de pesquisa no Google 🔷 **Recomendado entre 70 e 155 caracteres** (~135) 🔷 Caracteres chamativos permitidos pelo Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
 collection_p_image: Imagem Principal
 collection_p_image_hint: Nome do arquivo com o mesmo formato do "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) e comprimir ([compressor online](https://kraken.io)) antes de carregar
-collection_p_categories: Categorias
-collection_p_categories_hint: Indique uma ou mais [categorias previamente criadas](#/collections/categories)
-collection_p_tags: Tags
-collection_p_tags_hint: Opcionalmente, indique uma ou mais [tags previamente criadas](#/collections/tags)
-collection_p_author: Autor
-collection_p_author_hint: Indique um [autor previamente criado](#/collections/authors)
 collection_p_toc: Índice
 collection_p_toc_hint: Tabela de conteúdos gerada automaticamente pelos cabeçalhos do conteúdo
 collection_p_draft: Rascunho
@@ -146,8 +142,10 @@ collection_p_date_ini: Data Inicial
 collection_p_date_ini_hint: Formato → 2024-12-31T24:59:59
 collection_p_date_end: Data Final
 collection_p_date_end_hint: Formato → 2024-12-31T24:59:59
-collection_p_artist: Artista/s
-collection_p_artist_hint: '**Exemplo →** "Manolo García"'
+collection_p_artists: Artista/s
+collection_p_artists_hint: '**Exemplo →** "Manolo García"'
+collection_p_artists_group: Grupo
+collection_p_artists_name: Nome
 collection_p_location: Localização
 collection_p_location_hint: '**Exemplo →** "Sala B"'
 collection_p_address: Endereço
@@ -163,30 +161,9 @@ collection_p_custom_key_label: Chave
 collection_p_custom_value_label: Valor
 collection_p_custom_hint: Aqui você pode adicionar parâmetros para usar nas seções dos modelos com "**\{\{% param custom.exemplo %\}\}**"
 # types
-collection_blog: Blog
-collection_blog_singular: Entrada
-collection_blog_description: Entradas de blog, com datas, categorias, tags e autores atribuídos.
-collection_events: Eventos
-collection_events_singular: Evento
-collection_events_description: Eventos com datas de início e término.
-collection_products: Produtos
-collection_products_singular: Produto
-collection_products_description: Produtos com categorias, tags e variações.
-collection_categories: Categorias
-collection_categories_singular: Categoria
-collection_categories_description: Categorias atribuídas a cada artigo. Devem ser criadas aqui antes de poderem ser atribuídas.
-collection_tags: Tags
-collection_tags_singular: Tag
-collection_tags_description: Tags atribuídas a cada artigo. Devem ser criadas aqui antes de poderem ser atribuídas.
-collection_authors: Autores
-collection_authors_singular: Autor
-collection_authors_description: Autores atribuídos a cada artigo. Devem ser criados aqui antes de poderem ser atribuídos.
-collection_pages: Páginas
-collection_pages_singular: Página
-collection_pages_description: Páginas básicas ou normais (sem seções).
-collection_page: Personalizadas
-collection_page_singular: Personalizada
-collection_page_description: Páginas customizáveis por seções.
+collection_single: Personalizadas
+collection_single_singular: Personalizada
+collection_single_description: Páginas customizáveis por seções.
 collection_related: Relacionados
 collection_sections: Seções
 collection_sections_singular: Seção
@@ -284,7 +261,7 @@ collection_settings_schema_address_pc: CEP
 collection_settings_schema_address_locality: Localidade
 collection_settings_schema_address_region: Região
 collection_settings_schema_address_country: País
-collection_settings_schema_address_country_hint: Recomendado usar [código de país de 2 letras](https://pt.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+collection_settings_schema_address_country_hint: Recomendado usar [código de país de 2 letras](https://wikipedia.org/wiki/ISO_3166-1)
 collection_settings_schema_address_geo: Coordenadas
 collection_settings_schema_address_link: Link para Mapa
 collection_settings_schema_open: Horários
@@ -402,10 +379,10 @@ base_menu_logo_align: Alinhamento do Logo
 base_menu_logo_align_hint: Alinhamento do logo sem que o menu se expanda
 base_menu_transparent: Iniciar Transparente
 base_menu_transparent_hint: Altera a cor ao rolar a página
-base_menu_hide_sections: Ocultar Seções
-base_menu_hide_sections_hint: Oculta os links que levam a cada seção
-base_menu_hide_modals: Ocultar Modais
-base_menu_hide_modals_hint: Oculta links que levam a cada janela modal como subitens expansíveis
+base_menu_show_sections: Mostrar Secções
+base_menu_show_sections_hint: Mostrar links que levam a cada secção
+base_menu_show_modals: Mostrar Modais
+base_menu_show_modals_hint: Mostra links que levam a cada janela modal como subitens drop-down
 base_menu_hide_icons: Ocultar Ícones
 base_menu_google_translate: Google Tradutor
 base_callnow: Botões de Canto
@@ -668,6 +645,14 @@ option-langs-fr: 🇫🇷 Francês
 option-langs-de: 🇩🇪 Alemão
 option-langs-pt: 🇵🇹 Português
 option-langs-it: 🇮🇹 Italiano
+option-base-blog: Blog
+option-base-event: Evento
+option-base-product: Produto
+option-base-taxonomy: Taxonomia
+option-base-author: Autor
+option-base-organization: Organização
+option-base-service: Serviços
+option-base-page: Página
 option-hn-0: h0
 option-hn-1: h1
 option-hn-2: h2

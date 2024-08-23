@@ -1,0 +1,79 @@
+
+{{ $type                  := "WebPage" }}
+{{ $has_part              := slice }}
+{{ $thumbnail             := (partial "components/base/schema/image" .).url }}
+{{ $image                 := dict "@id" (print .Permalink "#schema-image") }}
+{{ $primary_image_of_page := dict "@id" (print .Permalink "#schema-image") }}
+{{ $is_part_of            := dict "@id" (print site.BaseURL "/#schema-website") }}
+{{ $potential_action      := slice (dict "@type" "ReadAction" "target" .Permalink) }}
+{{ $breadcrumbs           := "" }}
+
+{{/*  Self page  */}}
+{{ if eq page.Permalink .Permalink }}
+
+  {{/*  Collection?  */}}
+
+  {{/*  If children  */}}
+  {{ with partial "functions/children" . }}
+    {{/*  Type and hasPart  */}}
+    {{ $type = "CollectionPage" }}
+    {{ range . }}
+      {{ $has_part = $has_part | append (partial "components/base/schema/page" .) }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Breadcrumbs  */}}
+  {{ if .Params.breadcrumbs }}
+    {{ $breadcrumbs = dict "@id" (print .Permalink "#schema-breadcrumb") }}
+  {{ end }}
+
+{{ else }}
+
+  {{/*  Others  */}}
+  {{ $image                 = $thumbnail }}
+  {{ $primary_image_of_page = "" }}
+  {{ $is_part_of            = "" }}
+  {{ $potential_action      = "" }}
+
+{{ end }}
+
+
+{{/*  Title  */}}
+{{ $title  := "" }}
+{{ with .Params.title_seo }}
+  {{ $title = . | markdownify }}
+{{ else }}
+  {{ $title = partial "functions/anchor-page" . }}
+{{ end }}
+
+{{/*  Description  */}}
+{{ $description  := "" }}
+{{ with .Description }}
+  {{ $description = . }}
+{{ else }}
+  {{ if .IsPage | and .Content }}
+    {{ $description = .Summary }}
+  {{ end }}
+{{ end }}
+{{ $description = $description | markdownify }}
+
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"              $type
+  "@id"                .Permalink
+  "url"                .Permalink
+  "name"               $title
+  "description"        $description
+  "thumbnailUrl"       $thumbnail
+  "isPartOf"           $is_part_of
+  "image"              $image
+  "primaryImageOfPage" $primary_image_of_page
+  "potentialAction"    $potential_action
+  "hasPart"            $has_part
+  "breadcrumb"         $breadcrumbs
+  "inLanguage"         .Lang
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ return $schema }}

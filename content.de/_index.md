@@ -7,6 +7,6 @@ image: fondo.jpg
 draft: false
 noindex: false
 translationKey: home
-sections:
-- title: Hugo Thema SanSoul
+cascade:
+  type: single
 ---

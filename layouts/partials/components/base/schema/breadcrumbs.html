@@ -1,0 +1,21 @@
+{{ $schema := dict }}
+
+{{ if .Params.breadcrumbs }}
+  {{ $items := slice }}
+  {{ range $k, $v := partial "functions/breadcrumbs" . | collections.Reverse | append page }}
+    {{ $items = $items | append (dict
+      "@type"    "ListItem"
+      "position" (add $k 1)
+      "name"     .Title
+      "item"     .Permalink
+    ) }}
+  {{ end }}
+
+  {{ $schema = dict
+    "@type"           "BreadcrumbList"
+    "@id"             (print .Permalink "#schema-breadcrumb")
+    "itemListElement" $items
+  }}
+{{ end }}
+
+{{ return $schema }}

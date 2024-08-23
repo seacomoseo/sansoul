@@ -1,7 +1,7 @@
 
 
 
-{{- if .page.Content | and (ne .page.Type "events") -}}
+{{- if .Page.Content | and (ne .Page.Params.base "event") -}}
 
   {{- $hide_reading_time := "" -}}
   {{- with .box -}}
@@ -13,7 +13,7 @@
   {{- if not $hide_reading_time -}}
     <i class="data__item">
       {{- partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") -}}
-      {{- i18n "reading_time" .page.ReadingTime -}}
+      {{- i18n "reading_time" .Page.ReadingTime -}}
       {{- if not .box }} {{ i18n "of_reading" }}{{ end -}}
     </i>
   {{- end -}}
@@ -21,7 +21,7 @@
     {{- if not .box -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" "comment-dots" "emoji" "💬") -}}
-        {{- i18n "word_count" .page.WordCount -}}
+        {{- i18n "word_count" .Page.WordCount -}}
       </i>
     {{- end -}}
   */}}

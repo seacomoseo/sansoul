@@ -1,72 +1,18 @@
 {{ $p := dict }}
 
 {{/*  COMMON TEMPLATE PARAMS  */}}
-{{ with site.Data.templates.base._ }}
-  {{ $p = merge . $p }}
+{{ with site.Data.types.all }}
+  {{ $p = merge $p . }}
 {{ end }}
 
 {{ if eq .Kind "404" }}
 
   {{/*  404  */}}
-  {{ with index site.Data.templates.base "404" }}
-    {{ $p = merge $p . }}
-  {{ end }}
-
-{{ else }}
-
-  {{/*  DEFAULT  */}}
-  {{ if eq .Type "page" }}
-    {{/*  CUSTOM  */}}
-    {{ with site.Data.templates.base.customs }}
-      {{ $p = merge $p . }}
-    {{ end }}
-  {{ else }}
-    {{/*  ARTICLES  */}}
-    {{ with site.Data.templates.base.articles }}
-      {{ $p = merge $p . }}
-    {{ end }}
-    {{ if eq .Kind "section" }}
-      {{/*  LISTS  */}}
-      {{ with site.Data.templates.base.lists }}
-        {{ $p = merge $p . }}
-      {{ end }}
-    {{ else }}
-      {{ if in (slice "categories" "tags" "authors") .Type }}
-        {{/*  TAXONOMIES  */}}
-        {{ with site.Data.templates.base.taxonomies }}
-          {{ $p = merge $p . }}
-        {{ end }}
-      {{ else if eq .Type "events" }}
-        {{/*  EVENTS  */}}
-        {{ with site.Data.templates.base.events }}
-          {{ $p = merge $p . }}
-        {{ end }}
-      {{ else if eq .Type "blog" }}
-        {{/*  BLOG  */}}
-        {{ with site.Data.templates.base.blog }}
-          {{ $p = merge $p . }}
-        {{ end }}
-      {{ end }}
-      {{/*  ARTICLES PARENT  */}}
-      {{ with site.GetPage .Type }}
-        {{ with .Params.template }}
-          {{ with index site.Data.templates . }}
-            {{ $p = merge $p . }}
-          {{ end }}
-        {{ end }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-
-  {{/*  PAGE  */}}
-  {{ with .Params.template }}
-    {{ with index site.Data.templates . }}
-      {{ $p = merge $p . }}
-    {{ end }}
-  {{ end }}
-  {{ with .Params.base }}
-    {{ $p = merge $p . (dict "base" nil) }}
-  {{ end }}
+  {{ $p = merge $p (dict
+    "menu"    (dict "hide" true )
+    "callnow" (dict "hide" true )
+    "sections" (slice (dict "file" "base/404"))
+  ) }}
 
 {{ end }}
 

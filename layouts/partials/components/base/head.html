@@ -1,4 +1,4 @@
-{{- $config := partial "functions/config-lang" . -}}
+{{- $config := site.Data.config -}}
 
 {{ $title := "" }}
 {{ with .Params.title_seo }}
@@ -22,7 +22,7 @@
   site.BaseURL
   "/media/"
   ((cond (in site.Data.schema.logo "svg") "" site.Data.schema.logo)
-    | default (cond (in $config.menu.logo "svg") "" $config.menu.logo)
+    | default (cond (in site.Params.menu.logo "svg") "" site.Params.menu.logo)
     | default (cond (in $config.cms.logo "svg") "" $config.cms.logo)
     | default $config.favicon.png
     | default "base/icon.png"
@@ -61,7 +61,7 @@
 {{ end }}
 
 {{/*  OPEN GRAPH  */}}
-<meta property="og:site_name" content="{{ $config.title }}">
+<meta property="og:site_name" content="{{ site.Title }}">
 {{ if .IsHome }}
   <meta property="og:type" content="website">
 {{ else }}
@@ -89,13 +89,13 @@
 {{ if .Params.noindex }}
   <meta name="robots" content="noindex">
 {{ end }}
-{{ with $config.google_site_verification }}
+{{ with site.Params.google_site_verification }}
   <meta name="google-site-verification" content="{{ . }}">
 {{ end }}
 
 {{/*  GOOGLE ANALYTICS  */}}
 {{- if hugo.IsProduction -}}
-  {{- with $config.google_analytics -}}
+  {{- with site.Params.google_analytics -}}
     <script>
       // GA4 base
       window.dataLayer = window.dataLayer || [];
@@ -151,7 +151,7 @@
 
 {{/*  RSS  */}}
 {{ with site.Home.OutputFormats.Get "RSS" }}
-  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $config.title }}">
+  <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Title }}">
 {{ end }}
 
 {{/*  GOOGLE FONTS  */}}

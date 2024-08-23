@@ -1,0 +1,35 @@
+{{/*  Brand  */}}
+{{ $brand := dict }}
+{{ with .Params.brand }}
+  {{ $brand  = dict
+    "@type" "Brand"
+    "name"  .
+  }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+
+  "@type"            "Product"
+  "@id"              (print .Permalink "#schema-product")
+  "name"             .Title
+  "description"      .Params.description
+  "sku"              .Params.sku
+  "url"              .Permalink
+  "inLanguage"       .Lang
+  "brand"            $brand
+  "potentialAction"  (dict "@type" "BuyAction" "target" .Permalink)
+  "image"            (dict "@id" (print .Permalink "#schema-image"))
+  "isPartOf"         (dict "@id" .Permalink)
+  "mainEntityOfPage" (dict "@id" .Permalink)
+  "offers"           (dict
+    "@type"           "Offer"
+    "url"             .Permalink
+    "price"           .Params.price
+    "priceCurrency"   site.Params.currency
+    "availability"    (print "https://schema.org/" (cond (not .Params.stock) "InStock" "OutOfStock"))
+  )
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ return $schema }}

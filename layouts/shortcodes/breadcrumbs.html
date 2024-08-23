@@ -1,0 +1,12 @@
+<div id="breadcrumbs">
+  {{- range partial "functions/breadcrumbs" page | collections.Reverse -}}
+    {{- partial "components/link" (dict
+      "link"      .RelPermalink
+      "button"    "none"
+      "label"     .Title
+      "noindex"   .Params.noindex
+    ) -}}
+    {{- partial "components/icon" (dict "icon" "angle-right" "emoji" "➡️") -}}
+  {{- end -}}
+  {{- page.Title -}}
+</div>

@@ -3,11 +3,10 @@
 
   {{/*  VARIABLES  */}}
   {{- $params := partial "functions/page-params" . -}}
-  {{- $config := partial "functions/config-lang" . -}}
 
   {{/*  CUSTOM HTML HEAD  */}}
   {{- $custom_html_head  := "" -}}
-  {{- with $config.custom_html.head -}}
+  {{- with site.Params.custom_html.head -}}
     {{- $path            := print "aux_html_head." $.Lang -}}
     {{- $custom_html_head = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
@@ -15,7 +14,7 @@
 
   {{/*  CUSTOM HTML BODY  */}}
   {{- $custom_html_body  := "" -}}
-  {{- with $config.custom_html.body -}}
+  {{- with site.Params.custom_html.body -}}
     {{- $path            := print "aux_html_body." $.Lang -}}
     {{- $custom_html_body = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
@@ -51,7 +50,7 @@
   {{- $body_class := slice
     (print "kind-" .Kind)
     (print "type-" .Type)
-    (print "section-" .Section)
+    (print "base-" .Params.base)
     "body-top"
     $body_menu
     $body_menu_logo

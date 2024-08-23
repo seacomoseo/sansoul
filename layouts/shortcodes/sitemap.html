@@ -1,45 +1,30 @@
-{{ $parents  := slice }}
-
-{{ range slice
-  "/" 
-  "pages"
-  "categories"
-  "tags"
-  "authors"
-  "blog"
-  "events"
-  "products"
-}}
-  {{ with page.GetPage . }}
-    {{ if or .RegularPages .IsHome }}
-      {{ $parent_type := index site.Data.utilities.types .Type }}
-      <h2>
-        {{ partial "components/link" (dict
-          "class"     "sitemap-header-link"
-          "link"      .RelPermalink
-          "button"    "none"
-          "icon"      $parent_type.icon
-          "emoji"     $parent_type.emoji
-          "label"     .Title
-          "anchor"    (partial "functions/anchor-page" .)
-          "noindex"   .Params.noindex
-        ) }}
-      </h2>
-      {{ with .RegularPages }}
-        <ul>
-          {{ range sort . "Params.date_ini" "desc" }}
-            <li>
-              {{ partial "components/link" (dict
-                "link"      .RelPermalink
-                "button"    "none"
-                "label"     .Title
-                "anchor"    (partial "functions/anchor-page" .)
-                "noindex"   .Params.noindex
-              ) }}
-            </li>
-          {{ end }}
-        </ul>
+{{ $types := slice site.Home | append site.Sections }}
+{{ range $types }}
+  <h2>
+    {{ partial "components/link" (dict
+      "class"     "sitemap-header-link"
+      "link"      .RelPermalink
+      "button"    "none"
+      "icon"      (.Params.icon  | default "file-heart")
+      "emoji"     (.Params.emoji | default "📑")
+      "label"     .Title
+      "anchor"    (partial "functions/anchor-page" .)
+      "noindex"   .Params.noindex
+    ) }}
+  </h2>
+  {{ with .RegularPages }}
+    <ul>
+      {{ range sort . "Params.date_ini" "desc" }}
+        <li>
+          {{ partial "components/link" (dict
+            "link"      .RelPermalink
+            "button"    "none"
+            "label"     .Title
+            "anchor"    (partial "functions/anchor-page" .)
+            "noindex"   .Params.noindex
+          ) }}
+        </li>
       {{ end }}
-    {{ end }}
+    </ul>
   {{ end }}
 {{ end }}

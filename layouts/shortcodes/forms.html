@@ -7,7 +7,7 @@
         {{- if and .inputs (not .action) -}}
           {{- $forms = $forms | append (partial "components/blocks/form" (merge . (dict
             "shortcode" true
-            "page"      $page
+            "Page"      $page
             "section"   $section
             "id"        $section.id
           ))) -}}

@@ -1,13 +1,13 @@
 <i class="data__item">
-  {{- $type := index site.Data.utilities.types .page.Type -}}
-  {{- partial "components/icon" (dict "class" "data__icon" "icon" $type.icon "emoji" $type.emoji) -}}
+  {{- partial "components/icon" (dict "class" "data__icon" "icon" .Page.Params.icon "emoji" .Page.Params.emoji) -}}
+  {{- $label := .Page.CurrentSection.Params.singular -}}
   {{- if $.box -}}
-    {{- (page.GetPage .page.Type).Title -}}
+    {{- $label -}}
   {{- else -}}
     {{- partial "components/link" (dict
-      "link"    (page.GetPage page.Type).RelPermalink
+      "link"    page.CurrentSection.RelPermalink
       "button"  "none"
-      "label"   (i18n .page.Type 1)
+      "label"   $label
       "noindex" true
     ) -}}
   {{- end -}}

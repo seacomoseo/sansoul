@@ -1,0 +1,36 @@
+{{ $children := slice }}
+
+{{ if .IsSection }}
+  {{/*  Parent  */}}
+  {{ $children = .Pages }}
+{{ else }}
+  {{/*  Regular  */}}
+  {{ $relations := partial "functions/relations" . }}
+  {{/*  All pages (not parents)  */}}
+  {{ range site.RegularPages }}
+    {{ $regular := . }}
+    {{/*  Each relation with same type of page  */}}
+    {{ range where $relations "relation" page.Type }}
+      {{/*  Check param in page with same name tath relation  */}}
+      {{ $match := index $regular.Params .name }}
+      {{/*  To slice  */}}
+      {{ if and $match (not .multiple) }}
+        {{ $match = slice $match }}
+      {{ end }}
+      {{/*  Each relation from page param  */}}
+      {{ range $match }}
+        {{/*  Check same filename tath self page  */}}
+        {{ if eq . page.File.TranslationBaseName }}
+          {{/*  Check page exist  */}}
+          {{ with site.GetPage page.Type . }}
+            {{/*  Append  */}}
+            {{ $children = $children | append $regular }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ $children = uniq $children }}
+{{ end }}
+
+{{ return $children }}

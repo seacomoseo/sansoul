@@ -2,11 +2,10 @@
 {{- $two   := index .Params 1 -}}
 
 {{- if in (slice "name" "nif" "location" "email") $param -}}
-  {{- $config := partial "functions/config-lang" . -}}
-  {{- $legal  := $config.legal -}}
+  {{- $legal  := site.Params.legal -}}
 
   {{- if eq $param "name" -}}
-    {{- $legal.name | default $config.title | default site.Data.schema.title -}}
+    {{- $legal.name | default site.Title | default site.Data.schema.title -}}
   {{- else if eq $param "nif" -}}
     {{- $legal.nif | default "00000000A" -}}
   {{- else if eq $param "location" -}}

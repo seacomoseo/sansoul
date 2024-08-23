@@ -1,0 +1,44 @@
+{{ $schemas        := slice }}
+{{ $ratings        := slice }}
+{{ $sum            := 0 }}
+
+{{ $item_reviewed  := dict }}
+{{ if in (slice "product" "organization" "service") page.Params.base }}
+  {{ $item_reviewed = (dict "@id" (print page.Permalink "#schema-" page.Params.base)) }}
+{{ else }}
+  {{ $item_reviewed = partial "components/base/schema/organization-id" . }}
+{{ end }}
+
+{{ range .reviews }}
+  {{ $rating := .rating  | default 5 }}
+  {{ $ratings = $ratings | append $rating }}
+  {{ $sum     = add $sum $rating }}
+  {{ $schemas = $schemas | append (dict
+    "@type"        "Review"
+    "author"       .title
+    "itemReviewed" $item_reviewed
+    "reviewRating" (dict
+      "@type"       "Rating"
+      "ratingValue" $rating
+      "bestRating"  5
+    )
+  ) }}
+{{ end }}
+
+{{ $schemas = $schemas | append (dict
+  "@type"        "AggregateRating"
+  "itemReviewed" $item_reviewed
+  "bestRating"   5
+  "ratingValue"  (div $sum (len $ratings))
+  "ratingCount"  (len $ratings)
+) }}
+
+{{ $schema := dict 
+  "@context" "http://schema.org"
+  "@graph"   $schemas
+}}
+
+{{ $opts  := cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ") }}
+{{ $schema = $schema | jsonify $opts }}
+
+{{ return $schema }}

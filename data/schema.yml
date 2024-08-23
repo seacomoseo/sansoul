@@ -1,6 +1,17 @@
+# legal: null # string
+# nif: null # string
+# areas: [] # strings areaServed
+# services: [] # strings serviceType
+# reviews: null # string url#anchor
+# Only in type: [FoodEstablishment, Bakery, BarOrPub, Brewery, CafeOrCoffeeShop, Distillery, FastFoodRestaurant, IceCreamShop, Restaurant, Winery]
+# menu: [] # strings url
+# food: [] # strings servesCuisine (Italian, American...)
+
 types: [] # strings https://schema.org/docs/full.html > Organization...
 names: [] # strings
 description: null # string
+legal: null # string
+nif: null # string
 url: null # string
 logo: null # string image path
 images: [] # strings image path
@@ -15,6 +26,7 @@ address:
   country: null # string
   geo: null # '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
   link: null # string
+areas: [] # strings
 open: []
 # - days:
 #   - monday
@@ -29,7 +41,11 @@ open: []
 #   opens: 8:00
 #   closes: 14:00
 prices: null # [ €, €€, €€€, $, $$, $$$ ]
-rating:
-  count: null # [ > 0, int ]
-  value: null # [ 0 - 5, float ]
+services: [] # strings
+# - name: null # strings
+#   price: null # float
+#   area: null # string
+#   url: null # string
+menu: [] # string url
+food: [] # string (Italian, American...)
 department: [] # all same

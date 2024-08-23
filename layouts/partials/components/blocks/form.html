@@ -1,5 +1,5 @@
 {{- $show          := cond (not site.Data.styles.performance.show) "" " show" -}}
-{{- $page_emoji    := (index site.Data.utilities.types .page.Type).emoji -}}
+{{- $page_emoji    := .Page.Params.emoji | default "📑" -}}
 {{- $section_name  := i18n "header" -}}
 {{- if eq .id "footer" }}
   {{- $section_name = i18n "footer" -}}
@@ -30,12 +30,12 @@
 {{- $subject := print
   (i18n "form") " "
   $page_emoji " "
-  .page.Title " "
+  .Page.Title " "
   $section_emoji " "
   $section_name
   (cond (eq $num 1) "" (print " 📌 " $num))
   -}}
-{{- $form_id       := print ((i18n "form") | urlize) "-" (cond (eq .id "header") .page.Params.slug .id) (cond (eq $num 1) "" (print "-" $num)) -}}
+{{- $form_id       := print ((i18n "form") | urlize) "-" (cond (eq .id "header") .Page.Params.slug .id) (cond (eq $num 1) "" (print "-" $num)) -}}
 {{- $netlify_forms := not .action -}}
 {{- $googleForm    := in .action "docs.google.com/forms" -}}
 {{- $formsubmit_co := in .action "formsubmit.co" -}}
@@ -67,7 +67,7 @@
     {{- if not .shortcode -}}
       <input type="hidden" name="form-name" value="{{ $form_id }}">
       <input type="hidden" name="subject" value="{{ site.BaseURL | replaceRE `^(https?:)?//|/$` `` }}: {{ $subject }}" data-remove-prefix>
-      <input type="hidden" name="url" value="{{ .page.Permalink }}#{{ $form_id }}">
+      <input type="hidden" name="url" value="{{ .Page.Permalink }}#{{ $form_id }}">
     {{- else -}}
       <input type="hidden" name="subject" value="{{ $form_id }}" data-remove-prefix>
       <input type="hidden" name="url" value="{{ $form_id }}">
@@ -76,7 +76,7 @@
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
-    {{/*  <input type="hidden" name="_next" value="{{ .page.Permalink }}#{{ .id }}">  */}}
+    {{/*  <input type="hidden" name="_next" value="{{ .Page.Permalink }}#{{ .id }}">  */}}
   {{- end -}}
 
 

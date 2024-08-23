@@ -1,11 +1,17 @@
-{{ $config := partial "functions/config-lang" . }}
+{{ $url    := print site.BaseURL "/" }}
+
+{{/*  Organization  */}}
+{{ $organization := partial "components/base/schema/organization-id" . }}
 
 {{ $schema := dict
-  "@context"      `http://schema.org`
-  "@type"         `WebSite`
-  "url"           (print site.BaseURL "/")
-  "name"          $config.title
-  "description"   $config.description
+  "@type"         "WebSite"
+  "@id"           (print $url "#schema-website")
+  "url"           $url
+  "name"          site.Title
+  "description"   site.Params.description
+  "publisher"     $organization
+  "alternateName" site.Data.schema.names
+  "inLanguage"    .Lang
 }}
 
 {{ return $schema }}

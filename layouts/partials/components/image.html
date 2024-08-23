@@ -64,7 +64,7 @@
           {{- if .alt }}
             alt="{{ .alt }}"
           {{- else }}
-            alt="{{ .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `(\?|\&|\=)` ` ` | replaceRE `^(.+)\..*$` `$1` | replaceRE `/` ` ` }}"
+            alt="{{ .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `^(.+)\..*$` `$1` | humanize }}"
           {{- end }}
           decoding="async"
           {{- if not .notlazy }} loading="lazy"{{ end -}}

@@ -7,6 +7,6 @@ image: fondo.jpg
 draft: false
 noindex: false
 translationKey: home
-sections:
-- title: Tema SanSoul di Hugo
+cascade:
+  type: single
 ---

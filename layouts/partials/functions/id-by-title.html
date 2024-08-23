@@ -3,7 +3,7 @@
   | default (.hanchor | markdownify)
   | default (.title | markdownify)
   | default .name
-  | default .file
+  | default (replace .file "/" "-")
 }}
 {{ $id = $id | urlize }}
 {{ return $id }}

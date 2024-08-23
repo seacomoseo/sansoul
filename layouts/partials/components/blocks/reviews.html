@@ -133,6 +133,10 @@
     {{ end }}
   </div>
 </div>
+{{/*  SCHEMA  */}}
+<script type="application/ld+json">
+  {{- partial "components/base/schema/reviews" . | safeJS -}}
+</script>
 
 {{ if .slider }}
   {{- partial "components/slider-buttons"

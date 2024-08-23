@@ -1,0 +1,16 @@
+{{ $paths := slice }}
+{{ $type  := page.Params.breadcrumbs }}
+
+{{ with index .Params $type }}
+  {{ with index . 0 }}
+    {{ with site.GetPage $type . }}
+      {{ $paths = $paths | append . }}
+      {{ $path := partial "functions/breadcrumbs" . }}
+      {{ with $path }}
+        {{ $paths = $paths | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $paths }}

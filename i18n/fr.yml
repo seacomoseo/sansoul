@@ -9,8 +9,10 @@ word_count:
   other: '{{ .Count }} mots'
 of_reading: de lecture
 price: Prix
-artist: Artiste/s
+artists: Artiste/s
 toc: Table des matières
+image: Image
+author: L'auteur
 about: À propos
 comments: Commentaires
 share: Partager !
@@ -122,12 +124,6 @@ collection_p_description: Résumé
 collection_p_description_hint: Utilisé pour les vignettes des listes et les résultats de recherche Google 🔷 **Recommandé entre 70 et 155 caractères** (~135) 🔷 Caractères accrocheurs autorisés par Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
 collection_p_image: Image Principale
 collection_p_image_hint: Nom de fichier au même format que "slug" 🔷 Recommandé de redimensionner ([éditeur en ligne](https://photopea.com)) et compresser ([compresseur en ligne](https://kraken.io)) avant de télécharger
-collection_p_categories: Catégories
-collection_p_categories_hint: Indiquer une ou plusieurs [catégories préalablement créées](#/collections/categories)
-collection_p_tags: Étiquettes
-collection_p_tags_hint: Indiquer éventuellement une ou plusieurs [étiquettes préalablement créées](#/collections/tags)
-collection_p_author: Auteur
-collection_p_author_hint: Indiquer un [auteur préalablement créé](#/collections/authors)
 collection_p_toc: Table des Matières
 collection_p_toc_hint: Table des matières générée automatiquement à l'aide des titres du contenu
 collection_p_draft: Brouillon
@@ -146,8 +142,10 @@ collection_p_date_ini: Date de Début
 collection_p_date_ini_hint: Format → 2024-12-31T24:59:59
 collection_p_date_end: Date de Fin
 collection_p_date_end_hint: Format → 2024-12-31T24:59:59
-collection_p_artist: Artiste(s)
-collection_p_artist_hint: '**Exemple →** "Manolo García"'
+collection_p_artists: Artiste(s)
+collection_p_artists_hint: '**Exemple →** "Manolo García"'
+collection_p_artists_group: Groupe
+collection_p_artists_name: Nom
 collection_p_location: Emplacement
 collection_p_location_hint: '**Exemple →** "Salle B"'
 collection_p_address: Adresse
@@ -163,30 +161,9 @@ collection_p_custom_key_label: Clé
 collection_p_custom_value_label: Valeur
 collection_p_custom_hint: Ici, vous pouvez ajouter des paramètres pour les utiliser ensuite dans les sections des modèles avec "**\{\{% param custom.example %\}\}**"
 # types
-collection_blog: Blog
-collection_blog_singular: Article
-collection_blog_description: Articles du blog, avec dates, catégories, étiquettes et auteurs assignés.
-collection_events: Événements
-collection_events_singular: Événement
-collection_events_description: Événements avec dates de début et de fin.
-collection_products: Produits
-collection_products_singular: Produit
-collection_products_description: Produits avec catégories, étiquettes et variations.
-collection_categories: Catégories
-collection_categories_singular: Catégorie
-collection_categories_description: Catégories assignées à chaque article. Elles doivent être créées ici avant de pouvoir être assignées.
-collection_tags: Étiquettes
-collection_tags_singular: Étiquette
-collection_tags_description: Étiquettes assignées à chaque article. Elles doivent être créées ici avant de pouvoir être assignées.
-collection_authors: Auteurs
-collection_authors_singular: Auteur
-collection_authors_description: Auteurs assignés à chaque article. Ils doivent être créés ici avant de pouvoir être assignés.
-collection_pages: Pages
-collection_pages_singular: Page
-collection_pages_description: Pages basiques ou normales (sans sections).
-collection_page: Personnalisées
-collection_page_singular: Personnalisée
-collection_page_description: Pages pouvant être mises en page par sections.
+collection_single: Personnalisées
+collection_single_singular: Personnalisée
+collection_single_description: Pages pouvant être mises en page par sections.
 collection_related: Connexes
 collection_sections: Sections
 collection_sections_singular: Section
@@ -284,7 +261,7 @@ collection_settings_schema_address_pc: Code Postal
 collection_settings_schema_address_locality: Localité
 collection_settings_schema_address_region: Région
 collection_settings_schema_address_country: Pays
-collection_settings_schema_address_country_hint: Recommandé d'utiliser le [code pays à 2 lettres](https://fr.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+collection_settings_schema_address_country_hint: Recommandé d'utiliser le [code pays à 2 lettres](https://wikipedia.org/wiki/ISO_3166-1)
 collection_settings_schema_address_geo: Coordonnées
 collection_settings_schema_address_link: Lien vers Carte
 collection_settings_schema_open: Horaires
@@ -402,10 +379,10 @@ base_menu_logo_align: Alignement du Logo
 base_menu_logo_align_hint: Alignement du logo sans que le menu ne se déploie
 base_menu_transparent: Démarre Transparent
 base_menu_transparent_hint: Prend sa couleur lors du défilement
-base_menu_hide_sections: Cacher les Sections
-base_menu_hide_sections_hint: Cache les liens menant à chaque section
-base_menu_hide_modals: Cacher les Modaux
-base_menu_hide_modals_hint: Cacher les liens menant à chaque fenêtre modale comme sous-éléments dépliables
+base_menu_show_sections: Afficher les Sections
+base_menu_show_sections_hint: Affiche les liens menant à chaque section
+base_menu_show_modals: Afficher les Modaux
+base_menu_show_modals_hint: Affiche les liens menant à chaque fenêtre modale sous forme de sous-éléments déroulants
 base_menu_hide_icons: Cacher les Icônes
 base_menu_google_translate: Traducteur Google
 base_callnow: Boutons de Coin
@@ -668,6 +645,14 @@ option-langs-fr: 🇫🇷 Français
 option-langs-de: 🇩🇪 Allemand
 option-langs-pt: 🇵🇹 Portugais
 option-langs-it: 🇮🇹 Italien
+option-base-blog: Blog
+option-base-event: Événement
+option-base-product: Produit
+option-base-taxonomy: Taxonomie
+option-base-author: Auteur
+option-base-organization: Organisation
+option-base-service: Services
+option-base-page: Page
 option-hn-0: h0
 option-hn-1: h1
 option-hn-2: h2

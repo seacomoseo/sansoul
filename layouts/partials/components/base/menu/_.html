@@ -3,8 +3,7 @@
   {{- $items := slice -}}
   {{- $logo  := "" -}}
   {{ if .menu.logo -}}
-    {{- $config := partial "functions/config-lang" . -}}
-    {{- $logo    = $config.menu.logo -}}
+    {{- $logo = site.Params.menu.logo -}}
   {{- end -}}
 
   {{/*  ITEM HOME LINK  */}}

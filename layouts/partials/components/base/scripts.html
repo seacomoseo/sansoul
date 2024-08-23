@@ -1,5 +1,3 @@
-{{ $config := partial "functions/config-lang" . }}
-
 {{ $is_cookies          := false }}
 {{ $is_scroll_show      := false }}
 {{ $disqus_id           := "" }}
@@ -16,7 +14,7 @@
   {{ $is_cookies = true }}
 {{ end }}
 
-{{ with $config.disqus }}
+{{ with site.Params.disqus }}
   {{ $disqus_id = . }}
 {{ end }}
 
@@ -25,7 +23,7 @@
 {{ end }}
 
 {{ if hugo.IsProduction }}
-  {{ with $config.google_analytics }}
+  {{ with site.Params.google_analytics }}
     {{ $ga4_id = . }}
   {{ end }}
 {{ end }}

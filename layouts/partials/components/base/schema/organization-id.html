@@ -1,0 +1,3 @@
+{{ $url          := site.Data.schema.url | default (print site.BaseURL "/") }}
+{{ $organization := dict "@id" (print $url "#schema-organization") }}
+{{ return $organization }}

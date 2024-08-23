@@ -186,8 +186,8 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               'contents',
               'reading_time',
               'type',
+              'type_label',
               'categories',
-              'tags',
               'author',
               'image'
             ]
@@ -240,7 +240,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
           searchItemType = `
             <i class="data__item">
               <svg class="data__icon"><use href="/draws.svg#${results[item].item.icon}"></use></svg>
-              ${results[item].item.type}
+              ${results[item].item.type_label}
             </i>`
         }
         if (results[item].item.author) {

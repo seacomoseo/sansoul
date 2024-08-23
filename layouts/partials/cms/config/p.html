@@ -34,12 +34,33 @@
   (dict "&P_LASTMOD"        (dict "label" $t.collection_p_lastmod        "name" `lastmod`        "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_lastmod_hint))
   (dict "&P_DATE_INI"       (dict "label" $t.collection_p_date_ini       "name" `date_ini`       "widget" `string`   "i18n" `duplicate` "required" false "hint" $t.collection_p_date_ini_hint))
   (dict "&P_DATE_END"       (dict "label" $t.collection_p_date_end       "name" `date_end`       "widget" `string`   "i18n" `duplicate` "required" false "hint" $t.collection_p_date_end_hint))
-  (dict "&P_ARTIST"         (dict "label" $t.collection_p_artist         "name" `artist`         "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_artist_hint))
+  (dict "&P_ARTIST"         (dict
+    "label"          $t.collection_p_artists
+    "name"           `artists`
+    "widget"         `list`
+    "collapsed"      false
+    "summary"        "{{fields.link}}"
+    "allow_add"      true
+    "required"       false
+    "fields"         (slice
+      (dict "label" $t.collection_p_artists_group "name" `group` "widget" `boolean` "i18n" `duplicate` "required" false)
+      (dict "label" $t.collection_p_artists_name  "name" `name`  "widget" `string`  "i18n" true        "required" false)
+    )
+  ))
   (dict "&P_LOCATION"       (dict "label" $t.collection_p_location       "name" `location`       "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_location_hint))
   (dict "&P_ADDRESS"        (dict "label" $t.collection_p_address        "name" `address`        "widget" `string`   "i18n" true        "required" false "hint" $t.collection_p_address_hint))
   (dict "&P_BODY"           (dict "label" $t.collection_p_body           "name" `body`           "widget" `markdown` "i18n" true        "required" false "hint" $t.collection_p_body_hint           "show_raw" true))
   (dict "&P_TRANSLATIONKEY" (dict "label" $t.collection_p_translationKey "name" `translationKey` "widget" `string`   "i18n" `duplicate` "required" false "hint" $t.collection_p_translationKey_hint))
   (dict "&P_TEMPLATE"       (dict "label" $t.collection_p_template       "name" `template`       "widget" `relation` "i18n" `duplicate` "required" false "hint" $t.collection_p_template_hint       "options_length" 100 "collection" `templates` "value_field" "{{slug}}" "search_fields" (slice "{{name}}") "display_fields" (slice "{{name}}")))
+
+
+
+
+
+
+
+
+
   (dict "&P_CUSTOM" (dict
     "label"       $t.collection_p_custom
     "name"        `custom`

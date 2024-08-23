@@ -5,7 +5,9 @@
 
 {{/*  Key (lightbox need it)  */}}
 {{ $key_class  := print "section--" .key }}
-{{ if .header }}
+{{ if .body_class }}
+  {{ $key_class = "" }}
+{{ else if .header }}
   {{ $key_class = "section--header" }}
 {{ else if .footer }}
   {{ $key_class = "section--footer" }}
