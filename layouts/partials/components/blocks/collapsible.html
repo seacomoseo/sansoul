@@ -39,6 +39,7 @@
   "@type"      "FAQPage"
   "@id"        (print page.Permalink "#schema-faq")
   "mainEntity" $schema_questions
+  "isPartOf"   (dict "@id" page.Permalink)
 -}}
 {{- if hugo.IsProduction -}}
   {{- $schema = $schema | jsonify -}}

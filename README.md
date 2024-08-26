@@ -285,6 +285,11 @@
       - [x] Fix lightbox
       - [x] Fix purgecss
       - [x] Images src sizes
+      - [ ] `schema`
+        - [ ] `itemListElement` como sustituto de cualquier array?
+          - [ ] `reviews`?
+        - [ ] `organization.services.offer`
+        - [ ] `images`
       - [/] `cascade.type: single` en páginas únicas
       - [/] `params` in each box
       - [/] `data.config.langs.[lang].types` in `data.types`

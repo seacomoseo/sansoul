@@ -11,11 +11,13 @@
     "availability"  "http://schema.org/InStock"
   }}
 {{ end }}
-
+ 
 {{/*  Provider  */}}
-{{ $provider  := partial "components/base/schema/organization-id" . }}
+{{ $provider  := "" }}
 {{ with .Params.provider }}
   {{ $provider = . }}
+{{ else }}
+  {{ $provider = partial "components/base/schema/organization-id" . }}
 {{ end }}
 
 {{/*  Schema  */}}

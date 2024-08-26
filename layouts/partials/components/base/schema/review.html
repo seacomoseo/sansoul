@@ -15,7 +15,10 @@
   {{ $sum     = add $sum $rating }}
   {{ $schemas = $schemas | append (dict
     "@type"        "Review"
-    "author"       .title
+    "author"       (dict
+      "@type"       "Person"
+      "name"        .title
+    )
     "itemReviewed" $item_reviewed
     "reviewRating" (dict
       "@type"       "Rating"

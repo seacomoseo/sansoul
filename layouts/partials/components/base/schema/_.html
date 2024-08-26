@@ -2,11 +2,11 @@
   (partial "components/base/schema/website" .)
   (partial "components/base/schema/page" .)
   (partial "components/base/schema/image" .)
-  (partial "components/base/schema/organization" .)
+  (partial "components/base/schema/organization" site.Data.schema)
   (partial "components/base/schema/breadcrumbs" .)
 }}
 
-{{ if in (slice "article" "event" "product" "person" "service") .Params.base }}
+{{ if in (slice "article" "event" "product" "person" "service" "organization") .Params.base }}
   {{ $schemas = $schemas | append (partial (print "components/base/schema/" .Params.base) .) }}
 {{ end }}
 
