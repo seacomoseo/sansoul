@@ -1,6 +1,3 @@
-{{ $schemas        := slice }}
-{{ $ratings        := slice }}
-{{ $sum            := 0 }}
 
 {{ $item_reviewed  := dict }}
 {{ if in (slice "product" "organization" "service") page.Params.base }}
@@ -9,6 +6,9 @@
   {{ $item_reviewed = partial "components/base/schema/organization-id" . }}
 {{ end }}
 
+{{ $schemas := slice }}
+{{ $ratings := slice }}
+{{ $sum     := 0 }}
 {{ range .reviews }}
   {{ $rating := .rating  | default 5 }}
   {{ $ratings = $ratings | append $rating }}
@@ -28,11 +28,17 @@
   ) }}
 {{ end }}
 
+{{ $rating_avg  := 0 }}
+{{ with $ratings }}
+  {{ $rating_avg = div $sum (len .) | mul 100 | math.Round }}
+  {{ $rating_avg = div $rating_avg 100 }}
+{{ end }}
+
 {{ $schemas = $schemas | append (dict
   "@type"        "AggregateRating"
   "itemReviewed" $item_reviewed
   "bestRating"   5
-  "ratingValue"  (div $sum (len $ratings))
+  "ratingValue"  $rating_avg
   "ratingCount"  (len $ratings)
 ) }}
 
