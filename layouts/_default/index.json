@@ -1,67 +1,70 @@
 {{- $index := slice -}}
-{{- $pages := where site.Pages "File.TranslationBaseName" "not in" (slice "legal" "privacy" "cookies" "search" "sitemap") -}}
-{{- range $k, $page := $pages -}}
+{{- range $k, $page := site.Pages -}}
+  {{- if .File -}}
+    {{- if not (in (slice "legal" "privacy" "cookies" "search" "sitemap") .File.TranslationBaseName) -}}
 
-  {{- $image := .Params.image -}}
-  {{- if $image -}}
-    {{- if strings.HasPrefix $image "http" -}}
-      {{- $image = partial "functions/iframe-poster" $image | default $image -}}
-    {{- else -}}
-      {{- with resources.Get (print "/media/" $image) -}}
-        {{- $image = .RelPermalink -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-
-	{{- $contents  := .Plain -}}
-  {{- if not $contents -}}
-	  {{- $contents = "" -}}
-    {{- range partial "functions/sections" . -}}
-      {{- range partial "functions/section-searchable" . -}}
-        {{- with .title       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-        {{- with .hanchor     }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-        {{- with .subtitle    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-        {{- with .description }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-        {{- with .label       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $contents = $contents | replaceRE ` \n\n \{\{.+?\}\}` "" -}}
-  
-  {{- $summary := dict
-    "title"         .Title
-    "link"          .RelPermalink
-    "description"   ((.Description | default .Plain) | markdownify | htmlUnescape | plainify | truncate 155)
-    "date"          (partial "functions/date" (dict "date" (.Params.Lastmod | default .Params.date_ini) "type" .Type))
-    "date_end"      (partial "functions/date" (dict "date" .Params.date_end "type" .Type))
-    "contents"      $contents
-    "image"         $image
-    "reading_time"  (i18n "reading_time" .ReadingTime)
-    "type"          .Type
-    "type_label"    .Params.singular
-    "icon"          (.Params.icon  | default "file-heart")
-    "emoji"         (.Params.emoji | default "📑")
-  -}}
-
-  {{- range .CurrentSection.Params.custom_params -}}
-    {{- if eq .type "relation" -}}
-      {{- $relation    := .relation -}}
-      {{- $taxonomies  := slice -}}
-      {{- $param       := index $page.Params .name -}}
-      {{- with $param -}}
-        {{- if not (reflect.IsSlice .) -}}
-          {{- $param = slice . -}}
-        {{- end -}}
-        {{- range $param -}}
-          {{- $taxonomies = $taxonomies | append (site.GetPage (print $relation "/" .)).Title -}}
+      {{- $image := .Params.image -}}
+      {{- if $image -}}
+        {{- if strings.HasPrefix $image "http" -}}
+          {{- $image = partial "functions/iframe-poster" $image | default $image -}}
+        {{- else -}}
+          {{- with resources.Get (print "/media/" $image) -}}
+            {{- $image = .RelPermalink -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- $summary = merge $summary (dict .name (delimit $taxonomies ", ")) -}}
+
+      {{- $contents  := .Plain -}}
+      {{- if not $contents -}}
+        {{- $contents = "" -}}
+        {{- range partial "functions/sections" . -}}
+          {{- range partial "functions/section-searchable" . -}}
+            {{- with .title       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .hanchor     }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .subtitle    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .description }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .label       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $contents = $contents | replaceRE ` \n\n \{\{.+?\}\}` "" -}}
+      
+      {{- $summary := dict
+        "title"         .Title
+        "link"          .RelPermalink
+        "description"   ((.Description | default .Plain) | markdownify | htmlUnescape | plainify | truncate 155)
+        "date"          (partial "functions/date" (dict "date" .Lastmod    "type" .Type))
+        "end"           (partial "functions/date" (dict "date" .Params.end "type" .Type))
+        "contents"      $contents
+        "image"         $image
+        "reading_time"  (i18n "reading_time" .ReadingTime)
+        "type"          .Type
+        "type_label"    .Params.singular
+        "icon"          .Params.icon
+        "emoji"         .Params.emoji
+      -}}
+
+      {{- range .CurrentSection.Params.custom_params -}}
+        {{- if eq .type "relation" -}}
+          {{- $relation    := .relation -}}
+          {{- $taxonomies  := slice -}}
+          {{- $param       := index $page.Params .name -}}
+          {{- with $param -}}
+            {{- if not (reflect.IsSlice .) -}}
+              {{- $param = slice . -}}
+            {{- end -}}
+            {{- range $param -}}
+              {{- $taxonomies = $taxonomies | append (site.GetPage (print $relation "/" .)).Title -}}
+            {{- end -}}
+          {{- end -}}
+          {{- $summary = merge $summary (dict .name (delimit $taxonomies ", ")) -}}
+        {{- end -}}
+      {{- end -}}
+      
+      {{- $index = $index | append $summary -}}
+
     {{- end -}}
   {{- end -}}
-  
-  {{- $index = $index | append $summary -}}
-
 {{- end -}}
 
 {{- if hugo.IsProduction -}}

@@ -1,0 +1,19 @@
+{{ $images := slice }}
+
+{{ range . }}
+  {{ $image    := "" }}
+  {{ $external := strings.HasPrefix . "http" }}
+  {{ if not $external }}
+    {{ $url    := resources.Get (print "/media/" .) }}
+    {{ with $url }}
+      {{ $image = .Permalink }}
+    {{ end }}
+  {{ else }}
+    {{ $image   = . }}
+  {{ end }}
+  {{ with $image }}
+    {{ $images = $images | append . }}
+  {{ end }}
+{{ end }}
+
+{{ return $images }}

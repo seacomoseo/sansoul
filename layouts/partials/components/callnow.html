@@ -1,96 +1,98 @@
-{{- with .callnow -}}
-  {{- if not .hide -}}
+{{- if ne .Kind "404" -}}
+  {{- with .Params.callnow -}}
+    {{- if not .hide -}}
 
-    {{- $buttons := slice -}}
+      {{- $buttons := slice -}}
 
-    {{- with index . page.Lang -}}
+      {{- with index . page.Lang -}}
 
-      {{- range . -}}
-        {{- $buttons = $buttons | append . -}}
-      {{- end -}}
+        {{- range . -}}
+          {{- $buttons = $buttons | append . -}}
+        {{- end -}}
 
-    {{- else -}}
+      {{- else -}}
 
-      {{- $contact_buttons := slice -}}
-      {{- range partial "functions/sections-all" page -}}
-        {{- range partial "functions/section-boxes" . -}}
-          {{- range .buttons -}}
-            {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
-              {{- $contact_buttons = $contact_buttons | append . -}}
+        {{- $contact_buttons := slice -}}
+        {{- range partial "functions/sections-all" page -}}
+          {{- range partial "functions/section-boxes" . -}}
+            {{- range .buttons -}}
+              {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
+                {{- $contact_buttons = $contact_buttons | append . -}}
+              {{- end -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
-      {{- end -}}
-      {{- with where $contact_buttons "type" "whatsapp" -}}
-        {{- $buttons   = first 1 . -}}
-      {{- else -}}
-        {{- with where $contact_buttons "type" "phone" -}}
-          {{- $buttons = first 1 . -}}
+        {{- with where $contact_buttons "type" "whatsapp" -}}
+          {{- $buttons   = first 1 . -}}
+        {{- else -}}
+          {{- with where $contact_buttons "type" "phone" -}}
+            {{- $buttons = first 1 . -}}
+          {{- end -}}
         {{- end -}}
+
+      {{- end -}}
+
+      {{- with $buttons -}}
+        {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" -}}
+        <aside class="callnow {{ $callnow_plus }}">
+          {{- range . -}}
+
+            {{- $class   := "" -}}
+            {{- $num     := "" -}}
+            {{- $link    := .link -}}
+            {{- $button  := cond (eq .button "link") "" .button -}}
+            {{- $icon    := .icon -}}
+            {{- $emoji   := "" -}}
+            {{- $label   := .label -}}
+            {{- $noindex := .ofuscate -}}
+
+            {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
+              {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` `` -}}
+            {{- end -}}
+
+            {{- if eq .type "custom" -}}
+              {{- $class   = (print "callnow__custom" (cond (not .ga4) "" " callnow__custom--ga4")) -}}
+            {{- else if eq .type "phone" -}}
+              {{- $class   = "contact__phone" -}}
+              {{- $link    = print "tel:+" $num -}}
+              {{- $icon    = .icon | default "phone" -}}
+              {{- $emoji   = .icon | default "📞" -}}
+              {{- $label   = i18n "callnow_phone" -}}
+              {{- $noindex = true -}}
+            {{- else if eq .type "whatsapp" -}}
+              {{- $class   = "callnow__whatsapp" -}}
+              {{- $link    = print "https://wa.me/" $num -}}
+              {{- $button  = cond (not .button) "whatsapp" $button -}}
+              {{- $icon    = "whatsapp" -}}
+              {{- $emoji   = "✆" -}}
+              {{- $label   = i18n "callnow_whatsapp" -}}
+              {{- $noindex = true -}}
+            {{- end -}}
+
+            {{- if $callnow_plus -}}<i>{{- end -}}
+
+            {{- with $label -}}
+              <div class="callnow__caption">{{ . }}</div>
+            {{- end -}}
+
+            {{- partial "components/link" (dict
+              "class"     (print $class " button--icon")
+              "link"      $link
+              "button"    $button
+              "font_alt"  ""
+              "icon"      $icon
+              "emoji"     $emoji
+              "label"     $label
+              "anchor"    .anchor
+              "noindex"   $noindex
+            ) -}}
+
+            {{- if $callnow_plus -}}</i>{{- end -}}
+
+          {{- end -}}
+        </aside>
       {{- end -}}
 
     {{- end -}}
-
-    {{- with $buttons -}}
-      {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" -}}
-      <aside class="callnow {{ $callnow_plus }}">
-        {{- range . -}}
-
-          {{- $class   := "" -}}
-          {{- $num     := "" -}}
-          {{- $link    := .link -}}
-          {{- $button  := cond (eq .button "link") "" .button -}}
-          {{- $icon    := .icon -}}
-          {{- $emoji   := "" -}}
-          {{- $label   := .label -}}
-          {{- $noindex := .ofuscate -}}
-
-          {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
-            {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` `` -}}
-          {{- end -}}
-
-          {{- if eq .type "custom" -}}
-            {{- $class   = (print "callnow__custom" (cond (not .ga4) "" " callnow__custom--ga4")) -}}
-          {{- else if eq .type "phone" -}}
-            {{- $class   = "contact__phone" -}}
-            {{- $link    = print "tel:+" $num -}}
-            {{- $icon    = .icon | default "phone" -}}
-            {{- $emoji   = .icon | default "📞" -}}
-            {{- $label   = i18n "callnow_phone" -}}
-            {{- $noindex = true -}}
-          {{- else if eq .type "whatsapp" -}}
-            {{- $class   = "callnow__whatsapp" -}}
-            {{- $link    = print "https://wa.me/" $num -}}
-            {{- $button  = cond (not .button) "whatsapp" $button -}}
-            {{- $icon    = "whatsapp" -}}
-            {{- $emoji   = "✆" -}}
-            {{- $label   = i18n "callnow_whatsapp" -}}
-            {{- $noindex = true -}}
-          {{- end -}}
-
-          {{- if $callnow_plus -}}<i>{{- end -}}
-
-          {{- with $label -}}
-            <div class="callnow__caption">{{ . }}</div>
-          {{- end -}}
-
-          {{- partial "components/link" (dict
-            "class"     (print $class " button--icon")
-            "link"      $link
-            "button"    $button
-            "font_alt"  ""
-            "icon"      $icon
-            "emoji"     $emoji
-            "label"     $label
-            "anchor"    .anchor
-            "noindex"   $noindex
-          ) -}}
-
-          {{- if $callnow_plus -}}</i>{{- end -}}
-
-        {{- end -}}
-      </aside>
-    {{- end -}}
-
   {{- end -}}
 {{- end -}}

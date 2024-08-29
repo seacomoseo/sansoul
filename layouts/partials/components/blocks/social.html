@@ -1,7 +1,12 @@
 <div class="social box__block buttons">
   {{- range .social -}}
-    {{- $icon := .icon -}}
-    {{- with .link -}}
+    {{- $link  := . -}}
+    {{- $icon  := "" -}}
+    {{- if reflect.IsMap . -}}
+      {{- $link = .link -}}
+      {{- $icon = .icon -}}
+    {{- end -}}
+    {{- with $link -}}
       {{- if not $icon -}}
         {{- if in . "facebook" -}}
           {{- $icon = "facebook-f" -}}
@@ -25,7 +30,7 @@
           {{- $icon = "share-nodes" -}}
         {{- end -}}
       {{- end -}}
-      {{ $label := print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` `$2`) | title }}
+      {{ $label := print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` "$2") | title }}
       {{- partial "components/link" (dict
         "class"   "button--icon"
         "link"    .

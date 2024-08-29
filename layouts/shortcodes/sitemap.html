@@ -5,8 +5,8 @@
       "class"     "sitemap-header-link"
       "link"      .RelPermalink
       "button"    "none"
-      "icon"      (.Params.icon  | default "file-heart")
-      "emoji"     (.Params.emoji | default "📑")
+      "icon"      .Params.icon
+      "emoji"     .Params.emoji
       "label"     .Title
       "anchor"    (partial "functions/anchor-page" .)
       "noindex"   .Params.noindex
@@ -14,7 +14,7 @@
   </h2>
   {{ with .RegularPages }}
     <ul>
-      {{ range sort . "Params.date_ini" "desc" }}
+      {{ range sort . "Date" "desc" }}
         <li>
           {{ partial "components/link" (dict
             "link"      .RelPermalink

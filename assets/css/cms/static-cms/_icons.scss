@@ -41,107 +41,9 @@ html[style*="--text-primary: #fff;"] :where(
   display: none;
 }
 
-// Each new icon
-// Types
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/blog"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/blog/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/blog"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-newspaper);
-}
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/events"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/events/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/events"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-calendar);
-}
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/products"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/products/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/products"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-box);
-}
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/categories"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/categories/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/categories"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-bookmark);
-}
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/tags"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/tags/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/tags"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-tag);
-}
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/authors"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/authors/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/authors"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-user);
-}
-// .CMS_Table_body-cell-link[href="#/collections/types/entries/pages"]:before,
-.CMS_Collection_header-wrapper:has([href="#/collections/pages/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/pages"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-file);
-}
-// Custom Pages
-.CMS_Collection_header-wrapper:has([href="#/collections/page/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/page"] .CMS_NavLink_icon {
-  // background-image: url("data:image/svg+xml;base64,/" + $icon-file-dashed-line);
-  background-image: url("data:image/svg+xml;base64," + $icon-file-lines);
-}
-// Sections
-.CMS_Collection_header-wrapper:has([href="#/collections/sections/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/sections"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-puzzle-piece);
-}
-// Modals
-.CMS_Collection_header-wrapper:has([href="#/collections/modals/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/modals"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-window-restore);
-}
-// Templates
-.CMS_Collection_header-wrapper:has([href="#/collections/templates/new"]) .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/templates"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-puzzle);
-}
-// Parents Types
-.CMS_Navbar_root:has([href^="#/collections/types"]) + .CMS_MainView_root #main-view .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/types"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-rectangle-vertical-history);
-}
-// Settings
-.CMS_Navbar_root:has([href^="#/collections/settings"]) + .CMS_MainView_root #main-view .CMS_Icon_root,
-.CMS_NavLink_link[href="#/collections/settings"] .CMS_NavLink_icon {
-  background-image: url("data:image/svg+xml;base64," + $icon-gear);
-}
 // Flags
 .CMS_NavLink_link[href*="/admin/"] .CMS_NavLink_icon {
   clip-path: circle(9px);
-}
-@if $en != '' {
-  .CMS_NavLink_link[href="#{$en}"] .CMS_NavLink_icon {
-    background-image: url("data:image/svg+xml;base64," + $icon-flag-en);
-  }
-}
-@if $es != '' {
-  .CMS_NavLink_link[href="#{$es}"] .CMS_NavLink_icon {
-    background-image: url("data:image/svg+xml;base64," + $icon-flag-es);
-  }
-}
-@if $fr != '' {
-  .CMS_NavLink_link[href="#{$fr}"] .CMS_NavLink_icon {
-    background-image: url("data:image/svg+xml;base64," + $icon-flag-fr);
-  }
-}
-@if $de != '' {
-  .CMS_NavLink_link[href="#{$de}"] .CMS_NavLink_icon {
-    background-image: url("data:image/svg+xml;base64," + $icon-flag-de);
-  }
-}
-@if $pt != '' {
-  .CMS_NavLink_link[href="#{$pt}"] .CMS_NavLink_icon {
-    background-image: url("data:image/svg+xml;base64," + $icon-flag-pt);
-  }
-}
-@if $it != '' {
-  .CMS_NavLink_link[href="#{$it}"] .CMS_NavLink_icon {
-    background-image: url("data:image/svg+xml;base64," + $icon-flag-it);
-  }
 }
 
 // Media
@@ -167,25 +69,59 @@ html[style*="--text-primary: #fff;"] :where(
   background-position: center;
 }
 
-// Each general icon
-.CMS_Table_body-cell-link[href="#/collections/settings/entries/config"]:before {
-  background-image: url("data:image/svg+xml;base64," + $icon-wrench);
+
+@function str-split($string, $separator) {
+  // empty array/list
+  $split-arr: ();
+  // first index of separator in string
+  $index : str-index($string, $separator);
+  // loop through string
+  @while $index != null {
+      // get the substring from the first character to the separator
+      $item: str-slice($string, 1, $index - 1);
+      // push item to array
+      $split-arr: append($split-arr, $item);
+      // remove item and separator from string
+      $string: str-slice($string, $index + 1);
+      // find new index of separator
+      $index : str-index($string, $separator);
+  }
+  // add the remaining string to list (the last item)
+  $split-arr: append($split-arr, $string);
+
+  @return $split-arr;
 }
-.CMS_Table_body-cell-link[href="#/collections/settings/entries/schema"]:before {
-  background-image: url("data:image/svg+xml;base64," + $icon-list-tree);
-}
-.CMS_Table_body-cell-link[href="#/collections/settings/entries/styles"]:before {
-  background-image: url("data:image/svg+xml;base64," + $icon-brush);
-}
-.CMS_Table_body-cell-link[href="#/collections/settings/entries/lists"]:before {
-  background-image: url("data:image/svg+xml;base64," + $icon-grid);
-}
-// .CMS_Table_body-cell-link[href="#/collections/settings/entries/langs"]:before {
-//   background-image: url("data:image/svg+xml;base64," + $icon-language);
-// }
-.CMS_Table_body-cell-link[href="#/collections/settings/entries/redirects"]:before {
-  background-image: url("data:image/svg+xml;base64," + $icon-turn-down-right);
-}
-.CMS_Table_body-cell-link[href="#/collections/settings/entries/robots"]:before {
-  background-image: url("data:image/svg+xml;base64," + $icon-robot);
+
+$roots: str-split($items, '|');
+@each $root in $roots {
+  @each $item in $root {
+    $parts: str-split($item, ',');
+    $group: nth($parts, 1);
+    $name: nth($parts, 2);
+    $base64: nth($parts, 3);
+    $link: nth($parts, 4);
+
+    // Types
+    @if $group == 'type' {
+      // .CMS_Table_body-cell-link[href="#/collections/types/entries/#{$name}"]:before,
+      .CMS_Collection_header-wrapper:has([href="#/collections/#{$name}/new"]) .CMS_Icon_root,
+      .CMS_NavLink_link[href="#/collections/#{$name}"] .CMS_NavLink_icon {
+        background-image: url("data:image/svg+xml;base64,#{$base64}");
+      }
+    }
+    // Flags
+    @if $group == 'flag' {
+      @if $link != '' {
+        .CMS_NavLink_link[href="#{$link}"] .CMS_NavLink_icon {
+          background-image: url("data:image/svg+xml;base64,#{$base64}");
+        }
+      }
+    }
+    // Settings
+    @if $group == 'setting' {
+      .CMS_Table_body-cell-link[href="#/collections/settings/entries/#{$name}"]:before {
+        background-image: url("data:image/svg+xml;base64,#{$base64}");
+      }
+    }
+  }
 }

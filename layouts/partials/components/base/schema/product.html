@@ -1,10 +1,40 @@
-{{/*  Brand  */}}
-{{ $brand := dict }}
-{{ with .Params.brand }}
-  {{ $brand  = dict
-    "@type" "Brand"
-    "name"  .
-  }}
+{{/*  Brand and Manufacturer  */}}
+{{ $brand        := "" }}
+{{ $manufacturer := "" }}
+{{ $man_org_type := "" }}
+{{ range .Params.relations_from }}
+  {{ if eq .schema "brand" }}
+    {{ with site.GetPage .name (index $.Params .name) }}
+      {{ $brand = partial "components/base/schema/brand" . }}
+    {{ end }}
+  {{ end }}
+  {{ if eq .schema "manufacturer" }}
+    {{ with site.GetPage .name (index $.Params .name) }}
+      {{ $manufacturer = partial "components/base/schema/organization" . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if not $brand }}
+  {{ with .Params.brand }}
+    {{ $brand  = dict
+      "@type" "Brand"
+      "name"  .
+    }}
+  {{ end }}
+{{ end }}
+{{ if not $manufacturer }}
+  {{ with .Params.manufacturer }}
+    {{ $manufacturer  = dict
+      "@type" "Organization"
+      "name"  .
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  Images  */}}
+{{ $image  := dict "@id" (print .Permalink "#schema-image") }}
+{{ with .Params.images }}
+  {{ $image = slice $image | append (partial "components/base/schema/images" .) }}
 {{ end }}
 
 {{/*  Schema  */}}
@@ -18,10 +48,10 @@
   "url"              .Permalink
   "inLanguage"       .Lang
   "brand"            $brand
-  "potentialAction"  (dict "@type" "BuyAction" "target" .Permalink)
-  "image"            (dict "@id" (print .Permalink "#schema-image"))
-  "isPartOf"         (dict "@id" .Permalink)
+  "manufacturer"     $manufacturer
+  "image"            $image
   "mainEntityOfPage" (dict "@id" .Permalink)
+  "potentialAction"  (dict "@type" "BuyAction" "target" .Permalink)
   "offers"           (dict
     "@type"           "Offer"
     "url"             .Permalink

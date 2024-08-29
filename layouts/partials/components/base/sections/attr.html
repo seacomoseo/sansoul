@@ -63,11 +63,12 @@
 {{ if .divider | and (not .footer) }}
   {{ $padding_bottom_divider = "pb-divider" }}
 {{ end }}
-{{ $params := partial "functions/page-params" page }}
-{{ if .header
-  | and (not $params.menu.hide)
-  | and (not $params.menu.sticky)
-  | and (eq $params.menu.header "hide")
+{{ if and
+  .header
+  (not page.Params.menu.hide)
+  (not page.Params.menu.sticky)
+  (eq page.Params.menu.header "hide")
+  (ne page.Kind "404")
 }}
   {{ $padding_top_divider = "pt-divider" }}
 {{ end }}

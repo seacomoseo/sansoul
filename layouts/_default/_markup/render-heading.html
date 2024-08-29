@@ -4,12 +4,11 @@
   {{- $id = $id | replaceRE (print "-" .) `` -}}
 {{- end -}}
 
-{{- $lists := site.Data.lists.content -}}
-{{- $class := "" -}}
-{{- if ($lists.underline | and (eq .Level 2)) -}}
+{{- $class  := "" -}}
+{{- if (page.Params.lists.underline | and (eq .Level 2)) -}}
   {{- $class = "underline" -}}
 {{- end -}}
-{{- if ($lists.uppercase | and (eq .Level 2)) -}}
+{{- if (page.Params.lists.uppercase | and (eq .Level 2)) -}}
   {{- $class = print $class "uppercase" -}}
 {{- end -}}
 {{- with .Attributes.class -}}

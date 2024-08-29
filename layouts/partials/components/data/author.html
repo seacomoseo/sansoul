@@ -1,7 +1,7 @@
-{{- $there_are_authors := gt (len (page.GetPage "authors").Pages) 1 -}}
+{{- $there_are_authors := gt (len (page.GetPage "author").Pages) 1 -}}
 {{- if $there_are_authors -}}
   {{- with .Page.Params.author -}}
-    {{- with $.GetPage "authors" . -}}
+    {{- with $.GetPage "author" . -}}
       <i class="data__item">
         {{- partial "components/icon" (dict "class" "data__icon" "icon" "user" "alt" "👤") -}}
         {{- if $.box -}}

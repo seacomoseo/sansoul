@@ -11,12 +11,15 @@
 {{/*  Self page  */}}
 {{ if eq page.Permalink .Permalink }}
 
-  {{/*  Collection?  */}}
+  {{/*  Children  */}}
+  {{ $children := partial "functions/relations-child" . }}
 
-  {{/*  If children  */}}
-  {{ with partial "functions/children" . }}
-    {{/*  Type and hasPart  */}}
+  {{/*  Type and hasPart  */}}
+  {{ with $children }}
     {{ $type = "CollectionPage" }}
+    {{ if eq page.Type "blog" }}
+      {{ $type = "Blog" }}
+    {{ end }}
     {{ range . }}
       {{ $has_part = $has_part | append (partial "components/base/schema/page" .) }}
     {{ end }}
@@ -25,6 +28,11 @@
   {{/*  Breadcrumbs  */}}
   {{ if .Params.breadcrumbs }}
     {{ $breadcrumbs = dict "@id" (print .Permalink "#schema-breadcrumb") }}
+  {{ end }}
+
+  {{/*  Images  */}}
+  {{ with .Params.images }}
+    {{ $image = slice $image | append (partial "components/base/schema/images" .) }}
   {{ end }}
 
 {{ else }}

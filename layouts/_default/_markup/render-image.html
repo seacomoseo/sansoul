@@ -16,7 +16,7 @@
 
 {{- else -}}
 
-  {{- with site.Data.lists.content.border -}}
+  {{- with page.Params.lists.border -}}
     {{- $image_class  = print $image_class " image--border" -}}
     {{- if ne . "main" -}}
       {{- $image_class = print $image_class " " . -}}

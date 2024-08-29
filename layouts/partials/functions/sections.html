@@ -1,11 +1,14 @@
-{{ $params         := partial "functions/page-params" . }}
 {{ $sections_final := slice }}
 {{ $sections       := slice }}
+{{ $params         := .Params }}
+{{ if eq .Kind "404" }}
+  {{ $params        = merge .Params (dict "sections" (slice (dict "file" "base/404"))) }}
+{{ end }}
 
 {{/*  SECTIONS BY YAML FILES  */}}
 {{ range $params.sections }}
   {{ $section := . }}
-  {{ with partial "functions/section-by-file" (merge . (dict "type" "sections")) }}
+  {{ with partial "functions/section-by-file" (merge . (dict "type" "section")) }}
     {{ $section = merge . $section }}
   {{ end }}
   {{ $if := partial "functions/if" (dict "Page" $.Page "if" $section.if) }}
@@ -46,7 +49,7 @@
     {{ range . }}
       {{ $modal := . }}
       {{/*  MODAL BY YAML FILES  */}}
-      {{ with partial "functions/section-by-file" (dict "file" .file "type" "modals") }}
+      {{ with partial "functions/section-by-file" (dict "file" .file "type" "modal") }}
         {{ $modals = $modals | append
           (merge
             ($params.modals  | default dict)

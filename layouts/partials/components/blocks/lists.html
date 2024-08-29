@@ -13,15 +13,17 @@
 {{ range $types }}
   {{ $type   := . }}
   {{ $parent := site.GetPage . }}
-  {{ $pages  := $parent.Pages }}
+  {{ $pages  := $parent.RegularPages }}
   {{ if eq . "related" }}
     {{ $type   = page.Type }}
     {{ $parent = site.GetPage $type }}
     {{ $pages  = $parent.Pages.Related (dict "document" page) }}
   {{ end }}
+  {{/*
   {{ if eq $parent.Params.base "event" }}
-    {{ $pages = sort $pages "Params.date_ini" "desc" }}
+    {{ $pages = sort $pages "Date" "desc" }}
   {{ end }}
+   */}}
   {{ $firsts_pages := $pages }}
 
   {{ if and page.IsSection (eq (len $types) 1) (ne . "related") }}
@@ -37,16 +39,30 @@
     }}
   {{ else }}
     {{/*  PAGE RESTS  */}}
-    {{ $relations := partial "functions/relations" . }}
+    {{/*  All relations  */}}
+    {{ $relations  := slice }}
+    {{ range site.Sections }}
+      {{ range .Params.relations_from }}
+        {{ $relations = $relations | append . }}
+      {{ end }}
+    {{ end }}
     {{/*  Filter by relations  */}}
-    {{ range $relations }}
-      {{ $filenames := index $list .relation }}
+    {{/*  {{ range $parent.Params.relations_from }}  */}}
+    {{ range uniq $relations }}
+      {{ $filenames := index $list .name }}
       {{ if $filenames }}
         {{ if .multiple }}
           {{ $filenames = slice | append $filenames }}
         {{ end }}
-        {{ $pages = where $pages (print "Params." .name) (cond .multiple "intersect" "in") $filenames }}
+        {{ $pages = where $pages (print "Params." .name) (cond (not .multiple) "in" "intersect") $filenames }}
       {{ end }}
+    {{ end }}
+    {{/*  Filter by date  */}}
+    {{ with $.date }}
+      {{ $pages = where $pages "Date" "ge" (time .) }}
+    {{ end }}
+    {{ with $.end }}
+      {{ $pages = where $pages "Date" "le" (time .) }}
     {{ end }}
     {{/*  Maximum number of pages  */}}
     {{ $firsts_pages = $pages | first $max }}
@@ -81,13 +97,14 @@
     {{- $boxes   := slice -}}
     {{- range $firsts_pages -}}
       {{- $desc  := .Params.description | default .Summary | truncate 150 -}}
-      {{- $price := .Params.price | lang.FormatCurrency 2 site.Params.currency -}}
+      {{- $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
       {{- $page  := merge .Params (dict
         "Page"        .
         "link"        .RelPermalink
         "description" $desc
         "price"       $price
         "icon"        ""
+        "social"      ""
       ) -}}
       {{- $boxes = $boxes | append $page -}}
     {{- end -}}

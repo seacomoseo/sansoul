@@ -4,10 +4,10 @@
 {{- if .Page.Content | and (ne .Page.Params.base "event") -}}
 
   {{- $hide_reading_time := "" -}}
-  {{- with .box -}}
-    {{- $hide_reading_time = .hide_reading_time -}}
+  {{- with .box.hide_reading_time -}}
+    {{- $hide_reading_time = . -}}
   {{- else -}}
-    {{- $hide_reading_time = site.Data.lists.content.hide_reading_time -}}
+    {{- $hide_reading_time = page.Params.lists.hide_reading_time -}}
   {{- end -}}
 
   {{- if not $hide_reading_time -}}

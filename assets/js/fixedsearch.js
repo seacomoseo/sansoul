@@ -187,7 +187,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               'reading_time',
               'type',
               'type_label',
-              'categories',
+              'category',
               'author',
               'image'
             ]
@@ -261,7 +261,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         }
         searchItems = searchItems +
           `
-          {{- $lists  := site.Data.lists.common -}}
+          {{- $lists  := site.Data.types.all.lists -}}
           {{- $styles := site.Data.styles -}}
           <article
             class="

@@ -1,175 +1,175 @@
-{{/*  Types  */}}
-{{ $types      := .types | default (slice "Organization") }}
+{{ $schema := dict }}
 
-{{/*  Names  */}}
-{{ $names      := .names | default (slice "Name") }}
-{{ $name       := index $names 0 }}
-{{ $names_more := after 1 $names }}
-
-{{/*  URL  */}}
-{{ $url    := .url }}
-{{ if not $url }}
-  {{ if eq page.Params.base "organization" }}
-    {{ $url = page.Permalink }}
-  {{ else }}
-    {{ $url = print site.BaseURL "/" }}
-  {{ end }}
+{{ $params := . }}
+{{ with .Params }}
+  {{ $params = . }}
 {{ end }}
 
-{{/*  Legal and NIF  */}}
-{{ $legal    := .legal }}
-{{ $nif      := .nif }}
-{{ if not (or $legal $nif) }}
-  {{ if not $legal }}
-    {{ $legal = site.Params.legal.name }}
-  {{ end }}
-  {{ if not $nif }}
-    {{ $nif   = site.Params.legal.nif }}
-  {{ end }}
-{{ end }}
+{{ with $params }}
 
-{{/*  Address, hasMap and geo by locations  */}}
-{{ $address := dict }}
-{{ $has_map := "" }}
-{{ $geo     := dict }}
-{{ with .address }}
-  {{ if .street }}
-    {{ $address = dict
-      "@type"           "PostalAddress"
-      "name"            .name
-      "streetAddress"   .street
-      "postalCode"      .pc
-      "addressLocality" .locality
-      "addressRegion"   .region
-      "addressCountry"  .country
-    }}
-    {{ $address = partial "functions/schema-obj" $address }}
-    {{ $has_map = print
-      "https://maps.google.com/maps/search/"
-      (print
-        .name     ", "
-        .street   ", "
-        .pc       " "
-        .locality ", "
-        .region   ", "
-        .country
-        | replaceRE "<nil>" ""
-        | urlquery
-      )
-    }}
-  {{ end }}
-  {{ with .link }}
-    {{ $has_map = . }}
-  {{ end }}
-  {{ with .geo }}
-    {{ $cordinates := (unmarshal .).coordinates }}
-    {{ $geo = dict
-      "@type"     "GeoCoordinates"
-      "latitude"  (index $cordinates 1)
-      "longitude" (index $cordinates 0)
-    }}
-  {{ end }}
-{{ end }}
+  {{/*  Types  */}}
+  {{ $types      := .types | default (slice "Organization") }}
 
-{{/*  Phones  */}}
-{{ $phones := partial "functions/phone-variations" .phones }}
+  {{/*  Names  */}}
+  {{ $names      := .names | default (slice "Name") }}
+  {{ $name       := index $names 0 }}
+  {{ $names_more := after 1 $names }}
 
-{{/*  Logo  */}}
-{{ $logo := partial "components/base/schema/image" (dict "Params" (dict "image" .logo) "Permalink" $url) }}
-
-{{/*  Images  */}}
-{{ $images := slice }}
-{{ range .images | append "icon.png" | uniq }}
-  {{ if . }}
-    {{ if strings.HasPrefix . "http" }}
-      {{ $images = $images | append . }}
+  {{/*  URL  */}}
+  {{ $url    := .url }}
+  {{ if not $url }}
+    {{ if eq .base "organization" }}
+      {{ $url = ($.Page | default page).Permalink }}
     {{ else }}
-      {{ with resources.Get (print "/media/" .) }}
-        {{ $images = $images | append .Permalink }}
-      {{ end }}
+      {{ $url = print site.BaseURL "/" }}
     {{ end }}
   {{ end }}
-{{ end }}
 
-{{/*  Opening Hours Specification  */}}
-{{ $open := slice }}
-{{ with .open }}
-  {{ range . }}
-    {{ $o    := slice }}
-    {{ $days := slice }}
-    {{ range .days }}
-      {{ $days = $days | append (print "https://schema.org/" (. | title)) }}
+  {{/*  Legal and NIF  */}}
+  {{ $legal    := .legal }}
+  {{ $nif      := .nif }}
+  {{ if not (or $legal $nif) }}
+    {{ if not $legal }}
+      {{ $legal = site.Params.legal.name }}
     {{ end }}
-    {{ with $days   }}{{ $o = merge $o (dict "dayOfWeek"    .) }}{{ end }}
-    {{ with .opens  }}{{ $o = merge $o (dict "opens"        .) }}{{ end }}
-    {{ with .closes }}{{ $o = merge $o (dict "closes"       .) }}{{ end }}
-    {{ with .from   }}{{ $o = merge $o (dict "validFrom"    .) }}{{ end }}
-    {{ with .to     }}{{ $o = merge $o (dict "validThrough" .) }}{{ end }}
-    {{ $open = $open | append $o }}
+    {{ if not $nif }}
+      {{ $nif   = site.Params.legal.nif }}
+    {{ end }}
   {{ end }}
-{{ end }}
 
-{{/*  Departments  */}}
-{{ $departments := slice }}
-{{ range .departments }}
-  {{ $departments = $departments | append (partial "components/base/schema/organization" .) }}
-{{ end }}
-
-{{/*  Offer Catalog  */}}
-{{ $offers := dict }}
-{{ with .services }}
-  {{ $services := slice }}
-  {{ range . }}
-    {{ $offers := dict }}
-    {{ with .price }}
-      {{ $offers  = dict
-        "@type"         "Offer"
-        "price"         .
-        "priceCurrency" site.Params.currency
+  {{/*  Address, hasMap and geo by locations  */}}
+  {{ $address := dict }}
+  {{ $has_map := "" }}
+  {{ $geo     := dict }}
+  {{ with .address }}
+    {{ if .street }}
+      {{ $address = dict
+        "@type"           "PostalAddress"
+        "name"            .name
+        "streetAddress"   .street
+        "postalCode"      .pc
+        "addressLocality" .locality
+        "addressRegion"   .region
+        "addressCountry"  .country
+      }}
+      {{ $address = partial "functions/schema-obj" $address }}
+      {{ $has_map = print
+        "https://maps.google.com/maps/search/"
+        (print
+          .name     ", "
+          .street   ", "
+          .pc       " "
+          .locality ", "
+          .region   ", "
+          .country
+          | replaceRE "<nil>" ""
+          | urlquery
+        )
       }}
     {{ end }}
-    {{ $service  := dict
-      "@type"      "Service"
-      "url"         .url
-      "name"        .name
-      "description" .description
-      "areaServed"  .area
-      "offers"      $offers
-    }}
-    {{ $service   = partial "functions/schema-obj" $service }}
-    {{ $services  = $services | append $service }}
+    {{ with .link }}
+      {{ $has_map = . }}
+    {{ end }}
+    {{ with .geo }}
+      {{ $cordinates := (unmarshal .).coordinates }}
+      {{ $geo = dict
+        "@type"     "GeoCoordinates"
+        "latitude"  (index $cordinates 1)
+        "longitude" (index $cordinates 0)
+      }}
+    {{ end }}
   {{ end }}
-  {{ $offers = dict
-    "@type"           "OfferCatalog"
-    "itemListElement" $services
-  }}
-{{ end }}
 
-{{/*  Schema  */}}
-{{ $schema := dict
-  "@type"                     $types
-  "@id"                       (print $url "#schema-organization")
-  "name"                      $name
-  "alternateName"             $names_more
-  "legalName"                 $legal
-  "taxID"                     $nif
-  "url"                       $url
-  "logo"                      $logo
-  "image"                     $images
-  "telephone"                 $phones
-  "address"                   $address
-  "hasMap"                    $has_map
-  "geo"                       $geo
-  "openingHoursSpecification" $open
-  "department"                $departments
-  "hasOfferCatalog"           $offers
-  "description"               .description
-  "sameAs"                    .social
-  "areaServed"                .areas
-  "priceRange"                .prices
-  "menu"                      .menu
-  "servesCuisine"             .food
-}}
-{{ $schema = partial "functions/schema-obj" $schema }}
+  {{/*  Phones  */}}
+  {{ $phones := partial "functions/phone-variations" .phones }}
+
+  {{/*  Logo  */}}
+  {{ $logo := partial "components/base/schema/image" (dict "Params" (dict "image" .logo) "Permalink" $url) }}
+
+  {{/*  Images  */}}
+  {{ $images := partial "components/base/schema/images" (slice .image | append .images | uniq) }}
+
+  {{/*  Opening Hours Specification  */}}
+  {{ $open := slice }}
+  {{ with .open }}
+    {{ range . }}
+      {{ $o    := slice }}
+      {{ $days := slice }}
+      {{ range .days }}
+        {{ $days = $days | append (print "https://schema.org/" (. | title)) }}
+      {{ end }}
+      {{ with $days   }}{{ $o = merge $o (dict "dayOfWeek"    .) }}{{ end }}
+      {{ with .opens  }}{{ $o = merge $o (dict "opens"        .) }}{{ end }}
+      {{ with .closes }}{{ $o = merge $o (dict "closes"       .) }}{{ end }}
+      {{ with .from   }}{{ $o = merge $o (dict "validFrom"    .) }}{{ end }}
+      {{ with .to     }}{{ $o = merge $o (dict "validThrough" .) }}{{ end }}
+      {{ $open = $open | append $o }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Departments  */}}
+  {{ $departments := slice }}
+  {{ range .departments }}
+    {{ $departments = $departments | append (partial "components/base/schema/organization" .) }}
+  {{ end }}
+
+  {{/*  Offer Catalog  */}}
+  {{ $offers := dict }}
+  {{ with .services }}
+    {{ $services := slice }}
+    {{ range . }}
+      {{ $offers := dict }}
+      {{ with .price }}
+        {{ $offers  = dict
+          "@type"         "Offer"
+          "price"         .
+          "priceCurrency" site.Params.currency
+        }}
+      {{ end }}
+      {{ $service  := dict
+        "@type"      "Service"
+        "url"         .url
+        "name"        .title
+        "description" .description
+        "areaServed"  .area
+        "offers"      $offers
+      }}
+      {{ $service   = partial "functions/schema-obj" $service }}
+      {{ $services  = $services | append $service }}
+    {{ end }}
+    {{ $offers = dict
+      "@type"           "OfferCatalog"
+      "itemListElement" $services
+    }}
+  {{ end }}
+
+  {{/*  Schema  */}}
+  {{ $schema = dict
+    "@type"                     $types
+    "@id"                       (print $url "#schema-organization")
+    "name"                      $name
+    "alternateName"             $names_more
+    "legalName"                 $legal
+    "taxID"                     $nif
+    "url"                       $url
+    "logo"                      $logo
+    "image"                     $images
+    "telephone"                 $phones
+    "address"                   $address
+    "hasMap"                    $has_map
+    "geo"                       $geo
+    "openingHoursSpecification" $open
+    "department"                $departments
+    "hasOfferCatalog"           $offers
+    "description"               .description
+    "sameAs"                    .social
+    "areaServed"                .areas
+    "priceRange"                .prices
+    "menu"                      .food_menu
+    "servesCuisine"             .food_type
+  }}
+  {{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ end }}
 
 {{ return $schema }}

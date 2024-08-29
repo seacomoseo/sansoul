@@ -1,0 +1,29 @@
+{{/*  ID  */}}
+{{ $id  := print .Permalink "#schema-person" }}
+
+{{/*  Image  */}}
+{{ $image  := dict "@id" (print .Permalink "#schema-image") }}
+{{/*  Not self page  */}}
+{{ if ne page.Permalink .Permalink }}
+  {{ $image = partial "components/base/schema/image" . }}
+{{ end }}
+
+{{/*  Organization  */}}
+{{ $organization := partial "components/base/schema/organization-id" . }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"            "Person"
+  "@id"              $id
+  "name"             .Title
+  "url"              .Permalink
+  "description"      .Description
+  "jobTitle"         .Params.job_title
+  "same_as"          .Params.social
+  "image"            $image
+  "publisher"        $organization
+  "mainEntityOfPage" (dict "@id" .Permalink)
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ return $schema }}

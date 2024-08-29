@@ -1,0 +1,44 @@
+{{ $children := slice }}
+
+{{/*  If is parent root  */}}
+{{ if .IsSection }}
+
+  {{/*  Each page of parent root  */}}
+  {{ range .Pages }}
+    {{ $children = $children | append . }}
+  {{ end }}
+
+{{ else }}
+
+  {{/*  Each relation  */}}
+  {{ range .Params.relations_to }}
+    {{/*  Parent  */}}
+    {{ with site.GetPage .name }}
+      {{/*  Each child  */}}
+      {{ range .Pages }}
+        {{ $page := . }}
+        {{/*  Value of param with key name like relation  */}}
+        {{ with index .Params page.Type }}
+          {{ $rel := . }}
+          {{ with $rel }}
+            {{/*  Force value to slice  */}}
+            {{ if not (reflect.IsSlice .) }}
+              {{ $rel = slice . }}
+            {{ end }}
+            {{/*  Each filename relation  */}}
+            {{ range $rel }}
+              {{/*  If filename relation is eq of self filename  */}}
+              {{ if eq . page.File.TranslationBaseName }}
+                {{/*  Append child  */}}
+                {{ $children = $children | append $page }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+{{ end }}
+
+{{ return $children }}

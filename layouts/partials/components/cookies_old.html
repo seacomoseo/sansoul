@@ -1,6 +1,6 @@
 {{- if ne page.Kind "404" -}}
   {{- $params := . -}}
-  {{- with site.GetPage "pages/cookies" -}}
+  {{- with site.GetPage "cookies" -}}
     {{- $color := $params.menu.color | default "white" -}}
     <aside class="cookies bg bg-{{ $color }} description">
       <div class="bg-color"></div>
@@ -9,7 +9,7 @@
         <strong>{{ i18n "cookies_we_use" }}</strong>
         {{- "" }} {{ i18n "cookies_message" }}. {{ "" -}}
         {{- partial "components/link" (dict
-          "link"      (page.GetPage "pages/cookies").RelPermalink
+          "link"      (page.GetPage "cookies").RelPermalink
           "button"    "none"
           "label"     (print (i18n "read_more") "…")
           "noindex"   true

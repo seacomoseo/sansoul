@@ -1,3 +1,11 @@
+{{/*  Type  */}}
+{{ $type  := "Article" }}
+{{ if eq .Type "blog" }}
+  {{ $type = "BlogPosting" }}
+{{ else if eq .Type "new" }}
+  {{ $type = "NewsArticle" }}
+{{ end }}
+
 {{/*  Thumbnail  */}}
 {{ $thumbnail  := (partial "components/base/schema/image" .).url }}
 
@@ -7,38 +15,19 @@
 {{/*  People and Taxonomies  */}}
 {{ $authors    := slice }}
 {{ $taxonomies := slice }}
-{{ range .CurrentSection.Params.custom_params }}
-  {{ $schema := .schema }}
-  {{ if intersect $schema (slice "author" "articleSection") }}
-    {{ if eq .type "relation" }}
-      {{ $multiple := .multiple }}
-      {{ $relation := .relation }}
-      {{ with index page.Params .name }}
-        {{ $items  := . }}
-        {{ if not $multiple }}
-          {{ $items = slice . }}
-        {{ end }}
-        {{ range $items }}
-          {{ with site.GetPage $relation "/" . }}
-            {{ if in $schema "author" }}
-              {{ $type   := cond (eq .Params.base "person") "person" "page" }}
-              {{ $item   := partial (print "components/base/schema/" $type) . }}
-              {{ $authors = $authors | append $item }}
-            {{ end }}
-            {{ if in $schema "articleSection" }}
-              {{ $taxonomies = $taxonomies | append .Title }}
-            {{ end }}
-          {{ end }}
-        {{ end }}
-      {{ end }}
-    {{ else }}
-      {{ with index page.Params .name }}
-        {{ if in $schema "author" }}
-          {{ $authors    = $authors    | append . }}
-        {{ end }}
-        {{ if in $schema "articleSection" }}
-          {{ $taxonomies = $taxonomies | append . }}
-        {{ end }}
+{{ $parents    := partial "functions/relations-parent" . }}
+{{ range $parents }}
+  {{ $page := . }}
+  {{ range .Params.relations_to }}
+    {{ $is_same_type   := eq page.Type .name }}
+    {{ $is_same_schema := in (slice "author" "articleSection") .schema }}
+    {{ if and $is_same_type $is_same_schema }}
+      {{ if eq .schema "author" }}
+        {{ $type   := cond (eq $page.Params.base "author") "author" "page" }}
+        {{ $item   := partial (print "components/base/schema/" $type) $page }}
+        {{ $authors = $authors | append $item }}
+      {{ else if eq .schema "articleSection" }}
+        {{ $taxonomies = $taxonomies | append $page.Title }}
       {{ end }}
     {{ end }}
   {{ end }}
@@ -49,7 +38,7 @@
 
 {{/*  Schema  */}}
 {{ $schema := dict
-  "@type"            "Article"
+  "@type"            $type
   "@id"              (print .Permalink "#schema-article")
   "headline"         .Title
   "datePublished"    (.Date.Format "2006-01-02T15:04:05Z07:00")

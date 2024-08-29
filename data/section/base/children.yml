@@ -1,0 +1,16 @@
+tag: nav
+if: children
+id: list
+size: md
+pt: 0
+boxes:
+- if: root
+  list:
+    types:
+    - '{{% type %}}'
+- if: parent
+  params:
+  - page: filename
+    box: list.{{% type %}}
+  list:
+    types: []

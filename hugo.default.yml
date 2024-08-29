@@ -17,11 +17,6 @@ languages:
     weight: 1
     languageName: Español
     paginatePath: pagina
-    permalinks:
-      page:
-        pages: :slug
-      section:
-        pages: paginas
   en:
     # baseURL: https://es.sansoul.netlify.com
     contentDir: content.en
@@ -29,11 +24,6 @@ languages:
     weight: 2
     languageName: English
     paginatePath: page
-    permalinks:
-      page:
-        pages: :slug
-      section:
-        pages: pages
   fr:
     # baseURL: https://fr.sansoul.netlify.com
     contentDir: content.fr
@@ -41,11 +31,6 @@ languages:
     weight: 3
     languageName: Français
     paginatePath: page
-    permalinks:
-      page:
-        pages: :slug
-      section:
-        pages: pages
   de:
     # baseURL: https://de.sansoul.netlify.com
     contentDir: content.de
@@ -53,11 +38,6 @@ languages:
     weight: 4
     languageName: Deutsch
     paginatePath: seite
-    permalinks:
-      page:
-        pages: :slug
-      section:
-        pages: seiten
   pt:
     # baseURL: https://pt.sansoul.netlify.com
     contentDir: content.pt
@@ -65,11 +45,6 @@ languages:
     weight: 5
     languageName: Português
     paginatePath: pagina
-    permalinks:
-      page:
-        pages: :slug
-      section:
-        pages: paginas
   it:
     # baseURL: https://it.sansoul.netlify.com
     contentDir: content.it
@@ -77,11 +52,6 @@ languages:
     weight: 6
     languageName: Italiano
     paginatePath: pagina
-    permalinks:
-      page:
-        pages: :slug
-      section:
-        pages: pagine
 
 module:
   mounts:
@@ -96,13 +66,13 @@ module:
     target: assets
 
   # es
-  ## sections
-  - source: content.es/sections
-    target: data/sections
+  ## section
+  - source: content.es/section
+    target: data/section
     lang: es
-  ## modals
-  - source: content.es/modals
-    target: data/modals
+  ## modal
+  - source: content.es/modal
+    target: data/modal
     lang: es
   ## prebuild
   - source: themes/sansoul/prebuild/public/content.es
@@ -111,133 +81,13 @@ module:
   ## content project
   - source: content.es
     target: content
-    excludeFiles: [sections, modals]
+    excludeFiles: [section, modal]
     lang: es
   ## content theme
   - source: themes/sansoul/content.es
     target: content
-    excludeFiles: [sections, modals]
+    excludeFiles: [section, modal]
     lang: es
-
-  # en
-  ## sections
-  - source: content.en/sections
-    target: data/sections
-    lang: en
-  ## modals
-  - source: content.en/modals
-    target: data/modals
-    lang: en
-  ## prebuild
-  - source: themes/sansoul/prebuild/public/content.en
-    target: content
-    lang: en
-  ## content project
-  - source: content.en
-    target: content
-    excludeFiles: [sections, modals]
-    lang: en
-  ## content theme
-  - source: themes/sansoul/content.en
-    target: content
-    excludeFiles: [sections, modals]
-    lang: en
-
-  # fr
-  ## sections
-  - source: content.fr/sections
-    target: data/sections
-    lang: fr
-  ## modals
-  - source: content.fr/modals
-    target: data/modals
-    lang: fr
-  ## prebuild
-  - source: themes/sansoul/prebuild/public/content.fr
-    target: content
-    lang: fr
-  ## content project
-  - source: content.fr
-    target: content
-    excludeFiles: [sections, modals]
-    lang: fr
-  ## content theme
-  - source: themes/sansoul/content.fr
-    target: content
-    excludeFiles: [sections, modals]
-    lang: fr
-
-  # de
-  ## sections
-  - source: content.de/sections
-    target: data/sections
-    lang: de
-  ## modals
-  - source: content.de/modals
-    target: data/modals
-    lang: de
-  ## prebuild
-  - source: themes/sansoul/prebuild/public/content.de
-    target: content
-    lang: de
-  ## content project
-  - source: content.de
-    target: content
-    excludeFiles: [sections, modals]
-    lang: de
-  ## content theme
-  - source: themes/sansoul/content.de
-    target: content
-    excludeFiles: [sections, modals]
-    lang: de
-
-  # pt
-  ## sections
-  - source: content.pt/sections
-    target: data/sections
-    lang: pt
-  ## modals
-  - source: content.pt/modals
-    target: data/modals
-    lang: pt
-  ## prebuild
-  - source: themes/sansoul/prebuild/public/content.pt
-    target: content
-    lang: pt
-  ## content project
-  - source: content.pt
-    target: content
-    excludeFiles: [sections, modals]
-    lang: pt
-  ## content theme
-  - source: themes/sansoul/content.pt
-    target: content
-    excludeFiles: [sections, modals]
-    lang: pt
-
-  # it
-  ## sections
-  - source: content.it/sections
-    target: data/sections
-    lang: it
-  ## modals
-  - source: content.it/modals
-    target: data/modals
-    lang: it
-  ## prebuild
-  - source: themes/sansoul/prebuild/public/content.it
-    target: content
-    lang: it
-  ## content project
-  - source: content.it
-    target: content
-    excludeFiles: [sections, modals]
-    lang: it
-  ## content theme
-  - source: themes/sansoul/content.it
-    target: content
-    excludeFiles: [sections, modals]
-    lang: it
 
   # data
   - source: data
@@ -263,9 +113,7 @@ related:
   indices:
   - name: date
     weight: 10
-  - name: categories
-    weight: 80
-  - name: tags
+  - name: category
     weight: 80
   - name: author
     weight: 80
@@ -301,7 +149,6 @@ markup:
 frontmatter:
   date:
   - date
-  - date_ini
   lastmod:
   - lastmod
   - :git

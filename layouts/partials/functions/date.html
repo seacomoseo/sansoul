@@ -1,6 +1,6 @@
 {{ $date := "" }}
 {{ with .date }}
-  {{ if eq $.type "events" }}
+  {{ if eq $.type "event" }}
     {{ $icon   := partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
     {{ $format := print "Monday, 2 Jan 2006 - 15:04" }}
     {{ $date    = . | time.Format $format | title }}

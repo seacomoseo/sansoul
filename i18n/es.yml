@@ -108,300 +108,397 @@ default: Por defecto
 enabled: Activado
 disabled: Desactivado
 reset: Valor por defecto / eliminar
+filter_published: Publicados
+filter_drafts: Borradores
+filter_year: Año
+filter_month: Mes
 # collections
-collection_filter_published: Publicados
-collection_filter_drafts: Borradores
-collection_filter_year: Año
-collection_filter_month: Mes
-# main-pages
-collection_p_title: Título
-collection_p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
-collection_p_title_seo: Título SEO
-collection_p_title_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
-collection_p_slug: Slug
-collection_p_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
-collection_p_description: Resumen
-collection_p_description_hint: Se utiliza para las miniaturas de las listas y para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
-collection_p_image: Imagen Principal
-collection_p_image_hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
-collection_p_toc: Índice
-collection_p_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
-collection_p_draft: Borrador
-collection_p_draft_hint: Oculta la página
-collection_p_noindex: No Index
-collection_p_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
-collection_p_job_title: Cargo
-collection_p_job_title_hint: '**Ejemplo →** "Podólogo Especialista"'
-collection_p_social: Redes Sociales
-collection_p_social_singular: Enlace a Red Social
-collection_p_date: Fecha
-collection_p_date_hint: Formato → 2024-12-31 🔷 Si no se indica, se creará automáticamente con la fecha de hoy
-collection_p_lastmod: Última Modifiación
-collection_p_lastmod_hint: Formato → 2024-12-31
-collection_p_date_ini: Fecha Inicial
-collection_p_date_ini_hint: Formato → 2024-12-31T24:59:59
-collection_p_date_end: Fecha Final
-collection_p_date_end_hint: Formato → 2024-12-31T24:59:59
-collection_p_artists: Artista/s
-collection_p_artists_hint: '**Ejemplo →** "Manolo García"'
-collection_p_artists_group: Grupo
-collection_p_artists_name: Nombre
-collection_p_location: Ubicación
-collection_p_location_hint: '**Ejemplo →** "Sala B"'
-collection_p_address: Dirección
-collection_p_address_hint: '**Ejemplo →** "Av. Ciclista Mariano Rojas, 20, 30008 Murcia"'
-collection_p_body: Contenido
-collection_p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**-main**", "**-alt**", "**-light**", "**-dark**", "**-invert**", "**-font-alt**" o "**-icon**") se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon-**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
-collection_p_translationKey: ID Traducción
-collection_p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
-collection_p_template: Plantilla
-collection_p_template_hint: Indica una [plantilla previamente creada](#/collections/templates)
-collection_p_custom: Parámetros Personalizados
-collection_p_custom_key_label: Clave
-collection_p_custom_value_label: Valor
-collection_p_custom_hint: Aquí puedes añadir parámetros para luego utilizar en las secciones de plantillas con "**\{\{% param custom.ejemplo %\}\}**"
-# types
-collection_single: Personalizadas
-collection_single_singular: Personalizada
-collection_single_description: Páginas maquetables por secciones.
-collection_related: Relacionados
+collection_page: Páginas
+collection_page_singular: Página
+collection_page_description: Páginas con sus propias plantillas individuales.
 collection_sections: Secciones
 collection_sections_singular: Sección
 collection_sections_description: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
 collection_modals: Modales
 collection_modals_singular: Modal
 collection_modals_description: Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un "#" delante del ID, Ejemplo → "#reparaciones-mantenimiento").
-collection_templates: Plantillas
-collection_templates_singular: Plantilla
-collection_templates_description: Plantillas para asignar a cada página y tipos de páginas. Es necesario crearlas aquí antes de poder asignarlas.
-collection_types: Tipos
-collection_types_description: Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. IMPORTANTE → Artículos se consideran todos los tipos de páginas excepto las Personalizadas y sus Secciones y Modales correspondientes.
-# settings
 collection_settings: Ajustes
-collection_settings_config: Configuración
-collection_settings_config_langs: Idiomas
-collection_settings_config_lang: Idioma
-collection_settings_config_langs_hint: El 1º se considera el principal y se toma sus valores por defecto para el resto de idiomas
-collection_settings_config_lang_disabled: Desactivar
-collection_settings_config_title: Título
-collection_settings_config_description: Descripción
-collection_settings_config_google_analytics: Código Analytics
-collection_settings_config_google_analytics_hint: 'Código de seguimiento de Google Analytics 🔷 **Ejemplo →** G-XXXXXXXXXX'
-collection_settings_config_google_site_verification: Código Search Console
-collection_settings_config_google_site_verification_hint: Código de Verificación de Google Search Console
-collection_settings_config_google_file_verification: Archivo Search Console
-collection_settings_config_google_file_verification_hint: Nombre de Archivo de Verificación de Google Search Console 🔷 **Ejemplo →** google7467d923cbb3eb4c.html
-collection_settings_config_disqus: Disqus
-collection_settings_config_disqus_hint: Nombre corto del sistema de comentarios disqus.com
-collection_settings_config_menu: Menú
-collection_settings_config_menu_logo: Logo
-collection_settings_config_menu_title: Título
-collection_settings_config_menu_subtitle: Subtítulo
-collection_settings_config_legal: Legal
-collection_settings_config_legal_hint: Información para rellenar datos en los avisos legales, de privacidad y de cookies
-collection_settings_config_legal_name: Nombre Legal
-collection_settings_config_legal_nif: NIF / DNI
-collection_settings_config_legal_email: Email
-collection_settings_config_legal_location: Ubicación
-collection_settings_config_legal_country: País
-collection_settings_config_paginate: Enlace Permanente de Paginación
-collection_settings_config_paginate_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
-collection_settings_config_currency: Moneda
-collection_settings_config_types: Tipos de Artículos
-collection_settings_config_types_hint: Tipos de artículos que se pueden activar o desactivar marcándolos como borradores. El resto de contenido editable corresponde a cada artículo padre. **IMPORTANTE:** Artículos se consideran todos los tipos de páginas excepto las Personalizadas y sus Secciones y Modales correspondientes.
-collection_settings_config_types_slug: Slug
-collection_settings_config_types_slug_hint: Es el final de la URL o enlace de la página padre de este tipo
-collection_settings_config_types_permalinks: Enlaces Permanentes
-collection_settings_config_types_permalinks_hint: Es la URL o enlace de las páginas hijo de este tipo, requiere **:slug**, que se sustituye por el slug de cada página
-collection_settings_config_types_draft_hint: Oculta la página padre y todas sus hijas
-collection_settings_config_types_template: Plantilla para Páginas Hijas
-collection_settings_config_types_template_hint: Indica una [plantilla previamente creada](#/collections/templates) 🔷 Esta se aplicará a cada una de las páginas hijas
-collection_settings_config_remote: Recursos Remotos
-collection_settings_config_remote_singular: Recurso Remoto
-collection_settings_config_remote_hint: Genera contenido mediante recursos remotos, como APIS JSON, YAML, Markdown, CSV...
-collection_settings_config_remote_src: URL
-collection_settings_config_remote_csv: ¿Es un CSV?
-collection_settings_config_remote_index: Índice
-collection_settings_config_remote_index_hint: Ruta hacia el objeto deseado separado por puntos 🔷 **Ejemplo →** "shop.articles.products"
-collection_settings_config_remote_type: Tipo de Página
-collection_settings_config_remote_pairings: Emparejamientos
-collection_settings_config_remote_pairings_key_label: Clave Destino
-collection_settings_config_remote_pairings_value_label: Clave Origen
-collection_settings_config_custom_html: HTML Personalizado
-collection_settings_config_custom_html_head: Antes de </head>
-collection_settings_config_custom_html_body: Antes de </body>
-collection_settings_config_favicon: Favicono
-collection_settings_config_favicon_svg: SVG
-collection_settings_config_favicon_png: PNG
-collection_settings_config_favicon_ico: ICO
-collection_settings_config_cms: CMS (Panel de Administración)
-collection_settings_config_cms_logo: Logo
-collection_settings_config_cms_lang: Idioma
-collection_settings_config_cms_editorial: Flujo Editorial
-collection_settings_config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
-collection_settings_config_langs_default_subdir: Idioma Principal en Subcarpeta
-collection_settings_schema: Datos Estructurados
-collection_settings_schema_hint: Marcado de datos estructurados y Metadatos (útil para el SEO)
-collection_settings_schema_types: Tipo de Negocio
-collection_settings_schema_names: Nombres
-collection_settings_schema_names_singular: Nombre
-collection_settings_schema_names_hint: Nombres y Variantes del Negocio / Proyecto
-collection_settings_schema_description: Descripción
-collection_settings_schema_url: URL
-collection_settings_schema_logo: Logo
-collection_settings_schema_images: Imágenes
-collection_settings_schema_social: Redes Sociales
-collection_settings_schema_social_singular: Enlace a Red Social
-collection_settings_schema_phones: Teléfonos
-collection_settings_schema_phones_singular: Teléfono
-collection_settings_schema_address: Dirección
-collection_settings_schema_address_name: Nombre en Google Maps
-collection_settings_schema_address_street: Calle
-collection_settings_schema_address_pc: Código Postal
-collection_settings_schema_address_locality: Localidad
-collection_settings_schema_address_region: Región
-collection_settings_schema_address_country: País
-collection_settings_schema_address_country_hint: Recomendado usar [código de país de 2 letras](https://wikipedia.org/wiki/ISO_3166-1)
-collection_settings_schema_address_geo: Coordenadas
-collection_settings_schema_address_link: Enlace a Mapa
-collection_settings_schema_open: Horarios
-collection_settings_schema_open_singular: Horario
-collection_settings_schema_open_days: Días de la Semana
-collection_settings_schema_open_opens: Apertura
-collection_settings_schema_open_closes: Cierre
-collection_settings_schema_open_from: Válido Desde
-collection_settings_schema_open_to: Válido Hasta
-collection_settings_schema_open_valid_hint: Formato → 2024-12-31
-collection_settings_schema_rating: Reseñas
-collection_settings_schema_rating_singular: Reseña
-collection_settings_schema_rating_count: Número de Reseñas
-collection_settings_schema_rating_value: Valor Promedio (máximo 5)
-collection_settings_schema_prices: Rango de Precios
-collection_settings_schema_department: Departamentos
-collection_settings_schema_department_singular: Departamento
-collection_settings_styles: Estilos
-collection_settings_styles_icons: Iconos
-collection_settings_styles_icons_type: Tipo de Iconos
-collection_settings_styles_icons_sharp: Iconos Afilados
-collection_settings_styles_icons_emojis: Tipo de Emojis
-collection_settings_styles_icons_emojis_default: Cambiar iconos base por emojis
-collection_settings_styles_fonts: Fuentes
-collection_settings_styles_fonts_google: Google Fonts
-collection_settings_styles_fonts_google_hint: Activar Fuentes de Google
-collection_settings_styles_fonts_base: Fuente Base
-collection_settings_styles_fonts_cursive: Manuscrita
-collection_settings_styles_fonts_title: Títulos
-collection_settings_styles_fonts_blockquote_cursive: Citas Manuscritas
-collection_settings_styles_fonts_blockquote_cursive_hint: Citas con Fuente Manuscrita ; Desactivadas se usará 'Times New Roman' cursiva
-collection_settings_styles_fonts_family: Familia
-collection_settings_styles_fonts_family_hint: Nombres válidos → [Google Fonts](https://fonts.google.com/)
-collection_settings_styles_fonts_weight: Grosor
-collection_settings_styles_fonts_bold: Grosor Negrita
-collection_settings_styles_fonts_italic: Cursiva
-collection_settings_styles_fonts_line_height: Alto de Línea
-collection_settings_styles_fonts_top: Ajuste Vertical
-collection_settings_styles_fonts_size: Tamaño (por defecto = 1)
-collection_settings_styles_colors: Colores
-collection_settings_styles_colors_main: Principal
-collection_settings_styles_colors_alt: Alternativo
-collection_settings_styles_colors_alt_hint: Usado para subtítulos, bordes y como seleccionable
-collection_settings_styles_colors_link: Enlaces
-collection_settings_styles_colors_link_hint: Color para los enlaces y botones por defecto 🔷 Si no se especifica, se considerará igual que el principal
-collection_settings_styles_colors_color: Color
-collection_settings_styles_colors_light: Versión Clara
-collection_settings_styles_colors_dark: Versión Oscura
-collection_settings_styles_colors_contrast: Contraste
-collection_settings_styles_colors_contrast_hint: Opciones de cambio del color y textos de botones según el fond
-collection_settings_styles_base: Base
-collection_settings_styles_base_white: Blanco
-collection_settings_styles_base_light: Claro
-collection_settings_styles_base_grey: Gris
-collection_settings_styles_base_dark: Oscuro
-collection_settings_styles_base_black: Negro
-collection_settings_styles_rounded: Esquinas Redondeadas
-collection_settings_styles_rounded_radius: Radio
-collection_settings_styles_rounded_radius_hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas 🔷 Si el valor es 0 no se redondea nada 🔷 Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas 🔷 Máximo 1.25
-collection_settings_styles_rounded_chamfer: Chaflán
-collection_settings_styles_rounded_chamfer_hint: Cambia las esquinas redondeadas por chaflanes (cortes rectos)
-collection_settings_styles_buttons: Botones
-collection_settings_styles_buttons_font_main: Fuente Principal
-collection_settings_styles_buttons_font_alt: Fuente Alternativa
-collection_settings_styles_buttons_sides_round: Laterales Redondos
-collection_settings_styles_buttons_sides_round_hint: Redondea las esquinas hasta el máximo
-collection_settings_styles_buttons_icon_circle: Iconos Círculares
-collection_settings_styles_buttons_icon_circle_hint: Redondea las esquinas hasta convertir en círculos los que solamente tienen un icono grande
-collection_settings_styles_buttons_deep: 3D
-collection_settings_styles_buttons_deep_hint: Efecto 3D o de profundidad
-collection_settings_styles_buttons_outline: Borde y Hueco
-collection_settings_styles_buttons_outline_hint: Deja bordes sólidos y rellenos transparente
-collection_settings_styles_buttons_type: Tipo
-collection_settings_styles_buttons_bold: Negrita
-collection_settings_styles_buttons_uppercase: Mayúsculas
-collection_settings_styles_inputs: Campos de Formularios
-collection_settings_styles_inputs_fill: Rellenos
-collection_settings_styles_inputs_fill_hint: Aplica un fondo de color blanco con esquinas redondeadas en cada campo simple
-collection_settings_styles_shadow: Sombras
-collection_settings_styles_shadow_left: Posición Horizontal
-collection_settings_styles_shadow_top: Posición Vertical
-collection_settings_styles_shadow_blur: Difuminado
-collection_settings_styles_shadow_color: Color
-collection_settings_styles_shadow_alpha: Transparencia
-collection_settings_styles_performance: Rendimiento
-collection_settings_styles_performance_hint: Desactivar cada opción mejora el rendimiento (considerable para dispositivos poco potentes)
-collection_settings_styles_performance_show: Aparecer en Todos
-collection_settings_styles_performance_show_hint: Activar efecto de aparecer al hacer scroll en todos los elementos
-collection_settings_lists: Listas
-collection_settings_lists_all: Todas
-collection_settings_lists_blog: Blog
-collection_settings_lists_events: Eventos
-collection_settings_lists_products: Productos
-collection_settings_lists_taxonomies: Taxonomías
-collection_settings_lists_pages: Páginas
-collection_settings_lists_page: Personalizadas
-collection_settings_lists_related: Relacionados
-collection_settings_redirects: Redirecciones
-collection_settings_redirects_hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
-collection_settings_robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
-# base
-base_background: Fondo de Página
-base_menu: Menú
-base_menu_items: Elementos
-base_menu_item: Elemento
-base_menu_subitems: Sublementos
-base_menu_subitem: Sublemento
-base_menu_hide: Ocultar
-base_menu_logo: Mostrar Logo
-base_menu_sticky: Pantalla de Ajuste
-base_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
-base_menu_logo_sticky: Logo Fijo en Móvil
-base_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
-base_menu_logo_align: Alineación del Logo
-base_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
-base_menu_transparent: Inicia Transparente
-base_menu_transparent_hint: Al hacer scroll toma su color
-base_menu_show_sections: Mostrar Secciones
-base_menu_show_sections_hint: Muestra los enlaces que llevan a cada sección
-base_menu_show_modals: Mostrar Modales
-base_menu_show_modals_hint: Muestra enlaces que llevan a cada ventana modal como subelementos desplegables
-base_menu_hide_icons: Ocultar Iconos
-base_menu_google_translate: Traductor de Google
-base_callnow: Botones de Esquina
-base_callnow_hide: Ocultar
-base_callnow_items: Botones
-base_callnow_item: Botón
-base_section: Estilo de cada Sección
-base_section_singular: Sección
-base_section_hint: El 1º se aplica a todas, el resto de forma alterna 🔷 **Ejemplo →** si hay 3 estilos, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
-base_modal: Estilo de cada Modal
-base_modal_singular: Modal
-base_sections: Secciones
-base_sections_singular: Sección
-base_modals: Ventanas Modales
-base_modals_singular: Ventana Modal
-base_modals_hint: Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **Ejemplo →** '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión
-base_file: Archivo
-base_file_sections_hint: Indica una [sección previamente creada]
-base_file_modals_hint: Indica una [modal previamente creada]
+# collections > settings > config
+config: Configuración
+config_langs: Idiomas
+config_lang: Idioma
+config_langs_hint: El 1º se considera el principal y se toma sus valores por defecto para el resto de idiomas
+config_lang_disabled: Desactivar
+config_title: Título
+config_description: Descripción
+config_google_analytics: Código Analytics
+config_google_analytics_hint: 'Código de seguimiento de Google Analytics 🔷 **Ejemplo →** G-XXXXXXXXXX'
+config_google_site_verification: Código Search Console
+config_google_site_verification_hint: Código de Verificación de Google Search Console
+config_google_file_verification: Archivo Search Console
+config_google_file_verification_hint: Nombre de Archivo de Verificación de Google Search Console 🔷 **Ejemplo →** google7467d923cbb3eb4c.html
+config_disqus: Disqus
+config_disqus_hint: Nombre corto del sistema de comentarios disqus.com
+config_menu: Menú
+config_menu_logo: Logo
+config_menu_title: Título
+config_menu_subtitle: Subtítulo
+config_legal: Legal
+config_legal_hint: Información para rellenar datos en los avisos legales, de privacidad y de cookies
+config_legal_name: Nombre Legal
+config_legal_nif: NIF / DNI
+config_legal_email: Email
+config_legal_location: Ubicación
+config_phone_code: Prefijo Telefónico de País
+config_time_zone: Zona Horaria
+config_currency: Moneda
+config_currency_hint: Código de moneda de 3 letras
+config_paginate: Enlace Permanente de Paginación
+config_paginate_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
+config_custom_html: HTML Personalizado
+config_custom_html_head: Antes de </head>
+config_custom_html_body: Antes de </body>
+config_favicon: Favicono
+config_favicon_svg: SVG
+config_favicon_png: PNG
+config_favicon_ico: ICO
+config_cms: CMS (Panel de Administración)
+config_cms_logo: Logo
+config_cms_lang: Idioma
+config_cms_editorial: Flujo Editorial
+config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
+config_langs_default_subdir: Idioma Principal en Subcarpeta
+# collections > settings > types
+types: Tipos de Páginas
+types_all: Todos
+types_all_hint: Plantilla común a todos los tipos de páginas (incluidas únicas y personalizadas)
+types_customs: Personalizados
+types_custom: Personalizado
+types_customs_base: Base
+types_customs_name: Nombre
+types_customs_emoji: Emoji
+types_customs_related: Relacionados
+types_customs_breadcrumbs: Migas de Pan
+types_customs_params: Parámetros Personalizados
+types_customs_params_singular: Parámetro Personalizado
+types_customs_params_name: Nombre
+types_customs_params_type: Tipo
+types_customs_params_options: Opciones
+types_customs_params_options_label: Título
+types_customs_params_options_value: Valor
+types_customs_params_list: Lista
+types_customs_relations: Relaciones
+types_customs_relations_singular: Relación
+types_customs_params_relations_hint: Crear previamente
+types_customs_params_multiple: Múltiple
+types_customs_params_schema: Schema
+types_customs_params_lang: Textos
+types_customs_params_lang_label: Nombre
+types_customs_params_lang_hint: Leyenda
+types_customs_template: Plantilla
+types_customs_template_hint: Plantilla para las páginas de este tipo
+types_customs_lang: Textos
+types_customs_singular: Título Singular
+types_customs_slug_hint: Es el final de la URL o enlace de la página padre de este tipo 🔷 **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
+types_customs_permalinks: Enlaces Permanentes
+types_customs_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
+types_customs_hint: Leyenda
+# collections > settings > types default
+types_default_article_singular: Artículo
+types_default_article_title: Artículos
+types_default_article_slug: articulos
+types_default_article_permalinks: articulo
+types_default_article_description: Lista de artículos
+types_default_article_hint: Artículos con fechas.
+types_default_blog_singular: Blog
+types_default_blog_title: Blog
+types_default_blog_slug: blog
+types_default_blog_permalinks: blog
+types_default_blog_description: Lista de entradas de blog
+types_default_blog_hint: Entradas de blog con fechas.
+types_default_new_singular: Noticia
+types_default_new_title: Noticias
+types_default_new_slug: noticias
+types_default_new_permalinks: noticia
+types_default_new_description: Lista de noticias
+types_default_new_hint: Noticias con fechas.
+types_default_event_singular: Evento
+types_default_event_title: Eventos
+types_default_event_slug: eventos
+types_default_event_permalinks: evento/:year/:month/:day
+types_default_event_description: Lista de eventos
+types_default_event_hint: Eventos con fechas de inicio y fin, ubicación, artistas y precio.
+types_default_product_singular: Producto
+types_default_product_title: Productos
+types_default_product_slug: productos
+types_default_product_permalinks: producto
+types_default_product_description: Lista de productos
+types_default_product_hint: Productos con SKU, precio y variaciones.
+types_default_category_singular: Categoría
+types_default_category_title: Categorías
+types_default_category_slug: categorias
+types_default_category_permalinks: categoria
+types_default_category_description: Lista de categorías
+types_default_category_hint: Es necesario crear las categorías aquí antes de poder asignarlas.
+types_default_brand_singular: Marca
+types_default_brand_title: Marcas
+types_default_brand_slug: marcas
+types_default_brand_permalinks: marca
+types_default_brand_description: Lista de marcas
+types_default_brand_hint: Es necesario crear las marcas aquí antes de poder asignarlas.
+types_default_supplier_singular: Proveedor
+types_default_supplier_title: Proveedores
+types_default_supplier_slug: proveedores
+types_default_supplier_permalinks: proveedor
+types_default_supplier_description: Lista de proveedores
+types_default_supplier_hint: Es necesario crear los proveedores aquí antes de poder asignarlos.
+types_default_manufacturer_singular: Fabricante
+types_default_manufacturer_title: Fabricantes
+types_default_manufacturer_slug: fabricantes
+types_default_manufacturer_permalinks: fabricante
+types_default_manufacturer_description: Lista de fabricantes
+types_default_manufacturer_hint: Es necesario crear los fabricantes aquí antes de poder asignarlos.
+types_default_author_singular: Autor
+types_default_author_title: Autores
+types_default_author_slug: autores
+types_default_author_permalinks: autor
+types_default_author_description: Lista de autores
+types_default_author_hint: Es necesario crear los autores aquí antes de poder asignarlos.
+types_default_organization_singular: Organización
+types_default_organization_title: Organizaciones
+types_default_organization_slug: organizaciones
+types_default_organization_permalinks: organizacion
+types_default_organization_description: Lista de organizaciones
+types_default_organization_hint: Organizaciones con mucha información para marcado de datos estructurados (útil para el SEO).
+types_default_service_singular: Servicio
+types_default_service_title: Servicios
+types_default_service_slug: servicios
+types_default_service_permalinks: servicio
+types_default_service_description: Lista de servicios
+types_default_service_hint: Servicios con áreas de servicio, tipos de servicio y precio.
+types_default_page_singular: Página
+types_default_page_title: Páginas
+types_default_page_slug: paginas
+types_default_page_permalinks: pagina
+types_default_page_description: Lista de páginas
+types_default_page_hint: Páginas simples.
+# collections > settings > schema
+schema: Datos Estructurados
+schema_hint: Marcado de datos estructurados y Metadatos (útil para el SEO)
+schema_types: Tipo de Negocio
+schema_names: Nombres
+schema_names_singular: Nombre
+schema_names_hint: Nombres y Variantes del Negocio / Proyecto
+schema_description: Descripción
+schema_legal: Nombre Legal
+schema_nif: NIF / DNI
+schema_logo: Logo
+schema_images: Imágenes
+schema_social: Redes Sociales
+schema_social_singular: Enlace a Red Social
+schema_phones: Teléfonos
+schema_phones_singular: Teléfono
+schema_address: Dirección
+schema_address_name: Nombre en Google Maps
+schema_address_street: Calle
+schema_address_pc: Código Postal
+schema_address_locality: Localidad
+schema_address_region: Región
+schema_address_country: País
+schema_address_country_hint: Código de país de 2 letras
+schema_address_geo: Coordenadas
+schema_address_link: Enlace a Mapa
+schema_areas: Áreas de Servicio
+schema_areas_singular: Área de Servicio
+schema_open: Horarios
+schema_open_singular: Horario
+schema_open_days: Días de la Semana
+schema_open_opens: Apertura
+schema_open_closes: Cierre
+schema_open_from: Válido Desde
+schema_open_to: Válido Hasta
+schema_open_valid_hint: Formato → 2024-12-31
+schema_prices: Rango de Precios
+schema_services: Servicios
+schema_services_singular: Servicio
+schema_food_menu: Menús de Comida
+schema_food_menu_singular: Menú de Comida
+schema_food_menu_hint: Enlaces a cartas de menús (solo para establecimientos de comida)
+schema_food_type: Tipos de Comida
+schema_food_type_singular: Tipo de Comida
+schema_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para establecimientos de comida)
+schema_departments: Departamentos
+schema_departments_singular: Departamento
+# collections > settings > styles
+styles: Estilos
+styles_icons: Iconos
+styles_icons_type: Tipo de Iconos
+styles_icons_sharp: Iconos Afilados
+styles_icons_emojis: Tipo de Emojis
+styles_icons_emojis_default: Cambiar iconos base por emojis
+styles_fonts: Fuentes
+styles_fonts_google: Google Fonts
+styles_fonts_google_hint: Activar Fuentes de Google
+styles_fonts_base: Fuente Base
+styles_fonts_cursive: Manuscrita
+styles_fonts_title: Títulos
+styles_fonts_blockquote_cursive: Citas Manuscritas
+styles_fonts_blockquote_cursive_hint: Citas con Fuente Manuscrita ; Desactivadas se usará 'Times New Roman' cursiva
+styles_fonts_family: Familia
+styles_fonts_family_hint: Nombres válidos → [Google Fonts](https://fonts.google.com/)
+styles_fonts_weight: Grosor
+styles_fonts_bold: Grosor Negrita
+styles_fonts_italic: Cursiva
+styles_fonts_line_height: Alto de Línea
+styles_fonts_top: Ajuste Vertical
+styles_fonts_size: Tamaño (por defecto = 1)
+styles_colors: Colores
+styles_colors_main: Principal
+styles_colors_alt: Alternativo
+styles_colors_alt_hint: Usado para subtítulos, bordes y como seleccionable
+styles_colors_link: Enlaces
+styles_colors_link_hint: Color para los enlaces y botones por defecto 🔷 Si no se especifica, se considerará igual que el principal
+styles_colors_color: Color
+styles_colors_light: Versión Clara
+styles_colors_dark: Versión Oscura
+styles_colors_contrast: Contraste
+styles_colors_contrast_hint: Opciones de cambio del color y textos de botones según el fond
+styles_base: Base
+styles_base_white: Blanco
+styles_base_light: Claro
+styles_base_grey: Gris
+styles_base_dark: Oscuro
+styles_base_black: Negro
+styles_rounded: Esquinas Redondeadas
+styles_rounded_radius: Radio
+styles_rounded_radius_hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas 🔷 Si el valor es 0 no se redondea nada 🔷 Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas 🔷 Máximo 1.25
+styles_rounded_chamfer: Chaflán
+styles_rounded_chamfer_hint: Cambia las esquinas redondeadas por chaflanes (cortes rectos)
+styles_buttons: Botones
+styles_buttons_font_main: Fuente Principal
+styles_buttons_font_alt: Fuente Alternativa
+styles_buttons_sides_round: Laterales Redondos
+styles_buttons_sides_round_hint: Redondea las esquinas hasta el máximo
+styles_buttons_icon_circle: Iconos Círculares
+styles_buttons_icon_circle_hint: Redondea las esquinas hasta convertir en círculos los que solamente tienen un icono grande
+styles_buttons_deep: 3D
+styles_buttons_deep_hint: Efecto 3D o de profundidad
+styles_buttons_outline: Borde y Hueco
+styles_buttons_outline_hint: Deja bordes sólidos y rellenos transparente
+styles_buttons_type: Tipo
+styles_buttons_bold: Negrita
+styles_buttons_uppercase: Mayúsculas
+styles_inputs: Campos de Formularios
+styles_inputs_fill: Rellenos
+styles_inputs_fill_hint: Aplica un fondo de color blanco con esquinas redondeadas en cada campo simple
+styles_shadow: Sombras
+styles_shadow_left: Posición Horizontal
+styles_shadow_top: Posición Vertical
+styles_shadow_blur: Difuminado
+styles_shadow_color: Color
+styles_shadow_alpha: Transparencia
+styles_performance: Rendimiento
+styles_performance_hint: Desactivar cada opción mejora el rendimiento (considerable para dispositivos poco potentes)
+styles_performance_show: Aparecer en Todos
+styles_performance_show_hint: Activar efecto de aparecer al hacer scroll en todos los elementos
+# collections > settings > remote
+remote: Contenido Remoto
+remote_singular: Recurso Remoto
+remote_hint: Genera contenido mediante recursos remotos, como APIS JSON, YAML, Markdown, CSV...
+remote_csv: ¿Es un CSV?
+remote_types: Tipos de Páginas
+remote_type: Tipo de Página
+remote_index: Índice
+remote_index_hint: Ruta hacia el objeto deseado separado por puntos 🔷 **Ejemplo →** "shop.articles.products"
+remote_pairings: Emparejamientos
+remote_pairings_singular: Emparejamiento
+remote_pairings_from: Parámetro de Origen
+remote_pairings_to: Parámetro de Destino
+remote_pairings_kind: Tipo de Valor
+remote_pairings_delimit: Separador
+redirects: Redirecciones
+redirects_hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
+robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
+# main-page-params
+p_title: Título
+p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
+p_title_seo: Título SEO
+p_title_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+p_slug: Slug
+p_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
+p_image: Imagen Principal
+p_image_hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
+p_description: Resumen
+p_description_hint: Se utiliza para las miniaturas de las listas y para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+p_toc: Índice
+p_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
+p_draft: Borrador
+p_draft_hint: Oculta la página
+p_noindex: No Index
+p_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
+p_date: Fecha
+p_lastmod: Última Modifiación
+p_end: Fecha Final
+p_location: Ubicación
+p_location_hint: '**Ejemplo →** "Sala B"'
+p_place: Dirección
+p_place_hint: '**Ejemplo →** "Av. Ciclista Mariano Rojas, 20, 30008 Murcia"'
+p_artists: Artista/s
+p_artists_singular: Nombre
+p_artists_group: ¿Es un Grupo?
+p_artists_hint: '**Ejemplo →** "Manolo García"'
+p_job_title: Cargo
+p_job_title_hint: '**Ejemplo →** "Podólogo Especialista"'
+p_service_types: Tipos de Servicio
+p_service_types_singular: Tipo de Servicio
+p_body: Contenido
+p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**-main**", "**-alt**", "**-light**", "**-dark**", "**-invert**", "**-font-alt**" o "**-icon**") se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon-**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
+p_translationKey: ID Traducción
+p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
+p_base: Base
+p_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
+# templates
+template_background: Fondo de Página
+template_menu: Menú
+template_menu_items: Elementos
+template_menu_item: Elemento
+template_menu_subitems: Sublementos
+template_menu_subitem: Sublemento
+template_menu_hide: Ocultar
+template_menu_logo: Mostrar Logo
+template_menu_sticky: Pantalla de Ajuste
+template_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
+template_menu_logo_sticky: Logo Fijo en Móvil
+template_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
+template_menu_logo_align: Alineación del Logo
+template_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
+template_menu_transparent: Inicia Transparente
+template_menu_transparent_hint: Al hacer scroll toma su color
+template_menu_show_sections: Mostrar Secciones
+template_menu_show_sections_hint: Muestra los enlaces que llevan a cada sección
+template_menu_show_modals: Mostrar Modales
+template_menu_show_modals_hint: Muestra enlaces que llevan a cada ventana modal como subelementos desplegables
+template_menu_hide_icons: Ocultar Iconos
+template_menu_google_translate: Traductor de Google
+template_callnow: Botones de Esquina
+template_callnow_hide: Ocultar
+template_callnow_items: Botones
+template_callnow_item: Botón
+template_section: Estilo de cada Sección
+template_section_singular: Sección
+template_section_hint: El 1º se aplica a todas, el resto de forma alterna 🔷 **Ejemplo →** si hay 3 estilos, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
+template_modal: Estilo de cada Modal
+template_modal_singular: Modal
+template_sections: Secciones
+template_sections_singular: Sección
+template_modals: Ventanas Modales
+template_modals_singular: Ventana Modal
+template_modals_hint: Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **Ejemplo →** '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión
+template_file: Archivo
+template_file_sections_hint: Sección previamente creada
+template_file_modals_hint: Modal previamente creada
+template_lists: Listas
+template_related: Listas de Relacionados
 # boxes and sections
 box_name: Nombre
 box_name_hint: Nombre del archivo
@@ -527,12 +624,8 @@ box_align_y_self: Alineación Vertical de la Caja
 box_list: Lista
 box_list_hint: Lista de Artículos (entradas del blog, páginas, productos, categorías...)
 box_list_types: Tipos
-box_list_categories: Categorías
-box_list_categories_hint: Filtra por [categorías previamente creadas](#/collections/categories)
-box_list_tags: Etiquetas
-box_list_tags_hint: Filtra por varias [etiquetas previamente creadas](#/collections/tags)
-box_list_authors: Autores
-box_list_authors_hint: Filtra por [autores previamente creados](#/collections/authors)
+box_list_start: Fecha Inicial
+box_list_end: Fecha Final
 box_list_max: Nº Máximo
 box_list_max_hint: Número máximo de elementos visibles, para ver el resto aparecerá un botón '+ Más' que llevará al Tipo de Artículo
 box_step: Estilo de Pasos
@@ -646,9 +739,10 @@ option-langs-fr: 🇫🇷 Francés
 option-langs-de: 🇩🇪 Alemán
 option-langs-pt: 🇵🇹 Portugués
 option-langs-it: 🇮🇹 Italiano
-option-base-blog: Blog
+option-base-article: Artículo
 option-base-event: Evento
 option-base-product: Producto
+option-base-brand: Marca
 option-base-taxonomy: Taxonomía
 option-base-author: Autor
 option-base-organization: Organización
@@ -778,6 +872,40 @@ option-view-contact: Botones de Contacto
 option-view-form: Formulario
 option-view-map: Mapa
 option-view-boxes: SubCajas
+option-phone_code-49: +49 🇩🇪 Alemania
+option-phone_code-54: +54 🇦🇷 Argentina
+option-phone_code-61: +61 🇦🇺 Australia
+option-phone_code-43: +43 🇦🇹 Austria
+option-phone_code-32: +32 🇧🇪 Bélgica
+option-phone_code-359: +359 🇧🇬 Bulgaria
+option-phone_code-1: +1 🇺🇸🇨🇦 Estados Unidos y Canadá
+option-phone_code-57: +57 🇨🇴 Colombia
+option-phone_code-385: +385 🇭🇷 Croacia
+option-phone_code-421: +421 🇸🇰 Eslovaquia
+option-phone_code-386: +386 🇸🇮 Eslovenia
+option-phone_code-34: +34 🇪🇸 España
+option-phone_code-372: +372 🇪🇪 Estonia
+option-phone_code-358: +358 🇫🇮 Finlandia
+option-phone_code-33: +33 🇫🇷 Francia
+option-phone_code-30: +30 🇬🇷 Grecia
+option-phone_code-31: +31 🇳🇱 Holanda (Países Bajos)
+option-phone_code-353: +353 🇮🇪 Irlanda
+option-phone_code-354: +354 🇮🇸 Islandia
+option-phone_code-39: +39 🇮🇹 Italia
+option-phone_code-371: +371 🇱🇻 Letonia
+option-phone_code-370: +370 🇱🇹 Lituania
+option-phone_code-352: +352 🇱🇺 Luxemburgo
+option-phone_code-356: +356 🇲🇹 Malta
+option-phone_code-212: +212 🇲🇦 Marruecos
+option-phone_code-52: +52 🇲🇽 México
+option-phone_code-47: +47 🇳🇴 Noruega
+option-phone_code-48: +48 🇵🇱 Polonia
+option-phone_code-351: +351 🇵🇹 Portugal
+option-phone_code-44: +44 🇬🇧 Reino Unido
+option-phone_code-7: +7 🇷🇺 Rusia
+option-phone_code-46: +46 🇸🇪 Suecia
+option-phone_code-41: +41 🇨🇭 Suiza
+option-phone_code-58: +58 🇻🇪 Venezuela
 option-divider-arrow-four: Flecha 4 Puntas
 option-divider-arrow-tr-alt: Flecha con Transparencia Alternativa
 option-divider-arrow-tr-fan: Flecha con Transparencia en Abanico

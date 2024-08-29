@@ -19,15 +19,16 @@
 
 {{ $options_lists := slice }}
 {{ range site.Sections }}
-  {{ $options_lists = $options_lists | append (dict "value" .Type "label" .Title) }}
+  {{ $options_lists = $options_lists | append (dict "value" .Type "label" (print .Params.emoji " " .Title)) }}
 {{ end }}
 {{ $options_lists = $options_lists | append
-  (dict "value" "/"       "label" $t.collection_single)
-  (dict "value" "related" "label" $t.related)
+  (dict "value" "/"       "label" (print page.Params.emoji " " $t.collection_page))
+  (dict "value" "related" "label" (print site.Data.utilities.defaults.related.emoji " " $t.related))
 }}
 
 {{ $vars := slice
   (dict "&OPTIONS_LANGS"         $options.langs)
+  (dict "&OPTIONS_BASE"          $options.base)
   (dict "&OPTIONS_HN"            (where $options.hn "value" "in" (slice "1" "2" "3" "4" "5" "6" "p")))
   (dict "&OPTIONS_HS"            (where $options.hn "value" "in" (slice "0" "1" "2" "3" "4" "5" "6")))
   (dict "&OPTIONS_ALIGN"         $options.align)
@@ -63,11 +64,8 @@
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
   (dict "&OPTIONS_LISTS"         $options_lists)
   (dict "&OPTIONS_TYPES"         (where $options_lists "value" "not in" (slice "/" "related")))
-  (dict "&OPTIONS_COUNTRIES"     (index site.Data.utilities.countries $lang_default))
-  (dict "&OPTIONS_FONT_WEIGHT"   site.Data.utilities.font_weight)
-  (dict "&RELATION_CATEGORIES"   (cond (not (.GetPage "categories")) "hidden" "relation"))
-  (dict "&RELATION_TAGS"         (cond (not (.GetPage "tags"      )) "hidden" "relation"))
-  (dict "&RELATION_AUTHOR"       (cond (not (.GetPage "author"    )) "hidden" "relation"))
+  (dict "&OPTIONS_PHONE_CODES"   $options.phone_code)
+  (dict "&OPTIONS_FONT_WEIGHT"   (slice 0 100 200 300 400 500 600 700 800 900))
 }}
 
 {{ return $vars }}

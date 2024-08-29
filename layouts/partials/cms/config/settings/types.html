@@ -1,151 +1,163 @@
 {{ $t := partial "functions/i18n" . }}
 
+{{ $type_customs_langs        := slice }}
+{{ $type_customs_params_langs := slice }}
+{{ range site.Languages }}
+  {{ $type_customs_langs        = $type_customs_langs        | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_customs_lang        " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_CUSTOMS_ITEMS` )) }}
+  {{ $type_customs_params_langs = $type_customs_params_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_customs_params_lang " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_CUSTOMS_PARAMS_LANG` )) }}
+{{ end }}
+
+
 {{ return slice
 
-  (dict "&SETTINGS_CONFIG_LANGS_DEFAULT_SUBDIR" (dict "label" $t.collection_settings_config_langs_default_subdir "name" `lang_default_subdir` "widget" `boolean` "required" false))
+  (dict "&SETTINGS_TYPES_ALL"  (dict
+    "name"      `all`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.types_all
+    "hint"      $t.types_all_hint
+    "collapsed" true
+    "i18n"      true
+    "fields"    (slice
+      `~P_TOC`
+      `~TEMPLATE_BACKGROUND`
+      `~TEMPLATE_MENU`
+      `~TEMPLATE_CALLNOW`
+      `~TEMPLATE_SECTION`
+      `~TEMPLATE_MODAL`
+      `~TEMPLATE_SECTIONS`
+      `~TEMPLATE_LISTS`
+      `~TEMPLATE_RELATED`
+    )
+  ))
 
-  (dict "&SETTINGS_CONFIG_LANGS" (dict
-    "label"          $t.collection_settings_config_langs
-    "label_singular" $t.collection_settings_config_lang
-    "name"           `langs`
+
+  (dict "&SETTINGS_TYPES_CUSTOMS_ITEMS"  (dict
+    "name"           `lang`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.types_customs_lang
+    "collapsed"      true
+    "i18n"           true
+    "fields"         (slice
+      (dict "name" `singular`    "widget" `string` "i18n" true "required" false "label" $t.types_customs_singular)
+      `~P_TITLE`
+      `~P_TITLE_SEO`
+      (dict "<<" (slice (dict "hint" $t.types_customs_slug_hint) `~P_SLUG`))
+      (dict "name" `permalinks`  "widget" `string` "i18n" true "required" false "label" $t.types_customs_permalinks "hint" $t.types_customs_permalinks_hint)
+      `~P_DESCRIPTION`
+      (dict "name" `hint`        "widget" `string` "i18n" true "required" false "label" $t.types_customs_hint)
+      `~P_IMAGE`
+      (dict "<<" (slice (dict "name" `content`) `~P_BODY`))
+    )
+  ))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_NAME"     (dict "name" `name`      "widget" `string`  "required" false "label" $t.types_customs_params_name))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_TYPE"     (dict "name" `type`      "widget" `select`  "required" false "label" $t.types_customs_params_type "options" site.Data.utilities.widgets))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_MULTIPLE" (dict "name" `multiple`  "widget" `boolean` "required" false "label" $t.types_customs_params_multiple))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_SCHEMA"   (dict "name" `schema`    "widget" `strings` "required" false "label" $t.types_customs_params_schema))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_OPTIONS"  (dict
+    "name"           `options`
     "widget"         `list`
+    "required"       false
+    "label"          $t.types_customs_params_options
+    "label_singular" $t.types_customs_params_options_singular
+    "collapsed"      true
+    "summary"        "{{fields.label}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `label` "widget" `string`  "required" false "label" $t.types_customs_params_options_label)
+      (dict "name" `value` "widget" `string`  "required" false "label" $t.types_customs_params_options_value)
+    )
+  ))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_LANG"     (dict
+    "name"           `lang`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.types_customs_params_lang
+    "collapsed"      true
+    "i18n"           true
+    "fields"         (slice
+      (dict "name" `label` "widget" `string`  "required" false "label" $t.types_customs_params_lang_label)
+      (dict "name" `hint`  "widget" `string`  "required" false "label" $t.types_customs_params_lang_hint)
+    )
+  ))
+  (dict "&SETTINGS_TYPES_CUSTOMS_PARAMS_LIST"  (dict
+    "name"           `list`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.types_customs_params_list
+    "label_singular" $t.types_customs_params_list_singular
+    "collapsed"      true
+    "summary"        "{{fields.label}}"
+    "allow_add"      true
+    "fields"         (slice
+      `~SETTINGS_TYPES_CUSTOMS_PARAMS_NAME`
+      (dict "<<" (slice (dict "options" (where site.Data.utilities.widgets "value" "not in" (slice "relation" "list"))) `~SETTINGS_TYPES_CUSTOMS_PARAMS_TYPE`))
+      `~SETTINGS_TYPES_CUSTOMS_PARAMS_OPTIONS`
+      `~SETTINGS_TYPES_CUSTOMS_PARAMS_MULTIPLE`
+      | append $type_customs_params_langs
+    )
+  ))
+  (dict "&SETTINGS_TYPES_CUSTOMS"  (dict
+    "name"           `customs`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.types_customs
+    "label_singular" $t.types_custom
     "collapsed"      true
     "summary"        "{{fields.lang}}"
     "allow_add"      true
-    "hint"           $t.collection_settings_config_langs_hint
-    "required"       false
     "fields"         (slice
-      (dict "label" $t.collection_settings_config_lang                     "name" `lang`                     "widget" `select`  "required" false "options" `~OPTIONS_LANGS`)
-      (dict "label" $t.collection_settings_config_lang_disabled            "name" `disabled`                 "widget" `boolean` "required" false)
-      (dict "label" $t.collection_settings_config_title                    "name" `title`                    "widget" `string`  "required" false)
-      (dict "label" $t.collection_settings_config_description              "name" `description`              "widget" `text`    "required" false)
-      (dict "label" $t.collection_settings_config_google_analytics         "name" `google_analytics`         "widget" `string`  "required" false "hint" $t.collection_settings_config_google_analytics_hint)
-      (dict "label" $t.collection_settings_config_google_site_verification "name" `google_site_verification` "widget" `string`  "required" false "hint" $t.collection_settings_config_google_site_verification_hint)
-      (dict "label" $t.collection_settings_config_google_file_verification "name" `google_file_verification` "widget" `string`  "required" false "hint" $t.collection_settings_config_google_file_verification_hint)
-      (dict "label" $t.collection_settings_config_disqus                   "name" `disqus`                   "widget" `string`  "required" false "hint" $t.collection_settings_config_disqus_hint)
+      (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_customs_base        "options" `~OPTIONS_LANGS`)
+      (dict "name" `name`        "widget" `string`  "required" false "label" $t.types_customs_name)
+      `~BOX_ICON_ID`
+      (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_customs_emoji)
+      (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled)
+      `~P_NOINDEX`
+      (dict "name" `related`     "widget" `select`  "required" false "label" $t.types_customs_related)
       (dict
-        "label"     $t.collection_settings_config_menu
-        "name"      `menu`
-        "widget"    `object`
-        "collapsed" true
-        "required"  false
-        "fields"    (slice
-          (dict "label" $t.collection_settings_config_menu_logo     "name" `logo`     "required" false "widget" `image` "max_file_size" 512000000)
-          (dict "label" $t.collection_settings_config_menu_title    "name" `title`    "required" false "widget" `string`)
-          (dict "label" $t.collection_settings_config_menu_subtitle "name" `subtitle` "required" false "widget" `string`)
-        )
-      )
-      (dict
-        "label"     $t.collection_settings_config_legal
-        "name"      `legal`
-        "widget"    `object`
-        "collapsed" true
-        "hint"      $t.collection_settings_config_legal_hint
-        "required"  false
-        "fields"    (slice
-          (dict "label" $t.collection_settings_config_legal_name     "name" `name`     "required" false "widget" `string`)
-          (dict "label" $t.collection_settings_config_legal_nif      "name" `nif`      "required" false "widget" `string`)
-          (dict "label" $t.collection_settings_config_legal_email    "name" `email`    "required" false "widget" `string`)
-          (dict "label" $t.collection_settings_config_legal_location "name" `location` "required" false "widget" `string`)
-          (dict "label" $t.collection_settings_config_legal_country  "name" `country`  "required" false "widget" `select` "options" `~OPTIONS_COUNTRIES`)
-        )
-      )
-      (dict "label" $t.collection_settings_config_paginate "name" `paginate` "widget" `string`  "required" false "hint" $t.collection_settings_config_paginate_hint)
-      (dict "label" $t.collection_settings_config_currency "name" `currency` "widget" `string`  "required" false "hint" (print $t.default ": EUR"))
-      (dict
-        "label"     $t.collection_settings_config_types
-        "name"      `types`
-        "widget"    `object`
-        "collapsed" true
-        "hint"      $t.collection_settings_config_types_hint
-        "required"  false
-        "fields"    `~SETTINGS_CONFIG_TYPES`
-      )
-      (dict
-        "label"          $t.collection_settings_config_remote
-        "label_singular" $t.collection_settings_config_remote_singular
-        "name"           `remote`
+        "name"           `relations`
         "widget"         `list`
-        "collapsed"      true
-        "summary"        "{{fields.src}}"
-        "allow_add"      true
-        "hint"           $t.collection_settings_config_remote_hint
         "required"       false
-        "fields"    (slice
-          (dict "label" $t.collection_settings_config_remote_src   "name" `src`   "widget" `string`  "required" false)
-          (dict "label" $t.collection_settings_config_remote_csv   "name" `csv`   "widget" `boolean` "required" false)
-          (dict "label" $t.collection_settings_config_remote_index "name" `index` "widget" `string`  "required" false "hint" $t.collection_settings_config_remote_index_hint)
-          (dict "label" $t.collection_settings_config_remote_type  "name" `type`  "widget" `select`  "required" false "options" `~OPTIONS_TYPES`)
-          (dict
-            "label"       $t.collection_settings_config_remote_pairings
-            "name"        `pairings`
-            "widget"      `keyvalue`
-            "key_label"   $t.collection_settings_config_remote_pairings_key_label
-            "value_label" $t.collection_settings_config_remote_pairings_value_label
-            "required"    false
-          )
+        "label"          $t.types_customs_relations
+        "label_singular" $t.types_customs_relations_singular
+        "collapsed"      true
+        "summary"        "{{fields.lang}}"
+        "allow_add"      true
+        "fields"         (slice
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_NAME`
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_MULTIPLE`
+          (dict "name" `breadcrumbs` "widget" `string`  "required" false "label" $t.types_customs_breadcrumbs)
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_SCHEMA`
         )
       )
       (dict
-        "label"     $t.collection_settings_config_custom_html
-        "name"      `custom_code`
-        "widget"    `object`
-        "collapsed" true
-        "required"  false
-        "fields"    (slice
-          (dict "label" $t.collection_settings_config_custom_html_head "name" `head` "required" false "widget" `text` "default_language" `html`       "output_code_only" true)
-          (dict "label" $t.collection_settings_config_custom_html_body "name" `body` "required" false "widget" `text` "default_language" `html`       "output_code_only" true)
+        "name"           `params`
+        "widget"         `list`
+        "required"       false
+        "label"          $t.types_customs_params
+        "label_singular" $t.types_customs_params_singular
+        "collapsed"      true
+        "summary"        "{{fields.lang}}"
+        "allow_add"      true
+        "fields"         (slice
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_NAME`
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_TYPE`
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_OPTIONS`
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_LIST`
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_MULTIPLE`
+          `~SETTINGS_TYPES_CUSTOMS_PARAMS_SCHEMA`
+          | append $type_customs_params_langs
         )
       )
+      (dict "<<" (slice (dict "name" `template` "label" $t.types_customs_template "hint" $t.types_customs_template_hint) `~SETTINGS_TYPES_ALL`))
+      | append $type_customs_langs
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_FAVICON" (dict
-    "label"     $t.collection_settings_config_favicon
-    "name"      `favicon`
-    "widget"    `object`
-    "collapsed" true
-    "required"  false
-    "fields"    (slice
-      (dict "label" $t.collection_settings_config_favicon_svg "name" `svg` "required" false "widget" `image` "max_file_size" 512000000)
-      (dict "label" $t.collection_settings_config_favicon_png "name" `png` "required" false "widget" `image` "max_file_size" 512000000)
-      (dict "label" $t.collection_settings_config_favicon_ico "name" `ico` "required" false "widget" `file`  "max_file_size" 512000000)
-    )
-  ))
 
-  (dict "&SETTINGS_CONFIG_CMS" (dict
-    "label"     $t.collection_settings_config_cms
-    "name"      `cms`
-    "widget"    `object`
-    "collapsed" true
-    "required"  false
-    "fields"    (slice
-      (dict "label" $t.collection_settings_config_cms_logo      "name" `logo`      "widget" `image`   "required" false "max_file_size" 512000000)
-      (dict "label" $t.collection_settings_config_cms_lang      "name" `lang`      "widget" `select`  "required" false "options" `~OPTIONS_LANGS`)
-      (dict "label" $t.collection_settings_config_cms_editorial "name" `editorial` "widget" `boolean` "required" false "hint" $t.collection_settings_config_cms_editorial_hint)
-      (dict "label" `disable`                                   "name" `disable`   "widget" `hidden`  "required" false)
-    )
-  ))
-
-  (dict "&SETTINGS_CONFIG_OTHERS" (dict
-    "label"     $t.collection_settings_config_cms
-    "name"      `others`
-    "widget"    `hidden`
-    "collapsed" true
-    "required"  false
-    "fields"    (slice
-      (dict "label" `cookies_legal`               "name" `cookies_legal`               "widget" `hidden` "required" false)
-      (dict "label" `analytics_pagespeed_disable` "name" `analytics_pagespeed_disable` "widget" `hidden` "required" false)
-      (dict "label" `process_all_images`          "name" `process_all_images`          "widget" `hidden` "required" false)
-      (dict "label" `development`                 "name" `development`                 "widget" `hidden` "required" false)
-    )
-  ))
-
-  (dict "&SETTINGS_CONFIG" (slice
-    `~SETTINGS_CONFIG_LANGS_DEFAULT_SUBDIR`
-    `~SETTINGS_CONFIG_LANGS`
-    `~SETTINGS_CONFIG_FAVICON`
-    `~SETTINGS_CONFIG_CMS`
-    `~SETTINGS_CONFIG_OTHERS`
+  (dict "&SETTINGS_TYPES" (slice
+    `~SETTINGS_TYPES_ALL`
+    `~SETTINGS_TYPES_CUSTOMS`
   ))
 }}

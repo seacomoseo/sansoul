@@ -57,8 +57,8 @@
           - [x] `articles.kind` > `articles.types` and multiple select
           - [x] Add `date_ini`
           - [x] Add `date_end`
-          - [ ] `date_ini` > `ini`
-          - [ ] `date_end` > `end`
+          - [x] `date_ini` > `date`
+          - [x] `date_end` > `end`
         - [x] `view: collapsibles`:
           - [x] `design` > `collapsible`
           - [x] `items` > `collapsibles`
@@ -274,7 +274,7 @@
       - [x] forms check ✅❌
       - [x] `view` conditions in childs
       - [x] `data.config.schema` > `data.schema`
-      - [x] Add `schema.department`
+      - [x] Add `schema.departments`
       - [x] `cms/config/box`
       - [x] CMS language by config
       - [x] `data.langs` > `data.config.langs` and all params in `data.config` (less `favicon`, `cms` and hidden) > `data.config.langs`
@@ -285,22 +285,33 @@
       - [x] Fix lightbox
       - [x] Fix purgecss
       - [x] Images src sizes
-      - [ ] `schema`
-        - [ ] `itemListElement` como sustituto de cualquier array?
-          - [ ] `reviews`?
-        - [ ] `organization.services.offer`
-        - [ ] `images`
-      - [/] `cascade.type: single` en páginas únicas
+      - [x] Remove `site.Data.list`
+      - [x] New `brand` schema
+      - [x] Remove `taxonomy` base
+      - [x] root directories in singular
+      - [x] Remove `T` in `date`, `lastmod` and `end`
+      - [x] Filter `list` by `date`
+      - [ ] Fix types in CMS
+      - [ ] Translate CMS
+      - [ ] 404
+      - [ ] `types`
+        - [ ] `params` > `relations`
+          - [ ] Remove `type: [relation]`
+          - [ ] Remove `relation`
+          - [ ] Slice to string `schema`
+        - [ ] `breadcrumbs` > `relations`
+        - [ ] `categories` params > `category`
+        - [ ] `authors` params > `author`
+      - [x] `cascade.type: single` en páginas únicas
       - [/] `params` in each box
-      - [/] `data.config.langs.[lang].types` in `data.types`
-        - [x] Remove `tags`
-        - [x] `data/templates` > `data/types.templates`
-        - [x] `prebuild`
-          - [x] `types`
-          - [x] `hugo.default`
-      - [/] Remove `site.Data.list`
+      - [x] `data.config.langs.[lang].types` in `data.types`
+      - [x] CMS
+        - [ ] `collections` by custom types base params
+        - [ ] `date`'s
+        - [x] Collection icons
+        - [ ] Fix `settings.types` arrays to objects
+      - [ ] Static CMS isues preview images in subdir and `public_folder: ''`
       - [ ] Box `data`
-      - [ ] Filter `list` by `date_ini` and `date_end`
       - [ ] `i18n` editable in cms?
       - [ ] `buildFuture`
       - [ ] 404 js
@@ -445,7 +456,7 @@ cp ./data/config                      > ./data/schema
 perl -0777 -i'' -pe 's/Paginate: .+?\n//igs'                       hugo.yml
 perl -0777 -i'' -pe 's/defaultContentLanguage:.+//igs'             hugo.yml
 perl -0777 -i'' -pe 's/ #.+//ig'                                   data/schema.yml
-perl -0777 -i'' -pe 's/department:.+//igs'                         data/schema.yml
+perl -0777 -i'' -pe 's/departments:.+//igs'                         data/schema.yml
 yq -i '.types =           load("data/config.yml").location_type'   data/schema.yml
 yq -i '.names +=          [load("data/config.yml").title]'         data/schema.yml
 yq -i '.names +=          load("data/config.yml").alternate_name'  data/schema.yml

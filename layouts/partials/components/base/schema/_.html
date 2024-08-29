@@ -6,8 +6,10 @@
   (partial "components/base/schema/breadcrumbs" .)
 }}
 
-{{ if in (slice "article" "event" "product" "person" "service" "organization") .Params.base }}
-  {{ $schemas = $schemas | append (partial (print "components/base/schema/" .Params.base) .) }}
+{{ if not .IsSection }}
+  {{ if in (slice "article" "event" "product" "brand" "author" "service" "organization") .Params.base }}
+    {{ $schemas = $schemas | append (partial (print "components/base/schema/" .Params.base) .) }}
+  {{ end }}
 {{ end }}
 
 {{ $schema := dict 

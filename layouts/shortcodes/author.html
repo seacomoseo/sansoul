@@ -1,6 +1,6 @@
 {{- with page -}}
   {{- with .Params.author -}}
-    {{- with site.GetPage "authors" . -}}
+    {{- with site.GetPage "author" . -}}
       {{- $param := index $.Params 0 -}}
       {{- if eq $param "description" -}}
         {{ .Description }}

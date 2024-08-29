@@ -1,61 +1,62 @@
 {{/*  URL  */}}
-{{ $image          := "" }}
-{{ $image_external := strings.HasPrefix .Params.image "http" }}
-{{ with .Params.image }}
-  {{ if not $image_external }}
-    {{ $image_url := resources.Get (print "/media/" .) }}
-    {{ with $image_url }}
+{{ $image    := "" }}
+
+{{ $src      := .Params.image }}
+{{ if not .Params.image }}
+  {{ with .Params.images }}
+    {{ $src := index . 0 }}
+  {{ end }}
+{{ end }}
+{{ if not $src }}
+  {{ $src := site.Data.schema.logo
+    | default site.Params.menu.logo
+    | default site.Params.cms.logo
+    | default site.Params.favicon.svg
+    | default site.Params.favicon.png
+    | default "base/icon.png"
+  }}
+{{ end }}
+
+{{ $external := strings.HasPrefix $src "http" }}
+{{ with $src }}
+  {{ if not $external }}
+    {{ $url := resources.Get (print "/media/" .) }}
+    {{ with $url }}
       {{ $image    = .Permalink }}
     {{ end }}
   {{ else }}
     {{ $image      = partial "functions/iframe-poster" . | default . }}
   {{ end }}
-{{ else }}
-  {{ $image      = site.Data.schema.logo }}
-  {{ if not $image }}
-    {{ $image    = site.Params.menu.logo
-      | default site.Data.config.favicon.svg
-      | default site.Data.config.favicon.png
-      | default "base/icon.png"
-    }}
-  {{ end }}
-  {{ $image_url := resources.Get (print "/media/" $image) }}
-  {{ with $image_url }}
-    {{ $image    = .Permalink }}
-  {{ end }}
 {{ end }}
 
-{{/*  WIDTH AND HEIGHT  */}}
-{{ $image_width  := 1280 }}
-{{ $image_height := 960 }}
-{{ if not (in $image ".svg" | or $image_external) | and $image }}
+{{/*  Width and Height  */}}
+{{ $width  := 1280 }}
+{{ $height := 960 }}
+{{ if not (in $image ".svg" | or $external) | and $image }}
   {{ with resources.Get (print "/media/" $image) }}
-    {{ $image_width  = $image.Width }}
-    {{ $image_height = $image.Height }}
+    {{ $width  = $image.Width }}
+    {{ $height = $image.Height }}
   {{ end }}
 {{ end }}
 
-{{/*  CAPTION  */}}
+{{/*  Caption  */}}
 {{ $caption := $image
   | replaceRE `^http.+/(.*)$` "$1"
   | replaceRE `^(.+)\..*$`    "$1"
   | humanize
 }}
 
-{{ $schema := dict }}
-
-{{ if $image }}
-  {{ $schema = dict
-    "@type"      "ImageObject"
-    "@id"        (print .Permalink "#schema-image")
-    "url"        $image
-    "contentUrl" $image
-    "width"      $image_width
-    "height"     $image_height
-    "caption"    $caption
-    "inLanguage" .Lang
-  }}
-  {{ $schema = partial "functions/schema-obj" $schema }}
-{{ end }}
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"      "ImageObject"
+  "@id"        (print .Permalink "#schema-image")
+  "url"        $image
+  "contentUrl" $image
+  "width"      $width
+  "height"     $height
+  "caption"    $caption
+  "inLanguage" .Lang
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
 
 {{ return $schema }}

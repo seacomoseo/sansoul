@@ -11,7 +11,7 @@
     "availability"  "http://schema.org/InStock"
   }}
 {{ end }}
- 
+
 {{/*  Provider  */}}
 {{ $provider  := "" }}
 {{ with .Params.provider }}
@@ -29,12 +29,11 @@
   "url"              .Permalink
   "name"             .Title
   "description"      .Params.description
-  "serviceType"      .Params.services
+  "serviceType"      .Params.service_types
   "areaServed"       .Params.areas
   "offers"           $offers
   "provider"         $provider
   "image"            (dict "@id" (print .Permalink "#schema-image"))
-  "isPartOf"         (dict "@id" .Permalink)
   "mainEntityOfPage" (dict "@id" .Permalink)
 }}
 {{ $schema = partial "functions/schema-obj" $schema }}

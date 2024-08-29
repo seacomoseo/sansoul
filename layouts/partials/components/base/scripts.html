@@ -10,7 +10,7 @@
   {{ $is_scroll_show = true }}
 {{ end }}
 
-{{ if site.GetPage "pages/cookies" }}
+{{ if site.GetPage "cookies" }}
   {{ $is_cookies = true }}
 {{ end }}
 
@@ -18,7 +18,7 @@
   {{ $disqus_id = . }}
 {{ end }}
 
-{{ if .menu.google_translate }}
+{{ if .Params.menu.google_translate }}
   {{ $is_google_translate = true }}
 {{ end }}
 

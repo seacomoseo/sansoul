@@ -1,4 +1,4 @@
-{{- with .menu -}}
+{{- with .Params.menu -}}
   {{- if or .logo .title .subtitle -}}
     {{- $container := .size | default "lg" -}}
     {{- $color     := print "bg bg-" (.color | default "white") -}}

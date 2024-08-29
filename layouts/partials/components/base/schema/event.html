@@ -1,16 +1,16 @@
 {{/*  Dates  */}}
-{{ $date_ini := dateFormat "2006-01-02T15:04:05Z07:00" .Params.date_ini | replaceRE `T00.00.00[-+]\d\d.00` "" }}
-{{ $date_end := dateFormat "2006-01-02T15:04:05Z07:00" (.Params.date_end | default .Params.date_ini) | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+{{ $date := dateFormat "2006-01-02T15:04:05Z07:00" .Date                         | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+{{ $end  := dateFormat "2006-01-02T15:04:05Z07:00" (.Params.end | default .Date) | replaceRE `T00.00.00[-+]\d\d.00` "" }}
 
 {{/*  Location  */}}
 {{ $location := dict }}
 {{ with .Params }}
-  {{ if or .location .address }}
+  {{ if or .location .place }}
     {{ $location = dict
       "location" (dict
         "@type"   "Place"
         "name"    .location
-        "address" .address
+        "address" .place
       )
     }}
   {{ end }}
@@ -50,8 +50,8 @@
   "performer"           $artists
   "location"            $location
   "offers"              $offers
-  "startDate"           $date_ini
-  "endDate"             $date_end
+  "startDate"           $date
+  "endDate"             $end
   "image"               (dict "@id" (print .Permalink "#schema-image"))
   "organizer"           (partial "components/base/schema/organization-id" .)
   "eventStatus"         "http://schema.org/EventScheduled"

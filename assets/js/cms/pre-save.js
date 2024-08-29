@@ -22,12 +22,11 @@ export function initPreSave () {
       const dataObj = d
       const articles = [
         'blog',
-        'events',
-        'products',
-        'categories',
-        'tags',
-        'authors',
-        'pages'
+        'event',
+        'product',
+        'category',
+        'author',
+        'page'
       ]
       if (articles.includes(collection)) {
         dataObj.slug = slugConverter(d.slug || d.title)
@@ -35,9 +34,9 @@ export function initPreSave () {
       if (collection === 'blog') {
         dataObj.date = d.date || new Date().toLocaleDateString('sv-SE')
       }
-      if (collection === 'events') {
-        if (d.date_ini) dataObj.date_ini = new Date(d.date_ini).toISOString().slice(0, 19)
-        if (d.date_end) dataObj.date_end = new Date(d.date_end).toISOString().slice(0, 19)
+      if (collection === 'event') {
+        if (d.date) dataObj.date = new Date(d.date).toISOString().slice(0, 19)
+        if (d.end) dataObj.end = new Date(d.end).toISOString().slice(0, 19)
       }
       return dataObj
     }

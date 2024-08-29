@@ -15,12 +15,14 @@
     {{ $if = $.Page.CurrentSection.Pages.Related (dict "document" $.Page) }}
   {{ else if eq . "comments" }}
     {{ $if = site.Params.disqus }}
-  {{ else if eq . "taxonomy" }}
-    {{ $is_taxonomy   := in (slice "taxonomy" "person") $.Page.Params.base }}
-    {{ $is_not_parent := not $.Page.IsSection }}
-    {{ $if = and $is_taxonomy $is_not_parent }}
-  {{ else if eq . "parent" }}
+  {{ else if eq . "children" }}
+    {{ $if = or $.Page.IsSection $.Page.Params.relations_to }}
+  {{ else if eq . "root" }}
     {{ $if = $.Page.IsSection }}
+  {{ else if eq . "parent" }}
+    {{ $is_parent   := $.Page.Params.relations_to }}
+    {{ $is_not_root := not $.Page.IsSection }}
+    {{ $if = and $is_parent $is_not_root }}
   {{ else }}
     {{ $if = index $.Page.Params (split . ".") }}
   {{ end }}

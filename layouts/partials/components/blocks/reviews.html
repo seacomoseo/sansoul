@@ -109,7 +109,7 @@
                 -}}
               </div>
             {{- end -}}
-            <div class="review__person">
+            <div class="review__author">
               {{- with .title -}}
                 <h3 class="review__title h4">{{ . | markdownify }}</h3>
               {{- end -}}
@@ -118,12 +118,13 @@
               {{- end -}}
               {{- if ne .rating 0 -}}
                 <p class="review__stars">
-                  {{- $int := .rating | default 5 | int -}}
+                  {{- $rating := .rating | default 5 -}}
+                  {{- $int    := $rating | int -}}
                   {{- range seq $int -}}
                     {{- partial "components/icon" (dict "icon" "star-fill") -}}
                   {{- end -}}
-                  {{- if ne .rating $int -}}
-                    {{- $decimal := sub .rating $int -}}
+                  {{- if ne $rating $int -}}
+                    {{- $decimal := sub $rating $int -}}
                     {{- if ge $decimal 0.5 -}}
                       {{- partial "components/icon" (dict "icon" "star-fill-half") -}}
                     {{- end -}}

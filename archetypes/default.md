@@ -5,7 +5,7 @@ slug:  "{{ .Name }}"
 translationKey:  "{{ .Name }}"
 description: ''
 image: ''
-categories: [general]
+category: [general]
 tags: []
 author: admin
 toc: false

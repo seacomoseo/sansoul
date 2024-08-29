@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
 
-  {{/*  VARIABLES  */}}
-  {{- $params := partial "functions/page-params" . -}}
-
   {{/*  CUSTOM HTML HEAD  */}}
   {{- $custom_html_head  := "" -}}
   {{- with site.Params.custom_html.head -}}
@@ -23,26 +20,28 @@
   {{/*  BODY ID  */}}
   {{- $body_id := "" -}}
   {{- if .IsHome -}}
-    {{- $body_id = .Params.slug -}}
+    {{- $body_id = .Slug -}}
   {{- else -}}
     {{- $body_id = .RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-` -}}
   {{- end -}}
   {{- $body_id = print "body-" $body_id -}}
 
   {{/*  BODY MENU CLASS  */}}
-  {{- $menu                  := $params.menu | default dict -}}
+  {{- $menu                  := .Params.menu | default dict -}}
   {{- $body_menu             := "" -}}
   {{- $body_menu_logo        := "" -}}
   {{- $body_menu_sticky      := "" -}}
   {{- $body_menu_logo_sticky := "" -}}
   {{- $body_menu_transparent := "" -}}
-  {{- with $menu -}}
-    {{- if not .hide -}}
-      {{- $body_menu                 = "body-menu" -}}
-      {{- $body_menu_logo            = cond (not .logo)        "" "body-menu--logo" -}}
-      {{- $body_menu_sticky          = cond (not .sticky)      "" (print "body-menu--sticky body-menu--sticky--" .sticky) -}}
-      {{- $body_menu_logo_sticky = cond (not .logo_sticky)     "" "body-menu--logo--sticky" -}}
-      {{- $body_menu_transparent     = cond (not .transparent) "" "body-menu--transparent" -}}
+  {{- if ne .Kind "404" -}}
+    {{- with $menu -}}
+      {{- if not .hide -}}
+        {{- $body_menu                 = "body-menu" -}}
+        {{- $body_menu_logo            = cond (not .logo)        "" "body-menu--logo" -}}
+        {{- $body_menu_sticky          = cond (not .sticky)      "" (print "body-menu--sticky body-menu--sticky--" .sticky) -}}
+        {{- $body_menu_logo_sticky = cond (not .logo_sticky)     "" "body-menu--logo--sticky" -}}
+        {{- $body_menu_transparent     = cond (not .transparent) "" "body-menu--transparent" -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 
@@ -60,9 +59,9 @@
   -}}
 
   {{/*  BODY ATTRIBUTES  */}}
-  {{- $background := merge $params.background (dict
+  {{- $background := merge .Params.background (dict
     "body"  true
-    "color" ($params.background.color | default "white"))
+    "color" (.Params.background.color | default "white"))
   -}}
   {{- $body_attr  := partial "components/base/sections/attr" (merge $background (dict
     "id"         $body_id
@@ -87,10 +86,10 @@
     {{- partial "components/bg" $background -}}
 
     {{/*  LOGO  */}}
-    {{ partial "components/base/logo" $params }}
+    {{ partial "components/base/logo" . }}
 
     {{/*  MENU  */}}
-    {{ partial "components/base/menu/_" $params }}
+    {{ partial "components/base/menu/_" . }}
 
     {{/*  MAIN  */}}
     <main>
@@ -101,10 +100,10 @@
     {{ partial "components/base/sections/_" (dict "footer" true) }}
 
     {{/*  PRE BODY END  */}}
-    {{ partial "components/cookies"         $params }}
-    {{ partial "components/callnow" $params }}
-    {{ partial "components/up"       .       }}
-    {{ partial "components/base/scripts"    $params }}
+    {{ partial "components/cookies"      . }}
+    {{ partial "components/callnow"      . }}
+    {{ partial "components/up"           . }}
+    {{ partial "components/base/scripts" . }}
     {{ $custom_html_body }}
   </body>
 </html>

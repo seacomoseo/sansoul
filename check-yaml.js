@@ -1,5 +1,22 @@
 const fs = require('fs')
-const yaml = require('yaml')
+const path = require('path')
+const yaml = require('/opt/homebrew/lib/node_modules/yaml')
+
+// Directorio donde se encuentra el archivo YAML
+const yamlDir = path.join(__dirname, '../../public/admin')
+// Patrón de archivo YAML
+const yamlPattern = /^config\..*\.yml$/
+
+// Función para encontrar el archivo CSS que coincida con el patrón
+const findYamlFile = (dir, pattern) => {
+  const files = fs.readdirSync(dir)
+  for (const file of files) {
+    if (pattern.test(file)) {
+      return path.join(dir, file)
+    }
+  }
+  throw new Error(`No se encontró ningún archivo que coincida con el patrón: ${pattern}`)
+}
 
 // Función para obtener una propiedad anidada de un objeto usando una ruta
 const getNestedProperty = (obj, path) => {
@@ -9,8 +26,10 @@ const getNestedProperty = (obj, path) => {
   }, obj)
 }
 
+// Encontrar el archivo CSS
+const filePath = findYamlFile(yamlDir, yamlPattern)
+
 // Leer y parsear el archivo YAML con configuraciones ajustadas
-const filePath = 'public/admin/config.5a2a5194588b5a08f02ce2f01c4e02af2bd79e7dd99143fa0a39119bafe2cfa6.yml'
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error(`Error al leer el archivo: ${err}`)
@@ -28,7 +47,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     const parsedData = yaml.parse(data, options)
 
     // Ruta específica a comprobar
-    const ruta = "/collections/11/files/0/fields/1/fields/13/fields/4"
+    const ruta = "/collections/16/files/1/fields/1/fields/8/fields/3/fields/4"
 
     // Obtener la propiedad especificada
     const contenido = getNestedProperty(parsedData, ruta)

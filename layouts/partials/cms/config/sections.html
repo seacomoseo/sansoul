@@ -188,25 +188,25 @@
     | append $boxi
   ))
   (dict "&BOX" (dict
-    "label"     $t.box_box
     "name"      `box`
     "widget"    `object`
-    "collapsed" true
     "required"  false
+    "label"     $t.box_box
+    "collapsed" true
     "fields"    `~BOX_FIELDS`
   ))
 
 
   (dict "&BOXES_FIELDS" $boxes_fields)
   (dict "&BOXES_LAST"   (dict
-    "label"          $t.box_boxes
-    "label_singular" $t.box_boxes_singular
     "name"           `boxes`
     "widget"         `list`
+    "required"       false
+    "label"          $t.box_boxes
+    "label_singular" $t.box_boxes_singular
     "collapsed"      true
     "summary"        "{{fields.title}}"
     "allow_add"      true
-    "required"       false
     "fields"         `~BOXES_FIELDS`
   ))
   (dict "&BOXES_2" (dict "<<" (slice (dict "fields" ($boxes_fields | append `~BOXES_LAST`)) `~BOXES_LAST`)))
@@ -226,7 +226,6 @@
     | append $divider
     | append $boxi_boxes
     | append $boxi
-    | append $list
   ))
   (dict "&SECTIONS_FIELDS" (slice
     `~BOX_NAME`
@@ -243,7 +242,6 @@
     | append $divider
     | append $boxi_boxes
     | append $boxi
-    | append $list
     | append $blocks
     | append `~BOX`
     | append `~BOXES`
@@ -262,7 +260,6 @@
     | append $size_modal
     | append $boxi_boxes
     | append $boxi
-    | append $list
   ))
   (dict "&MODALS_FIELDS" (slice
     `~BOX_NAME`
@@ -278,7 +275,6 @@
     | append $size_modal
     | append $boxi_boxes
     | append $boxi
-    | append $list
     | append $blocks
     | append `~BOX`
     | append `~BOXES`

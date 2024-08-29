@@ -1,0 +1,27 @@
+{{ $parent := slice }}
+
+{{/*  Parent relations  */}}
+{{ with .Params.relations_from }}
+  {{/*  Each parent relation  */}}
+  {{ range . }}
+    {{ $type      := .name }}
+    {{/*  Param with key name like relation  */}}
+    {{ $filenames := index page.Params .name }}
+    {{ with $filenames }}
+      {{/*  Force value to slice  */}}
+      {{ if not (reflect.IsSlice .) }}
+        {{ $filenames = slice . }}
+      {{ end }}
+      {{/*  Each filename relation  */}}
+      {{ range $filenames }}
+        {{/*  Page relation  */}}
+        {{ with site.GetPage $type . }}
+          {{/*  Append parent  */}}
+          {{ $parent = $parent | append . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $parent }}
