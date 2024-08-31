@@ -233,7 +233,7 @@
       - [x] `config.country` > `config.legal.country`
       - [x] `config` add `cms`
       - [x] `config.cms_editorial_workflow` > `config.cms.editorial`
-      - [x] `config.cms_disable` > `config.cms.disable`
+      - [x] `config.cms_disable` > `config.cms.disabled`
       - [x] `config` add `cms.logo`
       - [x] `config.yml` > `config.es.yml`
       - [x] `hugo.yml` > `languages` > `data/langs.yml`

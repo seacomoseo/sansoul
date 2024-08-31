@@ -7,8 +7,8 @@ image: fondo.jpg
 category:
 - categoria-3
 author: admin
-date: 2020-01-01
-lastmod: 2021-01-01
+date: 2020-01-01 00:00:00
+lastmod: 2021-01-01 00:00:00
 toc: true
 draft: false
 noindex: false

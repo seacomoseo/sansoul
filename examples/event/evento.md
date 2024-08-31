@@ -4,7 +4,7 @@ seo: null # string
 slug: evento
 description: Esto es un evento de ejemplo.
 image: fondo.jpg
-date: 2023-08-01 00:00:00
+date: 2023-08-01 10:00:00
 end: 2023-08-05 13:55:49
 artists:
 - name: Artista de ejemplo

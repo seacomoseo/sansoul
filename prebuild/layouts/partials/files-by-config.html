@@ -1,6 +1,6 @@
-{{ $types_full := site.Data.types._ }}
-{{ $types := where site.Data.types._ "disabled" "!=" false }}
-{{ $langs := where site.Data.config.langs  "disabled" "!=" false }}
+{{ $types_full := site.Data.types._                             | default slice }}
+{{ $types := where $types_full            "disabled" "!=" false | default slice }}
+{{ $langs := where site.Data.config.langs "disabled" "!=" false }}
 {{ $lang_first := index $langs 0 }}
 
 {{ $languages := dict }}
@@ -22,6 +22,7 @@
   {{ with $config_lang }}
     {{/*  i18n  */}}
     {{ $t := index site.Data.i18n $lang }}
+    {{ $cascade = dict "singular" $t.collection_single_singular }}
 
     {{ $config_mix  := . }}
     {{ if gt (len $langs) 1 }}
@@ -37,7 +38,6 @@
       {{ $time_zone = .time_zone }}
       {{ $title     = .title }}
       {{ $params    = . }}
-      {{ $cascade   = dict "singular" $t.collection_single_singular }}
 
       {{ range $k, $type := $types_full }}
         {{ $base  := .base | default "page" }}
@@ -67,7 +67,7 @@
         {{ end }}
 
         {{/*  permalinks  */}}
-        {{ $permalinks      := "" }}
+        {{ $permalinks    := "" }}
         {{ with $type.permalinks }}
           {{ $permalinks     = print . "/:slug" }}
         {{ else }}
@@ -234,6 +234,7 @@
   (dict
     "source"       "data"
     "target"       "data"
+    "excludeFiles" "**/example/*"
   )
 }}
 {{ $obj = merge $obj (dict "module" (dict "mounts" $mounts)) }}

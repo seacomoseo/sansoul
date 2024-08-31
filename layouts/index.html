@@ -22,7 +22,7 @@
       (dict "partial" `google-site-verification` "path" .)
     -}}
   {{- end -}}
-  {{- if not site.Data.config.cms.disable -}}
+  {{- if not site.Data.config.cms.disabled -}}
     {{- $resources = $resources | append
       (dict "partial" `cms/index`              "path" $cms_index_path)
     -}}

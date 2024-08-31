@@ -126,8 +126,8 @@
       // If is not bot and if cookies law
       const isBot = navigator.userAgent.toLowerCase().match(/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/)
       if (!isBot
-        {{- if $config.others.analytics_pagespeed_disable }} && !navigator.userAgent.includes("Chrome-Lighthouse") {{ end -}}
-        {{- if $config.others.cookies_legal               }} && localStorage.controlcookieanalytics                {{ end -}}
+        {{- if $config.others.analytics_pagespeed_disabled }} && !navigator.userAgent.includes("Chrome-Lighthouse") {{ end -}}
+        {{- if $config.others.cookies_legal                }} && localStorage.controlcookieanalytics                {{ end -}}
       ) {
         googleAnalytics();
       }
