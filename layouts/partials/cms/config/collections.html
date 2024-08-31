@@ -14,12 +14,12 @@
   {{/*  Permalinks  */}}
   {{ $permalinks    := "{{fields.slug}}" }}
   {{ with .Params.cms.permalinks }} 
-    {{ $permalinks   = print . "/{{fields.slug}}" }}
+    {{ $permalinks   = replace . ":slug" "{{fields.slug}}" }}
     {{ if in . ":" }}
       {{ $permalinks = $permalinks | replaceRE `:(year|month|day)` "{{$1}}" }}
     {{ end }}
   {{ end }}
-  {{ $permalinks     = print site.Home $permalinks }}
+  {{ $permalinks     = print site.Home.RelPermalink $permalinks "/" }}
 
   {{/*  Summary  */}}
   {{ $summary  := "{{title}}" }}
@@ -35,7 +35,7 @@
   {{ if eq .Params.base "event" }}
     {{ $sortable_fields   = slice "date" "end"     | append $sortable_fields }}
   {{ end }}
-  {{ with .Params.custom_params }}
+  {{ with .Params.customs }}
     {{ range where . "type" "date" }}
       {{ $sortable_fields = $sortable_fields       | append .name }}
     {{ end }}
@@ -124,7 +124,7 @@
       `~P_PRICE`
     }}
   {{ end }}
-  {{ range (.Params.custom_params | default slice) | append (.Params.relations_from | default slice) }}
+  {{ range (.Params.customs | default slice) | append (.Params.relations_from | default slice) }}
     {{ $type        := .type | default "relation" }}
     {{ $value_type  := "" }}
     {{ if in (slice "int" "float") .type }}
@@ -140,7 +140,7 @@
     {{ $hint   := $lang.hint }}
     {{ if not .type }}
       {{ $label = (site.GetPage .name).Params.cms.title }}
-      {{ $hint  = print "[" $t.types_customs_params_relations_hint "](#/collections/" .name ")" }}
+      {{ $hint  = print "[" $t.types_params_relations_hint "](#/collections/" .name ")" }}
     {{ end }}
 
     {{ $fields = $fields | append
@@ -177,10 +177,11 @@
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
-    "label"            .Params.cms.title
-    "label_singular"   .Params.cms.singular
-    "name"             .Type
-    "description"      .Params.cms.hint
+    "label"            (.Params.cms.title | default "")
+    "label_singular"   (.Params.cms.singular | default "")
+    "name"             (.Type | default "")
+    "icon"             (.Params.icon | default "")
+    "description"      (.Params.cms.hint | default "")
     "identifier_field" `slug`
     "folder"           (print `content.` .Lang `/` .Type)
     "create"           true
@@ -205,10 +206,11 @@
 
 {{/*  ROOT PAGES  */}}
 {{ $colections = $colections | append (dict
-  "label"            $t.collection_page
-  "label_singular"   $t.collection_page_singular
-  "name"             `page`
-  "description"      $t.collection_page_description
+  "label"            $t.collection_single
+  "label_singular"   $t.collection_single_singular
+  "name"             `single`
+  "icon"             site.Data.utilities.defaults.page.icon
+  "description"      $t.collection_single_description
   "identifier_field" `slug`
   "folder"            (print `content.` .Lang)
   "create"            true
@@ -284,6 +286,7 @@
   "label"            $t.collection_sections
   "label_singular"   $t.collection_sections_singular
   "name"             `section`
+  "icon"             site.Data.utilities.defaults.section.icon
   "description"      $t.collection_sections_description
   "identifier_field" `name`
   "extension"        `yml`
@@ -303,6 +306,7 @@
   "label"            $t.collection_modals
   "label_singular"   $t.collection_modals_singular
   "name"             `modal`
+  "icon"             site.Data.utilities.defaults.modal.icon
   "description"      $t.collection_modals_description
   "identifier_field" `name`
   "extension"        `yml`
@@ -321,10 +325,12 @@
 {{ $colections = $colections | append  (dict
   "label"           $t.collection_settings
   "name"            `settings`
+  "icon"            site.Data.utilities.defaults.settings.icon
   "sortable_fields" (dict "fields" slice)
   "editor"          (dict "preview" false)
   "files"           (slice
     (dict "file" `data/config.yml`     "extension" `yml` "name" `config`    "label" $t.config    "fields" `~SETTINGS_CONFIG`)
+    (dict "file" `data/template.yml`   "extension" `yml` "name" `template`  "label" $t.template  "fields" `~SETTINGS_TEMPLATE`)
     (dict "file" `data/types.yml`      "extension" `yml` "name" `types`     "label" $t.types     "fields" `~SETTINGS_TYPES`)
     (dict "file" `data/schema.yml`     "extension" `yml` "name" `schema`    "label" $t.schema    "fields" `~SETTINGS_SCHEMA`)
     (dict "file" `data/styles.yml`     "extension" `yml` "name" `styles`    "label" $t.styles    "fields" `~SETTINGS_STYLES`)

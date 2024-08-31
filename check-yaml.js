@@ -47,7 +47,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     const parsedData = yaml.parse(data, options)
 
     // Ruta específica a comprobar
-    const ruta = "/collections/16/files/1/fields/1/fields/8/fields/3/fields/4"
+    const ruta = "/collections"
 
     // Obtener la propiedad especificada
     const contenido = getNestedProperty(parsedData, ruta)

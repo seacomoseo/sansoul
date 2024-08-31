@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
 
+  {{- $params := partial "functions/params" . -}}
+
   {{/*  CUSTOM HTML HEAD  */}}
   {{- $custom_html_head  := "" -}}
-  {{- with site.Params.custom_html.head -}}
+  {{- with site.Params.html.head -}}
     {{- $path            := print "aux_html_head." $.Lang -}}
     {{- $custom_html_head = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
@@ -11,7 +13,7 @@
 
   {{/*  CUSTOM HTML BODY  */}}
   {{- $custom_html_body  := "" -}}
-  {{- with site.Params.custom_html.body -}}
+  {{- with site.Params.html.body -}}
     {{- $path            := print "aux_html_body." $.Lang -}}
     {{- $custom_html_body = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
@@ -22,26 +24,28 @@
   {{- if .IsHome -}}
     {{- $body_id = .Slug -}}
   {{- else -}}
-    {{- $body_id = .RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-` -}}
+    {{- $body_id = .RelPermalink | replaceRE `^/|/$|\.html` `` | replaceRE `/` `-` -}}
   {{- end -}}
   {{- $body_id = print "body-" $body_id -}}
 
   {{/*  BODY MENU CLASS  */}}
-  {{- $menu                  := .Params.menu | default dict -}}
+  {{- $menu  := $params.menu -}}
   {{- $body_menu             := "" -}}
   {{- $body_menu_logo        := "" -}}
   {{- $body_menu_sticky      := "" -}}
   {{- $body_menu_logo_sticky := "" -}}
   {{- $body_menu_transparent := "" -}}
-  {{- if ne .Kind "404" -}}
-    {{- with $menu -}}
-      {{- if not .hide -}}
-        {{- $body_menu                 = "body-menu" -}}
-        {{- $body_menu_logo            = cond (not .logo)        "" "body-menu--logo" -}}
-        {{- $body_menu_sticky          = cond (not .sticky)      "" (print "body-menu--sticky body-menu--sticky--" .sticky) -}}
-        {{- $body_menu_logo_sticky = cond (not .logo_sticky)     "" "body-menu--logo--sticky" -}}
-        {{- $body_menu_transparent     = cond (not .transparent) "" "body-menu--transparent" -}}
-      {{- end -}}
+  {{- with $menu -}}
+    {{- if not .hide -}}
+      {{- $body_menu             = "body-menu" -}}
+      {{- $body_menu_sticky      = cond (not .sticky)      "" (print "body-menu--sticky body-menu--sticky--" .sticky) -}}
+    {{- end -}}
+    {{- if or (not .hide) .logo -}}
+      {{- $body_menu_transparent = cond (not .transparent) "" "body-menu--transparent" -}}
+    {{- end -}}
+    {{- if .logo -}}
+      {{- $body_menu_logo        = "body-menu--logo" -}}
+      {{- $body_menu_logo_sticky = cond (not .logo_sticky) "" "body-menu--logo--sticky" -}}
     {{- end -}}
   {{- end -}}
 
@@ -59,9 +63,10 @@
   -}}
 
   {{/*  BODY ATTRIBUTES  */}}
-  {{- $background := merge .Params.background (dict
+  {{- $background := $params.background -}}
+  {{- $background  = merge $background (dict
     "body"  true
-    "color" (.Params.background.color | default "white"))
+    "color" ($background.color | default "white"))
   -}}
   {{- $body_attr  := partial "components/base/sections/attr" (merge $background (dict
     "id"         $body_id
@@ -86,10 +91,10 @@
     {{- partial "components/bg" $background -}}
 
     {{/*  LOGO  */}}
-    {{ partial "components/base/logo" . }}
+    {{ partial "components/base/logo" $params.menu }}
 
     {{/*  MENU  */}}
-    {{ partial "components/base/menu/_" . }}
+    {{ partial "components/base/menu/_" $params.menu }}
 
     {{/*  MAIN  */}}
     <main>
@@ -100,10 +105,10 @@
     {{ partial "components/base/sections/_" (dict "footer" true) }}
 
     {{/*  PRE BODY END  */}}
-    {{ partial "components/cookies"      . }}
-    {{ partial "components/callnow"      . }}
-    {{ partial "components/up"           . }}
-    {{ partial "components/base/scripts" . }}
+    {{ partial "components/cookies"      $params.menu    }}
+    {{ partial "components/callnow"      $params.callnow }}
+    {{ partial "components/up"           .               }}
+    {{ partial "components/base/scripts" .               }}
     {{ $custom_html_body }}
   </body>
 </html>

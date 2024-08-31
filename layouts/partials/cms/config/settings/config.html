@@ -22,6 +22,7 @@
       (dict "name" `google_analytics`         "widget" `string`  "required" false "label" $t.config_google_analytics         "hint" $t.config_google_analytics_hint)
       (dict "name" `google_site_verification` "widget" `string`  "required" false "label" $t.config_google_site_verification "hint" $t.config_google_site_verification_hint)
       (dict "name" `google_file_verification` "widget" `string`  "required" false "label" $t.config_google_file_verification "hint" $t.config_google_file_verification_hint)
+      (dict "name" `google_translate`         "widget" `boolean` "required" false "label" $t.config_google_translate         "hint" $t.config_google_translate_hint)
       (dict "name" `disqus`                   "widget" `string`  "required" false "label" $t.config_disqus                   "hint" $t.config_disqus_hint)
       (dict
         "label"     $t.config_menu
@@ -49,19 +50,19 @@
           (dict "name" `location` "widget" `string` "required" false "label" $t.config_legal_location)
         )
       )
-      (dict "name" `phone_code` "widget" `select` "required" false "label" $t.config_phone_code                                                 "options" `~OPTIONS_PHONE_CODES`)
+      (dict "name" `phone_code` "widget" `select` "required" false "label" $t.config_phone_code "hint" (print $t.default "→ **" (index $t "option-phone_code-34") "**") "options" `~OPTIONS_PHONE_CODES`)
       (dict "name" `time_zone`  "widget" `select` "required" false "label" $t.config_time_zone  "hint" (print $t.default "→ **Europe/Madrid**") "options" site.Data.utilities.time_zone)
-      (dict "name" `currency`   "widget" `string` "required" false "label" $t.config_currency   "hint" (print "[" $t.config_currency_hint "](https://wikipedia.org/wiki/ISO_4217) 🔷 " $t.default "→ **EUR**"))
+      (dict "name" `currency`   "widget" `select` "required" false "label" $t.config_currency   "hint" (print $t.default "→ **EUR**")           "options" `~OPTIONS_CURRENCY`)
       (dict "name" `paginate`   "widget" `string` "required" false "label" $t.config_paginate   "hint" $t.config_paginate_hint)
       (dict
-        "name"      `custom_html`
+        "name"      `html`
         "widget"    `object`
-        "label"     $t.config_custom_html
+        "label"     $t.config_html
         "required"  false
         "collapsed" true
         "fields"    (slice
-          (dict "name" `head` "required" false "label" $t.config_custom_html_head "widget" `text` "default_language" `html` "output_code_only" true)
-          (dict "name" `body` "required" false "label" $t.config_custom_html_body "widget" `text` "default_language" `html` "output_code_only" true)
+          (dict "name" `head` "required" false "label" $t.config_html_head "widget" `text` "default_language" `html` "output_code_only" true)
+          (dict "name" `body` "required" false "label" $t.config_html_body "widget" `text` "default_language" `html` "output_code_only" true)
         )
       )
     )

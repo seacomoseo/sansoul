@@ -1,6 +1,6 @@
 {{- $items := slice -}}
 
-{{ if .menu.show_sections }}
+{{ if .show_sections }}
   {{- $sections  := slice -}}
   {{- with partial "functions/sections" page -}}
     {{- $sections = after 1 . -}}
@@ -13,7 +13,7 @@
         {{ $item := partial "components/base/menu/item-by-section" . }}
 
         {{/*  MODALS TO SUBITEMS  */}}
-        {{ if $.menu.show_modals }}
+        {{ if $.show_modals }}
           {{ $subitems := slice }}
           {{ with .modals }}
             {{ range . }}

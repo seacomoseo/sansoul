@@ -44,7 +44,7 @@
         "emoji"         .Params.emoji
       -}}
 
-      {{- range .CurrentSection.Params.custom_params -}}
+      {{- range .CurrentSection.Params.customs -}}
         {{- if eq .type "relation" -}}
           {{- $relation    := .relation -}}
           {{- $taxonomies  := slice -}}

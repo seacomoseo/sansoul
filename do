@@ -11,6 +11,8 @@ STE="\033[0m"
 if [ $1 = up ]
 then
 
+  echo "${STI} DO UP ${STE}"
+
   echo "${STI} ADD ${STE}"
   git add .
 
@@ -52,6 +54,8 @@ then
 elif [ $1 = down ]
 then
 
+  echo "${STI} DO DOWN ${STE}"
+
   echo "${STI} PULL ${STE}"
   git pull
 
@@ -62,10 +66,7 @@ then
 elif [ $1 = du ]
 then
 
-  echo "${STI} DO DOWN ${STE}"
   sh do down
-
-  echo "${STI} DO UP ${STE}"
   sh do up
 
 # hugo server with theme config
@@ -165,10 +166,26 @@ then
 elif [ $1 = clean ]
 then
 
-  echo "${STI} REMOVE BINARY FILES FROM HISTORY ${STE}"
-  git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch *.ai *.bmp *.eps *.gif *.gifv *.ico *.jng *.jp2 *.jpg *.jpeg *.jpx *.jxr *.png *.psb *.psd *.svgz *.tif *.tiff *.wbmp *.webp *.pdf *.kar *.m4a *.mid *.midi *.mp3 *.ogg *.ra *.wav *.3gpp *.3gp *.as *.asf *.asx *.avi *.fla *.flv *.m4v *.mng *.mov *.mp4 *.mpeg *.mpg *.ogv *.swc *.swf *.webm *.7z *.gz *.jar *.rar *.tar *.zip *.ttf *.eot *.otf *.woff *.woff2 *.exe *.pyc' --prune-empty -- --all
+  NAME=$(basename "$PWD")
+  REPO=https://github.com/seacomoseo/$NAME.git
+  # clone-repo
+  git clone --mirror "$REPO" clean-repo
+  # go to clean-repo
+  cd clean-repo
+  # remove media and static files
+  git filter-repo --path assets/media --path static --invert-paths --force
+  # update remote repo
+  git remote add origin "$REPO"
+  git push --force --all
+  git push --force --tags
+  # go to parent
+  cd ..
+  # pull
+  git fetch origin
+  git reset --hard origin/master
+  # remove clean-repo
+  rm -rf clean-repo
 
-  echo "${STI} DO UP ${STE}"
   sh do up
 
   echo "${STI} FORCE PUSH ${STE}"

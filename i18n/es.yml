@@ -113,9 +113,9 @@ filter_drafts: Borradores
 filter_year: Año
 filter_month: Mes
 # collections
-collection_page: Páginas
-collection_page_singular: Página
-collection_page_description: Páginas con sus propias plantillas individuales.
+collection_single: Páginas
+collection_single_singular: Página
+collection_single_description: Cada página tiene su propia plantilla individual (los valores sobreescriben a los de la plantilla general)
 collection_sections: Secciones
 collection_sections_singular: Sección
 collection_sections_description: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
@@ -137,6 +137,8 @@ config_google_site_verification: Código Search Console
 config_google_site_verification_hint: Código de Verificación de Google Search Console
 config_google_file_verification: Archivo Search Console
 config_google_file_verification_hint: Nombre de Archivo de Verificación de Google Search Console 🔷 **Ejemplo →** google7467d923cbb3eb4c.html
+config_google_translate: Traductor de Google
+config_google_translate_hint: Añade un enlace en el menú que lleva directamente al sitio web desde el traductor de Google
 config_disqus: Disqus
 config_disqus_hint: Nombre corto del sistema de comentarios disqus.com
 config_menu: Menú
@@ -152,12 +154,11 @@ config_legal_location: Ubicación
 config_phone_code: Prefijo Telefónico de País
 config_time_zone: Zona Horaria
 config_currency: Moneda
-config_currency_hint: Código de moneda de 3 letras
 config_paginate: Enlace Permanente de Paginación
 config_paginate_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
-config_custom_html: HTML Personalizado
-config_custom_html_head: Antes de </head>
-config_custom_html_body: Antes de </body>
+config_html: HTML Personalizado
+config_html_head: Antes de </head>
+config_html_body: Antes de </body>
 config_favicon: Favicono
 config_favicon_svg: SVG
 config_favicon_png: PNG
@@ -168,41 +169,85 @@ config_cms_lang: Idioma
 config_cms_editorial: Flujo Editorial
 config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
 config_langs_default_subdir: Idioma Principal en Subcarpeta
+# collections > settings > template
+template: Plantilla General
+template_hint: Plantilla común a todas las páginas (los valores de las páginas, personalizadas o no, con su propia plantilla sobreescriben a los de ésta)
+template_background: Fondo de Página
+template_menu: Menú
+template_menu_items: Elementos
+template_menu_item: Elemento
+template_menu_subitems: Sublementos
+template_menu_subitem: Sublemento
+template_menu_hide: Ocultar
+template_menu_logo: Mostrar Logo
+template_menu_sticky: Pantalla de Ajuste
+template_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
+template_menu_logo_sticky: Logo Fijo en Móvil
+template_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
+template_menu_logo_align: Alineación del Logo
+template_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
+template_menu_transparent: Inicia Transparente
+template_menu_transparent_hint: Al hacer scroll toma su color
+template_menu_show_sections: Mostrar Secciones
+template_menu_show_sections_hint: Muestra los enlaces que llevan a cada sección
+template_menu_show_modals: Mostrar Modales
+template_menu_show_modals_hint: Muestra enlaces que llevan a cada ventana modal como subelementos desplegables
+template_menu_hide_icons: Ocultar Iconos
+template_callnow: Botones de Esquina
+template_callnow_show: Mostrar
+template_callnow_items: Botones
+template_callnow_item: Botón
+template_section: Estilo de cada Sección
+template_section_singular: Sección
+template_section_hint: El 1º se aplica a todas, el resto de forma alterna 🔷 **Ejemplo →** si hay 3 estilos, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
+template_modal: Estilo de cada Modal
+template_modal_singular: Modal
+template_sections: Secciones
+template_sections_singular: Sección
+template_modals: Ventanas Modales
+template_modals_singular: Ventana Modal
+template_modals_hint: Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **Ejemplo →** '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión
+template_file: Archivo
+template_file_sections_hint: Sección previamente creada
+template_file_modals_hint: Modal previamente creada
+template_lists: Listas
+template_related: Listas de Relacionados
 # collections > settings > types
 types: Tipos de Páginas
-types_all: Todos
-types_all_hint: Plantilla común a todos los tipos de páginas (incluidas únicas y personalizadas)
-types_customs: Personalizados
-types_custom: Personalizado
-types_customs_base: Base
-types_customs_name: Nombre
-types_customs_emoji: Emoji
-types_customs_related: Relacionados
-types_customs_breadcrumbs: Migas de Pan
-types_customs_params: Parámetros Personalizados
-types_customs_params_singular: Parámetro Personalizado
-types_customs_params_name: Nombre
-types_customs_params_type: Tipo
-types_customs_params_options: Opciones
-types_customs_params_options_label: Título
-types_customs_params_options_value: Valor
-types_customs_params_list: Lista
-types_customs_relations: Relaciones
-types_customs_relations_singular: Relación
-types_customs_params_relations_hint: Crear previamente
-types_customs_params_multiple: Múltiple
-types_customs_params_schema: Schema
-types_customs_params_lang: Textos
-types_customs_params_lang_label: Nombre
-types_customs_params_lang_hint: Leyenda
-types_customs_template: Plantilla
-types_customs_template_hint: Plantilla para las páginas de este tipo
-types_customs_lang: Textos
-types_customs_singular: Título Singular
-types_customs_slug_hint: Es el final de la URL o enlace de la página padre de este tipo 🔷 **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
-types_customs_permalinks: Enlaces Permanentes
-types_customs_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
-types_customs_hint: Leyenda
+types__: Tipos
+types__singular: Tipo
+types__hint: Tipos personalizados de páginas
+types_base: Base
+types_base_hint: Determina el marcado de datos estructurados (útil para el SEO) y los parámetros mínimos que deben tener
+types_name: Nombre
+types_name_hint: Algunos nombres rellenan por defecto los campos de icono, emoji y textos en todos los idiomas
+types_emoji: Emoji
+types_related: Relacionados
+types_breadcrumbs: Migas de Pan
+types_params: Parámetros Personalizados
+types_params_singular: Parámetro Personalizado
+types_params_name: Nombre
+types_params_type: Tipo
+types_params_options: Opciones
+types_params_options_label: Título
+types_params_options_value: Valor
+types_params_list: Lista
+types_relations: Relaciones
+types_relations_singular: Relación
+types_params_relations_hint: Crear previamente
+types_params_multiple: Múltiple
+types_params_schema: Schema
+types_params_lang: Textos
+types_params_lang_label: Nombre
+types_params_lang_hint: Leyenda
+types_template: Plantilla
+types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
+types_lang: Textos
+types_singular: Título Singular
+types_slug_hint: Es el final de la URL o enlace de la página padre de este tipo 🔷 **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
+types_permalinks: Enlaces Permanentes
+types_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
+types_hint: Leyenda
 # collections > settings > types default
 types_default_article_singular: Artículo
 types_default_article_title: Artículos
@@ -422,8 +467,8 @@ robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tuto
 # main-page-params
 p_title: Título
 p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
-p_title_seo: Título SEO
-p_title_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+p_seo: Título SEO
+p_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
 p_slug: Slug
 p_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
 p_image: Imagen Principal
@@ -457,48 +502,6 @@ p_translationKey: ID Traducción
 p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
 p_base: Base
 p_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
-# templates
-template_background: Fondo de Página
-template_menu: Menú
-template_menu_items: Elementos
-template_menu_item: Elemento
-template_menu_subitems: Sublementos
-template_menu_subitem: Sublemento
-template_menu_hide: Ocultar
-template_menu_logo: Mostrar Logo
-template_menu_sticky: Pantalla de Ajuste
-template_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
-template_menu_logo_sticky: Logo Fijo en Móvil
-template_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
-template_menu_logo_align: Alineación del Logo
-template_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
-template_menu_transparent: Inicia Transparente
-template_menu_transparent_hint: Al hacer scroll toma su color
-template_menu_show_sections: Mostrar Secciones
-template_menu_show_sections_hint: Muestra los enlaces que llevan a cada sección
-template_menu_show_modals: Mostrar Modales
-template_menu_show_modals_hint: Muestra enlaces que llevan a cada ventana modal como subelementos desplegables
-template_menu_hide_icons: Ocultar Iconos
-template_menu_google_translate: Traductor de Google
-template_callnow: Botones de Esquina
-template_callnow_hide: Ocultar
-template_callnow_items: Botones
-template_callnow_item: Botón
-template_section: Estilo de cada Sección
-template_section_singular: Sección
-template_section_hint: El 1º se aplica a todas, el resto de forma alterna 🔷 **Ejemplo →** si hay 3 estilos, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
-template_modal: Estilo de cada Modal
-template_modal_singular: Modal
-template_sections: Secciones
-template_sections_singular: Sección
-template_modals: Ventanas Modales
-template_modals_singular: Ventana Modal
-template_modals_hint: Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **Ejemplo →** '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión
-template_file: Archivo
-template_file_sections_hint: Sección previamente creada
-template_file_modals_hint: Modal previamente creada
-template_lists: Listas
-template_related: Listas de Relacionados
 # boxes and sections
 box_name: Nombre
 box_name_hint: Nombre del archivo
@@ -538,9 +541,11 @@ box_image_contain: Imagen Ajustada a la Proporción
 box_image_contain_hint: Para que no se recorte si se selecciona alguna proporción
 box_image_border: Color del Borde de la Imagen
 box_image_inset: Imagen Incrustada
-box_image_inset_hint: Las imágenes se incrustan en el elemento como si este no tuviese márgenes internos
+box_image_inset_hint: Se incrusta en el elemento como si este no tuviese márgenes internos
 box_image_grayscale: Imagen en Blanco y Negro
-box_image_grayscale_hint: Las imágenes recuperan el color al pasar el cursor por encima
+box_image_grayscale_hint: Recuperan el color al pasar el cursor por encima
+box_image_declive: Imagen con Gradiente
+box_image_declive_hint: Gradiente de fondo hacia abajo
 box_button_link: Enlace
 box_button_licon: Icono del Enlace
 box_button_label: Texto del Enlace
@@ -739,15 +744,14 @@ option-langs-fr: 🇫🇷 Francés
 option-langs-de: 🇩🇪 Alemán
 option-langs-pt: 🇵🇹 Portugués
 option-langs-it: 🇮🇹 Italiano
-option-base-article: Artículo
-option-base-event: Evento
-option-base-product: Producto
-option-base-brand: Marca
-option-base-taxonomy: Taxonomía
-option-base-author: Autor
-option-base-organization: Organización
-option-base-service: Servicio
-option-base-page: Página
+option-base-article: 📰 Artículo
+option-base-event: 📅 Evento
+option-base-product: 📦 Producto
+option-base-brand: 🏷 Marca
+option-base-author: 👤 Autor
+option-base-organization: 🚀 Organización
+option-base-service: 🔧 Servicio
+option-base-page: 📄 Página
 option-hn-0: h0
 option-hn-1: h1
 option-hn-2: h2
@@ -821,6 +825,9 @@ option-icons_emojis-noto-bw: Noto (Android) en monocromo
 option-buttons_type-base: Base
 option-buttons_type-title: Título
 option-buttons_type-cursive: Cursiva
+option-callnow_show-items: Elementos
+option-callnow_show-auto: Automático
+option-callnow_show-hide: Ocultar
 option-direction_right: Derecha
 option-direction_left: Izquierda
 option-direction_top: Arriba
@@ -1156,6 +1163,169 @@ option-location_type-SearchRescueOrganization: → Organización de Búsqueda y 
 option-location_type-SportsOrganization: → Organización Deportiva
 option-location_type-SportsTeam: → → Equipo Deportivo
 option-location_type-WorkersUnion: → Sindicato
+option-currency-AED: AED 🇦🇪 Dírham de los Emiratos Árabes Unidos
+option-currency-AFN: AFN 🇦🇫 Afgani Afgano
+option-currency-ALL: ALL 🇦🇱 Lek Albanés
+option-currency-AMD: AMD 🇦🇲 Dram Armenio
+option-currency-ANG: ANG 🇨🇼 Florín de las Antillas Neerlandesas
+option-currency-AOA: AOA 🇦🇴 Kwanza Angoleño
+option-currency-ARS: ARS 🇦🇷 Peso Argentino
+option-currency-AUD: AUD 🇦🇺 Dólar Australiano
+option-currency-AWG: AWG 🇦🇼 Florín Arubeño
+option-currency-AZN: AZN 🇦🇿 Manat Azerbaiyano
+option-currency-BAM: BAM 🇧🇦 Marco Convertible de Bosnia Y Herzegovina
+option-currency-BBD: BBD 🇧🇧 Dólar de Barbados
+option-currency-BDT: BDT 🇧🇩 Taka de Bangladés
+option-currency-BGN: BGN 🇧🇬 Lev Búlgaro
+option-currency-BHD: BHD 🇧🇭 Dinar Bareiní
+option-currency-BIF: BIF 🇧🇮 Franco Burundés
+option-currency-BMD: BMD 🇧🇲 Dólar Bermudeño
+option-currency-BND: BND 🇧🇳 Dólar de Brunéi
+option-currency-BOB: BOB 🇧🇴 Boliviano
+option-currency-BRL: BRL 🇧🇷 Real Brasileño
+option-currency-BSD: BSD 🇧🇸 Dólar Bahameño
+option-currency-BTN: BTN 🇧🇹 Ngultrum Butanés
+option-currency-BWP: BWP 🇧🇼 Pula de Botsuana
+option-currency-BYN: BYN 🇧🇾 Rublo Bielorruso
+option-currency-BZD: BZD 🇧🇿 Dólar de Belice
+option-currency-CAD: CAD 🇨🇦 Dólar Canadiense
+option-currency-CDF: CDF 🇨🇩 Franco Congoleño
+option-currency-CHF: CHF 🇨🇭 Franco Suizo
+option-currency-CLP: CLP 🇨🇱 Peso Chileno
+option-currency-CNY: CNY 🇨🇳 Renminbi / Yuan Chino
+option-currency-COP: COP 🇨🇴 Peso Colombiano
+option-currency-CRC: CRC 🇨🇷 Colón Costarricense
+option-currency-CUP: CUP 🇨🇺 Peso Cubano
+option-currency-CVE: CVE 🇨🇻 Escudo Caboverdiano
+option-currency-CZK: CZK 🇨🇿 Corona Checa
+option-currency-DJF: DJF 🇩🇯 Franco Yibutiano
+option-currency-DKK: DKK 🇩🇰 Corona Danesa
+option-currency-DOP: DOP 🇩🇴 Peso Dominicano
+option-currency-DZD: DZD 🇩🇿 Dinar Argelino
+option-currency-EGP: EGP 🇪🇬 Libra Egipcia
+option-currency-ERN: ERN 🇪🇷 Nakfa Eritreo
+option-currency-ETB: ETB 🇪🇹 Birr Etíope
+option-currency-EUR: EUR 🇪🇺 Euro
+option-currency-FJD: FJD 🇫🇯 Dólar Fiyiano
+option-currency-FKP: FKP 🇫🇰 Libra de las Islas Malvinas
+option-currency-GBP: GBP 🇬🇧 Libra Esterlina
+option-currency-GEL: GEL 🇬🇪 Lari Georgiano
+option-currency-GHS: GHS 🇬🇭 Cedi Ghanés
+option-currency-GIP: GIP 🇬🇮 Libra Gibraltareña
+option-currency-GMD: GMD 🇬🇲 Dalasi Gambiano
+option-currency-GNF: GNF 🇬🇳 Franco Guineano
+option-currency-GTQ: GTQ 🇬🇹 Quetzal Guatemalteco
+option-currency-GYD: GYD 🇬🇾 Dólar Guyanés
+option-currency-HKD: HKD 🇭🇰 Dólar de Hong Kong
+option-currency-HNL: HNL 🇭🇳 Lempira Hondureño
+option-currency-HTG: HTG 🇭🇹 Gourde Haitiano
+option-currency-HUF: HUF 🇭🇺 Florín Húngaro
+option-currency-IDR: IDR 🇮🇩 Rupia Indonesia
+option-currency-ILS: ILS 🇮🇱 Nuevo Shéquel Israelí
+option-currency-INR: INR 🇮🇳 Rupia India
+option-currency-IQD: IQD 🇮🇶 Dinar Iraquí
+option-currency-IRR: IRR 🇮🇷 Rial Iraní
+option-currency-ISK: ISK 🇮🇸 Corona Islandesa
+option-currency-JMD: JMD 🇯🇲 Dólar Jamaicano
+option-currency-JOD: JOD 🇯🇴 Dinar Jordano
+option-currency-JPY: JPY 🇯🇵 Yen Japonés
+option-currency-KES: KES 🇰🇪 Chelín Keniano
+option-currency-KGS: KGS 🇰🇬 Som Kirguís
+option-currency-KHR: KHR 🇰🇭 Riel Camboyano
+option-currency-KMF: KMF 🇰🇲 Franco Comorano
+option-currency-KPW: KPW 🇰🇵 Won Norcoreano
+option-currency-KRW: KRW 🇰🇷 Won Surcoreano
+option-currency-KWD: KWD 🇰🇼 Dinar Kuwaití
+option-currency-KYD: KYD 🇰🇾 Dólar de las Islas Caimán
+option-currency-KZT: KZT 🇰🇿 Tenge Kazajo
+option-currency-LAK: LAK 🇱🇦 Kip Laosiano
+option-currency-LBP: LBP 🇱🇧 Libra Libanesa
+option-currency-LKR: LKR 🇱🇰 Rupia de Sri Lanka
+option-currency-LRD: LRD 🇱🇷 Dólar Liberiano
+option-currency-LSL: LSL 🇱🇸 Loti Lesothense
+option-currency-LYD: LYD 🇱🇾 Dinar Libio
+option-currency-MAD: MAD 🇲🇦 Dírham Marroquí
+option-currency-MDL: MDL 🇲🇩 Leu Moldavo
+option-currency-MGA: MGA 🇲🇬 Ariary Malgache
+option-currency-MKD: MKD 🇲🇰 Denar Macedonio
+option-currency-MMK: MMK 🇲🇲 Kyat Birmano
+option-currency-MNT: MNT 🇲🇳 Tugrik Mongol
+option-currency-MOP: MOP 🇲🇴 Pataca de Macao
+option-currency-MRU: MRU 🇲🇷 Ouguiya Mauritana
+option-currency-MUR: MUR 🇲🇺 Rupia Mauriciana
+option-currency-MVR: MVR 🇲🇻 Rufiyaa Maldiva
+option-currency-MWK: MWK 🇲🇼 Kwacha Malauí
+option-currency-MXN: MXN 🇲🇽 Peso Mexicano
+option-currency-MYR: MYR 🇲🇾 Ringgit Malasio
+option-currency-MZN: MZN 🇲🇿 Metical Mozambiqueño
+option-currency-NAD: NAD 🇳🇦 Dólar Namibio
+option-currency-NGN: NGN 🇳🇬 Naira Nigeriana
+option-currency-NIO: NIO 🇳🇮 Córdoba Nicaragüense
+option-currency-NOK: NOK 🇳🇴 Corona Noruega
+option-currency-NPR: NPR 🇳🇵 Rupia Nepalí
+option-currency-NZD: NZD 🇳🇿 Dólar Neozelandés
+option-currency-OMR: OMR 🇴🇲 Rial Omaní
+option-currency-PAB: PAB 🇵🇦 Balboa Panameño
+option-currency-PEN: PEN 🇵🇪 Sol Peruano
+option-currency-PGK: PGK 🇵🇬 Kina de Papúa Nueva Guinea
+option-currency-PHP: PHP 🇵🇭 Peso Filipino
+option-currency-PKR: PKR 🇵🇰 Rupia Paquistaní
+option-currency-PLN: PLN 🇵🇱 Złoty Polaco
+option-currency-PYG: PYG 🇵🇾 Guaraní Paraguayo
+option-currency-QAR: QAR 🇶🇦 Riyal Qatarí
+option-currency-RON: RON 🇷🇴 Leu Rumano
+option-currency-RSD: RSD 🇷🇸 Dinar Serbio
+option-currency-RUB: RUB 🇷🇺 Rublo Ruso
+option-currency-RWF: RWF 🇷🇼 Franco Ruandés
+option-currency-SAR: SAR 🇸🇦 Riyal Saudí
+option-currency-SBD: SBD 🇸🇧 Dólar de las Islas Salomón
+option-currency-SCR: SCR 🇸🇨 Rupia de Seychelles
+option-currency-SDG: SDG 🇸🇩 Libra Sudanesa
+option-currency-SEK: SEK 🇸🇪 Corona Sueca
+option-currency-SGD: SGD 🇸🇬 Dólar de Singapur
+option-currency-SHP: SHP 🇸🇭 Libra de Santa Elena
+option-currency-SLE: SLE 🇸🇱 Leone de Sierra Leona
+option-currency-SOS: SOS 🇸🇴 Chelín Somalí
+option-currency-SRD: SRD 🇸🇷 Dólar Surinamés
+option-currency-SSP: SSP 🇸🇸 Libra de Sudán del Sur
+option-currency-STN: STN 🇸🇹 Dobra de Santo Tomé Y Príncipe
+option-currency-SVC: SVC 🇸🇻 Colón Salvadoreño
+option-currency-SYP: SYP 🇸🇾 Libra Siria
+option-currency-SZL: SZL 🇸🇿 Lilangeni Suazi
+option-currency-THB: THB 🇹🇭 Baht Tailandés
+option-currency-TJS: TJS 🇹🇯 Somoni Tayiko
+option-currency-TMT: TMT 🇹🇲 Manat Turcomano
+option-currency-TND: TND 🇹🇳 Dinar Tunecino
+option-currency-TOP: TOP 🇹🇴 Paʻanga Tongano
+option-currency-TRY: TRY 🇹🇷 Lira Turca
+option-currency-TTD: TTD 🇹🇹 Dólar de Trinidad Y Tobago
+option-currency-TWD: TWD 🇹🇼 Nuevo Dólar Taiwanés
+option-currency-TZS: TZS 🇹🇿 Chelín Tanzano
+option-currency-UAH: UAH 🇺🇦 Grivna Ucraniana
+option-currency-UGX: UGX 🇺🇬 Chelín Ugandés
+option-currency-USD: USD 🇺🇸 Dólar Estadounidense
+option-currency-UYU: UYU 🇺🇾 Peso Uruguayo
+option-currency-UYW: UYW 🇺🇾 Unidad Previsional
+option-currency-UZS: UZS 🇺🇿 Som Uzbeko
+option-currency-VED: VED 🇻🇪 Bolívar Digital Venezolano
+option-currency-VES: VES 🇻🇪 Bolívar Soberano Venezolano
+option-currency-VND: VND 🇻🇳 Dong Vietnamita
+option-currency-VUV: VUV 🇻🇺 Vatu Vanuatuense
+option-currency-WST: WST 🇼🇸 Tala Samoano
+option-currency-XAF: XAF 🇨🇲🇨🇫🇨🇬🇬🇦🇬🇶🇹🇩 Franco CFA BEAC
+option-currency-XCD: XCD 🇦🇬🇦🇮🇩🇲🇬🇩🇰🇳🇱🇨🇻🇨 Dólar del Caribe Oriental
+option-currency-XDR: XDR 🏳️‍🌐 Derechos Especiales de Giro
+option-currency-XOF: XOF 🇧🇯🇧🇫🇨🇮🇬🇳🇲🇱🇳🇪🇸🇳🇹🇬 Franco CFA BCEAO
+option-currency-XPF: XPF 🇵🇫 Franco CFP / Pacífico
+option-currency-XSU: XSU 🏳️‍🌐 SUCRE
+option-currency-XTS: XTS 🧪 Código Reservado para Pruebas
+option-currency-XUA: XUA 🏳️‍🌐 Unidad de Cuenta ADB
+option-currency-XXX: XXX ❌ Sin Moneda
+option-currency-YER: YER 🇾🇪 Rial Yemení
+option-currency-ZAR: ZAR 🇿🇦 Rand Sudafricano
+option-currency-ZMW: ZMW 🇿🇲 Kwacha Zambiano
+option-currency-ZWG: ZWG 🇿🇼 Oro de Zimbabue
+option-currency-ZWL: ZWL 🇿🇼 Dólar Zimbabuense
 
 # other
 construction: Sitio Web en <br> Construcción

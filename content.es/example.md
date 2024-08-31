@@ -1,6 +1,6 @@
 ---
 title: Página de Ejemplo
-title_seo: null # string
+seo: null # string
 slug: unica
 description: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
 image: fondo.jpg
@@ -13,7 +13,7 @@ background:
   gradient_type: null # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
   bg: null # string
   alpha: 0 # [ 0.00 - 1.00 ]
-  parallax: null # [ none, fix, soft, box ]
+  parallax: null # [ none, fix, soft ]
 menu:
   hide: false
   logo: false
@@ -28,9 +28,8 @@ menu:
   show_sections: true
   show_modals: false
   hide_icons: false
-  google_translate: false # `link: translate` in `items|es` to relocate it
-  es: # `link: langs` to relocate langs
-  - link: null # string
+  es:
+  - link: null # string; `langs` to relocate langs; `translate` to relocate translate
     icon: 1 # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: null # string
     anchor: null # string
@@ -38,27 +37,21 @@ menu:
     button_color: none
     font_alt: false
 callnow:
-  hide: false
+  show: null # [ items, auto, hide ]
   es:
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
-    full: false
     button: link # [ main, link, alt, light, dark, invert, none ]
-    font_alt: false
   - type: whatsapp
     label: 123456789
-    full: false
     button: whatsapp # [ main, link, alt, light, dark, invert, none ]
-    font_alt: false
   - type: custom
     link: '#principal'
     icon: person-from-portal
     label: Personalizado
-    full: true
     anchor: Mola Mazo
     ofuscate: false
     button: light # [ main, link, alt, light, dark, invert, none ]
-    font_alt: false
     ga4: false
 section: []
 modal: {}

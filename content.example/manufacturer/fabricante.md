@@ -1,6 +1,6 @@
 ---
 title: Fabricante de ejemplo
-title_seo: ''
+seo: ''
 slug: fabricante
 description: Esta es la descripción de un fabricante de ejemplo.
 image: base/icon.png

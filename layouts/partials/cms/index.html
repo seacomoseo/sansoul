@@ -3,14 +3,26 @@
 {{- $config       := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
 {{- $local        := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
 {{- $translations := slice -}}
-{{- $trans_css    := slice -}}
+{{- $default      := site.Data.utilities.defaults -}}
+{{- $icons        := slice
+  $default.page.icon
+  $default.section.icon
+  $default.modal.icon
+  $default.settings.icon
+-}}
 {{- range .Translations -}}
   {{- $cms_link   := print .Site.Home.RelPermalink "admin/" -}}
+  {{- $icon       := print "flag-" .Lang -}}
   {{- $translations = $translations | append (dict
-    "id"    .Lang
-    "title" .Language.LanguageName
-    "data"  $cms_link
+    "id"      .Lang
+    "title"   .Language.LanguageName
+    "data"    $cms_link
+    "options" (dict "icon" $icon)
   ) -}}
+  {{- $icons = $icons | append $icon -}}
+{{- end -}}
+{{- range site.Sections -}}
+  {{- $icons = $icons | append .Params.icon -}}
 {{- end -}}
 
 <!doctype html>
@@ -52,6 +64,25 @@
   {{/*  HELP CORNER  */}}
   {{ cond $local "" (partial "cms/help-corner" .) }}
 
+  {{/*  ICONS (for draws-purge)  */}}
+  <div style="display:none">
+    {{- range slice
+      $default.config.icon
+      $default.template.icon
+      $default.types.icon
+      $default.schema.icon
+      $default.styles.icon
+      $default.remote.icon
+      $default.redirects.icon
+      $default.robots.icon
+    -}}
+      {{- $icons = $icons | append . -}}
+    {{- end -}}
+    {{- range $icons -}}
+      <svg><use href="/draws.svg#{{ . }}"></use></svg>
+    {{- end -}}
+  </div>
+
   {{/*  SVELTIA CMS  */}}
   {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}
 
@@ -69,6 +100,7 @@
       "netlifyId"    (site.Params.netlify_id | default "sansoul")
       "tReset"       $t.reset
       "translations" $translations
+      "icons"        $icons
       "local"        $local
     )
   }}

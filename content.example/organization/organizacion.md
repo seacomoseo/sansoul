@@ -1,6 +1,6 @@
 ---
 title: Organización de ejemplo
-title_seo: ▷ Organización de ejemplo 【Con caracteres llamativos】
+seo: ▷ Organización de ejemplo 【Con caracteres llamativos】
 slug: organizacion
 description: Esta es la descripción de una organización de ejemplo.
 image: fondo.jpg

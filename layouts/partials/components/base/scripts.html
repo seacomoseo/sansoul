@@ -18,7 +18,7 @@
   {{ $disqus_id = . }}
 {{ end }}
 
-{{ if .Params.menu.google_translate }}
+{{ if site.Params.google_translate }}
   {{ $is_google_translate = true }}
 {{ end }}
 
@@ -75,10 +75,12 @@
 {{ end }}
 
 {{ $js := slice $_index | append $conditional_srcs | append $custom | resources.Concat "js/scripts.js" }}
-{{ $js  = $js | js.Build $opts | fingerprint }}
+{{ $js  = $js | js.Build $opts }}
 
 {{ if hugo.IsProduction }}
   {{ $js = $js | minify }}
+{{ else }}
+  {{ $js = $js | fingerprint }}
 {{ end }}
 
 <script src="{{ $js.RelPermalink }}" defer></script>

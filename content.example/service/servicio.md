@@ -1,6 +1,6 @@
 ---
 title: Servicio de ejemplo
-title_seo: ▷ Servicio de ejemplo 【Con caracteres llamativos】
+seo: ▷ Servicio de ejemplo 【Con caracteres llamativos】
 slug: Servicio
 description: Esta es la descripción de un Servicio de ejemplo.
 image: fondo.jpg

@@ -76,12 +76,12 @@
     */}}
 
     {{/*  TEMPLATE  */}}
-    {{- $template_all       := site.Data.types.all.lists -}}
+    {{- $template_all       := site.Data.template.lists -}}
     {{- $template_type      := $parent.Params.lists -}}
     {{- $template_related   := dict -}}
     {{- if eq $type "related" -}}
       {{- $template_related := merge
-        site.Data.types.all.related
+        site.Data.template.related
         $parent.Params.related
       -}}
     {{- end -}}

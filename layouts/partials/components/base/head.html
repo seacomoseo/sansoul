@@ -1,10 +1,20 @@
 {{- $config := site.Data.config -}}
 
-{{ $title := "" }}
-{{ with .Params.title_seo }}
-  {{ $title = . | markdownify }}
+{{ $title     := .Title }}
+{{ with .Params.seo }}
+  {{ $title    = . | markdownify }}
 {{ else }}
-  {{ $title = partial "functions/anchor-page" . }}
+  {{ $anchor  := "" }}
+  {{ range first 1 (partial "functions/sections" .) }}
+    {{ $anchor = .hanchor }}
+    {{ $title  = .title | default $.Title }}
+  {{ end }}
+  {{ with $anchor }}
+    {{ $title  = . }}
+  {{ else }}
+    {{ $pre   := cond .IsSection .Params.emoji "⭐" }}
+    {{ $title  = print $pre " " $title " ⇨ " site.Title }}
+  {{ end }}
 {{ end }}
 
 {{ $description := "" }}

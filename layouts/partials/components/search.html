@@ -15,7 +15,7 @@
         </button>
       */}}
     </div>
-    {{- $lists  := site.Data.types.all.lists -}}
+    {{- $lists  := site.Data.template.lists -}}
     {{- $class  := print "boxes boxes--columns-" ($lists.columns | default 3) -}}
     {{- with $lists.columns_min }}
       {{- $class = print $class " boxes--min-" . -}}

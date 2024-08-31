@@ -285,33 +285,29 @@
       - [x] Fix lightbox
       - [x] Fix purgecss
       - [x] Images src sizes
+      - [x] `data.config.langs.[lang].types` in `data.types`
       - [x] Remove `site.Data.list`
       - [x] New `brand` schema
       - [x] Remove `taxonomy` base
       - [x] root directories in singular
       - [x] Remove `T` in `date`, `lastmod` and `end`
       - [x] Filter `list` by `date`
-      - [ ] Fix types in CMS
-      - [ ] Translate CMS
-      - [ ] 404
-      - [ ] `types`
-        - [ ] `params` > `relations`
-          - [ ] Remove `type: [relation]`
-          - [ ] Remove `relation`
-          - [ ] Slice to string `schema`
-        - [ ] `breadcrumbs` > `relations`
-        - [ ] `categories` params > `category`
-        - [ ] `authors` params > `author`
-      - [x] `cascade.type: single` en páginas únicas
-      - [/] `params` in each box
-      - [x] `data.config.langs.[lang].types` in `data.types`
-      - [x] CMS
-        - [ ] `collections` by custom types base params
-        - [ ] `date`'s
-        - [x] Collection icons
-        - [ ] Fix `settings.types` arrays to objects
-      - [ ] Static CMS isues preview images in subdir and `public_folder: ''`
+      - [x] `title_seo` > `seo`
+      - [x] `menu.google_translate` > `config.langs.lang.google_translate`
+      - [x] `types.all` > `template.cascade`
+      - [x] `types.customs` > `_`
+      - [x] Fix logo
+      - [x] Fix callnow
+      - [x] 404
+      - [x] `categories` params > `category`
+      - [x] `authors` params > `author`
+      - [ ] Fix purge css
       - [ ] Box `data`
+      - [ ] Types from file to dir
+      - [ ] Custom params in CMS
+      - [/] `params` in each box
+      - [ ] Translate CMS
+      - [x] Static CMS isues preview images in subdir and `public_folder: ''`
       - [ ] `i18n` editable in cms?
       - [ ] `buildFuture`
       - [ ] 404 js
@@ -330,7 +326,6 @@
       - [ ] Reset `cookies`.md
       - [ ] Reset `admin`.md
       - [ ] Check `forms` `actions`
-      - [ ] Check events
       - [ ] Check comments
       - [ ] Check Google Translate ofuscate links and la propia traducción
       - [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`

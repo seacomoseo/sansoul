@@ -1,0 +1,14 @@
+{{ $404  := dict }}
+{{ if eq .Kind "404" }}
+  {{ $404 = dict
+    "menu"     (dict "hide" "true")
+    "callnow"  (dict "hide" "true")
+    "sections" (slice (dict "file" "base/404"))
+  }}
+{{ end }}
+
+{{ return merge
+  site.Data.template
+  (.Params | default dict)
+  $404
+}}

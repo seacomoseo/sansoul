@@ -1,6 +1,6 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
-title_seo:  ''
+seo:  ''
 slug:  "{{ .Name }}"
 translationKey:  "{{ .Name }}"
 description: ''

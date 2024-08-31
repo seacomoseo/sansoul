@@ -46,7 +46,6 @@
   `~MENU_SHOW_SECTIONS`
   `~MENU_SHOW_MODALS`
   `~MENU_HIDE_ICONS`
-  `~MENU_GOOGLE_TRANSLATE`
 }}
 {{ $menu_items_fields := slice
   `~BOX_BUTTON_LINK`
@@ -97,7 +96,6 @@
   (dict "&MENU_SHOW_SECTIONS"    (dict "name" `show_sections`    "widget" `boolean` "required" false "label" $t.template_menu_show_sections                               "hint" $t.template_menu_show_sections_hint))
   (dict "&MENU_SHOW_MODALS"      (dict "name" `show_modals`      "widget" `boolean` "required" false "label" $t.template_menu_show_modals                                 "hint" $t.template_menu_show_modals_hint))
   (dict "&MENU_HIDE_ICONS"       (dict "name" `hide_icons`       "widget" `boolean` "required" false "label" $t.template_menu_hide_icons))
-  (dict "&MENU_GOOGLE_TRANSLATE" (dict "name" `google_translate` "widget" `boolean` "required" false "label" $t.template_menu_google_translate))
 
   (dict "&TEMPLATE_MENU_SINGLE" (dict
     "name"      `menu`
@@ -122,13 +120,12 @@
 {{ $callnow_langs  := slice }}
 {{ range site.Languages }}
   {{ $callnow_langs = $callnow_langs | append (dict "<<" (slice
-    (dict "name" .Lang)
-    (dict "label" (print $t.template_callnow_items " " (index $t (print "option-langs-" .Lang))))
+    (dict "name" .Lang "label" (print $t.template_callnow_items " " (index $t (print "option-langs-" .Lang))))
     `~CALLNOW_ITEMS`
   )) }}
 {{ end }}
 {{ $colections = $colections | append
-  (dict "&CALLNOW_HIDE"  (dict "name" `hide` "widget" `boolean` "required" false "label" $t.template_callnow_hide))
+  (dict "&CALLNOW_HIDE"  (dict "name" `show` "widget" `select` "required" false "label" $t.template_callnow_show "options" `~OPTIONS_CALLNOW_SHOW`))
   (dict "&CALLNOW_ITEMS" (dict
     "name"           `items`
     "widget"         `list`
@@ -150,7 +147,7 @@
           `~BOX_ICON_ID`
           `~BOX_CONTACT_LABEL`
           `~BOX_BUTTON_OFUSCATE`
-          `~BOX_BUTTON_COLOR_WITHOUT_NONE`
+          `~BOX_BUTTON_COLOR`
           `~BOX_BUTTON_GA4`
         )
       )

@@ -1,6 +1,6 @@
 ---
 title: Entrada de ejemplo
-title_seo: ▷ Entrada de ejemplo 【Con caracteres llamativos】
+seo: ▷ Entrada de ejemplo 【Con caracteres llamativos】
 slug: entrada
 description: Esto es una entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
 image: fondo.jpg

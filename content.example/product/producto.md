@@ -1,6 +1,6 @@
 ---
 title: Producto de ejemplo
-title_seo: ▷ Producto de ejemplo 【Con caracteres llamativos】
+seo: ▷ Producto de ejemplo 【Con caracteres llamativos】
 slug: producto
 description: Esta es la descripción de un producto de ejemplo.
 image: fondo.jpg

@@ -1,6 +1,6 @@
 ---
 title: Evento de ejemplo
-title_seo: null # string
+seo: null # string
 slug: evento
 description: Esto es un evento de ejemplo.
 image: fondo.jpg

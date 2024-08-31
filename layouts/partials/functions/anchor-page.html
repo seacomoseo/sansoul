@@ -1,11 +1,13 @@
-{{ $anchor := .Params.title_seo }}
+{{ $anchor := .Params.seo }}
 
 {{ with partial "functions/sections" . }}
   {{ with index . 0 }}
-    {{ $anchor = .hanchor | default .title | default $anchor }}
+    {{ $anchor = .hanchor
+      | default  .title
+      | default  $anchor
+      | default  $.Title
+    }}
   {{ end }}
 {{ end }}
-
-{{ $anchor = $anchor | default .Title }}
 
 {{ return $anchor }}

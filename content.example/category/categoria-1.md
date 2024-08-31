@@ -1,6 +1,6 @@
 ---
 title: Categoría 1
-title_seo: null # string
+seo: null # string
 slug: categoria-1
 description: null # string
 image: null # string

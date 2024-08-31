@@ -22,7 +22,7 @@
   {{ $options_lists = $options_lists | append (dict "value" .Type "label" (print .Params.emoji " " .Title)) }}
 {{ end }}
 {{ $options_lists = $options_lists | append
-  (dict "value" "/"       "label" (print page.Params.emoji " " $t.collection_page))
+  (dict "value" "/"       "label" (print page.Params.emoji " " $t.collection_single))
   (dict "value" "related" "label" (print site.Data.utilities.defaults.related.emoji " " $t.related))
 }}
 
@@ -35,13 +35,14 @@
   (dict "&OPTIONS_ALIGN_X"       $options.align_x)
   (dict "&OPTIONS_ALIGN_Y"       $options.align_y)
   (dict "&OPTIONS_BUTTONS_TYPE"  $options.buttons_type)
+  (dict "&OPTIONS_CALLNOW_SHOW"  $options.callnow_show)
   (dict "&OPTIONS_DIRECTION"     $options.direction)
   (dict "&OPTIONS_BULLETS"       $options.bullets)
   (dict "&OPTIONS_ARROWS"        $options.arrows)
   (dict "&OPTIONS_COLOR_BASE"    (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "none")))
   (dict "&OPTIONS_COLOR_BASE_W"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert")))
+  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "hide")))
   (dict "&OPTIONS_COLOR_BASE_H"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "none" "hide")))
-  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp")))
   (dict "&OPTIONS_COLOR_BG"      (where $options.color "value" "in" (slice "main" "main-light" "main-dark" "alt" "alt-light" "alt-dark" "link" "link-light" "link-dark" "white" "light" "grey" "dark" "black")))
   (dict "&OPTIONS_CONTRAST"      $options.contrast)
   (dict "&OPTIONS_PARALLAX_SECT" (where $options.parallax "value" "!=" "box"))
@@ -62,6 +63,7 @@
   (dict "&OPTIONS_VIEW_BOXES"    (where $options.view "value" "in" (slice "all" "text" "icon" "image" "button" "bg" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
   (dict "&OPTIONS_DIVIDER"       $options.divider)
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
+  (dict "&OPTIONS_CURRENCY"      $options.currency)
   (dict "&OPTIONS_LISTS"         $options_lists)
   (dict "&OPTIONS_TYPES"         (where $options_lists "value" "not in" (slice "/" "related")))
   (dict "&OPTIONS_PHONE_CODES"   $options.phone_code)

@@ -1,66 +1,38 @@
 // ICONS
 
-// All
-.CMS_Table_body-cell-link:is(
-  [href^="#/collections/config/entries/"],
-  // [href^="#/collections/types/entries/"]
-):before,
-.CMS_Collection_header-wrapper .CMS_Icon_root,
-.CMS_NavLink_icon:not([data-testid="sidebar-nav-Media"] *) {
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 18px;
-  opacity: 0.87;
+// COLLECTIONS
+.CMS_Icon_root,
+.CMS_NavLink_icon {
+  svg {
+    opacity: 0.87;
+    color: var(--primary-main);
+    fill: currentColor;
+  }
 }
 
 // Dark mode
-html[style*="--text-primary: #fff;"] :where(
-  .CMS_Table_body-cell-link:is(
-    [href^="#/collections/config/entries/"],
-    // [href^="#/collections/types/entries/"]
-  ):before,
-  .CMS_Collection_header-wrapper .CMS_Icon_root,
-  .CMS_NavLink_icon:not([data-testid="sidebar-nav-Media"] *)
-) {
+html[style*="--text-primary: #fff;"] .CMS_NavLink_icon {
   filter: brightness(1.25);
 }
 
 // Menu item active
-:is(
-  .CMS_NavLink_link.active,
-  .CMS_NestedCollection_expanded
-) .CMS_NavLink_icon {
-  filter: brightness(6);
-}
-
-// Old icons
-:is(
-  .CMS_Collection_header-wrapper .CMS_Icon_root,
-  .CMS_NavLink_icon:not([data-testid="sidebar-nav-Media"] *)
-) > *:not(#aux) {
-  display: none;
+.CMS_NavLink_link.active,
+.CMS_NestedCollection_expanded {
+  .CMS_NavLink_icon {
+    filter: brightness(6);
+  }
 }
 
 // Flags
-.CMS_NavLink_link[href*="/admin/"] .CMS_NavLink_icon {
-  clip-path: circle(9px);
+.CMS_NavLink_link[href*="/admin/"] svg {
+  border-radius: 50%;
 }
 
-// Media
-.CMS_MediaLibrary_title-icon-wrapper,
-.CMS_NavLink_link[href="#/media"] .CMS_NavLink_icon {
-  color: var(--primary-main);
-}
-
-// Settings icons
+// SETTINGS
 .CMS_Table_body-cell-link {
   position: relative;
 }
-.CMS_Table_body-cell:first-child
-.CMS_Table_body-cell-link:is(
-  [href^="#/collections/settings/entries/"],
-  // [href^="#/collections/types/entries/"]
-):before {
+.CMS_Table_body-cell:first-child [href^="#/collections/settings/entries/"].CMS_Table_body-cell-link:before {
   content: '';
   width: 20px;
   margin-right: .5rem;
@@ -96,32 +68,26 @@ $roots: str-split($items, '|');
 @each $root in $roots {
   @each $item in $root {
     $parts: str-split($item, ',');
-    $group: nth($parts, 1);
-    $name: nth($parts, 2);
-    $base64: nth($parts, 3);
-    $link: nth($parts, 4);
+    $name: nth($parts, 1);
+    $base64: nth($parts, 2);
 
-    // Types
-    @if $group == 'type' {
-      // .CMS_Table_body-cell-link[href="#/collections/types/entries/#{$name}"]:before,
-      .CMS_Collection_header-wrapper:has([href="#/collections/#{$name}/new"]) .CMS_Icon_root,
-      .CMS_NavLink_link[href="#/collections/#{$name}"] .CMS_NavLink_icon {
-        background-image: url("data:image/svg+xml;base64,#{$base64}");
-      }
-    }
-    // Flags
-    @if $group == 'flag' {
-      @if $link != '' {
-        .CMS_NavLink_link[href="#{$link}"] .CMS_NavLink_icon {
-          background-image: url("data:image/svg+xml;base64,#{$base64}");
-        }
-      }
-    }
     // Settings
-    @if $group == 'setting' {
-      .CMS_Table_body-cell-link[href="#/collections/settings/entries/#{$name}"]:before {
-        background-image: url("data:image/svg+xml;base64,#{$base64}");
-      }
+    .CMS_Table_body-cell-link[href="#/collections/settings/entries/#{$name}"]:before {
+      background-image: url("data:image/svg+xml;base64,#{$base64}");
     }
+    // Fix nested collections
+    .CMS_NavLink_link[href="#/collections/#{$name}"] .CMS_NavLink_icon {
+      background-image: url("data:image/svg+xml;base64,#{$base64}");
+    }
+  }
+}
+
+// Fix nested collections
+.CMS_NestedCollection_link .CMS_NavLink_icon {
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.87;
+  svg {
+    display: none;
   }
 }

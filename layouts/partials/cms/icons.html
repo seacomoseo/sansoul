@@ -4,41 +4,35 @@
 {{ $sharp      := cond (and $icon_sharp (ne $icon_type "duotone")) "sharp-" "" }}
 {{ $type       := $icon_type | default "solid" }}
 {{ $icons      := partialCached (print "draws/icons/" $sharp $type ".svg") . }}
-{{ if .IsTranslated }}
-  {{ $icons     = print $icons "\n" (partialCached "draws/flags.svg" .) }}
-{{ end }}
+{{ $default    := site.Data.utilities.defaults }}
 
 {{ $names := slice
-  (dict "group" "type"    "name" "page"      "icon" "file")
-  (dict "group" "type"    "name" "section"   "icon" "puzzle-piece")
-  (dict "group" "type"    "name" "modal"     "icon" "window-restore")
-  (dict "group" "type"    "name" "settings"  "icon" "gear")
-  (dict "group" "setting" "name" "config"    "icon" "wrench")
-  (dict "group" "setting" "name" "types"     "icon" "icons")
-  (dict "group" "setting" "name" "schema"    "icon" "list-tree")
-  (dict "group" "setting" "name" "styles"    "icon" "brush")
-  (dict "group" "setting" "name" "remote"    "icon" "file-import")
-  (dict "group" "setting" "name" "redirects" "icon" "turn-down-right")
-  (dict "group" "setting" "name" "robots"    "icon" "robot")
+  (dict "name" "section"    "icon" $default.section.icon)
+  (dict "name" "modal"     "icon" $default.modal.icon)
+  (dict "name" "config"    "icon" $default.config.icon)
+  (dict "name" "template"  "icon" $default.template.icon)
+  (dict "name" "types"     "icon" $default.types.icon)
+  (dict "name" "schema"    "icon" $default.schema.icon)
+  (dict "name" "styles"    "icon" $default.styles.icon)
+  (dict "name" "remote"    "icon" $default.remote.icon)
+  (dict "name" "redirects" "icon" $default.redirects.icon)
+  (dict "name" "robots"    "icon" $default.robots.icon)
 }}
-{{ range site.Sections }}
-  {{ $names = $names | append (dict "group" "type" "name" .Type "icon" .Params.icon) }}
-{{ end }}
-{{ range .AllTranslations }}
-  {{ $names = $names | append (dict "group" "flag" "name" .Lang "icon" (print "flag-" .Lang) "link" (print .Site.Home.RelPermalink "admin/")) }}
-{{ end }}
 
 {{ range $names }}
   {{ $icon  := .icon }}
   {{ $regex := print `<symbol id="` .icon `".+` }}
   {{ $finds := findRE $regex $icons 1 }}
-  {{ $fill  := cond (in (slice "setting" "type") .group) ` fill="#1976d2"` "" }}
+  {{ $fill  := ` fill="#1976d2">` }}
+  {{ if eq $icon_type "duotone" }}
+    {{ $fill = `><style>:root{--dt-main:#1976d2;--dt-main-op:1;--dt-alt:#1976d2;--dt-alt-op:.5}</style>` }}
+  {{ end }}
   {{ range $finds }}
-    {{ $icon = replace . "<symbol" (print `<svg xmlns="http://www.w3.org/2000/svg"` $fill) }}
+  {{ $icon = . | replaceRE `^<symbol (.*?)>` (print `<svg $1 xmlns="http://www.w3.org/2000/svg"` $fill) }}
     {{ $icon = replace $icon "</symbol>" "</svg>" }}
     {{ $icon = $icon | base64Encode }}
   {{ end }}
-  {{ $return  = $return | append (print .group "," .name "," $icon  "," (.link | default "")) }}
+  {{ $return  = $return | append (print .name "," $icon) }}
 {{ end }}
 
 {{ return $return }}

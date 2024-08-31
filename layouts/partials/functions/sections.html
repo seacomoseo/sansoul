@@ -1,9 +1,6 @@
+{{ $params         := partial "functions/params" . }}
 {{ $sections_final := slice }}
 {{ $sections       := slice }}
-{{ $params         := .Params }}
-{{ if eq .Kind "404" }}
-  {{ $params        = merge .Params (dict "sections" (slice (dict "file" "base/404"))) }}
-{{ end }}
 
 {{/*  SECTIONS BY YAML FILES  */}}
 {{ range $params.sections }}

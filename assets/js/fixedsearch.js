@@ -261,7 +261,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         }
         searchItems = searchItems +
           `
-          {{- $lists  := site.Data.types.all.lists -}}
+          {{- $lists  := site.Params.lists -}}
           {{- $styles := site.Data.styles -}}
           <article
             class="

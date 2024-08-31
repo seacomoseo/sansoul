@@ -1,6 +1,6 @@
 ---
 title: Admin
-title_seo: null # string
+seo: null # string
 slug: admin
 description: Descripción de ejemplo
 image: base/icon.png

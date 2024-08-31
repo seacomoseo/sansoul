@@ -1,33 +1,31 @@
-{{- if ne page.Kind "404" -}}
-  {{- with site.GetPage "cookies" -}}
-    {{- $color := $.Params.menu.color | default "white" -}}
-    <aside class="cookies bg bg-{{ $color }} description">
-      <div class="bg-color"></div>
-      {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
-      <strong>{{ i18n "cookies_question" }}</strong>
+{{- with site.GetPage "cookies" -}}
+  {{- $color := $.color | default "white" -}}
+  <aside class="cookies bg bg-{{ $color }} description">
+    <div class="bg-color"></div>
+    {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
+    <strong>{{ i18n "cookies_question" }}</strong>
+    {{- partial "components/link" (dict
+      "link"      .RelPermalink
+      "button"    "none"
+      "label"     (print (i18n "read_more") "…")
+      "noindex"   true
+      "_blank"    true
+    ) -}}
+    <div class="cookies__buttons">
       {{- partial "components/link" (dict
-        "link"      (page.GetPage "cookies").RelPermalink
-        "button"    "none"
-        "label"     (print (i18n "read_more") "…")
-        "noindex"   true
-        "_blank"    true
+        "class"   "cookies__button button--sm"
+        "link"    "none"
+        "button"  "link"
+        "label"   (i18n "cookies_no")
+        "noindex" true
       ) -}}
-      <div class="cookies__buttons">
-        {{- partial "components/link" (dict
-          "class"   "cookies__button button--sm"
-          "link"    "none"
-          "button"  "link"
-          "label"   (i18n "cookies_no")
-          "noindex" true
-        ) -}}
-        {{- partial "components/link" (dict
-          "class"   "cookies__button cookies__button--acept button--sm"
-          "link"    "none"
-          "button"  "link"
-          "label"   (i18n "cookies_ok")
-          "noindex" true
-        ) -}}
-      </div>
-    </aside>
-  {{- end -}}
+      {{- partial "components/link" (dict
+        "class"   "cookies__button cookies__button--acept button--sm"
+        "link"    "none"
+        "button"  "link"
+        "label"   (i18n "cookies_ok")
+        "noindex" true
+      ) -}}
+    </div>
+  </aside>
 {{- end -}}
