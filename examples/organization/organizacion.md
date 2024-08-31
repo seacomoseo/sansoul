@@ -18,7 +18,7 @@ images:
 social:
 - https://www.facebook.com/QuantumFracture
 - https://www.instagram.com/quantumfracture/
-- https://g.page/webmurcia
+- https://g.page/r/CQI3T3wmeAB6EBM
 phones:
 - 123456789
 - +34 987 654 321
@@ -30,7 +30,7 @@ address:
   region: Murcia
   country: ES
   geo: '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
-  link: https://g.page/webmurcia
+  link: https://g.page/r/CQI3T3wmeAB6EBM
 areas:
 - Región de Murcia
 - Internacional
