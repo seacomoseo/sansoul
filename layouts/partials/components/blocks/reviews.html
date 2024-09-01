@@ -57,23 +57,43 @@
           {{- $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
         {{- end -}}
         {{- $bg         := cond (not $bg_color) "" "bg" -}}
-        {{- $bg_alpha   := cond (not .alpha) "" (print "bg-alpha-" .alpha) }}
         {{- $shadow     := cond (not (.color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
 
         {{- $review_class := partial "functions/attr-delimit" (dict
+          "attr"  "class"
           "array" (slice
             "review__globe"
             $bg
             $bg_color
             $bg_gradient_color
             $bg_gradient_type
-            $bg_alpha
             $shadow
           )
         ) -}}
 
+        {{/*  REVIEW ITEM STYLE  */}}
+        {{- $alpha := and (.alpha | and (ne .alpha 100)) (.color | or .gradient) -}}
+        {{- $alpha  = cond (not $alpha)        "" (print "--color-alpha:" .alpha) -}}
+
+        {{ $review_style := partial "functions/attr-delimit" (dict
+          "attr"    "style"
+          "delimit" ";"
+          "array"   (slice
+            $alpha
+          )
+        ) }}
+
+        {{/*  REVIEW ITEM ATTRIBUTES JOIN  */}}
+        {{ $review_attr := partial "functions/attr-delimit" (dict
+          "array" (slice
+            $review_class
+            $review_style
+          )
+        ) }}
+
+        {{/*  REVIEW ITEM  */}}
         <div class="review">
-          <div class="{{ $review_class }}">
+          <div {{ $review_attr | safeHTMLAttr }}>
             <div class="bg-color"></div>
             {{- $icon       := .icon | default "quote-left" -}}
             {{- $icon_right := .icon_right | default .icon | default "quote-right" -}}
