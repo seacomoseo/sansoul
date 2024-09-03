@@ -1,12 +1,12 @@
 ---
 title: Página de Ejemplo
-seo: null # string
 slug: unica
-description: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
 image: fondo.jpg
 draft: true
 noindex: true
 translationKey: single
+seo: null # string
+description: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
 background:
   color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
   gradient: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]

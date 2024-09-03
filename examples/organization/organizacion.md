@@ -1,9 +1,15 @@
 ---
-title: Organización de ejemplo
-seo: ▷ Organización de ejemplo 【Con caracteres llamativos】
 slug: organizacion
-description: Esta es la descripción de una organización de ejemplo.
+title: Organización de ejemplo
 image: fondo.jpg
+
+toc: true
+draft: false
+noindex: false
+translationKey: organization-example
+seo: ▷ Título SEO Organización de ejemplo 【Con caracteres llamativos】
+description: Esta es la descripción SEO de una organización de ejemplo.
+
 types:
 - LocalBusiness
 - Organization
@@ -12,6 +18,7 @@ names:
 - SanSoul
 legal: SAN SOUL S.L.
 nif: 00000000A
+summary: Esto es el resumen de una organización de ejemplo.
 logo: base/logo.svg
 images:
 - fondo.jpg
@@ -74,9 +81,5 @@ food_menu:
 food_type:
 - Gaditana
 - Murciana
-toc: true
-draft: false
-noindex: false
-translationKey: organization-example
 ---
 Contenido

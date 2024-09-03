@@ -273,7 +273,7 @@
       - [x] `cms/config/collections`
       - [x] forms check ✅❌
       - [x] `view` conditions in childs
-      - [x] `data.config.schema` > `data.schema`
+      - [x] `data.config.schema` > `content.es/_index.md > *`
       - [x] Add `schema.departments`
       - [x] `cms/config/box`
       - [x] CMS language by config

@@ -28,7 +28,7 @@
   "inLanguage"       .Lang
   "url"              .Permalink
   "name"             .Title
-  "description"      .Params.description
+  "description"      (.Summary | default .Description | plainify)
   "serviceType"      .Params.service_types
   "areaServed"       .Params.areas
   "offers"           $offers

@@ -151,11 +151,13 @@ config_legal_name: Nombre Legal
 config_legal_nif: NIF / DNI
 config_legal_email: Email
 config_legal_location: Ubicación
+config_main_organization: Página de Organización Principal
+config_main_organization_hint: Ruta interna hacia la página 🔷 **Ejemplo →** supplier/ejemplo
 config_phone_code: Prefijo Telefónico de País
 config_time_zone: Zona Horaria
 config_currency: Moneda
-config_paginate: Enlace Permanente de Paginación
-config_paginate_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
+config_pagination: Enlace Permanente de Paginación
+config_pagination_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
 config_html: HTML Personalizado
 config_html_head: Antes de </head>
 config_html_body: Antes de </body>
@@ -327,53 +329,6 @@ types_default_page_slug: paginas
 types_default_page_permalinks: pagina
 types_default_page_description: Lista de páginas
 types_default_page_hint: Páginas simples.
-# collections > settings > schema
-schema: Datos Estructurados
-schema_hint: Marcado de datos estructurados y Metadatos (útil para el SEO)
-schema_types: Tipo de Negocio
-schema_names: Nombres
-schema_names_singular: Nombre
-schema_names_hint: Nombres y Variantes del Negocio / Proyecto
-schema_description: Descripción
-schema_legal: Nombre Legal
-schema_nif: NIF / DNI
-schema_logo: Logo
-schema_images: Imágenes
-schema_social: Redes Sociales
-schema_social_singular: Enlace a Red Social
-schema_phones: Teléfonos
-schema_phones_singular: Teléfono
-schema_address: Dirección
-schema_address_name: Nombre en Google Maps
-schema_address_street: Calle
-schema_address_pc: Código Postal
-schema_address_locality: Localidad
-schema_address_region: Región
-schema_address_country: País
-schema_address_country_hint: Código de país de 2 letras
-schema_address_geo: Coordenadas
-schema_address_link: Enlace a Mapa
-schema_areas: Áreas de Servicio
-schema_areas_singular: Área de Servicio
-schema_open: Horarios
-schema_open_singular: Horario
-schema_open_days: Días de la Semana
-schema_open_opens: Apertura
-schema_open_closes: Cierre
-schema_open_from: Válido Desde
-schema_open_to: Válido Hasta
-schema_open_valid_hint: Formato → 2024-12-31
-schema_prices: Rango de Precios
-schema_services: Servicios
-schema_services_singular: Servicio
-schema_food_menu: Menús de Comida
-schema_food_menu_singular: Menú de Comida
-schema_food_menu_hint: Enlaces a cartas de menús (solo para establecimientos de comida)
-schema_food_type: Tipos de Comida
-schema_food_type_singular: Tipo de Comida
-schema_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para establecimientos de comida)
-schema_departments: Departamentos
-schema_departments_singular: Departamento
 # collections > settings > styles
 styles: Estilos
 styles_icons: Iconos
@@ -465,24 +420,34 @@ redirects: Redirecciones
 redirects_hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
 robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
 # main-page-params
-p_title: Título
-p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
-p_seo: Título SEO
-p_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
 p_slug: Slug
 p_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
+p_title: Título
+p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
+p_summary: Resumen
+p_summary_hint: Se utiliza para las miniaturas de las listas 🔷 Si no se indica, se toman 155 caracteres del contenido
 p_image: Imagen Principal
 p_image_hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
-p_description: Resumen
-p_description_hint: Se utiliza para las miniaturas de las listas y para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
 p_toc: Índice
 p_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
 p_draft: Borrador
 p_draft_hint: Oculta la página
 p_noindex: No Index
 p_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
+p_seo: Título SEO
+p_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+p_description: Descripción SEO
+p_description_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+p_body: Contenido
+p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**-main**", "**-alt**", "**-light**", "**-dark**", "**-invert**", "**-font-alt**" o "**-icon**") se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon-**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
+p_translationKey: ID Traducción
+p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
+p_base: Base
+p_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
+# main-page-params article + event
 p_date: Fecha
 p_lastmod: Última Modifiación
+# main-page-params event
 p_end: Fecha Final
 p_location: Ubicación
 p_location_hint: '**Ejemplo →** "Sala B"'
@@ -492,16 +457,56 @@ p_artists: Artista/s
 p_artists_singular: Nombre
 p_artists_group: ¿Es un Grupo?
 p_artists_hint: '**Ejemplo →** "Manolo García"'
+# main-page-params author
 p_job_title: Cargo
 p_job_title_hint: '**Ejemplo →** "Podólogo Especialista"'
+# main-page-params service
 p_service_types: Tipos de Servicio
 p_service_types_singular: Tipo de Servicio
-p_body: Contenido
-p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**-main**", "**-alt**", "**-light**", "**-dark**", "**-invert**", "**-font-alt**" o "**-icon**") se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon-**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
-p_translationKey: ID Traducción
-p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
-p_base: Base
-p_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
+# main-page-params organization
+p_types: Tipo de Negocio
+p_names: Nombres
+p_names_singular: Nombre
+p_names_hint: Nombres y Variantes del Negocio / Proyecto
+p_legal: Nombre Legal
+p_nif: NIF / DNI
+p_logo: Logo
+p_images: Imágenes
+p_social: Redes Sociales
+p_social_singular: Enlace a Red Social
+p_phones: Teléfonos
+p_phones_singular: Teléfono
+p_address: Dirección
+p_address_name: Nombre en Google Maps
+p_address_street: Calle
+p_address_pc: Código Postal
+p_address_locality: Localidad
+p_address_region: Región
+p_address_country: País
+p_address_country_hint: Código de país de 2 letras
+p_address_geo: Coordenadas
+p_address_link: Enlace a Mapa
+p_areas: Áreas de Servicio
+p_areas_singular: Área de Servicio
+p_open: Horarios
+p_open_singular: Horario
+p_open_days: Días de la Semana
+p_open_opens: Apertura
+p_open_closes: Cierre
+p_open_from: Válido Desde
+p_open_to: Válido Hasta
+p_open_valid_hint: Formato → 2024-12-31
+p_prices: Rango de Precios
+p_services: Servicios
+p_services_singular: Servicio
+p_food_menu: Menús de Comida
+p_food_menu_singular: Menú de Comida
+p_food_menu_hint: Enlaces a cartas de menús (solo para establecimientos de comida)
+p_food_type: Tipos de Comida
+p_food_type_singular: Tipo de Comida
+p_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para establecimientos de comida)
+p_departments: Departamentos
+p_departments_singular: Departamento
 # boxes and sections
 box_name: Nombre
 box_name_hint: Nombre del archivo

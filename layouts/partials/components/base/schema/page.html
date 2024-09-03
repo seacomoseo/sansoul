@@ -55,15 +55,7 @@
 {{ end }}
 
 {{/*  Description  */}}
-{{ $description  := "" }}
-{{ with .Description }}
-  {{ $description = . }}
-{{ else }}
-  {{ if .IsPage | and .Content }}
-    {{ $description = .Summary }}
-  {{ end }}
-{{ end }}
-{{ $description = $description | markdownify }}
+{{ $description  := .Summary | default .Description | plainify }}
 
 
 {{/*  Schema  */}}

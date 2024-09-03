@@ -5,11 +5,11 @@
   {{- $legal  := site.Params.legal -}}
 
   {{- if eq $param "name" -}}
-    {{- $legal.name | default site.Title | default site.Data.schema.title -}}
+    {{- $legal.name | default site.Home.Params.legal | default site.Title -}}
   {{- else if eq $param "nif" -}}
-    {{- $legal.nif | default "00000000A" -}}
+    {{- $legal.nif | default site.Home.Params.nif | default "00000000A" -}}
   {{- else if eq $param "location" -}}
-    {{- $legal.location | default (i18n (print "option-phone_code-" site.Params.phone_code | default 34)) | default "-" -}}
+    {{- $legal.location | default (i18n (print "option-phone_code-" site.Params.phone_code | default 34) | replaceRE `[^\w\s]` "") | default "-" -}}
   {{- else if eq $param "email" -}}
     <i class="ofuscate">
       {{- $legal.email | default "mail@mail.com" | base64Encode -}}

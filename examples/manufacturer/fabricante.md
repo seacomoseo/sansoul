@@ -1,15 +1,22 @@
 ---
-title: Fabricante de ejemplo
-seo: ''
 slug: fabricante
-description: Esta es la descripción de un fabricante de ejemplo.
+title: Fabricante de ejemplo
 image: base/icon.png
+
+toc: true
+draft: false
+noindex: false
+translationKey: manufacturer-example
+seo: null
+description: null
+
 types:
 - Organization
 names:
 - Fabricante
 legal: FABRICANTE S.L.
 nif: 00000000A
+summary: Esta es la descripción de un fabricante de ejemplo.
 logo: base/logo.png
 images:
 - fondo.jpg
@@ -34,9 +41,5 @@ areas:
 open: []
 prices: €€€
 services: []
-toc: true
-draft: false
-noindex: false
-translationKey: manufacturer-example
 ---
 Contenido

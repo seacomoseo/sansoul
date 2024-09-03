@@ -6,17 +6,17 @@
 {{ $languages := dict }}
 
 {{ range site.Data.options.langs }}
-  {{ $lang      := . }}
-  {{ $language  := dict }}
-  {{ $base_url  := "" }}
-  {{ $paginate  := false }}
-  {{ $enabled   := false }}
-  {{ $dir       := false }}
-  {{ $label     := false }}
-  {{ $time_zone := false }}
-  {{ $title     := false }}
-  {{ $params    := false }}
-  {{ $cascade   := false }}
+  {{ $lang       := . }}
+  {{ $language   := dict }}
+  {{ $base_url   := "" }}
+  {{ $pagination := false }}
+  {{ $enabled    := false }}
+  {{ $dir        := false }}
+  {{ $label      := false }}
+  {{ $time_zone  := false }}
+  {{ $title      := false }}
+  {{ $params     := false }}
+  {{ $cascade    := false }}
 
   {{ $config_lang  := index (where $langs "lang" $lang) 0 }}
   {{ with $config_lang }}
@@ -30,14 +30,14 @@
     {{ end }}
     {{ with $config_mix }}
       {{/*  language's vars  */}}
-      {{ $base_url  = .baseURL }}
-      {{ $paginate  = .paginate }}
-      {{ $enabled   = not (.disabled | default false) }}
-      {{ $dir       = cond $enabled (print "content." $lang) false }}
-      {{ $label     = .label }}
-      {{ $time_zone = .time_zone }}
-      {{ $title     = .title }}
-      {{ $params    = . }}
+      {{ $base_url   = .baseURL }}
+      {{ $pagination = .pagination }}
+      {{ $enabled    = not (.disabled | default false) }}
+      {{ $dir        = cond $enabled (print "content." $lang) false }}
+      {{ $label      = .label }}
+      {{ $time_zone  = .time_zone }}
+      {{ $title      = .title }}
+      {{ $params     = . }}
 
       {{ range $k, $type := $types_full }}
         {{ $base  := .base | default "page" }}
@@ -156,15 +156,15 @@
     {{ end }}
   {{ end }}
   {{ $languages = merge $languages $language }}
-  {{ with $base_url  }}{{ $languages = merge $languages (dict $lang (dict "baseURL"         .))  }}{{ end }}
-  {{ with $paginate  }}{{ $languages = merge $languages (dict $lang (dict "paginatePath"    .))  }}{{ end }}
-  {{ with $enabled   }}{{ $languages = merge $languages (dict $lang (dict "disabled"   (not .))) }}{{ end }}
-  {{ with $weight    }}{{ $languages = merge $languages (dict $lang (dict "weight"          .))  }}{{ end }}
-  {{ with $dir       }}{{ $languages = merge $languages (dict $lang (dict "contentDir"      .))  }}{{ end }}
-  {{ with $label     }}{{ $languages = merge $languages (dict $lang (dict "languageName"    .))  }}{{ end }}
-  {{ with $time_zone }}{{ $languages = merge $languages (dict $lang (dict "timeZone"        .))  }}{{ end }}
-  {{ with $title     }}{{ $languages = merge $languages (dict $lang (dict "title"           .))  }}{{ end }}
-  {{ with $cascade   }}{{ $languages = merge $languages (dict $lang (dict "cascade"         .))  }}{{ end }}
+  {{ with $base_url   }}{{ $languages = merge $languages (dict $lang (dict "baseURL"                 .))  }}{{ end }}
+  {{ with $pagination }}{{ $languages = merge $languages (dict $lang (dict "pagination" (dict "path" .))) }}{{ end }}
+  {{ with $enabled    }}{{ $languages = merge $languages (dict $lang (dict "disabled"           (not .))) }}{{ end }}
+  {{ with $weight     }}{{ $languages = merge $languages (dict $lang (dict "weight"                  .))  }}{{ end }}
+  {{ with $dir        }}{{ $languages = merge $languages (dict $lang (dict "contentDir"              .))  }}{{ end }}
+  {{ with $label      }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
+  {{ with $time_zone  }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
+  {{ with $title      }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
+  {{ with $cascade    }}{{ $languages = merge $languages (dict $lang (dict "cascade"                 .))  }}{{ end }}
   {{ with $params }}
     {{ range $k, $v := . }}
       {{ with .      }}{{ $languages = merge $languages (dict $lang (dict "params" (dict $k .))) }}{{ end }}

@@ -1,8 +1,7 @@
 ---
-title: Página de ejemplo
-seo: ▷ Página de ejemplo 【Con caracteres llamativos】
 slug: ejemplo
-description: Esto es una página de ejemplo
+title: Página de ejemplo
+summary: Resumen de página de ejemplo
 image: fondo.jpg
 category:
 - categoria-3
@@ -16,6 +15,8 @@ toc: true
 draft: false
 noindex: false
 translationKey: event-example
+seo: ▷ Título SEO de Página de ejemplo 【Con caracteres llamativos】
+description: llll➤ Descripción SEO de página de ejemplo ✅ con caracteres llamativos ☎️ 679 823 145.
 ---
 
 Contenido de página de ejemplo

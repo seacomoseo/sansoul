@@ -1,17 +1,41 @@
 {{ $t := partial "functions/i18n" . }}
 
+{{ $departments_fields := slice
+  `~P_TYPES`
+  `~P_NAMES`
+  `~P_SUMMARY`
+  `~P_LEGAL`
+  `~P_NIF`
+  `~P_LOGO`
+  `~P_URL`
+  `~P_IMAGES`
+  `~P_SOCIAL`
+  `~P_PHONES`
+  `~P_ADDRESS`
+  `~P_AREAS`
+  `~P_OPEN`
+  `~P_PRICES`
+  `~P_SERVICES`
+  `~P_FOOD_MENU`
+  `~P_FOOD_TYPE`
+}}
+
 {{ return slice
 
-  (dict "&P_TITLE"          (dict "name" `title`          "widget" `string`   "i18n" true        "default" ``     "label" $t.p_title          "hint" $t.p_title_hint))
-  (dict "&P_TITLE_SEO"      (dict "name" `seo`      "widget" `string`   "i18n" true        "required" false "label" $t.p_seo      "hint" $t.p_seo_hint))
   (dict "&P_SLUG"           (dict "name" `slug`           "widget" `string`   "i18n" true        "default" ``     "label" $t.p_slug           "hint" $t.p_slug_hint           "pattern" (slice "^[a-z0-9-]+$" $t.pattern)))
-  (dict "&P_DESCRIPTION"    (dict "name" `description`    "widget" `text`     "i18n" true        "required" false "label" $t.p_description    "hint" $t.p_description_hint))
-
+  (dict "&P_TITLE"          (dict "name" `title`          "widget" `string`   "i18n" true        "default" ``     "label" $t.p_title          "hint" $t.p_title_hint))
+  (dict "&P_SUMMARY"        (dict "name" `summary`        "widget" `text`     "i18n" true        "required" false "label" $t.p_summary        "hint" $t.p_summary_hint))
   (dict "&P_IMAGE"          (dict "name" `image`          "widget" `image`    "i18n" `duplicate` "required" false "label" $t.p_image          "hint" $t.p_image_hint          "choose_url" true  "max_file_size" 512000000))
-
+  
   (dict "&P_TOC"            (dict "name" `toc`            "widget" `boolean`  "i18n" `duplicate` "required" false "label" $t.p_toc            "hint" $t.p_toc_hint))
   (dict "&P_DRAFT"          (dict "name" `draft`          "widget" `boolean`  "i18n" true        "required" false "label" $t.p_draft          "hint" $t.p_draft_hint))
   (dict "&P_NOINDEX"        (dict "name" `noindex`        "widget" `boolean`  "i18n" true        "required" false "label" $t.p_noindex        "hint" $t.p_noindex_hint))
+  (dict "&P_TRANSLATIONKEY" (dict "name" `translationKey` "widget" `string`   "i18n" `duplicate` "required" false "label" $t.p_translationKey "hint" $t.p_translationKey_hint))
+  (dict "&P_TITLE_SEO"      (dict "name" `seo`            "widget" `string`   "i18n" true        "required" false "label" $t.p_seo            "hint" $t.p_seo_hint))
+  (dict "&P_DESCRIPTION"    (dict "name" `description`    "widget" `text`     "i18n" true        "required" false "label" $t.p_description    "hint" $t.p_description_hint))
+  (dict "&P_BODY"           (dict "name" `body`           "widget" `markdown` "i18n" true        "required" false "label" $t.p_body           "hint" $t.p_body_hint           "show_raw" true))
+
+  (dict "&P_BASE"           (dict "name" `base`           "widget" `select`   "i18n" `duplicate` "required" false "label" $t.p_base           "hint" $t.p_base_hint           "options" `~OPTIONS_BASE`))
 
   (dict "&P_DATE"           (dict "name" `date`           "widget" `datetime` "i18n" true        "required" true  "label" $t.p_date                                           "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`))
   (dict "&P_LASTMOD"        (dict "name" `lastmod`        "widget" `datetime` "i18n" true        "required" false "label" $t.p_lastmod                                        "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`))
@@ -55,9 +79,176 @@
     )
   ))
 
-  (dict "&P_BODY"           (dict "name" `body`           "widget" `markdown` "i18n" true        "required" false "label" $t.p_body           "hint" $t.p_body_hint           "show_raw" true))
-  (dict "&P_TRANSLATIONKEY" (dict "name" `translationKey` "widget" `string`   "i18n" `duplicate` "required" false "label" $t.p_translationKey "hint" $t.p_translationKey_hint))
 
-  (dict "&P_BASE"           (dict "name" `base`           "widget" `select`   "i18n" `duplicate` "required" false "label" $t.p_base           "hint" $t.p_base_hint           "options" `~OPTIONS_BASE`))
+
+
+
+
+
+
+
+
+  (dict "&P_TYPES" (dict
+    "name"           `types`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_types
+    "collapsed"      true
+    "summary"        "{{fields.type}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `type` "widget" `select` "required" false "label" $t.p_types "options" `~OPTIONS_LOCATION_TYPE`)
+    )
+  ))
+  (dict "&P_NAMES" (dict
+    "name"           `names`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_names
+    "label_singular" $t.p_names_singular
+    "hint"           $t.p_names_hint
+    "collapsed"      true
+    "summary"        "{{fields.name}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `name` "widget" `string` "required" false "label" $t.p_names_singular)
+    )
+  ))
+  (dict "&P_LEGAL"       (dict "name" `legal`       "required" false "label" $t.p_legal       "widget" `string`))
+  (dict "&P_NIF"         (dict "name" `nif`         "required" false "label" $t.p_nif         "widget" `string`))
+  (dict "&P_URL"         (dict "name" `url`         "required" false "label" `URL`                                     "widget" `string` "hint" (print $t.default " → **" site.BaseURL "/**")))
+  (dict "&P_LOGO"        (dict "name" `logo`        "required" false "label" $t.p_logo        "widget" `image` "max_file_size" 512000000))
+  (dict "&P_IMAGES"      (dict "name" `images`      "required" false "label" $t.p_images      "widget" `image` "multiple" true "choose_url" true))
+  (dict "&P_SOCIAL"      (dict
+    "name"           `social`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_social
+    "label_singular" $t.p_social_singular
+    "collapsed"      true
+    "summary"        "{{fields.link}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `link` "widget" `string` "required" false "label" $t.p_social_singular)
+    )
+  ))
+  (dict "&P_PHONES" (dict
+    "name"           `phones`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_phones
+    "label_singular" $t.p_phones_singular
+    "collapsed"      true
+    "summary"        "{{fields.phone}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `phone` "widget" `string` "required" false "label" $t.p_phones_singular)
+    )
+  ))
+  (dict "&P_ADDRESS" (dict
+    "name"           `address`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.p_address
+    "label_singular" $t.p_address_singular
+    "collapsed"      true
+    "fields"         (slice
+      (dict "name" `name`     "widget" `string` "required" false "label" $t.p_address_name    )
+      (dict "name" `street`   "widget" `string` "required" false "label" $t.p_address_street  )
+      (dict "name" `pc`       "widget" `number` "required" false "label" $t.p_address_pc       "value_type" `int` "min" 10000 "max" 99999)
+      (dict "name" `locality` "widget" `string` "required" false "label" $t.p_address_locality)
+      (dict "name" `region`   "widget" `string` "required" false "label" $t.p_address_region  )
+      (dict "name" `country`  "widget" `string` "required" false "label" $t.p_address_country  "hint" (print "[" $t.p_address_country_hint "](https://wikipedia.org/wiki/ISO_3166-1)"))
+      (dict "name" `geo`      "widget" `map`    "required" false "label" $t.p_address_geo     )
+      (dict "name" `link`     "widget" `string` "required" false "label" $t.p_address_link    )
+    )
+  ))
+  (dict "&P_AREAS" (dict
+    "name"           `areas`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_areas
+    "label_singular" $t.p_areas_singular
+    "collapsed"      true
+    "summary"        "{{fields.area}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `area` "widget" `string` "required" false "label" $t.p_areas_singular)
+    )
+  ))
+  (dict "&P_OPEN" (dict
+    "name"           `open`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_open
+    "label_singular" $t.p_open_singular
+    "collapsed"      true
+    "summary"        "{{fields.days}} {{fields.opens}}-{{fields.closes}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `days`   "widget" `select` "required" false "label" $t.p_open_days "multiple" true "options" `~OPTIONS_DAYS`)
+      (dict "name" `opens`  "widget" `string` "required" false "label" $t.p_open_opens)
+      (dict "name" `closes` "widget" `string` "required" false "label" $t.p_open_closes)
+      (dict "name" `from`   "widget" `string` "required" false "label" $t.p_open_from "hint" $t.p_open_valid_hint)
+      (dict "name" `to`     "widget" `string` "required" false "label" $t.p_open_to   "hint" $t.p_open_valid_hint)
+    )
+  ))
+  (dict "&P_PRICES"   (dict "name" `prices` "widget" `select` "required" false "label" $t.p_prices "options" (slice "€" "€€" "€€€" "$" "$$" "$$$")))
+  (dict "&P_SERVICES" (dict
+    "name"           `services`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_services
+    "label_singular" $t.p_services_singular
+    "collapsed"      true
+    "summary"        "{{fields.title}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `title`       "widget" `string` "required" false "label" $t.box_title)
+      (dict "name" `description` "widget" `text`   "required" false "label" $t.box_description)
+      (dict "name" `price`       "widget" `number` "required" false "label" $t.price "value_type" `float` "min" 0 "step" 0.01)
+      (dict "name" `area`        "widget" `string` "required" false "label" $t.p_areas_singular)
+      (dict "name" `url`         "widget" `string` "required" false "label" `URL`)
+    )
+  ))
+  (dict "&P_FOOD_MENU" (dict
+    "name"           `food_menu`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_food_menu
+    "label_singular" $t.p_food_menu_singular
+    "hint"           $t.p_food_menu_hint
+    "collapsed"      true
+    "summary"        "{{fields.food_menu}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `food_menu` "widget" `string` "required" false "label" $t.p_food_menu_singular)
+    )
+  ))
+  (dict "&P_FOOD_TYPE" (dict
+    "name"           `food_type`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_food_type
+    "label_singular" $t.p_food_type_singular
+    "hint"           $t.p_food_type_hint
+    "collapsed"      true
+    "summary"        "{{fields.food_type}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `food_type` "widget" `string` "required" false "label" $t.p_food_type_singular)
+    )
+  ))
+  (dict "&P_DEPARTMENTS" (dict
+    "name"           `departments`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_departments
+    "label_singular" $t.p_departments_singular
+    "collapsed"      true
+    "summary"        "{{fields.url}}"
+    "allow_add"      true
+    "fields"         $departments_fields
+  ))
 
 }}

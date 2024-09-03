@@ -1,7 +1,10 @@
 
 # default with option in cms
 
-Paginate: 24
+pagination:
+  disableAliases: false
+  pagerSize: 24
+  path: page
 buildFuture: true
 timeZone: Europe/Madrid
 params:
@@ -23,42 +26,48 @@ languages:
     disabled: true
     weight: 1
     languageName: Español
-    paginatePath: pagina
+    pagination:
+      path: pagina
   en:
     # baseURL: https://es.sansoul.netlify.com
     contentDir: content.en
     disabled: true
     weight: 2
     languageName: English
-    paginatePath: page
+    pagination:
+      path: page
   fr:
     # baseURL: https://fr.sansoul.netlify.com
     contentDir: content.fr
     disabled: true
     weight: 3
     languageName: Français
-    paginatePath: page
+    pagination:
+      path: page
   de:
     # baseURL: https://de.sansoul.netlify.com
     contentDir: content.de
     disabled: true
     weight: 4
     languageName: Deutsch
-    paginatePath: seite
+    pagination:
+      path: seite
   pt:
     # baseURL: https://pt.sansoul.netlify.com
     contentDir: content.pt
     disabled: true
     weight: 5
     languageName: Português
-    paginatePath: pagina
+    pagination:
+      path: pagina
   it:
     # baseURL: https://it.sansoul.netlify.com
     contentDir: content.it
     disabled: true
     weight: 6
     languageName: Italiano
-    paginatePath: pagina
+    pagination:
+      path: pagina
 
 module:
   mounts:

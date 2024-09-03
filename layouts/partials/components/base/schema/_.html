@@ -1,12 +1,27 @@
+{{ $main          := site.GetPage (site.Params.main_organization | default "/") | default site.Home }}
+{{ $organization  := dict }}
+{{ if eq $main.Params.base "organization" }}
+  {{ $organization = partial "components/base/schema/organization" $main }}
+{{ else }}
+  {{ $url         := $main.Permalink }}
+  {{ $organization = dict
+    "@type"        "Organization"
+    "@id"          (print $url "#schema-organization")
+    "url"          $url
+    "name"         site.Title
+    "desccription" site.Params.description
+  }}
+{{ end }}
+
 {{ $schemas := slice
   (partial "components/base/schema/website" .)
   (partial "components/base/schema/page" .)
   (partial "components/base/schema/image" .)
-  (partial "components/base/schema/organization" site.Data.schema)
+  $organization
   (partial "components/base/schema/breadcrumbs" .)
 }}
 
-{{ if not .IsSection }}
+{{ if and (not .IsSection) (ne $main site.Home) }}
   {{ if in (slice "article" "event" "product" "brand" "author" "service" "organization") .Params.base }}
     {{ $schemas = $schemas | append (partial (print "components/base/schema/" .Params.base) .) }}
   {{ end }}

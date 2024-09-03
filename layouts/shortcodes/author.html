@@ -2,8 +2,8 @@
   {{- with .Params.author -}}
     {{- with site.GetPage "author" . -}}
       {{- $param := index $.Params 0 -}}
-      {{- if eq $param "description" -}}
-        {{ .Description }}
+      {{- if eq $param "summary" -}}
+        {{ .Summary | default .Description | plainify }}
       {{- else if eq $param "image" -}}
         {{ .Params.image }}
       {{- else -}}

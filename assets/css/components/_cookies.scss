@@ -1,11 +1,9 @@
 .cookies {
   @if $radius > 0.01  {
-    @if $chamfer and $radius > 1 {
-      --radius: #{ 1em - $radius };
-    } @else if $radius > 1  {
-      --radius: #{ 1.75em - $radius };
-    } @else {
+    @if $chamfer and $radius >= 1 {
       --radius: .75em;
+    } @else {
+      --radius-padding: .75em;
     }
   }
   position: fixed;

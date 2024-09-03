@@ -43,7 +43,7 @@
   "@type"            "Product"
   "@id"              (print .Permalink "#schema-product")
   "name"             .Title
-  "description"      .Params.description
+  "description"      (.Summary | default .Description | plainify)
   "sku"              .Params.sku
   "url"              .Permalink
   "inLanguage"       .Lang

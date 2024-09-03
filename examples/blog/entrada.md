@@ -1,18 +1,21 @@
 ---
-title: Entrada de ejemplo
-seo: ▷ Entrada de ejemplo 【Con caracteres llamativos】
 slug: entrada
-description: Esto es una entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
+title: Entrada de ejemplo
+summary: Esto es una entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
 image: fondo.jpg
+
+date: 2020-01-01 00:00:00
+lastmod: 2021-01-01 00:00:00
 category:
 - categoria-3
 author: admin
-date: 2020-01-01 00:00:00
-lastmod: 2021-01-01 00:00:00
+
 toc: true
 draft: false
 noindex: false
 translationKey: post
+seo: ▷ Título SEO Entrada de ejemplo 【Con caracteres llamativos】
+description: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
 ---
 Este es un ejemplo de párrafo:
 

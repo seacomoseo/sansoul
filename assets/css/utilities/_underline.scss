@@ -5,9 +5,11 @@
     width: 2em;
     height: $menu-bar-double;
     background-color: var(--main);
-    margin: .125em auto .25em;
+    --underline-margin: calc(50% - 1em);
+    margin: .125em var(--underline-margin) .25em;
     --radius: #{ $menu-bar };
     @include radius;
+    order: 10;
   }
 }
 .hide .underline:after {
@@ -19,17 +21,19 @@
 }
 .align-right .underline:after {
   margin-right: 0;
+  --underline-margin: calc(100% - 2em);
 }
 .align-left .underline:after {
   margin-left: 0;
+  --underline-margin: calc(100% - 2em);
 }
 @media (min-width: $screen-xl) {
   .align--xl-right .underline:after {
     margin-right: 0;
-    margin-left: auto;
+    margin-left: calc(100% - 2em);
   }
   .align--xl-left .underline:after {
     margin-left: 0;
-    margin-right: auto;
+    margin-right: calc(100% - 2em);
   }
 }

@@ -45,7 +45,7 @@
   "@type"               "Event"
   "@id"                 (print .Permalink "#schema-event")
   "name"                .Title
-  "description"         .Description
+  "description"         (.Summary | default .Description | plainify)
   "url"                 .Permalink
   "performer"           $artists
   "location"            $location

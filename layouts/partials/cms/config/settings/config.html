@@ -50,10 +50,11 @@
           (dict "name" `location` "widget" `string` "required" false "label" $t.config_legal_location)
         )
       )
-      (dict "name" `phone_code` "widget" `select` "required" false "label" $t.config_phone_code "hint" (print $t.default "→ **" (index $t "option-phone_code-34") "**") "options" `~OPTIONS_PHONE_CODES`)
-      (dict "name" `time_zone`  "widget" `select` "required" false "label" $t.config_time_zone  "hint" (print $t.default "→ **Europe/Madrid**") "options" site.Data.utilities.time_zone)
-      (dict "name" `currency`   "widget" `select` "required" false "label" $t.config_currency   "hint" (print $t.default "→ **EUR**")           "options" `~OPTIONS_CURRENCY`)
-      (dict "name" `paginate`   "widget" `string` "required" false "label" $t.config_paginate   "hint" $t.config_paginate_hint)
+      (dict "name" `main_organization` "widget" `string` "required" false "label" $t.config_main_organization "hint" $t.config_main_organization_hint)
+      (dict "name" `phone_code`        "widget" `select` "required" false "label" $t.config_phone_code        "hint" (print $t.default "→ **" (index $t "option-phone_code-34") "**") "options" `~OPTIONS_PHONE_CODES`)
+      (dict "name" `time_zone`         "widget" `select` "required" false "label" $t.config_time_zone         "hint" (print $t.default "→ **Europe/Madrid**") "options" site.Data.utilities.time_zone)
+      (dict "name" `currency`          "widget" `select` "required" false "label" $t.config_currency          "hint" (print $t.default "→ **EUR**")           "options" `~OPTIONS_CURRENCY`)
+      (dict "name" `pagination`        "widget" `string` "required" false "label" $t.config_pagination        "hint" $t.config_pagination_hint)
       (dict
         "name"      `html`
         "widget"    `object`

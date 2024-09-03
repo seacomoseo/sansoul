@@ -212,11 +212,15 @@
 .box__icon {
   color: var(--base);
 }
+.box__icon--side {
+  order: -1;
+}
 .box__icon--bottom {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .5em;
+  width: 100%;
   @include radius-parent(0em, #{ $menu-bar });
   &:before,
   &:after {
@@ -257,6 +261,7 @@
 // Title
 .box__title {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: .25em;
   margin: 0;

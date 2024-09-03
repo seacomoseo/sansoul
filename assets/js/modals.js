@@ -64,7 +64,7 @@ function prevNextModal (prev) {
 export function initModals () {
   // When load if modal is active
   if (window.location.hash) {
-    const hasModal = document.querySelector((window.location.hash.replace(/=+/, '-').substring(0, 150) || 'none') + '.modal')
+    const hasModal = document.querySelector((window.location.hash.replace(/=+/, '-').substring(0, 155) || 'none') + '.modal')
     if (hasModal) {
       // Get parent section
       let sectionSibling = hasModal.previousElementSibling

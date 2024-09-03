@@ -69,10 +69,9 @@
 
   {{/*  Fields  */}}
   {{ $fields  := slice
-    `~P_TITLE`
-    `~P_TITLE_SEO`
     `~P_SLUG`
-    `~P_DESCRIPTION`
+    `~P_TITLE`
+    `~P_SUMMARY`
     `~P_IMAGE`
   }}
   {{ if eq .Params.base "article" }}
@@ -97,29 +96,29 @@
   {{ else if eq .Params.base "author" }}
     {{ $fields = $fields | append
       `~P_JOB_TITLE`
-      `~SCHEMA_SOCIAL`
+      `~P_SOCIAL`
     }}
   {{ else if eq .Params.base "organization" }}
     {{ $fields = $fields | append
-      `~SCHEMA_TYPES`
-      `~SCHEMA_NAMES`
-      `~SCHEMA_LEGAL`
-      `~SCHEMA_NIF`
-      `~SCHEMA_LOGO`
-      `~SCHEMA_IMAGES`
-      `~SCHEMA_SOCIAL`
-      `~SCHEMA_PHONES`
-      `~SCHEMA_ADDRESS`
-      `~SCHEMA_AREAS`
-      `~SCHEMA_OPEN`
-      `~SCHEMA_PRICES`
-      `~SCHEMA_SERVICES`
-      `~SCHEMA_FOOD_MENU`
-      `~SCHEMA_FOOD_TYPE`
+      `~P_TYPES`
+      `~P_NAMES`
+      `~P_LEGAL`
+      `~P_NIF`
+      `~P_LOGO`
+      `~P_IMAGES`
+      `~P_SOCIAL`
+      `~P_PHONES`
+      `~P_ADDRESS`
+      `~P_AREAS`
+      `~P_OPEN`
+      `~P_PRICES`
+      `~P_SERVICES`
+      `~P_FOOD_MENU`
+      `~P_FOOD_TYPE`
     }}
   {{ else if eq .Params.base "service" }}
     {{ $fields = $fields | append
-      `~SCHEMA_AREAS`
+      `~P_AREAS`
       `~P_SERVICE_TYPES`
       `~P_PRICE`
     }}
@@ -172,6 +171,8 @@
     `~P_DRAFT`
     `~P_NOINDEX`
     `~P_TRANSLATIONKEY`
+    `~P_TITLE_SEO`
+    `~P_DESCRIPTION`
     `~P_BODY`
   }}
 
@@ -236,14 +237,15 @@
   )
   "editor"            (dict "preview" false )
   "fields"            (slice
-    `~P_TITLE`
-    `~P_TITLE_SEO`
     `~P_SLUG`
-    `~P_DESCRIPTION`
+    `~P_TITLE`
+    `~P_SUMMARY`
     `~P_IMAGE`
     `~P_DRAFT`
     `~P_NOINDEX`
     `~P_TRANSLATIONKEY`
+    `~P_TITLE_SEO`
+    `~P_DESCRIPTION`
     `~TEMPLATE_BACKGROUND`
     `~TEMPLATE_MENU_SINGLE`
     `~TEMPLATE_CALLNOW_SINGLE`
@@ -259,21 +261,21 @@
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_PLACE`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `product`     )) `~P_SKU`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_JOB_TITLE`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_TYPES`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_NAMES`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_LEGAL`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_NIF`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_LOGO`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_IMAGES`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `author`))) `~SCHEMA_SOCIAL`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_PHONES`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_ADDRESS`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `service`))) `~SCHEMA_AREAS`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_OPEN`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_PRICES`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_SERVICES`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_FOOD_MENU`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~SCHEMA_FOOD_TYPE`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_TYPES`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_NAMES`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_LEGAL`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_NIF`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_LOGO`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_IMAGES`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `author`))) `~P_SOCIAL`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_PHONES`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_ADDRESS`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `service`))) `~P_AREAS`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_OPEN`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_PRICES`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_SERVICES`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_FOOD_MENU`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_FOOD_TYPE`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`     )) `~P_SERVICE_TYPES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `product` `service`))) `~P_PRICE`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `article` `event` `product` `service` `brand` `author` `organization` `service` `page`))) `~P_BODY`))
@@ -332,7 +334,6 @@
     (dict "file" `data/config.yml`     "extension" `yml` "name" `config`    "label" $t.config    "fields" `~SETTINGS_CONFIG`)
     (dict "file" `data/template.yml`   "extension" `yml` "name" `template`  "label" $t.template  "fields" `~SETTINGS_TEMPLATE`)
     (dict "file" `data/types.yml`      "extension" `yml` "name" `types`     "label" $t.types     "fields" `~SETTINGS_TYPES`)
-    (dict "file" `data/schema.yml`     "extension" `yml` "name" `schema`    "label" $t.schema    "fields" `~SETTINGS_SCHEMA`)
     (dict "file" `data/styles.yml`     "extension" `yml` "name" `styles`    "label" $t.styles    "fields" `~SETTINGS_STYLES`)
     (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "fields" `~SETTINGS_REMOTE`)
     (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "fields" (slice (dict "name" `body` "widget" `text` "required" false "label" $t.redirects "hint" $t.redirects_hint)))

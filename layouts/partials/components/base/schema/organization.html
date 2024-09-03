@@ -1,11 +1,6 @@
 {{ $schema := dict }}
 
-{{ $params := . }}
-{{ with .Params }}
-  {{ $params = . }}
-{{ end }}
-
-{{ with $params }}
+{{ with .Params | default . }}
 
   {{/*  Types  */}}
   {{ $types      := .types | default (slice "Organization") }}
@@ -15,15 +10,11 @@
   {{ $name       := index $names 0 }}
   {{ $names_more := after 1 $names }}
 
+  {{/*  Description  */}}
+  {{ $description  := $.Summary | default $.Description | default .summary | default .description | plainify }}
+
   {{/*  URL  */}}
-  {{ $url    := .url }}
-  {{ if not $url }}
-    {{ if eq .base "organization" }}
-      {{ $url = ($.Page | default page).Permalink }}
-    {{ else }}
-      {{ $url = print site.BaseURL "/" }}
-    {{ end }}
-  {{ end }}
+  {{ $url    := .url | default $.Page.Permalink }}
 
   {{/*  Legal and NIF  */}}
   {{ $legal    := .legal }}
@@ -152,6 +143,7 @@
     "legalName"                 $legal
     "taxID"                     $nif
     "url"                       $url
+    "description"               $description
     "logo"                      $logo
     "image"                     $images
     "telephone"                 $phones
@@ -161,7 +153,6 @@
     "openingHoursSpecification" $open
     "department"                $departments
     "hasOfferCatalog"           $offers
-    "description"               .description
     "sameAs"                    .social
     "areaServed"                .areas
     "priceRange"                .prices

@@ -18,7 +18,6 @@
   | append  (partial "cms/config/settings/config" .)
   | append  (partial "cms/config/settings/template" .)
   | append  (partial "cms/config/settings/types" .)
-  | append  (partial "cms/config/settings/schema" .)
   | append  (partial "cms/config/settings/styles" .)
   | append  (partial "cms/config/settings/remote" .)
 }}
@@ -86,7 +85,7 @@
     "logo_url"      (resources.Get (print "/media/"
       ($config.cms.logo
         | default $config.menu.logo
-        | default $config.schema.logo
+        | default site.Home.Params.logo
         | default $config.favicon.svg
         | default $config.favicon.png
         | default "base/icon.png"

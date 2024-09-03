@@ -17,21 +17,13 @@
   {{ end }}
 {{ end }}
 
-{{ $description := "" }}
-{{ with .Description }}
-  {{ $description = . }}
-{{ else }}
-  {{ if .IsPage | and .Content }}
-    {{ $description = .Summary }}
-  {{ end }}
-{{ end }}
-{{ $description = $description | markdownify }}
+{{ $description := .Description | default .Summary | truncate 155 | plainify }}
 
 {{ $image_og  := "" }}
 {{ $site_logo := print
   site.BaseURL
   "/media/"
-  ((cond (in site.Data.schema.logo "svg") "" site.Data.schema.logo)
+  ((cond (in site.Home.Params.logo "svg") "" site.Home.Params.logo)
     | default (cond (in site.Params.menu.logo "svg") "" site.Params.menu.logo)
     | default (cond (in $config.cms.logo "svg") "" $config.cms.logo)
     | default $config.favicon.png
@@ -77,12 +69,17 @@
 {{ else }}
   <meta property="og:type" content="article">
   <meta property="og:title" content="{{ $title }}">
-  {{ with .Date }}<meta property="article:published_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}" />{{ end }}
-  {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}" />{{ end }}
+  {{ if eq .Params.base "article" }}
+    {{ with .Date }}<meta property="article:published_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}" />{{ end }}
+    {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}" />{{ end }}
+  {{ end }}
 {{ end }}
 {{ with .Lastmod }}<meta property="og:updated_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />{{ end }}
 <meta property="og:url" content="{{ .Permalink }}">
-<meta property="og:locale" content="{{ site.Language }}">
+<meta property="og:locale" content="{{ .Lang }}">
+{{ range .Translations }}
+  <meta property="og:locale:alternate" content="{{ .Lang }}" />
+{{ end }}
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:image" content="{{ $image_og | default `/media/logo.png` }}">
 

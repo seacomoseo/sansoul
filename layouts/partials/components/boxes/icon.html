@@ -4,7 +4,7 @@
     "attr"  "class"
     "array" (slice
       "box__icon"
-      (cond (or (not .icon_type) (eq .icon_type "side")) "" (print "box__icon--" .icon_type))
+      (print "box__icon--" .icon_type)
       (.icon_color | default "main")
     )
   ) -}}
@@ -16,10 +16,10 @@
   {{/*  ATTRIBUTES  */}}
   {{- $attr := print $class $style -}}
 
-  {{- if ne $.icon_type "top" -}}
-    <div {{ $attr | safeHTMLAttr }}>
+  {{- if eq $.icon_type "bottom" -}}
+    <span {{ $attr | safeHTMLAttr }}>
       {{- partial "components/icon" (dict "icon" .icon) -}}
-    </div>
+    </span>
   {{- else -}}
     {{- partial "components/icon" (dict
       "attr" $attr

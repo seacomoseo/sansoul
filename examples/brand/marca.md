@@ -1,12 +1,13 @@
 ---
-title: Marca de ejemplo
-seo: ''
 slug: marca
-description: Esta es la descripción de un marca de ejemplo.
+title: Marca de ejemplo
+summary: Esto es el resumen de un marca de ejemplo.
 image: base/icon.png
 toc: true
 draft: false
 noindex: false
 translationKey: brand-example
+seo: null
+description: null
 ---
 Contenido

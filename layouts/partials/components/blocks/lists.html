@@ -96,7 +96,7 @@
     {{/*  PAGES TO BOXES  */}}
     {{- $boxes   := slice -}}
     {{- range $firsts_pages -}}
-      {{- $desc  := .Params.description | default .Summary | truncate 150 -}}
+      {{- $desc  := .Summary | default .Description | truncate 155 | plainify -}}
       {{- $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
       {{- $page  := merge .Params (dict
         "Page"        .
