@@ -42,9 +42,9 @@
   "isPartOf"   (dict "@id" page.Permalink)
 -}}
 {{- if hugo.IsProduction -}}
-  {{- $schema = $schema | jsonify -}}
+  {{- $schema = jsonify $schema -}}
 {{- else -}}
-  {{- $schema = $schema | jsonify (dict "prefix" "" "indent" "  ") -}}
+  {{- $schema = debug.Dump $schema -}}
 {{- end -}}
 <script type="application/ld+json">
   {{- $schema | safeJS -}}

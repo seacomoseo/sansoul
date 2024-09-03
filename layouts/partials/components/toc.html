@@ -1,0 +1,9 @@
+
+<ol {{ if not .Level }} class="toc"{{ end }}>
+  {{- range .Headings -}}
+    <li>
+      <a href="#{{ .ID | urlize | replaceRE `^-+|<.+?>|_+|#+` `` }}">{{ .Title }}</a>
+      {{- partial "components/toc" . -}}
+    </li>
+  {{- end -}}
+</ol>

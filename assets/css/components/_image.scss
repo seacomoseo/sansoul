@@ -56,6 +56,9 @@ svg.image__inner {
 }
 .image__inner--gradient {
   background-image: linear-gradient($main, rgba($main, 0));
+  &:has(+ .image__inner) {
+    position: absolute;
+  }
 }
 
 

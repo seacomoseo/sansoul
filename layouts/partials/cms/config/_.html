@@ -39,6 +39,20 @@
 {{ end }}
 
 
+{{ $logo := $config.cms.logo
+  | default $config.menu.logo
+  | default site.Home.Params.logo
+  | default $config.favicon.svg
+  | default $config.favicon.png
+  | default "base/icon.png"
+}}
+{{ $logo = print "/media/" $logo }}
+{{ $logo = resources.Get $logo }}
+{{ with $logo }}
+  {{ $logo = .RelPermalink }}
+{{ end }}
+
+
 {{ $i18n := dict
   "i18n" (dict
     "structure"      false
@@ -82,15 +96,7 @@
       "max_file_size"  512000000
       "folder_support" true
     )
-    "logo_url"      (resources.Get (print "/media/"
-      ($config.cms.logo
-        | default $config.menu.logo
-        | default site.Home.Params.logo
-        | default $config.favicon.svg
-        | default $config.favicon.png
-        | default "base/icon.png"
-      )
-    )).RelPermalink
+    "logo_url"      $logo
     "locale"        $lang_cms
     "slug"          (dict
       "encoding"             `ascii`
