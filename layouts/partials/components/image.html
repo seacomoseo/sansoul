@@ -68,7 +68,7 @@
           {{- end }}
           decoding="async"
           {{- if not .notlazy }} loading="lazy"{{ end -}}
-        />
+        >
       </picture>
     {{- end -}}
   {{- else -}}
@@ -174,7 +174,7 @@
               height="{{ $svg_height }}"
               decoding="async"
               loading="lazy"
-            />
+            >
           {{- else -}}
             {{- $svg = readFile (print "/assets/media/" $file) -}}
             {{- if not ($svg_head | findRE ` viewBox=`) -}}
@@ -395,7 +395,7 @@
             height="{{ $image_img.Height }}"
             decoding="async"
             {{ if not .notlazy }} loading="lazy" {{ end }}
-          />
+          >
         </picture>
       {{- end -}}
     {{- end -}}

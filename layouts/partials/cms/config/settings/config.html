@@ -24,6 +24,11 @@
       (dict "name" `google_file_verification` "widget" `string`  "required" false "label" $t.config_google_file_verification "hint" $t.config_google_file_verification_hint)
       (dict "name" `google_translate`         "widget" `boolean` "required" false "label" $t.config_google_translate         "hint" $t.config_google_translate_hint)
       (dict "name" `disqus`                   "widget" `string`  "required" false "label" $t.config_disqus                   "hint" $t.config_disqus_hint)
+      (dict "name" `main_organization`        "widget" `string`  "required" false "label" $t.config_main_organization        "hint" $t.config_main_organization_hint)
+      (dict "name" `phone_code`               "widget" `select`  "required" false "label" $t.config_phone_code               "hint" (print $t.default "→ **" (index $t "option-phone_code-34") "**") "options" `~OPTIONS_PHONE_CODES`)
+      (dict "name" `time_zone`                "widget" `select`  "required" false "label" $t.config_time_zone                "hint" (print $t.default "→ **Europe/Madrid**")                         "options" site.Data.utilities.time_zone)
+      (dict "name" `currency`                 "widget" `select`  "required" false "label" $t.config_currency                 "hint" (print $t.default "→ **EUR**")                                   "options" `~OPTIONS_CURRENCY`)
+      (dict "name" `pagination`               "widget" `string`  "required" false "label" $t.config_pagination               "hint" $t.config_pagination_hint)
       (dict
         "label"     $t.config_menu
         "name"      `menu`
@@ -36,25 +41,6 @@
           (dict "name" `subtitle` "required" false "label" $t.config_menu_subtitle "widget" `string`)
         )
       )
-      (dict
-        "name"      `legal`
-        "widget"    `object`
-        "required"  false
-        "label"     $t.config_legal
-        "hint"      $t.config_legal_hint
-        "collapsed" true
-        "fields"    (slice
-          (dict "name" `name`     "widget" `string` "required" false "label" $t.config_legal_name)
-          (dict "name" `nif`      "widget" `string` "required" false "label" $t.config_legal_nif)
-          (dict "name" `email`    "widget" `string` "required" false "label" $t.config_legal_email)
-          (dict "name" `location` "widget" `string` "required" false "label" $t.config_legal_location)
-        )
-      )
-      (dict "name" `main_organization` "widget" `string` "required" false "label" $t.config_main_organization "hint" $t.config_main_organization_hint)
-      (dict "name" `phone_code`        "widget" `select` "required" false "label" $t.config_phone_code        "hint" (print $t.default "→ **" (index $t "option-phone_code-34") "**") "options" `~OPTIONS_PHONE_CODES`)
-      (dict "name" `time_zone`         "widget" `select` "required" false "label" $t.config_time_zone         "hint" (print $t.default "→ **Europe/Madrid**") "options" site.Data.utilities.time_zone)
-      (dict "name" `currency`          "widget" `select` "required" false "label" $t.config_currency          "hint" (print $t.default "→ **EUR**")           "options" `~OPTIONS_CURRENCY`)
-      (dict "name" `pagination`        "widget" `string` "required" false "label" $t.config_pagination        "hint" $t.config_pagination_hint)
       (dict
         "name"      `html`
         "widget"    `object`

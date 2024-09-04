@@ -19,7 +19,7 @@
       {{ $permalinks = $permalinks | replaceRE `:(year|month|day)` "{{$1}}" }}
     {{ end }}
   {{ end }}
-  {{ $permalinks     = print site.Home.RelPermalink $permalinks "/" }}
+  {{ $permalinks     = print $permalinks "/" }}
 
   {{/*  Summary  */}}
   {{ $summary  := "{{title}}" }}
@@ -104,6 +104,7 @@
       `~P_NAMES`
       `~P_LEGAL`
       `~P_NIF`
+      `~P_EMAIL`
       `~P_LOGO`
       `~P_IMAGES`
       `~P_SOCIAL`
@@ -213,13 +214,13 @@
   "icon"             site.Data.utilities.defaults.page.icon
   "description"      $t.collection_single_description
   "identifier_field" `slug`
-  "folder"            (print `content.` .Lang)
-  "create"            true
+  "folder"           (print `content.` .Lang)
+  "create"           true
   "slug"             "{{fields.slug}}"
-  "preview_path"      (print site.Home.RelPermalink "{{fields.slug}}/")
-  "summary"           "{{title}}"
-  "sortable_fields"   (dict "fields" (slice "commit_date" "title"))
-  "view_filters"      (dict
+  "preview_path"     "{{fields.slug}}/"
+  "summary"          "{{title}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "title"))
+  "view_filters"     (dict
     "filters" (slice
       (dict "name" `published` "label" $t.filter_published "field" `draft`   "pattern" false)
       (dict "name" `drafts`    "label" $t.filter_drafts    "field" `draft`   "pattern" true)
@@ -265,6 +266,7 @@
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_NAMES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_LEGAL`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_NIF`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_EMAIL`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_LOGO`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_IMAGES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `author`))) `~P_SOCIAL`))

@@ -3,9 +3,9 @@
   {{ $content = .content | site.Home.RenderString (dict "display" (cond (not .inline) "block" "inline")) }}
 {{ end }}
 
-{{ $emoji_regex := `([\w\d]?[\p{So}\p{Sk}\x{200d}\x{fe0f}\x{20e3}\x{1fae0}\x{1faf0}\x{2934}\x{2935}\x{2194}\x{203c}\x{2049}\x{3030}\x{303d}\x{2139}\x{25fc}\x{25fb}\x{25fe}\x{25fd}\x{e007f}\x{e0063}\x{e0062}\x{e0067}\x{e0073}\x{e0074}\x{1fae2}\x{1fae3}\x{1fae1}\x{1fae5}\x{1fae4}\x{1f979}\x{1faf3}\x{1faf4}\x{1faf5}\x{1faf6}\x{1faf2}\x{1faf1}\x{1fae6}\x{1fac5}\x{1fac3}\x{1fac4}\x{1f9cc}\x{1fab7}\x{1fab9}\x{1faba}\x{1fad8}\x{1fad7}\x{1fad9}\x{1f6dd}\x{1f6df}\x{1fae7}\x{1faac}\x{1faa9}\x{1fa7c}\x{1fa7b}\x{1faaa}\x{1f7f0}\x{e50a}\x{fe82b}]+)` }}
 {{ $emojis := site.Data.styles.icons.emojis }}
 {{ if $emojis }}
+  {{ $emoji_regex := `([\w\d]?[\p{So}\p{Sk}\x{200d}\x{fe0f}\x{20e3}\x{1fae0}\x{1faf0}\x{2934}\x{2935}\x{2194}\x{203c}\x{2049}\x{3030}\x{303d}\x{2139}\x{25fc}\x{25fb}\x{25fe}\x{25fd}\x{e007f}\x{e0063}\x{e0062}\x{e0067}\x{e0073}\x{e0074}\x{1fae2}\x{1fae3}\x{1fae1}\x{1fae5}\x{1fae4}\x{1f979}\x{1faf3}\x{1faf4}\x{1faf5}\x{1faf6}\x{1faf2}\x{1faf1}\x{1fae6}\x{1fac5}\x{1fac3}\x{1fac4}\x{1f9cc}\x{1fab7}\x{1fab9}\x{1faba}\x{1fad8}\x{1fad7}\x{1fad9}\x{1f6dd}\x{1f6df}\x{1fae7}\x{1faac}\x{1faa9}\x{1fa7c}\x{1fa7b}\x{1faaa}\x{1f7f0}\x{e50a}\x{fe82b}]+)` }}
   {{ $content = $content | replaceRE $emoji_regex `∫$1∫` }}
   {{ with $content | findRE `∫.+?∫` }}
     {{ range . | uniq }}
@@ -13,44 +13,43 @@
     {{ end }}
   {{ end }}
 {{ else }}
+{{/*  
   {{ $content = $content
-    | replaceRE (print `icon-` $emoji_regex) `∫$1∫`
+    | replaceRE (print `icon:` $emoji_regex) `∫$1∫`
     | replaceRE `∫(.+?)∫` `<i class="emoji">$1</i>`
   }}
+*/}}
 {{ end }}
 
 {{ $content = $content
-  | replaceRE `==icon(.+?)==` `<mark class="sign">icon$1</mark>`
-  | replaceRE `==(.+?)==` `<mark>$1</mark>`
-  | replaceRE `(?s)(<blockquote class="quotes.*?">)` `$1 <svg class="quote-left"><use href='/draws.svg#quote-left'></use></svg><svg class="quote-right"><use href='/draws.svg#quote-right'></use></svg>`
-  | replaceRE `(?s)(<blockquote class="dittos.*?">)` `$1 <svg class="quote-left"><use href='/draws.svg#ditto'></use></svg><svg class="quote-right"><use href='/draws.svg#ditto'></use></svg>`
-  | replaceRE `icon-([\w-]+)` `<svg><use href='/draws.svg#$1'></use></svg>`
-  | replaceRE `\n` `∫`
-  | replaceRE `<p( class="(.+?)")?>[∫\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
-  | replaceRE `<i>(<svg.+?</svg>)(.*?)</i>` `$1<i>$2</i>`
+  | replaceRE `(<blockquote class="quotes.*?">)` `$1 <svg class="quote-left"><use href="/draws.svg#quote-left"></use></svg><svg class="quote-right"><use href="/draws.svg#quote-right"></use></svg>`
+  | replaceRE `(<blockquote class="dittos.*?">)` `$1 <svg class="quote-left"><use href="/draws.svg#ditto"></use></svg><svg class="quote-right"><use href="/draws.svg#ditto"></use></svg>`
+  | replaceRE `icon:([\w-]+)` `<svg><use href="/draws.svg#$1"></use></svg>`
+  | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
+  | replaceRE `(?s)<i>(<svg.+?</svg>)(.*?)</i>` `$1<i>$2</i>`
   | replaceRE ` start="(.+?)"` ` style="--item: $1;"`
   | replaceRE `<li(.*?)>` `<li$1><div>`
-  | replaceRE `<li><div>(∫|<p>)*(<svg>.+?</svg>) ` `<li class="li-svg">$2<div>$1`
+  | replaceRE `(?s)<li><div>(\n|<p>)*(<svg>.+?</svg>) ` `<li class="li-svg">$2<div>$1`
   | replaceRE `</li>` `</div></li>`
-  | replaceRE `<p><figure(.+?)</figure></p>` `<figure$1</figure>`
-  | replaceRE `<table(.+?)</table>` `<div class="table-inner"><table$1</table></div>`
+  | replaceRE `(?s)<p><figure(.+?)</figure></p>` `<figure$1</figure>`
+  | replaceRE `(?s)<table(.+?)</table>` `<div class="table-inner"><table$1</table></div>`
   | replaceRE `<table class="` `<table class="bg-light `
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`
 }}
 
 {{ if .not_header_links }}
   {{ $content = $content
-    | replaceRE `(class="description__heading .*?") id=".*?">[\s\S\n]*?<a .*?"(>.*?)</a>` `$1$2`
+    | replaceRE `(?s)(class="description__heading .*?") id=".*?">[\s\S\n]*?<a .*?"(>.*?)</a>` `$1$2`
   }}
 {{ else }}
   {{ $content = $content
-    | replaceRE `(<a class="description__heading-link".+?)<br>(</a>)` `$1$2`
+    | replaceRE `(?s)(<a class="description__heading-link".+?)<br>(</a>)` `$1$2`
   }}
 {{ end }}
 
 {{ if $.nofollow }}
   {{ range $content | findRE `<a.+?</a>` }}
-    {{ $url    := . | replaceRE `.+href="(.+?)".+` `$1` }}
+    {{ $url    := . | replaceRE `(?s).+href="(.+?)".+` `$1` }}
     {{ $blank  := cond (strings.HasPrefix $url "http") "b" "h" }}
     {{ $url     = $url | base64Encode }}
     {{ $link   := replace . `target="_blank" rel="noopener"` `` }}
@@ -61,9 +60,6 @@
   {{ end }}
 {{ end }}
 
-{{ $content = $content
-  | replaceRE `∫` "\n"
-  | safeHTML
-}}
+{{ $content = $content | safeHTML }}
 
 {{ return $content }}

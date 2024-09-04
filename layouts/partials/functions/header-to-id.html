@@ -1,0 +1,9 @@
+{{ $id     := .id }}
+{{ $icons  := .title| findRE `icon:[\w-]+` }}
+{{ range $icons }}
+  {{ $icon := .   | replaceRE `^icon:` "" }}
+  {{ $id    = $id | replaceRE (print "icon" $icon "-?") "" }}
+{{ end }}
+{{ $id      = $id | replaceRE `^-+|_+` "" }}
+
+{{ return $id }}

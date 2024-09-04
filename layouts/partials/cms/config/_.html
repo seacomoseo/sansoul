@@ -25,17 +25,15 @@
 
 {{ $site_url      := "" }}
 {{ $publish_mode  := "" }}
-{{ $display_url   := "" }}
 {{ if $local }}
-  {{ $site_url     = site.BaseURL | replaceRE "^(https?:)?//|/$" "" }}
+  {{ $site_url     = site.Home.Permalink }}
 {{ else if $config.cms.editorial }}
   {{ $site_url     = print "https://" site.Params.netlify_name ".netlify.app/" }}
   {{ $publish_mode = "editorial_workflow" }}
 {{ else if $config.others.development }}
   {{ $site_url     = print "https://" site.Params.netlify_name ".netlify.app/" }}
 {{ else }}
-  {{ $site_url     = site.BaseURL | replaceRE "^(https?:)?//|/$" "" }}
-  {{ $display_url  = print site.Home.Permalink }}
+  {{ $site_url     = site.Home.Permalink }}
 {{ end }}
 
 
@@ -68,7 +66,7 @@
   "backend"       (dict
     "name"        `git-gateway`
     "branch"      `main`
-    "site_domain" (site.BaseURL | replaceRE "^(https?:)?//|/$" "")
+    "site_domain" (urls.Parse site.BaseURL).Hostname
   )
   BUTTON LOGIN WITH GITHUB
     https://decapcms.org/docs/github-backend/
@@ -85,13 +83,12 @@
     "backend"       (dict
       "name"        `git-gateway`
       "branch"      `main`
-      "site_domain" (site.BaseURL | replaceRE "^(https?:)?//|/$" "")
+      "site_domain" (urls.Parse site.BaseURL).Host
     )
     "local_backend" $local
     "media_folder"  `assets/media`
     "public_folder" ``
     "site_url"      $site_url
-    "display_url"   $display_url
     "media_library" (dict
       "max_file_size"  512000000
       "folder_support" true

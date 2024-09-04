@@ -2,22 +2,31 @@
 {{- $two   := index .Params 1 -}}
 
 {{- if in (slice "name" "nif" "location" "email") $param -}}
-  {{- $legal  := site.Params.legal -}}
 
-  {{- if eq $param "name" -}}
-    {{- $legal.name | default site.Home.Params.legal | default site.Title -}}
-  {{- else if eq $param "nif" -}}
-    {{- $legal.nif | default site.Home.Params.nif | default "00000000A" -}}
-  {{- else if eq $param "location" -}}
-    {{- $legal.location | default (i18n (print "option-phone_code-" site.Params.phone_code | default 34) | replaceRE `[^\w\s]` "") | default "-" -}}
-  {{- else if eq $param "email" -}}
-    <i class="ofuscate">
-      {{- $legal.email | default "mail@mail.com" | base64Encode -}}
-    </i>
+  {{- with site.Home.Params -}}
+    {{- if eq $param "name" -}}
+      {{- .legal | default site.Title -}}
+    {{- else if eq $param "nif" -}}
+      {{- .nif | default "00000000A" -}}
+    {{- else if eq $param "location" -}}
+      {{- with .address -}}
+        {{- with .street }}{{ . }},{{ end }}
+        {{ with .pc }}{{ . }}{{ end }}
+        {{ with .locality }}{{ . }}{{ end }}
+        {{ with .region }},{{ . }}{{ end }}
+        {{ with .country }},{{ . }}{{ end }}
+      {{- else -}}
+        {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
+      {{- end -}}
+    {{- else if eq $param "email" -}}
+      <i class="ofuscate">
+        {{- .email | default "mail@mail.com" | base64Encode -}}
+      </i>
+    {{- end -}}
   {{- end -}}
 
 {{- else if eq $param "web" -}}
-  {{- site.BaseURL | replaceRE "^(https?:)?//|/$" "" -}}
+  {{- (urls.Parse site.BaseURL).Host -}}
 {{- else if eq $param "https" -}}
   {{- site.BaseURL -}}
 {{- end -}}

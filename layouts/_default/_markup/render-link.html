@@ -1,23 +1,25 @@
 
-{{- $label := .Text | replaceRE `^btn[\w-]* ` `` -}}
-{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` `` -}}
+{{- $label    := .Text  | replaceRE `^btn[\w-:]* `                "" -}}
+{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` "" -}}
 {{- $noindex  := cond (strings.HasPrefix .Title "nofollow") true nil -}}
 
 {{- $button   := "none" -}}
 {{- $class    := "" -}}
 {{- if strings.HasPrefix .Text "btn" -}}
-  {{- $other  := .Text | replaceRE `^btn-?([\w-]*).*` `$1` -}}
-  {{- $button  =  replace $other "-font-alt" "" | replaceRE `^.+?(main|alt|link|light|dark|invert|whatsapp).*` `$1` -}}
+  {{- $other  := .Text | replaceRE `^btn:?([\w-]*).*` "$1" -}}
   {{- range $other | findRE `icon|font-alt|sm` -}}
     {{- $class = print $class " button--" . -}}
   {{- end -}}
+  {{- $button  = replace $other "font-alt" "" -}}
+  {{- $button  = findRE `(main|alt|link|light|dark|invert|whatsapp)` $button 1 -}}
+  {{- $button  = index $button 0 -}}
 {{- end -}}
 
 {{- $icon     := "" -}}
 {{- if $anchor | and (not $noindex) -}}
-  {{- $label   = $label | replaceRE `icon-[\w-]+` `` -}}
-  {{- if findRE `icon-[\w-]` .Text -}}
-    {{- $icon  = .Text | replaceRE `^.*?icon-([\w-]+).*` `$1` -}}
+  {{- $label   = $label | replaceRE `icon:[\w-]+` "" -}}
+  {{- if findRE `icon:[\w-]` .Text -}}
+    {{- $icon  = .Text | replaceRE `^.*?icon:([\w-]+).*` "$1" -}}
   {{- end -}}
 {{- end -}}
 

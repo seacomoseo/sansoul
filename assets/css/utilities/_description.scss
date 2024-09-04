@@ -217,12 +217,12 @@
       filter: drop-shadow($shadow);
     }
   }
-  mark.sign {
+  mark:has(svg > use[href^="/draws.svg#sign-"]) {
     position: relative;
     display: inline-block;
     background-color: transparent;
     color: inherit;
-    svg:first-child {
+    svg:has(use[href^="/draws.svg#sign-"]) {
       position: absolute;
       top: -0.125em;
       left: -0.25em;

@@ -1,8 +1,11 @@
 
 <ol {{ if not .Level }} class="toc"{{ end }}>
   {{- range .Headings -}}
+    {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) -}}
     <li>
-      <a href="#{{ .ID | urlize | replaceRE `^-+|<.+?>|_+|#+` `` }}">{{ .Title }}</a>
+      <a href="#{{ $id }}">
+        {{- .Title | safeHTML -}}
+      </a>
       {{- partial "components/toc" . -}}
     </li>
   {{- end -}}

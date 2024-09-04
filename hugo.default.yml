@@ -155,12 +155,27 @@ markup:
   tableOfContents:
     ordered: true
     endLevel: 6
+  defaultMarkdownHandler: goldmark
   goldmark:
     renderer:
       unsafe: true
     parser:
+      autoHeadingIDType: github-ascii
       attribute:
         block: true
+    extensions:
+      strikethrough: false
+      extras:
+        delete:
+          enable: true
+        insert:
+          enable: true
+        mark:
+          enable: true
+        subscript:
+          enable: true
+        superscript:
+          enable: true
 
 frontmatter:
   date:

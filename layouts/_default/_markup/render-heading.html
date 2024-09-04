@@ -1,8 +1,4 @@
-{{- $id    := .Attributes.id | urlize | replaceRE `^-+|<.+?>|_+|#+` `` -}}
-{{- $icons := .Text| findRE `icon-[\w-]+` -}}
-{{- range $icons -}}
-  {{- $id = $id | replaceRE (print "-" .) `` -}}
-{{- end -}}
+{{- $id     := partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
 
 {{- $class  := "" -}}
 {{- if (page.Params.lists.underline | and (eq .Level 2)) -}}

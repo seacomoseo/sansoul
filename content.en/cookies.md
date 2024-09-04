@@ -45,16 +45,16 @@ You have the option to allow, block, or delete cookies installed on your device 
 
 You can allow, block, or delete the cookies installed on your device by configuring the options of the browser installed on your computer:
 
-- icon-link [Google Chrome](https://support.google.com/accounts/answer/61416?hl=es "nofollow")
-- icon-link [Mozilla Firefox](https://support.mozilla.org/es/kb/Borrar%20cookies "nofollow")
-- icon-link [Internet Explorer](https://support.microsoft.com/es-es/topic/c%C3%B3mo-eliminar-archivos-de-cookies-en-internet-explorer-bca9446f-d873-78de-77ba-d42645fa52fc "nofollow")
-- icon-link [Safari MAC OS](https://support.apple.com/es-es/guide/safari/sfri11471/mac "nofollow")
-- icon-link [Safari IOS iPhone and iPad](https://support.apple.com/es-es/HT201265 "nofollow")
+- icon:link [Google Chrome](https://support.google.com/accounts/answer/61416?hl=es "nofollow")
+- icon:link [Mozilla Firefox](https://support.mozilla.org/es/kb/Borrar%20cookies "nofollow")
+- icon:link [Internet Explorer](https://support.microsoft.com/es-es/topic/c%C3%B3mo-eliminar-archivos-de-cookies-en-internet-explorer-bca9446f-d873-78de-77ba-d42645fa52fc "nofollow")
+- icon:link [Safari MAC OS](https://support.apple.com/es-es/guide/safari/sfri11471/mac "nofollow")
+- icon:link [Safari IOS iPhone and iPad](https://support.apple.com/es-es/HT201265 "nofollow")
 
 In addition, you can also manage the cookie storage in your browser through tools such as the following:
 
-- icon-link [Ghostery](http://www.ghostery.com/ "nofollow")
-- icon-link [Your online choices](http://www.youronlinechoices.com/es/ "nofollow")
+- icon:link [Ghostery](http://www.ghostery.com/ "nofollow")
+- icon:link [Your online choices](http://www.youronlinechoices.com/es/ "nofollow")
 
 ## Cookies Used on This Site
 
@@ -70,9 +70,9 @@ In response to this information, you can take the following actions:
 
 This site uses analytical cookies to collect statistics on user activity when visiting the site and the general activity of the site itself. The information collected is anonymous and allows optimizing navigation on our website and ensuring the best service to the user. We use both first-party and third-party cookies (Google Analytics) for analyzing our site. Users can exclude their activity via the exclusion systems provided by analytical tools. Generate a unique user identifier, which is used to count how many times a user visits the site, as well as the date of the first and last visit. Record the date and time of access to any page of the site. Check the need to keep a user's session open or create a new one. Identify the user's session to collect the approximate geographical location of the computer accessing the site for statistical purposes.
 
-- icon-link [Use of Google Analytics cookies on websites](https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=es "nofollow")
-- icon-link [Google Analytics Privacy Policy](https://www.google.com/policies/privacy/ "nofollow")
-- icon-link [Google Cookies Policy](http://www.google.com/policies/technologies/types/ "nofollow")
+- icon:link [Use of Google Analytics cookies on websites](https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=es "nofollow")
+- icon:link [Google Analytics Privacy Policy](https://www.google.com/policies/privacy/ "nofollow")
+- icon:link [Google Cookies Policy](http://www.google.com/policies/technologies/types/ "nofollow")
 
 | Cookie | Name | Purpose | Owner | More Information |
 | --- | --- | --- | --- | --- |

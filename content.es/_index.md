@@ -8,6 +8,7 @@ types: [] # strings https://schema.org/docs/full.html > Organization...
 names: [] # strings
 legal: null # string
 nif: null # string
+email: null # string
 summary: null # string
 logo: null # string image path
 images: [] # strings image path

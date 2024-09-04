@@ -225,7 +225,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         let searchItemAuthor = ''
         let searchItemReadingTime = ''
         if (results[item].item.image) {
-          searchItemImage = `<picture class="image__inner"><img src="${results[item].item.image}" /></picture>`
+          searchItemImage = `<picture class="image__inner"><img src="${results[item].item.image}"></picture>`
         }
         if (results[item].item.description) {
           searchItemText = `<div class="description description--small">${results[item].item.description}</div>`

@@ -1,4 +1,4 @@
-{{ $url    := print site.BaseURL "/" }}
+{{ $url    := (urls.Parse site.BaseURL).String }}
 
 {{/*  Organization  */}}
 {{ $organization := partial "components/base/schema/organization-id" . }}

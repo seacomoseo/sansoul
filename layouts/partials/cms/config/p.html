@@ -6,6 +6,7 @@
   `~P_SUMMARY`
   `~P_LEGAL`
   `~P_NIF`
+  `~P_EMAIL`
   `~P_LOGO`
   `~P_URL`
   `~P_IMAGES`
@@ -116,7 +117,8 @@
   ))
   (dict "&P_LEGAL"       (dict "name" `legal`       "required" false "label" $t.p_legal       "widget" `string`))
   (dict "&P_NIF"         (dict "name" `nif`         "required" false "label" $t.p_nif         "widget" `string`))
-  (dict "&P_URL"         (dict "name" `url`         "required" false "label" `URL`                                     "widget" `string` "hint" (print $t.default " → **" site.BaseURL "/**")))
+  (dict "&P_EMAIL"       (dict "name" `email`       "required" false "label" $t.p_email       "widget" `string`))
+  (dict "&P_URL"         (dict "name" `url`         "required" false "label" `URL`            "widget" `string`))
   (dict "&P_LOGO"        (dict "name" `logo`        "required" false "label" $t.p_logo        "widget" `image` "max_file_size" 512000000))
   (dict "&P_IMAGES"      (dict "name" `images`      "required" false "label" $t.p_images      "widget" `image` "multiple" true "choose_url" true))
   (dict "&P_SOCIAL"      (dict

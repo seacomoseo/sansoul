@@ -301,6 +301,9 @@
       - [x] 404
       - [x] `categories` params > `category`
       - [x] `authors` params > `author`
+      - [x] `icon-*` > `icon:*`
+      - [x] `btn-*` > `btn:*`
+      - [x] `config..langs.*.legal` > `content.*/_index.md`
       - [ ] Fix purge css
       - [ ] Box `data`
       - [ ] Types from file to dir
