@@ -63,7 +63,7 @@
         {{/*  type with lang  */}}
         {{ $type_lang := index . $lang }}
         {{ with $type_lang }}
-          {{ $type = merge . $type $type_lang }}
+          {{ $type = merge $type . }}
         {{ end }}
 
         {{/*  permalinks  */}}
@@ -72,9 +72,8 @@
           {{ $permalinks     = print . "/:slug" }}
         {{ else }}
           {{ if eq $type.permalinks nil }}
-            {{ $permalinks   = index $t (print "types_default_" $name "_permalinks") }}
-            {{ with $permalinks }}
-              {{ $permalinks = print $permalinks "/:slug" }}
+            {{ with index $t (print "types_default_" $name "_permalinks") }}
+              {{ $permalinks = print . "/:slug" }}
             {{ end }}
           {{ end }}
           {{ if not $permalinks }}

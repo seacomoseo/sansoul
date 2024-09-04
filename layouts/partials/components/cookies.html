@@ -3,11 +3,10 @@
   <aside class="cookies bg bg-{{ $color }} description">
     <div class="bg-color"></div>
     {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
-    <strong>{{ i18n "cookies_question" }}</strong>
     {{- partial "components/link" (dict
       "link"      .RelPermalink
       "button"    "none"
-      "label"     (print (i18n "read_more") "…")
+      "label"     (i18n "cookies_question")
       "noindex"   true
       "_blank"    true
     ) -}}
