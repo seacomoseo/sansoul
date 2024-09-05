@@ -3,7 +3,14 @@
     {{- with site.GetPage "author" . -}}
       {{- $param := index $.Params 0 -}}
       {{- if eq $param "summary" -}}
-        {{ .Summary | default .Description | plainify }}
+        {{ .Summary | default .Description }}
+        {{ if .ContentWithoutSummary }}
+          {{- partial "components/link" (dict
+            "link"      .RelPermalink
+            "button"    "none"
+            "label"     (print (i18n "read_more") "…")
+          ) -}}
+        {{ end }}
       {{- else if eq $param "image" -}}
         {{ .Params.image }}
       {{- else -}}
