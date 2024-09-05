@@ -16,9 +16,10 @@
         {{ range $types }}
           {{ $type     := .type | default "pages" }}
           {{ $pairings := slice
-            (dict "to" "title"                       )
-            (dict "to" "seo"                         )
             (dict "to" "slug"                        )
+            (dict "to" "title"                       )
+            (dict "to" "summary"                     )
+            (dict "to" "seo"                         )
             (dict "to" "description"                 )
             (dict "to" "image"                       )
             (dict "to" "images"      "kind" "slice"  )

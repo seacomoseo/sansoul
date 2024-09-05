@@ -44,17 +44,17 @@
         {{ $name  := .name | default $base }}
         {{ $title := $name | default .label | default .singular | urlize | default "" }}
 
-        {{/*  relations_from  */}}
-        {{ $relations_from := slice }}
-        {{ $breadcrumbs    := "" }}
+        {{/*  taxonomies  */}}
+        {{ $taxonomies  := slice }}
+        {{ $breadcrumbs := "" }}
         {{ range $types }}
           {{ $base_from := .base | default "page" }}
           {{ $name_from := .name | default $base_from }}
-          {{ range .relations }}
+          {{ range .taxonomy_of }}
             {{ if eq .name $name }}
-              {{ $relations_from = $relations_from | append (merge . (dict "name" $name_from "base" $base_from)) }}
+              {{ $taxonomies    = $taxonomies | append (merge . (dict "name" $name_from "base" $base_from)) }}
               {{ if .breadcrumbs }}
-                {{ $breadcrumbs  = $name_from }}
+                {{ $breadcrumbs = $name_from }}
               {{ end }}
             {{ end }}
           {{ end }}
@@ -103,10 +103,10 @@
           {{ $emoji       := $type.emoji                   | default (index site.Data.utilities.defaults $name).emoji         | default "📄" }}
           {{ $noindex     := cond (eq .noindex nil) true .noindex }}
           {{ $obj         := dict 
+            "slug"           $slug
             "singular"       $singular
             "title"          $title
             "seo"            .seo
-            "slug"           $slug
             "description"    $description
             "image"          .image
             "draft"          .disabled
@@ -116,14 +116,14 @@
             "cms"            $cms
             "custom_params"  .params
             "cascade"        ((dict
-              "icon"           $icon
-              "emoji"          $emoji
-              "type"           $name
-              "base"           $base
-              "is_related"     .related
-              "relations_from" $relations_from
-              "relations_to"   .relations
-              "breadcrumbs"    $breadcrumbs
+              "icon"        $icon
+              "emoji"       $emoji
+              "type"        $name
+              "base"        $base
+              "is_related"  .related
+              "taxonomies"  $taxonomies
+              "taxonomy_of" .taxonomy_of
+              "breadcrumbs" $breadcrumbs
             ) | merge .template)
           }}
           {{/*  file  */}}
@@ -245,7 +245,7 @@
     "weight" 10
   )
 }}
-{{ range where $types "relations" "ne" nil }}
+{{ range where $types "taxonomy_of" "ne" nil }}
   {{ $indices = $indices | append
     (dict
       "name"   (.name | default .base | default "page")

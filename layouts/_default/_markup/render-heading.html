@@ -1,18 +1,25 @@
 {{- $id     := partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
 
-{{- $class  := "" -}}
+{{- $class  := "content__heading" -}}
 {{- if (page.Params.lists.underline | and (eq .Level 2)) -}}
-  {{- $class = "underline" -}}
+  {{- $class = print $class " underline" -}}
 {{- end -}}
 {{- if (page.Params.lists.uppercase | and (eq .Level 2)) -}}
-  {{- $class = print $class "uppercase" -}}
+  {{- $class = print $class " uppercase" -}}
 {{- end -}}
 {{- with .Attributes.class -}}
-  {{- $class = print $class (replace . "." " ") -}}
+  {{- $class = print $class " " . -}}
 {{- end -}}
 
-<h{{ .Level }} class="description__heading {{ $class }}" id="{{ $id }}">
-  <a class="description__heading-link" href="#{{ $id }}">
+{{- $attrs       := "" -}}
+{{- range $k, $v := merge .Attributes (dict "id" $id "class" $class) }}
+  {{- if . }}
+    {{- $attrs    = print $attrs " " $k `="` . `"` }}
+  {{- end }}
+{{- end }}
+
+<h{{ .Level }} {{- $attrs | safeHTMLAttr }}>
+  <a class="content__heading-link" href="#{{ $id }}">
     {{- .Text | safeHTML -}}
     {{- if in $class "underline" }}<br>{{ end -}}
   </a>

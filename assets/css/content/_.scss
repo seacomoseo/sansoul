@@ -1,0 +1,37 @@
+
+.content {
+  a,
+  [data-h],
+  [data-b] {
+    &:not(.box, .button, button, .content__heading > *) {
+      @include font-base-bold;
+      line-height: $line-height-base;
+    }
+  }
+  em {
+    @include font-cursive;
+    color: var(--subtitle);
+  }
+  // strong {
+  //   color: var(--subtitle);
+  // }
+  iframe:not(.content__figure *) {
+    filter: drop-shadow($shadow);
+  }
+  :not(.button, button, li, code) > svg {
+    color: var(--main);
+  }
+  // :not(.button, button, li, .sign) > svg {
+  //   margin-right: .25em;
+  //   &:not(:first-child > :first-child) {
+  //     margin-left: .25em;
+  //   }
+  // }
+  // svg + svg {
+  //   margin-left: 0;
+  // }
+  :not(.button, button) > svg {
+    position: relative;
+    top: 0.125em;
+  }
+}

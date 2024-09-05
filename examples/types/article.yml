@@ -17,7 +17,7 @@ related: true
 
 - base: page
   name: category
-  relations:
+  taxonomy_of:
   - name: article
     multiple: true
     breadcrumbs: true
@@ -38,25 +38,25 @@ related: true
     breadcrumbs: true
 
 - base: brand
-  relations:
+  taxonomy_of:
   - name: product
     schema: brand
 
 - base: organization
   name: supplier
-  relations:
+  taxonomy_of:
   - name: product
 
 - base: organization
   name: manufacturer
   icon: 
   emoji: 
-  relations:
+  taxonomy_of:
   - name: product
     schema: manufacturer
 
 - base: author
-  relations:
+  taxonomy_of:
   - name: article
     schema: author
 
@@ -71,7 +71,7 @@ related: true
 #   disabled: null # boolean
 #   noindex: null # boolean
 #   related: null # boolean
-#   relations:
+#   taxonomy_of:
 #   - name: null # string of relation name in params
 #     multiple: null # boolean
 #     breadcrumbs: null # boolean
@@ -99,11 +99,11 @@ related: true
 #     lists: {}
 #     related: {}
 #   es:
+#     slug: null # string
+#     permalinks: null # string
 #     singular: null # string
 #     title: null # string
 #     seo: null # string
-#     slug: null # string
-#     permalinks: null # string
 #     description: null # string
 #     hint: null # string
 #     image: null # string image path

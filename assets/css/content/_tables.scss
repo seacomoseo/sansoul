@@ -1,0 +1,73 @@
+.content {
+
+
+  // Table inner
+
+  .table-inner {
+    display: flex;
+    justify-content: center;
+  }
+
+
+  // Table
+
+  table {
+    margin-bottom: 1em;
+    @if not $chamfer or $radius <= .01 {
+      filter: drop-shadow($shadow);
+    }
+    &:not(.table-sm, .container.bg *, .boxes *) {
+      @include fluid-size(max-width, 1px, $screen-min / 1px, $container-width-max-xl / 1px);
+      margin-inline: calc(var(--container-margin-side) + 2em);
+    }
+  }
+}
+
+// Aligns
+
+.align-center table,
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.align-right table,
+table.align-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+@media (min-width: $screen-xl) {
+  .align--xl-center {
+    table {
+      margin-left: auto;
+    }
+  }
+  .align--xl-right {
+    table {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+}
+
+// Compare
+
+/*! purgecss start ignore */
+.compare {
+  [href="/draws.svg#xmark"] {
+    color: red;
+    fill: red;
+  }
+  [href="/draws.svg#check"] {
+    color: green;
+    fill: green;
+  }
+}
+/*! purgecss end ignore */
+
+.compare {
+  td, th {
+    &:not(:first-child) {
+      text-align: center;
+    }
+  }
+}

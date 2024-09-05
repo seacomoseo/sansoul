@@ -8,7 +8,7 @@
 
 {{ $relations  := slice }}
 {{ range site.Sections }}
-  {{ range .Params.relations_from }}
+  {{ range .Params.taxonomies }}
     {{ $relations = $relations | append (dict "name" .name "multiple" .multiple) }}
   {{ end }}
   {{ with in (slice "article" "event") .Params.base }}
@@ -16,11 +16,17 @@
   {{ end }}
 {{ end }}
 {{ range uniq $relations }}
+  {{ $page   := site.GetPage .name }}
+  {{ $cms    := $page.Params.cms }}
+  {{ $label  := $cms.singular }}
+  {{ if .multiple }}
+    {{ $label = $cms.title }}
+  {{ end }}
   {{ $list_fields = $list_fields | append (dict
     "name"           .name
     "widget"         `relation`
     "required"       false
-    "label"          (site.GetPage .name).Params.cms.title
+    "label"          $label
     "hint"           (print "[" $t.types_params_relations_hint "](#/collections/" .name ")")
     "i18n"           `duplicate`
     "options_length" 100
@@ -84,7 +90,7 @@
     "fields"         (slice
       `~BOX_TITLE`
       `~BOX_SUBTITLE`
-      `~BOX_DESCRIPTION`
+      `~BOX_CONTENT`
       `~BOX_ICON_ID`
       `~BOX_IMAGE_NO_VIDEO`
     )
@@ -166,7 +172,7 @@
     "fields"         (slice
       `~BOX_ICON_ID`
       `~BOX_TITLE`
-      `~BOX_DESCRIPTION`
+      `~BOX_CONTENT`
     )
   ))
 
@@ -214,7 +220,7 @@
       `~BOX_TITLE`
       `~BOX_SUBTITLE`
       `~BOX_IMAGE_NO_VIDEO`
-      `~BOX_DESCRIPTION`
+      `~BOX_CONTENT`
     )
   ))
 
@@ -314,7 +320,7 @@
       (dict "name" `h4`          "widget" `object` "required" false "label" $t.box_form_inputs_h4                                               "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
       (dict "name" `h5`          "widget" `object` "required" false "label" $t.box_form_inputs_h5                                               "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
       (dict "name" `h6`          "widget" `object` "required" false "label" $t.box_form_inputs_h6                                               "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
-      (dict "name" `description` "widget" `object` "required" false "label" $t.box_form_inputs_description                                      "fields" (slice (dict "label" $t.box_contact_label "name" `name` "widget" `markdown` "show_raw" true) `~BOX_CONTACT_FULL`))
+      (dict "name" `description` "widget" `object` "required" false "label" $t.box_form_inputs_content                                          "fields" (slice (dict "label" $t.box_contact_label "name" `name` "widget" `markdown` "show_raw" true) `~BOX_CONTACT_FULL`))
     )
   ))
 

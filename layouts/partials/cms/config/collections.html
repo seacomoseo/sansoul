@@ -40,7 +40,7 @@
       {{ $sortable_fields = $sortable_fields       | append .name }}
     {{ end }}
   {{ end }}
-  {{ with .Params.relations_from }}
+  {{ with .Params.taxonomies }}
     {{ range . }}
       {{ $sortable_fields = $sortable_fields       | append .name }}
     {{ end }}
@@ -58,7 +58,7 @@
     (dict   "name" `noindex` "label" `NoIndex`        "field" `noindex`)
     (dict   "name" `drafts`  "label" $t.filter_drafts "field" `draft`)
   }}
-  {{ with .Params.relations_from }}
+  {{ with .Params.taxonomies }}
     {{ range . }}
       {{ $label := (site.GetPage .name).Params.cms.title }}
       {{ $groups = $groups | append
@@ -124,7 +124,7 @@
       `~P_PRICE`
     }}
   {{ end }}
-  {{ range (.Params.customs | default slice) | append (.Params.relations_from | default slice) }}
+  {{ range (.Params.customs | default slice) | append (.Params.taxonomies | default slice) }}
     {{ $type        := .type | default "relation" }}
     {{ $value_type  := "" }}
     {{ if in (slice "int" "float") .type }}
@@ -139,7 +139,12 @@
     {{ $label  := $lang.label | default .name }}
     {{ $hint   := $lang.hint }}
     {{ if not .type }}
-      {{ $label = (site.GetPage .name).Params.cms.title }}
+      {{ $page   := site.GetPage .name }}
+      {{ $cms    := $page.Params.cms }}
+      {{ $label   = $cms.singular }}
+      {{ if .multiple }}
+        {{ $label = $cms.title }}
+      {{ end }}
       {{ $hint  = print "[" $t.types_params_relations_hint "](#/collections/" .name ")" }}
     {{ end }}
 

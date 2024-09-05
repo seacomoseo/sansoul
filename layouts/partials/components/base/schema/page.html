@@ -12,7 +12,7 @@
 {{ if eq page.Permalink .Permalink }}
 
   {{/*  Children  */}}
-  {{ $children := partial "functions/relations-child" . }}
+  {{ $children := partial "functions/taxonomy-children" . }}
 
   {{/*  Type and hasPart  */}}
   {{ with $children }}

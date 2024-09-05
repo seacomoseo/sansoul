@@ -12,13 +12,13 @@
 {{/*  Organization  */}}
 {{ $organization := partial "components/base/schema/organization-id" . }}
 
-{{/*  People and Taxonomies  */}}
-{{ $authors    := slice }}
-{{ $taxonomies := slice }}
-{{ $parents    := partial "functions/relations-parent" . }}
-{{ range $parents }}
+{{/*  Authors and ArticleSections  */}}
+{{ $authors      := slice }}
+{{ $art_sections := slice }}
+{{ $taxonomies   := partial "functions/taxonomy-parents" . }}
+{{ range $taxonomies }}
   {{ $page := . }}
-  {{ range .Params.relations_to }}
+  {{ range .Params.taxonomy_of }}
     {{ $is_same_type   := eq page.Type .name }}
     {{ $is_same_schema := in (slice "author" "articleSection") .schema }}
     {{ if and $is_same_type $is_same_schema }}
@@ -27,7 +27,7 @@
         {{ $item   := partial (print "components/base/schema/" $type) $page }}
         {{ $authors = $authors | append $item }}
       {{ else if eq .schema "articleSection" }}
-        {{ $taxonomies = $taxonomies | append $page.Title }}
+        {{ $art_sections = $art_sections | append $page.Title }}
       {{ end }}
     {{ end }}
   {{ end }}
@@ -51,7 +51,7 @@
   "image"            (dict "@id" (print .Permalink "#schema-image"))
   "publisher"        $organization
   "author"           $authors
-  "articleSection"   $taxonomies
+  "articleSection"   $art_sections
 }}
 {{ $schema = partial "functions/schema-obj" $schema }}
 

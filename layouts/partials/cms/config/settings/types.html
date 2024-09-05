@@ -14,7 +14,7 @@
   `~SETTINGS_TYPES_DISABLED`
   `~P_NOINDEX`
   `~SETTINGS_TYPES_RELATED`
-  `~SETTINGS_TYPES_RELATIONS`
+  `~SETTINGS_TYPES_TAXONOMY_OF`
   `~SETTINGS_TYPES_PARAMS`
   `~SETTINGS_TYPES_TEMPLATE`
 }}
@@ -92,17 +92,16 @@
   ))
 
 
-  (dict "&SETTINGS_TYPES_BASE"      (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
-  (dict "&SETTINGS_TYPES_NAME"      (dict "name" `name`        "widget" `string`  "required" false "label" $t.types_name "hint" (print $t.types_name_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, organization, service, page, section**")))
-  (dict "&SETTINGS_TYPES_EMOJI"     (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_emoji))
-  (dict "&SETTINGS_TYPES_DISABLED"  (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled))
-  (dict "&SETTINGS_TYPES_RELATED"   (dict "name" `related`     "widget" `boolean` "required" false "label" $t.types_related))
-  (dict "&SETTINGS_TYPES_RELATIONS" (dict
-    "name"           `relations`
+  (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
+  (dict "&SETTINGS_TYPES_NAME"        (dict "name" `name`        "widget" `string`  "required" false "label" $t.types_name "hint" (print $t.types_name_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, organization, service, page, section**")))
+  (dict "&SETTINGS_TYPES_EMOJI"       (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_emoji))
+  (dict "&SETTINGS_TYPES_DISABLED"    (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled))
+  (dict "&SETTINGS_TYPES_RELATED"     (dict "name" `related`     "widget" `boolean` "required" false "label" $t.types_related))
+  (dict "&SETTINGS_TYPES_TAXONOMY_OF" (dict
+    "name"           `taxonomy_of`
     "widget"         `list`
     "required"       false
-    "label"          $t.types_relations
-    "label_singular" $t.types_relations_singular
+    "label"          $t.types_taxonomy_of
     "collapsed"      true
     "summary"        "{{fields.lang}}"
     "allow_add"      true

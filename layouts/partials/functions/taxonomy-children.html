@@ -10,14 +10,14 @@
 
 {{ else }}
 
-  {{/*  Each relation  */}}
-  {{ range .Params.relations_to }}
+  {{/*  Each taxonomy  */}}
+  {{ range .Params.taxonomy_of }}
     {{/*  Parent  */}}
     {{ with site.GetPage .name }}
       {{/*  Each child  */}}
       {{ range .Pages }}
         {{ $page := . }}
-        {{/*  Value of param with key name like relation  */}}
+        {{/*  Value of param with key name like taxonomy  */}}
         {{ with index .Params page.Type }}
           {{ $rel := . }}
           {{ with $rel }}
@@ -25,9 +25,9 @@
             {{ if not (reflect.IsSlice .) }}
               {{ $rel = slice . }}
             {{ end }}
-            {{/*  Each filename relation  */}}
+            {{/*  Each filename taxonomy  */}}
             {{ range $rel }}
-              {{/*  If filename relation is eq of self filename  */}}
+              {{/*  If filename taxonomy is eq of self filename  */}}
               {{ if eq . page.File.TranslationBaseName }}
                 {{/*  Append child  */}}
                 {{ $children = $children | append $page }}

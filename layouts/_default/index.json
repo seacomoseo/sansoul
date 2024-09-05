@@ -19,11 +19,11 @@
         {{- $contents = "" -}}
         {{- range partial "functions/sections" . -}}
           {{- range partial "functions/section-searchable" . -}}
-            {{- with .title       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-            {{- with .hanchor     }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-            {{- with .subtitle    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-            {{- with .description }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
-            {{- with .label       }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .title    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .hanchor  }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .subtitle }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .content  }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
+            {{- with .label    }}{{ $contents = print $contents " \n\n " . }}{{ end -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
@@ -32,10 +32,10 @@
       {{- $summary := dict
         "title"         .Title
         "link"          .RelPermalink
-        "description"   ((.Description | default .Plain) | markdownify | htmlUnescape | plainify | truncate 155)
+        "summary"       ((.Description | default .Plain) | markdownify | htmlUnescape | plainify | truncate 155)
         "date"          (partial "functions/date" (dict "date" .Lastmod    "type" .Type))
         "end"           (partial "functions/date" (dict "date" .Params.end "type" .Type))
-        "contents"      $contents
+        "content"       $contents
         "image"         $image
         "reading_time"  (i18n "reading_time" .ReadingTime)
         "type"          .Type

@@ -2,7 +2,7 @@
 {{ $brand        := "" }}
 {{ $manufacturer := "" }}
 {{ $man_org_type := "" }}
-{{ range .Params.relations_from }}
+{{ range .Params.taxonomies }}
   {{ if eq .schema "brand" }}
     {{ with site.GetPage .name (index $.Params .name) }}
       {{ $brand = partial "components/base/schema/brand" . }}

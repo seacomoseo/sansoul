@@ -16,11 +16,11 @@
   {{ else if eq . "comments" }}
     {{ $if = site.Params.disqus }}
   {{ else if eq . "children" }}
-    {{ $if = or $.Page.IsSection $.Page.Params.relations_to }}
+    {{ $if = or $.Page.IsSection $.Page.Params.taxonomy_of }}
   {{ else if eq . "root" }}
     {{ $if = $.Page.IsSection }}
   {{ else if eq . "parent" }}
-    {{ $is_parent   := $.Page.Params.relations_to }}
+    {{ $is_parent   := $.Page.Params.taxonomy_of }}
     {{ $is_not_root := not $.Page.IsSection }}
     {{ $if = and $is_parent $is_not_root }}
   {{ else }}

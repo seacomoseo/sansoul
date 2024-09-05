@@ -13,8 +13,8 @@
             {{- partial "components/icon" (dict "class" "collapsible__button-icon" "icon" "plus") -}}
           </button>
         </h{{ $hn }}>
-        <div class="collapsible__description collapsible__target description" hidden="until-found">
-          {{- with .description -}}
+        <div class="collapsible__content collapsible__target content" hidden="until-found">
+          {{- with .content -}}
             {{- partial "functions/md" (dict "content" . "not_header_links" true) -}}
           {{- end -}}
         </div>
@@ -30,7 +30,7 @@
     "name"  .title
     "acceptedAnswer" (dict
       "@type" `Answer`
-      "text"  (.description | markdownify | plainify)
+      "text"  (.content | markdownify | plainify)
     )
   ) -}}
 {{- end -}}

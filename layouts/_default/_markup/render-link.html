@@ -1,4 +1,3 @@
-
 {{- $label    := .Text  | replaceRE `^btn[\w-:]* `                "" -}}
 {{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` "" -}}
 {{- $noindex  := cond (strings.HasPrefix .Title "nofollow") true nil -}}

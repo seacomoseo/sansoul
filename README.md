@@ -304,6 +304,7 @@
       - [x] `icon-*` > `icon:*`
       - [x] `btn-*` > `btn:*`
       - [x] `config..langs.*.legal` > `content.*/_index.md`
+      - [x] `(section|modal)/description:` > `$1/content:`
       - [ ] Fix purge css
       - [ ] Box `data`
       - [ ] Types from file to dir

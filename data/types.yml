@@ -38,7 +38,7 @@ _:
 
 - base: page
   name: category
-  relations:
+  taxonomy_of:
   - name: article
     multiple: true
     breadcrumbs: true
@@ -59,25 +59,25 @@ _:
     breadcrumbs: true
 
 - base: brand
-  relations:
+  taxonomy_of:
   - name: product
     schema: brand
 
 - base: organization
   name: supplier
-  relations:
+  taxonomy_of:
   - name: product
 
 - base: organization
   name: manufacturer
   icon: 
   emoji: 
-  relations:
+  taxonomy_of:
   - name: product
     schema: manufacturer
 
 - base: author
-  relations:
+  taxonomy_of:
   - name: article
     schema: author
 
@@ -92,7 +92,7 @@ _:
 #   disabled: null # boolean
 #   noindex: null # boolean
 #   related: null # boolean
-#   relations:
+#   taxonomy_of:
 #   - name: null # string of relation name in params
 #     multiple: null # boolean
 #     breadcrumbs: null # boolean

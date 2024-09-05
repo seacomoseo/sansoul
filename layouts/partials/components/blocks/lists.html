@@ -39,16 +39,16 @@
     }}
   {{ else }}
     {{/*  PAGE RESTS  */}}
-    {{/*  All relations  */}}
-    {{ $relations  := slice }}
+    {{/*  All taxonomies  */}}
+    {{ $taxonomies  := slice }}
     {{ range site.Sections }}
-      {{ range .Params.relations_from }}
-        {{ $relations = $relations | append . }}
+      {{ range .Params.taxonomies }}
+        {{ $taxonomies = $taxonomies | append . }}
       {{ end }}
     {{ end }}
-    {{/*  Filter by relations  */}}
-    {{/*  {{ range $parent.Params.relations_from }}  */}}
-    {{ range uniq $relations }}
+    {{/*  Filter by taxonomies  */}}
+    {{/*  {{ range $parent.Params.taxonomies }}  */}}
+    {{ range uniq $taxonomies }}
       {{ $filenames := index $list .name }}
       {{ if $filenames }}
         {{ if .multiple }}
@@ -96,15 +96,15 @@
     {{/*  PAGES TO BOXES  */}}
     {{- $boxes   := slice -}}
     {{- range $firsts_pages -}}
-      {{- $desc  := .Summary | default .Description | truncate 155 | plainify -}}
-      {{- $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
-      {{- $page  := merge .Params (dict
-        "Page"        .
-        "link"        .RelPermalink
-        "description" $desc
-        "price"       $price
-        "icon"        ""
-        "social"      ""
+      {{- $content := .Summary | default .Description | truncate 155 | plainify -}}
+      {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
+      {{- $page    := merge .Params (dict
+        "Page"    .
+        "link"    .RelPermalink
+        "contetn" $content
+        "price"   $price
+        "icon"    ""
+        "social"  ""
       ) -}}
       {{- $boxes = $boxes | append $page -}}
     {{- end -}}

@@ -32,18 +32,16 @@
   | replaceRE `(?s)<li><div>(\n|<p>)*(<svg>.+?</svg>) ` `<li class="li-svg">$2<div>$1`
   | replaceRE `</li>` `</div></li>`
   | replaceRE `(?s)<p><figure(.+?)</figure></p>` `<figure$1</figure>`
-  | replaceRE `(?s)<table(.+?)</table>` `<div class="table-inner"><table$1</table></div>`
-  | replaceRE `<table class="` `<table class="bg-light `
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`
 }}
 
 {{ if .not_header_links }}
   {{ $content = $content
-    | replaceRE `(?s)(class="description__heading .*?") id=".*?">[\s\S\n]*?<a .*?"(>.*?)</a>` `$1$2`
+    | replaceRE `(?s)(class="content__heading .*?") id=".*?">.*?<a .*?"(>.*?)</a>` `$1$2`
   }}
 {{ else }}
   {{ $content = $content
-    | replaceRE `(?s)(<a class="description__heading-link".+?)<br>(</a>)` `$1$2`
+    | replaceRE `(?s)(<a class="content__heading-link".+?)<br>(</a>)` `$1$2`
   }}
 {{ end }}
 

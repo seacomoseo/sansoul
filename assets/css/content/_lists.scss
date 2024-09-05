@@ -1,0 +1,157 @@
+.content {
+
+
+  // All
+
+  ul, ol {
+    display: table;
+    text-align: left;
+    padding: 0;
+    margin: 0 auto 1em;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    p {
+      margin: 0;
+    }
+    > li{
+      display: table-row;
+      > * {
+        display: table-cell;
+        // text-align: right;
+      }
+      &:before,
+      > svg {
+        color: var(--main);
+        font-size: 1.2em;
+      }
+      &:before {
+        @include font-base-bold;
+        content: "\2014";
+      }
+      &.li-svg:before {
+        content: "";
+      }
+      > div {
+        padding-top: .75em;
+        padding-left: .5em;
+      }
+      &:first-child > div {
+        padding-top: 0;
+      }
+    }
+    ul, ol {
+      > li:first-child > div {
+        padding-top: .75em;
+      }
+    }
+  }
+
+
+  // Ordered
+
+  ol {
+    counter-reset: item calc(var(--item, 1) - 1);
+    > li{
+      &:before {
+        content: counter(item) ". ";
+        counter-increment: item;
+        white-space: nowrap;
+      }
+    }
+  }
+
+
+  // List inline
+
+  .list-inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+    li {
+      display: flex;
+      gap: .25em;
+      line-height: 1.25;
+      &:before {
+        content: none;
+      }
+      > svg {
+        top: 0;
+      }
+      > div {
+        padding: 0;
+      }
+    }
+  }
+
+
+  // Definitions
+
+  dt, dd {
+    &:not(:last-child) {
+      margin-bottom: .75em;
+    }
+  }
+}
+
+
+// Aligns
+
+.align-left ul,
+.align-left ol,
+ul.align-left,
+ol.align-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+ul.align-center,
+ol.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.align-right ul,
+.align-right ol,
+ul.align-right,
+ol.align-right {
+  margin-left: auto;
+  margin-right: 0;
+  direction: rtl;
+  text-align: right;
+  > li {
+    direction: ltr;
+    > div {
+      padding-left: 0;
+      padding-right: .75em;
+    }
+  }
+}
+// Fix in page sections
+.align-right .content {
+  ul, ol {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+@media (min-width: $screen-xl) {
+  .align--xl-left {
+    ul, ol {
+      margin-left: 0;
+    }
+  }
+  .align--xl-right {
+    ul, ol {
+      direction: rtl;
+      text-align: right;
+      margin-left: auto;
+      margin-right: 0;
+      > li {
+        direction: ltr;
+        > div {
+          padding-left: 0;
+          padding-right: .75em;
+        }
+      }
+    }
+  }
+}

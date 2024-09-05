@@ -170,13 +170,13 @@
       </div>
     {{- end -}}
 
-    {{/*  DESCRIPTION  */}}
-    {{- if not .hide_description -}}
-      {{- with .description -}}
+    {{/*  CONTENT  */}}
+    {{- if not .hide_content -}}
+      {{- with .content -}}
         {{- $desc_align  := cond (and (not $align) $main (not $header) (or (eq $size "xs") (eq $size "sm"))) " align-left" "" -}}
-        {{- $desc_class  := print "box__description description" $desc_align -}}
+        {{- $desc_class  := print "box__content content" $desc_align -}}
         {{- if $like_article -}}
-          {{- $desc_class = print $desc_class " box__description--small" -}}
+          {{- $desc_class = print $desc_class " box__content--small" -}}
         {{- end -}}
         <div class="{{ $desc_class }}">
           {{/* <div class="float"></div><div class="float float--r"></div> */}}
@@ -284,7 +284,6 @@
         .
         (dict
           "level"   $level
-          "first"   (eq .key 0)
           "span_xl" $span_xl
           "span_xs" $span_xs
         )

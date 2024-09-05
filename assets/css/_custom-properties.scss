@@ -1,0 +1,109 @@
+:root {
+  color-scheme: light dark;
+  // scrollbar
+  scrollbar-width: thin;
+  scrollbar-color:
+    light-dark(rgba(186, 186, 192, .75),  rgba(31, 32, 32, .75))
+    light-dark(rgba(186, 186, 192, .125), rgba(31, 32, 32, .125));
+  // divider
+  --divider-height: min(12.5cqw, 5.5em);
+  // duotone
+  --dt-main: currentColor;
+  --dt-main-op: 1;
+  --dt-alt: currentColor;
+  --dt-alt-op: .5;
+  // form
+  --form-control-color: var(--alt);
+  --form-control-disabled: #959495;
+  // outline
+  --outline: #{ $menu-bar-double };
+  // screen width
+  --vw-min: #{ $screen-min / 1px };
+  --vw-max: #{ $screen-max / 1px };
+  --vw: #{ $screen-min / 1px };
+  @media (min-width: $screen-xs) { --vw: #{ $screen-xs / 1px }; }
+  @media (min-width: $screen-sm) { --vw: #{ $screen-sm / 1px }; }
+  @media (min-width: $screen-md) { --vw: #{ $screen-md / 1px }; }
+  @media (min-width: $screen-lg) { --vw: #{ $screen-lg / 1px }; }
+  @media (min-width: $screen-xl) { --vw: #{ $screen-xl / 1px }; }
+  --run: calc(var(--vw-max) - var(--vw-min));
+}
+
+// EXTENDS LIKE FUNCTIONS
+@if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
+  %radius,
+  .body-menu--sticky .menu__subitems {
+    // radius
+    --radius: #{ $radius };
+    --radius-padding: 0em;
+    @if $chamfer {
+      --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
+    --radius-top: var(--radius-calc);
+    --radius-bottom: var(--radius-calc);
+    @if $chamfer {
+      --radius-calc: calc((((var(--radius) + var(--radius-padding)) / .7071) - var(--radius-padding)) * .7071);
+      --chamfer: polygon(
+        var(--radius-top) 0%,
+        calc(100% - var(--radius-top)) 0%,
+        100% var(--radius-top),
+        100% calc(100% - var(--radius-bottom)),
+        calc(100% - var(--radius-bottom)) 100%,
+        var(--radius-bottom) 100%,
+        0% calc(100% - var(--radius-bottom)),
+        0% var(--radius-top)
+      );
+      // Outline
+      --radius-outline: calc((((var(--radius) + var(--outline)) / .7071) - var(--outline)) * .7071);
+      --chamfer-outline: polygon(
+        var(--radius) 0%,
+        calc(100% - var(--radius)) 0%,
+        100% var(--radius),
+        100% calc(100% - var(--radius)),
+        calc(100% - var(--radius)) 100%,
+        var(--radius) 100%,
+        0% calc(100% - var(--radius)),
+        0% var(--radius)
+        ,
+        var(--radius) 0%
+        ,
+        var(--radius-outline) var(--outline),
+        var(--outline) var(--radius-outline),
+        var(--outline) calc(100% - var(--radius-outline)),
+        var(--radius-outline) calc(100% - var(--outline)),
+        calc(100% - var(--radius-outline)) calc(100% - var(--outline)),
+        calc(100% - var(--outline)) calc(100% - var(--radius-outline)),
+        calc(100% - var(--outline)) var(--radius-outline),
+        calc(100% - var(--radius-outline)) var(--outline)
+        ,
+        var(--radius-outline) var(--outline)
+      );
+      --chamfer-int-outline: polygon(
+        var(--radius-outline) var(--outline),
+        var(--outline) var(--radius-outline),
+        var(--outline) calc(100% - var(--radius-outline)),
+        var(--radius-outline) calc(100% - var(--outline)),
+        calc(100% - var(--radius-outline)) calc(100% - var(--outline)),
+        calc(100% - var(--outline)) calc(100% - var(--radius-outline)),
+        calc(100% - var(--outline)) var(--radius-outline),
+        calc(100% - var(--radius-outline)) var(--outline)
+      );
+      --outline-diamond: calc(var(--outline) / .7071);
+      --diamond-outline: polygon(
+        50% 0%, 100% 50%, 50% 100%, 0% 50%
+        ,
+        50% 0%
+        ,
+        50% var(--outline-diamond),
+        var(--outline-diamond) 50%,
+        50% calc(100% - var(--outline-diamond)),
+        calc(100% - var(--outline-diamond)) 50%
+        ,
+        50% var(--outline-diamond)
+      );
+    } @else {
+      --radius-calc: calc(var(--radius) + var(--radius-padding));
+      --radius-end: var(--radius-top) var(--radius-top) var(--radius-bottom) var(--radius-bottom);
+    }
+  }
+}

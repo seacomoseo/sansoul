@@ -1,0 +1,46 @@
+// Link
+
+.content__heading-link {
+  color: inherit;
+}
+
+
+// Underline
+
+.content__heading.underline {
+  margin-bottom: 0;
+  .content__heading-link {
+    display: block;
+  }
+  &:after {
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    top: -0.625em;
+  }
+}
+
+
+// Subtitle next title
+
+.title + .subtitle {
+  margin-top: -.75rem;
+}
+
+
+// HN
+
+.content {
+  h2, h3, h4, h5, h6 {
+    &:not(:first-child) {
+      margin-top: 2em;
+    }
+  }
+}
+
+
+// Sitemap
+
+.sitemap-header-link:not([aux]) {
+  color: inherit;
+}
