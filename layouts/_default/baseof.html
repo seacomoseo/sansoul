@@ -22,9 +22,16 @@
   {{/*  BODY ID  */}}
   {{- $body_id := "" -}}
   {{- if .IsHome -}}
-    {{- $body_id = .Slug -}}
+    {{- $body_id = "home" -}}
+  {{- else if .IsSection -}}
+    {{- $body_id = .Type -}}
+  {{- else if eq .Kind "404" -}}
+    {{- $body_id = 404 -}}
   {{- else -}}
-    {{- $body_id = .RelPermalink | replaceRE `^/|/$|\.html` `` | replaceRE `/` `-` -}}
+    {{- $body_id = .File.TranslationBaseName -}}
+    {{- if ne .Type "single" -}}
+      {{- $body_id = print .Type "-" $body_id -}}
+    {{- end -}}
   {{- end -}}
   {{- $body_id = print "body-" $body_id -}}
 

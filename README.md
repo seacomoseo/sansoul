@@ -278,33 +278,18 @@
       - [x] `cms/config/box`
       - [x] CMS language by config
       - [x] `data.langs` > `data.config.langs` and all params in `data.config` (less `favicon`, `cms` and hidden) > `data.config.langs`
-      - [x] Translate CMS
-      - [x] New `de`, `it` and `pt` translates
-      - [x] Cookies small
-      - [x] Fix slider
-      - [x] Fix lightbox
-      - [x] Fix purgecss
-      - [x] Images src sizes
-      - [x] `data.config.langs.[lang].types` in `data.types`
-      - [x] Remove `site.Data.list`
-      - [x] New `brand` schema
-      - [x] Remove `taxonomy` base
+      - [x] `data.list` > `data.template.lists`
       - [x] root directories in singular
-      - [x] Remove `T` in `date`, `lastmod` and `end`
-      - [x] Filter `list` by `date`
-      - [x] `title_seo` > `seo`
-      - [x] `menu.google_translate` > `config.langs.lang.google_translate`
-      - [x] `types.all` > `template.cascade`
-      - [x] `types.customs` > `_`
-      - [x] Fix logo
-      - [x] Fix callnow
-      - [x] 404
       - [x] `categories` params > `category`
       - [x] `authors` params > `author`
+      - [x] `title_seo` > `seo`
+      - [x] Remove `T` in `date`, `lastmod` and `end`
+      - [x] `menu.google_translate` > `config.langs.lang.google_translate`
       - [x] `icon-*` > `icon:*`
       - [x] `btn-*` > `btn:*`
       - [x] `config..langs.*.legal` > `content.*/_index.md`
       - [x] `(section|modal)/description:` > `$1/content:`
+      - [x] `#body-RelPermalink` > `#body-Type-Filename` (`body-inicio` > `body-home`)
       - [ ] Fix purge css
       - [ ] Box `data`
       - [ ] Types from file to dir
