@@ -198,7 +198,7 @@ elif [ $1 = css-purge ]
 then
 
   echo "${STI} CSS PURGE ${STE}"
-  node ./themes/sansoul/css-purge.js
+  # node ./themes/sansoul/css-purge.js
 
 # Check yaml error of Static CMS
 elif [ $1 = yml ]

@@ -37,8 +37,13 @@
   ) }}
 
 
-  {{/*  ATTRIBUTES  */}}
-  {{- $attr := print $class $style -}}
+  {{/*  JOIN ATTRIBUTES  */}}
+  {{ $attr := partial "functions/attr-delimit" (dict
+  "array" (slice
+    $class
+    $style
+  )
+  ) }}
 
   <div {{ $attr | safeHTMLAttr }}>
     {{- if partial `functions/is-iframe` .bg -}}
