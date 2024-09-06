@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# variables
+# Variables
 PROYECT="${PWD##*/}"
 STI="\033[7;37m"
 STE="\033[0m"
 
 # COMMANDS FOR PROJECTS
 
-# upload with date now
+# Upload with date now
 if [ $1 = up ]
 then
 
@@ -22,7 +22,7 @@ then
   echo "${STI} PUSH ${STE}"
   git push
 
-# upload submodule changes with date now
+# Upload submodule changes with date now
 elif [ $1 = sup ]
 then
 
@@ -50,7 +50,7 @@ then
   echo "${STI} GO PROJECT ${STE}"
   cd ../..
 
-# pull of repository and update the submodules
+# Pull of repository and update the submodules
 elif [ $1 = down ]
 then
 
@@ -62,21 +62,21 @@ then
   echo "${STI} SUBMODULE UPDATE ${STE}"
   git submodule update --recursive --remote
 
-# pull of repository and update the submodules
+# Pull of repository and update the submodules
 elif [ $1 = du ]
 then
 
   sh do down
   sh do up
 
-# hugo server with theme config
+# Hugo server with theme config
 elif [ $1 = rm-public ]
 then
 
   echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
   rm -r public
 
-# hugo server with theme config
+# Hugo server with theme config
 elif [ $1 = server ]
 then
 
@@ -86,14 +86,14 @@ then
   echo "${STI} HUGO SERVER ${STE}"
   hugo server --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml
 
-# create woff2 and scss by font files
+# Create woff2 and scss by font files
 elif [ $1 = normalize ]
 then
 
   echo "${STI} NORMALIZE YAML AND MARKDOWN FILES ${STE}"
   python3 ../_tools/others/yaml-normalize.py
 
-# create woff2 and scss by font files
+# Create woff2 and scss by font files
 elif [ $1 = fonts ]
 then
 
@@ -162,7 +162,7 @@ then
     fi
   done
 
-# remove binary files from history
+# Remove binary files from history
 elif [ $1 = clean ]
 then
 
@@ -193,20 +193,46 @@ then
 
 # COMMANDS FOR DEPLOY
 
-# like purge css
+# Like purge CSS
 elif [ $1 = css-purge ]
 then
 
   echo "${STI} CSS PURGE ${STE}"
   node ./themes/sansoul/css-purge.js
 
-# like purge css
+# Check yaml error of Static CMS
 elif [ $1 = yml ]
 then
 
-  time node ./themes/sansoul/check-yaml.js
+  cd ../_tools
+  node others/check-yaml.js $PROYECT
+  cd ../$PROYECT
 
-# purge svg draws for online (when up to git)
+# Get data of place by Google API
+elif [ $1 = places ]
+then
+
+  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
+  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+  cd ../_tools
+  for LANG in $LANGS; do
+    node others/fetch-place.js $PROYECT $COLOR $LANG $2
+  done
+  cd ../$PROYECT
+
+# Scrap reviews by Google Maps
+elif [ $1 = reviews ]
+then
+
+  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
+  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+  cd ../_tools
+  for LANG in $LANGS; do
+    node others/scrape-reviews.js $PROYECT $LANG $2
+  done
+  cd ../$PROYECT
+
+# Purge svg draws for online (when up to git)
 elif [ $1 = draws-purge ]
 then
 
@@ -238,7 +264,7 @@ then
   # Delete temporary files
   rm ${TEMP} ${IDSF}
 
-# enter in to prebuild folder, build hugo and go back
+# Enter in to prebuild folder, build hugo and go back
 elif [ $1 = prebuild ]
 then
 
@@ -256,7 +282,7 @@ then
   echo "${STI} GO PROJECT ${STE}"
   cd ../../..
 
-# # if multilang, copy 404 file in root
+# # If multilang, copy 404 file in root
 # elif [ $1 = multilang ]
 # then
 
@@ -268,7 +294,7 @@ then
 #     cp ./public/${lang}/404.html ./public/
 #   fi
 
-# hugo build as developement environement
+# Hugo build as developement environement
 elif [ $1 = hugo-development ]
 then
 
@@ -281,7 +307,7 @@ then
   echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml
 
-# hugo build as production environement
+# Hugo build as production environement
 elif [ $1 = hugo-production ]
 then
 
@@ -299,7 +325,7 @@ then
   sh do draws-purge
   # sh do multilang
 
-# hugo check environement
+# Hugo check environement
 elif [ $1 = hugo ]
 then
 
@@ -312,7 +338,7 @@ then
     sh do hugo-production
   fi
 
-# cms + hugo local
+# CMS + hugo local
 elif [ $1 = local ]
 then
 

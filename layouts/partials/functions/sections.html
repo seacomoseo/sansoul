@@ -49,7 +49,7 @@
       {{ with partial "functions/section-by-file" (dict "file" .file "type" "modal") }}
         {{ $modals = $modals | append
           (merge
-            ($params.modals  | default dict)
+            ($params.modal  | default dict)
             .
             $modal
             (dict

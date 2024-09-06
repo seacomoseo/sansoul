@@ -64,6 +64,9 @@
 
     {{/*  CLASS  */}}
     {{- $menu_class := print "menu bg bg-" (.color | default "white") -}}
+    {{ if .gradient }}
+      {{ $menu_class = print $menu_class " bg-gradient-" .gradient " bg-gradient-" (.gradient_type | default "linear-b") }}
+    {{ end }}
     {{- $box_class  := "" -}}
     {{ if .sticky }}
       {{- $box_class = print "container container--" (.size | default "lg") -}}

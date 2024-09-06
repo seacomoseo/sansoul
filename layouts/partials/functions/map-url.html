@@ -1,1 +1,9 @@
-{{ return print "https://maps.google.com/maps?q=" (. | replaceRE "<nil>" "" | urlquery) }}
+{{ $return := "" }}
+
+{{ if strings.HasPrefix . "http" }}
+  {{ $return = . }}
+{{ else }}
+  {{ $return = print "https://maps.google.com/maps?q=" (. | replaceRE "<nil>" "" | urlquery) }}
+{{ end }}
+
+{{ return $return }}

@@ -221,6 +221,8 @@
       `~BOX_SUBTITLE`
       `~BOX_IMAGE_NO_VIDEO`
       `~BOX_CONTENT`
+      `~BOX_REVIEW_RATING`
+      (dict "name" `date` "widget" `datetime` "required" false "label" $t.p_date "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`)
     )
   ))
 
@@ -325,6 +327,16 @@
   ))
 
 
-  (dict "&BOX_MAP" (dict "name" `map` "widget" `string` "required" false "label" $t.box_map "hint" $t.box_map_hint))
+  (dict "&BOX_MAP" (dict
+    "name"           `map`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.box_map
+    "collapsed"      true
+    "fields"         (slice
+      (dict "<<" (slice (dict "hint" "") `~BOX_IMAGE_SRC`))
+      (dict "name" `anchor` "widget" `string` "required" false "label" $t.box_map_anchor "hint" $t.box_map_anchor_hint)
+    )
+  ))
 
 }}

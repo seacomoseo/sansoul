@@ -13,18 +13,23 @@
   {{ $rating := .rating  | default 5 }}
   {{ $ratings = $ratings | append $rating }}
   {{ $sum     = add $sum $rating }}
-  {{ $schemas = $schemas | append (dict
-    "@type"        "Review"
-    "author"       (dict
-      "@type"       "Person"
-      "name"        .title
-    )
-    "itemReviewed" $item_reviewed
-    "reviewRating" (dict
+  {{ $rr     := dict
       "@type"       "Rating"
       "ratingValue" $rating
       "bestRating"  5
+  }}
+  {{ with .date }}
+    {{ $date := dateFormat "2006-01-02T15:04:05Z07:00" . | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+    {{ $rr    = merge $rr (dict "datePublished" $date) }}
+  {{ end }}
+  {{ $schemas = $schemas | append (dict
+    "@type"        "Review"
+    "author"       (dict
+      "@type" "Person"
+      "name"  .title
     )
+    "itemReviewed" $item_reviewed
+    "reviewRating" $rr
   ) }}
 {{ end }}
 

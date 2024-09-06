@@ -1,25 +1,24 @@
-.content {
+// Table inner
+
+.table-inner,
+.gss :is(.ritz) {
+  display: flex;
+  justify-content: center;
+}
 
 
-  // Table inner
+// Table
 
-  .table-inner {
-    display: flex;
-    justify-content: center;
+table {
+  @if not $chamfer or $radius <= .01 {
+    filter: drop-shadow($shadow);
   }
-
-
-  // Table
-
-  table {
+  &:not(.table-sm, .container.bg *, .boxes *) {
+    @include fluid-size(max-width, 1px, $screen-min / 1px, $container-width-max-xl / 1px);
+    margin-inline: calc(var(--container-margin-side) + 2em);
+  }
+  &:where(.content *) {
     margin-bottom: 1em;
-    @if not $chamfer or $radius <= .01 {
-      filter: drop-shadow($shadow);
-    }
-    &:not(.table-sm, .container.bg *, .boxes *) {
-      @include fluid-size(max-width, 1px, $screen-min / 1px, $container-width-max-xl / 1px);
-      margin-inline: calc(var(--container-margin-side) + 2em);
-    }
   }
 }
 

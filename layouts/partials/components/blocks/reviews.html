@@ -135,6 +135,12 @@
               {{- end -}}
               {{- with .subtitle -}}
                 <p class="review__subtitle">{{ . | markdownify }}</p>
+                {{/*
+              {{- else -}}
+                {{- with .date -}}
+                  <p class="review__subtitle">{{ partial "functions/date" (dict "date" .) }}</p>
+                {{- end -}}
+                */}}
               {{- end -}}
               {{- if ne .rating 0 -}}
                 <p class="review__stars">

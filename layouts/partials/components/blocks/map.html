@@ -1,13 +1,26 @@
 {{- with .map -}}
+  {{- if or .image .anchor -}}
 
-  <div class="map box__block">
+    <div class="map box__block">
 
-    {{ if strings.HasPrefix . "http" }}
+      {{ $image    := .image }}
+      {{ if not (strings.HasPrefix .image "http") }}
+        {{ $image   = resources.Get (print "/media/" .image) }}
+        {{ with $image }}
+          {{ $image = .RelPermalink }}
+        {{ end }}
+      {{ end }}
 
-      {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
-        <div data-b="{{ print `/media/` . | base64Encode }}" tabindex="0" role="link">
+      {{ $link  := .anchor }}
+      {{ if not (strings.HasPrefix .anchor "http") }}
+        {{ $link = partial "functions/map-url" .anchor }}
+      {{ end }}
+
+      {{ if $image }}
+
+        <div data-b="{{ $link | default $image | base64Encode }}" tabindex="0" role="link">
           {{ partial "components/image" (dict
-            "src"       .
+            "src"       .image
             "alt"       (i18n "map")
             "container" $.container
             "span_xl"   $.span_xl
@@ -15,18 +28,14 @@
             "notlazy"   false
           ) }}
         </div>
+
       {{ else }}
-        <iframe loading="lazy" data-src="{{ . }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+
+        <iframe loading="lazy" data-src="{{ print $link `&z=15&output=embed` }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+
       {{ end }}
 
-    {{ else }}
+    </div>
 
-      {{ with partial "functions/map-url" . }}
-        <iframe loading="lazy" data-src="{{ . }}&z=15&output=embed" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
-      {{ end }}
-
-    {{ end }}
-
-  </div>
-
+  {{- end -}}
 {{- end -}}
