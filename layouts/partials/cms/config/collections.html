@@ -95,7 +95,7 @@
     }}
   {{ else if eq .Params.base "author" }}
     {{ $fields = $fields | append
-      `~P_JOB_TITLE`
+      `~P_JOB`
       `~P_SOCIAL`
     }}
   {{ else if eq .Params.base "organization" }}
@@ -266,7 +266,7 @@
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_LOCATION`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_PLACE`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `product`     )) `~P_SKU`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_JOB_TITLE`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_JOB`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_TYPES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_NAMES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_LEGAL`))

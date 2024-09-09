@@ -1,0 +1,20 @@
+
+{{- with page.Params.address -}}
+  {{- with .link -}}
+    {{- . -}}
+  {{- else -}}
+    {{- print
+      "https://maps.google.com/maps/search/"
+      (print
+        .name     ", "
+        .street   ", "
+        .pc       " "
+        .locality ", "
+        .region   ", "
+        .country
+        | replaceRE "<nil>" ""
+        | urlquery
+      )
+    -}}
+  {{- end -}}
+{{- end -}}

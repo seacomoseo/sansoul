@@ -82,7 +82,7 @@
 
   {{/*  FINAL  */}}
   {{ range $section }}
-    {{ $section_final := partial "functions/replace-params" (dict "Page" $.Page "obj" .) }}
+    {{ $section_final := partial "functions/replace-shortcodes" (dict "Page" $.Page "obj" .) }}
     {{ $sections_final = $sections_final | append $section_final }}
   {{ end }}
 

@@ -27,7 +27,7 @@
   {{ end }}
 
   {{/*  ITEMS CUSTOM  */}}
-  {{ $custom := .items | default (index . page.Lang) }}
+  {{ $custom := .items | default (index . page.Lang).items }}
   {{ range $custom }}
     {{ $items = $items | append . }}
   {{ end }}
@@ -65,7 +65,7 @@
     {{/*  CLASS  */}}
     {{- $menu_class := print "menu bg bg-" (.color | default "white") -}}
     {{ if .gradient }}
-      {{ $menu_class = print $menu_class " bg-gradient-" .gradient " bg-gradient-" (.gradient_type | default "linear-b") }}
+      {{ $menu_class = print $menu_class " bg-gradient-" .gradient " bg-gradient-" (.gradient_type | default "linear-t") }}
     {{ end }}
     {{- $box_class  := "" -}}
     {{ if .sticky }}

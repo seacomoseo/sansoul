@@ -198,7 +198,7 @@ elif [ $1 = css-purge ]
 then
 
   echo "${STI} CSS PURGE ${STE}"
-  # node ./themes/sansoul/css-purge.js
+  node ./themes/sansoul/css-purge.js
 
 # Check yaml error of Static CMS
 elif [ $1 = yml ]
@@ -314,14 +314,14 @@ then
   sh do rm-public
   sh do prebuild
 
-  # echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
-  # cp ./themes/sansoul/package.json ./
-  # cp ./themes/sansoul/postcss.config.js ./
+  echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
+  cp ./themes/sansoul/package.json ./
+  cp ./themes/sansoul/postcss.config.js ./
 
   echo "${STI} RUN HUGO PRODUCTION ${STE}"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml
 
-  sh do css-purge
+  # sh do css-purge
   sh do draws-purge
   # sh do multilang
 

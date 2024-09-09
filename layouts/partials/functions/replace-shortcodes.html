@@ -3,7 +3,7 @@
   {{ $json := . }}
   {{ with . | findRE `\{\{\%.+?\%\}\}` }}
     {{ range . | uniq }}
-      {{ $param := . | markdownify | replaceRE `\"` `\"` }}
+      {{ $param := . | site.Home.RenderString | plainify | replaceRE `&amp;#43;` `+` | replaceRE `\"` `\"` }}
       {{ $json   = $json | replaceRE . $param }}
     {{ end }}
     {{ $obj =  unmarshal $json }}

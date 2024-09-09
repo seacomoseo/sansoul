@@ -59,11 +59,13 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 3em 3.5em 4em;
-  background-color: var(--bg-color);
-  // background-image: var(--gradient);
   filter: drop-shadow($shadow);
   transform: translateX(100%);
   font-weight: $font-weight-base;
+  background-color: var(--bg-color);
+}
+%bg-gradient.menu {
+  background-image: var(--gradient);
 }
 .menu__active {
   overflow: hidden;
@@ -114,11 +116,6 @@
   margin: 0;
   padding-left: 1.625em;
   list-style: none;
-  background-color: var(--bg-color);
-  overflow: hidden;
-  overscroll-behavior: contain;
-  transform-origin: top left;
-  transition: transform .3s, max-height .3s, padding-bottom .3s;
   padding-right: 1em;
   margin-right: -1em;
   z-index: 1;
@@ -128,21 +125,8 @@
 }
 
 .menu__item--subitems {
-  margin-top: 1em;
-  > .menu__subitems {
-    max-height: 0;
-  }
   > .menu__link > svg {
     transition: transform .3s;
-  }
-}
-.menu__active .menu__item--subitems,
-.menu__item--subitems:focus,
-.menu__item--subitems:hover {
-  > .menu__subitems {
-    transform: none;
-    max-height: 200lvh;
-    padding-bottom: 1em;
   }
 }
 

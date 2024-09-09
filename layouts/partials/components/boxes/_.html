@@ -8,7 +8,7 @@
 {{- $box     := . -}}
 {{- $level   := .level -}}
 
-{{- $is_wrap  := or (ne $columns.max 1) (ne $columns.min 1) -}}
+{{- $is_wrap  := or (ne .box.columns 1) (ne .box.columns_min 1) -}}
 
 {{- with .box -}}
   {{- $is_wrap = or $is_wrap .slider -}}

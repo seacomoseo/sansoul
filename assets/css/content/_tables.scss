@@ -1,7 +1,7 @@
 // Table inner
 
 .table-inner,
-.gss :is(.ritz) {
+.gss .ritz {
   display: flex;
   justify-content: center;
 }
@@ -52,13 +52,11 @@ table.align-right {
 
 /*! purgecss start ignore */
 .compare {
-  [href="/draws.svg#xmark"] {
+  svg:has(> use[href="/draws.svg#xmark"]) {
     color: red;
-    fill: red;
   }
-  [href="/draws.svg#check"] {
+  svg:has(> use[href="/draws.svg#check"]) {
     color: green;
-    fill: green;
   }
 }
 /*! purgecss end ignore */

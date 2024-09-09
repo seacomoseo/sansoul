@@ -1,5 +1,5 @@
 {{- if eq .Page.Params.base "author" -}}
-  {{- with .Page.Params.job_title -}}
+  {{- with .Page.Params.job -}}
     <i class="data__item">
       {{- partial "components/icon" (dict "class" "data__icon" "icon" "briefcase" "emoji" "💼") -}}
       <i>{{ . }}</i>

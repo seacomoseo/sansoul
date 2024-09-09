@@ -30,18 +30,6 @@
       (dict "name" `currency`                 "widget" `select`  "required" false "label" $t.config_currency                 "hint" (print $t.default "→ **EUR**")                                   "options" `~OPTIONS_CURRENCY`)
       (dict "name" `pagination`               "widget" `string`  "required" false "label" $t.config_pagination               "hint" $t.config_pagination_hint)
       (dict
-        "label"     $t.config_menu
-        "name"      `menu`
-        "widget"    `object`
-        "collapsed" true
-        "required"  false
-        "fields"    (slice
-          (dict "name" `logo`     "required" false "label" $t.config_menu_logo     "widget" `image` "max_file_size" 512000000)
-          (dict "name" `title`    "required" false "label" $t.config_menu_title    "widget" `string`)
-          (dict "name" `subtitle` "required" false "label" $t.config_menu_subtitle "widget" `string`)
-        )
-      )
-      (dict
         "name"      `html`
         "widget"    `object`
         "label"     $t.config_html

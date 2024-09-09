@@ -14,6 +14,7 @@
       {{ $link  := .anchor }}
       {{ if not (strings.HasPrefix .anchor "http") }}
         {{ $link = partial "functions/map-url" .anchor }}
+        {{ $link = print $link "&z=15&output=embed" }}
       {{ end }}
 
       {{ if $image }}
@@ -31,7 +32,7 @@
 
       {{ else }}
 
-        <iframe loading="lazy" data-src="{{ print $link `&z=15&output=embed` }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
+        <iframe loading="lazy" data-src="{{ $link }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
 
       {{ end }}
 

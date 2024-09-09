@@ -28,7 +28,11 @@ menu:
   show_sections: true
   show_modals: false
   hide_icons: false
-  es:
+  # es: <- in data/template.yml
+  image: null # string image path
+  title: null # string
+  subtitle: null # string
+  items:
   - link: null # string; `langs` to relocate langs; `translate` to relocate translate
     icon: 1 # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: null # string

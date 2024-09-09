@@ -1,11 +1,11 @@
 {{- with .menu -}}
   {{- if or .logo .title .subtitle -}}
-    {{- $container := .size | default "lg" -}}
     {{- $color     := print "bg bg-" (.color | default "white") -}}
     {{- $align     := cond (or (not .logo_align) (eq .logo_align `left`)) "" (print " align-" .logo_align) }}
-    {{- $logo      := site.Params.menu.logo -}}
-    {{- $title     := site.Params.menu.title -}}
-    {{- $subtitle  := site.Params.menu.subtitle -}}
+    {{- $logo      := .image    | default (index . page.Lang).image -}}
+    {{- $title     := .title    | default (index . page.Lang).title -}}
+    {{- $subtitle  := .subtitle | default (index . page.Lang).subtitle -}}
+    {{- $container := .size     | default "lg" -}}
     {{- if and $.transparent (not $.logo_sticky) -}}
       {{- with partial "functions/sections" page -}}
         {{- $section := index . 0 -}}
