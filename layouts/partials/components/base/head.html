@@ -20,33 +20,30 @@
 {{ $description := .Description | default .Summary | truncate 155 | plainify }}
 
 {{ $image_og  := "" }}
-{{ $site_logo := print
-  site.BaseURL
-  "/media/"
-  ((cond (in site.Home.Params.logo "svg") "" site.Home.Params.logo)
-    | default (cond (in site.Params.menu.logo "svg") "" site.Params.menu.logo)
-    | default (cond (in $config.cms.logo "svg") "" $config.cms.logo)
-    | default $config.favicon.png
-    | default "base/icon.png"
-  )
-}}
 {{ with .Params.image }}
-  {{ if in . ".svg" }}
-    {{ $image_og = $site_logo }}
-  {{ else if partial "functions/is-iframe" . }}
-    {{ $image_og = partial "functions/iframe-poster" . }}
-  {{ else if in . "http" }}
-    {{ $image_og = . }}
-  {{ else }}
+  {{ if not (in . ".svg") }}
+    {{ if partial "functions/is-iframe" . }}
+      {{ $image_og = partial "functions/iframe-poster" . }}
+    {{ else }}
+      {{ $image_og = . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if not $image_og }}
+  {{ $image_og =
+    ((cond (in site.Home.Params.logo "svg") "" site.Home.Params.logo)
+      | default (cond (in site.Params.menu.logo "svg") "" site.Params.menu.logo)
+      | default (cond (in $config.cms.logo "svg") "" $config.cms.logo)
+      | default $config.favicon.png
+      | default "base/icon.png"
+    )
+  }}
+{{ end }}
+{{ with $image_og }}
+  {{ if not (hasPrefix . "http") }}
     {{ with resources.Get (print "/media/" .) }}
       {{ $image_og = .Permalink }}
     {{ end }}
-  {{ end }}
-{{ else }}
-  {{ if (in $site_logo "svg") }}
-    {{ $image_og = print site.BaseURL "/media/base/logo.png" }}
-  {{ else if $site_logo }}
-    {{ $image_og = $site_logo }}
   {{ end }}
 {{ end }}
 
@@ -81,7 +78,7 @@
   <meta property="og:locale:alternate" content="{{ .Lang }}">
 {{ end }}
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="{{ $image_og | default `/media/logo.png` }}">
+<meta property="og:image" content="{{ $image_og }}">
 
 {{/*  ANDROID THEME COLOR  */}}
 <meta name="theme-color" content="{{ site.Data.styles.colors.main.color }}">

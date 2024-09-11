@@ -5,7 +5,7 @@
 
       {{- $image := .Params.image -}}
       {{- if $image -}}
-        {{- if strings.HasPrefix $image "http" -}}
+        {{- if hasPrefix $image "http" -}}
           {{- $image = partial "functions/iframe-poster" $image | default $image -}}
         {{- else -}}
           {{- with resources.Get (print "/media/" $image) -}}

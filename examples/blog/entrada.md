@@ -236,7 +236,7 @@ Ejemplos:
 
 Imagen con enlace de nota de página
 
-![Alt text](logo.png "Logo")
+![Alt text](base/icon.png "Icono")
 
 Con la referencia a la URL después
 

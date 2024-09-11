@@ -17,7 +17,7 @@ names:
 legal: FABRICANTE S.L.
 nif: 00000000A
 summary: Esta es la descripción de un fabricante de ejemplo.
-logo: base/logo.png
+logo: base/icon.png
 images:
 - fondo.jpg
 social:

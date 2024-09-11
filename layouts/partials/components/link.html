@@ -13,12 +13,12 @@
 
   {{- $label       := .label | default (i18n `more`)  -}}
   {{- $anchor      := cond (ne .anchor .label) .anchor "" -}}
-  {{- $external    := strings.HasPrefix .link "http" -}}
+  {{- $external    := hasPrefix .link "http" -}}
   {{- $_blank      := not (not ._blank) -}}
   {{- $page_title  := "" -}}
   {{- $lightbox    := findRE `\.(jpg|png|gif|webp|svg)` .link -}}
   {{- $noindex     := (.noindex | default false)  -}}
-  {{- $anchor_link := strings.HasPrefix .link "#" -}}
+  {{- $anchor_link := hasPrefix .link "#" -}}
   {{- $button      := ne .button "none" -}}
   {{- if $button -}}
     {{- with .button -}}

@@ -1,10 +1,10 @@
 {{- $label    := .Text  | replaceRE `^btn[\w-:]* `                "" -}}
 {{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` "" -}}
-{{- $noindex  := cond (strings.HasPrefix .Title "nofollow") true nil -}}
+{{- $noindex  := cond (hasPrefix .Title "nofollow") true nil -}}
 
 {{- $button   := "none" -}}
 {{- $class    := "" -}}
-{{- if strings.HasPrefix .Text "btn" -}}
+{{- if hasPrefix .Text "btn" -}}
   {{- $other  := .Text | replaceRE `^btn:?([\w-]*).*` "$1" -}}
   {{- range $other | findRE `icon|font-alt|sm` -}}
     {{- $class = print $class " button--" . -}}

@@ -1,6 +1,6 @@
 {{- if .src -}}
   {{- $mute := cond (in .src "#mute") true .bg -}}
-  {{- if strings.HasPrefix .src "http" -}}
+  {{- if hasPrefix .src "http" -}}
     {{- if .src | findRE `\.(mp4|mov|avi|webm)` -}}
       {{- $src    := .src | replaceRE `.poster\=([/\w\d\.-]+)|\#mute` `` -}}
       {{- $poster := "" -}}

@@ -42,8 +42,8 @@
   {{- $link           := .link -}}
   {{- $underline      := .underline | and (not (.icon | and (eq $icon_type "bottom"))) -}}
 
-  {{- $external       := strings.HasPrefix $link "http" -}}
-  {{- $is_anchor_link := strings.HasPrefix $link "#" -}}
+  {{- $external       := hasPrefix $link "http" -}}
+  {{- $is_anchor_link := hasPrefix $link "#" -}}
   {{- $start_slash    := $link | findRE `^/` -}}
   {{- if $link -}}
     {{- if not $external | and (not $is_anchor_link) | and (not $start_slash) -}}

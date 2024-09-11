@@ -2,7 +2,7 @@
 
 {{ range . }}
   {{ $image    := "" }}
-  {{ $external := strings.HasPrefix . "http" }}
+  {{ $external := hasPrefix . "http" }}
   {{ if not $external }}
     {{ $url    := resources.Get (print "/media/" .) }}
     {{ with $url }}

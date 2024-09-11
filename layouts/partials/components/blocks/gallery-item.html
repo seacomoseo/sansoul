@@ -55,7 +55,7 @@
   {{- $style_height = lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}
 {{- end -}}
 
-{{- $external := strings.HasPrefix .image "http" -}}
+{{- $external := hasPrefix .image "http" -}}
 {{- if not $external -}}
   {{- if not (in $.image "/media/") -}}
     {{- with resources.Get (print "/media/" .image) -}}

@@ -17,7 +17,7 @@
   }}
 {{ end }}
 
-{{ $external := strings.HasPrefix $src "http" }}
+{{ $external := hasPrefix $src "http" }}
 {{ with $src }}
   {{ if not $external }}
     {{ $url := resources.Get (print "/media/" .) }}

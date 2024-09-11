@@ -4,7 +4,7 @@
     <div class="map box__block">
 
       {{ $image    := .image }}
-      {{ if not (strings.HasPrefix .image "http") }}
+      {{ if not (hasPrefix .image "http") }}
         {{ $image   = resources.Get (print "/media/" .image) }}
         {{ with $image }}
           {{ $image = .RelPermalink }}
@@ -12,7 +12,7 @@
       {{ end }}
 
       {{ $link  := .anchor }}
-      {{ if not (strings.HasPrefix .anchor "http") }}
+      {{ if not (hasPrefix .anchor "http") }}
         {{ $link = partial "functions/map-url" .anchor }}
         {{ $link = print $link "&z=15&output=embed" }}
       {{ end }}
