@@ -1,9 +1,11 @@
 {{- $box := . -}}
 {{- range .params -}}
   {{- $param_box  := .box -}}
-  {{- $param_page := index page.Params (split .page ".") -}}
+  {{- $param_page := "" -}}
   {{- if eq .page "filename" -}}
     {{- $param_page = page.File.TranslationBaseName -}}
+  {{- else -}}
+    {{- $param_page = partial "functions/param" .page -}}
   {{- end -}}
   {{- if $param_page -}}
     {{ $keys  := split $param_box "." }}

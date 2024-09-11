@@ -12,8 +12,8 @@
       {{ with site.Home }}
         {{ $items = $items | append (dict
           "link"     .RelPermalink
-          "icon"     "house"
-          "emoji"    "🏠"
+          "icon"     (cond (not $.hide_icons) "house" "")
+          "emoji"    (cond (not $.hide_icons) "🏠" "")
           "label"    .Title
           "anchor"   (partial "functions/anchor-page" .)
         ) }}

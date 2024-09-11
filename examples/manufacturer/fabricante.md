@@ -34,7 +34,7 @@ address:
   region: Murcia
   country: ES
   geo: '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
-  link: https://g.page/r/CafZvI4bJRWJEBM
+  link: https://g.page/r/CQI3T3wmeAB6EBM
 areas:
 - España
 - Online
