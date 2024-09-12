@@ -40,9 +40,9 @@
       {{ $params     = . }}
 
       {{ range $k, $type := $types_full }}
-        {{ $base  := .base | default "page" }}
-        {{ $name  := .name | default $base }}
-        {{ $title := $name | default .label | default .singular | urlize | default "" }}
+        {{ $base  := or .base "page" }}
+        {{ $name  := or .name $base }}
+        {{ $title := or $name .label .singular | urlize | default "" }}
 
         {{/*  taxonomies  */}}
         {{ $taxonomies  := slice }}
@@ -86,21 +86,21 @@
         {{ $i18n_cms := index site.Data.i18n $lang_cms }}
         {{ $cms      := index . $lang_cms }}
         {{ $cms       = dict
-          "title"      ($cms.title    | default $cms.singular | default (index $i18n_cms (print "types_default_" $name "_title"      )) | default $name)
-          "singular"   ($cms.singular | default $cms.title    | default (index $i18n_cms (print "types_default_" $name "_singular"   )) | default $name)
-          "hint"       ($cms.hint                             | default (index $i18n_cms (print "types_default_" $name "_hint"       )))
+          "title"      (or $cms.title    $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
+          "singular"   (or $cms.singular $cms.title    (index $i18n_cms (print "types_default_" $name "_singular"   )) $name)
+          "hint"       (or $cms.hint                   (index $i18n_cms (print "types_default_" $name "_hint"       )))
           "permalinks" $permalinks
         }}
 
         {{/*  CONFIG TO TYPE PARENT PAGES  */}}
         {{ $slug          := "" }}
         {{ with $type }}
-          {{ $title        = .title    | default .singular | default (index $t (print "types_default_" $name "_title"      )) | default $name }}
-          {{ $singular    := .singular | default .title    | default (index $t (print "types_default_" $name "_singular"   )) | default $name }}
-          {{ $description := .description                  | default (index $t (print "types_default_" $name "_description")) | default ""}}
-          {{ $slug         = .slug                         | default (index $t (print "types_default_" $name "_slug"       )) | default $title }}
-          {{ $icon        := $type.icon                    | default (index site.Data.utilities.defaults $name).icon          | default "file" }}
-          {{ $emoji       := $type.emoji                   | default (index site.Data.utilities.defaults $name).emoji         | default "📄" }}
+          {{ $title        = or .title       .singular (index $t (print "types_default_" $name "_title"      )) $name }}
+          {{ $singular    := or .singular    .title    (index $t (print "types_default_" $name "_singular"   )) $name }}
+          {{ $description := or .description           (index $t (print "types_default_" $name "_description")) ""}}
+          {{ $slug         = or .slug                  (index $t (print "types_default_" $name "_slug"       )) $title }}
+          {{ $icon        := or $type.icon             (index site.Data.utilities.defaults $name).icon          "file" }}
+          {{ $emoji       := or $type.emoji            (index site.Data.utilities.defaults $name).emoji         "📄" }}
           {{ $noindex     := cond (eq .noindex nil) true .noindex }}
           {{ $obj         := dict 
             "slug"           $slug
@@ -248,7 +248,7 @@
 {{ range where $types "taxonomy_of" "ne" nil }}
   {{ $indices = $indices | append
     (dict
-      "name"   (.name | default .base | default "page")
+      "name"   (or .name .base "page")
       "weight" 80
     )
   }}

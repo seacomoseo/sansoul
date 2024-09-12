@@ -2,17 +2,17 @@
 {{- $footer := eq .id "footer" -}}
 {{- $modal  := .modal  | default false -}}
 
-{{- $tag := .tag -}}
+{{- $node := .node -}}
 {{- if $modal -}}
-  {{- $tag = "dialog" -}}
+  {{- $node = "dialog" -}}
 {{- end -}}
-{{- if not $tag -}}
+{{- if not $node -}}
   {{- if $header -}}
-    {{- $tag = "header" -}}
+    {{- $node = "header" -}}
   {{- else if $footer -}}
-    {{- $tag = "footer" -}}
+    {{- $node = "footer" -}}
   {{- else -}}
-    {{- $tag = "section" -}}
+    {{- $node = "section" -}}
   {{- end -}}
 {{- end -}}
 
@@ -23,7 +23,7 @@
 )) -}}
 
 {{/*  SECTION  */}}
-{{- print "<" $tag $attr ">" | safeHTML -}}
+{{- print "<" $node $attr ">" | safeHTML -}}
 
   {{/*  BACKGROUND  */}}
   {{- if not $modal -}}
@@ -42,7 +42,7 @@
     (dict
       "level"         0
       "first"         (eq .id "header")
-      "tag"           (cond $modal .tag           .box_tag)
+      "node"          (cond $modal .node           .box_node)
       "bg"            (cond $modal .bg            .box_bg)
       "alpha"         (cond $modal .alpha         .box_alpha)
       "parallax"      (cond $modal .parallax      .box_parallax)
@@ -116,4 +116,4 @@
     </div>
   {{- end -}}
 
-{{- print "</" $tag ">" | safeHTML -}}
+{{- print "</" $node ">" | safeHTML -}}

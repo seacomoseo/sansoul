@@ -2,9 +2,9 @@
 
 {{/*  LIST FILTERS  */}}
 
-{{ $list_fields := slice `~BOX_LIST_TYPES` }}
-{{ $relations := slice }}
-{{ $dates     := true }}
+{{ $lists_fields := slice `~BOX_LIST_TYPE` }}
+{{ $relations    := slice }}
+{{ $dates        := true }}
 
 {{ $relations  := slice }}
 {{ range site.Sections }}
@@ -22,7 +22,7 @@
   {{ if .multiple }}
     {{ $label = $cms.title }}
   {{ end }}
-  {{ $list_fields = $list_fields | append (dict
+  {{ $lists_fields = $lists_fields | append (dict
     "name"           .name
     "widget"         `relation`
     "required"       false
@@ -39,26 +39,29 @@
 {{ end }}
 
 {{ with $dates }}
-  {{ $list_fields = $list_fields | append `~BOX_LIST_START` `~BOX_LIST_END` }}
+  {{ $lists_fields = $lists_fields | append `~BOX_LIST_START` `~BOX_LIST_END` }}
 {{ end }}
-{{ $list_fields = $list_fields | append `~BOX_LIST_MAX` }}
+{{ $lists_fields = $lists_fields | append `~BOX_LIST_MAX` }}
 
 
 {{/*  BLOCKS  */}}
 
 {{ return slice
 
-  (dict "&BOX_LIST_TYPES" (dict "name" `types` "widget" `select`   "required" false "label" $t.box_list_types "multiple" true "options" `~OPTIONS_LISTS`))
-  (dict "&BOX_LIST_START" (dict "name" `date`  "widget" `datetime` "required" false "label" $t.box_list_start "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`))
-  (dict "&BOX_LIST_END"   (dict "name" `end`   "widget" `datetime` "required" false "label" $t.box_list_end   "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`))
-  (dict "&BOX_LIST_MAX"   (dict "name" `max`   "widget" `number`   "required" false "label" $t.box_list_max   "hint" $t.box_list_max_hint "value_type" `int` "min" 1))
+  (dict "&BOX_LIST_TYPE"  (dict "name" `type`  "widget" `select`   "required" false "label" $t.box_lists_types "options" `~OPTIONS_LISTS`))
+  (dict "&BOX_LIST_START" (dict "name" `date`  "widget" `datetime` "required" false "label" $t.box_lists_start "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`))
+  (dict "&BOX_LIST_END"   (dict "name" `end`   "widget" `datetime` "required" false "label" $t.box_lists_end   "format" `yyyy-MM-dd HH:mm:ss` "date_format" `yyyy-MM-dd` "time_format" `HH:mm`))
+  (dict "&BOX_LIST_MAX"   (dict "name" `max`   "widget" `number`   "required" false "label" $t.box_lists_max   "hint" $t.box_lists_max_hint "value_type" `int` "min" 1))
   (dict "&BOX_LIST" (dict
-    "name"      `list`
-    "widget"    `object`
-    "required"  false
-    "label"     $t.box_list
-    "collapsed" false
-    "fields"    $list_fields
+    "name"           `lists`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.box_lists
+    "label_singular" $t.box_lists_singular
+    "collapsed"      false
+    "summary"        "{{fields.type}}"
+    "allow_add"      true
+    "fields"         $lists_fields
   ))
 
 

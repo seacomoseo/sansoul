@@ -8,8 +8,8 @@
     {{- $name := index site.Data.utilities.types $.type -}}
     {{- range . -}}
       {{- $parent_type := site.GetPage $.type . -}}
-      <i class="data__item">
-        {{- partial "components/icon" (dict "class" "data__icon" "icon" $name.icon "emoji" $name.emoji) -}}
+      <i class="box__tag">
+        {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" $name.icon "emoji" $name.emoji) -}}
         {{- if $.item.box -}}
           {{- $parent_type.Title -}}
         {{- else -}}

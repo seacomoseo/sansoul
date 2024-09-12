@@ -24,6 +24,7 @@
 {{ $options_lists = $options_lists | append
   (dict "value" "/"       "label" (print page.Params.emoji " " $t.collection_single))
   (dict "value" "related" "label" (print site.Data.utilities.defaults.related.emoji " " $t.related))
+  (dict "value" "all"     "label" (print site.Data.utilities.defaults.all.emoji     " " $t.all))
 }}
 
 {{ $vars := slice
@@ -57,10 +58,11 @@
   (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "!=" "fluid"))
   (dict "&OPTIONS_DAYS"          $options.days)
   (dict "&OPTIONS_GALLERY_TYPES" $options.gallery_types)
-  (dict "&OPTIONS_VIEW_SECTION"  (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "container_bg" "paddings" "size" "divider" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
-  (dict "&OPTIONS_VIEW_MODAL"    (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "paddings" "size" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
-  (dict "&OPTIONS_VIEW_BOX"      (where $options.view "value" "in" (slice "all" "group" "text" "icon" "image" "button" "bg" "boxi" "list")))
-  (dict "&OPTIONS_VIEW_BOXES"    (where $options.view "value" "in" (slice "all" "text" "icon" "image" "button" "bg" "boxi" "step" "gallery" "list" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
+  (dict "&OPTIONS_VIEW_SECTION"  (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "container_bg" "paddings" "size" "divider" "boxi" "other" "step" "gallery" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
+  (dict "&OPTIONS_VIEW_MODAL"    (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "paddings" "size" "boxi" "other" "step" "gallery" "lists" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
+  (dict "&OPTIONS_VIEW_BOX"      (where $options.view "value" "in" (slice "all" "group" "text" "icon" "image" "button" "bg" "boxi" "other" "lists")))
+  (dict "&OPTIONS_VIEW_BOXES"    (where $options.view "value" "in" (slice "all" "text" "icon" "image" "button" "bg" "boxi" "other" "step" "gallery" "lists" "collapsible" "gss" "review" "contact" "form" "map" "boxes")))
+  (dict "&OPTIONS_TAGS"          $options.tags)
   (dict "&OPTIONS_DIVIDER"       $options.divider)
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
   (dict "&OPTIONS_CURRENCY"      $options.currency)

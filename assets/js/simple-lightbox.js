@@ -3,15 +3,18 @@ import { scrollShot } from './scroll-shot'
 import { loadScript } from './load-script'
 
 export function initSimpleLightbox () {
+  // All ligtbox items
   const lbItems = document.querySelectorAll('[data-lightbox]')
   if (lbItems) {
     function lightbox () {
+      // Unique groups of ligtbox items
       let lbGroups = []
       lbItems.forEach(lbItem => {
-        const lbGroup = lbItem.closest('.gallery, .box, .boxes, .content, .menu__items')
+        const lbGroup = lbItem.closest('.gallery, .container, .boxes, .content, .menu__items')
         lbGroups.push(lbGroup)
       })
       lbGroups = [...new Set(lbGroups)]
+      // Each group
       lbGroups.forEach(lbGroup => {
         const lbSection = lbGroup.closest('.menu, .section, .modal')
         const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?((section|modal)--[\w-]+|menu).*$/, '$1') : ''

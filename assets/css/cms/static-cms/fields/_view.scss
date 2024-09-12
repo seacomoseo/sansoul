@@ -125,11 +125,16 @@
   .name-hide_radius,
   .name-pill,
   .name-card,
+  )),
+:has(> [data-view*="other"]) ~ :has(> :is(
   .name-if,
-  .name-tag
+  .name-node,
+  .name-params,
+  .name-tag,
+  .name-tags
 )),
-:has(> [data-view*="list"]) ~ :has(> :is(
-  .name-list,
+:has(> [data-view*="lists"]) ~ :has(> :is(
+  .name-lists,
   .name-box,
   .name-hide_content,
   .name-hide_categories,

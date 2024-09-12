@@ -39,7 +39,8 @@
         (cond (eq $columns.max 1) "" (print "--columns-max:" $columns.max))
         (cond (eq $columns.min 1) "" (print "--columns-min:" $columns.min))
         (cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap))
-        (cond (eq .gap_ny nil)    "" (print "--columns-gap-ny:" .gap_ny))
+        (cond (eq .gap_min nil)   "" (print "--columns-gap-min:" .gap_min))
+        (cond (eq .gap_ny nil)    "" (print "--columns-gap-ny:"  .gap_ny))
       )
     ) }}
 
@@ -63,7 +64,7 @@
 {{ end }}
 
         {{ $parent  := dict }}
-        {{ if not .article_list }}
+        {{ if not .list_pages }}
           {{ $parent = dict
             "uppercase"   $box.uppercase
             "underline"   $box.underline
@@ -87,19 +88,19 @@
             $.box
             .
             (dict
-              "id"           $.id
-              "level"        $level
-              "key"          $key
-              "container"    $.container
-              "span_xl"      $columns.span_xl
-              "span_xs"      $columns.span_xs
-              "section"      $.section
-              "first"        $.first
-              "footer"       $.footer
-              "columns"      $columns.max
-              "columns_min"  $columns.min
-              "is_wrap"      $is_wrap
-              "article_list" $.article_list
+              "id"          $.id
+              "level"       $level
+              "key"         $key
+              "container"   $.container
+              "span_xl"     $columns.span_xl
+              "span_xs"     $columns.span_xs
+              "section"     $.section
+              "first"       $.first
+              "footer"      $.footer
+              "columns"     $columns.max
+              "columns_min" $columns.min
+              "is_wrap"     $is_wrap
+              "list_pages"  $.list_pages
             )
           ) }}
         {{ end }}

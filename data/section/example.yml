@@ -83,15 +83,19 @@ hide_shadow: true
 hide_radius: true
 pill: false
 card: false
+# other
 if: '' # [ 'param name', body, related ]
-tag: aside # [ section, header, footer, nav, article, aside, div ]
-# list
-data: row # [ hide, column, row, space ]
-data_custom:
+node: aside # [ section, header, footer, nav, article, aside, div ]
+params: [] # [ { box, page, value } ]
+# - box: null # string like box.columns
+#   page: null # string like example.path.to.param
+#   value: null # string like obj
+tag: row # [ hide, column, row, space ]
+tags:
 - icon: star
   label: Ejemplaco
 # view
-view: [] # [all, text, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, step, gallery, list, collapsible, gss, review, contact, form, map, boxes ]
+view: [] # [all, text, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, step, gallery, collapsible, gss, review, contact, form, map, boxes ]
 
 
 ## BOXES
@@ -101,6 +105,7 @@ box:
   columns: 2 # [ 0 = auto, > 0 ]
   columns_min: 1 # [ 0 = auto, > 0 ]
   gap: null # [ >= 0.00 ]
+  gap_min: null # [ >= 0.00 ]
   gap_ny: null # [ >= 0.00 ]
   direction: right # [ right, left, top, bottom ]
   group_radius: false
@@ -113,7 +118,7 @@ box:
   # add same to container
   # + remove `box_` of bg keys
   # + view
-  view: [] # [ all, group, text, icon, image, button, bg, boxi, list ]
+  view: [] # [ all, group, text, icon, image, button, bg, boxi, others, lists ]
 boxes:
 - title: Título de Caja 1
   # add same to container
@@ -125,7 +130,7 @@ boxes:
   grow: false
   align_y: stretch # [ stretch, top, center, bottom ]
   # + view
-  view: [] # [ all, text, icon, image, button, bg, boxi-boxes, boxi, step, gallery, list, collapsible, gss, review, contact, form, map, boxes ]
+  view: [] # [ all, text, icon, image, button, bg, boxi-boxes, boxi, others, step, gallery, lists, collapsible, gss, review, contact, form, map, boxes ]
 - title: Título de Caja 2
 - title: Título de Caja 3
 - boxes:
@@ -135,8 +140,8 @@ boxes:
 
 ## TYPES
 
-- list:
-    types: [] # [ blog, event, product, category, author, page, ..., /, related ]
+- lists:
+  - type: null # [ all, blog, event, product, category, author, page, ..., /, related ]
     category:
     - categoria-2
     author:
@@ -146,7 +151,7 @@ boxes:
     max: 4 # [ > 1 ]
   box:
     # add like box
-    # + list
+    # + lists
     hide_content: false
     hide_category: false
     hide_reading_time: false

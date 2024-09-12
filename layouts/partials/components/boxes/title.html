@@ -1,4 +1,4 @@
-{{ $title  := .hanchor | default .title | default .menu_label }}
+{{ $title  := or .hanchor .title .menu_label }}
 {{ if $title }}
   {{ $title = partial "functions/md" (dict "content" $title "inline" true) }}
 

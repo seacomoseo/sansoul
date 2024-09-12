@@ -88,6 +88,9 @@ perl -0777 -i'' -pe 's/\.contact__form-/.form__/igs'               ./assets/css/
 perl -0777 -i'' -pe 's/\.contact__form/.form/igs'                  ./assets/css/_custom.scss
 perl -0777 -i'' -pe 's/\.contact__buttons-/.contact__/igs'         ./assets/css/_custom.scss
 perl -0777 -i'' -pe 's/\.contact__buttons/.contact/igs'            ./assets/css/_custom.scss
+perl -0777 -i'' -pe 's/\.data__icon/.box__tag-icon/igs'            ./assets/css/_custom.scss
+perl -0777 -i'' -pe 's/\.data__item/.box__tag/igs'                 ./assets/css/_custom.scss
+perl -0777 -i'' -pe 's/\.data/.box__tags/igs'                      ./assets/css/_custom.scss
 perl -0777 -i'' -pe 's/\[data-showup\]/.show/igs'                  ./assets/css/_custom.scss
 perl -0777 -i'' -pe 's/body-inicio/body-home/igs'                  ./assets/css/_custom.scss
 perl -0777 -i'' -pe 's/body-admin/body-author-admin/igs'           ./assets/css/_custom.scss

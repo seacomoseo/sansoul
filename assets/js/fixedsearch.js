@@ -232,50 +232,50 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         }
         if (results[item].item.date) {
           searchItemType = `
-            <time class="data__item" >
-              {{ partial "components/icon" (dict "class" "data__icon" "icon" "calendar" "emoji" "📅") }}
+            <time class="box__tag">
+              {{ partial "components/icon" (dict "class" "box__tag-icon" "icon" "calendar" "emoji" "📅") }}
               ${results[item].item.date}
             </time>`
         } else {
           searchItemType = `
-            <i class="data__item">
-              <svg class="data__icon"><use href="/draws.svg#${results[item].item.icon}"></use></svg>
+            <i class="box__tag">
+              <svg class="box__tag-icon"><use href="/draws.svg#${results[item].item.icon}"></use></svg>
               ${results[item].item.type_label}
             </i>`
         }
         if (results[item].item.author) {
           searchItemAuthor = `
-            <i class="data__item">
-              {{ partial "components/icon" (dict "class" "data__icon" "icon" "user" "emoji" "👤") }}
+            <i class="box__tag">
+              {{ partial "components/icon" (dict "class" "box__tag-icon" "icon" "user" "emoji" "👤") }}
               ${results[item].item.author}
             </i>`
         }
         if (results[item].item.reading_time !== '0 minutos' && results[item].item.reading_time !== '') {
           searchItemReadingTime = `
-            <div class="data">
-              <i class="data__item">
-              {{ partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
+            <div class="box__tags">
+              <i class="box__tag">
+              {{ partial "components/icon" (dict "class" "box__tag-icon" "icon" "clock" "emoji" "🕓") }}
                 ${results[item].item.reading_time}
               </i>
             </div>`
         }
         searchItems = searchItems +
           `
-          {{- $lists  := site.Params.lists -}}
+          {{- $list   := site.Params.list -}}
           {{- $styles := site.Data.styles -}}
           <article
             class="
               search__result-item
               box
               box--button-hide
-              bg bg-{{ $lists.color }}
-              align-{{ $lists.align | default "left" -}}
+              bg bg-{{ $list.color }}
+              align-{{ $list.align | default "left" -}}
             "
             data-h
           >
             <a class="search__result-item-link" href="${results[item].item.link}"></a>
 
-            {{- if $styles.buttons.deep | and $lists.color -}}
+            {{- if $styles.buttons.deep | and $list.color -}}
               <div class="bg-color bg-color--3d"></div>
             {{- end -}}
             <div class="bg-color"></div>
@@ -284,9 +284,9 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               class="
                 image
                 image--inset
-                {{ print "image--" ($lists.ratio | default "16x9") }}
-                {{ cond (not $lists.contain) "" "image--contain" }}
-                {{ cond (ne $lists.image "gradient") "" "image--gradient" }}
+                {{ print "image--" ($list.ratio | default "16x9") }}
+                {{ cond (not $list.contain) "" "image--contain" }}
+                {{ cond (ne $list.image "gradient") "" "image--gradient" }}
               "
             >
               ${searchItemImage}
@@ -295,7 +295,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               <i class="box__link" data-h><i>${results[item].item.title}</i></i>
             </p>
             ${searchItemText}
-            <div class="data">
+            <div class="box__tags">
               ${searchItemType}
               ${searchItemAuthor}
             </div>

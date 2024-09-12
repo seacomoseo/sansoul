@@ -1,0 +1,6 @@
+{{- with .Page.Params.location -}}
+  <i class="box__tag">
+    {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" "location-dot" "emoji" "📍") -}}
+    <i>{{ . }}</i>
+  </i>
+{{- end -}}

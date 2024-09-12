@@ -13,6 +13,7 @@
   (dict "&BOX_COLUMNS_MAX"     (dict "name" `columns`      "widget" `number`  "required" false "label" $t.box_columns      "value_type" `int`   "step" 1    "min" 0 "max" 12 "hint" $t.box_columns_hint))
   (dict "&BOX_COLUMNS_MIN"     (dict "name" `columns_min`  "widget" `number`  "required" false "label" $t.box_columns_min  "value_type" `int`   "step" 1    "min" 0 "max" 12 "hint" $t.box_columns_min_hint))
   (dict "&BOX_GAP"             (dict "name" `gap`          "widget" `number`  "required" false "label" $t.box_gap          "value_type" `float` "step" 0.01 "min" 0 "max" 10))
+  (dict "&BOX_GAP_MIN"         (dict "name" `gap_min`      "widget" `number`  "required" false "label" $t.box_gap_min      "value_type" `float` "step" 0.01 "min" 0 "max" 10))
   (dict "&BOX_GAP_NY"          (dict "name" `gap_ny`       "widget" `number`  "required" false "label" $t.box_gap_ny       "value_type" `float` "step" 0.01 "min" 0 "max" 10 "hint" $t.box_gap_ny_hint))
   (dict "&BOX_DIRECTION"       (dict "name" `direction`    "widget" `select`  "required" false "label" $t.box_direction    "options" `~OPTIONS_DIRECTION`))
   (dict "&BOX_GROUP_RADIUS"    (dict "name" `group_radius` "widget" `boolean` "required" false "label" $t.box_group_radius                                                   "hint" $t.box_group_radius_hint))
@@ -105,8 +106,40 @@
   (dict "&BOX_HIDE_RADIUS"  (dict "name" `hide_radius`  "widget" `boolean` "required" false "label" $t.box_hide_radius))
   (dict "&BOX_PILL"         (dict "name" `pill`         "widget" `boolean` "required" false "label" $t.box_pill          "hint" $t.box_pill_hint))
   (dict "&BOX_CARD"         (dict "name" `card`         "widget" `boolean` "required" false "label" $t.box_card          "hint" $t.box_card_hint))
-  (dict "&BOX_IF"           (dict "name" `if`           "widget" `boolean` "required" false "label" $t.box_if            "hint" $t.box_if_hint))
-  (dict "&BOX_TAG"          (dict "name" `tag`          "widget" `boolean` "required" false "label" $t.box_tag))
+
+  (dict "&BOX_IF"           (dict "name" `if`           "widget" `string`  "required" false "label" $t.box_if            "hint" $t.box_if_hint))
+  (dict "&BOX_NODE"         (dict "name" `node`         "widget" `string`  "required" false "label" $t.box_node          "hint" $t.box_node_hint))
+  (dict "&BOX_PARAMS"       (dict
+    "name"           `params`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.box_params
+    "label_singular" $t.box_params_singular
+    "hint"           $t.box_params_hint
+    "collapsed"      false
+    "summary"        "{{fields.image}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `box`   "widget" `string` "required" false "label" $t.box_params_box)
+      (dict "name" `page`  "widget" `string` "required" false "label" $t.box_params_page)
+      (dict "name" `value` "widget" `string` "required" false "label" $t.box_params_value)
+    )
+  ))
+  (dict "&BOX_TAG"          (dict "name" `tag`          "widget" `select`  "required" false "label" $t.box_tag           "hint" $t.box_tag_hint      "options" `~OPTIONS_TAGS`))
+  (dict "&BOX_TAGS"         (dict
+    "name"           `tags`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.box_tags
+    "label_singular" $t.box_tags_singular
+    "collapsed"      false
+    "summary"        "{{fields.image}}"
+    "allow_add"      true
+    "fields"         (slice
+      `~BOX_ICON_ID`
+      (dict "name" `label` "widget" `string` "required" false "label" $t.box_contact_label)
+    )
+  ))
 
   (dict "&BOX_HIDE_CONTENT"      (dict "name" `hide_content`      "widget" `boolean` "required" false "label" $t.box_hide_content      "hint" $t.box_hide_content_hint))
   (dict "&BOX_HIDE_CATEGORIES"   (dict "name" `hide_categories`   "widget" `boolean` "required" false "label" $t.box_hide_categories   "hint" $t.box_hide_categories_hint))

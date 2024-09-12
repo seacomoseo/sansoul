@@ -28,17 +28,17 @@ export function initSliders () {
       track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
     }
 
-    function scrollToNear (item, side, track) {
-      const trackLeft = track.scrollLeft
-      const itemWidth = item.offsetWidth
-      let scrollLeft
-      if (side === 'left') {
-        scrollLeft = trackLeft - itemWidth
-      } else {
-        scrollLeft = trackLeft + itemWidth
-      }
-      track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
-    }
+    // function scrollToNear (item, side, track) {
+    //   const trackLeft = track.scrollLeft
+    //   const itemWidth = item.offsetWidth
+    //   let scrollLeft
+    //   if (side === 'left') {
+    //     scrollLeft = trackLeft - itemWidth
+    //   } else {
+    //     scrollLeft = trackLeft + itemWidth
+    //   }
+    //   track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
+    // }
 
     function scrollToLeft (track, width) {
       track.scrollTo({
@@ -117,6 +117,12 @@ export function initSliders () {
         const items = slider.querySelector('.slider__items')
         const children = [...items.children]
         const bullets = slider.querySelectorAll('.slider__bullet')
+
+        // FIRST TO START ON LOAD
+        const trackChild = track.firstElementChild
+        const trackStyle = window.getComputedStyle(trackChild)
+        const padding = parseFloat(trackStyle.getPropertyValue('padding-left'))
+        track.scrollTo(padding, 0)
 
         // SCROLL-SHOT
         function callbackScrollChildren (entries, observer) {

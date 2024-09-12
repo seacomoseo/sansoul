@@ -6,6 +6,7 @@
   `~BOX_COLUMNS_MAX`
   `~BOX_COLUMNS_MIN`
   `~BOX_GAP`
+  `~BOX_GAP_MIN`
   `~BOX_GAP_NY`
   `~BOX_DIRECTION`
   `~BOX_GROUP_RADIUS`
@@ -129,10 +130,15 @@
   `~BOX_HIDE_RADIUS`
   `~BOX_PILL`
   `~BOX_CARD`
-  `~BOX_IF`
-  `~BOX_TAG`
 }}
-{{ $list := slice
+{{ $other := slice
+  `~BOX_IF`
+  `~BOX_NODE`
+  `~BOX_PARAMS`
+  `~BOX_TAG`
+  `~BOX_TAGS`
+}}
+{{ $lists := slice
   `~BOX_HIDE_CONTENT`
   `~BOX_HIDE_CATEGORIES`
   `~BOX_HIDE_READING_TIME`
@@ -169,6 +175,7 @@
   | append $bg_boxes
   | append $boxi_boxes
   | append $boxi
+  | append $other
   | append $blocks
   | append `~BOX`
 }}
@@ -185,8 +192,9 @@
     | append $image
     | append $button
     | append $bg_boxes
-    | append $list
+    | append $lists
     | append $boxi
+    | append $other
   ))
   (dict "&BOX" (dict
     "name"      `box`
@@ -227,6 +235,7 @@
     | append $divider
     | append $boxi_boxes
     | append $boxi
+    | append $other
   ))
   (dict "&SECTIONS_FIELDS" (slice
     `~BOX_NAME`
@@ -243,6 +252,7 @@
     | append $divider
     | append $boxi_boxes
     | append $boxi
+    | append $other
     | append $blocks
     | append `~BOX`
     | append `~BOXES`
@@ -261,6 +271,7 @@
     | append $size_modal
     | append $boxi_boxes
     | append $boxi
+    | append $other
   ))
   (dict "&MODALS_FIELDS" (slice
     `~BOX_NAME`
@@ -276,6 +287,7 @@
     | append $size_modal
     | append $boxi_boxes
     | append $boxi
+    | append $other
     | append $blocks
     | append `~BOX`
     | append `~BOXES`

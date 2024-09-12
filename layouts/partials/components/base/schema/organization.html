@@ -11,7 +11,7 @@
   {{ $names_more := after 1 $names }}
 
   {{/*  Description  */}}
-  {{ $description  := $.Summary | default $.Description | default .summary | default .description | plainify }}
+  {{ $description  := or $.Summary $.Description .summary .description | plainify }}
 
   {{/*  URL  */}}
   {{ $url    := .url | default $.Page.Permalink }}

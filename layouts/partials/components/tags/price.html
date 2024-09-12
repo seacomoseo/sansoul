@@ -1,0 +1,6 @@
+{{- with .Page.Params.price -}}
+  <i class="box__tag">
+    {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" "tag" "emoji" "🏷️") -}}
+    <i>{{ . | lang.FormatCurrency 2 site.Params.currency }}</i>
+  </i>
+{{- end -}}

@@ -42,6 +42,7 @@
   {{- $body_menu_sticky      := "" -}}
   {{- $body_menu_logo_sticky := "" -}}
   {{- $body_menu_transparent := "" -}}
+  {{- $body_menu_sections    := "" -}}
   {{- with $menu -}}
     {{- if not .hide -}}
       {{- $body_menu             = "body-menu" -}}
@@ -53,6 +54,9 @@
     {{- if .logo -}}
       {{- $body_menu_logo        = "body-menu--logo" -}}
       {{- $body_menu_logo_sticky = cond (not .logo_sticky) "" "body-menu--logo--sticky" -}}
+    {{- end -}}
+    {{- if $menu.show_sections -}}
+      {{- $body_menu_sections    = "body-menu--sections" -}}
     {{- end -}}
   {{- end -}}
 
@@ -67,6 +71,7 @@
     $body_menu_sticky
     $body_menu_logo_sticky
     $body_menu_transparent
+    $body_menu_sections
   -}}
 
   {{/*  BODY ATTRIBUTES  */}}

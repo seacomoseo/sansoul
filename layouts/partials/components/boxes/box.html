@@ -1,36 +1,44 @@
 {{- $box := . -}}
+
+{{/*  MERGE PARAMS  */}}
 {{- range .params -}}
-  {{- $param_box  := .box -}}
-  {{- $param_page := "" -}}
-  {{- if eq .page "filename" -}}
-    {{- $param_page = page.File.TranslationBaseName -}}
+  {{- $value    := .value -}}
+  {{- with .value -}}
+    {{- $value   = unmarshal . -}}
   {{- else -}}
-    {{- $param_page = partial "functions/param" .page -}}
+    {{- with .page -}}
+      {{- if eq . "filename" -}}
+        {{- $value = page.File.TranslationBaseName -}}
+      {{- else -}}
+        {{- $value = partial "functions/param" . -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
-  {{- if $param_page -}}
-    {{ $keys  := split $param_box "." }}
-    {{ $obj   := dict }}
+  {{- if $value -}}
+    {{ $keys := split .box "." }}
+    {{ $obj  := dict }}
     {{ if eq (len $keys) 2 }}
-      {{ $obj  = dict (index $keys 0) (dict (index $keys 1) $param_page) }}
+      {{ $obj = dict (index $keys 0) (dict (index $keys 1) $value) }}
     {{ else }}
-      {{ $obj  = dict (index $keys 0) $param_page }}
+      {{ $obj = dict (index $keys 0) $value }}
     {{ end }}
-    {{- $box   = merge $box $obj -}}
+    {{- $box  = merge $box $obj -}}
   {{- end -}}
 {{- end -}}
 
+{{/*  BOX  */}}
 {{- with $box -}}
-  {{- $align       := .align       -}}
-  {{- $size        := .size        -}}
-  {{- $data        := .data        -}}
-  {{- $data_custom := .data_custom -}}
+  {{- $align := .align -}}
+  {{- $size  := .size  -}}
+  {{- $tag  := .tag  -}}
+  {{- $tags := .tags -}}
 
   {{- $header := eq .id "header" -}}
   {{- $footer := eq .id "footer" -}}
   {{- $modal  := .modal | default false -}}
   {{- $main   := not .level -}}
   {{- $level  := .level | default (cond $header 1 (cond $modal 3 2)) -}}
-  {{- $tag    := .tag | default "div" -}}
+  {{- $node   := .node | default "div" -}}
 
   {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
   {{- $show          := site.Data.styles.performance.show -}}
@@ -59,7 +67,7 @@
     .is_wrap
     .span
     .span_min
-    .tag
+    .node
     .color
     .gradient
     .bg
@@ -112,14 +120,7 @@
     )) -}}
 
     {{/*  BOX  */}}
-    {{- print
-      "<"
-      $tag
-      " "
-      $box_attr
-      ">"
-      | safeHTML
-    -}}
+    {{- print "<" $node " " $box_attr ">" | safeHTML -}}
 
       {{/*  BACKGROUND  */}}
       {{- partial "components/bg" (merge . (dict
@@ -217,12 +218,10 @@
     {{ end }}
 
     {{/*  LIST  */}}
-    {{ if .list }}
+    {{ if .lists }}
       {{- partial "components/blocks/lists" (merge
-        .list
         .
         (dict
-          "list"      nil
           "span_xl"   $span_xl
           "span_xs"   $span_xs
           "level"     $level
@@ -294,21 +293,23 @@
 
     {{/*  END TYPES  */}}
 
-    {{/*  DATA  */}}
-    {{- if and (ne .data "hide") (or .data .article_list .data_custom) -}}
+    {{/*  TAGS  */}}
+    {{- if and (ne .tag "hide") (or .tag .list_pages .tags) -}}
       {{- with .Page | default page -}}
-        {{ $type := cond (or (eq $data "row") (eq $data nil)) "" $data }}
-        {{ $type  = cond (and (eq $level 1) (eq .Params.base "event")) "column" $data }}
-        <div class="data {{ with $type }}data--{{ . }}{{ end }}">
-          {{- if $data_custom -}}
-            {{- range $data_custom -}}
-              <i class="data__item">
-                {{- partial "components/icon" (dict "class" "data__icon" "icon" .icon) -}}
-                <i>{{- .label -}}</i>
-              </i>
+        {{ $type := cond (or (eq $tag "row") (eq $tag nil)) "" $tag }}
+        {{ $type  = cond (and (eq $level 1) (eq .Params.base "event")) "column" $tag }}
+        <div class="box__tags {{ with $type }}box__tags--{{ . }}{{ end }}">
+          {{- with $tags -}}
+            {{- range . -}}
+              {{- if .label -}}
+                <i class="box__tag">
+                  {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" .icon) -}}
+                  <i>{{- .label -}}</i>
+                </i>
+              {{- end -}}
             {{- end -}}
           {{- else -}}
-            {{- partial "components/data/_" (dict "Page" . "box" $box) -}}
+            {{- partial "components/tags/_" (dict "Page" . "box" $box) -}}
           {{- end -}}
         </div>
       {{- end -}}
@@ -324,7 +325,7 @@
         {{- $class  = "box__button hide" -}}
         {{- $button = "none" -}}
         {{- $icon   = "" -}}
-        {{- $label  = .anchor | default .hanchor | default .title -}}
+        {{- $label  = or .anchor .hanchor .title -}}
       {{- end -}}
       {{/*  {{- if not $like_article -}}  */}}
         {{- partial "components/link" (dict
@@ -371,6 +372,6 @@
     {{- end -}}
 
   {{- if $is_wrap -}}
-    {{- print "</" $tag ">" | safeHTML -}}
+    {{- print "</" $node ">" | safeHTML -}}
   {{- end -}}
 {{- end -}}

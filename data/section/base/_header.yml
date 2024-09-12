@@ -1,12 +1,23 @@
-tag: header
+node: header
 align: left
 hide_reading_time: true
 boxes:
 - if: breadcrumbs
-  tag: nav
+  node: nav
   content: |
     {{< breadcrumbs >}}
 - title: '{{% param title %}}'
-- data: row
+- tag: row
+  # tags:
+  # - icon: '{{% param base.icon %}}'
+  #   label: '{{% type %}}'
+  # - icon: calendar
+  #   label: '{{% date-type %}}'
+  # - icon: bookmark
+  #   label: '{{% taxonomy category %}}'
+  # - icon: user
+  #   label: '{{% taxonomy auhor %}}'
+  # - icon: briefcase
+  #   label: '{{% param job %}}'
 - if: image
   image: '{{% param image %}}'

@@ -5,8 +5,9 @@
   --columns-min: 1;
   --columns-max: var(--columns-min, 1);
 
-  --columns-gap-min: min(var(--columns-gap-max), 1);
-  @include fluid-size(--columns-gap-max, 1, 1, 2);
+  --columns-gap-min: 1;
+  @include fluid-size(--columns-gap-max-default, 1, 1, 2);
+  --columns-gap-max: var(--columns-gap-min, var(--columns-gap-max-default, 1));
 
   @include fluid-size(--gap-width, 1em, var(--columns-gap-min), var(--columns-gap-max));
   column-gap: var(--gap-width);

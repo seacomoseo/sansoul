@@ -1,4 +1,4 @@
-.data {
+.box__tags {
   display: flex;
   flex-wrap: wrap;
   gap: .5em 1em;
@@ -13,10 +13,10 @@
     justify-content: flex-end;
   }
 }
-.data--space {
+.box__tags--space {
   justify-content: space-between;
 }
-.data--column {
+.box__tags--column {
   flex-direction: column;
   align-content: center;
   &:where(.align-left *) {
@@ -26,7 +26,7 @@
     align-content: flex-end;
   }
 }
-.data__item {
+.box__tag {
   display: flex;
   align-items: center;
   gap: .5em;
@@ -37,7 +37,7 @@
     @include font-title;
   }
 }
-.data__icon {
+.box__tag-icon {
   color: var(--main);
   &:where(time > *) {
     margin-left: .25em;

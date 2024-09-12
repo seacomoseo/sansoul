@@ -1,9 +1,9 @@
 import { scrollShot } from './scroll-shot'
 
 export function initMenuScrollSpy () {
-  const isSectionedPage = document.querySelector('body.type-page')
-  const menuItemActive = document.querySelector('.menu__item--active')
-  if (isSectionedPage) {
+  const isShowSections = document.querySelector('.body-menu--sections')
+  if (isShowSections) {
+    const menuItemActive = document.querySelector('.menu__item--active')
     scrollShot({
       rootMargin: '-50% 0% -50%',
       query: '.section[id]:not(footer),#header',
@@ -19,7 +19,7 @@ export function initMenuScrollSpy () {
               menuItemsActive.forEach(item => item.classList.remove('menu__item--active'))
             }
             // Add menu item active
-            const menuLinkId = document.querySelector('.menu__item > [href="#' + e.id + '"], .menu__item > [href="/#' + e.id + '"]')
+            const menuLinkId = document.querySelector(`.menu__item > [href="#${e.id}"], .menu__item > [href="/#${e.id}"]`)
             if (menuLinkId) {
               menuLinkId.parentNode.classList.add('menu__item--active')
             }

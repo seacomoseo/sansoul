@@ -28,6 +28,7 @@
       "@type" "Person"
       "name"  .title
     )
+    "reviewBody"   (.content | markdownify | plainify)
     "itemReviewed" $item_reviewed
     "reviewRating" $rr
   ) }}

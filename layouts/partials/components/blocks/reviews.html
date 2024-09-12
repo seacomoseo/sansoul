@@ -95,8 +95,8 @@
         <div class="review">
           <div {{ $review_attr | safeHTMLAttr }}>
             <div class="bg-color"></div>
-            {{- $icon       := .icon | default "quote-left" -}}
-            {{- $icon_right := .icon_right | default .icon | default "quote-right" -}}
+            {{- $icon       := or             .icon "quote-left" -}}
+            {{- $icon_right := or .icon_right .icon "quote-right" -}}
             {{- partial "components/icon" (dict
               "class" "review__icon"
               "icon"  $icon

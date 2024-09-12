@@ -2,8 +2,8 @@
 {{- if $there_are_authors -}}
   {{- with .Page.Params.author -}}
     {{- with $.GetPage "author" . -}}
-      <i class="data__item">
-        {{- partial "components/icon" (dict "class" "data__icon" "icon" "user" "alt" "👤") -}}
+      <i class="box__tag">
+        {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" "user" "alt" "👤") -}}
         {{- if $.box -}}
           {{- .Title -}}
         {{- else -}}
