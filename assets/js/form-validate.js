@@ -64,7 +64,7 @@ export function initFormValidate () {
     }
 
     forms.forEach(e => {
-      e.addEventListener('submit', submit => {
+      e.addEventListener('submit', async submit => {
         submit.preventDefault()
 
         let valid = true
@@ -179,11 +179,11 @@ export function initFormValidate () {
           let action = window.atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
           const netlifyForm = action === `/${form.id}`
-          const googleForm = action.includes('docs.google.com/forms')
+          const googleScript = action.includes('script.google.com')
           const formSubmitCo = action.includes('formsubmit.co')
           const workersLGTN = action.includes('lagrantribunomada.workers.dev')
           const formSubmitCoAjax = formSubmitCo && !isFileType
-          if (!netlifyForm && !googleForm && !formSubmitCoAjax && !workersLGTN) {
+          if (!netlifyForm && !googleScript && !formSubmitCoAjax && !workersLGTN) {
             if (formSubmitCo) action = action.replace('/ajax', '')
             form.action = action
             // like form.submit()
@@ -201,31 +201,64 @@ export function initFormValidate () {
 
             changeCheckbox(form, true)
             const formOptions = { method: 'POST' }
-            if (isFileType || formSubmitCo) {
+            if ((!googleScript && isFileType) || formSubmitCo) {
+              // Send with files
               formOptions.timeout = 30000
+              // formOptions.headers = { Accept: 'application/json' }
               formOptions.body = new FormData(form)
             } else {
+              // Send withouth files, except googleScript tath convert to base64
+              let formData
+              if (googleScript) {
+                formData = new FormData()
+                const filePromises = []
+
+                // Add all inputs withouth type files
+                const formDataAux = new FormData(form)
+                for (const [key, value] of formDataAux.entries()) {
+                  if (!key.startsWith('📄')) {
+                    formData.append(key, value)
+                  }
+                }
+
+                // Add inputs type files
+                form.querySelectorAll('input[type="file"]').forEach(input => {
+                  if (input.files.length) {
+                    const files = Array.from(input.files)
+                    files.forEach(file => {
+                      const filePromise = new Promise(resolve => {
+                        const reader = new FileReader()
+                        reader.onloadend = () => {
+                          const base64File = reader.result // .split(',')[1]
+                          console.log(base64File)
+                          formData.append(input.name, base64File)
+                          resolve()
+                        }
+                        reader.readAsDataURL(file)
+                      })
+                      filePromises.push(filePromise)
+                    })
+                  }
+                })
+
+                await Promise.all(filePromises)
+              } else {
+                formData = new FormData(form)
+              }
               formOptions.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
-              formOptions.body = new URLSearchParams(new FormData(form)).toString()
+              formOptions.body = new URLSearchParams(formData).toString()
             }
-            if (googleForm) formOptions.mode = 'no-cors'
             changeCheckbox(form, false)
 
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {
-                if (!response.ok) {
-                  throw new Error('HTTP status ' + response.status)
+                if (!response.ok && !response.result === 'success' && !response.error) {
+                  throw new Error('HTTP status ' + (response.status || response.error))
                 }
               })
               .then(response => { formSubmitSuccess(form) })
-              .catch(error => {
-                if (googleForm && error === 'Error: HTTP status 0') {
-                  formSubmitSuccess(form)
-                } else {
-                  formSubmitError(error)
-                }
-              })
+              .catch(error => { formSubmitError(error) })
           }
         } else {
           // alert('Completa correctamente los campos requeridos')

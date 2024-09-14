@@ -37,7 +37,7 @@
   -}}
 {{- $form_id       := print ((i18n "form") | urlize) "-" (cond (eq .id "header") .Page.Slug .id) (cond (eq $num 1) "" (print "-" $num)) -}}
 {{- $netlify_forms := not .action -}}
-{{- $googleForm    := in .action "docs.google.com/forms" -}}
+{{- $googleScript  := in .action "script.google.com" -}}
 {{- $formsubmit_co := in .action "formsubmit.co" -}}
 {{- $inputs_fill   := site.Data.styles.inputs.fill -}}
 {{- $chamfer       := site.Data.styles.rounded.chamfer -}}
@@ -55,7 +55,11 @@
     name="{{ $form_id }}"
     action="{{ $action }}"
   {{- else -}}
-    {{- if $formsubmit_co }} enctype="multipart/form-data"{{ end }}
+    {{- $is_file_type  := false -}}
+    {{- range where .inputs `type` `file` -}}
+      {{- $is_file_type = true -}}
+    {{- end -}}
+    {{- if or $is_file_type $formsubmit_co | and (not $googleScript) }} enctype="multipart/form-data"{{ end }}
     target="_blank"
     action="{{ $action | base64Encode }}"
   {{- end -}}
@@ -72,11 +76,16 @@
       <input type="hidden" name="subject" value="{{ $form_id }}" data-remove-prefix>
       <input type="hidden" name="url" value="{{ $form_id }}">
     {{- end -}}
+  {{- else if $googleScript -}}
+    <input type="hidden" name="_domain" value="{{ (urls.Parse site.BaseURL).Host }}">
+    <input type="hidden" name="_id" value="{{ $form_id }}">
+    <input type="hidden" name="_subject" value="{{ $subject }}">
+    <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
   {{- else if $formsubmit_co -}}
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
-    {{/*  <input type="hidden" name="_next" value="{{ .Page.Permalink }}#{{ .id }}">  */}}
+    {{/*  <input type="hidden" name="_next" value="{{ .Page.Permalink }}#{{ $form_id }}">  */}}
   {{- end -}}
 
 
@@ -96,11 +105,15 @@
         "></div>
       {{ end }}
       {{- if $type | in (slice "text" "email" "tel" "number" "date" "time" "file") -}}
-        {{- $onfocus := false -}}
+        {{- $onfocus  := false -}}
         {{- if (eq $type "date" | or (eq $type "time")) | and (not .shortcode) -}}
           {{- $onfocus = true -}}
         {{- end -}}
-        <input class="form__input" type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}" name="{{ .name }}" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }} {{ if $onfocus }}onfocus="(this.type='{{ $type }}')"{{ end }} {{ with .accept }}accept="{{ . }}"{{ end }}>
+        {{- $name  := .name -}}
+        {{- if and $googleScript (eq $type "file") -}}
+          {{- $name = print "📄" .name -}}
+        {{- end -}}
+        <input class="form__input" type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}" name="{{ $name }}" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }} {{ if $onfocus }}onfocus="(this.type='{{ $type }}')"{{ end }} {{ with .accept }}accept="{{ . }}"{{ end }} {{ if .multiple }}multiple{{ end }}>
       {{- else if $type | eq "textarea" -}}
         <textarea class="form__textarea" name="{{ .name }}" rows="3" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }}></textarea>
       {{- else if $type | eq "select" -}}
@@ -118,7 +131,7 @@
           <legend>{{ $legend }}{{ if .required }} *{{ end }}</legend>
           {{- range .options -}}
             {{- $option := .value | default .option -}}
-            {{- if and $is_checkbox (not $googleForm) -}}
+            {{- if $is_checkbox -}}
               {{- $name   = .value | default (print $legend " ➡️ " $option) -}}
               {{- $option = "✅" -}}
             {{- end -}}
