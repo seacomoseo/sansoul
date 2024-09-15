@@ -22,10 +22,10 @@
   {{ $type   := .type | default "/" }}
   {{ $parent := site.GetPage $type }}
   {{ $pages  := $parent.RegularPages }}
-  {{ if eq . "related" }}
+  {{ if eq .type "related" }}
     {{ $type   = page.Type }}
     {{ $parent = site.GetPage $type }}
-    {{ $pages  = $parent.Pages.Related (dict "document" page) }}
+    {{ $pages  = $parent.Pages.Related page }}
   {{ end }}
   {{/*
   {{ if eq $parent.Params.base "event" }}

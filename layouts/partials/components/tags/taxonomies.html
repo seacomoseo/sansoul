@@ -5,7 +5,7 @@
 
 {{- if $show_categories -}}
   {{- with index .item.Page.Params .type -}}
-    {{- $name := index site.Data.utilities.types $.type -}}
+    {{- $name := index site.Data.utilities.defaults $.type -}}
     {{- range . -}}
       {{- $parent_type := site.GetPage $.type . -}}
       <i class="box__tag">
