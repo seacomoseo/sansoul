@@ -1,7 +1,7 @@
 
 {{ $item_reviewed  := dict }}
-{{ if in (slice "product" "organization" "service") page.Params.base }}
-  {{ $item_reviewed = (dict "@id" (print page.Permalink "#schema-" page.Params.base)) }}
+{{ if in (slice "product" "organization") page.Params.base }}
+  {{ $item_reviewed = dict "@id" (print page.Permalink "#schema-" page.Params.base) }}
 {{ else }}
   {{ $item_reviewed = partial "components/base/schema/organization-id" . }}
 {{ end }}

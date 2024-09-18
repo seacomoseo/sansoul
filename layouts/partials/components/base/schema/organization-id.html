@@ -1,12 +1,14 @@
 {{ $main          := site.GetPage (site.Params.main_organization | default "/") | default site.Home }}
 {{ $url           := $main.Permalink }}
-{{ $organization  := dict "@id" (print $url "#schema-organization") }}
+{{ $organization  := dict
+  "@id"  (print $url "#schema-organization")
+  "name" (index $main.Params.names 0 | default site.Title | default "Name")
+}}
 
 {{ if ne $main.Params.base "organization" }}
   {{ $organization = merge $organization (dict
     "@type"        "Organization"
     "url"          $url
-    "name"         site.Title
     "desccription" site.Params.description
   ) }}
 {{ end }}

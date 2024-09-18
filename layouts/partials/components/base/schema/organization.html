@@ -6,7 +6,7 @@
   {{ $types      := .types | default (slice "Organization") }}
 
   {{/*  Names  */}}
-  {{ $names      := .names | default (slice "Name") }}
+  {{ $names      := .names | default (slice (site.Title | default "Name")) }}
   {{ $name       := index $names 0 }}
   {{ $names_more := after 1 $names }}
 
