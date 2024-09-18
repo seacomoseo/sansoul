@@ -36,14 +36,14 @@
     "collapsed"      true
     "i18n"           true
     "fields"         (slice
+      (dict "name" `permalinks`  "widget" `string` "i18n" true "required" false "label" $t.types_permalinks "hint" $t.types_permalinks_hint)
+      (dict "<<" (slice (dict "required" false "hint" $t.types_slug_hint) `~P_SLUG`))
       (dict "name" `singular`    "widget" `string` "i18n" true "required" false "label" $t.types_singular)
       (dict "<<" (slice (dict "required" false) `~P_TITLE`))
+      `~P_IMAGE`
       `~P_TITLE_SEO`
-      (dict "<<" (slice (dict "required" false "hint" $t.types_slug_hint) `~P_SLUG`))
-      (dict "name" `permalinks`  "widget" `string` "i18n" true "required" false "label" $t.types_permalinks "hint" $t.types_permalinks_hint)
       `~P_DESCRIPTION`
       (dict "name" `hint`        "widget" `string` "i18n" true "required" false "label" $t.types_hint)
-      `~P_IMAGE`
       (dict "<<" (slice (dict "name" `content`) `~P_BODY`))
     )
   ))

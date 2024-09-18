@@ -138,7 +138,7 @@
   `~BOX_TAG`
   `~BOX_TAGS`
 }}
-{{ $lists := slice
+{{ $list := slice
   `~BOX_HIDE_CONTENT`
   `~BOX_HIDE_CATEGORIES`
   `~BOX_HIDE_READING_TIME`
@@ -176,8 +176,8 @@
   | append $boxi_boxes
   | append $boxi
   | append $other
-  | append $blocks
   | append `~BOX`
+  | append $blocks
 }}
 
 
@@ -192,7 +192,7 @@
     | append $image
     | append $button
     | append $bg_boxes
-    | append $lists
+    | append $list
     | append $boxi
     | append $other
   ))
@@ -253,8 +253,8 @@
     | append $boxi_boxes
     | append $boxi
     | append $other
-    | append $blocks
     | append `~BOX`
+    | append $blocks
     | append `~BOXES`
   ))
 
@@ -288,8 +288,8 @@
     | append $boxi_boxes
     | append $boxi
     | append $other
-    | append $blocks
     | append `~BOX`
+    | append $blocks
     | append `~BOXES`
   ))
 

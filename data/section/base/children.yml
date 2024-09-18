@@ -4,32 +4,12 @@ id: lists
 size: md
 pt: 0
 boxes:
-- if: root
-  lists:
-  - type: '{{% type %}}'
-- if: parent
+- if: collection
+  list:
+    type: '{{% type %}}'
+- if: taxonomy
   params:
-  - box: lists
-    value: '[ { "type": "all", "{{% type %}}": "{{% filename %}}" } ]'
-
-  # lists:
-  # - type: all
-  #   '{{% type %}}': '{{% filename %}}'
-
-  # lists:
-  #   types: []
-  #   taxonomies:
-  #   - taxonomy: '{{% type %}}'
-  #     files: [ '{{% filename %}}' ]
-  #   data: null
-  #   end: null
-  #   max: null
-
-  # lists:
-  # - type: all
-  #   taxonomies:
-  #   - taxonomy: '{{% type %}}'
-  #     files: [ '{{% filename %}}' ]
-  #   data: null
-  #   end: null
-  #   max: null
+  - box: list.{{% type %}}
+    page: filename
+  list:
+    type: all

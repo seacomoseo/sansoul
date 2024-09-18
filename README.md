@@ -113,7 +113,7 @@ fi
 - Copiar desde `data/articles.yml` > `content.logo` hacia `data/template.yml` > `menu.es.image`
 - Copiar desde `data/articles.yml` > `content.title` hacia `data/template.yml` > `menu.es.title`
 - Copiar desde `data/articles.yml` > `content.subtitle` hacia `data/template.yml` > `menu.es.subtitle`
-- Copiar desde `data/articles.yml` > `common` hacia `data/template.yml` > `lists`
+- Copiar desde `data/articles.yml` > `common` hacia `data/template.yml` > `list`
 - Si `content.es/authors.md` > `draft: false` entonces añadir a `data/types.yml` > `_: []` esto: `{ base: author, taxonomy_of: [ name: blog, schema: author ] }`
 - Si `content.es/blog.md` > `draft: false` entonces añadir a `data/types.yml` > `_: []` esto: `{ base: article, name: blog, related: true }`
 - Si `content.es/categories.md` > `draft: false` entonces añadir a `data/types.yml` > `_: []` esto: `{ base: page, name: category, taxonomy_of: [ { name: blog, multiple: true, breadcrumbs: true, schema: articleSection }, { name: category, multiple: true, breadcrumbs: true } ] }`

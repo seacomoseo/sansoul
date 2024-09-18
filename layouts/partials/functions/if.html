@@ -17,9 +17,9 @@
     {{ $if = site.Params.disqus }}
   {{ else if eq . "children" }}
     {{ $if = or $.Page.IsSection $.Page.Params.taxonomy_of }}
-  {{ else if eq . "root" }}
+  {{ else if eq . "collection" }}
     {{ $if = $.Page.IsSection }}
-  {{ else if eq . "parent" }}
+  {{ else if eq . "taxonomy" }}
     {{ $is_parent   := $.Page.Params.taxonomy_of }}
     {{ $is_not_root := not $.Page.IsSection }}
     {{ $if = and $is_parent $is_not_root }}

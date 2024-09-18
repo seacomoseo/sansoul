@@ -95,7 +95,7 @@ tags:
 - icon: star
   label: Ejemplaco
 # view
-view: [] # [all, text, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, step, gallery, collapsible, gss, review, contact, form, map, boxes ]
+view: [] # [all, text, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, collapsibles, gallery, reviews, contact, form, map, gss, boxes ]
 
 
 ## BOXES
@@ -118,7 +118,7 @@ box:
   # add same to container
   # + remove `box_` of bg keys
   # + view
-  view: [] # [ all, group, text, icon, image, button, bg, boxi, others, lists ]
+  view: [] # [ all, group, text, icon, image, button, bg, boxi, others, list ]
 boxes:
 - title: Título de Caja 1
   # add same to container
@@ -130,7 +130,7 @@ boxes:
   grow: false
   align_y: stretch # [ stretch, top, center, bottom ]
   # + view
-  view: [] # [ all, text, icon, image, button, bg, boxi-boxes, boxi, others, step, gallery, lists, collapsible, gss, review, contact, form, map, boxes ]
+  view: [] # [ all, text, icon, image, button, bg, boxi-boxes, boxi, others, list, steps, collapsibles, gallery, reviews, contact, form, map, gss, boxes ]
 - title: Título de Caja 2
 - title: Título de Caja 3
 - boxes:
@@ -140,18 +140,18 @@ boxes:
 
 ## TYPES
 
-- lists:
-  - type: null # [ all, blog, event, product, category, author, page, ..., /, related ]
+- list:
+    type: null # [ all, blog, event, product, category, author, page, ..., /, related ]
+    max: 4 # [ > 1 ]
+    date: 2023-05-01 00:00:00 # date
+    end: 2023-11-01 00:00:00 # date
     category:
     - categoria-2
     author:
     - admin
-    date: 2023-05-01 00:00:00 # date
-    end: 2023-11-01 00:00:00 # date
-    max: 4 # [ > 1 ]
   box:
     # add like box
-    # + lists
+    # + list
     hide_content: false
     hide_category: false
     hide_reading_time: false

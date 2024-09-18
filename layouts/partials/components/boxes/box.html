@@ -218,8 +218,8 @@
     {{ end }}
 
     {{/*  LIST  */}}
-    {{ if .lists }}
-      {{- partial "components/blocks/lists" (merge
+    {{ if .list }}
+      {{- partial "components/blocks/list" (merge
         .
         (dict
           "span_xl"   $span_xl
@@ -231,7 +231,7 @@
 
     {{/*  COLLAPSIBLE  */}}
     {{ if .collapsibles }}
-      {{- partial "components/blocks/collapsible" (merge
+      {{- partial "components/blocks/collapsibles" (merge
         .
         (dict "level" $level)
       ) -}}

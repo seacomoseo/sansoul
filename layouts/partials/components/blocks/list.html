@@ -1,0 +1,148 @@
+{{ $e := . }}
+
+{{ with .list }}
+  {{ if and .type (ne $.type "related") }}
+    {{ $list  := . }}
+    {{ $max   := .max | default 999 }}
+    {{ $types := slice .type }}
+    {{ if eq .type "all" }}
+      {{ $types   = slice }}
+      {{ range site.Sections }}
+        {{ $types = $types | append .Type }}
+      {{ end }}
+      {{ $types   = $types | append "/" }}
+    {{ end }}
+
+    {{/*  {{ $types_many := gt (len $types) 1 }}  */}}
+
+    {{ range $types }}
+      {{ $type   := . }}
+      {{ $parent := site.GetPage $type }}
+      {{ $pages  := $parent.RegularPages }}
+      {{ if eq $type "related" }}
+        {{ $parent = site.GetPage page.Type }}
+        {{ $pages  = $parent.Pages.Related page }}
+      {{ end }}
+      {{/*
+      {{ if eq $parent.Params.base "event" }}
+        {{ $pages = sort $pages "Date" "desc" }}
+      {{ end }}
+      */}}
+      {{ $firsts_pages := $pages }}
+
+      {{ if and page.IsSection (eq (len $types) 1) (ne $type "related") }}
+        {{/*  PAGE PARENT  */}}
+        {{ $firsts_pages = (page.Paginate $pages $max).Pages }}
+        {{ partial "functions/pagination" page
+          | replaceRE `\n|\s{2,}|<li.*?>|</li>` ``
+          | replaceRE `<ul class="pagination pagination-default">` `<div class="pagination buttons">`
+          | replaceRE `</ul>` `</div>`
+          | replaceRE `page-link` `button button--sm`
+          | replaceRE `span` `i`
+          | safeHTML
+        }}
+      {{ else }}
+        {{/*  PAGE RESTS  */}}
+        {{/*  All taxonomies  */}}
+        {{ $taxonomies  := slice }}
+        {{ range site.Sections }}
+          {{ range .Params.taxonomies }}
+            {{ $taxonomies = $taxonomies | append . }}
+          {{ end }}
+        {{ end }}
+        {{/*  Filter by taxonomies  */}}
+        {{/*  {{ range $parent.Params.taxonomies }}  */}}
+        {{ range uniq $taxonomies }}
+          {{ $filenames := index $list .name }}
+          {{ if $filenames }}
+            {{ $filenames = slice | append $filenames }}
+            {{ $pages = where $pages (print "Params." .name) (cond (not .multiple) "in" "intersect") $filenames }}
+          {{ end }}
+        {{ end }}
+        {{/*  Filter by date  */}}
+        {{ with $list.date }}
+          {{ $pages = where $pages "Date" "ge" (time .) }}
+        {{ end }}
+        {{ with $list.end }}
+          {{ $pages = where $pages "Date" "le" (time .) }}
+        {{ end }}
+        {{/*  Maximum number of pages  */}}
+        {{ $firsts_pages = $pages | first $max }}
+      {{ end }}
+
+      {{ if len $pages }}
+        {{/*
+        {{ if $types_many }}
+          <p class="list-title h4">{{ $parent.Title }}</p>
+        {{ end }}
+        */}}
+
+        {{/*  TEMPLATE  */}}
+        {{- $template_all       := site.Data.template.list -}}
+        {{- $template_type      := $parent.Params.list -}}
+        {{- $template_related   := dict -}}
+        {{- if eq $type "related" -}}
+          {{- with site.Data.template.related -}}
+            {{- $template_related = . -}}
+          {{- end -}}
+          {{- with $parent.Params.related -}}
+            {{- $template_related = merge $template_related . -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $template_box       := $.box | default dict -}}
+        {{- $template           := merge
+          $template_all
+          $template_type
+          $template_related
+          $template_box
+        -}}
+
+        {{/*  PAGES TO BOXES  */}}
+        {{- $boxes   := slice -}}
+        {{- range $firsts_pages -}}
+          {{- $content := .Summary | default .Description | truncate 155 | plainify -}}
+          {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
+          {{- $page    := merge .Params (dict
+            "Page"    .
+            "link"    .RelPermalink
+            "content" $content
+            "price"   $price
+            "icon"    ""
+            "social"  ""
+          ) -}}
+          {{- $boxes = $boxes | append $page -}}
+        {{- end -}}
+
+        {{/*  BOXES  */}}
+        {{- partial "components/boxes/_"
+          (merge
+            $e
+            (dict
+              "box"        $template
+              "boxes"      $boxes
+              "list_pages" true
+            )
+          )
+        -}}
+
+        {{/*  LAST BUTTON  */}}
+        {{ if and (not page.IsSection) (gt (len $pages) (len $firsts_pages)) }}
+          <div class="buttons">
+            {{- partial "components/link"
+              (dict
+                "class"   ""
+                "link"    $parent.RelPermalink
+                "button"  "link"
+                "icon"    "plus"
+                "emoji"   "➕"
+                "label"   (i18n "more")
+                "anchor"  (print (i18n "more") " " $parent.Title)
+                "noindex" true
+              )
+            -}}
+          </div>
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
