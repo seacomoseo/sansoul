@@ -1,42 +1,41 @@
 {{- with .map -}}
-  {{- if or .image .anchor -}}
+  <div class="map box__block">
 
-    <div class="map box__block">
+    {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
 
-      {{ $image    := .image }}
-      {{ if not (hasPrefix .image "http") }}
-        {{ $image   = resources.Get (print "/media/" .image) }}
-        {{ with $image }}
-          {{ $image = .RelPermalink }}
+      {{ if not $.link }}
+        {{ $image    := . }}
+        {{ if not (hasPrefix . "http") }}
+          {{ $image   = resources.Get (print "/media/" .) }}
+          {{ with $image }}
+            {{ $image = .RelPermalink }}
+          {{ end }}
         {{ end }}
+        <div data-b="{{ $image | base64Encode }}" tabindex="0" role="link">
+      {{ end }}
+      {{ partial "components/image" (dict
+        "src"       .
+        "alt"       (i18n "map")
+        "container" $.container
+        "span_xl"   $.span_xl
+        "span_xs"   $.span_xs
+        "notlazy"   false
+      ) }}
+      {{ if not $.link }}
+        </div>
       {{ end }}
 
-      {{ $link  := .anchor }}
-      {{ if not (hasPrefix .anchor "http") }}
-        {{ $link = partial "functions/map-url" .anchor }}
+    {{ else }}
+
+      {{ $link  := . }}
+      {{ if not (hasPrefix . "http") }}
+        {{ $link = partial "functions/map-url" . }}
         {{ $link = print $link "&z=15&output=embed" }}
       {{ end }}
 
-      {{ if $image }}
+      <iframe loading="lazy" data-src="{{ $link }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
 
-        <div data-b="{{ $link | default $image | base64Encode }}" tabindex="0" role="link">
-          {{ partial "components/image" (dict
-            "src"       .image
-            "alt"       (i18n "map")
-            "container" $.container
-            "span_xl"   $.span_xl
-            "span_xs"   $.span_xs
-            "notlazy"   false
-          ) }}
-        </div>
+    {{ end }}
 
-      {{ else }}
-
-        <iframe loading="lazy" data-src="{{ $link }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
-
-      {{ end }}
-
-    </div>
-
-  {{- end -}}
+  </div>
 {{- end -}}
