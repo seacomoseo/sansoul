@@ -143,6 +143,7 @@ svg.image__inner {
   // }
   --image-margin: calc(var(--box-padding) * -1);
   margin: var(--image-margin);
+  width: calc(100% - var(--image-margin) * 2);
   --image-inset-block-margin: calc(max(var(--box-padding), 1em) - var(--box-gap));
   // --image-inset-padding-radius:;
   --radius-padding: var(--image-inset-padding-radius);
@@ -353,6 +354,8 @@ img[src*=".svg"].image__inner {
       }
     }
   }
+}
+.box {
   // IMAGE HOVER
   > .image--hover {
     .image__inner:not(.image__inner--hover) {

@@ -1,7 +1,8 @@
 .steps {
   list-style: none;
   padding: 0;
-  margin: 0 auto;
+  margin-inline: auto;
+  margin-bottom: 0;
   width: fit-content;
 }
 :root          { --steps-size: 5em; }
@@ -115,7 +116,11 @@
   font-weight: $font-weight-title;
   line-height: 1;
   font-size: calc(var(--steps-size) * .5);
-  color: var(--main-text);
+  @if $buttons-outline {
+    color: var(--text);
+  } @else {
+    color: var(--main-text);
+  }
   z-index: 3;
 }
 .step:after,
@@ -131,17 +136,24 @@
   text-align: left;
   .underline:after {
     margin-left: 0;
+    margin-right: calc(100% - 2em);
   }
   .buttons {
     justify-content: flex-start;
   }
 }
+.step__title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25em;
+}
 .step__title,
 .step__subtitle {
   margin: 0;
 }
-.step__title + .step__subtitle {
-  margin-top: -1rem;
+.step__title + .step__subtitle,
+.step__title.underline + * {
+  margin-top: -.75rem;
 }
 @media (min-width: $screen-md) {
   .steps:not(.boxes *) {
@@ -154,13 +166,16 @@
         .step__content {
           order: -1;
           text-align: right;
-          .underline:after {
-            margin-left: auto;
-            margin-right: 0;
-          }
-          .buttons {
-            justify-content: flex-end;
-          }
+        }
+        .step__title {
+          justify-content: right;
+        }
+        .underline:after {
+          margin-left: calc(100% - 2em);
+          margin-right: 0;
+        }
+        .buttons {
+          justify-content: flex-end;
         }
       }
       &:nth-child(2n) {
