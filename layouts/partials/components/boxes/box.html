@@ -63,8 +63,8 @@
   {{- $like_article   := $link | and (eq .button "hide") -}}
 
   {{/*  WRAP  */}}
-  {{- $is_wrap := or
-    .is_wrap
+  {{- $box_wrap := or
+    .box_wrap
     .span
     .span_min
     .node
@@ -81,7 +81,7 @@
     .gap_y
   -}}
 
-  {{- if $is_wrap -}}
+  {{- if $box_wrap -}}
 
     {{- $image_src        := .image -}}
     {{- $bg_color         := .color | default (cond $modal "white" "") -}}
@@ -284,9 +284,10 @@
       {{- partial "components/boxes/_" (merge
         .
         (dict
-          "level"   $level
-          "span_xl" $span_xl
-          "span_xs" $span_xs
+          "level"    $level
+          "span_xl"  $span_xl
+          "span_xs"  $span_xs
+          "box_wrap" nil
         )
       ) -}}
     {{ end }}
@@ -319,7 +320,7 @@
     {{- if $link -}}
       {{- $class  := "box__button" -}}
       {{- $button := .button -}}
-      {{- $icon   := (cond (eq .licon "none") "" (.licon | default "plus")) -}}
+      {{- $icon   := (cond (eq .licon "none") "" .licon) -}}
       {{- $label  := .label -}}
       {{- if $like_article -}}
         {{- $class  = "box__button hide" -}}
@@ -371,7 +372,7 @@
       {{- end -}}
     {{- end -}}
 
-  {{- if $is_wrap -}}
+  {{- if $box_wrap -}}
     {{- print "</" $node ">" | safeHTML -}}
   {{- end -}}
 {{- end -}}

@@ -55,9 +55,11 @@
 {{ if .ph }}
   {{ $padding_hide          = "ph" }}
 {{ end }}
-{{ with .prev }}
-  {{ if .divider }}
-    {{ $padding_top_divider = "pt-divider" }}
+{{ if $bg }}
+  {{ with .prev }}
+    {{ if .divider }}
+      {{ $padding_top_divider = "pt-divider" }}
+    {{ end }}
   {{ end }}
 {{ end }}
 {{ if .divider | and (not .footer) }}

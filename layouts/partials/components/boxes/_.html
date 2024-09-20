@@ -8,11 +8,24 @@
 {{- $box     := . -}}
 {{- $level   := .level -}}
 
-{{- $is_wrap  := or (ne .box.columns 1) (ne .box.columns_min 1) -}}
+{{- $boxes_wrap  := or
+  (and (ne .box.columns nil)     (ne .box.columns 1))
+  (and (ne .box.columns_min nil) (ne .box.columns_min 1))
+-}}
 
 {{- with .box -}}
-  {{- $is_wrap = or $is_wrap .slider -}}
-  {{- if $is_wrap -}}
+  {{- $boxes_wrap = or
+    $boxes_wrap
+    .gap
+    .gap_min
+    .gap_ny
+    .direction
+    .group_radius
+    .slider
+    .align_y
+    .align_x
+  -}}
+  {{- if $boxes_wrap -}}
     {{- $level = add $.level 1 -}}
 
     {{/*  CLASS  */}}
@@ -99,13 +112,13 @@
               "footer"      $.footer
               "columns"     $columns.max
               "columns_min" $columns.min
-              "is_wrap"     $is_wrap
+              "box_wrap"    $boxes_wrap
               "list_pages"  $.list_pages
             )
           ) }}
         {{ end }}
 
-{{- if $is_wrap -}}
+{{- if $boxes_wrap -}}
   {{- with .box -}}
     </div>
 

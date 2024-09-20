@@ -1,33 +1,33 @@
 import { scrollShot } from './scroll-shot'
 
 export function initVideoMute () {
-  const video = document.querySelector('video[muted]')
-  if (video) {
-    const events = ['click', 'touchstart']
-    // Función para intentar reproducir el vídeo con sonido
-    const tryPlayWithSound = e => {
-      video.muted = false
-      const paused = video.paused
-      video.play().then(() => {
-        if (paused) {
-          video.pause()
-        } else {
-          e.target === video && video.play()
-        }
-        console.log('Reproducción con sonido habilitada')
-        // Remover listeners después de la primera reproducción exitosa
-        events.forEach(e => {
-          document.removeEventListener(e, tryPlayWithSound)
-        })
-      }).catch((err) => {
-        console.log('No se puede reproducir con sonido aún', err)
-      })
-    }
-    // Escuchar clic en cualquier parte de la página, interacción táctil y con teclado
-    events.forEach(e => {
-      document.addEventListener(e, tryPlayWithSound)
-    })
-  }
+  // const video = document.querySelector('video[muted]')
+  // if (video) {
+  //   const events = ['click', 'touchstart']
+  //   // Función para intentar reproducir el vídeo con sonido
+  //   const tryPlayWithSound = e => {
+  //     video.muted = false
+  //     const paused = video.paused
+  //     video.play().then(() => {
+  //       if (paused) {
+  //         video.pause()
+  //       } else {
+  //         e.target === video && video.play()
+  //       }
+  //       console.log('Reproducción con sonido habilitada')
+  //       // Remover listeners después de la primera reproducción exitosa
+  //       events.forEach(e => {
+  //         document.removeEventListener(e, tryPlayWithSound)
+  //       })
+  //     }).catch((err) => {
+  //       console.log('No se puede reproducir con sonido aún', err)
+  //     })
+  //   }
+  //   // Escuchar clic en cualquier parte de la página, interacción táctil y con teclado
+  //   events.forEach(e => {
+  //     document.addEventListener(e, tryPlayWithSound)
+  //   })
+  // }
 
   // When load DOM and sources
   window.addEventListener('load', () => {

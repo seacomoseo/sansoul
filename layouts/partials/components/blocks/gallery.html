@@ -8,7 +8,7 @@
 ) -}}
 {{- $items       := $columns.items | default slice | append .images -}}
 
-{{- $button_icon      := (cond (eq .icon "none") "" (.icon | default "plus")) -}}
+{{- $button_icon      := (cond (eq .icon "none") "" .icon) -}}
 {{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
 {{- $is_button_custom := .link | and (ne .type "rows") -}}
 
@@ -76,7 +76,7 @@
         "link"      .link
         "button"    (.button | default "light")
         "font_alt"  ""
-        "icon"      (cond (eq .licon "none") "" (.licon | default "plus"))
+        "icon"      (cond (eq .licon "none") "" .licon)
         "label"     "none"
         "anchor"    ""
         "noindex"   .ofuscate
