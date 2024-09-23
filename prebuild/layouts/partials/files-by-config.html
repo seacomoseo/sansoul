@@ -110,12 +110,13 @@
             "description"    $description
             "image"          .image
             "draft"          .disabled
-            "noindex"        $noindex
+            "noindex"        true
             "translationKey" $name
             "weight"         (add $k 1)
             "cms"            $cms
             "custom_params"  .params
             "cascade"        ((dict
+              "noindex"     $noindex
               "icon"        $icon
               "emoji"       $emoji
               "type"        $name
@@ -125,6 +126,7 @@
               "taxonomy_of" .taxonomy_of
               "breadcrumbs" $breadcrumbs
             ) | merge .template)
+            | merge site.Data.template
           }}
           {{/*  file  */}}
           {{ $path := print "content." $lang "/" $name "/_index.md" }}
