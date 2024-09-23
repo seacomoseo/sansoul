@@ -6,11 +6,12 @@
     {{- $title     := .title    | default (index . page.Lang).title -}}
     {{- $subtitle  := .subtitle | default (index . page.Lang).subtitle -}}
     {{- $container := .size     | default "lg" -}}
-    {{- if and $.transparent (not $.logo_sticky) -}}
+    {{- if and .transparent (not .logo_sticky) -}}
+      {{- $color  = print "bg bg-" ($.background.color | default "white") -}}
       {{- with partial "functions/sections" page -}}
         {{- $section := index . 0 -}}
-        {{- with $section.color  -}}
-          {{- $color  = print "bg bg-" . | default "white" -}}
+        {{- with $section.color -}}
+          {{- $color  = print "bg bg-" (. | default "white") -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
