@@ -88,7 +88,7 @@
         {{ $cms       = dict
           "title"      (or $cms.title    $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
           "singular"   (or $cms.singular $cms.title    (index $i18n_cms (print "types_default_" $name "_singular"   )) $name)
-          "hint"       (or $cms.hint                   (index $i18n_cms (print "types_default_" $name "_hint"       )))
+          "hint"       (or $type.hint                  (index $i18n_cms (print "types_default_" $name "_hint"       )))
           "permalinks" $permalinks
         }}
 
@@ -99,8 +99,8 @@
           {{ $singular    := or .singular    .title    (index $t (print "types_default_" $name "_singular"   )) $name }}
           {{ $description := or .description           (index $t (print "types_default_" $name "_description")) ""}}
           {{ $slug         = or .slug                  (index $t (print "types_default_" $name "_slug"       )) $title }}
-          {{ $icon        := or $type.icon             (index site.Data.utilities.defaults $name).icon          "file" }}
-          {{ $emoji       := or $type.emoji            (index site.Data.utilities.defaults $name).emoji         "📄" }}
+          {{ $icon        := or .icon                  (index site.Data.utilities.defaults $name).icon          "file" }}
+          {{ $emoji       := or .emoji                 (index site.Data.utilities.defaults $name).emoji         "📄" }}
           {{ $noindex     := cond (eq .noindex nil) true .noindex }}
           {{ $obj         := dict 
             "slug"           $slug
@@ -114,7 +114,7 @@
             "translationKey" $name
             "weight"         (add $k 1)
             "cms"            $cms
-            "custom_params"  .params
+            "customs"        .params
             "cascade"        ((dict
               "noindex"     $noindex
               "icon"        $icon

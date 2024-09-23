@@ -1,14 +1,13 @@
 {{ $t := partial "functions/i18n" . }}
 
-{{ $type_langs         := slice }}
-{{ $type_params_langs  := slice }}
+{{ $type_langs        := slice }}
 {{ range site.Languages }}
-  {{ $type_langs        = $type_langs        | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang        " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_ITEMS` )) }}
-  {{ $type_params_langs = $type_params_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_params_lang " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_PARAMS_LANG` )) }}
+  {{ $type_langs       = $type_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_ITEMS` )) }}
 {{ end }}
 {{ $type_langs_fields := slice
   `~SETTINGS_TYPES_BASE`
   `~SETTINGS_TYPES_NAME`
+  `~SETTINGS_TYPES_HINT`
   `~BOX_ICON_ID`
   `~SETTINGS_TYPES_EMOJI`
   `~SETTINGS_TYPES_DISABLED`
@@ -17,12 +16,6 @@
   `~SETTINGS_TYPES_TAXONOMY_OF`
   `~SETTINGS_TYPES_PARAMS`
   `~SETTINGS_TYPES_TEMPLATE`
-}}
-{{ $type_params_langs_fields := slice
-  `~SETTINGS_TYPES_PARAMS_NAME`
-  `~SETTINGS_TYPES_PARAMS_TYPE_SUB`
-  `~SETTINGS_TYPES_PARAMS_OPTIONS`
-  `~SETTINGS_TYPES_PARAMS_MULTIPLE`
 }}
 
 
@@ -43,14 +36,15 @@
       `~P_IMAGE`
       `~P_TITLE_SEO`
       `~P_DESCRIPTION`
-      (dict "name" `hint`        "widget" `string` "i18n" true "required" false "label" $t.types_hint)
       (dict "<<" (slice (dict "name" `content`) `~P_BODY`))
     )
   ))
   (dict "&SETTINGS_TYPES_PARAMS_NAME"     (dict "name" `name`      "widget" `string`  "required" false "label" $t.types_params_name))
+  (dict "&SETTINGS_TYPES_PARAMS_LABEL"    (dict "name" `label`     "widget" `string`  "required" false "label" $t.types_params_label))
+  (dict "&SETTINGS_TYPES_PARAMS_HINT"     (dict "name" `hint`      "widget" `string`  "required" false "label" $t.types_params_hint))
   (dict "&SETTINGS_TYPES_PARAMS_TYPE"     (dict "name" `type`      "widget" `select`  "required" false "label" $t.types_params_type "options" site.Data.utilities.widgets))
   (dict "&SETTINGS_TYPES_PARAMS_MULTIPLE" (dict "name" `multiple`  "widget" `boolean` "required" false "label" $t.types_params_multiple))
-  (dict "&SETTINGS_TYPES_PARAMS_SCHEMA"   (dict "name" `schema`    "widget" `strings` "required" false "label" $t.types_params_schema))
+  (dict "&SETTINGS_TYPES_PARAMS_SCHEMA"   (dict "name" `schema`    "widget" `string`  "required" false "label" $t.types_params_schema))
   (dict "&SETTINGS_TYPES_PARAMS_OPTIONS"  (dict
     "name"           `options`
     "widget"         `list`
@@ -65,18 +59,6 @@
       (dict "name" `value` "widget" `string`  "required" false "label" $t.types_params_options_value)
     )
   ))
-  (dict "&SETTINGS_TYPES_PARAMS_LANG"     (dict
-    "name"           `lang`
-    "widget"         `object`
-    "required"       false
-    "label"          $t.types_params_lang
-    "collapsed"      true
-    "i18n"           true
-    "fields"         (slice
-      (dict "name" `label` "widget" `string`  "required" false "label" $t.types_params_lang_label)
-      (dict "name" `hint`  "widget" `string`  "required" false "label" $t.types_params_lang_hint)
-    )
-  ))
   (dict "&SETTINGS_TYPES_PARAMS_TYPE_SUB"  (dict "<<" (slice (dict "options" (where site.Data.utilities.widgets "value" "not in" (slice "relation" "list"))) `~SETTINGS_TYPES_PARAMS_TYPE`)))
   (dict "&SETTINGS_TYPES_PARAMS_LIST"  (dict
     "name"           `list`
@@ -86,13 +68,20 @@
     "collapsed"      true
     "summary"        "{{fields.label}}"
     "allow_add"      true
-    "fields"         ($type_params_langs_fields | append $type_params_langs
+    "fields"         (slice
+      `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_TYPES_PARAMS_LABEL`
+      `~SETTINGS_TYPES_PARAMS_HINT`
+      `~SETTINGS_TYPES_PARAMS_TYPE_SUB`
+      `~SETTINGS_TYPES_PARAMS_OPTIONS`
+      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
     )
   ))
 
 
   (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
   (dict "&SETTINGS_TYPES_NAME"        (dict "name" `name`        "widget" `string`  "required" false "label" $t.types_name "hint" (print $t.types_name_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, organization, service, page, section**")))
+  (dict "&SETTINGS_TYPES_HINT"        (dict "name" `hint`        "widget" `string`  "required" false "label" $t.types_hint))
   (dict "&SETTINGS_TYPES_EMOJI"       (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_emoji))
   (dict "&SETTINGS_TYPES_DISABLED"    (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled))
   (dict "&SETTINGS_TYPES_RELATED"     (dict "name" `related`     "widget" `boolean` "required" false "label" $t.types_related))
@@ -122,12 +111,13 @@
     "allow_add"      true
     "fields"         (slice
       `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_TYPES_PARAMS_LABEL`
+      `~SETTINGS_TYPES_PARAMS_HINT`
       `~SETTINGS_TYPES_PARAMS_TYPE`
       `~SETTINGS_TYPES_PARAMS_OPTIONS`
       `~SETTINGS_TYPES_PARAMS_LIST`
       `~SETTINGS_TYPES_PARAMS_MULTIPLE`
       `~SETTINGS_TYPES_PARAMS_SCHEMA`
-      | append $type_params_langs
     )
   ))
   (dict "&SETTINGS_TYPES_TEMPLATE"  (dict

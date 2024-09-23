@@ -119,7 +119,7 @@
     }}
   {{ else if eq .Params.base "service" }}
     {{ $fields = $fields | append
-      `~P_AREAS`
+      `~P_SERVICE_AREAS`
       `~P_SERVICE_TYPES`
       `~P_PRICE`
     }}
@@ -135,9 +135,8 @@
     {{ if in (slice "string" "text" "markdown" "image") .type }}
       {{ $i18n = true }}
     {{ end }}
-    {{ $lang   := index . $.Lang }}
-    {{ $label  := $lang.label | default .name }}
-    {{ $hint   := $lang.hint }}
+    {{ $label := .label | default .name }}
+    {{ $hint  := .hint | default "" }}
     {{ if not .type }}
       {{ $page   := site.GetPage .name }}
       {{ $cms    := $page.Params.cms }}
@@ -277,12 +276,13 @@
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `author`))) `~P_SOCIAL`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_PHONES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_ADDRESS`))
-    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `organization` `service`))) `~P_AREAS`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_AREAS`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_OPEN`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_PRICES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_SERVICES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_FOOD_MENU`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_FOOD_TYPE`))
+    (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`     )) `~P_SERVICE_AREAS`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`     )) `~P_SERVICE_TYPES`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `product` `service`))) `~P_PRICE`))
     (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `article` `event` `product` `service` `brand` `author` `organization` `service` `page`))) `~P_BODY`))

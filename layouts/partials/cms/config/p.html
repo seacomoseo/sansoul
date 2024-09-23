@@ -65,6 +65,19 @@
 
   (dict "&P_JOB"            (dict "name" `job`            "widget" `string`   "i18n" true        "required" false "label" $t.p_job            "hint" $t.p_job_hint))
 
+  (dict "&P_SERVICE_AREAS" (dict
+    "name"           `service_areas`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_areas
+    "label_singular" $t.p_areas_singular
+    "collapsed"      false
+    "summary"        "{{fields.area}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `area` "widget" `string` "required" false "label" $t.p_areas_singular)
+    )
+  ))
   (dict "&P_SERVICE_TYPES"         (dict
     "name"           `service_types`
     "widget"         `list`
@@ -156,19 +169,7 @@
       (dict "name" `link`     "widget" `string` "required" false "label" $t.p_address_link    )
     )
   ))
-  (dict "&P_AREAS" (dict
-    "name"           `areas`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.p_areas
-    "label_singular" $t.p_areas_singular
-    "collapsed"      true
-    "summary"        "{{fields.area}}"
-    "allow_add"      true
-    "fields"         (slice
-      (dict "name" `area` "widget" `string` "required" false "label" $t.p_areas_singular)
-    )
-  ))
+  (dict "&P_AREAS" (dict "<<" (slice (dict "name" `areas`) `~P_SERVICE_AREAS`)))
   (dict "&P_OPEN" (dict
     "name"           `open`
     "widget"         `list`
