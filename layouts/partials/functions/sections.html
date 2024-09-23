@@ -5,7 +5,7 @@
 {{/*  SECTIONS BY YAML FILES  */}}
 {{ range $params.sections }}
   {{ $section := . }}
-  {{ with partial "functions/section-by-file" (merge . (dict "type" "section")) }}
+  {{ with partial "functions/section-by-file" (dict "file" .file "type" "section") }}
     {{ $section = merge . $section }}
   {{ end }}
   {{ $if := partial "functions/if" (dict "Page" $.Page "if" $section.if) }}

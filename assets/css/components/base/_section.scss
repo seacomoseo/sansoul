@@ -31,7 +31,7 @@ body {
 // GET MENU HEIGHT
 
 // NOT MENU TRANSPARENT
-.body-menu:not(.body-menu--transparent) { // not transparent
+.body-menu:not(.body-menu--transparent) {
   --menu-height: 0em; // not logo
   --pt-extra: 2em;
   &.body-menu--logo {
@@ -55,11 +55,11 @@ body:not(.body-menu),
 
 // MENU STICKY ACTIVE
 .body-menu--sticky--active {
-  .body-menu:not(.aux):not(.aux) {
+  &.body-menu:not(.aux.aux) {
     --menu-height: 6.8em;
     --pt-extra: 0em;
   }
-  .body-menu:not(.body-menu--transparent) {
+  &.body-menu:not(.body-menu--transparent) {
     --pt-divider-header: 0em;
   }
 }

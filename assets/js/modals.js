@@ -52,12 +52,8 @@ function prevNextModal (prev) {
   //   openModal(modalPrevNext)
   //   window.location.hash = modalPrevNext.id
   // }
-  let modalButtonPrevNext
-  if (prev) {
-    modalButtonPrevNext = document.querySelector('dialog[open].modal .modal__prev')
-  } else {
-    modalButtonPrevNext = document.querySelector('dialog[open].modal .modal__next')
-  }
+  const prevNext = prev ? 'prev' : 'next'
+  const modalButtonPrevNext = document.querySelector(`dialog[open].modal .modal__${prevNext}`)
   if (modalButtonPrevNext) modalButtonPrevNext.click()
 }
 
