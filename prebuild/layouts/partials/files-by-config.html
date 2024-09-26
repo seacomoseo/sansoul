@@ -203,12 +203,12 @@
     {{ $mounts = $mounts | append
       (dict
         "source"       (print "content." . "/section")
-        "target"       "data/section"
+        "target"       (print "data/" . "/section")
         "lang"         .
       )
       (dict
         "source"       (print "content." . "/modal")
-        "target"       "data/modal"
+        "target"       (print "data/" . "/modal")
         "lang"         .
       )
       (dict

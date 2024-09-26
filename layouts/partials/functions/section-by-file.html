@@ -1,7 +1,7 @@
 {{/*  SECTION BY YAML FILES  */}}
 {{ $section := dict }}
 {{ if .file }}
-  {{ with index site.Data .type }}
+  {{ with index site.Data (slice site.Home.Lang .type) }}
     {{ with index . (split $.file "/") }}
       {{ $section = . }}
     {{ end }}
