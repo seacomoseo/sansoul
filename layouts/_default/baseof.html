@@ -78,8 +78,8 @@
   {{- $background := $params.background -}}
   {{- $background  = merge $background (dict
     "body"  true
-    "color" ($background.color | default "white"))
-  -}}
+    "color" ($background.color | default "white")
+  ) -}}
   {{- $body_attr  := partial "components/base/sections/attr" (merge $background (dict
     "id"         $body_id
     "body_class" $body_class
