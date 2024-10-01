@@ -6,9 +6,14 @@
     "sections" (slice (dict "file" "base/404"))
   }}
 {{ end }}
+{{ $single  := dict }}
+{{ if eq .Type "single" }}
+  {{ $single = site.Data.types.single.template }}
+{{ end }}
 
 {{ return merge
   site.Data.template
+  $single
   (.Params | default dict)
   $404
 }}

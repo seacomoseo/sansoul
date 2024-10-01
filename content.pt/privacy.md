@@ -3,6 +3,7 @@ title: Privacidade
 slug: privacidade
 noindex: true
 translationKey: privacy
+type: system
 weight: 2
 ---
 

@@ -1,4 +1,4 @@
-{{ $types_full := site.Data.types._                             | default slice }}
+{{ $types_full := site.Data.types.custom                        | default slice }}
 {{ $types := where $types_full            "disabled" "!=" false | default slice }}
 {{ $langs := where site.Data.config.langs "disabled" "!=" false }}
 {{ $lang_first := index $langs 0 }}

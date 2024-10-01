@@ -8,107 +8,10 @@
 
 ### SHELL INICIAL
 
-```shell
-# Cambiar submódulo
-git submodule deinit -f themes/sansoul
-git rm -f themes/sansoul
-rm -rf .git/modules/themes/sansoul
-git submodule add https://github.com/seacomoseo/sansoul.git themes/sansoul
-git submodule update --init --recursive
-# Copiar archivos desde sansoul.es
-cp ../sansoul.es/netlify.toml      ./netlify.toml
-cp ../sansoul.es/package.json      ./package.json
-cp ../sansoul.es/data/template.yml ./data/template.yml
-cp ../sansoul.es/data/types.yml    ./data/types.yml
-cp ../sansoul.es/data/remote.yml   ./data/remote.yml
-cp ../sansoul.es/data/package.json ./package.json
-# Mover y renombrar archivos
-mv ./data/redirects.md             ./assets/redirects.md
-mv ./data/robots.md                ./assets/robots.md
-mv ./data/design.yml               ./data/styles.yml
-mv ./data/config.yml               ./data/config_old.yml
-mv ./content.es/sections           ./content.es/section
-mv ./content.es/modals             ./content.es/modal
-mv ./content.es/authors            ./content.es/author
-mv ./content.es/categories         ./content.es/category
-mv ./content.es/pages/*            ./content.es/page/
-mv ./content.es/products           ./content.es/product
-mv ./content.es/events             ./content.es/event
-mv ./content.en/sections           ./content.en/section
-mv ./content.en/modals             ./content.en/modal
-mv ./content.en/authors            ./content.en/author
-mv ./content.en/categories         ./content.en/category
-mv ./content.en/pages/*            ./content.en/page/
-mv ./content.en/products           ./content.en/product
-mv ./content.en/events             ./content.en/event
-mv ./content.fr/sections           ./content.fr/section
-mv ./content.fr/modals             ./content.fr/modal
-mv ./content.fr/authors            ./content.fr/author
-mv ./content.es/custom/            ./content.es/pages/   # and add template
-mv ./content.en/custom/            ./content.en/pages/   # and add template
-mv ./content.en/section/footer.yml ./content.en/section/base/footer.yml
-mv ./assets/media/favicon.ico      ./assets/media/base/favicon.ico
-mv ./assets/media/icon*.*          ./assets/media/base/
-mv ./assets/media/logo*.*          ./assets/media/base/
-# Reemplazos en general
-perl -0777 -i'' -pe 's/(- |(image|logo): )icon/$1base\/icon/igs'   ./content.*/section/*.yml content.*/modal/*.yml
-perl -0777 -i'' -pe 's/(- |(image|logo): )logo/$1base\/logo/igs'   ./content.*/section/*.yml content.*/modal/*.yml
-perl -0777 -i'' -pe 's/image_hover:/hover:/igs'                    ./content.*/section/*.yml content.*/modal/*.yml
-perl -0777 -i'' -pe 's/description:/content:/igs'                  ./content.*/section/*.yml content.*/modal/*.yml
-perl -0777 -i'' -pe 's/full_screen:/full:/igs'                     ./content.*/section/*.yml content.*/modal/*.yml
-perl -0777 -i'' -pe 's/title_seo:/seo:/igs'                        ./content.*/*/*.md content.*/*.md
-perl -0777 -i'' -pe 's/(\n  - )/$1file: /ig'                       ./content.*/*/*.md content.*/*.md
-perl -0777 -i'' -pe 's/common:\n  size: ''\n  num: 3\n  num_xs: false\n  gap: ''\n  title_size: null\n  uppercase: false\n  underline: false\n  icon: ''\n  icon_type: ''\n  icon_size: ''\n  icon_color: ''\n  image: gradient\n  image_hover: ''\n  ratio: 16x9\n  contain: false\n  inset: true\n  border: ''\n  grayscale: false\n  align: left\n  align_y: ''\n  align_x: ''\n  padding: ''\n  color: white\n  gradient: ''\n  gradient_type: ''\n  color_opacity: null\n  pill: false\n  card: false\n  hide_shadow: false\n  hide_description: false\n  hide_categories: true\n  reading_time: true\n  licon: ''\n  label: ''\n  button: hide\n  font_alt: false\n  slider: false\n  interval: null\n  hide_bullets: false\n  hide_arrows: false/common: {}/ig'          ./data/articles.yml
-perl -0777 -i'' -pe 's/num:/columns:/igs'                          ./data/articles.yml
-perl -0777 -i'' -pe 's/num_xs:/columns_min:/igs'                   ./data/articles.yml
-perl -0777 -i'' -pe 's/title_size:/hs:/igs'                        ./data/articles.yml
-perl -0777 -i'' -pe 's/hide_bullets: true/bullets: hide/igs'       ./data/articles.yml
-perl -0777 -i'' -pe 's/hide_arrows: true/arrows: hide/igs'         ./data/articles.yml
-# styles.yml
-perl -0777 -i'' -pe 's/(\n\s+emojis:)/\n  sharp: false$1/igs'      ./data/styles.yml
-perl -0777 -i'' -pe 's/(\n\s+top:)/\n    size: 1$1/igs'            ./data/styles.yml
-perl -0777 -i'' -pe 's/(\nshadow:)/\ninputs:\n  fill: false$1/igs' ./data/styles.yml
-perl -0777 -i'' -pe 's/font_base:.+/font_main:\n    type: title\n    bold: false\n    uppercase: true\n  font_alt:\n    type: base\n    bold: false\n    uppercase: false/ig'         ./data/styles.yml
-perl -0777 -i'' -pe 's/opacity:/alpha:/igs'                        ./data/styles.yml
-yq -i '.shadow.alpha = 1 - (.shadow.alpha // 0)'                   ./data/styles.yml
-perl -0777 -i'' -pe 's/lightbox_overlay:\n.+\n.+\n//ig'            ./data/styles.yml
-perl -0777 -i'' -pe 's/\n  parallax:.+//ig'                        ./data/styles.yml
-perl -0777 -i'' -pe 's/\n  srcsetx2:.+//ig'                        ./data/styles.yml
-perl -0777 -i'' -pe 's/showup/show/ig'                             ./data/styles.yml
-# CSS
-perl -0777 -i'' -pe 's/column--item-/box--/igs'                    ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.columns/.boxes/igs'                       ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.column/.box/igs'                          ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.section__(header|title)/.box__$1/igs'     ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/description/content/igs'                    ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/section--full-screen/section--full/igs'     ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.button-up/.up/igs'                        ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.button-callnow/.callnow/igs'              ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.contact__form-/.form__/igs'               ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.contact__form/.form/igs'                  ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.contact__buttons-/.contact__/igs'         ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.contact__buttons/.contact/igs'            ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.data__icon/.box__tag-icon/igs'            ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.data__item/.box__tag/igs'                 ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\.data/.box__tags/igs'                      ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/\[data-showup\]/.show/igs'                  ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/body-inicio/body-home/igs'                  ./assets/css/_custom.scss
-perl -0777 -i'' -pe 's/body-admin/body-author-admin/igs'           ./assets/css/_custom.scss
-# Otros
-touch ./data/config.yml
-perl -0777 -i'' -pe 's/icon-/icon:/igs'                            ./content.*/*/*.md content.*/*.md
-perl -0777 -i'' -pe 's/btn-/btn:/igs'                              ./content.*/*/*.md content.*/*.md
-# Comprobar si 'performance.parallax' es 'true' en el archivo YAML
-if yq eval '.performance.parallax' data/styles.yml | grep -iq 'true'; then
-  # Si es verdadero, reemplazar 'parallax: true' con 'parallax: smooth'
-  perl -0777 -i'' -pe 's/parallax: true/parallax: smooth/igs' ./content.*/*/*.md content.*/*.md
-else
-  # Si es falso, reemplazar 'parallax: true' con 'parallax: fix'
-  perl -0777 -i'' -pe 's/parallax: true/parallax: fix/igs' ./content.*/*/*.md content.*/*.md
-fi
-```
-
 ### YAML y MARKDOWN
+
+
+Quiero crear un script en node en el archivo `update-v2.js` que realice todas estas acciones:
 
 - Copiar desde `data/articles.yml` > `content.logo` hacia `data/template.yml` > `menu.es.image`
 - Copiar desde `data/articles.yml` > `content.title` hacia `data/template.yml` > `menu.es.title`
@@ -308,20 +211,46 @@ fi
     - `type` > eliminar
   - Añadir como primer parámetro `name` con el nombre del archivo sin extensión como valor (en formato título: cambiando guiones medios por espacios y primera letra de cada palabra en mayúscula)
 
-### SHELL FINAL
-
-```shell
-# Eliminar archivos
-rm data/articles.yml
-rm data/menu.yml
-rm data/modals.yml
-rm data/config_old.yml
-rm -r content.es/_index/
-rm -r content.en/_index/
-rm -r content.fr/_index/
-# Reemplazos en general
-perl -0777 -i'' -pe 's/- link:/- /igs' content.*/_index.md
+A tener en cuenta:
+- Debe usar la biblioteca `yaml` con las siguientes preferencias para guardar cada archivo `.yml` o `.md` (frontmatter):
+```json
+{
+  "toStringOptions": {
+    "simpleKeys": true,
+    "singleQuote": true,
+    "blockQuote": "literal",
+    "lineWidth": 0,
+    "indent": 2,
+    "indentSeq": false
+  }
+}
 ```
+- Para editar el frontmatter de los archivos markdown (`.md`), utiliza algo como esto:
+```js
+import fs from 'fs'
+import yaml from 'yaml'
+
+// Lee el archivo Markdown
+const markdownFileContent = fs.readFileSync('archivo.md', 'utf8')
+
+// Utiliza una expresión regular para extraer el frontmatter y el contenido
+const match = markdownFileContent.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)?/)
+
+if (match) {
+  const yamlContent = match[1] // Frontmatter YAML
+  const markdownContent = match[2] || '' // Contenido Markdown (puede ser vacío)
+
+  // Analiza el frontmatter YAML
+  const frontmatter = yaml.parse(yamlContent)
+
+  console.log('Frontmatter:', frontmatter)
+  console.log('Contenido Markdown:', markdownContent)
+} else {
+  console.error('No se encontró frontmatter YAML válido en el archivo.')
+}
+```
+
+### SHELL FINAL
 
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
@@ -331,8 +260,6 @@ perl -0777 -i'' -pe 's/- link:/- /igs' content.*/_index.md
 - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
 - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
 - `submited_` > `submited-`
-
-
 
 
 

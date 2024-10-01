@@ -3,6 +3,7 @@ title: Avviso Legale
 slug: legale
 noindex: true
 translationKey: legal
+type: system
 weight: 1
 ---
 

@@ -140,12 +140,25 @@
       `~TEMPLATE_RELATED`
     )
   ))
-  (dict "&SETTINGS_TYPES_" (dict
-    "name"           `_`
+  (dict "&SETTINGS_TYPES_SINGLE"  (dict
+    "name"      `single`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.types_single
+    "hint"      $t.types_single_hint
+    "collapsed" true
+    "i18n"      true
+    "fields"    (slice
+      `~SETTINGS_TYPES_PARAMS`
+      `~SETTINGS_TYPES_TEMPLATE`
+    )
+  ))
+  (dict "&SETTINGS_TYPES_CUSTOM" (dict
+    "name"           `custom`
     "widget"         `list`
     "required"       false
-    "label"          $t.types__
-    "label_singular" $t.types__singular
+    "label"          $t.types_custom
+    "label_singular" $t.types_custom_singular
     "collapsed"      false
     "summary"        "{{fields.lang}}"
     "allow_add"      true
@@ -153,7 +166,8 @@
   ))
 
   (dict "&SETTINGS_TYPES" (slice
-    `~SETTINGS_TYPES_`
+    `~SETTINGS_TYPES_SINGLE`
+    `~SETTINGS_TYPES_CUSTOM`
   ))
 
 }}

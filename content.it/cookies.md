@@ -3,6 +3,7 @@ title: Cookies
 slug: cookies
 noindex: true
 translationKey: cookies
+type: system
 weight: 3
 ---
 

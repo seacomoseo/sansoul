@@ -3,6 +3,7 @@ title: Vie privée
 slug: Vie privée
 noindex: true
 translationKey: privacy
+type: system
 weight: 2
 ---
 
