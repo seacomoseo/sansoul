@@ -81,20 +81,23 @@
   {{ $images := partial "components/base/schema/images" (slice .image | append .images | uniq) }}
 
   {{/*  Opening Hours Specification  */}}
-  {{ $open := slice }}
-  {{ with .open }}
+  {{ $schedule := slice }}
+  {{ with .schedule }}
     {{ range . }}
-      {{ $o    := slice }}
+      {{ $s    := . }}
       {{ $days := slice }}
       {{ range .days }}
         {{ $days = $days | append (print "https://schema.org/" (. | title)) }}
       {{ end }}
-      {{ with $days   }}{{ $o = merge $o (dict "dayOfWeek"    .) }}{{ end }}
-      {{ with .opens  }}{{ $o = merge $o (dict "opens"        .) }}{{ end }}
-      {{ with .closes }}{{ $o = merge $o (dict "closes"       .) }}{{ end }}
-      {{ with .from   }}{{ $o = merge $o (dict "validFrom"    .) }}{{ end }}
-      {{ with .to     }}{{ $o = merge $o (dict "validThrough" .) }}{{ end }}
-      {{ $open = $open | append $o }}
+      {{ range .hours }}
+        {{ $o := slice }}
+        {{ with $days   }}{{ $o = merge $o (dict "dayOfWeek"    .) }}{{ end }}
+        {{ with .open   }}{{ $o = merge $o (dict "opens"        .) }}{{ end }}
+        {{ with .close  }}{{ $o = merge $o (dict "closes"       .) }}{{ end }}
+        {{ with $s.from }}{{ $o = merge $o (dict "validFrom"    .) }}{{ end }}
+        {{ with $s.to   }}{{ $o = merge $o (dict "validThrough" .) }}{{ end }}
+        {{ $schedule = $schedule | append $o }}
+      {{ end }}
     {{ end }}
   {{ end }}
 
@@ -150,7 +153,7 @@
     "address"                   $address
     "hasMap"                    $has_map
     "geo"                       $geo
-    "openingHoursSpecification" $open
+    "openingHoursSpecification" $schedule
     "department"                $departments
     "hasOfferCatalog"           $offers
     "sameAs"                    .social

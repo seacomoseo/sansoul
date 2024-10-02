@@ -24,7 +24,7 @@ address:
   geo: null # '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
   link: null # string
 areas: [] # strings
-open: []
+schedule: []
 # - days:
 #   - monday
 #   - tuesday
@@ -33,10 +33,11 @@ open: []
 #   - friday
 #   - saturday
 #   - sunday
+#   hours:
+#   - open: 8:00
+#     close: 14:00
 #   from: 2014-12-24
 #   to: 2014-12-25
-#   opens: 8:00
-#   closes: 14:00
 prices: null # [ €, €€, €€€, $, $$, $$$ ]
 services: [] # strings
 # - title: null # strings

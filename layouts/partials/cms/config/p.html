@@ -171,20 +171,31 @@
   ))
   (dict "&P_AREAS" (dict "<<" (slice (dict "name" `areas`) `~P_SERVICE_AREAS`)))
   (dict "&P_OPEN" (dict
-    "name"           `open`
+    "name"           `schedule`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_open
-    "label_singular" $t.p_open_singular
+    "label"          $t.p_schedule
+    "label_singular" $t.p_schedule_singular
     "collapsed"      true
-    "summary"        "{{fields.days}} {{fields.opens}}-{{fields.closes}}"
+    "summary"        "{{fields.days}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `days`   "widget" `select` "required" false "label" $t.p_open_days "multiple" true "options" `~OPTIONS_DAYS`)
-      (dict "name" `opens`  "widget" `string` "required" false "label" $t.p_open_opens)
-      (dict "name" `closes` "widget" `string` "required" false "label" $t.p_open_closes)
-      (dict "name" `from`   "widget" `string` "required" false "label" $t.p_open_from "hint" $t.p_open_valid_hint)
-      (dict "name" `to`     "widget" `string` "required" false "label" $t.p_open_to   "hint" $t.p_open_valid_hint)
+      (dict "name" `days`   "widget" `select` "required" false "label" $t.p_schedule_days "multiple" true "options" `~OPTIONS_DAYS`)
+      (dict
+        "name"           `hours`
+        "widget"         `list`
+        "required"       false
+        "label"          $t.p_schedule_hours
+        "collapsed"      false
+        "summary"        "{{fields.open}} - {{fields.close}}"
+        "allow_add"      true
+        "fields"         (slice
+          (dict "name" `open`   "widget" `datetime` "required" false "label" $t.p_schedule_hours_close "format" `H:mm` "date_format" false "time_format" `HH:mm`)
+          (dict "name" `close`  "widget" `datetime` "required" false "label" $t.p_schedule_hours_close "format" `H:mm` "date_format" false "time_format" `HH:mm`)
+        )
+      )
+      (dict "name" `from`   "widget" `datetime` "required" false "label" $t.p_schedule_from "hint" $t.p_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false)
+      (dict "name" `to`     "widget" `datetime` "required" false "label" $t.p_schedule_to   "hint" $t.p_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false)
     )
   ))
   (dict "&P_PRICES"   (dict "name" `prices` "widget" `select` "required" false "label" $t.p_prices "options" (slice "€" "€€" "€€€" "$" "$$" "$$$")))
