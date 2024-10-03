@@ -16,6 +16,14 @@
   {{- end -}}
 {{- end -}}
 
+{{ $container := .size
+  | default (cond
+    (.ph | default false)
+    "fluid"
+    (cond $modal "sm" "lg")
+  )
+}}
+
 {{- $attr := partial "components/base/sections/attr" (merge . (dict
   "header" $header
   "footer" $footer
@@ -60,7 +68,7 @@
       "flip_x"        nil
       "flip_y"        nil
       "if"            nil
-      "container"     .size
+      "container"     $container
       "span_xl"       1.00
       "span_xs"       1.00
       "section"       .

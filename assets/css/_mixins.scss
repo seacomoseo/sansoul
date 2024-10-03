@@ -24,7 +24,7 @@
   line-height: $line-height-title;
   font-size: $font-size-title * 1em;
   @if $top-title != 0 {
-    &:not(strong, a) {
+    &:not(strong, a, [data-h], [data-b]) {
       transform: translateY(#{ $top-title }em);
       > svg,
       &.underline:after {

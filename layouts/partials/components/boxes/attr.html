@@ -20,17 +20,8 @@
   .map
 )) }}
 
-{{ $container_size := cond (not .main) "" (
-  .size
-  | default (cond
-    (.ph | default false)
-    "fluid"
-    (cond .modal "sm" "lg")
-  )
-) }}
-
 {{ $box_bg_color := print
-  (cond (not .bg_color)     "" (print "bg-" .bg_color))
+  (cond (not .card) (cond (not .bg_color) "" (print "bg-" .bg_color)) "bg-black")
   (cond (not .bg_image_src) "" " bg-image")
 }}
 
@@ -51,7 +42,7 @@
     "box"
     (cond .main                      "" (print "box--" (add .key 1)))
     (cond (not .main)                "" "container")
-    (cond (not .main)                "" (print "container--" $container_size))
+    (cond (not .main)                "" (print "container--" .container))
     (cond (not (.main | and .modal)) "" "modal__container")
     (cond (not .align)               "" (print "align-" .align))
     (cond (not .align_y)             "" (print "align-self-" .align_y))

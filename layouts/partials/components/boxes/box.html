@@ -29,7 +29,6 @@
 {{/*  BOX  */}}
 {{- with $box -}}
   {{- $align := .align -}}
-  {{- $size  := .size  -}}
   {{- $tag  := .tag  -}}
   {{- $tags := .tags -}}
 
@@ -176,10 +175,10 @@
     {{/*  CONTENT  */}}
     {{- if not .hide_content -}}
       {{- with .content -}}
-        {{- $desc_align  := cond (and (not $align) $main (not $header) (or (eq $size "xs") (eq $size "sm"))) " align-left" "" -}}
-        {{- $cont_class  := print "box__content content" $desc_align -}}
+        {{- $content_align := cond (and (not $align) $main (not $header) (or (eq $.container "xs") (eq $.container "sm"))) " align-left" "" -}}
+        {{- $cont_class    := print "box__content content" $content_align -}}
         {{- if $like_article -}}
-          {{- $cont_class = print $cont_class " box__content--small" -}}
+          {{- $cont_class   = print $cont_class " box__content--small" -}}
         {{- end -}}
         <div class="{{ $cont_class }}">
           {{/* <div class="float"></div><div class="float float--r"></div> */}}

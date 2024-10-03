@@ -93,7 +93,7 @@
 
   {{- range .inputs -}}
     {{- $type     := .type -}}
-    {{- $full     := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6") | or .full) " contact__full" "" -}}
+    {{- $full     := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content") | or .full) " contact__full" "" -}}
     {{- $required := cond (not .required) "" " data-required" | safeHTMLAttr -}}
     {{- if $type | ne "hidden" -}}
       <div class="form__item {{ $full }}">
@@ -144,8 +144,8 @@
       {{- else if $type | findRE `^h\d` -}}
         {{- print "<" $type " " | safeHTML -}}
         class="form__title contact__full"
-        {{- ">" -}}
-        {{- .name | markdownify -}}
+        {{- ">" | safeHTML -}}
+        {{- .label | markdownify -}}
         {{- print "</" $type ">" | safeHTML -}}
       {{- else if $type | eq "content" -}}
         <div class="form__content content">
