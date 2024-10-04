@@ -328,18 +328,24 @@ boxes:
     placeholder: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
     required: false
+    regex: '[^∑]*'
+    regex_hint: No se adminte el caracter "∑"
   - type: email
     name: Email
     placeholder: Correo
     required: false
+    regex: null # regex pattern
   - type: tel
     name: Tel
     placeholder: Teléfono
     required: false
+    regex: null # regex pattern
   - type: number
     name: Number
     placeholder: Número
     required: false
+    min: 1
+    max: 10
   - type: date
     name: Date
     placeholder: Fecha

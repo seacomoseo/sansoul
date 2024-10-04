@@ -1,3 +1,4 @@
+{{- $a := "" | safeHTMLAttr }}
 {{- $show          := cond (not site.Data.styles.performance.show) "" " show" -}}
 {{- $page_emoji    := .Page.Params.emoji -}}
 {{- $section_name  := i18n "header" -}}
@@ -113,9 +114,27 @@
         {{- if and $googleScript (eq $type "file") -}}
           {{- $name = print "📄" .name -}}
         {{- end -}}
-        <input class="form__input" type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}" name="{{ $name }}" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }} {{ if $onfocus }}onfocus="(this.type='{{ $type }}')"{{ end }} {{ with .accept }}accept="{{ . }}"{{ end }} {{ if .multiple }}multiple{{ end }}>
+        <input
+          {{- $a }} class="form__input"
+          {{- $a }} type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}"
+          {{- $a }} name="{{ $name }}"
+          {{- $a }} placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}"
+          {{- $required }}
+          {{- if $onfocus }} onfocus="(this.type='{{ $type }}')"{{ end }}
+          {{- with .accept }} accept="{{ . }}"{{ end }}
+          {{- with .regex }} pattern="{{ . }}"{{ end }}
+          {{- with .min }} min="{{ . }}"{{ end }}
+          {{- with .max }} max="{{ . }}"{{ end }}
+          {{- if .multiple }} multiple{{ end -}}
+        >
       {{- else if $type | eq "textarea" -}}
-        <textarea class="form__textarea" name="{{ .name }}" rows="3" placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}" {{- $required }}></textarea>
+        <textarea
+          {{- $a }} class="form__textarea"
+          {{- $a }} name="{{ .name }}"
+          {{- $a }} rows="3"
+          {{- $a }} placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}"
+          {{- $required -}}
+        ></textarea>
       {{- else if $type | eq "select" -}}
         <select class="form__select" name="{{ .name }}" {{- $required }}>
           <option value="">{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</option>

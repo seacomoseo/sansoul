@@ -4,7 +4,7 @@ import {
   formErrorRequiredFields,
   formErrorRequiredCheck,
   formErrorEmail,
-  formErrorNumber,
+  formErrorTel,
   formErrorFile,
   formErrorAcept,
   formSubmitOk,
@@ -143,12 +143,34 @@ export function initFormValidate () {
           const telMatch = input.value.match(/^[0-9]{9,15}$/)
           if (input.value && !telMatch) {
             input.style.borderColor = 'red'
-            formError.innerHTML += `<li>${formErrorNumber}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
+            formError.innerHTML += `<li>${formErrorTel}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else if (input.value && telMatch) {
             input.style = false
           }
         })
+
+        // form.querySelectorAll('[type="number"][min]').forEach(input => {
+        //   const minMatch = input.value >= input.min
+        //   if (input.value && !minMatch) {
+        //     input.style.borderColor = 'red'
+        //     formError.innerHTML += `<li>${formErrorMin.replace('{{.}}', input.min)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
+        //     valid = false
+        //   } else if (input.value && minMatch) {
+        //     input.style = false
+        //   }
+        // })
+
+        // form.querySelectorAll('[type="number"][max]').forEach(input => {
+        //   const maxMatch = input.value <= input.max
+        //   if (input.value && !maxMatch) {
+        //     input.style.borderColor = 'red'
+        //     formError.innerHTML += `<li>${formErrorMax.replace('{{.}}', input.max)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
+        //     valid = false
+        //   } else if (input.value && maxMatch) {
+        //     input.style = false
+        //   }
+        // })
 
         form.querySelectorAll('[type="file"]').forEach(input => {
           if (input.files.length > 0) {
