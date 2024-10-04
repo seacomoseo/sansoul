@@ -305,8 +305,11 @@ pre {
 }
 
 /*! purgecss start ignore */
-[id]:not(.divider, .modal) {
+[id]:not(.pt-divider, .modal) {
   scroll-margin-top: 3em;
+}
+[id].pt-divider {
+  scroll-margin-top: calc(3em - var(--pt-divider));
 }
 ::selection {
   color: $main-contrast-neutral;

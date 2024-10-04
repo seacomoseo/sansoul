@@ -36,7 +36,7 @@
   $section_name
   (cond (eq $num 1) "" (print " 📌 " $num))
   -}}
-{{- $form_id       := print ((i18n "form") | urlize) "-" (cond (eq .id "header") .Page.Slug .id) (cond (eq $num 1) "" (print "-" $num)) -}}
+{{- $form_id       := print "form-" (cond (eq .id "header") .Page.Slug .id) (cond (eq $num 1) "" (print "-" $num)) -}}
 {{- $netlify_forms := not .action -}}
 {{- $googleScript  := in .action "script.google.com" -}}
 {{- $formsubmit_co := in .action "formsubmit.co" -}}
@@ -201,7 +201,7 @@
       {{- partial "functions/md" (dict "content" (i18n "send_check") "not_header_links" true "inline" true) -}}
       {{- " " -}}
       {{- partial "components/link" (dict
-        "link"      (print (page.GetPage "pribacy").RelPermalink "#" (i18n "forms"))
+        "link"      (print (page.GetPage "privacy").RelPermalink "#" (i18n "forms"))
         "button"    "none"
         "label"     (print (i18n "read_more") "…")
         "noindex"   true
