@@ -9,8 +9,8 @@
 }
 // Font Base Bold
 @mixin font-base-bold($hide-nested: false) {
-  @include font-base;
   @if $font-weight-bold-base > 0 {
+    @include font-base;
     font-weight: $font-weight-bold-base;
   } @else {
     @include font-title($hide-nested);
