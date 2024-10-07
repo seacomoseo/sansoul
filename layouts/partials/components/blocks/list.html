@@ -102,14 +102,16 @@
         {{- range $firsts_pages -}}
           {{- $content := .Summary | default .Description | truncate 155 | plainify -}}
           {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
-          {{- $page    := merge .Params (dict
+          {{- $page    := dict
             "Page"    .
             "link"    .RelPermalink
+            "title"   .Params.title
             "content" $content
             "price"   $price
             "icon"    ""
             "social"  ""
-          ) -}}
+            "image"   .Params.image
+          -}}
           {{- $boxes = $boxes | append $page -}}
         {{- end -}}
 

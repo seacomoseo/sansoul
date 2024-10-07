@@ -24,6 +24,10 @@
 {{- $icon  := .AlertType -}}
 {{- with $type -}}
   {{- $icon = .icon -}}
+{{- else -}}
+  {{- with .Attributes.icon -}}
+    {{- $icon = . -}}
+  {{- end -}}
 {{- end -}}
 
 {{/*  Background  */}}
@@ -41,7 +45,7 @@
 {{- $class       := print "alert " (or .Attributes.class "") " " $bg -}}
 {{- $attributes  := merge .Attributes (dict "class" $class) -}}
 {{- range $k, $v := $attributes -}}
-  {{- if . -}}
+  {{- if and . (ne $k "icon") -}}
     {{- $attrs    = print $attrs " " $k `="` . `"` -}}
   {{- end -}}
 {{- end -}}

@@ -1,46 +1,57 @@
-{{ $type        := .type | default "relation" }}
-{{ $value_type  := "" }}
-{{ if in (slice "int" "float") .type }}
-  {{ $type       = "number" }}
-  {{ $value_type = .type }}
-{{ end }}
-{{ $i18n  := "duplicate" }}
-{{ if in (slice "string" "text" "markdown" "image") .type }}
-  {{ $i18n = true }}
-{{ end }}
-{{ $label := .label | default .name | default "single" }}
-{{ $hint  := .hint | default "" }}
-{{ if not .type }}
-  {{ $page   := site.GetPage .name }}
-  {{ $cms    := $page.Params.cms }}
-  {{ $label   = $cms.singular }}
-  {{ if .multiple }}
-    {{ $label = $cms.title }}
+{{ $fields := slice }}
+
+{{ if hasPrefix .name "~" }}
+
+  {{ $fields = .fields | append (dict "<<" (slice (dict "collapsed" true) .name)) }}
+
+{{ else }}
+
+  {{ $type        := .type | default "relation" }}
+  {{ $value_type  := "" }}
+  {{ if in (slice "int" "float") .type }}
+    {{ $type       = "number" }}
+    {{ $value_type = .type }}
   {{ end }}
-  {{ $hint  = print "[" .t.types_params_relations_hint "](#/collections/" .name ")" }}
+  {{ $i18n  := "duplicate" }}
+  {{ if in (slice "string" "text" "markdown" "image") .type }}
+    {{ $i18n = true }}
+  {{ end }}
+  {{ $label := .label | default .name | default "single" }}
+  {{ $hint  := .hint | default "" }}
+  {{ if not .type }}
+    {{ $page   := site.GetPage .name }}
+    {{ $cms    := $page.Params.cms }}
+    {{ $label   = $cms.singular }}
+    {{ if .multiple }}
+      {{ $label = $cms.title }}
+    {{ end }}
+    {{ $hint  = print "[" .t.types_params_relations_hint "](#/collections/" .name ")" }}
+  {{ end }}
+
+  {{ $fields = .fields | append
+    (dict
+      "name"           .name
+      "widget"         $type
+      "i18n"           $i18n
+      "required"       false
+      "label"          $label
+      "hint"           $hint
+      "options"        .options
+      "options_length" 100
+      "collection"     .name
+      "value_field"    "{{slug}}"
+      "search_fields"  (slice "{{title}}")
+      "display_fields" (slice "{{title}}")
+      "multiple"       .multiple
+      "choose_url"     true
+      "max_file_size"  512000000
+      "value_type"     $value_type
+      "format"         `yyyy-MM-dd HH:mm:ss`
+      "date_format"    `yyyy-MM-dd`
+      "time_format"    `HH:mm`
+    )
+  }}
+
 {{ end }}
 
-{{ $fields := .fields | append
-  (dict
-    "name"           .name
-    "widget"         $type
-    "i18n"           $i18n
-    "required"       false
-    "label"          $label
-    "hint"           $hint
-    "options"        .options
-    "options_length" 100
-    "collection"     .name
-    "value_field"    "{{slug}}"
-    "search_fields"  (slice "{{title}}")
-    "display_fields" (slice "{{title}}")
-    "multiple"       .multiple
-    "choose_url"     true
-    "max_file_size"  512000000
-    "value_type"     $value_type
-    "format"         `yyyy-MM-dd HH:mm:ss`
-    "date_format"    `yyyy-MM-dd`
-    "time_format"    `HH:mm`
-  )
-}}
 {{ return $fields }}

@@ -5,10 +5,12 @@
   (dict "&BOX_NAME" (dict "name" `name` "widget" `string` "required" true  "label" $t.box_name "hint" $t.box_name_hint))
   (dict "&BOX_ID"   (dict "name" `id`   "widget" `string` "required" false "label" $t.box_id   "hint" $t.box_id_hint "pattern" (slice "^[a-z-]+$" $t.pattern)))
 
-  (dict "&BOX_VIEW_SECTION" (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_SECTION`))
-  (dict "&BOX_VIEW_MODAL"   (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_MODAL`))
-  (dict "&BOX_VIEW_BOX"     (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_BOX`))
-  (dict "&BOX_VIEW_BOXES"   (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_BOXES`))
+  (dict "&BOX_VIEW_SECTION"  (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_SECTION`))
+  (dict "&BOX_VIEW_SECTIONS" (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_SECTIONS`))
+  (dict "&BOX_VIEW_MODAL"    (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_MODAL`))
+  (dict "&BOX_VIEW_MODALS"   (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_MODALS`))
+  (dict "&BOX_VIEW_BOX"      (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_BOX`))
+  (dict "&BOX_VIEW_BOXES"    (dict "name" `view` "widget" `select` "required" false "label" $t.box_view "hint" $t.box_view_hint "multiple" true "options" `~OPTIONS_VIEW_BOXES`))
 
   (dict "&BOX_COLUMNS_MAX"     (dict "name" `columns`      "widget" `number`  "required" false "label" $t.box_columns      "value_type" `int`   "step" 1    "min" 0 "max" 12 "hint" $t.box_columns_hint))
   (dict "&BOX_COLUMNS_MIN"     (dict "name" `columns_min`  "widget" `number`  "required" false "label" $t.box_columns_min  "value_type" `int`   "step" 1    "min" 0 "max" 12 "hint" $t.box_columns_min_hint))
