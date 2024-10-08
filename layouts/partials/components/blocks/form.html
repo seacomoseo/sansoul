@@ -94,7 +94,7 @@
 
   {{- range .inputs -}}
     {{- $type     := .type -}}
-    {{- $full     := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content") | or .full) " contact__full" "" -}}
+    {{- $full     := cond ($type | in (slice "textarea" "select" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
     {{- $required := cond (not .required) "" " data-required" | safeHTMLAttr -}}
     {{- if $type | ne "hidden" -}}
       <div class="form__item {{ $full }}">
@@ -127,6 +127,10 @@
           {{- with .max }} max="{{ . }}"{{ end }}
           {{- if .multiple }} multiple{{ end -}}
         >
+      {{- else if $type | eq "geo" -}}
+        <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
+        <div id="geo" class="form__geo-map"></div>
+        <input class="form__geo" type="hidden" name="{{ .name }}" placeholder="{{ .placeholder | default .name }}" {{- $required }}>
       {{- else if $type | eq "textarea" -}}
         <textarea
           {{- $a }} class="form__textarea"

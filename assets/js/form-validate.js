@@ -114,6 +114,20 @@ export function initFormValidate () {
           }
         })
 
+        form.querySelectorAll(
+          '.form__geo[data-required]'
+        ).forEach(input => {
+          if (!input.value) {
+            input.parentElement.children[0].style.color = 'red'
+            console.log(input)
+            console.log(input.parentElement.children[0])
+            formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${input.placeholder}</strong></li>`
+            valid = false
+          } else {
+            input.parentElement.children[0].style = false
+          }
+        })
+
         form.querySelectorAll('fieldset[novalidate]').forEach(fieldset => {
           let fieldsetValid
           fieldset.querySelectorAll('input').forEach(input => {
