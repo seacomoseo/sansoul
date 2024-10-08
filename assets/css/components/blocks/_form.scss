@@ -19,6 +19,11 @@
   aspect-ratio: 16/9;
   @include radius(0em, $radius * 1rem / 1em);
 }
+/*! purgecss start ignore */
+.leaflet-popup-content {
+  max-width: calc(100vw - 10em);
+}
+/*! purgecss end ignore */
 .form__label--geo {
   @include font-base-bold;
   margin-left: $radius;
