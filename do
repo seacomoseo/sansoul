@@ -84,7 +84,7 @@ then
   sh do prebuild
 
   echo "${STI} HUGO SERVER ${STE}"
-  hugo server --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml
+  hugo server --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # Create woff2 and scss by font files
 elif [ $1 = normalize ]
@@ -305,7 +305,7 @@ then
   rm -rf public resources
 
   echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
-  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml
+  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # Hugo build as production environement
 elif [ $1 = hugo-production ]
@@ -319,7 +319,7 @@ then
   cp ./themes/sansoul/postcss.config.js ./
 
   echo "${STI} RUN HUGO PRODUCTION ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml
+  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
   # sh do css-purge
   sh do draws-purge

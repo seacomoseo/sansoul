@@ -202,9 +202,8 @@
   {{ with .lang }}
     {{ $mounts = $mounts | append
       (dict
-        "source"       (print "themes/sansoul/data/section")
-        "target"       (print "data/" . "/section")
-        "excludeFiles" "**/example/*"
+        "source"       (print "content." . "/modal")
+        "target"       (print "data/" . "/modal")
         "lang"         .
       )
       (dict
@@ -213,8 +212,9 @@
         "lang"         .
       )
       (dict
-        "source"       (print "content." . "/modal")
-        "target"       (print "data/" . "/modal")
+        "source"       (print "themes/sansoul/data/section")
+        "target"       (print "data/" . "/section")
+        "excludeFiles" "**/example/*"
         "lang"         .
       )
       (dict
