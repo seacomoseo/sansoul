@@ -46,8 +46,7 @@ export function initGa4 () {
     // eslint-disable-next-line
     gtag('event', 'contact_click', {
       event_category: category,
-      event_label: `${type}${value ? `: ${value}` : ''}`,
-      value: 1
+      event_label: `${type}${value ? `: ${value}` : ''}`
     })
   }
 
