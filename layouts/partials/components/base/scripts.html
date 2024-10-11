@@ -22,11 +22,11 @@
   {{ $is_google_translate = true }}
 {{ end }}
 
-{{/*  {{ if hugo.IsProduction }}  */}}
+{{ if hugo.IsProduction }}
   {{ with site.Params.google_analytics }}
     {{ $ga4_id = . }}
   {{ end }}
-{{/*  {{ end }}  */}}
+{{ end }}
 
 
 {{/*  OPTIONS  */}}
