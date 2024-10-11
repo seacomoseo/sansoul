@@ -1,6 +1,20 @@
 export function initGa4 () {
   function ga4 (b) {
-    let ofuscateLink, category, label, value
+    let category, label, ofuscateLink, value, type
+
+    if (b.classList.toString().search('phone') !== -1) {
+      category = 'phone'
+    } else if (b.classList.toString().search('whatsapp') !== -1) {
+      category = 'whatsapp'
+    } else if (b.classList.contains('contact__email-option-copy')) {
+      category = 'email_copy'
+    } else if (b.classList.contains('contact__email-option-send')) {
+      category = 'email_send'
+    } else if (b.classList.contains('contact__address')) {
+      category = 'address'
+    } else if (b.classList.toString().search('custom--ga4') !== -1) {
+      category = 'custom'
+    }
 
     if (b.href) {
       value = b.href
@@ -24,30 +38,16 @@ export function initGa4 () {
     }
 
     if (b.classList.toString().search('callnow') !== -1) {
-      category = 'callnow'
+      type = 'callnow'
     } else {
-      category = 'contact'
-    }
-
-    if (b.classList.toString().search('phone') !== -1) {
-      label = 'phone'
-    } else if (b.classList.toString().search('whatsapp') !== -1) {
-      label = 'whatsapp'
-    } else if (b.classList.contains('contact__email-option-copy')) {
-      label = 'email_copy'
-    } else if (b.classList.contains('contact__email-option-send')) {
-      label = 'email_send'
-    } else if (b.classList.contains('contact__address')) {
-      label = 'address'
-    } else if (b.classList.toString().search('custom--ga4') !== -1) {
-      label = 'custom'
+      type = 'contact'
     }
 
     // eslint-disable-next-line
     gtag('event', 'contact_click', {
       event_category: category,
-      event_label: label,
-      value
+      event_label: `${type}${value ? `: ${value}` : ''}`,
+      value: 1
     })
   }
 
