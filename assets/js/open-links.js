@@ -1,4 +1,4 @@
-import { scrollTo, disableEnableParallax } from './scroll-to'
+import { scrollTo, scrolling } from './scroll-to'
 
 export function initOpenLinks () {
   function openLink (url, blank) {
@@ -37,7 +37,7 @@ export function initOpenLinks () {
     const link = e.target.closest('[href*="#"]:not(use,[href*="&_x_tr_hist=true"])') // Fix Google Translate Subdomain links with hash
     if (link) {
       e.preventDefault()
-      disableEnableParallax()
+      scrolling()
       const url = link.getAttribute('href')
       processLink(url)
     } else {

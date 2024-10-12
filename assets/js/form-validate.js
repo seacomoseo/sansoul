@@ -43,6 +43,7 @@ export function initFormValidate () {
       formSubmit.classList.add('form__submit--success')
       formSubmit.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
       formSubmited(form)
+      form.reset()
     }
     function formSubmitError (error) {
       formSubmit.classList.add('form__submit--error')

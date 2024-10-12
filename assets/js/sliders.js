@@ -152,7 +152,7 @@ export function initSliders () {
           function setSideScrollInterval () {
             return setInterval(() => {
               const isStatic = slider.classList.contains('slider--static')
-              const disableParallax = document.body.classList.contains('disable-parallax')
+              const disableParallax = document.body.classList.contains('scrolling')
               if (!isStatic && !disableParallax) {
                 sideScroll('right', track, children)
               }

@@ -24,7 +24,7 @@ export function initParallax () {
     window.addEventListener('scroll', () => {
       parallaxElements.forEach(e => {
         const parallaxScroll = e.classList.contains('parallax--scroll')
-        const disableParallax = document.body.classList.contains('disable-parallax')
+        const disableParallax = document.body.classList.contains('scrolling')
         if (parallaxScroll && !disableParallax) doParallax(e)
       })
     })

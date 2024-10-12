@@ -1,10 +1,10 @@
-export function disableEnableParallax () {
-  document.body.classList.add('disable-parallax')
-  setTimeout(() => { document.body.classList.remove('disable-parallax') }, 1000)
+export function scrolling () {
+  document.body.classList.add('scrolling')
+  setTimeout(() => { document.body.classList.remove('scrolling') }, 1000)
 }
 
 export function scrollTo (targetElement) {
-  disableEnableParallax()
+  scrolling()
   targetElement.scrollIntoView({ behavior: 'smooth' })
 }
 
