@@ -114,6 +114,17 @@
         {{- if and $googleScript (eq $type "file") -}}
           {{- $name = print "📄" .name -}}
         {{- end -}}
+
+        {{- if eq $type "tel" -}}
+          <div class="form__item form__item--tel">
+            <select class="form__select form__select--pre" name="🌐 {{ .name }}" {{- $required }}>
+              {{/*  <option value="">{{ i18n "box_contact_pre" }}{{ if .required }} *{{ end }}</option>  */}}
+              {{- range site.Data.options.phone_code -}}
+                <option value="{{ . }}" {{- if eq . site.Params.phone_code }} selected{{ end }}>{{ i18n (print "option-phone_code-" .) | replaceRE `^(\+\d+ \S+).*` "$1" }}</option>
+              {{- end -}}
+            </select>
+        {{- end -}}
+
         <input
           {{- $a }} class="form__input"
           {{- $a }} type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}"
@@ -127,6 +138,11 @@
           {{- with .max }} max="{{ . }}"{{ end }}
           {{- if .multiple }} multiple{{ end -}}
         >
+
+        {{- if eq $type "tel" -}}
+          </div>
+        {{- end -}}
+
       {{- else if $type | eq "geo" -}}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div id="geo" class="form__geo-map"></div>
