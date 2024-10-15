@@ -79,7 +79,7 @@
 
         {{/*  TEMPLATE  */}}
         {{- $template_all       := site.Data.template.list -}}
-        {{- $template_type      := $parent.Params.list -}}
+        {{- $template_type      := $parent.Params.cascade.list -}}
         {{- $template_related   := dict -}}
         {{- if eq $type "related" -}}
           {{- with site.Data.template.related -}}
@@ -100,7 +100,7 @@
         {{/*  PAGES TO BOXES  */}}
         {{- $boxes   := slice -}}
         {{- range $firsts_pages -}}
-          {{- $content := .Summary | default .Description | truncate 155 | plainify -}}
+          {{- $content := .Summary | default .Description | truncate 155 -}}
           {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
           {{- $page    := dict
             "Page"    .

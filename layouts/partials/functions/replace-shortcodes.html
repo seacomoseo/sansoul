@@ -1,9 +1,17 @@
 {{ $obj    := .obj | default dict }}
 {{ with $obj | jsonify }}
   {{ $json := . }}
-  {{ with . | findRE `\{\{\%.+?\%\}\}` }}
+  {{ with . | findRE `\{\{ .+? \}\}` }}
     {{ range . | uniq }}
-      {{ $param := . | site.Home.RenderString | plainify | replaceRE `&amp;#43;` `+` | replaceRE `\"` `\"` }}
+      {{ $param := .
+        | replaceRE `^\{\{ ` "{{< "
+        | replaceRE ` \}\}$` " >}}"
+        | site.Home.RenderString
+        | plainify
+        | replaceRE `&amp;#43;` `+`
+        | replaceRE `\"` `\"`
+        | replaceRE `\n+$` ""
+      }}
       {{ $json   = $json | replaceRE . $param }}
     {{ end }}
     {{ $obj =  unmarshal $json }}

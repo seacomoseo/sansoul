@@ -62,11 +62,16 @@
       {{ $has_map = . }}
     {{ end }}
     {{ with .geo }}
-      {{ $cordinates := (unmarshal .).coordinates }}
+      {{ $geo := dict }}
+      {{ if reflect.IsMap . }}
+        {{ $geo = . }}
+      {{ else }}
+        {{ $geo = unmarshal . }}
+      {{ end }}
       {{ $geo = dict
         "@type"     "GeoCoordinates"
-        "latitude"  (index $cordinates 1)
-        "longitude" (index $cordinates 0)
+        "latitude"  (index $geo.coordinates 1)
+        "longitude" (index $geo.coordinates 0)
       }}
     {{ end }}
   {{ end }}

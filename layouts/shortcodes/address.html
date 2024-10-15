@@ -1,0 +1,13 @@
+
+{{- with page.Params.address -}}
+  {{- with .street   }}{{ . }}{{ end -}}
+  {{- if and .street .pc }}, {{ end -}}
+  {{- with .pc       }}{{ . }}{{ end -}}
+  {{- if and .pc .locality }} {{ end -}}
+  {{- with .locality }}{{ . }}{{ end -}}
+  {{- "" -}}{{/*  {{- if and .locality .region }}, {{ end -}}  */}}
+  {{- "" -}}{{/*  {{- with .region   }}{{ . }}{{ end -}}  */}}
+  {{- "" -}}{{/*  {{- if and .region .country }}, {{ end -}}  */}}
+  {{- if and .locality .country }}, {{ end -}}
+  {{- with .country  }}{{ . }}{{ end -}}
+{{- end -}}

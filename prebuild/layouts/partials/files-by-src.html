@@ -8,88 +8,79 @@
         {{ warnf "%s" . }}
       {{ else }}
 
-        {{ $datas := unmarshal . }}
+        {{ $datas := unmarshal (.Content | string) }}
         {{ if $csv }}
           {{ $datas = partial "csv" $datas }}
         {{ end }}
 
-        {{ range $types }}
-          {{ $type     := .type | default "pages" }}
-          {{ $pairings := slice
-            (dict "to" "slug"                        )
-            (dict "to" "title"                       )
-            (dict "to" "summary"                     )
-            (dict "to" "seo"                         )
-            (dict "to" "description"                 )
-            (dict "to" "image"                       )
-            (dict "to" "images"      "kind" "slice"  )
-            (dict "to" "date"                        )
-            (dict "to" "lastmod"                     )
-            (dict "to" "category"    "kind" "slice"  )
-            (dict "to" "brand"       "kind" "slice"  )
-            (dict "to" "author"                      )
-            (dict "to" "price"       "kind" "float"  )
-            (dict "to" "job"                         )
-            (dict "to" "social"      "kind" "slice"  )
-            (dict "to" "date"                        )
-            (dict "to" "end"                         )
-            (dict "to" "artists"                     )
-            (dict "to" "location"                    )
-            (dict "to" "place"                       )
-            (dict "to" "toc"         "kind" "boolean")
-            (dict "to" "draft"       "kind" "boolean")
-            (dict "to" "noindex"     "kind" "boolean")
-            (dict "to" "content"                     )
-            (dict "from" "slug" "to" "translationKey")
-            | append .pairings
-          }}
+        {{ if $datas }}
+          {{ range $types }}
+            {{ $type     := .type | default "pages" }}
+            {{ $pairings := .pairings }}
 
-          {{ with .index }}
-            {{ $datas = index $datas (split . ".") }}
-          {{ end }}
-          {{ with $datas }}
-            {{/*  TO FILES  */}}
-            {{ range $key, $data := . }}
+            {{ with .index }}
+              {{ $datas = index $datas (split . ".") }}
+            {{ end }}
+            {{ with $datas }}
+              {{/*  TO FILES  */}}
+              {{ range $key, $data := . }}
+                {{ with . }}
 
-              {{ $obj := dict }}
-              {{ range $pairings }}
-                {{ $from    := .from | default .to }}
+                  {{ $obj := dict }}
+                  {{ range $pairings }}
+                    {{ $from    := .from | default .to }}
 
-                {{ $pair    := index $data (split $from ".") }}
-                {{ if $pair }}
-                  {{ if eq .kind "slice" }}
-                    {{ if not (reflect.IsSlice $pair) }}
-                      {{ $pair = split $pair (.delimit | default ",")  }}
+                    {{ $pair    := index $data (split $from ".") }}
+                    {{ if $pair }}
+                      {{ if eq .kind "slice" }}
+                        {{ if not (reflect.IsSlice $pair) }}
+                          {{ $pair = split $pair (.delimit | default ",")  }}
+                        {{ end }}
+                      {{ end }}
+                    {{ end }}
+
+                    {{ if ne .default nil }}
+                      {{ $default  := .default }}
+                      {{ if      eq .kind "int" }}
+                        {{ $default = int .default }}
+                      {{ else if eq .kind "float" }}
+                        {{ $default = float .default }}
+                      {{ else if eq .kind "boolean" }}
+                        {{ $default = eq "true" .default }}
+                      {{ else if eq .kind "slice" }}
+                        {{ $default = split .default (.delimit | default ",")  }}
+                      {{ else if eq .kind "dict" }}
+                        {{ $default = unmarshal .default }}
+                      {{ end }}
+                      {{ $pair = $pair | default $default }}
+                    {{ end }}
+
+                    {{ if $pair }}
+                      {{ $keys     := split .to "." }}
+                      {{ $kind     := .kind }}
+                      {{ $new_dict := dict }}
+                      {{ range collections.Reverse $keys }}
+                        {{ if eq $kind "slice" }}
+                          {{ $value   := index $obj . }}
+                          {{ $new_dict = dict . ($value | default slice | append $pair) }}
+                        {{ else }}
+                          {{ $new_dict = dict . ($new_dict | default $pair) }}
+                        {{ end }}
+                      {{ end }}
+                      {{ $obj = merge $obj $new_dict }}
                     {{ end }}
                   {{ end }}
-                {{ end }}
 
-                {{ if ne .default nil }}
-                  {{ $default  := .default }}
-                  {{ if      eq .kind "int" }}
-                    {{ $default = int .default }}
-                  {{ else if eq .kind "float" }}
-                    {{ $default = float .default }}
-                  {{ else if eq .kind "boolean" }}
-                    {{ $default = eq "true" .default }}
-                  {{ else if eq .kind "slice" }}
-                    {{ $default = split .default (.delimit | default ",")  }}
-                  {{ end }}
-                  {{ $pair = $pair | default $default }}
-                {{ end }}
+                  {{ $slug    := index $obj "slug"    | default $key }}
+                  {{ $content := index $obj "content" | default "" }}
+                  {{ $obj      = merge $obj (dict "content" nil) }}
+                  {{ $path    := print "content." $lang "/" $type "/" (urlize $slug) ".md" }}
+                  {{ partial "file-by-obj" (dict "obj" $obj "content" $content "path" $path) }}
 
-                {{ if $pair }}
-                  {{ $obj  = merge $obj (dict .to $pair) }}
                 {{ end }}
               {{ end }}
 
-              {{ $slug    := index $obj "slug"    | default $key }}
-              {{ $content := index $obj "content" | default "" }}
-              {{ $path    := print "content." $lang "/" $type "/" (urlize $slug) ".md" }}
-              {{ partial "file-by-obj" (dict "obj" $obj "content" $content "path" $path) }}
-
             {{ end }}
-
           {{ end }}
         {{ end }}
 

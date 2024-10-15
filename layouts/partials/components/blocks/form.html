@@ -130,7 +130,8 @@
       {{- else if $type | eq "geo" -}}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div id="geo" class="form__geo-map"></div>
-        <input class="form__geo" type="hidden" name="{{ .name }}" placeholder="{{ .placeholder | default .name }}" {{- $required }}>
+        <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" placeholder="{{ .placeholder | default .name }}" {{- $required }}>
+        <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y" placeholder="{{ .placeholder | default .name }}" {{- $required }}>
       {{- else if $type | eq "textarea" -}}
         <textarea
           {{- $a }} class="form__textarea"

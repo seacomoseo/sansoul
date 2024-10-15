@@ -18,7 +18,11 @@
   {{ with $children }}
     {{ $type = "CollectionPage" }}
     {{ if eq page.Type "blog" }}
-      {{ $type = "Blog" }}
+      {{ $type = "BlogPosting" }}
+    {{ else if eq page.Type "article" }}
+      {{ $type = "Article" }}
+    {{ else if eq page.Type "new" }}
+      {{ $type = "NewsArticle" }}
     {{ end }}
     {{ range . }}
       {{ $has_part = $has_part | append (partial "components/base/schema/page" .) }}

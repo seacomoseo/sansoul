@@ -24,7 +24,7 @@
     {{ $is_not_root := not $.Page.IsSection }}
     {{ $if = and $is_parent $is_not_root }}
   {{ else }}
-    {{ $if = index $.Page.Params (split . ".") }}
+    {{ $if = partial "functions/index-split" (dict "value" $.Page.Params "path" .) }}
   {{ end }}
 {{ end }}
 {{ return $if }}

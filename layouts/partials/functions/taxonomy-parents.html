@@ -1,12 +1,11 @@
 {{ $parent := slice }}
-
 {{/*  Parent taxonomies  */}}
 {{ with .Params.taxonomies }}
   {{/*  Each parent taxonomy  */}}
   {{ range . }}
     {{ $type      := .name }}
     {{/*  Param with key name like taxonomy  */}}
-    {{ $filenames := index page.Params .name }}
+    {{ $filenames := index $.Params .name }}
     {{ with $filenames }}
       {{/*  Force value to slice  */}}
       {{ if not (reflect.IsSlice .) }}

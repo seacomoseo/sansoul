@@ -8,12 +8,12 @@
     {{ if lt $index (len $value) }}
       {{ $value = index $value $index }}
     {{ else }}
-      {{ $value = nil }}
+      {{ $value = "" }}
     {{ end }}
   {{ else }}
-    {{ $value = nil }}
+    {{ $value = "" }}
   {{ end }}
-  {{ if eq $value nil }}
+  {{ if eq $value "" }}
     {{ break }}
   {{ end }}
 {{ end }}

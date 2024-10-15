@@ -12,8 +12,8 @@
   {{ with $anchor }}
     {{ $title  = . }}
   {{ else }}
-    {{ $pre   := cond .IsSection .Params.emoji "" }}
-    {{ $title  = print $pre " " $title " ⇨ " site.Title }}
+    {{ $pre   := cond .IsSection (print .Params.emoji " ") "" }}
+    {{ $title  = print $pre $title " - " site.Title }}
   {{ end }}
 {{ end }}
 

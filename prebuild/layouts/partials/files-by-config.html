@@ -1,6 +1,6 @@
-{{ $types_full := site.Data.types.custom                        | default slice }}
-{{ $types := where $types_full            "disabled" "!=" false | default slice }}
-{{ $langs := where site.Data.config.langs "disabled" "!=" false }}
+{{ $types_full := site.Data.types.custom                       | default slice }}
+{{ $types := where $types_full            "disabled" "!=" true | default slice }}
+{{ $langs := where site.Data.config.langs "disabled" "!=" true }}
 {{ $lang_first := index $langs 0 }}
 
 {{ $languages := dict }}
@@ -48,10 +48,11 @@
         {{ $taxonomies  := slice }}
         {{ $breadcrumbs := "" }}
         {{ range $types }}
-          {{ $base_from := .base | default "page" }}
-          {{ $name_from := .name | default $base_from }}
+          {{ $type_of := . }}
           {{ range .taxonomy_of }}
             {{ if eq .name $name }}
+              {{ $base_from    := $type_of.base | default "page" }}
+              {{ $name_from    := $type_of.name | default $base_from }}
               {{ $taxonomies    = $taxonomies | append (merge . (dict "name" $name_from "base" $base_from)) }}
               {{ if .breadcrumbs }}
                 {{ $breadcrumbs = $name_from }}

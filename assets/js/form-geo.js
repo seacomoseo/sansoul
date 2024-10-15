@@ -36,7 +36,8 @@ export function initFormGeo () {
           }
 
           // Display latitude and longitude in input field
-          document.querySelector('.form__geo').value = `{"type":"Point","coordinates":[${Number(lng.toFixed(7))},${Number(lat.toFixed(7))}]}`
+          document.querySelector('.form__geo--x').value = Number(lat.toFixed(7))
+          document.querySelector('.form__geo--y').value = Number(lng.toFixed(7))
         })
 
         // popup over top elements when popupopen in small screen sizes

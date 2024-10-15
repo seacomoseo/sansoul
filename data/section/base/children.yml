@@ -6,10 +6,10 @@ pt: 0
 boxes:
 - if: collection
   list:
-    type: '{{% type %}}'
+    type: '{{ type }}'
 - if: taxonomy
   params:
-  - box: list.{{% type %}}
+  - box: list.{{ type }}
     page: filename
   list:
     type: all

@@ -1,11 +1,15 @@
 export function scrolling () {
   document.body.classList.add('scrolling')
-  setTimeout(() => { document.body.classList.remove('scrolling') }, 1000)
+  setTimeout(() => {
+    document.body.classList.remove('scrolling')
+  }, 1500)
 }
 
 export function scrollTo (targetElement) {
   scrolling()
-  targetElement.scrollIntoView({ behavior: 'smooth' })
+  setTimeout(() => {
+    targetElement.scrollIntoView({ behavior: 'smooth' })
+  }, 500)
 }
 
 // SCROLL IF IS HASH WHEN LOAD (FIX SHOW)
