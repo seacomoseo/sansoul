@@ -117,7 +117,7 @@
 
         {{- if eq $type "tel" -}}
           <div class="form__item form__item--tel">
-            <select class="form__select form__select--pre" name="🌐 {{ .name }}" {{- $required }}>
+            <select class="form__select form__select--pre">
               {{/*  <option value="">{{ i18n "box_contact_pre" }}{{ if .required }} *{{ end }}</option>  */}}
               {{- range site.Data.options.phone_code -}}
                 <option value="{{ . }}" {{- if eq . site.Params.phone_code }} selected{{ end }}>{{ i18n (print "option-phone_code-" .) | replaceRE `^(\+\d+ \S+).*` "$1" }}</option>
@@ -129,8 +129,8 @@
           {{- $a }} class="form__input"
           {{- $a }} type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}"
           {{- $a }} name="{{ $name }}"
-          {{- $a }} placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}"
           {{- $required }}
+          {{- if not ($type | in (slice `date` `time` `file`)) }} placeholder="{{ .placeholder | default .name }}{{ if .required }} *{{ end }}"{{ end }}
           {{- if $onfocus }} onfocus="(this.type='{{ $type }}')"{{ end }}
           {{- with .accept }} accept="{{ . }}"{{ end }}
           {{- with .regex }} pattern="{{ . }}"{{ end }}
@@ -146,8 +146,8 @@
       {{- else if $type | eq "geo" -}}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div id="geo" class="form__geo-map"></div>
-        <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" placeholder="{{ .placeholder | default .name }}" {{- $required }}>
-        <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y" placeholder="{{ .placeholder | default .name }}" {{- $required }}>
+        <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" {{- $required }}>
+        <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y" {{- $required }}>
       {{- else if $type | eq "textarea" -}}
         <textarea
           {{- $a }} class="form__textarea"

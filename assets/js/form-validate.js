@@ -90,7 +90,7 @@ export function initFormValidate () {
             formError.innerHTML += `<li>${formErrorSingleQuotes}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else {
-            input.style = false
+            delete input.style
           }
         })
 
@@ -111,21 +111,20 @@ export function initFormValidate () {
             formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else {
-            input.style = false
+            delete input.style
           }
         })
 
         form.querySelectorAll(
           '.form__geo[data-required]'
         ).forEach(input => {
+          const title = input.parentElement.children[0]
           if (!input.value) {
-            input.parentElement.children[0].style.color = 'red'
-            console.log(input)
-            console.log(input.parentElement.children[0])
+            title.style.color = 'red'
             formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${input.placeholder}</strong></li>`
             valid = false
           } else {
-            input.parentElement.children[0].style = false
+            delete title.style
           }
         })
 
@@ -139,7 +138,7 @@ export function initFormValidate () {
             formError.innerHTML += `<li>${formErrorRequiredCheck}: <strong>${fieldset.children[0].textContent.replace(' *', '')}</strong></li>`
             valid = false
           } else {
-            fieldset.style = false
+            delete fieldset.style
           }
         })
 
@@ -150,7 +149,7 @@ export function initFormValidate () {
             formError.innerHTML += `<li>${formErrorEmail}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else if (input.value && emailMatch) {
-            input.style = false
+            delete input.style
           }
         })
 
@@ -161,7 +160,7 @@ export function initFormValidate () {
             formError.innerHTML += `<li>${formErrorTel}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else if (input.value && telMatch) {
-            input.style = false
+            delete input.style
           }
         })
 
@@ -172,7 +171,7 @@ export function initFormValidate () {
         //     formError.innerHTML += `<li>${formErrorMin.replace('{{.}}', input.min)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
         //     valid = false
         //   } else if (input.value && minMatch) {
-        //     input.style = false
+        //     delete input.style
         //   }
         // })
 
@@ -183,7 +182,7 @@ export function initFormValidate () {
         //     formError.innerHTML += `<li>${formErrorMax.replace('{{.}}', input.max)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
         //     valid = false
         //   } else if (input.value && maxMatch) {
-        //     input.style = false
+        //     delete input.style
         //   }
         // })
 
@@ -195,7 +194,7 @@ export function initFormValidate () {
               formError.innerHTML += `<li>${formErrorFile}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
               valid = false
             } else if (input.value && file) {
-              input.style = false
+              delete input.style
             }
           }
         })
@@ -207,11 +206,20 @@ export function initFormValidate () {
           formError.innerHTML += `<li>${formErrorAcept}</li>`
           valid = false
         } else {
-          accept.style = false
+          delete accept.style
         }
 
         if (valid) {
           formError && formError.remove()
+
+          // Phone Prefixes Prev
+          form.querySelectorAll('[type="tel"]').forEach(input => {
+            if (input.value) {
+              input.value = `'+${input.previousElementSibling.value} ${input.value}`
+              input.dataset.value = input.value
+            }
+          })
+
           const actionEncoded = form.action.replace(window.location.href.split('#')[0], '')
           let action = window.atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
@@ -267,7 +275,6 @@ export function initFormValidate () {
                         const reader = new FileReader()
                         reader.onloadend = () => {
                           const base64File = reader.result // .split(',')[1]
-                          console.log(base64File)
                           formData.append(input.name, base64File)
                           resolve()
                         }
@@ -297,6 +304,14 @@ export function initFormValidate () {
               .then(response => { formSubmitSuccess(form) })
               .catch(error => { formSubmitError(error) })
           }
+
+          // Phone Prefixes Restore
+          form.querySelectorAll('[type="tel"]').forEach(input => {
+            if (input.dataset.value) {
+              input.value = input.dataset.value
+              delete input.dataset.value
+            }
+          })
         } else {
           // alert('Completa correctamente los campos requeridos')
           scrollTo(formError)
