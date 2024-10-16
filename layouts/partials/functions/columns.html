@@ -14,7 +14,7 @@
   {{ if eq .columns 0 }}
     {{ $span  := 0 }}
     {{ range $items }}
-      {{ $span = add $span (or .span .span_min 1) }}
+      {{ $span = add $span (.span | default .span_min | default 1) }}
     {{ end }}
     {{ $max  = cond (le $span 6) $span 3 }}
   {{ end }}
