@@ -330,16 +330,22 @@ boxes:
     required: false
     regex: '[^∑]*'
     regex_hint: No se adminte el caracter "∑"
+    min: 0
+    max: 50
   - type: email
     name: Email
     placeholder: Correo
     required: false
     regex: null # regex pattern
+    min: 0
+    max: 30
   - type: tel
     name: Tel
     placeholder: Teléfono
     required: false
     regex: null # regex pattern
+    min: 0
+    max: 15
   - type: number
     name: Number
     placeholder: Número
@@ -358,6 +364,8 @@ boxes:
     name: Textarea
     placeholder: Mensaje
     required: false
+    min: 0
+    max: 155
   - type: geo
     name: Posición
   - type: hidden
