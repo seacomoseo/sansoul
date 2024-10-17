@@ -21,7 +21,7 @@
 )) }}
 
 {{ $box_bg_color := print
-  (cond (not .card) (cond (not .bg_color) "" (print "bg-" .bg_color)) "bg-black")
+  (cond (not .bg_color) (cond (not .card) "" "bg-black") (print "bg-" .bg_color))
   (cond (not .bg_image_src) "" " bg-image")
 }}
 

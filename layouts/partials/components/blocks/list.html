@@ -108,10 +108,16 @@
             "title"   .Params.title
             "content" $content
             "price"   $price
+            "image"   ""
             "icon"    ""
             "social"  ""
-            "image"   .Params.image
           -}}
+          {{- if ne $template.image "hide" -}}
+            {{- with .Params.image }}{{ $page = merge $page (dict "image" .) }}{{ end -}}
+          {{- end -}}
+          {{- if eq $template.icon "_" -}}
+            {{- with .Params.icon }}{{ $page = merge $page (dict "icon" .) }}{{ end -}}
+          {{- end -}}
           {{- $boxes = $boxes | append $page -}}
         {{- end -}}
 

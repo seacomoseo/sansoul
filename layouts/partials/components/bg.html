@@ -1,3 +1,7 @@
+{{- if .card -}}
+  <div class="bg-card"></div>
+{{- end -}}
+
 {{- if or .color .gradient .bg -}}
   {{- $image     := "" -}}
   {{- $alpha     := "" -}}
@@ -62,8 +66,4 @@
       </div>
     {{- end -}}
   </div>
-{{- end -}}
-
-{{- if .card -}}
-  <div class="bg-card"></div>
 {{- end -}}
