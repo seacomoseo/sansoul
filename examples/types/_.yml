@@ -1,17 +1,20 @@
+title: _ # string
 base: page # [ article, event, product, brand, author, organization, service, page ]
-name: _ # string
-icon: null # string
-emoji: null # string
+icon: file # string
+emoji: 📄 # string
 disabled: null # boolean
 noindex: null # boolean
 related: null # boolean
+hint: null # string
 taxonomy_of:
 - name: null # string of relation name in params
   multiple: null # boolean
   breadcrumbs: null # boolean
   schema: null # string [ articleSection or author in article, brand or manufacturer in product ]
 params:
-- name: null # string *
+- name: null # string * if has prefix '~', get YAML variable
+  label: null # string
+  hint: null # string
   type: null # [ boolean, int, float, string, text, markdown, date, image, select, list ] *
   options: []
   # - label: null # string
@@ -19,13 +22,10 @@ params:
   list: [] # [ boolean, int, float, string, text, markdown, date, image, select ]
   multiple: null # boolean
   schema: null # strings
-  es:
-    label: null # string
-    hint: null # string
 template:
   toc: null # boolean
   background: {}
-  menu: []
+  menu: {}
   callnow: {}
   section: []
   modal: {}
@@ -33,14 +33,13 @@ template:
   list: {}
   related: {}
 es:
-  slug: null # string
   permalinks: null # string
+  slug: null # string
   singular: null # string
   title: null # string
+  image: null # string image path
   seo: null # string
   description: null # string
-  hint: null # string
-  image: null # string image path
   content: null # string block
 en: {}
 fr: {}

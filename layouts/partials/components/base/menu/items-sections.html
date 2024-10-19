@@ -6,7 +6,7 @@
     {{- $sections = after 1 . -}}
   {{- end -}}
 
-  {{ with where $sections "menu_button" "!=" "hide" }}
+  {{ with where $sections "menu_button" "ne" "hide" }}
     {{ range . }}
       {{ if .menu_label | or .hanchor | or .title | or (.icon | and .id) }}
 

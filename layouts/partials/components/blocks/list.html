@@ -3,14 +3,13 @@
 {{ with .list }}
   {{ if and .type (ne $.type "related") }}
     {{ $list  := . }}
-    {{ $max   := .max | default 999 }}
     {{ $types := slice .type }}
+    {{ $max   := .max | default 999 }}
     {{ if eq .type "all" }}
       {{ $types   = slice }}
       {{ range site.Sections }}
         {{ $types = $types | append .Type }}
       {{ end }}
-      {{ $types   = $types | append "/" }}
     {{ end }}
 
     {{/*  {{ $types_many := gt (len $types) 1 }}  */}}
@@ -22,13 +21,42 @@
       {{ if eq $type "related" }}
         {{ $parent = site.GetPage page.Type }}
         {{ $pages  = $parent.Pages.Related page }}
+      {{ else if eq $type "single" }}
+        {{ $pages = slice site.Home | append $pages }}
       {{ end }}
       {{/*
       {{ if eq $parent.Params.base "event" }}
         {{ $pages = sort $pages "Date" "desc" }}
       {{ end }}
       */}}
-      {{ $firsts_pages := $pages }}
+      {{ $firsts_pages  := $pages }}
+
+      {{/*  TEMPLATE  */}}
+      {{- $template_box       := $.box | default dict -}}
+      {{- $template_related   := dict -}}
+      {{- $type_rel           := $type -}}
+      {{- if eq $type "related" -}}
+        {{- $type_rel           = page.Type -}}
+        {{- with site.Data.types.all.template.related -}}
+          {{- $template_related = . -}}
+        {{- end -}}
+        {{- with (index site.Data.types $type_rel).template.related -}}
+          {{- $template_related = merge $template_related . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $template_type      := (index site.Data.types $type_rel).template.list -}}
+      {{- $template_all       := site.Data.types.all.template.list -}}
+      {{- $template           := merge
+        $template_all
+        $template_type
+        $template_related
+        $template_box
+      -}}
+      {{ if eq $type "related" }}
+        {{ if not $.list.max }}
+          {{ $max  = $template.columns | default $template.columns_min }}
+        {{ end }}
+      {{ end }}
 
       {{ if and page.IsSection (eq (len $types) 1) (ne $type "related") }}
         {{/*  PAGE PARENT  */}}
@@ -77,49 +105,40 @@
         {{ end }}
         */}}
 
-        {{/*  TEMPLATE  */}}
-        {{- $template_all       := site.Data.template.list -}}
-        {{- $template_type      := $parent.Params.cascade.list -}}
-        {{- $template_related   := dict -}}
-        {{- if eq $type "related" -}}
-          {{- with site.Data.template.related -}}
-            {{- $template_related = . -}}
-          {{- end -}}
-          {{- with $parent.Params.related -}}
-            {{- $template_related = merge $template_related . -}}
-          {{- end -}}
-        {{- end -}}
-        {{- $template_box       := $.box | default dict -}}
-        {{- $template           := merge
-          $template_all
-          $template_type
-          $template_related
-          $template_box
-        -}}
-
         {{/*  PAGES TO BOXES  */}}
         {{- $boxes   := slice -}}
         {{- range $firsts_pages -}}
-          {{- $content := .Summary | default .Description | truncate 155 -}}
           {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
-          {{- $page    := dict
+          {{- $content := .Summary | default .Description | truncate 155 -}}
+          {{- $params  := slice
+            (dict "param" "image"   "value" .Params.image)
+            (dict "param" "icon"    "value" .Params.icon)
+            (dict "param" "content" "value" $content)
+          -}}
+          {{- $page := dict
             "Page"    .
             "link"    .RelPermalink
             "title"   .Params.title
-            "content" $content
             "price"   $price
             "social"  ""
           -}}
-          {{- if ne $template.image "hide" -}}
-            {{- with .Params.image }}{{ $page = merge $page (dict "image" .) }}{{ end -}}
-          {{- end -}}
-          {{- if eq $template.icon "_" -}}
-            {{- with .Params.icon }}{{ $page = merge $page (dict "icon" .) }}{{ end -}}
+          {{- range $params -}}
+            {{- $param := .param -}}
+            {{- if ne (index $template .param) "hide" -}}
+              {{- if .value -}}
+                {{- $page = merge $page (dict .param .value) -}}
+              {{- end -}}
+            {{- end -}}
           {{- end -}}
           {{- $boxes = $boxes | append $page -}}
         {{- end -}}
-
+        
         {{/*  BOXES  */}}
+        {{- range slice "image" "icon" "content" -}}
+          {{- if eq (index $template .) "hide" -}}
+            {{- $template = merge $template (dict . "") -}}
+          {{- end -}}
+        {{- end -}}
         {{- partial "components/boxes/_"
           (merge
             $e

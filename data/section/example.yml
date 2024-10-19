@@ -4,7 +4,7 @@ name: Ejemplo
 id: seccion
 ## menu
 menu_label: Texto del enlace del Menú
-menu_button: link # [ main, link, alt, light, dark, invert, none, hide ]
+menu_button: link # [ main, link, alt, light, dark, invert, similar, none, hide ]
 menu_font_alt: true
 # bg
 color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
@@ -49,13 +49,13 @@ align_max: center # [ left, center, right ]
 icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 icon_type: bottom # [ top, side, bottom ]
 icon_size: 0 # [ 0 = auto, > 0.00 ]
-icon_color: '' # [ main, link, alt, light, dark, invert ]
+icon_color: '' # [ main, link, alt, light, dark, invert, similar ]
 # image
 image: base/icon.png
 hover: fondo.jpg
 ratio: circle # [ normal, 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1, circle ]
 contain: false
-border: main # [ main, link, alt, light, dark, invert ]
+border: main # [ main, link, alt, light, dark, invert, similar ]
 inset: true
 grayscale: false
 declive: false
@@ -65,7 +65,7 @@ licon: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Ccla
 label: Legal
 anchor: Aviso Legal
 ofuscate: false
-button: none # [ main, link, alt, light, dark, invert, none, hide ]
+button: none # [ main, link, alt, light, dark, invert, similar, none, hide ]
 font_alt: true
 # container
 box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
@@ -151,15 +151,11 @@ boxes:
     - admin
   box:
     # add like box
-    # + list
-    hide_content: false
-    hide_category: false
-    hide_reading_time: false
 
 ###
 
 - step:
-    border: link # [ main, link, alt, light, dark, invert ]
+    border: link # [ main, link, alt, light, dark, invert, similar ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
     hn: '' # [ 1 - 6, p ]
     hs: '' # [ 0 - 6 ]
@@ -192,7 +188,7 @@ boxes:
     label: Ejemplo
     anchor: Jeje
     ofuscate: false
-    button: none # [ main, link, alt, light, dark, invert, none ]
+    button: none # [ main, link, alt, light, dark, invert, similar, none ]
     font_alt: true
   images:
   - https://images.unsplash.com/photo-1552664730-d307ca884978?fit=crop&w=512&q=60
@@ -212,7 +208,7 @@ boxes:
 ###
 
 - collapsible:
-    button: '' # [ main, link, alt, light, dark, invert, none ]
+    button: '' # [ main, link, alt, light, dark, invert, similar, none ]
     font_alt: false
     licon: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     hn: '' # [ 1 - 6, p ]
@@ -244,7 +240,7 @@ boxes:
     interval: 2
     bullets: '' # [ dash, radius, hide ]
     arrows: '' # [ bottom, float, hide ]
-    button: '' # [ main, link, alt, light, dark, invert ]
+    button: '' # [ main, link, alt, light, dark, invert, similar ]
   reviews:
   - title: Título Reseña 1
     subtitle: Subtítulo Reseña 1
@@ -281,12 +277,12 @@ boxes:
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
     full: false
-    button: link # [ main, link, alt, light, dark, invert, none ]
+    button: link # [ main, link, alt, light, dark, invert, similar, none ]
     font_alt: false
   - type: whatsapp
     label: 123456789
     full: false
-    button: whatsapp # [ main, link, alt, light, dark, invert, none ]
+    button: whatsapp # [ main, link, alt, light, dark, invert, similar, none ]
     font_alt: false
   - type: mail
     label: ejemplo@gmail.com
@@ -297,7 +293,7 @@ boxes:
     label: Calle País de Nunca Jamás, 42, 30000 Murcia
     anchor: Molando Ando, Calle País de Nunca Jamás, 42, 30000 Murcia, España
     full: true
-    button: link # [ main, link, alt, light, dark, invert, none ]
+    button: link # [ main, link, alt, light, dark, invert, similar, none ]
     font_alt: false
   - type: h3
     label: Encabezado h3
@@ -314,14 +310,20 @@ boxes:
     full: true
     anchor: Mola Mazo
     ofuscate: false
-    button: light # [ main, link, alt, light, dark, invert, none ]
+    button: light # [ main, link, alt, light, dark, invert, similar, none ]
     font_alt: false
     ga4: false
   - type: hr
 
 ###
 
-- action: ''
+- form:
+    action: ''
+    fill: false
+    icon: none # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    label: ¡Dale!
+    button: alt
+    font_alt: true
   inputs:
   - type: text
     name: Text
@@ -416,6 +418,8 @@ boxes:
     # accept: .pdf,.png,.jpg,.jpeg
     multiple: true
     required: true
+    button: alt
+    font_alt: true
 
 ###
 

@@ -3,13 +3,17 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
-  > * {
-    position: relative;
-    flex-grow: 1;
-  }
 }
-.form__item > * {
-  width: 100%;
+.form__item {
+  position: relative;
+  flex-grow: 1;
+  &:not(.contact__full, .form__item--tel) {
+    width: 210px;
+  }
+  > *,
+  .form__select:not(.form__select--pre) {
+    width: 100%;
+  }
 }
 .form__geo {
   display: none;
@@ -38,6 +42,7 @@
   gap: 1em;
   padding: .5625em 1em;
   text-align: left;
+  --border: color-mix(in srgb, var(--similar), var(--invert));
 }
 .form__label {
   display: flex;
@@ -79,6 +84,7 @@
   font-size: .75em;
   gap: 1em;
   text-align: left;
+  width: 100%;
   > i {
     display: flex;
     flex-wrap: wrap;
@@ -123,6 +129,7 @@
   display: none;
 }
 .form__fill-inputs {
+  --border: color-mix(in srgb, var(--similar), var(--invert) 25%);
   input:not([type="checkbox"], [type="radio"], [type="hidden"]),
   textarea,
   select {
@@ -140,11 +147,8 @@
       box-shadow: $shadow inset;
       border-radius: $radius;
     }
-    background-color: $white;
-    color: $dark;
-    &::placeholder {
-      color: #767676;
-    }
+    background-color: var(--similar);
+    color: var(--similar-text);
   }
   @if $chamfer and $radius > .01 {
     fieldset {
@@ -161,6 +165,9 @@
       height: 2.5em;
       clip-path: var(--chamfer);
       background-color: var(--border);
+      &:has(~ [style], ~ * [style]) {
+        --border: red;
+      }
     }
     .form__item-border--textarea {
       min-height: 5.72em;
@@ -175,6 +182,7 @@
         left: 0;
         width: 100%;
         height: 100%;
+        @extend %radius;
         --outline: 1px;
         clip-path: var(--chamfer-int-outline);
         background-color: var(--bg-color);
@@ -190,19 +198,63 @@
   }
 }
 
+.form__file {
+  position: relative;
+  .form__file--button {
+    position: absolute;
+    float: left;
+    height: 100%;
+    z-index: 1;
+  }
+  .form__input {
+    width: 100%;
+    @if not $chamfer and $radius > .01 {
+      &:not(.form__fill-inputs) {
+        border-top-left-radius: $radius;
+        border-bottom-left-radius: $radius;
+      }
+    }
+  }
+  ::file-selector-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .form__input::before {
+    content: attr(data-placeholder);
+    // font-size: 1em;
+    @include font-button;
+    margin-inline: -1rem 1rem;
+    padding-inline: 3.25rem 1.5rem;
+    opacity: 0;
+  }
+  .button--font-alt + .form__input::before {
+    @include font-button(alt);
+  }
+}
+
 .form__item--tel {
   display: flex;
   gap: .5em;
   .form__input {
-    padding-left: 7em;
+    padding-left: 5.6em;
   }
 }
-select.form__select--pre {
+.form__pre {
   position: absolute;
-  width: min-content;
-  border: none;
-  box-shadow: none;
-  border-radius: initial;
-  background-color: initial;
+  width: auto;
   z-index: 1;
+  .form__select {
+    border: none;
+    box-shadow: none;
+    border-radius: initial;
+    background-color: initial;
+    padding-right: .5em;
+    background-position: right;
+  }
 }

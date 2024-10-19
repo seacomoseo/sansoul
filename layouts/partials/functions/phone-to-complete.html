@@ -1,10 +1,10 @@
 {{ $phone := . | replaceRE `[^\d]` `` }}
 {{ $code  := site.Params.phone_code | default "34" }}
-{{ $codes := index site.Data.options.phone_code }}
+{{ $codes := site.Data.utilities.phone_code }}
 {{ if in . "+" }}
   {{ range $codes }}
-    {{ if findRE (print `^` .) $phone }}
-      {{ $code = . }}
+    {{ if findRE (print `^` .value) $phone }}
+      {{ $code = .value }}
     {{ end }}
   {{ end }}
 {{ end }}

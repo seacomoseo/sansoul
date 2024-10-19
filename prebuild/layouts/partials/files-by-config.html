@@ -1,7 +1,15 @@
-{{ $types_full := site.Data.types.custom                       | default slice }}
-{{ $types := where $types_full            "disabled" "!=" true | default slice }}
-{{ $langs := where site.Data.config.langs "disabled" "!=" true }}
-{{ $lang_first := index $langs 0 }}
+
+{{ $types_full  := slice }}
+{{ range $k, $v := site.Data.types }}
+  {{ if ne "all" $k }}
+    {{ $types_full = $types_full | append (merge . (dict "name" $k "base" (cond (eq $k "single") "single" (.base | default "page")))) }}
+  {{ end }}
+{{ end }}
+{{ $types_full   = sort $types_full "order" }}
+{{ $types_full   = where $types_full            "name" "eq" "single" | append (where $types_full "name" "ne" "single") }}
+{{ $types       := where $types_full            "disabled" "ne" true | default slice }}
+{{ $langs       := where site.Data.config.langs "disabled" "ne" true }}
+{{ $lang_first  := index $langs 0 }}
 
 {{ $languages := dict }}
 
@@ -22,7 +30,7 @@
   {{ with $config_lang }}
     {{/*  i18n  */}}
     {{ $t := index site.Data.i18n $lang }}
-    {{ $cascade = dict "singular" $t.collection_single_singular }}
+    {{ $cascade = dict "singular" $t.types_default_single_singular }}
 
     {{ $config_mix  := . }}
     {{ if gt (len $langs) 1 }}
@@ -40,8 +48,8 @@
       {{ $params     = . }}
 
       {{ range $k, $type := $types_full }}
-        {{ $base  := or .base "page" }}
-        {{ $name  := or .name $base }}
+        {{ $name  := .name }}
+        {{ $base  := .base }}
         {{ $title := or $name .label .singular | urlize | default "" }}
 
         {{/*  taxonomies  */}}
@@ -51,8 +59,8 @@
           {{ $type_of := . }}
           {{ range .taxonomy_of }}
             {{ if eq .name $name }}
-              {{ $base_from    := $type_of.base | default "page" }}
-              {{ $name_from    := $type_of.name | default $base_from }}
+              {{ $name_from    := $type_of.name }}
+              {{ $base_from    := $type_of.base }}
               {{ $taxonomies    = $taxonomies | append (merge . (dict "name" $name_from "base" $base_from)) }}
               {{ if .breadcrumbs }}
                 {{ $breadcrumbs = $name_from }}
@@ -126,9 +134,10 @@
               "taxonomies"  $taxonomies
               "taxonomy_of" .taxonomy_of
               "breadcrumbs" $breadcrumbs
-            ) | merge .template)
-            | merge site.Data.template
+            ))
           }}
+            {{/*  ) | merge .template)  */}}
+            {{/*  | merge site.Data.types.all.template  */}}
           {{/*  file  */}}
           {{ $path := print "content." $lang "/" $name "/_index.md" }}
           {{ partial "file-by-obj" (dict "obj" $obj "content" (.content | default "") "path" $path) }}
@@ -224,9 +233,14 @@
         "lang"         .
       )
       (dict
+        "source"       (print "content." . "/single/_index.md")
+        "target"       "content/_index.md"
+        "lang"         .
+      )
+      (dict
         "source"       (print "content." .)
         "target"       "content"
-        "excludeFiles" (slice "section" "modal")
+        "excludeFiles" (slice "section" "modal" (print "single/_index.md"))
         "lang"         .
       )
       (dict
@@ -257,7 +271,7 @@
 {{ range where $types "taxonomy_of" "ne" nil }}
   {{ $indices = $indices | append
     (dict
-      "name"   (or .name .base "page")
+      "name"   .name
       "weight" 80
     )
   }}

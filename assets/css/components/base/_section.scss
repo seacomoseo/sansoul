@@ -4,9 +4,6 @@
   align-items: center;
   padding-top: calc(var(--pt, 0px) + var(--pt-divider, 0px));
   padding-bottom: calc(var(--pb, 0px) + var(--pb-divider, 0px));
-  &:not(.scrolling *) {
-    content-visibility: auto;
-  }
   // contain-intrinsic-size: auto 100vh;
   // filter: none;
   // z-index: 0;
@@ -18,6 +15,11 @@
     clip-path: inset(0);
   }
 }
+/*! purgecss start ignore */
+.section:not(.sections-visibile *, .section--header) {
+  content-visibility: auto;
+}
+/*! purgecss end ignore */
 .section--full {
   min-height: var(--full-height-section);
 }

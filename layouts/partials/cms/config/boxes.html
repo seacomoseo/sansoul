@@ -65,6 +65,7 @@
   (dict "&BOX_BUTTON_FONT_ALT"           (dict "name" `font_alt` "widget" `boolean` "required" false "label" $t.box_button_font_alt))
   (dict "&BOX_BUTTON_GA4"                (dict "name" `ga4`      "widget" `boolean` "required" false "label" $t.box_button_ga4      "hint" $t.box_button_ga4_hint))
   (dict "&BOX_BUTTON_COLOR"              (dict "name" `button`   "widget" `select`  "required" false "label" $t.box_button_color    "options" `~OPTIONS_COLOR_BASE`))
+  (dict "&BOX_BUTTON_COLOR_SIMPLE"       (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_W`)             `~BOX_BUTTON_COLOR`)))
   (dict "&BOX_BUTTON_COLOR_WITH_HIDE"    (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_H`)             `~BOX_BUTTON_COLOR`)))
   (dict "&BOX_BUTTON_COLOR_WITHOUT_NONE" (dict "<<" (slice (dict "options" `~OPTIONS_COLOR_BASE_N`)             `~BOX_BUTTON_COLOR`)))
 
@@ -142,9 +143,5 @@
       (dict "name" `label` "widget" `string` "required" false "label" $t.box_contact_label)
     )
   ))
-
-  (dict "&BOX_HIDE_CONTENT"      (dict "name" `hide_content`      "widget" `boolean` "required" false "label" $t.box_hide_content      "hint" $t.box_hide_content_hint))
-  (dict "&BOX_HIDE_CATEGORIES"   (dict "name" `hide_categories`   "widget" `boolean` "required" false "label" $t.box_hide_categories   "hint" $t.box_hide_categories_hint))
-  (dict "&BOX_HIDE_READING_TIME" (dict "name" `hide_reading_time` "widget" `boolean` "required" false "label" $t.box_hide_reading_time))
 
 }}

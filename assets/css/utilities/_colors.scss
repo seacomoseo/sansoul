@@ -33,6 +33,8 @@ body,
   --dark-text: #{ $light };
   --invert: var(--dark);
   --invert-text: var(--dark-text);
+  --similar: var(--light);
+  --similar-text: var(--light-text);
   --hover: var(--alt);
   --hover-text: var(--alt-text);
   --active: var(--grey);
@@ -42,10 +44,7 @@ body,
   --text: #{ $text };
   --title: var(--dark);
   --subtitle: var(--alt);
-  --border: var(--alt);
-  // 2nd file of tables
-  --tr2: var(--light);
-  --tr2-text: var(--light-text);
+  --border: color-mix(in srgb, var(--similar), var(--invert));
 }
 
 // Texts
@@ -61,27 +60,25 @@ body,
   --text: #{ $white };
   --title: #{ $white };
   --subtitle: #{ $white };
-  --border: #{ $alt-light };
-  --tr2: var(--dark);
-  --tr2-text: var(--dark-text);
+  --invert: var(--light);
+  --invert-text: var(--light-text);
+  --similar: var(--dark);
+  --similar-text: var(--dark-text);
 }
 .bg-main {
   --text: #{ $main-contrast-neutral };
   --title: #{ $main-contrast-neutral };
   --subtitle: #{ $main-contrast-neutral };
-  --border: #{ text-contrast($main, $light, $grey) };
 }
 .bg-alt {
   --text: #{ $alt-contrast-neutral };
   --title: #{ $alt-contrast-neutral };
   --subtitle: #{ $alt-contrast-neutral };
-  --border: #{ text-contrast($alt, $light, $grey) };
 }
 .bg-link {
   --text: #{ $link-contrast-neutral };
   --title: #{ $link-contrast-neutral };
   --subtitle: #{ $link-contrast-neutral };
-  --border: #{ text-contrast($link, $light, $grey) };
 }
 
 // Link and Main
@@ -153,14 +150,10 @@ body,
   @if text-contrast($color) == $white {
     --invert: var(--light);
     --invert-text: var(--light-text);
+    --similar: var(--dark);
+    --similar-text: var(--dark-text);
   }
 }
-.bg-link-dark,
-.bg-main-dark,
-.bg-alt-dark,
-.bg-grey,
-.bg-dark,
-.bg-black { @include invert-light($black); }
 .bg-main {  @include invert-light($main); }
 .bg-alt {   @include invert-light($alt); }
 .bg-link {  @include invert-light($link); }
@@ -264,6 +257,10 @@ button,
 .invert {
   --base: var(--invert);
   --base-text: var(--invert-text);
+}
+.similar {
+  --base: var(--similar);
+  --base-text: var(--similar-text);
 }
 .whatsapp {
   --base: #25d366;

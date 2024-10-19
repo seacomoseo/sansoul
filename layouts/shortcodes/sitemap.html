@@ -1,4 +1,4 @@
-{{ $types := slice site.Home | append site.Sections }}
+{{ $types := site.Sections }}
 {{ range $types }}
   <h2>
     {{ partial "components/link" (dict
@@ -12,7 +12,11 @@
       "noindex"   .Params.noindex
     ) }}
   </h2>
-  {{ with .RegularPages }}
+  {{ $pages := .RegularPages }}
+  {{ if eq .Type "single" }}
+    {{ $pages = slice site.Home | append .RegularPages }}
+  {{ end }}
+  {{ with $pages }}
     <ul>
       {{ range sort . "Date" "desc" }}
         <li>

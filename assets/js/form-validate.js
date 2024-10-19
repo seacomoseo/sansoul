@@ -10,7 +10,7 @@ import {
   formSubmitOk,
   formSubmitWrong
 } from '@params'
-import { scrollTo } from './scroll-to'
+// import { scrollTo } from './scroll-to'
 
 export function initFormValidate () {
   window.addEventListener('load', () => {
@@ -75,7 +75,7 @@ export function initFormValidate () {
         formError = document.createElement('ul')
         formError.classList.add('form__error')
         formError.innerHTML += closeIcon
-        form.prepend(formError)
+        form.append(formError)
 
         form.querySelectorAll(
           '[type="text"],' +
@@ -86,11 +86,11 @@ export function initFormValidate () {
           'textarea'
         ).forEach(input => {
           if (input.value.includes("'")) {
-            input.style.borderColor = 'red'
+            input.style.setProperty('--border', 'red')
             formError.innerHTML += `<li>${formErrorSingleQuotes}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else {
-            delete input.style
+            input.removeAttribute('style')
           }
         })
 
@@ -106,83 +106,84 @@ export function initFormValidate () {
           'select[data-required]'
         ).forEach(input => {
           if (!input.value) {
-            input.style.borderColor = 'red'
-            const placeholder = input.placeholder || input.children[0].textContent
+            input.style.setProperty('--border', 'red')
+            console.log(input)
+            const placeholder = input.placeholder || input.dataset.placeholder || input.children[0].textContent
             formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else {
-            delete input.style
+            input.removeAttribute('style')
           }
         })
 
         form.querySelectorAll(
-          '.form__geo[data-required]'
+          '.form__geo--x[data-required]'
         ).forEach(input => {
           const title = input.parentElement.children[0]
           if (!input.value) {
             title.style.color = 'red'
-            formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${input.placeholder}</strong></li>`
+            formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${title.textContent}</strong></li>`
             valid = false
           } else {
-            delete title.style
+            title.removeAttribute('style')
           }
         })
 
-        form.querySelectorAll('fieldset[novalidate]').forEach(fieldset => {
+        form.querySelectorAll('fieldset[data-required]').forEach(fieldset => {
           let fieldsetValid
           fieldset.querySelectorAll('input').forEach(input => {
             if (input.checked) fieldsetValid = true
           })
           if (!fieldsetValid) {
-            fieldset.style.borderColor = 'red'
+            fieldset.style.setProperty('--border', 'red')
             formError.innerHTML += `<li>${formErrorRequiredCheck}: <strong>${fieldset.children[0].textContent.replace(' *', '')}</strong></li>`
             valid = false
           } else {
-            delete fieldset.style
+            fieldset.removeAttribute('style')
           }
         })
 
         form.querySelectorAll('[type="email"]').forEach(input => {
           const emailMatch = input.value.match(/@.*\./)
           if (input.value && !emailMatch) {
-            input.style.borderColor = 'red'
+            input.style.setProperty('--border', 'red')
             formError.innerHTML += `<li>${formErrorEmail}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else if (input.value && emailMatch) {
-            delete input.style
+            input.removeAttribute('style')
           }
         })
 
         form.querySelectorAll('[type="tel"]').forEach(input => {
           const telMatch = input.value.match(/^[0-9\s]{9,15}$/)
           if (input.value && !telMatch) {
-            input.style.borderColor = 'red'
+            input.style.setProperty('--border', 'red')
             formError.innerHTML += `<li>${formErrorTel}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
             valid = false
           } else if (input.value && telMatch) {
-            delete input.style
+            input.removeAttribute('style')
           }
         })
 
         // form.querySelectorAll('[type="number"][min]').forEach(input => {
         //   const minMatch = input.value >= input.min
         //   if (input.value && !minMatch) {
-        //     input.style.borderColor = 'red'
+        //     input.style.setProperty('--border', 'red')
         //     formError.innerHTML += `<li>${formErrorMin.replace('{{.}}', input.min)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
         //     valid = false
         //   } else if (input.value && minMatch) {
-        //     delete input.style
+        //     input.removeAttribute('style')
         //   }
         // })
 
         // form.querySelectorAll('[type="number"][max]').forEach(input => {
         //   const maxMatch = input.value <= input.max
         //   if (input.value && !maxMatch) {
-        //     input.style.borderColor = 'red'
+        //     input.style.setProperty('--border', 'red')
         //     formError.innerHTML += `<li>${formErrorMax.replace('{{.}}', input.max)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
         //     valid = false
         //   } else if (input.value && maxMatch) {
-        //     delete input.style
+        //     input.removeAttribute('style')
         //   }
         // })
 
@@ -190,11 +191,11 @@ export function initFormValidate () {
           if (input.files.length > 0) {
             const file = input.files[0]
             if (file.size > 5 * 1024 * 1024) {
-              input.style.borderColor = 'red'
+              input.style.setProperty('--border', 'red')
               formError.innerHTML += `<li>${formErrorFile}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
               valid = false
             } else if (input.value && file) {
-              delete input.style
+              input.removeAttribute('style')
             }
           }
         })
@@ -206,7 +207,7 @@ export function initFormValidate () {
           formError.innerHTML += `<li>${formErrorAcept}</li>`
           valid = false
         } else {
-          delete accept.style
+          accept.removeAttribute('style')
         }
 
         if (valid) {
@@ -309,12 +310,11 @@ export function initFormValidate () {
           form.querySelectorAll('[type="tel"]').forEach(input => {
             if (input.dataset.value) {
               input.value = input.dataset.value
-              delete input.dataset.value
+              input.removeAttribute('data-value')
             }
           })
-        } else {
-          // alert('Completa correctamente los campos requeridos')
-          scrollTo(formError)
+        // } else {
+        //   scrollTo(formError)
         }
       })
     })

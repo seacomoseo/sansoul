@@ -115,15 +115,15 @@ filter_drafts: Borradores
 filter_year: Año
 filter_month: Mes
 # collections
-collection_single: Páginas
-collection_single_singular: Página
-collection_single_description: Cada página tiene su propia plantilla individual (los valores sobreescriben a los de la plantilla general)
 collection_sections: Secciones
 collection_sections_singular: Sección
 collection_sections_description: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
 collection_modals: Modales
 collection_modals_singular: Modal
 collection_modals_description: Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un "#" delante del ID, Ejemplo → "#reparaciones-mantenimiento").
+collection_types: Colecciones
+collection_types_singular: Colección
+collection_types_description: Tipos de Páginas. Aquí se crean, editan y configuran de forma individual, a excepción de "Todas", cuyos parámetros se aplican por defecto a todas las colecciones.
 collection_settings: Ajustes
 # collections > settings > config
 config: Configuración
@@ -163,7 +163,39 @@ config_cms_lang: Idioma
 config_cms_editorial: Flujo Editorial
 config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
 config_langs_default_subdir: Idioma Principal en Subcarpeta
-# collections > settings > template
+# collections > types
+types_title: Nombre
+types_title_hint: Algunos nombres rellenan por defecto los campos de icono, emoji y textos en todos los idiomas
+types_order: Orden
+types_order_hint: Orden en que se muestra la colección
+types_base: Base
+types_base_hint: Determina el marcado de datos estructurados (útil para el SEO) y los parámetros mínimos que deben tener
+types_hint: Leyenda
+types_emoji: Emoji
+types_related: Relacionados
+types_breadcrumbs: Migas de Pan
+types_params: Parámetros Personalizados
+types_params_singular: Parámetro Personalizado
+types_params_name: Nombre
+types_params_label: Nombre
+types_params_hint: Leyenda
+types_params_type: Tipo
+types_params_options: Opciones
+types_params_options_label: Título
+types_params_options_value: Valor
+types_params_list: Lista
+types_taxonomy_of: Taxonomía de
+types_params_relations_hint: Crear previamente
+types_params_multiple: Múltiple
+types_params_schema: Schema
+types_template: Plantilla
+types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
+types_lang: Textos
+types_permalinks: Enlaces Permanentes
+types_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
+types_slug_hint: Es el final de la URL o enlace de la página padre de este tipo 🔷 **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
+types_singular: Título Singular
+# collections > types > template
 template: Plantilla General
 template_hint: Plantilla común a todas las páginas (los valores de las páginas, personalizadas o no, con su propia plantilla sobreescriben a los de ésta)
 template_background: Fondo de Página
@@ -209,43 +241,7 @@ template_file_sections_hint: Sección previamente creada
 template_file_modals_hint: Modal previamente creada
 template_list: Listas
 template_related: Listas de Relacionados
-# collections > settings > types
-types: Tipos de Páginas
-types_single: Únicas
-types_single_hint: Tipo de páginas únicas
-types_custom: Personalizadas
-types_custom_singular: Tipo
-types_custom_hint: Tipos personalizados de páginas
-types_base: Base
-types_base_hint: Determina el marcado de datos estructurados (útil para el SEO) y los parámetros mínimos que deben tener
-types_name: Nombre
-types_name_hint: Algunos nombres rellenan por defecto los campos de icono, emoji y textos en todos los idiomas
-types_hint: Leyenda
-types_emoji: Emoji
-types_related: Relacionados
-types_breadcrumbs: Migas de Pan
-types_params: Parámetros Personalizados
-types_params_singular: Parámetro Personalizado
-types_params_name: Nombre
-types_params_label: Nombre
-types_params_hint: Leyenda
-types_params_type: Tipo
-types_params_options: Opciones
-types_params_options_label: Título
-types_params_options_value: Valor
-types_params_list: Lista
-types_taxonomy_of: Taxonomía de
-types_params_relations_hint: Crear previamente
-types_params_multiple: Múltiple
-types_params_schema: Schema
-types_template: Plantilla
-types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
-types_lang: Textos
-types_permalinks: Enlaces Permanentes
-types_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
-types_slug_hint: Es el final de la URL o enlace de la página padre de este tipo 🔷 **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
-types_singular: Título Singular
-# collections > settings > types default
+# collections > types default
 types_default_article_permalinks: articulo
 types_default_article_slug: articulos
 types_default_article_singular: Artículo
@@ -324,6 +320,12 @@ types_default_page_singular: Página
 types_default_page_title: Páginas
 types_default_page_description: Lista de páginas
 types_default_page_hint: Páginas simples.
+types_default_single_permalinks: ''
+types_default_single_slug: paginas
+types_default_single_singular: Página
+types_default_single_title: Páginas
+types_default_single_description: Lista de páginas
+types_default_single_hint: Páginas únicas. Cada una tiene su propia plantilla individual (los valores sobreescriben a los de la plantilla general).
 # collections > settings > styles
 styles: Estilos
 styles_icons: Iconos
@@ -434,7 +436,7 @@ p_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomen
 p_description: Descripción SEO
 p_description_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
 p_body: Contenido
-p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**:**" + "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**font-alt**" o "**icon**", separar con "**-**" si se añaden varios) se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon:**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
+p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**:**" + "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**-similar**", "**font-alt**" o "**icon**", separar con "**-**" si se añaden varios) se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon:**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
 p_translationKey: ID Traducción
 p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
 p_base: Base
@@ -615,11 +617,6 @@ box_tag: Estilo de Etiquetas
 box_tag_hint: Lista de datos a modo de etiquetas
 box_tags: Etiquetas
 box_tags_singular: Etiqueta
-box_hide_content: Ocultar Contenido
-box_hide_content_hint: Ocultar contenido en cada elemento de la rejilla
-box_hide_categories: Ocultar Categorías
-box_hide_categories_hint: Ocultar categorías y etiquetas en cada elemento de la rejilla
-box_hide_reading_time: Ocultar Tiempo de Lectura
 box_columns: Nº de Columnas
 box_columns_hint: 0 = se calcula automático según el número de elementos y sus anchos
 box_columns_min: Nº Columnas en Resolución Mínima
@@ -698,6 +695,7 @@ box_contact_custom: Personalizado
 box_social: Botones de RRSS
 box_social_singular: Botón de RRSS
 box_social_hint: Botones con enlaces hacia Redes Sociales
+box_form: Formulario
 box_form_action: Acción de Formulario
 box_form_inputs: Elementos de Formulario
 box_form_input: Elemento de Formulario
@@ -751,8 +749,7 @@ box_form_inputs_h5: Encabezado h5
 box_form_inputs_h6: Encabezado h6
 box_form_inputs_content: Contenido
 box_map: Mapa
-box_map_anchor: Dirección
-box_map_anchor_hint: Se puede indicar una Dirección postal (que será transformada en URL de GMaps) o una URL directamente 🔷 Si se indica Imagen, la URL se tomará como enlace al tocar el mapa, sin Imagen se tomará como URL de Iframe
+box_map_hint: Se puede indicar una Dirección postal (que será transformada en URL de GMaps) o una URL directamente 🔷 Si se indica Imagen, la URL se tomará como enlace al tocar el mapa, sin Imagen se tomará como URL de Iframe
 box_box: Estilo de Cajas
 box_boxes: Cajas
 box_boxes_singular: Caja
@@ -809,6 +806,7 @@ option-color-grey: Gris
 option-color-dark: Oscuro
 option-color-black: Negro
 option-color-invert: Invertido (Claro u Oscuro según fondo)
+option-color-similar: Similar (Oscuro o Claro según fondo)
 option-color-whatsapp: WhatsApp
 option-color-none: Sin Color (tipo Enlace simple)
 option-color-hide: Ocultar Botón / Enlace
@@ -903,40 +901,6 @@ option-view-gss: Hoja de Google Drive
 option-view-boxes: SubCajas
 option-tags-row: Fila
 option-tags-column: Columna
-option-phone_code-34: +34 🇪🇸 España
-option-phone_code-52: +52 🇲🇽 México
-option-phone_code-54: +54 🇦🇷 Argentina
-option-phone_code-57: +57 🇨🇴 Colombia
-option-phone_code-58: +58 🇻🇪 Venezuela
-option-phone_code-61: +61 🇦🇺 Australia
-option-phone_code-30: +30 🇬🇷 Grecia
-option-phone_code-31: +31 🇳🇱 Holanda
-option-phone_code-32: +32 🇧🇪 Bélgica
-option-phone_code-33: +33 🇫🇷 Francia
-option-phone_code-39: +39 🇮🇹 Italia
-option-phone_code-351: +351 🇵🇹 Portugal
-option-phone_code-352: +352 🇱🇺 Luxemburgo
-option-phone_code-353: +353 🇮🇪 Irlanda
-option-phone_code-354: +354 🇮🇸 Islandia
-option-phone_code-356: +356 🇲🇹 Malta
-option-phone_code-358: +358 🇫🇮 Finlandia
-option-phone_code-359: +359 🇧🇬 Bulgaria
-option-phone_code-370: +370 🇱🇹 Lituania
-option-phone_code-371: +371 🇱🇻 Letonia
-option-phone_code-372: +372 🇪🇪 Estonia
-option-phone_code-385: +385 🇭🇷 Croacia
-option-phone_code-386: +386 🇸🇮 Eslovenia
-option-phone_code-41: +41 🇨🇭 Suiza
-option-phone_code-421: +421 🇸🇰 Eslovaquia
-option-phone_code-43: +43 🇦🇹 Austria
-option-phone_code-44: +44 🇬🇧 Reino Unido
-option-phone_code-46: +46 🇸🇪 Suecia
-option-phone_code-47: +47 🇳🇴 Noruega
-option-phone_code-48: +48 🇵🇱 Polonia
-option-phone_code-49: +49 🇩🇪 Alemania
-option-phone_code-212: +212 🇲🇦 Marruecos
-option-phone_code-1: +1 🇺🇸🇨🇦 EEUU y Canadá
-option-phone_code-7: +7 🇷🇺 Rusia
 option-divider-arrow-four: Flecha 4 Puntas
 option-divider-arrow-tr-alt: Flecha con Transparencia Alternativa
 option-divider-arrow-tr-fan: Flecha con Transparencia en Abanico

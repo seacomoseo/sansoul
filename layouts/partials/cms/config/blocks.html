@@ -296,7 +296,22 @@
       (dict "name" `value`  "widget" `string` "required" false "label" $t.box_form_inputs_value  "hint" $t.box_form_inputs_value_hint)
     )
   ))
-  (dict "&BOX_FORM_ACTION" (dict "name" `action` "widget" `string` "required" false "label" $t.box_form_action))
+  (dict "&BOX_FORM" (dict
+    "name"      `form`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.box_form
+    "summary"   "{{fields.action}}"
+    "collapsed" true
+    "fields"    (slice
+      (dict "name" `action` "widget" `string`  "required" false "label" $t.box_form_action)
+      (dict "name" `fill`   "widget" `boolean` "required" false "label" $t.styles_inputs_fill "hint" $t.styles_inputs_fill_hint)
+      `~BOX_ICON_ID`
+      `~BOX_BUTTON_LABEL`
+      `~BOX_BUTTON_COLOR_SIMPLE`
+      `~BOX_BUTTON_FONT_ALT`
+    )
+  ))
   (dict "&BOX_FORM_INPUTS" (dict
     "name"           `inputs`
     "widget"         `list`
@@ -304,12 +319,10 @@
     "label"          $t.box_form_inputs
     "label_singular" $t.box_form_input
     "summary"        "{{fields.name}}"
-    "collapsed"      false
+    "collapsed"      true
     "allow_add"      true
     "types"      (slice
-      (dict "name" `text`     "widget" `object` "required" false "label" $t.box_form_inputs_text     "hint" $t.box_form_inputs_text_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`
- `~BOX_FORM_REGEX`
- `~BOX_FORM_REGEX`))
+      (dict "name" `text`     "widget" `object` "required" false "label" $t.box_form_inputs_text     "hint" $t.box_form_inputs_text_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))
       (dict "name" `email`    "widget" `object` "required" false "label" $t.box_form_inputs_email    "hint" $t.box_form_inputs_email_hint    "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))
       (dict "name" `tel`      "widget" `object` "required" false "label" $t.box_form_inputs_tel      "hint" $t.box_form_inputs_tel_hint      "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))
       (dict "name" `number`   "widget" `object` "required" false "label" $t.box_form_inputs_number   "hint" $t.box_form_inputs_number_hint   "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))
@@ -320,7 +333,7 @@
       (dict "name" `select`   "widget" `object` "required" false "label" $t.box_form_inputs_select   "hint" $t.box_form_inputs_select_hint   "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_CONTACT_FULL` `~BOX_FORM_OPTIONS`))
       (dict "name" `radio`    "widget" `object` "required" false "label" $t.box_form_inputs_radio    "hint" $t.box_form_inputs_radio_hint    "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_OPTIONS`))
       (dict "name" `checkbox` "widget" `object` "required" false "label" $t.box_form_inputs_checkbox "hint" $t.box_form_inputs_checkbox_hint "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_OPTIONS`))
-      (dict "name" `file`     "widget" `object` "required" false "label" $t.box_form_inputs_file     "hint" $t.box_form_inputs_file_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_ACCEPT`))
+      (dict "name" `file`     "widget" `object` "required" false "label" $t.box_form_inputs_file     "hint" $t.box_form_inputs_file_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_ACCEPT` `~BOX_BUTTON_COLOR_SIMPLE` `~BOX_BUTTON_FONT_ALT`))
       (dict "name" `hidden`   "widget" `object` "required" false "label" $t.box_form_inputs_hidden   "hint" $t.box_form_inputs_hidden_hint   "fields" (slice `~BOX_FORM_NAME`))
       (dict "name" `h3`       "widget" `object` "required" false "label" $t.box_form_inputs_h3                                               "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
       (dict "name" `h4`       "widget" `object` "required" false "label" $t.box_form_inputs_h4                                               "fields" (slice (dict "label" $t.box_title         "name" `name` "widget" `string`) `~BOX_FORM_HINT`))
@@ -331,16 +344,6 @@
   ))
 
 
-  (dict "&BOX_MAP" (dict
-    "name"           `map`
-    "widget"         `object`
-    "required"       false
-    "label"          $t.box_map
-    "collapsed"      true
-    "fields"         (slice
-      (dict "<<" (slice (dict "hint" "") `~BOX_IMAGE_SRC`))
-      (dict "name" `anchor` "widget" `string` "required" false "label" $t.box_map_anchor "hint" $t.box_map_anchor_hint)
-    )
-  ))
+  (dict "&BOX_MAP" (dict "<<" (slice (dict "name" `map` "label" $t.box_map "hint" $t.box_map_hint) `~BOX_IMAGE_SRC`)))
 
 }}

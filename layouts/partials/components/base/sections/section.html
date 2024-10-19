@@ -105,7 +105,7 @@
         "anchor"  (i18n "cookies_notice")
         "noindex" true
       ) -}}
-      {{ with page.GetPage "sitemap" }}
+      {{ with site.GetPage "single/sitemap" }}
         {{ partial "components/link" (dict
           "class"   "footer__sitemap"
           "link"    .RelPermalink

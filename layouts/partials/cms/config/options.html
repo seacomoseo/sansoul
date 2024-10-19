@@ -19,10 +19,11 @@
 
 {{ $options_lists := slice }}
 {{ range site.Sections }}
-  {{ $options_lists = $options_lists | append (dict "value" .Type "label" (print .Params.emoji " " .Title)) }}
+  {{ if ne .Type "single" }}
+    {{ $options_lists = $options_lists | append (dict "value" .Type "label" (print .Params.emoji " " .Title)) }}
+  {{ end }}
 {{ end }}
 {{ $options_lists = $options_lists | append
-  (dict "value" "/"       "label" (print page.Params.emoji " " $t.collection_single))
   (dict "value" "related" "label" (print site.Data.utilities.defaults.related.emoji " " $t.related))
   (dict "value" "all"     "label" (print site.Data.utilities.defaults.all.emoji     " " $t.all))
 }}
@@ -40,22 +41,22 @@
   (dict "&OPTIONS_DIRECTION"     $options.direction)
   (dict "&OPTIONS_BULLETS"       $options.bullets)
   (dict "&OPTIONS_ARROWS"        $options.arrows)
-  (dict "&OPTIONS_COLOR_BASE"    (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "none")))
-  (dict "&OPTIONS_COLOR_BASE_W"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert")))
-  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "hide")))
-  (dict "&OPTIONS_COLOR_BASE_H"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "whatsapp" "none" "hide")))
+  (dict "&OPTIONS_COLOR_BASE"    (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "similar" "whatsapp" "none")))
+  (dict "&OPTIONS_COLOR_BASE_W"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "similar")))
+  (dict "&OPTIONS_COLOR_BASE_N"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "similar" "whatsapp" "hide")))
+  (dict "&OPTIONS_COLOR_BASE_H"  (where $options.color "value" "in" (slice "main" "alt" "link" "light" "dark" "invert" "similar" "whatsapp" "none" "hide")))
   (dict "&OPTIONS_COLOR_BG"      (where $options.color "value" "in" (slice "main" "main-light" "main-dark" "alt" "alt-light" "alt-dark" "link" "link-light" "link-dark" "white" "light" "grey" "dark" "black")))
   (dict "&OPTIONS_CONTRAST"      $options.contrast)
-  (dict "&OPTIONS_PARALLAX_SECT" (where $options.parallax "value" "!=" "box"))
-  (dict "&OPTIONS_PARALLAX_BOX"  (where $options.parallax "value" "!=" "fix"))
+  (dict "&OPTIONS_PARALLAX_SECT" (where $options.parallax "value" "ne" "box"))
+  (dict "&OPTIONS_PARALLAX_BOX"  (where $options.parallax "value" "ne" "fix"))
   (dict "&OPTIONS_GRADIENT"      $options.gradient)
   (dict "&OPTIONS_ICON_TYPE"     $options.icon_type)
   (dict "&OPTIONS_ICONS_TYPE"    $options.icons_type)
   (dict "&OPTIONS_ICONS_EMOJIS"  $options.icons_emojis)
   (dict "&OPTIONS_RATIO"         $options.ratio)
-  (dict "&OPTIONS_RATE"          (where $options.ratio "value" "!=" "circle"))
+  (dict "&OPTIONS_RATE"          (where $options.ratio "value" "ne" "circle"))
   (dict "&OPTIONS_SIZES"         $options.sizes)
-  (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "!=" "fluid"))
+  (dict "&OPTIONS_SIZES_N_FLUID" (where $options.sizes "value" "ne" "fluid"))
   (dict "&OPTIONS_DAYS"          $options.days)
   (dict "&OPTIONS_GALLERY_TYPES" $options.gallery_types)
   (dict "&OPTIONS_VIEW_SECTION"  (where $options.view "value" "in" (slice "all" "text" "menu" "icon" "image" "button" "bg" "container_bg" "paddings" "size" "divider" "boxi" "other")))
@@ -69,8 +70,7 @@
   (dict "&OPTIONS_LOCATION_TYPE" $options.location_type)
   (dict "&OPTIONS_CURRENCY"      $options.currency)
   (dict "&OPTIONS_LISTS"         $options_lists)
-  (dict "&OPTIONS_TYPES"         (where $options_lists "value" "not in" (slice "/" "related")))
-  (dict "&OPTIONS_PHONE_CODES"   $options.phone_code)
+  (dict "&OPTIONS_TYPES"         (where $options_lists "value" "ne" "related"))
   (dict "&OPTIONS_FONT_WEIGHT"   (slice 0 100 200 300 400 500 600 700 800 900))
 }}
 

@@ -5,8 +5,9 @@
   {{ $type_langs       = $type_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_ITEMS` )) }}
 {{ end }}
 {{ $type_langs_fields := slice
+  `~SETTINGS_TYPES_TITLE`
+  `~SETTINGS_TYPES_ORDER`
   `~SETTINGS_TYPES_BASE`
-  `~SETTINGS_TYPES_NAME`
   `~SETTINGS_TYPES_HINT`
   `~BOX_ICON_ID`
   `~SETTINGS_TYPES_EMOJI`
@@ -79,12 +80,13 @@
   ))
 
 
-  (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
-  (dict "&SETTINGS_TYPES_NAME"        (dict "name" `name`        "widget" `string`  "required" false "label" $t.types_name "hint" (print $t.types_name_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, organization, service, page, section**")))
-  (dict "&SETTINGS_TYPES_HINT"        (dict "name" `hint`        "widget" `string`  "required" false "label" $t.types_hint))
+  (dict "&SETTINGS_TYPES_TITLE"       (dict "name" `title`       "widget" `string`  "required" true  "label" $t.types_title "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, organization, service, page, section**")))
+  (dict "&SETTINGS_TYPES_ORDER"       (dict "name" `order`       "widget" `number`  "required" false "label" $t.types_order "hint" $t.types_order_hint   "value_type" `int` "min" 0 "step" 1))
+  (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base  "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
   (dict "&SETTINGS_TYPES_EMOJI"       (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_emoji))
   (dict "&SETTINGS_TYPES_DISABLED"    (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled))
   (dict "&SETTINGS_TYPES_RELATED"     (dict "name" `related`     "widget" `boolean` "required" false "label" $t.types_related))
+  (dict "&SETTINGS_TYPES_HINT"        (dict "name" `hint`        "widget" `string`  "required" false "label" $t.types_hint))
   (dict "&SETTINGS_TYPES_TAXONOMY_OF" (dict
     "name"           `taxonomy_of`
     "widget"         `list`
@@ -140,34 +142,7 @@
       `~TEMPLATE_RELATED`
     )
   ))
-  (dict "&SETTINGS_TYPES_SINGLE"  (dict
-    "name"      `single`
-    "widget"    `object`
-    "required"  false
-    "label"     $t.types_single
-    "hint"      $t.types_single_hint
-    "collapsed" true
-    "i18n"      true
-    "fields"    (slice
-      `~SETTINGS_TYPES_PARAMS`
-      `~SETTINGS_TYPES_TEMPLATE`
-    )
-  ))
-  (dict "&SETTINGS_TYPES_CUSTOM" (dict
-    "name"           `custom`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_custom
-    "label_singular" $t.types_custom_singular
-    "collapsed"      false
-    "summary"        "{{fields.lang}}"
-    "allow_add"      true
-    "fields"         ($type_langs_fields | append $type_langs)
-  ))
 
-  (dict "&SETTINGS_TYPES" (slice
-    `~SETTINGS_TYPES_SINGLE`
-    `~SETTINGS_TYPES_CUSTOM`
-  ))
+  (dict "&TYPES_FIELDS" ($type_langs_fields | append $type_langs))
 
 }}

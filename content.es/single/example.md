@@ -45,17 +45,17 @@ callnow:
   es:
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
-    button: link # [ main, link, alt, light, dark, invert, none ]
+    button: link # [ main, link, alt, light, dark, invert, similar, none ]
   - type: whatsapp
     label: 123456789
-    button: whatsapp # [ main, link, alt, light, dark, invert, none ]
+    button: whatsapp # [ main, link, alt, light, dark, invert, similar, none ]
   - type: custom
     link: '#principal'
     icon: person-from-portal
     label: Personalizado
     anchor: Mola Mazo
     ofuscate: false
-    button: light # [ main, link, alt, light, dark, invert, none ]
+    button: light # [ main, link, alt, light, dark, invert, similar, none ]
     ga4: false
 section: []
 modal: {}

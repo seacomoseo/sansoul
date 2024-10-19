@@ -5,9 +5,10 @@
 {{- $translations := slice -}}
 {{- $default      := site.Data.utilities.defaults -}}
 {{- $icons        := slice
-  $default.page.icon
+  $default.single.icon
   $default.section.icon
   $default.modal.icon
+  $default.types.icon
   $default.settings.icon
 -}}
 {{- range .Translations -}}
@@ -68,8 +69,6 @@
   <div style="display:none">
     {{- range slice
       $default.config.icon
-      $default.template.icon
-      $default.types.icon
       $default.styles.icon
       $default.remote.icon
       $default.redirects.icon

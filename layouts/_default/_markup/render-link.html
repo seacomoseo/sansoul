@@ -10,7 +10,7 @@
     {{- $class = print $class " button--" . -}}
   {{- end -}}
   {{- $button  = replace $other "font-alt" "" -}}
-  {{- $button  = findRE `(main|alt|link|light|dark|invert|whatsapp)` $button 1 -}}
+  {{- $button  = findRE `(main|alt|link|light|dark|invert|similar|whatsapp)` $button 1 -}}
   {{- $button  = index $button 0 -}}
 {{- end -}}
 
