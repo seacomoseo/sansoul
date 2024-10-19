@@ -29,8 +29,6 @@
 {{/*  BOX  */}}
 {{- with $box -}}
   {{- $align := .align -}}
-  {{- $tag  := .tag  -}}
-  {{- $tags := .tags -}}
 
   {{- $header := eq .id "header" -}}
   {{- $footer := eq .id "footer" -}}
@@ -294,26 +292,12 @@
     {{/*  END TYPES  */}}
 
     {{/*  TAGS  */}}
-    {{- if and (ne .tag "hide") (or .tag .list_pages .tags) -}}
-      {{- with .Page | default page -}}
-        {{ $type := cond (or (eq $tag "row") (eq $tag nil)) "" $tag }}
-        {{ $type  = cond (and (eq $level 1) (eq .Params.base "event")) "column" $tag }}
-        <div class="box__tags {{ with $type }}box__tags--{{ . }}{{ end }}">
-          {{- with $tags -}}
-            {{- range . -}}
-              {{- if .label -}}
-                <i class="box__tag">
-                  {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" .icon) -}}
-                  <i>{{- .label -}}</i>
-                </i>
-              {{- end -}}
-            {{- end -}}
-          {{- else -}}
-            {{- partial "components/tags/_" (dict "Page" . "box" $box) -}}
-          {{- end -}}
-        </div>
-      {{- end -}}
-    {{- end -}}
+    {{ if .tags }}
+      {{- partial "components/tags/_" (merge
+        .
+        (dict "level" $level)
+      ) -}}
+    {{ end }}
 
     {{/*  BUTTON  */}}
     {{- if $link -}}

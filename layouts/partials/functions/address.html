@@ -1,0 +1,19 @@
+{{ $return := "" }}
+
+{{ with .Page.Params.address }}
+  {{ with .street              }}{{ $return = print $return .    }}{{ end }}
+  {{ if and .street .pc        }}{{ $return = print $return ", " }}{{ end }}
+  {{ with .pc                  }}{{ $return = print $return .    }}{{ end }}
+  {{ if and .pc .locality      }}{{ $return = print $return " "  }}{{ end }}
+  {{ with .locality            }}{{ $return = print $return .    }}{{ end }}
+  {{/*  {{ if and .locality .region  }}{{ $return = print $return ", " }}{{ end }}  */}}
+  {{/*  {{ with .region              }}{{ $return = print $return .    }}{{ end }}  */}}
+  {{/*  {{ if and .region .country   }}{{ $return = print $return ", " }}{{ end }}  */}}
+  {{ if and .locality .country }}{{ $return = print $return ", " }}{{ end }}
+  {{ with .country             }}{{ $return = print $return .    }}{{ end }}
+  {{ if and $return $.url }}
+    {{ $return = .link | default (print "https://maps.google.com/maps/search/" ($return | urlquery)) }}
+  {{ end }}
+{{ end }}
+
+{{ return $return }}

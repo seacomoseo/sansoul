@@ -104,12 +104,12 @@
         {{/*  CONFIG TO TYPE PARENT PAGES  */}}
         {{ $slug          := "" }}
         {{ with $type }}
-          {{ $title        = or .title       .singular (index $t (print "types_default_" $name "_title"      )) $name }}
-          {{ $singular    := or .singular    .title    (index $t (print "types_default_" $name "_singular"   )) $name }}
-          {{ $description := or .description           (index $t (print "types_default_" $name "_description")) ""}}
-          {{ $slug         = or .slug                  (index $t (print "types_default_" $name "_slug"       )) $title }}
-          {{ $icon        := or .icon                  (index site.Data.utilities.defaults $name).icon          "file" }}
-          {{ $emoji       := or .emoji                 (index site.Data.utilities.defaults $name).emoji         "📄" }}
+          {{ $title        = or .title       (index $t (print "types_default_" $name "_title"      )) .singular $name }}
+          {{ $singular    := or .singular    (index $t (print "types_default_" $name "_singular"   )) .title    $name }}
+          {{ $description := or .description (index $t (print "types_default_" $name "_description")) ""              }}
+          {{ $slug         = or .slug        (index $t (print "types_default_" $name "_slug"       )) $title          }}
+          {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon          "file"          }}
+          {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji         "📄"            }}
           {{ $noindex     := cond (eq .noindex nil) true .noindex }}
           {{ $obj         := dict 
             "slug"           $slug

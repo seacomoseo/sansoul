@@ -1,15 +1,127 @@
-{{- if eq .Page.Type "blog" -}}
-  {{- partial "components/tags/dates-blog" . -}}
-{{- else if eq .Page.Type "event" -}}
-  {{- partial "components/tags/dates-event" . -}}
-  {{- partial "components/tags/location" . -}}
-  {{- partial "components/tags/artists" . -}}
-  {{- partial "components/tags/price" . -}}
-{{- else -}}
-  {{- partial "components/tags/type" . -}}
+{{- if ne .tag "hide" -}}
+  {{- $tag  := .tag  -}}
+  {{- $page := .Page | default page -}}
+  {{- with .tags -}}
+    {{- $items := slice -}}
+
+    {{- range . -}}
+      {{- $icon   := "" -}}
+      {{- $label  := "" -}}
+      {{- if      eq .type "type" -}}
+      
+        {{- if not $page.IsSection -}}
+          {{- $icon  = $page.Params.icon -}}
+          {{- $label = $page.CurrentSection.Params.singular -}}
+        {{- end -}}
+
+      {{- else if eq .type "date" -}}
+
+        {{- if $page.Date -}}
+          {{- if eq $page.Params.base "article" -}}
+            {{- $time   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Lastmod -}}
+            {{- $date   := partial "functions/date-format" $page.Lastmod -}}
+            {{- $hour   := cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
+            {{- $el     := print `<time datetime="` $time `">` $date.day $hour `</time>` -}}
+            {{- $items   = $items | append (dict "icon" "calendar" "label" $el) -}}
+            {{- if $page.Lastmod -}}
+              {{- if ne $page.Date $page.Lastmod -}}
+                {{- $time  = dateFormat "2006-01-02T15:04:05Z07:00" $page.Date -}}
+                {{- $date  = partial "functions/date-format" $page.Date -}}
+                {{- $hour  = cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
+                {{- $el    = print ` <time datetime="` $time `">` $date.day $hour `</time>` -}}
+                {{- $items = $items | append (dict "icon" "calendar-pen" "label" $el) -}}
+              {{- end -}}
+            {{- end -}}
+          {{- else if eq $page.Params.base "event" -}}
+            {{- $time   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date -}}
+            {{- $date   := partial "functions/date-format" $page.Date -}}
+            {{- $hour   := cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
+            {{- $el     := print `<time datetime="` $time `">` $date.day $hour `</time>` -}}
+            {{- $items   = $items | append (dict "icon" "calendar-check" "label" $el) -}}
+            {{- if $page.Params.end -}}
+              {{- $date_full  := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date       -}}
+              {{- $end_full   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
+              {{- if ne $date_full $end_full -}}
+                {{- $date_day := $page.Date       | time.Format "2 Jan 2006" -}}
+                {{- $end_day  := $page.Params.end | time.Format "2 Jan 2006" -}}
+                {{/*  {{- if ne $date_day $end_day -}}  */}}
+                  {{- $date = partial "functions/date-format" $page.Params.end -}}
+                {{/*  {{- else -}}  */}}
+                  {{/*  {{- $date = dict "day" "" "hour" ($page.Params.end | time.Format "15:04") -}}  */}}
+                {{/*  {{- end -}}  */}}
+                {{- $time   = dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
+                {{- $hour   = cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
+                {{- $el     = print ` <time datetime="` $time `">` $date.day $hour `</time>` -}}
+                {{- $items  = $items | append (dict "icon" "calendar-xmark" "label" $el) -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+
+      {{- else if eq .type "reading-time" -}}
+
+        {{- $icon  = "clock" -}}
+        {{- $label = print (i18n "reading_time" $page.ReadingTime) " " (i18n "of_reading") -}}
+
+      {{- else if eq .type "words" -}}
+
+        {{- $icon  = "comment-dots" -}}
+        {{- $label = i18n "word_count" $page.WordCount -}}
+
+      {{- else if eq .type "address" -}}
+
+        {{- $icon  = "location-dot" -}}
+        {{- $label = partial "functions/address" (dict "Page" $page "link" false) -}}
+
+      {{- else if eq .type "taxonomy" -}}
+
+        {{- $parents    := dict -}}
+        {{- $taxonomy   := .taxonomy -}}
+        {{- $taxonomies := partial "functions/taxonomy-parents" $page -}}
+        {{- range $taxonomies -}}
+          {{- if or (not $taxonomy) (eq $taxonomy "all") (eq $taxonomy .Type) -}}
+            {{- $title  := index $parents .Type | default slice | append (dict "title" .Title "link" .RelPermalink) -}}
+            {{- $parents = merge $parents (dict .Type $title) -}}
+          {{- end -}}
+        {{- end -}}
+        {{- range $k, $parent := site.Sections -}}
+          {{- with index $parents .Type -}}
+            {{- $taxs := slice -}}
+            {{- range . -}}
+              {{- $taxs = $taxs | append .title -}}
+            {{- end -}}
+            {{- $items = $items | append (dict "icon" $parent.Params.icon "label" (delimit $taxs ", ")) -}}
+          {{- end -}}
+        {{- end -}}
+
+      {{- else if eq .type "param" -}}
+
+        {{- $label = partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
+
+      {{- else if eq .type "custom" -}}
+
+        {{- $label = .label -}}
+
+      {{- end -}}
+      {{- if $label -}}
+        {{- $icon  = .icon  | default $icon -}}
+        {{- $items = $items | append (dict "icon" $icon "label" $label) -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- with $items -}}
+      {{- $type  := cond (eq $tag "row") "" (print " box__tags--" $tag) -}}
+      <div class="box__tags {{- $type }}">
+        {{- range . -}}
+          <i class="box__tag">
+            {{- with .icon -}}
+              {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" .) -}}
+            {{- end -}}
+            <i>{{ .label | safeHTML }}</i>
+          </i>
+        {{- end -}}
+      </div>
+    {{- end -}}
+
+  {{- end -}}
 {{- end -}}
-{{- partial "components/tags/job" . -}}
-{{- partial "components/tags/reading-time" . -}}
-{{- partial "components/tags/author" . -}}
-{{- partial "components/tags/taxonomies" (dict "item" . "type" "category") -}}
-{{- partial "components/tags/taxonomies" (dict "item" . "type" "tags") -}}
