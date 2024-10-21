@@ -7,7 +7,7 @@
 .form__item {
   position: relative;
   flex-grow: 1;
-  &:not(.contact__full, .form__item--tel) {
+  &:not(.contact__full) {
     width: 210px;
   }
   > *,
@@ -61,7 +61,7 @@
   text-align: center;
 }
 .form__hint {
-  margin-top: .25em;
+  margin-top: .25rem;
   font-size: .75em;
   color: var(--subtitle);
   p, ul, ol {
@@ -238,15 +238,9 @@
   }
 }
 
-.form__item--tel {
-  display: flex;
-  gap: .5em;
-  .form__input {
-    padding-left: 5.6em;
-  }
-}
 .form__pre {
   position: absolute;
+  left: 0;
   width: auto;
   z-index: 1;
   .form__select {
@@ -257,4 +251,11 @@
     padding-right: .5em;
     background-position: right;
   }
+  + .form__input {
+    padding-left: 5.6em;
+  }
+}
+
+.form__item[data-showif]:not(.form__item--show) {
+  display: none;
 }

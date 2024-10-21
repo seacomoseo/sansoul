@@ -94,52 +94,48 @@ export function initFormValidate () {
           }
         })
 
-        form.querySelectorAll(
-          '[type="text"][data-required],' +
-          '[type="email"][data-required],' +
-          '[type="tel"][data-required],' +
-          '[type="number"][data-required],' +
-          '[type="date"][data-required],' +
-          '[type="time"][data-required],' +
-          '[type="file"][data-required],' +
-          'textarea[data-required],' +
-          'select[data-required]'
-        ).forEach(input => {
-          if (!input.value) {
-            input.style.setProperty('--border', 'red')
-            console.log(input)
-            const placeholder = input.placeholder || input.dataset.placeholder || input.children[0].textContent
-            formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${placeholder.replace(' *', '')}</strong></li>`
-            valid = false
+        function isInput (input) {
+          if (input.tagName === 'FIELDSET') {
+            return input.querySelector('input:checked')
+          } else if (input.type === 'checkbox') {
+            return input.checked
           } else {
-            input.removeAttribute('style')
+            return input.value
           }
-        })
+        }
 
-        form.querySelectorAll(
-          '.form__geo--x[data-required]'
-        ).forEach(input => {
-          const title = input.parentElement.children[0]
-          if (!input.value) {
-            title.style.color = 'red'
-            formError.innerHTML += `<li>${formErrorRequiredFields}: <strong>${title.textContent}</strong></li>`
-            valid = false
-          } else {
-            title.removeAttribute('style')
+        form.querySelectorAll('[data-required], [data-requiredif]').forEach(input => {
+          let required = false
+          if (!(input.dataset.required === undefined)) {
+            required = true
+          } else if (input.dataset.requiredif) {
+            const inputIf = form.querySelector(`[name="${input.dataset.requiredif}"]`)
+            required = isInput(inputIf)
           }
-        })
-
-        form.querySelectorAll('fieldset[data-required]').forEach(fieldset => {
-          let fieldsetValid
-          fieldset.querySelectorAll('input').forEach(input => {
-            if (input.checked) fieldsetValid = true
-          })
-          if (!fieldsetValid) {
-            fieldset.style.setProperty('--border', 'red')
-            formError.innerHTML += `<li>${formErrorRequiredCheck}: <strong>${fieldset.children[0].textContent.replace(' *', '')}</strong></li>`
-            valid = false
+          const elementToStyle = input.classList.contains('form__geo') ? input.parentElement.children[0] : input
+          if (required) {
+            if (!isInput(input)) {
+              let formErrorMessage, formErrorName
+              if (input.tagName === 'FIELDSET') {
+                elementToStyle.style.setProperty('--border', 'red')
+                formErrorMessage = formErrorRequiredCheck
+                formErrorName = input.children[0].textContent.replace(' *', '')
+              } else if (input.classList.contains('form__geo')) {
+                elementToStyle.style.color = 'red'
+                formErrorMessage = formErrorRequiredFields
+                formErrorName = elementToStyle.textContent
+              } else {
+                elementToStyle.style.setProperty('--border', 'red')
+                formErrorMessage = formErrorRequiredFields
+                formErrorName = (input.placeholder || input.dataset.placeholder || input.children[0].textContent).replace(' *', '')
+              }
+              formError.innerHTML += `<li>${formErrorMessage}: <strong>${formErrorName}</strong></li>`
+              valid = false
+            } else {
+              elementToStyle.removeAttribute('style')
+            }
           } else {
-            fieldset.removeAttribute('style')
+            elementToStyle.removeAttribute('style')
           }
         })
 
@@ -216,7 +212,7 @@ export function initFormValidate () {
           // Phone Prefixes Prev
           form.querySelectorAll('[type="tel"]').forEach(input => {
             if (input.value) {
-              input.value = `'+${input.previousElementSibling.value} ${input.value}`
+              input.value = `+${input.previousElementSibling.children[0].value} ${input.value}`
               input.dataset.value = input.value
             }
           })

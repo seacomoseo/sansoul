@@ -94,11 +94,45 @@
   {{/*  CUSTOM INPUTS  */}}
 
   {{- range .inputs -}}
-    {{- $type     := .type -}}
-    {{- $full     := cond ($type | in (slice "textarea" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
-    {{- $required := cond (not .required) "" " data-required" | safeHTMLAttr -}}
+    {{- $name        := .name -}}
+    {{- $type        := .type -}}
+    {{- $full        := cond ($type | in (slice "textarea" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
+    {{- $show_if     := "" | safeHTMLAttr -}}
+    {{- with .show_if -}}
+      {{- $show_if    = print ` data-showif="{` (. | replaceRE `(\|\||\&\&)` "}$1{") `}"` | safeHTMLAttr -}}
+    {{- end -}}
+    {{- $show_of     := false -}}
+    {{- range $.inputs -}}
+      {{- $input := . -}}
+      {{- with .show_if -}}
+        {{- with $input.options -}}
+          {{- range . -}}
+            {{- $value := .value | default .option -}}
+            {{- range split $value "||" -}}
+              {{- if eq . $name -}}
+                {{- $show_of  = true -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- else -}}
+          {{- range split . "||" -}}
+            {{- if eq . $name -}}
+              {{- $show_of = true -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $show_of      = cond (not $show_of)     "" (print ` data-showof="{` .name `}"`) | safeHTMLAttr -}}
+    {{- $required    := cond (not .required)    "" " data-required" | safeHTMLAttr -}}
+    {{- if or (and (not .required) .required_if) (and .required .show_if) -}}
+      {{- with .required_if | default .show_if -}}
+        {{- $required = print ` data-requiredif="` . `"` | safeHTMLAttr -}}
+      {{- end -}}
+    {{- end -}}
+
     {{- if $type | ne "hidden" -}}
-      <div class="form__item {{ $full }}">
+      <div class="form__item {{- $full }}" {{- $show_if }} {{- $show_of }}>
     {{ end }}
       {{ if $chamfer | and ($type | in (slice "text" "email" "tel" "number" "date" "time" "file" "textarea" "select" "radio" "checkbox")) }}
         <div class="form__item-border
@@ -112,7 +146,6 @@
         {{- if (eq $type "date" | or (eq $type "time")) | and (not .shortcode) -}}
           {{- $onfocus    = true -}}
         {{- end -}}
-        {{- $name  := .name -}}
         {{- if and $googleScript (eq $type "file") -}}
           {{- $name = print "📄" .name -}}
         {{- end -}}
@@ -124,15 +157,14 @@
         {{- end -}}
 
         {{- if eq $type "tel" -}}
-          <div class="form__item form__item--tel">
-            <label class="form__pre">
-              <select class="form__select">
-                {{/*  <option value="">{{ i18n "box_contact_pre" }}{{ if .required }} *{{ end }}</option>  */}}
-                {{- range site.Data.utilities.phone_code -}}
-                  <option value="{{ .value }}" {{- if eq .value site.Params.phone_code }} selected{{ end }}>{{ .label }}</option>
-                {{- end -}}
-              </select>
-            </label>
+          <label class="form__pre">
+            <select class="form__select">
+              {{/*  <option value="">{{ i18n "box_contact_pre" }}{{ if .required }} *{{ end }}</option>  */}}
+              {{- range site.Data.utilities.phone_code -}}
+                <option value="{{ .value }}" {{- if eq .value site.Params.phone_code }} selected{{ end }}>{{ .label }}</option>
+              {{- end -}}
+            </select>
+          </label>
         {{- end -}}
 
         {{- if eq $type "file" -}}
@@ -164,9 +196,7 @@
           {{- if .multiple }} multiple{{ end -}}
         >
 
-        {{- if eq $type "tel" -}}
-          </div>
-        {{- else if eq $type "file" -}}
+        {{- if eq $type "file" -}}
         </label>
         {{- end -}}
 
@@ -174,7 +204,7 @@
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div id="geo" class="form__geo-map"></div>
         <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" {{- $required }}>
-        <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y" {{- $required }}>
+        <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y">
       {{- else if $type | eq "textarea" -}}
         <textarea
           {{- $a }} class="form__textarea"
@@ -195,7 +225,6 @@
           </select>
         </label>
       {{- else if $type | in (slice "radio" "checkbox") -}}
-        {{- $name   := .name -}}
         {{- $legend := .placeholder | default .name -}}
         {{- $is_checkbox := eq $type "checkbox" -}}
         <fieldset class="form__fieldset" {{- $required }}>{{ "" -}}
