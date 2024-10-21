@@ -240,9 +240,10 @@
           </select>
         </label>
       {{- else if $type | in (slice "radio" "checkbox") -}}
-        {{- $legend := .placeholder | default .name -}}
+        {{- $axis        := cond (not .x) "" " form__fieldset--x" -}}
         {{- $is_checkbox := eq $type "checkbox" -}}
-        <fieldset class="form__fieldset" {{- $required }}>{{ "" -}}
+        {{- $legend      := .placeholder | default .name -}}
+        <fieldset class="form__fieldset {{- $axis }}" {{- $required }}>{{ "" -}}
           <legend>{{ $legend }}{{ if .required }} *{{ end }}</legend>
           {{- range .options -}}
             {{- $option := .value | default .option -}}

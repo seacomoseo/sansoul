@@ -37,12 +37,15 @@
 }
 .form__fieldset {
   display: flex;
-  // flex-wrap: wrap;
   flex-direction: column;
   gap: 1em;
   padding: .5625em 1em;
   text-align: left;
   --border: color-mix(in srgb, var(--similar), var(--invert));
+}
+.form__fieldset--x {
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 .form__label {
   display: flex;
@@ -96,7 +99,8 @@
 .form__submit {
   color: $white;
   background-color: red;
-  padding: 1em 1em 1em 2em;
+  margin-top: 1em;
+  padding: 1em;
   scroll-margin-top: 3em;
   width: 100%;
   text-align: left;
@@ -105,10 +109,11 @@
     float: right;
     cursor: pointer;
   }
+  ul {
+    margin: 0;
+  }
 }
 .form__submit {
-  margin-top: 1em;
-  padding: 1em;
   background-color: grey;
   svg {
     position: relative;

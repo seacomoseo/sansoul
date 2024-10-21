@@ -330,6 +330,8 @@ boxes:
     placeholder: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
     required: false
+    required_if: null # string of names separated of '||' or '&&'
+    show_if: null # string of names separated of '||' or '&&'
     regex: '[^∑]*'
     regex_hint: No se adminte el caracter "∑"
     min: 0
@@ -338,6 +340,7 @@ boxes:
     name: Email
     placeholder: Correo
     required: false
+    required_if: Text
     regex: null # regex pattern
     min: 0
     max: 30
@@ -345,6 +348,7 @@ boxes:
     name: Tel
     placeholder: Teléfono
     required: false
+    show_if: Text||Email
     regex: null # regex pattern
     min: 0
     max: 15
@@ -352,6 +356,7 @@ boxes:
     name: Number
     placeholder: Número
     required: false
+    show_if: Text&&Email
     min: 1
     max: 10
   - type: date
@@ -393,6 +398,7 @@ boxes:
     name: Radio
     placeholder: Radios
     required: true
+    x: false
     options:
     - option: Radio Opción 1
       value: Radio Valor 1
@@ -404,6 +410,7 @@ boxes:
     name: Checkbox
     placeholder: Checkboxes
     required: true
+    x: true
     options:
     - option: Checkbox Opción 1
       value: Checkbox Valor 1
