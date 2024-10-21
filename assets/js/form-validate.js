@@ -105,12 +105,14 @@ export function initFormValidate () {
         }
 
         form.querySelectorAll('[data-required], [data-requiredif]').forEach(input => {
-          let required = false
+          let required
           if (!(input.dataset.required === undefined)) {
             required = true
           } else if (input.dataset.requiredif) {
-            const inputIf = form.querySelector(`[name="${input.dataset.requiredif}"]`)
-            required = isInput(inputIf)
+            input.dataset.requiredif.split(/\|\||&&/).forEach(requif => {
+              const inputIf = form.querySelector(`[name="${requif}"]`)
+              if (isInput(inputIf)) required = true
+            })
           }
           const elementToStyle = input.classList.contains('form__geo') ? input.parentElement.children[0] : input
           if (required) {

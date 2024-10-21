@@ -97,33 +97,48 @@
     {{- $name        := .name -}}
     {{- $type        := .type -}}
     {{- $full        := cond ($type | in (slice "textarea" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
+    {{- $names       := slice -}}
+    {{- if .type | in (slice "radio" "checkbox") -}}
+      {{- range .options -}}
+        {{- $names    = $names | append (.value | default .option) -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $names      = slice .name -}}
+    {{- end -}}
     {{- $show_if     := "" | safeHTMLAttr -}}
     {{- with .show_if -}}
       {{- $show_if    = print ` data-showif="{` (. | replaceRE `(\|\||\&\&)` "}$1{") `}"` | safeHTMLAttr -}}
     {{- end -}}
-    {{- $show_of     := false -}}
+    {{- $show_of     := slice -}}
     {{- range $.inputs -}}
-      {{- $input := . -}}
-      {{- with .show_if -}}
-        {{- with $input.options -}}
-          {{- range . -}}
-            {{- $value := .value | default .option -}}
-            {{- range split $value "||" -}}
-              {{- if eq . $name -}}
-                {{- $show_of  = true -}}
+      {{- if ne .name $name -}}
+        {{- if .show_if -}}
+          {{- if .type | in (slice "radio" "checkbox") -}}
+            {{- with .options -}}
+              {{- range . -}}
+                {{- $value := .value | default .option -}}
+                {{- range split $value "||" -}}
+                  {{- range split . "&&" -}}
+                    {{- if . | in $names -}}
+                      {{- $show_of  = $show_of | append . -}}
+                    {{- end -}}
+                  {{- end -}}
+                {{- end -}}
               {{- end -}}
             {{- end -}}
-          {{- end -}}
-        {{- else -}}
-          {{- range split . "||" -}}
-            {{- if eq . $name -}}
-              {{- $show_of = true -}}
+          {{- else -}}
+            {{- range split .show_if "||" -}}
+              {{- range split . "&&" -}}
+                {{- if . | in $names -}}
+                  {{- $show_of = $show_of | append . -}}
+                {{- end -}}
+              {{- end -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
-    {{- $show_of      = cond (not $show_of)     "" (print ` data-showof="{` .name `}"`) | safeHTMLAttr -}}
+    {{- $show_of      = cond (not $show_of)     "" (print ` data-showof="{` (delimit (uniq $show_of) "}|{") `}"`) | safeHTMLAttr -}}
     {{- $required    := cond (not .required)    "" " data-required" | safeHTMLAttr -}}
     {{- if or (and (not .required) .required_if) (and .required .show_if) -}}
       {{- with .required_if | default .show_if -}}
