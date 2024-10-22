@@ -5,7 +5,6 @@ import { loadScript } from './load-script'
 export function initIframePoster () {
   const posterIframe = document.querySelectorAll('[data-iframe]')
 
-
   if (posterIframe) {
     document.addEventListener('click', e => {
       const iframeWrap = e.target.closest('[data-iframe]')
@@ -16,7 +15,7 @@ export function initIframePoster () {
         const src = iframeWrap.dataset.iframe
         const isYoutube = src.match(/youtu\.be|youtube(-nocookie)?\.com/s)
         if (isYoutube) {
-          if (lang == 'en') attrsEn = '&cc_load_policy=1&hl=en&cc_lang_pref=en'
+          if (lang !== 'es') attrsEn = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           attrs =
             ` title="${i18nVideo} · Youtube"` +
             ` src="${src}${attrsEn}&autoplay=1&showinfo=0"` +

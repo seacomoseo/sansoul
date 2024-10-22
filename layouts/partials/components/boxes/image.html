@@ -64,7 +64,10 @@
       "notlazy"   $.first
       | merge (cond (not ($iframe_poster | and (not $is_page)))
         (dict)
-        (dict "iframe_src" (partial `functions/iframe-src` (merge . (dict `src` $image_src))))
+        (dict
+          "iframe_src" (partial `functions/iframe-src` (merge . (dict `src` $image_src)))
+          "icon_color" .icon_color
+        )
       )
     ) }}
 

@@ -35,10 +35,10 @@ body,
   --invert-text: var(--dark-text);
   --similar: var(--light);
   --similar-text: var(--light-text);
-  --hover: var(--alt);
-  --hover-text: var(--alt-text);
-  --active: var(--grey);
-  --active-text: var(--grey-text);
+  --hover: var(--invert);
+  --hover-text: var(--invert-text);
+  --active: var(--similar);
+  --active-text: var(--similar-text);
   // Texts
   color: var(--text);
   --text: #{ $text };
@@ -89,8 +89,6 @@ body,
     --link-text: var(--alt-text);
     --main: var(--alt);
     --main-text: var(--alt-text);
-    --hover: var(--invert);
-    --hover-text: var(--invert-text);
   }
 } @else {
   .bg-link {
@@ -107,16 +105,7 @@ body,
   }
 }
 
-// Alt and Hover
-.alt,
-.bg-alt {
-  // like active
-  --hover: var(--grey);
-  --hover-text: var(--grey-text);
-  // like invert
-  --active: var(--invert);
-  --active-text: var(--invert-text);
-}
+// Alt
 .bg-alt {
   // like link
   --alt: var(--link);
@@ -126,13 +115,6 @@ body,
   // like dark
   --grey: var(--dark);
   --grey-text: var(--dark-text);
-}
-
-// Active
-.bg-grey {
-  // like invert
-  --active: var(--invert);
-  --active-text: var(--invert-text);
 }
 
 // Light
@@ -257,10 +239,16 @@ button,
 .invert {
   --base: var(--invert);
   --base-text: var(--invert-text);
+  // hover like grey
+  --hover: var(--grey);
+  --hover-text: var(--grey-text);
 }
 .similar {
   --base: var(--similar);
   --base-text: var(--similar-text);
+  // active like grey
+  --active: var(--grey);
+  --active-text: var(--grey-text);
 }
 .whatsapp {
   --base: #25d366;

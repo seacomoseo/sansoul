@@ -70,6 +70,10 @@
           decoding="async"
           {{- if not .notlazy }} loading="lazy"{{ end -}}
         >
+        {{- if .iframe_src }}
+          {{- $color := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
+          {{- partial "components/icon" (dict "class" $color "icon" "youtube-iframe" "emoji" "▶️") -}}
+        {{ end }}
       </picture>
     {{- end -}}
   {{- else -}}
@@ -398,6 +402,11 @@
             decoding="async"
             {{ if not .notlazy }} loading="lazy" {{ end }}
           >
+
+          {{- if .iframe_src }}
+            {{- $color := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
+            {{- partial "components/icon" (dict "class" $color "icon" "youtube-iframe" "emoji" "▶️") -}}
+          {{ end }}
         </picture>
       {{- end -}}
     {{- end -}}
