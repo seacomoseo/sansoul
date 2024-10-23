@@ -34,26 +34,28 @@
       </video>
     {{- else if .src | findRE `youtu\.be|youtube\.com` -}}
       <iframe
-        {{ with .class }} class="{{ . }}" {{ end }}
+        {{- with .class }} class="{{ . }}" {{ end -}}
         width="560"
         height="315"
         loading="lazy"
-        data-src="{{ partial `functions/iframe-src` (dict `src` .src `bg` .bg) }}"
+        src="{{ partial `functions/iframe-src` (dict `src` .src `bg` .bg) }}"
         title="{{ with .alt }}{{ . }}{{ else }}{{ i18n `video` }} · Youtube{{ end }}"
         allow="accelerometer clipboard-write; encrypted-media; gyroscope; picture-in-picture {{- if $mute }}; autoplay; loop; mute{{ end }}"
         allowfullscreen
+        {{- if not .notlazy }} loading="lazy"{{ end -}}
       ></iframe>
     {{- else if in .src `vimeo.com` -}}
       {{- $id := .src | replaceRE `^.+?com/(.+?)(\?|$).*` `$1` -}}
       <iframe
-        {{ with .class }} class="{{ . }}" {{ end }}
+        {{- with .class }} class="{{ . }}" {{ end -}}
         width="640"
         height="360"
         loading="lazy"
-        data-src="{{ partial `functions/iframe-src` (dict `src` .src `bg` .bg) }}"
+        src="{{ partial `functions/iframe-src` (dict `src` .src `bg` .bg) }}"
         title="{{ with .alt }}{{ . }}{{ else }}{{ i18n `video` }} · Vimeo{{ end }}"
         allow="fullscreen {{- if $mute }}; autoplay; loop; muted{{ end }}"
         allowfullscreen
+        {{- if not .notlazy }} loading="lazy"{{ end -}}
       ></iframe>
     {{- else -}}
       <picture

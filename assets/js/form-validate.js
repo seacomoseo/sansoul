@@ -88,7 +88,7 @@ export function formValid (form) {
   })
 
   form.querySelectorAll('[type="tel"]').forEach(input => {
-    const telMatch = input.value.match(/^[0-9\s]{9,15}$/)
+    const telMatch = input.value.match(/^\+?[0-9\s]{9,15}$/)
     if (input.value && !telMatch) {
       input.style.setProperty('--border', 'red')
       message.innerHTML += `<li>${formErrorTel}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
