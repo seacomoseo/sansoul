@@ -7,7 +7,13 @@
 ## Script para actualizar proyectos
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
-- `_index.md` > `open[0].{days,opens,closes}`
+- `_index.md`
+  - `images`
+  - `schedule`
+- `sections|modals`
+  - `gallery.wrap`
+- `tags`
+- `assets/css/_custom.scss`
 - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
 - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
 - `file:` en cada modal
