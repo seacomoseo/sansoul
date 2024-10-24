@@ -7,24 +7,29 @@
 ## Script para actualizar proyectos
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
-- `_index.md`
-  - `images`
-  - `schedule`
-- `sections|modals`
-  - `gallery.wrap`
-- `tags`
-- `reading_time`
-- `hide_categories`
-- `content.${lang}/single/*.md`
-  - `menu.hide_anchors`
+- `content.${lang}`
+  - `_index.md`
+    - `images`
+    - `schedule`
+  - `{sections|modals}/*.yml`
+    - `map`
+    - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
+    - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
+  - `single/*.md`
+    - `menu.hide_anchors`
+- `types/*.yml`
+    - `template.list`
+      - `tags`
+      - `reading_time`
+      - `hide_categories`
+- `types/*.yml|content.${lang}/single/*.md`
+  - `file:` en cada modal
+  - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
+  - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
 - `assets/css/_custom.scss`
-- Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
-- Ojo con `shadow: true` (en `boxes`, `box` y `review`)
-- `file:` en cada modal
-- `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
-- `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
-- `submited_` > `submited-`
-
+- `assets/js/custom.js`
+  - `submited_` > `submited-`
+coordinates
 
 ## TO DO
 

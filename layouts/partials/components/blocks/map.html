@@ -1,41 +1,10 @@
 {{- with .map -}}
-  <div class="map box__block">
-
-    {{ if . | findRE `\.(jpe?g|png|gif|webp|avif|svg)$` }}
-
-      {{ if not $.link }}
-        {{ $image    := . }}
-        {{ if not (hasPrefix . "http") }}
-          {{ $image   = resources.Get (print "/media/" .) }}
-          {{ with $image }}
-            {{ $image = .RelPermalink }}
-          {{ end }}
-        {{ end }}
-        <div data-b="{{ $image | base64Encode }}" tabindex="0" role="link">
-      {{ end }}
-      {{ partial "components/image" (dict
-        "src"       .
-        "alt"       (i18n "map")
-        "container" $.container
-        "span_xl"   $.span_xl
-        "span_xs"   $.span_xs
-        "notlazy"   false
-      ) }}
-      {{ if not $.link }}
-        </div>
-      {{ end }}
-
-    {{ else }}
-
-      {{ $link  := . }}
-      {{ if not (hasPrefix . "http") }}
-        {{ $link = partial "functions/map-url" . }}
-        {{ $link = print $link "&z=15&output=embed" }}
-      {{ end }}
-
-      <iframe loading="lazy" src="{{ $link }}" width="600" height="450" allowfullscreen="" title="{{ i18n `location` }}"></iframe>
-
-    {{ end }}
-
-  </div>
+  {{- $geo := dict -}}
+  {{- if reflect.IsMap . -}}
+    {{- $geo = . -}}
+  {{- else -}}
+    {{- $geo = unmarshal . -}}
+  {{- end -}}
+  <div id="map-{{ $.section.id }}" class="map box__block" data-y="{{ index $geo.coordinates 0 }}" data-x="{{ index $geo.coordinates 1 }}"></div>
+  <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#star-fill"></use></svg>
 {{- end -}}

@@ -260,13 +260,7 @@
 
     {{/*  MAP  */}}
     {{ if .map }}
-      {{- partial "components/blocks/map" (merge
-        .
-        (dict
-          "span_xl" $span_xl
-          "span_xs" $span_xs
-        )
-      ) -}}
+      {{- partial "components/blocks/map" . -}}
     {{ end }}
 
     {{/*  GSS  */}}
