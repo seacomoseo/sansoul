@@ -2,13 +2,13 @@
   box-sizing: border-box;
 }
 html {
+  @include font-base(true);
   @include fluid-size(font-size, 1px, $font-size-min, $font-size-max);
   scroll-behavior: smooth;
-  @include font-base;
   overflow-x: hidden;
 }
 body {
-  font-size: var(--fsb);
+  // font-size: var(--fsb);
   color: var(--text, $text);
   background-color: $light;
   word-break: break-word;

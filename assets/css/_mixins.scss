@@ -1,12 +1,14 @@
 // FONTS
 
 // Font Base
-@mixin font-base {
+@mixin font-base($root: false) {
   font-family: $font-family-base;
   font-style: $font-style-base;
   font-weight: $font-weight-base;
   line-height: $line-height-base;
-  font-size: 1em;
+  @if not $root {
+    font-size: 1em;
+  }
 }
 // Font Base Bold
 @mixin font-base-bold($hide-nested: false) {
