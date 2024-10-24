@@ -1,6 +1,7 @@
 ---
-title: Mapa do Site
-slug: mapa-site
+title: Sitemap
+slug: sitemap
+summary: ' '
 noindex: true
 translationKey: sitemap
 type: system

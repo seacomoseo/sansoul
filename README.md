@@ -13,6 +13,10 @@
 - `sections|modals`
   - `gallery.wrap`
 - `tags`
+- `reading_time`
+- `hide_categories`
+- `content.${lang}/single/*.md`
+  - `menu.hide_anchors`
 - `assets/css/_custom.scss`
 - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
 - Ojo con `shadow: true` (en `boxes`, `box` y `review`)

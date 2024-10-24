@@ -3,16 +3,16 @@
   [data-testid="delete-button"] {
     display: none;
   }
-  .CMS_EditorControlPane_root {
+  .CMS_EditorControlPane_root > .CMS_EditorControl_root:has(> :is(
     .name-order,
     .name-base,
-    .name-disabled {
-      display: none;
-    }
+    .name-disabled
+  )) {
+    display: none;
   }
 }
 [data-hash="#/collections/types/entries/all"] {
-  .CMS_EditorControlPane_root {
+  .CMS_EditorControlPane_root > .CMS_EditorControl_root:has(> :is(
     .name-icon,
     .name-emoji,
     .name-noindex,
@@ -24,8 +24,8 @@
     .name-fr,
     .name-de,
     .name-pt,
-    .name-it {
-      display: none;
-    }
+    .name-it
+  )) {
+    display: none;
   }
 }

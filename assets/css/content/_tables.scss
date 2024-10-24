@@ -4,15 +4,13 @@
 .gss .ritz {
   display: flex;
   justify-content: center;
+  filter: drop-shadow($shadow);
 }
 
 
 // Table
 
 table {
-  @if not $chamfer or $radius <= .01 {
-    filter: drop-shadow($shadow);
-  }
   &:not(.table-sm, .container.bg *, .boxes *) {
     @include fluid-size(max-width, 1px, $screen-min / 1px, $container-width-max-xl / 1px);
     @include fluid-size(--margin-table-lg, 1em, 1, 2);
