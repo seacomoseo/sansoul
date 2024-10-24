@@ -216,8 +216,15 @@
         {{- end -}}
 
       {{- else if $type | eq "geo" -}}
+        {{ $icon := .icon | default "circle-dot" }}
+        {{ $color := .icon_color | default "main" }}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
-        <div id="geo" class="form__geo-map"></div>
+        <div
+          id="geo-{{ .section.id }}"
+          class="form__geo-map bg-light {{ $color }}"
+          data-icon="{{ $icon }}"
+        ></div>
+        <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#star-fill"></use></svg>
         <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" {{- $required }}>
         <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y">
       {{- else if $type | eq "textarea" -}}

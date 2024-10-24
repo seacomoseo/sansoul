@@ -5,6 +5,14 @@
   {{- else -}}
     {{- $geo = unmarshal . -}}
   {{- end -}}
-  <div id="map-{{ $.section.id }}" class="map box__block" data-y="{{ index $geo.coordinates 0 }}" data-x="{{ index $geo.coordinates 1 }}"></div>
-  <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#star-fill"></use></svg>
+  {{ $icon := $.licon | default $.icon | default "circle-star" }}
+  {{ $color := $.icon_color | default "main" }}
+  <div
+    id="map-{{ $.section.id }}"
+    class="map box__block bg-light {{ $color }}"
+    data-y="{{ index $geo.coordinates 0 }}"
+    data-x="{{ index $geo.coordinates 1 }}"
+    data-icon="{{ $icon }}"
+  ></div>
+  <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#{{ $icon }}"></use></svg>
 {{- end -}}
