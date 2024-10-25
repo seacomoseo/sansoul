@@ -17,10 +17,11 @@
 }
 
 .container.bg:not([class*="box--padding-"]) {
-  @include fluid-size(--box-padding, 1em, 1, 2);
+  --box-padding-min: 1;
+  --box-padding-max: 2;
   &.container--lg,
   &.container--xl {
-    @include fluid-size(--box-padding, 1em, 1, 3);
+    --box-padding-max: 3;
   }
 }
 

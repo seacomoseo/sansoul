@@ -43,7 +43,10 @@
 
   --box-w: calc(var(--column-width) - var(--gc));
   --box-width: var(--box-w);
-  --box-padding: 1em;
+
+  --box-padding-min: 1;
+  --box-padding-max: var(--box-padding-min, 1);
+  @include fluid-size(--box-padding, 1em, var(--box-padding-min), var(--box-padding-max));
 }
 .boxes > *,
 .box {
@@ -59,7 +62,7 @@
 // Default padding and gap when columns is small (> 2 and container <= sm)
 .boxes--sm {
   --columns-gap-max-default: 1;
-  --box-padding: 1em;
+  --box-padding-min: 1;
 }
 
 .boxes--left {

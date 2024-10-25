@@ -127,9 +127,9 @@
 
 {{/*  STYLES  */}}
 
-{{ $bg_alpha          := "" }}
-{{ if and (.color_alpha | and (ne .color_alpha 100)) ($bg_color | or $bg_gradient_color) }}
-  {{ $bg_alpha         = print "--bg-alpha:" .color_alpha }}
+{{ $bg_color_alpha    := "" }}
+{{ if and (and .color_alpha (ne .color_alpha 1)) (or $bg_color $bg_gradient_color) }}
+  {{ $bg_color_alpha   = print "--bg-alpha:" .color_alpha }}
 {{ end }}
 {{ $padding_top       := "" }}
 {{ $padding_bottom    := "" }}
@@ -145,16 +145,16 @@
   {{ end }}
 {{ end }}
 {{ if $modal }}
-  {{/*  {{ $bg_color_alpha = "" }}  */}}
-  {{ $padding_top      = "" }}
-  {{ $padding_bottom   = "" }}
+  {{ $bg_color_alpha = "" }}
+  {{ $padding_top    = "" }}
+  {{ $padding_bottom = "" }}
 {{ end }}
 
 {{ $style := partial "functions/attr-delimit" (dict
   "attr"    "style"
   "delimit" ";"
   "array"   (slice
-    $bg_alpha
+    $bg_color_alpha
     $padding_top
     $padding_bottom
     $divider_style

@@ -86,10 +86,10 @@
 // Padding
 .container,
 .box:where(:not(.bg)) {
-  --box-padding: 0em;
+  --box-padding-min: 0;
 }
 .box:where(.bg:not(.boxes > *, [class*="box--padding-"])) {
-  --box-padding: 1.00em;
+  --box-padding-min: 1;
 }
 
 // Span
@@ -282,6 +282,9 @@
     &:is(.align-right *) {
       text-align: right;
     }
+  }
+  &:has(.box__icon--side) {
+    flex-wrap: nowrap;
   }
 }
 .align-center > {

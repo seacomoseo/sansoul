@@ -6,7 +6,7 @@
   {{- with .value -}}
     {{- $value   = unmarshal . -}}
   {{- else -}}
-    {{- with .page -}}
+    {{- with .page | default .box -}}
       {{- if eq . "filename" -}}
         {{- $value = page.File.TranslationBaseName -}}
       {{- else -}}

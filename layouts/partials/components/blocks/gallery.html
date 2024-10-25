@@ -6,7 +6,7 @@
   "span_xl" .span_xl
   "span_xs" .span_xs
 ) -}}
-{{- $items       := $columns.items | default slice | append .images -}}
+{{- $items       := $columns.items | default slice | append (.images | default slice) -}}
 
 {{- $button_icon      := (cond (eq .icon "none") "" .icon) -}}
 {{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
@@ -59,16 +59,18 @@
         {{- $image = .image -}}
         {{- $link  = .link -}}
       {{- end -}}
-      {{- partial "components/blocks/gallery-item" (dict
-        "image"     $image
-        "link"      $link
-        "type"      $.type
-        "lightbox"  (not $.limages)
-        "columns"   $columns.max
-        "container" $.container
-        "span_xl"   $columns.span_xl
-        "span_xs"   $columns.span_xs
-      ) -}}
+      {{- if $image -}}
+        {{- partial "components/blocks/gallery-item" (dict
+          "image"     $image
+          "link"      $link
+          "type"      $.type
+          "lightbox"  (not $.limages)
+          "columns"   $columns.max
+          "container" $.container
+          "span_xl"   $columns.span_xl
+          "span_xs"   $columns.span_xs
+        ) -}}
+      {{- end -}}
     {{- end -}}
     {{- if $is_button_expand -}}
       {{- partial "components/link" (dict

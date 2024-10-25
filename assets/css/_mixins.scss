@@ -30,7 +30,7 @@
   @if $top-title != 0 {
     &:not(strong, a, [data-h], [data-b]) {
       transform: translateY(#{ $top-title }em);
-      > svg,
+      > svg:not(.box__icon--side),
       &.underline:after {
         transform: translateY(-#{ $top-title }em);
       }
@@ -237,7 +237,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  text-indent: -1000vw;
+  text-indent: -1000000vw;
   text-align: left;
   z-index: -10;
 }

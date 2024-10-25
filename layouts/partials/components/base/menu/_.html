@@ -10,7 +10,7 @@
   {{/*  ITEM HOME LINK  */}}
   {{ if not $logo }}
     {{ if not page.IsHome | and (not .hide_anchors) }}
-      {{ if not ($custom  | jsonify | findRE `"link":"/"`) }}
+      {{ if not ($custom  | jsonify | findRE `"link":"/#?"`) }}
         {{ with site.Home }}
           {{ $items = $items | append (dict
             "link"     .RelPermalink

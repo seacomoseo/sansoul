@@ -74,12 +74,13 @@
     height: .1875em;
     position: relative;
   }
+  --base: var(--similar);
   &--active {
-    --base: var(--hover);
+    --base: var(--border);
   }
   &:not(#aux) {
     &:focus {
-      --base: var(--active);
+      --base: var(--link);
     }
     &,
     &:hover,
