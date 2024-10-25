@@ -52,7 +52,22 @@
             {{- $noindex = true -}}
           {{- else if eq .type "address" -}}
             {{- $class   = "contact__address" -}}
-            {{- $link    = partial "functions/map-url" (.anchor | default .label) -}}
+            {{- $geo := dict -}}
+            {{- with .geo -}}
+              {{- if reflect.IsMap . -}}
+                {{- $geo = . -}}
+              {{- else -}}
+                {{- $geo = unmarshal . -}}
+              {{- end -}}
+            {{- end -}}
+            {{- if $geo -}}
+              {{- $y     := index $geo.coordinates 0 -}}
+              {{- $x     := index $geo.coordinates 1 -}}
+              {{- $zoom  := .zoom | default 15 -}}
+              {{- $link   = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
+            {{- else -}}
+              {{- $link  = partial "functions/map-url" (.anchor | default .label) -}}
+            {{- end -}}
             {{- $icon    = "location-dot" -}}
             {{- $emoji   = "📍" -}}
             {{- $label   = .label | default .anchor -}}

@@ -225,6 +225,10 @@
   ))
 
 
+  (dict "&BOX_MAP"  (dict "name" `map`  "widget" `map`    "required" false "label" $t.box_map  "hint" $t.box_map_hint "number" 7))
+  (dict "&BOX_ZOOM" (dict "name" `zoom` "widget" `number` "required" false "label" $t.box_zoom "hint" `1 - 20`        "value_type" `int` "step" 1 "min" 1 "max" 20))
+
+
   (dict "&BOX_CONTACT_DAYS"            (dict "name" `days`   "widget" `string`  "required" false "label" $t.box_contact_days))
   (dict "&BOX_CONTACT_HOURS"           (dict "name" `hours`  "widget" `string`  "required" false "label" $t.box_contact_hours))
   (dict "&BOX_CONTACT_LABEL"           (dict "name" `label`  "widget" `string`  "required" false "label" $t.box_contact_label))
@@ -233,6 +237,7 @@
   (dict "&BOX_CONTACT_ADDRESS_LABEL"   (dict "name" `label`  "widget" `string`  "required" false "label" $t.box_contact_address))
   (dict "&BOX_CONTACT_ADDRESS_ANCHOR"  (dict "name" `anchor` "widget" `string`  "required" false "label" $t.box_contact_anchor      "hint" $t.box_contact_anchor_hint))
   (dict "&BOX_CONTACT_HIDDEN"          (dict "name" `hidden` "widget" `hidden`  "required" false "label" `hidden`))
+  (dict "&BOX_CONTACT_MAP"             (dict "<<" (slice (dict "name" `geo` "hint" $t.box_contact_map_hint) `~BOX_MAP`)))
   (dict "&BOX_CONTACT" (dict
     "name"           `contact`
     "widget"         `list`
@@ -241,14 +246,14 @@
     "label_singular" $t.box_contact_singular
     "hint"           $t.box_contact_hint
     "summary"        "{{fields.label}}{{fields.days}} {{fields.hours}}"
-    "collapsed"      false
+    "collapsed"      true
     "allow_add"      true
     "types"          (slice
       (dict "name" `schedule` "widget" `object` "required" false "label" $t.box_contact_schedule "summary" "{{fields.days}} {{fields.hours}}" "fields" (slice `~BOX_CONTACT_DAYS` `~BOX_CONTACT_HOURS` `~BOX_CONTACT_FULL`))
       (dict "name" `phone`    "widget" `object` "required" false "label" $t.box_contact_phone    "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT` `~BOX_ICON_ID`))
       (dict "name" `whatsapp` "widget" `object` "required" false "label" $t.box_contact_whatsapp "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT`))
       (dict "name" `mail`     "widget" `object` "required" false "label" $t.box_contact_mail     "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT`))
-      (dict "name" `address`  "widget" `object` "required" false "label" $t.box_contact_address  "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_ADDRESS_LABEL` `~BOX_CONTACT_ADDRESS_ANCHOR` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT`))
+      (dict "name" `address`  "widget" `object` "required" false "label" $t.box_contact_address  "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_ADDRESS_LABEL` `~BOX_CONTACT_ADDRESS_ANCHOR` `~BOX_CONTACT_FULL` `~BOX_BUTTON_COLOR` `~BOX_BUTTON_FONT_ALT` `~BOX_CONTACT_MAP` `~BOX_ZOOM`))
       (dict "name" `h3`       "widget" `object` "required" false "label" $t.box_contact_h3       "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
       (dict "name" `h4`       "widget" `object` "required" false "label" $t.box_contact_h4       "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
       (dict "name" `h5`       "widget" `object` "required" false "label" $t.box_contact_h5       "summary" "{{fields.label}}"                 "fields" (slice `~BOX_CONTACT_LABEL` `~BOX_CONTACT_HIDDEN`))
@@ -265,7 +270,7 @@
     "label"          $t.box_social
     "label_singular" $t.box_social_singular
     "hint"           $t.box_social_hint
-    "collapsed"      false
+    "collapsed"      true
     "summary"        "{{fields.link}}"
     "allow_add"      true
     "fields"         (slice
@@ -282,7 +287,6 @@
   (dict "&BOX_FORM_REQUIRED_IF" (dict "name" `required_if` "widget" `string`  "required" false "label" $t.box_form_inputs_required_if "hint" $t.box_form_inputs_required_if_hint))
   (dict "&BOX_FORM_SHOW_IF"     (dict "name" `show_if`     "widget" `string`  "required" false "label" $t.box_form_inputs_show_if     "hint" $t.box_form_inputs_show_if_hint))
   (dict "&BOX_FORM_REGEX"       (dict "name" `regex`       "widget" `string`  "required" false "label" $t.box_form_inputs_regex))
-  (dict "&BOX_ZOOM"             (dict "name" `zoom`        "widget" `number`  "required" false "label" $t.box_zoom                    "hint" `1 - 20` "value_type" `int` "step" 1 "min" 1 "max" 20))
   (dict "&BOX_FORM_MIN"         (dict "name" `min`         "widget" `number`  "required" false "label" $t.box_form_inputs_min         "value_type" `float`))
   (dict "&BOX_FORM_MAX"         (dict "name" `max`         "widget" `number`  "required" false "label" $t.box_form_inputs_max         "value_type" `float`))
   (dict "&BOX_FORM_X"           (dict "name" `x`           "widget" `boolean` "required" false "label" $t.box_form_inputs_x))
@@ -346,8 +350,5 @@
     )
   ))
 
-
-  (dict "&BOX_MAP"  (dict "name" `map`  "widget" `map`    "required" false "label" $t.box_map "hint" $t.box_map_hint "number" 7))
-  
 
 }}
