@@ -4,6 +4,7 @@ import { loadStyle } from './load-style'
 
 export function initMap () {
   function mapStart (mapDiv) {
+    const zoom = mapDiv.dataset.zoom || 15
     const x = mapDiv.dataset.x
     const y = mapDiv.dataset.y
     // eslint-disable-next-line
@@ -11,7 +12,7 @@ export function initMap () {
       setView: true,
       trackResize: true,
       scrollWheelZoom: false
-    }).setView([x, y], 15)
+    }).setView([x, y], zoom)
 
     // eslint-disable-next-line
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

@@ -5,8 +5,9 @@ import { loadStyle } from './load-style'
 
 export function initFormGeo () {
   function mapStart (geoDiv) {
+    const zoom = geoDiv.dataset.zoom || 5
     const isMobile = window.innerWidth <= 768 // Mobile size
-    const initialZoom = isMobile ? 4 : 5 // Soom adjust by device
+    const initialZoom = isMobile ? zoom - 1 : zoom // Soom adjust by device
     // eslint-disable-next-line
     const map = L.map(geoDiv, {
       setView: true,

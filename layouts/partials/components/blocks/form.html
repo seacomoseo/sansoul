@@ -216,13 +216,15 @@
         {{- end -}}
 
       {{- else if $type | eq "geo" -}}
-        {{ $icon := .icon | default "circle-dot" }}
+        {{ $icon  := .icon | default "circle-dot" }}
         {{ $color := .icon_color | default "main" }}
+        {{ $zoom  := $.zoom | default 5 }}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div
           id="geo-{{ .section.id }}"
           class="form__geo-map bg-light {{ $color }}"
           data-icon="{{ $icon }}"
+          data-zoom="{{ $zoom }}"
         ></div>
         <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#star-fill"></use></svg>
         <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" {{- $required }}>

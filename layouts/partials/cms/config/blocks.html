@@ -282,6 +282,7 @@
   (dict "&BOX_FORM_REQUIRED_IF" (dict "name" `required_if` "widget" `string`  "required" false "label" $t.box_form_inputs_required_if "hint" $t.box_form_inputs_required_if_hint))
   (dict "&BOX_FORM_SHOW_IF"     (dict "name" `show_if`     "widget" `string`  "required" false "label" $t.box_form_inputs_show_if     "hint" $t.box_form_inputs_show_if_hint))
   (dict "&BOX_FORM_REGEX"       (dict "name" `regex`       "widget" `string`  "required" false "label" $t.box_form_inputs_regex))
+  (dict "&BOX_ZOOM"             (dict "name" `zoom`        "widget" `number`  "required" false "label" $t.box_zoom                    "hint" `1 - 20` "value_type" `int` "step" 1 "min" 1 "max" 20))
   (dict "&BOX_FORM_MIN"         (dict "name" `min`         "widget" `number`  "required" false "label" $t.box_form_inputs_min         "value_type" `float`))
   (dict "&BOX_FORM_MAX"         (dict "name" `max`         "widget" `number`  "required" false "label" $t.box_form_inputs_max         "value_type" `float`))
   (dict "&BOX_FORM_X"           (dict "name" `x`           "widget" `boolean` "required" false "label" $t.box_form_inputs_x))
@@ -331,7 +332,7 @@
       (dict "name" `date`     "widget" `object` "required" false "label" $t.box_form_inputs_date     "hint" $t.box_form_inputs_date_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL`))
       (dict "name" `time`     "widget" `object` "required" false "label" $t.box_form_inputs_time     "hint" $t.box_form_inputs_time_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL`))
       (dict "name" `textarea` "widget" `object` "required" false "label" $t.box_form_inputs_textarea "hint" $t.box_form_inputs_textarea_hint "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_FORM_MIN` `~BOX_FORM_MAX`))
-      (dict "name" `geo`      "widget" `object` "required" false "label" $t.box_form_inputs_geo      "hint" $t.box_form_inputs_geo_hint      "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_ICON_ID`  `~BOX_ICON_COLOR`))
+      (dict "name" `geo`      "widget" `object` "required" false "label" $t.box_form_inputs_geo      "hint" $t.box_form_inputs_geo_hint      "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_ZOOM`     `~BOX_ICON_ID` `~BOX_ICON_COLOR`))
       (dict "name" `select`   "widget" `object` "required" false "label" $t.box_form_inputs_select   "hint" $t.box_form_inputs_select_hint   "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL` `~BOX_FORM_OPTIONS`))
       (dict "name" `radio`    "widget" `object` "required" false "label" $t.box_form_inputs_radio    "hint" $t.box_form_inputs_radio_hint    "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_FORM_X` `~BOX_FORM_OPTIONS`))
       (dict "name" `checkbox` "widget" `object` "required" false "label" $t.box_form_inputs_checkbox "hint" $t.box_form_inputs_checkbox_hint "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_FORM_X` `~BOX_FORM_OPTIONS`))
@@ -346,7 +347,7 @@
   ))
 
 
-  (dict "&BOX_MAP" (dict "name" `map` "widget" `map` "required" false "label" $t.box_map "hint" $t.box_map_hint "number" 7))
+  (dict "&BOX_MAP"  (dict "name" `map`  "widget" `map`    "required" false "label" $t.box_map "hint" $t.box_map_hint "number" 7))
   
 
 }}
