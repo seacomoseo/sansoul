@@ -12,7 +12,11 @@
     - `images`
     - `schedule`
   - `{sections|modals}/*.yml`
-    - `map`
+    - `contacto.yml`
+      - `address.geo`
+      - `map`
+    - `mapa.yml`
+      - `map`
     - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
     - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
   - `single/*.md`
