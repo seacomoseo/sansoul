@@ -149,7 +149,7 @@ export function initFormSend () {
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {
-                if (!response.ok && !response.result === 'success' && !response.error) {
+                if (!response.ok && !(response.result === 'success') && !response.error) {
                   throw new Error('HTTP status ' + (response.status || response.error))
                 }
               })
