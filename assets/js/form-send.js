@@ -149,11 +149,15 @@ export function initFormSend () {
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {
-                if (!response.ok && !(response.result === 'success') && !response.error) {
-                  throw new Error('HTTP status ' + (response.status || response.error))
+                if (!response.ok) {
+                  throw new Error('HTTP status ' + response.status)
                 }
+                return response.json()
               })
-              .then(response => {
+              .then(data => {
+                if (googleScript && data.result !== 'success') {
+                  throw new Error(data.error || 'Unknown error, data: ' + JSON.stringify(data))
+                }
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
@@ -163,7 +167,7 @@ export function initFormSend () {
                 formMessage.classList.add('form__submit--error')
                 formMessage.innerHTML =
                   `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
-                  `<svg><use href="/draws.svg#circle-info"></use></svg> ${error}`
+                  `<svg><use href="/draws.svg#circle-info"></use></svg> ${error.message}`
               })
           }
 
