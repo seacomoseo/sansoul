@@ -156,7 +156,7 @@ export function initFormSend () {
               })
               .then(data => {
                 if (googleScript && data.result !== 'success') {
-                  throw new Error(data.error || 'Unknown error, data: ' + JSON.stringify(data))
+                  throw new Error(data.message || 'Unknown error, data: ' + JSON.stringify(data))
                 }
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`

@@ -164,10 +164,10 @@
         {{- if and $googleScript (eq $type "file") -}}
           {{- $name = print "📄" .name -}}
         {{- end -}}
-        {{- $length  := "" -}}
+        {{- $length  := "" | safeHTMLAttr -}}
         {{- if or .min .max -}}
           {{- if $type | in (slice "text" "email" "tel") -}}
-            {{- $length  = "length" -}}
+            {{- $length  = "length" | safeHTMLAttr -}}
           {{- end -}}
         {{- end -}}
 
