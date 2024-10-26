@@ -65,6 +65,7 @@
     target="_blank"
     action="{{ $action | base64Encode }}"
   {{- end -}}
+  {{- with .form.to }} to="{{ . | base64Encode }}"{{ end -}}
 >
 
   {{/*  HIDDEN INPUTS  */}}

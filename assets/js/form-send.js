@@ -44,6 +44,9 @@ export function initFormSend () {
           value: form.id
         })
       }
+      if (form.dataset.to) {
+        window.location.href = atob(form.dataset.to)
+      }
     }
 
     forms.forEach(e => {
