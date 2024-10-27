@@ -8,7 +8,6 @@ import { formValid } from './form-validate'
 
 // Change values pre and post get form data
 function changeValuesPrev (form, prev) {
-  console.log(prev ? 'prev' : 'next')
   // Checkboxes
   const checkboxes = form.querySelectorAll('input[type="checkbox"]')
   checkboxes.forEach(checkbox => {
@@ -157,7 +156,6 @@ export function initFormSend () {
               formOptions.body = new URLSearchParams(formData).toString()
             }
 
-            console.log('star fetch')
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {
@@ -174,14 +172,12 @@ export function initFormSend () {
                 formMessage.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
                 form.reset()
-                console.log('end fetch')
               })
               .catch(error => {
                 formMessage.classList.add('form__submit--error')
                 formMessage.innerHTML =
                   `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
                   `<svg><use href="/draws.svg#circle-info"></use></svg> ${error.message}`
-                console.log('end fetch')
                 changeValuesPrev(form, false)
               })
           }
