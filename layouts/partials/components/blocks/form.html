@@ -8,6 +8,7 @@
   {{ $section_name  = .section.menu_label
     | default .section.hanchor
     | default .section.title
+    | default .form.id
     | default .id
     | default .section.name
     | default .section.file
@@ -18,14 +19,20 @@
   {{- $section_emoji = "🪟" -}}
 {{- end -}}
 
-{{- $num := 0 -}}
-{{- range partial "functions/section-boxes" .section -}}
-  {{- if .inputs -}}
-    {{- $num = add $num 1 -}}
-    {{- if eq .inputs $.inputs -}}
-      {{- break -}}
+{{- $form_id := "" -}}
+{{- $num     := 0 -}}
+{{- with .form.id -}}
+  {{- $form_id = . -}}
+{{- else -}}
+  {{- range partial "functions/section-boxes" .section -}}
+    {{- if .inputs -}}
+      {{- $num = add $num 1 -}}
+      {{- if eq .inputs $.inputs -}}
+        {{- break -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
+  {{- $form_id = print "form-" (cond (eq .id "header") .Page.Slug .id) (cond (le $num 1) "" (print "-" $num)) -}}
 {{- end -}}
 
 {{- $subject := print
@@ -35,9 +42,9 @@
   $section_emoji " "
   $section_name
   (cond (le $num 1) "" (print " 📌 " $num))
-  -}}
+-}}
+
 {{- $form          := merge site.Data.styles.inputs (.form | default dict) -}}
-{{- $form_id       := print "form-" (cond (eq .id "header") .Page.Slug .id) (cond (le $num 1) "" (print "-" $num)) -}}
 {{- $netlify_forms := not $form.action -}}
 {{- $googleScript  := in $form.action "script.google.com" -}}
 {{- $formsubmit_co := in $form.action "formsubmit.co" -}}
@@ -62,8 +69,8 @@
       {{- $is_file_type = true -}}
     {{- end -}}
     {{- if or $is_file_type $formsubmit_co | and (not $googleScript) }} enctype="multipart/form-data"{{ end }}
-    target="_blank"
     action="{{ $action | base64Encode }}"
+    target="_blank"
   {{- end -}}
   {{- with .form.to }} to="{{ . | base64Encode }}"{{ end -}}
 >
@@ -88,7 +95,7 @@
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
-    {{/*  <input type="hidden" name="_next" value="{{ .Page.Permalink }}#{{ $form_id }}">  */}}
+    <input type="hidden" name="_next" value="{{ with .form.to }}{{ . }}{{ else }}{{ .Page.Permalink }}#{{ $form_id }}{{ end }}">
   {{- end -}}
 
 
@@ -222,7 +229,7 @@
         {{ $zoom  := $.zoom | default 5 }}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div
-          id="geo-{{ .section.id }}"
+          id="geo-{{ $form_id }}"
           class="form__geo-map bg-light {{ $color }}"
           data-icon="{{ $icon }}"
           data-zoom="{{ $zoom }}"

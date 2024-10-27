@@ -6,6 +6,57 @@ import {
 } from '@params'
 import { formValid } from './form-validate'
 
+// Change values pre and post get form data
+function changeValuesPrev (form, prev) {
+  console.log(prev ? 'prev' : 'next')
+  // Checkboxes
+  const checkboxes = form.querySelectorAll('input[type="checkbox"]')
+  checkboxes.forEach(checkbox => {
+    if (prev) {
+      if (!checkbox.checked) {
+        checkbox.value = '❌'
+        checkbox.checked = true
+      }
+    } else {
+      if (checkbox.value === '❌') {
+        checkbox.value = '✅'
+        checkbox.checked = false
+      }
+    }
+  })
+  // Phone Prefixes
+  const phones = form.querySelectorAll('[type="tel"]')
+  phones.forEach(input => {
+    if (prev) {
+      if (input.value) {
+        input.dataset.value = input.value
+        input.value = `+${input.previousElementSibling.children[0].value} ${input.value}`
+      }
+    } else {
+      if (input.dataset.value) {
+        input.value = input.dataset.value
+        input.removeAttribute('data-value')
+      }
+    }
+  })
+}
+
+function formSubmited (form) {
+  const customEventSubmit = new CustomEvent('submited-' + form.id)
+  document.dispatchEvent(customEventSubmit)
+  if (googleAnalyticsId) {
+    // eslint-disable-next-line
+    gtag('event', 'contact_form_submit', {
+      event_category: 'contact',
+      event_label: 'form',
+      value: form.id
+    })
+  }
+  if (form.dataset.to) {
+    window.location.href = atob(form.dataset.to)
+  }
+}
+
 export function initFormSend () {
   window.addEventListener('load', () => {
     const forms = document.querySelectorAll('.form')
@@ -14,40 +65,6 @@ export function initFormSend () {
         '<use href="/draws.svg#xmark"></use>' +
       '</svg>'
     let formMessage
-
-    // Change checkbox value and checked pre and post get form data
-    function changeCheckbox (form, prev) {
-      const checkboxes = form.querySelectorAll('input[type="checkbox"]')
-      checkboxes.forEach(checkbox => {
-        if (prev) {
-          if (!checkbox.checked) {
-            checkbox.value = '❌'
-            checkbox.checked = true
-          }
-        } else {
-          if (checkbox.value === '❌') {
-            checkbox.value = '✅'
-            checkbox.checked = false
-          }
-        }
-      })
-    }
-
-    function formSubmited (form) {
-      const customEventSubmit = new CustomEvent('submited-' + form.id)
-      document.dispatchEvent(customEventSubmit)
-      if (googleAnalyticsId) {
-        // eslint-disable-next-line
-        gtag('event', 'contact_form_submit', {
-          event_category: 'contact',
-          event_label: 'form',
-          value: form.id
-        })
-      }
-      if (form.dataset.to) {
-        window.location.href = atob(form.dataset.to)
-      }
-    }
 
     forms.forEach(e => {
       e.addEventListener('submit', async submit => {
@@ -65,13 +82,7 @@ export function initFormSend () {
           formMessage.append(message)
           form.append(formMessage)
         } else {
-          // Phone Prefixes Prev
-          form.querySelectorAll('[type="tel"]').forEach(input => {
-            if (input.value) {
-              input.value = `+${input.previousElementSibling.children[0].value} ${input.value}`
-              input.dataset.value = input.value
-            }
-          })
+          changeValuesPrev(form, true)
 
           const actionEncoded = form.action.replace(window.location.href.split('#')[0], '')
           let action = window.atob(actionEncoded)
@@ -88,15 +99,13 @@ export function initFormSend () {
             submitFormFunction.call(form)
             form.action = actionEncoded
             formSubmited(form)
+            changeValuesPrev(form, false)
           } else {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
             formMessage.innerHTML = `<svg class="spin"><use href="/draws.svg#rotate"></use></svg> ${formSubmitSending}…`
             form.append(formMessage)
-
-            // Prev to form process for AJAX
-            changeCheckbox(form, true)
 
             const formOptions = { method: 'POST' }
             if ((!googleScript && isFileType) || formSubmitCo) {
@@ -135,6 +144,8 @@ export function initFormSend () {
                       })
                       filePromises.push(filePromise)
                     })
+                  } else {
+                    formData.append(input.name, input.value)
                   }
                 })
 
@@ -146,9 +157,7 @@ export function initFormSend () {
               formOptions.body = new URLSearchParams(formData).toString()
             }
 
-            // Next to form process for AJAX
-            changeCheckbox(form, false)
-
+            console.log('star fetch')
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {
@@ -165,22 +174,17 @@ export function initFormSend () {
                 formMessage.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
                 form.reset()
+                console.log('end fetch')
               })
               .catch(error => {
                 formMessage.classList.add('form__submit--error')
                 formMessage.innerHTML =
                   `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
                   `<svg><use href="/draws.svg#circle-info"></use></svg> ${error.message}`
+                console.log('end fetch')
+                changeValuesPrev(form, false)
               })
           }
-
-          // Phone Prefixes Restore
-          form.querySelectorAll('[type="tel"]').forEach(input => {
-            if (input.dataset.value) {
-              input.value = input.dataset.value
-              input.removeAttribute('data-value')
-            }
-          })
         }
       })
     })
