@@ -17,15 +17,17 @@
 
 .cancelled {
   @include radius;
-  background-color: var(--alt);
+  background-color: red;
   width: fit-content;
-  font-size: 5em;
-  margin: 1rem auto 1em;
+  margin: 2rem auto 1em;
   padding: .5em 1em;
   rotate: 5deg;
   filter: drop-shadow($shadow);
-  strong {
+  mark {
     @include font-title;
+    @include fluid-size(font-size, 1em, 4, 8);
+    background-color: transparent;
+    color: white;
     display: inline-block;
     transform: translateY(#{ $top-title }em);
   }
