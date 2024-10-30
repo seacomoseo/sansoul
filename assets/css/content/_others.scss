@@ -14,3 +14,19 @@
   }
 }
 /*! purgecss end ignore */
+
+.cancelled {
+  @include radius;
+  background-color: var(--alt);
+  width: fit-content;
+  font-size: 5em;
+  margin: 1rem auto 1em;
+  padding: .5em 1em;
+  rotate: 5deg;
+  filter: drop-shadow($shadow);
+  strong {
+    @include font-title;
+    display: inline-block;
+    transform: translateY(#{ $top-title }em);
+  }
+}

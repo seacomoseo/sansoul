@@ -21,7 +21,7 @@
   (partial "components/base/schema/breadcrumbs" .)
 }}
 
-{{ if and (not .IsSection) (ne $main site.Home) }}
+{{ if and (not .IsSection) (ne $main .) }}
   {{ if in (slice "article" "event" "product" "brand" "author" "service" "organization") .Params.base }}
     {{ $schemas = $schemas | append (partial (print "components/base/schema/" .Params.base) .) }}
   {{ end }}

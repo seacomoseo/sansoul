@@ -40,6 +40,9 @@
   {{ end }}
 {{ end }}
 
+{{/*  Status  */}}
+{{ $status := print "http://schema.org/" (cond (not .Params.cancelled) "EventScheduled" "EventCancelled") }}
+
 {{/*  Schema  */}}
 {{ $schema := dict
   "@type"               "Event"
@@ -54,7 +57,7 @@
   "endDate"             $end
   "image"               (dict "@id" (print .Permalink "#schema-image"))
   "organizer"           (partial "components/base/schema/organization-id" .)
-  "eventStatus"         "http://schema.org/EventScheduled"
+  "eventStatus"         $status
   "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"
 }}
 

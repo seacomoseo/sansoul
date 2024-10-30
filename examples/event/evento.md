@@ -6,6 +6,7 @@ image: fondo.jpg
 
 date: 2023-08-01 10:00:00
 end: 2023-08-05 13:55:49
+cancelled: false
 artists:
 - name: Artista de ejemplo
   group: false

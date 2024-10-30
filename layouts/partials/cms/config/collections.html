@@ -92,6 +92,7 @@
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `article` `event`))) `~P_DATE`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `article`     )) `~P_LASTMOD`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_END`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_CANCELLED`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_ARTISTS`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_LOCATION`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_PLACE`))
@@ -133,6 +134,7 @@
     {{ $fields = $fields | append
       `~P_DATE`
       `~P_END`
+      `~P_CANCELLED`
       `~P_ARTISTS`
       `~P_LOCATION`
       `~P_PLACE`
