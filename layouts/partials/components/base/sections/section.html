@@ -1,6 +1,6 @@
 {{- $header := eq .id "header" -}}
 {{- $footer := eq .id "footer" -}}
-{{- $modal  := .modal  | default false -}}
+{{- $modal  := .modal | default false -}}
 
 {{- $node := .node -}}
 {{- if $modal -}}
@@ -48,8 +48,12 @@
   {{ partial "components/boxes/box" (merge
     .
     (dict
+      "id"            nil
       "level"         0
-      "first"         (eq .id "header")
+      "first"         $header
+      "header"        $header
+      "footer"        $footer
+      "modal"         $modal
       "node"          (cond $modal .node           .box_node)
       "bg"            (cond $modal .bg            .box_bg)
       "alpha"         (cond $modal .alpha         .box_alpha)

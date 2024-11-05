@@ -46,7 +46,7 @@ underline: true
 align: left # [ left, center, right ]
 align_max: center # [ left, center, right ]
 # icon
-icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+# icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 icon_type: bottom # [ top, side, bottom ]
 icon_size: 0 # [ 0 = auto, > 0.00 ]
 icon_color: '' # [ main, link, alt, light, dark, invert, similar ]
@@ -120,7 +120,8 @@ box:
   # + view
   view: [] # [ all, group, text, icon, image, button, bg, boxi, others, list ]
 boxes:
-- title: Título de Caja 1
+- id: id-ejemplo-caja-1
+  title: Título de Caja 1
   # add same to container
   # + remove `box_` of bg keys
   # boxi-boxes
@@ -322,6 +323,8 @@ boxes:
 - form:
     id: example
     action: ''
+    to: '#gracias'
+    subject: ''
     fill: false
     icon: none # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: ¡Dale!
@@ -435,4 +438,4 @@ boxes:
 
 ###
 
-- map: Molando Ando, Calle País de Nunca Jamás, 42, 30000 Murcia, España
+- map: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'

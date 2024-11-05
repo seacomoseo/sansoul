@@ -36,6 +36,11 @@
 {{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bg_image_src)) "" "bg-figure-video-parent" }}
 */}}
 
+{{ $box_id  := .id }}
+{{ with .id }}
+  {{ $box_id = print `id="` (. | urlize) `"` }}
+{{ end }}
+
 {{ $box_class := partial "functions/attr-delimit" (dict
   "attr"  "class"
   "array" (slice
@@ -92,6 +97,7 @@
 
 {{ $box_attr := partial "functions/attr-delimit" (dict
   "array" (slice
+    $box_id
     $box_class
     $box_style
   )

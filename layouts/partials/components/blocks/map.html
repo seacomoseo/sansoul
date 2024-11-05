@@ -9,7 +9,7 @@
   {{ $color := $.icon_color | default "main" }}
   {{ $zoom  := $.zoom | default 15 }}
   <div
-    id="map-{{ $.section.id }}"
+    id="map-{{ $.id | default $.section.id }}"
     class="map box__block bg-light {{ $color }}"
     data-y="{{ index $geo.coordinates 0 }}"
     data-x="{{ index $geo.coordinates 1 }}"

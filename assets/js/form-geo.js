@@ -1,7 +1,6 @@
 import { formGeo } from '@params'
 import { scrollShot } from './scroll-shot'
-import { loadScript } from './load-script'
-import { loadStyle } from './load-style'
+import { loadLeaflet } from './load-leaflet'
 
 export function initFormGeo () {
   function mapStart (geoDiv) {
@@ -65,14 +64,11 @@ export function initFormGeo () {
     rootMargin: '0%',
     query: '.form__geo-map',
     doStart: geoDiv => {
-      const b = document.body.dataset
-      if (!b.leafletLoaded) {
-        b.leafletLoaded = true
-        loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', null)
-        loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', () => mapStart(geoDiv))
-      } else {
+      loadLeaflet().then(() => {
         mapStart(geoDiv)
-      }
+      }).catch(error => {
+        console.error(error)
+      })
     }
   })
 }

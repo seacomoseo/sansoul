@@ -1,6 +1,5 @@
 import { scrollShot } from './scroll-shot'
-import { loadScript } from './load-script'
-import { loadStyle } from './load-style'
+import { loadLeaflet } from './load-leaflet'
 
 export function initMap () {
   function mapStart (mapDiv) {
@@ -38,17 +37,14 @@ export function initMap () {
   }
 
   scrollShot({
-    rootMargin: '0%',
+    rootMargin: '20%',
     query: '.map',
-    doStart: mapDiv => {
-      const b = document.body.dataset
-      if (!b.leafletLoaded) {
-        b.leafletLoaded = true
-        loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', null)
-        loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', () => mapStart(mapDiv))
-      } else {
+    doStart: (mapDiv) => {
+      loadLeaflet().then(() => {
         mapStart(mapDiv)
-      }
+      }).catch(error => {
+        console.error(error)
+      })
     }
   })
 }

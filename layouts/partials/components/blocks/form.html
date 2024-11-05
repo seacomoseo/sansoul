@@ -1,48 +1,58 @@
-{{- $a := "" | safeHTMLAttr }}
-{{- $show          := cond (not site.Data.styles.performance.show) "" " show" -}}
-{{- $page_emoji    := .Page.Params.emoji -}}
-{{- $section_name  := i18n "header" -}}
-{{- if eq .id "footer" }}
-  {{- $section_name = i18n "footer" -}}
-{{- else if ne .id "header" }}
-  {{ $section_name  = .section.menu_label
-    | default .section.hanchor
-    | default .section.title
-    | default .form.id
-    | default .id
-    | default .section.name
-    | default .section.file
-  }}
-{{- end -}}
-{{- $section_emoji  := "🧩" -}}
-{{- if .section.modal }}
-  {{- $section_emoji = "🪟" -}}
-{{- end -}}
-
-{{- $form_id := "" -}}
+{{- $a       := "" | safeHTMLAttr }}
+{{- $show    := cond (not site.Data.styles.performance.show) "" " show" -}}
+{{- $form_id := .form.id -}}
+{{- $subject := .form.subject -}}
 {{- $num     := 0 -}}
-{{- with .form.id -}}
-  {{- $form_id = . -}}
-{{- else -}}
-  {{- range partial "functions/section-boxes" .section -}}
-    {{- if .inputs -}}
-      {{- $num = add $num 1 -}}
-      {{- if eq .inputs $.inputs -}}
-        {{- break -}}
+
+{{- if not $form_id -}}
+  {{- with .id -}}
+    {{- $form_id = print "form-" . -}}
+  {{- else -}}
+    {{- range partial "functions/section-boxes" .section -}}
+      {{- if .inputs -}}
+        {{- $num = add $num 1 -}}
+        {{- if eq .inputs $.inputs -}}
+          {{- break -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
+    {{- $form_id      = print "form-" (cond (eq .section.id "header") .Page.Slug .section.id) (cond (le $num 1) "" (print "-" $num)) -}}
   {{- end -}}
-  {{- $form_id = print "form-" (cond (eq .id "header") .Page.Slug .id) (cond (le $num 1) "" (print "-" $num)) -}}
 {{- end -}}
 
-{{- $subject := print
-  (i18n "form") " "
-  $page_emoji " "
-  .Page.Title " "
-  $section_emoji " "
-  $section_name
-  (cond (le $num 1) "" (print " 📌 " $num))
--}}
+{{- if not $subject -}}
+  {{- $page_emoji    := .Page.Params.emoji -}}
+  {{- $section_name  := i18n "header" -}}
+  {{- if eq .section.id "footer" }}
+    {{- $section_name = i18n "footer" -}}
+  {{- else if ne .section.id "header" }}
+    {{ $section_name  = .form.id
+      | default .id
+      | default .section.title
+      | default .section.menu_label
+      | default .section.id
+      | default .section.hanchor
+      | default .section.name
+      | default .section.file
+    }}
+  {{- end -}}
+  {{- $section_emoji  := "🧩" -}}
+  {{- if .section.modal }}
+    {{- $section_emoji = "🪟" -}}
+  {{- end -}}
+
+  {{- if and (not $form_id) (not .id) -}}
+    {{- $section_name = print $section_name (cond (le $num 1) "" (print " 📌 " $num)) -}}
+  {{- end -}}
+
+  {{- $subject = print
+    (i18n "form") " "
+    $page_emoji " "
+    .Page.Title " "
+    $section_emoji " "
+    $section_name
+  -}}
+{{- end -}}
 
 {{- $form          := merge site.Data.styles.inputs (.form | default dict) -}}
 {{- $netlify_forms := not $form.action -}}

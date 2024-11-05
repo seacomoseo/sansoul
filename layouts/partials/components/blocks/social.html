@@ -26,11 +26,16 @@
           {{- $icon = "gitlab" -}}
         {{- else if in . "g.page" -}}
           {{- $icon = "google" -}}
+        {{- else if in . "mailto" -}}
+          {{- $icon = "envelope" -}}
         {{- else -}}
           {{- $icon = "share-nodes" -}}
         {{- end -}}
       {{- end -}}
       {{ $label := print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` "$2") | title }}
+      {{- if in . "mailto" -}}
+        {{- $label = print (i18n "follow_us") " Email" -}}
+      {{- end -}}
       {{- partial "components/link" (dict
         "class"   "button--icon"
         "link"    .

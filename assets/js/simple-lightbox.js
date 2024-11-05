@@ -37,7 +37,11 @@ export function initSimpleLightbox () {
     scrollShot({
       rootMargin: '0%',
       query: '[data-lightbox]',
-      doStart: gallery => loadScript('/js/simple-lightbox.min.js', lightbox)
+      doStart: gallery => loadScript('/js/simple-lightbox.min.js')
+        .then(lightbox)
+        .catch(error => {
+          console.error(error)
+        })
     })
   }
 }
