@@ -191,6 +191,7 @@
 
         {{- if eq $type "tel" -}}
           <label class="form__pre">
+            <i class="hide">Prefix</i>
             <select class="form__select">
               {{/*  <option value="">{{ i18n "box_contact_pre" }}{{ if .required }} *{{ end }}</option>  */}}
               {{- range site.Data.utilities.phone_code -}}
@@ -259,6 +260,7 @@
         ></textarea>
       {{- else if $type | eq "select" -}}
         <label>
+          <i class="hide">Select</i>
           <select class="form__select" name="{{ .name }}" {{- $required }}>
             <option value="">{{ .placeholder | default .name }}{{ if .required }} *{{ end }}</option>
             {{- range .options -}}

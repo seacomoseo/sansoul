@@ -81,7 +81,7 @@
   {{- $not_link := $noindex | or $lightbox | or ((eq .label "none") | and (not .link)) -}}
   {{- if $not_link -}}
     {{- "<" | safeHTML -}}
-      {{- cond    $button `button  type="button"` "i" -}}
+      {{- cond    $button `button type="button"` "i" | safeHTML -}}
       {{- with    $class           }} class="{{ . }}"{{ end -}}
       {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}" data-b
       {{- else if $link            }} data-{{ cond (or $external $_blank) `b` `h` }}="{{ $link | safeURL | base64Encode }}"

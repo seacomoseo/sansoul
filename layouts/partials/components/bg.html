@@ -31,12 +31,14 @@
 
 
   {{/*  STYLE  */}}
+  {{ $bg_alpha    := and (.alpha | and (ne .alpha 100)) .bg }}
+  {{ $color_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) }}
   {{ $style := partial "functions/attr-delimit" (dict
     "attr"    "style"
     "delimit" ";"
     "array"   (slice
-      (cond (not .alpha)       "" (print "--bg-alpha:"    .alpha))
-      (cond (not .color_alpha) "" (print "--color-alpha:" .color_alpha))
+      (cond (not $bg_alpha)    "" (print "--bg-alpha:"    .alpha))
+      (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
     )
   ) }}
 
