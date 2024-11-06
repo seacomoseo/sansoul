@@ -245,7 +245,7 @@
           data-icon="{{ $icon }}"
           data-zoom="{{ $zoom }}"
         ></div>
-        <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#star-fill"></use></svg>
+        {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" "star-fill") }}
         <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" {{- $required }}>
         <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y">
       {{- else if $type | eq "textarea" -}}

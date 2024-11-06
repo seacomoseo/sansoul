@@ -76,6 +76,7 @@
     "styles-shadow-alpha"                (.styles.shadow.alpha                    | default 0)
     "styles-performance-show"            (.styles.performance.show                | not | not | string)
     "menu-google_translate"              (site.Params.google_translate            | not | not | string)
+    "timestamp"                          site.Params.timestamp
     -}}
 {{- end -}}
 
@@ -85,9 +86,8 @@
   {{- if hugo.IsProduction -}}
     {{/*  {{- $css = $css | minify | postCSS | resources.PostProcess -}}  */}}
     {{- $css = $css | minify -}}
-  {{- else -}}
-    {{- $css = $css | fingerprint -}}
   {{- end -}}
+  {{- $css = $css | fingerprint -}}
 {{- end -}}
 
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">

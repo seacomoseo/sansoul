@@ -16,5 +16,5 @@
     data-icon="{{ $icon }}"
     data-zoom="{{ $zoom }}"
   ></div>
-  <svg class="leaflet-data-marker__svg hide"><use href="/draws.svg#{{ $icon }}"></use></svg>
+  {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" $icon) }}
 {{- end -}}

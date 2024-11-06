@@ -239,7 +239,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         } else {
           searchItemType = `
             <i class="box__tag">
-              <svg class="box__tag-icon"><use href="/draws.svg#${results[item].item.icon}"></use></svg>
+              <svg class="box__tag-icon"><use href="/draws.{{ site.Params.timestamp }}.svg#${results[item].item.icon}"></use></svg>
               ${results[item].item.type_label}
             </i>`
         }

@@ -3,7 +3,7 @@
 <div class="help-corner">
   <div class="deploy-status">
     {{/*  <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/{{ site.Params.netlify_id }}/deploy-status" width="118" height="20" alt="Netlify Deploy Status" decoding="async" loading="lazy">  */}}
-    <svg><use href="/draws.svg#rotate"></use></svg>
+    {{ partial "components/icon" (dict "icon" "rotate") }}
   </div>
   <div class="info">
     <div class="info__sub-wrap">
@@ -17,19 +17,19 @@
       <p class="info__text">{{ $t.google_spreadsheets_info }}{{ with site.Params.drive_mails }} ({{ $t.google_spreadsheets_info_view }} <strong>{{ . }}</strong>){{ end }}:</p>
       <div class="info__buttons">
         <a class="google-spreadsheets-link" href="{{ site.Params.drive_link }}" target="_blank">
-          <svg><use href="/draws.svg#google-drive"></use></svg>
+          {{ partial "components/icon" (dict "icon" "google-drive") }}
           {{ $t.google_spreadsheets_link }}
         </a>
         <a class="git-link" href="{{ site.Params.git_url }}" target="_blank">
-          <svg><use href="/draws.svg#git-alt"></use></svg>
+          {{ partial "components/icon" (dict "icon" "git-alt") }}
           Git
         </a>
         <a class="netlify-link" href="https://app.netlify.com/sites/{{ site.Params.netlify_name | default `sansoul` }}/deploys" target="_blank" title="Netlify Deploy Status">
-          <svg><use href="/draws.svg#netlify"></use></svg>
+          {{ partial "components/icon" (dict "icon" "netlify") }}
           Netlify
         </a>
         <button class="rebuild" disabled>
-          <svg><use href="/draws.svg#rocket-launch"></use></svg>
+          {{ partial "components/icon" (dict "icon" "rocket-launch") }}
           {{ $t.rebuild }}
         </button>
       </div>

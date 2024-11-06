@@ -285,6 +285,13 @@
   )
 ) }}
 
+{{/*  fingerprint / timestamp  */}}
+{{ $obj = merge $obj (dict
+  "params" (dict
+    "timestamp" (now.Format "20060102150405")
+  )
+) }}
+
 {{/*  file  */}}
 {{ partial "file-by-obj" (dict "obj" $obj "path" "hugo.prebuild.yml") }}
 

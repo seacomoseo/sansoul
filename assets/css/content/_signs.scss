@@ -1,12 +1,12 @@
 
 .content {
-  mark:has(svg > use[href^="/draws.svg#sign-"]) {
+  mark:has(svg > use[href^="/draws.#{$timestamp}.svg#sign-"]) {
     position: relative;
     display: inline-block;
     background-color: transparent;
     color: inherit;
     padding: 0;
-    svg:has(use[href^="/draws.svg#sign-"]) {
+    svg:has(use[href^="/draws.#{$timestamp}.svg#sign-"]) {
       position: absolute;
       top: -0.125em;
       left: -0.25em;

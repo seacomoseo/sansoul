@@ -20,7 +20,7 @@
     {{ $flips = print $flip_x $flip_y }}
   {{ end }}
 
-  {{ $style     = print "--divider" (cond $.next "-next" "") ": url(/draws.svg#div-" .divider "-" (cond $.next "ne" "pr") $flips ")" }}
+  {{ $style     = print "--divider" (cond $.next "-next" "") ": url(/draws." site.Params.timestamp ".svg#div-" .divider "-" (cond $.next "ne" "pr") $flips ")" }}
   {{ if eq .divider "gradient" }}
     {{ if $.next }}
       {{ $style = "--divider-next: linear-gradient(black, transparent)" }}

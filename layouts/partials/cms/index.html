@@ -77,7 +77,7 @@
       {{- $icons = $icons | append . -}}
     {{- end -}}
     {{- range $icons -}}
-      <svg><use href="/draws.svg#{{ . }}"></use></svg>
+      {{- partial "components/icon" (dict "icon" .) -}}
     {{- end -}}
   </div>
 
@@ -101,6 +101,7 @@
       "icons"        $icons
       "local"        $local
       "lang"         $lang_cms
+      "timestamp"    site.Params.timestamp
     )
   }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}

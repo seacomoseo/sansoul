@@ -2,7 +2,8 @@ import {
   googleAnalyticsId,
   formSubmitSending,
   formSubmitOk,
-  formSubmitWrong
+  formSubmitWrong,
+  timestamp
 } from '@params'
 import { formValid } from './form-validate'
 
@@ -61,7 +62,7 @@ export function initFormSend () {
     const forms = document.querySelectorAll('.form')
     const closeIcon =
       '<svg class="close" onclick="this.parentElement.remove()">' +
-        '<use href="/draws.svg#xmark"></use>' +
+        `<use href="/draws.${timestamp}.svg#xmark"></use>` +
       '</svg>'
     let formMessage
 
@@ -103,7 +104,7 @@ export function initFormSend () {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
-            formMessage.innerHTML = `<svg class="spin"><use href="/draws.svg#rotate"></use></svg> ${formSubmitSending}…`
+            formMessage.innerHTML = `<svg class="spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${formSubmitSending}…`
             form.append(formMessage)
 
             const formOptions = { method: 'POST' }
@@ -133,6 +134,7 @@ export function initFormSend () {
                     const files = Array.from(input.files)
                     files.forEach(file => {
                       const filePromise = new Promise(resolve => {
+                        // eslint-disable-next-line
                         const reader = new FileReader()
                         reader.onloadend = () => {
                           const base64File = reader.result // .split(',')[1]
@@ -169,15 +171,15 @@ export function initFormSend () {
                   throw new Error(data.message || 'Unknown error, data: ' + JSON.stringify(data))
                 }
                 formMessage.classList.add('form__submit--success')
-                formMessage.innerHTML = `<svg><use href="/draws.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
+                formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
                 form.reset()
               })
               .catch(error => {
                 formMessage.classList.add('form__submit--error')
                 formMessage.innerHTML =
-                  `<svg><use href="/draws.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
-                  `<svg><use href="/draws.svg#circle-info"></use></svg> ${error.message}`
+                  `<svg><use href="/draws.${timestamp}.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
+                  `<svg><use href="/draws.${timestamp}.svg#circle-info"></use></svg> ${error.message}`
                 changeValuesPrev(form, false)
               })
           }

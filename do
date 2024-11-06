@@ -237,15 +237,15 @@ elif [ $1 = draws-purge ]
 then
 
   echo "${STI} DRAWS PURGE ${STE}"
-  FILE=public/draws.svg
+  FILE=`ls public/draws.*.svg`
   TEMP=temp.svg
   IDSF=ids.txt
   # Collect id's
   find ./public/ -type f -iname "*.*" | \
-    xargs grep -Eoh "draws.svg\#(\w|-|\.)+" | \
+    xargs grep -Eoh "draws\.[0-9]+\.svg\#(\w|-|\.)+" | \
     sort | \
     uniq | \
-    sed -E 's/^draws\.svg#|-(pr|ne)x?y?$//g' | \
+    sed -E 's/^draws\.[0-9]+\.svg#|-(pr|ne)x?y?$//g' | \
     tr "\n" "|" | \
     sed -E 's/\|$//g' > \
     ${IDSF}

@@ -40,6 +40,7 @@
     "googleAnalyticsId" $ga4_id
     "i18nVideo"         $i18n_video
     "lang"              $lang
+    "timestamp"         site.Params.timestamp
     "formGeo"                 (i18n "form_geo")
     "formErrorSingleQuotes"   (i18n "form_error_single_quotes")
     "formErrorRequiredFields" (i18n "form_error_required_fields")
@@ -81,8 +82,7 @@
 
 {{ if hugo.IsProduction }}
   {{ $js = $js | minify }}
-{{ else }}
-  {{ $js = $js | fingerprint }}
 {{ end }}
+{{ $js = $js | fingerprint }}
 
 <script src="{{ $js.RelPermalink }}" defer></script>

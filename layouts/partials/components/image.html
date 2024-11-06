@@ -200,7 +200,8 @@
             {{- $svg | safeHTML -}}
           {{- end -}}
         {{- else -}}
-          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use href="/draws.svg#{{ $file | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
+          {{- $draws := print "/draws." site.Params.timestamp ".svg" -}}
+          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use href="{{ $draws }}#{{ $file | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
         {{- end -}}
       {{- end -}}
     {{- else -}}

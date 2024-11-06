@@ -35,7 +35,7 @@
 
 {{ $svg := not $emoji | or $icons.emojis }}
 {{ if $svg }}
-  {{ $svg = print `<svg` $attr `><use href="/draws.svg#` $icon `"></use></svg>` | safeHTML }}
+  {{ $svg = print `<svg` $attr `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}
 {{ else }}
   {{ $svg = print `<b` $attr `>` .icon `</b>` | safeHTML }}
 {{ end }}
