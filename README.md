@@ -26,6 +26,24 @@
       - `tags`
       - `reading_time`
       - `hide_categories`
+- `types/all.yml`
+  - columns: 3
+    image: gradient
+    ratio: 16x9
+    inset: true
+    align: left
+    color: white
+    hide_categories: true
+    reading_time: true
+    button: hide
+  - columns: 3
+    color: white
+    decline: true
+    inset: true
+    ratio: 16x9
+    icon: hide
+    align: left
+    button: hide
 - `types/*.yml|content.${lang}/single/*.md`
   - `file:` en cada modal
   - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
