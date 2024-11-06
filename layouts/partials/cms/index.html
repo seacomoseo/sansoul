@@ -44,7 +44,21 @@
   <link href="{{ $resource.RelPermalink }}" type="text/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
-  {{ $vars   := dict "items" (delimit (partial "cms/icons" .) "|") }}
+  {{ $vars   := dict
+    "items"      (delimit (partial "cms/icons" .) "|")
+  }}
+  {{/*
+  "white"      (site.Data.styles.colors.base.white | default "#fff")
+  "light"      (site.Data.styles.colors.base.light | default "#eee")
+  "grey"       (site.Data.styles.colors.base.grey  | default "#282525")
+  "dark"       (site.Data.styles.colors.base.dark  | default "#000")
+  "black"      (site.Data.styles.colors.base.black | default "#767676")
+  "link"       (site.Data.styles.colors.link.color | default site.Data.styles.colors.main.color | default "#577399")
+  "link-light" (site.Data.styles.colors.link.light | default "")
+  "link-dark"  (site.Data.styles.colors.link.dark  | default "")
+  "link-contrast-text" (or (in (slice "all" "text") site.Data.styles.colors.link.contrast) (not site.Data.styles.colors.link.contrast) | not | not | string)
+  "link-contrast-bg"   (or (in (slice "all" "bg")   site.Data.styles.colors.link.contrast) (not site.Data.styles.colors.link.contrast) | not | not | string)
+  */}}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction))
     | fingerprint

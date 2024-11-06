@@ -14,7 +14,12 @@
   {{ $description  := or $.Summary $.Description .summary .description | plainify }}
 
   {{/*  URL  */}}
-  {{ $url    := .url | default $.Page.Permalink }}
+  {{ $url  := .url | default $.Page.Permalink }}
+  {{ $id   := print $url "#schema-organization" }}
+  {{ if and .department (not $url) }}
+    {{ $url = site.Home.Permalink }}
+    {{ $id  = print $url "#schema-department" }}
+  {{ end }}
 
   {{/*  Legal and NIF  */}}
   {{ $legal    := .legal }}
@@ -109,7 +114,7 @@
   {{/*  Departments  */}}
   {{ $departments := slice }}
   {{ range .departments }}
-    {{ $departments = $departments | append (partial "components/base/schema/organization" .) }}
+    {{ $departments = $departments | append (partial "components/base/schema/organization" (merge . (dict "department" true))) }}
   {{ end }}
 
   {{/*  Offer Catalog  */}}
@@ -145,7 +150,7 @@
   {{/*  Schema  */}}
   {{ $schema = dict
     "@type"                     $types
-    "@id"                       (print $url "#schema-organization")
+    "@id"                       $id
     "name"                      $name
     "alternateName"             $names_more
     "legalName"                 $legal
