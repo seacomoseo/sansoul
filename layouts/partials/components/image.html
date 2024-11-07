@@ -226,12 +226,19 @@
 
             {{/*  CONTAIN  */}}
             {{- if not .contain -}}
-              {{- with .ratio -}}
+              {{- $ratio := .ratio -}}
+              {{- if not $ratio -}}
+                {{- if .circle -}}
+                  {{- $ratio = "1/1" -}}
+                {{- end -}}
+              {{- else if not (in $ratio "/") -}}
+                {{- $ratio = "1/1" -}}
+              {{- end -}}
+              {{- with $ratio -}}
                 {{- if ne . "auto" -}}
-                  {{- $ratio        := cond (eq "circle" .) "1x1" . -}}
-                  {{- $ratio         = split $ratio "x" -}}
-                  {{- $width_aim    := index $ratio 0 | float -}}
-                  {{- $height_aim   := index $ratio 1 | float -}}
+                  {{- $ratio_split  := split $ratio_split "/" -}}
+                  {{- $width_aim    := index $ratio_split 0 | float -}}
+                  {{- $height_aim   := index $ratio_split 1 | float -}}
                   {{- $ratio_aim    := div $height_aim $width_aim -}}
                   {{- $width_image  := $image.Width   | float -}}
                   {{- $height_image := $image.Height  | float -}}

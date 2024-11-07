@@ -19,6 +19,9 @@
       - `map`
     - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
     - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
+    - `hs`
+    - `ratio`
+    - `rate`
   - `single/*.md`
     - `menu.hide_anchors`
 - `types/*.yml`
@@ -40,7 +43,7 @@
     color: white
     decline: true
     inset: true
-    ratio: 16x9
+    ratio: 16/9
     icon: hide
     align: left
     button: hide

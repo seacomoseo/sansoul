@@ -284,10 +284,11 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               class="
                 image
                 image--inset
-                {{ print "image--" ($list.ratio | default "16x9") }}
+                image--ratio
                 {{ cond (not $list.contain) "" "image--contain" }}
                 {{ cond (ne $list.image "gradient") "" "image--gradient" }}
               "
+              style="--image-ratio: {{ $list.ratio | default "16/9" }}"
             >
               ${searchItemImage}
             </div>

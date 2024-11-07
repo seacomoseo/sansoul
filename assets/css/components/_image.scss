@@ -64,7 +64,9 @@ svg.image__inner {
 
 // RATIO
 
-%image--ratio {
+.image--circle,
+.image--ratio {
+  --image-ratio: 1;
   width: 100%;
   .image__inner {
     width: 100%;
@@ -77,18 +79,6 @@ svg.image__inner {
     }
   }
 }
-.image--circle,
-.image--1x1 {  --image-ratio: 1;    @extend %image--ratio; }
-.image--3x2 {  --image-ratio: 3/2;  @extend %image--ratio; }
-.image--2x3 {  --image-ratio: 2/3;  @extend %image--ratio; }
-.image--16x9 { --image-ratio: 16/9; @extend %image--ratio; }
-.image--9x16 { --image-ratio: 9/16; @extend %image--ratio; }
-.image--18x6 { --image-ratio: 18/6; @extend %image--ratio; }
-.image--6x18 { --image-ratio: 6/18; @extend %image--ratio; }
-.image--2x1 {  --image-ratio: 2/1;  @extend %image--ratio; }
-.image--1x2 {  --image-ratio: 1/2;  @extend %image--ratio; }
-.image--4x3 {  --image-ratio: 4/3;  @extend %image--ratio; }
-.image--3x4 {  --image-ratio: 3/4;  @extend %image--ratio; }
 
 
 // BORDER

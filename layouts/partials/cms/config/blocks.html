@@ -96,7 +96,6 @@
 
 
   (dict "&BOX_GALLERY_TYPE"  (dict "name" `type` "widget" `select` "required" false "label" $t.box_gallery_type "options" `~OPTIONS_GALLERY_TYPES`))
-  (dict "&BOX_GALLERY_RATIO" (dict "<<" (slice (dict "options" `~OPTIONS_RATE`) `~BOX_IMAGE_RATIO`)))
   (dict "&BOX_GALLERY" (dict
     "name"      `gallery`
     "widget"    `object`
@@ -108,7 +107,7 @@
       `~BOX_GALLERY_TYPE`
       `~BOX_BG_COLOR`
       `~BOX_GAP`
-      `~BOX_GALLERY_RATIO`
+      `~BOX_IMAGE_RATIO`
       `~BOX_IMAGE_CONTAIN`
       `~BOX_IMAGE_GRAYSCALE`
       `~BOX_BUTTON_LINK`
@@ -331,7 +330,7 @@
     "summary"        "{{fields.name}}"
     "collapsed"      true
     "allow_add"      true
-    "types"      (slice
+    "types"          (slice
       (dict "name" `text`     "widget" `object` "required" false "label" $t.box_form_inputs_text     "hint" $t.box_form_inputs_text_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))
       (dict "name" `email`    "widget" `object` "required" false "label" $t.box_form_inputs_email    "hint" $t.box_form_inputs_email_hint    "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))
       (dict "name" `tel`      "widget" `object` "required" false "label" $t.box_form_inputs_tel      "hint" $t.box_form_inputs_tel_hint      "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL` `~BOX_FORM_MIN` `~BOX_FORM_MAX` `~BOX_FORM_REGEX`))

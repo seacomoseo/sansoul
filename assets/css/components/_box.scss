@@ -106,20 +106,10 @@
 }
 
 // Ratio
-%box--ratio {
-  min-height: calc(var(--box-width) * var(--box-ratio));
+.box--ratio {
+  --box-ratio: 16/9;
+  min-height: calc(var(--box-width) / (var(--box-ratio)));
 }
-.box--1x1 {  --box-ratio: 1;    @extend %box--ratio; }
-.box--3x2 {  --box-ratio: 2/3;  @extend %box--ratio; }
-.box--2x3 {  --box-ratio: 3/2;  @extend %box--ratio; }
-.box--16x9 { --box-ratio: 9/16; @extend %box--ratio; }
-.box--9x16 { --box-ratio: 16/9; @extend %box--ratio; }
-.box--18x6 { --box-ratio: 6/18; @extend %box--ratio; }
-.box--6x18 { --box-ratio: 18/6; @extend %box--ratio; }
-.box--2x1 {  --box-ratio: 1/2;  @extend %box--ratio; }
-.box--1x2 {  --box-ratio: 2/1;  @extend %box--ratio; }
-.box--4x3 {  --box-ratio: 3/4;  @extend %box--ratio; }
-.box--3x4 {  --box-ratio: 4/3;  @extend %box--ratio; }
 
 // Direction
 .boxes--top,
@@ -412,7 +402,7 @@
   content: '';
   display: block;
   --bg-card-width: calc(100cqw + var(--box-padding) * 2);
-  --bg-card-height: calc(var(--bg-card-width) * var(--box-ratio) - 100%);
+  --bg-card-height: calc(var(--bg-card-width) / (var(--box-ratio)) - 100%);
   width: var(--bg-card-width);
   height: var(--bg-card-height);
   position: absolute;

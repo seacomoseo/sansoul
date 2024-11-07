@@ -4,6 +4,7 @@
 {{- $span_xl      := 1.0 -}}
 {{- $figure_class := "content__figure" -}}
 {{- $image_class  := "image" -}}
+{{- $image_style  := "" -}}
 
 {{- if in .Text "float" -}}
 
@@ -23,10 +24,14 @@
     {{- end -}}
   {{- end -}}
 
-  {{/*  RATIO IN TEXT, EXAMPLE: ![3x2](example.jpg)  */}}
-  {{- if in site.Data.options.ratio .Text -}}
+  {{/*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */}}
+  {{- if .Text | findRE `^[\d/]*$` -}}
     {{- $ratio       = $.Text -}}
-    {{- $image_class = print $image_class " image--" $ratio -}}
+    {{- $image_class = print $image_class " image--ratio" -}}
+    {{- $image_style = print ` style="--image-ratio:` $ratio `"` -}}
+    {{- $alt         = false -}}
+  {{- else if eq .Text "circle" -}}
+    {{- $image_class = print $image_class " image--circle" -}}
     {{- $alt         = false -}}
   {{- end -}}
 
@@ -53,7 +58,7 @@
   {{- end -}}
 >
 
-  <div class="{{ $image_class }}">
+  <div class="{{ $image_class }}" {{- $image_style | safeHTMLAttr }}>
     {{- partial "components/image"
       (dict
         "class" "image__inner"

@@ -53,7 +53,8 @@ icon_color: '' # [ main, link, alt, light, dark, invert, similar ]
 # image
 image: base/icon.png
 hover: fondo.jpg
-ratio: circle # [ normal, 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1, circle ]
+ratio: 1/1 # [ int/int ]
+circle: true
 contain: false
 border: main # [ main, link, alt, light, dark, invert, similar ]
 inset: true
@@ -76,7 +77,7 @@ box_bg: base/icon.png
 box_alpha: .8 # [ 0.00 - 1.00 ]
 box_parallax: '' # [ none, soft, box ]
 # boxi
-rate: 16x9 # [ 3x2, 2x3, 16x9, 9x16, 18x6, 6x18, 2x1, 1x2, 4x3, 3x4, 1x1 ]
+rate: 16/9 # [ int/int ]
 gap_y: null # [ >= 0.00 ]
 padding: null # [ >= 0.00 ]
 hide_shadow: true
@@ -92,8 +93,25 @@ params: [] # [ { box, page, value } ]
 #   value: null # string like obj
 tag: row # [ hide, column, row, space ]
 tags:
-- icon: star
-  label: Ejemplaco
+- type: type
+- type: date
+- type: reading-time
+- type: words
+- type: address
+- type: taxonomy
+  taxonomy: all
+- type: param
+  param: job
+  icon: briefcase
+- type: param
+  param: autor
+  icon: user-group
+- type: param
+  param: place
+  icon: location-dot
+- type: custom
+  icon: star
+  label: ¡Holi!
 # view
 view: [] # [all, text, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, collapsibles, gallery, reviews, contact, form, map, gss, boxes ]
 

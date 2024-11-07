@@ -43,16 +43,17 @@
   (dict "&BOX_MENU_FONT_ALT" (dict "name" `menu_font_alt` "widget" `boolean` "required" false "label" $t.box_menu_font_alt))
 
   (dict "&BOX_ICON_ID"    (dict "name" `icon`       "widget" `string` "required" false "label" $t.box_icon_id    "pattern" (slice "^[a-z-]+$" $t.pattern) "hint" $t.box_icon_id_hint))
-  (dict "&BOX_ICON_TYPE"  (dict "name" `icon_type`  "widget" `select` "required" false "label" $t.box_icon_type  "options" `~OPTIONS_ICON_TYPE`                 "hint" $t.box_icon_type_hint))
+  (dict "&BOX_ICON_TYPE"  (dict "name" `icon_type`  "widget" `select` "required" false "label" $t.box_icon_type  "options" `~OPTIONS_ICON_TYPE`           "hint" $t.box_icon_type_hint))
   (dict "&BOX_ICON_SIZE"  (dict "name" `icon_size`  "widget" `number` "required" false "label" $t.box_icon_size  "value_type" `int` "step" 1 "min" 1 "max" 6))
   (dict "&BOX_ICON_COLOR" (dict "name" `icon_color` "widget" `select` "required" false "label" $t.box_icon_color "options" `~OPTIONS_COLOR_BASE_W`))
 
   (dict "&BOX_IMAGE_SRC"       (dict "name" `image`     "widget" `image`   "required" false "label" $t.box_image_src       "choose_url" true "max_file_size" 512000000 "hint" $t.box_image_src_hint))
   (dict "&BOX_IMAGE_HOVER"     (dict "name" `hover`     "widget" `image`   "required" false "label" $t.box_image_hover     "choose_url" true "max_file_size" 512000000 "hint" $t.box_image_hover_hint))
-  (dict "&BOX_IMAGE_RATIO"     (dict "name" `ratio`     "widget" `select`  "required" false "label" $t.box_image_ratio     "options" `~OPTIONS_RATIO`                  "hint" $t.box_image_ratio_hint))
+  (dict "&BOX_IMAGE_RATIO"     (dict "name" `ratio`     "widget" `string`  "required" false "label" $t.box_image_ratio                                                 "hint" $t.box_image_ratio_hint     "pattern" (slice "^[\\d/]*$" $t.box_image_ratio_pattern)))
   (dict "&BOX_IMAGE_CONTAIN"   (dict "name" `contain`   "widget" `boolean` "required" false "label" $t.box_image_contain                                               "hint" $t.box_image_contain_hint))
   (dict "&BOX_IMAGE_BORDER"    (dict "name" `border`    "widget" `select`  "required" false "label" $t.box_image_border    "options" `~OPTIONS_COLOR_BASE_W`))
   (dict "&BOX_IMAGE_INSET"     (dict "name" `inset`     "widget" `boolean` "required" false "label" $t.box_image_inset                                                 "hint" $t.box_image_inset_hint))
+  (dict "&BOX_IMAGE_CIRCLE"    (dict "name" `circle`    "widget" `boolean` "required" false "label" $t.box_image_circle))
   (dict "&BOX_IMAGE_GRAYSCALE" (dict "name" `grayscale` "widget" `boolean` "required" false "label" $t.box_image_grayscale                                             "hint" $t.box_image_grayscale_hint))
   (dict "&BOX_IMAGE_DECLIVE"   (dict "name" `declive`   "widget" `boolean` "required" false "label" $t.box_image_declive                                               "hint" $t.box_image_declive_hint))
   (dict "&BOX_IMAGE_NO_VIDEO"  (dict "<<" (slice (dict "hint" "") `~BOX_IMAGE_SRC`)))
@@ -102,7 +103,7 @@
   (dict "&BOX_SPAN_MIN"     (dict "name" `span_min`     "widget" `number`  "required" false "label" $t.box_span_min      "hint" $t.box_span_min_hint "value_type" `float` "step" 0.01 "min" 0   "max" 12))
   (dict "&BOX_GROW"         (dict "name" `grow`         "widget" `boolean` "required" false "label" $t.box_grow          "hint" $t.box_grow_hint))
   (dict "&BOX_ALIGN_Y_SELF" (dict "name" `align_y`      "widget" `select`  "required" false "label" $t.box_align_y_self                              "options" `~OPTIONS_ALIGN_Y`))
-  (dict "&BOX_RATE"         (dict "name" `rate`         "widget" `select`  "required" false "label" $t.box_rate                                      "options" `~OPTIONS_RATE`))
+  (dict "&BOX_RATE"         (dict "name" `rate`         "widget" `string`  "required" false "label" $t.box_rate                                      "pattern" (slice "^[\\d/]*$" $t.box_image_ratio_pattern)))
   (dict "&BOX_GAP_Y"        (dict "name" `gap_y`        "widget" `number`  "required" false "label" $t.box_gap_y                                     "value_type" `float` "step" 0.01 "min" 0   "max" 20))
   (dict "&BOX_PADDING"      (dict "name" `padding`      "widget" `number`  "required" false "label" $t.box_padding                                   "value_type" `float` "step" 0.01 "min" 0   "max" 10))
   (dict "&BOX_PADDING_MIN"  (dict "name" `padding_min`  "widget" `number`  "required" false "label" $t.box_padding_min                               "value_type" `float` "step" 0.01 "min" 0   "max" 10))
@@ -120,7 +121,7 @@
     "label"          $t.box_params
     "label_singular" $t.box_params_singular
     "hint"           $t.box_params_hint
-    "collapsed"      false
+    "collapsed"      true
     "summary"        "{{fields.image}}"
     "allow_add"      true
     "fields"         (slice
@@ -129,19 +130,29 @@
       (dict "name" `value` "widget" `string` "required" false "label" $t.box_params_value)
     )
   ))
-  (dict "&BOX_TAG"          (dict "name" `tag`          "widget" `select`  "required" false "label" $t.box_tag           "hint" $t.box_tag_hint      "options" `~OPTIONS_TAGS`))
-  (dict "&BOX_TAGS"         (dict
+  (dict "&BOX_TAG"           (dict "name" `tag`      "widget" `select` "required" false "label" $t.box_tag               "options" `~OPTIONS_TAGS`))
+  (dict "&BOX_TAGS_LABEL"    (dict "name" `label`    "widget" `string` "required" false "label" $t.box_contact_label))
+  (dict "&BOX_TAGS_TAXONOMY" (dict "name" `taxonomy` "widget" `select` "required" false "label" $t.box_tags_taxonomy_key "options" `~OPTIONS_TYPES`))
+  (dict "&BOX_TAGS_PARAM"    (dict "name" `param`    "widget" `string` "required" false "label" $t.box_tags_param_key))
+  (dict "&BOX_TAGS"          (dict
     "name"           `tags`
     "widget"         `list`
     "required"       false
     "label"          $t.box_tags
     "label_singular" $t.box_tags_singular
-    "collapsed"      false
-    "summary"        "{{fields.image}}"
+    "hint"           $t.box_tags_hint
+    "collapsed"      true
+    "summary"        "{{fields.type}}"
     "allow_add"      true
-    "fields"         (slice
-      `~BOX_ICON_ID`
-      (dict "name" `label` "widget" `string` "required" false "label" $t.box_contact_label)
+    "types"          (slice
+      (dict "name" `type`         "widget" `object` "required" false "label" $t.box_tags_type                                       "fields" (slice `~BOX_ICON_ID`))
+      (dict "name" `date`         "widget" `object` "required" false "label" $t.box_tags_date                                       "fields" (slice `~BOX_ICON_ID`))
+      (dict "name" `reading-time` "widget" `object` "required" false "label" $t.box_tags_reading_time                               "fields" (slice `~BOX_ICON_ID`))
+      (dict "name" `words`        "widget" `object` "required" false "label" $t.box_tags_words                                      "fields" (slice `~BOX_ICON_ID`))
+      (dict "name" `address`      "widget" `object` "required" false "label" $t.box_tags_address                                    "fields" (slice `~BOX_ICON_ID`))
+      (dict "name" `taxonomy`     "widget" `object` "required" false "label" $t.box_tags_taxonomy                                   "fields" (slice `~BOX_ICON_ID` `~BOX_TAGS_TAXONOMY`))
+      (dict "name" `param`        "widget" `object` "required" false "label" $t.box_tags_param        "hint" $t.box_tags_param_hint "fields" (slice `~BOX_ICON_ID` `~BOX_TAGS_PARAM`))
+      (dict "name" `custom`       "widget" `object` "required" false "label" $t.box_tags_custom                                     "fields" (slice `~BOX_ICON_ID` `~BOX_TAGS_LABEL`))
     )
   ))
 

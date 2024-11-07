@@ -25,11 +25,14 @@
   (cond (not .bg_image_src) "" " bg-image")
 }}
 
-{{ $box_rate := cond
-  (not .card)
-  (cond (not $no_content) "" "box--16x9")
-  "box--2x3"
-}}
+{{ $box_rate  := .rate }}
+{{ if not $box_rate }}
+  {{ $box_rate = cond
+    (not .card)
+    (cond (not $no_content) "" "16/9")
+    "3/4"
+  }}
+{{ end }}
 
 {{/*
 {{ $box_bg_image_fix       := cond (not (.bg_image_src | and .parallax))               "" "bg--fix" }}
@@ -61,7 +64,7 @@
     (cond (ne .parallax "soft")                      "" "parallax--bg")
     (cond (and (not .span) (not .span_min))          "" "box--span")
     (cond (not .grow)                                "" "box--grow")
-    (cond (and (not .rate) (ne .rate "auto"))        $box_rate (print "box--" .rate))
+    (cond (not $box_rate)                            "" "box--ratio")
     (cond (not .hide_radius)                         "" "box--hide-radius")
     (cond (not .hide_shadow)                         "" "box--hide-shadow")
     (cond (not .card)                                "" "box--card")
@@ -89,6 +92,7 @@
     (cond (eq .padding_min nil)                 "" (print "--box-padding-min:" .padding_min))
     (cond (or (not .span) (eq .span 1))         "" (print "--box-span-max:" .span))
     (cond (or (not .span_min) (eq .span_min 1)) "" (print "--box-span-min:" .span_min))
+    (cond (not $box_rate)                       "" (print "--box-ratio:" $box_rate))
   )
 ) }}
 

@@ -20,28 +20,42 @@
   {{ end }}
 
   {{/*  IMAGE CLASS  */}}
-  {{- $hover     := cond (not .hover)     "" "image--hover"           -}}
-  {{- $contain   := cond (not .contain)   "" "image--contain"         -}}
-  {{- $inset     := cond (not .inset)     "" "image--inset"           -}}
-  {{- $grayscale := cond (not .grayscale) "" "image--grayscale"       -}}
-  {{- $ratio     := cond (not .ratio)     "" (print "image--" .ratio) -}}
+  {{- $hover     := cond (not .hover)     "" "image--hover"     -}}
+  {{- $contain   := cond (not .contain)   "" "image--contain"   -}}
+  {{- $inset     := cond (not .inset)     "" "image--inset"     -}}
+  {{- $circle    := cond (not .circle)    "" "image--circle"    -}}
+  {{- $grayscale := cond (not .grayscale) "" "image--grayscale" -}}
+  {{- $ratio     := cond (not .ratio)     "" "image--ratio"     -}}
   {{- $border    := cond (not .border)    "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
   {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
 
   {{- $class := partial "functions/attr-delimit" (dict
+    "attr"  "class"
     "array" (slice
       "image"
       $ratio
       $contain
       $border
       $inset
+      $circle
       $hover
       $icon_top
       $grayscale
     )
   ) -}}
 
-  <div class="{{ $class }}">
+  {{/*  IMAGE STYLE  */}}
+  {{ $style := cond (not .ratio) "" (print `style="--image-ratio:` .ratio `"`) }}
+
+  {{/*  IMAGE ATTR JOIN  */}}
+  {{ $attr  := partial "functions/attr-delimit" (dict
+    "array" (slice
+      $class
+      $style
+    )
+  ) }}
+
+  <div {{ $attr | safeHTMLAttr }}>
 
     {{/*  GRADIENT  */}}
     {{- if .declive -}}
