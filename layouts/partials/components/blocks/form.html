@@ -235,19 +235,19 @@
         {{- end -}}
 
       {{- else if $type | eq "geo" -}}
-        {{ $icon  := .icon | default "circle-dot" }}
-        {{ $color := .icon_color | default "main" }}
-        {{ $zoom  := $.zoom | default 5 }}
+        {{ $icon := .icon  | default "circle-dot" }}
         <label class="form__label form__label--geo">{{ .placeholder | default .name }}</label>
         <div
           id="geo-{{ $form_id }}"
-          class="form__geo-map bg-light {{ $color }}"
+          class="form__geo-map bg-light"
+          data-area="{{ .area }}"
+          data-color="{{ .color | default `main` }}"
           data-icon="{{ $icon }}"
-          data-zoom="{{ $zoom }}"
+          data-zoom="{{ .zoom }}"
+          data-view="{{ .view | default `{"type":"Point","coordinates":[40.46367, -3.74922]}` }}"
         ></div>
-        {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" "star-fill") }}
-        <input class="form__geo form__geo--x" type="hidden" name="{{ .name }} X" {{- $required }}>
-        <input class="form__geo form__geo--y" type="hidden" name="{{ .name }} Y">
+        {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" $icon) }}
+        <input class="form__geo form__geo--json" type="hidden" name="{{ .name }}" {{- $required }}>
       {{- else if $type | eq "textarea" -}}
         <textarea
           {{- $a }} class="form__textarea"

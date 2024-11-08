@@ -224,8 +224,26 @@
   ))
 
 
-  (dict "&BOX_MAP"  (dict "name" `map`  "widget" `map`    "required" false "label" $t.box_map  "hint" $t.box_map_hint "number" 7))
-  (dict "&BOX_ZOOM" (dict "name" `zoom` "widget" `number` "required" false "label" $t.box_zoom "hint" `1 - 20`        "value_type" `int` "step" 1 "min" 1 "max" 20))
+  (dict "&BOX_ZOOM"        (dict "name" `zoom`   "widget" `number` "required" false "label" $t.box_zoom        "hint" `1 - 20` "value_type" `int` "step" 1 "min" 1 "max" 20))
+  (dict "&BOX_MAP_POINT"   (dict "name" `geo`    "widget" `map`    "required" false "label" $t.box_map_point   "decimals" 7 "type" `Point`))
+  (dict "&BOX_MAP_POLYGON" (dict "name" `geo`    "widget" `map`    "required" false "label" $t.box_map_polygon "decimals" 7 "type" `Polygon`))
+  (dict "&BOX_MAP_COLOR"   (dict "name" `color`  "widget" `select` "required" false "label" $t.box_map_color   "options" `~OPTIONS_COLOR_BASE_W`))
+  (dict "&BOX_MAP_RADIUS"  (dict "name" `radius` "widget" `number` "required" false "label" $t.box_map_radius  "hint" $t.box_map_radius_hint  "value_type" `int` "step" 1 "min" 0 "max" 20))
+  (dict "&BOX_MAP" (dict
+    "name"           `map`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.box_map
+    "hint"           $t.box_map_hint
+    "summary"        "{{fields.label}}{{fields.days}} {{fields.hours}}"
+    "collapsed"      true
+    "allow_add"      true
+    "types"          (slice
+      (dict "name" `point`   "widget" `object` "required" false "label" $t.box_map_point   "fields" (slice `~BOX_MAP_POINT`   `~BOX_MAP_COLOR` `~BOX_ICON_ID`))
+      (dict "name" `circle`  "widget" `object` "required" false "label" $t.box_map_circle  "fields" (slice `~BOX_MAP_POINT`   `~BOX_MAP_COLOR` `~BOX_MAP_RADIUS`))
+      (dict "name" `polygon` "widget" `object` "required" false "label" $t.box_map_polygon "fields" (slice `~BOX_MAP_POLYGON` `~BOX_MAP_COLOR`))
+    )
+  ))
 
 
   (dict "&BOX_CONTACT_DAYS"            (dict "name" `days`   "widget" `string`  "required" false "label" $t.box_contact_days))
@@ -236,7 +254,7 @@
   (dict "&BOX_CONTACT_ADDRESS_LABEL"   (dict "name" `label`  "widget" `string`  "required" false "label" $t.box_contact_address))
   (dict "&BOX_CONTACT_ADDRESS_ANCHOR"  (dict "name" `anchor` "widget" `string`  "required" false "label" $t.box_contact_anchor      "hint" $t.box_contact_anchor_hint))
   (dict "&BOX_CONTACT_HIDDEN"          (dict "name" `hidden` "widget" `hidden`  "required" false "label" `hidden`))
-  (dict "&BOX_CONTACT_MAP"             (dict "<<" (slice (dict "name" `geo` "hint" $t.box_contact_map_hint) `~BOX_MAP`)))
+  (dict "&BOX_CONTACT_MAP"             (dict "<<" (slice (dict "hint" $t.box_contact_map_hint) `~BOX_MAP_POINT`)))
   (dict "&BOX_CONTACT" (dict
     "name"           `contact`
     "widget"         `list`
@@ -290,6 +308,7 @@
   (dict "&BOX_FORM_MAX"         (dict "name" `max`         "widget" `number`  "required" false "label" $t.box_form_inputs_max         "value_type" `float`))
   (dict "&BOX_FORM_X"           (dict "name" `x`           "widget" `boolean` "required" false "label" $t.box_form_inputs_x))
   (dict "&BOX_FORM_ACCEPT"      (dict "name" `accept`      "widget" `string`  "required" false "label" $t.box_form_inputs_accept      "hint" $t.box_form_inputs_accept_hint))
+  (dict "&BOX_FORM_GEO_VIEW"    (dict "<<" (slice (dict "label" $t.box_form_geo_view "name" `view`) `~BOX_MAP_POINT`)))
   (dict "&BOX_FORM_OPTIONS"     (dict
     "name"           `options`
     "widget"         `list`
@@ -338,7 +357,7 @@
       (dict "name" `date`     "widget" `object` "required" false "label" $t.box_form_inputs_date     "hint" $t.box_form_inputs_date_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL`))
       (dict "name" `time`     "widget" `object` "required" false "label" $t.box_form_inputs_time     "hint" $t.box_form_inputs_time_hint     "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL`))
       (dict "name" `textarea` "widget" `object` "required" false "label" $t.box_form_inputs_textarea "hint" $t.box_form_inputs_textarea_hint "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_FORM_MIN` `~BOX_FORM_MAX`))
-      (dict "name" `geo`      "widget" `object` "required" false "label" $t.box_form_inputs_geo      "hint" $t.box_form_inputs_geo_hint      "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_ZOOM`     `~BOX_ICON_ID` `~BOX_ICON_COLOR`))
+      (dict "name" `geo`      "widget" `object` "required" false "label" $t.box_form_inputs_geo      "hint" $t.box_form_inputs_geo_hint      "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_ZOOM`     `~BOX_FORM_GEO_VIEW` `~BOX_ICON_ID` `~BOX_MAP_COLOR`))
       (dict "name" `select`   "widget" `object` "required" false "label" $t.box_form_inputs_select   "hint" $t.box_form_inputs_select_hint   "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_CONTACT_FULL` `~BOX_FORM_OPTIONS`))
       (dict "name" `radio`    "widget" `object` "required" false "label" $t.box_form_inputs_radio    "hint" $t.box_form_inputs_radio_hint    "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_FORM_X` `~BOX_FORM_OPTIONS`))
       (dict "name" `checkbox` "widget" `object` "required" false "label" $t.box_form_inputs_checkbox "hint" $t.box_form_inputs_checkbox_hint "fields" (slice `~BOX_FORM_NAME` `~BOX_FORM_PLACEHOLDER` `~BOX_FORM_HINT` `~BOX_FORM_REQUIRED` `~BOX_FORM_REQUIRED_IF` `~BOX_FORM_SHOW_IF` `~BOX_FORM_X` `~BOX_FORM_OPTIONS`))

@@ -1,45 +1,77 @@
-import { formGeo, timestamp } from '@params'
+import { formGeo } from '@params'
 import { scrollShot } from './scroll-shot'
-import { loadLeaflet } from './load-leaflet'
+import { loadLeaflet, loadLeafletDraw, myIcon, fill, tile } from './leaflet'
 
-export function initFormGeo () {
-  function mapStart (geoDiv) {
-    const zoom = geoDiv.dataset.zoom || 5
-    const isMobile = window.innerWidth <= 768 // Mobile size
-    const initialZoom = isMobile ? zoom - 1 : zoom // Soom adjust by device
-    const map = window.L.map(geoDiv, {
-      setView: true,
-      trackResize: true
-    }).setView([40.46367, -3.74922], initialZoom)
+function updateInputGeo (json, layer, type) {
+  if (!type) type = JSON.parse(json.value).type
+  const geoJson = {
+    type: type === 'circle' ? 'Circle' : 'Polygon',
+    coordinates: layer.toGeoJSON().geometry.coordinates,
+    radius: layer._mRadius || undefined
+  }
+  json.value = JSON.stringify(geoJson)
+}
 
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map)
+function mapStart (geoDiv) {
+  const json = geoDiv.parentElement.querySelector('.form__geo--json')
+  const zoom = geoDiv.dataset.zoom || 5
+  const isMobile = window.innerWidth <= 768 // Mobile size
+  const initialZoom = isMobile ? zoom - 1 : zoom // Soom adjust by device
+  const initialView = JSON.parse(geoDiv.dataset.view).coordinates
+  const map = window.L.map(geoDiv, {
+    setView: true,
+    trackResize: true
+  }).setView(initialView, initialZoom)
 
-    const myIcon = window.L.divIcon({
-      className: 'leaflet-data-marker',
-      html: `<svg class="leaflet-data-marker__svg" viewBox="0 -5 149 188"><path fill="var(--base)" stroke="var(--base-mix)" stroke-width="12" paint-order="stroke" stroke-miterlimit="10" d="M126 23l-6-6A69 69 0 0 0 74 1a69 69 0 0 0-51 22A70 70 0 0 0 1 74c0 21 7 38 22 52l43 47c6 6 11 6 16 0l48-51c12-13 18-29 18-48 0-20-8-37-22-51z"/><use fill="var(--base-mix)" href="/draws.${timestamp}.svg#${geoDiv.dataset.icon}" x="36" y="16" transform="scale(.67)"></use></svg>`,
-      iconAnchor: [24, 50],
-      iconSize: [48, 48],
-      popupAnchor: [0, -46]
+  tile(map)
+
+  if (geoDiv.dataset.area === 'true') {
+    // Polygon and circle
+    loadLeafletDraw().then(() => {
+      const drawnItems = new window.L.FeatureGroup()
+      map.addLayer(drawnItems)
+
+      const style = { shapeOptions: fill(geoDiv.dataset.color).style }
+      const drawControl = new window.L.Control.Draw({
+        edit: {
+          featureGroup: drawnItems
+        },
+        draw: {
+          polygon: style,
+          circle: style,
+          marker: false,
+          circlemarker: false,
+          polyline: false,
+          rectangle: style
+        }
+      })
+      map.addControl(drawControl)
+
+      map.on(window.L.Draw.Event.CREATED, e => {
+        const layer = e.layer
+        drawnItems.clearLayers()
+        drawnItems.addLayer(layer)
+        updateInputGeo(json, layer, e.layerType)
+      })
+
+      map.on('draw:edited', e => {
+        const layers = drawnItems.getLayers()
+        if (layers.length > 0) {
+          updateInputGeo(json, layers[0], e.layerType)
+        }
+      })
+    }).catch(error => {
+      console.error('Error loading Leaflet Draw:', error)
     })
-
-    let marker = window.L.marker([40.46367, -3.74922], { icon: myIcon, id: 1 }).addTo(map).bindPopup(formGeo).openPopup()
+  } else {
+    // Marker
+    const marker = window.L.marker(initialView, { icon: myIcon(geoDiv.dataset) })
+    marker.addTo(map).bindPopup(formGeo).openPopup()
 
     // Clics listen
     map.on('click', (e) => {
-      const { lat, lng } = e.latlng
-
-      // If a marker already exists, move it
-      if (marker) {
-        marker.setLatLng(e.latlng)
-      } else {
-        marker = window.L.marker(e.latlng).addTo(map)
-      }
-
-      // Display latitude and longitude in input field
-      document.querySelector('.form__geo--x').value = Number(lat.toFixed(7))
-      document.querySelector('.form__geo--y').value = Number(lng.toFixed(7))
+      marker.setLatLng(e.latlng)
+      json.value = JSON.stringify(marker.toGeoJSON().geometry)
     })
 
     // popup over top elements when popupopen in small screen sizes
@@ -50,7 +82,9 @@ export function initFormGeo () {
       map.on('popupopen', () => { mapPane.style.zIndex = 10000 })
     }
   }
+}
 
+export function initFormGeo () {
   scrollShot({
     rootMargin: '0%',
     query: '.form__geo-map',

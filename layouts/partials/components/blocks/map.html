@@ -1,20 +1,25 @@
 {{- with .map -}}
-  {{- $geo := dict -}}
-  {{- if reflect.IsMap . -}}
-    {{- $geo = . -}}
-  {{- else -}}
-    {{- $geo = unmarshal . -}}
-  {{- end -}}
-  {{ $icon  := $.licon | default $.icon | default "circle-star" }}
-  {{ $color := $.icon_color | default "main" }}
-  {{ $zoom  := $.zoom | default 15 }}
+  {{- $icons := slice -}}
   <div
     id="map-{{ $.id | default $.section.id }}"
-    class="map box__block bg-light {{ $color }}"
-    data-y="{{ index $geo.coordinates 0 }}"
-    data-x="{{ index $geo.coordinates 1 }}"
-    data-icon="{{ $icon }}"
-    data-zoom="{{ $zoom }}"
+    class="map box__block bg-light"
+    data-zoom="{{ $.zoom | default `` }}"
   ></div>
-  {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" $icon) }}
+  <div class="map__next">
+    {{- range . -}}
+      {{- $radius := .radius | default "" -}}
+      {{- $color  := .color | default $.icon_color | default "main" -}}
+      {{- $icon   := cond (ne .type "point") "" (.icon | default $.licon | default "circle-star") -}}
+      {{- $icons   = $icons | append $icon -}}
+      <div
+        data-geo="{{ .geo }}"
+        data-radius="{{ $radius }}"
+        data-color="{{ $color }}"
+        data-icon="{{ $icon }}"
+      >{{ .label }}</div>
+    {{- end -}}
+  </div>
+  {{- range uniq $icons -}}
+    {{- partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" .) -}}
+  {{- end -}}
 {{- end -}}

@@ -398,9 +398,13 @@ boxes:
     min: 0
     max: 155
   - type: geo
-    name: Posición
-    icon: circle-check
-    icon_color: link
+    name: HOLI
+    area: true
+    color: link
+    icon: circle-dot
+    view: '{"type":"Point","coordinates":[40.46367, -3.74922]}'
+    zoom: 4
+    required: true
   - type: hidden
     name: Hidden
     placeholder: Oculto
@@ -456,4 +460,18 @@ boxes:
 
 ###
 
-- map: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
+- map:
+  - type: point
+    geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
+    color: link
+    icon: cat
+    label: Punto
+  - type: circle
+    geo: '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
+    radius: 30
+    color: main
+    label: Círculo
+  - type: polygon
+    geo: '{"type":"Polygon","coordinates":[[[-0.730882,37.9909474],[-0.7646935,38.5600661],[0.2231645,38.729593],[-0.730882,37.9909474]]]}'
+    color: link
+    label: Polígono
