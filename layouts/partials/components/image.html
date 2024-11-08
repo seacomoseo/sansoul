@@ -236,7 +236,7 @@
               {{- end -}}
               {{- with $ratio -}}
                 {{- if ne . "auto" -}}
-                  {{- $ratio_split  := split $ratio_split "/" -}}
+                  {{- $ratio_split  := split $ratio "/" -}}
                   {{- $width_aim    := index $ratio_split 0 | float -}}
                   {{- $height_aim   := index $ratio_split 1 | float -}}
                   {{- $ratio_aim    := div $height_aim $width_aim -}}
