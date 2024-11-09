@@ -3,15 +3,20 @@
 {{ $end  := dateFormat "2006-01-02T15:04:05Z07:00" (.Params.end | default .Date) | replaceRE `T00.00.00[-+]\d\d.00` "" }}
 
 {{/*  Location  */}}
+
 {{ $location := dict }}
 {{ with .Params }}
-  {{ if or .location .place }}
+  {{ if .address }}
+    {{ $place   := partial "components/base/schema/address" . }}
+    {{ $address := $place.address | default dict }}
+    {{ $has_map := $place.has_map | default "" }}
+    {{ $geo     := $place.geo     | default dict }}
     {{ $location = dict
-      "location" (dict
-        "@type"   "Place"
-        "name"    .location
-        "address" .place
-      )
+      "@type"   "Place"
+      "name"    $address.name
+      "address" $address
+      "hasMap"  $has_map
+      "geo"     $geo
     }}
   {{ end }}
 {{ end }}

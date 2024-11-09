@@ -34,52 +34,10 @@
   {{ end }}
 
   {{/*  Address, hasMap and geo by locations  */}}
-  {{ $address := dict }}
-  {{ $has_map := "" }}
-  {{ $geo     := dict }}
-  {{ with .address }}
-    {{ if .street }}
-      {{ $address = dict
-        "@type"           "PostalAddress"
-        "name"            .name
-        "streetAddress"   .street
-        "postalCode"      .pc
-        "addressLocality" .locality
-        "addressRegion"   .region
-        "addressCountry"  .country
-      }}
-      {{ $address = partial "functions/schema-obj" $address }}
-      {{ $has_map = print
-        "https://maps.google.com/maps/search/"
-        (print
-          .name     ", "
-          .street   ", "
-          .pc       " "
-          .locality ", "
-          .region   ", "
-          .country
-          | replaceRE "<nil>" ""
-          | urlquery
-        )
-      }}
-    {{ end }}
-    {{ with .link }}
-      {{ $has_map = . }}
-    {{ end }}
-    {{ with .geo }}
-      {{ $geo := dict }}
-      {{ if reflect.IsMap . }}
-        {{ $geo = . }}
-      {{ else }}
-        {{ $geo = unmarshal . }}
-      {{ end }}
-      {{ $geo = dict
-        "@type"     "GeoCoordinates"
-        "latitude"  (index $geo.coordinates 1)
-        "longitude" (index $geo.coordinates 0)
-      }}
-    {{ end }}
-  {{ end }}
+  {{ $location := partial "components/base/schema/address" . }}
+  {{ $address  := $location.address | default dict }}
+  {{ $has_map  := $location.has_map | default "" }}
+  {{ $geo      := $location.geo     | default dict }}
 
   {{/*  Phones  */}}
   {{ $phones := partial "functions/phone-variations" .phones }}

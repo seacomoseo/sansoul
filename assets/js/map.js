@@ -3,8 +3,6 @@ import { loadLeaflet, myIcon, fill, tile } from './leaflet'
 
 function mapStart (mapDiv) {
   const map = window.L.map(mapDiv.id, {
-    minZoom: 1,
-    maxZoom: 18,
     setView: true,
     trackResize: true,
     scrollWheelZoom: false
@@ -46,7 +44,7 @@ function mapStart (mapDiv) {
     map.addLayer(marker)
   })
 
-  const maxZoom = mapDiv.dataset.zoom || 15
+  const maxZoom = parseInt(mapDiv.dataset.zoom) || 15
   map.fitBounds(bounds, { maxZoom, padding: [50, 50] })
 }
 

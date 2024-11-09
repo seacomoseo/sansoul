@@ -8,9 +8,9 @@
   <div class="map__next">
     {{- range . -}}
       {{- $radius := .radius | default "" -}}
-      {{- $color  := .color | default $.icon_color | default "main" -}}
+      {{- $color  := .color  | default $.icon_color | default "main" -}}
       {{- $icon   := cond (ne .type "point") "" (.icon | default $.licon | default "circle-star") -}}
-      {{- $icons   = $icons | append $icon -}}
+      {{- $icons   = $icons  | append $icon -}}
       <div
         data-geo="{{ .geo }}"
         data-radius="{{ $radius }}"

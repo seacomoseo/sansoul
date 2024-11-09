@@ -1,0 +1,59 @@
+{{ $address := dict }}
+{{ $has_map := "" }}
+{{ $geo     := dict }}
+{{ with .address }}
+  {{ if or .name .region }}
+    {{ $address = dict
+      "@type"           "PostalAddress"
+      "name"            .name
+      "streetAddress"   .street
+      "postalCode"      .pc
+      "addressLocality" .locality
+      "addressRegion"   .region
+      "addressCountry"  .country
+    }}
+    {{ $address = partial "functions/schema-obj" $address }}
+    {{ $has_map = print
+      "https://maps.google.com/maps/search/"
+      (print
+        .name     ", "
+        .street   ", "
+        .pc       " "
+        .locality ", "
+        .region   ", "
+        .country
+        | replaceRE "<nil>" ""
+        | urlquery
+      )
+    }}
+  {{ end }}
+  {{ with .link }}
+    {{ $has_map = . }}
+  {{ end }}
+  {{ with .geo }}
+    {{ if reflect.IsMap . }}
+      {{ $geo = . }}
+    {{ else }}
+      {{ $geo = unmarshal . }}
+    {{ end }}
+    {{ $lat := index $geo.coordinates 1 }}
+    {{ $lng := index $geo.coordinates 0 }}
+    {{ $geo = dict
+      "@type"     "GeoCoordinates"
+      "latitude"  $lat
+      "longitude" $lng
+    }}
+    {{ if not $has_map }}
+      {{ $has_map = print "https://maps.google.com/maps/search/" $lat "," $lng }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $location := dict
+  "address" $address
+  "has_map" $has_map
+  "geo"     $geo
+}}
+{{ $location = partial "functions/schema-obj" $location }}
+
+{{ return $location }}

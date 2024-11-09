@@ -1,0 +1,15 @@
+name: Ubicación de Eventos
+node: div
+if: address
+id: address
+pt: 0
+contact:
+- type: address
+  label: '{{ address }}'
+  anchor: '{{ param address.link }}'
+  button: link
+boxes:
+- if: address.geo
+  map:
+  - type: point
+    geo: '{{ param address.geo }}'
