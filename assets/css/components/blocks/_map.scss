@@ -7,8 +7,11 @@
 }
 @if $radius {
   .ph .container--fluid > .map {
-    height: calc(20em + var(--pt-divider, 0px) + var(--pb-divider, 0px));
+    min-height: calc(20em + var(--pt-divider, 0px) + var(--pb-divider, 0px));
     @include hide-radius;
+  }
+  .ph .container--fluid.box--ratio > .map {
+    height: calc(var(--box-width) / (var(--box-ratio)));
   }
 }
 .leaflet-data-marker__svg {
