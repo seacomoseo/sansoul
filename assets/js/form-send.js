@@ -30,7 +30,7 @@ function changeValuesPrev (form, prev) {
     if (prev) {
       if (input.value) {
         input.dataset.value = input.value
-        input.value = `+${input.previousElementSibling.children[0].value} ${input.value}`
+        input.value = `+${input.previousElementSibling.children[1].value} ${input.value}`
       }
     } else {
       if (input.dataset.value) {
