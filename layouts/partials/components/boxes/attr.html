@@ -59,9 +59,9 @@
     $box_bg_color
     (cond (not .gradient)            "" (print "bg-gradient-" .gradient))
     (cond (not .gradient)            "" (print "bg-gradient-" (.gradient_type | default "linear-r")))
-    (cond (or (not .parallax) (eq .parallax "none")) "" "parallax")
+    (cond (or (not .bg) (not .parallax) (eq .parallax "none")) "" "parallax")
     (cond (ne .parallax "box")                       "" "parallax--box")
-    (cond (ne .parallax "soft")                      "" "parallax--bg")
+    (cond (not (and .bg (eq .parallax "soft")))      "" "parallax--bg")
     (cond (and (not .span) (not .span_min))          "" "box--span")
     (cond (not .grow)                                "" "box--grow")
     (cond (not $box_rate)                            "" "box--ratio")
