@@ -25,6 +25,7 @@
 {{ $content = $content
   | replaceRE `(<blockquote class="quotes.*?">)` (print `$1 <svg class="quote-left"><use href="` $draws `#quote-left"></use></svg><svg class="quote-right"><use href="` $draws `#quote-right"></use></svg>`)
   | replaceRE `(<blockquote class="dittos.*?">)` (print `$1 <svg class="quote-left"><use href="` $draws `#ditto"></use></svg><svg class="quote-right"><use href="` $draws `#ditto"></use></svg>`)
+  | replaceRE `<div class="bg-color"></div><p>` `<div class="bg-color"></div>`
   | replaceRE `icon:([\w-]+)` (print `<svg><use href="` $draws `#$1"></use></svg>`)
   | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
   | replaceRE `(?s)<i>(<svg.+?</svg>)(.*?)</i>` `$1<i>$2</i>`
