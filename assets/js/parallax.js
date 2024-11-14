@@ -1,50 +1,42 @@
 import { scrollShot } from './scroll-shot'
 
+function doParallax (e) {
+  // if (e.classList.contains('parallax--box')) e = e.parentElement
+  const container = e.getBoundingClientRect()
+  const imageHeight = container.height * 1.25
+  // const imageHeight = e.querySelector('.bg-figure-image').offsetHeight
+  const extraHeight = imageHeight - container.height
+  const viewportHeight = window.innerHeight
+
+  // Calculate scroll progress
+  const totalScrollDistance = viewportHeight + container.height
+  const scrolledDistance = viewportHeight - container.top
+  const scrollProgress = scrolledDistance / totalScrollDistance
+
+  // Adjust the vertical displacement of the image
+  const imageOffset = -extraHeight * scrollProgress
+  e.style.setProperty('--parallax-pos', imageOffset)
+}
+
+function doParallaxes () {
+  const parallaxElements = document.querySelectorAll('.parallax--scroll:not(.scrolling *)')
+  if (parallaxElements.length) {
+    parallaxElements.forEach(doParallax)
+  }
+}
+
 export function initParallax () {
   const parallaxElements = document.querySelectorAll('.parallax')
 
   if (parallaxElements[0]) {
-    function doParallax (e) {
-      const speed = 10
-      const parent = e.parentElement
-      const parentTop = parent.getBoundingClientRect().top
-      const partialHeight = window.innerHeight / speed
-      const pos = parentTop / speed - partialHeight
-      e.style.setProperty('--parallax-pos', pos)
-    }
-
     // Toggle class parallax--scroll when element is in viewport
     scrollShot({
       rootMargin: '0%',
       query: '.parallax',
+      // doOnLoad: doParallaxes,
       doStart: e => e.classList.add('parallax--scroll'),
       doEnd: e => e.classList.remove('parallax--scroll')
     })
-
-    window.addEventListener('scroll', () => {
-      parallaxElements.forEach(e => {
-        const parallaxScroll = e.classList.contains('parallax--scroll')
-        const disableParallax = document.body.classList.contains('scrolling')
-        if (parallaxScroll && !disableParallax) doParallax(e)
-      })
-    })
-
-    // Apply parallax function in first image in header to prevent "blink first scroll" efect
-    // When load DOM and sources
-    window.addEventListener('load', () => {
-      if (window.scrollY < window.innerHeight && parallaxElements[0].closest('.section--header')) {
-        doParallax(parallaxElements[0])
-      }
-    })
-    // if (window.scrollY < window.innerHeight) {
-    //   const parallaxFirstImage = parallaxElements[0].querySelector('img')
-    //   if (parallaxFirstImage) {
-    //     const newImg = new Image()
-    //     newImg.onload = () => {
-    //       doParallax(parallaxElements[0])
-    //     }
-    //     newImg.src = parallaxFirstImage.currentSrc
-    //   }
-    // }
+    window.addEventListener('scroll', doParallaxes)
   }
 }
