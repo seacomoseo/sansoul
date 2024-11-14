@@ -7,14 +7,13 @@
 .bg {
   --bg-alpha: 0;
   --color-alpha: 0;
-  --color-opacity: calc(1 - var(--color-alpha));
 }
 .bg-alpha > .bg-figure-image {
   opacity: calc(1 - var(--bg-alpha));
 }
 
 %bg-color {
-  --bg-color: color-mix(in srgb, var(--bg-hex), transparent calc(var(--color-alpha, 1) * 100%));
+  --bg-color: color-mix(in srgb, var(--bg-hex), transparent calc(var(--color-alpha, 0) * 100%));
 }
 
 .bg-main       {  --bg-hex: #{ $main       }; @extend %bg-color; }
@@ -36,7 +35,7 @@
 
 %bg-gradient {
   --gradient-hex: #{ $black };
-  --gradient-color: color-mix(in srgb, var(--gradient-hex), transparent calc(var(--color-alpha, 1) * 100%));
+  --gradient-color: color-mix(in srgb, var(--gradient-hex), transparent calc(var(--color-alpha, 0) * 100%));
 }
 
 .bg-gradient-main       { --gradient-hex: #{ $main       }; }
