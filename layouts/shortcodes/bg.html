@@ -1,0 +1,6 @@
+{{- $color := .Get 0 | default "white" -}}
+
+<div class="alert bg bg-{{ $color }}">
+  <div class="bg-color"></div>
+  {{- .Inner -}}
+</div>
