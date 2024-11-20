@@ -212,7 +212,9 @@ iframe.image__inner {
 
 .image--circle {
   &, .image__inner {
-    &:not(.aux) { // only for priority
+    &:not(.aux.aux) { // only for priority
+      --radius-top: 50%;
+      --radius-bottom: 50%;
       @include circle;
     }
   }

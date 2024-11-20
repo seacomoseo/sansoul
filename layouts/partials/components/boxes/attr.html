@@ -69,7 +69,7 @@
     (cond (not .hide_shadow)                         "" "box--hide-shadow")
     (cond (not .card)                                "" "box--card")
     (cond (not .pill)                                "" "pill-bottom")
-    (cond (not (or .pill (eq .ratio "circle")))      "" "pill-top")
+    (cond (not (or .pill .circle))                   "" "pill-top")
     (cond (ne .button "hide")                        "" "box--button-hide")
     (cond (not (.slider | and (not .key)))           "" "slider__item--active")
     (cond (not .show)                                "" "show")
