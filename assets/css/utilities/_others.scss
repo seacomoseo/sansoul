@@ -2,8 +2,22 @@
   @include ofuscate;
 }
 .lcp {
-  width: calc(100vw - .5em);
-  height: calc(100lvh - .5em);
+  font-size: 3em;
+  line-height: 1.33;
+  padding: .77em 1em;
   position: absolute;
-  // z-index: 1000;
+  pointer-events: none;
+  z-index: 1000;
+  animation: lcp 1.5s infinite;
+}
+.loaded .lcp {
+  display: none;
+}
+@keyframes lcp {
+  0%, 100% {
+    color: var(--bg-hex);
+  }
+  50% {
+    color: var(--similar);
+  }
 }
