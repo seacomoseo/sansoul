@@ -2,12 +2,20 @@
   @include ofuscate;
 }
 .lcp {
+  height: 100lvh;
+  width: calc(100% - 2rem);
+  @include fluid-size(max-width, 1px, $screen-min / 1px - 32, 768);
+  display: grid;
+  place-content: center;
   font-size: 3em;
   line-height: 1.33;
-  padding: .77em 1em;
+  padding: 1rem 0;
   position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 1;
   animation: lcp 1.5s infinite;
 }
 .loaded .lcp {
@@ -15,9 +23,9 @@
 }
 @keyframes lcp {
   0%, 100% {
-    color: var(--bg-hex);
+    color: var(--similar);
   }
   50% {
-    color: var(--similar);
+    color: var(--bg-hex);
   }
 }
