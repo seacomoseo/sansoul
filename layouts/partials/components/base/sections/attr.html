@@ -19,33 +19,34 @@
 {{ $full        := cond (not .full) "" "section--full" }}
 
 {{/*  Background  */}}
-{{ $bg_color    := "" }}
+{{ $bg                := "" }}
+{{ $bg_color          := "" }}
+{{ $bg_gradient_color := "" }}
+{{ $bg_gradient_type  := "" }}
+{{ $bg_image_fix      := "" }}
+{{ $bg_parallax       := "" }}
+{{ $bg_video_parent   := "" }}
 {{ if not $modal }}
   {{ with .color }}
-    {{ $bg_color = print "bg-" . }}
+    {{ $bg_color          = print "bg-" . }}
+  {{ else }}
+    {{ if and .map .ph .prev.divider }}
+      {{ $bg_color        = "bg-white" }}
+    {{ end }}
   {{ end }}
-{{ end }}
-{{ if .bg }}
-  {{ $bg_color   = print $bg_color " bg-image" }}
-{{ end }}
-{{ $bg_gradient_color      := "" }}
-{{ $bg_gradient_type       := "" }}
-{{ if not $modal | and .gradient }}
-  {{ $bg_gradient_color     = print "bg-gradient-" .gradient }}
-  {{ $bg_gradient_type      = print "bg-gradient-" (.gradient_type | default "linear-b") }}
-{{ end }}
-{{ $bg                     := cond (not $bg_color) "" "bg" }}
-{{ $bg_image_fix           := cond (not (and .bg (eq .parallax "fix")))        "" "bg--fix" }}
-{{ $bg_parallax            := cond (not (and .bg (eq .parallax "soft"))) "" "parallax parallax--bg" }}
-{{ $bg_video_parent        := "" }}
-{{ if partial `functions/is-iframe` .bg }}
-  {{ $bg_video_parent       = "bg-figure-video-parent" }}
-{{ end }}
-{{ if $modal }}
-  {{ $bg           = "" }}
-  {{ $bg_color     = "" }}
-  {{ $bg_image_fix = "" }}
-  {{ $bg_parallax  = "" }}
+  {{ if .bg }}
+    {{ $bg_color          = print $bg_color " bg-image" }}
+  {{ end }}
+  {{ if .gradient }}
+    {{ $bg_gradient_color = print "bg-gradient-" .gradient }}
+    {{ $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-b") }}
+  {{ end }}
+  {{ $bg                  = cond (not $bg_color) "" "bg" }}
+  {{ $bg_image_fix        = cond (not (and .bg (eq .parallax "fix")))        "" "bg--fix" }}
+  {{ $bg_parallax         = cond (not (and .bg (eq .parallax "soft"))) "" "parallax parallax--bg" }}
+  {{ if partial `functions/is-iframe` .bg }}
+    {{ $bg_video_parent       = "bg-figure-video-parent" }}
+  {{ end }}
 {{ end }}
 
 {{/*  Paddings  */}}
@@ -81,7 +82,7 @@
 {{ $divider_style := "" }}
 {{ with .prev }}
   {{ if .divider }}
-    {{ if or $.color $.gradient $.bg }}
+    {{ if or $.color $.gradient $.bg (and $.map $.ph .divider) }}
       {{ with partial "components/divider-attr" (dict "section" . "next" false) }}
         {{ $divider       = .class }}
         {{ $divider_style = .style }}
@@ -94,7 +95,7 @@
 {{ $divider_next       := "" }}
 {{ $divider_next_style := "" }}
 {{ if .next }}
-  {{ if and .divider (not .footer) (not (or .next.color .next.gradient .next.bg)) }}
+  {{ if and .divider (not .footer) (not (or .next.color .next.gradient .next.bg (and .next.map .next.ph .divider))) }}
     {{ with partial "components/divider-attr" (dict "section" . "next" true) }}
       {{ $divider_next       = .class }}
       {{ $divider_next_style = .style }}

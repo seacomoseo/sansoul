@@ -267,6 +267,7 @@
       {{- partial "components/boxes/_" (merge
         .
         (dict
+          "main"     $main
           "level"    $level
           "span_xl"  $span_xl
           "span_xs"  $span_xs
@@ -316,7 +317,7 @@
 
     {{/*  MODAL BUTTONS CLOSE, PREV AND NEXT  */}}
     {{- if $main -}}
-      {{- if .modal | and (not .ph) -}}
+      {{- if and .modal (not .ph) -}}
         <div class="buttons">
           {{- with .prev -}}
             <a class="button button--icon modal__prev" href="#{{ .id }}">

@@ -77,7 +77,7 @@
 {{ end }}
 
         {{ $parent  := dict }}
-        {{ if not .list_pages }}
+        {{ if and (not .list_pages) (not .main) }}
           {{ $parent = dict
             "uppercase"   $box.uppercase
             "underline"   $box.underline

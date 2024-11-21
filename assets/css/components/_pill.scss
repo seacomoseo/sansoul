@@ -8,7 +8,9 @@
     // PILL TOP BACKGROUND
     &.bg {
       --radius-top: calc(50cqw + var(--box-padding));
-      padding-top: calc(var(--box-padding) / .7071);
+      @if $chamfer {
+        padding-top: calc(var(--box-padding) / .7071);
+      }
       // Any first element
       > *:where(
         :first-child,
@@ -80,7 +82,9 @@
     // PILL BOTTOM BACKGROUND
     &.bg {
       --radius-bottom: calc(50cqw + var(--box-padding));
-      padding-bottom: calc(var(--box-padding) / .7071);
+      @if $chamfer {
+        padding-bottom: calc(var(--box-padding) / .7071);
+      }
       // Any last element
       > *:is(
         :last-child,

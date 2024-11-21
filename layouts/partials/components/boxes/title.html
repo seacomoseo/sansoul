@@ -20,8 +20,7 @@
     "array" (slice
       "box__title"
       (cond (not ($title | and (not .title))) "" "hide")
-      (cond (not .like_article) "" "box__title--link")
-      (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" "h6"))
+      (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" (print "h" (cond (not .like_article) .level "6"))))
       (cond (not .uppercase)    "" "uppercase")
       (cond (not .underline)    "" "underline")
     )
