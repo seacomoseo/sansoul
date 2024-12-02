@@ -90,7 +90,7 @@
   {{- if $netlify_forms -}}
     {{- if not .shortcode -}}
       <input type="hidden" name="form-name" value="{{ $form_id }}">
-      <input type="hidden" name="subject" value="{{ (urls.Parse site.BaseURL).Host }}: {{ $subject }}" data-remove-prefix>
+      <input type="hidden" name="subject" value="{{ $subject }}" data-remove-prefix>
       <input type="hidden" name="url" value="{{ .Page.Permalink }}#{{ $form_id }}">
     {{- else -}}
       <input type="hidden" name="subject" value="{{ $form_id }}" data-remove-prefix>
@@ -246,7 +246,7 @@
           data-zoom="{{ .zoom }}"
           data-view="{{ .view | default `{"type":"Point","coordinates":[40.46367, -3.74922]}` }}"
         ></div>
-        {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg hide" "icon" $icon) }}
+        {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" $icon) }}
         <input class="form__geo form__geo--json" type="hidden" name="{{ .name }}" {{- $required }}>
       {{- else if $type | eq "textarea" -}}
         <textarea
@@ -345,5 +345,10 @@
     {{- "" -}}
   </label>
   {{- "" -}}
+  {{- partial "components/icon" (dict "class" "display-none" "icon" "xmark"       ) -}}
+  {{- partial "components/icon" (dict "class" "display-none" "icon" "rotate"      ) -}}
+  {{- partial "components/icon" (dict "class" "display-none" "icon" "circle-check") -}}
+  {{- partial "components/icon" (dict "class" "display-none" "icon" "circle-xmark") -}}
+  {{- partial "components/icon" (dict "class" "display-none" "icon" "circle-info" ) -}}
 
 </form>

@@ -164,7 +164,7 @@ export function initFormSend () {
                 if (!response.ok) {
                   throw new Error('HTTP status ' + response.status)
                 }
-                return response.json()
+                return googleScript ? response.json() : response
               })
               .then(data => {
                 if (googleScript && data.result !== 'success') {
