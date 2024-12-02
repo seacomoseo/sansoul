@@ -4,7 +4,8 @@
     {{ $if = $.Page.RawContent }}
   {{ else if eq . "toc" }}
     {{ $if = false }}
-    {{ if $.Page.Params.toc }}
+    {{ $params := partial "functions/params" $.Page }}
+    {{ if $params.toc }}
       {{ with $.Page.RawContent }}
         {{ with . | findRE `\n#* ` }}
           {{ $if = index . 1 }}
