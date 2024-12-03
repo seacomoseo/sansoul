@@ -59,9 +59,11 @@
         {{- end -}}
 
       {{- else if eq .type "reading-time" -}}
-
-        {{- $icon  = "clock" -}}
-        {{- $label = print (i18n "reading_time" $page.ReadingTime) " " (i18n "of_reading") -}}
+      
+        {{- with $page.ReadingTime -}}
+          {{- $icon  = "clock" -}}
+          {{- $label = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
+        {{- end -}}
 
       {{- else if eq .type "words" -}}
 
