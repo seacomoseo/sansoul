@@ -13,7 +13,7 @@
       {{ end }}
     {{ end }}
   {{ else if eq . "related" }}
-    {{ $if = $.Page.CurrentSection.Pages.Related $.Page }}
+    {{ $if = or $.Page.Params.related ($.Page.CurrentSection.Pages.Related $.Page) }}
   {{ else if eq . "comments" }}
     {{ $if = site.Params.disqus }}
   {{ else if eq . "children" }}

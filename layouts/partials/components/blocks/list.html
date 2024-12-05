@@ -21,6 +21,12 @@
       {{ if eq $type "related" }}
         {{ $parent = site.GetPage page.Type }}
         {{ $pages  = $parent.Pages.Related page }}
+        {{ with page.Params.related }}
+          {{ range . | collections.Reverse }}
+            {{ $pages = slice (site.GetPage page.Type .) | append $pages }}
+          {{ end }}
+          {{ $pages = uniq $pages }}
+        {{ end }}
       {{ else if eq $type "single" }}
         {{ $pages = slice site.Home | append $pages }}
       {{ end }}

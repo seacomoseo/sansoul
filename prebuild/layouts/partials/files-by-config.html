@@ -265,6 +265,7 @@
 {{ $indices := slice
   (dict
     "name"   "date"
+    "type"   "fragments"
     "weight" 10
   )
 }}
@@ -272,6 +273,7 @@
   {{ $indices = $indices | append
     (dict
       "name"   .name
+      "type"   "fragments"
       "weight" 80
     )
   }}
