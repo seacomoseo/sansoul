@@ -171,6 +171,24 @@
   {{ range (.Params.customs | default slice) | append (.Params.taxonomies | default slice) }}
     {{ $fields = partial "cms/config/collections-params" (merge . (dict "fields" $fields "t" $t)) }}
   {{ end }}
+  {{ if .Params.is_related }}
+    {{ $fields = $fields | append
+      (dict
+        "name"           `related`
+        "widget"         `relation`
+        "required"       false
+        "label"          $t.p_related
+        "hint"           $t.p_related_hint
+        "i18n"           `duplicate`
+        "options_length" 100
+        "collection"     .Type
+        "value_field"    "{{slug}}"
+        "search_fields"  (slice "{{title}}")
+        "display_fields" (slice "{{title}}")
+        "multiple"       true
+      )
+    }}
+  {{ end }}
   {{ if ne .Params.base "single" }}
     {{ $fields = $fields | append
       `~P_TOC`
