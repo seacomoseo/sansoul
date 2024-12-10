@@ -197,6 +197,13 @@
 )) {
   margin-top: Max(calc(var(--box-gap) * 2), 2em);
 }
+.box__title:where(:not(
+  :first-child,
+  .bg-color + *,
+  .box__title.hide + *
+  )) + .box__block {
+  margin-top: 0;
+}
 
 // Icon
 .box__icon {
