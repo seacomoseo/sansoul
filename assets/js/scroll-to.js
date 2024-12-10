@@ -1,5 +1,6 @@
+const c = document.body.classList
+
 export function scrolling () {
-  const c = document.body.classList
   if (!c.contains('sections-visibile')) c.add('sections-visibile')
   c.add('scrolling')
   setTimeout(() => {
@@ -7,11 +8,11 @@ export function scrolling () {
   }, 1500)
 }
 
-export function scrollTo (targetElement) {
+export function scrollTo (targetElement, instant) {
   scrolling()
-  setTimeout(() => {
-    targetElement.scrollIntoView({ behavior: 'smooth' })
-  }, 500)
+  targetElement.scrollIntoView({ behavior: 'smooth' })
+  // setTimeout(() => {
+  // }, 500)
 }
 
 // SCROLL IF IS HASH WHEN LOAD (FIX SHOW)

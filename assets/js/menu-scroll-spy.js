@@ -25,8 +25,8 @@ export function initMenuScrollSpy () {
             }
           }
           // Upgrade hash without cut the flow of the smooth scroll wen there is a section in the middle
-          const hash = e.tagName === 'HEADER' ? window.location.pathname + window.location.search : '#' + e.id
-          window.history.replaceState('', '', hash)
+          // const hash = e.tagName === 'HEADER' ? window.location.pathname + window.location.search : '#' + e.id
+          // window.history.replaceState('', '', hash)
         }
       },
       doEnd: () => null // For not unobserve

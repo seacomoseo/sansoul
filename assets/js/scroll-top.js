@@ -57,10 +57,14 @@ export function initScrollTop () {
         document.body.classList.add('body-top')
         menuChangeColor(true)
         // Remove hash
-        window.history.replaceState('', '', window.location.pathname + window.location.search)
+        if (window.location.hash) {
+          window.history.replaceState('', '', window.location.pathname + window.location.search)
+        }
       } else {
         document.body.classList.remove('body-top')
         menuChangeColor(false)
+        const c = document.body.classList
+        if (!c.contains('sections-visibile')) c.add('sections-visibile')
       }
     }
 
@@ -84,10 +88,10 @@ export function initScrollTop () {
           }
         }
         scrollTo(target)
-        if (window.location.hash) {
-          // Remove hash
-          window.history.replaceState('', '', window.location.pathname + window.location.search)
-        }
+        // if (window.location.hash) {
+        //   // Remove hash
+        //   window.history.replaceState('', '', window.location.pathname + window.location.search)
+        // }
       }
     })
   })
