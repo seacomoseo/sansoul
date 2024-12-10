@@ -64,7 +64,7 @@ export function initScrollTop () {
         document.body.classList.remove('body-top')
         menuChangeColor(false)
         const c = document.body.classList
-        if (!c.contains('sections-visibile')) c.add('sections-visibile')
+        // if (!c.contains('sections-visibile')) c.add('sections-visibile')
       }
     }
 

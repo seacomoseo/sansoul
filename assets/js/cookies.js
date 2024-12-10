@@ -42,10 +42,13 @@ export function initCookies () {
     document.addEventListener('click', e => {
       // Onclick cookies accept
       const cb = e.target.closest('.cookies__button')
-      if (cb) cookiesAccept(cb)
-      // Onclick cookies message toggle
-      const ct = e.target.closest('.cookies__toggle')
-      if (ct) cookiesToggle()
+      if (cb) {
+        cookiesAccept(cb)
+      } else {
+        // Onclick cookies message toggle
+        const ct = e.target.closest('.cookies__toggle')
+        if (ct) cookiesToggle()
+      }
     })
 
     // Add class active from cookies message if cookies don't acept

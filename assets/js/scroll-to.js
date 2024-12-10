@@ -1,7 +1,7 @@
 const c = document.body.classList
 
 export function scrolling () {
-  if (!c.contains('sections-visibile')) c.add('sections-visibile')
+  // if (!c.contains('sections-visibile')) c.add('sections-visibile')
   c.add('scrolling')
   setTimeout(() => {
     c.remove('scrolling')
