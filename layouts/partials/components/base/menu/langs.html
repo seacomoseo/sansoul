@@ -3,7 +3,7 @@
 {{ if page.IsTranslated }}
   {{ range page.AllTranslations }}
     {{ $items = $items | append (dict
-      "link"     .Permalink
+      "link"     .RelPermalink
       "icon"     (print "flag-" .Lang)
       "emoji"    (i18n "flag")
       "label"    .Language.LanguageName

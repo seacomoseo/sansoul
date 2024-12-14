@@ -244,8 +244,8 @@ iframe.image__inner {
 [data-iframe] {
   cursor: pointer;
   svg {
-    width: 4.25em;
-    height: 3em;
+    width: 5em;
+    height: 5em;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -254,6 +254,10 @@ iframe.image__inner {
     fill: var(--base-text);
     transition: color .1s;
     filter: drop-shadow($shadow);
+    &:has([href$="#youtube-iframe"]) {
+      width: 4.25em;
+      height: 3em;
+    }
   }
   &:hover svg {
     color: var(--hover);

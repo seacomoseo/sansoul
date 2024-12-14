@@ -1,4 +1,9 @@
 {{- with partial "components/base/menu/langs" . -}}
+  {{/*  
+  {{ partial "components/icon" (dict "class" "" "icon" "globe") }}
+  {{ page.Lang }}
+  {{ partial "components/icon" (dict "class" "lang-down" "icon" "angle-down") }}
+  */}}
   <i class="langs">
     {{- range . -}}
       <i class="lang" lang="{{ .lang }}" title="{{ .title }}">

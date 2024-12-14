@@ -74,7 +74,8 @@
         >
         {{- if .iframe_src }}
           {{- $color := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
-          {{- partial "components/icon" (dict "class" $color "icon" "youtube-iframe" "emoji" "▶️") -}}
+          {{- $icon  := cond (not site.Data.styles.icons.youtube_play) "play-iframe" "youtube-iframe" -}}
+          {{- partial "components/icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
         {{ end }}
       </picture>
     {{- end -}}
@@ -415,7 +416,8 @@
 
           {{- if .iframe_src }}
             {{- $color := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
-            {{- partial "components/icon" (dict "class" $color "icon" "youtube-iframe" "emoji" "▶️") -}}
+            {{- $icon  := cond (not site.Data.styles.icons.youtube_play) "play-iframe" "youtube-iframe" -}}
+            {{- partial "components/icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
           {{ end }}
         </picture>
       {{- end -}}

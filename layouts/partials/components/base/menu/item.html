@@ -29,7 +29,7 @@
       {{- end -}}
       {{- $icon  := cond (not $hide_icons) .icon "" -}}
       {{- $emoji := cond (not $hide_icons) .emoji "" -}}
-      {{- $label := .menu_label | default .label -}}
+      {{- $label := .menu_label | default .label| markdownify -}}
 
       {{- if or $label $icon $emoji -}}
 
