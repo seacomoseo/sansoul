@@ -47,19 +47,6 @@
   }}
 {{ end }}
 
-{{ if $.nofollow }}
-  {{ range $content | findRE `<a.+?</a>` }}
-    {{ $url    := . | replaceRE `(?s).+href="(.+?)".+` `$1` }}
-    {{ $blank  := cond (hasPrefix $url "http") "b" "h" }}
-    {{ $url     = $url | base64Encode }}
-    {{ $link   := replace . `target="_blank" rel="noopener"` `` }}
-    {{ $link    = replace $link "<a " "<i " }}
-    {{ $link    = replace $link "</a>" "</i>" }}
-    {{ $link    = $link | replaceRE `href=".+?"` (print `data-` $blank `="` $url `"`) }}
-    {{ $content = replace $content . $link }}
-  {{ end }}
-{{ end }}
-
 {{ $content = $content | safeHTML }}
 
 {{ return $content }}

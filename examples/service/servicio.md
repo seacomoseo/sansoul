@@ -1,5 +1,5 @@
 ---
-slug: Servicio
+slug: servicio
 title: Servicio de ejemplo
 summary: Este es el resumen de un Servicio de ejemplo.
 image: fondo.jpg

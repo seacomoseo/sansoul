@@ -3,7 +3,9 @@
   height: 100%;
   min-height: 20em;
   filter: drop-shadow($shadow);
-  @include radius;
+  &:not(.box--hide-radius > *) {
+    @include radius;
+  }
 }
 @if $radius {
   .ph .container--fluid > .map {

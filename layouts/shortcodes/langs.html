@@ -1,0 +1,17 @@
+{{- with partial "components/base/menu/langs" . -}}
+  <i class="langs">
+    {{- range . -}}
+      <i class="lang" lang="{{ .lang }}" title="{{ .title }}">
+        {{- partial "components/link" (dict
+          "class"    "lang__link"
+          "link"     .link
+          "button"   "none"
+          "icon"     .icon
+          "emoji"    .emoji
+          "label"    (.lang | upper)
+          "noindex"  true
+        ) -}}
+      </i>
+    {{- end -}}
+  </i>
+{{- end -}}

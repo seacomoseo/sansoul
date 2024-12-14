@@ -19,7 +19,7 @@ names:
 legal: SAN SOUL S.L.
 nif: 00000000A
 summary: Esto es el resumen de una organización de ejemplo.
-logo: base/logo.svg
+logo: base/poster.svg
 images:
 - fondo.jpg
 social:

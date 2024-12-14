@@ -119,6 +119,9 @@ fieldset {
     opacity: .5;
   }
 }
+select:has(option:checked[value=""]) {
+  color: color-mix(in srgb, var(--text), transparent 50%);
+}
 input:not([type="checkbox"], [type="radio"], [type="hidden"]),
 select {
   height: 2.5em;

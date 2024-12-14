@@ -1,43 +1,47 @@
-{{ $icons := site.Data.styles.icons }}
-{{ $icon  := .icon }}
-{{ $emoji := "" }}
+{{ $svg := "" }}
 
-{{ if $icons.emojis_default | and .emoji }}
-  {{ $icon = .emoji }}
-{{ end }}
-{{ $icon_code := $icon | urlquery }}
-{{ $emoji      = in $icon_code "%" }}
-{{ with $icons.emojis }}
-  {{ if $emoji }}
-    {{ $variants := cond (eq . "noto-bw" | or (eq . "twemoji-scale")) `-ef-b8-8f|-f0-9f-8f-b(b|c|d|e|f)` `-ef-b8-8f` }}
-    {{ $icon_code = $icon_code | lower | replaceRE `%` `-` | replaceRE `^-` `` | replaceRE $variants `` }}
-    {{ if eq . "noto-bw" }}
-      {{ $alias := where (index site.Data.utilities.emoji_alias .) "alias" $icon_code }}
-      {{ with $alias }}
-        {{ $icon_code = (index . 0).simple }}
-      {{ end }}
-    {{ end }}
-    {{ $icon = print "emoji-" $icon_code }}
+{{ if ne .icon "hide" }}
+  {{ $icons := site.Data.styles.icons }}
+  {{ $icon  := .icon }}
+  {{ $emoji := "" }}
+
+  {{ if $icons.emojis_default | and .emoji }}
+    {{ $icon = .emoji }}
   {{ end }}
-{{ end }}
+  {{ $icon_code := $icon | urlquery }}
+  {{ $emoji      = in $icon_code "%" }}
+  {{ with $icons.emojis }}
+    {{ if $emoji }}
+      {{ $variants := cond (eq . "noto-bw" | or (eq . "twemoji-scale")) `-ef-b8-8f|-f0-9f-8f-b(b|c|d|e|f)` `-ef-b8-8f` }}
+      {{ $icon_code = $icon_code | lower | replaceRE `%` `-` | replaceRE `^-` `` | replaceRE $variants `` }}
+      {{ if eq . "noto-bw" }}
+        {{ $alias := where (index site.Data.utilities.emoji_alias .) "alias" $icon_code }}
+        {{ with $alias }}
+          {{ $icon_code = (index . 0).simple }}
+        {{ end }}
+      {{ end }}
+      {{ $icon = print "emoji-" $icon_code }}
+    {{ end }}
+  {{ end }}
 
-{{/*  CLASS  */}}
-{{ $class := "" }}
-{{ with .class }}
-  {{ $class = print ` class="` . `"` }}
-{{ end }}
-{{ if $emoji }}
-  {{ $class = print ` class="` (cond (not .class) `` .class) ` emoji"` }}
-{{ end }}
+  {{/*  CLASS  */}}
+  {{ $class := "" }}
+  {{ with .class }}
+    {{ $class = print ` class="` . `"` }}
+  {{ end }}
+  {{ if $emoji }}
+    {{ $class = print ` class="` (cond (not .class) `` .class) ` emoji"` }}
+  {{ end }}
 
-{{/*  ATTRIBUTES  */}}
-{{- $attr := cond (not .attr) $class (print " " .attr) -}}
+  {{/*  ATTRIBUTES  */}}
+  {{ $attr := cond (not .attr) $class (print " " .attr) }}
 
-{{ $svg := not $emoji | or $icons.emojis }}
-{{ if $svg }}
-  {{ $svg = print `<svg` $attr `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}
-{{ else }}
-  {{ $svg = print `<b` $attr `>` .icon `</b>` | safeHTML }}
+  {{ $svg = not $emoji | or $icons.emojis }}
+  {{ if $svg }}
+    {{ $svg = print `<svg` $attr `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}
+  {{ else }}
+    {{ $svg = print `<b` $attr `>` .icon `</b>` | safeHTML }}
+  {{ end }}
 {{ end }}
 
 {{ return $svg }}

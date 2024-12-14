@@ -23,6 +23,7 @@
       flex-wrap: wrap;
       width: 100%;
       transition: padding .3s;
+      padding-block: var(--menu-py);
     }
     .menu__item {
       padding: 0 .5em;
@@ -130,12 +131,9 @@
       position: fixed;
     }
   }
-  --menu-py: 2em;
   &.body-top {
+    --menu-py: 2em;
     .menu {
-      .menu__items {
-        padding-block: var(--menu-py);
-      }
       .menu__subitems {
         .menu__items {
           padding-block: 0;

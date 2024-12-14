@@ -1,15 +1,15 @@
-{{- if and . (not .hide) -}}
+{{ if and . (not .hide) }}
 
-  {{- $items := slice -}}
-  {{- $logo  := "" -}}
+  {{ $items := slice }}
+  {{ $logo  := "" }}
   {{ if .logo -}}
-    {{- $logo = site.Params.menu.logo -}}
-  {{- end -}}
+    {{ $logo = .image | default (index . page.Lang).image }}
+  {{ end }}
   {{ $custom := .items | default (index . page.Lang).items }}
 
   {{/*  ITEM HOME LINK  */}}
   {{ if not $logo }}
-    {{ if not page.IsHome | and (not .hide_anchors) }}
+    {{ if not page.IsHome | and .show_sections }}
       {{ if not ($custom  | jsonify | findRE `"link":"/#?"`) }}
         {{ with site.Home }}
           {{ $items = $items | append (dict
@@ -50,7 +50,7 @@
 
 
   {{/*  PRINT HTML  */}}
-  {{- if $items -}}
+  {{ if $items }}
 
     {{/*  MENU TOGGLE  */}}
     <button class="menu__toggle button--icon">
@@ -65,13 +65,13 @@
     <div class="menu__backover"></div>
 
     {{/*  CLASS  */}}
-    {{- $menu_class := print "menu bg bg-" (.color | default "white") -}}
+    {{ $menu_class := print "menu bg bg-" (.color | default "white") }}
     {{ if .gradient }}
       {{ $menu_class = print $menu_class " bg-gradient-" .gradient " bg-gradient-" (.gradient_type | default "linear-t") }}
     {{ end }}
-    {{- $box_class  := "" -}}
+    {{ $box_class  := "" }}
     {{ if .sticky }}
-      {{- $box_class = print "container container--" (.size | default "lg") -}}
+      {{ $box_class = print "container container--" (.size | default "lg") }}
     {{ end }}
 
     {{/*  NAV  */}}
@@ -86,7 +86,7 @@
           {{/*  LOGO  */}}
           {{ with $logo }}
             <li class="menu__item menu__item--logo">
-              <a class="menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}/{{ end }}">
+              <a class="menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}{{ site.Home.RelPermalink }}{{ end }}">
                 {{ partial "components/image" (dict
                   "svg_src"   true
                   "class"     "menu__logo-image"

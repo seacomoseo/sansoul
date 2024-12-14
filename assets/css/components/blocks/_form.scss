@@ -28,10 +28,6 @@
   max-width: calc(100vw - 10em);
 }
 /*! purgecss end ignore */
-.form__label--geo {
-  @include font-base-bold;
-  margin-left: $radius;
-}
 .form__hidden {
   display: none;
 }
@@ -47,10 +43,21 @@
   flex-direction: row;
   flex-wrap: wrap;
 }
-.form__label {
+.form__option {
   display: flex;
   align-items: baseline;
   gap: .5em;
+}
+.form__option--consent {
+  font-size: .75em;
+  text-align: left;
+  width: 100%;
+}
+.form__label {
+  display: block;
+  @include font-base-bold;
+  margin-left: $radius;
+  margin-bottom: .25em;
 }
 .form__content {
   h3, h4, h5, h6 {
@@ -61,7 +68,6 @@
 }
 .form__title {
   margin: .5em 0 0;
-  text-align: center;
 }
 .form__hint {
   margin-top: .25rem;
@@ -82,17 +88,6 @@
 .form__hint {
   margin-left: $radius + .5em;
   width: calc(100% - #{ $radius + .5em } * 2);
-}
-.form__label--accept {
-  font-size: .75em;
-  gap: 1em;
-  text-align: left;
-  width: 100%;
-  > i {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5em 1em;
-  }
 }
 /*! purgecss start ignore */
 .form__error,
@@ -133,7 +128,7 @@
 #search__form ~ .form {
   display: none;
 }
-.form__fill-inputs {
+.form--fill-inputs {
   --border: color-mix(in srgb, var(--similar), var(--invert) 25%);
   input:not([type="checkbox"], [type="radio"], [type="hidden"]),
   textarea,
@@ -203,18 +198,25 @@
   }
 }
 
+.form--labels-out {
+  :not(.aux)::placeholder,
+  select:has(option:checked[value=""]) {
+    color: transparent;
+  }
+}
+
 .form__file {
   position: relative;
   .form__file--button {
     position: absolute;
     float: left;
-    height: 100%;
+    height: 2.5em;
     z-index: 1;
   }
   .form__input {
     width: 100%;
     @if not $chamfer and $radius > .01 {
-      &:not(.form__fill-inputs) {
+      &:not(.form--fill-inputs) {
         border-top-left-radius: $radius;
         border-bottom-left-radius: $radius;
       }
@@ -246,6 +248,7 @@
 .form__pre {
   position: absolute;
   left: 0;
+  translate: 0 -100%;
   width: auto;
   z-index: 1;
   .form__select {
@@ -255,9 +258,9 @@
     padding-right: .5em;
     background-position: right;
   }
-  + .form__input {
-    padding-left: 5.6em;
-  }
+}
+.form__input:has(+ .form__pre) {
+  padding-left: 5.6em;
 }
 
 .form__item[data-showif]:not(.form__item--show) {

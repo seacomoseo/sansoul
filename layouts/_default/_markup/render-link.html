@@ -1,6 +1,12 @@
-{{- $label    := .Text  | replaceRE `^btn[\w-:]* `                "" -}}
-{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` "" -}}
+{{- $label    := .Text  | replaceRE `^btn[\w-:]* `                                "" -}}
+{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?homefollow)?(\s?_blank)?` "" -}}
 {{- $noindex  := cond (hasPrefix .Title "nofollow") true nil -}}
+
+{{- if in .Title "homefollow" -}}
+  {{- if not page.IsHome -}}
+    {{- $noindex = true -}}
+  {{- end -}}
+{{- end -}}
 
 {{- $button   := "none" -}}
 {{- $class    := "" -}}

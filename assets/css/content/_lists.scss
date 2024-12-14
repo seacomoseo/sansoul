@@ -68,6 +68,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 1.5em;
     li {
       display: flex;
@@ -81,6 +82,8 @@
       }
       > div {
         padding: 0;
+        display: flex;
+        gap: .5em;
       }
     }
   }
@@ -133,13 +136,13 @@ ol.align-right {
     margin-right: 0;
   }
 }
-@media (min-width: $screen-xl) {
-  .align--xl-left {
+@media (min-width: $screen-max) {
+  .align--max-left {
     ul, ol {
       margin-left: 0;
     }
   }
-  .align--xl-right {
+  .align--max-right {
     ul, ol {
       direction: rtl;
       text-align: right;

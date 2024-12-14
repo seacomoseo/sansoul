@@ -133,7 +133,7 @@ export function formValid (form) {
     }
   })
 
-  const accept = form.querySelector('.form__label--accept')
+  const accept = form.querySelector('.form__option--consent')
   if (!accept) valid = false
   if (!accept.querySelector('[type="checkbox"]').checked) {
     accept.style.color = 'red'

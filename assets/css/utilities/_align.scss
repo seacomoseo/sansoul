@@ -1,23 +1,14 @@
 .container {
-  text-align: center;
+  text-align: var(--align);
+  --align: center;
 }
 .align-center {
-  text-align: center;
-  .logo__link,
-  .box__icon--bottom,
-  .box__title,
-  .buttons {
-    justify-content: center;
-  }
+  text-align: var(--align);
+  --align: center;
 }
 .align-left {
-  text-align: left;
-  .logo__link,
-  .box__icon--bottom,
-  .box__title,
-  .buttons {
-    justify-content: flex-start;
-  }
+  text-align: var(--align);
+  --align: left;
   .box__icon--side {
     order: -1;
   }
@@ -27,13 +18,8 @@
   }
 }
 .align-right {
-  text-align: right;
-  .logo__link,
-  .box__icon--bottom,
-  .box__title,
-  .buttons {
-    justify-content: flex-end;
-  }
+  text-align: var(--align);
+  --align: right;
   .box__icon--side {
     order: 1;
   }
@@ -66,28 +52,18 @@
 .align-self-stretch {
   align-self: stretch;
 }
-@media (min-width: $screen-xl) {
-  .align--xl-center {
-    text-align: center;
-    .box__icon--bottom,
-    .box__title,
-    .buttons {
-      justify-content: center;
-      align-items: center;
-    }
+@media (min-width: $screen-max) {
+  .align--max-center {
+    text-align: var(--align);
+    --align: center;
     .box__icon--top,
     .box__button:not(.aux) {
       margin-inline: auto;
     }
   }
-  .align--xl-left {
-    text-align: left;
-    .box__icon--bottom,
-    .box__title,
-    .buttons {
-      justify-content: flex-start;
-      // align-items: flex-start;
-    }
+  .align--max-left {
+    text-align: var(--align);
+    --align: left;
     .box__icon--side {
       order: -1;
     }
@@ -96,14 +72,9 @@
       margin-left: 0;
     }
   }
-  .align--xl-right {
-    text-align: right;
-    .box__icon--bottom,
-    .box__title,
-    .buttons {
-      justify-content: flex-end;
-      // align-items: flex-end;
-    }
+  .align--max-right {
+    text-align: var(--align);
+    --align: right;
     .box__icon--side {
       order: 1;
     }

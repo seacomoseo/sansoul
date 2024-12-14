@@ -91,10 +91,9 @@
       {{- if and (not $button) (not $link) }} data-b{{ end -}}
     {{- ">" | safeHTML -}}
   {{- else -}}
-    <a {{ if $button | or $class | or $is_data_more -}}
-         class="{{ cond $button `button` `` }} {{- with $class }} {{ . }}{{ end }}"
-       {{- end -}}
-      {{- `` | safeHTMLAttr }} href="{{ $link | safeURL }}"
+    <a
+      {{- if $button | or $class | or $is_data_more }} class="{{ cond $button `button` `` }} {{- with $class }} {{ . }}{{ end }}"
+      {{- end }} href="{{ $link | safeURL }}"
       {{- if or $external $_blank }} target="_blank" rel="noopener"{{ end -}}
       {{- if eq .label `none` }} title="{{ $final_label }}"{{ end -}}
     >

@@ -341,14 +341,16 @@ boxes:
     to: '#gracias'
     subject: ''
     fill: false
+    labels_out: true
     icon: none # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: ¡Dale!
     button: alt
     font_alt: true
+    consent: Consiento el tratamiento de mis datos. [Leer más...](#holi)
   inputs:
   - type: text
     name: Text
-    placeholder: Texto
+    label: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
     required: false
     required_if: null # string of names separated of '||' or '&&'
@@ -359,7 +361,7 @@ boxes:
     max: 50
   - type: email
     name: Email
-    placeholder: Correo
+    label: Correo
     required: false
     required_if: Text
     regex: null # regex pattern
@@ -367,7 +369,7 @@ boxes:
     max: 30
   - type: tel
     name: Tel
-    placeholder: Teléfono
+    label: Teléfono
     required: false
     show_if: Text||Email
     regex: null # regex pattern
@@ -375,22 +377,22 @@ boxes:
     max: 15
   - type: number
     name: Number
-    placeholder: Número
+    label: Número
     required: false
     show_if: Text&&Email
     min: 1
     max: 10
   - type: date
     name: Date
-    placeholder: Fecha
+    label: Fecha
     required: false
   - type: time
     name: Time
-    placeholder: Tiempo
+    label: Tiempo
     required: false
   - type: textarea
     name: Textarea
-    placeholder: Mensaje
+    label: Mensaje
     required: false
     min: 0
     max: 155
@@ -404,15 +406,15 @@ boxes:
     required: true
   - type: hidden
     name: Hidden
-    placeholder: Oculto
+    label: Oculto
     required: false
   - type: h3
-    name: Encabezado
+    label: Encabezado
   - type: content
-    name: Contenido
+    content: Contenido
   - type: select
     name: Select
-    placeholder: Seleción
+    label: Seleción
     required: true
     options:
     - option: Seleción Opción 1
@@ -423,7 +425,7 @@ boxes:
       value: Seleción Valor 3
   - type: radio
     name: Radio
-    placeholder: Radios
+    label: Radios
     required: true
     x: false
     options:
@@ -435,7 +437,7 @@ boxes:
       value: Radio Valor 3
   - type: checkbox
     name: Checkbox
-    placeholder: Checkboxes
+    label: Checkboxes
     required: true
     x: true
     options:
