@@ -1,8 +1,10 @@
 {{ $items := slice }}
 
 {{ if page.IsTranslated }}
+  {{ $langs  := slice }}
+  {{ $label  := print page.Lang (partial "components/icon" (dict "class" "langs__drop" "icon" (print "angle-" (cond (not $.up) "down" "up")))) }}
   {{ range page.AllTranslations }}
-    {{ $items = $items | append (dict
+    {{ $langs = $langs | append (dict
       "link"     .RelPermalink
       "icon"     (print "flag-" .Lang)
       "emoji"    (i18n "flag")
@@ -12,6 +14,12 @@
       "lang"     .Lang
     ) }}
   {{ end }}
+  {{ $items = $items | append (dict
+    "icon"  $.icon
+    "emoji" "🌐"
+    "label" $label
+    "items" $langs
+  ) }}
 {{ end }}
 
 {{ return $items }}

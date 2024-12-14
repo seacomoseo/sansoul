@@ -1,22 +1,27 @@
-{{- with partial "components/base/menu/langs" . -}}
-  {{/*  
-  {{ partial "components/icon" (dict "class" "" "icon" "globe") }}
-  {{ page.Lang }}
-  {{ partial "components/icon" (dict "class" "lang-down" "icon" "angle-down") }}
-  */}}
-  <i class="langs">
-    {{- range . -}}
-      <i class="lang" lang="{{ .lang }}" title="{{ .title }}">
-        {{- partial "components/link" (dict
-          "class"    "lang__link"
-          "link"     .link
-          "button"   "none"
-          "icon"     .icon
-          "emoji"    .emoji
-          "label"    (.lang | upper)
-          "noindex"  true
-        ) -}}
+{{- with partial "components/base/menu/langs" (dict "icon" (index .Params 0) "up" true) -}}
+  {{- with index . 0 -}}
+    {{- partial "components/icon" (dict "icon" .icon "emoji" .emoji) -}}
+    <i class="langs">
+      {{- partial "components/link" (dict
+        "class"    "langs__parent"
+        "label"    (.label | markdownify)
+        "noindex"  true
+      ) -}}
+      <i class="langs__items">
+        {{- range .items -}}
+          <i class="lang" lang="{{ .lang }}" title="{{ .title }}">
+            {{- partial "components/link" (dict
+              "class"    "lang__link"
+              "link"     .link
+              "button"   "none"
+              "icon"     .icon
+              "emoji"    .emoji
+              "label"    .label
+              "noindex"  true
+            ) -}}
+          </i>
+        {{- end -}}
       </i>
-    {{- end -}}
-  </i>
+    </i>
+  {{- end -}}
 {{- end -}}
