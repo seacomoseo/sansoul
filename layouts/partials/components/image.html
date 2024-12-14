@@ -233,7 +233,7 @@
                   {{- $ratio = "1/1" -}}
                 {{- end -}}
               {{- else if not (in $ratio "/") -}}
-                {{- $ratio = "1/1" -}}
+                {{- $ratio = print $ratio "/1" -}}
               {{- end -}}
               {{- with $ratio -}}
                 {{- if ne . "auto" -}}
