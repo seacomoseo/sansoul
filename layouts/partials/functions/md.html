@@ -30,6 +30,9 @@
   | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
   | replaceRE `(?s)<i>(<svg.+?</svg>)(.*?)</i>` `$1<i>$2</i>`
   | replaceRE ` start="(.+?)"` ` style="--item: $1;"`
+  | replaceRE `<li(.*?)>` `<li$1><div>`
+  | replaceRE `(?s)<li><div>(\n|<p>)*(<svg>.+?</svg>) ` `<li class="li-svg">$2<div>$1`
+  | replaceRE `</li>` `</div></li>`
   | replaceRE `(?s)<p><figure(.+?)</figure></p>` `<figure$1</figure>`
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`
 }}
