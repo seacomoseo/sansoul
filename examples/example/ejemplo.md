@@ -2,7 +2,7 @@
 slug: ejemplo
 title: Página de ejemplo
 summary: Resumen de página de ejemplo
-image: fondo.jpg
+image: base/poster.png
 category:
 - categoria-3
 - categoria-2

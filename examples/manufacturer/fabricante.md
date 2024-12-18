@@ -19,7 +19,7 @@ nif: 00000000A
 summary: Esta es la descripción de un fabricante de ejemplo.
 logo: base/icon.png
 images:
-- fondo.jpg
+- base/poster.png
 social:
 - https://www.facebook.com/fabricante
 - https://www.instagram.com/fabricante/

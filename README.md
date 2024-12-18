@@ -7,6 +7,8 @@
 ## Script para actualizar proyectos
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
+- `*.yml`
+  - `placeholder`
 - `content.${lang}`
   - `_index.md`
     - `images`

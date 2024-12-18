@@ -114,7 +114,10 @@
           {{ $slug         = or .slug        (index $t (print "types_default_" $name "_slug"       )) $title          }}
           {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon          "file"          }}
           {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji         "📄"            }}
-          {{ $customs     := .params | default slice | append site.Data.types.all.params }}
+          {{ $customs     := .params | default slice }}
+          {{ with site.Data.types.all.params }}
+            {{ $customs    = $customs | append . }}
+          {{ end }}
           {{ $noindex     := cond (eq .noindex nil) true .noindex }}
           {{ $obj         := dict 
             "slug"           $slug

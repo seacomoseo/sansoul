@@ -2,7 +2,7 @@
 slug: producto
 title: Producto de ejemplo
 summary: Esto es el resumen de un producto de ejemplo.
-image: fondo.jpg
+image: base/poster.png
 
 sku: PRO001
 price: 10.50

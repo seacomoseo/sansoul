@@ -1,7 +1,7 @@
 ---
 slug: organizacion
 title: Organización de ejemplo
-image: fondo.jpg
+image: base/poster.png
 
 toc: true
 draft: false
@@ -21,7 +21,7 @@ nif: 00000000A
 summary: Esto es el resumen de una organización de ejemplo.
 logo: base/poster.svg
 images:
-- fondo.jpg
+- base/poster.png
 social:
 - https://www.facebook.com/QuantumFracture
 - https://www.instagram.com/quantumfracture/

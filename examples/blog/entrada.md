@@ -2,7 +2,7 @@
 slug: entrada
 title: Entrada de ejemplo
 summary: Esto es una entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
-image: fondo.jpg
+image: base/poster.png
 
 date: 2020-01-01 00:00:00
 lastmod: 2021-01-01 00:00:00

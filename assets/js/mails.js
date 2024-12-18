@@ -14,8 +14,9 @@ export function initMails () {
         .closest('.contact__email')
         .querySelector('.ofuscate')
         .textContent
+      console.log(emailCopyButton.classList.value)
       // If copy button then copy in clipbard; if not then send email
-      if (emailCopyButton.classList[0].includes('copy')) {
+      if (emailCopyButton.classList.value.includes('copy')) {
         navigator.clipboard.writeText(email)
         const msg = 'contact__email-option-copy--active'
         emailCopyButton.classList.add(msg)

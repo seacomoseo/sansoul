@@ -1,7 +1,7 @@
 ---
 title: Página de Ejemplo
 slug: unica
-image: fondo.jpg
+image: base/poster.png
 draft: true
 noindex: true
 translationKey: single
