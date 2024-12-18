@@ -195,9 +195,20 @@
     {{/*  GALLERY  */}}
     {{ if .gallery }}
       {{- if eq .gallery.type "boxes" -}}
-        {{- $boxes_images := .limages | default slice -}}
+        {{- $boxes_images := slice -}}
+        {{- range .limages -}}
+          {{- $boxes_images = $boxes_images | append (dict
+            "image"  .image
+            "link"   .link
+            "anchor" (.image | replaceRE `^(.+)\..*$` "$1" | humanize)
+          ) -}}
+        {{- end -}}
         {{- range .images -}}
-          {{- $boxes_images = $boxes_images | append (dict "image" . "link" .) -}}
+          {{- $boxes_images = $boxes_images | append (dict
+            "image"  .
+            "link"   .
+            "anchor" (. | replaceRE `^(.+)\..*$` "$1" | humanize)
+          ) -}}
         {{- end -}}
         {{- partial "components/boxes/_" (merge
           (dict
@@ -249,9 +260,9 @@
       ) -}}
     {{ end }}
 
-    {{/*  COLLAPSIBLE  */}}
-    {{ if .collapsibles }}
-      {{- partial "components/blocks/collapsibles" (merge
+    {{/*  ACCORDION  */}}
+    {{ if .accordions }}
+      {{- partial "components/blocks/accordion" (merge
         .
         (dict "level" $level)
       ) -}}

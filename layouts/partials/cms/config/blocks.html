@@ -144,27 +144,27 @@
   ))
 
 
-  (dict "&BOX_COLLAPSIBLE" (dict
-    "name"      `collapsible`
+  (dict "&BOX_ACCORDION" (dict
+    "name"      `accordion`
     "widget"    `object`
     "required"  false
-    "label"     $t.box_collapsible
+    "label"     $t.box_accordion
     "collapsed" false
     "fields"    (slice
       `~BOX_BUTTON_COLOR`
       `~BOX_BUTTON_FONT_ALT`
       `~BOX_ICON_ID`
-      (dict "name" `headers`    "widget" `boolean` "required" false "label" $t.box_collapsible_headers)
-      (dict "name" `first_open` "widget" `boolean` "required" false "label" $t.box_collapsible_first_open)
+      (dict "name" `headers`    "widget" `boolean` "required" false "label" $t.box_accordion_headers)
+      (dict "name" `first_open` "widget" `boolean` "required" false "label" $t.box_accordion_first_open)
     )
   ))
-  (dict "&BOX_COLLAPSIBLES" (dict
-    "name"           `collapsibles`
+  (dict "&BOX_ACCORDIONS" (dict
+    "name"           `accordions`
     "widget"         `list`
     "required"       false
-    "label"          $t.box_collapsibles
-    "label_singular" $t.box_collapsibles_singular
-    "hint"           $t.box_collapsibles_hint
+    "label"          $t.box_accordions
+    "label_singular" $t.box_accordions_singular
+    "hint"           $t.box_accordions_hint
     "collapsed"      false
     "summary"        "{{fields.title}}"
     "allow_add"      true

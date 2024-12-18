@@ -93,10 +93,12 @@
         {{/*  cms  */}}
         {{ $lang_cms := site.Data.config.cms.lang | default "es" }}
         {{ $i18n_cms := index site.Data.i18n $lang_cms }}
+        {{/*
         {{ if ne $lang_cms "es" }}
           {{ $i18n_cms_es := index site.Data.i18n "es" }}
           {{ $i18n_cms     = merge $i18n_cms_es $i18n_cms }}
         {{ end }}
+         */}}
         {{ $cms      := index . $lang_cms }}
         {{ $cms       = dict
           "title"      (or $cms.title    $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
