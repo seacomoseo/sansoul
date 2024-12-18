@@ -60,7 +60,7 @@
       (dict "name" `value` "widget" `string`  "required" false "label" $t.types_params_options_value)
     )
   ))
-  (dict "&SETTINGS_TYPES_PARAMS_TYPE_SUB"  (dict "<<" (slice (dict "options" (where site.Data.utilities.widgets "value" "not in" (slice "relation" "list"))) `~SETTINGS_TYPES_PARAMS_TYPE`)))
+  (dict "&SETTINGS_TYPES_PARAMS_TYPE_SUB"  (dict "<<" (slice (dict "options" (where site.Data.utilities.widgets "value" "not" "list")) `~SETTINGS_TYPES_PARAMS_TYPE`)))
   (dict "&SETTINGS_TYPES_PARAMS_LIST"  (dict
     "name"           `list`
     "widget"         `list`

@@ -26,14 +26,16 @@
       </div>
       <div class="cookies__buttons">
         {{- partial "components/link" (dict
-          "class"   "cookies__button-acept button--sm button--font-alt"
+          "class"   "cookies__button-acept button--sm"
+          "font_alt" true
           "link"    "none"
           "button"  "link"
           "label"   (i18n "cookies_accept")
           "noindex" true
         ) -}}
         {{- partial "components/link" (dict
-          "class"   "cookies__button-acept button--sm button--font-alt cookies__button-acept--all"
+          "class"   "cookies__button-acept button--sm cookies__button-acept--all"
+          "font_alt" true
           "link"    "none"
           "button"  "link"
           "label"   (i18n "cookies_accept_all")

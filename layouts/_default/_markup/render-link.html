@@ -12,7 +12,7 @@
 {{- $class    := "" -}}
 {{- if hasPrefix .Text "btn" -}}
   {{- $other  := .Text | replaceRE `^btn:?([\w-]*).*` "$1" -}}
-  {{- range $other | findRE `icon|font-alt|sm` -}}
+  {{- range $other | findRE `dot|font-alt|sm` -}}
     {{- $class = print $class " button--" . -}}
   {{- end -}}
   {{- $button  = replace $other "font-alt" "" -}}

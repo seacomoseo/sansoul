@@ -20,6 +20,14 @@
 }
 .langs__parent {
   text-transform: uppercase;
+  display: flex;
+  gap: .375em;
+}
+.langs__parent--flag > svg {
+  border-radius: 50%;
+}
+.langs__drop {
+  margin-left: .125em;
 }
 .langs__items {
   overflow: hidden;
@@ -28,10 +36,10 @@
   left: 0;
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: .5em;
   width: max-content;
   background-color: var(--bg-color);
-  padding: 1em;
+  padding: .5em 1em 1em;
   border-radius: 1em 1em 0 0;
   transform: perspective(20em) rotateX(90deg);
   transform-origin: bottom;
@@ -52,6 +60,7 @@
 .lang__link {
   display: flex;
   gap: .375em;
+  padding-block: .5em;
 }
 
 .cancelled {

@@ -37,13 +37,19 @@ export function initOpenLinks () {
 
   // BODY CLICK
   document.addEventListener('click', e => {
+    let blank
+    if (e.button === 1 || e.metaKey || e.ctrlKey) { // Center clic or ctrl + clic
+      blank = true
+    } else if (!e.button === 0) { // Not left clic
+      return
+    }
     // NORMAL LINKS
     const link = e.target.closest('[href*="#"]:not(use,[href*="&_x_tr_hist=true"])') // Fix Google Translate Subdomain links with hash
     if (link) {
       e.preventDefault()
       scrolling()
       const url = link.getAttribute('href')
-      processLink(url)
+      processLink(url, blank)
     } else {
       // OFUSCATE LINKS
       const ofuscateLink = e.target.closest('[data-h],[data-b]')
@@ -52,7 +58,7 @@ export function initOpenLinks () {
         if (l.b) {
           processLink(window.atob(l.b), true)
         } else if (l.h) {
-          processLink(window.atob(l.h))
+          processLink(window.atob(l.h), blank)
         }
       } else {
         // BOX LINKS
@@ -60,7 +66,7 @@ export function initOpenLinks () {
           '.box:has(> .box__button):not(:has(' +
             '.box .box__button,' +
             '> .box__button ~ .box__button,' +
-            ':is(a, [data-h], [data-b]):not(.box__button)' +
+            '.href:not(.box__button)' +
           '))'
         )
         if (boxLink) {

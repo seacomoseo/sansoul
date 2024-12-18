@@ -1,11 +1,24 @@
 {{- if .src -}}
-  {{- $mute := cond (in .src "#mute") true .bg -}}
-  {{- if hasPrefix .src "http" -}}
-    {{- if .src | findRE `\.(mp4|mov|avi|webm)` -}}
-      {{- $src    := .src | replaceRE `.poster\=([/\w\d\.-]+)|\#mute` `` -}}
+  {{- $src       := .src -}}
+  {{- $mute      := cond (in $src "#mute") true .bg -}}
+  {{- $iframe    := "" -}}
+  {{- $icon_play := "" -}}
+  {{- if not $mute -}}
+    {{- if partial "functions/is-iframe" $src -}}
+      {{- $iframe    = partial "functions/iframe-src" (dict "src" $src "bg" .bg) -}}
+      {{- $src       = partial "functions/iframe-poster" $src -}}
+      {{- $color    := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
+      {{- $icon     := cond (not site.Data.styles.icons.youtube_play) "play-iframe" "youtube-iframe" -}}
+      {{- $icon_play = partial "components/icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if hasPrefix $src "http" -}}
+    {{- if $src | findRE `\.(mp4|mov|avi|webm)` -}}
+      {{- $src     = $src | replaceRE `.poster\=([/\w\d\.-]+)|\#mute` `` -}}
       {{- $poster := "" -}}
-      {{- if in .src "poster=" -}}
-        {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
+      {{- if in $src "poster=" -}}
+        {{- $poster = print "/media/" ($src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
       {{- end -}}
       {{- with resources.Get $poster }}
         {{- if hugo.IsProduction }}
@@ -32,26 +45,26 @@
       >
         <source src="{{ $src }}" type="video/{{ $src | replaceRE `^.+\.([\w\d]+)$` `$1` }}">
       </video>
-    {{- else if .src | findRE `youtu\.be|youtube\.com` -}}
+    {{- else if $src | findRE `youtu\.be|youtube\.com` -}}
       <iframe
         {{- with .class }} class="{{ . }}" {{ end -}}
         width="560"
         height="315"
         loading="lazy"
-        src="{{ partial `functions/iframe-src` (dict `src` .src `bg` .bg) }}"
+        src="{{ (partial `functions/iframe-src` (dict `src` $src `bg` .bg)).src }}"
         title="{{ with .alt }}{{ . }}{{ else }}{{ i18n `video` }} · Youtube{{ end }}"
         allow="accelerometer clipboard-write; encrypted-media; gyroscope; picture-in-picture {{- if $mute }}; autoplay; loop; mute{{ end }}"
         allowfullscreen
         {{- if not .notlazy }} loading="lazy"{{ end -}}
       ></iframe>
-    {{- else if in .src `vimeo.com` -}}
-      {{- $id := .src | replaceRE `^.+?com/(.+?)(\?|$).*` `$1` -}}
+    {{- else if and (in $src "vimeo.com") (not (in $src "/api/v2/")) -}}
+      {{- $id := $src | replaceRE `^.+?com/(.+?)(\?|$).*` `$1` -}}
       <iframe
         {{- with .class }} class="{{ . }}" {{ end -}}
         width="640"
         height="360"
         loading="lazy"
-        src="{{ partial `functions/iframe-src` (dict `src` .src `bg` .bg) }}"
+        src="{{ (partial `functions/iframe-src` (dict `src` $src `bg` .bg)).src }}"
         title="{{ with .alt }}{{ . }}{{ else }}{{ i18n `video` }} · Vimeo{{ end }}"
         allow="fullscreen {{- if $mute }}; autoplay; loop; muted{{ end }}"
         allowfullscreen
@@ -60,34 +73,30 @@
     {{- else -}}
       <picture
         {{- with .class }} class="{{ . }}" {{ end -}}
-        {{- with .iframe_src }} data-iframe="{{ . }}"{{ end -}}
+        {{- with $iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
       >
         <img
-          src="{{ .src | safeURL }}"
+          src="{{ $src | safeURL }}"
           {{- if .alt }}
             alt="{{ .alt }}"
           {{- else }}
-            alt="{{ .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `^(.+)\..*$` `$1` | humanize }}"
+            alt="{{ $src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `^(.+)\..*$` `$1` | humanize }}"
           {{- end }}
           decoding="async"
           {{- if not .notlazy }} loading="lazy"{{ end -}}
         >
-        {{- if .iframe_src }}
-          {{- $color := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
-          {{- $icon  := cond (not site.Data.styles.icons.youtube_play) "play-iframe" "youtube-iframe" -}}
-          {{- partial "components/icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
-        {{ end }}
+        {{- $icon_play -}}
       </picture>
     {{- end -}}
   {{- else -}}
-    {{- $src := print "/media/" .src -}}
-    {{- if .src | findRE `\.(mp4|mov|avi|webm)` -}}
+    {{- $src = print "/media/" $src -}}
+    {{- if $src | findRE `\.(mp4|mov|avi|webm)` -}}
       {{- $path := $src | replaceRE `[\#\&\?].*$` `` -}}
-      {{- $src   = resources.Get $path -}}
+      {{- $rsrc := resources.Get $path -}}
       {{- $mp4  := "" -}}
       {{- $webm := "" -}}
-      {{- if not (in .src ".webm") -}}
-        {{- with $src -}}
+      {{- if not (in $src ".webm") -}}
+        {{- with $rsrc -}}
           {{- with .RelPermalink -}}
             {{- $mp4  = . -}}
           {{- end -}}
@@ -96,17 +105,17 @@
           {{- $webm = .RelPermalink -}}
         {{- end -}}
       {{- else -}}
-        {{- with $src -}}
+        {{- with $rsrc -}}
           {{- $webm = .RelPermalink -}}
         {{- end -}}
       {{- end -}}
       {{- $t := "" -}}
-      {{- if in .src `t=` -}}
-        {{- $t = print "#" (.src | replaceRE `^.+?(t\=[\d-,\.]+).*$` `$1`) -}}
+      {{- if in $src `t=` -}}
+        {{- $t = print "#" ($src | replaceRE `^.+?(t\=[\d-,\.]+).*$` `$1`) -}}
       {{- end -}}
       {{- $poster := "" -}}
-      {{- if in .src "poster=" -}}
-        {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
+      {{- if in $src "poster=" -}}
+        {{- $poster = print "/media/" ($src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
       {{- else -}}
         {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
           {{- $file  := $path | replaceRE `^(.+)\..+$` (print `$1.` .) -}}
@@ -132,11 +141,14 @@
         {{- with .class }} class="{{ . }}" {{ end -}}
         width="560"
         height="315"
-        {{- if not .bg }} controls{{ end }}
-        {{- if .notlazy | and $mute }} muted loop autoplay playsinline
-        {{- else }} preload="none" {{- if $mute }} data-mute{{ end }}
-        {{- end }}
-        {{- with $poster }} poster="{{ . }}"{{ end -}}
+        {{- if not .bg }} controls {{- end -}}
+        {{- if and .notlazy $mute }} muted loop autoplay playsinline
+        {{- else -}}
+          {{- if $mute }} data-mute {{- else -}}
+            {{- if or .notlazy $poster .modal }} preload="none" {{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- with $poster }} poster="{{ . }}" {{- end -}}
       >
         {{- with $webm -}}
           <source src="{{ $webm }}{{ $t }}" type="video/webm">
@@ -145,9 +157,9 @@
           <source src="{{ . }}{{ $t }}" type="video/{{ . | replaceRE `^.+\.(.+)$` `$1` }}">{{/*  "; codecs="hvc1""  */}}
         {{- end -}}
       </video>
-    {{- else if in .src ".svg" -}}
-      {{- $file           := .src | replaceRE `#.*$` `` -}}
-      {{- $src             = resources.Get (print "/media/" $file) -}}
+    {{- else if in $src ".svg" -}}
+      {{- $file           := $src | replaceRE `#.*$` `` -}}
+      {{- $src             = resources.Get $file -}}
       {{- if $src -}}
         {{- $svg          := $src.Content | replaceRE `\n` `` -}}
         {{- $svg_head     := index ($svg  | findRE `^<svg.*?>`) 0 -}}
@@ -168,13 +180,13 @@
           {{- $svg_height      = add (float (index $view_box_split 3)) (float (index $view_box_split 1)) | int -}}
           {{- $svg_not_size    = true -}}
         {{- end -}}
-        {{- if $svg | findRE `svg-src|animat|href|</linearGradient>|</style>` | or (in .src "#src") -}}
-          {{- if .svg_src | or ($svg | findRE `svg-src`) | or (in .src "#src") -}}
+        {{- if $svg | findRE `svg-src|animat|href|</linearGradient>|</style>` | or (in $src "#src") -}}
+          {{- if .svg_src | or ($svg | findRE `svg-src`) | or (in $src "#src") -}}
             {{- $svg_minify := ($src | minify).Content -}}
             {{- if $svg_not_size -}}
               {{- $svg_minify = replace $svg_minify "<svg" (print `<svg width="` $svg_width `" height="` $svg_height `"`) -}}
             {{- end -}}
-            {{- $svg_src := ($svg_minify | resources.FromString (print `/media/` $file | replaceRE `\.svg$` `.min.svg`)).RelPermalink -}}
+            {{- $svg_src := ($svg_minify | resources.FromString ($file | replaceRE `\.svg$` `.min.svg`)).RelPermalink -}}
             <img
               {{ with .class }} class="{{ . }}"{{ end }}
               src="{{ ($svg_minify | resources.FromString $svg_src).RelPermalink | safeURL }}"
@@ -185,7 +197,7 @@
               loading="lazy"
             >
           {{- else -}}
-            {{- $svg = readFile (print "/assets/media/" $file) -}}
+            {{- $svg = readFile (print "/assets" $file) -}}
             {{- if not ($svg_head | findRE ` viewBox=`) -}}
               {{- $svg = replace $svg "<svg" (print "<svg viewBox='0 0 " $svg_width " " $svg_height "'") -}}
             {{- end -}}
@@ -202,7 +214,7 @@
           {{- end -}}
         {{- else -}}
           {{- $draws := print "/draws." site.Params.timestamp ".svg" -}}
-          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use href="{{ $draws }}#{{ $file | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
+          <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use href="{{ $draws }}#{{ $file | replaceRE `^/media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
         {{- end -}}
       {{- end -}}
     {{- else -}}
@@ -213,7 +225,7 @@
       {{- if $image -}}
         <picture
           {{- with .class }} class="{{ . }}"{{ end }}
-          {{- with .iframe_src }} data-iframe="{{ . }}"{{ end }}
+          {{- with $iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
           {{- if $image | findRE `\.jpe?g$`  -}}
             {{- with (resources.Get $image_min).Colors -}}
               {{- $colors := cond (eq (len .) 1) (slice (index . 0) `transparent`) . -}}
@@ -407,18 +419,14 @@
 
           <img
             src="{{ $image_img.RelPermalink | safeURL }}"
-            alt="{{ with .alt }}{{ . }}{{ else }}{{ .src | replaceRE `^(.+)\..*$` `$1` | replaceRE `/` ` ` }}{{ end }}"
+            alt="{{ with .alt }}{{ . }}{{ else }}{{ $src | replaceRE `^(.+)\..*$` `$1` | replaceRE `/` ` ` }}{{ end }}"
             width="{{ $image_img.Width }}"
             height="{{ $image_img.Height }}"
             decoding="async"
             {{ if not .notlazy }} loading="lazy" {{ end }}
           >
 
-          {{- if .iframe_src }}
-            {{- $color := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
-            {{- $icon  := cond (not site.Data.styles.icons.youtube_play) "play-iframe" "youtube-iframe" -}}
-            {{- partial "components/icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
-          {{ end }}
+          {{- $icon_play -}}
         </picture>
       {{- end -}}
     {{- end -}}

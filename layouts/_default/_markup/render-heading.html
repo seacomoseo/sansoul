@@ -19,7 +19,7 @@
 {{- end }}
 
 <h{{ .Level }} {{- $attrs | safeHTMLAttr }}>
-  <a class="content__heading-link" href="#{{ $id }}">
+  <a class="href content__heading-link" href="#{{ $id }}">
     {{- .Text | safeHTML -}}
     {{- if in $class "underline" }}<br>{{ end -}}
   </a>

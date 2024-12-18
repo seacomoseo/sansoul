@@ -81,17 +81,24 @@
 
   {{/*  MODAL BUTTONS CORNER  */}}
   {{- if $modal  -}}
-    <button class="modal__back button--icon">
-      {{- partial "components/icon" (dict "icon" "arrow-left") -}}
-      <i>{{ i18n "back" }}</i>
-      {{- "" -}}
-    </button>
-    {{- "" -}}
-    <button class="modal__close--corner button--icon">
-      {{- partial "components/icon" (dict "icon" "xmark") -}}
-      <i>{{ i18n "close" }}</i>
-      {{- "" -}}
-    </button>
+    {{/*
+    {{- partial "components/link" (dict
+      "class" "modal__back"
+      "link"  "none"
+      "dot"   true
+      "icon"  "arrow-left"
+      "emoji" "⬅️"
+      "label" (i18n "back")
+    ) -}}
+    */}}
+    {{- partial "components/link" (dict
+      "class" "modal__close--corner"
+      "link"  "none"
+      "dot"   true
+      "icon"  "xmark"
+      "emoji" "❌"
+      "label" (i18n "close")
+    ) -}}
   {{- end -}}
 
   {{/*  COOKIES AND SITEMAP LINK  */}}

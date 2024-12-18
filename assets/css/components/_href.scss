@@ -1,0 +1,16 @@
+.href {
+  color: var(--link);
+  cursor: pointer;
+  background-image: linear-gradient(180deg, transparent calc(100% - var(--outline)), var(--link) 0);
+  background-repeat: no-repeat;
+  background-size: 0 100%;
+  transition: background-size, color;
+  transition-duration: .3s;
+  &:hover,
+  &:focus {
+    @include link-hover;
+  }
+  &:active {
+    @include link-active;
+  }
+}

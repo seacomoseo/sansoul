@@ -1,7 +1,10 @@
 <aside class="up">
-  <button class="button--icon scroll-to-top">
-    {{- partial "components/icon" (dict "icon" "arrow-up") -}}
-    <i>{{ i18n "scroll_up" }}</i>
-    {{- "" -}}
-  </button>
+  {{- partial "components/link" (dict
+    "class" "scroll-to-top"
+    "link"  "none"
+    "dot"   true
+    "icon"  "arrow-up"
+    "emoji" "⬆️"
+    "label" (i18n "scroll_up")
+  ) -}}
 </aside>

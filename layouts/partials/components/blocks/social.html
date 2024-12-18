@@ -37,9 +37,9 @@
         {{- $label = print (i18n "follow_us") " Email" -}}
       {{- end -}}
       {{- partial "components/link" (dict
-        "class"   "button--icon"
         "link"    .
         "button"  $.button
+        "dot"     true
         "icon"    $icon
         "label"   $label
         "anchor"  ""

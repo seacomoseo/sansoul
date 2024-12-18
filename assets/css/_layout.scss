@@ -19,11 +19,21 @@ main {
   min-height: calc(100vh - 9em);
 }
 a {
-  @include link;
+  color: var(--link);
+  text-decoration: none;
+  transition: color;
+  transition-duration: .3s;
+  &:hover,
+  &:focus {
+    color: var(--hover);
+  }
+  &:active {
+    color: var(--active);
+  }
 }
 strong,
 .strong,
-.button--font-alt:not(.button, button) > i,
+.button--font-alt:not(.button) > i,
 dt,
 legend {
   @include font-base-bold;

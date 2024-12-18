@@ -28,7 +28,7 @@
   line-height: $line-height-title;
   font-size: $font-size-title * 1em;
   @if $top-title != 0 {
-    &:not(strong, a, [data-h], [data-b]) {
+    &:not(strong, .href) {
       transform: translateY(#{ $top-title }em);
       > svg:not(.box__icon--side),
       &.underline:after {
@@ -134,23 +134,6 @@
 
 // LINKS HOVER, FOCUS AND ACTIVE
 
-@mixin link {
-  color: var(--link);
-  text-decoration: none;
-  cursor: pointer;
-  background-image: linear-gradient(180deg, transparent calc(100% - var(--outline)), var(--link) 0);
-  background-repeat: no-repeat;
-  background-size: 0 100%;
-  transition: background-size, color;
-  transition-duration: .3s;
-  &:hover,
-  &:focus {
-    @include link-hover;
-  }
-  &:active {
-    @include link-active;
-  }
-}
 @mixin link-hover {
   color: var(--hover);
   background-size: 100% 100%;

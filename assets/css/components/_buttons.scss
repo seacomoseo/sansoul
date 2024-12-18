@@ -8,7 +8,7 @@
   flex-wrap: wrap;
   gap: 1em;
   margin-top: 2em;
-  > *:not(.button, button) {
+  > *:not(.button) {
     display: flex;
     gap: .25em;
   }
@@ -17,7 +17,6 @@
 
 // Button
 
-button,
 .button {
   color: var(--base-text);
   background-color: transparent;
@@ -101,7 +100,6 @@ button,
 
 // Hover, Focus and Active
 
-button,
 .button {
   &:is(
     :hover,
@@ -109,7 +107,7 @@ button,
     .box:has(> .box__button):not(:has(
       .box .box__button,
       > .box__button ~ .box__button,
-      :is(a, [data-h], [data-b]):not(.box__button)
+      .href:not(.box__button)
     )):where(
       :hover,
       :focus
@@ -141,7 +139,7 @@ button,
     .box:has(> .box__button):not(:has(
       .box .box__button,
       > .box__button ~ .box__button,
-      :is(a, [data-h], [data-b]):not(.box__button)
+      .href:not(.box__button)
     )):active > .box__button,
     .menu__button:where(.menu__item--active > *):not(:hover)
   ) {
@@ -181,7 +179,7 @@ button,
 
 // Icon
 
-.button--icon {
+.button--dot {
   padding: .5em;
   width: 3em;
   height: 3em;
@@ -220,7 +218,7 @@ button,
       }
     }
   }
-  &:not(.button, button) {
+  &:not(.button) {
     > i {
       @include font-button;
     }
@@ -243,7 +241,6 @@ button,
 // Outline
 
 @if $buttons-outline {
-  button,
   .button {
     color: var(--text);
     > svg {
@@ -273,13 +270,13 @@ button,
       }
     }
   }
-  .button--icon:not(:hover,:focus,:active) {
+  .button--dot:not(:hover,:focus,:active) {
     > svg {
       color: var(--text);
     }
   }
   @if $chamfer and $icon-buttons-rounded {
-    .button--icon {
+    .button--dot {
       &:before,
       &:after {
         clip-path: var(--diamond-outline);
@@ -288,8 +285,8 @@ button,
   }
   // Float icon
   .menu__toggle,
-  .callnow .button--icon,
-  .up .button--icon,
+  .callnow .button--dot,
+  .up .button--dot,
   .modal__back,
   .modal__close--corner {
     // --text: var(--base);

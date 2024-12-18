@@ -194,16 +194,47 @@
 
     {{/*  GALLERY  */}}
     {{ if .gallery }}
-      {{- partial "components/blocks/gallery" (merge
-        (.gallery | default dict)
-        (dict
-          "limages"   .limages
-          "images"    .images
-          "container" .container
-          "span_xl"   $span_xl
-          "span_xs"   $span_xs
-        )
-      ) -}}
+      {{- if eq .gallery.type "boxes" -}}
+        {{- $boxes_images := .limages | default slice -}}
+        {{- range .images -}}
+          {{- $boxes_images = $boxes_images | append (dict "image" . "link" .) -}}
+        {{- end -}}
+        {{- partial "components/boxes/_" (merge
+          (dict
+            "box"      (dict
+              "button"    "hide"
+              "columns"   .columns
+              "color"     .color
+              "gap"       .gap
+              "ratio"     .ratio
+              "contain"   .contain
+              "grayscale" .grayscale
+            )
+          )
+          .
+          (dict
+            "main"     $main
+            "level"    $level
+            "span_xl"  $span_xl
+            "span_xs"  $span_xs
+            "box_wrap" nil
+            "prev"     nil
+            "next"     nil
+            "boxes"    $boxes_images
+          )
+        ) -}}
+      {{- else -}}
+        {{- partial "components/blocks/gallery" (merge
+          (.gallery | default dict)
+          (dict
+            "limages"   .limages
+            "images"    .images
+            "container" .container
+            "span_xl"   $span_xl
+            "span_xs"   $span_xs
+          )
+        ) -}}
+      {{- end -}}
     {{ end }}
 
     {{/*  LIST  */}}
@@ -320,25 +351,34 @@
       {{- if and .modal (not .ph) -}}
         <div class="buttons">
           {{- with .prev -}}
-            <a class="button button--icon modal__prev" href="#{{ .id }}">
-              {{- partial "components/icon" (dict "icon" "chevron-left") -}}
-              <i>{{ i18n "prev" }}</i>
-              {{- "" -}}
-            </a>
+            {{- partial "components/link" (dict
+              "class" "modal__prev"
+              "link"  (print "#" .id)
+              "dot"   true
+              "icon"  "chevron-left"
+              "emoji" "⬅️"
+              "label" (i18n "prev")
+            ) -}}
           {{- end -}}
 
-          <button class="modal__close {{- if and .prev .next }} button--icon{{ end }}">
-            {{- partial "components/icon" (dict "icon" "xmark") -}}
-            <i>{{ i18n "close" }}</i>
-            {{- "" -}}
-          </button>
+          {{- partial "components/link" (dict
+            "class" "modal__close"
+            "link"  "none"
+            "dot"   (and .prev .next)
+            "icon"  "xmark"
+            "emoji" "❌"
+            "label" (i18n "close")
+          ) -}}
 
           {{- with .next -}}
-            <a class="button button--icon modal__next" href="#{{ .id }}">
-              {{- partial "components/icon" (dict "icon" "chevron-right") -}}
-              <i>{{ i18n "next" }}</i>
-              {{- "" -}}
-            </a>
+            {{- partial "components/link" (dict
+              "class" "modal__next"
+              "link"  (print "#" .id)
+              "dot"   true
+              "icon"  "chevron-right"
+              "emoji" "➡️"
+              "label" (i18n "next")
+            ) -}}
           {{- end -}}
         </div>
       {{- end -}}

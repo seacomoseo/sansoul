@@ -16,9 +16,17 @@
   {{ if . | findRE `youtu\.be|youtube\.com` }}
     {{ $image = print "https://i3.ytimg.com/vi_webp/" (. | replaceRE `^.+?(v=|be/)(.+?)(&|\?|$).*` `$2`) "/sddefault.webp" }}
   {{ else if in . `vimeo.com` }}
-    {{ $vimeo_api := getJSON (print "http://vimeo.com/api/v2/video/" (. | replaceRE `^.+?com/(.+?)(\?|$).*` `$1`) ".json") }}
-    {{ with $vimeo_api }}
-      {{ $image = (index $vimeo_api 0).thumbnail_large }}
+    {{ $url := print "http://vimeo.com/api/v2/video/" (. | replaceRE `^.+?com/(.+?)(\?|$).*` `$1`) ".json" }}
+    {{ with resources.GetRemote $url }}
+      {{ with .Err }}
+        {{ errorf "%s" . }}
+      {{ else }}
+        {{ with . | transform.Unmarshal }}
+          {{ $image = (index . 0).thumbnail_large }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ errorf "Unable to get remote resource %q" $url }}
     {{ end }}
   {{ end }}
 {{ end }}

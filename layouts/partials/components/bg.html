@@ -52,7 +52,8 @@
   ) }}
 
   <div {{ $attr | safeHTMLAttr }}>
-    {{- if partial `functions/is-iframe` .bg -}}
+    {{- $is_iframe := partial `functions/is-iframe` .bg -}}
+    {{- if $is_iframe -}}
       <div class="bg-figure-video">
     {{- end -}}
       {{- partial "components/image" (dict
@@ -64,7 +65,7 @@
         "span_xl"   .span_xl
         "span_xs"   .span_xs
       ) -}}
-    {{- if partial `functions/is-iframe` .bg -}}
+    {{- if $is_iframe -}}
       </div>
     {{- end -}}
   </div>

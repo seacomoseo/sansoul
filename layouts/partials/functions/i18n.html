@@ -3,4 +3,10 @@
 {{ $path     := print "i18n/" $lang_cms ".yml" }}
 {{ $file     := readFile $path }}
 {{ $i18n     := unmarshal $file }}
+{{ if ne $lang_cms "es" }}
+  {{ $path_es := print "i18n/es.yml" }}
+  {{ $file_es := readFile $path_es }}
+  {{ $i18n_es := unmarshal $file_es }}
+  {{ $i18n     = merge $i18n_es $i18n }}
+{{ end }}
 {{ return $i18n }}

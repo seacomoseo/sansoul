@@ -315,7 +315,7 @@ img[src*=".svg"].image__inner {
 .box:has(> .box__button):not(:has(
   .box .box__button,
   > .box__button ~ .box__button,
-  :is(a, [data-h], [data-b]):not(.box__button)
+  .href:not(.box__button)
 )) {
   > .image .image__inner {
     &:where(svg),

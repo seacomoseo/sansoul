@@ -1,8 +1,6 @@
 .section--footer {
-  a,
-  [data-h],
-  [data-b] {
-    &:not(:hover, button, .button) {
+  .href {
+    &:not(:hover) {
       color: inherit;
     }
     &:not(#aux) {
@@ -23,10 +21,10 @@
   gap: 1em;
   opacity: .75;
   font-size: 1.25em;
-  > *:is(i, a) {
+  .href {
     display: block;
     padding: .5em;
-    > svg {
+    svg {
       color: inherit;
     }
   }

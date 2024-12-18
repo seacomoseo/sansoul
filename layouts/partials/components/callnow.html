@@ -76,10 +76,11 @@
         {{- end -}}
 
         {{- partial "components/link" (dict
-          "class"     (print $class " button--icon")
+          "class"     $class
           "link"      $link
           "button"    $button
-          "font_alt"  ""
+          "dot"       true
+          "font_alt"  true
           "icon"      $icon
           "emoji"     $emoji
           "label"     $label

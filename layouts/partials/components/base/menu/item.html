@@ -42,6 +42,9 @@
         {{- with .translate -}}
           {{- $class = print $class " menu__link--translate" -}}
         {{- end -}}
+        {{- with .class -}}
+          {{- $class = print $class " " . -}}
+        {{- end -}}
 
         <li class="menu__item
           {{- if eq .link page.RelPermalink | and (not .IsHome) }} menu__item--active{{ end -}}

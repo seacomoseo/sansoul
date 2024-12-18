@@ -1,9 +1,5 @@
 
 {{- $class := .class | default "" -}}
-{{- with .font_alt -}}
-  {{- $class = print $class " button--font-alt" -}}
-{{- end -}}
-
 {{- $icon  := "" -}}
 {{- with .icon -}}
   {{- $icon = partial "components/icon" (dict "icon" . "emoji" $.emoji) -}}
@@ -20,10 +16,26 @@
   {{- $noindex     := (.noindex | default false)  -}}
   {{- $anchor_link := hasPrefix .link "#" -}}
   {{- $button      := ne .button "none" -}}
+  {{- $class_type  := "" -}}
   {{- if $button -}}
     {{- with .button -}}
-      {{- $class = print $class " " . -}}
+      {{- $class_type = print "button " . -}}
+    {{- else -}}
+      {{- $class_type = "button" -}}
     {{- end -}}
+  {{- else -}}
+    {{- $class_type = "href" -}}
+  {{- end -}}
+  {{- with .font_alt -}}
+    {{- $class_type = print $class_type " button--font-alt" -}}
+  {{- end -}}
+  {{- with .dot -}}
+    {{- $class_type = print $class_type " button--dot" -}}
+  {{- end -}}
+  {{- with $class -}}
+    {{- $class = print $class_type " " . -}}
+  {{- else -}}
+    {{- $class = $class_type -}}
   {{- end -}}
 
   {{- if not $external | and (not $anchor_link) | and (not .noindex) -}}
@@ -58,6 +70,7 @@
         )
       )
     )
+    | and (ne .label "none")
   -}}
   {{- $final_label := $anchor
     | default .label
@@ -78,43 +91,65 @@
     {{- end -}}
   {{- end -}}
 
-  {{- $not_link := $noindex | or $lightbox | or ((eq .label "none") | and (not .link)) -}}
-  {{- if $not_link -}}
-    {{- "<" | safeHTML -}}
+  {{- $not_link := or $noindex $lightbox ((eq .label "none") | and (not .link)) (eq .link "none") -}}
+  {{- "<" | safeHTML -}}
+    {{- if $not_link -}}
       {{- cond    $button `button type="button"` "i" | safeHTML -}}
-      {{- with    $class           }} class="{{ . }}"{{ end -}}
+      {{- "" }} class="{{ $class }}"
       {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}" data-b
       {{- else if $link            }} data-{{ cond (or $external $_blank) `b` `h` }}="{{ $link | safeURL | base64Encode }}"
       {{- end -}}
-      {{- if      eq .label `none` }} title="{{ $final_label }}"{{ end -}}
       {{- if      not $button      }} tabindex="0" role="link"{{ end -}}
       {{- if and (not $button) (not $link) }} data-b{{ end -}}
-    {{- ">" | safeHTML -}}
-  {{- else -}}
-    <a
-      {{- if $button | or $class | or $is_data_more }} class="{{ cond $button `button` `` }} {{- with $class }} {{ . }}{{ end }}"
-      {{- end }} href="{{ $link | safeURL }}"
+    {{- else -}}
+      {{- "a" | safeHTML -}}
+      {{- "" }} class="{{ $class }}"
+      {{- "" }} href="{{ $link | safeURL }}"
       {{- if or $external $_blank }} target="_blank" rel="noopener"{{ end -}}
-      {{- if eq .label `none` }} title="{{ $final_label }}"{{ end -}}
-    >
-  {{- end -}}
+    {{- end -}}
+    {{- if eq .label "none" }} title="{{ $final_label }}"{{ end -}}
+  {{- ">" | safeHTML -}}
 
   {{- $icon -}}
 
-  {{- if eq .label "none" -}}
-  {{- else if $is_data_more -}}
-    <i data-more="{{ $label }}"><i>{{ $final_label }}</i></i>
-  {{- else -}}
-    {{- partial "components/ofuscate" $label -}}
+  {{- if ne .label "none" -}}
+    {{- $ofuscate := partial "components/ofuscate" $label -}}
+    {{- if or $ofuscate $is_data_more -}}
+      <i
+        {{- if $ofuscate }} class="ofuscate"{{ end }}
+        {{- if $is_data_more }} data-more="{{ $label }}"{{ end -}}
+      >
+        {{- if $is_data_more -}}
+          <i>{{- $final_label -}}</i>
+        {{- else if $ofuscate -}}
+          {{- .label | base64Encode -}}
+        {{- end -}}
+      </i>
+    {{- else -}}
+      {{- if $button -}}
+        <i>{{- .label -}}</i>
+      {{- else -}}
+        {{- .label -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 
   {{- "</" | safeHTML }} {{- cond (not $not_link) "a" (cond $button "button" "i") -}} >
 
 {{- else -}}
 
+  {{- $ofuscate := partial "components/ofuscate" (.label | default "") -}}
+  {{- if $ofuscate -}}
+    {{- $class = print $class " ofuscate" -}}
+  {{- end -}}
+
   {{- with $class }}<i class="{{ . }}">{{ end -}}
     {{- $icon -}}
-    {{- partial "components/ofuscate" (.label | default "") -}}
+    {{- if $ofuscate -}}
+      {{- .label | base64Encode -}}
+    {{- else -}}
+      {{- .label -}}
+    {{- end -}}
   {{- with $class }}</i>{{ end -}}
 
 {{- end -}}

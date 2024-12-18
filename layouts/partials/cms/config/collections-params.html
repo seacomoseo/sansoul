@@ -28,29 +28,51 @@
     {{ $hint  = print "[" .t.types_params_relations_hint "](#/collections/" .name ")" }}
   {{ end }}
 
-  {{ $fields = .fields | append
-    (dict
-      "name"           .name
-      "widget"         $type
-      "i18n"           $i18n
-      "required"       false
-      "label"          $label
-      "hint"           $hint
+  {{ $field := dict
+    "name"           .name
+    "widget"         $type
+  }}
+
+  {{ if eq $type "number" }}
+    {{ $field = merge $field (dict
+      "value_type"     $value_type
+    ) }}
+  {{ else if eq $type "markdown" }}
+    {{ $field = merge $field (dict
+      "show_raw"       true
+    ) }}
+  {{ else if eq $type "date" }}
+    {{ $field = merge $field (dict
+      "format"         `yyyy-MM-dd HH:mm:ss`
+      "date_format"    `yyyy-MM-dd`
+      "time_format"    `HH:mm`
+    ) }}
+  {{ else if eq $type "image" }}
+  {{ else if eq $type "select" }}
+    {{ $field = merge $field (dict
       "options"        .options
+    ) }}
+  {{ else if eq $type "relation" }}
+    {{ $field = merge $field (dict
       "options_length" 100
       "collection"     .name
       "value_field"    "{{slug}}"
       "search_fields"  (slice "{{title}}")
       "display_fields" (slice "{{title}}")
-      "multiple"       .multiple
-      "choose_url"     true
-      "max_file_size"  512000000
-      "value_type"     $value_type
-      "format"         `yyyy-MM-dd HH:mm:ss`
-      "date_format"    `yyyy-MM-dd`
-      "time_format"    `HH:mm`
-    )
-  }}
+    ) }}
+  {{ else if in (slice "list" "object") $type }}
+    {{ $fields_children := slice }}
+    {{ range .list | default slice }}
+      {{ $fields_children = partial "cms/config/collections-params" (merge . (dict "fields" $fields_children "t" $.t)) }}
+    {{ end }}
+    {{ $field = merge $field (dict
+      "collapsed"      true
+      "allow_add"      true
+      "fields"         $fields_children
+    ) }}
+  {{ end }}
+
+  {{ $fields = .fields | append $field }}
 
 {{ end }}
 

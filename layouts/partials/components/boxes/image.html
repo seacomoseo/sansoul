@@ -1,5 +1,3 @@
-{{- $is_page := isset . "Page" -}}
-
 {{- $image_src  := .image -}}
 {{- with .image -}}
   {{- $image_src = . | plainify  -}}
@@ -12,12 +10,6 @@
 
 {{/*  IMAGE INI  */}}
 {{ if $print_image }}
-
-  {{/*  IFRAME POSTER  */}}
-  {{ $iframe_poster  := "" }}
-  {{ if partial "functions/is-iframe" $image_src | and ((in $image_src "poster") | or $is_page) }}
-    {{ $iframe_poster = partial "functions/iframe-poster" $image_src }}
-  {{ end }}
 
   {{/*  IMAGE CLASS  */}}
   {{- $hover     := cond (not .hover)     "" "image--hover"     -}}
@@ -62,27 +54,19 @@
       <div class="image__inner image__inner--gradient"></div>
     {{- end -}}
 
+
     {{/*  IMAGE TAG  */}}
     {{ partial "components/image" (dict
-      "class"     "image__inner"
-      "src"       (cond
-        (not $iframe_poster)
-        $image_src
-        $iframe_poster
-      )
-      "ratio"     .ratio
-      "contain"   .contain
-      "container" .container
-      "span_xl"   .span_xl
-      "span_xs"   .span_xs
-      "notlazy"   $.first
-      | merge (cond (not ($iframe_poster | and (not $is_page)))
-        (dict)
-        (dict
-          "iframe_src" (partial `functions/iframe-src` (merge . (dict `src` $image_src)))
-          "icon_color" .icon_color
-        )
-      )
+      "class"      "image__inner"
+      "src"        $image_src
+      "ratio"      .ratio
+      "contain"    .contain
+      "container"  .container
+      "span_xl"    .span_xl
+      "span_xs"    .span_xs
+      "notlazy"    $.first
+      "modal"      .modal
+      "icon_color" .icon_color
     ) }}
 
     {{/*  IMAGE HOVER TAG  */}}

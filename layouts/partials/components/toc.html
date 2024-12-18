@@ -3,9 +3,11 @@
   {{- range .Headings -}}
     {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) -}}
     <li>
-      <a href="#{{ $id }}">
-        {{- .Title | safeHTML -}}
-      </a>
+      {{- partial "components/link" (dict
+        "link"    (print "#" $id)
+        "button"  "none"
+        "label"   (.Title | safeHTML)
+      ) -}}
       {{- partial "components/toc" . -}}
     </li>
   {{- end -}}

@@ -1,3 +1,5 @@
+import { togglePlayer } from './iframe-player'
+
 // MODAL
 
 // Last seccion hash
@@ -12,6 +14,7 @@ function openModal (target) {
   // }, 10)
   document.documentElement.classList.add('modal__active')
   target.scrollTo({ top: 0 })
+  togglePlayer(target, true)
 }
 
 // Close
@@ -28,6 +31,7 @@ export function closeModal (changeHash) {
   }
   const modalOpen = document.querySelector('dialog[open].modal')
   if (modalOpen) {
+    togglePlayer(modalOpen, false)
     modalOpen.classList.add('modal--hide')
     setTimeout(() => {
       modalOpen.close()
@@ -116,8 +120,8 @@ export function initModals () {
     const backover = e.target.classList.contains('modal')
     if (buttonClose || backover) closeModal()
     // Back
-    const back = e.target.closest('.modal__back')
-    if (back) window.history.back()
+    // const back = e.target.closest('.modal__back')
+    // if (back) window.history.back()
   })
 
   // When keyup escape

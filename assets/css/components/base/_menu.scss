@@ -88,7 +88,7 @@
   }
 }
 .menu__title {
-  margin-top: 1em;
+  margin-block: 1em 0;
   text-transform: uppercase;
 }
 .menu__items {
@@ -98,7 +98,6 @@
   transition: padding-top .3s;
   line-height: 1.25;
   .menu__link {
-    @include link;
     text-align: left;
     color: inherit;
     display: flex;
@@ -176,13 +175,12 @@
 }
 
 // Langs
-.menu__item--lang
-svg {
+.menu__item--lang svg {
   border-radius: 50%;
 }
-.langs__drop {
+.menu .langs__drop {
   margin-left: .125em;
-  translate: 0 .1em;
+  translate: 0 .2em;
 }
 
 // Container

@@ -43,7 +43,7 @@
   }}
 {{ else }}
   {{ $content = $content
-    | replaceRE `(?s)(<a class="content__heading-link".+?)<br>(</a>)` `$1$2`
+    | replaceRE `(?s)(<a class="href content__heading-link".+?)<br>(</a>)` `$1$2`
   }}
 {{ end }}
 

@@ -1,9 +1,10 @@
-{{- with partial "components/base/menu/langs" (dict "icon" (index .Params 0) "up" true) -}}
+{{- with partial "components/base/menu/langs" (dict "up" true) -}}
   {{- with index . 0 -}}
-    {{- partial "components/icon" (dict "icon" .icon "emoji" .emoji) -}}
     <i class="langs">
       {{- partial "components/link" (dict
-        "class"    "langs__parent"
+        "class"    .class
+        "icon"     (index $.Params 0 | default .icon)
+        "emoji"    .emoji
         "label"    (.label | markdownify)
         "noindex"  true
       ) -}}

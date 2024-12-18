@@ -110,11 +110,7 @@
   }
 }
 .contact {
-  a:not(.button),
-  i:where(
-    [data-h],
-    [data-b]
-  ) {
+  .href:not(.button) {
     display: inline-flex;
     align-items: center;
     gap: .375em;
@@ -128,11 +124,11 @@
 .contact > {
   *:not(button, .button) {
     justify-content: center;
-    &:not(.contact__email:has(> button.contact__email-button)) {
+    &:not(.contact__email:has(> .button.contact__email-button)) {
       flex-grow: 0;
     }
   }
-  * > .contact__email-button:not(button, .button) {
+  * > .contact__email-button:not(.button) {
     width: auto;
     display: flex;
     align-items: center;

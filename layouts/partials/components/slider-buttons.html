@@ -9,7 +9,7 @@
 {{- end -}}
 
 {{- $bullet_class := "slider__bullet" -}}
-{{- $arrow_class  := "slider__arrow button--icon" -}}
+{{- $arrow_class  := "slider__arrow" -}}
 {{- if and (ne .button "hide") (ne .button "none") -}}
   {{- with .button -}}
     {{- $bullet_class = print $bullet_class " " . -}}
@@ -22,16 +22,33 @@
     {{- if eq . 1 -}}
       {{- $bullet_class = print $bullet_class " slider__bullet--active" -}}
     {{- end -}}
-    <button class="{{ $bullet_class }}" title="{{ i18n `slide` }} {{ . }}"></button>
+    {{- partial "components/link" (dict
+      "class"  $bullet_class
+      "link"   "none"
+      "label"  "none"
+      "anchor" (print (i18n "slide") " " .)
+    ) -}}
   {{- end -}}
 </div>
 
 <div class="{{ $arrows_class }}">
-  <button class="{{ $arrow_class }} slider__arrow--left" title="{{ i18n `slide_left` }}">
-    {{- partial "components/icon" (dict "icon" "chevron-left") -}}
-  </button>
+  {{- partial "components/link" (dict
+    "class"  (print $arrow_class " slider__arrow--left")
+    "link"   "none"
+    "dot"    true
+    "icon"   "chevron-left"
+    "emoji"  "⬅️"
+    "label"  "none"
+    "anchor" (i18n "slide_left")
+  ) -}}
   {{- "" -}}
-  <button class="{{ $arrow_class }} slider__arrow--right" title="{{ i18n `slide_right` }}">
-    {{- partial "components/icon" (dict "icon" "chevron-right") -}}
-  </button>
+  {{- partial "components/link" (dict
+    "class"  (print $arrow_class " slider__arrow--right")
+    "link"   "none"
+    "dot"    true
+    "icon"   "chevron-right"
+    "emoji"  "⬅️"
+    "label"  "none"
+    "anchor" (i18n "slide_right")
+  ) -}}
 </div>

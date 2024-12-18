@@ -25,7 +25,7 @@
 .box:has(> .box__button):not(:has(
   .box .box__button,
   > .box__button ~ .box__button,
-  :is(a, [data-h], [data-b]):not(.box__button)
+  .href:not(.box__button)
 )).bg:not(.box--hide-shadow) {
   transition: filter .1s, transform .1s;
   @if $buttons-3d {
@@ -269,7 +269,7 @@
   align-items: baseline;
   gap: .25em;
   margin: 0;
-  > :is(a,[data-h],[data-b]):not(:hover, :focus, :active) {
+  .href:not(:hover, :focus, :active) {
     color: inherit;
   }
   // Remove underline if next is icon bottom
@@ -302,13 +302,10 @@
 
 
 // Link
-.box__link {
-  @include link;
-}
 .box:has(> .box__button):not(:has(
   .box .box__button,
   > .box__button ~ .box__button,
-  :is(a, [data-h], [data-b]):not(.box__button)
+  .href:not(.box__button)
 )) {
   cursor: pointer;
   // Hover
@@ -375,7 +372,7 @@
     margin-inline: auto;
   }
   // Text link style
-  &:not(.button, button) {
+  &:not(.button) {
     display: flex;
     justify-content: center;
     gap: .25em;

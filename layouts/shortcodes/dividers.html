@@ -25,7 +25,11 @@
   {{ end }}
 
   <h3 id="divider-{{ . }}">
-    <a href="#divider-{{ . }}">{{ . }}</a>
+    {{- partial "components/link" (dict
+      "link"    (print "#divider-" .)
+      "button"  "none"
+      "label"   .
+    ) -}}
     <br>
     {{ i18n (print "option_divider_" .) }}
   </h3>
