@@ -53,11 +53,9 @@ export function initMap () {
     rootMargin: '20%',
     query: '.map',
     doStart: (mapDiv) => {
-      loadLeaflet().then(() => {
-        mapStart(mapDiv)
-      }).catch(error => {
-        console.error(error)
-      })
+      loadLeaflet()
+        .then(() => { mapStart(mapDiv) })
+        .catch(console.error)
     }
   })
 }

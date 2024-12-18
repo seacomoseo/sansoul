@@ -67,9 +67,7 @@ export function initIframePlayer () {
               }
             }, 100)
           })
-          .catch(error => {
-            console.error(error)
-          })
+          .catch(console.error)
       }
     })
   }

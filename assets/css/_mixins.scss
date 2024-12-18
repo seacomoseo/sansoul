@@ -61,10 +61,9 @@
   font-size: $font-size-cursive * 1em;
   @if $top-cursive {
     &:not(strong, a) {
-      position: relative;
-      top: #{ $top-cursive }em;
+      translate: 0 #{ $top-cursive }em;
       > svg {
-        margin-top: -#{ $top-cursive }em;
+        translate: 0 -#{ $top-cursive }em;
       }
     }
   }

@@ -27,6 +27,7 @@ export function initSimpleLightbox () {
           const galleryExpand = e.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
           if (galleryExpand) localImages.open(e.target.closest('.gallery').firstChild)
         })
+        console.log(localImages)
         // Fix combine lightbox with modal
         localImages.on('show.simplelightbox', e => {
           closeModal(true)
@@ -36,12 +37,10 @@ export function initSimpleLightbox () {
 
     scrollShot({
       rootMargin: '0%',
-      query: '[data-lightbox]',
+      query: ':is(.menu, .section, .modal):has([data-lightbox])',
       doStart: gallery => loadScript('/js/simple-lightbox.min.js')
         .then(lightbox)
-        .catch(error => {
-          console.error(error)
-        })
+        .catch(console.error)
     })
   }
 }

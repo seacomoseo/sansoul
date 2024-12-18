@@ -27,42 +27,44 @@ function mapStart (geoDiv) {
 
   if (geoDiv.dataset.area === 'true') {
     // Polygon and circle
-    loadLeafletDraw().then(() => {
-      const drawnItems = new window.L.FeatureGroup()
-      map.addLayer(drawnItems)
+    loadLeafletDraw()
+      .then(() => {
+        const drawnItems = new window.L.FeatureGroup()
+        map.addLayer(drawnItems)
 
-      const style = { shapeOptions: fill(geoDiv.dataset.color).style }
-      const drawControl = new window.L.Control.Draw({
-        edit: {
-          featureGroup: drawnItems
-        },
-        draw: {
-          polygon: style,
-          circle: style,
-          marker: false,
-          circlemarker: false,
-          polyline: false,
-          rectangle: style
-        }
-      })
-      map.addControl(drawControl)
+        const style = { shapeOptions: fill(geoDiv.dataset.color).style }
+        const drawControl = new window.L.Control.Draw({
+          edit: {
+            featureGroup: drawnItems
+          },
+          draw: {
+            polygon: style,
+            circle: style,
+            marker: false,
+            circlemarker: false,
+            polyline: false,
+            rectangle: style
+          }
+        })
+        map.addControl(drawControl)
 
-      map.on(window.L.Draw.Event.CREATED, e => {
-        const layer = e.layer
-        drawnItems.clearLayers()
-        drawnItems.addLayer(layer)
-        updateInputGeo(json, layer, e.layerType)
-      })
+        map.on(window.L.Draw.Event.CREATED, e => {
+          const layer = e.layer
+          drawnItems.clearLayers()
+          drawnItems.addLayer(layer)
+          updateInputGeo(json, layer, e.layerType)
+        })
 
-      map.on('draw:edited', e => {
-        const layers = drawnItems.getLayers()
-        if (layers.length > 0) {
-          updateInputGeo(json, layers[0], e.layerType)
-        }
+        map.on('draw:edited', e => {
+          const layers = drawnItems.getLayers()
+          if (layers.length > 0) {
+            updateInputGeo(json, layers[0], e.layerType)
+          }
+        })
       })
-    }).catch(error => {
-      console.error('Error loading Leaflet Draw:', error)
-    })
+      .catch(error => {
+        console.error('Error loading Leaflet Draw:', error)
+      })
   } else {
     // Marker
     const marker = window.L.marker(initialView, { icon: myIcon(geoDiv.dataset) })
@@ -89,11 +91,9 @@ export function initFormGeo () {
     rootMargin: '0%',
     query: '.form__geo-map',
     doStart: geoDiv => {
-      loadLeaflet().then(() => {
-        mapStart(geoDiv)
-      }).catch(error => {
-        console.error(error)
-      })
+      loadLeaflet()
+        .then(() => { mapStart(geoDiv) })
+        .catch(console.error)
     }
   })
 }
