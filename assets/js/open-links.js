@@ -66,7 +66,7 @@ export function initOpenLinks () {
           '.box:has(> .box__button):not(:has(' +
             '.box .box__button,' +
             '> .box__button ~ .box__button,' +
-            '.href:not(.box__button)' +
+            '.href:not(.box__link, .box__button)' +
           '))'
         )
         if (boxLink) {

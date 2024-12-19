@@ -107,7 +107,7 @@
     .box:has(> .box__button):not(:has(
       .box .box__button,
       > .box__button ~ .box__button,
-      .href:not(.box__button)
+      .href:not(.box__link, .box__button)
     )):where(
       :hover,
       :focus
@@ -139,7 +139,7 @@
     .box:has(> .box__button):not(:has(
       .box .box__button,
       > .box__button ~ .box__button,
-      .href:not(.box__button)
+      .href:not(.box__link, .box__button)
     )):active > .box__button,
     .menu__button:where(.menu__item--active > *):not(:hover)
   ) {
