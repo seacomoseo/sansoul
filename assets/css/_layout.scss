@@ -23,11 +23,13 @@ a {
   text-decoration: none;
   transition: color;
   transition-duration: .3s;
-  &:hover,
-  &:focus {
+  &:where(
+    :hover,
+    :focus
+  ) {
     color: var(--hover);
   }
-  &:active {
+  &:where(:active) {
     color: var(--active);
   }
 }

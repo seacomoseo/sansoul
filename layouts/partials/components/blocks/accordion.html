@@ -23,7 +23,7 @@
           {{ else }}
             <i>{{ .title }}</i>
             <button type="button" class="accordion__button-dot button button--dot {{ $button }}">
-              {{- $icon  := cond (not .icon) "angle-down" .icon -}}
+              {{- $icon  := cond (not .icon) (site.Data.styles.icons.down | default "angle-down") .icon -}}
               {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon) -}}
             </button>
           {{ end }}

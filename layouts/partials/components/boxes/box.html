@@ -366,7 +366,7 @@
               "class" "modal__prev"
               "link"  (print "#" .id)
               "dot"   true
-              "icon"  "chevron-left"
+              "icon"  (site.Data.styles.icons.left | default "chevron-left")
               "emoji" "⬅️"
               "label" (i18n "prev")
             ) -}}
@@ -386,7 +386,7 @@
               "class" "modal__next"
               "link"  (print "#" .id)
               "dot"   true
-              "icon"  "chevron-right"
+              "icon"  (site.Data.styles.icons.right | default "chevron-right")
               "emoji" "➡️"
               "label" (i18n "next")
             ) -}}

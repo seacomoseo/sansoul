@@ -7,7 +7,7 @@
         "label"     .Title
         "noindex"   .Params.noindex
       ) -}}
-      {{- partial "components/icon" (dict "icon" "angle-right" "emoji" "➡️") -}}
+      {{- partial "components/icon" (dict "icon" (site.Data.styles.icons.right | default "angle-right") "emoji" "➡️") -}}
     </i>
   {{- end -}}
   {{/*  {{- page.Title -}}  */}}
