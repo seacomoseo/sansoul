@@ -39,6 +39,9 @@
             {{- $class = "menu__button button--sm" -}}
           {{- end -}}
         {{- end -}}
+        {{- with .ga4 -}}
+          {{- $class = print $class " ga4" -}}
+        {{- end -}}
         {{- with .translate -}}
           {{- $class = print $class " menu__link--translate" -}}
         {{- end -}}

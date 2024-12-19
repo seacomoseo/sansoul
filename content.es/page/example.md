@@ -38,8 +38,9 @@ menu:
     label: null # string
     anchor: null # string
     ofuscate: true
-    button_color: none
+    button: none
     font_alt: false
+    ga4: false
 callnow:
   show: null # [ items, auto, hide ]
   es:

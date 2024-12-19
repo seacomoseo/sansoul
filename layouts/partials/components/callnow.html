@@ -34,7 +34,7 @@
 
   {{- with $buttons -}}
     {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" -}}
-    <aside class="callnow {{ $callnow_plus }}">
+    <aside id="callnow" class="callnow {{ $callnow_plus }}">
       {{- range . -}}
 
         {{- $class   := "" -}}
@@ -51,7 +51,7 @@
         {{- end -}}
 
         {{- if eq .type "custom" -}}
-          {{- $class   = (print "callnow__custom" (cond (not .ga4) "" " callnow__custom--ga4")) -}}
+          {{- $class   = (print "callnow__custom" (cond (not .ga4) "" " ga4")) -}}
         {{- else if eq .type "phone" -}}
           {{- $class   = "contact__phone" -}}
           {{- $link    = print "tel:+" $num -}}

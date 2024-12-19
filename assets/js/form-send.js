@@ -30,7 +30,7 @@ function changeValuesPrev (form, prev) {
     if (prev) {
       if (input.value) {
         input.dataset.value = input.value
-        input.value = `+${input.previousElementSibling.children[1].value} ${input.value}`
+        input.value = `+${input.nextElementSibling.children[1].value} ${input.value}`
       }
     } else {
       if (input.dataset.value) {
@@ -46,10 +46,10 @@ function formSubmited (form) {
   document.dispatchEvent(customEventSubmit)
   if (googleAnalyticsId) {
     // eslint-disable-next-line
-    gtag('event', 'contact_form_submit', {
-      event_category: 'contact',
-      event_label: 'form',
-      value: form.id
+    gtag('event', 'contact', {
+      id: form.parentElement.closest('[id]').id,
+      type: 'form',
+      label: form.id
     })
   }
   if (form.dataset.to) {

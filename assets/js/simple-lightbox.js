@@ -27,7 +27,6 @@ export function initSimpleLightbox () {
           const galleryExpand = e.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
           if (galleryExpand) localImages.open(e.target.closest('.gallery').firstChild)
         })
-        console.log(localImages)
         // Fix combine lightbox with modal
         localImages.on('show.simplelightbox', e => {
           closeModal(true)

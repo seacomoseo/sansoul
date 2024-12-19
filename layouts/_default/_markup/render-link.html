@@ -1,5 +1,5 @@
-{{- $label    := .Text  | replaceRE `^btn[\w-:]* `                                "" -}}
-{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?homefollow)?(\s?_blank)?` "" -}}
+{{- $label    := .Text  | replaceRE `^btn[\w-:]* `                                         "" -}}
+{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?homefollow)?(\s?_blank)?(\s?ga4)?` "" -}}
 {{- $noindex  := cond (hasPrefix .Title "nofollow") true nil -}}
 
 {{- if in .Title "homefollow" -}}
@@ -18,6 +18,10 @@
   {{- $button  = replace $other "font-alt" "" -}}
   {{- $button  = findRE `(main|alt|link|light|dark|invert|similar|whatsapp)` $button 1 -}}
   {{- $button  = index $button 0 -}}
+{{- end -}}
+
+{{- if in .Title "ga4" -}}
+  {{- $class = print $class " ga4" -}}
 {{- end -}}
 
 {{- $icon     := "" -}}

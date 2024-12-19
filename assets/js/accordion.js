@@ -17,9 +17,6 @@ function showAccordionTarget (itemTarget) {
 
 function accordionToggle (itemTarget) {
   const itemActive = document.querySelector('.accordion--active')
-  console.log(itemTarget)
-  console.log(itemActive)
-
   if (itemTarget === itemActive) {
     hideAccordionActive(itemActive)
   } else {

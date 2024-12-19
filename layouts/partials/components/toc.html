@@ -1,14 +1,16 @@
 
-<ol {{ if not .Level }} class="toc"{{ end }}>
-  {{- range .Headings -}}
-    {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) -}}
-    <li>
-      {{- partial "components/link" (dict
-        "link"    (print "#" $id)
-        "button"  "none"
-        "label"   (.Title | safeHTML)
-      ) -}}
-      {{- partial "components/toc" . -}}
-    </li>
-  {{- end -}}
-</ol>
+{{- if .Headings -}}
+  <ol {{ if not .Level }} class="toc"{{ end }}>
+    {{- range .Headings -}}
+      {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) -}}
+      <li>
+        {{- partial "components/link" (dict
+          "link"    (print "#" $id)
+          "button"  "none"
+          "label"   (.Title | safeHTML)
+        ) -}}
+        {{- partial "components/toc" . -}}
+      </li>
+    {{- end -}}
+  </ol>
+{{- end -}}
