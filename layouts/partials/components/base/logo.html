@@ -17,9 +17,9 @@
     {{- end -}}
     <header class="logo {{ $color }}">
       <div class="box container container--{{ $container }} {{- $align }}">
-        <div class="logo__link href" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link">
+        {{ $alt := site.Home.Params.seo | default site.Home.Params.title | markdownify | plainify }}
+        <div class="logo__link href" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link" title="{{ $alt }}">
           {{- with $logo -}}
-            {{- $alt := print "Logo " site.Title -}}
             {{- partial "components/image"
               (dict
                 "svg_src"   true
