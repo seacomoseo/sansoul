@@ -16,13 +16,13 @@
             {{- $icon  := cond (not .icon) "circle-question" .icon -}}
             {{- $emoji := cond (not .icon) "❔" .icon -}}
             <button type="button" class="accordion__button button {{ $button }} {{ $fotn_alt }}">
-            {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon "emoji" $emoji) -}}
-            <i>{{ .title }}</i>
-            {{- partial "components/icon" (dict "class" "accordion__button-dot" "icon" "plus") -}}
+              {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon "emoji" $emoji) -}}
+              <i>{{ .title }}</i>
+              {{- partial "components/icon" (dict "class" "accordion__button-dot" "icon" "plus") -}}
             </button>
           {{ else }}
             <i>{{ .title }}</i>
-            <button type="button" class="accordion__button-dot button button--dot {{ $button }}">
+            <button type="button" class="accordion__button-dot button button--dot {{ $button }}" title="{{ i18n `more` }}">
               {{- $icon  := cond (not .icon) (site.Data.styles.icons.down | default "angle-down") .icon -}}
               {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon) -}}
             </button>
