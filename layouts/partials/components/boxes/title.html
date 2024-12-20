@@ -2,15 +2,17 @@
 {{ if $title }}
   {{ $title = partial "functions/md" (dict "content" $title "inline" true) }}
 
-  {{ $hn    := .hn | default (cond (not .link) .level "p") }}
-  {{ with $hn }}
-    {{ if ne . "p" }}
-      {{ $hn = print "h" . }}
+  {{ $hn    := .hn }}
+  {{ if not $hn }}
+    {{ if or (not .link) (eq .level 2) }}
+      {{ $hn = print "h" .level }}
+    {{ else }}
+      {{ $hn = "p" }}
     {{ end }}
   {{ end }}
 
   {{ $link  := "" }}
-  {{ if not .like_article | and .main }}
+  {{ if and .main (not .like_article) }}
     {{ $link = cond .header page.RelPermalink (print "#" .section.id) }}
   {{ end }}
 
