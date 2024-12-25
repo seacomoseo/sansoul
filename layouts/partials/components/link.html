@@ -127,9 +127,9 @@
       </i>
     {{- else -}}
       {{- if $button -}}
-        <i>{{- .label -}}</i>
+        <i>{{- .label | default (i18n "more") -}}</i>
       {{- else -}}
-        {{- .label -}}
+        {{- .label | default (i18n "more") -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -148,7 +148,7 @@
     {{- if $ofuscate -}}
       {{- .label | base64Encode -}}
     {{- else -}}
-      {{- .label -}}
+      {{- .label | default (i18n "more") -}}
     {{- end -}}
   {{- with $class }}</i>{{ end -}}
 

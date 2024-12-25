@@ -7,6 +7,7 @@
 {{ $is_part_of            := dict "@id" (print site.BaseURL "/#schema-website") }}
 {{ $potential_action      := slice (dict "@type" "ReadAction" "target" .Permalink) }}
 {{ $breadcrumbs           := "" }}
+{{ $authors               := slice }}
 
 {{/*  Self page  */}}
 {{ if eq page.Permalink .Permalink }}
@@ -17,6 +18,7 @@
   {{/*  Type and hasPart  */}}
   {{ with $children }}
     {{ $type = "CollectionPage" }}
+    {{/*
     {{ if eq page.Type "blog" }}
       {{ $type = "BlogPosting" }}
     {{ else if eq page.Type "article" }}
@@ -24,6 +26,7 @@
     {{ else if eq page.Type "new" }}
       {{ $type = "NewsArticle" }}
     {{ end }}
+    */}}
     {{ range . }}
       {{ $has_part = $has_part | append (partial "components/base/schema/page" .) }}
     {{ end }}
@@ -37,6 +40,22 @@
   {{/*  Images  */}}
   {{ with .Params.images }}
     {{ $image = slice $image | append (partial "components/base/schema/images" .) }}
+  {{ end }}
+
+  {{/*  Authors  */}}
+  {{ if ne .Params.base "article" }}
+    {{ $taxonomies := partial "functions/taxonomy-parents" . }}
+    {{ range $taxonomies }}
+      {{ $page := . }}
+      {{ range .Params.taxonomy_of }}
+        {{ $is_same_type   := eq page.Type .name }}
+        {{ $is_same_schema := eq "author" .schema }}
+        {{ if and $is_same_type $is_same_schema }}
+          {{ $item   := partial "components/base/schema/author" $page }}
+          {{ $authors = $authors | append $item }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
   {{ end }}
 
 {{ else }}
@@ -76,6 +95,7 @@
   "potentialAction"    $potential_action
   "hasPart"            $has_part
   "breadcrumb"         $breadcrumbs
+  "author"             $authors
   "inLanguage"         .Lang
 }}
 {{ $schema = partial "functions/schema-obj" $schema }}
