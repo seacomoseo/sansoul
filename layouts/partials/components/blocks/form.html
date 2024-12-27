@@ -55,11 +55,13 @@
 {{- end -}}
 
 {{- $form          := merge site.Data.styles.inputs (.form | default dict) -}}
-{{- $netlify_forms := not $form.action -}}
-{{- $googleScript  := in $form.action "script.google.com" -}}
-{{- $formsubmit_co := in $form.action "formsubmit.co" -}}
+{{- $netlify_forms := and (not $form.action) (getenv "NETLIFY") -}}
+{{- $action_gss    := "https://script.google.com/macros/s/AKfycbzEd6cjH5eTjzVxDVk6x-3Q9QwUHDMWpR8V1Ij1g6IG7MYwpPM_epAGpxJUR1__ljrWMQ/exec" -}}
+{{- $action_def    := cond (not $netlify_forms) $action_gss (print "/" $form_id) -}}
+{{- $action        := $form.action | default $action_def -}}
+{{- $googleScript  := in $action "script.google.com" -}}
+{{- $formsubmit_co := in $action "formsubmit.co" -}}
 {{- $chamfer       := site.Data.styles.rounded.chamfer -}}
-{{- $action        := $form.action | default (print "/" $form_id) -}}
 {{- $inputs_fill   := cond (not $form.fill) "" " form--fill-inputs" -}}
 {{- $labels_out    := cond (not $form.labels_out) "" " form--labels-out" -}}
 

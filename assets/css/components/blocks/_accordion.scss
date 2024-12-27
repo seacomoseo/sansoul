@@ -25,7 +25,7 @@
   padding-right: 1.125em;
   margin: 0;
 }
-.accordion__button-dot {
+.accordion__button-dot:not(.accordions--headers *) {
   transform: rotate(0deg);
   transition: transform .3s;
   &:where(.accordion--active *) {
@@ -63,7 +63,7 @@
   .accordion__title {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
     cursor: pointer;
     transition: color .3s;
@@ -74,8 +74,11 @@
   .accordion__button-dot {
     flex-shrink: 0;
     font-size: 1.0833333rem;
-    &:where(.accordion--active *) {
-      transform: rotate(180deg);
+    svg {
+      transition: transform .3s;
+      &:where(.accordion--active *) {
+        transform: rotate(180deg) translateY(.1em);
+      }
     }
   }
   .accordion__icon {
