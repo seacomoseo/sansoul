@@ -3,8 +3,13 @@
 {{- end }}
 
 # general
-/index.php /
-/index.php/* /:splat
+/index.php / 301
+/index.php/* /:splat 301
+
+{{- $a := "" -}}
+{{- if getenv "NETLIFY" -}}
+  {{- $a := "!" -}}
+{{- end -}}
 
 {{- if .IsTranslated -}}
   {{- if hugo.IsMultihost -}}
@@ -12,23 +17,23 @@
     {{- range .AllTranslations }}
       {{- $siteBaseURL := .Site.BaseURL }}
       {{- range .Translations }}
-{{ $siteBaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301!
+{{ $siteBaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301{{ $a }}
       {{- end }}
-{{ .Site.BaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301!
-{{ .Site.BaseURL }}/404.html /{{ .Lang }}/404 404!
-{{ .Site.BaseURL }}/404 /{{ .Lang }}/404.html 404!
+{{ .Site.BaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301{{ $a }}
+{{ .Site.BaseURL }}/404.html /{{ .Lang }}/404 404{{ $a }}
+{{ .Site.BaseURL }}/404 /{{ .Lang }}/404.html 404{{ $a }}
 {{ .Site.BaseURL }}/* /{{ .Lang }}/:splat 200
 {{ .Site.BaseURL }}/* /{{ .Lang }}/404.html 404
     {{- end }}
   {{- else }}
 # multilanguage
     {{- range .Translations }}
-/{{ .Lang }}/404.html /{{ .Lang }}/404 404!
-/{{ .Lang }}/404 /{{ .Lang }}/404.html 404!
+/{{ .Lang }}/404.html /{{ .Lang }}/404 404{{ $a }}
+/{{ .Lang }}/404 /{{ .Lang }}/404.html 404{{ $a }}
 /{{ .Lang }}/* /{{ .Lang }}/404.html 404
     {{- end }}
   {{- end }}
 {{- end }}
 
-/404.html /404 404!
-/404 /404.html 404!
+/404.html /404 404{{ $a }}
+/404 /404.html 404{{ $a }}
