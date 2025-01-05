@@ -1,4 +1,4 @@
-import { editorial, hook, netlifyId } from '@params'
+import { editorial, netlifyHook, netlifyId } from '@params'
 
 export function initDeployStatus () {
   const deployStatus = document.querySelector('.deploy-status')
@@ -70,9 +70,9 @@ export function initDeployStatus () {
   const interval = 5000 // 5 seconds
   setInterval(checkDeploymentStatus, interval)
 
-  if (hook) {
+  if (netlifyHook) {
     rebuildButton.addEventListener('click', () => {
-      fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + hook), { method: 'POST' })
+      fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
         .then(response => {
           if (response.status === 200) {
             console.log('Rebuild start')

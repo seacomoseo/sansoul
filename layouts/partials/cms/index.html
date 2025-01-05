@@ -108,7 +108,7 @@
     "targetPath" (print site.Home.RelPermalink "js/cms.js")
     "params"     (dict
       "editorial"    site.Data.config.cms.editorial
-      "hook"         site.Params.hook
+      "netlifyHook"  site.Params.netlify_hook
       "netlifyId"    (site.Params.netlify_id | default "sansoul")
       "tReset"       $t.reset
       "translations" $translations

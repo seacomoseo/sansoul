@@ -27,10 +27,10 @@
 {{ if $local }}
   {{ $site_url     = site.Home.Permalink }}
 {{ else if $config.cms.editorial }}
-  {{ $site_url     = print "https://" site.Params.netlify_name ".netlify.app/" }}
+  {{ $site_url     = print "https://" site.Params.name ".netlify.app/" }}
   {{ $publish_mode = "editorial_workflow" }}
 {{ else if $config.others.development }}
-  {{ $site_url     = print "https://" site.Params.netlify_name ".netlify.app/" }}
+  {{ $site_url     = print "https://" site.Params.name ".netlify.app/" }}
 {{ else }}
   {{ $site_url     = site.Home.Permalink }}
 {{ end }}

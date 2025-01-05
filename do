@@ -93,6 +93,18 @@ then
   echo "${STI} NORMALIZE YAML AND MARKDOWN FILES ${STE}"
   python3 ../_tools/others/yaml-normalize.py
 
+# Create favicon.ico
+elif [ $1 = favicon ]
+then
+
+  echo "${STI} CREATE FAVICON ${STE}"
+  magick \
+    -background none \
+    -gravity center \
+    -define icon:auto-resize=48,32,16 \
+    assets/media/base/icon.svg \
+    assets/media/base/favicon.ico
+
 # Create woff2 and scss by font files
 elif [ $1 = fonts ]
 then
