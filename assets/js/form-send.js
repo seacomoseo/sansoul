@@ -39,6 +39,15 @@ function changeValuesPrev (form, prev) {
       }
     }
   })
+  // Checkboxes
+  const _bcc = form.querySelector('input[name="_bcc"]')
+  if (_bcc) {
+    if (prev) {
+      _bcc.value = atob(_bcc.value)
+    } else {
+      _bcc.value = btoa(_bcc.value)
+    }
+  }
 }
 
 function formSubmited (form) {

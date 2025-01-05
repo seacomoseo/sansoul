@@ -100,6 +100,9 @@
       <input type="hidden" name="url" value="{{ $form_id }}">
     {{- end -}}
   {{- else if $googleScript -}}
+    {{- with .form.email | default site.Params.email | default site.Home.Params.email -}}
+      <input type="hidden" name="_bcc" value="{{ . | base64Encode }}">
+    {{- end -}}
     <input type="hidden" name="_domain" value="{{ (urls.Parse site.BaseURL).Host }}">
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
