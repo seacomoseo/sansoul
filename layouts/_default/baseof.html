@@ -46,7 +46,11 @@
   {{- with $menu -}}
     {{- if not .hide -}}
       {{- $body_menu             = "body-menu" -}}
-      {{- $body_menu_sticky      = cond (not .sticky)      "" (print "body-menu--sticky body-menu--sticky--" .sticky) -}}
+      {{- with .sticky -}}
+        {{- if ne . "none" -}}
+          {{- $body_menu_sticky = print "body-menu--sticky body-menu--sticky--" . -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
     {{- if or (not .hide) .logo -}}
       {{- $body_menu_transparent = cond (not .transparent) "" "body-menu--transparent" -}}
