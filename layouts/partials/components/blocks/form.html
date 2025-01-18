@@ -175,6 +175,9 @@
       {{ if or $form.labels_out (eq $type "geo") }}
         {{ if $type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "geo" "select") }}
           <label class="form__label">
+            {{- with .icon -}}
+              {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
+            {{- end -}}
             {{- .label | default .name -}}
             {{- cond (not .required) "" " *" -}}
           </label>
@@ -210,7 +213,7 @@
               "link"      "none"
               "button"    .button
               "font_alt"  .font_alt
-              "icon"      "upload"
+              "icon"      (.icon | default "upload")
               "emoji"     "📤"
               "label"     $placeholder
               "noindex"   true
@@ -249,7 +252,7 @@
         {{- end -}}
 
       {{- else if $type | eq "geo" -}}
-        {{ $icon := .icon  | default "circle-dot" }}
+        {{ $icon := .licon | default "circle-dot" }}
         <div
           id="geo-{{ $form_id }}"
           class="form__geo-map bg-light"
@@ -286,7 +289,12 @@
         {{- $is_checkbox := eq $type "checkbox" -}}
         {{- $legend      := .label | default .name -}}
         <fieldset class="form__fieldset {{- $axis }}" {{- $required }}>{{ "" -}}
-          <legend>{{ $legend }}{{ if .required }} *{{ end }}</legend>
+          <legend>
+            {{- with .icon -}}
+              {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
+            {{- end -}}
+            {{- $legend }}{{ if .required }} *{{ end -}}
+          </legend>
           {{- range .options -}}
             {{- $option := .value | default .option -}}
             {{- if $is_checkbox -}}
@@ -315,6 +323,13 @@
           {{- partial "functions/md" (dict "content" . "not_header_links" true) -}}
         </div>
       {{- end -}}
+
+      {{- if $type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "select") -}}
+        {{- with .icon -}}
+          {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
+        {{- end -}}
+      {{- end -}}
+
     {{- if $type | ne "hidden" -}}
       </div>
     {{- else -}}

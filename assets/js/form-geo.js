@@ -74,6 +74,9 @@ function mapStart (geoDiv) {
     map.on('click', (e) => {
       marker.setLatLng(e.latlng)
       json.value = JSON.stringify(marker.toGeoJSON().geometry)
+      // Trigger change event manually (for form-show)
+      const input = geoDiv.parentElement.querySelector('input')
+      input.dispatchEvent(new Event('change', { bubbles: true }))
     })
 
     // popup over top elements when popupopen in small screen sizes

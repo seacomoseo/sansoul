@@ -17,6 +17,7 @@
     - `contacto.yml`
       - `address.geo`
       - `map`
+      - `form.email`
     - `mapa.yml`
       - `map`
     - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
@@ -59,6 +60,7 @@
 - `assets/css/_custom.scss`
 - `assets/js/custom.js`
   - `submited_` > `submited-`
+- `data/config.yml` > `langs.0.email`
 - coordinates
 
 

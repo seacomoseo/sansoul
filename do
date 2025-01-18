@@ -1,9 +1,12 @@
 #!/bin/sh
 
+# Functions
+hecho() {
+  echo "\033[7;37m $1 \033[0m"
+}
+
 # Variables
 PROYECT="${PWD##*/}"
-STI="\033[7;37m"
-STE="\033[0m"
 
 # COMMANDS FOR PROJECTS
 
@@ -11,55 +14,55 @@ STE="\033[0m"
 if [ $1 = up ]
 then
 
-  echo "${STI} DO UP ${STE}"
+  hecho "DO UP"
 
-  echo "${STI} ADD ${STE}"
+  hecho "ADD"
   git add .
 
-  echo "${STI} COMMIT ${STE}"
+  hecho "COMMIT"
   git commit -m "Update: `date +'%Y-%m-%d %H:%M:%S'`"
 
-  echo "${STI} PUSH ${STE}"
+  hecho "PUSH"
   git push
 
 # Upload submodule changes with date now
 elif [ $1 = sup ]
 then
 
-  echo "${STI} SUBMODULE SYNC ${STE}"
+  hecho "SUBMODULE SYNC"
   git submodule sync --recursive
 
-  echo "${STI} GO SANSOUL ${STE}"
+  hecho "GO SANSOUL"
   cd themes/sansoul
 
-  echo "${STI} SANSOUL FETCH ${STE}"
+  hecho "SANSOUL FETCH"
   git fetch
 
-  echo "${STI} SANSOUL CHECKOUT ORIGIN/MAIN ${STE}"
+  hecho "SANSOUL CHECKOUT ORIGIN/MAIN"
   git checkout -B main origin/main
 
-  echo "${STI} SANSOUL ADD ${STE}"
+  hecho "SANSOUL ADD"
   git add .
 
-  echo "${STI} SANSOUL COMMIT ${STE}"
+  hecho "SANSOUL COMMIT"
   git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
 
-  echo "${STI} SANSOUL PUSH ${STE}"
+  hecho "SANSOUL PUSH"
   git push
 
-  echo "${STI} GO PROJECT ${STE}"
+  hecho "GO PROJECT"
   cd ../..
 
 # Pull of repository and update the submodules
 elif [ $1 = down ]
 then
 
-  echo "${STI} DO DOWN ${STE}"
+  hecho "DO DOWN"
 
-  echo "${STI} PULL ${STE}"
+  hecho "PULL"
   git pull
 
-  echo "${STI} SUBMODULE UPDATE ${STE}"
+  hecho "SUBMODULE UPDATE"
   git submodule update --recursive --remote
 
 # Pull of repository and update the submodules
@@ -73,7 +76,7 @@ then
 elif [ $1 = rm-public ]
 then
 
-  echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
+  hecho "REMOVE PUBLIC DIRECTORIE"
   rm -r public
 
 # Hugo server with theme config
@@ -83,21 +86,21 @@ then
   sh do rm-public
   sh do prebuild
 
-  echo "${STI} HUGO SERVER ${STE}"
+  hecho "HUGO SERVER"
   hugo server --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # Create woff2 and scss by font files
 elif [ $1 = normalize ]
 then
 
-  echo "${STI} NORMALIZE YAML AND MARKDOWN FILES ${STE}"
+  hecho "NORMALIZE YAML AND MARKDOWN FILES"
   python3 ../_tools/others/yaml-normalize.py
 
 # Create favicon.ico
 elif [ $1 = favicon ]
 then
 
-  echo "${STI} CREATE FAVICON ${STE}"
+  hecho "CREATE FAVICON"
   magick \
     -background none \
     -gravity center \
@@ -170,7 +173,7 @@ then
   font-display: swap;
 }" >> $CSS_FILE
 
-      echo "${STI} Converted $font to $woff2_file ${STE}"
+      hecho "Converted $font to $woff2_file"
     fi
   done
 
@@ -200,7 +203,7 @@ then
 
   sh do up
 
-  echo "${STI} FORCE PUSH ${STE}"
+  hecho "FORCE PUSH"
   git push origin --force --all
 
 # COMMANDS FOR DEPLOY
@@ -209,7 +212,7 @@ then
 elif [ $1 = css-purge ]
 then
 
-  echo "${STI} CSS PURGE ${STE}"
+  hecho "CSS PURGE"
   node ./themes/sansoul/css-purge.js
 
 # Check yaml error of Static CMS
@@ -248,7 +251,7 @@ then
 elif [ $1 = draws-purge ]
 then
 
-  echo "${STI} DRAWS PURGE ${STE}"
+  hecho "DRAWS PURGE"
   FILE=`ls public/draws.*.svg`
   TEMP=temp.svg
   IDSF=ids.txt
@@ -282,16 +285,16 @@ then
 
   hugo version
 
-  echo "${STI} GO SANSOUL PREBUILD ${STE}"
+  hecho "GO SANSOUL PREBUILD"
   cd themes/sansoul/prebuild
 
-  echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
+  hecho "REMOVE PUBLIC DIRECTORIE"
   rm -r public
 
-  echo "${STI} RUN HUGO PREBUILD ${STE}"
+  hecho "RUN HUGO PREBUILD"
   hugo --config ../../../hugo.yml,hugo.yml
 
-  echo "${STI} GO PROJECT ${STE}"
+  hecho "GO PROJECT"
   cd ../../..
 
 # # If multilang, copy 404 file in root
@@ -302,7 +305,7 @@ then
 #   lang=${lang:-es}
 #   if [ -e "./public/${lang}/404.html" ]
 #   then
-#     echo "${STI} MULTILANG: COPY 404 FILE IN ROOT ${STE}"
+#     hecho "MULTILANG: COPY 404 FILE IN ROOT"
 #     cp ./public/${lang}/404.html ./public/
 #   fi
 
@@ -316,7 +319,7 @@ then
   # remove cache directories
   rm -rf public resources
 
-  echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
+  hecho "RUN HUGO DEVELOPMENT"
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # Hugo build as production environement
@@ -326,11 +329,11 @@ then
   sh do rm-public
   sh do prebuild
 
-  echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
+  hecho "COPY FILES FROM SANSOUL TO PROJECT"
   cp ./themes/sansoul/package.json ./
   cp ./themes/sansoul/postcss.config.js ./
 
-  echo "${STI} RUN HUGO PRODUCTION ${STE}"
+  hecho "RUN HUGO PRODUCTION"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
   # sh do css-purge

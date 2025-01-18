@@ -60,7 +60,7 @@ export function formValid (form) {
         } else if (input.classList.contains('form__geo')) {
           elementToStyle.style.color = 'red'
           formErrorMessage = formErrorRequiredFields
-          formErrorName = elementToStyle.textContent
+          formErrorName = elementToStyle.textContent.replace(' *', '')
         } else {
           elementToStyle.style.setProperty('--border', 'red')
           formErrorMessage = formErrorRequiredFields
