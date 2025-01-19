@@ -1,11 +1,13 @@
-{{ $name := "" }}
-{{ $src  := .src }}
-{{ $mute := cond (in .src "#mute") true .bg }}
+{{ $name  := "" }}
+{{ $url   := "" }}
+{{ $src   := .src }}
+{{ $mute  := cond (in .src "#mute") true .bg }}
 
 {{ if .src | findRE `youtu\.be|youtube\.com` }}
 
   {{ $name  = "youtube" }}
   {{ $id   := .src | replaceRE `^.+?(v=|be/)(.+?)(&|\?|#|$).*` `$2` }}
+  {{ $url   = print "https://youtu.be/" $id }}
   {{ $t    := .src | findRE `t\=\d+`       }}{{ if $t    }}{{ $t    = index $t    0 | replaceRE `t\=` ``    }}{{ end }}
   {{ $end  := .src | findRE `end\=\d+`     }}{{ if $end  }}{{ $end  = index $end  0 | replaceRE `end\=` ``  }}{{ end }}
   {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
@@ -23,6 +25,7 @@
 
   {{ $name  = "vimeo" }}
   {{ $id   := .src | replaceRE `^.+?com/(video/)?(.+?)(\?|$).*` `$2` }}
+  {{ $url   = print "https://player.vimeo.com/video/" $id }}
   {{ $src   = print
     "https://player.vimeo.com/video/"
     $id
@@ -32,4 +35,4 @@
 
 {{ end }}
 
-{{ return (dict "name" $name "src" $src) }}
+{{ return (dict "name" $name "src" $src "url" $url) }}

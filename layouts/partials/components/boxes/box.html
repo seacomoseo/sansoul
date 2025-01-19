@@ -199,6 +199,7 @@
         {{- range .limages -}}
           {{- $boxes_images = $boxes_images | append (dict
             "image"  .image
+            "alt"    .alt
             "link"   .link
             "anchor" (.image | replaceRE `^(.+)\..*$` "$1" | humanize)
           ) -}}

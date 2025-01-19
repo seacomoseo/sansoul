@@ -1,62 +1,16 @@
-{{/*  URL  */}}
-{{ $image    := "" }}
-
-{{ $src      := .Params.image }}
-{{ if not .Params.image }}
-  {{ with .Params.images }}
-    {{ $src := index . 0 }}
-  {{ end }}
-{{ end }}
-{{ if not $src }}
-  {{ $src := site.Data.schema.logo
-    | default site.Params.menu.logo
-    | default site.Params.cms.logo
-    | default site.Params.favicon.svg
-    | default site.Params.favicon.png
-    | default "base/icon.png"
-  }}
-{{ end }}
-
-{{ $external := hasPrefix $src "http" }}
-{{ with $src }}
-  {{ if not $external }}
-    {{ $url := resources.Get (print "/media/" .) }}
-    {{ with $url }}
-      {{ $image    = .Permalink }}
-    {{ end }}
-  {{ else }}
-    {{ $image      = partial "functions/iframe-poster" . | default . }}
-  {{ end }}
-{{ end }}
-
-{{/*  Width and Height  */}}
-{{ $width  := 1280 }}
-{{ $height := 960 }}
-{{ if not (in $image ".svg" | or $external) | and $image }}
-  {{ with resources.Get (print "/media/" $image) }}
-    {{ $width  = $image.Width }}
-    {{ $height = $image.Height }}
-  {{ end }}
-{{ end }}
-
-{{/*  Caption  */}}
-{{ $caption := $image
-  | replaceRE `^http.+/(.*)$` "$1"
-  | replaceRE `^(.+)\..*$`    "$1"
-  | humanize
-}}
-
-{{/*  Schema  */}}
 {{ $schema := dict
+  "@context"   "https://schema.org"
   "@type"      "ImageObject"
-  "@id"        (print .Permalink "#schema-image")
-  "url"        $image
-  "contentUrl" $image
-  "width"      $width
-  "height"     $height
-  "caption"    $caption
-  "inLanguage" .Lang
+  "url"        .url
+  "contentUrl" .url
+  "width"      .width
+  "height"     .height
+  "caption"    .caption
+  "inLanguage" page.Lang
+  "isPartOf"   (dict "@id" page.Permalink)
 }}
 {{ $schema = partial "functions/schema-obj" $schema }}
 
-{{ return $schema }}
+<script type="application/ld+json">
+  {{- $schema | jsonify | safeJS -}}
+</script>

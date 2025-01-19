@@ -1,0 +1,37 @@
+{{- $alt := .alt -}}
+{{- if not $alt -}}
+  {{- $alt = .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `^(.+)\..*$` `$1` | humanize -}}
+{{- end -}}
+
+<picture
+  {{- with .class }} class="{{ . }}" {{ end -}}
+  {{- with .iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
+>
+  <img
+    src="{{ .src | safeURL }}"
+    alt="{{ $alt }}"
+    decoding="async"
+    {{- if not .notlazy }} loading="lazy"{{ end -}}
+  >
+  {{- .icon_play -}}
+</picture>
+
+{{- if not .notschema -}}
+  {{- with .iframe -}}
+    {{- partial "components/base/schema/video" (dict
+      "name"         $alt
+      "thumbnailUrl" $.src
+      "uploadDate"   .upload
+      "duration"     .duration
+      "contentUrl"   .url
+      "embedUrl"     .src
+    ) -}}
+  {{- else -}}
+    {{- partial "components/base/schema/image" (dict
+      "url"     .src
+      "width"   512
+      "height"  512
+      "caption" $alt
+    ) -}}
+  {{- end -}}
+{{- end -}}

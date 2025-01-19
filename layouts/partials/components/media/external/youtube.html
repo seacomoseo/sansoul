@@ -1,0 +1,28 @@
+{{- $iframe := partial "functions/iframe-src" (dict "src" .src "bg" .bg) -}}
+{{- $poster := partial "functions/iframe-poster" .src -}}
+
+{{- $alt  := .alt -}}
+{{- if not $alt -}}
+  {{- $alt = print (i18n "video") " · Youtube" -}}
+{{- end -}}
+
+<iframe
+  {{- with .class }} class="{{ . }}" {{ end -}}
+  width="560"
+  height="315"
+  loading="lazy"
+  src="{{ $iframe.src }}"
+  title="{{ $alt }}"
+  allow="accelerometer clipboard-write; encrypted-media; gyroscope; picture-in-picture {{- if .mute }}; autoplay; loop; mute{{ end }}"
+  allowfullscreen
+  {{- if not .notlazy }} loading="lazy"{{ end -}}
+></iframe>
+
+{{- partial "components/base/schema/video" (dict
+  "name"         $alt
+  "thumbnailUrl" $poster
+  "uploadDate"   .upload
+  "duration"     .duration
+  "contentUrl"   $iframe.url
+  "embedUrl"     $iframe.src
+) -}}

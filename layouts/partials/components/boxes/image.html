@@ -59,6 +59,7 @@
     {{ partial "components/image" (dict
       "class"      "image__inner"
       "src"        $image_src
+      "alt"        (.alt | default .hanchor | default .anchor | default .title)
       "ratio"      .ratio
       "contain"    .contain
       "container"  .container
@@ -74,6 +75,7 @@
       {{ partial "components/image" (dict
         "class"     "image__inner image__inner--hover"
         "src"       (.hover | plainify)
+        "alt"       .hover_alt
         "ratio"     .ratio
         "contain"   .contain
         "container" .container

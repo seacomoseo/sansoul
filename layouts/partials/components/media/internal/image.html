@@ -1,0 +1,235 @@
+{{- $image     := resources.Get .src -}}
+{{- $image_img := $image -}}
+{{- $image_min := $image -}}
+{{- if $image -}}
+  {{- $alt := .alt -}}
+  {{- if not $alt -}}
+    {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
+  {{- end -}}
+
+  <picture
+    {{- with .class }} class="{{ . }}"{{ end }}
+    {{- with .iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
+    {{- if $image | findRE `\.jpe?g$`  -}}
+      {{- with (resources.Get $image_min).Colors -}}
+        {{- $colors := cond (eq (len .) 1) (slice (index . 0) `transparent`) . -}}
+        {{- ` ` | safeHTMLAttr -}}
+        style="--pre-bg:linear-gradient({{ delimit $colors `,` }})"
+      {{- end -}}
+    {{- end -}}
+  >
+
+    {{- if hugo.IsProduction -}}
+
+      {{/*  CONTAIN  */}}
+      {{- if not .contain -}}
+        {{- $ratio := .ratio -}}
+        {{- if not $ratio -}}
+          {{- if .circle -}}
+            {{- $ratio = "1/1" -}}
+          {{- end -}}
+        {{- else if not (in $ratio "/") -}}
+          {{- $ratio = print $ratio "/1" -}}
+        {{- end -}}
+        {{- with $ratio -}}
+          {{- if ne . "auto" -}}
+            {{- $ratio_split  := split $ratio "/" -}}
+            {{- $width_aim    := index $ratio_split 0 | float -}}
+            {{- $height_aim   := index $ratio_split 1 | float -}}
+            {{- $ratio_aim    := div $height_aim $width_aim -}}
+            {{- $width_image  := $image.Width   | float -}}
+            {{- $height_image := $image.Height  | float -}}
+            {{- $ratio_image  := div $height_image $width_image -}}
+            {{- if ne $ratio_image $ratio_aim -}}
+              {{- if gt $ratio_image $ratio_aim -}}
+                {{- $image = $image.Fill (print $width_image "x" (mul $width_image $ratio_aim | int) " Center") -}}
+              {{- else -}}
+                {{- $image = $image.Fill (print (div $height_image $ratio_aim | int) "x" $height_image " Center") -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $sizes       := slice -}}
+      {{- $srcsizes    := slice -}}
+      {{- $srcset      := slice -}}
+      {{- $src_reverse := false -}}
+
+      {{/*  SIZES  */}}
+      {{- if .max -}}
+
+        {{- if gt $image.Width .max -}}
+          {{- $sizes = slice .max -}}
+        {{- else -}}
+          {{- $sizes = slice $image.Width -}}
+        {{- end -}}
+
+      {{- else if gt $image.Width 320 -}}
+
+        {{/*
+          problems
+            background images (sections and columns items)
+            span with grow (columns items image)
+        */}}
+
+        {{- $span_xl           := .span_xl | default 1 -}}
+        {{- $span_xs           := .span_xs | default 1 -}}
+        {{- $container_sizes   := dict
+          "xs"    512
+          "sm"    720
+          "md"    960
+          "lg"    1200
+          "xl"    1440
+          "fluid" 2000
+        -}}
+        {{- $container         := .container | default `fluid` -}}
+        {{- $container_max     := index $container_sizes $container -}}
+        {{- $container_min     := 393 -}}
+        {{/*  {{ $screens := slice 375 425 768 1024 1280 }}  */}}
+        {{- $screens           := slice 425 768 1280 -}}
+        {{- if lt $span_xs 0.50 -}}
+          {{- $screens          = slice 375 768 1280 -}}
+        {{- end -}}
+        {{- if eq $container "fluid" -}}
+          {{- $screens          = $screens | append 1440 -}}
+        {{- end -}}
+        {{- $screen_min        := 375 -}}
+        {{- $screen_max        := 1232 -}}
+        {{- $size_max          := (mul $container_max $span_xl) | int -}}
+        {{- $size_min          := (mul $container_min $span_xs) | int -}}
+
+        {{- $sizes_base        := slice -}}
+        {{- range $screens -}}
+          {{- $size            := 0 -}}
+          {{- if eq $container "fluid" -}}
+            {{- $size           = mul . $span_xl -}}
+          {{- else -}}
+            {{/*  y = y1 + ( ((y2 - y1) * (x - x1)) / (x2 - x1) )  */}}
+            {{- $size           = add $size_min (div (mul (sub $size_max $size_min) (sub . $screen_min)) (sub $screen_max $screen_min)) -}}
+          {{- end -}}
+          {{- $sizes_base       = $sizes_base | append (dict "size" $size "screen" .) -}}
+        {{- end -}}
+
+        {{/*  if first > last  */}}
+        {{- if gt (index $sizes_base 0).size (index (last 1 $sizes_base) 0).size -}}
+          {{- $src_reverse      = true -}}
+          {{- $sizes_base       = $sizes_base | append (dict "size" 320 "screen" 320) -}}
+        {{- end -}}
+
+        {{- $size_prev         := 10000 -}}
+        {{- $image_next        := 0 -}}
+        {{- $sizes_base_sort   := (sort $sizes_base "size" "desc") -}}
+        {{- range $key, $value := $sizes_base_sort -}}
+
+          {{- $size            := .size -}}
+          {{- $image_size      := div $image.Width 2 -}}
+
+          {{/*  size = image_size only if size > image_size > next_size  */}}
+          {{- if le $image_size .size -}}
+            {{- $size_next     := (index $sizes_base_sort (add $key 1)).size | default 0 -}}
+            {{- if ge $image_size $size_next -}}
+              {{- $image_next   = add $image_next 1 -}}
+              {{- if eq $image_next 1 -}}
+                {{- $size       = $image_size -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+
+          {{/*  set size only if diference between size and size_prev is bigest that 100px  */}}
+          {{- $is_size_far_prev := lt (sub $size $size_prev) (div -100 2) -}}
+
+          {{- if ge $image_size $size | and $is_size_far_prev -}}
+            {{/*  each size here is a object  */}}
+            {{- $sizes     = $sizes | append (dict "size" (mul $size 2 | int) "screen" .screen) -}}
+            {{- $size_prev = $size -}}
+          {{- end -}}
+
+        {{- end -}}
+
+      {{- else -}}
+
+        {{- $sizes = slice $image.Width -}}
+
+      {{- end -}}
+
+      {{/*  SOURCE BY SIZES  */}}
+      {{- if gt (len $sizes) 1 -}}
+
+        {{/*  SRCSIZES AND SRCSET  */}}
+        {{- range $key, $value := sort $sizes "size" -}}
+          {{- $srcsizes         = $srcsizes | append (print "(max-width:" .screen "px) " (div .size 2) "px") -}}
+          {{- $image_resize    := $image.Resize (print .size "x webp") -}}
+          {{- $image_resize     = $image_resize | resources.Copy (print ($.src | replaceRE `(.+)\..+` `$1`) `-` .size `x` $image_resize.Height `.webp`) -}}
+          {{- $srcset           = $srcset | append (print $image_resize.RelPermalink " " .size "w") -}}
+          {{- if not $key -}}
+            {{- $image_min      = $image_resize -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- $srcsizes           = delimit $srcsizes "," | replaceRE "\\(max-width:[0-9]+?px\\) ([0-9]+?px)$" "(all) $1" -}}
+        {{- if $src_reverse -}}
+          {{- $srcsizes         = $srcsizes | replaceRE "max" "min" -}}
+        {{- end -}}
+        {{- $srcset             = delimit $srcset "," -}}
+
+      {{- else -}}
+
+        {{/*  SRC  */}}
+        {{- $image_width    := $image.Width -}}
+        {{- if $sizes -}}
+          {{- $image_width   = index $sizes 0 -}}
+          {{/*  if is not a int > is a object  */}}
+          {{- if ne (printf "%T" $image_width) "int" -}}
+            {{- $image_width = $image_width.size -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $image_resize   := $image.Resize (print $image_width "x" " webp") -}}
+        {{- $image_resize    = $image_resize | resources.Copy (print ($.src | replaceRE `(.+)\..+` `$1`) `-` $image_width `x` $image_resize.Height `.webp`) -}}
+        {{- $srcset          = print $image_resize.RelPermalink " " $image_width "w" -}}
+        {{- $image_min       = $image_resize -}}
+        {{- $srcsizes        = "100vw" -}}
+
+      {{- end -}}
+
+      <source type="image/webp"
+        sizes="{{ $srcsizes }}"
+        srcset="{{ $srcset }}"
+        width="{{ $image.Width }}"
+        height="{{ $image.Height }}"
+      />
+
+    {{- end -}}
+
+    <img
+      src="{{ $image_img.RelPermalink | safeURL }}"
+      alt="{{ $alt }}"
+      width="{{ $image_img.Width }}"
+      height="{{ $image_img.Height }}"
+      decoding="async"
+      {{ if not .notlazy }} loading="lazy" {{ end }}
+    >
+
+    {{- .icon_play -}}
+  </picture>
+
+  {{- if not .notschema -}}
+    {{- with .iframe -}}
+      {{- partial "components/base/schema/video" (dict
+        "name"         $alt
+        "thumbnailUrl" $image_img.RelPermalink
+        "uploadDate"   .upload
+        "duration"     .duration
+        "contentUrl"   .url
+        "embedUrl"     .src
+      ) -}}
+    {{- else -}}
+      {{- partial "components/base/schema/image" (dict
+        "url"     $image_img.RelPermalink
+        "width"   $image_img.Width
+        "height"  $image_img.Height
+        "caption" $alt
+      ) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

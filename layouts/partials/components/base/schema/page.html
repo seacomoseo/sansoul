@@ -1,7 +1,7 @@
 
 {{ $type                  := "WebPage" }}
 {{ $has_part              := slice }}
-{{ $thumbnail             := (partial "components/base/schema/image" .).url }}
+{{ $thumbnail             := (partial "components/base/schema/image-main" .).url }}
 {{ $image                 := dict "@id" (print .Permalink "#schema-image") }}
 {{ $primary_image_of_page := dict "@id" (print .Permalink "#schema-image") }}
 {{ $is_part_of            := dict "@id" (print site.BaseURL "/#schema-website") }}

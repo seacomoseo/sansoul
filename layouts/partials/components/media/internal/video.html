@@ -1,0 +1,84 @@
+{{- $path := .src | replaceRE `[\#\&\?].*$` `` -}}
+
+{{- $rsrc := resources.Get $path -}}
+{{- $mp4  := "" -}}
+{{- $webm := "" -}}
+{{- if not (in .src ".webm") -}}
+  {{- with $rsrc -}}
+    {{- with .RelPermalink -}}
+      {{- $mp4  = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with resources.Get ($path | replaceRE `\.(mp4|mov|avi)$` `.webm`) -}}
+    {{- $webm = .RelPermalink -}}
+  {{- end -}}
+{{- else -}}
+  {{- with $rsrc -}}
+    {{- $webm = .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $t := "" -}}
+{{- if in .src `t=` -}}
+  {{- $t = print "#" (.src | replaceRE `^.+?(t\=[\d-,\.]+).*$` `$1`) -}}
+{{- end -}}
+
+{{- $poster  := "" -}}
+{{- if in .src "poster=" -}}
+  {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
+{{- else -}}
+  {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
+    {{- $file  := $path | replaceRE `^(.+)\..+$` (print `$1.` .) -}}
+    {{- $asset := print "assets" $file -}}
+    {{- if fileExists $asset -}}
+      {{- $poster = $file -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with resources.Get $poster }}
+  {{- if hugo.IsProduction }}
+    {{- $file  := $poster | replaceRE `(.+)\..+` `$1` -}}
+    {{- $poster = .Resize (print .Width "x" " webp") -}}
+    {{- $poster = $poster | resources.Copy (print $file `-` .Width `x` .Height `.webp`) -}}
+    {{- $poster = $poster.RelPermalink -}}
+  {{ else }}
+    {{- $poster = .RelPermalink -}}
+  {{ end }}
+{{ else }}
+  {{- $poster = "" -}}
+{{ end }}
+
+{{- $alt := .alt -}}
+{{- if not $alt -}}
+  {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
+{{- end -}}
+
+<video
+  {{- with .class }} class="{{ . }}" {{ end -}}
+  width="560"
+  height="315"
+  {{- if not .bg }} controls {{- end -}}
+  {{- if and .notlazy .mute }} muted loop autoplay playsinline
+  {{- else -}}
+    {{- if .mute }} data-mute {{- else -}}
+      {{- if or .notlazy $poster .modal }} preload="none" {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $poster }} poster="{{ . }}" {{- end -}}
+>
+  {{- with $webm -}}
+    <source src="{{ $webm }}{{ $t }}" type="video/webm">
+  {{- end -}}
+  {{- with $mp4 -}}
+    <source src="{{ . }}{{ $t }}" type="video/{{ . | replaceRE `^.+\.(.+)$` `$1` }}">{{/*  "; codecs="hvc1""  */}}
+  {{- end -}}
+</video>
+
+{{- partial "components/base/schema/video" (dict
+  "name"         $alt
+  "thumbnailUrl" $poster
+  "uploadDate"   (.upload | default (os.Stat (print "assets" $path)).ModTime | time.Format "2006-01-02T15:04:05Z07:00")
+  "duration"     .duration
+  "contentUrl"   ($webm | default $mp4)
+  "embedUrl"     nil
+) -}}

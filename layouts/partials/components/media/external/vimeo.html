@@ -1,0 +1,28 @@
+{{- $iframe := partial "functions/iframe-src" (dict "src" .src "bg" .bg) -}}
+{{- $poster := partial "functions/iframe-poster" .src -}}
+
+{{- $alt  := .alt -}}
+{{- if not $alt -}}
+  {{- $alt = print (i18n "video") " · Vimeo" -}}
+{{- end -}}
+
+<iframe
+  {{- with .class }} class="{{ . }}" {{ end -}}
+  width="640"
+  height="360"
+  loading="lazy"
+  src="{{ $iframe.src }}"
+  title="{{ $alt }}"
+  allow="fullscreen {{- if .mute }}; autoplay; loop; muted{{ end }}"
+  allowfullscreen
+  {{- if not .notlazy }} loading="lazy"{{ end -}}
+></iframe>
+
+{{- partial "components/base/schema/video" (dict
+  "name"         $alt
+  "thumbnailUrl" $poster
+  "uploadDate"   .upload
+  "duration"     .duration
+  "contentUrl"   $iframe.url
+  "embedUrl"     $iframe.src
+) -}}

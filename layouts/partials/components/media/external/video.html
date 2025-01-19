@@ -1,0 +1,43 @@
+{{- $src := .src | replaceRE `.poster\=([/\w\d\.-]+)|\#mute` `` -}}
+
+{{- $alt := .alt -}}
+{{- if not $alt -}}
+  {{- $alt = .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `^(.+)\..*$` `$1` | humanize -}}
+{{- end -}}
+
+{{- $poster  := "" -}}
+{{- if in .src "poster=" -}}
+  {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
+  {{- with resources.Get $poster }}
+    {{- if hugo.IsProduction }}
+      {{- $file  := $poster | replaceRE `(.+)\..+` `$1` -}}
+      {{- $poster = .Resize (print .Width "x" " webp") -}}
+      {{- $poster = $poster | resources.Copy (print $file "-" .Width "x" .Height ".webp") -}}
+      {{- $poster = $poster.RelPermalink -}}
+    {{- else -}}
+      {{- $poster = .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $poster = print "data:image/svg+xml;base64," ("<svg width='100%' height='100%' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><style>path{transform-origin:center}path:nth-child(2){animation:spin 2s linear infinite}path:nth-child(3){animation:spin calc(2s * 12) linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style><g fill='none' stroke='gray' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10'><circle cx='8' cy='8' r='7.5'/><path d='M8 3 V8'/><path d='M8 8 L10 10'/></g></svg>" | base64Encode) -}}
+{{- end -}}
+
+<video
+  {{ with .class }} class="{{ . }}"{{ end }}
+  {{- if not .bg }} controls{{ end }}
+  {{- if .notlazy | and .mute }} muted loop autoplay playsinline
+  {{- else }} preload="none" {{- if .mute }} data-mute{{ end }}
+  {{- end }}
+  poster="{{ $poster }}"
+>
+  <source src="{{ $src }}" type="video/{{ $src | replaceRE `^.+\.([\w\d]+)$` `$1` }}">
+</video>
+
+{{- partial "components/base/schema/video" (dict
+  "name"         $alt
+  "thumbnailUrl" $poster
+  "uploadDate"   .upload
+  "duration"     .duration
+  "contentUrl"   $src
+  "embedUrl"     nil
+) -}}

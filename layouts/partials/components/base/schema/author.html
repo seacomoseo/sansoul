@@ -5,7 +5,7 @@
 {{ $image  := dict "@id" (print .Permalink "#schema-image") }}
 {{/*  Not self page  */}}
 {{ if ne page.Permalink .Permalink }}
-  {{ $image = partial "components/base/schema/image" . }}
+  {{ $image = partial "components/base/schema/image-main" . }}
 {{ end }}
 
 {{/*  Organization  */}}

@@ -43,7 +43,7 @@
   {{ $phones := partial "functions/phone-variations" .phones }}
 
   {{/*  Logo  */}}
-  {{ $logo := partial "components/base/schema/image" (dict "Params" (dict "image" .logo) "Permalink" $url) }}
+  {{ $logo := partial "components/base/schema/image-main" (dict "Params" (dict "image" .logo) "Permalink" $url) }}
 
   {{/*  Images  */}}
   {{ $images := partial "components/base/schema/images" (slice .image | append .images | uniq) }}

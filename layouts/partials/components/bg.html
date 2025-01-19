@@ -59,6 +59,7 @@
       {{- partial "components/image" (dict
         "class"     (print "bg-figure-image" $grayscale)
         "src"       .bg
+        "alt"       (.hanchor | default .anchor | default .title | default .subtitle)
         "notlazy"   .header
         "bg"        true
         "container" .container
