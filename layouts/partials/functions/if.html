@@ -15,7 +15,7 @@
   {{ else if eq . "related" }}
     {{ $if = or $.Page.Params.related ($.Page.CurrentSection.Pages.Related $.Page) }}
   {{ else if eq . "comments" }}
-    {{ $if = site.Params.disqus }}
+    {{ $if = and site.Params.disqus $.Page.Params.is_comments (not $.Page.IsSection) }}
   {{ else if eq . "children" }}
     {{ $if = or $.Page.IsSection $.Page.Params.taxonomy_of }}
   {{ else if eq . "collection" }}

@@ -21,18 +21,20 @@ export function initComments () {
     (document.head || document.body).appendChild(s2)
     // document.querySelector('.comments__load').remove();
   }
-  function showComments () {
-    document.querySelector('#disqus_thread').classList.add('disqus-show')
-  }
+  // function showComments () {
+  //   document.querySelector('#disqus_thread').classList.add('disqus-show')
+  // }
 
   // Lazy-Load show comments
   scrollShot({
     rootMargin: '0%',
     query: '#disqus_thread',
     // () => document.querySelector('.comments__show').remove(),
+    doOnLoad: () => {
+    },
     doStart: () => {
       loadComments()
-      showComments()
+      // showComments()
     }
   })
 }

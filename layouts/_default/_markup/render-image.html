@@ -25,12 +25,20 @@
   {{- end -}}
 
   {{/*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */}}
-  {{- if .Text | findRE `^[\d/]*$` -}}
-    {{- $ratio       = $.Text -}}
+  {{- $is_ratio  := .Text | findRE `^[\d/]*$` -}}
+  {{- $is_circle := eq .Text "circle" -}}
+  {{- $is_iframe := partial "functions/is-iframe" .Destination -}}
+  {{- $is_video  := .Destination | findRE `\.(mp4|mov|avi|webm)` -}}
+  {{- if or $is_ratio $is_circle $is_iframe $is_video -}}
+    {{- if $is_circle -}}
+      {{- $ratio     = "1/1" -}}
+    {{- else -}}
+      {{- $ratio     = $.Text | default "16/9" -}}
+    {{- end -}}
     {{- $image_class = print $image_class " image--ratio" -}}
     {{- $image_style = print ` style="--image-ratio:` $ratio `"` -}}
     {{- $alt         = false -}}
-  {{- else if eq .Text "circle" -}}
+  {{- else if $is_circle -}}
     {{- $image_class = print $image_class " image--circle" -}}
     {{- $alt         = false -}}
   {{- end -}}

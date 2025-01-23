@@ -49,6 +49,7 @@
   gap: .5em;
 }
 .form__option--consent {
+  position: relative;
   font-size: .75em;
   text-align: left;
   width: 100%;
@@ -92,6 +93,7 @@
 /*! purgecss start ignore */
 .form__error,
 .form__submit {
+  position: relative;
   color: $white;
   background-color: red;
   margin-top: 1em;
@@ -288,10 +290,87 @@ legend, .form__label {
 .form__select:is(label:has(~ .form__icon) > *) {
   padding-left: 2.625em;
 }
+.form__select:is(label.form__pre:has(~ .form__icon) > *) {
+  padding-left: 2.25em;
+}
 .form__input:has(~ .form__pre):has(~ .form__icon) {
-  padding-left: 5.6em + 1.625em;
+  padding-left: 6.5em;
 }
 
 .form__item[data-showif]:not(.form__item--show) {
   display: none;
+}
+
+// br and hr
+.form > {
+  .form__br,
+  hr {
+    flex-grow: 0;
+    width: calc(100% - #{ $radius / 2 });
+    height: 0;
+  }
+  hr {
+    border: none;
+    border-bottom: 0.125em #aaa dashed;
+  }
+}
+.form:has(.form__br) {
+  margin-bottom: -1rem;
+}
+.form:has(.form__br ~ .form__br) {
+  margin-bottom: -2rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -3rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -4rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -5rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -6rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -7rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -8rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -9rem;
+}
+.form:has(.form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br ~ .form__br) {
+  margin-bottom: -10rem;
+}
+.form__br ~ {
+  * { top: -1rem; }
+  .form__br ~ {
+    * { top: -2rem; }
+    .form__br ~ {
+      * { top: -3rem; }
+      .form__br ~ {
+        * { top: -4rem; }
+        .form__br ~ {
+          * { top: -5rem; }
+          .form__br ~ {
+            * { top: -6rem; }
+            .form__br ~ {
+              * { top: -7rem; }
+              .form__br ~ {
+                * { top: -8rem; }
+                .form__br ~ {
+                  * { top: -9rem; }
+                  .form__br ~ {
+                    * { top: -10rem; }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
