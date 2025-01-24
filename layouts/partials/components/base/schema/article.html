@@ -13,28 +13,9 @@
 {{ $organization := partial "components/base/schema/organization-id" . }}
 
 {{/*  Authors and ArticleSections  */}}
-{{ $authors      := slice }}
-{{ $art_sections := slice }}
-{{ $taxonomies   := partial "functions/taxonomy-parents" . }}
-{{ range $taxonomies }}
-  {{ $page := . }}
-  {{ range .Params.taxonomy_of }}
-    {{ $is_same_type   := eq page.Type .name }}
-    {{ $is_same_schema := in (slice "author" "articleSection") .schema }}
-    {{ if and $is_same_type $is_same_schema }}
-      {{ if eq .schema "author" }}
-        {{ $type   := cond (eq $page.Params.base "author") "author" "page" }}
-        {{ $item   := partial (print "components/base/schema/" $type) $page }}
-        {{ $authors = $authors | append $item }}
-      {{ else if eq .schema "articleSection" }}
-        {{ $art_sections = $art_sections | append $page.Title }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-{{ end }}
-{{ if not $authors }}
-  {{ $authors = $organization }}
-{{ end }}
+{{ $aas          := partial "functions/authors-article-sections" . }}
+{{ $authors      := $aas.authors }}
+{{ $art_sections := $aas.art_sections }}
 
 {{/*  Schema  */}}
 {{ $schema := dict

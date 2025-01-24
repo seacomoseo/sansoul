@@ -120,16 +120,16 @@
         {{- if $is_data_more }} data-more="{{ $label }}"{{ end -}}
       >
         {{- if $is_data_more -}}
-          <i>{{- $final_label -}}</i>
+          <i>{{- $final_label | safeHTML -}}</i>
         {{- else if $ofuscate -}}
           {{- .label | base64Encode -}}
         {{- end -}}
       </i>
     {{- else -}}
       {{- if $button -}}
-        <i>{{- .label | default (i18n "more") -}}</i>
+        <i>{{- .label | default (i18n "more") | safeHTML -}}</i>
       {{- else -}}
-        {{- .label | default (i18n "more") -}}
+        {{- .label | default (i18n "more") | safeHTML -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -148,7 +148,7 @@
     {{- if $ofuscate -}}
       {{- .label | base64Encode -}}
     {{- else -}}
-      {{- .label | default (i18n "more") -}}
+      {{- .label | default (i18n "more") | safeHTML -}}
     {{- end -}}
   {{- with $class }}</i>{{ end -}}
 

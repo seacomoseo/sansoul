@@ -1,20 +1,37 @@
 {{- with page -}}
   {{- with .Params.author -}}
-    {{- with site.GetPage "author" . -}}
-      {{- $param := index $.Params 0 -}}
-      {{- if eq $param "summary" -}}
-        {{ .Summary | default .Description }}
-        {{ if .ContentWithoutSummary }}
-          {{- partial "components/link" (dict
-            "link"      .RelPermalink
-            "button"    "none"
-            "label"     (print (i18n "read_more") "…")
-          ) -}}
-        {{ end }}
-      {{- else if eq $param "image" -}}
-        {{ .Params.image }}
-      {{- else -}}
-        {{ i18n "about" }} [{{ .Title }}]({{ .RelPermalink -}})
+    {{- $index    := index $.Params 0 -}}
+    {{- $param    := index $.Params 1 -}}
+    {{/*  Force value to slice  */}}
+    {{- $authors  := . -}}
+    {{- if not (reflect.IsSlice .) -}}
+      {{- $authors = slice . -}}
+    {{- end -}}
+    {{- $author   := index $authors $index -}}
+    {{- with $author -}}
+      {{- with site.GetPage "author" . -}}
+        {{- if eq $param "parent" -}}
+          {{- i18n "authors" -}}
+        {{- else if eq $param "is" -}}
+          {{- true -}}
+        {{- else if eq $param "title" -}}
+          {{ i18n "about" }} [{{ .Title }}]({{ .RelPermalink -}})
+        {{- else if eq $param "summary" -}}
+          {{ .Summary | default .Description }}
+          {{ if .ContentWithoutSummary }}
+            {{- partial "components/link" (dict
+              "link"      .RelPermalink
+              "button"    "none"
+              "label"     (print (i18n "read_more") "…")
+            ) -}}
+          {{ end }}
+        {{- else if eq $param "image" -}}
+          {{ .Params.image }}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- if eq $param "is" -}}
+        {{- false -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

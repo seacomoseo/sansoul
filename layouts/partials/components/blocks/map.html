@@ -9,7 +9,7 @@
     {{- range . -}}
       {{- $radius := .radius | default "" -}}
       {{- $color  := .color  | default $.icon_color | default "main" -}}
-      {{- $icon   := cond (ne .type "point") "" (.icon | default $.licon | default "circle-star") -}}
+      {{- $icon   := cond (ne .type "point") "" (.icon | default $.licon | default "circle-dot") -}}
       {{- $icons   = $icons  | append $icon -}}
       <div
         data-geo="{{ .geo }}"

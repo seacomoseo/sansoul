@@ -20,6 +20,10 @@
   {{ $provider = partial "components/base/schema/organization-id" . }}
 {{ end }}
 
+{{/*  Authors and ArticleSections  */}}
+{{ $aas          := partial "functions/authors-article-sections" . }}
+{{ $authors      := $aas.authors }}
+
 {{/*  Schema  */}}
 {{ $schema := dict
 
@@ -33,6 +37,7 @@
   "areaServed"       .Params.areas
   "offers"           $offers
   "provider"         $provider
+  "author"           $authors
   "image"            (dict "@id" (print .Permalink "#schema-image"))
   "mainEntityOfPage" (dict "@id" .Permalink)
 }}

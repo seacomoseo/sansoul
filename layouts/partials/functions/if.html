@@ -24,6 +24,10 @@
     {{ $is_parent   := $.Page.Params.taxonomy_of }}
     {{ $is_not_root := not $.Page.IsSection }}
     {{ $if = and $is_parent $is_not_root }}
+  {{ else if eq . "true" }}
+    {{ $if = true }}
+  {{ else if eq . "false" }}
+    {{ $if = false }}
   {{ else }}
     {{ $if = partial "functions/index-split" (dict "value" $.Page.Params "path" .) }}
   {{ end }}

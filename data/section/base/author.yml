@@ -1,22 +1,78 @@
-name: Autor
+name: Autores
 node: aside
 if: author
 id: author
-hanchor: '{{ i18n option-base-author }}'
-box:
-  columns: 1
-  align_x: flex-start
-  align_y: top
+hanchor: '{{ i18n author }}'
+title: '{{ author 1 parent }}'
 boxes:
-- span: .2
-  span_min: .4
-  image: '{{ author image }}'
-  ratio: 1/1
-  border: main
-- span: .8
-  span_min: .6
-  gap_y: .75
-  align: left
-  title: '{{% author %}}'
-  content: |
-    {{< author summary >}}
+- box:
+    columns: 1
+    align_x: flex-start
+    align_y: top
+  boxes:
+  - span: .2
+    span_min: .4
+    image: '{{ author 0 image }}'
+    ratio: 1/1
+    border: main
+  - span: .8
+    span_min: .6
+    gap_y: .75
+    align: left
+    title: '{{% author 0 title %}}'
+    content: |
+      {{< author 0 summary >}}
+- if: '{{ author 1 is }}'
+  box:
+    columns: 1
+    align_x: flex-end
+    align_y: top
+  boxes:
+  - span: .8
+    span_min: .6
+    gap_y: .75
+    align: right
+    title: '{{% author 1 title %}}'
+    content: |
+      {{< author 1 summary >}}
+  - span: .2
+    span_min: .4
+    image: '{{ author 1 image }}'
+    ratio: 1/1
+    border: main
+- if: '{{ author 2 is }}'
+  box:
+    columns: 1
+    align_x: flex-end
+    align_y: top
+  boxes:
+  - span: .2
+    span_min: .4
+    image: '{{ author 2 image }}'
+    ratio: 1/1
+    border: main
+  - span: .8
+    span_min: .6
+    gap_y: .75
+    align: left
+    title: '{{% author 2 title %}}'
+    content: |
+      {{< author 2 summary >}}
+- if: '{{ author 3 is }}'
+  box:
+    columns: 1
+    align_x: flex-end
+    align_y: top
+  boxes:
+  - span: .8
+    span_min: .6
+    gap_y: .75
+    align: right
+    title: '{{% author 3 title %}}'
+    content: |
+      {{< author 3 summary >}}
+  - span: .2
+    span_min: .4
+    image: '{{ author 3 image }}'
+    ratio: 1/1
+    border: main

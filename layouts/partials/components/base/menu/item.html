@@ -3,7 +3,11 @@
   {{- if eq .link "langs" -}}
 
     {{ range partial "components/base/menu/langs" . }}
-      {{- partial "components/base/menu/item" (merge . (dict "sub" $sub "hide_icons" $.hide_icons "ofuscate" $.ofuscate)) -}}
+      {{- partial "components/base/menu/item" (merge . (dict
+        "sub"        $sub
+        "hide_icons" $.hide_icons
+        "ofuscate"   $.ofuscate
+      )) -}}
     {{ end }}
 
   {{- else -}}
@@ -74,7 +78,10 @@
           {{- with .items -}}
             <ul class="menu__{{ cond (eq $sub 0) `` `sub` }}items">
               {{- range . -}}
-                {{- partial "components/base/menu/item" (merge . (dict "sub" $sub "hide_icons" $.hide_icons)) -}}
+                {{- partial "components/base/menu/item" (merge . (dict
+                  "sub"        $sub
+                  "hide_icons" $.hide_icons
+                )) -}}
               {{- end -}}
             </ul>
           {{- end -}}
