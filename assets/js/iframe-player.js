@@ -53,6 +53,7 @@ export function initIframePlayer () {
         delete iframeWrap.dataset.iframe
         delete iframeWrap.dataset.youtube
         delete iframeWrap.dataset.vimeo
+        iframeWrap.nextElementSibling.remove()
 
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
         const windowObject = isYoutube ? 'YT' : 'Vimeo'
