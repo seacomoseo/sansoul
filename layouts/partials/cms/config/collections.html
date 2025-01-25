@@ -203,11 +203,11 @@
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
-    "label"            (.Params.cms.title | default "")
+    "label"            (.Params.cms.title    | default "")
     "label_singular"   (.Params.cms.singular | default "")
-    "name"             (.Type | default "")
-    "icon"             (.Params.icon | default "")
-    "description"      (.Params.cms.hint | default "")
+    "name"             (.Type                | default "")
+    "icon"             (.Params.icon         | default "")
+    "description"      (.Params.cms.hint     | default "")
     "identifier_field" `slug`
     "folder"           (print `content.` .Lang `/` .Type)
     "create"           true

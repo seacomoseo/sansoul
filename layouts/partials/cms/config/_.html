@@ -59,31 +59,29 @@
 }}
 
 
-{{/*  FINAL CMS CONFIG ==============================================================================
-  EMAIL+PASS LOGIN WITH NETLIFY IDENTITY
-    https://decapcms.org/docs/git-gateway-backend/
-  "backend"       (dict
+{{/*  BUTTON LOGIN WITH GITHUB  */}}
+{{/*  https://decapcms.org/docs/github-backend/  */}}
+{{- $backend := dict
+  "name"     `github`
+  "repo"     (replace site.Params.git_url "https://github.com/" "")
+  "branch"   `main`
+  "base_url" `https://sveltia-cms-auth.sansoul.workers.dev`
+-}}
+{{- if getenv "NETLIFY" -}}
+  {{/*  EMAIL+PASS LOGIN WITH NETLIFY IDENTITY  */}}
+  {{/*  https://decapcms.org/docs/git-gateway-backend/  */}}
+  {{- $backend =
     "name"        `git-gateway`
     "branch"      `main`
-    "site_domain" (urls.Parse site.BaseURL).Hostname
-  )
-  BUTTON LOGIN WITH GITHUB
-    https://decapcms.org/docs/github-backend/
-  "backend" (dict
-    "name"  "github"
-    "repo"  (replace site.Params.git_url "https://github.com/" "")
-  )
-*/}}
+    "site_domain" (urls.Parse site.BaseURL).Host
+  -}}
+{{- end -}}
 
 
 {{ $cms_config :=
   (dict
     "_variables"    $vars
-    "backend"       (dict
-      "name"        `git-gateway`
-      "branch"      `main`
-      "site_domain" (urls.Parse site.BaseURL).Host
-    )
+    "backend"       $backend
     "local_backend" $local
     "media_folder"  `assets/media`
     "public_folder" ``
