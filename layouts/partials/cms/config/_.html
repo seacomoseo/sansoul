@@ -70,7 +70,7 @@
 {{- if getenv "NETLIFY" -}}
   {{/*  EMAIL+PASS LOGIN WITH NETLIFY IDENTITY  */}}
   {{/*  https://decapcms.org/docs/git-gateway-backend/  */}}
-  {{- $backend =
+  {{- $backend = dict
     "name"        `git-gateway`
     "branch"      `main`
     "site_domain" (urls.Parse site.BaseURL).Host
