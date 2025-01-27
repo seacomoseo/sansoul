@@ -110,7 +110,7 @@ if (deployStatus && rebuildButton) {
           return response.text()
         })
         .then(data => {
-          console.log("Rebuild start")
+          console.log('Rebuild start')
           checkDeploymentStatus()
         })
         .catch(error => {
