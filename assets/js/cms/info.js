@@ -11,6 +11,7 @@ async function checkDeploymentStatus () {
   } else {
     statusColor = await getStatusColorCloudflare(`https://deploy-status.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
   }
+  console.log('color:', statusColor)
   // Disable rebuild button if is building color
   rebuildButton.disabled = statusColor === 'red'
   // Change deploy status color
