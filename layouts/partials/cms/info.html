@@ -1,0 +1,89 @@
+{{- $t            := partial "functions/i18n" . -}}
+{{- $lang_cms     := partial "functions/lang_cms" . -}}
+{{- $config       := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
+
+<!doctype html>
+<html lang="{{ $lang_cms }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ $t.cms }} · {{ $config.title }}</title>
+  <meta name="robots" content="noindex">
+
+  {{/*  STYLES  */}}
+  {{ $vars   := dict
+    "items"      (delimit (partial "cms/icons" .) "|")
+  }}
+  {{ $styles := resources.Get "css/cms/info.scss"
+    | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction))
+    | fingerprint
+  }}
+  {{ if hugo.IsProduction }}
+    {{ $styles = $styles | minify }}
+  {{ end }}
+  <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+
+</head>
+<body>
+
+  {{/*  BODY  */}}
+  <div class="deploy-status">
+    {{/*  <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/{{ site.Params.netlify_id }}/deploy-status" width="118" height="20" alt="Netlify Deploy Status" decoding="async" loading="lazy">  */}}
+    {{ partial "components/icon" (dict "icon" "rotate") }}
+  </div>
+  <div class="info">
+    <p class="info__text">{{ $t.deploy_status }}:</p>
+    <p class="info__status">
+      <span class="info__status-success">{{ $t.deploy_status_success }}</span>
+      <span class="info__status-building">{{ $t.deploy_status_building }}</span>
+      <span class="info__status-canceled">{{ $t.deploy_status_canceled }}</span>
+      <span class="info__status-error">{{ $t.deploy_status_error }}</span>
+    </p>
+    <p class="info__text">{{ $t.google_spreadsheets_info }}{{ with site.Params.drive_mails }} ({{ $t.google_spreadsheets_info_view }} <strong>{{ . }}</strong>){{ end }}:</p>
+    <div class="info__buttons">
+      <a class="google-spreadsheets-link" href="{{ site.Params.drive_link }}" target="_blank">
+        {{ partial "components/icon" (dict "icon" "google-drive") }}
+        {{ $t.google_spreadsheets_link }}
+      </a>
+      <a class="github-link" href="https://github.com/seacomoseo/{{ site.Params.domain }}" target="_blank">
+        {{ partial "components/icon" (dict "icon" "github") }}
+        GitHub
+      </a>
+      {{/*  {{ if getenv "NETLIFY" }}  */}}
+        <a class="netlify-link" href="https://app.netlify.com/sites/{{ site.Params.name | default `sansoul` }}/deploys" target="_blank" title="Netlify Deploy Status">
+          {{ partial "components/icon" (dict "icon" "netlify") }}
+          Netlify
+        </a>
+      {{/*  {{ end }}  */}}
+      <button class="rebuild" disabled>
+        {{ partial "components/icon" (dict "icon" "rocket-launch") }}
+        {{ $t.rebuild }}
+      </button>
+      <a class="admin-link" href="..">
+        {{ partial "components/icon" (dict "icon" "arrow-left") }}
+        Admin
+      </a>
+    </div>
+  </div>
+
+
+  {{/*  CUSTOM SCRIPT  */}}
+  {{ $opts := dict
+    "minify"     hugo.IsProduction
+    "targetPath" (print site.Home.RelPermalink "js/cms-info.js")
+    "params"     (dict
+      "netlify"      (getenv "NETLIFY")
+      "netlifyHook"  site.Params.netlify_hook
+      "netlifyId"    site.Params.netlify_id
+      "cloudflareId" site.Params.cloudflare_id
+      "name"         site.Params.name
+    )
+  }}
+  {{ $js := resources.Get "js/cms/info.js" | js.Build $opts | fingerprint }}
+  {{ if hugo.IsProduction }}
+    {{ $js = $js | minify }}
+  {{ end }}
+  <script src="{{ $js.RelPermalink }}"></script>
+
+</body>
+</html>

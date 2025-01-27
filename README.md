@@ -8,7 +8,7 @@
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
 - `*.yml`
-  - `placeholder`
+  - `placeholder` > `label`
 - `content.${lang}`
   - `_index.md`
     - `images`
@@ -60,7 +60,9 @@
 - `assets/css/_custom.scss`
 - `assets/js/custom.js`
   - `submited_` > `submited-`
-- `data/config.yml` > `langs.0.email`
+- `data/config.yml`
+  - `langs.0.google_analytics`
+  - `langs.0.email`
 - coordinates
 
 

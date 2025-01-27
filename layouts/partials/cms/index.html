@@ -1,7 +1,7 @@
 {{- $t            := partial "functions/i18n" . -}}
 {{- $lang_cms     := partial "functions/lang_cms" . -}}
 {{- $config       := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
-{{- $local        := eq (getenv "HUGO_CMS_LOCAL") "true" -}}
+{{- $netlify      := getenv "NETLIFY" -}}
 {{- $translations := slice -}}
 {{- $default      := site.Data.utilities.defaults -}}
 {{- $icons        := slice
@@ -69,15 +69,12 @@
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
 
   {{/*  NETLIFY IDENTITY  */}}
-  {{ if not $local }}
+  {{ if $netlify }}
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   {{ end }}
 
 </head>
 <body style="--login: '{{ $t.login }}'">
-
-  {{/*  HELP CORNER  */}}
-  {{ cond $local "" (partial "cms/help-corner" .) }}
 
   {{/*  ICONS (for draws-purge)  */}}
   <div style="display:none">
@@ -107,13 +104,10 @@
     "minify"     hugo.IsProduction
     "targetPath" (print site.Home.RelPermalink "js/cms.js")
     "params"     (dict
-      "editorial"    site.Data.config.cms.editorial
-      "netlifyHook"  site.Params.netlify_hook
-      "netlifyId"    (site.Params.netlify_id | default "sansoul")
       "tReset"       $t.reset
       "translations" $translations
       "icons"        $icons
-      "local"        $local
+      "netlify"      $netlify
       "lang"         $lang_cms
       "timestamp"    site.Params.timestamp
     )

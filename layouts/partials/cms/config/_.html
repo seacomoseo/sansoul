@@ -24,13 +24,17 @@
 
 {{ $site_url      := "" }}
 {{ $publish_mode  := "" }}
+{{ $domain        := ".pages.dev/" }}
+{{- if getenv "NETLIFY" -}}
+  {{ $domain       = ".netlify.app/" }}
+{{- end -}}
 {{ if $local }}
   {{ $site_url     = site.Home.Permalink }}
 {{ else if $config.cms.editorial }}
-  {{ $site_url     = print "https://" site.Params.name ".netlify.app/" }}
+  {{ $site_url   = print "https://" site.Params.name $domain }}
   {{ $publish_mode = "editorial_workflow" }}
 {{ else if $config.others.development }}
-  {{ $site_url     = print "https://" site.Params.name ".netlify.app/" }}
+  {{ $site_url     = print "https://" site.Params.name $domain }}
 {{ else }}
   {{ $site_url     = site.Home.Permalink }}
 {{ end }}
@@ -63,7 +67,7 @@
 {{/*  https://decapcms.org/docs/github-backend/  */}}
 {{- $backend := dict
   "name"     `github`
-  "repo"     (replace site.Params.git_url "https://github.com/" "")
+  "repo"     (print "seacomoseo/" site.Params.domain)
   "branch"   `main`
   "base_url" `https://sveltia-cms-auth.sansoul.workers.dev`
 -}}
