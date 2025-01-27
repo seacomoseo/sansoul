@@ -82,22 +82,26 @@ if (deployStatus && rebuildButton) {
   setInterval(checkDeploymentStatus, 5000)
 
   rebuildButton.addEventListener('click', () => {
+    rebuildButton.disabled = true
+    deployStatus.style.backgroundColor = '#F6E0A5'
     if (netlify) {
       if (netlifyHook) {
         fetch(atob('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
           .then(response => {
-            if (response.status === 200) {
-              rebuildButton.disabled = true
-              console.log('Rebuild start')
-              checkDeploymentStatus()
-            } else {
-              console.log('There was a problem starting the reconstruction')
+            if (!response.ok) {
+              throw new Error(`HTTP status ${response.status}`)
             }
+            return response.json()
+          })
+          .then(data => {
+            console.log(`Rebuild start: ${data}`)
+            checkDeploymentStatus()
+          })
+          .catch(error => {
+            console.error(`Error deployment: ${error}`)
           })
       }
     } else {
-      rebuildButton.disabled = true
-      deployStatus.style.backgroundColor = '#F6E0A5'
       fetch(`https://deploy.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
         .then(response => {
           if (!response.ok) {
@@ -106,7 +110,7 @@ if (deployStatus && rebuildButton) {
           return response.text()
         })
         .then(data => {
-          console.log(`Rebuild start: ${data}`)
+          console.log("Rebuild start")
           checkDeploymentStatus()
         })
         .catch(error => {
