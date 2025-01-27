@@ -84,7 +84,7 @@ if (deployStatus && rebuildButton) {
   rebuildButton.addEventListener('click', () => {
     if (netlify) {
       if (netlifyHook) {
-        fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
+        fetch(atob('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
           .then(response => {
             if (response.status === 200) {
               rebuildButton.disabled = true
