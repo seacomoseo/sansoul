@@ -56,17 +56,31 @@ if (deployStatus && rebuildButton) {
   // Call the function every 5 seconds
   setInterval(checkDeploymentStatus, 5000)
 
-  if (netlifyHook) {
-    rebuildButton.addEventListener('click', () => {
-      fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
+  rebuildButton.addEventListener('click', () => {
+    if (netlify) {
+      if (netlifyHook) {
+        fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
+          .then(response => {
+            if (response.status === 200) {
+              console.log('Rebuild start')
+              checkDeploymentStatus()
+            } else {
+              console.log('There was a problem starting the reconstruction')
+            }
+          })
+      }
+    } else {
+      fetch(`https://deploy-status.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
         .then(response => {
-          if (response.status === 200) {
-            console.log('Rebuild start')
-            checkDeploymentStatus()
-          } else {
-            console.log('There was a problem starting the reconstruction')
+          if (!response.ok) {
+            throw new Error(`HTTP status ${response.status}`)
           }
+          console.log(`Rebuild start: ${response.text()}`)
         })
-    })
-  }
+        .catch(error => {
+          console.error(`Error deployment: ${error}`)
+        })
+      checkDeploymentStatus()
+    }
+  })
 }
