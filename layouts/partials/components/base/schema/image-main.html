@@ -1,7 +1,7 @@
 {{/*  URL  */}}
-{{ $image    := "" }}
+{{ $image := "" }}
 
-{{ $src      := .Params.image }}
+{{ $src := .Params.image }}
 {{ if not .Params.image }}
   {{ with .Params.images }}
     {{ $src := index . 0 }}
@@ -22,10 +22,10 @@
   {{ if not $external }}
     {{ $url := resources.Get (print "/media/" .) }}
     {{ with $url }}
-      {{ $image    = .Permalink }}
+      {{ $image = .Permalink }}
     {{ end }}
   {{ else }}
-    {{ $image      = partial "functions/iframe-poster" . | default . }}
+    {{ $image = partial "functions/iframe-poster" . | default . }}
   {{ end }}
 {{ end }}
 
@@ -34,8 +34,8 @@
 {{ $height := 960 }}
 {{ if not (in $image ".svg" | or $external) | and $image }}
   {{ with resources.Get (print "/media/" $image) }}
-    {{ $width  = $image.Width }}
-    {{ $height = $image.Height }}
+    {{ $width  = .Width }}
+    {{ $height = .Height }}
   {{ end }}
 {{ end }}
 

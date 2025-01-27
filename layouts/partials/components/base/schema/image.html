@@ -1,8 +1,12 @@
+{{ $url    := .url }}
+{{ if hasPrefix $url "/" }}
+  {{ $url   = print site.BaseURL $url }}
+{{ end }}
 {{ $schema := dict
   "@context"   "https://schema.org"
   "@type"      "ImageObject"
-  "url"        .url
-  "contentUrl" .url
+  "url"        $url
+  "contentUrl" $url
   "width"      .width
   "height"     .height
   "caption"    .caption

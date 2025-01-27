@@ -218,7 +218,7 @@
     {{- with .iframe -}}
       {{- partial "components/base/schema/video" (dict
         "name"         $alt
-        "thumbnailUrl" $image_img.RelPermalink
+        "thumbnailUrl" $image_img.Permalink
         "uploadDate"   .upload
         "duration"     .duration
         "contentUrl"   .url
@@ -226,7 +226,7 @@
       ) -}}
     {{- else -}}
       {{- partial "components/base/schema/image" (dict
-        "url"     $image_img.RelPermalink
+        "url"     $image_img.Permalink
         "width"   $image_img.Width
         "height"  $image_img.Height
         "caption" $alt
