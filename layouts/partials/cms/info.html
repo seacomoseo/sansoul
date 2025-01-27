@@ -31,6 +31,7 @@
     {{/*  <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/{{ site.Params.netlify_id }}/deploy-status" width="118" height="20" alt="Netlify Deploy Status" decoding="async" loading="lazy">  */}}
     {{ partial "components/icon" (dict "icon" "rotate") }}
   </div>
+  <div class="deploy-time"></div>
   <div class="info">
     <p class="info__text">{{ $t.deploy_status }}:</p>
     <p class="info__status">
@@ -49,12 +50,12 @@
         {{ partial "components/icon" (dict "icon" "github") }}
         GitHub
       </a>
-      {{/*  {{ if getenv "NETLIFY" }}  */}}
+      {{ if getenv "NETLIFY" }}
         <a class="netlify-link" href="https://app.netlify.com/sites/{{ site.Params.name | default `sansoul` }}/deploys" target="_blank" title="Netlify Deploy Status">
           {{ partial "components/icon" (dict "icon" "netlify") }}
           Netlify
         </a>
-      {{/*  {{ end }}  */}}
+      {{ end }}
       <button class="rebuild" disabled>
         {{ partial "components/icon" (dict "icon" "rocket-launch") }}
         {{ $t.rebuild }}

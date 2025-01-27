@@ -1,24 +1,48 @@
-import { netlify, netlifyHook, netlifyId, cloudflareId, name } from '@params'
+import { name, netlify, netlifyHook, netlifyId, cloudflareId } from '@params'
 
 const deployStatus = document.querySelector('.deploy-status')
+const deployTime = document.querySelector('.deploy-time')
 const rebuildButton = document.querySelector('.rebuild')
+
+let statusColor
+
+let counter = 0
+let isRunning = false
+let counterInterval
+
+const timer = isBuilding => {
+  if (isBuilding) {
+    if (!isRunning) {
+      isRunning = true
+      counterInterval = setInterval(() => {
+        counter++
+        deployTime.innerHTML = `${counter}s`
+      }, 1000)
+    }
+  } else {
+    isRunning = false
+    counter = 0
+    clearInterval(counterInterval)
+  }
+}
 
 // Function to get and check the status of the deployment
 async function checkDeploymentStatus () {
-  let statusColor
   if (netlify) {
     statusColor = await getStatusColorNetlify(`https://api.netlify.com/api/v1/badges/${netlifyId}/deploy-status`)
   } else {
     statusColor = await getStatusColorCloudflare(`https://deploy-status.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
   }
   console.log('color:', statusColor)
+  const isBuilding = statusColor === '#F6E0A5'
   // Disable rebuild button if is building color
-  rebuildButton.disabled = statusColor === 'red'
+  rebuildButton.disabled = isBuilding
   // Change deploy status color
   deployStatus.style.backgroundColor = statusColor
   // Restart animation
   deployStatus.classList.remove('timer')
   deployStatus.classList.add('timer')
+  timer(isBuilding)
 }
 
 function getStatusColorNetlify (url) {
@@ -53,6 +77,7 @@ function getStatusColorCloudflare (url) {
 }
 
 if (deployStatus && rebuildButton) {
+  checkDeploymentStatus()
   // Call the function every 5 seconds
   setInterval(checkDeploymentStatus, 5000)
 
@@ -62,6 +87,7 @@ if (deployStatus && rebuildButton) {
         fetch(btoa('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
           .then(response => {
             if (response.status === 200) {
+              rebuildButton.disabled = true
               console.log('Rebuild start')
               checkDeploymentStatus()
             } else {
@@ -70,12 +96,18 @@ if (deployStatus && rebuildButton) {
           })
       }
     } else {
-      fetch(`https://deploy-status.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
+      rebuildButton.disabled = true
+      deployStatus.style.backgroundColor = '#F6E0A5'
+      fetch(`https://deploy.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP status ${response.status}`)
           }
-          console.log(`Rebuild start: ${response.text()}`)
+          return response.text()
+        })
+        .then(data => {
+          console.log(`Rebuild start: ${data}`)
+          checkDeploymentStatus()
         })
         .catch(error => {
           console.error(`Error deployment: ${error}`)
