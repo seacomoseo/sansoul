@@ -23,7 +23,7 @@ if (!fs.existsSync(jsonFilePath)) {
           await sharp(svgPath)
             // .resize({ width: 1200 })
             .flatten({ background: { r: 255, g: 255, b: 255 } }) // Establece el fondo blanco
-            .avif({
+            .webp({
               quality: 50,
               effort: 0
             })
