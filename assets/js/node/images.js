@@ -9,48 +9,45 @@ const imageListDir = './public/image_list'
 // Leer el archivo JSON y parsear la lista de rutas de SVG
 if (!fs.existsSync(jsonFilePath)) {
   console.error(`❌ File not found ${jsonFilePath}`)
-  process.exit(1)
+} else {
+  const svgPaths = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'))
+  if (!Array.isArray(svgPaths) || svgPaths.length === 0) {
+    console.error('❌ JSON file does not contain a valid list of routes')
+  } else {
+    // Convertir cada archivo SVG a WEBP en paralelo
+    Promise.all(
+      svgPaths.map(async (svgPath) => {
+        const webpPath = svgPath.replace(/\.svg$/, '.webp')
+
+        try {
+          await sharp(svgPath)
+            // .resize({ width: 1200 })
+            .flatten({ background: { r: 255, g: 255, b: 255 } }) // Establece el fondo blanco
+            .avif({
+              quality: 50,
+              effort: 0
+            })
+            .toFile(webpPath)
+
+          console.log(`✅ Converted to WEBP: ${svgPath}`)
+        } catch (error) {
+          console.error(`❌ Error converting ${svgPath}:`, error)
+        }
+      })
+    ).then(() => {
+      // Eliminar el archivo JSON después de completar la conversión
+      fs.unlink(jsonFilePath, (err) => {
+        if (err) {
+          console.error(`❌ Error when deleting ${jsonFilePath}:`, err)
+        } else {
+          console.log(`🗑️ Deleted ${jsonFilePath}`)
+        }
+      })
+
+      console.log('🎉 WEBP conversion completed!')
+    })
+  }
 }
-
-const svgPaths = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'))
-
-if (!Array.isArray(svgPaths) || svgPaths.length === 0) {
-  console.error('❌ JSON file does not contain a valid list of routes')
-  process.exit(1)
-}
-
-// Convertir cada archivo SVG a WEBP en paralelo
-Promise.all(
-  svgPaths.map(async (svgPath) => {
-    const webpPath = svgPath.replace(/\.svg$/, '.webp')
-
-    try {
-      await sharp(svgPath)
-        // .resize({ width: 1200 })
-        .flatten({ background: { r: 255, g: 255, b: 255 } }) // Establece el fondo blanco
-        .avif({
-          quality: 50,
-          effort: 0
-        })
-        .toFile(webpPath)
-
-      console.log(`✅ Converted to WEBP: ${svgPath}`)
-    } catch (error) {
-      console.error(`❌ Error converting ${svgPath}:`, error)
-    }
-  })
-).then(() => {
-  // Eliminar el archivo JSON después de completar la conversión
-  fs.unlink(jsonFilePath, (err) => {
-    if (err) {
-      console.error(`❌ Error when deleting ${jsonFilePath}:`, err)
-    } else {
-      console.log(`🗑️ Deleted ${jsonFilePath}`)
-    }
-  })
-
-  console.log('🎉 WEBP conversion completed!')
-})
 
 // Procesar los archivos JSON dentro de ./public/image_list
 if (fs.existsSync(imageListDir)) {
