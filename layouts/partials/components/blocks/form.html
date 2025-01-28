@@ -1,5 +1,5 @@
 {{- $a       := "" | safeHTMLAttr }}
-{{- $show    := cond (not site.Data.styles.performance.show) "" " show" -}}
+{{- $show    := cond (not site.Data.config.other.show) "" " show" -}}
 {{- $form_id := .form.id -}}
 {{- $subject := .form.subject -}}
 {{- $num     := 0 -}}

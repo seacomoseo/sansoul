@@ -24,7 +24,7 @@
     (cond (not .contain)    "" "gallery--contain")
     (cond (not .grayscale)  "" "gallery--grayscale")
     (cond (not .color | or (eq .color "transparent")) "" (print "bg bg-" .color))
-    (cond (not site.Data.styles.performance.show)     "" "show")
+    (cond (not site.Data.config.other.show)           "" "show")
   )
 ) -}}
 

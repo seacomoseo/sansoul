@@ -1,6 +1,10 @@
 {{- $file           := .src | replaceRE `#.*$` `` -}}
 {{- $src            := resources.Get $file -}}
 {{- if $src -}}
+  {{- $alt := .alt -}}
+  {{- if not $alt -}}
+    {{- $alt = $file | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
+  {{- end -}}
   {{- $svg          := $src.Content | replaceRE `\n` `` -}}
   {{- $svg_head     := index ($svg  | findRE `^<svg.*?>`) 0 -}}
   {{- $svg_width    := $svg_head    | findRE ` width="(.+?)"` -}}
@@ -59,5 +63,14 @@
   {{- else -}}
     {{- $draws := print "/draws." site.Params.timestamp ".svg" -}}
     <svg {{- with .class }} class="{{ . }}"{{ end }} width="{{ $svg_width }}" height="{{ $svg_height }}"><use href="{{ $draws }}#{{ $file | replaceRE `^/media/(icons?/)?|.svg$` `` | replaceRE `/` `-` }}"></use></svg>
+  {{- end -}}
+
+  {{- if not .notschema -}}
+    {{- partial "components/base/schema/image" (dict
+      "url"     $src.Permalink
+      "width"   $svg_width
+      "height"  $svg_height
+      "caption" $alt
+    ) -}}
   {{- end -}}
 {{- end -}}

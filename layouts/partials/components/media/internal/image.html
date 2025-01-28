@@ -1,8 +1,8 @@
-{{- $image     := resources.Get .src -}}
-{{- $image_img := $image -}}
-{{- $image_min := $image -}}
+{{- $image      := resources.Get .src -}}
+{{- $image_base := $image -}}
 {{- if $image -}}
-  {{- $alt := .alt -}}
+  {{- $type := cond (not site.Data.config.others.webp) "avif" "webp" -}}
+  {{- $alt  := .alt -}}
   {{- if not $alt -}}
     {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
   {{- end -}}
@@ -11,15 +11,17 @@
     {{- with .class }} class="{{ . }}"{{ end }}
     {{- with .iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
     {{- if $image | findRE `\.jpe?g$`  -}}
-      {{- with (resources.Get $image_min).Colors -}}
-        {{- $colors := cond (eq (len .) 1) (slice (index . 0) `transparent`) . -}}
+      {{- with $image.Colors -}}
+        {{/*  {{- $colors := cond (eq (len .) 1) (slice (index . 0) `transparent`) . -}}  */}}
+        {{- $colors := slice (index . 0) (index . 1 | default `transparent`) -}}
         {{- ` ` | safeHTMLAttr -}}
         style="--pre-bg:linear-gradient({{ delimit $colors `,` }})"
       {{- end -}}
     {{- end -}}
   >
 
-    {{- if hugo.IsProduction -}}
+    {{/*  {{- if hugo.IsProduction -}}  */}}
+    {{- if true -}}
 
       {{/*  CONTAIN  */}}
       {{- if not .contain -}}
@@ -157,21 +159,17 @@
       {{- if gt (len $sizes) 1 -}}
 
         {{/*  SRCSIZES AND SRCSET  */}}
-        {{- range $key, $value := sort $sizes "size" -}}
-          {{- $srcsizes         = $srcsizes | append (print "(max-width:" .screen "px) " (div .size 2) "px") -}}
-          {{- $image_resize    := $image.Resize (print .size "x webp") -}}
-          {{- $image_resize     = $image_resize | resources.Copy (print ($.src | replaceRE `(.+)\..+` `$1`) `-` .size `x` $image_resize.Height `.webp`) -}}
-          {{- $srcset           = $srcset | append (print $image_resize.RelPermalink " " .size "w") -}}
-          {{- if not $key -}}
-            {{- $image_min      = $image_resize -}}
-          {{- end -}}
+        {{- range sort $sizes "size" -}}
+          {{- $srcsizes    = $srcsizes | append (print "(max-width:" .screen "px) " (div .size 2) "px") -}}
+          {{- $image_link := partial "functions/image-format" (dict "image" $image "size" .size) -}}
+          {{- $srcset      = $srcset | append (print $image_link " " .size "w") -}}
         {{- end -}}
 
-        {{- $srcsizes           = delimit $srcsizes "," | replaceRE "\\(max-width:[0-9]+?px\\) ([0-9]+?px)$" "(all) $1" -}}
+        {{- $srcsizes      = delimit $srcsizes "," | replaceRE "\\(max-width:[0-9]+?px\\) ([0-9]+?px)$" "(all) $1" -}}
         {{- if $src_reverse -}}
-          {{- $srcsizes         = $srcsizes | replaceRE "max" "min" -}}
+          {{- $srcsizes    = $srcsizes | replaceRE "max" "min" -}}
         {{- end -}}
-        {{- $srcset             = delimit $srcset "," -}}
+        {{- $srcset        = delimit $srcset "," -}}
 
       {{- else -}}
 
@@ -184,15 +182,13 @@
             {{- $image_width = $image_width.size -}}
           {{- end -}}
         {{- end -}}
-        {{- $image_resize   := $image.Resize (print $image_width "x" " webp") -}}
-        {{- $image_resize    = $image_resize | resources.Copy (print ($.src | replaceRE `(.+)\..+` `$1`) `-` $image_width `x` $image_resize.Height `.webp`) -}}
-        {{- $srcset          = print $image_resize.RelPermalink " " $image_width "w" -}}
-        {{- $image_min       = $image_resize -}}
+        {{- $image_link      := partial "functions/image-format" (dict "image" $image "size" $image_width) -}}
+        {{- $srcset          = print $image_link " " $image_width "w" -}}
         {{- $srcsizes        = "100vw" -}}
 
       {{- end -}}
 
-      <source type="image/webp"
+      <source type="image/{{ $type }}"
         sizes="{{ $srcsizes }}"
         srcset="{{ $srcset }}"
         width="{{ $image.Width }}"
@@ -202,10 +198,10 @@
     {{- end -}}
 
     <img
-      src="{{ $image_img.RelPermalink | safeURL }}"
+      src="{{ $image_base.RelPermalink | safeURL }}"
       alt="{{ $alt }}"
-      width="{{ $image_img.Width }}"
-      height="{{ $image_img.Height }}"
+      width="{{ $image_base.Width }}"
+      height="{{ $image_base.Height }}"
       decoding="async"
       {{ if not .notlazy }} loading="lazy" {{ end }}
     >
@@ -218,7 +214,7 @@
     {{- with .iframe -}}
       {{- partial "components/base/schema/video" (dict
         "name"         $alt
-        "thumbnailUrl" $image_img.Permalink
+        "thumbnailUrl" $image_base.Permalink
         "uploadDate"   .upload
         "duration"     .duration
         "contentUrl"   .url
@@ -226,9 +222,9 @@
       ) -}}
     {{- else -}}
       {{- partial "components/base/schema/image" (dict
-        "url"     $image_img.Permalink
-        "width"   $image_img.Width
-        "height"  $image_img.Height
+        "url"     $image_base.Permalink
+        "width"   $image_base.Width
+        "height"  $image_base.Height
         "caption" $alt
       ) -}}
     {{- end -}}

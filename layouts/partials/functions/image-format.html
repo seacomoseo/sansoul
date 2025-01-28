@@ -1,0 +1,20 @@
+{{ $image_link := "" }}
+{{ if site.Data.config.others.webp }}
+  {{ $image_resize := .image.Resize (print .size "x webp") }}
+  {{ $image_resize  = $image_resize | resources.Copy (print (.image.RelPermalink | replaceRE `(.+)\..+` `$1`) `-` .size `x` $image_resize.Height `.webp`) }}
+  {{ $image_link    = $image_resize.RelPermalink }}
+{{ else }}
+  {{ $width  := .size }}
+  {{ $height := div (mul .image.Height .size) .image.Width }}
+  {{ $file   := print "image_list/" (replace .image.RelPermalink "/" "~") "." $width "x" $height ".json" }}
+  {{ $json   := dict
+    "path"   (print "./public" .image.RelPermalink)
+    "width"  $width
+    "height" $height
+    | jsonify
+  }}
+  {{ $resource  := resources.FromString $file $json }}
+  {{ $resource.Publish }}
+  {{ $image_link = .image.RelPermalink | replaceRE `(.+)(\..+)$` (print "$1-" $width "x" $height ".avif") }}
+{{ end }}
+{{ return $image_link }}

@@ -35,7 +35,7 @@
   {{- $node   := .node | default "div" -}}
 
   {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
-  {{- $show          := site.Data.styles.performance.show -}}
+  {{- $show          := site.Data.config.other.show -}}
   {{- $group_radius  := .group_radius | and (not .slider) -}}
 
   {{- $span_xl := mul .span_xl (.span     | default 1.00) -}}

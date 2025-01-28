@@ -1,12 +1,13 @@
 #!/bin/sh
 
+# Variables
+start_ms=$(node -e "console.log(Date.now())")
+PROYECT="${PWD##*/}"
+
 # Functions
 hecho() {
   echo "\033[7;37m $1 \033[0m"
 }
-
-# Variables
-PROYECT="${PWD##*/}"
 
 # COMMANDS FOR PROJECTS
 
@@ -213,7 +214,14 @@ elif [ $1 = css-purge ]
 then
 
   hecho "CSS PURGE"
-  node ./themes/sansoul/css-purge.js
+  node ./themes/sansoul/assets/js/node/css-purge.js
+
+# Open Graph SVG
+elif [ $1 = images ]
+then
+
+  hecho "CSS PURGE"
+  node ./themes/sansoul/assets/js/node/images.js
 
 # Check yaml error of Static CMS
 elif [ $1 = yml ]
@@ -338,7 +346,12 @@ then
 
   # sh do css-purge
   sh do draws-purge
+  sh do images
   # sh do multilang
+
+  end_ms=$(node -e "console.log(Date.now())")
+  elapsed=$((end_ms - start_ms))
+  echo "🕑 $elapsed ms"
 
 # Hugo check environement
 elif [ $1 = hugo ]

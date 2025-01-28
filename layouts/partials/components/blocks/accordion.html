@@ -1,4 +1,4 @@
-{{- $show     := cond (not site.Data.styles.performance.show) "" " show" -}}
+{{- $show     := cond (not site.Data.config.other.show) "" " show" -}}
 {{- $button   := cond (ne .accordion.button "none") .accordion.button "" -}}
 {{- $fotn_alt := cond (not .accordion.font_alt) "" "button--font-alt" -}}
 {{- $headers  := .accordion.headers -}}

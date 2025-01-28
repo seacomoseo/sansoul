@@ -7,6 +7,7 @@
   {{- $google_file_verification := site.Params.google_file_verification -}}
   {{- $draws_path               := print "/draws." site.Params.timestamp ".svg" -}}
   {{- $redirects_path           := "/_redirects" -}}
+  {{- $svgs                     := "/og-svgs.json" -}}
   {{- if hugo.IsMultihost -}}
     {{- $cms_index_path   = print "../" .Lang "/admin/index.html" -}}
     {{- if hugo.IsProduction -}}
@@ -17,6 +18,7 @@
   {{- $resources := slice
     (dict   "partial" `draws/_`                  "path" $draws_path)
     (dict   "partial" `redirects`                "path" $redirects_path)
+    (dict   "partial" `og-svgs`                  "path" $svgs)
   -}}
   {{- with $google_file_verification -}}
     {{- $resources = $resources | append

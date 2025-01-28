@@ -1,0 +1,35 @@
+{{ $img := "" }}
+{{ $svg := "" }}
+
+{{ with .Params.image }}
+  {{ if partial "functions/is-iframe" . }}
+    {{ $img = partial "functions/iframe-poster" . }}
+  {{ else }}
+    {{ $img = . }}
+  {{ end }}
+{{ end }}
+
+{{ if not $img }}
+  {{ $img = site.Home.Params.logo
+    | default .Params.menu.logo
+    | default site.Data.types.all.template.menu.logo
+    | default site.Data.config.cms.logo
+    | default site.Data.config.favicon.png
+    | default "base/icon.png"
+  }}
+{{ end }}
+
+{{ with $img }}
+  {{ if not (hasPrefix . "http") }}
+    {{ with resources.Get (print "/media/" .) }}
+      {{ $img = .Permalink }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ if in $img ".svg" }}
+  {{ $svg = print "./public/" (replace $img site.BaseURL "") }}
+  {{ $img = $img | replaceRE `\.svg$` `.webp` }}
+{{ end }}
+
+{{ return (dict "image" $img "svg" $svg) }}
