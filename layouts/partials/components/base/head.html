@@ -17,8 +17,11 @@
   {{ end }}
 {{ end }}
 
-{{ $description := .Description | default .Summary | truncate 155 | plainify }}
-{{ $image_og    := (partial "functions/image-og" .).img }}
+{{ $description  := .Description | default .Summary | truncate 155 | plainify }}
+{{ $image        := (partial "functions/image-og" .).img }}
+{{ $aas          := partial "functions/authors-article-sections" . }}
+{{ $authors      := $aas.authors }}
+{{ $art_sections := $aas.art_sections }}
 
 {{/*  BASIC  */}}
 <meta charset="utf-8">
@@ -45,13 +48,25 @@
   {{ end }}
 {{ end }}
 {{ with .Lastmod }}<meta property="og:updated_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}">{{ end }}
+{{ range $authors }}
+  {{ if reflect.IsMap . }}
+    <meta name="author" content="{{ .name }}">
+    <meta property="article:author" content="{{ .name }}">
+  {{ end }}
+{{ end }}
+{{ range $art_sections }}
+  {{ if reflect.IsMap . }}
+    <meta property="article:section" content="{{ .name }}">
+  {{ end }}
+{{ end }}
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:locale" content="{{ .Lang }}">
 {{ range .Translations }}
   <meta property="og:locale:alternate" content="{{ .Lang }}">
 {{ end }}
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="{{ $image_og }}">
+<meta name="image" content="{{ $image }}">
+<meta property="og:image" content="{{ $image }}">
 
 {{/*  ANDROID THEME COLOR  */}}
 <meta name="theme-color" content="{{ site.Data.styles.colors.main.color }}">
