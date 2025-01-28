@@ -349,8 +349,7 @@ then
   sh do images
   # sh do multilang
 
-  end_ms=$(node -e "console.log(Date.now())")
-  elapsed=$((end_ms - start_ms))
+  elapsed=$(node -e "console.log(Date.now() - $start_ms)")
   echo "🕑 $elapsed ms"
 
 # Hugo check environement
