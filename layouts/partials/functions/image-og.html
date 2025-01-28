@@ -29,7 +29,7 @@
 
 {{ if in $img ".svg" }}
   {{ $svg = print "./public/" (replace $img site.BaseURL "") }}
-  {{ $img = $img | replaceRE `\.svg$` `.webp` }}
+  {{ $img = $img | replaceRE `\.svg$` `.png` }}
 {{ end }}
 
 {{ return (dict "img" $img "svg" $svg) }}

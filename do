@@ -220,7 +220,7 @@ then
 elif [ $1 = images ]
 then
 
-  hecho "CSS PURGE"
+  hecho "IMAGES AVIF AND OPEN GRAPH SVG TO PNG"
   node ./themes/sansoul/assets/js/node/images.js
 
 # Check yaml error of Static CMS

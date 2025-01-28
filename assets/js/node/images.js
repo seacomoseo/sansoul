@@ -7,29 +7,25 @@ const jsonFilePath = './public/og-svgs.json'
 const imageListDir = './public/image_list'
 
 // Leer el archivo JSON y parsear la lista de rutas de SVG
-if (!fs.existsSync(jsonFilePath)) {
-  console.error(`❌ File not found ${jsonFilePath}`)
-} else {
+if (fs.existsSync(jsonFilePath)) {
   const svgPaths = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'))
-  if (!Array.isArray(svgPaths) || svgPaths.length === 0) {
-    console.error('❌ JSON file does not contain a valid list of routes')
-  } else {
-    // Convertir cada archivo SVG a WEBP en paralelo
+  if (Array.isArray(svgPaths) && svgPaths.length !== 0) {
+    // Convertir cada archivo SVG a PNG en paralelo
     Promise.all(
       svgPaths.map(async (svgPath) => {
-        const webpPath = svgPath.replace(/\.svg$/, '.webp')
+        const pngPath = svgPath.replace(/\.svg$/, '.png')
 
         try {
           await sharp(svgPath)
             // .resize({ width: 1200 })
             .flatten({ background: { r: 255, g: 255, b: 255 } }) // Establece el fondo blanco
-            .webp({
+            .png({
               quality: 50,
-              effort: 0
+              effort: 1
             })
-            .toFile(webpPath)
+            .toFile(pngPath)
 
-          console.log(`✅ Converted to WEBP: ${svgPath}`)
+          console.log(`✅ Converted to PNG: ${svgPath}`)
         } catch (error) {
           console.error(`❌ Error converting ${svgPath}:`, error)
         }
@@ -44,7 +40,7 @@ if (!fs.existsSync(jsonFilePath)) {
         }
       })
 
-      console.log('🎉 WEBP conversion completed!')
+      console.log('🎉 PNG conversion completed!')
     })
   }
 }
@@ -98,6 +94,4 @@ if (fs.existsSync(imageListDir)) {
 
     console.log('🎉 AVIF conversion completed!')
   })
-} else {
-  console.error(`❌ Folder ${imageListDir} not found`)
 }
