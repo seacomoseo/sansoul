@@ -56,7 +56,7 @@
     {{- if $is_iframe -}}
       <div class="bg-figure-video">
     {{- end -}}
-      {{- partial "components/image" (dict
+      {{- partial "components/media/_" (dict
         "class"     (print "bg-figure-image" $grayscale)
         "src"       .bg
         "alt"       (.hanchor | default .anchor | default .title | default .subtitle)

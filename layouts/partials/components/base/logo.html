@@ -20,7 +20,7 @@
         {{ $alt := site.Home.Params.seo | default site.Home.Params.title | markdownify | plainify }}
         <div class="logo__link href" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link" title="{{ $alt }}">
           {{- with $logo -}}
-            {{- partial "components/image"
+            {{- partial "components/media/_"
               (dict
                 "svg_src"   true
                 "class"     "logo__image"

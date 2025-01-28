@@ -39,7 +39,7 @@
 
 {{ if .not_header_links }}
   {{ $content = $content
-    | replaceRE `(?s)(class="content__heading .*?") id=".*?">.*?<a .*?"(>.*?)</a>` `$1$2`
+    | replaceRE `(?s)(class="content__heading.*?") id=".*?">.*?<a .*?"(>.*?)</a>` `$1$2`
   }}
 {{ else }}
   {{ $content = $content

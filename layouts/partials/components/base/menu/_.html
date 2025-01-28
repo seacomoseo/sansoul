@@ -88,7 +88,7 @@
             {{ $title := site.Home.Params.seo | default site.Home.Params.title | markdownify }}
             <li class="menu__item menu__item--logo">
               <a class="href menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}{{ site.Home.RelPermalink }}{{ end }}" title="{{ $title | plainify }}">
-                {{ partial "components/image" (dict
+                {{ partial "components/media/_" (dict
                   "svg_src"   true
                   "class"     "menu__logo-image"
                   "src"       .

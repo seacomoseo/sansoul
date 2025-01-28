@@ -56,7 +56,7 @@
 
 
     {{/*  IMAGE TAG  */}}
-    {{ partial "components/image" (dict
+    {{ partial "components/media/_" (dict
       "class"      "image__inner"
       "src"        $image_src
       "alt"        (.alt | default .hanchor | default .anchor | default .title)
@@ -72,7 +72,7 @@
 
     {{/*  IMAGE HOVER TAG  */}}
     {{ if .hover }}
-      {{ partial "components/image" (dict
+      {{ partial "components/media/_" (dict
         "class"     "image__inner image__inner--hover"
         "src"       (.hover | plainify)
         "alt"       .hover_alt
