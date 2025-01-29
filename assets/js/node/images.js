@@ -23,13 +23,13 @@ function removeDir (dirPath) {
 }
 
 // Rutas de archivos y directorios con JSON
-const faviconsPath = './public/favicons.json'
-const jsonFilePath = './public/og-svgs.json'
+const faviconsJSON = './public/favicons.json'
+const ogSVGsJSON = './public/og-svgs.json'
 const imageListDir = './public/image_list'
 
 // Leer el archivo JSON y parsear los favicons
-if (fs.existsSync(faviconsPath)) {
-  const svgPaths = JSON.parse(fs.readFileSync(faviconsPath, 'utf8'))
+if (fs.existsSync(faviconsJSON)) {
+  const svgPaths = JSON.parse(fs.readFileSync(faviconsJSON, 'utf8'))
   if (Array.isArray(svgPaths) && svgPaths.length !== 0) {
     // Convertir cada archivo en paralelo
     Promise.all(
@@ -73,7 +73,7 @@ if (fs.existsSync(faviconsPath)) {
         }
       })
     ).then(() => {
-      removeFile(faviconsPath)
+      removeFile(faviconsJSON)
 
       console.log('🎉 Favicons completed!')
     })
@@ -81,8 +81,8 @@ if (fs.existsSync(faviconsPath)) {
 }
 
 // Leer el archivo JSON de imágenes SVG para Open Graph y parsear la lista de rutas
-if (fs.existsSync(jsonFilePath)) {
-  const svgPaths = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'))
+if (fs.existsSync(ogSVGsJSON)) {
+  const svgPaths = JSON.parse(fs.readFileSync(ogSVGsJSON, 'utf8'))
   if (Array.isArray(svgPaths) && svgPaths.length !== 0) {
     // Convertir cada archivo SVG a PNG en paralelo
     Promise.all(
@@ -105,7 +105,7 @@ if (fs.existsSync(jsonFilePath)) {
         }
       })
     ).then(() => {
-      removeFile(jsonFilePath)
+      removeFile(ogSVGsJSON)
 
       console.log('🎉 PNG conversion completed!')
     })

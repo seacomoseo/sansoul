@@ -1,6 +1,7 @@
-{{- $t            := partial "functions/i18n" . -}}
-{{- $lang_cms     := partial "functions/lang_cms" . -}}
-{{- $config       := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
+{{- $t        := partial "functions/i18n" . -}}
+{{- $lang_cms := partial "functions/lang_cms" . -}}
+{{- $config   := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
+{{- $netlify  := getenv "NETLIFY" -}}
 
 <!doctype html>
 <html lang="{{ $lang_cms }}">
@@ -44,22 +45,36 @@
     <div class="info__buttons">
       <a class="google-spreadsheets-link" href="{{ site.Params.drive_link }}" target="_blank">
         {{ partial "components/icon" (dict "icon" "google-drive") }}
-        {{ $t.google_spreadsheets_link }}
+        Drive: {{ $t.google_spreadsheets_link }}
       </a>
       <a class="github-link" href="https://github.com/seacomoseo/{{ site.Params.domain }}" target="_blank">
         {{ partial "components/icon" (dict "icon" "github") }}
-        GitHub
+        GitHub Repo
       </a>
-      {{ if getenv "NETLIFY" }}
-        <a class="netlify-link" href="https://app.netlify.com/sites/{{ site.Params.name | default `sansoul` }}/deploys" target="_blank" title="Netlify Deploy Status">
+      {{ if $netlify }}
+        <a class="netlify-link" href="https://app.netlify.com/sites/{{ site.Params.name }}/deploys" target="_blank" title="Netlify Deploys">
           {{ partial "components/icon" (dict "icon" "netlify") }}
-          Netlify
+          Netlify Deploys
+        </a>
+      {{ end }}
+      {{ if site.Params.cloudflare_id }}
+        <a class="cloudflare-link" href="https://dash.cloudflare.com/?to=/:account/pages/view/{{ site.Params.name }}" target="_blank" title="Cloudflare Pages Deploys">
+          {{ partial "components/icon" (dict "icon" "bolt") }}
+          Cloudflare Pages Deploys
         </a>
       {{ end }}
       <button class="rebuild" disabled>
         {{ partial "components/icon" (dict "icon" "rocket-launch") }}
         {{ $t.rebuild }}
       </button>
+      {{ if not $netlify }}
+        {{ if site.Params.cloudflare_id }}
+          <button class="clear-cache" disabled>
+            {{ partial "components/icon" (dict "icon" "trash") }}
+            {{ $t.clear_cache }}
+          </button>
+        {{ end }}
+      {{ end }}
       <a class="admin-link" href="..">
         {{ partial "components/icon" (dict "icon" "arrow-left") }}
         Admin

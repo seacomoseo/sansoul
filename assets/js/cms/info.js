@@ -3,9 +3,9 @@ import { name, netlify, netlifyHook, netlifyId, cloudflareId } from '@params'
 const deployStatus = document.querySelector('.deploy-status')
 const deployTime = document.querySelector('.deploy-time')
 const rebuildButton = document.querySelector('.rebuild')
+const clearCacheButton = document.querySelector('.clear-cache')
 
 let statusColor
-
 let counter = 0
 let isRunning = false
 let counterInterval
@@ -27,16 +27,23 @@ const timer = isBuilding => {
 }
 
 // Function to get and check the status of the deployment
-async function checkDeploymentStatus () {
-  if (netlify) {
+async function checkStatus () {
+  if (netlify && netlifyId) {
     statusColor = await getStatusColorNetlify(`https://api.netlify.com/api/v1/badges/${netlifyId}/deploy-status`)
-  } else {
+  } else if (cloudflareId) {
     statusColor = await getStatusColorCloudflare(`https://deploy-status.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
   }
-  console.log('color:', statusColor)
+  if (statusColor) {
+    setStatus(statusColor)
+  }
+}
+
+function setStatus (statusColor) {
+  console.log('color: ', statusColor)
   const isBuilding = statusColor === '#F6E0A5'
   // Disable rebuild button if is building color
-  rebuildButton.disabled = isBuilding
+  if (rebuildButton) rebuildButton.disabled = isBuilding
+  if (clearCacheButton) clearCacheButton.disabled = isBuilding
   // Change deploy status color
   deployStatus.style.backgroundColor = statusColor
   // Restart animation
@@ -77,46 +84,60 @@ function getStatusColorCloudflare (url) {
 }
 
 if (deployStatus && rebuildButton) {
-  checkDeploymentStatus()
+  checkStatus()
   // Call the function every 5 seconds
-  setInterval(checkDeploymentStatus, netlify ? 1000 : 5000)
+  setInterval(checkStatus, netlify ? 1000 : 5000)
 
-  rebuildButton.addEventListener('click', () => {
-    rebuildButton.disabled = true
-    deployStatus.style.backgroundColor = '#F6E0A5'
-    if (netlify) {
-      if (netlifyHook) {
-        fetch(atob('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP status ${response.status}`)
-            }
-            return response.json()
-          })
-          .then(data => {
-            console.log(`Rebuild start: ${data}`)
-            checkDeploymentStatus()
-          })
-          .catch(error => {
-            console.error(`Error deployment: ${error}`)
-          })
-      }
-    } else {
-      fetch(`https://deploy.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}`)
+  document.addEventListener('click', e => {
+    const rebuildTarget = e.target.closest('.rebuild')
+    if (rebuildTarget) rebuild()
+    const clearCacheTarget = e.target.closest('.clear-cache')
+    if (clearCacheTarget) rebuildCloudflare({ cache: true })
+  })
+
+  function rebuild () {
+    setStatus('#F6E0A5')
+    if (netlify && netlifyHook) {
+      rebuildNetlify()
+    } else if (cloudflareId) {
+      rebuildCloudflare({ cache: false })
+    }
+  }
+
+  function rebuildNetlify () {
+    if (netlifyHook) {
+      fetch(atob('aHR0cHM6Ly9hcGkubmV0bGlmeS5jb20vYnVpbGRfaG9va3Mv' + netlifyHook), { method: 'POST' })
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP status ${response.status}`)
           }
-          return response.text()
+          return response.json()
         })
         .then(data => {
-          console.log('Rebuild start')
-          checkDeploymentStatus()
+          console.log(`Rebuild start: ${data}`)
+          checkStatus()
         })
         .catch(error => {
           console.error(`Error deployment: ${error}`)
         })
-      checkDeploymentStatus()
     }
-  })
+  }
+
+  function rebuildCloudflare ({ cache }) {
+    fetch(`https://deploy.sansoul.workers.dev/?name=${name}&id=${atob(cloudflareId)}&clearCache=${cache}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP status ${response.status}`)
+        }
+        return response.json()
+      })
+      .then(data => {
+        console.log(cache ? 'Rebuild start: ' : 'Clear cache start: ', data)
+        checkStatus()
+      })
+      .catch(error => {
+        console.error(`Error deployment: ${error}`)
+      })
+    checkStatus()
+  }
 }

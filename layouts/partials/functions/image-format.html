@@ -6,15 +6,15 @@
 {{ else }}
   {{ $width  := .size }}
   {{ $height := div (mul .image.Height .size) .image.Width }}
-  {{ $file   := print "image_list/" (replace .image "/" "~") "." $width "x" $height ".json" }}
-  {{ $json   := dict
-    "path"   (print "./public" .image)
-    "width"  $width
-    "height" $height
-    | jsonify
-  }}
-  {{ $resource  := resources.FromString $file $json }}
-  {{ $resource.Publish }}
-  {{ $image_link = .image | replaceRE `(.+)(\..+)$` (print "$1-" $width "x" $height ".avif") }}
+  {{ $avif   := .image | replaceRE `(.+)(\..+)$` (print "$1-" $width "x" $height ".avif") }}
+  {{ $get    := resources.Get $avif }}
+  {{ if not $get }}
+    {{ $path      := print "./public" .image }}
+    {{ $file      := print "image_list/" (replace $avif "/" "~") ".json" }}
+    {{ $json      := dict "path" $path "width" $width "height" $height | jsonify }}
+    {{ $resource  := resources.FromString $file $json }}
+    {{ $resource.Publish }}
+    {{ $image_link = $avif }}
+  {{ end }}
 {{ end }}
 {{ return $image_link }}
