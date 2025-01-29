@@ -1,8 +1,8 @@
-{{ $thumb  := .thumbnailUrl }}
-{{ if hasPrefix $thumb "/" }}
-  {{ $thumb = print site.BaseURL $thumb }}
-{{ end }}
-{{ $schema := dict
+{{- $thumb  := .thumbnailUrl -}}
+{{- if hasPrefix $thumb "/" -}}
+  {{- $thumb = print site.BaseURL $thumb -}}
+{{- end -}}
+{{- $schema := dict
   "@type"          "VideoObject"
   "@context"       "https://schema.org"
   "@type"          "VideoObject"
@@ -15,8 +15,8 @@
   "embedUrl"       .embedUrl
   "inLanguage"     page.Lang
   "isPartOf"       (dict "@id" page.Permalink)
-}}
-{{ $schema = partial "functions/schema-obj" $schema }}
+-}}
+{{- $schema = partial "functions/schema-obj" $schema -}}
 
 <script type="application/ld+json">
   {{- $schema | jsonify | safeJS -}}

@@ -1,8 +1,8 @@
-{{ $url    := .url }}
-{{ if hasPrefix $url "/" }}
-  {{ $url   = print site.BaseURL $url }}
-{{ end }}
-{{ $schema := dict
+{{- $url    := .url -}}
+{{- if hasPrefix $url "/" -}}
+  {{- $url   = print site.BaseURL $url -}}
+{{- end -}}
+{{- $schema := dict
   "@context"   "https://schema.org"
   "@type"      "ImageObject"
   "url"        $url
@@ -12,8 +12,8 @@
   "caption"    .caption
   "inLanguage" page.Lang
   "isPartOf"   (dict "@id" page.Permalink)
-}}
-{{ $schema = partial "functions/schema-obj" $schema }}
+-}}
+{{- $schema = partial "functions/schema-obj" $schema -}}
 
 <script type="application/ld+json">
   {{- $schema | jsonify | safeJS -}}

@@ -42,7 +42,7 @@
   ) }}
   
   <div {{ $attr | safeHTMLAttr }}>
-    {{ range .reviews }}
+    {{- range .reviews -}}
       {{- with merge $review . -}}
 
         {{/*  REVIEW ITEM CLASS  */}}
@@ -162,15 +162,16 @@
           </div>
         </div>
       {{- end -}}
-    {{ end }}
+    {{- end -}}
   </div>
 </div>
 {{/*  SCHEMA  */}}
+{{- "" -}}
 <script type="application/ld+json">
   {{- partial "components/base/schema/review" . | safeJS -}}
 </script>
 
-{{ if .slider }}
+{{- if .slider -}}
   {{- partial "components/slider-buttons"
     (dict
       "items"   (len .reviews)
@@ -180,4 +181,4 @@
     )
   -}}
   </div>
-{{ end }}
+{{- end -}}

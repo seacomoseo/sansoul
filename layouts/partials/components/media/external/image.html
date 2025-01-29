@@ -7,12 +7,14 @@
   {{- with .class }} class="{{ . }}" {{ end -}}
   {{- with .iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
 >
+  {{- "" -}}
   <img
     src="{{ .src | safeURL }}"
     alt="{{ $alt }}"
     decoding="async"
     {{- if not .notlazy }} loading="lazy"{{ end -}}
   >
+  {{- "" -}}
 </picture>
 
 {{- .icon_play -}}
