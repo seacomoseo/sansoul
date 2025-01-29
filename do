@@ -351,7 +351,7 @@ then
   # sh do multilang
 
   end_ms=$(node -p "Date.now()")
-  elapsed=$(node -p "$end_ms - $start_ms")
+  elapsed=$(echo "$end_ms - $start_ms" | bc)
   echo "\033[1;36m🕑 $elapsed ms\033[0m"
 
 # Hugo check environement
