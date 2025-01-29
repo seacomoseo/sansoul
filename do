@@ -333,7 +333,7 @@ then
 elif [ $1 = hugo-production ]
 then
 
-  start_ms=$(node -p "Date.now()")
+  start_ms=$(node -p "Date.now().toString().slice(-6)")
 
   sh do rm-public
   sh do prebuild
@@ -350,8 +350,8 @@ then
   sh do images
   # sh do multilang
 
-  end_ms=$(node -p "Date.now()")
-  elapsed=$(echo "$end_ms - $start_ms" | bc)
+  end_ms=$(node -p "Date.now().toString().slice(-6)")
+  elapsed=$((end_ms - start_ms))
   echo "\033[1;36m🕑 $elapsed ms\033[0m"
 
 # Hugo check environement
