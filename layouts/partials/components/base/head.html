@@ -126,18 +126,36 @@
 {{ partial "components/base/styles" . }}
 
 {{/*  FAVICON  */}}
-{{ $favicon_ico := resources.Get (print "/media/" ($config.favicon.ico | default "base/favicon.ico")) }}
-{{ with $favicon_ico }}
-  <link rel="icon" sizes="any" href="{{ (. | resources.Copy `/favicon.ico`).RelPermalink }}">
+{{ $favicon := resources.Get (print "/media/" ($config.favicon | default "base/icon.svg")) }}
+{{ if not $favicon }}
+  {{ $favicon = resources.Get "/media/base/icon.png" }}
 {{ end }}
-{{ $favicon_svg := resources.Get (print "/media/" ($config.favicon.svg | default "base/icon.svg")) }}
-{{ with $favicon_svg }}
-  <link rel="icon" type="image/svg+xml" href="{{ (. | resources.Copy `/favicon.svg`).RelPermalink | safeURL }}">
-{{ end }}
-{{ if or hugo.IsProduction (not (and $favicon_ico $favicon_svg)) }}
-  {{ $favicon_png := resources.Get (print "/media/" ($config.favicon.png | default "base/icon.png")) }}
-  {{ with $favicon_png }}
-    <link rel="icon apple-touch-icon" type="image/png" sizes="192x192" href="{{ (.Resize `192x192` | resources.Copy `/favicon.png`).RelPermalink | safeURL }}">
+
+{{ with $favicon }}
+  {{ $favicons := slice }}
+  {{ with resources.Get "/media/base/favicon.ico" }}
+    {{ (. | resources.Copy "/favicon.ico").Publish }}
+  {{ else }}
+    {{ $favicons = slice (dict "from" .RelPermalink "ext" "ico") }}
+  {{ end }}
+  <link rel="icon" sizes="any" href="/favicon.ico">
+
+  {{ if in . "svg" }}
+    {{ (. | resources.Copy "/favicon.svg").Publish }}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    {{ with resources.Get "/media/base/icon.png" }}
+      {{ (.Resize "192x192 png q1" | resources.Copy "/favicon.png").Publish }}
+    {{ else }}
+      {{ $favicons = $favicons | append (dict "from" .RelPermalink "ext" "png") }}
+    {{ end }}
+    {{ $favicons = $favicons | append (dict "from" .RelPermalink "ext" "png") }}
+  {{ else }}
+    {{ (.Resize "192x192 png q1" | resources.Copy "/favicon.png").Publish }}
+  {{ end }}
+  <link rel="icon apple-touch-icon" type="image/png" sizes="192x192" href="/favicon.png">
+
+  {{ with $favicons }}
+    {{ (resources.FromString "favicons.json" (. | jsonify)).Publish }}
   {{ end }}
 {{ end }}
 

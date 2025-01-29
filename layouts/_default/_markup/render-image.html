@@ -45,26 +45,18 @@
 
 {{- end -}}
 
-<figure class="{{ $figure_class }}" {{ $aux := `` }}
-  {{- if in .Text `float` -}}
-    {{- $img_shape := resources.Get (print `/media/` .Destination) -}}
-    {{- if in .Destination `.svg` -}}
-    {{- else -}}
-      {{- $img_shape =
-        (
-          (
-            $img_shape
-            | images.Filter (images.Gamma -1)
-          ).Resize
-          (print 100 `x webp q10`)
-          | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`)
-        )
-      -}}
-    {{- end -}}
-    {{- ` ` | safeHTMLAttr -}}
-    style="--shape:url({{- $img_shape.RelPermalink -}})"
+{{- $shape := "" -}}
+{{- if in .Text "float" -}}
+  {{- $img_shape := resources.Get (print "/media/" .Destination) -}}
+  {{- if not (in .Destination ".svg") -}}
+    {{- $img_shape = $img_shape | images.Filter (images.Gamma -1) -}}
+    {{- $img_shape = $img_shape.Resize (print 100 "x webp q10") -}}
+    {{- $img_shape = $img_shape | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`) -}}
   {{- end -}}
->
+  {{- $shape = ` style="--shape:url(` $img_shape.RelPermalink `)"` -}}
+{{- end -}}
+
+<figure class="{{ $figure_class }}" {{- $shape | safeHTMLAttr }}>
 
   <div class="{{ $image_class }}" {{- $image_style | safeHTMLAttr }}>
     {{- partial "components/media/_"

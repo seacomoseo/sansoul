@@ -11,9 +11,8 @@
   {{ $src := site.Data.schema.logo
     | default site.Params.menu.logo
     | default site.Params.cms.logo
-    | default site.Params.favicon.svg
-    | default site.Params.favicon.png
-    | default "base/icon.png"
+    | default site.Params.favicon
+    | default (cond (not (resources.Get "/media/base/icon.svg")) "base/icon.png" "base/icon.svg")
   }}
 {{ end }}
 

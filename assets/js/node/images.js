@@ -1,12 +1,86 @@
 import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import ico from 'sharp-ico'
 
-// Ruta del archivo JSON con la lista de SVGs
+function removeFile (filePath) {
+  fs.unlink(filePath, err => {
+    if (err) {
+      console.error(`❌ Error when deleting ${filePath}:`, err)
+    } else {
+      console.log(`🗑️ Deleted ${filePath}`)
+    }
+  })
+}
+
+function removeDir (dirPath) {
+  try {
+    fs.rmSync(dirPath, { recursive: true, force: true })
+    console.log(`🗑️ Deleted ${dirPath}`)
+  } catch (error) {
+    console.error(`❌ Error when deleting ${dirPath}:`, error.message)
+  }
+}
+
+// Rutas de archivos y directorios con JSON
+const faviconsPath = './public/favicons.json'
 const jsonFilePath = './public/og-svgs.json'
 const imageListDir = './public/image_list'
 
-// Leer el archivo JSON y parsear la lista de rutas de SVG
+// Leer el archivo JSON y parsear los favicons
+if (fs.existsSync(faviconsPath)) {
+  const svgPaths = JSON.parse(fs.readFileSync(faviconsPath, 'utf8'))
+  if (Array.isArray(svgPaths) && svgPaths.length !== 0) {
+    // Convertir cada archivo en paralelo
+    Promise.all(
+      svgPaths.map(async ({ from, ext }) => {
+        const inputPath = './public' + from
+        const outputPath = `./public/favicon.${ext}`
+
+        try {
+          if (ext === 'ico') {
+            // Crear una lista de imágenes redimensionadas
+            const sizes = [48, 32, 16]
+            const images = await Promise.all(
+              sizes.map(size =>
+                sharp(inputPath)
+                  .resize(size, size, { fit: 'contain' })
+                  .png({
+                    quality: 1,
+                    effort: 1
+                  })
+                  .toBuffer()
+              )
+            )
+            // Convertir las imágenes redimensionadas a un archivo .ico
+            await ico.sharpsToIco(
+              images.map(buffer => sharp(buffer)),
+              outputPath
+            )
+          } else {
+            await sharp(inputPath)
+              .resize(192, 192, { fit: 'contain' })
+              .png({
+                quality: 75,
+                effort: 1
+              })
+              .toFile(outputPath)
+          }
+
+          console.log(`✅ Converted FAVICON: ${inputPath} ⏩️ ${outputPath}`)
+        } catch (error) {
+          console.error(`❌ Error converting ${inputPath}:`, error)
+        }
+      })
+    ).then(() => {
+      removeFile(faviconsPath)
+
+      console.log('🎉 Favicons completed!')
+    })
+  }
+}
+
+// Leer el archivo JSON de imágenes SVG para Open Graph y parsear la lista de rutas
 if (fs.existsSync(jsonFilePath)) {
   const svgPaths = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'))
   if (Array.isArray(svgPaths) && svgPaths.length !== 0) {
@@ -25,20 +99,13 @@ if (fs.existsSync(jsonFilePath)) {
             })
             .toFile(pngPath)
 
-          console.log(`✅ Converted to PNG: ${svgPath}`)
+          console.log(`✅ Converted to PNG: ${svgPath} ⏩️ ${pngPath}`)
         } catch (error) {
           console.error(`❌ Error converting ${svgPath}:`, error)
         }
       })
     ).then(() => {
-      // Eliminar el archivo JSON después de completar la conversión
-      fs.unlink(jsonFilePath, (err) => {
-        if (err) {
-          console.error(`❌ Error when deleting ${jsonFilePath}:`, err)
-        } else {
-          console.log(`🗑️ Deleted ${jsonFilePath}`)
-        }
-      })
+      removeFile(jsonFilePath)
 
       console.log('🎉 PNG conversion completed!')
     })
@@ -84,13 +151,7 @@ if (fs.existsSync(imageListDir)) {
       }
     })
   ).then(() => {
-    // Eliminar el directorio image_list después de completar la conversión
-    try {
-      fs.rmSync(imageListDir, { recursive: true, force: true })
-      console.log(`🗑️ Deleted ${imageListDir}`)
-    } catch (error) {
-      console.error(`❌ Error when deleting ${imageListDir}:`, error.message)
-    }
+    removeDir(imageListDir)
 
     console.log('🎉 AVIF conversion completed!')
   })
