@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Variables
-start_ms=$(node -e "console.log(Date.now())")
 PROYECT="${PWD##*/}"
 
 # Functions
@@ -333,6 +332,8 @@ then
 # Hugo build as production environement
 elif [ $1 = hugo-production ]
 then
+
+  start_ms=$(node -e "console.log(Date.now())")
 
   sh do rm-public
   sh do prebuild
