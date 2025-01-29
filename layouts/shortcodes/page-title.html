@@ -1,6 +1,6 @@
 {{- $param := index .Params 0 -}}
 {{- if eq $param "index" -}}
-  {{- (urls.Parse site.BaseURL).Host -}}
+  {{- site.Params.domain -}}
 {{- else -}}
   {{- $page := site.GetPage "pages" $param -}}
   {{- $page.Title -}}

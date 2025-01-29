@@ -26,7 +26,7 @@
   {{- end -}}
 
 {{- else if eq $param "web" -}}
-  {{- (urls.Parse site.BaseURL).Host -}}
+  {{- site.Params.domain -}}
 {{- else if eq $param "https" -}}
   {{- site.BaseURL -}}
 {{- end -}}

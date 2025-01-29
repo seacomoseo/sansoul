@@ -4,7 +4,7 @@
 {{- $link      := $page.RelPermalink -}}
 {{- $nofollow  := ` "nofollow"` -}}
 {{- if eq $param "index" -}}
-  {{- $title    = (urls.Parse site.BaseURL).Host -}}
+  {{- $title    = site.Params.domain -}}
   {{- $link     = site.Home.RelPermalink -}}
   {{- $nofollow = "" -}}
 {{- end -}}

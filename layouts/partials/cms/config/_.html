@@ -76,7 +76,7 @@
   {{- $backend = dict
     "name"        `git-gateway`
     "branch"      `main`
-    "site_domain" (urls.Parse site.BaseURL).Host
+    "site_domain" site.Params.domain
   -}}
 {{- end -}}
 
