@@ -30,14 +30,14 @@
       {{- if $svg_not_size -}}
         {{- $svg_minify = replace $svg_minify "<svg" (print `<svg width="` $svg_width `" height="` $svg_height `"`) -}}
       {{- end -}}
-      {{- $svg_src := ($svg_minify | resources.FromString ($file | replaceRE `\.svg$` `.min.svg`)).RelPermalink -}}
+      {{- $src  = $svg_minify | resources.FromString ($file | replaceRE `\.svg$` `.svg`) -}}
       {{- $alt := .alt -}}
       {{- if not $alt -}}
         {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
       {{- end -}}
       <img
         {{ with .class }} class="{{ . }}"{{ end }}
-        src="{{ ($svg_minify | resources.FromString $svg_src).RelPermalink | safeURL }}"
+        src="{{ ($svg_minify | resources.FromString $src.RelPermalink).RelPermalink | safeURL }}"
         alt="{{ $alt }}"
         width="{{ $svg_width }}"
         height="{{ $svg_height }}"
