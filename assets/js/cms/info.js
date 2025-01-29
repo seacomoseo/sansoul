@@ -79,7 +79,7 @@ function getStatusColorCloudflare (url) {
 if (deployStatus && rebuildButton) {
   checkDeploymentStatus()
   // Call the function every 5 seconds
-  setInterval(checkDeploymentStatus, 5000)
+  setInterval(checkDeploymentStatus, netlify ? 1000 : 5000)
 
   rebuildButton.addEventListener('click', () => {
     rebuildButton.disabled = true
