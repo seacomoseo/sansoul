@@ -352,7 +352,7 @@ then
 elif [ $1 = hugo ]
 then
 
-  start_ms=$(node -p "Number(Date.now().toString().slice(-5))")
+  start_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
 
   # Deploy with environement
   development=$(grep '^\s\sdevelopment:' ./data/config.yml | awk '{print $2}')
@@ -363,8 +363,8 @@ then
     sh do hugo-production
   fi
 
-  end_ms=$(node -p "Number(Date.now().toString().slice(-5))")
-  elapsed=$(node -p "$end_ms - $start_ms")
+  end_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
+  elapsed=$((end_ms - start_ms))
   echo "\033[1;36m🕑 $elapsed ms\033[0m"
 
 # CMS + hugo local
