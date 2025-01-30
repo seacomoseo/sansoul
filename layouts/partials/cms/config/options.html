@@ -1,5 +1,5 @@
 {{ $lang_default := partial "functions/lang_default" . }}
-{{ $t            := partial "functions/i18n" . }}
+{{ $t            := partial "functions/i18n-cms" . }}
 
 {{/*  OPTIONS WITH TRANSLATE  */}}
 {{ $options := dict }}
@@ -30,6 +30,7 @@
 
 {{ $vars := slice
   (dict "&OPTIONS_LANGS"         $options.langs)
+  (dict "&OPTIONS_LANGS_CMS"     $options.langs_cms)
   (dict "&OPTIONS_BASE"          $options.base)
   (dict "&OPTIONS_HN"            (where $options.hn "value" "in" (slice "1" "2" "3" "4" "5" "6" "p")))
   (dict "&OPTIONS_HS"            (where $options.hn "value" "in" (slice "0" "1" "2" "3" "4" "5" "6")))

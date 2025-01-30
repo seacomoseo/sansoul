@@ -200,7 +200,7 @@
   "defaultContentLanguage" ((index $langs 0).lang | default "es")
   "languages"              $languages
 }}
-{{ with site.Data.config.lang_default_subdir }}
+{{ with site.Data.config.others.lang_default_subdir }}
   {{ $obj = merge $obj (dict "defaultContentLanguageInSubdir" .) }}
 {{ end }}
 

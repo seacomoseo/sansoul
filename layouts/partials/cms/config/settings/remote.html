@@ -1,4 +1,4 @@
-{{ $t := partial "functions/i18n" . }}
+{{ $t := partial "functions/i18n-cms" . }}
 
 {{ return dict "&SETTINGS_REMOTE" (slice
   (dict
@@ -41,7 +41,7 @@
               (dict "name" `to`      "widget" `string` "required" true  "label" $t.remote_pairings_to)
               (dict "name" `default` "widget" `string` "required" false "label" $t.default)
               (dict "name" `kind`    "widget" `select` "required" false "label" $t.remote_pairings_kind    "options" site.Data.utilities.pairing_kinds)
-              (dict "name" `delimit` "widget" `string` "required" false "label" $t.remote_pairings_delimit "hint" (print $t.default "→ '**,**'"))
+              (dict "name" `delimit` "widget" `string` "required" false "label" $t.remote_pairings_delimit "hint" (print $t.default " → '**,**'"))
             )
           )
         )

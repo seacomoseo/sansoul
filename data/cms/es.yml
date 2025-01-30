@@ -1,0 +1,1195 @@
+# base
+cms: Gestor de Contenidos
+login: Iniciar sesión
+deploy_status: El color del icono de la esquina se actualiza cada 5 segundos e indica el estado de construcción del sitio tras el último cambio (que suele tardar entre 20 y 90 segundos)
+deploy_status_success: Construido
+deploy_status_building: Construyendo
+deploy_status_canceled: Cancelado
+deploy_status_error: Error
+google_spreadsheets_info: Los datos de acceso (email y contraseña) están en esta hoja de Google Drive
+google_spreadsheets_info_view: que solo puede ver
+google_spreadsheets_link: Acesos
+rebuild: Reconstruir
+clear_cache: Borrar Caché
+recent: Contenido reciente de
+default: Por defecto
+enabled: Activado
+disabled: Desactivado
+reset: Valor por defecto / eliminar
+filter_published: Publicados
+filter_drafts: Borradores
+filter_year: Año
+filter_month: Mes
+# collections
+collection_sections: Secciones
+collection_sections_singular: Sección
+collection_sections_description: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
+collection_modals: Modales
+collection_modals_singular: Modal
+collection_modals_description: Ventanas Modales asignadas a cada sección. Es necesario crearlas aquí antes de poder asignarlas. Están ocultas y hay que enlazarlas tipo ancla para que se desplieguen (con un "#" delante del ID, Ejemplo → "#reparaciones-mantenimiento").
+collection_types: Colecciones
+collection_types_singular: Colección
+collection_types_description: Tipos de Páginas. Aquí se crean, editan y configuran de forma individual, a excepción de "Todas", cuyos parámetros se aplican por defecto a todas las colecciones.
+collection_settings: Ajustes
+# collections > settings > config
+config: Configuración
+config_langs: Idiomas
+config_lang: Idioma
+config_langs_hint: El 1º se considera el principal y se toma sus valores por defecto para el resto de idiomas
+config_lang_disabled: Desactivado
+config_title: Título
+config_description: Descripción
+config_email: Emails
+config_email_hint: Emails separados por comas a los que le llegarán el mensaje
+config_google_analytics: Código Analytics
+config_google_analytics_hint: 'Código de seguimiento de Google Analytics 🔷 **Ejemplo →** G-XXXXXXXXXX'
+config_google_site_verification: Código Search Console
+config_google_site_verification_hint: Código de Verificación de Google Search Console
+config_google_file_verification: Archivo Search Console
+config_google_file_verification_hint: Nombre de Archivo de Verificación de Google Search Console 🔷 **Ejemplo →** google7467d923cbb3eb4c.html
+config_google_translate: Traductor de Google
+config_google_translate_hint: Añade un enlace en el menú que lleva directamente al sitio web desde el traductor de Google
+config_disqus: Disqus
+config_disqus_hint: Nombre corto del sistema de comentarios disqus.com
+config_main_organization: Página de Organización Principal
+config_main_organization_hint: Ruta interna hacia la página 🔷 **Ejemplo →** supplier/ejemplo
+config_phone_code: Prefijo Telefónico de País
+config_time_zone: Zona Horaria
+config_currency: Moneda
+config_pagination: Enlace Permanente de Paginación
+config_pagination_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
+config_html: HTML Personalizado
+config_html_head: Antes de </head>
+config_html_body: Antes de </body>
+config_cms: CMS (Panel de Administración)
+config_cms_logo: Logo
+config_cms_lang: Idioma
+config_cms_editorial: Flujo Editorial
+config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
+config_others: Avanzado
+config_others_favicon: Favicono
+config_others_favicon_hint: Icono en miniatura representativo del sitio web (recomendable en formato SVG)
+config_others_lang_default_subdir: Idioma Principal en Subcarpeta
+config_others_cookies_advanced: Cookies Avanzadas
+config_others_cookies_advanced_hint: El mensaje de Cookies le permite al usuario elegir opciones
+config_others_cookies_legal: Cookies Legales
+config_others_cookies_legal_hint: Hace efectiva la política de cookies
+config_others_analytics_pagespeed_disabled: Analytics Desactivado para PageSpeed
+config_others_analytics_pagespeed_disabled_hint: Desactiva Google Analytics solo para [PageSpeed Insights](https://pagespeed.web.dev/)
+config_others_process_all_images: Procesar Todas las Imágenes
+config_others_process_all_images_hint: Hace que todas las imágenes de la galería estén disponibles aunque no se usen en ninguna página
+config_others_development: Modo Desarrollo
+config_others_development_hint: Acelera las implementaciones para desarrollo y empeora la velocidad de carga para los usuarios
+config_others_show: Efecto Aparecer
+config_others_show_hint: Activar efecto de aparecer al hacer scroll en todos los elementos (empeora el rendimiento en dispositivos poco potentes)
+config_others_webp: Imágenes en formato WEBP
+config_others_webp_hint: Comprimir Imágenes en formato WEBP en vez de AVIF (mejora la velocidad de carga a costa de aumentar el tiempo de compilación)
+# collections > types
+types_title: Nombre
+types_title_hint: Algunos nombres rellenan por defecto los campos de icono, emoji y textos en todos los idiomas
+types_order: Orden
+types_order_hint: Orden en que se muestra la colección
+types_base: Base
+types_base_hint: Determina el marcado de datos estructurados (útil para el SEO) y los parámetros mínimos que deben tener
+types_hint: Leyenda
+types_emoji: Emoji
+types_comments: Comentarios
+types_related: Relacionados
+types_breadcrumbs: Migas de Pan
+types_params: Parámetros Personalizados
+types_params_singular: Parámetro Personalizado
+types_params_name: Nombre
+types_params_label: Nombre
+types_params_hint: Leyenda
+types_params_type: Tipo
+types_params_options: Opciones
+types_params_options_label: Título
+types_params_options_value: Valor
+types_params_list: Lista
+types_taxonomy_of: Taxonomía de
+types_params_relations_hint: Crear previamente
+types_params_multiple: Múltiple
+types_params_schema: Schema
+types_template: Plantilla
+types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
+types_lang: Textos
+types_permalinks: Enlaces Permanentes
+types_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
+types_slug_hint: Es el final de la URL o enlace de la página padre de este tipo 🔷 **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
+types_singular: Título Singular
+# collections > types > template
+template: Plantilla General
+template_hint: Plantilla común a todas las páginas (los valores de las páginas, personalizadas o no, con su propia plantilla sobreescriben a los de ésta)
+template_background: Fondo de Página
+template_menu: Menú
+template_menu_items: Elementos
+template_menu_item: Elemento
+template_menu_subitems: Sublementos
+template_menu_subitem: Sublemento
+template_menu_hide: Ocultar
+template_menu_logo: Mostrar Logo
+template_menu_image: Imagen del Logo
+template_menu_title: Título del Logo
+template_menu_subtitle: Subtítulo del Logo
+template_menu_sticky: Pantalla de Ajuste
+template_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
+template_menu_logo_sticky: Logo Fijo en Móvil
+template_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
+template_menu_logo_align: Alineación del Logo
+template_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
+template_menu_transparent: Inicia Transparente
+template_menu_transparent_hint: Al hacer scroll toma su color
+template_menu_show_sections: Mostrar Secciones
+template_menu_show_sections_hint: Muestra los enlaces que llevan a cada sección
+template_menu_show_modals: Mostrar Modales
+template_menu_show_modals_hint: Muestra enlaces que llevan a cada ventana modal como subelementos desplegables
+template_menu_hide_icons: Ocultar Iconos
+template_callnow: Botones de Esquina
+template_callnow_show: Mostrar
+template_callnow_items: Botones
+template_callnow_item: Botón
+template_section: Estilo de cada Sección
+template_section_singular: Sección
+template_section_hint: El 1º se aplica a todas, el resto de forma alterna 🔷 **Ejemplo →** si hay 3 estilos, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
+template_modal: Estilo de cada Modal
+template_modal_singular: Modal
+template_sections: Secciones
+template_sections_singular: Sección
+template_modals: Ventanas Modales
+template_modals_singular: Ventana Modal
+template_modals_hint: Son secciones representadas como ventanas modales ocultas, a las cuales hay que enlazar tipo ancla (con un '#' delante del ID, **Ejemplo →** '*#reparaciones-mantenimiento*') para que se desplieguen; Tener en cuenta que en el menú aparecerán como subelementos de la sección en cuestión
+template_file: Archivo
+template_file_sections_hint: Sección previamente creada
+template_file_modals_hint: Modal previamente creada
+template_list: Listas
+template_related: Listas de Relacionados
+# collections > settings > styles
+styles: Estilos
+styles_icons: Iconos
+styles_icons_type: Tipo de Iconos
+styles_icons_sharp: Iconos Afilados
+styles_icons_emojis: Tipo de Emojis
+styles_icons_emojis_default: Cambiar iconos base por emojis
+styles_icons_play: Play
+styles_icons_up: Arriba
+styles_icons_down: Abajo
+styles_icons_left: Izquierda
+styles_icons_right: Derecha
+styles_fonts: Fuentes
+styles_fonts_google: Google Fonts
+styles_fonts_google_hint: Activar Fuentes de Google
+styles_fonts_base: Fuente Base
+styles_fonts_cursive: Manuscrita
+styles_fonts_title: Títulos
+styles_fonts_blockquote_cursive: Citas Manuscritas
+styles_fonts_blockquote_cursive_hint: Citas con Fuente Manuscrita ; Desactivadas se usará 'Times New Roman' cursiva
+styles_fonts_family: Familia
+styles_fonts_family_hint: Nombres válidos → [Google Fonts](https://fonts.google.com/)
+styles_fonts_weight: Grosor
+styles_fonts_bold: Grosor Negrita
+styles_fonts_italic: Cursiva
+styles_fonts_line_height: Alto de Línea
+styles_fonts_top: Ajuste Vertical
+styles_fonts_size: Tamaño (por defecto = 1)
+styles_colors: Colores
+styles_colors_main: Principal
+styles_colors_alt: Alternativo
+styles_colors_alt_hint: Usado para subtítulos, bordes y como seleccionable
+styles_colors_link: Enlaces
+styles_colors_link_hint: Color para los enlaces y botones por defecto 🔷 Si no se especifica, se considerará igual que el principal
+styles_colors_color: Color
+styles_colors_light: Versión Clara
+styles_colors_dark: Versión Oscura
+styles_colors_contrast: Contraste
+styles_colors_contrast_hint: Opciones de cambio del color y textos de botones según el fond
+styles_base: Base
+styles_base_white: Blanco
+styles_base_light: Claro
+styles_base_grey: Gris
+styles_base_dark: Oscuro
+styles_base_black: Negro
+styles_rounded: Esquinas Redondeadas
+styles_rounded_radius: Radio
+styles_rounded_radius_hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas 🔷 Si el valor es 0 no se redondea nada 🔷 Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas 🔷 Máximo 1.25
+styles_rounded_chamfer: Chaflán
+styles_rounded_chamfer_hint: Cambia las esquinas redondeadas por chaflanes (cortes rectos)
+styles_buttons: Botones
+styles_buttons_font_main: Fuente Principal
+styles_buttons_font_alt: Fuente Alternativa
+styles_buttons_sides_round: Laterales Redondos
+styles_buttons_sides_round_hint: Redondea las esquinas hasta el máximo
+styles_buttons_icon_circle: Iconos Círculares
+styles_buttons_icon_circle_hint: Redondea las esquinas hasta convertir en círculos los que solamente tienen un icono grande
+styles_buttons_deep: 3D
+styles_buttons_deep_hint: Efecto 3D o de profundidad
+styles_buttons_outline: Borde y Hueco
+styles_buttons_outline_hint: Deja bordes sólidos y rellenos transparente
+styles_buttons_type: Tipo
+styles_buttons_bold: Negrita
+styles_buttons_uppercase: Mayúsculas
+styles_inputs: Campos de Formularios
+styles_inputs_fill: Rellenos
+styles_inputs_fill_hint: Aplica un fondo de color blanco con esquinas redondeadas en cada campo simple
+styles_inputs_labels_out: Etiquetas Fuera
+styles_inputs_labels_out_hint: Coloca las etiquetas de cada campo fuera de éste
+styles_inputs_consent: Consentimiento
+styles_inputs_consent_hint: Texto junto a la casilla de verificación del consentimiento
+styles_shadow: Sombras
+styles_shadow_left: Posición Horizontal
+styles_shadow_top: Posición Vertical
+styles_shadow_blur: Difuminado
+styles_shadow_color: Color
+styles_shadow_alpha: Transparencia
+# collections > settings > remote
+remote: Contenido Remoto
+remote_singular: Recurso Remoto
+remote_hint: Genera contenido mediante recursos remotos, como APIS JSON, YAML, Markdown, CSV…
+remote_csv: ¿Es un CSV?
+remote_types: Tipos de Páginas
+remote_type: Tipo de Página
+remote_index: Índice
+remote_index_hint: Ruta hacia el objeto deseado separado por puntos 🔷 **Ejemplo →** "shop.articles.products"
+remote_pairings: Emparejamientos
+remote_pairings_singular: Emparejamiento
+remote_pairings_from: Parámetro de Origen
+remote_pairings_to: Parámetro de Destino
+remote_pairings_kind: Tipo de Valor
+remote_pairings_delimit: Separador
+redirects: Redirecciones
+redirects_hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
+robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
+# main-page-params
+p_slug: Slug
+p_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
+p_title: Título
+p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
+p_summary: Resumen
+p_summary_hint: Se utiliza para las miniaturas de las listas 🔷 Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido
+p_image: Imagen Principal
+p_image_hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
+p_related: Relacionados
+p_related_hint: Selecciona manualmente o se añadirán automaticamente
+p_toc: Índice
+p_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
+p_draft: Borrador
+p_draft_hint: Oculta la página
+p_noindex: No Index
+p_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
+p_seo: Título SEO
+p_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+p_description: Descripción SEO
+p_description_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+p_body: Contenido
+p_body_hint: Los enlaces que empiecen por "**btn**" (opcionalmente seguido de "**:**" + "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**-similar**", "**font-alt**" o "**dot**", separar con "**-**" si se añaden varios) se convertirán en botones 🔷 Se pueden usar iconos usando el texto "**icon:**" seguido de uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
+p_translationKey: ID Traducción
+p_translationKey_hint: Identificador único de traducción para cada página correspondiente a cada idioma 🔷 **Ejemplo →** ID Traducción = "*i-invented-it*" exactamente igual en la misma página en español ("*Me lo invento*"), en inglés ("*I invented it*") y en francés ("*Je l"ai inventé*")
+p_base: Base
+p_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
+# main-page-params article + event
+p_date: Fecha
+p_lastmod: Última Modifiación
+# main-page-params event
+p_end: Fecha Final
+p_cancelled: Cancelado
+p_artists: Artista/s
+p_artists_singular: Nombre
+p_artists_group: ¿Es un Grupo?
+p_artists_hint: '**Ejemplo →** "Manolo García"'
+# main-page-params author
+p_job: Cargo
+p_job_hint: '**Ejemplo →** "Podólogo Especialista"'
+# main-page-params service
+p_service_types: Tipos de Servicio
+p_service_types_singular: Tipo de Servicio
+# main-page-params organization
+p_types: Tipo de Negocio
+p_names: Nombres
+p_names_singular: Nombre
+p_names_hint: Nombres y Variantes del Negocio / Proyecto
+p_legal: Nombre Legal
+p_nif: NIF / DNI
+p_email: Email Legal
+p_logo: Logo
+p_images: Imágenes
+p_social: Redes Sociales
+p_social_singular: Enlace a Red Social
+p_phones: Teléfonos
+p_phones_singular: Teléfono
+p_address: Dirección
+p_address_name: Nombre en Google Maps
+p_address_street: Calle
+p_address_pc: Código Postal
+p_address_locality: Localidad
+p_address_region: Región
+p_address_country: País
+p_address_country_hint: Código de país de 2 letras
+p_address_geo: Coordenadas
+p_address_link: Enlace a Mapa
+p_areas: Áreas de Servicio
+p_areas_singular: Área de Servicio
+p_schedule: Horarios
+p_schedule_singular: Horario
+p_schedule_days: Días de la Semana
+p_schedule_hours: Horas
+p_schedule_hours_open: Apertura
+p_schedule_hours_close: Cierre
+p_schedule_from: Válido Desde
+p_schedule_to: Válido Hasta
+p_schedule_valid_hint: Formato → 2024-12-31
+p_prices: Rango de Precios
+p_services: Servicios
+p_services_singular: Servicio
+p_food_menu: Menús de Comida
+p_food_menu_singular: Menú de Comida
+p_food_menu_hint: Enlaces a cartas de menús (solo para establecimientos de comida)
+p_food_type: Tipos de Comida
+p_food_type_singular: Tipo de Comida
+p_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para establecimientos de comida)
+p_departments: Departamentos
+p_departments_singular: Departamento
+# boxes and sections
+box_name: Nombre
+box_name_hint: Nombre del archivo
+box_id: ID
+box_id_hint: Identificador para enlaces ancla 🔷 Debe ser único (no repetirse) entre todas las secciones y cajas 🔷 Corto 🔷 Descriptivo 🔷 Sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** preguntas-frecuentes
+box_view: Ver
+box_view_hint: Grupos de opciones a mostras
+box_title: Título
+box_hanchor: Título Oculto
+box_hanchor_hint: Encabezado y Ancla/Anchor Oculto que tendrá el enlace del título y del menú (para SEO)
+box_subtitle: Subtítulo
+box_content: Contenido
+box_price: Precio
+box_hn: Etiqueta de Título
+box_hs: Tamaño de Título
+box_uppercase: Título en Mayúsculas
+box_underline: Título Subrayado
+box_align: Alineación del Contenido
+box_align_max: Alineación del Contenido en Escritorio
+box_align_max_hint: Alineación del contenido cuando el ancho de la ventana ≥ 1280px
+box_menu_label: Texto del Enlace del Menú
+box_menu_button: Color del Botón del Enlace del Menú
+box_menu_font_alt: Fuente Alternativa del Enlace del Menú
+box_icon_id: Icono
+box_icon_id_hint: Nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) o emojis
+box_icon_type: Tipo de Icono
+box_icon_type_hint: Arriba en grande, Lateral junto al texto y Abajo a modo de subrayado
+box_icon_size: Tamaño de Icono
+box_icon_color: Color de Icono
+box_image_src: Imagen
+box_image_src_hint: Admite vídeo (incluido de youtube y vimeo) mediante URL (solamente el nombre de archivo subido previamente a **Medios**) 🔷 Para establecer la imagen de miniatura del vídeo, subir desde **Medios** una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp…) 🔷 En caso de ser un vídeo, puede establecerse una imagen de miniatura si a la URL se le añade al final '#poster=nombre-de-imagen.jpg' o, si es interno, subir desde **Medios** una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp…) 🔷 Se puede autoreproducir el vídeo dejándolo mudo añadiéndole al final de la URL '#mute' 🔷 Se pueden establecer marcas de inicio y final del vídeo en segundos añadiendo al final de la URL '#t=2,7' o '#t=2' para el inicio solamente
+box_image_hover: Imagen Alternativa
+box_image_hover_hint: Aparecerá al pasar el cursor por encima
+box_image_alt: Texto Alternativo de Imagen
+box_image_hover_alt: Texto Alternativo de Imagen Alternativa
+box_image_ratio: Proporción de la Imagen
+box_image_ratio_hint: Automática por defecto 🔷 **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+box_image_ratio_pattern: Sólo números (1-9) y barras inclinadas ("/")
+box_image_contain: Imagen Ajustada a la Proporción
+box_image_contain_hint: Para que no se recorte si se selecciona alguna proporción
+box_image_border: Color del Borde de la Imagen
+box_image_inset: Imagen Incrustada
+box_image_inset_hint: Se incrusta en el elemento como si este no tuviese márgenes internos
+box_image_circle: Imagen en Círculo
+box_image_grayscale: Imagen en Blanco y Negro
+box_image_grayscale_hint: Recuperan el color al pasar el cursor por encima
+box_image_declive: Imagen con Gradiente
+box_image_declive_hint: Gradiente de fondo hacia abajo
+box_button_link: Enlace
+box_button_licon: Icono del Enlace
+box_button_label: Texto del Enlace
+box_button_anchor: Ancla del Enlace
+box_button_anchor_hint: Texto/Anchor oculto que tendrá el enlace (para SEO)
+box_button_ofuscate: Enlace Ofuscado
+box_button_ofuscate_hint: Ésto hace que Google no considere el enlace como tal (para SEO)
+box_button_color: Color del Botón del Enlace
+box_button_font_alt: Fuente Alternativa del Enlace
+box_button_ga4: GA4
+box_button_ga4_hint: Marcarlo como evento en Google Analytics 4 (para posterior conversión)
+box_bg_color: Color del Fondo
+box_bg_gradient: Color de Gradiente del Fondo
+box_bg_gradient_type: Tipo de Gradiente del Fondo
+box_bg_color_alpha: Transparencia de color de Fondo
+box_bg_image: Imagen de Fondo
+box_bg_alpha: Transparencia de imagen de Fondo
+box_parallax: Paralaje
+box_parallax_hint: Aplica un efecto de desplazamiento al hacer scroll
+box_container_bg_color: Color del Fondo de la Caja
+box_container_bg_gradient_color: Color de Gradiente del Fondo de la Caja
+box_container_bg_gradient_type: Tipo de Gradiente del Fondo de la Caja
+box_container_bg_color_alpha: Transparencia de color de Fondo de la Caja
+box_container_bg_image: Imagen de Fondo de la Caja
+box_container_bg_alpha: Transparencia de imagen de Fondo de la Caja
+box_container_parallax: Paralaje de la Caja
+box_pt: Márgenes Interior Superior
+box_pb: Márgenes Interior Inferior
+box_ph: Ocultar Márgenes Interiores
+box_size: Tamaño del Contenedor
+box_size_hint: Por defecto → **Grande** en Secciones y Menú, **Pequeño** en Modales
+box_full: Alto Mínimo = Pantalla
+box_divider_id: Divisor
+box_divider_hint: Visibles en
+box_divider_flip_x: Voltear Divisor Horizontal
+box_divider_flip_y: Voltear Divisor Vertical
+box_order: Orden del Elemento en Escritorio
+box_order_hint: Orden del elemento cuando el ancho de la ventana ≥ 1280px
+box_span: Ancho
+box_span_hint: Ancho en Número de Columnas
+box_span_min: Ancho Mínimo
+box_span_min_hint: Ancho en Nº Columnas en Resolución Mínima
+box_grow: Rellenar Ancho
+box_grow_hint: Rellenar el ancho de contenedor aumentando el ancho de los elementos o columnas (no aplica si se activa carrusel)
+box_rate: Proporción de la Caja
+box_rate_hint: Altura mínima según la proporción establecida 🔷 Automática por defecto 🔷 **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+box_gap_y: Margen entre Elementos de la Caja
+box_padding: Márgenes Interiores
+box_padding_min: Márgenes Interiores Mínimos
+box_hide_shadow: Quitar Sombra
+box_hide_radius: Quitar Esquinas Redondeadas
+box_pill: Modo Bala
+box_pill_hint: Redondea la parte superior e inferior
+box_card: Modo Tarjeta
+box_card_hint: Utiliza la imagen como fondo + deja un margen superior para que se vea dicho fondo + alinea los contenido abajo y les añade un degradado a negro
+box_if: Condicional
+box_if_hint: Comprueba si existe el valor en los parámetros personalizados de la página para procesar la caja
+box_node: Nodo
+box_node_hint: Nombre de la etiqueta HTML de la Caja
+box_params: Parámetros
+box_params_singular: Parámetro
+box_params_hint: Parámetros personalizados desde la página o valor hasta la caja
+box_params_box: Parámetro de caja
+box_params_page: Parámetro de página
+box_params_value: Valor JSON
+box_tag: Estilo de Etiquetas
+box_tags: Etiquetas
+box_tags_singular: Etiqueta
+box_tags_hint: Lista de datos a modo de etiquetas relativas a la página
+box_tags_type: Tipo
+box_tags_date: Fecha
+box_tags_reading_time: Tiempo de Lectura
+box_tags_words: Nº de Palabras
+box_tags_address: Dirección
+box_tags_taxonomy: Taxonomías
+box_tags_taxonomy_key: Taxonomía
+box_tags_param: Parámetro
+box_tags_param_key: Clave del Parámetro
+box_tags_param_hint: Indica el nombre del parámetro
+box_tags_custom: Personalizado
+box_columns: Nº de Columnas
+box_columns_hint: 0 = se calcula automático según el número de elementos y sus anchos
+box_columns_min: Nº Columnas en Resolución Mínima
+box_columns_min_hint: 0 = se calcula automático según el número de elementos y sus anchos en resoluciones mínimas
+box_gap: Margen entre Cajas
+box_gap_min: Margen entre Cajas en Resolución Mínima
+box_gap_ny: Margen Vertical entre Cajas
+box_gap_ny_hint: El valor es en relación proporcional al **Margen entre Cajas**
+box_direction: Dirección de las Cajas
+box_group_radius: Esquinas Redondeadas en Conjunto
+box_group_radius_hint: Esquinas redondeadas en el conjunto de elementos
+box_slider: Activar Carrusel
+box_slider_hint: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
+box_interval: Intervalo del Carrusel
+box_interval_hint: Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)
+box_bullets: Guías del Carrusel
+box_arrows: Flechas del Carrusel
+box_align_x: Alineación Horizontal de Cajas
+box_align_y: Alineación Vertical de Cajas
+box_align_y_self: Alineación Vertical de la Caja
+box_list: Lista
+box_list_hint: Lista de Páginas
+box_list_type: Tipo
+box_list_max: Nº Máximo
+box_list_max_hint: Número máximo de elementos visibles, para ver el resto aparecerá un botón '+ Más' que llevará al Tipo de Artículo
+box_list_start: Fecha Inicial
+box_list_end: Fecha Final
+box_step: Estilo de Pasos
+box_steps: Pasos
+box_steps_singular: Paso
+box_steps_border: Color del Borde
+box_gallery: Estilo de Galería
+box_gallery_images: Galería de Imágenes
+box_gallery_images_hint: Sube varias imágenes, de una sola vez, que permitan hacer click para que se amplíen (como pase de diapositivas)
+box_gallery_limages: Galería de Imágenes con Enlaces
+box_gallery_limages_singular: Imágen con Enlace
+box_gallery_type: Tipo de Galería
+box_accordion: Estilo de Acordeones
+box_accordions: Acordeones
+box_accordions_singular: Acordeón
+box_accordions_hint: Botones con contenido desplegable, muy usado para preguntas frecuentes
+box_accordion_headers: Modo Encabezados
+box_accordion_first_open: Primero Desplegado
+box_gss: Hoja G.Drive Archivo
+box_gss_hint: Identificador del archivo de tipo hoja de Google Drive 🔷 **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
+box_gss_sheet: Hoja G.Drive Pestaña
+box_gss_sheet_hint: Identificador de la pestaña 🔷 **Ejemplo →** "1861644079"
+box_review: Estilo de Reseñas
+box_reviews: Reseñas
+box_reviews_singular: Reseña
+box_review_icon_left: Icono Izquierda
+box_review_icon_right: Icono Derecha
+box_review_rating: Valoración
+box_contact: Botones de Contacto
+box_contact_singular: Botón de Contacto
+box_contact_hint: Datos de contacto que se verán como botones, enlaces, o textos
+box_contact_days: Días
+box_contact_hours: Horas
+box_contact_label: Texto
+box_contact_label_phone: Número de Teléfono
+box_contact_full: Ancho Completo
+box_contact_address: Dirección para Mostrar
+box_contact_anchor: Dirección para Enlazar
+box_contact_anchor_hint: Usado para generar enlace automático a GMaps
+box_contact_schedule: Horarios de Contacto
+box_contact_pre: Prefijo
+box_contact_phone: Teléfono
+box_contact_whatsapp: WhatsApp
+box_contact_mail: eMail
+box_contact_address: Dirección
+box_contact_map_hint: Si seleccionas una ubicación, el enlace llevará a un mapa con las coordenadas exactas
+box_contact_h3: Encabezado H3
+box_contact_h4: Encabezado H4
+box_contact_h5: Encabezado H5
+box_contact_h6: Encabezado H6
+box_contact_br: Salto de Línea
+box_contact_hr: Separador
+box_contact_custom: Personalizado
+box_social: Botones de RRSS
+box_social_singular: Botón de RRSS
+box_social_hint: Botones con enlaces hacia Redes Sociales
+box_form: Formulario
+box_form_action: Acción
+box_form_action_hint: Acción que se ejecuta al enviar el formulario
+box_form_to: Destino
+box_form_to_hint: URL de la página que se abrirá si el formulario se envía correctamente
+box_form_subject: Asunto
+box_form_subject_hint: Asunto que tendrá el email de recepción
+box_form_inputs: Elementos de Formulario
+box_form_input: Elemento de Formulario
+box_form_inputs_name: Nombre
+box_form_inputs_name_hint: Nombre que tendrá el campo
+box_form_inputs_label: Nombre Visible
+box_form_inputs_label_hint: Texto descriptivo del campo que aparece sobre éste 🔷 Si no se especifica, se aplicará el nombre anterior
+box_form_inputs_hint: Leyenda
+box_form_inputs_hint_hint: Texto descriptivo del campo que aparece bajo éste
+box_form_inputs_required: Requerido
+box_form_inputs_required_hint: Indica si es obligatorio completar el campo
+box_form_inputs_required_if: Requerido Si…
+box_form_inputs_required_if_hint: Indica si es obligatorio completar este campo solamente si otro campo está completado, indicando su nombre (puedes indicar varios separados por '||' o por '&&')
+box_form_inputs_show_if: Mostrar Si…
+box_form_inputs_show_if_hint: Este campo estará oculto hasta que otro campo se complete, indicando su nombre (puedes indicar varios separados por '||' si con uno es suficiente o por '&&' si se requieren todos)
+box_form_inputs_regex: Regex
+box_form_inputs_min: Mínimo
+box_form_inputs_max: Máximo
+box_form_inputs_x: Opciones en Horizontal
+box_form_inputs_accept: Archivos
+box_form_inputs_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas 🔷 **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
+box_form_geo_view: Centro de Vista Inicial
+box_form_inputs_options: Opciones
+box_form_inputs_option: Opción
+box_form_inputs_option_hint: Opción que se le muestra al usuario
+box_form_inputs_value: Valor
+box_form_inputs_value_hint: Valor que recibirá el formulario
+box_form_inputs_text: Texto (Simple)
+box_form_inputs_text_hint: Campo simple de texto normal
+box_form_inputs_email: Email (Simple)
+box_form_inputs_email_hint: Campo simple de email
+box_form_inputs_tel: Teléfono (Simple)
+box_form_inputs_tel_hint: Campo simple de teléfono
+box_form_inputs_number: Número (Simple)
+box_form_inputs_number_hint: Campo simple de número
+box_form_inputs_date: Fecha (Simple)
+box_form_inputs_date_hint: Campo simple de fecha
+box_form_inputs_time: Tiempo (Simple)
+box_form_inputs_time_hint: Campo simple de tiempo
+box_form_inputs_textarea: Área de Texto (Simple)
+box_form_inputs_textarea_hint: Campo simple de área de texto 🔷 Ocupa todo el ancho
+box_form_inputs_geo: Coordenadas
+box_form_inputs_geo_hint: Mapa para establecer un punto 🔷 Ocupa todo el ancho
+box_form_inputs_select: Selección (Múltiple)
+box_form_inputs_select_hint: Campo múltiple de lista de selección desplegable 🔷 Solo permite seleccionar una opción 🔷 Ocupa todo el ancho
+box_form_inputs_radio: Radios (Múltiple)
+box_form_inputs_radio_hint: Campo múltiple de radios o círculos 🔷 Solo permite seleccionar una opción 🔷 Ocupa todo el ancho
+box_form_inputs_checkbox: Casillas (Múltiple)
+box_form_inputs_checkbox_hint: Campo múltiple de casillas de verificación 🔷 Permite seleccionar múltiples opciones 🔷 Ocupa todo el ancho
+box_form_inputs_file: Archivo
+box_form_inputs_file_hint: Campo de archivo adjunto (máximo 8 MB)
+box_form_inputs_hidden: Oculto
+box_form_inputs_hidden_hint: Campo simple oculto a los usuarios (puede servir para indicar algo internamente en la recepción de formularios)
+box_form_inputs_h3: Encabezado h3
+box_form_inputs_h4: Encabezado h4
+box_form_inputs_h5: Encabezado h5
+box_form_inputs_h6: Encabezado h6
+box_form_inputs_content: Contenido
+box_map: Mapa
+box_map_hint: Si seleccionas una ubicación, aparecerá un mapa como este
+box_map_point: Punto
+box_map_circle: Círculo
+box_map_polygon: Polígono
+box_map_color: Color
+box_map_radius: Radio
+box_map_radius_hint: Radio en kilómetros
+box_zoom: Zoom
+box_box: Estilo de Cajas
+box_boxes: Cajas
+box_boxes_singular: Caja
+# patterns
+pattern: En minúsculas 🔷 Sin espacios (guiones medios en su lugar) 🔷 Sin eñes (enes en su lugar) 🔷 Sin caracteres extraños ni barras bajas
+# options
+option-langs-es: 🇪🇸 Español
+option-langs-en: 🇬🇧 Inglés
+option-langs-fr: 🇫🇷 Francés
+option-langs-de: 🇩🇪 Alemán
+option-langs-pt: 🇵🇹 Portugués
+option-langs-it: 🇮🇹 Italiano
+option-langs_cms-es: 🇪🇸 Español
+option-langs_cms-en: 🇬🇧 Inglés
+option-base-article: 📰 Artículo
+option-base-event: 📅 Evento
+option-base-product: 📦 Producto
+option-base-brand: 🏷 Marca
+option-base-author: 👤 Autor
+option-base-organization: 🚀 Organización
+option-base-service: 🔧 Servicio
+option-base-page: 📄 Página
+option-base-single: 📑 Única
+option-hn-0: h0
+option-hn-1: h1
+option-hn-2: h2
+option-hn-3: h3
+option-hn-4: h4
+option-hn-5: h5
+option-hn-6: h6
+option-hn-p: Párrafo
+option-align_y-stretch: Sin Alinear (alto completo)
+option-align_y-top: Arriba
+option-align_y-center: Centrado
+option-align_y-bottom: Abajo
+option-align-left: Izquierda
+option-align-center: Centrado
+option-align-right: Derecha
+option-align_x-center: Centrados
+option-align_x-space-evenly: Espacios Uniformes
+option-align_x-space-between: Espacios Solo Entre Elementos
+option-align_x-space-around: Espacios Alrededor Iguales
+option-align_x-flex-start: Izquierda
+option-align_x-flex-end: Derecha
+option-color-main: Principal
+option-color-main-light: Principal Claro
+option-color-main-dark: Principal Oscuro
+option-color-alt: Alternativo
+option-color-alt-light: Alternativo Claro
+option-color-alt-dark: Alternativo Oscuro
+option-color-link: Enlace
+option-color-link-light: Enlace Claro
+option-color-link-dark: Enlace Oscuro
+option-color-white: Blanco
+option-color-light: Claro
+option-color-grey: Gris
+option-color-dark: Oscuro
+option-color-black: Negro
+option-color-invert: Invertido (Claro u Oscuro según fondo)
+option-color-similar: Similar (Oscuro o Claro según fondo)
+option-color-whatsapp: WhatsApp
+option-color-none: Sin Color (tipo Enlace simple)
+option-color-hide: Ocultar Botón / Enlace
+option-contrast-none: Nada 🔷 Nada cambia (textos de botones blancos)
+option-contrast-all: Todo 🔷 Cambia tanto el color como los textos de botones (garantiza buen contraste)
+option-contrast-text: Texto 🔷 Sólo cambian los textos de botones
+option-contrast-bg: Fondo 🔷 El color y los textos de botones cambian sólo en fondos oscuros
+option-parallax-none: Desactivado
+option-parallax-fix: Fijo en el Fondo
+option-parallax-soft: Suave en el Fondo
+option-parallax-box: Suave en la Caja
+option-gradient-linear-b: Linear Abajo
+option-gradient-linear-t: Linear Arriba
+option-gradient-linear-r: Linear Derecha
+option-gradient-linear-l: Linear Izquierda
+option-gradient-linear-tr: Linear Arriba-Derecha
+option-gradient-linear-br: Linear Abajo-Derecha
+option-gradient-linear-tl: Linear Arriba-Izquierda
+option-gradient-linear-bl: Linear Abajo-Izquierda
+option-gradient-circle: Circular
+option-gradient-circle-alt: Circular Invertido
+option-gradient-radial: Radial
+option-gradient-radial-alt: Radial Invertido
+option-icon_type-top: Arriba
+option-icon_type-side: Lateral
+option-icon_type-bottom: Abajo
+option-icons_type-thin: Finos
+option-icons_type-light: Ligeros
+option-icons_type-regular: Normales
+option-icons_type-solid: Sólidos
+option-icons_type-duotone: Duotonos
+option-icons_emojis-twemoji: Twemoji (Twiter)
+option-icons_emojis-twemoji-scale: Twemoji (Twiter) con escalado de colores
+option-icons_emojis-noto-bw: Noto (Android) en monocromo
+option-buttons_type-base: Base
+option-buttons_type-title: Título
+option-buttons_type-cursive: Cursiva
+option-callnow_show-items: Elementos
+option-callnow_show-auto: Automático
+option-callnow_show-hide: Ocultar
+option-direction_right: Derecha
+option-direction_left: Izquierda
+option-direction_top: Arriba
+option-direction_bottom: Abajo
+option-bullets_dash: Guiones
+option-bullets_radius: Radios
+option-bullets_hide: Ocultar
+option-arrows_bottom: Abajo
+option-arrows_float: Flotantes
+option-arrows_hide: Ocultar
+option-sizes-xs: Muy Pequeño
+option-sizes-sm: Pequeño
+option-sizes-md: Mediano
+option-sizes-lg: Grande
+option-sizes-xl: Muy Grande
+option-sizes-fluid: Fluido
+option-days-monday: Lunes
+option-days-tuesday: Martes
+option-days-wednesday: Miércoles
+option-days-thursday: Jueves
+option-days-friday: Viernes
+option-days-saturday: Sábado
+option-days-sunday: Domingo
+option-gallery_types-grid: Rejilla
+option-gallery_types-grid-contain: Rejilla Ajustada
+option-gallery_types-rows: Filas
+option-gallery_types-columns: Columnas
+option-gallery_types-boxes: Cajas
+option-view-group: Grupo
+option-view-text: Texto
+option-view-menu: Menú
+option-view-icon: Icono
+option-view-image: Imágen
+option-view-button: Botón
+option-view-bg: Fondo
+option-view-container: Fondo de Contenedor Principal
+option-view-paddings: Márgenes Interiores
+option-view-size: Tamaño
+option-view-divider: Divisor
+option-view-boxi: Caja
+option-view-other: Otros
+option-view-list: Lista
+option-view-steps: Pasos
+option-view-accordions: Colapsables
+option-view-gallery: Galería
+option-view-reviews: Reseñas
+option-view-contact: Botones de Contacto
+option-view-form: Formulario
+option-view-map: Mapa
+option-view-gss: Hoja de Google Drive
+option-view-boxes: SubCajas
+option-tags-row: Fila
+option-tags-column: Columna
+option-divider-arrow-four: Flecha 4 Puntas
+option-divider-arrow-op-alt: Flecha con Transparencia Alternativa
+option-divider-arrow-op-fan: Flecha con Transparencia en Abanico
+option-divider-arrow-op: Flecha con Transparencia
+option-divider-arrow-round: Flecha Redondeada
+option-divider-arrow-side-round: Flecha Lateral Redondeada
+option-divider-arrow-side: Flecha Lateral
+option-divider-arrow-sides-round-op: Flechas Laterales Redondeadas con Transparencia
+option-divider-arrow-sides-round: Flechas Laterales Redondeadas
+option-divider-arrow-sides: Flechas Laterales
+option-divider-arrow-three: Flecha 3 Puntas
+option-divider-arrow-two: Flecha 2 Puntas
+option-divider-arrow: Flecha
+option-divider-book: Libro
+option-divider-brush: Brocha
+option-divider-bubles: Burbujas
+option-divider-central-dents: Dientes Centrales
+option-divider-central-waves: Hondas Centrales
+option-divider-christmas-trees: Árboles de Navidad
+option-divider-city: Ciudad
+option-divider-clouds-op: Nubes con Transparencia
+option-divider-clouds: Nubes
+option-divider-curve-corner-op: Curva en Esquina con Transparencia
+option-divider-curve-corner: Curva en Esquina
+option-divider-curve-edges: Curva con Bordes
+option-divider-curve-op: Curva con Transparencia
+option-divider-curve-side: Curva Lateral
+option-divider-curve: Curva
+option-divider-curved-alt: Curvado Alternativo
+option-divider-curved-bracket: Corchetes Curvados
+option-divider-curved: Curvado
+option-divider-dents-op-alt: Dentado con Transparencia Alternativa
+option-divider-dents-op: Dientes con Transparencia
+option-divider-dents-round: Dientes Redondeados
+option-divider-dents: Dientes
+option-divider-diagonals-op: Diagonales con Transparencia
+option-divider-diagonals: Diagonales
+option-divider-drip: Goteo
+option-divider-ethnic-alt: Étnico Alternativo
+option-divider-ethnic: Étnico
+option-divider-fall: Otoño
+option-divider-fire: Fuego
+option-divider-gradient: Gradiente
+option-divider-half-circle: Semicírculo
+option-divider-mountain: Montañas
+option-divider-snow: Nieve
+option-divider-squares: Cuadrados
+option-divider-staggered-pill-op: Escalonado Bala con Transparencia
+option-divider-staggered-pill-tilt: Escalonado Bala con Inclinación
+option-divider-staggered-pill: Escalonado Bala 
+option-divider-staggered-round: Escalonado Redondeado
+option-divider-staggered: Escalonado
+option-divider-sun-round: Sol Redondeado
+option-divider-sun: Sol
+option-divider-taj-mahal: Taj Mahal
+option-divider-tear-alt: Desgarro Alternativo
+option-divider-tear-rough: Desgarro Bruto
+option-divider-tear: Desgarro
+option-divider-tilt-curve-sides: Inclinación con Curvas Laterales
+option-divider-tilt-op-alt: Inclinación con Transparencia Alternativo
+option-divider-tilt-op: Inclinación con Transparencia
+option-divider-tilt: Inclinación
+option-divider-waves-op: Olas con Transparencia
+option-divider-waves: Olas
+option-divider-wavy-alt: Ondas Alternativas
+option-divider-wavy-jump: Ondas con Salto
+option-divider-wavy-op-alt: Ondas con Transparencia Alternativas
+option-divider-wavy-op: Ondas con Transparencia
+option-divider-wavy: Ondas
+option-location_type-Organization: Organización
+option-location_type-Airline: → Aerolínea
+option-location_type-Consortium: → Consorcio
+option-location_type-Corporation: → Corporación
+option-location_type-EducationalOrganization: → Organización Educativa
+option-location_type-CollegeOrUniversity: → → Colegio o Universidad
+option-location_type-ElementarySchool: → → Escuela Primaria
+option-location_type-HighSchool: → → Escuela Secundaria
+option-location_type-MiddleSchool: → → Escuela Intermedia
+option-location_type-Preschool: → → Preescolar
+option-location_type-School: → → Escuela
+option-location_type-FundingScheme: → Esquema de Financiación
+option-location_type-GovernmentOrganization: → Organización Gubernamental
+option-location_type-LibrarySystem: → Sistema de Biblioteca
+option-location_type-LocalBusiness: → Negocio Local
+option-location_type-AnimalShelter: → → Refugio de Animales
+option-location_type-ArchiveOrganization: → → Organización de Archivo
+option-location_type-AutomotiveBusiness: → → Negocio de Automóviles
+option-location_type-AutoBodyShop: → → → Taller de Carrocería
+option-location_type-AutoDealer: → → → Distribuidor de Automóviles
+option-location_type-AutoPartsStore: → → → Tienda de Repuestos de Automóviles
+option-location_type-AutoRental: → → → Alquiler de Automóviles
+option-location_type-AutoRepair: → → → Reparación de Automóviles
+option-location_type-AutoWash: → → → Lavado de Automóviles
+option-location_type-GasStation: → → → Gasolinera
+option-location_type-MotorcycleDealer: → → → Venta de Motocicletas
+option-location_type-MotorcycleRepair: → → → Reparación de Motocicletas
+option-location_type-ChildCare: → → Cuidado de Niños
+option-location_type-Dentist: → → Dentista
+option-location_type-DryCleaningOrLaundry: → → Tintorería o Lavandería
+option-location_type-EmergencyService: → → Servicio de Emergencia
+option-location_type-FireStation: → → → Estación de Bomberos
+option-location_type-Hospital: → → → Hospital
+option-location_type-PoliceStation: → → → Cuartel de Policía
+option-location_type-EmploymentAgency: → → Agencia de Empleo
+option-location_type-EntertainmentBusiness: → → Negocio de Entretenimiento
+option-location_type-AdultEntertainment: → → → Entretenimiento para Adultos
+option-location_type-AmusementPark: → → → Parque de Atracciones
+option-location_type-ArtGallery: → → → Galería de Arte
+option-location_type-Casino: → → → Casino
+option-location_type-ComedyClub: → → → Club de Comedia
+option-location_type-MovieTheater: → → → Cine
+option-location_type-NightClub: → → → Club Nocturno
+option-location_type-FinancialService: → → Servicios Financieros
+option-location_type-AccountingService: → → → Servicio de Contabilidad
+option-location_type-AutomatedTeller: → → → Cajero Automatizado
+option-location_type-BankOrCreditUnion: → → → Banco o Caja de Ahorros
+option-location_type-InsuranceAgency: → → → Agencia de Seguros
+option-location_type-FoodEstablishment: → → Establecimiento de Alimentos
+option-location_type-Bakery: → → → Panadería
+option-location_type-BarOrPub: → → → Bar o Pub
+option-location_type-Brewery: → → → Cervecería
+option-location_type-CafeOrCoffeeShop: → → → Cafetería
+option-location_type-Distillery: → → → Destilería
+option-location_type-FastFoodRestaurant: → → → Restaurante de Comida Rápida
+option-location_type-IceCreamShop: → → → Heladería
+option-location_type-Restaurant: → → → Restaurante
+option-location_type-Winery: → → → Bodega
+option-location_type-GovernmentOffice: → → Oficina Gubernamental
+option-location_type-HealthAndBeautyBusiness: → → Negocio de Salud y Belleza
+option-location_type-BeautySalon: → → → Salón de Belleza
+option-location_type-DaySpa: → → → Dia de Spa
+option-location_type-HairSalon: → → → Peluquería
+option-location_type-HealthClub: → → → Club de Salud
+option-location_type-NailSalon: → → → Manicura
+option-location_type-TattooParlor: → → → Salón de Tatuajes
+option-location_type-HomeAndConstructionBusiness: → → Negocio de Reformas y Construcciones
+option-location_type-Electrician: → → → Electricista
+option-location_type-GeneralContractor: → → → Contratista General
+option-location_type-HVACBusiness: → → → Climatización (Calefacción, Ventilación y Aire Acondicionado)
+option-location_type-HousePainter: → → → Pintor
+option-location_type-Locksmith: → → → Cerrajero
+option-location_type-MovingCompany: → → → Empresa de Mudanzas
+option-location_type-Plumber: → → → Fontanero
+option-location_type-RoofingContractor: → → → Contratista de Techado
+option-location_type-InternetCafe: → → Cyber-Café
+option-location_type-LegalService: → → Servicio Legal
+option-location_type-Attorney: → → → Abogado
+option-location_type-Notary: → → → Notario
+option-location_type-Library: → → Biblioteca
+option-location_type-LodgingBusiness: → → Negocio de Alojamiento
+option-location_type-BedAndBreakfast: → → → Cama y Desayuno
+option-location_type-Campground: → → → Terreno de Camping
+option-location_type-Hostel: → → → Hostal
+option-location_type-Hotel: → → → Hotel
+option-location_type-Motel: → → → Motel
+option-location_type-Resort: → → → Complejo
+option-location_type-SkiResort: → → → → Estación de Esquí
+option-location_type-MedicalBusiness: → → Negocio Médico
+option-location_type-CommunityHealth: → → → Comunidad Sanitaria
+option-location_type-Dermatology: → → → Dermatología
+option-location_type-DietNutrition: → → → Nutrición Dietética
+option-location_type-Emergency: → → → Emergencia
+option-location_type-Geriatric: → → → Geriátrico
+option-location_type-Gynecologic: → → → Ginecológico
+option-location_type-MedicalClinic: → → → Clínica Médica
+option-location_type-CovidTestingFacility: → → → → Instalación de Pruebas COVID
+option-location_type-Midwifery: → → → Partería
+option-location_type-Nursing: → → → Enfermería
+option-location_type-Obstetric: → → → Obstétrico
+option-location_type-Oncologic: → → → Oncológico
+option-location_type-Optician: → → → Óptico
+option-location_type-Optometric: → → → Optométrico
+option-location_type-Otolaryngologic: → → → Otorrolingológico
+option-location_type-Pediatric: → → → Pediátrico
+option-location_type-Pharmacy: → → → Farmacia
+option-location_type-Physician: → → → Médico
+option-location_type-Physiotherapy: → → → Fisioterapia
+option-location_type-PlasticSurgery: → → → Cirugía Plástica
+option-location_type-Podiatric: → → → Pediatría
+option-location_type-mainCare: → → → Atención Primaria
+option-location_type-Psychiatric: → → → Psiquiátrico
+option-location_type-PublicHealth: → → → Salud Pública
+option-location_type-ProfessionalService: → → Servicio Profesional
+option-location_type-RadioStation: → → Estación de Radio
+option-location_type-RealEstateAgent: → → Agente de Bienes Raíces (Agencia Inmobiliaria)
+option-location_type-RecyclingCenter: → → Centro de Reciclaje
+option-location_type-SelfStorage: → → Trasteros y Guardamuebles
+option-location_type-ShoppingCenter: → → Centro Comercial
+option-location_type-SportsActivityLocation: → → Lugar Deportivo
+option-location_type-BowlingAlley: → → → Bolera
+option-location_type-ExerciseGym: → → → Gimnasio
+option-location_type-GolfCourse: → → → Campo de Golf
+option-location_type-PublicSwimmingPool: → → → Piscina Pública
+option-location_type-SportsClub: → → → Club Deportivo
+option-location_type-StadiumOrArena: → → → Estadio o Arena
+option-location_type-TennisComplex: → → → Complejo de Tenis
+option-location_type-Store: → → Tienda
+option-location_type-BikeStore: → → → Tienda de Bicicletas
+option-location_type-BookStore: → → → Librería
+option-location_type-ClothingStore: → → → Tienda de Ropa
+option-location_type-ComputerStore: → → → Tienda de Informática
+option-location_type-ConvenienceStore: → → → Tienda de Conveniencia (24 horas)
+option-location_type-DepartmentStore: → → → Grandes Almacenes
+option-location_type-ElectronicsStore: → → → Tienda de Electrónicos
+option-location_type-Florist: → → → Florista
+option-location_type-FurnitureStore: → → → Tienda de Muebles
+option-location_type-GardenStore: → → → Tienda de Jardinería
+option-location_type-GroceryStore: → → → Tienda de Comestibles
+option-location_type-HardwareStore: → → → Ferretería
+option-location_type-HobbyShop: → → → Tienda de Pasatiempos (Hobby)
+option-location_type-HomeGoodsStore: → → → Tienda de Artículos para el Hogar
+option-location_type-JewelryStore: → → → Joyería
+option-location_type-LiquorStore: → → → Tienda de Licores
+option-location_type-MensClothingStore: → → → Tienda de Ropa para Hombre
+option-location_type-MobilePhoneStore: → → → Tienda de Teléfonos Móviles
+option-location_type-MovieRentalStore: → → → Tienda de Alquiler de Películas
+option-location_type-MusicStore: → → → Tienda de Música
+option-location_type-OfficeEquipmentStore: → → → Tienda de Equipos de Oficina
+option-location_type-OutletStore: → → → Tienda de Liquidación (Outlet)
+option-location_type-PawnShop: → → → Casa de Empeño
+option-location_type-PetStore: → → → Tienda de Mascotas
+option-location_type-ShoeStore: → → → Zapatería
+option-location_type-SportingGoodsStore: → → → Tienda de Artículos Deportivos
+option-location_type-TireShop: → → → Tienda de Neumáticos
+option-location_type-ToyStore: → → → Tienda de Juguetes
+option-location_type-WholesaleStore: → → → Almacén Al Por Mayor
+option-location_type-TelevisionStation: → → Estación de Televisión
+option-location_type-TouristInformationCenter: → → Centro de Información Turística
+option-location_type-TravelAgency: → → Agencia de Viajes
+option-location_type-MedicalOrganization: → Organización Médica
+option-location_type-DiagnosticLab: → → Laboratorio de Diagnóstico
+option-location_type-VeterinaryCare: → → Cuidado Veterinario
+option-location_type-NGO: → ONG
+option-location_type-NewsMediaOrganization: → Organización de Medios de Comunicación
+option-location_type-OnlineBusiness: → Negocio Online
+option-location_type-OnlineStore: → → Tienda Online (eCommerce)
+option-location_type-PerformingGroup: → Grupo Artístico
+option-location_type-DanceGroup: → → Grupo de Baile
+option-location_type-MusicGroup: → → Grupo de Musica
+option-location_type-TheaterGroup: → → Grupo de Teatro
+option-location_type-Project: → Proyecto
+option-location_type-FundingAgency: → → Agencia Fundadora o Fundación
+option-location_type-ResearchProject: → → Proyecto de Investigación
+option-location_type-ResearchOrganization: → Organización de Investigación
+option-location_type-SearchRescueOrganization: → Organización de Búsqueda y Rescate
+option-location_type-SportsOrganization: → Organización Deportiva
+option-location_type-SportsTeam: → → Equipo Deportivo
+option-location_type-WorkersUnion: → Sindicato
+option-currency-AED: AED 🇦🇪 Dírham de los Emiratos Árabes Unidos
+option-currency-AFN: AFN 🇦🇫 Afgani Afgano
+option-currency-ALL: ALL 🇦🇱 Lek Albanés
+option-currency-AMD: AMD 🇦🇲 Dram Armenio
+option-currency-ANG: ANG 🇨🇼 Florín de las Antillas Neerlandesas
+option-currency-AOA: AOA 🇦🇴 Kwanza Angoleño
+option-currency-ARS: ARS 🇦🇷 Peso Argentino
+option-currency-AUD: AUD 🇦🇺 Dólar Australiano
+option-currency-AWG: AWG 🇦🇼 Florín Arubeño
+option-currency-AZN: AZN 🇦🇿 Manat Azerbaiyano
+option-currency-BAM: BAM 🇧🇦 Marco Convertible de Bosnia Y Herzegovina
+option-currency-BBD: BBD 🇧🇧 Dólar de Barbados
+option-currency-BDT: BDT 🇧🇩 Taka de Bangladés
+option-currency-BGN: BGN 🇧🇬 Lev Búlgaro
+option-currency-BHD: BHD 🇧🇭 Dinar Bareiní
+option-currency-BIF: BIF 🇧🇮 Franco Burundés
+option-currency-BMD: BMD 🇧🇲 Dólar Bermudeño
+option-currency-BND: BND 🇧🇳 Dólar de Brunéi
+option-currency-BOB: BOB 🇧🇴 Boliviano
+option-currency-BRL: BRL 🇧🇷 Real Brasileño
+option-currency-BSD: BSD 🇧🇸 Dólar Bahameño
+option-currency-BTN: BTN 🇧🇹 Ngultrum Butanés
+option-currency-BWP: BWP 🇧🇼 Pula de Botsuana
+option-currency-BYN: BYN 🇧🇾 Rublo Bielorruso
+option-currency-BZD: BZD 🇧🇿 Dólar de Belice
+option-currency-CAD: CAD 🇨🇦 Dólar Canadiense
+option-currency-CDF: CDF 🇨🇩 Franco Congoleño
+option-currency-CHF: CHF 🇨🇭 Franco Suizo
+option-currency-CLP: CLP 🇨🇱 Peso Chileno
+option-currency-CNY: CNY 🇨🇳 Renminbi / Yuan Chino
+option-currency-COP: COP 🇨🇴 Peso Colombiano
+option-currency-CRC: CRC 🇨🇷 Colón Costarricense
+option-currency-CUP: CUP 🇨🇺 Peso Cubano
+option-currency-CVE: CVE 🇨🇻 Escudo Caboverdiano
+option-currency-CZK: CZK 🇨🇿 Corona Checa
+option-currency-DJF: DJF 🇩🇯 Franco Yibutiano
+option-currency-DKK: DKK 🇩🇰 Corona Danesa
+option-currency-DOP: DOP 🇩🇴 Peso Dominicano
+option-currency-DZD: DZD 🇩🇿 Dinar Argelino
+option-currency-EGP: EGP 🇪🇬 Libra Egipcia
+option-currency-ERN: ERN 🇪🇷 Nakfa Eritreo
+option-currency-ETB: ETB 🇪🇹 Birr Etíope
+option-currency-EUR: EUR 🇪🇺 Euro
+option-currency-FJD: FJD 🇫🇯 Dólar Fiyiano
+option-currency-FKP: FKP 🇫🇰 Libra de las Islas Malvinas
+option-currency-GBP: GBP 🇬🇧 Libra Esterlina
+option-currency-GEL: GEL 🇬🇪 Lari Georgiano
+option-currency-GHS: GHS 🇬🇭 Cedi Ghanés
+option-currency-GIP: GIP 🇬🇮 Libra Gibraltareña
+option-currency-GMD: GMD 🇬🇲 Dalasi Gambiano
+option-currency-GNF: GNF 🇬🇳 Franco Guineano
+option-currency-GTQ: GTQ 🇬🇹 Quetzal Guatemalteco
+option-currency-GYD: GYD 🇬🇾 Dólar Guyanés
+option-currency-HKD: HKD 🇭🇰 Dólar de Hong Kong
+option-currency-HNL: HNL 🇭🇳 Lempira Hondureño
+option-currency-HTG: HTG 🇭🇹 Gourde Haitiano
+option-currency-HUF: HUF 🇭🇺 Florín Húngaro
+option-currency-IDR: IDR 🇮🇩 Rupia Indonesia
+option-currency-ILS: ILS 🇮🇱 Nuevo Shéquel Israelí
+option-currency-INR: INR 🇮🇳 Rupia India
+option-currency-IQD: IQD 🇮🇶 Dinar Iraquí
+option-currency-IRR: IRR 🇮🇷 Rial Iraní
+option-currency-ISK: ISK 🇮🇸 Corona Islandesa
+option-currency-JMD: JMD 🇯🇲 Dólar Jamaicano
+option-currency-JOD: JOD 🇯🇴 Dinar Jordano
+option-currency-JPY: JPY 🇯🇵 Yen Japonés
+option-currency-KES: KES 🇰🇪 Chelín Keniano
+option-currency-KGS: KGS 🇰🇬 Som Kirguís
+option-currency-KHR: KHR 🇰🇭 Riel Camboyano
+option-currency-KMF: KMF 🇰🇲 Franco Comorano
+option-currency-KPW: KPW 🇰🇵 Won Norcoreano
+option-currency-KRW: KRW 🇰🇷 Won Surcoreano
+option-currency-KWD: KWD 🇰🇼 Dinar Kuwaití
+option-currency-KYD: KYD 🇰🇾 Dólar de las Islas Caimán
+option-currency-KZT: KZT 🇰🇿 Tenge Kazajo
+option-currency-LAK: LAK 🇱🇦 Kip Laosiano
+option-currency-LBP: LBP 🇱🇧 Libra Libanesa
+option-currency-LKR: LKR 🇱🇰 Rupia de Sri Lanka
+option-currency-LRD: LRD 🇱🇷 Dólar Liberiano
+option-currency-LSL: LSL 🇱🇸 Loti Lesothense
+option-currency-LYD: LYD 🇱🇾 Dinar Libio
+option-currency-MAD: MAD 🇲🇦 Dírham Marroquí
+option-currency-MDL: MDL 🇲🇩 Leu Moldavo
+option-currency-MGA: MGA 🇲🇬 Ariary Malgache
+option-currency-MKD: MKD 🇲🇰 Denar Macedonio
+option-currency-MMK: MMK 🇲🇲 Kyat Birmano
+option-currency-MNT: MNT 🇲🇳 Tugrik Mongol
+option-currency-MOP: MOP 🇲🇴 Pataca de Macao
+option-currency-MRU: MRU 🇲🇷 Ouguiya Mauritana
+option-currency-MUR: MUR 🇲🇺 Rupia Mauriciana
+option-currency-MVR: MVR 🇲🇻 Rufiyaa Maldiva
+option-currency-MWK: MWK 🇲🇼 Kwacha Malauí
+option-currency-MXN: MXN 🇲🇽 Peso Mexicano
+option-currency-MYR: MYR 🇲🇾 Ringgit Malasio
+option-currency-MZN: MZN 🇲🇿 Metical Mozambiqueño
+option-currency-NAD: NAD 🇳🇦 Dólar Namibio
+option-currency-NGN: NGN 🇳🇬 Naira Nigeriana
+option-currency-NIO: NIO 🇳🇮 Córdoba Nicaragüense
+option-currency-NOK: NOK 🇳🇴 Corona Noruega
+option-currency-NPR: NPR 🇳🇵 Rupia Nepalí
+option-currency-NZD: NZD 🇳🇿 Dólar Neozelandés
+option-currency-OMR: OMR 🇴🇲 Rial Omaní
+option-currency-PAB: PAB 🇵🇦 Balboa Panameño
+option-currency-PEN: PEN 🇵🇪 Sol Peruano
+option-currency-PGK: PGK 🇵🇬 Kina de Papúa Nueva Guinea
+option-currency-PHP: PHP 🇵🇭 Peso Filipino
+option-currency-PKR: PKR 🇵🇰 Rupia Paquistaní
+option-currency-PLN: PLN 🇵🇱 Złoty Polaco
+option-currency-PYG: PYG 🇵🇾 Guaraní Paraguayo
+option-currency-QAR: QAR 🇶🇦 Riyal Qatarí
+option-currency-RON: RON 🇷🇴 Leu Rumano
+option-currency-RSD: RSD 🇷🇸 Dinar Serbio
+option-currency-RUB: RUB 🇷🇺 Rublo Ruso
+option-currency-RWF: RWF 🇷🇼 Franco Ruandés
+option-currency-SAR: SAR 🇸🇦 Riyal Saudí
+option-currency-SBD: SBD 🇸🇧 Dólar de las Islas Salomón
+option-currency-SCR: SCR 🇸🇨 Rupia de Seychelles
+option-currency-SDG: SDG 🇸🇩 Libra Sudanesa
+option-currency-SEK: SEK 🇸🇪 Corona Sueca
+option-currency-SGD: SGD 🇸🇬 Dólar de Singapur
+option-currency-SHP: SHP 🇸🇭 Libra de Santa Elena
+option-currency-SLE: SLE 🇸🇱 Leone de Sierra Leona
+option-currency-SOS: SOS 🇸🇴 Chelín Somalí
+option-currency-SRD: SRD 🇸🇷 Dólar Surinamés
+option-currency-SSP: SSP 🇸🇸 Libra de Sudán del Sur
+option-currency-STN: STN 🇸🇹 Dobra de Santo Tomé Y Príncipe
+option-currency-SVC: SVC 🇸🇻 Colón Salvadoreño
+option-currency-SYP: SYP 🇸🇾 Libra Siria
+option-currency-SZL: SZL 🇸🇿 Lilangeni Suazi
+option-currency-THB: THB 🇹🇭 Baht Tailandés
+option-currency-TJS: TJS 🇹🇯 Somoni Tayiko
+option-currency-TMT: TMT 🇹🇲 Manat Turcomano
+option-currency-TND: TND 🇹🇳 Dinar Tunecino
+option-currency-TOP: TOP 🇹🇴 Paʻanga Tongano
+option-currency-TRY: TRY 🇹🇷 Lira Turca
+option-currency-TTD: TTD 🇹🇹 Dólar de Trinidad Y Tobago
+option-currency-TWD: TWD 🇹🇼 Nuevo Dólar Taiwanés
+option-currency-TZS: TZS 🇹🇿 Chelín Tanzano
+option-currency-UAH: UAH 🇺🇦 Grivna Ucraniana
+option-currency-UGX: UGX 🇺🇬 Chelín Ugandés
+option-currency-USD: USD 🇺🇸 Dólar Estadounidense
+option-currency-UYU: UYU 🇺🇾 Peso Uruguayo
+option-currency-UYW: UYW 🇺🇾 Unidad Previsional
+option-currency-UZS: UZS 🇺🇿 Som Uzbeko
+option-currency-VED: VED 🇻🇪 Bolívar Digital Venezolano
+option-currency-VES: VES 🇻🇪 Bolívar Soberano Venezolano
+option-currency-VND: VND 🇻🇳 Dong Vietnamita
+option-currency-VUV: VUV 🇻🇺 Vatu Vanuatuense
+option-currency-WST: WST 🇼🇸 Tala Samoano
+option-currency-XAF: XAF 🇨🇲🇨🇫🇨🇬🇬🇦🇬🇶🇹🇩 Franco CFA BEAC
+option-currency-XCD: XCD 🇦🇬🇦🇮🇩🇲🇬🇩🇰🇳🇱🇨🇻🇨 Dólar del Caribe Oriental
+option-currency-XDR: XDR 🏳️‍🌐 Derechos Especiales de Giro
+option-currency-XOF: XOF 🇧🇯🇧🇫🇨🇮🇬🇳🇲🇱🇳🇪🇸🇳🇹🇬 Franco CFA BCEAO
+option-currency-XPF: XPF 🇵🇫 Franco CFP / Pacífico
+option-currency-XSU: XSU 🏳️‍🌐 SUCRE
+option-currency-XTS: XTS 🧪 Código Reservado para Pruebas
+option-currency-XUA: XUA 🏳️‍🌐 Unidad de Cuenta ADB
+option-currency-XXX: XXX ❌ Sin Moneda
+option-currency-YER: YER 🇾🇪 Rial Yemení
+option-currency-ZAR: ZAR 🇿🇦 Rand Sudafricano
+option-currency-ZMW: ZMW 🇿🇲 Kwacha Zambiano
+option-currency-ZWG: ZWG 🇿🇼 Oro de Zimbabue
+option-currency-ZWL: ZWL 🇿🇼 Dólar Zimbabuense

@@ -14,9 +14,13 @@
   padding-bottom: 0;
   align-items: center;
 }
+.CMS_WidgetList_ListItem_header {
+  padding-right: 0;
+}
 
 // Move toggle arrow to left
 .CMS_WidgetObject_expand-icon,
+.CMS_WidgetList_ListItem_expand-button-icon,
 .CMS_WidgetList_expand-button-icon,
 .CMS_WidgetCode_expand-button-icon {
   order: -1;
@@ -31,16 +35,22 @@
 // List item controls ajust
 .CMS_WidgetList_ListItem_single-field-controls {
   position: absolute;
-  top: 3rem;
-  right: 1.25em;
-  height: 2rem;
+  top: 0.25rem;
+  right: 0.5em;
 }
 
 // Margins
-.CMS_WidgetObject_fields,
+.CMS_WidgetObject_fields {
+  margin-left: -.25em;
+  margin-top: .5em;
+}
 .CMS_WidgetList_ListItem_content {
   margin-left: -.25em;
-  padding-left: 0.5em;
+  &:not(.CMS_WidgetList_ListItem_single-field-root > *) {
+    margin-left: -0.125em;
+    margin-top: .5em;
+  }
+  // padding-left: 0.5em;
   // > .CMS_EditorControl_root {
   //   margin-left: .5rem;
   // }
@@ -88,8 +98,5 @@
   }
   .CMS_Field_root {
     background-color: var(--bgc);
-  }
-  .CMS_WidgetList_ListItem_single-field-controls {
-    top: 2rem;
   }
 }
