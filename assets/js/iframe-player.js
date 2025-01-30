@@ -55,18 +55,21 @@ export function initIframePlayer () {
         delete iframeWrap.dataset.vimeo
         iframeWrap.nextElementSibling.remove()
 
+        const iframe = iframeWrap.firstChild
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
         const windowObject = isYoutube ? 'YT' : 'Vimeo'
         loadScript(script)
           .then(() => {
-            const checkWindowObject = setInterval(() => {
-              if (window[windowObject] && window[windowObject].Player) {
-                clearInterval(checkWindowObject)
-                // eslint-disable-next-line
-                players[id] = new window[windowObject].Player(iframeWrap.firstChild)
-                if (!isYoutube) players[id].play()
-              }
-            }, 100)
+            iframe.addEventListener('load', () => {
+              const checkWindowObject = setInterval(() => {
+                if (window[windowObject] && window[windowObject].Player) {
+                  clearInterval(checkWindowObject)
+                  // eslint-disable-next-line
+                  players[id] = new window[windowObject].Player(iframe)
+                  if (!isYoutube) players[id].play()
+                }
+              }, 100)
+            })
           })
           .catch(console.error)
       }
