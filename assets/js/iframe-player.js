@@ -24,6 +24,7 @@ export function initIframePlayer () {
       if (iframeWrap) {
         let attrs = ''
         let attrsEn = ''
+        const iframe = iframeWrap.firstChild
         const className = iframeWrap.className
         const isYoutube = iframeWrap.dataset.youtube
         const src = iframeWrap.dataset.youtube || iframeWrap.dataset.vimeo
@@ -55,7 +56,6 @@ export function initIframePlayer () {
         delete iframeWrap.dataset.vimeo
         iframeWrap.nextElementSibling?.remove()
 
-        const iframe = iframeWrap.firstChild
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
         const windowObject = isYoutube ? 'YT' : 'Vimeo'
         iframe.addEventListener('load', () => {
