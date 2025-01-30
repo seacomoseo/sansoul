@@ -94,7 +94,7 @@ export function togglePlayer (target, openModal) {
         if (typeof players[id].playVideo === 'function' && typeof players[id].pauseVideo === 'function') {
           openModal ? players[id].playVideo() : players[id].pauseVideo()
         } else {
-          console.log(openModal ? 'playVideo' : 'pauseVideo' + ' not set')
+          console.log((openModal ? 'playVideo' : 'pauseVideo') + ' not set')
         }
       } else {
         openModal ? players[id].play() : players[id].pause()
