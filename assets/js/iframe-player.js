@@ -63,7 +63,16 @@ export function initIframePlayer () {
               if (window[windowObject] && window[windowObject].Player) {
                 clearInterval(checkWindowObject)
                 // eslint-disable-next-line
-                players[id] = new window[windowObject].Player(iframeWrap.firstChild)
+                // players[id] = new window[windowObject].Player(iframeWrap.firstChild)
+                players[id] = new window[windowObject].Player(iframeWrap.firstChild, {
+                  events: {
+                    videoId: idVideo,
+                    onReady: (event) => {
+                      console.log(`YouTube Player listo: ${id}`)
+                      players[id] = event.target // Asigna correctamente el objeto Player
+                    }
+                  }
+                })
                 if (!isYoutube) players[id].play()
               }
             }, 100)
