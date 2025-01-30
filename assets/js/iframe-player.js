@@ -88,13 +88,19 @@ export function togglePlayer (target, openModal) {
   const iframePlayers = target.querySelectorAll('.modal.ph :is(iframe[src^="https://www.youtube"], iframe[src^="https://player.vimeo.com"])')
   if (iframePlayers.length === 1) {
     const id = playerId(target, videoId(iframePlayers[0].src))
-    if (iframePlayers[0].src.includes('https://www.youtube')) {
-      // Check if playVideo and pauseVideo is set
-      if (players[id] && typeof players[id].playVideo === 'function' && typeof players[id].pauseVideo === 'function') {
-        openModal ? players[id].playVideo() : players[id].pauseVideo()
+    if (players[id]) {
+      if (iframePlayers[0].src.includes('https://www.youtube')) {
+        // Check if playVideo and pauseVideo is set
+        if (typeof players[id].playVideo === 'function' && typeof players[id].pauseVideo === 'function') {
+          openModal ? players[id].playVideo() : players[id].pauseVideo()
+        } else {
+          console.log(openModal ? 'playVideo' : 'pauseVideo' + ' not set')
+        }
+      } else {
+        openModal ? players[id].play() : players[id].pause()
       }
     } else {
-      openModal ? players[id].play() : players[id].pause()
+      console.log('players is not set, id: ', id)
     }
     return
   }
