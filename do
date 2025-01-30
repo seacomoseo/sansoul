@@ -333,7 +333,7 @@ then
 elif [ $1 = hugo-production ]
 then
 
-  start_ms=$(node -p "parseInt(Date.now().toString().slice(-5), 10)")
+  start_ms=$(node -p "Number(Date.now().toString().slice(-5))")
 
   sh do rm-public
   sh do prebuild
@@ -350,7 +350,7 @@ then
   sh do images
   # sh do multilang
 
-  end_ms=$(node -p "parseInt(Date.now().toString().slice(-5), 10)")
+  end_ms=$(node -p "Number(Date.now().toString().slice(-5))")
   elapsed=$((end_ms - start_ms))
   echo "\033[1;36m🕑 $elapsed ms\033[0m"
 
