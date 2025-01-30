@@ -43,7 +43,7 @@ export function initIframePlayer () {
         }
         iframeWrap.innerHTML =
           '<iframe' +
-            ` ${className && 'class="' + className + '"'}` +
+            ` ${className ? ' class="' + className + '"' : ''}` +
             ` ${attrs}` +
             ' allowfullscreen ' +
             ' width="560" ' +
@@ -53,7 +53,7 @@ export function initIframePlayer () {
         delete iframeWrap.dataset.iframe
         delete iframeWrap.dataset.youtube
         delete iframeWrap.dataset.vimeo
-        iframeWrap.nextElementSibling.remove()
+        iframeWrap.nextElementSibling?.remove()
 
         const iframe = iframeWrap.firstChild
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
@@ -65,8 +65,14 @@ export function initIframePlayer () {
                 if (window[windowObject] && window[windowObject].Player) {
                   clearInterval(checkWindowObject)
                   // eslint-disable-next-line
-                  players[id] = new window[windowObject].Player(iframe)
-                  if (!isYoutube) players[id].play()
+                  players[id] = new window[windowObject].Player(iframe, {
+                    events: {
+                      onReady: () => {
+                        console.log('YouTube player ready:', id)
+                        if (!isYoutube) players[id].play()
+                      }
+                    }
+                  })
                 }
               }, 100)
             })
@@ -88,22 +94,23 @@ export function togglePlayer (target, openModal) {
     }
   }
   // Play/Pause only one youtube/vimeo player
-  const iframePlayers = target.querySelectorAll('.modal.ph :is(iframe[src^="https://www.youtube"], iframe[src^="https://player.vimeo.com"])')
+  const iframePlayers = target.querySelectorAll('.modal.ph iframe:is([src^="https://www.youtube"], [src^="https://player.vimeo.com"])')
   if (iframePlayers.length === 1) {
     const id = playerId(target, videoId(iframePlayers[0].src))
-    if (players[id]) {
+    const player = players[id]
+    if (player) {
       if (iframePlayers[0].src.includes('https://www.youtube')) {
         // Check if playVideo and pauseVideo is set
-        if (typeof players[id].playVideo === 'function' && typeof players[id].pauseVideo === 'function') {
-          openModal ? players[id].playVideo() : players[id].pauseVideo()
+        if (player.pauseVideo && player.playVideo) {
+          openModal ? player.playVideo() : player.pauseVideo()
         } else {
           console.log((openModal ? 'playVideo' : 'pauseVideo') + ' not set')
         }
       } else {
-        openModal ? players[id].play() : players[id].pause()
+        openModal ? player.play() : player.pause()
       }
     } else {
-      console.log('players is not set, id: ', id)
+      console.log('players is not set, id:', id)
     }
     return
   }
