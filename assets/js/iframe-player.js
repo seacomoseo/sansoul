@@ -63,16 +63,7 @@ export function initIframePlayer () {
               if (window[windowObject] && window[windowObject].Player) {
                 clearInterval(checkWindowObject)
                 // eslint-disable-next-line
-                // players[id] = new window[windowObject].Player(iframeWrap.firstChild)
-                players[id] = new window[windowObject].Player(iframeWrap.firstChild, {
-                  events: {
-                    videoId: idVideo,
-                    onReady: (event) => {
-                      console.log(`YouTube Player listo: ${id}`)
-                      players[id] = event.target // Asigna correctamente el objeto Player
-                    }
-                  }
-                })
+                players[id] = new window[windowObject].Player(iframeWrap.firstChild)
                 if (!isYoutube) players[id].play()
               }
             }, 100)
@@ -98,7 +89,10 @@ export function togglePlayer (target, openModal) {
   if (iframePlayers.length === 1) {
     const id = playerId(target, videoId(iframePlayers[0].src))
     if (iframePlayers[0].src.includes('https://www.youtube')) {
-      openModal ? players[id].playVideo() : players[id].pauseVideo()
+      // Check if playVideo and pauseVideo is set
+      if (players[id] && typeof players[id].playVideo === 'function' && typeof players[id].pauseVideo === 'function') {
+        openModal ? players[id].playVideo() : players[id].pauseVideo()
+      }
     } else {
       openModal ? players[id].play() : players[id].pause()
     }
