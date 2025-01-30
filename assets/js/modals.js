@@ -1,4 +1,5 @@
 import { togglePlayer } from './iframe-player'
+import { scrollTo } from './scroll-to'
 
 // MODAL
 
