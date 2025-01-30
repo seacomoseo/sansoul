@@ -20,13 +20,13 @@
 .CMS_EditorControl_root {
   position: relative;
 }
-.hint-info:is(:hover, :focus) + *,
-.hint-info:is(:hover, :focus) + * > *:not(.CMS_Hint_root),
+.hint-info:focus + *,
+.hint-info:focus + * > *:not(.CMS_Hint_root),
 :is(.hint-info + *, .hint-info + * > *):has(.CMS_Hint_root:hover) {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-.hint-info:is(:hover, :focus) + * .CMS_Hint_root,
+.hint-info:focus + * .CMS_Hint_root,
 .CMS_Hint_root:hover {
   display: block;
 }
@@ -70,23 +70,32 @@
 
 // Info
 .hint-info {
+  cursor: pointer;
   font-size: 12px;
   position: absolute;
   // top: calc(100% - 0.875rem);
-  top: calc(100% - 1.075rem);
-  left: 0.125rem;
+  // left: 0.125rem;
+  bottom: .0625rem;
+  left: 0;
   padding: 0.125rem;
   height: 0.75rem;
   width: 0.75rem;
-  border-radius: 50%;
+  // border-radius: 50%;
+  border-radius: 50% 50% 0 0;
   display: grid;
   place-content: center;
   background-color: var(--common-gray);
   color: var(--bg);
   z-index: 19;
+  &:is(:hover, :focus) {
+    background-color: var(--primary-main);
+  }
+  &:focus {
+    border-radius: 0 50% 50% 0;
+  }
   &:after {
     content: 'i';
-    width: .75rem;
+    width: 1.5rem;
     height: 1.5rem;
     display: flex;
     justify-content: center;

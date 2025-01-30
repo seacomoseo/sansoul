@@ -219,7 +219,7 @@ then
 elif [ $1 = images ]
 then
 
-  hecho "IMAGES AVIF AND OPEN GRAPH SVG TO PNG"
+  hecho "IMAGES ICO, PNG AND AVIF"
   node ./themes/sansoul/assets/js/node/images.js
 
 # Check yaml error of Static CMS

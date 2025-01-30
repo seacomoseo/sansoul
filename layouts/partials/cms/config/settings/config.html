@@ -44,19 +44,6 @@
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_FAVICON" (dict
-    "name"      `favicon`
-    "widget"    `object`
-    "required"  false
-    "label"     $t.config_favicon
-    "collapsed" true
-    "fields"    (slice
-      (dict "name" `svg` "required" false "label" $t.config_favicon_svg "widget" `image` "max_file_size" 512000000)
-      (dict "name" `png` "required" false "label" $t.config_favicon_png "widget" `image` "max_file_size" 512000000)
-      (dict "name" `ico` "required" false "label" $t.config_favicon_ico "widget" `file`  "max_file_size" 512000000)
-    )
-  ))
-
   (dict "&SETTINGS_CONFIG_CMS" (dict
     "name"      `cms`
     "widget"    `object`
@@ -78,19 +65,20 @@
     "collapsed" true
     "required"  false
     "fields"    (slice
-      (dict "name" `cookies_legal`                "widget" `hidden`  "required" false "label" `cookies_legal`)
-      (dict "name" `analytics_pagespeed_disabled` "widget" `hidden`  "required" false "label" `analytics_pagespeed_disabled`)
-      (dict "name" `process_all_images`           "widget" `hidden`  "required" false "label" `process_all_images`)
-      (dict "name" `development`                  "widget" `hidden`  "required" false "label" `development`)
-      (dict "name" `show`                         "widget" `boolean` "required" false "label" $t.config_others_show "hint" $t.config_others_show_hint)
-      (dict "name" `webp`                         "widget" `boolean` "required" false "label" $t.config_others_webp "hint" $t.config_others_webp_hint)
+      (dict "name" `favicon`                      "widget" `image`   "required" false "label" $t.config_others_favicon                      "hint" $t.config_others_favicon_hint                      "max_file_size" 512000000)
+      (dict "name" `cookies_advanced`             "widget" `hidden`  "required" false "label" $t.config_others_cookies_advanced             "hint" $t.config_others_cookies_advanced_hint)
+      (dict "name" `cookies_legal`                "widget" `hidden`  "required" false "label" $t.config_others_cookies_legal                "hint" $t.config_others_cookies_legal_hint)
+      (dict "name" `analytics_pagespeed_disabled` "widget" `hidden`  "required" false "label" $t.config_others_analytics_pagespeed_disabled "hint" $t.config_others_analytics_pagespeed_disabled_hint)
+      (dict "name" `process_all_images`           "widget" `hidden`  "required" false "label" $t.config_others_process_all_images           "hint" $t.config_others_process_all_images_hint)
+      (dict "name" `development`                  "widget" `hidden`  "required" false "label" $t.config_others_development                  "hint" $t.config_others_development_hint)
+      (dict "name" `show`                         "widget" `boolean` "required" false "label" $t.config_others_show                         "hint" $t.config_others_show_hint)
+      (dict "name" `webp`                         "widget" `boolean` "required" false "label" $t.config_others_webp                         "hint" $t.config_others_webp_hint)
     )
   ))
 
   (dict "&SETTINGS_CONFIG" (slice
     `~SETTINGS_CONFIG_LANGS_DEFAULT_SUBDIR`
     `~SETTINGS_CONFIG_LANGS`
-    `~SETTINGS_CONFIG_FAVICON`
     `~SETTINGS_CONFIG_CMS`
     `~SETTINGS_CONFIG_OTHERS`
   ))

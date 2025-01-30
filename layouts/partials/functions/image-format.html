@@ -1,20 +1,22 @@
 {{ $image_link := "" }}
 {{ if site.Data.config.others.webp }}
-  {{ $image_resize := .image.Resize (print .size "x webp") }}
-  {{ $image_resize  = $image_resize | resources.Copy (print (.image.RelPermalink | replaceRE `(.+)\..+` `$1`) `-` .size `x` $image_resize.Height `.webp`) }}
-  {{ $image_link    = $image_resize.RelPermalink }}
+  {{ $webp      := .image.Resize (print .size "x webp") }}
+  {{ $webp_path := .image.RelPermalink | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
+  {{ $webp       = $webp | resources.Copy $webp_path }}
+  {{ $image_link = $webp.RelPermalink }}
 {{ else }}
-  {{ $width  := .size }}
   {{ $height := div (mul .image.Height .size) .image.Width }}
-  {{ $avif   := .image | replaceRE `(.+)(\..+)$` (print "$1-" $width "x" $height ".avif") }}
+  {{ $avif   := .image | replaceRE `(.+)\..+$` (print "$1-" .size "x" $height ".avif") }}
   {{ $get    := resources.Get $avif }}
-  {{ if not $get }}
-    {{ $path      := print "./public" .image }}
-    {{ $file      := print "image_list/" (replace $avif "/" "~") ".json" }}
-    {{ $json      := dict "path" $path "width" $width "height" $height | jsonify }}
-    {{ $resource  := resources.FromString $file $json }}
-    {{ $resource.Publish }}
-    {{ $image_link = $avif }}
+  {{ with $get }}
+    {{ $get.Publish }}
+  {{ else }}
+    {{ $path := print "./public" .image }}
+    {{ $file := print "image_list/" (replace $avif "/" "~") ".json" }}
+    {{ $json := dict "path" $path "width" .size "height" $height | jsonify }}
+    {{ $rsc  := resources.FromString $file $json }}
+    {{ $rsc.Publish }}
   {{ end }}
+  {{ $image_link = $avif }}
 {{ end }}
 {{ return $image_link }}

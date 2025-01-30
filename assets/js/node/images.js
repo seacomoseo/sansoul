@@ -18,7 +18,7 @@ function removeDir (dirPath) {
     fs.rmSync(dirPath, { recursive: true, force: true })
     console.log(`🗑️ Deleted ${dirPath}`)
   } catch (error) {
-    console.error(`❌ Error when deleting ${dirPath}:`, error.message)
+    console.error(`❌ Error when deleting ${dirPath}: `, error.message)
   }
 }
 
@@ -67,17 +67,16 @@ if (fs.existsSync(faviconsJSON)) {
               .toFile(outputPath)
           }
 
-          console.log(`✅ Converted FAVICON: ${inputPath} ⏩️ ${outputPath}`)
+          console.log(`✅ ICO: ${inputPath} ⏩️ ${outputPath}`)
         } catch (error) {
-          console.error(`❌ Error converting ${inputPath}:`, error)
+          console.error(`❌ Error: ${inputPath}: `, error)
         }
       })
     ).then(() => {
-      removeFile(faviconsJSON)
-
       console.log('🎉 Favicons completed!')
     })
   }
+  removeFile(faviconsJSON)
 }
 
 // Leer el archivo JSON de imágenes SVG para Open Graph y parsear la lista de rutas
@@ -99,17 +98,16 @@ if (fs.existsSync(ogSVGsJSON)) {
             })
             .toFile(pngPath)
 
-          console.log(`✅ Converted to PNG: ${svgPath} ⏩️ ${pngPath}`)
+          console.log(`✅ PNG: ${svgPath} ⏩️ ${pngPath}`)
         } catch (error) {
-          console.error(`❌ Error converting ${svgPath}:`, error)
+          console.error(`❌ Error: ${svgPath}: `, error)
         }
       })
     ).then(() => {
-      removeFile(ogSVGsJSON)
-
-      console.log('🎉 PNG conversion completed!')
+      console.log('🎉 PNG completed!')
     })
   }
+  removeFile(ogSVGsJSON)
 }
 
 // Procesar los archivos JSON dentro de ./public/image_list
@@ -145,14 +143,13 @@ if (fs.existsSync(imageListDir)) {
           })
           .toFile(avifPath)
 
-        console.log(`✅ Converted to AVIF: ${data.path} ⏩️ ${avifPath}`)
+        console.log(`✅ AVIF: ${data.path} ⏩️ ${avifPath}`)
       } catch (error) {
-        console.error(`❌ Error while converting ${data.path}:`, error)
+        console.error(`❌ Error: ${data.path}: `, error)
       }
     })
   ).then(() => {
-    removeDir(imageListDir)
-
-    console.log('🎉 AVIF conversion completed!')
+    console.log('🎉 AVIF completed!')
   })
+  removeDir(imageListDir)
 }

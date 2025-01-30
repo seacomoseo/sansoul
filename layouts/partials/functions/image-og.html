@@ -26,9 +26,12 @@
       {{ $img = .Permalink }}
 
       {{ if in $img ".svg" }}
-        {{ $img  = $img | replaceRE `\.svg$` `.png` }}
+        {{ $img  = .RelPermalink | replaceRE `\.svg$` `.png` }}
         {{ $png := resources.Get $img }}
-        {{ if not $png }}
+        {{ with $png }}
+          {{ $img = .Permalink }}
+        {{ else }}
+          {{ $img = .Permalink | replaceRE `\.svg$` `.png` }}
           {{ $svg = print "./public" .RelPermalink }}
         {{ end }}
       {{ end }}

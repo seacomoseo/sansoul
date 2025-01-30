@@ -149,7 +149,6 @@
     {{ else }}
       {{ $favicons = $favicons | append (dict "from" .RelPermalink "ext" "png") }}
     {{ end }}
-    {{ $favicons = $favicons | append (dict "from" .RelPermalink "ext" "png") }}
   {{ else }}
     {{ (.Resize "192x192 png q1" | resources.Copy "/favicon.png").Publish }}
   {{ end }}

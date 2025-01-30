@@ -7,9 +7,20 @@
 .CMS_WidgetList_ListItem_expand-button {
   padding: 0;
 }
-.CMS_WidgetObject_expand {
+.CMS_WidgetObject_expand,
+.CMS_WidgetList_expand-button,
+.CMS_WidgetCode_expand-button {
+  gap: 0.125rem;
   padding-bottom: 0;
   align-items: center;
+}
+
+// Move toggle arrow to left
+.CMS_WidgetObject_expand-icon,
+.CMS_WidgetList_expand-button-icon,
+.CMS_WidgetCode_expand-button-icon {
+  order: -1;
+  margin-left: -.75rem;
 }
 
 // Summary
@@ -22,8 +33,7 @@
   position: absolute;
   top: 3rem;
   right: 1.25em;
-  height: 2re
-  m;
+  height: 2rem;
 }
 
 // Margins
@@ -34,12 +44,6 @@
   // > .CMS_EditorControl_root {
   //   margin-left: .5rem;
   // }
-}
-
-// Move toggle arrow to left in lists and codes
-.CMS_WidgetList_expand-button-icon,
-.CMS_WidgetCode_expand-button-icon {
-  order: -1;
 }
 
 // Remove bottom line from list item
@@ -72,4 +76,20 @@
   &:nth-child(7n) { --bgc: var(--color-red); }
   &:nth-child(8n) { --bgc: var(--color-grey); }
   &:nth-child(9n) { --bgc: var(--color-blue); }
+}
+
+// List item not multiple
+.CMS_WidgetList_sortable-item:not(.CMS_WidgetList_multi-field-item) {
+  padding: 0;
+  background-color: transparent;
+  border-bottom-width: 0;
+  .CMS_WidgetObject_list-root {
+    margin: 0;
+  }
+  .CMS_Field_root {
+    background-color: var(--bgc);
+  }
+  .CMS_WidgetList_ListItem_single-field-controls {
+    top: 2rem;
+  }
 }
