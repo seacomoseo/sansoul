@@ -58,9 +58,9 @@ export function initIframePlayer () {
         const iframe = iframeWrap.firstChild
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
         const windowObject = isYoutube ? 'YT' : 'Vimeo'
-        loadScript(script)
-          .then(() => {
-            iframe.addEventListener('load', () => {
+        iframe.addEventListener('load', () => {
+          loadScript(script)
+            .then(() => {
               const checkWindowObject = setInterval(() => {
                 if (window[windowObject] && window[windowObject].Player) {
                   clearInterval(checkWindowObject)
@@ -76,8 +76,8 @@ export function initIframePlayer () {
                 }
               }, 100)
             })
-          })
-          .catch(console.error)
+            .catch(console.error)
+        })
       }
     })
   }
