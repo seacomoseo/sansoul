@@ -41,7 +41,7 @@
           "link"          .RelPermalink
           "title"         .Title
           "image"         $image
-          "summary"       (.Summary | default .Description | default $contents | truncate 155)
+          "summary"       (.Summary | default .Description | default $contents | truncate 155 | replaceRE `icon:[\w-]*\s?` "")
           "content"       $contents
           "reading_time"  (i18n "reading_time" .ReadingTime)
         -}}

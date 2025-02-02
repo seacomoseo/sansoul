@@ -17,7 +17,7 @@
   {{ end }}
 {{ end }}
 
-{{ $description  := .Description | default .Summary | truncate 155 | plainify }}
+{{ $description  := .Description | default .Summary | truncate 155 | plainify | replaceRE `icon:[\w-]*\s?` "" }}
 {{ $image        := (partial "functions/image-og" .).img }}
 {{ $aas          := partial "functions/authors-article-sections" . }}
 {{ $authors      := $aas.authors }}
@@ -30,7 +30,7 @@
 
 <title>{{ $title }}</title>
 
-{{ with $description | plainify | truncate 155 }}
+{{ with $description }}
   <meta name="description" content="{{ . }}">
   <meta property="og:description" content="{{ . }}">
 {{ end }}
