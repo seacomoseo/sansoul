@@ -78,7 +78,7 @@
 {{ end }}
 
 {{/*  Description  */}}
-{{ $description  := .Summary | default .Description | plainify }}
+{{ $description  := partial "functions/summary" . }}
 
 
 {{/*  Schema  */}}

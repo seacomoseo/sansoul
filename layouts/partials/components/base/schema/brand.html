@@ -2,7 +2,7 @@
   "@type"            "Brand"
   "@id"              (print .Permalink "#schema-brand")
   "name"             .Title
-  "description"      (.Summary | default .Description | plainify)
+  "description"      (partial "functions/summary" .)
   "url"              .Permalink
   "image"            (dict "@id" (print .Permalink "#schema-image"))
   "logo"             (dict "@id" (print .Permalink "#schema-image"))

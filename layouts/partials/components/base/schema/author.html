@@ -17,7 +17,7 @@
   "@id"              $id
   "name"             .Title
   "url"              .Permalink
-  "description"      (.Summary | default .Description | plainify)
+  "description"      (partial "functions/summary" .)
   "jobTitle"         .Params.job
   "same_as"          .Params.social
   "image"            $image

@@ -11,7 +11,7 @@
   {{ $names_more := after 1 $names }}
 
   {{/*  Description  */}}
-  {{ $description  := or $.Summary $.Description .summary .description | plainify }}
+  {{ $description  := or $.Summary $.Description .summary .description | plainify | replaceRE `icon:[\w-]*\s?` "" }}
 
   {{/*  URL  */}}
   {{ $url  := .url | default $.Page.Permalink }}

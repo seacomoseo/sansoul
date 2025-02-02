@@ -1,0 +1,7 @@
+{{ $summary := .Summary
+  | default .Description
+  | truncate 155
+  | plainify
+  | replaceRE `icon:[\w-]*\s?` ""
+}}
+{{ return $summary }}

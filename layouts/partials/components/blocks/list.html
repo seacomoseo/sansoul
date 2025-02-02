@@ -115,7 +115,7 @@
         {{- $boxes   := slice -}}
         {{- range $firsts_pages -}}
           {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
-          {{- $content := .Summary | default .Description | truncate 155 | plainify | replaceRE `icon:[\w-]*\s?` "" -}}
+          {{- $content := partial "functions/summary" . -}}
           {{- $params  := slice
             (dict "param" "image"   "value" .Params.image)
             (dict "param" "icon"    "value" .Params.icon)
