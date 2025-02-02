@@ -4,6 +4,6 @@
   {{ $icon := .   | replaceRE `^icon:` "" }}
   {{ $id    = $id | replaceRE (print "icon" $icon "-?") "" }}
 {{ end }}
-{{ $id      = $id | replaceRE `^-+|_+` "" }}
+{{ $id      = $id | replaceRE `^-+|_+|-+$` "" }}
 
 {{ return $id }}
