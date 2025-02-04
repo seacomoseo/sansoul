@@ -1,14 +1,21 @@
-{{- $netlify := getenv "NETLIFY" -}}
+/index.php / 301
+
+# ---
+
+{{ $netlify := getenv "NETLIFY" -}}
 {{- with resources.Get "_redirects" -}}
   {{- if $netlify -}}
     {{- .Content -}}
   {{- else -}}
-    {{- .Content | replaceRE `(?m)^(/.*?[^0124!])$` "$1 301" -}}
+    {{- .Content
+      | replaceRE `!` ""
+      | replaceRE `(?m)^(/.*?[^0124])$` "$1 301"
+    -}}
   {{- end -}}
 {{- end }}
 
-# general
-/index.php / 301
+# ---
+
 /index.php/* /:splat 301
 
 {{- $a := "" -}}
