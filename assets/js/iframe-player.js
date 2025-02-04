@@ -20,8 +20,9 @@ export function initIframePlayer () {
 
   if (posterIframe) {
     document.addEventListener('click', e => {
-      const iframeWrap = e.target.closest('[data-iframe]')
-      if (iframeWrap) {
+      const imageWithIframe = e.target.closest('.image:has(> [data-iframe])')
+      if (imageWithIframe) {
+        const iframeWrap = imageWithIframe.querySelector('[data-iframe]')
         let attrs = ''
         let attrsEn = ''
         const iframe = iframeWrap.firstChild
