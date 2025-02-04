@@ -1,5 +1,10 @@
-{{ with resources.Get "_redirects" }}
-  {{- .Content }}
+{{- $netlify := getenv "NETLIFY" -}}
+{{- with resources.Get "_redirects" -}}
+  {{- if $netlify -}}
+    {{- .Content -}}
+  {{- else -}}
+    {{- .Content | replaceRE `(?m)^(/.*?[^0124!])$` "$1 301" -}}
+  {{- end -}}
 {{- end }}
 
 # general
@@ -7,7 +12,7 @@
 /index.php/* /:splat 301
 
 {{- $a := "" -}}
-{{- if getenv "NETLIFY" -}}
+{{- if $netlify -}}
   {{- $a := "!" -}}
 {{- end -}}
 
@@ -35,5 +40,7 @@
   {{- end }}
 {{- end }}
 
+{{ if $netlify -}}
 /404.html /404 404{{ $a }}
 /404 /404.html 404{{ $a }}
+{{- end -}}
