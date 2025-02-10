@@ -231,7 +231,7 @@
           {{- if $onfocus }} onfocus="(this.type='{{ $type }}')" onblur="(this.type='text')"{{ end }}
           {{- with .accept }} accept="{{ . }}"{{ end }}
           {{- with .regex }} pattern="{{ . }}"{{ end }}
-          {{- with .min }} min{{ $length }}="{{ . }}"{{ end }}
+          {{- if ne .min nil }} min{{ $length }}="{{ .min }}"{{ end }}
           {{- with .max }} max{{ $length }}="{{ . }}"{{ end }}
           {{- if .multiple }} multiple{{ end -}}
         >
