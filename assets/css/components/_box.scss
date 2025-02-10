@@ -264,11 +264,6 @@
 
 // Title
 .box__title {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: var(--align, center);
-  align-items: baseline;
-  gap: .25em;
   margin: 0;
   .href:not(.box__link, :hover, :focus, :active) {
     color: inherit;
@@ -278,6 +273,11 @@
     content: none;
   }
   &:has(> .box__icon) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: var(--align, center);
+    align-items: baseline;
+    gap: .25em;
     text-align: left;
     &:is(.align-right *) {
       text-align: right;

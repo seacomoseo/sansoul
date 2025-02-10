@@ -6,6 +6,7 @@
   font-style: $font-style-base;
   font-weight: $font-weight-base;
   line-height: $line-height-base;
+  --top-font: 0em;
   @if not $root {
     font-size: 1em;
   }
@@ -28,13 +29,16 @@
   line-height: $line-height-title;
   font-size: $font-size-title * 1em;
   @if $top-title != 0 {
+    --top-font: #{#{ $top-title }em};
     &:not(strong, .href) {
-      transform: translateY(#{ $top-title }em);
+      translate: 0 var(--top-font);
       > svg:not(.box__icon--side),
       &.underline:after {
-        transform: translateY(-#{ $top-title }em);
+        translate: 0 calc(var(--top-font) * -1);
       }
     }
+  } @else {
+    --top-font: 0em;
   }
   @if not $hide-nested {
     @if $font-weight-bold-title > 0 {
@@ -59,13 +63,17 @@
   font-weight: $font-weight-cursive;
   line-height: $line-height-cursive;
   font-size: $font-size-cursive * 1em;
-  @if $top-cursive {
-    &:not(strong, a) {
-      translate: 0 #{ $top-cursive }em;
-      > svg {
-        translate: 0 -#{ $top-cursive }em;
+  @if $top-cursive != 0 {
+    --top-font: #{#{ $top-cursive }em};
+    &:not(strong, .href) {
+      translate: 0 var(--top-font);
+      > svg:not(.box__icon--side),
+      &.underline:after {
+        translate: 0 calc(var(--top-font) * -1);
       }
     }
+  } @else {
+    --top-font: 0em;
   }
   @if not $hide-nested {
     @if $font-weight-bold-cursive > 0 {

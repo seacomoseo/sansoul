@@ -16,8 +16,8 @@
   {{ end }}
 
   {{ $link  := "" }}
-  {{ if and .main (not .like_article) }}
-    {{ $link = cond .header page.RelPermalink (print "#" .section.id) }}
+  {{ if and (not .like_article) (or .main (eq $hn "h1") (eq $hn "h2")) }}
+    {{ $link = cond (or .header (eq $hn "h1")) page.RelPermalink (print "#" .section.id) }}
   {{ end }}
 
   {{/*  TITLE CLASS  */}}
