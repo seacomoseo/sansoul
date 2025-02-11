@@ -25,7 +25,7 @@
   {{- end -}}
 
   {{/*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */}}
-  {{- $is_ratio  := .Text | findRE `^[\d/]*$` -}}
+  {{- $is_ratio  := .Text | findRE `^[\d/]+$` -}}
   {{- $is_circle := eq .Text "circle" -}}
   {{- $is_iframe := partial "functions/is-iframe" .Destination -}}
   {{- $is_video  := .Destination | findRE `\.(mp4|mov|avi|webm)` -}}
