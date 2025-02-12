@@ -183,6 +183,7 @@ export function initFormSend () {
                 formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
                 form.reset()
+                changeValuesPrev(form, false)
               })
               .catch(error => {
                 formMessage.classList.add('form__submit--error')
