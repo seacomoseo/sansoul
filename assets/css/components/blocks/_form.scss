@@ -201,7 +201,7 @@
 }
 
 .form--labels-out {
-  :not(.aux)::placeholder,
+  :is(input, textarea):not(.aux)::placeholder,
   select:has(option:checked[value=""]) {
     color: transparent;
   }

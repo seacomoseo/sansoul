@@ -10,7 +10,13 @@
     {{- $author   := index $authors $index -}}
     {{- with $author -}}
       {{- with site.GetPage "author" . -}}
-        {{- if eq $param "parent" -}}
+        {{- if eq $param "hanchor" -}}
+          {{- if gt (len $authors) 1 -}}
+            {{- i18n "authors" -}}
+          {{- else -}}
+            {{- i18n "authors" -}}
+          {{- end -}}
+        {{- else if eq $param "parent" -}}
           {{- i18n "authors" -}}
         {{- else if eq $param "is" -}}
           {{- true -}}
