@@ -78,10 +78,10 @@ export function initCustomWidgets () {
           'data-view': (name === 'view' ? value : undefined)
         },
         [
-          hint && h('div', {
-            className: 'hint-info',
-            tabindex: 0
-          }),
+          hint && h('label',
+            { className: 'hint-info' },
+            h('input', { type: 'checkbox' })
+          ),
           h(OriginalComponent, {
             label: label.replace(/\s\([^(]+?\)$/g, ''),
             value,

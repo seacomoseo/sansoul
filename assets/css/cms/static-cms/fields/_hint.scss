@@ -23,13 +23,13 @@
 .CMS_EditorControl_root {
   position: relative;
 }
-.hint-info:focus + *,
-.hint-info:focus + * > *:not(.CMS_Hint_root),
+.hint-info:has(> input:checked) + *,
+.hint-info:has(> input:checked) + * > *:not(.CMS_Hint_root),
 :is(.hint-info + *, .hint-info + * > *):has(.CMS_Hint_root:hover) {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-.hint-info:focus + * .CMS_Hint_root,
+.hint-info:has(> input:checked) + * .CMS_Hint_root,
 .CMS_Hint_root:hover {
   display: block;
 }
@@ -90,11 +90,12 @@
   background-color: var(--common-gray);
   color: var(--bg);
   z-index: 19;
-  &:is(:hover, :focus) {
-    background-color: var(--primary-main);
-  }
-  &:focus {
+  &:has(> input:checked) {
+    background-color: var(--primary-dark);
     border-radius: 0 50% 50% 0;
+  }
+  &:not(.aux):hover {
+    background-color: var(--primary-main);
   }
   &:after {
     content: 'i';
@@ -103,6 +104,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    top: .5px;
+  }
+  > input {
+    display: none;
   }
 }
 // Front for touch over the info in mobile
