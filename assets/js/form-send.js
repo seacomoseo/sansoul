@@ -3,9 +3,15 @@ import {
   formSubmitSending,
   formSubmitOk,
   formSubmitWrong,
+  formErrorFileOnload,
   timestamp
 } from '@params'
 import { formValid } from './form-validate'
+
+const closeIcon =
+'<svg class="close" onclick="this.parentElement.remove()">' +
+  `<use href="/draws.${timestamp}.svg#xmark"></use>` +
+'</svg>'
 
 // Change values pre and post get form data
 function changeValuesPrev (form, prev) {
@@ -66,13 +72,16 @@ function formSubmited (form) {
   }
 }
 
+function formSubmitError (formMessage, message) {
+  formMessage.classList.add('form__submit--error')
+  formMessage.innerHTML =
+    `<svg><use href="/draws.${timestamp}.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
+    `<svg><use href="/draws.${timestamp}.svg#circle-info"></use></svg> ${message}`
+}
+
 export function initFormSend () {
   window.addEventListener('load', () => {
     const forms = document.querySelectorAll('.form')
-    const closeIcon =
-      '<svg class="close" onclick="this.parentElement.remove()">' +
-        `<use href="/draws.${timestamp}.svg#xmark"></use>` +
-      '</svg>'
     let formMessage
 
     forms.forEach(e => {
@@ -142,13 +151,20 @@ export function initFormSend () {
                   if (input.files.length) {
                     const files = Array.from(input.files)
                     files.forEach(file => {
-                      const filePromise = new Promise(resolve => {
+                      const filePromise = new Promise((resolve, reject) => {
                         // eslint-disable-next-line
                         const reader = new FileReader()
+                        // When reading finishes
                         reader.onloadend = () => {
-                          const base64File = reader.result // .split(',')[1]
-                          formData.append(input.name, base64File)
-                          resolve()
+                          // If an error occurred, reader.error will defined
+                          if (reader.error) {
+                            formSubmitError(formMessage, `${formErrorFileOnload} <strong>${input.dataset.placeholder}</strong>: ${reader.error}`)
+                            reject(reader.error)
+                          } else {
+                            const base64File = reader.result // .split(',')[1]
+                            formData.append(input.name, base64File)
+                            resolve()
+                          }
                         }
                         reader.readAsDataURL(file)
                       })
@@ -182,14 +198,15 @@ export function initFormSend () {
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
-                form.reset()
                 changeValuesPrev(form, false)
+                form.reset()
+                // Trigger change event manually (for form-show)
+                form.querySelectorAll('input, select, textarea').forEach(input => {
+                  input.dispatchEvent(new Event('change', { bubbles: true }))
+                })
               })
               .catch(error => {
-                formMessage.classList.add('form__submit--error')
-                formMessage.innerHTML =
-                  `<svg><use href="/draws.${timestamp}.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
-                  `<svg><use href="/draws.${timestamp}.svg#circle-info"></use></svg> ${error.message}`
+                formSubmitError(formMessage, error.message)
                 changeValuesPrev(form, false)
               })
           }
