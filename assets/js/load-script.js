@@ -5,7 +5,6 @@ export function loadScript (url) {
 
     if (!script) {
       script = document.createElement('script')
-      script.type = 'text/javascript'
       script.src = url
 
       script.onload = resolve
