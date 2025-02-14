@@ -19,7 +19,8 @@
 
 .button {
   color: var(--base-text);
-  background-color: transparent;
+  // background-color: transparent;
+  background-color: color-mix(in srgb, var(--base), transparent 100%);
   position: relative;
   @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
     @extend %radius;
