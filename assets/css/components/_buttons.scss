@@ -96,6 +96,13 @@
     }
   }
   transition-duration: .1s;
+  &[disabled] {
+    --base: var(--grey);
+    --base-text: var(--grey-text);
+    opacity: .5;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
 }
 
 

@@ -1,0 +1,55 @@
+{{/*  {{- $netlify  := getenv "NETLIFY" -}}  */}}
+{{- $netlify  := true -}}
+
+- icon:screwdriver-wrench [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "nofollow _blank") (CMS)
+- icon:google-drive       [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "nofollow")
+{{- with site.Params.drive_mails }}<br> {{ i18n "gdsheet_view" }}:
+{{- range split . ";" }}
+  - icon:envelope {{ . }}
+{{ end }}
+{{- end }}
+- icon:github [{{ i18n "github_repo" }}](https://github.com/seacomoseo/{{ site.Params.domain }} "nofollow")
+- icon:gitlab [{{ i18n "gitlab_repo" }}](https://gitlab.com/seacomoseo/{{ site.Params.domain }} "nofollow")
+
+{{- $deployments_link := print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name -}}
+{{- if $netlify }}
+  {{- $deployments_link = print "https://app.netlify.com/sites/" site.Params.name "/deploys" -}}
+{{- end }}
+
+**{{ i18n "deploy_status" }}**: \
+{{ i18n "deploy_status_info" }}
+
+[btn:similar icon:rotate
+  <i class="status__label status__label--success">{{ i18n "deploy_status_success" }}</i>
+  <i class="status__label status__label--building">{{ i18n "deploy_status_building" }}</i>
+  <i class="status__label status__label--canceled">{{ i18n "deploy_status_canceled" }}</i>
+  <i class="status__label status__label--error">{{ i18n "deploy_status_error" }}</i>
+  <i class="status__label status__label--whaiting">{{ i18n "deploy_status_whaiting" }}</i>
+  <strong id="deploy-time"></strong>
+]({{ $deployments_link }} "nofollow")
+{#status .buttons}
+
+[btn:invert icon:rocket-launch {{ i18n "rebuild" }}](none)
+{{- if and site.Params.cloudflare_id (not $netlify) }}
+[btn:similar icon:trash {{ i18n "clear_cache" }}](none)
+{{- end }}
+{.rebuild}
+
+
+{{/*  CUSTOM SCRIPT  */}}
+{{- $opts := dict
+  "minify"     hugo.IsProduction
+  "targetPath" (print site.Home.RelPermalink "js/info.js")
+  "params"     (dict
+    "netlify"      $netlify
+    "netlifyHook"  site.Params.netlify_hook
+    "netlifyId"    site.Params.netlify_id
+    "cloudflareId" site.Params.cloudflare_id
+    "name"         site.Params.name
+  )
+-}}
+{{- $js := resources.Get "js/info.js" | js.Build $opts | fingerprint -}}
+{{- if hugo.IsProduction -}}
+  {{- $js = $js | minify -}}
+{{- end -}}
+<script src="{{ $js.RelPermalink }}"></script>

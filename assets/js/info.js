@@ -1,9 +1,10 @@
 import { name, netlify, netlifyHook, netlifyId, cloudflareId } from '@params'
 
-const deployStatus = document.querySelector('.deploy-status')
-const deployTime = document.querySelector('.deploy-time')
-const rebuildButton = document.querySelector('.rebuild')
-const clearCacheButton = document.querySelector('.clear-cache')
+const deployStatus = document.getElementById('status')
+const deployTime = document.getElementById('deploy-time')
+const deployStatusButton = document.querySelector('#status > .button')
+const rebuildButton = document.querySelector('.rebuild > *:nth-child(1)')
+const clearCacheButton = document.querySelector('.rebuild > *:nth-child(2)')
 
 let statusColor
 let counter = 0
@@ -45,10 +46,7 @@ function setStatus (statusColor) {
   if (rebuildButton) rebuildButton.disabled = isBuilding
   if (clearCacheButton) clearCacheButton.disabled = isBuilding
   // Change deploy status color
-  deployStatus.style.backgroundColor = statusColor
-  // Restart animation
-  deployStatus.classList.remove('timer')
-  deployStatus.classList.add('timer')
+  deployStatusButton.style.setProperty('--similar', statusColor)
   timer(isBuilding)
 }
 
@@ -84,6 +82,7 @@ function getStatusColorCloudflare (url) {
 }
 
 if (deployStatus && rebuildButton) {
+  console.log('JARL!')
   checkStatus()
   // Call the function every 5 seconds
   setInterval(checkStatus, netlify ? 1000 : 5000)

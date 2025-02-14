@@ -1,0 +1,25 @@
+#status {
+  font-size: 1.5em;
+  margin-block: 1rem;
+  .button[style] {
+    --similar-text: var(--dark);
+  }
+  svg {
+    animation: spin 5s linear infinite;
+  }
+}
+.status__label {
+  display: none;
+}
+#status [style*='#BEF9C6'] i > .status__label--success,
+#status [style*='#F6E0A5'] i > .status__label--building,
+#status [style*='#D2D5DB'] i > .status__label--canceled,
+#status [style*='#F4BCBA'] i > .status__label--error,
+#status :not([style])      i > .status__label--whaiting {
+  display: inline;
+}
+#deploy-time {
+  text-transform: lowercase;
+  color: var(--base-text);
+  opacity: .75;
+}

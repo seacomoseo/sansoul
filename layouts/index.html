@@ -3,7 +3,6 @@
 
   {{/*  FILES  */}}
   {{- $cms_index_path           := print .RelPermalink "admin/index.html" -}}
-  {{- $cms_info                 := print .RelPermalink "admin/info/index.html" -}}
   {{- $google_file_verification := site.Params.google_file_verification -}}
   {{- $draws_path               := print "/draws." site.Params.timestamp ".svg" -}}
   {{- $redirects_path           := "/_redirects" -}}
@@ -27,8 +26,7 @@
   {{- end -}}
   {{- if not site.Data.config.cms.disabled -}}
     {{- $resources = $resources | append
-      (dict "partial" `cms/index`              "path" $cms_index_path)
-      (dict "partial" `cms/info`               "path" $cms_info)
+      (dict "partial" `cms/index`                "path" $cms_index_path)
     -}}
   {{- end -}}
   {{- range $resources -}}
