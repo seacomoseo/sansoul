@@ -1,30 +1,71 @@
 {{- with site.GetPage "cookies" -}}
-  {{- $color := $.color | default "white" -}}
-  <aside class="cookies bg bg-{{ $color }} content">
+  {{- $color    := $.color | default "white" -}}
+  {{- $class    := print "cookies bg bg-" $color " content" -}}
+  {{- $icon     := partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
+  {{- $label_0  := i18n "cookies_question" -}}
+  {{- $label_1  := i18n "cookies_no" -}}
+  {{- $label_2  := i18n "cookies_ok" -}}
+  {{- $advanced := site.Data.config.others.cookies_advanced -}}
+  {{- if $advanced -}}
+    {{- $label_0 = print (i18n "read_more") "…" -}}
+    {{- $label_1 = i18n "cookies_accept" -}}
+    {{- $label_2 = i18n "cookies_accept_all" -}}
+  {{- end -}}
+
+  {{- $link     := partial "components/link" (dict
+    "link"    .RelPermalink
+    "button"  "none"
+    "label"   $label_0
+    "noindex" true
+    "_blank"  true
+  ) -}}
+  {{- $button_1 := partial "components/link" (dict
+    "class"   "cookies__button button--sm"
+    "link"    "none"
+    "button"  "link"
+    "label"   $label_1
+    "noindex" true
+  ) -}}
+  {{- $button_2 := partial "components/link" (dict
+    "class"   "cookies__button button--sm cookies__button--all"
+    "link"    "none"
+    "button"  "link"
+    "label"   $label_2
+    "noindex" true
+  ) -}}
+
+  <aside class="{{ $class }}">
     <div class="bg-color"></div>
-    {{- partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
-    {{- partial "components/link" (dict
-      "link"      .RelPermalink
-      "button"    "none"
-      "label"     (i18n "cookies_question")
-      "noindex"   true
-      "_blank"    true
-    ) -}}
+    {{- if $advanced -}}
+      <i class="cookies__messaje">
+        {{- $icon -}}
+        <strong>{{ i18n "cookies_we_use" }}</strong>
+        {{- "" }} {{ i18n "cookies_message" }}. {{ "" -}}
+        {{- $link -}}
+      </i>
+      <div class="cookies__checks">
+        {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
+        {{- range $key, $label := split (i18n "cookies_checks") "," -}}
+          <label class="form__option">
+            {{- "" -}}
+            <input
+              class="form__checkbox"
+              type="checkbox"
+              name="cookies"
+              value="{{ index $values $key }}"
+              {{- if not $key }} disabled checked{{ end -}}
+            >
+            {{- . -}}
+          </label>
+        {{- end -}}
+      </div>
+    {{- else -}}
+      {{- $icon -}}
+      {{- $link -}}
+    {{- end -}}
     <div class="cookies__buttons">
-      {{- partial "components/link" (dict
-        "class"   "cookies__button button--sm"
-        "link"    "none"
-        "button"  "link"
-        "label"   (i18n "cookies_no")
-        "noindex" true
-      ) -}}
-      {{- partial "components/link" (dict
-        "class"   "cookies__button cookies__button--acept button--sm"
-        "link"    "none"
-        "button"  "link"
-        "label"   (i18n "cookies_ok")
-        "noindex" true
-      ) -}}
+      {{- $button_1 -}}
+      {{- $button_2 -}}
     </div>
   </aside>
 {{- end -}}

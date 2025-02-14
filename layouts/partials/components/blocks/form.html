@@ -1,5 +1,5 @@
 {{- $a       := "" | safeHTMLAttr }}
-{{- $show    := cond (not site.Data.config.other.show) "" " show" -}}
+{{- $show    := cond (not site.Data.config.others.show) "" " show" -}}
 {{- $form_id := .form.id -}}
 {{- $subject := .form.subject -}}
 {{- $num     := 0 -}}
@@ -85,7 +85,7 @@
     action="{{ $action | base64Encode }}"
     target="_blank"
   {{- end -}}
-  {{- with .form.to }} to="{{ . | base64Encode }}"{{ end -}}
+  {{- with .form.to }} data-to="{{ . | base64Encode }}"{{ end -}}
 >
 
   {{/*  HIDDEN INPUTS  */}}

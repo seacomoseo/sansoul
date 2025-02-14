@@ -1,4 +1,4 @@
-import { googleAnalyticsId } from '@params'
+import { cookiesLegal } from '@params'
 
 export function initCookies () {
   const cookiesMessage = document.querySelector('.cookies')
@@ -28,11 +28,14 @@ export function initCookies () {
       window.localStorage.controlcookie = window.localStorage.controlcookie || 0
       window.localStorage.controlcookie++
       cookiesClose()
-      const aceptAll = c.classList.value.includes('cookies__button--acept')
-      if (aceptAll) {
+
+      // If acept all or analytics ckecked
+      const aceptAll = c.classList.contains('cookies__button--all')
+      const analyticsCkecked = document.querySelector('.cookies [value="analytics"]').checked
+      if (aceptAll || analyticsCkecked) {
         window.localStorage.controlcookieanalytics = window.localStorage.controlcookieanalytics || 0
         window.localStorage.controlcookieanalytics++
-        if (googleAnalyticsId) {
+        if (typeof googleAnalytics === 'function' && cookiesLegal) {
           // eslint-disable-next-line
           googleAnalytics()
         }

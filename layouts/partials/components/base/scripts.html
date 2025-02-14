@@ -3,10 +3,11 @@
 {{ $disqus_id           := "" }}
 {{ $is_google_translate := false }}
 {{ $ga4_id              := "" }}
+{{ $cookies_legal       := false }}
 {{ $i18n_video          := i18n "video" }}
 {{ $lang                := page.Lang }}
 
-{{ if site.Data.config.other.show }}
+{{ if site.Data.config.others.show }}
   {{ $is_scroll_show = true }}
 {{ end }}
 
@@ -22,10 +23,8 @@
   {{ $is_google_translate = true }}
 {{ end }}
 
-{{ if hugo.IsProduction }}
-  {{ with site.Params.google_analytics }}
-    {{ $ga4_id = . }}
-  {{ end }}
+{{ with site.Data.config.others.cookies_legal }}
+  {{ $cookies_legal = true }}
 {{ end }}
 
 
@@ -37,7 +36,7 @@
   "params"     (dict
     "disqusId"          $disqus_id
     "isGoogleTranslate" $is_google_translate
-    "googleAnalyticsId" $ga4_id
+    "cookiesLegal"      $cookies_legal
     "i18nVideo"         $i18n_video
     "lang"              $lang
     "timestamp"         site.Params.timestamp

@@ -5,7 +5,7 @@
 {{ $border    := print " " (.border    | default "alt") }}
 {{ $uppercase := cond (not .uppercase) "" " uppercase" }}
 {{ $underline := cond (not .underline) "" " underline" }}
-{{ $show      := cond (not site.Data.config.other.show) "" " show" }}
+{{ $show      := cond (not site.Data.config.others.show) "" " show" }}
 <ul class="steps box__block">
   {{ range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">

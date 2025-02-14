@@ -1,5 +1,4 @@
 import {
-  googleAnalyticsId,
   formSubmitSending,
   formSubmitOk,
   formSubmitWrong,
@@ -59,7 +58,7 @@ function changeValuesPrev (form, prev) {
 function formSubmited (form) {
   const customEventSubmit = new CustomEvent('submited-' + form.id)
   document.dispatchEvent(customEventSubmit)
-  if (googleAnalyticsId) {
+  if (typeof gtag === 'function') {
     // eslint-disable-next-line
     gtag('event', 'contact', {
       id: form.parentElement.closest('[id]').id,

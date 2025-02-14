@@ -15,7 +15,9 @@
   margin: .8em;
   z-index: 400;
   transition: transform .5s, opacity .5s;
-  font-size: 16px;
+  &:has(.cookies__messaje) {
+    font-size: 14px;
+  }
   // svg {
   //   color: var(--main);
   // }
@@ -23,12 +25,16 @@
     translate: 0 var(--top-font);
   }
 }
+.cookies__messaje > svg:not(#aux) {
+  margin-right: 0.25em;
+}
 .cookies,
+.cookies__checks,
 .cookies__buttons {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1em;
+  gap: .5em 1em;
 }
 .cookies__buttons {
   margin-left: auto;
