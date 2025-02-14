@@ -37,35 +37,41 @@
   <aside class="{{ $class }}">
     <div class="bg-color"></div>
     {{- if $advanced -}}
-      <i class="cookies__messaje">
+      <div class="cookies__messaje">
         {{- $icon -}}
         <strong>{{ i18n "cookies_we_use" }}</strong>
         {{- "" }} {{ i18n "cookies_message" }}. {{ "" -}}
         {{- $link -}}
-      </i>
-      <div class="cookies__checks">
-        {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
-        {{- range $key, $label := split (i18n "cookies_checks") "," -}}
-          <label class="form__option">
-            {{- "" -}}
-            <input
-              class="form__checkbox"
-              type="checkbox"
-              name="cookies"
-              value="{{ index $values $key }}"
-              {{- if not $key }} disabled checked{{ end -}}
-            >
-            {{- . -}}
-          </label>
-        {{- end -}}
+      </div>
+      <div class="cookies__config">
+        <div class="cookies__checks">
+          {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
+          {{- range $key, $label := split (i18n "cookies_checks") "," -}}
+            <label class="form__option">
+              {{- "" -}}
+              <input
+                class="form__checkbox"
+                type="checkbox"
+                name="cookies"
+                value="{{ index $values $key }}"
+                {{- if not $key }} disabled checked{{ end -}}
+              >
+              {{- . -}}
+            </label>
+          {{- end -}}
+        </div>
+        <div class="cookies__buttons">
+          {{- $button_1 -}}
+          {{- $button_2 -}}
+        </div>
       </div>
     {{- else -}}
       {{- $icon -}}
       {{- $link -}}
+      <div class="cookies__buttons">
+        {{- $button_1 -}}
+        {{- $button_2 -}}
+      </div>
     {{- end -}}
-    <div class="cookies__buttons">
-      {{- $button_1 -}}
-      {{- $button_2 -}}
-    </div>
   </aside>
 {{- end -}}
