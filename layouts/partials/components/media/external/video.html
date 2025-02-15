@@ -10,6 +10,7 @@
   {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
   {{- with resources.Get $poster }}
     {{- if hugo.IsProduction }}
+      {{- .Publish -}}
       {{- $poster = partial "functions/image-format" (dict "image" . "size" .Width) -}}
     {{- else -}}
       {{- $poster = .RelPermalink -}}
