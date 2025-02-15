@@ -87,9 +87,9 @@ if (deployStatus && rebuildButton) {
   setInterval(checkStatus, netlify ? 1000 : 5000)
 
   document.addEventListener('click', e => {
-    const rebuildTarget = e.target.closest('.rebuild')
+    const rebuildTarget = e.target.closest('.rebuild:not([disabled])')
     if (rebuildTarget) rebuild()
-    const clearCacheTarget = e.target.closest('.clear-cache')
+    const clearCacheTarget = e.target.closest('.clear-cache:not([disabled])')
     if (clearCacheTarget) rebuildCloudflare({ cache: true })
   })
 
