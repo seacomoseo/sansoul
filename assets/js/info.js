@@ -63,7 +63,7 @@ function getStatusColorNetlify (url) {
     })
     .catch(error => {
       console.error('Error obtaining deployment status:', error)
-      return 'red'
+      return 'tomato'
     })
 }
 
@@ -77,7 +77,7 @@ function getStatusColorCloudflare (url) {
     })
     .catch(error => {
       console.error('Error obtaining deployment status:', error)
-      return 'red'
+      return 'tomato'
     })
 }
 

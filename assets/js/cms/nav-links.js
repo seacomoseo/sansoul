@@ -9,7 +9,7 @@ export function initNavLinks () {
   CMS.registerAdditionalLink({
     id: 'info',
     title: 'Info',
-    data: '/admin/info/',
+    data: '../info/',
     options: { icon: 'circle-info' }
   })
 }

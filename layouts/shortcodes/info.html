@@ -1,7 +1,7 @@
 {{/*  {{- $netlify  := getenv "NETLIFY" -}}  */}}
 {{- $netlify  := true -}}
 
-- icon:screwdriver-wrench [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "nofollow _blank") (CMS)
+- icon:screwdriver-wrench [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "nofollow _blank") (CMS) [{{ i18n "tutorial" }} ^icon:flag-es^](https://seacomoseo.com/cms/ "nofollow")
 - icon:google-drive       [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "nofollow")
 {{- with site.Params.drive_mails }}<br> {{ i18n "gdsheet_view" }}:
 {{- range split . ";" }}
@@ -20,11 +20,12 @@
 {{ i18n "deploy_status_info" }}
 
 [btn:similar icon:rotate
-  <i class="status__label status__label--success">{{ i18n "deploy_status_success" }}</i>
-  <i class="status__label status__label--building">{{ i18n "deploy_status_building" }}</i>
-  <i class="status__label status__label--canceled">{{ i18n "deploy_status_canceled" }}</i>
-  <i class="status__label status__label--error">{{ i18n "deploy_status_error" }}</i>
-  <i class="status__label status__label--whaiting">{{ i18n "deploy_status_whaiting" }}</i>
+  <i class="loader"></i>
+  <i class="status__label status__label--success">icon:square-check {{ i18n "deploy_status_success" }}</i>
+  <i class="status__label status__label--building">icon:rotate {{ i18n "deploy_status_building" }}</i>
+  <i class="status__label status__label--canceled">icon:square-xmark {{ i18n "deploy_status_canceled" }}</i>
+  <i class="status__label status__label--error">icon:triangle-exclamation {{ i18n "deploy_status_error" }}</i>
+  <i class="status__label status__label--whaiting">icon:rotate {{ i18n "deploy_status_whaiting" }}</i>
   <strong id="deploy-time"></strong>
 ]({{ $deployments_link }} "nofollow")
 {#status .buttons}

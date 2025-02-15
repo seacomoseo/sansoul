@@ -2,10 +2,21 @@
   font-size: 1.5em;
   margin-block: 1rem;
   .button[style] {
-    --similar-text: var(--dark);
+    // --similar-text: var(--similar);
+    // --similar-text: #{$dark};
+    --similar-text: color-mix(in srgb, var(--similar) 25%, black);
+  }
+  .button > svg {
+    opacity: 0;
   }
   svg {
-    animation: spin 5s linear infinite;
+    color: var(--base-text);
+    opacity: .75;
+    scale: 1.25;
+    margin-right: .125em;
+    &:has(> use[href="/draws.#{$timestamp}.svg#rotate"]) {
+      animation: spin 2.5s linear infinite;
+    }
   }
 }
 .status__label {
@@ -15,11 +26,70 @@
 #status [style*='#F6E0A5'] i > .status__label--building,
 #status [style*='#D2D5DB'] i > .status__label--canceled,
 #status [style*='#F4BCBA'] i > .status__label--error,
+#status [style*='tomato']  i > .status__label--whaiting,
 #status :not([style])      i > .status__label--whaiting {
   display: inline;
 }
 #deploy-time {
   text-transform: lowercase;
+  opacity: .75;
+}
+
+.loader {
+  display: inline-block;
+  position: absolute;
+  left: 1.25em;
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
   color: var(--base-text);
   opacity: .75;
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: inherit;
+    height: inherit;
+    border-radius: 50%;
+    transform: rotateX(70deg);
+    animation: 1s spin-loader linear infinite;
+  }
+  &:after {
+    opacity: .5;
+    transform: rotateY(70deg);
+    animation-delay: .4s;
+  }
+}
+
+@keyframes spin-loader {
+  0%,
+  100% {
+    box-shadow: .2em 0px 0 0px currentcolor;
+  }
+  12% {
+    box-shadow: .2em .2em 0 0 currentcolor;
+  }
+  25% {
+    box-shadow: 0 .2em 0 0px currentcolor;
+  }
+  37% {
+    box-shadow: -.2em .2em 0 0 currentcolor;
+  }
+  50% {
+    box-shadow: -.2em 0 0 0 currentcolor;
+  }
+  62% {
+    box-shadow: -.2em -.2em 0 0 currentcolor;
+  }
+  75% {
+    box-shadow: 0px -.2em 0 0 currentcolor;
+  }
+  87% {
+    box-shadow: .2em -.2em 0 0 currentcolor;
+  }
 }
