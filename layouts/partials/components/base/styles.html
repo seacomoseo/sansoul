@@ -82,7 +82,7 @@
 
 {{- $css := resources.Get (print "css/styles.scss") -}}
 {{- with $css -}}
-  {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction)) -}}
+  {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment) -}}
   {{- if hugo.IsProduction -}}
     {{/*  {{- $css = $css | minify | postCSS | resources.PostProcess -}}  */}}
     {{- $css = $css | minify -}}

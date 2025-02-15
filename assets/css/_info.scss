@@ -1,17 +1,24 @@
 #status {
   font-size: 1.5em;
   margin-block: 1rem;
-  .button[style] {
-    // --similar-text: var(--similar);
-    // --similar-text: #{$dark};
-    --similar-text: color-mix(in srgb, var(--similar) 25%, black);
+  @if $buttons-outline {
+    .button[style] {
+      --similar-text: color-mix(in srgb, var(--similar) 25%, black);
+    }
   }
   .button > svg {
     opacity: 0;
   }
+  .loader,
   svg {
-    color: var(--base-text);
+    @if $buttons-outline {
+      color: var(--base);
+    } @else {
+      color: var(--base-text);
+    }
     opacity: .75;
+  }
+  svg {
     scale: 1.25;
     margin-right: .125em;
     &:has(> use[href="/draws.#{$timestamp}.svg#rotate"]) {
@@ -25,7 +32,7 @@
 #status [style*='#BEF9C6'] i > .status__label--success,
 #status [style*='#F6E0A5'] i > .status__label--building,
 #status [style*='#D2D5DB'] i > .status__label--canceled,
-#status [style*='#F4BCBA'] i > .status__label--error,
+#status [style*='#FFBDBA'] i > .status__label--error,
 #status [style*='tomato']  i > .status__label--whaiting,
 #status :not([style])      i > .status__label--whaiting {
   display: inline;
@@ -38,14 +45,13 @@
 .loader {
   display: inline-block;
   position: absolute;
+  top: .375em;
   left: 1.25em;
   transform: rotateZ(45deg);
   perspective: 1000px;
   border-radius: 50%;
   width: 48px;
   height: 48px;
-  color: var(--base-text);
-  opacity: .75;
   &:before,
   &:after {
     content: '';

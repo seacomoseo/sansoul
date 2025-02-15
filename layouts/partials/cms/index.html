@@ -60,7 +60,7 @@
   "link-contrast-bg"   (or (in (slice "all" "bg")   site.Data.styles.colors.link.contrast) (not site.Data.styles.colors.link.contrast) | not | not | string)
   */}}
   {{ $styles := resources.Get "css/cms.scss"
-    | toCSS (dict "vars" $vars "enableSourceMap" (not hugo.IsProduction))
+    | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment)
     | fingerprint
   }}
   {{ if hugo.IsProduction }}

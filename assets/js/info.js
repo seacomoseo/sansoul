@@ -82,7 +82,6 @@ function getStatusColorCloudflare (url) {
 }
 
 if (deployStatus && rebuildButton) {
-  console.log('JARL!')
   checkStatus()
   // Call the function every 5 seconds
   setInterval(checkStatus, netlify ? 1000 : 5000)

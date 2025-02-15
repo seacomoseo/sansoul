@@ -1,5 +1,4 @@
-{{/*  {{- $netlify  := getenv "NETLIFY" -}}  */}}
-{{- $netlify  := true -}}
+{{- $netlify := or (getenv "NETLIFY") hugo.IsDevelopment -}}
 
 - icon:screwdriver-wrench [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "nofollow _blank") (CMS) [{{ i18n "tutorial" }} ^icon:flag-es^](https://seacomoseo.com/cms/ "nofollow")
 - icon:google-drive       [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "nofollow")
@@ -19,7 +18,7 @@
 **{{ i18n "deploy_status" }}**: \
 {{ i18n "deploy_status_info" }}
 
-[btn:similar icon:rotate
+[btn:similar icon:none
   <i class="loader"></i>
   <i class="status__label status__label--success">icon:square-check {{ i18n "deploy_status_success" }}</i>
   <i class="status__label status__label--building">icon:rotate {{ i18n "deploy_status_building" }}</i>
