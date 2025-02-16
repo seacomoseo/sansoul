@@ -130,10 +130,10 @@ export function formValid (form) {
       if (file.size > 5 * 1024 * 1024) count++
     })
     if (count) {
-      formErrorFile.append(formErrorFileSize)
+      formErrorFile.push(formErrorFileSize)
     }
-    if (!formErrorFile && files.length > fileMax) {
-      formErrorFile.append(formErrorFileMax.replace('{s}', fileMax))
+    if (files.length > fileMax) {
+      formErrorFile.push(formErrorFileMax.replace('{s}', fileMax))
     }
     if (formErrorFile.length > 0) {
       formErrorFile.forEach(error => {

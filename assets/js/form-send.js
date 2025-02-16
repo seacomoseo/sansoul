@@ -160,7 +160,7 @@ export function initFormSend () {
                             formSubmitError(formMessage, `${formErrorFileOnload} <strong>${input.dataset.placeholder}</strong>: ${reader.error}`)
                             reject(reader.error)
                           } else {
-                            const base64File = reader.result // .split(',')[1]
+                            const base64File = reader.result
                             formData.append(input.name, base64File)
                             resolve()
                           }
