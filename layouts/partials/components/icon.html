@@ -1,16 +1,16 @@
 {{ $svg := "" }}
 
 {{ if ne .icon "hide" }}
-  {{ $icons := site.Data.styles.icons }}
-  {{ $icon  := .icon }}
-  {{ $emoji := "" }}
+  {{ $config := site.Data.styles.icons }}
+  {{ $icon   := .icon }}
+  {{ $emoji  := "" }}
 
-  {{ if $icons.emojis_default | and .emoji }}
+  {{ if $config.emojis_default | and .emoji }}
     {{ $icon = .emoji }}
   {{ end }}
   {{ $icon_code := $icon | urlquery }}
   {{ $emoji      = in $icon_code "%" }}
-  {{ with $icons.emojis }}
+  {{ with $config.emojis }}
     {{ if $emoji }}
       {{ $variants := cond (eq . "noto-bw" | or (eq . "twemoji-scale")) `-ef-b8-8f|-f0-9f-8f-b(b|c|d|e|f)` `-ef-b8-8f` }}
       {{ $icon_code = $icon_code | lower | replaceRE `%` `-` | replaceRE `^-` `` | replaceRE $variants `` }}
@@ -36,7 +36,7 @@
   {{/*  ATTRIBUTES  */}}
   {{ $attr := cond (not .attr) $class (print " " .attr) }}
 
-  {{ $svg = not $emoji | or $icons.emojis }}
+  {{ $svg = not $emoji | or $config.emojis }}
   {{ if $svg }}
     {{ $svg = print `<svg` $attr `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}
   {{ else }}

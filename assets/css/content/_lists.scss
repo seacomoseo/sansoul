@@ -14,7 +14,7 @@
     p {
       margin: 0;
     }
-    > li{
+    > li {
       display: table-row;
       > * {
         display: table-cell;
@@ -22,8 +22,16 @@
       }
       &:before,
       > svg {
-        color: var(--main);
         font-size: 1.2em;
+        color: var(--main);
+      }
+      @if $main = $link {
+        &:not(#toc *, .list-inline *):where(:is(ul, ol):has(.href) *) {
+          &:before,
+          > svg {
+            opacity: .5;
+          }
+        }
       }
       &:before {
         @include font-base-bold;

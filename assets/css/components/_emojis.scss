@@ -1,8 +1,10 @@
-.emoji {
-  @extend svg;
-  line-height: 1em;
+@if $emojis {
+  .emoji {
+    @extend svg;
+    line-height: 1em;
+  }
 }
-@if $emoji-scale {
+@if $emojis-scale {
   .emoji {
     --hue: #{ hue($main) };
     --hue-back: #{ mix($dark, $main, 30%) };
