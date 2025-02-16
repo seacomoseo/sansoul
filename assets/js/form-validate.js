@@ -123,24 +123,26 @@ export function formValid (form) {
 
   form.querySelectorAll('[type="file"]').forEach(input => {
     const files = [...input.files]
-    if (files.length > 0) {
-      let formErrorFile
-      const fileMax = input.dataset.max
-      files.forEach(file => {
-        if (file.size > 5 * 1024 * 1024) {
-          formErrorFile = formErrorFileSize
-        }
-      })
-      if (!formErrorFile && files.length > fileMax) {
-        formErrorFile = formErrorFileMax.replace('{s}', fileMax)
-      }
-      if (formErrorFile) {
+    const fileMax = input.dataset.max
+    const formErrorFile = []
+    let count = 0
+    files.forEach(file => {
+      if (file.size > 5 * 1024 * 1024) count++
+    })
+    if (count) {
+      formErrorFile.append(formErrorFileSize)
+    }
+    if (!formErrorFile && files.length > fileMax) {
+      formErrorFile.append(formErrorFileMax.replace('{s}', fileMax))
+    }
+    if (formErrorFile.length > 0) {
+      formErrorFile.forEach(error => {
         input.style.setProperty('--border', 'var(--submit-error)')
-        message.innerHTML += `<li>${formErrorFile}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
+        message.innerHTML += `<li>${error}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
         valid = false
-      } else if (input.value && files[0]) {
-        input.removeAttribute('style')
-      }
+      })
+    } else if (input.value && files[0]) {
+      input.removeAttribute('style')
     }
   })
 
