@@ -1,9 +1,9 @@
 ---
-title: Info
-slug: info
+title: CMS
+slug: cms
 summary: ' '
 noindex: true
-translationKey: info
+translationKey: cms
 type: system
 weight: 6
 ---
