@@ -22,7 +22,7 @@ export function formValid (form) {
     'textarea'
   ).forEach(input => {
     if (input.value.includes("'")) {
-      input.style.setProperty('--border', 'var(--color-error)')
+      input.style.setProperty('--border', 'var(--submit-error)')
       message.innerHTML += `<li>${formErrorSingleQuotes}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
       valid = false
     } else {
@@ -55,15 +55,15 @@ export function formValid (form) {
       if (!isInput(input)) {
         let formErrorMessage, formErrorName
         if (input.tagName === 'FIELDSET') {
-          elementToStyle.style.setProperty('--border', 'var(--color-error)')
+          elementToStyle.style.setProperty('--border', 'var(--submit-error)')
           formErrorMessage = formErrorRequiredCheck
           formErrorName = input.children[0].textContent.replace(' *', '')
         } else if (input.classList.contains('form__geo')) {
-          elementToStyle.style.color = 'var(--color-error)'
+          elementToStyle.style.color = 'var(--submit-error)'
           formErrorMessage = formErrorRequiredFields
           formErrorName = elementToStyle.textContent.replace(' *', '')
         } else {
-          elementToStyle.style.setProperty('--border', 'var(--color-error)')
+          elementToStyle.style.setProperty('--border', 'var(--submit-error)')
           formErrorMessage = formErrorRequiredFields
           formErrorName = (input.placeholder || input.dataset.placeholder || input.children[0].textContent).replace(' *', '')
         }
@@ -80,7 +80,7 @@ export function formValid (form) {
   form.querySelectorAll('[type="email"]').forEach(input => {
     const emailMatch = input.value.match(/@.*\./)
     if (input.value && !emailMatch) {
-      input.style.setProperty('--border', 'var(--color-error)')
+      input.style.setProperty('--border', 'var(--submit-error)')
       message.innerHTML += `<li>${formErrorEmail}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
       valid = false
     } else if (input.value && emailMatch) {
@@ -91,7 +91,7 @@ export function formValid (form) {
   form.querySelectorAll('[type="tel"]').forEach(input => {
     const telMatch = input.value.match(/^\+?[0-9\s]{9,15}$/)
     if (input.value && !telMatch) {
-      input.style.setProperty('--border', 'var(--color-error)')
+      input.style.setProperty('--border', 'var(--submit-error)')
       message.innerHTML += `<li>${formErrorTel}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
       valid = false
     } else if (input.value && telMatch) {
@@ -102,7 +102,7 @@ export function formValid (form) {
   // form.querySelectorAll('[type="number"][min]').forEach(input => {
   //   const minMatch = input.value >= input.min
   //   if (input.value && !minMatch) {
-  //     input.style.setProperty('--border', 'var(--color-error)')
+  //     input.style.setProperty('--border', 'var(--submit-error)')
   //     message.innerHTML += `<li>${formErrorMin.replace('{{.}}', input.min)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
   //     valid = false
   //   } else if (input.value && minMatch) {
@@ -113,7 +113,7 @@ export function formValid (form) {
   // form.querySelectorAll('[type="number"][max]').forEach(input => {
   //   const maxMatch = input.value <= input.max
   //   if (input.value && !maxMatch) {
-  //     input.style.setProperty('--border', 'var(--color-error)')
+  //     input.style.setProperty('--border', 'var(--submit-error)')
   //     message.innerHTML += `<li>${formErrorMax.replace('{{.}}', input.max)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
   //     valid = false
   //   } else if (input.value && maxMatch) {
@@ -135,7 +135,7 @@ export function formValid (form) {
         formErrorFile = formErrorFileMax.replace('{s}', fileMax)
       }
       if (formErrorFile) {
-        input.style.setProperty('--border', 'var(--color-error)')
+        input.style.setProperty('--border', 'var(--submit-error)')
         message.innerHTML += `<li>${formErrorFile}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
         valid = false
       } else if (input.value && files[0]) {
@@ -147,7 +147,7 @@ export function formValid (form) {
   const accept = form.querySelector('.form__option--consent')
   if (!accept) valid = false
   if (!accept.querySelector('[type="checkbox"]').checked) {
-    accept.style.color = 'var(--color-error)'
+    accept.style.color = 'var(--submit-error)'
     message.innerHTML += `<li>${formErrorAcept}</li>`
     valid = false
   } else {
