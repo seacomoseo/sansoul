@@ -182,6 +182,8 @@ export function initFormSend () {
               formOptions.body = new URLSearchParams(formData).toString()
             }
 
+            changeValuesPrev(form, false)
+
             // Send by AJAX
             fetch(action, formOptions)
               .then(response => {
@@ -197,7 +199,6 @@ export function initFormSend () {
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
-                changeValuesPrev(form, false)
                 form.reset()
                 // Trigger change event manually (for form-show)
                 form.querySelectorAll('input, select, textarea').forEach(input => {
@@ -206,7 +207,6 @@ export function initFormSend () {
               })
               .catch(error => {
                 formSubmitError(formMessage, error.message)
-                changeValuesPrev(form, false)
               })
           }
         }

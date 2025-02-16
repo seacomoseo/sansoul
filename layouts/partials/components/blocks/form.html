@@ -206,6 +206,12 @@
             {{- $length  = "length" | safeHTMLAttr -}}
           {{- end -}}
         {{- end -}}
+        {{- $data  := "" | safeHTMLAttr -}}
+        {{- if .max -}}
+          {{- if eq $type "file" -}}
+            {{- $data  = "data-" | safeHTMLAttr -}}
+          {{- end -}}
+        {{- end -}}
 
         {{- if eq $type "file" -}}
           <label class="form__file">
@@ -232,7 +238,7 @@
           {{- with .accept }} accept="{{ . }}"{{ end }}
           {{- with .regex }} pattern="{{ . }}"{{ end }}
           {{- if ne .min nil }} min{{ $length }}="{{ .min }}"{{ end }}
-          {{- with .max }} max{{ $length }}="{{ . }}"{{ end }}
+          {{- with .max }} {{ $data }}max{{ $length }}="{{ . }}"{{ end }}
           {{- if .multiple }} multiple{{ end -}}
         >
 

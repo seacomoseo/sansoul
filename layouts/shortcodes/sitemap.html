@@ -1,6 +1,6 @@
-{{ range site.Sections }}
+{{- range site.Sections -}}
   <h2 class="content__heading">
-    {{ partial "components/link" (dict
+    {{- partial "components/link" (dict
       "class"     "content__heading-link sitemap-header-link"
       "link"      .RelPermalink
       "button"    "none"
@@ -9,25 +9,30 @@
       "label"     .Title
       "anchor"    (partial "functions/anchor-page" .)
       "noindex"   .Params.noindex
-    ) }}
+    ) -}}
   </h2>
-  {{ $pages := .RegularPages }}
-  {{ if eq .Type "single" }}
-    {{ $pages = slice site.Home | append .RegularPages }}
-  {{ end }}
-  {{ with $pages }}
+  {{- $parent_icon := .Params.icon -}}
+  {{- $pages := .RegularPages -}}
+  {{- if eq .Type "single" -}}
+    {{- $pages = slice site.Home | append .RegularPages -}}
+  {{- end -}}
+  {{- with $pages -}}
     <ul>
-      {{ range sort . "Date" "desc" }}
+      {{- range sort . "Date" "desc" -}}
         <li>
-          {{ partial "components/link" (dict
+          {{- $icon := cond (eq $parent_icon .Params.icon) "" .Params.icon -}}
+          {{- with $icon -}}
+            {{- partial "components/icon" (dict "icon" .) -}}
+          {{- end -}}
+          {{- partial "components/link" (dict
             "link"      .RelPermalink
             "button"    "none"
             "label"     .Title
             "anchor"    (partial "functions/anchor-page" .)
             "noindex"   .Params.noindex
-          ) }}
+          ) -}}
         </li>
-      {{ end }}
+      {{- end -}}
     </ul>
-  {{ end }}
-{{ end }}
+  {{- end -}}
+{{- end -}}

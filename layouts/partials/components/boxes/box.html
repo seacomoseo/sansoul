@@ -193,20 +193,31 @@
     {{ end }}
 
     {{/*  GALLERY  */}}
-    {{ if .gallery }}
+    {{ if or .images .limages }}
       {{- if eq .gallery.type "boxes" -}}
         {{- $boxes_images := slice -}}
-        {{- range .limages -}}
+        {{- range $k, $v := .limages -}}
+          {{- $alt := .alt -}}
+          {{- if not .alt -}}
+            {{- with $.gallery -}}
+              {{- $alt = .alt | default (print .alt " " (add $k 1)) -}}
+            {{- end -}}
+          {{- end -}}
           {{- $boxes_images = $boxes_images | append (dict
             "image"  .image
-            "alt"    .alt
+            "alt"    $alt
             "link"   .link
             "anchor" (.image | replaceRE `^(.+)\..*$` "$1" | humanize)
           ) -}}
         {{- end -}}
-        {{- range .images -}}
+        {{- range $k, $v := .images -}}
+          {{- $alt := "" -}}
+          {{- with $.gallery -}}
+            {{- $alt = print .alt " " (add $k 1) -}}
+          {{- end -}}
           {{- $boxes_images = $boxes_images | append (dict
             "image"  .
+            "alt"    $alt
             "link"   .
             "anchor" (. | replaceRE `^(.+)\..*$` "$1" | humanize)
           ) -}}

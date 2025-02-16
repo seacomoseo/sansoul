@@ -3,6 +3,9 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
+  --submit-waiting: color-mix(in srgb, var(--invert) 25%, grey);
+  --submit-success: color-mix(in srgb, var(--invert) 25%, green);
+  --submit-error: color-mix(in srgb, var(--invert) 25%, red);
 }
 .form__item {
   position: relative;
@@ -94,8 +97,8 @@
 .form__error,
 .form__submit {
   position: relative;
-  color: $white;
-  background-color: red;
+  color: #fff;
+  background-color: var(--submit-error);
   margin-top: 1em;
   padding: 1em;
   scroll-margin-top: 3em;
@@ -111,7 +114,7 @@
   }
 }
 .form__submit {
-  background-color: grey;
+  background-color: var(--submit-waiting);
   svg {
     position: relative;
     top: .125em;
@@ -121,10 +124,10 @@
   }
 }
 .form__submit--success {
-  background-color: green;
+  background-color: var(--submit-success);
 }
 .form__submit--error {
-  background-color: red;
+  background-color: var(--submit-error);
 }
 /*! purgecss end ignore */
 #search__form ~ .form {
