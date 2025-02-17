@@ -12,25 +12,25 @@ export function initFormFiles () {
         input.addEventListener('change', e => {
           const inputEl = e.target
           const files = [...inputEl.files]
-          // Asigna la longitud al dataset para show_if
+          // Assigns length to the dataset for show_if
           inputEl.dataset.length =
             files.length || inputEl.closest('.form__item').querySelector('.form__preview-item:not([style]) input')
               ? 1
               : ''
-          // Resetea el valor del input
+          // Resets the input value
           inputEl.value = ''
           if (files.length) {
             const inputPreview = inputEl.closest('.form__item').querySelector('.form__preview')
-            // Limpia la vista previa anterior
-            inputPreview.innerHTML = ''
-            // Crea un placeholder para cada archivo en orden
+            // Clears the previous preview
+            // inputPreview.innerHTML = ''
+            // Creates a placeholder for each file in order
             const placeholders = files.map(() => {
               const li = document.createElement('li')
               li.classList.add('form__preview-item')
               inputPreview.appendChild(li)
               return li
             })
-            // Procesa cada archivo
+            // Processes each file
             files.forEach((file, i) => {
               const reader = new FileReader()
               reader.onloadend = async () => {
@@ -47,7 +47,7 @@ export function initFormFiles () {
       })
     })
 
-    // Función para cerrar la vista previa
+    // Function to close preview
     const closePreview = item => {
       const input = item.closest('.form__item').querySelector('.form__file input')
       item.parentElement.remove()
@@ -65,7 +65,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   const isImage = base64File.startsWith('data:image')
   const isSVG = base64File.startsWith('data:image/svg')
 
-  // Si es imagen (y no SVG), comprimirla y obtener el nuevo base64
+  // If it is image (and not SVG), compress it and get new base64
   if (isImage && !isSVG) {
     base64File = await new Promise((resolve, reject) => {
       const img = new Image()
@@ -88,7 +88,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
         ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
         canvas.toBlob(blob => {
           if (blob) {
-            // Si el blob es más pequeño que el archivo original, se actualizan las variables
+            // If the blob is smaller than the original file, update the variables
             if (blob.size < file.size) {
               compressedFile = blob
               fileName = file.name.replace(/^(.+)\..+$/, '$1.webp')
@@ -109,7 +109,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     })
   }
 
-  // Configura la previsualización según si es imagen o no
+  // Configures the preview depending on whether it is image or not
   if (isImage) {
     const blobUrl = URL.createObjectURL(compressedFile)
     const previewImg = new Image()
@@ -122,7 +122,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     previewMedia.append(file.name.replace(/^.+\.(.+)$/, '$1'))
   }
 
-  // Crea el input oculto para enviar el archivo (o su representación en texto)
+  // Creates the hidden input to send the file (or its text representation)
   const fileInput = document.createElement('input')
   if (form.dataset.gas) {
     fileInput.type = 'text'
@@ -132,13 +132,12 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     fileInput.dataset.size = compressedFile.size
     fileInput.value = base64File + '|' + driveFileName(fileInput, i, length)
   } else {
-    // Nota: La propiedad files de un input es de solo lectura, por lo que si necesitas administrar
-    // los archivos, se requiere otra estrategia.
+    // Note: The files property of an input is read-only, so if you need to manage the files, another strategy is required.
     fileInput.attributes = input.attributes
   }
   fileInput.classList.add('display-none')
 
-  // Actualiza el placeholder con la información del archivo
+  // Update the placeholder with the file information.
   placeholder.innerHTML = `
     <i class="form__preview-media">${previewMedia.outerHTML}</i>
     <i class="form__preview-name">${fileName}</i>
