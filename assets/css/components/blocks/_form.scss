@@ -107,11 +107,13 @@
   @include radius;
   svg.close {
     float: right;
-    cursor: pointer;
   }
   ul {
     margin: 0;
   }
+}
+.close {
+  cursor: pointer;
 }
 .form__submit {
   background-color: var(--submit-waiting);
@@ -212,13 +214,27 @@
 
 .form__file {
   position: relative;
+  overflow: hidden;
   .form__file--button {
     position: absolute;
     float: left;
     height: 2.5em;
     z-index: 1;
+    i:after {
+      @include font-base;
+      text-transform: initial;
+      font-size: 1rem;
+      content: var(--form-file-label);
+      position: absolute;
+      color: var(--similar-text);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-left: 2.5em;
+    }
   }
   .form__input {
+    color: transparent;
+    text-indent: -200vw;
     width: 100%;
     @if not $chamfer and $radius > .01 {
       &:not(.form--fill-inputs) {
@@ -237,7 +253,7 @@
     cursor: pointer;
     z-index: 2;
   }
-  .form__input::before {
+  .form__input:before {
     content: attr(data-placeholder);
     // font-size: 1em;
     @include font-button;
@@ -248,6 +264,56 @@
   .button--font-alt + .form__input::before {
     @include font-button(alt);
   }
+}
+
+.form__preview {
+  display: grid;
+  padding: 0;
+  margin: 0;
+}
+.form__preview-item {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 1em;
+  border: 1px transparent solid;
+  &:not(:last-child) {
+    border-bottom-color: var(--border);
+  }
+}
+.form__preview-media,
+.form__preview-size {
+  flex-shrink: 0;
+}
+.form__preview-media {
+  &:has(.form__preview-file) {
+  }
+  @include radius;
+  overflow: hidden;
+  background-color: var(--similar);
+  > * {
+    width: 2.5em;
+    height: 2.5em;
+    object-fit: contain;
+    display: grid;
+    place-content: center;
+  }
+}
+.form__preview-file {
+  translate: 0 var(--top-font);
+}
+.form__preview-name {
+  margin-right: auto;
+  text-align: left;
+}
+.form__preview-size,
+.form__preview .close {
+  color: var(--text);
+}
+.form__preview-item--error-load,
+.form__preview-item--error .form__preview-name,
+.form__preview-item--error .close {
+  color: var(--submit-error);
 }
 
 .form__pre {

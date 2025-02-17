@@ -35,6 +35,8 @@ export function formValid (form) {
       return input.querySelector('input:checked')
     } else if (input.type === 'checkbox') {
       return input.checked
+    } else if (input.type === 'file') {
+      return input.parentElement.querySelector('input:is(.form__item:has(.form__preview-item) *)')
     } else {
       return input.value
     }
@@ -121,28 +123,41 @@ export function formValid (form) {
   //   }
   // })
 
-  form.querySelectorAll('[type="file"]').forEach(input => {
-    const files = [...input.files]
-    const fileMax = input.dataset.max
-    const formErrorFile = []
+  form.querySelectorAll('.form__file [type="file"]').forEach(input => {
+    // Size
     let count = 0
-    files.forEach(file => {
-      if (file.size > 5 * 1024 * 1024) count++
+    input.closest('.form__item').querySelectorAll('.form__preview input').forEach(inputPreview => {
+      const size = inputPreview.dataset.size
+      if (size > 5 * 1024 * 1024) {
+        inputPreview.parentElement.style.setProperty('--text', 'var(--submit-error)')
+        count++
+      }
     })
     if (count) {
-      formErrorFile.push(formErrorFileSize)
+      message.innerHTML += `<li>${formErrorFileSize}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
+      valid = false
     }
-    if (files.length > fileMax) {
-      formErrorFile.push(formErrorFileMax.replace('{s}', fileMax))
-    }
-    if (formErrorFile.length > 0) {
-      formErrorFile.forEach(error => {
-        input.style.setProperty('--border', 'var(--submit-error)')
-        message.innerHTML += `<li>${error}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
-        valid = false
+
+    // Length
+    const fileMax = input.dataset.max
+    const inputPreview = input.closest('.form__item').querySelector('.form__preview')
+    const children = [...inputPreview.children]
+      .filter(child => !child.classList.contains('form__preview-item--error-load') && !child.style[0])
+    if (children.length > fileMax) {
+      const error = formErrorFileMax.replace('{s}', fileMax)
+      message.innerHTML += `<li>${error}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
+      valid = false
+      children.forEach((child, i) => {
+        if (i + 1 > fileMax) {
+          child.classList.add('form__preview-item--error')
+        } else {
+          child.classList.remove('form__preview-item--error')
+        }
       })
-    } else if (input.value && files[0]) {
-      input.removeAttribute('style')
+    } else if (input.value) {
+      children.forEach(child => {
+        child.classList.remove('form__preview-item--error')
+      })
     }
   })
 

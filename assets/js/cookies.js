@@ -36,7 +36,6 @@ export function initCookies () {
         window.localStorage.controlcookieanalytics = window.localStorage.controlcookieanalytics || 0
         window.localStorage.controlcookieanalytics++
         if (typeof googleAnalytics === 'function' && cookiesLegal) {
-          // eslint-disable-next-line
           googleAnalytics()
         }
       }

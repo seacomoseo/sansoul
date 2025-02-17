@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { tReset } from '@params'
 
 export function initCustomWidgets () {

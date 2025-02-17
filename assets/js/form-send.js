@@ -2,7 +2,6 @@ import {
   formSubmitSending,
   formSubmitOk,
   formSubmitWrong,
-  formErrorFileOnload,
   timestamp
 } from '@params'
 import { formValid } from './form-validate'
@@ -44,13 +43,29 @@ function changeValuesPrev (form, prev) {
       }
     }
   })
-  // Checkboxes
-  const _bcc = form.querySelector('input[name="_bcc"]')
-  if (_bcc) {
+  // Files
+  const files = form.querySelectorAll('.form .form__file input[type="file"]')
+  files.forEach(input => {
     if (prev) {
-      _bcc.value = atob(_bcc.value)
+      if (input.name) {
+        input.dataset.name = input.name
+        input.name = ''
+        input.value = ''
+      }
     } else {
-      _bcc.value = btoa(_bcc.value)
+      if (input.dataset.name) {
+        input.name = input.dataset.name
+        input.removeAttribute('data-name')
+      }
+    }
+  })
+  // BCC
+  const _cc = form.querySelector('input[name="_cc"]')
+  if (_cc) {
+    if (prev) {
+      _cc.value = atob(_cc.value)
+    } else {
+      _cc.value = btoa(_cc.value)
     }
   }
 }
@@ -59,7 +74,6 @@ function formSubmited (form) {
   const customEventSubmit = new CustomEvent('submited-' + form.id)
   document.dispatchEvent(customEventSubmit)
   if (typeof gtag === 'function') {
-    // eslint-disable-next-line
     gtag('event', 'contact', {
       id: form.parentElement.closest('[id]').id,
       type: 'form',
@@ -131,53 +145,8 @@ export function initFormSend () {
               // formOptions.headers = { Accept: 'application/json' }
               formOptions.body = new FormData(form)
             } else {
-              // Send withouth files, except googleScript tath convert to base64
-              let formData
-              if (googleScript) {
-                formData = new FormData()
-                const filePromises = []
-
-                // Add all inputs withouth type files
-                const formDataAux = new FormData(form)
-                for (const [key, value] of formDataAux.entries()) {
-                  if (!key.startsWith('📄')) {
-                    formData.append(key, value)
-                  }
-                }
-
-                // Add inputs type files
-                form.querySelectorAll('input[type="file"]').forEach(input => {
-                  if (input.files.length) {
-                    const files = Array.from(input.files)
-                    files.forEach(file => {
-                      const filePromise = new Promise((resolve, reject) => {
-                        // eslint-disable-next-line
-                        const reader = new FileReader()
-                        // When reading finishes
-                        reader.onloadend = () => {
-                          // If an error occurred, reader.error will defined
-                          if (reader.error) {
-                            formSubmitError(formMessage, `${formErrorFileOnload} <strong>${input.dataset.placeholder}</strong>: ${reader.error}`)
-                            reject(reader.error)
-                          } else {
-                            const base64File = reader.result
-                            formData.append(input.name, base64File)
-                            resolve()
-                          }
-                        }
-                        reader.readAsDataURL(file)
-                      })
-                      filePromises.push(filePromise)
-                    })
-                  } else {
-                    formData.append(input.name, input.value)
-                  }
-                })
-
-                await Promise.all(filePromises)
-              } else {
-                formData = new FormData(form)
-              }
+              // Send withouth files (googleScript convert to base64)
+              const formData = new FormData(form)
               formOptions.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
               formOptions.body = new URLSearchParams(formData).toString()
             }
@@ -199,7 +168,10 @@ export function initFormSend () {
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
+                // Reset
                 form.reset()
+                // Remove previews
+                form.querySelectorAll('.form__preview').forEach(e => { e.innerHTML = '' })
                 // Trigger change event manually (for form-show)
                 form.querySelectorAll('input, select, textarea').forEach(input => {
                   input.dispatchEvent(new Event('change', { bubbles: true }))

@@ -65,7 +65,6 @@ export function initIframePlayer () {
               const checkWindowObject = setInterval(() => {
                 if (window[windowObject] && window[windowObject].Player) {
                   clearInterval(checkWindowObject)
-                  // eslint-disable-next-line
                   players[id] = new window[windowObject].Player(iframe, {
                     events: {
                       onReady: () => {

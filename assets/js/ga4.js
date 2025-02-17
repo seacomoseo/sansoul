@@ -34,7 +34,6 @@ export function initGa4 () {
       }
     }
 
-    // eslint-disable-next-line
     gtag('event', 'contact', { id, type, label })
   }
 

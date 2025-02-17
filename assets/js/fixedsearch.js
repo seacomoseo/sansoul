@@ -26,7 +26,6 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
     // console.log(event); // DEBUG
     // Ctrl + / to show or hide Search
     // if (event.metaKey && event.which === 191) {
-    // eslint-disable-next-line
     if (event.ctrlKey && event.which === 191) {
       searchToggleFocus(e) // toggle visibility of search box
     }
@@ -130,7 +129,6 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
   Fetch some json without jquery
   -------------------------------------------------------------- */
   function fetchJSON (path, callback) {
-    // eslint-disable-next-line
     const httpRequest = new XMLHttpRequest()
     httpRequest.onreadystatechange = function () {
       if (httpRequest.readyState === 4) {

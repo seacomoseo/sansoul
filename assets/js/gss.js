@@ -7,7 +7,6 @@ export function initGss () {
     query: '[data-gss]',
     doStart: e => {
       const url = e.dataset.gss
-      // eslint-disable-next-line
       const xhr = new XMLHttpRequest()
       xhr.open('GET', url, true)
       xhr.onload = () => {

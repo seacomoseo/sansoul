@@ -55,7 +55,8 @@
 {{- end -}}
 
 {{- $form          := merge site.Data.styles.inputs (.form | default dict) -}}
-{{- $netlify_forms := and (not $form.action) (getenv "NETLIFY") -}}
+{{- $netlify_forms := false -}}
+{{/*  {{- $netlify_forms := and (not $form.action) (getenv "NETLIFY") -}}  */}}
 {{- $action_gss    := "https://script.google.com/macros/s/AKfycbzEd6cjH5eTjzVxDVk6x-3Q9QwUHDMWpR8V1Ij1g6IG7MYwpPM_epAGpxJUR1__ljrWMQ/exec" -}}
 {{- $action_def    := cond (not $netlify_forms) $action_gss (print "/" $form_id) -}}
 {{- $action        := $form.action | default $action_def -}}
@@ -82,6 +83,7 @@
       {{- $is_file_type = true -}}
     {{- end -}}
     {{- if or $is_file_type $formsubmit_co | and (not $googleScript) }} enctype="multipart/form-data"{{ end }}
+    {{- if $googleScript }} data-gas="true"{{ end }}
     action="{{ $action | base64Encode }}"
     target="_blank"
   {{- end -}}
@@ -101,13 +103,16 @@
     {{- end -}}
   {{- else if $googleScript -}}
     {{- with .form.email | default site.Params.email -}}
-      <input type="hidden" name="_bcc" value="{{ . | base64Encode }}">
+      <input type="hidden" name="_cc" value="{{ . | base64Encode }}">
     {{- end -}}
     <input type="hidden" name="_domain" value="{{ site.Params.domain }}">
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
   {{- else if $formsubmit_co -}}
+    {{- with .form.email | default site.Params.email -}}
+      <input type="hidden" name="_cc" value="{{ . | base64Encode }}">
+    {{- end -}}
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
@@ -214,7 +219,11 @@
         {{- end -}}
 
         {{- if eq $type "file" -}}
-          <label class="form__file">
+          {{- $form_file_label  := i18n "form_file_label" -}}
+          {{- if .multiple -}}
+            {{- $form_file_label = i18n "form_files_label" -}}
+          {{- end -}}
+          <label class="form__file" style="--form-file-label:'{{ $form_file_label }}'">
             {{- partial "components/link" (dict
               "class"     "form__file--button"
               "link"      "none"
@@ -341,6 +350,10 @@
         {{- with .icon -}}
           {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
         {{- end -}}
+      {{- end -}}
+
+      {{- if eq $type "file" -}}
+        <ol class="form__preview"></ol>
       {{- end -}}
 
     {{- if $form_item_wrap -}}

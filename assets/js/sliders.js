@@ -1,5 +1,3 @@
-import { scrollShot } from './scroll-shot'
-
 export function initSliders () {
   const sliders = document.querySelectorAll('.slider')
 
@@ -134,7 +132,6 @@ export function initSliders () {
             }
           })
         }
-        // eslint-disable-next-line
         const observerScrollChildren = new IntersectionObserver(callbackScrollChildren, {
           root: slider,
           rootMargin: '0% 0%',

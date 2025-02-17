@@ -14,7 +14,6 @@ export function initPreSave () {
       .replace(/-+$/, '')
   }
 
-  // eslint-disable-next-line
   CMS.registerEventListener({
     name: 'preSave',
     handler: ({ data, collection, field }) => {

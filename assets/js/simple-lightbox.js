@@ -20,7 +20,6 @@ export function initSimpleLightbox () {
         const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?((section|modal)--[\w-]+|menu).*$/, '$1') : ''
         const lbBox = lbGroup.closest('.box')
         const lbGroupBox = lbBox ? '.' + lbBox.classList.value.replace(/^.*?(box(--\d+)?).*$/, '$1').replace(' ', '.') : ''
-        // eslint-disable-next-line
         const localImages = new SimpleLightbox(`${lbGroupSection} ${lbGroupBox} [data-lightbox]`, { sourceAttr: 'data-lightbox' })
         // Gallery expand button open first child
         document.addEventListener('click', e => {

@@ -55,7 +55,6 @@ function getStatusColorNetlify (url) {
     .then(response => response.text())
     .then(svgText => {
       // Create a temporary SVG element to analyze the background color
-      // eslint-disable-next-line
       const parser = new DOMParser()
       const svgDoc = parser.parseFromString(svgText, 'image/svg+xml')
       const background = svgDoc.querySelector('path:nth-child(4)').getAttribute('fill')
