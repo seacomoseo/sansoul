@@ -211,9 +211,9 @@
             {{- $length  = "length" | safeHTMLAttr -}}
           {{- end -}}
         {{- end -}}
-        {{- $data  := "" | safeHTMLAttr -}}
-        {{- if .max -}}
-          {{- if eq $type "file" -}}
+        {{- $data      := "" | safeHTMLAttr -}}
+        {{- if eq $type "file" -}}
+          {{- if .max -}}
             {{- $data  = "data-" | safeHTMLAttr -}}
           {{- end -}}
         {{- end -}}
@@ -242,7 +242,7 @@
           {{- $a }} name="{{ $name }}"
           {{- $required }}
           {{- if not ($type | in (slice `file`)) }} placeholder="{{ $placeholder }}"{{ end }}
-          {{- if eq $type `file` }} data-placeholder="{{ $placeholder }}"{{ end }}
+          {{- if eq $type `file` }} data-placeholder="{{ $placeholder }}" data-basename="{{ .base_name }}"{{ end }}
           {{- if $onfocus }} onfocus="(this.type='{{ $type }}')" onblur="(this.type='text')"{{ end }}
           {{- with .accept }} accept="{{ . }}"{{ end }}
           {{- with .regex }} pattern="{{ . }}"{{ end }}

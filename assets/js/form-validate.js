@@ -36,7 +36,7 @@ export function formValid (form) {
     } else if (input.type === 'checkbox') {
       return input.checked
     } else if (input.type === 'file') {
-      return input.parentElement.querySelector('input:is(.form__item:has(.form__preview-item) *)')
+      return input.closest('.form__item:has(.form__preview-item)').querySelector('input')
     } else {
       return input.value
     }
@@ -48,8 +48,8 @@ export function formValid (form) {
       required = true
     } else if (input.dataset.requiredif) {
       input.dataset.requiredif.split(/\|\||&&/).forEach(requif => {
-        const inputIf = form.querySelector(`[name="${requif}"]`)
-        if (isInput(inputIf)) required = true
+        const inputIf = form.querySelector(`[name="${requif}"],[name="📄${requif}"]`)
+        if (inputIf && isInput(inputIf)) required = true
       })
     }
     const elementToStyle = input.classList.contains('form__geo') ? input.parentElement.children[0] : input

@@ -10,7 +10,7 @@ export function initFormShow () {
           const input = changed.target
           const nameShow = input.name.replace('📄', '')
           // Convert the NodeList to array to be able to iterate with for...of
-          const itemsShowIf = [...form.querySelectorAll(`[data-showif*="${nameShow}"]`)]
+          const itemsShowIf = [...form.querySelectorAll(`[data-showif*="{${nameShow}}"]`)]
           for (const itemShowIf of itemsShowIf) {
             let show = []
             const namesShowIf = itemShowIf.dataset.showif
@@ -30,7 +30,6 @@ export function initFormShow () {
                 } else {
                   add = inputShowOf.value
                 }
-                console.log('add: ', add)
                 show.push(!!add)
               }
             }
