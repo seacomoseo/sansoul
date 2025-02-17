@@ -64,7 +64,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   let fileName = file.name
   const isImage = base64File.startsWith('data:image')
   const isSVG = base64File.startsWith('data:image/svg')
-  
+
   // Si es imagen (y no SVG), comprimirla y obtener el nuevo base64
   if (isImage && !isSVG) {
     base64File = await new Promise((resolve, reject) => {
@@ -108,7 +108,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
       img.onerror = err => reject(err)
     })
   }
-  
+
   // Configura la previsualización según si es imagen o no
   if (isImage) {
     const blobUrl = URL.createObjectURL(compressedFile)
@@ -121,7 +121,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     previewMedia.classList.add('form__preview-file')
     previewMedia.append(file.name.replace(/^.+\.(.+)$/, '$1'))
   }
-  
+
   // Crea el input oculto para enviar el archivo (o su representación en texto)
   const fileInput = document.createElement('input')
   if (form.dataset.gas) {
@@ -137,7 +137,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     fileInput.attributes = input.attributes
   }
   fileInput.classList.add('display-none')
-  
+
   // Actualiza el placeholder con la información del archivo
   placeholder.innerHTML = `
     <i class="form__preview-media">${previewMedia.outerHTML}</i>
@@ -146,7 +146,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     ${closeIcon}
   `
   placeholder.appendChild(fileInput)
-  
+
   return base64File
 }
 
