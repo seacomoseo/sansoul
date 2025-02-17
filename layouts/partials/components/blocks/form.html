@@ -211,10 +211,12 @@
             {{- $length  = "length" | safeHTMLAttr -}}
           {{- end -}}
         {{- end -}}
+        {{- $max       := .max -}}
         {{- $data      := "" | safeHTMLAttr -}}
         {{- if eq $type "file" -}}
-          {{- if .max -}}
-            {{- $data  = "data-" | safeHTMLAttr -}}
+          {{- $data     = "data-" | safeHTMLAttr -}}
+          {{- if not $max -}}
+            {{- $max    = 1 -}}
           {{- end -}}
         {{- end -}}
 
@@ -247,7 +249,7 @@
           {{- with .accept }} accept="{{ . }}"{{ end }}
           {{- with .regex }} pattern="{{ . }}"{{ end }}
           {{- if ne .min nil }} min{{ $length }}="{{ .min }}"{{ end }}
-          {{- with .max }} {{ $data }}max{{ $length }}="{{ . }}"{{ end }}
+          {{- with $max }} {{ $data }}max{{ $length }}="{{ . }}"{{ end }}
           {{- if .multiple }} multiple{{ end -}}
         >
 
