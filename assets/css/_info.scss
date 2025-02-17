@@ -1,9 +1,9 @@
 #status {
   font-size: 1.5em;
   margin-block: 1rem;
-  @if $buttons-outline {
+  @if not $buttons-outline {
     .button[style] {
-      --similar-text: color-mix(in srgb, var(--similar) 25%, black);
+      --similar-text: color-mix(in srgb, var(--light) 25%, black);
     }
   }
   .loader,
