@@ -1,5 +1,4 @@
 {{- $box  := . -}}
-{{- $bgpc := .bgpc -}}
 
 {{/*  MERGE PARAMS  */}}
 {{- range .params -}}
@@ -30,6 +29,7 @@
 {{/*  BOX  */}}
 {{- with $box -}}
   {{- $align := .align -}}
+  {{- $bgcp  := .bgcp -}}
 
   {{- $main   := not .level -}}
   {{- $level  := .level | default (cond .header 1 (cond .modal 3 2)) -}}
@@ -82,12 +82,9 @@
     {{- $bg_color         := .color | default (cond .modal "white" "") -}}
     {{- $bg_image_src     := .bg -}}
 
-    {{- with $bg_color -}}
-      {{- if in (slice "similar" "invert") . -}}
-        {{- $bgpc = partial "functions/color-child" (dict "color" $bgpc "type" .) -}}
-        {{- $bg_color = $bgpc -}}
-      {{- end -}}
-    {{- end -}}
+    {{- $bgc     := partial "functions/color-background" (dict "child" $bg_color "parent" .bgcp) -}}
+    {{- $bgcp     = $bgc.parent -}}
+    {{- $bg_color = $bgc.child -}}
 
     {{- if .card -}}
       {{- $image_src       = "" -}}
@@ -259,6 +256,7 @@
         {{- partial "components/blocks/gallery" (merge
           (.gallery | default dict)
           (dict
+            "bgcp"      $bgcp
             "limages"   .limages
             "images"    .images
             "container" .container
@@ -274,7 +272,7 @@
       {{- partial "components/blocks/list" (merge
         .
         (dict
-          "bgpc"      $bgpc
+          "bgcp"      $bgcp
           "span_xl"   $span_xl
           "span_xs"   $span_xs
           "level"     $level
@@ -294,7 +292,10 @@
     {{ if .reviews }}
       {{- partial "components/blocks/reviews" (merge
         (.review | default dict)
-        (dict "reviews" .reviews)
+        (dict
+          "reviews" .reviews
+          "bgcp"    $bgcp
+        )
       ) -}}
     {{ end }}
 
@@ -305,7 +306,10 @@
 
     {{/*  CONTACT  */}}
     {{ if .contact }}
-      {{- partial "components/blocks/contact" . -}}
+      {{- partial "components/blocks/contact" (merge
+        .
+        (dict "bgcp" $bgcp)
+      ) -}}
     {{ end }}
 
     {{/*  FORM  */}}
@@ -331,7 +335,7 @@
       {{- partial "components/boxes/_" (merge
         .
         (dict
-          "bgpc"     $bgpc
+          "bgcp"     $bgcp
           "main"     $main
           "level"    $level
           "span_xl"  $span_xl

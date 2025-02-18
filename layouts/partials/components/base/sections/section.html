@@ -16,6 +16,10 @@
   {{- end -}}
 {{- end -}}
 
+{{- $bgc      := partial "functions/color-background" (dict "child" (cond $modal "black" .color) "parent" .bgcp) -}}
+{{- $bgcp     := $bgc.parent -}}
+{{- $bg_color := $bgc.child -}}
+
 {{ $container := .size
   | default (cond
     (.ph | default false)
@@ -25,6 +29,7 @@
 }}
 
 {{- $attr := partial "components/base/sections/attr" (merge . (dict
+  "color"  $bg_color
   "header" $header
   "footer" $footer
   "modal"  $modal
@@ -38,6 +43,7 @@
     {{- partial "components/bg" (merge
       .
       (dict
+        "color"     $bg_color
         "card"      nil
         "container" "fluid"
       )
@@ -59,7 +65,8 @@
       "header"        $header
       "footer"        $footer
       "modal"         $modal
-      "node"          (cond $modal .node           .box_node)
+      "bgcp"          $bgcp
+      "node"          (cond $modal .node          .box_node)
       "bg"            (cond $modal .bg            .box_bg)
       "alpha"         (cond $modal .alpha         .box_alpha)
       "parallax"      (cond $modal .parallax      .box_parallax)

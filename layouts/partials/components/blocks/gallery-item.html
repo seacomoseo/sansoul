@@ -7,9 +7,9 @@
   {{- $height := 100 -}}
   {{- with .image -}}
 
-    {{- if $image | findRE `\.(mp4|mov|avi|webm)` -}}{{/*  IS VIDEO  */}}
+    {{- if $image | findRE `\.(mp4|mov|avi|webm)` -}} {{- /*  IS VIDEO  */ -}}
 
-      {{/*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}  */}}
+      {{- /*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}  */ -}}
       {{- $poster := "" -}}
       {{- if in $image "poster=" -}}
         {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
@@ -32,7 +32,7 @@
     {{ else }}
 
       {{- with resources.Get (print "/media/" .) -}}
-        {{- if in $image ".svg" -}}{{/*  IS SVG  */}}
+        {{- if in $image ".svg" -}} {{- /*  IS SVG  */ -}}
           {{- $svg := (. | minify).Content }}
           {{- $view_box := $svg
             | replaceRE

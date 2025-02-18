@@ -46,8 +46,10 @@
       {{- with merge $review . -}}
 
         {{/*  REVIEW ITEM CLASS  */}}
+        {{- $bgc      := partial "functions/color-background" (dict "child" .color "parent" $.bgcp) -}}
+        {{- $color    := $bgc.child -}}
         {{- $bg_color := print
-          (cond (not .color) "" (print "bg-" .color))
+          (cond (not $color) "" (print "bg-" $color))
           (cond (not .image) "" " bg-image")
         -}}
         {{- $bg_gradient_color := "" }}
@@ -57,7 +59,7 @@
           {{- $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
         {{- end -}}
         {{- $bg         := cond (not $bg_color) "" "bg" -}}
-        {{- $shadow     := cond (not (.color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
+        {{- $shadow     := cond (not ($color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
 
         {{- $review_class := partial "functions/attr-delimit" (dict
           "attr"  "class"
@@ -72,7 +74,7 @@
         ) -}}
 
         {{/*  REVIEW ITEM STYLE  */}}
-        {{- $alpha := and (.alpha | and (ne .alpha 100)) (.color | or .gradient) -}}
+        {{- $alpha := and (.alpha | and (ne .alpha 100)) ($color | or .gradient) -}}
         {{- $alpha  = cond (not $alpha)        "" (print "--color-alpha:" .alpha) -}}
 
         {{ $review_style := partial "functions/attr-delimit" (dict

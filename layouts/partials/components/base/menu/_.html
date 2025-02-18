@@ -66,13 +66,10 @@
       <div class="menu__backover"></div>
 
       {{/*  CLASS  */}}
-      {{- $color := .color | default "white" -}}
-      {{- with $color -}}
-        {{- if in (slice "similar" "invert") . -}}
-          {{- $color = partial "functions/color-child" (dict "color" $.background.color "type" .) -}}
-        {{- end -}}
-      {{- end -}}
-      {{ $menu_class := print "menu bg bg-" $color }}
+      {{- $color      := .color | default "white" -}}
+      {{- $bgc        := partial "functions/color-background" (dict "child" $color "parent" $.background.color) -}}
+      {{- $color       = $bgc.child -}}
+      {{ $menu_class  := print "menu bg bg-" $color }}
       {{ if .gradient }}
         {{ $menu_class = print $menu_class " bg-gradient-" .gradient " bg-gradient-" (.gradient_type | default "linear-t") }}
       {{ end }}

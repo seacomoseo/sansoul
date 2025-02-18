@@ -1,10 +1,7 @@
 {{- with site.GetPage "cookies" -}}
-  {{- $color := $.menu.color | default "white" -}}
-  {{- with $color -}}
-    {{- if in (slice "similar" "invert") . -}}
-      {{- $color = partial "functions/color-child" (dict "color" $.background.color "type" .) -}}
-    {{- end -}}
-  {{- end -}}
+  {{- $color    := $.menu.color | default "white" -}}
+  {{- $bgc      := partial "functions/color-background" (dict "child" $color "parent" $.background.color) -}}
+  {{- $color     = $bgc.child -}}
   {{- $class    := print "cookies bg bg-" $color " content" -}}
   {{- $icon     := partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
   {{- $label_0  := i18n "cookies_question" -}}
