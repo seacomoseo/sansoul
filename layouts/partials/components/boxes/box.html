@@ -26,10 +26,16 @@
   {{- end -}}
 {{- end -}}
 
+{{/*  bgcp  */}}
+{{- with $box -}}
+  {{- $color := .color | default (cond .modal "white" (cond (not .card) "" "black")) -}}
+  {{- $bgc   := partial "functions/color-background" (dict "child" $color "parent" .bgcp) -}}
+  {{- $box    = merge . (dict "bgcp" $bgc.parent "color" $bgc.child) -}}
+{{- end -}}
+
 {{/*  BOX  */}}
 {{- with $box -}}
   {{- $align := .align -}}
-  {{- $bgcp  := .bgcp -}}
 
   {{- $main   := not .level -}}
   {{- $level  := .level | default (cond .header 1 (cond .modal 3 2)) -}}
@@ -79,21 +85,15 @@
   {{- if $box_wrap -}}
 
     {{- $image_src        := .image -}}
-    {{- $bg_color         := .color | default (cond .modal "white" "") -}}
     {{- $bg_image_src     := .bg -}}
-
-    {{- $bgc     := partial "functions/color-background" (dict "child" $bg_color "parent" .bgcp) -}}
-    {{- $bgcp     = $bgc.parent -}}
-    {{- $bg_color = $bgc.child -}}
 
     {{- if .card -}}
       {{- $image_src       = "" -}}
-      {{- $bg_color        = cond (not .color) "black" .color -}}
       {{- if not .bg -}}
         {{- $bg_image_src  = .image -}}
       {{- end -}}
     {{- end -}}
-    {{- $bg        := $bg_color | or .gradient | or $bg_image_src -}}
+    {{- $bg        := .color | or .gradient | or $bg_image_src -}}
 
     {{- $shadow    := $bg | and (not .hide_shadow) -}}
     {{- $radius    := true -}}
@@ -108,7 +108,7 @@
     {{/*  ATTRIBUTES  */}}
     {{- $box_attr  := partial "components/boxes/attr" (merge . (dict
       "main"         $main
-      "bg_color"     $bg_color
+      "bg_color"     .color
       "bg_image_src" $bg_image_src
       "bg"           $bg
       "image_src"    $image_src
@@ -123,7 +123,6 @@
 
       {{/*  BACKGROUND  */}}
       {{- partial "components/bg" (merge . (dict
-        "color"    $bg_color
         "bg"       $bg_image_src
         "shadow"   $shadow
         "box"      true
@@ -256,7 +255,7 @@
         {{- partial "components/blocks/gallery" (merge
           (.gallery | default dict)
           (dict
-            "bgcp"      $bgcp
+            "bgcp"      .bgcp
             "limages"   .limages
             "images"    .images
             "container" .container
@@ -272,7 +271,6 @@
       {{- partial "components/blocks/list" (merge
         .
         (dict
-          "bgcp"      $bgcp
           "span_xl"   $span_xl
           "span_xs"   $span_xs
           "level"     $level
@@ -294,7 +292,7 @@
         (.review | default dict)
         (dict
           "reviews" .reviews
-          "bgcp"    $bgcp
+          "bgcp"    .bgcp
         )
       ) -}}
     {{ end }}
@@ -306,10 +304,7 @@
 
     {{/*  CONTACT  */}}
     {{ if .contact }}
-      {{- partial "components/blocks/contact" (merge
-        .
-        (dict "bgcp" $bgcp)
-      ) -}}
+      {{- partial "components/blocks/contact" . -}}
     {{ end }}
 
     {{/*  FORM  */}}
@@ -335,7 +330,6 @@
       {{- partial "components/boxes/_" (merge
         .
         (dict
-          "bgcp"     $bgcp
           "main"     $main
           "level"    $level
           "span_xl"  $span_xl

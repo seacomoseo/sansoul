@@ -78,20 +78,22 @@
 
         {{ $parent  := dict }}
         {{ if and (not .list_pages) (not .main) }}
-          {{ $parent = dict
-            "uppercase"   $box.uppercase
-            "underline"   $box.underline
-            "icon_type"   $box.icon_type
-            "icon_size"   $box.icon_size
-            "icon_color"  $box.icon_color
-            "ratio"       $box.ratio
-            "contain"     $box.contain
-            "border"      $box.border
-            "inset"       $box.inset
-            "grayscale"   $box.grayscale
-            "hide_shadow" $box.hide_shadow
-            "hide_radius" $box.hide_radius
-          }}
+          {{ with $box }}
+            {{ $parent = dict
+              "uppercase"   .uppercase
+              "underline"   .underline
+              "icon_type"   .icon_type
+              "icon_size"   .icon_size
+              "icon_color"  .icon_color
+              "ratio"       .ratio
+              "contain"     .contain
+              "border"      .border
+              "inset"       .inset
+              "grayscale"   .grayscale
+              "hide_shadow" .hide_shadow
+              "hide_radius" .hide_radius
+            }}
+          {{ end }}
         {{ end }}
 
         {{ range $key, $value := $boxes }}
@@ -103,6 +105,7 @@
             (dict
               "level"       $level
               "key"         $key
+              "bgcp"        $.bgcp
               "container"   $.container
               "span_xl"     $columns.span_xl
               "span_xs"     $columns.span_xs

@@ -1,11 +1,10 @@
 {{- $show := cond (not site.Data.config.others.show) "" " show" -}}
-{{- $box  := . -}}
 
 {{/*  DATA  */}}
 {{- with .contact -}}
   <div class="contact box__block {{- $show }}">
     {{- range . -}}
-      {{- with merge (dict "button" $box.button "font_alt" $box.font_alt) . -}}
+      {{- with merge (dict "button" $.button "font_alt" $.font_alt) . -}}
 
         {{- $full := cond (not .full) "" " contact__full" -}}
 

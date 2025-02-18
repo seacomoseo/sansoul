@@ -89,6 +89,11 @@
     "body_class" $body_class
   )) -}}
 
+  {{/*  SECTIONS  */}}
+  {{- $sections_all := partial "components/base/sections/_" dict -}}
+  {{- $sections     := where $sections_all "id" "ne" "footer" -}}
+  {{- $footer       := index (last 1 $sections_all) 0 -}}
+
   {{/*  HEAD  */}}
   <head>
     {{- partial "components/base/head" . -}}
@@ -109,11 +114,18 @@
 
     {{/*  MAIN  */}}
     <main>
-      {{ partial "components/base/sections/_" dict }}
+      {{ range $key, $value := $sections }}
+        {{/* SECTION  */}}
+        {{- partial "components/base/sections/section" (merge . (dict "key" $key)) -}}
+        {{/*  MODALS  */}}
+        {{- range $k, $v := .modals -}}
+          {{- partial "components/base/sections/section" (merge . (dict "key" $key "k" $k)) -}}
+        {{- end -}}
+      {{ end }}
     </main>
 
     {{/*  FOOTER  */}}
-    {{ partial "components/base/sections/_" (dict "footer" true) }}
+    {{ partial "components/base/sections/section" (merge $footer (dict "key" 0)) }}
 
     {{/*  PRE BODY END  */}}
     {{ partial "components/cookies"      $params         }}
