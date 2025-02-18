@@ -1,4 +1,5 @@
-{{- $box := . -}}
+{{- $box  := . -}}
+{{- $bgpc := .bgpc -}}
 
 {{/*  MERGE PARAMS  */}}
 {{- range .params -}}
@@ -80,6 +81,14 @@
     {{- $image_src        := .image -}}
     {{- $bg_color         := .color | default (cond .modal "white" "") -}}
     {{- $bg_image_src     := .bg -}}
+
+    {{- with $bg_color -}}
+      {{- if in (slice "similar" "invert") . -}}
+        {{- $bgpc = partial "functions/color-child" (dict "color" $bgpc "type" .) -}}
+        {{- $bg_color = $bgpc -}}
+      {{- end -}}
+    {{- end -}}
+
     {{- if .card -}}
       {{- $image_src       = "" -}}
       {{- $bg_color        = cond (not .color) "black" .color -}}
@@ -265,6 +274,7 @@
       {{- partial "components/blocks/list" (merge
         .
         (dict
+          "bgpc"      $bgpc
           "span_xl"   $span_xl
           "span_xs"   $span_xs
           "level"     $level
@@ -321,6 +331,7 @@
       {{- partial "components/boxes/_" (merge
         .
         (dict
+          "bgpc"     $bgpc
           "main"     $main
           "level"    $level
           "span_xl"  $span_xl

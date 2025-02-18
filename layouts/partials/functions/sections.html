@@ -55,6 +55,7 @@
             (dict
               "modal" true
               "id"    (partial "functions/id-by-title" .)
+              "bgpc"  "dark"
             )
           )
         }}
@@ -76,6 +77,7 @@
     ($alternate | default dict)
     .
     (dict "modals" $modals)
+    (dict "bgpc" ($params.background.color | default "light"))
     (dict "id" (partial "functions/id-by-title" .))
     (cond (not $key) (dict "id" "header") dict)
   ) }}

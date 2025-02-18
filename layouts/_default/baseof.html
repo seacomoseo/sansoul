@@ -105,7 +105,7 @@
     {{ partial "components/base/logo" $params }}
 
     {{/*  MENU  */}}
-    {{ partial "components/base/menu/_" $params.menu }}
+    {{ partial "components/base/menu/_" $params }}
 
     {{/*  MAIN  */}}
     <main>
@@ -116,7 +116,7 @@
     {{ partial "components/base/sections/_" (dict "footer" true) }}
 
     {{/*  PRE BODY END  */}}
-    {{ partial "components/cookies"      $params.menu    }}
+    {{ partial "components/cookies"      $params         }}
     {{ partial "components/callnow"      $params.callnow }}
     {{ partial "components/up"           .               }}
     {{ partial "components/base/scripts" .               }}

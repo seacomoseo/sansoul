@@ -1,0 +1,24 @@
+{{/* partial "functions/background-contrast" (dict "color" "#6g23f4" "invert" true) */}}
+{{ $return := "" }}
+{{ $invert := .invert | default true }}
+
+{{/* Extract RGB components from the hex color string */}}
+{{ $rStr := substr .color 1 3 }}
+{{ $gStr := substr .color 3 5 }}
+{{ $bStr := substr .color 5 7 }}
+
+{{/* Convert hex strings to integer values */}}
+{{ $r := int (printf "0x%s" $rStr) }}
+{{ $g := int (printf "0x%s" $gStr) }}
+{{ $b := int (printf "0x%s" $bStr) }}
+
+{{/* Calculate brightness using the formula: (R*299 + G*587 + B*114) / 1000 */}}
+{{ $brightness := div (add (mul $r 299) (mul $g 587) (mul $b 114)) 1000 }}
+
+{{/* If brightness is less than 128 (i.e. background is dark), return lighter color; else, return darker color */}}
+{{ if lt $brightness 128 }}
+  {{ $return = cond $invert "dark" "light" }}
+{{ else }}
+  {{ $return = cond $invert "light" "dark" }}
+{{ end }}
+{{ return $return }}

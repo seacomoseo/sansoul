@@ -8,8 +8,8 @@ translationKey: single
 seo: null # string
 description: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
 background:
-  color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
-  gradient: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
+  color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+  gradient: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
   gradient_type: null # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
   bg: null # string
   alpha: 0 # [ 0.00 - 1.00 ]
@@ -22,7 +22,7 @@ menu:
   logo_align: null # [ left, center, right ]
   size: null # [ xs, sm, md, lg, xl, fluid ]
   transparent: true
-  color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black ]
+  color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
   gradient: null # ¿?
   gradient_type: null # ¿?
   show_sections: true
