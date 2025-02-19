@@ -9,6 +9,7 @@ const clearCacheButton = document.querySelector('.rebuild > *:nth-child(2)')
 let statusColor
 let counter = 0
 let isRunning = false
+let statusInterval
 let counterInterval
 
 const timer = isBuilding => {
@@ -46,7 +47,7 @@ function setStatus (statusColor) {
   if (rebuildButton) rebuildButton.disabled = isBuilding
   if (clearCacheButton) clearCacheButton.disabled = isBuilding
   // Change deploy status color
-  deployStatusButton.style.setProperty('--similar', statusColor)
+  deployStatusButton.style.setProperty('--link', statusColor)
   timer(isBuilding)
 }
 
@@ -81,15 +82,28 @@ function getStatusColorCloudflare (url) {
 }
 
 if (deployStatus && rebuildButton) {
-  checkStatus()
-  // Call the function every 5 seconds
-  setInterval(checkStatus, netlify ? 1000 : 5000)
-
   document.addEventListener('click', e => {
-    const rebuildTarget = e.target.closest('.rebuild:not([disabled])')
-    if (rebuildTarget) rebuild()
-    const clearCacheTarget = e.target.closest('.clear-cache:not([disabled])')
-    if (clearCacheTarget) rebuildCloudflare({ cache: true })
+    const rebuildTarget = e.target.closest('.rebuild > *:nth-child(1)')
+    const clearCacheTarget = e.target.closest('.rebuild > *:nth-child(2)')
+    const statusNotRuningTarget = e.target.closest('#status .button:not([style])')
+    const statusRuningTarget = e.target.closest('#status .button[style]')
+    if (rebuildTarget || clearCacheTarget || statusNotRuningTarget) {
+      deployStatusButton.style.setProperty('--link', 'var(--light)')
+      if (rebuildButton) rebuildButton.disabled = true
+      if (clearCacheButton) clearCacheButton.disabled = true
+      if (!statusInterval) statusInterval = setInterval(checkStatus, netlify ? 1000 : 5000)
+    }
+    if (rebuildTarget) {
+      rebuild()
+    } else if (clearCacheTarget) {
+      rebuildCloudflare({ cache: true })
+    } else if (statusRuningTarget) {
+      clearInterval(statusInterval)
+      statusInterval = null
+      deployStatusButton.removeAttribute('style')
+      if (rebuildButton) rebuildButton.disabled = false
+      if (clearCacheButton) clearCacheButton.disabled = false
+    }
   })
 
   function rebuild () {

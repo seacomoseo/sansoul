@@ -1,9 +1,13 @@
 #status {
   font-size: 1.5em;
   margin-block: 1rem;
-  @if not $buttons-outline {
-    .button[style] {
-      --similar-text: color-mix(in srgb, var(--light) 25%, black);
+  .button[style] {
+    --base: var(--link);
+    @if not $buttons-outline {
+      --base-text: color-mix(in srgb, var(--light) 25%, black);
+    }
+    &:hover {
+      opacity: .75;
     }
   }
   .loader,
@@ -26,17 +30,26 @@
 .status__label {
   display: none;
 }
-#status [style*='#BEF9C6'] i > .status__label--success,
-#status [style*='#F6E0A5'] i > .status__label--building,
-#status [style*='#D2D5DB'] i > .status__label--canceled,
-#status [style*='#FFBDBA'] i > .status__label--error,
-#status [style*='tomato']  i > .status__label--whaiting,
-#status :not([style])      i > .status__label--whaiting {
+#status [style*='#BEF9C6']:not(:hover) i > .status__label--success,
+#status [style*='#F6E0A5']:not(:hover) i > .status__label--building,
+#status [style*='#D2D5DB']:not(:hover) i > .status__label--canceled,
+#status [style*='#FFBDBA']:not(:hover) i > .status__label--error,
+#status [style*='tomato']:not(:hover)  i > .status__label--whaiting,
+#status [style*='--light']:not(:hover) i > .status__label--whaiting,
+#status .button:not([style])           i > .status__label--check,
+#status .button[style]:hover           i > .status__label--end {
   display: inline;
 }
 #deploy-time {
   text-transform: lowercase;
   opacity: .75;
+}
+
+#status .button:not([style]) {
+  > svg,
+  .loader {
+    display: none;
+  }
 }
 
 .loader {
@@ -72,13 +85,13 @@
 @keyframes spin-loader {
   0%,
   100% {
-    box-shadow: .2em 0px 0 0px currentcolor;
+    box-shadow: .2em 0 0 0 currentcolor;
   }
   12% {
     box-shadow: .2em .2em 0 0 currentcolor;
   }
   25% {
-    box-shadow: 0 .2em 0 0px currentcolor;
+    box-shadow: 0 .2em 0 0 currentcolor;
   }
   37% {
     box-shadow: -.2em .2em 0 0 currentcolor;
@@ -90,7 +103,7 @@
     box-shadow: -.2em -.2em 0 0 currentcolor;
   }
   75% {
-    box-shadow: 0px -.2em 0 0 currentcolor;
+    box-shadow: 0 -.2em 0 0 currentcolor;
   }
   87% {
     box-shadow: .2em -.2em 0 0 currentcolor;
