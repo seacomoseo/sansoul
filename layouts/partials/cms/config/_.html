@@ -126,10 +126,10 @@
 {{ with $publish_mode }}
   {{ $cms_config = merge $cms_config (dict "publish_mode" .) }}
 {{ end }}
+{{/*  
 {{ $cms_config = print `aux: ` $cms_config | unmarshal }}
 {{ $cms_config = merge $cms_config.aux (dict "_variables" nil) }}
 {{ $cms_config = $cms_config | jsonify }}
-{{/*  
 {{ $cms_config = $cms_config.aux| jsonify (cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ")) }}
 */}}
 {{ return $cms_config }}

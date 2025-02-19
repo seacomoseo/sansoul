@@ -98,6 +98,8 @@ if (deployStatus && rebuildButton) {
     } else if (clearCacheTarget) {
       rebuildCloudflare({ cache: true })
     } else if (statusRuningTarget) {
+      statusRuningTarget.tabIndex = -1
+    } else if (statusRuningTarget) {
       clearInterval(statusInterval)
       statusInterval = null
       deployStatusButton.removeAttribute('style')
