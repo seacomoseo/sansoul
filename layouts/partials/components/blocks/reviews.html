@@ -7,24 +7,24 @@
 <div class="reviews {{ if .slider }}slider__track{{ else }}box__block{{ end }}">
 
   {{/*  REVIEWS CLASS  */}}
-  {{- $slider        := cond (not .slider) "" " slider__items" -}}
-  {{- $show          := cond (not site.Data.config.others.show) "" " show" -}}
-  {{- $columns_class := print `class="boxes` $slider $show `"` -}}
+  {{- $slider     := cond (not .slider) "" " slider__items" -}}
+  {{- $show       := cond (not site.Data.config.others.show) "" " show" -}}
+  {{- $cols_class := print `class="boxes` $slider $show `"` -}}
 
 
   {{/*  REVIEWS STYLE  */}}
-  {{- $columns_max   := .columns | default 1 -}}
-  {{- if eq .columns 0 -}}
-    {{- $columns_max  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- $cols_max   := .cols | default 1 -}}
+  {{- if eq .cols 0 -}}
+    {{- $cols_max  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
   {{- end -}}
-  {{- $columns_min   := .columns_min | default 1 -}}
-  {{- if eq .columns_min 0 -}}
-    {{- $columns_min  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- $cols_min   := .cols_min | default 1 -}}
+  {{- if eq .cols_min 0 -}}
+    {{- $cols_min  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
   {{- end -}}
-  {{- $col_max := cond (eq $columns_max 1) "" (print "--columns-max:" $columns_max) -}}
-  {{- $col_min := cond (eq $columns_min 1) "" (print "--columns-min:" $columns_min) -}}
+  {{- $col_max := cond (eq $cols_max 1) "" (print "--cols-max:" $cols_max) -}}
+  {{- $col_min := cond (eq $cols_min 1) "" (print "--cols-min:" $cols_min) -}}
 
-  {{ $columns_style := partial "functions/attr-delimit" (dict
+  {{ $cols_style := partial "functions/attr-delimit" (dict
     "attr"    "style"
     "delimit" ";"
     "array"   (slice
@@ -36,8 +36,8 @@
   {{/*  REVIEWS ATTRIBUTES JOIN  */}}
   {{ $attr := partial "functions/attr-delimit" (dict
     "array" (slice
-      $columns_class
-      $columns_style
+      $cols_class
+      $cols_style
     )
   ) }}
   

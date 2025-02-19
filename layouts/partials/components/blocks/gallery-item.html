@@ -1,7 +1,7 @@
 {{- $style_width  := "" -}}
 {{- $style_height := "" -}}
 {{- $image        := .image -}}
-{{- $columns      := .columns | default 2 -}}
+{{- $cols         := .cols | default 2 -}}
 {{- if eq .type "rows" -}}
   {{- $width  := 200 -}}
   {{- $height := 100 -}}
@@ -51,7 +51,7 @@
     {{ end }}
 
   {{- end -}}
-  {{- $style_width  = lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $columns)) 16) -}}
+  {{- $style_width  = lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}
   {{- $style_height = lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}
 {{- end -}}
 

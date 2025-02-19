@@ -9,16 +9,16 @@
 {{ $max   := 1 }}
 {{ $min   := 1 }}
 {{ with .each }}
-  {{ $max  = .columns     | default 1 }}
-  {{ $min  = .columns_min | default 1 }}
-  {{ if eq .columns 0 }}
+  {{ $max  = .cols     | default 1 }}
+  {{ $min  = .cols_min | default 1 }}
+  {{ if eq .cols 0 }}
     {{ $span  := 0 }}
     {{ range $items }}
       {{ $span = add $span (.span | default .span_min | default 1) }}
     {{ end }}
     {{ $max  = cond (le $span 6) $span 3 }}
   {{ end }}
-  {{ if eq .columns_min 0 }}
+  {{ if eq .cols_min 0 }}
     {{ $span  := 0 }}
     {{ range $items }}
       {{ $span = add $span (.span_min | default 1) }}

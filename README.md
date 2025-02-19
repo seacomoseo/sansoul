@@ -42,7 +42,7 @@
     hide_categories: true
     reading_time: true
     button: hide
-  - columns: 3
+  - cols: 3
     color: white
     decline: true
     inset: true
@@ -86,14 +86,14 @@
 - [ ] Rehuse `boxes` partial in `reviews`
 - [ ] search template
 - [ ] `search.html`
-- [ ] `.columns--gap-0`
+- [ ] `.cols--gap-0`
 - [ ] cp `data/templates` > `themes/sansoul/data/templates`
 - [ ] Reset `cookies`.md
 - [ ] Reset `admin`.md
 - [ ] Check `forms` `actions`
 - [ ] Check comments
 - [ ] Check Google Translate ofuscate links and la propia traducción
-- [ ] ¿Remove `columns` and `columns_min`? > Only `span` and `span_min`?
+- [ ] ¿Remove `cols` and `cols_min`? > Only `span` and `span_min`?
 - [ ] `styles.performance`
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?

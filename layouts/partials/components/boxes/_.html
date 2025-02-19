@@ -1,16 +1,16 @@
-{{- $columns := partial "functions/columns" (dict
+{{- $cols := partial "functions/columns" (dict
   "each"    .box
   "items"   .boxes
   "span_xl" .span_xl
   "span_xs" .span_xs
 ) -}}
-{{- $boxes   := $columns.items -}}
+{{- $boxes   := $cols.items -}}
 {{- $box     := . -}}
 {{- $level   := .level -}}
 
 {{- $boxes_wrap  := or
-  (and (ne .box.columns nil)     (ne .box.columns 1))
-  (and (ne .box.columns_min nil) (ne .box.columns_min 1))
+  (and (ne .box.cols nil)     (ne .box.cols 1))
+  (and (ne .box.cols_min nil) (ne .box.cols_min 1))
 -}}
 
 {{- with .box -}}
@@ -34,7 +34,7 @@
       "attr"  "class"
       "array" (slice
         "boxes"
-        (cond (or (gt $columns.max 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
+        (cond (or (gt $cols.max 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
         (cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction))
         (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
         (cond (not .align_y) "" (print "align-items-" .align_y))
@@ -49,11 +49,11 @@
       "attr"    "style"
       "delimit" ";"
       "array"   (slice
-        (cond (eq $columns.max 1) "" (print "--columns-max:" $columns.max))
-        (cond (eq $columns.min 1) "" (print "--columns-min:" $columns.min))
-        (cond (eq .gap nil)       "" (print "--columns-gap-max:" .gap))
-        (cond (eq .gap_min nil)   "" (print "--columns-gap-min:" .gap_min))
-        (cond (eq .gap_ny nil)    "" (print "--columns-gap-ny:"  .gap_ny))
+        (cond (eq $cols.max 1)  "" (print "--cols-max:" $cols.max))
+        (cond (eq $cols.min 1)  "" (print "--cols-min:" $cols.min))
+        (cond (eq .gap nil)     "" (print "--cols-gap-max:" .gap))
+        (cond (eq .gap_min nil) "" (print "--cols-gap-min:" .gap_min))
+        (cond (eq .gap_ny nil)  "" (print "--cols-gap-ny:"  .gap_ny))
       )
     ) }}
 
@@ -103,18 +103,18 @@
             $.box
             .
             (dict
-              "level"       $level
-              "key"         $key
-              "bgcp"        $.bgcp
-              "container"   $.container
-              "span_xl"     $columns.span_xl
-              "span_xs"     $columns.span_xs
-              "section"     $.section
-              "first"       $.first
-              "footer"      $.footer
-              "columns"     $columns.max
-              "columns_min" $columns.min
-              "box_wrap"    $boxes_wrap
+              "level"     $level
+              "key"       $key
+              "bgcp"      $.bgcp
+              "container" $.container
+              "span_xl"   $cols.span_xl
+              "span_xs"   $cols.span_xs
+              "section"   $.section
+              "first"     $.first
+              "footer"    $.footer
+              "cols"      $cols.max
+              "cols_min"  $cols.min
+              "box_wrap"  $boxes_wrap
             )
           ) }}
         {{ end }}

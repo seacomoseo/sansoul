@@ -2,20 +2,20 @@
 .boxes {
   display: flex;
 
-  --columns-min: 1;
-  --columns-max: var(--columns-min, 1);
+  --cols-min: 1;
+  --cols-max: var(--cols-min, 1);
 
-  @include fluid-size(--columns-gap-max-default, 1, 1, 2);
-  --columns-gap-max: var(--columns-gap-min, var(--columns-gap-max-default, 1));
+  @include fluid-size(--cols-gap-max-default, 1, 1, 2);
+  --cols-gap-max: var(--cols-gap-min, var(--cols-gap-max-default, 1));
 
-  @include fluid-size(--gap-width, 1em, var(--columns-gap-min, 1), var(--columns-gap-max));
+  @include fluid-size(--gap-width, 1em, var(--cols-gap-min, 1), var(--cols-gap-max));
   column-gap: var(--gap-width);
-  --columns-gap-ny: 1;
-  --columns-gap-y: calc(var(--gap-width) * var(--columns-gap-ny));
-  row-gap: var(--columns-gap-y);
+  --cols-gap-ny: 1;
+  --cols-gap-y: calc(var(--gap-width) * var(--cols-gap-ny));
+  row-gap: var(--cols-gap-y);
 
   &:not(:has(> .bg)) {
-    --columns-gap-ny: 2;
+    --cols-gap-ny: 2;
   }
   &:not([class*="justify"]) {
     justify-content: center;
@@ -34,13 +34,13 @@
 .boxes--bottom,
 .boxes--radius,
 .slider__items {
-  @include fluid-size(--columns, 1, var(--columns-min), var(--columns-max));
-  --column-width: calc(100cqw / var(--columns));
+  @include fluid-size(--cols, 1, var(--cols-min), var(--cols-max));
+  --col-width: calc(100cqw / var(--cols));
 
   // gap per column (gc) = gap width * gap number / columns number
-  --gc: calc(var(--gap-width) * (var(--columns) - 1) / var(--columns));
+  --gc: calc(var(--gap-width) * (var(--cols) - 1) / var(--cols));
 
-  --box-w: calc(var(--column-width) - var(--gc));
+  --box-w: calc(var(--col-width) - var(--gc));
   --box-width: var(--box-w);
 
   --box-padding-min: 1;
@@ -54,13 +54,13 @@
     order: var(--order, unset);
   }
   > .box {
-    --columns: 1;
+    --cols: 1;
   }
 }
 
 // Default padding and gap when columns is small (> 2 and container <= sm)
 .boxes--sm {
-  --columns-gap-max-default: 1;
+  --cols-gap-max-default: 1;
   --box-padding-min: 1;
 }
 
@@ -73,12 +73,12 @@
   display: block;
   columns: var(--box-width);
   &:not(.gallery-wrap *) {
-    margin-bottom: calc(0em - var(--columns-gap-y));
+    margin-bottom: calc(0em - var(--cols-gap-y));
   }
   > * {
     break-inside: avoid;
     margin-inline: auto; // is not posible align and justify items, grow is recomended
-    margin-bottom: var(--columns-gap-y);
+    margin-bottom: var(--cols-gap-y);
   }
 }
 .boxes--top {
@@ -90,6 +90,6 @@
   @include radius(var(--box-padding));
 }
 
-.section--full.ph .columns--gap-0 {
+.section--full.ph .cols--gap-0 {
   min-height: var(--full-height-section, 100lvh);
 }

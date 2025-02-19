@@ -16,8 +16,8 @@
       */}}
     </div>
     {{- $list  := site.Data.types.all.template.list -}}
-    {{- $class := print "boxes boxes--columns-" ($list.columns | default 3) -}}
-    {{- with $list.columns_min }}
+    {{- $class := print "boxes boxes--cols-" ($list.cols | default 3) -}}
+    {{- with $list.cols_min }}
       {{- $class = print $class " boxes--min-" . -}}
     {{- end -}}
     <div id="search__results" class="{{ $class }}"></div>
