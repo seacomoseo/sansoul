@@ -30,14 +30,14 @@
 .status__label {
   display: none;
 }
-#status [style*='#BEF9C6']:not(:hover)               i > .status__label--success,
-#status [style*='#F6E0A5']:not(:hover)               i > .status__label--building,
-#status [style*='#D2D5DB']:not(:hover)               i > .status__label--canceled,
-#status [style*='#FFBDBA']:not(:hover)               i > .status__label--error,
-#status [style*='tomato']:not(:hover)                i > .status__label--whaiting,
+#status [style*='#BEF9C6']/*:not(:hover)*/               i > .status__label--success,
+#status [style*='#F6E0A5']/*:not(:hover)*/               i > .status__label--building,
+#status [style*='#D2D5DB']/*:not(:hover)*/               i > .status__label--canceled,
+#status [style*='#FFBDBA']/*:not(:hover)*/               i > .status__label--error,
+#status [style*='tomato']/*:not(:hover)*/                i > .status__label--whaiting,
 #status [style*='--light']                           i > .status__label--whaiting,
-#status .button:not([style])                         i > .status__label--check,
-#status .button[style]:not([style*='--light']):hover i > .status__label--end {
+#status .button:not([style])                         i > .status__label--check/*,
+#status .button[style]:not([style*='--light']):hover i > .status__label--end*/ {
   display: inline;
 }
 #deploy-time {
