@@ -48,7 +48,7 @@ export function formValid (form) {
       required = true
     } else if (input.dataset.requiredif) {
       input.dataset.requiredif.split(/\|\||&&/).forEach(requif => {
-        const inputIf = form.querySelector(`[name="${requif}"],[name="📄${requif}"]`)
+        const inputIf = form.querySelector(`[name="${requif}"]`)
         if (inputIf && isInput(inputIf)) required = true
       })
     }

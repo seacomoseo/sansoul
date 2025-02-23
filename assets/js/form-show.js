@@ -8,7 +8,7 @@ export function initFormShow () {
         // Mark the callback as async to be able to use await
         form.addEventListener('change', /* async */ changed => {
           const input = changed.target
-          const nameShow = input.name.replace('📄', '')
+          const nameShow = input.name
           // Convert the NodeList to array to be able to iterate with for...of
           const itemsShowIf = [...form.querySelectorAll(`[data-showif*="{${nameShow}}"]`)]
           for (const itemShowIf of itemsShowIf) {
@@ -18,7 +18,7 @@ export function initFormShow () {
             const splitNames = namesShowIf.split(/\|\||&&/)
             for (const nameShowOf of splitNames) {
               const nameShowOfClean = nameShowOf.replace(/^.|.$/g, '')
-              const inputShowOf = form.querySelector(`[name="${nameShowOfClean}"],[name="📄${nameShowOfClean}"]`)
+              const inputShowOf = form.querySelector(`[name="${nameShowOfClean}"]`)
               if (inputShowOf) {
                 let add
                 if (inputShowOf.type === 'checkbox') {

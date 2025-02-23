@@ -66,13 +66,43 @@
 {{- $inputs_fill   := cond (not $form.fill) "" " form--fill-inputs" -}}
 {{- $labels_out    := cond (not $form.labels_out) "" " form--labels-out" -}}
 
+{{- $provider      := "" -}}
+{{- if $netlify_forms -}}
+  {{- $provider     = "ntlf" -}}
+{{- else if $googleScript -}}
+  {{- $provider     = "gas" -}}
+{{- else if $formsubmit_co -}}
+  {{- $provider     = "fsc" -}}
+{{- end -}}
+
+{{- $headers := slice (dict "name" (i18n "form_timestamp")) (dict "name" "URL") -}}
+{{- if $googleScript -}}
+  {{- range .inputs -}}
+    {{- $is_input := in (slice "text" "email" "tel" "number" "date" "time" "textarea" "geo" "select" "radio" "checkbox" "file" "hidden") .type -}}
+    {{- $isnt_    := not (hasPrefix (.name | default .label) "_") -}}
+    {{- if and $is_input $isnt_ -}}
+      {{- if eq .type "checkbox" -}}
+        {{- range .options -}}
+          {{- $headers = $headers | append (dict "name" (.value | default .option)) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $header := (dict "name" (.name | default .label)) -}}
+        {{- if eq .type "file" -}}
+          {{- $header = merge $header (dict "type" .type) -}}
+        {{- end -}}
+        {{- $headers = $headers | append $header -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 
 {{/*  HEAD  */}}
 
 <form
   id="{{ $form_id }}"
   class="form {{- $inputs_fill }} {{- $labels_out }} box__block {{- $show }}"
-  method="post"
+  method="POST"
   {{- if .shortcode -}}
     {{- if $netlify_forms }} netlify{{ end }}
     name="{{ $form_id }}"
@@ -83,7 +113,7 @@
       {{- $is_file_type = true -}}
     {{- end -}}
     {{- if or $is_file_type $formsubmit_co | and (not $googleScript) }} enctype="multipart/form-data"{{ end }}
-    {{- if $googleScript }} data-gas="true"{{ end }}
+    {{- with $provider }} data-prov="{{ . }}"{{ end }}
     action="{{ $action | base64Encode }}"
     target="_blank"
   {{- end -}}
@@ -102,6 +132,9 @@
       <input type="hidden" name="url" value="{{ $form_id }}">
     {{- end -}}
   {{- else if $googleScript -}}
+    {{- with $headers -}}
+      <input type="hidden" name="_headers" value="{{ . | jsonify }}">
+    {{- end -}}
     {{- with .form.email | default site.Params.email -}}
       <input type="hidden" name="_cc" value="{{ . | base64Encode }}">
     {{- end -}}
@@ -109,6 +142,7 @@
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
+    <input type="hidden" name="{{ i18n `form_timestamp` }}" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
   {{- else if $formsubmit_co -}}
     {{- with .form.email | default site.Params.email -}}
       <input type="hidden" name="_cc" value="{{ . | base64Encode }}">
@@ -125,7 +159,7 @@
   {{- range .inputs -}}
     {{- $name        := .name -}}
     {{- $type        := .type -}}
-    {{- $full        := cond ($type | in (slice "textarea" "radio" "checkbox" "file" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
+    {{- $full        := cond ($type | in (slice "textarea" "radio" "checkbox" "file" "h2" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
     {{- $names       := slice -}}
     {{- if .type | in (slice "radio" "checkbox") -}}
       {{- range .options -}}
@@ -201,9 +235,6 @@
         {{- $onfocus     := false -}}
         {{- if (eq $type "date" | or (eq $type "time")) | and (not .shortcode) -}}
           {{- $onfocus    = true -}}
-        {{- end -}}
-        {{- if and $googleScript (eq $type "file") -}}
-          {{- $name = print "📄" .name -}}
         {{- end -}}
         {{- $length  := "" | safeHTMLAttr -}}
         {{- if or .min .max -}}
@@ -307,14 +338,18 @@
         {{- $is_checkbox := eq $type "checkbox" -}}
         {{- $legend      := .label | default .name -}}
         <fieldset class="form__fieldset {{- $axis }}" {{- $required }}>{{ "" -}}
-          <legend>
-            {{- with .icon -}}
-              {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
-            {{- end -}}
-            {{- $legend }}{{ if .required }} *{{ end -}}
-          </legend>
+          {{- if $legend -}}
+            <legend>
+              {{- with .icon -}}
+                {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
+              {{- end -}}
+              {{- $legend }}{{ if .required }} *{{ end -}}
+            </legend>
+          {{- end -}}
+          {{- $options  := .options -}}
+          {{- $required := .required -}}
           {{- range .options -}}
-            {{- $option := .value | default .option -}}
+            {{- $option  := .value | default .option -}}
             {{- if $is_checkbox -}}
               {{- $name   = .value | default (print $legend " ➡️ " $option) -}}
               {{- $option = "✅" -}}
@@ -322,6 +357,9 @@
             <label class="form__option">{{ "" -}}
               <input class="form__{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
               {{- .option -}}
+              {{- if eq (len $options) 1 -}}
+                {{- if $required }} *{{ end -}}
+              {{- end -}}
             </label>
           {{- end -}}
         </fieldset>
@@ -336,7 +374,7 @@
           {{- partial "functions/md" (dict "content" .content "not_header_links" true) -}}
         </div>
       {{- else if eq $type "hidden" -}}
-        <input class="form__hidden" type="hidden" name="{{ .name }}" value="{{ .label }}">
+        <input type="hidden" name="{{ .name }}" value="{{ .label }}">
       {{- else if eq $type "hr" -}}
         <hr>
       {{- else if eq $type "br" -}}

@@ -1,4 +1,5 @@
 import { formErrorFileOnload, timestamp } from '@params'
+import { slugify } from './slugify'
 
 const closeIcon = `<svg class="close" onclick="closePreview(this)">
   <use href="/draws.${timestamp}.svg#xmark"></use>
@@ -65,7 +66,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   const isImage = base64File.startsWith('data:image')
   const isSVG = base64File.startsWith('data:image/svg')
 
-  // If it is image (and not SVG), compress it and get new base64
+  // If it is an image (and not SVG), compress it and update the file if needed
   if (isImage && !isSVG) {
     base64File = await new Promise((resolve, reject) => {
       const img = new Image()
@@ -90,16 +91,12 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
           if (blob) {
             // If the blob is smaller than the original file, update the variables
             if (blob.size < file.size) {
-              compressedFile = blob
               fileName = file.name.replace(/^(.+)\..+$/, '$1.webp')
-              const blobReader = new FileReader()
-              blobReader.onloadend = () => {
-                resolve(blobReader.result)
-              }
-              blobReader.readAsDataURL(blob)
-            } else {
-              resolve(base64File)
+              compressedFile = new File([blob], fileName, { type: compressedFile.type })
             }
+            const blobReader = new FileReader()
+            blobReader.onloadend = () => resolve(blobReader.result)
+            blobReader.readAsDataURL(blob)
           } else {
             reject(new Error('Error converting canvas to blob'))
           }
@@ -109,7 +106,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
     })
   }
 
-  // Configures the preview depending on whether it is image or not
+  // Configure the preview media depending on whether it is an image or not
   if (isImage) {
     const blobUrl = URL.createObjectURL(compressedFile)
     const previewImg = new Image()
@@ -119,25 +116,32 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   } else {
     previewMedia = document.createElement('strong')
     previewMedia.classList.add('form__preview-file')
-    previewMedia.append(file.name.replace(/^.+\.(.+)$/, '$1'))
+    previewMedia.textContent = file.name.replace(/^.+\.(.+)$/, '$1')
   }
 
-  // Creates the hidden input to send the file (or its text representation)
+  // Create a hidden file input to hold the file for submission
   const fileInput = document.createElement('input')
-  if (form.dataset.gas) {
-    fileInput.type = 'text'
-    fileInput.name = input.name
-    fileInput.placeholder = input.dataset.placeholder
-    fileInput.dataset.basename = input.dataset.basename
-    fileInput.dataset.size = compressedFile.size
-    fileInput.value = base64File + '|' + driveFileName(fileInput, i, length)
-  } else {
-    // Note: The files property of an input is read-only, so if you need to manage the files, another strategy is required.
-    fileInput.attributes = input.attributes
-  }
+  fileInput.name = input.name
+  fileInput.placeholder = input.dataset.placeholder
+  fileInput.dataset.basename = input.dataset.basename
+  fileInput.dataset.size = compressedFile.size
+  fileInput.dataset.ext = compressedFile.name.replace(/^.+(\..+)$/, '$1')
   fileInput.classList.add('display-none')
 
-  // Update the placeholder with the file information.
+  console.log(base64File)
+
+  if (form.dataset.prov === 'gas') {
+    fileInput.type = 'text'
+    fileInput.value = base64File
+  } else {
+    fileInput.type = 'file'
+    // Use DataTransfer to assign the file to the file input
+    const dt = new DataTransfer()
+    dt.items.add(compressedFile)
+    fileInput.files = dt.files
+  }
+
+  // Update the placeholder with the file information
   placeholder.innerHTML = `
     <i class="form__preview-media">${previewMedia.outerHTML}</i>
     <i class="form__preview-name">${fileName}</i>
@@ -149,17 +153,27 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   return base64File
 }
 
-function driveFileName (fileInput, i, length) {
-  const name = []
-  const baseName = fileInput.dataset.basename
-  const baseInput = document.querySelector(`[name="${baseName}"], [name="📄${baseName}"]`)
-  const now = new Date()
-    .toLocaleString('sv-SE', { timeZone: 'Europe/Madrid', hour12: false })
-    .replace(' ', '-')
-    .replace(/:/g, '-')
-  if (baseInput) name.push(baseInput.value || baseName)
-  name.push(fileInput.name.replace('📄', ''))
-  if (length > 1) name.push(i + 1)
-  name.push(now)
-  return name.join('-').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+export function newFileNames (form, input, i, length, now) {
+  const fileName = []
+  const baseName = input.dataset.basename
+  const baseInput = form.querySelector(`[name="${baseName}"]`)
+  if (baseInput) fileName.push(baseInput.value || baseName)
+  fileName.push(now.replace(/ |:/g, '-'))
+  fileName.push(input.name)
+  if (length > 1) fileName.push(i + 1)
+  const newFileName = slugify(fileName.join('-')) + input.dataset.ext
+
+  if (input.type === 'file') {
+    // Change filename
+    const file = input.files[0]
+    const newFile = new File([file], newFileName, { type: file.type })
+    // Use DataTransfer to assign the new file to the file input
+    const dt = new DataTransfer()
+    dt.items.add(newFile)
+    input.files = dt.files
+  } else if (input.type === 'text') {
+    // Add filename and lastModified
+    input.type = 'hidden'
+    input.value = input.value + '|' + newFileName
+  }
 }

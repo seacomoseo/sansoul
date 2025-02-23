@@ -5,6 +5,7 @@ import {
   timestamp
 } from '@params'
 import { formValid } from './form-validate'
+import { newFileNames } from './form-files'
 
 const closeIcon =
 '<svg class="close" onclick="this.parentElement.remove()">' +
@@ -12,53 +13,53 @@ const closeIcon =
 '</svg>'
 
 // Change values pre and post get form data
-function changeValuesPrev (form, prev) {
+function changeValues ({ form, now, prev }) {
   // Checkboxes
   const checkboxes = form.querySelectorAll('input[type="checkbox"]')
   checkboxes.forEach(checkbox => {
-    if (prev) {
-      if (!checkbox.checked) {
-        checkbox.value = '❌'
-        checkbox.checked = true
-      }
-    } else {
-      if (checkbox.value === '❌') {
-        checkbox.value = '✅'
-        checkbox.checked = false
-      }
+    if (prev && !checkbox.checked) {
+      checkbox.value = '❌'
+      checkbox.checked = true
+    } else if (checkbox.value === '❌') {
+      checkbox.value = '✅'
+      checkbox.checked = false
     }
   })
   // Phone Prefixes
   const phones = form.querySelectorAll('[type="tel"]')
   phones.forEach(input => {
-    if (prev) {
-      if (input.value) {
-        input.dataset.value = input.value
-        input.value = `+${input.nextElementSibling.children[1].value} ${input.value}`
-      }
-    } else {
-      if (input.dataset.value) {
-        input.value = input.dataset.value
-        input.removeAttribute('data-value')
-      }
+    if (prev && input.value) {
+      input.dataset.value = input.value
+      input.value = `+${input.nextElementSibling.children[1].value} ${input.value}`
+    } else if (input.dataset.value) {
+      input.value = input.dataset.value
+      input.removeAttribute('data-value')
     }
   })
-  // Files
-  const files = form.querySelectorAll('.form .form__file input[type="file"]')
+  // Files Base
+  const files = form.querySelectorAll('.form .form__file input')
   files.forEach(input => {
-    if (prev) {
-      if (input.name) {
-        input.dataset.name = input.name
-        input.name = ''
-        input.value = ''
-      }
-    } else {
-      if (input.dataset.name) {
-        input.name = input.dataset.name
-        input.removeAttribute('data-name')
-      }
+    if (prev && input.name) {
+      input.dataset.name = input.name
+      input.name = ''
+      input.value = ''
+    } else if (input.dataset.name) {
+      input.name = input.dataset.name
+      input.removeAttribute('data-name')
     }
   })
+  // Files Previews
+  if (prev) {
+    const previews = form.querySelectorAll('.form__preview:has(input:is([type="file"], [type="text"]))')
+    if (previews) {
+      previews.forEach(preview => {
+        const inputs = preview.querySelectorAll('input:is([type="file"], [type="text"])')
+        inputs.forEach((input, i) => {
+          newFileNames(form, input, i, inputs.length, now)
+        })
+      })
+    }
+  }
   // BCC
   const _cc = form.querySelector('input[name="_cc"]')
   if (_cc) {
@@ -102,25 +103,28 @@ export function initFormSend () {
         submit.preventDefault()
 
         const form = submit.target
+        const { valid, message } = formValid(form)
+        const now = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Madrid', hour12: false })
+
         formMessage && formMessage.remove()
         formMessage = document.createElement('div')
         formMessage.innerHTML += closeIcon
-
-        const { valid, message } = formValid(form)
 
         if (!valid) {
           formMessage.classList.add('form__error')
           formMessage.append(message)
           form.append(formMessage)
         } else {
-          changeValuesPrev(form, true)
+          changeValues({ form, now, prev: true })
+          const timestampInput = form.querySelector('.form-timestamp')
+          if (timestampInput) timestampInput.value = now
 
           const actionEncoded = form.action.replace(window.location.href.split('#')[0], '')
           let action = window.atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
-          const netlifyForm = action === `/${form.id}`
-          const googleScript = action.includes('script.google.com')
-          const formSubmitCo = action.includes('formsubmit.co')
+          const netlifyForm = form.dataset.prov === 'ntlf'
+          const googleScript = form.dataset.prov === 'gas'
+          const formSubmitCo = form.dataset.prov === 'fsc'
           const formSubmitCoAjax = formSubmitCo && !isFileType
           if (!netlifyForm && !googleScript && !formSubmitCoAjax) {
             if (formSubmitCo) action = action.replace('/ajax', '')
@@ -130,7 +134,7 @@ export function initFormSend () {
             submitFormFunction.call(form)
             form.action = actionEncoded
             formSubmited(form)
-            changeValuesPrev(form, false)
+            changeValues({ form, now, prev: false })
           } else {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
@@ -151,7 +155,7 @@ export function initFormSend () {
               formOptions.body = new URLSearchParams(formData).toString()
             }
 
-            changeValuesPrev(form, false)
+            changeValues({ form, now, prev: false })
 
             // Send by AJAX
             fetch(action, formOptions)
@@ -167,6 +171,7 @@ export function initFormSend () {
                 }
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
+                console.log(data)
                 formSubmited(form)
                 // Reset
                 form.reset()
