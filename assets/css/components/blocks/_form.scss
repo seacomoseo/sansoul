@@ -42,6 +42,20 @@
   &:has(> :nth-child(2)) {
     padding-block: .66em;
   }
+  // Transparent to click in full fieldset
+  &:not(:has(> :nth-child(2))) {
+    position: relative;
+    .form__option {
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
 }
 .form__fieldset--x {
   flex-direction: row;
@@ -378,9 +392,25 @@ legend, .form__label {
 .form__input:has(~ .form__pre):has(~ .form__icon) {
   padding-left: 6.5em;
 }
-
-.form__item[data-showif]:not(.form__item--show) {
+.form__item[data-showif] {
+  // max-height: 0;
+  translate: 0 -1em;
+  opacity: 0;
   display: none;
+  transition: /* max-height, */ translate, opacity, display;
+  transition-duration: .3s;
+  transition-behavior: allow-discrete;
+}
+.form__item[data-showif].form__item--show {
+  // max-height: 100vh;
+  translate: 0;
+  opacity: 1;
+  display: block;
+  @starting-style {
+    // max-height: 0;
+    translate: 0 -1em;
+    opacity: 0;
+  }
 }
 
 // br and hr
