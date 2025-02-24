@@ -5,6 +5,7 @@ import {
   formErrorEmail,
   formErrorTel,
   formErrorFileSize,
+  formErrorFileSizeTotal,
   formErrorFileMax,
   formErrorAcept
 } from '@params'
@@ -123,17 +124,20 @@ export function formValid (form) {
   //   }
   // })
 
+  // Size Total
+  let counterTotalSize = 0
   form.querySelectorAll('.form__file [type="file"]').forEach(input => {
     // Size
-    let count = 0
-    input.closest('.form__item').querySelectorAll('.form__preview input').forEach(inputPreview => {
+    let tooBig
+    input.closest('.form__item').querySelectorAll('.form__preview :is(input, textarea)').forEach(inputPreview => {
       const size = inputPreview.dataset.size
-      if (size > 5 * 1024 * 1024) {
+      counterTotalSize += parseInt(size)
+      if (size > 3 * 1024 * 1024) {
         inputPreview.parentElement.style.setProperty('--text', 'var(--submit-error)')
-        count++
+        tooBig = true
       }
     })
-    if (count) {
+    if (tooBig) {
       message.innerHTML += `<li>${formErrorFileSize}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
       valid = false
     }
@@ -160,6 +164,14 @@ export function formValid (form) {
       })
     }
   })
+  // Size Total
+  if (counterTotalSize > 4 * 1024 * 1024) {
+    message.innerHTML += `<li>${formErrorFileSizeTotal}</li>`
+    form.classList.add('form--error-files-total-size')
+    valid = false
+  } else {
+    form.classList.remove('form--error-files-total-size')
+  }
 
   const accept = form.querySelector('.form__option--consent')
   if (!accept) valid = false

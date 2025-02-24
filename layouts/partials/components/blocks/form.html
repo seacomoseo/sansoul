@@ -251,10 +251,14 @@
           {{- end -}}
         {{- end -}}
 
+        {{- $multiple  := false -}}
         {{- if eq $type "file" -}}
           {{- $form_file_label  := i18n "form_file_label" -}}
-          {{- if .multiple -}}
+          {{- if .max -}}
             {{- $form_file_label = i18n "form_files_label" -}}
+            {{- if gt .max 1 -}}
+              {{- $multiple = true -}}
+            {{- end -}}
           {{- end -}}
           <label class="form__file" style="--form-file-label:'{{ $form_file_label }}'">
             {{- partial "components/link" (dict
@@ -281,7 +285,7 @@
           {{- with .regex }} pattern="{{ . }}"{{ end }}
           {{- if ne .min nil }} min{{ $length }}="{{ .min }}"{{ end }}
           {{- with $max }} {{ $data }}max{{ $length }}="{{ . }}"{{ end }}
-          {{- if .multiple }} multiple{{ end -}}
+          {{- if $multiple }} multiple{{ end -}}
         >
 
         {{- if eq $type "file" -}}

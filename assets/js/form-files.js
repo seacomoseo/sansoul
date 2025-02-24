@@ -1,9 +1,20 @@
-import { formErrorFileOnload, timestamp } from '@params'
+import { loading, formErrorFileOnload, timestamp } from '@params'
 import { slugify } from './slugify'
 
 const closeIcon = `<svg class="close" onclick="closePreview(this)">
   <use href="/draws.${timestamp}.svg#xmark"></use>
 </svg>`
+
+const canvasTest = document.createElement('canvas')
+const webpSupport = canvasTest.getContext && canvasTest.getContext('2d')
+  ? canvasTest.toDataURL('image/webp').indexOf('data:image/webp') === 0
+  : false
+
+const isSafari =
+  navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+  navigator.userAgent.indexOf('CriOS') === -1 &&
+  navigator.userAgent.indexOf('FxiOS') === -1
+console.log('isSafari: ', isSafari)
 
 export function initFormFiles () {
   window.addEventListener('load', () => {
@@ -28,6 +39,7 @@ export function initFormFiles () {
             const placeholders = files.map(() => {
               const li = document.createElement('li')
               li.classList.add('form__preview-item')
+              li.innerHTML = `<svg class="spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${loading}…`
               inputPreview.appendChild(li)
               return li
             })
@@ -63,44 +75,54 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   let compressedFile = file
   let previewMedia
   let fileName = file.name
-  const isImage = base64File.startsWith('data:image')
-  const isSVG = base64File.startsWith('data:image/svg')
+  const isImage = file.type.startsWith('image')
+  const isSVG = file.type === 'image/svg'
+  const isHeic = file.type === 'image/heic' || file.type === 'image/heif'
 
   // If it is an image (and not SVG), compress it and update the file if needed
-  if (isImage && !isSVG) {
+  if (isImage && !isSVG && !(isHeic && !isSafari)) {
     base64File = await new Promise((resolve, reject) => {
       const img = new Image()
       img.src = base64File
       img.onload = () => {
-        const originalWidth = img.naturalWidth
-        const originalHeight = img.naturalHeight
-        const maxDimension = 1920
-        let targetWidth = originalWidth
-        let targetHeight = originalHeight
-        if (originalWidth > maxDimension || originalHeight > maxDimension) {
-          const ratio = Math.min(maxDimension / originalWidth, maxDimension / originalHeight)
-          targetWidth = originalWidth * ratio
-          targetHeight = originalHeight * ratio
-        }
-        const canvas = document.createElement('canvas')
-        canvas.width = targetWidth
-        canvas.height = targetHeight
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
-        canvas.toBlob(blob => {
-          if (blob) {
-            // If the blob is smaller than the original file, update the variables
-            if (blob.size < file.size) {
-              fileName = file.name.replace(/^(.+)\..+$/, '$1.webp')
-              compressedFile = new File([blob], fileName, { type: compressedFile.type })
-            }
-            const blobReader = new FileReader()
-            blobReader.onloadend = () => resolve(blobReader.result)
-            blobReader.readAsDataURL(blob)
-          } else {
-            reject(new Error('Error converting canvas to blob'))
+        try {
+          const originalWidth = img.naturalWidth
+          const originalHeight = img.naturalHeight
+          const maxDimension = 1920
+          let targetWidth = originalWidth
+          let targetHeight = originalHeight
+          if (originalWidth > maxDimension || originalHeight > maxDimension) {
+            const ratio = Math.min(maxDimension / originalWidth, maxDimension / originalHeight)
+            targetWidth = originalWidth * ratio
+            targetHeight = originalHeight * ratio
           }
-        }, 'image/webp', 0.7)
+          const canvas = document.createElement('canvas')
+          canvas.width = targetWidth
+          canvas.height = targetHeight
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
+          const ext = webpSupport
+            ? 'webp'
+            : file.type === 'image/jpeg' || isHeic
+              ? 'jpeg'
+              : 'png'
+          canvas.toBlob(blob => {
+            if (blob) {
+              // If the blob is smaller than the original file, update the variables
+              if (blob.size < file.size) {
+                fileName = file.name.replace(/^(.+)\..+$/, `$1.${ext.replace('jpeg', 'jpg')}`)
+                compressedFile = new File([blob], fileName, { type: blob.type })
+              }
+              const blobReader = new FileReader()
+              blobReader.onloadend = () => resolve(blobReader.result)
+              blobReader.readAsDataURL(blob)
+            } else {
+              reject(new Error('Error converting canvas to blob'))
+            }
+          }, `image/${ext}`, 0.5)
+        } catch (error) {
+          resolve(base64File)
+        }
       }
       img.onerror = err => reject(err)
     })
@@ -120,15 +142,13 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   }
 
   // Create a hidden file input to hold the file for submission
-  const fileInput = document.createElement('input')
+  const fileInput = document.createElement(form.dataset.prov === 'gas' ? 'textarea' : 'input')
   fileInput.name = input.name
   fileInput.placeholder = input.dataset.placeholder
   fileInput.dataset.basename = input.dataset.basename
   fileInput.dataset.size = compressedFile.size
   fileInput.dataset.ext = compressedFile.name.replace(/^.+(\..+)$/, '$1')
-  fileInput.classList.add('display-none')
-
-  console.log(base64File)
+  fileInput.classList.add('form__preview-input', 'display-none')
 
   if (form.dataset.prov === 'gas') {
     fileInput.type = 'text'
@@ -161,7 +181,7 @@ export function newFileNames (form, input, i, length, now) {
   fileName.push(now.replace(/ |:/g, '-'))
   fileName.push(input.name)
   if (length > 1) fileName.push(i + 1)
-  const newFileName = slugify(fileName.join('-')) + input.dataset.ext
+  const newFileName = slugify(fileName.join('-') + input.dataset.ext)
 
   if (input.type === 'file') {
     // Change filename
@@ -171,9 +191,8 @@ export function newFileNames (form, input, i, length, now) {
     const dt = new DataTransfer()
     dt.items.add(newFile)
     input.files = dt.files
-  } else if (input.type === 'text') {
-    // Add filename and lastModified
-    input.type = 'hidden'
-    input.value = input.value + '|' + newFileName
+  } else if (input.tagName === 'TEXTAREA') {
+    // Add filename
+    input.value = input.value.split('|')[0] + '|' + newFileName
   }
 }

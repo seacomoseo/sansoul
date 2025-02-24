@@ -5,71 +5,12 @@ import {
   timestamp
 } from '@params'
 import { formValid } from './form-validate'
-import { newFileNames } from './form-files'
+import { changeValues } from './form-change-values'
 
 const closeIcon =
 '<svg class="close" onclick="this.parentElement.remove()">' +
   `<use href="/draws.${timestamp}.svg#xmark"></use>` +
 '</svg>'
-
-// Change values pre and post get form data
-function changeValues ({ form, now, prev }) {
-  // Checkboxes
-  const checkboxes = form.querySelectorAll('input[type="checkbox"]')
-  checkboxes.forEach(checkbox => {
-    if (prev && !checkbox.checked) {
-      checkbox.value = '❌'
-      checkbox.checked = true
-    } else if (checkbox.value === '❌') {
-      checkbox.value = '✅'
-      checkbox.checked = false
-    }
-  })
-  // Phone Prefixes
-  const phones = form.querySelectorAll('[type="tel"]')
-  phones.forEach(input => {
-    if (prev && input.value) {
-      input.dataset.value = input.value
-      input.value = `+${input.nextElementSibling.children[1].value} ${input.value}`
-    } else if (input.dataset.value) {
-      input.value = input.dataset.value
-      input.removeAttribute('data-value')
-    }
-  })
-  // Files Base
-  const files = form.querySelectorAll('.form .form__file input')
-  files.forEach(input => {
-    if (prev && input.name) {
-      input.dataset.name = input.name
-      input.name = ''
-      input.value = ''
-    } else if (input.dataset.name) {
-      input.name = input.dataset.name
-      input.removeAttribute('data-name')
-    }
-  })
-  // Files Previews
-  if (prev) {
-    const previews = form.querySelectorAll('.form__preview:has(input:is([type="file"], [type="text"]))')
-    if (previews) {
-      previews.forEach(preview => {
-        const inputs = preview.querySelectorAll('input:is([type="file"], [type="text"])')
-        inputs.forEach((input, i) => {
-          newFileNames(form, input, i, inputs.length, now)
-        })
-      })
-    }
-  }
-  // BCC
-  const _cc = form.querySelector('input[name="_cc"]')
-  if (_cc) {
-    if (prev) {
-      _cc.value = atob(_cc.value)
-    } else {
-      _cc.value = btoa(_cc.value)
-    }
-  }
-}
 
 function formSubmited (form) {
   const customEventSubmit = new CustomEvent('submited-' + form.id)
@@ -171,7 +112,6 @@ export function initFormSend () {
                 }
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
-                console.log(data)
                 formSubmited(form)
                 // Reset
                 form.reset()

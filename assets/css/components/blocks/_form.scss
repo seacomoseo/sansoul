@@ -135,10 +135,10 @@
   svg {
     position: relative;
     top: .125em;
-    &.spin {
-      animation: spin 10s linear infinite;
-    }
   }
+}
+.spin {
+  animation: spin 10s linear infinite;
 }
 .form__submit--success {
   background-color: var(--submit-success);
@@ -314,8 +314,6 @@
   flex-shrink: 0;
 }
 .form__preview-media {
-  &:has(.form__preview-file) {
-  }
   @include radius;
   overflow: hidden;
   background-color: var(--similar);
@@ -337,6 +335,11 @@
 .form__preview-size,
 .form__preview .close {
   color: var(--text);
+}
+.form__preview-size {
+  &:where(.form--error-files-total-size *) {
+    color: var(--submit-error);
+  }
 }
 .form__preview-item--error-load,
 .form__preview-item--error .form__preview-name,
