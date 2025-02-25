@@ -21,34 +21,30 @@
   {{ end }}
 
   {{/*  TITLE CLASS  */}}
-  {{ $class := partial "functions/attr-delimit" (dict
-    "attr"  "class"
-    "array" (slice
-      "box__title"
-      (cond (not ($title | and (not .title))) "" "hide")
-      (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" (print "h" (cond (not .like_article) .level "6"))))
-      (cond (not .uppercase)    "" "uppercase")
-      (cond (not .underline)    "" "underline")
-    )
-  ) }}
+  {{ $class := slice
+    "box__title"
+    (cond (not ($title | and (not .title))) "" "hide")
+    (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" (print "h" (cond (not .like_article) .level "6"))))
+    (cond (not .uppercase)    "" "uppercase")
+    (cond (not .underline)    "" "underline")
+  }}
 
   {{/*  TITLE MORE  */}}
   {{ $more  := "" }}
   {{ if and .title .hanchor (not $link) }}
-    {{ $more = print `data-more="` .title `"` }}
+    {{ $more = .title }}
   {{ end }}
 
   {{/*  TITLE JOIN  */}}
-  {{ $attr := partial "functions/attr-delimit" (dict
-    "array" (slice
-      $class
-      $more
-    )
-  ) }}
+  {{ $attrs := dict
+    "class"     $class
+    "data-more" $more
+  }}
+  {{ $attrs = partial "functions/attrs" $attrs }}
 
 
   {{/*  TITLE  */}}
-  {{ print "<" $hn " " $attr ">" | safeHTML }}
+  {{ print "<" $hn $attrs ">" | safeHTML }}
 
     {{/*  ICON SIDE  */}}
     {{ if eq .icon_type "side" }}
@@ -56,11 +52,7 @@
     {{ end }}
 
     {{/*  ANCHOR CLASS  */}}
-    {{ $anchor_class := partial "functions/attr-delimit" (dict
-      "array" (slice
-        (cond (not .like_article) "" "href box__link")
-      )
-    ) }}
+    {{ $anchor_class := cond (not .like_article) "" "href box__link" }}
 
     {{/*  ANCHOR  */}}
     {{ partial "components/link"

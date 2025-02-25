@@ -1,0 +1,19 @@
+{{ $attributes := . }}
+{{ $result     := slice }}
+{{ range $key, $value := $attributes }}
+  {{ if $value }}
+    {{ $attr := $key }}
+    {{ if ne $value "-" }}
+      {{ if reflect.IsSlice $value }}
+        {{ $delimit := cond (eq $key "style") ";" " " }}
+        {{ $purged  := where $value "." "ne" "" }}
+        {{ $value    = delimit $purged $delimit }}
+      {{ end }}
+      {{ $attr = printf "%s=\"%s\"" $key $value }}
+    {{ end }}
+    {{ $result = $result | append $attr }}
+  {{ end }}
+{{ end }}
+{{ $attrStr := delimit $result " " }}
+{{ $attrStr  = print " " $attrStr | safeHTMLAttr }}
+{{ return $attrStr }}

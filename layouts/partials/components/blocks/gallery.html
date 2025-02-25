@@ -16,40 +16,32 @@
 {{- $is_button_custom := .link | and (ne .type "rows") -}}
 
 {{/*  CLASS  */}}
-{{- $class := partial "functions/attr-delimit" (dict
-  "attr"  "class"
-  "array" (slice
-    "box__block"
-    "gallery"
-    (print "gallery--" (.type | default "grid"))
-    (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.max) "")
-    (cond (not .ratio)      "" "gallery--ratio")
-    (cond (not .contain)    "" "gallery--contain")
-    (cond (not .grayscale)  "" "gallery--grayscale")
-    (cond (not $color | or (eq $color "transparent")) "" (print "bg bg-" $color))
-    (cond (not site.Data.config.others.show)           "" "show")
-  )
-) -}}
+{{- $class := slice
+  "box__block"
+  "gallery"
+  (print "gallery--" (.type | default "grid"))
+  (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.max) "")
+  (cond (not .ratio)      "" "gallery--ratio")
+  (cond (not .contain)    "" "gallery--contain")
+  (cond (not .grayscale)  "" "gallery--grayscale")
+  (cond (not $color | or (eq $color "transparent")) "" (print "bg bg-" $color))
+  (cond (not site.Data.config.others.show)           "" "show")
+-}}
 
 {{/*  STYLE  */}}
-{{ $style := partial "functions/attr-delimit" (dict
-  "attr"    "style"
-  "delimit" ";"
-  "array"   (slice
-    (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
-    (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
-  )
-) }}
+{{ $style := slice
+  (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
+  (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
+}}
 
 {{/*  JOIN ATTRIBUTES  */}}
-{{ $attr := partial "functions/attr-delimit" (dict
-  "array" (slice
-    $class
-    $style
-  )
-) }}
+{{ $attrs := dict
+  "class" $class
+  "style" $style
+}}
+{{ $attrs := partial "functions/attrs" $attrs }}
 
-<div {{ $attr | safeHTMLAttr }}>
+<div {{- $attrs }}>
   {{- if $color | and (ne $color "transparent") -}}
     <div class="bg-color"></div>
   {{- end -}}

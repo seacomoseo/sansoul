@@ -119,7 +119,7 @@
     )) -}}
 
     {{/*  BOX  */}}
-    {{- print "<" $node " " $box_attr ">" | safeHTML -}}
+    {{- print "<" $node $box_attr ">" | safeHTML -}}
 
       {{/*  BACKGROUND  */}}
       {{- partial "components/bg" (merge . (dict

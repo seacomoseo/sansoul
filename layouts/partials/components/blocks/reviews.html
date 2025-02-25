@@ -9,7 +9,7 @@
   {{/*  REVIEWS CLASS  */}}
   {{- $slider     := cond (not .slider) "" " slider__items" -}}
   {{- $show       := cond (not site.Data.config.others.show) "" " show" -}}
-  {{- $cols_class := print `class="boxes` $slider $show `"` -}}
+  {{- $cols_class := print "boxes" $slider $show -}}
 
 
   {{/*  REVIEWS STYLE  */}}
@@ -24,24 +24,19 @@
   {{- $col_max := cond (eq $cols_max 1) "" (print "--cols-max:" $cols_max) -}}
   {{- $col_min := cond (eq $cols_min 1) "" (print "--cols-min:" $cols_min) -}}
 
-  {{ $cols_style := partial "functions/attr-delimit" (dict
-    "attr"    "style"
-    "delimit" ";"
-    "array"   (slice
-      $col_max
-      $col_min
-    )
-  ) }}
+  {{ $cols_style := slice
+    $col_max
+    $col_min
+  }}
 
   {{/*  REVIEWS ATTRIBUTES JOIN  */}}
-  {{ $attr := partial "functions/attr-delimit" (dict
-    "array" (slice
-      $cols_class
-      $cols_style
-    )
-  ) }}
+  {{ $attrs := dict
+    "class" $cols_class
+    "style" $cols_style
+  }}
+  {{ $attrs = partial "functions/attrs" $attrs }}
   
-  <div {{ $attr | safeHTMLAttr }}>
+  <div {{- $attrs }}>
     {{- range .reviews -}}
       {{- with merge $review . -}}
 
@@ -61,41 +56,31 @@
         {{- $bg         := cond (not $bg_color) "" "bg" -}}
         {{- $shadow     := cond (not ($color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
 
-        {{- $review_class := partial "functions/attr-delimit" (dict
-          "attr"  "class"
-          "array" (slice
-            "review__globe"
-            $bg
-            $bg_color
-            $bg_gradient_color
-            $bg_gradient_type
-            $shadow
-          )
-        ) -}}
+        {{- $review_class := slice
+          "review__globe"
+          $bg
+          $bg_color
+          $bg_gradient_color
+          $bg_gradient_type
+          $shadow
+        -}}
 
         {{/*  REVIEW ITEM STYLE  */}}
         {{- $alpha := and (.alpha | and (ne .alpha 100)) ($color | or .gradient) -}}
         {{- $alpha  = cond (not $alpha)        "" (print "--color-alpha:" .alpha) -}}
 
-        {{ $review_style := partial "functions/attr-delimit" (dict
-          "attr"    "style"
-          "delimit" ";"
-          "array"   (slice
-            $alpha
-          )
-        ) }}
+        {{ $review_style := slice $alpha }}
 
         {{/*  REVIEW ITEM ATTRIBUTES JOIN  */}}
-        {{ $review_attr := partial "functions/attr-delimit" (dict
-          "array" (slice
-            $review_class
-            $review_style
-          )
-        ) }}
+        {{ $review_attrs := dict
+          "class" $review_class
+          "style" $review_style
+        }}
+        {{ $review_attrs = partial "functions/attrs" $attrs }}
 
         {{/*  REVIEW ITEM  */}}
         <div class="review">
-          <div {{ $review_attr | safeHTMLAttr }}>
+          <div {{- $review_attrs }}>
             <div class="bg-color"></div>
             {{- $icon       := or             .icon "quote-left" -}}
             {{- $icon_right := or .icon_right .icon "quote-right" -}}

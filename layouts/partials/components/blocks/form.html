@@ -1,9 +1,6 @@
-{{- $a       := "" | safeHTMLAttr }}
-{{- $show    := cond (not site.Data.config.others.show) "" " show" -}}
+{{/*  ID  */}}
 {{- $form_id := .form.id -}}
-{{- $subject := .form.subject -}}
 {{- $num     := 0 -}}
-
 {{- if not $form_id -}}
   {{- with .id -}}
     {{- $form_id = print "form-" . -}}
@@ -16,10 +13,14 @@
         {{- end -}}
       {{- end -}}
     {{- end -}}
-    {{- $form_id      = print "form-" (cond (eq .section.id "header") .Page.Slug .section.id) (cond (le $num 1) "" (print "-" $num)) -}}
+    {{- $id_name := cond (eq .section.id "header") .Page.Slug .section.id -}}
+    {{- $id_num  := cond (le $num 1) "" (print "-" $num) -}}
+    {{- $form_id  = print "form-" $id_name $id_num -}}
   {{- end -}}
 {{- end -}}
 
+{{/*  Subject  */}}
+{{- $subject := .form.subject -}}
 {{- if not $subject -}}
   {{- $page_emoji    := .Page.Params.emoji -}}
   {{- $section_name  := i18n "header" -}}
@@ -54,6 +55,79 @@
   -}}
 {{- end -}}
 
+{{/*  Slices  */}}
+{{- $slices := dict
+  "markers"        (slice                                                                 "radio" "checkbox"                                                )
+  "values"         (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox" "file" "geo" "hidden"                          )
+  "full"           (slice                                             "textarea"          "radio" "checkbox" "file" "geo" "h2" "h3" "h4" "h5" "h6" "content")
+  "label"          (slice "text" "email" "tel" "number" "date" "time" "textarea" "select"                           "geo"                                   )
+  "border_chamfer" (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox" "file"                                         )
+  "tag_inputs"     (slice "text" "email" "tel" "number" "date" "time"                                        "file"                                         )
+  "icon"           (slice "text" "email" "tel" "number" "date" "time" "textarea" "select"                                                                   )
+  "min_max_length" (slice "text" "email" "tel"                                                                                                              )
+  "wrap"           (slice "hidden" "br" "hr"                                                                                                                )
+-}}
+
+
+{{/*  Inputs  */}}
+{{- $inputs := slice -}}
+{{- range .inputs -}}
+  {{- $input := . -}}
+  {{/*  full  */}}
+  {{- $full := in $slices.full .type | or .full | default false -}}
+  {{/*  names for show_of  */}}
+  {{- $name        := .name -}}
+  {{- $names       := slice -}}
+  {{- if .type | in $slices.markers -}}
+    {{- range .options -}}
+      {{- $names    = $names | append (.value | default .option) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $names      = slice .name -}}
+  {{- end -}}
+  {{/*  show_of  */}}
+  {{- $show_of     := slice -}}
+  {{- range $.inputs -}}
+    {{- if ne .name $name -}}
+      {{- if .show_if -}}
+        {{- if .type | in $slices.markers -}}
+          {{- with .options -}}
+            {{- range . -}}
+              {{- $value := .value | default .option -}}
+              {{- range split $value "||" -}}
+                {{- range split . "&&" -}}
+                  {{- if . | in $names -}}
+                    {{- $show_of  = $show_of | append . -}}
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- else -}}
+          {{- range split .show_if "||" -}}
+            {{- range split . "&&" -}}
+              {{- if . | in $names -}}
+                {{- $show_of = $show_of | append . -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{/*  merge params in input  */}}
+  {{- $input      = merge $input (dict "full" $full "show_of" $show_of) -}}
+  {{/*  check to checkbox  */}}
+  {{- if eq .type "check" -}}
+    {{- $options := slice (dict "option" .label "value" .name) -}}
+    {{- $input    = merge $input (dict "type" "checkbox" "name" nil "label" nil "options" $options) -}}
+  {{- end -}}
+  {{/*  append  */}}
+  {{- $inputs   = $inputs | append $input -}}
+{{- end -}}
+
+{{/*  More Vars  */}}
+{{- $_             := "" | safeHTMLAttr }}
 {{- $form          := merge site.Data.styles.inputs (.form | default dict) -}}
 {{- $netlify_forms := false -}}
 {{/*  {{- $netlify_forms := and (not $form.action) (getenv "NETLIFY") -}}  */}}
@@ -63,9 +137,10 @@
 {{- $googleScript  := in $action "script.google.com" -}}
 {{- $formsubmit_co := in $action "formsubmit.co" -}}
 {{- $chamfer       := site.Data.styles.rounded.chamfer -}}
-{{- $inputs_fill   := cond (not $form.fill) "" " form--fill-inputs" -}}
-{{- $labels_out    := cond (not $form.labels_out) "" " form--labels-out" -}}
-
+{{- $inputs_fill   := cond (not $form.fill) "" "form--fill-inputs" -}}
+{{- $labels_out    := cond (not $form.labels_out) "" "form--labels-out" -}}
+{{- $show          := cond (not site.Data.config.others.show) "" "show" -}}
+{{- $class         := slice "form" $inputs_fill $labels_out "box__block" $show -}}
 {{- $provider      := "" -}}
 {{- if $netlify_forms -}}
   {{- $provider     = "ntlf" -}}
@@ -75,10 +150,11 @@
   {{- $provider     = "fsc" -}}
 {{- end -}}
 
+{{/*  GAS Headers  */}}
 {{- $headers := slice (dict "name" (i18n "form_timestamp")) (dict "name" "URL") -}}
 {{- if $googleScript -}}
-  {{- range .inputs -}}
-    {{- $is_input := in (slice "text" "email" "tel" "number" "date" "time" "textarea" "geo" "select" "radio" "checkbox" "file" "hidden") .type -}}
+  {{- range $inputs -}}
+    {{- $is_input := in $slices.values .type -}}
     {{- $isnt_    := not (hasPrefix (.name | default .label) "_") -}}
     {{- if and $is_input $isnt_ -}}
       {{- if eq .type "checkbox" -}}
@@ -97,30 +173,51 @@
 {{- end -}}
 
 
+{{/*  HTML  */}}
+
 {{/*  HEAD  */}}
 
-<form
-  id="{{ $form_id }}"
-  class="form {{- $inputs_fill }} {{- $labels_out }} box__block {{- $show }}"
-  method="POST"
-  {{- if .shortcode -}}
-    {{- if $netlify_forms }} netlify{{ end }}
-    name="{{ $form_id }}"
-    action="{{ $action }}"
-  {{- else -}}
-    {{- $is_file_type  := false -}}
-    {{- range where .inputs `type` `file` -}}
-      {{- $is_file_type = true -}}
-    {{- end -}}
-    {{- if or $is_file_type $formsubmit_co | and (not $googleScript) }} enctype="multipart/form-data"{{ end }}
-    {{- with $provider }} data-prov="{{ . }}"{{ end }}
-    action="{{ $action | base64Encode }}"
-    target="_blank"
+{{ $a := dict
+  "id"     $form_id
+  "class"  $class
+  "method" "POST"
+}}
+{{- if .shortcode -}}
+  {{- if $netlify_forms }}
+    {{ $a = merge $a (dict "netlify" "") }}
+  {{ end }}
+  {{ $a = merge $a (dict
+    "name"   $form_id
+    "action" $action
+  ) }}
+{{- else -}}
+  {{- $is_file_type  := false -}}
+  {{- range where $inputs "type" "file" -}}
+    {{- $is_file_type = true -}}
+    {{- break -}}
   {{- end -}}
-  {{- with .form.to }} data-to="{{ . | base64Encode }}"{{ end -}}
->
+  {{- if or $is_file_type $formsubmit_co | and (not $googleScript) }}
+    {{ $a = merge $a (dict "enctype" "multipart/form-data") }}
+  {{ end }}
+  {{- with $provider }}
+    {{ $a = merge $a (dict "data-prov" .) }}
+  {{ end }}
+  {{ $a = merge $a (dict
+    "action" ($action | base64Encode)
+    "target" "_blank"
+  ) }}
+{{- end -}}
+{{- with .form.to }}
+  {{ $a = merge $a (dict
+    "data-to" (. | base64Encode)
+  ) }}
+{{ end -}}
+{{ $a = partial "functions/attrs" $a }}
 
-  {{/*  HIDDEN INPUTS  */}}
+<form {{- $a }}>
+
+
+  {{/*  PRINT HIDDEN AUTO INPUTS  */}}
 
   {{- if $netlify_forms -}}
     {{- if not .shortcode -}}
@@ -154,54 +251,12 @@
   {{- end -}}
 
 
-  {{/*  CUSTOM INPUTS  */}}
+  {{/*  PRINT CUSTOM INPUTS  */}}
 
-  {{- range .inputs -}}
+  {{- range $inputs -}}
+    {{/*  vars  */}}
     {{- $name        := .name -}}
     {{- $type        := .type -}}
-    {{- $full        := cond ($type | in (slice "textarea" "radio" "checkbox" "file" "h2" "h3" "h4" "h5" "h6" "content" "geo") | or .full) " contact__full" "" -}}
-    {{- $names       := slice -}}
-    {{- if .type | in (slice "radio" "checkbox") -}}
-      {{- range .options -}}
-        {{- $names    = $names | append (.value | default .option) -}}
-      {{- end -}}
-    {{- else -}}
-      {{- $names      = slice .name -}}
-    {{- end -}}
-    {{- $show_if     := "" | safeHTMLAttr -}}
-    {{- with .show_if -}}
-      {{- $show_if    = print ` data-showif="{` (. | replaceRE `(\|\||\&\&)` "}$1{") `}"` | safeHTMLAttr -}}
-    {{- end -}}
-    {{- $show_of     := slice -}}
-    {{- range $.inputs -}}
-      {{- if ne .name $name -}}
-        {{- if .show_if -}}
-          {{- if .type | in (slice "radio" "checkbox") -}}
-            {{- with .options -}}
-              {{- range . -}}
-                {{- $value := .value | default .option -}}
-                {{- range split $value "||" -}}
-                  {{- range split . "&&" -}}
-                    {{- if . | in $names -}}
-                      {{- $show_of  = $show_of | append . -}}
-                    {{- end -}}
-                  {{- end -}}
-                {{- end -}}
-              {{- end -}}
-            {{- end -}}
-          {{- else -}}
-            {{- range split .show_if "||" -}}
-              {{- range split . "&&" -}}
-                {{- if . | in $names -}}
-                  {{- $show_of = $show_of | append . -}}
-                {{- end -}}
-              {{- end -}}
-            {{- end -}}
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-    {{- $show_of      = cond (not $show_of)     "" (print ` data-showof="{` (delimit (uniq $show_of) "}|{") `}"`) | safeHTMLAttr -}}
     {{- $required    := cond (not .required)    "" " data-required" | safeHTMLAttr -}}
     {{- if or (and (not .required) .required_if) (and .required .show_if) -}}
       {{- with .required_if | default .show_if -}}
@@ -209,11 +264,23 @@
       {{- end -}}
     {{- end -}}
 
-    {{- $form_item_wrap := not ($type | in (slice "hidden" "br" "hr")) -}}
-    {{- if $form_item_wrap -}}
-      <div class="form__item {{- $full }}" {{- $show_if }} {{- $show_of }}>
+    {{/*  wrap  */}}
+    {{- $form_wrap := not ($type | in $slices.wrap) -}}
+    {{- if $form_wrap -}}
+      {{- $wrap_class := slice "form__item" (cond .full "contact__full" "") -}}
+      {{- $show_if    := "" -}}{{- with .show_if -}}{{- $show_if = print "{" (. | replaceRE `(\|\||\&\&)` "}$1{") "}" -}}{{- end -}}
+      {{- $show_of    := "" -}}{{- with .show_of -}}{{- $show_of = print "{" (delimit (uniq .) "}|{")             "}" -}}{{- end -}}
+      {{- $wrap_attrs := dict
+        "class"       $wrap_class
+        "data-showif" $show_if
+        "data-showof" $show_of
+      -}}
+      {{- $wrap_attrs  = partial "functions/attrs" $wrap_attrs -}}
+      <div {{- $wrap_attrs }}>
+
+      {{/*  label  */}}
       {{ if or $form.labels_out (eq $type "geo") }}
-        {{ if $type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "geo" "select") }}
+        {{ if $type | in $slices.label }}
           <label class="form__label">
             {{- with .icon -}}
               {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
@@ -224,13 +291,21 @@
         {{ end }}
       {{ end }}
     {{ end }}
-      {{ if $chamfer | and ($type | in (slice "text" "email" "tel" "number" "date" "time" "file" "textarea" "select" "radio" "checkbox")) }}
-        <div class="form__item-border
-          {{- if eq $type `textarea` }} form__item-border--textarea{{ end }}
-          {{- if $type | in (slice `radio` `checkbox`) }} form__item-border--fieldset{{ end -}}
-        "></div>
+
+      {{/*  border_chamfer  */}}
+      {{ if $chamfer | and ($type | in $slices.border_chamfer) }}
+        {{- $border_class := slice
+          "form__item-border"
+          (cond (eq $type "textarea"       ) "form__item-border--textarea" "")
+          (cond ($type | in $slices.markers) "form__item-border--fieldset" "")
+        -}}
+        {{- $border_attrs := dict "class" $border_class -}}
+        {{- $border_attrs  = partial "functions/attrs" $border_attrs -}}
+        <div {{- $border_attrs }}>
       {{ end }}
-      {{- if $type | in (slice "text" "email" "tel" "number" "date" "time" "file") -}}
+
+      {{/*  tag_inputs  */}}
+      {{- if $type | in $slices.tag_inputs -}}
         {{- $placeholder := print (.label | default .name) (cond (not .required) "" " *") -}}
         {{- $onfocus     := false -}}
         {{- if (eq $type "date" | or (eq $type "time")) | and (not .shortcode) -}}
@@ -238,7 +313,7 @@
         {{- end -}}
         {{- $length  := "" | safeHTMLAttr -}}
         {{- if or .min .max -}}
-          {{- if $type | in (slice "text" "email" "tel") -}}
+          {{- if $type | in $slices.min_max_length -}}
             {{- $length  = "length" | safeHTMLAttr -}}
           {{- end -}}
         {{- end -}}
@@ -254,11 +329,10 @@
         {{- $multiple  := false -}}
         {{- if eq $type "file" -}}
           {{- $form_file_label  := i18n "form_file_label" -}}
-          {{- if .max -}}
-            {{- $form_file_label = i18n "form_files_label" -}}
-            {{- if gt .max 1 -}}
-              {{- $multiple = true -}}
-            {{- end -}}
+          {{- with .max -}}
+          {{- end -}}
+          {{- if gt .max 1 -}}
+            {{- $multiple = true -}}
           {{- end -}}
           <label class="form__file" style="--form-file-label:'{{ $form_file_label }}'">
             {{- partial "components/link" (dict
@@ -274,11 +348,11 @@
         {{- end -}}
 
         <input
-          {{- $a }} class="form__input"
-          {{- $a }} type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}"
-          {{- $a }} name="{{ $name }}"
+          {{- $_ }} class="form__input"
+          {{- $_ }} type="{{ if $onfocus }}text{{ else }}{{ $type }}{{ end }}"
+          {{- $_ }} name="{{ $name }}"
           {{- $required }}
-          {{- if not ($type | in (slice `file`)) }} placeholder="{{ $placeholder }}"{{ end }}
+          {{- if ne $type `file` }} placeholder="{{ $placeholder }}"{{ end }}
           {{- if eq $type `file` }} data-placeholder="{{ $placeholder }}" data-basename="{{ .base_name }}"{{ end }}
           {{- if $onfocus }} onfocus="(this.type='{{ $type }}')" onblur="(this.type='text')"{{ end }}
           {{- with .accept }} accept="{{ . }}"{{ end }}
@@ -304,6 +378,7 @@
           </label>
         {{- end -}}
 
+      {{/*  geo  */}}
       {{- else if $type | eq "geo" -}}
         {{ $icon := .licon | default "circle-dot" }}
         <div
@@ -317,16 +392,20 @@
         ></div>
         {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" $icon) }}
         <input class="form__geo form__geo--json" type="hidden" name="{{ .name }}" {{- $required }}>
+
+      {{/*  textarea  */}}
       {{- else if $type | eq "textarea" -}}
         <textarea
-          {{- $a }} class="form__textarea"
-          {{- $a }} name="{{ .name }}"
-          {{- $a }} rows="3"
-          {{- $a }} placeholder="{{ .label | default .name }}{{ if .required }} *{{ end }}"
+          {{- $_ }} class="form__textarea"
+          {{- $_ }} name="{{ .name }}"
+          {{- $_ }} rows="3"
+          {{- $_ }} placeholder="{{ .label | default .name }}{{ if .required }} *{{ end }}"
           {{- with .min }} minlength="{{ . }}"{{ end }}
           {{- with .max }} maxlength="{{ . }}"{{ end }}
           {{- $required -}}
         ></textarea>
+
+      {{/*  select  */}}
       {{- else if $type | eq "select" -}}
         <label>
           <i class="hide">Select</i>
@@ -337,7 +416,9 @@
             {{- end -}}
           </select>
         </label>
-      {{- else if $type | in (slice "radio" "checkbox") -}}
+
+      {{/*  markers  */}}
+      {{- else if $type | in $slices.markers -}}
         {{- $axis        := cond (not .x) "" " form__fieldset--x" -}}
         {{- $is_checkbox := eq $type "checkbox" -}}
         {{- $legend      := .label | default .name -}}
@@ -350,57 +431,75 @@
               {{- $legend }}{{ if .required }} *{{ end -}}
             </legend>
           {{- end -}}
-          {{- $options  := .options -}}
           {{- $required := .required -}}
-          {{- range .options -}}
-            {{- $option  := .value | default .option -}}
-            {{- if $is_checkbox -}}
-              {{- $name   = .value | default (print $legend " ➡️ " $option) -}}
-              {{- $option = "✅" -}}
-            {{- end -}}
-            <label class="form__option">{{ "" -}}
-              <input class="form__{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
-              {{- .option -}}
-              {{- if eq (len $options) 1 -}}
-                {{- if $required }} *{{ end -}}
+          {{- with .options -}}
+            {{- $some := eq (len .) 1 -}}
+            {{- range . -}}
+              {{- $option  := .value | default .option -}}
+              {{- if $is_checkbox -}}
+                {{- $name   = .value | default (print $legend " ➡️ " $option) -}}
+                {{- $option = "✅" -}}
               {{- end -}}
-            </label>
+              <label class="form__option">{{ "" -}}
+                <input class="form__{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $option }}">
+                {{- .option -}}
+                {{- if $some -}}
+                  {{- if $required }} *{{ end -}}
+                {{- end -}}
+              </label>
+            {{- end -}}
           {{- end -}}
         </fieldset>
+
+      {{/*  headers  */}}
       {{- else if $type | findRE `^h\d` -}}
         {{- print "<" $type " " | safeHTML -}}
         class="form__title contact__full"
         {{- ">" | safeHTML -}}
         {{- .label | markdownify -}}
         {{- print "</" $type ">" | safeHTML -}}
+
+      {{/*  content  */}}
       {{- else if $type | eq "content" -}}
         <div class="form__content content">
           {{- partial "functions/md" (dict "content" .content "not_header_links" true) -}}
         </div>
+
+      {{/*  hidden  */}}
       {{- else if eq $type "hidden" -}}
         <input type="hidden" name="{{ .name }}" value="{{ .label }}">
+
+      {{/*  hr  */}}
       {{- else if eq $type "hr" -}}
         <hr>
+
+      {{/*  br  */}}
       {{- else if eq $type "br" -}}
         <div class="form__br"></div>
+
       {{- end -}}
+
+      {{/*  hint  */}}
       {{- with .hint -}}
         <div class="form__hint content {{- if not ($type | findRE `^h\d`) }} align-left{{ end }}">
           {{- partial "functions/md" (dict "content" . "not_header_links" true) -}}
         </div>
       {{- end -}}
 
-      {{- if $type | in (slice "text" "email" "tel" "number" "date" "time" "textarea" "select") -}}
+      {{/*  icon  */}}
+      {{- if $type | in $slices.icon -}}
         {{- with .icon -}}
           {{- partial "components/icon" (dict "class" "form__icon" "icon" .) -}}
         {{- end -}}
       {{- end -}}
 
+      {{/*  file preview  */}}
       {{- if eq $type "file" -}}
         <ol class="form__preview"></ol>
       {{- end -}}
 
-    {{- if $form_item_wrap -}}
+    {{/*  end wrap  */}}
+    {{- if $form_wrap -}}
       </div>
     {{ end }}
   {{- end -}}
@@ -408,21 +507,23 @@
 
   {{/*  FOOTER  */}}
 
-  {{- $class  := "form__button contact__full button" -}}
+  {{- /* Submit */ -}}
+  {{- $submit_class  := "form__button contact__full button" -}}
   {{- with $form.font_alt -}}
-    {{- $class = print $class " button--font-alt" -}}
+    {{- $submit_class = print $submit_class " button--font-alt" -}}
   {{- end -}}
   {{- with $form.button -}}
     {{- if ne . "link" -}}
-      {{- $class = print $class " " . -}}
+      {{- $submit_class = print $submit_class " " . -}}
     {{- end -}}
   {{- end -}}
-  <button class="{{ $class }}" type="submit" name="submit">
+  <button class="{{ $submit_class }}" type="submit" name="submit">
     {{- partial "components/icon" (dict "icon" ($form.icon | default "paper-plane") "emoji" "📨") -}}
     <i>{{ $form.label | default (i18n "send") }}</i>
     {{- "" -}}
   </button>
-  {{- "" -}}
+
+  {{- /* Consent */ -}}
   <label class="form__option form__option--consent">
     {{- "" -}}
     <input  class="form__checkbox" type="checkbox" value="true">
@@ -444,7 +545,8 @@
     </i>
     {{- "" -}}
   </label>
-  {{- "" -}}
+
+  {{- /* Icons */ -}}
   {{- partial "components/icon" (dict "class" "display-none" "icon" "xmark"       ) -}}
   {{- partial "components/icon" (dict "class" "display-none" "icon" "rotate"      ) -}}
   {{- partial "components/icon" (dict "class" "display-none" "icon" "circle-check") -}}

@@ -20,39 +20,33 @@
   {{- end -}}
 
   {{/*  CLASS  */}}
-  {{- $class := partial "functions/attr-delimit" (dict
-    "attr"  "class"
-    "array" (slice
-      "bg-color"
-      $image
-      $alpha
-    )
-  ) -}}
+  {{- $class := slice
+    "bg-color"
+    $image
+    $alpha
+  -}}
 
 
   {{/*  STYLE  */}}
   {{ $bg_alpha    := and (.alpha | and (ne .alpha 100)) .bg }}
   {{ $color_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) }}
-  {{ $style := partial "functions/attr-delimit" (dict
-    "attr"    "style"
-    "delimit" ";"
-    "array"   (slice
-      (cond (not $bg_alpha)    "" (print "--bg-alpha:"    .alpha))
-      (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
-    )
-  ) }}
+  {{ $style := slice
+    (cond (not $bg_alpha)    "" (print "--bg-alpha:"    .alpha))
+    (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
+  }}
 
 
   {{/*  JOIN ATTRIBUTES  */}}
-  {{ $attr := partial "functions/attr-delimit" (dict
-  "array" (slice
-    $class
-    $style
-  )
-  ) }}
+  {{ $attrs := dict
+    "class" $class
+    "style" $style
+  }}
+  {{ $attrs = partial "functions/attrs" $attrs }}
 
-  <div {{ $attr | safeHTMLAttr }}>
-    {{- $is_iframe := partial `functions/is-iframe` .bg -}}
+
+  {{/*  HTML  */}}
+  <div {{- $attrs }}>
+    {{- $is_iframe := partial "functions/is-iframe" .bg -}}
     {{- if $is_iframe -}}
       <div class="bg-figure-video">
     {{- end -}}

@@ -30,40 +30,32 @@
 
     {{/*  CLASS  */}}
     {{/*  {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */}}
-    {{- $class := partial "functions/attr-delimit" (dict
-      "attr"  "class"
-      "array" (slice
-        "boxes"
-        (cond (or (gt $cols.max 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
-        (cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction))
-        (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
-        (cond (not .align_y) "" (print "align-items-" .align_y))
-        (cond (not .align_x) "" (print "justify-" .align_x))
-        (cond (not .slider)  "box__block" "slider__items")
-      )
-    ) -}}
+    {{- $class := slice
+      "boxes"
+      (cond (or (gt $cols.max 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
+      (cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction))
+      (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
+      (cond (not .align_y) "" (print "align-items-" .align_y))
+      (cond (not .align_x) "" (print "justify-" .align_x))
+      (cond (not .slider)  "box__block" "slider__items")
+    -}}
 
 
     {{/*  STYLE  */}}
-    {{ $style := partial "functions/attr-delimit" (dict
-      "attr"    "style"
-      "delimit" ";"
-      "array"   (slice
-        (cond (eq $cols.max 1)  "" (print "--cols-max:" $cols.max))
-        (cond (eq $cols.min 1)  "" (print "--cols-min:" $cols.min))
-        (cond (eq .gap nil)     "" (print "--cols-gap-max:" .gap))
-        (cond (eq .gap_min nil) "" (print "--cols-gap-min:" .gap_min))
-        (cond (eq .gap_ny nil)  "" (print "--cols-gap-ny:"  .gap_ny))
-      )
-    ) }}
+    {{ $style := slice
+      (cond (eq $cols.max 1)  "" (print "--cols-max:" $cols.max))
+      (cond (eq $cols.min 1)  "" (print "--cols-min:" $cols.min))
+      (cond (eq .gap nil)     "" (print "--cols-gap-max:" .gap))
+      (cond (eq .gap_min nil) "" (print "--cols-gap-min:" .gap_min))
+      (cond (eq .gap_ny nil)  "" (print "--cols-gap-ny:"  .gap_ny))
+    }}
 
     {{/*  JOIN ATTRIBUTES  */}}
-    {{ $attr := partial "functions/attr-delimit" (dict
-      "array" (slice
-        $class
-        $style
-      )
-    ) }}
+    {{ $attrs := dict
+      "class" $class
+      "style" $style
+    }}
+    {{ $attrs = partial "functions/attrs" $attrs }}
 
     {{/*  SLIDER  */}}
     {{ if .slider }}
@@ -72,7 +64,7 @@
     {{ end }}
 
     {{/*  BOXES  */}}
-    <div {{ $attr | safeHTMLAttr }}>
+    <div {{- $attrs }}>
   {{ end }}
 {{ end }}
 

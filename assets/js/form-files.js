@@ -14,7 +14,6 @@ const isSafari =
   navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
   navigator.userAgent.indexOf('CriOS') === -1 &&
   navigator.userAgent.indexOf('FxiOS') === -1
-console.log('isSafari: ', isSafari)
 
 export function initFormFiles () {
   window.addEventListener('load', () => {

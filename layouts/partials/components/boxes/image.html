@@ -21,33 +21,36 @@
   {{- $border    := cond (not .border)    "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
   {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
 
-  {{- $class := partial "functions/attr-delimit" (dict
-    "attr"  "class"
-    "array" (slice
-      "image"
-      $ratio
-      $contain
-      $border
-      $inset
-      $circle
-      $hover
-      $icon_top
-      $grayscale
-    )
-  ) -}}
+  {{- $class := slice
+    "image"
+    $ratio
+    $contain
+    $border
+    $inset
+    $circle
+    $hover
+    $icon_top
+    $grayscale
+  -}}
 
   {{/*  IMAGE STYLE  */}}
-  {{ $style := cond (not .ratio) "" (print `style="--image-ratio:` .ratio `"`) }}
+  {{ $style := "" }}
+  {{ with .ratio }}
+    {{ $ratio := . }}
+    {{ if not (in . "/") }}
+      {{ $ratio = print . "/1" }}
+    {{ end }}
+    {{ $style  = print "--image-ratio:" $ratio }}
+  {{ end }}
 
   {{/*  IMAGE ATTR JOIN  */}}
-  {{ $attr  := partial "functions/attr-delimit" (dict
-    "array" (slice
-      $class
-      $style
-    )
-  ) }}
+  {{ $attrs := dict
+    "class" $class
+    "style" $style
+  }}
+  {{ $attrs = partial "functions/attrs" $attrs }}
 
-  <div {{ $attr | safeHTMLAttr }}>
+  <div {{- $attrs }}>
 
     {{/*  GRADIENT  */}}
     {{- if .declive -}}

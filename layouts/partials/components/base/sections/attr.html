@@ -103,27 +103,24 @@
   {{ end }}
 {{ end }}
 
-{{- $class := partial "functions/attr-delimit" (dict
-  "attr"  "class"
-  "array" (slice
-    $type
-    $key_class
-    $full
-    $bg
-    $bg_color
-    $bg_gradient_type
-    $bg_gradient_color
-    $bg_image_fix
-    $bg_parallax
-    $bg_video_parent
-    $padding_hide
-    $padding_top_divider
-    $padding_bottom_divider
-    $divider
-    $divider_next
-    | append (.body_class | default slice)
-  )
-) -}}
+{{- $class := slice
+  $type
+  $key_class
+  $full
+  $bg
+  $bg_color
+  $bg_gradient_type
+  $bg_gradient_color
+  $bg_image_fix
+  $bg_parallax
+  $bg_video_parent
+  $padding_hide
+  $padding_top_divider
+  $padding_bottom_divider
+  $divider
+  $divider_next
+  | append (.body_class | default slice)
+-}}
 
 
 {{/*  STYLES  */}}
@@ -151,36 +148,27 @@
   {{ $padding_bottom = "" }}
 {{ end }}
 
-{{ $style := partial "functions/attr-delimit" (dict
-  "attr"    "style"
-  "delimit" ";"
-  "array"   (slice
-    $bg_color_alpha
-    $padding_top
-    $padding_bottom
-    $divider_style
-    $divider_next_style
-  )
-) }}
+{{ $style := slice
+  $bg_color_alpha
+  $padding_top
+  $padding_bottom
+  $divider_style
+  $divider_next_style
+}}
 
 
 {{/*  HIDDEN  */}}
-{{ $hidden := cond $modal `hidden="until-found"` "" }}
-
-
-{{/*  ID  */}}
-{{ $id := cond (not .id) "" (print ` id="` .id `"`) }}
+{{ $hidden := cond $modal "until-found" nil }}
 
 
 {{/*  JOIN ATTRIBUTES  */}}
-{{ $attr := partial "functions/attr-delimit" (dict
-  "array" (slice
-    $id
-    $class
-    $style
-    $hidden
-  )
-) }}
+{{ $attrs := dict
+  "id"     .id
+  "class"  $class
+  "style"  $style
+  "hidden" $hidden
+}}
+{{ $attrs  = partial "functions/attrs" $attrs }}
 
 
-{{ return $attr }}
+{{ return $attrs }}
