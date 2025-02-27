@@ -20,8 +20,6 @@
 {{ end }}
 
 {{ $content = $content
-  | replaceRE `==icon(.+?)==` `<mark class="sign">icon$1</mark>`
-  | replaceRE `==(.+?)==` `<mark>$1</mark>`
   | replaceRE `(?s)(<blockquote class="quotes.*?">)` `$1 <svg class="quote-left"><use xlink:href='/draws.svg#quote-left'></use></svg><svg class="quote-right"><use xlink:href='/draws.svg#quote-right'></use></svg>`
   | replaceRE `(?s)(<blockquote class="dittos.*?">)` `$1 <svg class="quote-left"><use xlink:href='/draws.svg#ditto'></use></svg><svg class="quote-right"><use xlink:href='/draws.svg#ditto'></use></svg>`
   | replaceRE `icon-([\w-]+)` `<svg><use xlink:href='/draws.svg#$1'></use></svg>`
