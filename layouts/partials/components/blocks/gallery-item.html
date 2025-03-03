@@ -1,21 +1,36 @@
-{{- $style_width  := "" -}}
-{{- $style_height := "" -}}
-{{- $image        := .image -}}
-{{- $cols         := .cols | default 2 -}}
+{{- $image  := .image -}}
+{{- $tag    := "div" -}}
+{{- $title  := "" -}}
+{{- $target := "" -}}
+{{- $rel    := "" -}}
+{{- if not .lightbox -}}
+  {{- with .link -}}
+    {{- $tag   = "a" -}}
+    {{- $title = .image | replaceRE `\..+$` "" -}}
+    {{- if hasPrefix .link "http" -}}
+      {{- $target = "_blank" -}}
+      {{- $rel    = "noopener" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  ROWS TYPE  */ -}}
+{{- $style := "" -}}
 {{- if eq .type "rows" -}}
-  {{- $width  := 200 -}}
-  {{- $height := 100 -}}
+  {{- $cols         := .cols | default 2 -}}
+  {{- $width        := 200 -}}
+  {{- $height       := 100 -}}
   {{- with .image -}}
 
     {{- if $image | findRE `\.(mp4|mov|avi|webm)` -}} {{- /*  IS VIDEO  */ -}}
 
-      {{- /*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}  */ -}}
+      {{- /*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` "" -}}  */ -}}
       {{- $poster := "" -}}
       {{- if in $image "poster=" -}}
-        {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
+        {{- $poster = print "/media/" ($image | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` "$1") -}}
       {{- else -}}
         {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
-          {{- $path  := print "/media/" $image | replaceRE `[\#\&\?].*$` `` -}}
+          {{- $path  := print "/media/" $image | replaceRE `[\#\&\?].*$` "" -}}
           {{- $file  := $path | replaceRE `^(.+)\..+$` (print `$1.` .) -}}
           {{- $asset := print "assets" $file -}}
           {{- if fileExists $asset -}}
@@ -23,17 +38,17 @@
           {{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- with resources.Get $poster }}
+      {{- with resources.Get $poster -}}
         {{- $width  = .Width -}}
         {{- $height = .Height -}}
         {{- $image  = $poster -}}
-      {{ end }}
+      {{- end -}}
 
-    {{ else }}
+    {{- else -}}
 
       {{- with resources.Get (print "/media/" .) -}}
         {{- if in $image ".svg" -}} {{- /*  IS SVG  */ -}}
-          {{- $svg := (. | minify).Content }}
+          {{- $svg := (. | minify).Content -}}
           {{- $view_box := $svg
             | replaceRE
               `.*viewBox="([\d\.-]+) ([\d\.-]+) ([\d\.-]+) ([\d\.-]+)".*`
@@ -48,13 +63,15 @@
         {{- end -}}
       {{- end -}}
 
-    {{ end }}
+    {{- end -}}
 
   {{- end -}}
-  {{- $style_width  = lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}
-  {{- $style_height = lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}
+  {{- $style_width  := lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}
+  {{- $style_height := lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}
+  {{- $style         = "--gallery-item-width:" $style_width ";--gallery-item-height:" $style_height "%" -}}
 {{- end -}}
 
+{{- /*  external  */ -}}
 {{- $external := hasPrefix .image "http" -}}
 {{- if not $external -}}
   {{- if not (in $.image "/media/") -}}
@@ -64,34 +81,27 @@
   {{- end -}}
 {{- end -}}
 
-{{- if .lightbox -}}
-  <div class="gallery__item" data-lightbox="{{ $image }}" tabindex="0"
-{{- else if .link -}}
-  <a class="gallery__item" href="{{ .link }}"
-    {{- if $external }} target="_blank" rel="noopener"{{ end }}
-    title="{{ .image | replaceRE `\..+$` `` }}"
-{{- else -}}
-  <div class="gallery__item" tabindex="0"
-{{- end -}}
-  {{- if eq .type `rows` -}}
-    {{- ` ` | safeHTMLAttr -}}
-    style="--gallery-item-width:{{ $style_width }};--gallery-item-height:{{ $style_height }}%"
-  {{- end -}}
-  >
+{{- /*  attrs  */ -}}
+{{- $attrs := dict
+  "class"         "gallery__item"
+  "data-lightbox" (cond .lightbox $image "")
+  "tabindex"      (cond (not .link) "0" "")
+  "href"          (cond (not .link) "" .link)
+  "title"         $title
+  "target"        $target
+  "rel"           $rel
+  "style"         $style
+-}}
+{{- $attrs = partial "functions/attrs" $attrs -}}
 
-  {{- partial "components/media/_"
-    (dict
+{{- /*  HTML  */}}
+{{ print "<" $tag $attrs ">" | safeHTML }}
+  {{- partial "components/media/_" (dict
       "class"     "gallery__image"
       "src"       .image
       "alt"       .alt
       "container" .container
       "span_xl"   .span_xl
       "span_xs"   .span_xs
-    )
-  -}}
-
-{{- if not .lightbox | and .link -}}
-  </a>
-{{- else -}}
-  </div>
-{{- end -}}
+  ) }}
+{{ print "</" $tag ">" | safeHTML -}}

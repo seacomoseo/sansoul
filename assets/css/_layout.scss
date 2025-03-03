@@ -19,7 +19,7 @@ main {
   min-height: calc(100vh - 9em);
 }
 a {
-  color: var(--link);
+  color: var(--cta);
   text-decoration: none;
   transition: color;
   transition-duration: .3s;
@@ -251,7 +251,7 @@ tr {
 thead tr {
   color: var(--main-text);
   background-color: var(--main);
-  svg {
+  .icon {
     fill: var(--main-text);
   }
 }
@@ -267,12 +267,19 @@ iframe {
   }
 }
 /*! purgecss end ignore */
-svg {
+.icon {
   fill: currentColor;
   width: 1em;
   height: 1em;
   flex-shrink: 0;
   flex-grow: 0;
+  display: inline-block;
+}
+.icon--li {
+  @include font-title;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1em;
 }
 // [href^="/draws.#{$timestamp}.svg"] {
 //   color: $main;
@@ -289,7 +296,7 @@ pre {
   } @else {
     border-radius: $radius;
   }
-  > svg {
+  > .icon {
     color: inherit;
   }
 }
@@ -314,12 +321,12 @@ pre {
   color: $main-contrast-neutral;
   background: $main;
 }
-svg:has(> use[href="/draws.#{$timestamp}.svg#flag-es"]),
-svg:has(> use[href="/draws.#{$timestamp}.svg#flag-en"]),
-svg:has(> use[href="/draws.#{$timestamp}.svg#flag-fr"]),
-svg:has(> use[href="/draws.#{$timestamp}.svg#flag-de"]),
-svg:has(> use[href="/draws.#{$timestamp}.svg#flag-pt"]),
-svg:has(> use[href="/draws.#{$timestamp}.svg#flag-it"]) {
+.icon:has(> use[href="/draws.#{$timestamp}.svg#flag-es"]),
+.icon:has(> use[href="/draws.#{$timestamp}.svg#flag-en"]),
+.icon:has(> use[href="/draws.#{$timestamp}.svg#flag-fr"]),
+.icon:has(> use[href="/draws.#{$timestamp}.svg#flag-de"]),
+.icon:has(> use[href="/draws.#{$timestamp}.svg#flag-pt"]),
+.icon:has(> use[href="/draws.#{$timestamp}.svg#flag-it"]) {
   border-radius: 50%;
 }
 /*! purgecss end ignore */

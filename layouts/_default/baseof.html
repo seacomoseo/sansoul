@@ -3,7 +3,7 @@
 
   {{- $params := partial "functions/params" . -}}
 
-  {{/*  CUSTOM HTML HEAD  */}}
+  {{- /*  CUSTOM HTML HEAD  */ -}}
   {{- $custom_html_head  := "" -}}
   {{- with site.Params.html.head -}}
     {{- $path            := print "aux_html_head." $.Lang -}}
@@ -11,7 +11,7 @@
     {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
   {{- end -}}
 
-  {{/*  CUSTOM HTML BODY  */}}
+  {{- /*  CUSTOM HTML BODY  */ -}}
   {{- $custom_html_body  := "" -}}
   {{- with site.Params.html.body -}}
     {{- $path            := print "aux_html_body." $.Lang -}}
@@ -19,7 +19,7 @@
     {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
   {{- end -}}
 
-  {{/*  BODY ID  */}}
+  {{- /*  BODY ID  */ -}}
   {{- $body_id := "" -}}
   {{- if .IsHome -}}
     {{- $body_id = "home" -}}
@@ -35,7 +35,7 @@
   {{- end -}}
   {{- $body_id = print "body-" $body_id -}}
 
-  {{/*  BODY MENU CLASS  */}}
+  {{- /*  BODY MENU CLASS  */ -}}
   {{- $menu  := $params.menu -}}
   {{- $body_menu             := "" -}}
   {{- $body_menu_logo        := "" -}}
@@ -64,7 +64,7 @@
     {{- end -}}
   {{- end -}}
 
-  {{/*  BODY CLASS  */}}
+  {{- /*  BODY CLASS  */ -}}
   {{- $body_class := slice
     (print "kind-" .Kind)
     (print "type-" .Type)
@@ -78,7 +78,7 @@
     $body_menu_sections
   -}}
 
-  {{/*  BODY ATTRIBUTES  */}}
+  {{- /*  BODY ATTRIBUTES  */ -}}
   {{- $background := $params.background -}}
   {{- $background  = merge $background (dict
     "body"  true
@@ -89,50 +89,51 @@
     "body_class" $body_class
   )) -}}
 
-  {{/*  SECTIONS  */}}
+  {{- /*  SECTIONS  */ -}}
   {{- $sections_all := partial "components/base/sections/_" dict -}}
   {{- $sections     := where $sections_all "id" "ne" "footer" -}}
   {{- $footer       := index (last 1 $sections_all) 0 -}}
 
-  {{/*  HEAD  */}}
+  {{- /*  HEAD  */ -}}
   <head>
     {{- partial "components/base/head" . -}}
-    {{- $custom_html_head -}}
+    {{- $custom_html_head }}
   </head>
 
-  {{/*  MODY  */}}
+  {{- /*  BODY  */}}
   <body {{- $body_attr }}>
 
-    {{/*  BACKGROUND  */}}
+    {{- /*  BACKGROUND  */ -}}
     {{- partial "components/bg" $background -}}
 
-    {{/*  LOGO  */}}
-    {{ partial "components/base/logo" $params }}
+    {{- /*  LOGO  */ -}}
+    {{- partial "components/base/logo" $params -}}
 
-    {{/*  MENU  */}}
-    {{ partial "components/base/menu/_" $params }}
+    {{- /*  MENU  */ -}}
+    {{- partial "components/base/menu/_" $params -}}
 
-    {{/*  MAIN  */}}
+    {{- /*  MAIN  */}}
     <main>
-      {{ range $key, $value := $sections }}
-        {{/* SECTION  */}}
+      {{- range $key, $value := $sections -}}
+        {{- /* SECTION  */ -}}
         {{- partial "components/base/sections/section" (merge . (dict "key" $key)) -}}
-        {{/*  MODALS  */}}
+        {{- /*  MODALS  */ -}}
         {{- range $k, $v := .modals -}}
           {{- partial "components/base/sections/section" (merge . (dict "key" $key "k" $k)) -}}
         {{- end -}}
-      {{ end }}
+      {{- end }}
     </main>
 
-    {{/*  FOOTER  */}}
-    {{ partial "components/base/sections/section" (merge $footer (dict "key" 0)) }}
+    {{- /*  FOOTER  */ -}}
+    {{- partial "components/base/sections/section" (merge $footer (dict "key" 0)) -}}
 
-    {{/*  PRE BODY END  */}}
-    {{ partial "components/cookies"      $params         }}
-    {{ partial "components/callnow"      $params.callnow }}
-    {{ partial "components/up"           .               }}
-    {{ partial "components/base/scripts" .               }}
-    {{ $custom_html_body }}
+    {{- /*  PRE BODY END  */ -}}
+    {{- partial "components/cookies"      $params         -}}
+    {{- partial "components/callnow"      $params.callnow -}}
+    {{- partial "components/up"           .               -}}
+    {{- $js := partial "scripts" .         }}
+    <script src="{{ $js.RelPermalink }}" defer></script>
+    {{- $custom_html_body }}
   </body>
 </html>
 {{- block "none" . }}{{ end }}

@@ -28,8 +28,8 @@
   {{- if $boxes_wrap -}}
     {{- $level = add $.level 1 -}}
 
-    {{/*  CLASS  */}}
-    {{/*  {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */}}
+    {{- /* CLASS  */ -}}
+    {{- /* {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */ -}}
     {{- $class := slice
       "boxes"
       (cond (or (gt $cols.max 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
@@ -41,37 +41,37 @@
     -}}
 
 
-    {{/*  STYLE  */}}
-    {{ $style := slice
+    {{- /* STYLE  */ -}}
+    {{- $style := slice
       (cond (eq $cols.max 1)  "" (print "--cols-max:" $cols.max))
       (cond (eq $cols.min 1)  "" (print "--cols-min:" $cols.min))
       (cond (eq .gap nil)     "" (print "--cols-gap-max:" .gap))
       (cond (eq .gap_min nil) "" (print "--cols-gap-min:" .gap_min))
       (cond (eq .gap_ny nil)  "" (print "--cols-gap-ny:"  .gap_ny))
-    }}
+    -}}
 
-    {{/*  JOIN ATTRIBUTES  */}}
-    {{ $attrs := dict
+    {{- /* JOIN ATTRIBUTES  */ -}}
+    {{- $attrs := dict
       "class" $class
       "style" $style
-    }}
-    {{ $attrs = partial "functions/attrs" $attrs }}
+    -}}
+    {{- $attrs = partial "functions/attrs" $attrs -}}
 
-    {{/*  SLIDER  */}}
-    {{ if .slider }}
+    {{- /* SLIDER  */ -}}
+    {{- if .slider }}
       <div class="slider box__block" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
         <div class="slider__track">
-    {{ end }}
+    {{- end -}}
 
-    {{/*  BOXES  */}}
+    {{- /* BOXES  */}}
     <div {{- $attrs }}>
-  {{ end }}
-{{ end }}
+  {{- end -}}
+{{- end -}}
 
-        {{ $parent  := dict }}
-        {{ if and (not .list_pages) (not .main) }}
-          {{ with $box }}
-            {{ $parent = dict
+        {{- $parent  := dict -}}
+        {{- if and (not .list_pages) (not .main) -}}
+          {{- with $box -}}
+            {{- $parent = dict
               "uppercase"   .uppercase
               "underline"   .underline
               "icon_type"   .icon_type
@@ -84,13 +84,13 @@
               "grayscale"   .grayscale
               "hide_shadow" .hide_shadow
               "hide_radius" .hide_radius
-            }}
-          {{ end }}
-        {{ end }}
+            -}}
+          {{- end -}}
+        {{- end -}}
 
-        {{ range $key, $value := $boxes }}
-          {{/*  BOX  */}}
-          {{ partial "components/boxes/box" (merge
+        {{- range $key, $value := $boxes -}}
+          {{- /* BOX  */ -}}
+          {{- partial "components/boxes/box" (merge
             $parent
             $.box
             .
@@ -108,15 +108,15 @@
               "cols_min"  $cols.min
               "box_wrap"  $boxes_wrap
             )
-          ) }}
-        {{ end }}
+          ) -}}
+        {{- end -}}
 
 {{- if $boxes_wrap -}}
-  {{- with .box -}}
+  {{- with .box }}
     </div>
 
-    {{/*  SLIDER BUTTONS  */}}
-    {{ if .slider }}
+    {{- /* SLIDER BUTTONS  */ -}}
+    {{- if .slider }}
       </div>
         {{- partial "components/slider-buttons"
           (dict
@@ -125,8 +125,8 @@
             "arrows"  .arrows
             "button"  .button
           )
-        -}}
+        }}
       </div>
-    {{ end }}
-  {{ end }}
-{{ end }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

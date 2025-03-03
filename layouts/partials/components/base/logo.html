@@ -14,13 +14,13 @@
           {{- $color  = print "bg bg-" (. | default "white") -}}
         {{- end -}}
       {{- end -}}
-    {{- end -}}
+    {{- end }}
     <header class="logo {{ $color }}">
       <div class="box container container--{{ $container }} {{- $align }}">
-        {{ $alt := site.Home.Params.seo | default site.Home.Params.title | markdownify | plainify }}
-        <div class="logo__link href" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link" title="{{ $alt }}">
-          {{- with $logo -}}
-            {{- partial "components/media/_"
+        {{- $alt := site.Home.Params.seo | default site.Home.Params.title | markdownify | plainify }}
+        <div class="logo__link link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link" title="{{ $alt }}">
+          {{- with $logo }}
+            {{ partial "components/media/_"
               (dict
                 "svg_src"   true
                 "class"     "logo__image"
@@ -33,16 +33,16 @@
               )
             -}}
           {{- end -}}
-          {{ if $title | or $subtitle }}
+          {{- if $title | or $subtitle }}
             <div class="logo__titles">
-              {{- with $title -}}
+              {{- with $title }}
                 <i class="logo__title h1">{{ . }}</i>
               {{- end -}}
-              {{- with $subtitle -}}
+              {{- with $subtitle }}
                 <i class="logo__subtitle subtitle">{{ . }}</i>
               {{- end -}}
             </div>
-          {{- end -}}
+          {{- end }}
         </div>
       </div>
     </header>

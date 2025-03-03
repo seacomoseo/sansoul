@@ -34,7 +34,7 @@
                     {{ if $pair }}
                       {{ if eq .kind "slice" }}
                         {{ if not (reflect.IsSlice $pair) }}
-                          {{ $pair = split $pair (.delimit | default ",")  }}
+                          {{ $pair = split $pair (.delimit | default ",") }}
                         {{ end }}
                       {{ end }}
                     {{ end }}
@@ -48,7 +48,7 @@
                       {{ else if eq .kind "boolean" }}
                         {{ $default = eq "true" .default }}
                       {{ else if eq .kind "slice" }}
-                        {{ $default = split .default (.delimit | default ",")  }}
+                        {{ $default = split .default (.delimit | default ",") }}
                       {{ else if eq .kind "dict" }}
                         {{ $default = unmarshal .default }}
                       {{ end }}

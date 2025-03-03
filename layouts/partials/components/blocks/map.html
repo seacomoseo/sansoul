@@ -1,24 +1,31 @@
 {{- with .map -}}
   {{- $icons := slice -}}
-  <div
-    id="map-{{ $.id | default $.section.id }}"
-    class="map box__block bg-light"
-    data-zoom="{{ $.zoom | default `` }}"
-  ></div>
+  {{- /*  MAP  */}}
+  {{- $map_attrs := dict
+    "id"        (print "map-" ($.id | default $.section.id))
+    "class"     "map box__block bg-light"
+    "data-zoom" $.zoom
+  -}}
+  {{- $map_attrs = partial "functions/attrs" $map_attrs }}
+  <div {{- $map_attrs }}></div>
   <div class="map__next">
+    {{- /*  EACH  */ -}}
     {{- range . -}}
-      {{- $radius := .radius | default "" -}}
-      {{- $color  := .color  | default $.icon_color | default "main" -}}
-      {{- $icon   := cond (ne .type "point") "" (.icon | default $.licon | default "circle-dot") -}}
-      {{- $icons   = $icons  | append $icon -}}
-      <div
-        data-geo="{{ .geo }}"
-        data-radius="{{ $radius }}"
-        data-color="{{ $color }}"
-        data-icon="{{ $icon }}"
-      >{{ .label }}</div>
-    {{- end -}}
+      {{- $radius    := .radius | default "" -}}
+      {{- $color     := .color  | default $.icon_color | default "main" -}}
+      {{- $icon      := cond (ne .type "point") "" (.icon | default $.licon | default "circle-dot") -}}
+      {{- $icons      = $icons  | append $icon -}}
+      {{- $geo_attrs := dict
+        "data-geo"    .geo
+        "data-radius" $radius
+        "data-color"  $color
+        "data-icon"   $icon
+      -}}
+      {{- $geo_attrs = partial "functions/attrs" $geo_attrs }}
+      <div {{- $geo_attrs }}>{{ .label }}</div>
+    {{- end }}
   </div>
+  {{- /*  HIDDEN ICONS  */ -}}
   {{- range uniq $icons -}}
     {{- partial "components/icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" .) -}}
   {{- end -}}

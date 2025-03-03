@@ -1,73 +1,75 @@
-{{ $title  := or .hanchor .title .menu_label }}
-{{ if $title }}
-  {{ $title = partial "functions/md" (dict "content" $title "inline" true) }}
+{{- $title := or .title .hanchor .menu_label -}}
+{{- if $title -}}
+  {{- $hanchor := or .hanchor .menu_label -}}
 
-  {{ $hn    := "" }}
-  {{ if not .hn }}
-    {{ if or (not .link) (eq .level 2) }}
-      {{ $hn = print "h" .level }}
-    {{ else }}
-      {{ $hn = "p" }}
-    {{ end }}
-  {{ else if eq .hn "p" }}
-    {{ $hn = "p" }}
-  {{ else }}
-    {{ $hn = print "h" .hn }}
-  {{ end }}
+  {{/*  TAG  */}}
+  {{- $hn    := "" -}}
+  {{- if not .hn -}}
+    {{- if or (not .link) (eq .level 2) -}}
+      {{- $hn = print "h" .level -}}
+    {{- else -}}
+      {{- $hn = "p" -}}
+    {{- end -}}
+  {{- else if eq .hn "p" -}}
+    {{- $hn = "p" -}}
+  {{- else -}}
+    {{- $hn = print "h" .hn -}}
+  {{- end -}}
 
-  {{ $link  := "" }}
-  {{ if and (not .like_article) (or .main (eq $hn "h1") (eq $hn "h2")) }}
-    {{ $link = cond (or .header (eq $hn "h1")) page.RelPermalink (print "#" .section.id) }}
-  {{ end }}
+  {{/*  LINK  */}}
+  {{- $link     := "" -}}
+  {{- if .like_article -}}
+    {{- $link    = .link -}}
+    {{- $hanchor = or .anchor $hanchor -}}
+  {{- else if .main -}}
+    {{- $link    = cond .header page.RelPermalink (print "#" .section.id) -}}
+  {{- end -}}
 
-  {{/*  TITLE CLASS  */}}
-  {{ $class := slice
+  {{- /* TITLE CLASS  */ -}}
+  {{- $class := slice
     "box__title"
-    (cond (not ($title | and (not .title))) "" "hide")
     (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" (print "h" (cond (not .like_article) .level "6"))))
-    (cond (not .uppercase)    "" "uppercase")
-    (cond (not .underline)    "" "underline")
-  }}
+    (cond (and $link .like_article) "box-go" "")
+    (cond (not .title)              "hide"   "")
+    (cond (not .uppercase)          "" "uppercase")
+    (cond (not .underline)          "" "underline")
+  -}}
 
-  {{/*  TITLE MORE  */}}
-  {{ $more  := "" }}
-  {{ if and .title .hanchor (not $link) }}
-    {{ $more = .title }}
-  {{ end }}
+  {{- /* TITLE MORE  */ -}}
+  {{- $more  := "" -}}
+  {{- if and (ne $title $hanchor) (not $link) -}}
+    {{- $more = $hanchor | markdownify | plainify -}}
+  {{- end -}}
 
-  {{/*  TITLE JOIN  */}}
-  {{ $attrs := dict
-    "class"     $class
-    "data-more" $more
-  }}
-  {{ $attrs = partial "functions/attrs" $attrs }}
+  {{- /* TITLE JOIN  */ -}}
+  {{- $attrs := dict "class" $class "data-more" $more -}}
+  {{- $attrs  = partial "functions/attrs" $attrs -}}
 
 
-  {{/*  TITLE  */}}
-  {{ print "<" $hn $attrs ">" | safeHTML }}
+  {{- /* HTML  */}}
+  {{ print "<" $hn $attrs ">" | safeHTML -}}
 
-    {{/*  ICON SIDE  */}}
-    {{ if eq .icon_type "side" }}
-      {{ partial "components/boxes/icon" . }}
-    {{ end }}
+    {{- /* ICON SIDE  */ -}}
+    {{- if eq .icon_type "side" -}}
+      {{- partial "components/boxes/icon" . -}}
+    {{- end -}}
 
-    {{/*  ANCHOR CLASS  */}}
-    {{ $anchor_class := cond (not .like_article) "" "href box__link" }}
+    {{- /* ANCHOR  */ -}}
+    {{- if or .title $link -}}
+      {{- /* with wrap  */ -}}
+      {{- partial "components/link" (dict
+        "class"  (cond (not .like_article) "" "box__link")
+        "label"  ($title   | markdownify)
+        "anchor" ($hanchor | markdownify)
+        "link"   $link
+        "lock"   .ofuscate
+        "nomore" $more
+      ) -}}
+    {{- else -}}
+      {{- /* without wrap  */ -}}
+      {{- $hanchor | markdownify -}}
+    {{- end -}}
 
-    {{/*  ANCHOR  */}}
-    {{ partial "components/link"
-      (dict
-        "class"     $anchor_class
-        "link"      $link
-        "button"    "none"
-        "font_alt"  ""
-        "icon"      ""
-        "label"     (.title | default .hanchor | markdownify)
-        "label_alt" ""
-        "anchor"    .hanchor
-        "noindex"   .ofuscate
-      )
-    }}
-
-  {{ print "</" $hn ">" | safeHTML }}
-{{ end }}
+  {{- /*  END  */ -}}
+  {{- print "</" $hn ">" | safeHTML -}}
+{{- end -}}

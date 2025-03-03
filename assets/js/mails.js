@@ -1,6 +1,6 @@
 export function initMails () {
   // Decode form mail
-  document.querySelectorAll('.ofuscate').forEach(mail => {
+  document.querySelectorAll('.mail').forEach(mail => {
     mail.textContent = window.atob(mail.textContent)
   })
 
@@ -12,7 +12,7 @@ export function initMails () {
     if (emailCopyButton) {
       const email = emailCopyButton
         .closest('.contact__email')
-        .querySelector('.ofuscate')
+        .querySelector('.mail')
         .textContent
       // If copy button then copy in clipbard; if not then send email
       if (emailCopyButton.classList.value.includes('copy')) {

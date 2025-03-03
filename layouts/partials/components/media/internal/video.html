@@ -1,4 +1,4 @@
-{{- $path := .src | replaceRE `[\#\&\?].*$` `` -}}
+{{- $path := .src | replaceRE `[\#\&\?].*$` "" -}}
 
 {{- $rsrc := resources.Get $path -}}
 {{- $mp4  := "" -}}
@@ -9,7 +9,7 @@
       {{- $mp4  = . -}}
     {{- end -}}
   {{- end -}}
-  {{- with resources.Get ($path | replaceRE `\.(mp4|mov|avi)$` `.webm`) -}}
+  {{- with resources.Get ($path | replaceRE `\.(mp4|mov|avi)$` ".webm") -}}
     {{- $webm = .RelPermalink -}}
   {{- end -}}
 {{- else -}}
@@ -20,12 +20,12 @@
 
 {{- $t := "" -}}
 {{- if in .src `t=` -}}
-  {{- $t = print "#" (.src | replaceRE `^.+?(t\=[\d-,\.]+).*$` `$1`) -}}
+  {{- $t = print "#" (.src | replaceRE `^.+?(t\=[\d-,\.]+).*$` "$1") -}}
 {{- end -}}
 
 {{- $poster  := "" -}}
 {{- if in .src "poster=" -}}
-  {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` `$1`) -}}
+  {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` "$1") -}}
 {{- else -}}
   {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
     {{- $file  := $path | replaceRE `^(.+)\..+$` (print `$1.` .) -}}
@@ -35,44 +35,57 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- with resources.Get $poster }}
-  {{- if hugo.IsProduction }}
+{{- with resources.Get $poster -}}
+  {{- if hugo.IsProduction -}}
     {{- .Publish -}}
     {{- $poster = partial "functions/image-format" (dict "image" . "size" .Width) -}}
-  {{ else }}
+  {{- else -}}
     {{- $poster = .RelPermalink -}}
-  {{ end }}
-{{ else }}
+  {{- end -}}
+{{- else -}}
   {{- $poster = "" -}}
-{{ end }}
+{{- end -}}
 
 {{- $alt := .alt -}}
 {{- if not $alt -}}
-  {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
+  {{- $alt = .src | replaceRE `^/media/(.+)\..*$` "$1" | humanize -}}
 {{- end -}}
 
-<video
-  {{- with .class }} class="{{ . }}" {{ end -}}
-  width="560"
-  height="315"
-  {{- if not .bg }} controls {{- end -}}
-  {{- if and .notlazy .mute }} muted loop autoplay playsinline
-  {{- else -}}
-    {{- if .mute }} data-mute {{- else -}}
-      {{- if or .notlazy $poster .modal }} preload="none" {{- end -}}
-    {{- end -}}
+{{- $notlazy_mute := and .notlazy .mute -}}
+{{- $preload      := "" -}}
+{{- if and (not $notlazy_mute) (not .mute) -}}
+  {{- if or .notlazy $poster .modal -}}
+    {{- $preload = "none" -}}
   {{- end -}}
-  {{- with $poster }} poster="{{ . }}" {{- end -}}
->
-  {{- with $webm -}}
+{{- end -}}
+
+{{- $attrs := dict
+  "class"       .class
+  "width"       "560"
+  "height"      "315"
+  "controls"    (not .bg)
+  "muted"       $notlazy_mute
+  "loop"        $notlazy_mute
+  "autoplay"    $notlazy_mute
+  "playsinline" $notlazy_mute
+  "preload"     $preload
+  "data-mute"   (cond $notlazy_mute "" .mute)
+  "poster"      $poster
+-}}
+{{- $attrs = partial "functions/attrs" $attrs -}}
+
+{{- /*  HTML  */}}
+<video {{- $attrs }}>
+  {{- with $webm }}
     <source src="{{ $webm }}{{ $t }}" type="video/webm">
   {{- end -}}
-  {{- with $mp4 -}}
+  {{- with $mp4 }}
     <source src="{{ . }}{{ $t }}" type="video/{{ . | replaceRE `^.+\.(.+)$` `$1` }}">{{/*  "; codecs="hvc1""  */}}
-  {{- end -}}
+  {{- end }}
 </video>
 
-{{- partial "components/base/schema/video" (dict
+{{- /*  schema  */}}
+{{ partial "components/base/schema/video" (dict
   "name"         $alt
   "thumbnailUrl" $poster
   "uploadDate"   (.upload | default (os.Stat (print "assets" $path)).ModTime | time.Format "2006-01-02T15:04:05Z07:00")

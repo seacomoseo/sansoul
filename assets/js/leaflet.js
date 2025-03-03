@@ -44,7 +44,7 @@ export function loadLeafletDraw () {
 export function myIcon (i) {
   return window.L.divIcon({
     className: 'leaflet-data-marker',
-    html: `<svg class="leaflet-data-marker__svg ${i.color}" viewBox="0 -5 149 188">` +
+    html: `<svg class="icon leaflet-data-marker__svg ${i.color}" viewBox="0 -5 149 188">` +
       '<path fill="var(--base)" stroke="color-mix(in srgb, var(--base), var(--base-text) 75%)" stroke-width="12" paint-order="stroke" stroke-miterlimit="10" d="M126 23l-6-6A69 69 0 0 0 74 1a69 69 0 0 0-51 22A70 70 0 0 0 1 74c0 21 7 38 22 52l43 47c6 6 11 6 16 0l48-51c12-13 18-29 18-48 0-20-8-37-22-51z"/>' +
       `<use fill="color-mix(in srgb, var(--base), var(--base-text) 75%)" href="/draws.${timestamp}.svg#${i.icon}" x="36" y="16" transform="scale(.67)"></use>` +
     '</svg>',

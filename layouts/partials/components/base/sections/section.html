@@ -20,13 +20,13 @@
 {{- $bgcp     := $bgc.parent -}}
 {{- $bg_color := $bgc.child -}}
 
-{{ $container := .size
+{{- $container := .size
   | default (cond
     (.ph | default false)
     "fluid"
     (cond $modal "sm" "lg")
   )
-}}
+-}}
 
 {{- $attr := partial "components/base/sections/attr" (merge . (dict
   "color"  $bg_color
@@ -35,10 +35,10 @@
   "modal"  $modal
 )) -}}
 
-{{/*  SECTION  */}}
-{{- print "<" $node $attr ">" | safeHTML -}}
+{{- /*  SECTION  */}}
+{{ print "<" $node $attr ">" | safeHTML -}}
 
-  {{/*  BACKGROUND  */}}
+  {{- /*  BACKGROUND  */ -}}
   {{- if not $modal -}}
     {{- partial "components/bg" (merge
       .
@@ -50,13 +50,13 @@
     ) -}}
   {{- end -}}
 
-  {{/*  IMAGE LCP  */}}
-  {{- if $header -}}
+  {{- /*  IMAGE LCP  */ -}}
+  {{- if $header }}
     <div class="lcp">██ ████ ████ ██ ██████ ██ ███ ██████ ███ ███ ██████ ████</div>
   {{- end -}}
 
-  {{/*  BOX  */}}
-  {{ partial "components/boxes/box" (merge
+  {{- /*  BOX  */ -}}
+  {{- partial "components/boxes/box" (merge
     .
     (dict
       "id"            nil
@@ -89,56 +89,50 @@
       "box_wrap"      true
       "parent"        .box
     )
-  ) }}
+  ) -}}
 
-  {{/*  MODAL BUTTONS CORNER  */}}
+  {{- /*  MODAL BUTTONS CORNER  */ -}}
   {{- if $modal  -}}
-    {{/*
+    {{- /*
     {{- partial "components/link" (dict
-      "class" "modal__back"
-      "link"  "none"
-      "dot"   true
-      "icon"  (site.Data.styles.icons.left | default "arrow-left")
-      "emoji" "⬅️"
-      "label" (i18n "back")
+      "class"  "modal__back"
+      "button" "cta"
+      "dot"    true
+      "icon"   (site.Data.styles.icons.left | default "arrow-left")
+      "emoji"  "⬅️"
+      "label"  (i18n "back")
     ) -}}
     */}}
-    {{- partial "components/link" (dict
-      "class" "modal__close--corner"
-      "link"  "none"
-      "dot"   true
-      "icon"  "xmark"
-      "emoji" "❌"
-      "label" (i18n "close")
+    {{ partial "components/link" (dict
+      "class"  "modal__close--corner"
+      "button" "cta"
+      "dot"    true
+      "icon"   "xmark"
+      "emoji"  "❌"
+      "label"  (i18n "close")
     ) -}}
   {{- end -}}
 
-  {{/*  COOKIES AND SITEMAP LINK  */}}
-  {{- if $footer -}}
+  {{- /*  COOKIES AND SITEMAP LINK  */ -}}
+  {{- if $footer }}
     <div class="footer__float">
-      {{- partial "components/link" (dict
-        "class"   "cookies__toggle"
-        "link"    "none"
-        "button"  "none"
-        "icon"    "cookie-bite"
-        "emoji"   "🍪"
-        "label"   "none"
-        "anchor"  (i18n "cookies_notice")
-        "noindex" true
-      ) -}}
-      {{ with site.GetPage "page/sitemap" }}
-        {{ partial "components/link" (dict
-          "class"   "footer__sitemap"
-          "link"    .RelPermalink
-          "button"  "none"
-          "icon"    "sitemap"
-          "emoji"   "🗺"
-          "label"   "none"
-          "anchor"  .Title
-          "noindex" (not page.IsHome)
-        ) }}
-      {{- end -}}
+      {{ partial "components/link" (dict
+        "class"  "cookies__toggle"
+        "icon"   "cookie-bite"
+        "emoji"  "🍪"
+        "title"  (i18n "cookies_notice")
+        "lock"   true
+      ) }}
+      {{ with site.GetPage "page/sitemap" -}}
+        {{- partial "components/link" (dict
+          "class"  "footer__sitemap"
+          "icon"   "sitemap"
+          "emoji"  "🗺"
+          "title"  .Title
+          "link"   .RelPermalink
+          "lock"   (not page.IsHome)
+        ) -}}
+      {{- end }}
     </div>
-  {{- end -}}
-
-{{- print "</" $node ">" | safeHTML -}}
+  {{- end }}
+{{ print "</" $node ">" | safeHTML -}}

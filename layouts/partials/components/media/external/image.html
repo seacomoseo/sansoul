@@ -3,23 +3,41 @@
   {{- $alt = .src | replaceRE `^http.+/(.*)$` `$1` | replaceRE `^(.+)\..*$` `$1` | humanize -}}
 {{- end -}}
 
-<picture
-  {{- with .class }} class="{{ . }}" {{ end -}}
-  {{- with .iframe }} data-iframe data-{{ .name }}="{{ .src }}"{{ end -}}
->
-  {{- "" -}}
-  <img
-    src="{{ .src | safeURL }}"
-    alt="{{ $alt }}"
-    decoding="async"
-    {{- if not .notlazy }} loading="lazy"{{ end -}}
-  >
-  {{- "" -}}
-</picture>
+{{- $lazy := cond (not .notlazy) "lazy" "" -}}
 
-{{- .icon_play -}}
+{{- $iframe_data := "" -}}
+{{- $iframe_name := "" -}}
+{{- $iframe_src  := "" -}}
+{{- with .iframe -}}
+  {{- $iframe_data = true -}}
+  {{- $iframe_name = print "data-" .name -}}
+  {{- $iframe_src  = .src -}}
+{{- end -}}
 
-{{- if not .notschema -}}
+{{- $pic_attrs := dict
+  "class"       .class
+  "data-iframe" $iframe_data
+  $iframe_name  $iframe_src
+-}}
+{{- $img_attrs := dict
+  "src"      (.src | safeURL)
+  "alt"      $alt
+  "decoding" "async"
+  "loading"  $lazy
+-}}
+{{- $pic_attrs = partial "functions/attrs" $pic_attrs -}}
+{{- $img_attrs = partial "functions/attrs" $img_attrs -}}
+
+{{- /*  HTML  */}}
+<picture {{- $pic_attrs }}><img {{- $img_attrs }}></picture>
+
+{{- /*  icon  */ -}}
+{{- with .icon_play }}
+  {{ . -}}
+{{- end -}}
+
+{{- /*  schema  */}}
+{{ if not .notschema -}}
   {{- with .iframe -}}
     {{- partial "components/base/schema/video" (dict
       "name"         $alt

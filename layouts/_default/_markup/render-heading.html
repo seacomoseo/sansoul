@@ -1,4 +1,4 @@
-{{- $id     := partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
+{{- $id     := partial "functions/header-to-id" .Text -}}
 
 {{- $class  := "content__heading" -}}
 {{- if (page.Params.list.underline | and (eq .Level 2)) -}}
@@ -19,7 +19,7 @@
 {{- end }}
 
 <h{{ .Level }} {{- $attrs | safeHTMLAttr }}>
-  <a class="href content__heading-link" href="#{{ $id }}">
+  <a class="link content__heading-link" href="#{{ $id }}">
     {{- .Text | safeHTML -}}
     {{- if in $class "underline" }}<br>{{ end -}}
   </a>

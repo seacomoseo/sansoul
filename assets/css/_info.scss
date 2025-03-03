@@ -2,7 +2,7 @@
   font-size: 1.5em;
   margin-block: 1rem;
   .button[style] {
-    --base: var(--link);
+    --base: var(--cta);
     @if not $buttons-outline {
       --base-text: color-mix(in srgb, var(--light) 25%, black);
     }
@@ -11,7 +11,7 @@
     }
   }
   .loader,
-  svg {
+  .icon {
     @if $buttons-outline {
       color: var(--base);
     } @else {
@@ -19,7 +19,7 @@
     }
     opacity: .75;
   }
-  svg {
+  .icon {
     scale: 1.25;
     margin-right: .125em;
     &:has(> use[href="/draws.#{$timestamp}.svg#rotate"]) {
@@ -46,7 +46,7 @@
 }
 
 #status .button:not([style]) {
-  > svg,
+  > .icon,
   .loader {
     display: none;
   }

@@ -115,18 +115,18 @@
     {{- $svg_is_viewBox := $svg_head | findRE ` viewBox="(.+?)"` -}}
     {{- $svg_viewBox := "" -}}
     {{- if $svg_width | and $svg_height | and (not $svg_is_viewBox) -}}
-      {{- $svg_width = index $svg_width 0 | replaceRE ` width="|"` `` -}}
-      {{- $svg_height = index $svg_height 0 | replaceRE ` height="|"` `` -}}
+      {{- $svg_width = index $svg_width 0 | replaceRE ` width="|"` "" -}}
+      {{- $svg_height = index $svg_height 0 | replaceRE ` height="|"` "" -}}
       {{- $svg_viewBox = print ` viewBox="0 0 ` $svg_width ` ` $svg_height `"` -}}
     {{- end -}}
-    {{- $svg_head = $svg_head | replaceRE ` (xmlns|data-name|width|height)=".+?"` `` -}}
+    {{- $svg_head = $svg_head | replaceRE ` (xmlns|data-name|width|height)=".+?"` "" -}}
     {{- $svg
       | replaceRE `<svg (.*?)>` $svg_head
       | replaceRE
         `<svg (.*?)>(.+?)</svg>`
         (print
-          `<symbol id="` (. | replaceRE `^media/(icons?/)?|.svg$` `` | replaceRE `/` `-`) `" `
-          (cond (in $svg `preserveAspectRatio`) `` `preserveAspectRatio="xMidYMid meet" `)
+          `<symbol id="` (. | replaceRE `^media/(icons?/)?|.svg$` "" | replaceRE `/` "-") `" `
+          (cond (in $svg `preserveAspectRatio`) "" `preserveAspectRatio="xMidYMid meet" `)
           $svg_viewBox ` $1>$2</symbol>`
         )
 			| safeHTML

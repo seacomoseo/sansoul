@@ -1,4 +1,4 @@
-{{- $cols     := partial "functions/columns" (dict
+{{- $cols := partial "functions/columns" (dict
   "items" .limages
   "each"  (merge . (dict
     "cols" .cols
@@ -15,7 +15,7 @@
 {{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
 {{- $is_button_custom := .link | and (ne .type "rows") -}}
 
-{{/*  CLASS  */}}
+{{- /* CLASS  */ -}}
 {{- $class := slice
   "box__block"
   "gallery"
@@ -28,24 +28,21 @@
   (cond (not site.Data.config.others.show)           "" "show")
 -}}
 
-{{/*  STYLE  */}}
-{{ $style := slice
+{{- /* STYLE  */ -}}
+{{- $style := slice
   (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
-  (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
-}}
+  (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio)) -}}
 
-{{/*  JOIN ATTRIBUTES  */}}
-{{ $attrs := dict
+{{- /* JOIN ATTRIBUTES  */ -}}
+{{- $attrs := dict
   "class" $class
-  "style" $style
-}}
-{{ $attrs := partial "functions/attrs" $attrs }}
+  "style" $style -}}
+{{- $attrs := partial "functions/attrs" $attrs }}
 
 <div {{- $attrs }}>
-  {{- if $color | and (ne $color "transparent") -}}
+  {{- if $color | and (ne $color "transparent") }}
     <div class="bg-color"></div>
-  {{- end -}}
-
+  {{- end }}
   <div class="gallery__items">
     {{- range uniq $items -}}
       {{- $image := . -}}
@@ -67,31 +64,28 @@
         ) -}}
       {{- end -}}
     {{- end -}}
-    {{- if $is_button_expand -}}
-      {{- partial "components/link" (dict
-        "class"     "gallery__expand"
-        "link"      .link
-        "button"    (.button | default "light")
-        "font_alt"  ""
-        "icon"      (cond (eq .licon "none") "" .licon)
-        "label"     "none"
-        "anchor"    ""
-        "noindex"   .ofuscate
+    {{- if $is_button_expand }}
+      {{ partial "components/link" (dict
+        "class"  "gallery__expand"
+        "button" (.button | default "light")
+        "icon"   (cond (eq .licon "none") "" .licon)
+        "anchor" ""
+        "link"   .link
+        "lock"   .ofuscate
       ) -}}
-    {{- end -}}
+    {{- end }}
   </div>
 </div>
-{{- if $is_button_custom -}}
+{{- if $is_button_custom }}
   <div class="buttons">
-    {{- partial "components/link" (dict
-      "class"    ""
-      "link"     .link
-      "button"   .button
-      "font_alt" .font_alt
-      "icon"     .icon
-      "label"    .label
-      "anchor"   .anchor
-      "noindex"  .ofuscate
-    ) -}}
+    {{ partial "components/link" (dict
+      "link"   .link
+      "button" (.button | default "cta")
+      "swap"   .font_alt
+      "icon"   .icon
+      "label"  .label
+      "anchor" .anchor
+      "lock"   .ofuscate
+    ) }}
   </div>
 {{- end -}}

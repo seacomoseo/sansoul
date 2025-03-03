@@ -53,11 +53,11 @@
   "grey"       (site.Data.styles.colors.base.grey  | default "#282525")
   "dark"       (site.Data.styles.colors.base.dark  | default "#000")
   "black"      (site.Data.styles.colors.base.black | default "#767676")
-  "link"       (site.Data.styles.colors.link.color | default site.Data.styles.colors.main.color | default "#577399")
-  "link-light" (site.Data.styles.colors.link.light | default "")
-  "link-dark"  (site.Data.styles.colors.link.dark  | default "")
-  "link-contrast-text" (or (in (slice "all" "text") site.Data.styles.colors.link.contrast) (not site.Data.styles.colors.link.contrast) | not | not | string)
-  "link-contrast-bg"   (or (in (slice "all" "bg")   site.Data.styles.colors.link.contrast) (not site.Data.styles.colors.link.contrast) | not | not | string)
+  "cta"        (site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399")
+  "cta-light"  (site.Data.styles.colors.cta.light  | default "")
+  "cta-dark"   (site.Data.styles.colors.cta.dark   | default "")
+  "cta-contrast-text" (or (in (slice "all" "text") site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
+  "cta-contrast-bg"   (or (in (slice "all" "bg")   site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
   */}}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment)

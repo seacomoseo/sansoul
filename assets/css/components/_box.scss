@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: var(--align-items, center);
   max-width: 100%;
   padding: var(--box-padding);
   --box-inner: calc(100cqw - var(--box-padding) * 2);
@@ -13,20 +13,17 @@
   &.bg {
     @include radius-parent(var(--box-padding));
   }
-  > *:not(.box, .image, .box__icon, .box__button:not(.bg > *)) {
-    width: 100%;
-  }
+  // > *:not(.box, .image, .box__icon, .box__button:not(.bg > *)) {
+  //   width: 100%;
+  // }
 }
 .box--hide-shadow {
   filter: none;
 }
 
-// Hover, focus and active when only a button
-.box:has(> .box__button):not(:has(
-  .box .box__button,
-  > .box__button ~ .box__button,
-  .href:not(.box__link, .box__button)
-)).bg:not(.box--hide-shadow) {
+// Hover, focus and active when only a box-go link
+// direct child without brothers
+.box:has(> .box-go):not(:has(> .box-go ~ .box-go)).bg:not(.box--hide-shadow) {
   transition: filter .1s, transform .1s;
   @if $buttons-3d {
     transform: translateY(-.25em);
@@ -36,7 +33,7 @@
         @include like-bg-cover;
         content: '';
         transition: background-color .1s, transform .1s;
-        background-color: var(--link);
+        background-color: var(--cta);
       }
     }
     // @if $chamfer {
@@ -229,7 +226,7 @@
     background-color: var(--base);
     @include radius-child;
   }
-  svg {
+  .icon {
     font-size: 2em;
   }
 }
@@ -265,7 +262,7 @@
 // Title
 .box__title {
   margin: 0;
-  .href:not(.box__link, :hover, :focus, :active) {
+  .link:not(.box__link, :hover, :focus, :active) {
     color: inherit;
   }
   // Remove underline if next is icon bottom
@@ -303,11 +300,7 @@
 
 
 // Link
-.box:has(> .box__button):not(:has(
-  .box .box__button,
-  > .box__button ~ .box__button,
-  .href:not(.box__link, .box__button)
-)) {
+.box:has(> .box-go):not(:has(> .box-go ~ .box-go)) {
   cursor: pointer;
   // Hover
   &:has(.search__result-item-link:focus),
@@ -377,13 +370,17 @@
     display: flex;
     justify-content: center;
     gap: .25em;
-    svg {
+    .icon {
       color: var(--main);
     }
   }
 }
 .box--button-hide > {
   .box__button {
+    --base: transparent;
+    --hover: transparent;
+    --active: transparent;
+    position: absolute;
     // display: none;
     background-image: none;
     z-index: unset;
@@ -395,9 +392,7 @@
   // overflow: hidden;
   // @include radius;
   justify-content: flex-end;
-  > .box__link {
-    --link: #{ $white };
-  }
+  --cta: #{ $white };
 }
 .bg-card {
   flex-grow: 1;
@@ -414,7 +409,7 @@
   height: var(--bg-card-height);
   position: absolute;
   bottom: calc(-1 * var(--bg-card-height));
-  left: calc(var(--box-padding)* -1);
+  // left: calc(var(--box-padding)* -1);
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5) calc(var(--box-gap) * 2), #000);
   @include radius-child;
   border-top-left-radius: 0;

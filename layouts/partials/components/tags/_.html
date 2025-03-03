@@ -1,12 +1,15 @@
 {{- if ne .tag "hide" -}}
-  {{- $tag  := .tag  -}}
+  {{- $tag  := .tag  | default "row"  -}}
   {{- $page := .Page | default page -}}
   {{- with .tags -}}
     {{- $items := slice -}}
 
+    {{- /*  EACH  */ -}}
     {{- range . -}}
       {{- $icon   := "" -}}
       {{- $label  := "" -}}
+
+      {{- /*  TYPES  */ -}}
       {{- if      eq .type "type" -}}
       
         {{- if not $page.IsSection -}}
@@ -44,11 +47,11 @@
               {{- if ne $date_full $end_full -}}
                 {{- $date_day := $page.Date       | time.Format "2 Jan 2006" -}}
                 {{- $end_day  := $page.Params.end | time.Format "2 Jan 2006" -}}
-                {{/*  {{- if ne $date_day $end_day -}}  */}}
+                {{- /*  {{- if ne $date_day $end_day -}}  */ -}}
                   {{- $date = partial "functions/date-format" $page.Params.end -}}
-                {{/*  {{- else -}}  */}}
-                  {{/*  {{- $date = dict "day" "" "hour" ($page.Params.end | time.Format "15:04") -}}  */}}
-                {{/*  {{- end -}}  */}}
+                {{- /*  {{- else -}}  */ -}}
+                  {{- /*  {{- $date = dict "day" "" "hour" ($page.Params.end | time.Format "15:04") -}}  */ -}}
+                {{- /*  {{- end -}}  */ -}}
                 {{- $time   = dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
                 {{- $hour   = cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
                 {{- $el     = print ` <time datetime="` $time `">` $date.day $hour `</time>` -}}
@@ -105,23 +108,26 @@
         {{- $label = .label -}}
 
       {{- end -}}
+
+      {{- /*  APPEND  */ -}}
       {{- if $label -}}
         {{- $icon  = .icon  | default $icon -}}
         {{- $items = $items | append (dict "icon" $icon "label" $label) -}}
       {{- end -}}
     {{- end -}}
 
+    {{- /*  HTML  */ -}}
     {{- with $items -}}
-      {{- $type  := cond (eq $tag "row") "" (print " box__tags--" $tag) -}}
+      {{- $type  := cond (eq $tag "row") "" (print " box__tags--" $tag) }}
       <div class="box__tags {{- $type }}">
-        {{- range . -}}
+        {{- range . }}
           <i class="box__tag">
             {{- with .icon -}}
               {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" .) -}}
-            {{- end -}}
+            {{- end }}
             <i>{{ .label | safeHTML }}</i>
           </i>
-        {{- end -}}
+        {{- end }}
       </div>
     {{- end -}}
 

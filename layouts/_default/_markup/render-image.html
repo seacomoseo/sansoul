@@ -12,7 +12,7 @@
   {{- if in .Text "float-right" -}}
     {{- $figure_class = print $figure_class " content__figure--float-right" -}}
   {{- end -}}
-  {{- $alt = $alt | replaceRE `float(-right)?` `` -}}
+  {{- $alt = $alt | replaceRE `float(-right)?` "" -}}
   {{- $span_xl = 0.5 -}}
 
 {{- else -}}

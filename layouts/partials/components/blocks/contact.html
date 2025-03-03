@@ -1,7 +1,5 @@
-{{- $show := cond (not site.Data.config.others.show) "" " show" -}}
-
-{{/*  DATA  */}}
 {{- with .contact -}}
+  {{- $show := cond (not site.Data.config.others.show) "" " show" }}
   <div class="contact box__block {{- $show }}">
     {{- range . -}}
       {{- with merge (dict "button" $.button "font_alt" $.font_alt) . -}}
@@ -14,7 +12,7 @@
           {{- $class    := "" -}}
           {{- $num      := "" -}}
           {{- $link     := .link -}}
-          {{- $button   := cond (eq .button "link") "" .button -}}
+          {{- $button   := cond (not .button) "cta" .button -}}
           {{- $font_alt := .font_alt -}}
           {{- $icon     := .icon -}}
           {{- $emoji    := "" -}}
@@ -22,14 +20,14 @@
           {{- $noindex  := .ofuscate -}}
 
           {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
-            {{- $num      = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` `` -}}
+            {{- $num      = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
           {{- else if findRE `^(mail|address)$` .type -}}
             {{- $button   = cond (not .button) "main" $button -}}
             {{- $font_alt = not .font_alt -}}
           {{- end -}}
 
           {{- if eq .type "custom" -}}
-            {{- $class   = (print "callnow__custom" (cond (not .ga4) "" " ga4")) -}}
+            {{- $class   = "callnow__custom" -}}
           {{- else if eq .type "phone" -}}
             {{- $class   = "contact__phone" -}}
             {{- $link    = print "tel:+" $num -}}
@@ -73,24 +71,26 @@
             {{- $noindex = true -}}
           {{- end -}}
 
-          {{- if eq .type "mail" -}}
+          {{- /*  MAIL  */ -}}
+          {{- if eq .type "mail" }}
             <i class="contact__email {{ $full }}" {{ if eq .button `none` }}data-b{{ end }}>
               {{- $full = "" -}}
-          {{- end -}}
-              {{- partial "components/link" (dict
-                "class"     (print $class $full)
-                "link"      $link
-                "button"    $button
-                "font_alt"  $font_alt
-                "icon"      $icon
-                "emoji"     $emoji
-                "label"     $label
-                "anchor"    .anchor
-                "noindex"   $noindex
+          {{- end }}
+              {{ partial "components/link" (dict
+                "class"  (print $class $full)
+                "button" $button
+                "swap"   $font_alt
+                "ga4"    .ga4
+                "icon"   $icon
+                "emoji"  $emoji
+                "label"  $label
+                "anchor" .anchor
+                "link"   $link
+                "lock"   $noindex
               ) -}}
           {{- if eq .type "mail" -}}
               {{- $bgc := partial "functions/color-background" (dict "child" "similar" "parent" $.bgcp) -}}
-              {{- $bg  := $bgc.child -}}
+              {{- $bg  := $bgc.child }}
               <i class="contact__email-options bg bg-{{ $bg }}" style="--copied: '{{ i18n `copied` }}'">
                 <i class="bg-color"></i>
                 {{- range slice
@@ -106,55 +106,58 @@
                     "emoji" "📨"
                     "label" "send_email"
                   )
-                -}}
-                  {{- partial "components/link" (dict
-                    "class"     (print "contact__email-option-" .class " button--sm")
-                    "link"      "none"
-                    "button"    ""
-                    "font_alt"  true
-                    "icon"      .icon
-                    "emoji"     .emoji
-                    "label"     (i18n .label)
-                    "noindex"   true
+                }}
+                  {{ partial "components/link" (dict
+                    "class"  (print "contact__email-option-" .class)
+                    "button" "cta"
+                    "sm"     true
+                    "swap"   true
+                    "icon"   .icon
+                    "emoji"  .emoji
+                    "label"  (i18n .label)
                   ) -}}
-                {{- end -}}
+                {{- end }}
               </i>
             </i>
           {{- end -}}
 
         {{- else if eq .type "schedule" -}}
 
+          {{- /*  SCHEDULE  */}}
           <div class="contact__schedule {{ $full }}">
-            {{- with .days -}}
+            {{- with .days }}
               <div class="contact__schedule-item">
-                {{- partial "components/icon" (dict "icon" "calendar" "emoji" "📅") -}}
+                {{ partial "components/icon" (dict "icon" "calendar" "emoji" "📅") }}
                 <i>{{ . | markdownify }}</i>
               </div>
             {{- end -}}
-            {{- with .hours -}}
+            {{- with .hours }}
               <div class="contact__schedule-item">
-                {{- partial "components/icon" (dict "icon" "clock" "emoji" "🕓") -}}
+                {{ partial "components/icon" (dict "icon" "clock" "emoji" "🕓") }}
                 <i>{{ . | markdownify }}</i>
               </div>
-            {{- end -}}
+            {{- end }}
           </div>
 
         {{- else if findRE `^h\d$` .type -}}
 
-          {{- $h := replace .type "h" "" -}}
+          {{- /*  HN  */}}
+          {{- $h := replace .type "h" "" }}
           <h {{- $h }} class="form__title contact__full">{{ .label | markdownify }}</h {{- $h }}>
 
         {{- else if eq .type "hr" -}}
 
+          {{- /*  HR  */}}
           <hr>
 
         {{- else if eq .type "br" -}}
 
+          {{- /*  BR  */}}
           <div class="contact__br"></div>
 
         {{- end -}}
 
       {{- end -}}
-    {{- end -}}
+    {{- end }}
   </div>
 {{- end -}}

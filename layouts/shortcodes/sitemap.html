@@ -1,14 +1,13 @@
 {{- range site.Sections -}}
   <h2 class="content__heading">
     {{- partial "components/link" (dict
-      "class"     "content__heading-link sitemap-header-link"
-      "link"      .RelPermalink
-      "button"    "none"
-      "icon"      .Params.icon
-      "emoji"     .Params.emoji
-      "label"     .Title
-      "anchor"    (partial "functions/anchor-page" .)
-      "noindex"   .Params.noindex
+      "class"  "content__heading-link sitemap-header-link"
+      "icon"   .Params.icon
+      "emoji"  .Params.emoji
+      "label"  .Title
+      "anchor" (partial "functions/anchor-page" .)
+      "link"   .RelPermalink
+      "lock"   .Params.noindex
     ) -}}
   </h2>
   {{- $parent_icon := .Params.icon -}}
@@ -25,11 +24,10 @@
             {{- partial "components/icon" (dict "icon" .) -}}
           {{- end -}}
           {{- partial "components/link" (dict
-            "link"      .RelPermalink
-            "button"    "none"
-            "label"     .Title
-            "anchor"    (partial "functions/anchor-page" .)
-            "noindex"   .Params.noindex
+            "link"   .RelPermalink
+            "label"  .Title
+            "anchor" (partial "functions/anchor-page" .)
+            "lock"   .Params.noindex
           ) -}}
         </li>
       {{- end -}}

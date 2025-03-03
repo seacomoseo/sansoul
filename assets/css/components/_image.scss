@@ -30,7 +30,7 @@
     --radius-end: inherit;
   }
 }
-svg.image__inner {
+.icon.image__inner {
   height: 100%;
   &:not([width]) {
     width: var(--box-inner);
@@ -128,7 +128,7 @@ svg.image__inner {
 // INSET
 
 .image--inset {
-  // &, svg.image__inner:not([width]) {
+  // &, .icon.image__inner:not([width]) {
   //   width: 100cqw;
   // }
   --image-margin: calc(var(--box-padding) * -1);
@@ -243,7 +243,7 @@ iframe.image__inner {
 
 [data-iframe]:not(.aux.aux) {
   cursor: pointer;
-  ~ svg {
+  ~ .icon {
     cursor: pointer;
     width: 5em;
     height: 5em;
@@ -261,13 +261,13 @@ iframe.image__inner {
       height: 3em;
     }
   }
-  &:hover ~ svg,
-  ~ svg:hover {
+  &:hover ~ .icon,
+  ~ .icon:hover {
     color: var(--hover);
     fill: var(--hover-text);
   }
-  &:active ~ svg,
-  ~ svg:active {
+  &:active ~ .icon,
+  ~ .icon:active {
     color: var(--active);
     fill: var(--active-text);
   }
@@ -278,11 +278,11 @@ iframe.image__inner {
 
 .box:not(.bg)
 > .image:not(.image--border):not(.content *)
-> .image__inner:where(svg, img[src*=".svg"]) { // svg image without radius when not background
+> .image__inner:where(.icon, img[src*=".svg"]) { // svg image without radius when not background
   overflow: unset;
   @include hide-radius;
 }
-svg.image__inner {
+.icon.image__inner {
   width: 100%;
 }
 // SVG from IMG tag like SVG tag
@@ -316,13 +316,9 @@ img[src*=".svg"].image__inner {
 
 // BOX HOVER
 
-.box:has(> .box__button):not(:has(
-  .box .box__button,
-  > .box__button ~ .box__button,
-  .href:not(.box__link, .box__button)
-)) {
+.box:has(> .box-go):not(:has(> .box-go ~ .box-go)) {
   > .image .image__inner {
-    &:where(svg),
+    &:where(.icon),
     img {
       transition: transform .3s;
     }
@@ -332,7 +328,7 @@ img[src*=".svg"].image__inner {
   &:hover,
   &:focus {
     > .image .image__inner:not(.image__inner--hover) {
-      &:where(svg),
+      &:where(.icon),
       img {
         transform: scale(1.2) rotate(2deg);
       }
@@ -344,7 +340,7 @@ img[src*=".svg"].image__inner {
     &:hover,
     &:focus {
       > .image .image__inner:not(.image__inner--hover) {
-        &:where(svg),
+        &:where(.icon),
         img {
           transform: scale(1.2) rotate(-2deg);
         }

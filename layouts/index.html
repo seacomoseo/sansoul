@@ -30,9 +30,9 @@
     -}}
   {{- end -}}
   {{- range $resources -}}
-    {{ $string   := partial .partial page | string }}
-    {{ $resource := resources.FromString .path $string }}
-    {{ $resource.Publish }}
+    {{- $string   := partial .partial page | string -}}
+    {{- $resource := resources.FromString .path $string -}}
+    {{- $resource.Publish -}}
   {{- end -}}
 
   {{/*  PROCESS ALL PDF's  */}}

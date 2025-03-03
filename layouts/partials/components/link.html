@@ -1,155 +1,216 @@
+{{- /*
+  {{ partial "components/link" (dict
+    "class"  slice or string
+    "button" string
+    "dot"    boolean
+    "sm"     boolean
+    "swap"   boolean
+    "ga4"    boolean
 
-{{- $class := .class | default "" -}}
-{{- $icon  := "" -}}
-{{- with .icon -}}
-  {{- $icon = partial "components/icon" (dict "icon" . "emoji" $.emoji) -}}
-{{- end -}}
+    "icon"   string
+    "emoji"  string
 
-{{- if .link | or (eq .label "none") -}}
+    "label"  string
+    "anchor" string
+    "title"  string
 
-  {{- $label       := .label | default (i18n `more`)  -}}
-  {{- $anchor      := cond (ne .anchor .label) .anchor "" -}}
-  {{- $external    := hasPrefix .link "http" -}}
-  {{- $_blank      := not (not ._blank) -}}
-  {{- $page_title  := "" -}}
-  {{- $lightbox    := findRE `\.(jpg|png|gif|webp|svg)` .link -}}
-  {{- $noindex     := (.noindex | default false)  -}}
-  {{- $anchor_link := hasPrefix .link "#" -}}
-  {{- $button      := ne .button "none" -}}
-  {{- $class_type  := "" -}}
-  {{- if $button -}}
-    {{- with .button -}}
-      {{- $class_type = print "button " . -}}
-    {{- else -}}
-      {{- $class_type = "button" -}}
-    {{- end -}}
-  {{- else -}}
-    {{- $class_type = "href" -}}
-  {{- end -}}
-  {{- with .font_alt -}}
-    {{- $class_type = print $class_type " button--font-alt" -}}
-  {{- end -}}
-  {{- with .dot -}}
-    {{- $class_type = print $class_type " button--dot" -}}
-  {{- end -}}
-  {{- with $class -}}
-    {{- $class = print $class_type " " . -}}
-  {{- else -}}
-    {{- $class = $class_type -}}
-  {{- end -}}
+    "link"   string
+    "lock"   boolean or nil
+    "blank"  boolean
+    "nomore" boolean
+  ) }}
+*/ -}}
 
-  {{- if not $external | and (not $anchor_link) | and (not .noindex) -}}
-    {{- $link_cleaned  := .link | replaceRE `#.*` `` -}}
+{{- $tag       := "i" -}}
+{{- $type      := "" -}}
+{{- $more_data := "" -}}
+{{- $lb_data   := "" -}}
+{{- $b_data    := "" -}}
+{{- $h_data    := "" -}}
+{{- $tabindex  := "" -}}
+{{- $role      := "" -}}
+{{- $target    := "" -}}
+{{- $rel       := "" -}}
+{{- $href      := "" -}}
+{{- $label     := "" -}}
+
+{{- $button      := cond (eq .button "none") "" .button -}}
+{{- $link        := cond (eq .link   "none") "" .link -}}
+{{- $lock        := .lock | default false -}}
+{{- $is_lightbox := false -}}
+{{- $is_external := false -}}
+{{- $anchor_page := "" -}}
+
+
+{{- /*  LINK  */ -}}
+{{- if $link -}}
+  {{- $is_lightbox     = findRE `\.(jpe?g|png|gif|webp|svg)` $link -}}
+  {{- $is_external     = hasPrefix $link "http" -}}
+  {{- $is_anchor_link := hasPrefix $link "#" -}}
+
+  {{- /*  get page title and page lock  */ -}}
+  {{- if and (not $is_external) (not $is_anchor_link) (not .lock) -}}
+    {{- $link_cleaned  := $link | replaceRE `#.*` "" -}}
     {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
     {{- $page_internal := index $pages 0 | default site.Home -}}
     {{- with $page_internal -}}
       {{- if .Params.noindex -}}
-        {{- $noindex = true -}}
+        {{- $lock = true -}}
       {{- else -}}
-        {{- $page_title = partial "functions/anchor-page" . -}}
+        {{- $anchor_page = partial "functions/anchor-page" . -}}
       {{- end -}}
     {{- else -}}
-      {{- $noindex = true -}}
+      {{- $lock = true -}}
     {{- end -}}
   {{- end -}}
 
-  {{- if findRE `^(mailto|tel):` .link -}}
-    {{- $noindex = true -}}
+  {{- /*  lock in mail and tel links  */ -}}
+  {{- if findRE `^(mailto|tel):` $link -}}
+    {{- $lock = true -}}
   {{- end -}}
 
-  {{/*  Change noindex to false if explicit set false  */}}
-  {{- if $noindex | and (eq .noindex false) -}}
-    {{- $noindex = false -}}
+  {{- /*  change lock to false if explicit set false  */ -}}
+  {{- if and $lock (eq .lock false) -}}
+    {{- $lock = false -}}
   {{- end -}}
 
-  {{- $is_data_more := not $noindex
-    | and ($anchor
-      | or ((not .label)
-        | and (.label_alt
-          | or $page_title
-        )
-      )
-    )
-    | and (ne .label "none")
-  -}}
-  {{- $final_label := $anchor
-    | default .label
-    | default .label_alt
-    | default $page_title
-    | default (i18n "more")
-  -}}
-
-  {{- $start_slash := .link | findRE `^/` -}}
-  {{- $link        := .link -}}
-  {{- if eq .link "none" -}}
-    {{- $link       = "" -}}
-  {{- else if .link -}}
-    {{- if not $external | and (not $anchor_link) | and (not $start_slash) -}}
-      {{- with resources.Get ((print "/media/" .link) | replaceRE `\#.*$` ``) -}}
-        {{- $link     = .RelPermalink -}}
+  {{- /*  media link  */ -}}
+  {{- with $link -}}
+    {{- $slash_prefix := hasPrefix . "/" -}}
+    {{- if and (not $is_external) (not $is_anchor_link) (not $slash_prefix) -}}
+      {{- with resources.Get ((print "/media/" .) | replaceRE `\#.*$` "") -}}
+        {{- $link = .RelPermalink -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
-
-  {{- $not_link := or $noindex $lightbox ((eq .label "none") | and (not .link)) (eq .link "none") -}}
-  {{- "<" | safeHTML -}}
-    {{- if $not_link -}}
-      {{- cond    $button `button type="button"` "i" | safeHTML -}}
-      {{- "" }} class="{{ $class }}"
-      {{- if      $lightbox        }} data-lightbox="{{ $link | safeURL }}" data-b
-      {{- else if $link            }} data-{{ cond (or $external $_blank) `b` `h` }}="{{ $link | safeURL | base64Encode }}"
-      {{- end -}}
-      {{- if      not $button      }} tabindex="0" role="link"{{ end -}}
-      {{- if and (not $button) (not $link) }} data-b{{ end -}}
-    {{- else -}}
-      {{- "a" | safeHTML -}}
-      {{- "" }} class="{{ $class }}"
-      {{- "" }} href="{{ $link | safeURL }}"
-      {{- if or $external $_blank }} target="_blank" rel="noopener"{{ end -}}
-    {{- end -}}
-    {{- if eq .label "none" }} title="{{ $final_label }}"{{ end -}}
-  {{- ">" | safeHTML -}}
-
-  {{- $icon -}}
-
-  {{- if ne .label "none" -}}
-    {{- $ofuscate := partial "components/ofuscate" $label -}}
-    {{- if or $ofuscate $is_data_more -}}
-      <i
-        {{- if $ofuscate }} class="ofuscate"{{ end }}
-        {{- if $is_data_more }} data-more="{{ $label }}"{{ end -}}
-      >
-        {{- if $is_data_more -}}
-          <i>{{- $final_label | safeHTML -}}</i>
-        {{- else if $ofuscate -}}
-          {{- .label | base64Encode -}}
-        {{- end -}}
-      </i>
-    {{- else -}}
-      {{- if $button -}}
-        <i>{{- .label | default (i18n "more") | safeHTML -}}</i>
-      {{- else -}}
-        {{- .label | default (i18n "more") | safeHTML -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{- "</" | safeHTML }} {{- cond (not $not_link) "a" (cond $button "button" "i") -}} >
-
-{{- else -}}
-
-  {{- $ofuscate := partial "components/ofuscate" (.label | default "") -}}
-  {{- if $ofuscate -}}
-    {{- $class = print $class " ofuscate" -}}
-  {{- end -}}
-
-  {{- with $class }}<i class="{{ . }}">{{ end -}}
-    {{- $icon -}}
-    {{- if $ofuscate -}}
-      {{- .label | base64Encode -}}
-    {{- else -}}
-      {{- .label | default (i18n "more") | safeHTML -}}
-    {{- end -}}
-  {{- with $class }}</i>{{ end -}}
-
 {{- end -}}
+
+
+{{- /*  CLASS  */ -}}
+{{- /*  button type color, swap and dot or link  */ -}}
+{{- $class        := .class | default "" -}}
+{{- $class_type   := "" -}}
+{{- if $button -}}
+  {{- $hide := eq $button "hide" -}}
+  {{- if $hide -}}
+    {{- $class_type = slice "button" "hide" -}}
+  {{- else -}}
+    {{- $class_type = slice
+      "button"
+      (cond (not .dot)         "" "button--dot")
+      (cond (not .sm)          "" "button--sm")
+      (cond (not .swap)        "" "button--font-alt")
+      (cond (eq $button "cta") "" $button)
+    -}}
+  {{- end -}}
+{{- else if or $link $lock -}}
+  {{- /*  set link style if link or lock  */ -}}
+  {{- $class_type = slice "link" -}}
+{{- end -}}
+{{- with $class_type -}}
+  {{- $class = . | append $class -}}
+{{- end -}}
+
+
+{{- /*  WRAP  */ -}}
+{{- $not_link := or $lock $is_lightbox (not $link) -}}
+{{- if $not_link -}}
+  {{- if $button -}}
+    {{- $tag  = "button" -}}
+    {{- $type = "button" -}}
+  {{- else -}}
+    {{- if or $link $lock -}}
+      {{- /*  set link accesibility if link or lock  */ -}}
+      {{- $tabindex = "0" -}}
+      {{- $role     = "link" -}}
+    {{- end -}}
+    {{- if not $link -}}
+      {{- $b_data   = .blank -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $is_lightbox -}}
+    {{- $lb_data = $link | safeURL -}}
+    {{- $b_data  = true -}}
+  {{- else if $link -}}
+    {{ $link_b64 := $link | safeURL | base64Encode }}
+    {{- if or $is_external .blank -}}
+      {{- $b_data = $link_b64 -}}
+    {{- else -}}
+      {{- $h_data = $link_b64 -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $tag  = "a" -}}
+  {{- $href = $link | safeURL -}}
+  {{- if or $is_external .blank }}
+    {{- $target = "_blank" -}}
+    {{- $rel    = "noopener" -}}
+  {{ end -}}
+{{- end -}}
+
+
+{{- /*  LABEL  */ -}}
+{{- $label = .anchor | default .label | default $anchor_page -}}
+{{- if $label -}}
+  {{- $sub_tag   := "" -}}
+  {{- $sub_class := "" -}}
+  {{- $sub_more  := "" -}}
+  {{- $is_mail   := partial "functions/is-mail" (.label | default "") -}}
+  {{- $is_more   := ne $label .label -}}
+  {{- if $is_mail -}}
+    {{- $sub_class = "mail" -}}
+    {{- $label     = .label | base64Encode -}}
+    {{- $sub_tag   = true -}}
+  {{- else if eq $button "hide" -}}
+    {{- /*  if button hide, not more and not sub  */ -}}
+    {{- $sub_tag   = false -}}
+    {{- $label     = $label | plainify -}}
+  {{- else if and $is_more (not .nomore) -}}
+    {{- /*  check if already applied data-more in parent  */ -}}
+    {{- if $button -}}
+      {{- /*  if is a button, need one more child for prevent :before back problem  */ -}}
+      {{- $label    = print "<i>" $label "</i>" | safeHTML -}}
+      {{- $sub_more = .label | plainify -}}
+    {{- else -}}
+      {{- /*  else data-more in wrap  */ -}}
+      {{- $more_data = .label | plainify -}}
+    {{- end -}}
+    {{- $sub_tag = true -}}
+  {{- else if $button -}}
+    {{- $sub_tag = true -}}
+  {{- end -}}
+  {{- if $sub_tag -}}
+    {{- $sub_attrs := dict "class" $sub_class "data-more" $sub_more -}}
+    {{- $sub_attrs  = partial "functions/attrs" $sub_attrs -}}
+    {{- $label      = print "<i" $sub_attrs ">" $label "</i>" | safeHTML -}}
+  {{- end -}}
+{{- end -}}
+
+
+{{- /*  ATTRS  */ -}}
+{{- $attrs := dict
+  "type"          $type
+  "class"         $class
+  "data-more"     $more_data
+  "data-lightbox" $lb_data
+  "data-b"        $b_data
+  "data-h"        $h_data
+  "tabindex"      $tabindex
+  "role"          $role
+  "href"          $href
+  "target"        $target
+  "rel"           $rel
+  "title"         .title
+-}}
+{{- $attrs = partial "functions/attrs" $attrs -}}
+
+
+{{- /*  HTML  */}}
+{{- print "<" $tag $attrs ">" | safeHTML -}}
+  {{- with .icon -}}
+    {{- if ne . "hide" -}}
+      {{- partial "components/icon" (dict "icon" . "emoji" $.emoji) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $label -}}
+{{- print "</" $tag ">" | safeHTML -}}

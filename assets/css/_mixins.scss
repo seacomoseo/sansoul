@@ -30,9 +30,9 @@
   font-size: $font-size-title * 1em;
   @if $top-title != 0 {
     --top-font: #{#{ $top-title }em};
-    &:not(strong, .href) {
+    &:not(strong, .link, .icon) {
       translate: 0 var(--top-font);
-      > svg:not(.box__icon--side),
+      > .icon:not(.box__icon--side),
       &.underline:after {
         translate: 0 calc(var(--top-font) * -1);
       }
@@ -65,9 +65,9 @@
   font-size: $font-size-cursive * 1em;
   @if $top-cursive != 0 {
     --top-font: #{#{ $top-cursive }em};
-    &:not(strong, .href) {
+    &:not(strong, .link, .icon) {
       translate: 0 var(--top-font);
-      > svg:not(.box__icon--side),
+      > .icon:not(.box__icon--side),
       &.underline:after {
         translate: 0 calc(var(--top-font) * -1);
       }

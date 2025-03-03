@@ -8,7 +8,7 @@ import { formValid } from './form-validate'
 import { changeValues } from './form-change-values'
 
 const closeIcon =
-'<svg class="close" onclick="this.parentElement.remove()">' +
+'<svg class="icon close" onclick="this.parentElement.remove()">' +
   `<use href="/draws.${timestamp}.svg#xmark"></use>` +
 '</svg>'
 
@@ -30,8 +30,8 @@ function formSubmited (form) {
 function formSubmitError (formMessage, message) {
   formMessage.classList.add('form__submit--error')
   formMessage.innerHTML =
-    `<svg><use href="/draws.${timestamp}.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
-    `<svg><use href="/draws.${timestamp}.svg#circle-info"></use></svg> ${message}`
+    `<svg class="icon"><use href="/draws.${timestamp}.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
+    `<svg class="icon"><use href="/draws.${timestamp}.svg#circle-info"></use></svg> ${message}`
 }
 
 export function initFormSend () {
@@ -80,7 +80,7 @@ export function initFormSend () {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
-            formMessage.innerHTML = `<svg class="spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${formSubmitSending}…`
+            formMessage.innerHTML = `<svg class="icon spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${formSubmitSending}…`
             form.append(formMessage)
 
             const formOptions = { method: 'POST' }
@@ -111,7 +111,7 @@ export function initFormSend () {
                   throw new Error(data.message || 'Unknown error, data: ' + JSON.stringify(data))
                 }
                 formMessage.classList.add('form__submit--success')
-                formMessage.innerHTML = `<svg><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
+                formMessage.innerHTML = `<svg class="icon"><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
                 // Reset
                 form.reset()

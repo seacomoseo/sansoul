@@ -6,7 +6,7 @@
   ul, ol {
     display: table;
     text-align: left;
-    padding: 0;
+    padding-left: .25em;
     margin: 0 auto 1em;
     &:last-child {
       margin-bottom: 0;
@@ -16,41 +16,45 @@
     }
     > li {
       display: table-row;
-      > * {
+      --li-pt: .75rem;
+      &:first-child {
+        --li-pt: 0rem;
+      }
+      ul, ol {
+        > li:first-child {
+          --li-pt: .75rem;
+        }
+      }
+      > *,
+      &:before {
         display: table-cell;
         // text-align: right;
       }
       &:before,
-      > svg {
-        font-size: 1.2em;
+      > .icon {
         color: var(--main);
+        text-align: right;
+        white-space: nowrap;
+        scale: 1.2;
+        transform-origin: right calc(var(--li-pt) + .5em);
       }
-      @if $main = $link {
-        &:not(#toc *, .list-inline *):where(:is(ul, ol):has(.href) *) {
+      @if $main = $cta {
+        &:not(#toc *, .list-inline *):where(:is(ul, ol):has(.link) *) {
           &:before,
-          > svg {
+          > .icon {
             opacity: .5;
           }
         }
       }
       &:before {
-        @include font-base-bold;
         content: "\2014";
       }
-      &.li-svg:before {
-        content: "";
+      &.li-icon:before {
+        content: none;
       }
       > div {
-        padding-top: .75em;
+        padding-top: var(--li-pt);
         padding-left: .5em;
-      }
-      &:first-child > div {
-        padding-top: 0;
-      }
-    }
-    ul, ol {
-      > li:first-child > div {
-        padding-top: .75em;
       }
     }
   }
@@ -60,11 +64,11 @@
 
   ol {
     counter-reset: item calc(var(--item, 1) - 1);
-    > li{
+    > li {
+      counter-increment: item;
+      --li-counter: counters(item, ".") ".";
       &:before {
-        content: counter(item) ". ";
-        counter-increment: item;
-        white-space: nowrap;
+        content: var(--li-counter, "");
       }
     }
   }
@@ -85,9 +89,9 @@
       &:before {
         content: none;
       }
-      > svg {
-        top: 0;
-      }
+      // > .icon {
+      //   top: 0;
+      // }
       > div {
         padding: 0;
         display: flex;
@@ -131,6 +135,7 @@ ol.align-right {
   text-align: right;
   > li {
     direction: ltr;
+    --li-counter: "." counters(item, ".");
     > div {
       padding-left: 0;
       padding-right: .75em;

@@ -25,14 +25,13 @@
     ) -}}
     {{- range $networks -}}
       {{- partial "components/link" (dict
-        "link"    .link
-        "button"  "link"
-        "dot"     true
-        "icon"    .icon
-        "emoji"   .emoji
-        "label"   .title
-        "anchor"  ""
-        "noindex" true
+        "button" "cta"
+        "dot"    true
+        "icon"   .icon
+        "emoji"  .emoji
+        "label"  .title
+        "link"   .link
+        "lock"   true
       ) -}}
     {{- end -}}
   </div>

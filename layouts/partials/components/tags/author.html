@@ -3,15 +3,18 @@
   {{- with .Page.Params.author -}}
     {{- with $.GetPage "author" . -}}
       <i class="box__tag">
-        {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" "user" "alt" "👤") -}}
+        {{- partial "components/icon" (dict
+          "class" "box__tag-icon"
+          "icon"  "user"
+          "alt"   "👤"
+        ) -}}
         {{- if $.box -}}
           {{- .Title -}}
         {{- else -}}
           {{- partial "components/link" (dict
-            "link"    .RelPermalink
-            "button"  "none"
-            "label"   .Title
-            "noindex" true
+            "label" .Title
+            "link"  .RelPermalink
+            "lock"  true
           ) -}}
         {{- end -}}
       </i>

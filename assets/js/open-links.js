@@ -62,16 +62,8 @@ export function initOpenLinks () {
         }
       } else {
         // BOX LINKS
-        const boxLink = e.target.closest(
-          '.box:has(> .box__button):not(:has(' +
-            '.box .box__button,' +
-            '> .box__button ~ .box__button,' +
-            '.href:not(.box__link, .box__button)' +
-          '))'
-        )
-        if (boxLink) {
-          boxLink.querySelector('.box__button').click()
-        }
+        const boxLink = e.target.closest('.box:has(> .box-go):not(:has(> .box-go ~ .box-go))')
+        if (boxLink) boxLink.querySelector('.button, .link').click()
       }
     }
   })

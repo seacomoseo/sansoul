@@ -6,19 +6,26 @@
   {{- $alt = print (i18n "video") " · Youtube" -}}
 {{- end -}}
 
-<iframe
-  {{- with .class }} class="{{ . }}" {{ end -}}
-  width="560"
-  height="315"
-  loading="lazy"
-  src="{{ $iframe.src }}"
-  title="{{ $alt }}"
-  allow="accelerometer clipboard-write; encrypted-media; gyroscope; picture-in-picture {{- if .mute }}; autoplay; loop; mute{{ end }}"
-  allowfullscreen
-  {{- if not .notlazy }} loading="lazy"{{ end -}}
-></iframe>
+{{- $allow := print "accelerometer clipboard-write; encrypted-media; gyroscope; picture-in-picture" (cond (not .mute) "" "; autoplay; loop; mute") -}}
+{{- $lazy  := cond (not .notlazy) "lazy" "" -}}
 
-{{- partial "components/base/schema/video" (dict
+{{- $attrs := dict
+  "class"           .class
+  "width"           "560"
+  "height"          "315"
+  "src"             $iframe.src
+  "title"           $alt
+  "allow"           $allow
+  "allowfullscreen" true
+  "loading"         $lazy
+-}}
+{{- $attrs = partial "functions/attrs" $attrs -}}
+
+{{- /*  HTML  */}}
+<iframe {{- $attrs }}></iframe>
+
+{{- /*  schema  */}}
+{{ partial "components/base/schema/video" (dict
   "name"         $alt
   "thumbnailUrl" $poster
   "uploadDate"   .upload

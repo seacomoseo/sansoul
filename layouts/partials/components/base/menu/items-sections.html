@@ -1,10 +1,10 @@
-{{- $items := slice -}}
+{{ $items := slice }}
 
 {{ if .show_sections }}
-  {{- $sections  := slice -}}
-  {{- with partial "functions/sections" page -}}
-    {{- $sections = after 1 . -}}
-  {{- end -}}
+  {{ $sections  := slice }}
+  {{ with partial "functions/sections" page }}
+    {{ $sections = after 1 . }}
+  {{ end }}
 
   {{ with where $sections "menu_button" "ne" "hide" }}
     {{ range . }}

@@ -1,6 +1,6 @@
-{{- $vars := dict -}}
-{{- with site.Data -}}
-  {{- $vars = dict
+{{ $vars := dict }}
+{{ with site.Data }}
+  {{ $vars = dict
     "styles-colors-base-white"           (.styles.colors.base.white               | default "#fff")
     "styles-colors-base-light"           (.styles.colors.base.light               | default "#eee")
     "styles-colors-base-dark"            (.styles.colors.base.dark                | default "#282525")
@@ -8,23 +8,23 @@
     "styles-colors-base-grey"            (.styles.colors.base.grey                | default "#767676")
     "styles-colors-main-color"           (.styles.colors.main.color               | default "#577399")
     "styles-colors-alt-color"            (.styles.colors.alt.color                | default "")
-    "styles-colors-link-color"           (.styles.colors.link.color               | default .styles.colors.main.color | default "#577399")
+    "styles-colors-cta-color"            (.styles.colors.cta.color                | default .styles.colors.main.color | default "#577399")
 
     "styles-colors-main-light"           (.styles.colors.main.light               | default "")
     "styles-colors-alt-light"            (.styles.colors.alt.light                | default "")
-    "styles-colors-link-light"           (.styles.colors.link.light               | default "")
+    "styles-colors-cta-light"            (.styles.colors.cta.light                | default "")
 
     "styles-colors-main-dark"            (.styles.colors.main.dark                | default "")
     "styles-colors-alt-dark"             (.styles.colors.alt.dark                 | default "")
-    "styles-colors-link-dark"            (.styles.colors.link.dark                | default "")
+    "styles-colors-cta-dark"             (.styles.colors.cta.dark                 | default "")
 
     "styles-colors-main-contrast-text"   (or (in (slice "all" "text") .styles.colors.main.contrast) (not .styles.colors.main.contrast) | not | not | string)
     "styles-colors-alt-contrast-text"    (or (in (slice "all" "text") .styles.colors.alt.contrast ) (not .styles.colors.alt.contrast)  | not | not | string)
-    "styles-colors-link-contrast-text"   (or (in (slice "all" "text") .styles.colors.link.contrast) (not .styles.colors.link.contrast) | not | not | string)
+    "styles-colors-cta-contrast-text"    (or (in (slice "all" "text") .styles.colors.cta.contrast ) (not .styles.colors.cta.contrast)  | not | not | string)
 
     "styles-colors-main-contrast-bg"     (or (in (slice "all" "bg")   .styles.colors.main.contrast) (not .styles.colors.main.contrast) | not | not | string)
     "styles-colors-alt-contrast-bg"      (or (in (slice "all" "bg")   .styles.colors.alt.contrast ) (not .styles.colors.alt.contrast)  | not | not | string)
-    "styles-colors-link-contrast-bg"     (or (in (slice "all" "bg")   .styles.colors.link.contrast) (not .styles.colors.link.contrast) | not | not | string)
+    "styles-colors-cta-contrast-bg"      (or (in (slice "all" "bg")   .styles.colors.cta.contrast ) (not .styles.colors.cta.contrast)  | not | not | string)
 
     "styles-fonts-base-family"           (.styles.fonts.base.family               | default "Arial")
     "styles-fonts-title-family"          (.styles.fonts.title.family              | default "Arial")
@@ -48,7 +48,6 @@
     "styles-fonts-blockquote_cursive"    (.styles.fonts.blockquote_cursive        | not | not | string)
 
     "styles-duotone"                     (eq .styles.icons.type   "duotone"       | not | not | string)
-    "styles-emojis"                      (.styles.icons.emojis                    | not | not | string)
     "styles-emojis-scale"                (in .styles.icons.emojis "-scale"        | not | not | string)
     "styles-menu-bar"                    (cond (eq .styles.icons.type "thin"   ) .1
                                          (cond (eq .styles.icons.type "light"  ) .15
@@ -78,17 +77,17 @@
     "config-others-show"                 (.config.others.show                     | not | not | string)
     "menu-google_translate"              (site.Params.google_translate            | not | not | string)
     "timestamp"                          site.Params.timestamp
-    -}}
-{{- end -}}
+    }}
+{{ end }}
 
-{{- $css := resources.Get (print "css/styles.scss") -}}
-{{- with $css -}}
-  {{- $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment) -}}
-  {{- if hugo.IsProduction -}}
-    {{/*  {{- $css = $css | minify | postCSS | resources.PostProcess -}}  */}}
-    {{- $css = $css | minify -}}
-  {{- end -}}
-  {{- $css = $css | fingerprint -}}
-{{- end -}}
+{{ $css := resources.Get (print "css/styles.scss") }}
+{{ with $css }}
+  {{ $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment) }}
+  {{ if hugo.IsProduction }}
+    {{/*  {{ $css = $css | minify | postCSS | resources.PostProcess }}  */}}
+    {{ $css = $css | minify }}
+  {{ end }}
+  {{ $css = $css | fingerprint }}
+{{ end }}
 
-<link rel="stylesheet" href="{{ $css.RelPermalink }}">
+{{ return $css }}

@@ -1,13 +1,13 @@
 {{ $svg := readFile .path
   | replaceRE `\$main` site.Data.styles.colors.main.color
-  | replaceRE `\n\s*` ``
-  | replaceRE `<` `%3C`
-  | replaceRE `>` `%3E`
-  | replaceRE `"` `'`
-  | replaceRE `#` `%23`
-  | replaceRE `&` `%26`
-  | replaceRE `\{` `%7B`
-  | replaceRE `\}` `%7D`
+  | replaceRE `\n\s*` ""
+  | replaceRE `<` "%3C"
+  | replaceRE `>` "%3E"
+  | replaceRE `"` "'"
+  | replaceRE `#` "%23"
+  | replaceRE `&` "%26"
+  | replaceRE `\{` "%7B"
+  | replaceRE `\}` "%7D"
 }}
 {{ $css := print `
   position: relative;

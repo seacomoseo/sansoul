@@ -1,6 +1,6 @@
 {{- $box  := . -}}
 
-{{/*  MERGE PARAMS  */}}
+{{- /*  MERGE PARAMS  */ -}}
 {{- range .params -}}
   {{- $value    := .value -}}
   {{- with .value -}}
@@ -15,25 +15,25 @@
     {{- end -}}
   {{- end -}}
   {{- if $value -}}
-    {{ $keys := split .box "." }}
-    {{ $obj  := dict }}
-    {{ if eq (len $keys) 2 }}
-      {{ $obj = dict (index $keys 0) (dict (index $keys 1) $value) }}
-    {{ else }}
-      {{ $obj = dict (index $keys 0) $value }}
-    {{ end }}
+    {{- $keys := split .box "." -}}
+    {{- $obj  := dict -}}
+    {{- if eq (len $keys) 2 -}}
+      {{- $obj = dict (index $keys 0) (dict (index $keys 1) $value) -}}
+    {{- else -}}
+      {{- $obj = dict (index $keys 0) $value -}}
+    {{- end -}}
     {{- $box  = merge $box $obj -}}
   {{- end -}}
 {{- end -}}
 
-{{/*  bgcp  */}}
+{{- /*  bgcp  */ -}}
 {{- with $box -}}
   {{- $color := .color | default (cond .modal "white" (cond (not .card) "" "black")) -}}
   {{- $bgc   := partial "functions/color-background" (dict "child" $color "parent" .bgcp) -}}
   {{- $box    = merge . (dict "bgcp" $bgc.parent "color" $bgc.child) -}}
 {{- end -}}
 
-{{/*  BOX  */}}
+{{- /*  BOX  */ -}}
 {{- with $box -}}
   {{- $align := .align -}}
 
@@ -56,14 +56,14 @@
   {{- $start_slash    := $link | findRE `^/` -}}
   {{- if $link -}}
     {{- if not $external | and (not $is_anchor_link) | and (not $start_slash) -}}
-      {{- with resources.Get ((print "/media/" $link) | replaceRE `\#.*$` ``) -}}
+      {{- with resources.Get ((print "/media/" $link) | replaceRE `\#.*$` "") -}}
         {{- $link      = .RelPermalink -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- $like_article   := $link | and (eq .button "hide") -}}
+  {{- $like_article   := and $link (or .title .hanchor) (eq .button "hide") -}}
 
-  {{/*  WRAP  */}}
+  {{- /*  WRAP  */ -}}
   {{- $box_wrap := or
     .box_wrap
     .span
@@ -105,7 +105,7 @@
     {{- end -}}
     {{- $button_is := $link | and (ne .button "hide") -}}
 
-    {{/*  ATTRIBUTES  */}}
+    {{- /*  ATTRIBUTES  */ -}}
     {{- $box_attr  := partial "components/boxes/attr" (merge . (dict
       "main"         $main
       "bg_color"     .color
@@ -118,10 +118,10 @@
       "show"         (and (not .slider) (not .first) $show)
     )) -}}
 
-    {{/*  BOX  */}}
-    {{- print "<" $node $box_attr ">" | safeHTML -}}
+    {{- /*  BOX  */}}
+    {{ print "<" $node $box_attr ">" | safeHTML -}}
 
-      {{/*  BACKGROUND  */}}
+      {{- /*  BACKGROUND  */ -}}
       {{- partial "components/bg" (merge . (dict
         "bg"       $bg_image_src
         "shadow"   $shadow
@@ -132,61 +132,63 @@
 
   {{- end -}}
 
-    {{/*  IMAGE  */}}
+    {{- /*  IMAGE  */ -}}
     {{- partial "components/boxes/image" (merge . (dict
       "icon_type" $icon_type
       "span_xl"   $span_xl
       "span_xs"   $span_xs
     )) -}}
 
-    {{/*  TITLE  */}}
+    {{- /*  TITLE  */ -}}
     {{- partial "components/boxes/title" (merge . (dict
       "main"         $main
       "level"        $level
       "icon_type"    $icon_type
       "underline"    $underline
       "like_article" $like_article
+      "link"         $link
     )) -}}
 
-    {{/*  ICON BOTTOM  */}}
+    {{- /*  ICON BOTTOM  */ -}}
     {{- if eq $icon_type "bottom" -}}
       {{- partial "components/boxes/icon" (merge . (dict
         "icon_type" $icon_type
       )) -}}
     {{- end -}}
 
-    {{/*  SUBTITLE  */}}
-    {{- with .subtitle -}}
+    {{- /*  SUBTITLE  */ -}}
+    {{- with .subtitle }}
       <p class="box__subtitle subtitle">
         {{- . | markdownify -}}
       </p>
     {{- end -}}
 
-    {{/*  PRICE  */}}
+    {{- /*  PRICE  */ -}}
     {{- with .price }}
       <div class="price">
-        {{ . | markdownify }}
+        {{- . | markdownify -}}
       </div>
     {{- end -}}
 
-    {{/*  CONTENT  */}}
+    {{- /*  CONTENT  */ -}}
     {{- with .content -}}
-      {{- $content_align := cond (and (not $align) $main (not $.header) (or (eq $.container "xs") (eq $.container "sm"))) " align-left" "" -}}
+      {{- $content_small := or (eq $.container "xs") (eq $.container "sm") -}}
+      {{- $content_align := cond (and (not $align) $main (not $.header) $content_small) " align-left" "" -}}
       {{- $cont_class    := print "box__content content" $content_align -}}
       {{- if $like_article -}}
         {{- $cont_class   = print $cont_class " box__content--small" -}}
-      {{- end -}}
+      {{- end }}
       <div class="{{ $cont_class }}">
-        {{/* <div class="float"></div><div class="float float--r"></div> */}}
-        {{- partial "functions/md" (dict "content" . "not_header_links" $.modal) -}}
+        {{- /* <div class="float"></div><div class="float float--r"></div> */}}
+        {{ partial "functions/md" (dict "content" . "not_header_links" $.modal) }}
       </div>
     {{- end -}}
 
 
-    {{/*  TYPES  */}}
+    {{- /*  TYPES  */ -}}
 
-    {{/*  STEPS  */}}
-    {{ if .steps }}
+    {{- /*  STEPS  */ -}}
+    {{- if .steps -}}
       {{- partial "components/blocks/steps" (merge
         (.step | default dict)
         (dict
@@ -195,10 +197,10 @@
           "show" .show
         )
       ) -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  GALLERY  */}}
-    {{ if or .images .limages }}
+    {{- /*  GALLERY  */ -}}
+    {{- if or .images .limages -}}
       {{- if eq .gallery.type "boxes" -}}
         {{- $boxes_images := slice -}}
         {{- range $k, $v := .limages -}}
@@ -264,10 +266,10 @@
           )
         ) -}}
       {{- end -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  LIST  */}}
-    {{ if .list }}
+    {{- /*  LIST  */ -}}
+    {{- if .list -}}
       {{- partial "components/blocks/list" (merge
         .
         (dict
@@ -276,18 +278,18 @@
           "level"     $level
         )
       ) -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  ACCORDION  */}}
-    {{ if .accordions }}
+    {{- /*  ACCORDION  */ -}}
+    {{- if .accordions -}}
       {{- partial "components/blocks/accordion" (merge
         .
         (dict "level" $level)
       ) -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  REVIEWS  */}}
-    {{ if .reviews }}
+    {{- /*  REVIEWS  */ -}}
+    {{- if .reviews -}}
       {{- partial "components/blocks/reviews" (merge
         (.review | default dict)
         (dict
@@ -295,38 +297,38 @@
           "bgcp"    .bgcp
         )
       ) -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  SOCIAL  */}}
-    {{ if .social }}
+    {{- /*  SOCIAL  */ -}}
+    {{- if .social -}}
       {{- partial "components/blocks/social" . -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  CONTACT  */}}
-    {{ if .contact }}
+    {{- /*  CONTACT  */ -}}
+    {{- if .contact -}}
       {{- partial "components/blocks/contact" . -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  FORM  */}}
-    {{ if .inputs }}
+    {{- /*  FORM  */ -}}
+    {{- if .inputs -}}
       {{- partial "components/blocks/form" (merge
         .
         (dict "Page" page )
       ) -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  MAP  */}}
-    {{ if .map }}
+    {{- /*  MAP  */ -}}
+    {{- if .map -}}
       {{- partial "components/blocks/map" . -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  GSS  */}}
-    {{ if .gss }}
+    {{- /*  GSS  */ -}}
+    {{- if .gss -}}
       {{- partial "components/blocks/gss" . -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  BOXES  */}}
-    {{ if .boxes }}
+    {{- /*  BOXES  */ -}}
+    {{- if .boxes -}}
       {{- partial "components/boxes/_" (merge
         .
         (dict
@@ -339,84 +341,71 @@
           "next"     nil
         )
       ) -}}
-    {{ end }}
+    {{- end -}}
 
-    {{/*  END TYPES  */}}
+    {{- /*  END TYPES  */ -}}
 
-    {{/*  TAGS  */}}
-    {{ if .tags }}
+    {{- /*  TAGS  */ -}}
+    {{- if .tags -}}
       {{- partial "components/tags/_" (merge
         .
         (dict "level" $level)
       ) -}}
-    {{ end }}
-
-    {{/*  BUTTON  */}}
-    {{- if $link -}}
-      {{- $class  := "box__button" -}}
-      {{- $button := .button -}}
-      {{- $icon   := (cond (eq .licon "none") "" .licon) -}}
-      {{- $label  := .label -}}
-      {{- if $like_article -}}
-        {{- $class  = "box__button hide" -}}
-        {{- $button = "none" -}}
-        {{- $icon   = "" -}}
-        {{- $label  = or .anchor .hanchor .title -}}
-      {{- end -}}
-      {{/*  {{- if not $like_article -}}  */}}
-        {{- partial "components/link" (dict
-          "class"     $class
-          "link"      $link
-          "button"    $button
-          "font_alt"  .font_alt
-          "icon"      $icon
-          "label"     $label
-          "label_alt" .title
-          "anchor"    .anchor
-          "noindex"   .ofuscate
-        ) -}}
-      {{/*  {{- end -}}  */}}
     {{- end -}}
 
-    {{/*  MODAL BUTTONS CLOSE, PREV AND NEXT  */}}
+    {{- /*  BUTTON  */ -}}
+    {{- if and $link (not $like_article) -}}
+      {{ partial "components/link" (dict
+        "class"  "box__button box-go"
+        "button" (.button | default "cta")
+        "swap"   .font_alt
+        "icon"   .licon
+        "label"  (.label  | default (i18n "more") | markdownify)
+        "anchor" (.anchor | markdownify)
+        "link"   $link
+        "lock"   .ofuscate
+      ) -}}
+    {{- end -}}
+
+    {{- /*  MODAL BUTTONS CLOSE, PREV AND NEXT  */ -}}
     {{- if $main -}}
-      {{- if and .modal (not .ph) -}}
+      {{- if and .modal (not .ph) }}
         <div class="buttons">
-          {{- with .prev -}}
-            {{- partial "components/link" (dict
+          {{- with .prev }}
+            {{ partial "components/link" (dict
               "class" "modal__prev"
-              "link"  (print "#" .id)
+              "button" "cta"
               "dot"   true
               "icon"  (site.Data.styles.icons.left | default "chevron-left")
               "emoji" "⬅️"
               "label" (i18n "prev")
-            ) -}}
-          {{- end -}}
-
-          {{- partial "components/link" (dict
-            "class" "modal__close"
-            "link"  "none"
-            "dot"   (and .prev .next)
-            "icon"  "xmark"
-            "emoji" "❌"
-            "label" (i18n "close")
-          ) -}}
-
-          {{- with .next -}}
-            {{- partial "components/link" (dict
-              "class" "modal__next"
               "link"  (print "#" .id)
-              "dot"   true
-              "icon"  (site.Data.styles.icons.right | default "chevron-right")
-              "emoji" "➡️"
-              "label" (i18n "next")
             ) -}}
-          {{- end -}}
+          {{- end }}
+          {{ partial "components/link" (dict
+            "class" "modal__close"
+            "button" "cta"
+            "dot"    (and .prev .next)
+            "icon"   "xmark"
+            "emoji"  "❌"
+            "label"  (i18n "close")
+          ) -}}
+          {{- with .next }}
+            {{ partial "components/link" (dict
+              "class"  "modal__next"
+              "button" "cta"
+              "dot"    true
+              "icon"   (site.Data.styles.icons.right | default "chevron-right")
+              "emoji"  "➡️"
+              "label"  (i18n "next")
+              "link"   (print "#" .id)
+            ) -}}
+          {{- end }}
         </div>
       {{- end -}}
     {{- end -}}
 
-  {{- if $box_wrap -}}
-    {{- print "</" $node ">" | safeHTML -}}
+  {{- if $box_wrap }}
+    {{ print "</" $node ">" | safeHTML -}}
   {{- end -}}
 {{- end -}}

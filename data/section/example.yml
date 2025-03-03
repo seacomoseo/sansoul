@@ -4,12 +4,12 @@ name: Ejemplo
 id: seccion
 ## menu
 menu_label: Texto del enlace del Menú
-menu_button: link # [ main, link, alt, light, dark, invert, similar, none, hide ]
+menu_button: cta # [ main, cta, alt, light, dark, invert, similar, none, hide ]
 menu_font_alt: true
 # bg
-color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
-gradient: grey # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+gradient: grey # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
 gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 bg: base/poster.png
 alpha: 0 # [ 0.00 - 1.00 ]
@@ -37,8 +37,8 @@ price: 22 €
 content: |
   Contenido de [Sección](#seccion)
 
-  [btn:light icon:link Botón con anchor icon:link](#seccion "hola k ase")
-  [btn:dark  icon:link Botón sin anchor icon:link](#seccion)
+  [[:link: Botón con anchor :link:]](#seccion "hola k ase [light]")
+  [[:link: Botón sin anchor :link:]](#seccion "[dark]")
 hn: '' # [ 1 - 6, p ]
 hs: '' # [ 0 - 6 ]
 uppercase: true
@@ -49,14 +49,14 @@ align_max: center # [ left, center, right ]
 # icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 icon_type: bottom # [ top, side, bottom ]
 icon_size: 0 # [ 0 = auto, > 0.00 ]
-icon_color: '' # [ main, link, alt, light, dark, invert, similar ]
+icon_color: '' # [ main, cta, alt, light, dark, invert, similar ]
 # image
 image: base/icon.png
 hover: base/poster.png
 ratio: 1/1 # [ int/int ]
 circle: true
 contain: false
-border: main # [ main, link, alt, light, dark, invert, similar ]
+border: main # [ main, cta, alt, light, dark, invert, similar ]
 inset: true
 grayscale: false
 declive: false
@@ -66,12 +66,12 @@ licon: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Ccla
 label: Legal
 anchor: Aviso Legal
 ofuscate: false
-button: none # [ main, link, alt, light, dark, invert, similar, none, hide ]
+button: none # [ main, cta, alt, light, dark, invert, similar, none, hide ]
 font_alt: true
 # container
-box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
 box_color_alpha: '' # [ 0.00 - 1.00 ]
-box_gradient: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+box_gradient: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
 box_gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 box_bg: base/icon.png
 box_alpha: .8 # [ 0.00 - 1.00 ]
@@ -171,7 +171,7 @@ boxes:
 ###
 
 - step:
-    border: link # [ main, link, alt, light, dark, invert, similar ]
+    border: cta # [ main, cta, alt, light, dark, invert, similar ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
     hn: '' # [ 1 - 6, p ]
     hs: '' # [ 0 - 6 ]
@@ -194,7 +194,7 @@ boxes:
 - gallery:
     cols: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, cols, boxes ]
-    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
     gap: 0 # [ >= 0.00 ]
     ratio: 1/1 # [ int/int ]
     contain: true
@@ -205,7 +205,7 @@ boxes:
     label: Ejemplo
     anchor: Jeje
     ofuscate: false
-    button: none # [ main, link, alt, light, dark, invert, similar, none ]
+    button: none # [ main, cta, alt, light, dark, invert, similar, none ]
     font_alt: true
   images:
   - https://images.unsplash.com/photo-1552664730-d307ca884978?fit=crop&w=512&q=60
@@ -225,7 +225,7 @@ boxes:
 ###
 
 - accordion:
-    button: '' # [ main, link, alt, light, dark, invert, similar, none ]
+    button: '' # [ main, cta, alt, light, dark, invert, similar, none ]
     font_alt: false
     licon: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     hn: '' # [ 1 - 6, p ]
@@ -249,8 +249,8 @@ boxes:
 - review:
     cols: 3 # [ 0 = auto, > 0 ]
     cols_min: 1 # [ 0 = auto, > 0 ]
-    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
-    gradient: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, link, link-light, link-dark, white, light, grey, dark, black, invert, similar ]
+    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
+    gradient: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
     gradient_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
     alpha: .5 # [ 0.00 - 1.00 ]
     hide_shadow: true
@@ -258,7 +258,7 @@ boxes:
     interval: 2
     bullets: '' # [ dash, radius, hide ]
     arrows: '' # [ bottom, float, hide ]
-    button: '' # [ main, link, alt, light, dark, invert, similar ]
+    button: '' # [ main, cta, alt, light, dark, invert, similar ]
   reviews:
   - title: Título Reseña 1
     subtitle: Subtítulo Reseña 1
@@ -295,12 +295,12 @@ boxes:
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
     full: false
-    button: link # [ main, link, alt, light, dark, invert, similar, none ]
+    button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
     font_alt: false
   - type: whatsapp
     label: 123456789
     full: false
-    button: whatsapp # [ main, link, alt, light, dark, invert, similar, none ]
+    button: whatsapp # [ main, cta, alt, light, dark, invert, similar, none ]
     font_alt: false
   - type: mail
     label: ejemplo@gmail.com
@@ -313,7 +313,7 @@ boxes:
     geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
     zoom: 6
     full: true
-    button: link # [ main, link, alt, light, dark, invert, similar, none ]
+    button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
     font_alt: false
   - type: h2
     label: Encabezado h2
@@ -332,7 +332,7 @@ boxes:
     full: true
     anchor: Mola Mazo
     ofuscate: false
-    button: light # [ main, link, alt, light, dark, invert, similar, none ]
+    button: light # [ main, cta, alt, light, dark, invert, similar, none ]
     font_alt: false
     ga4: false
   - type: hr
@@ -412,7 +412,7 @@ boxes:
   - type: geo
     name: HOLI
     area: true
-    color: link
+    color: cta
     licon: circle-dot
     view: '{"type":"Point","coordinates":[40.46367, -3.74922]}'
     zoom: 4
@@ -480,7 +480,7 @@ boxes:
 - map:
   - type: point
     geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
-    color: link
+    color: cta
     icon: cat
     label: Punto
   - type: circle
@@ -490,5 +490,5 @@ boxes:
     label: Círculo
   - type: polygon
     geo: '{"type":"Polygon","coordinates":[[[-0.730882,37.9909474],[-0.7646935,38.5600661],[0.2231645,38.729593],[-0.730882,37.9909474]]]}'
-    color: link
+    color: cta
     label: Polígono

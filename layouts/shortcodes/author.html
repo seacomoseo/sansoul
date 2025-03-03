@@ -26,9 +26,8 @@
           {{ .Summary | default .Description }}
           {{ if .ContentWithoutSummary }}
             {{- partial "components/link" (dict
-              "link"      .RelPermalink
-              "button"    "none"
-              "label"     (print (i18n "read_more") "…")
+              "label" (print (i18n "read_more") "…")
+              "link"  .RelPermalink
             ) -}}
           {{ end }}
         {{- else if eq $param "image" -}}

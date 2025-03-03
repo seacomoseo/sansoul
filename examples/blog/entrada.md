@@ -74,13 +74,13 @@ ___
 
 Se pueden poner [iconos](#iconos) al inicio de cada elemento:
 
-- icon:check Elemento
-- icon:check Elemento
-  - icon:xmark Elemento
-    - icon:minus Elemento
-    - icon:minus Elemento
-    - icon:minus Elemento
-- icon:check Elemento
+- :check: Elemento
+- :check: Elemento
+  - :xmark: Elemento
+    - :minus: Elemento
+    - :minus: Elemento
+    - :minus: Elemento
+- :check: Elemento
 
 ### Ordenadas
 
@@ -165,18 +165,18 @@ Centrando las celdas
 | Más datos   | Otro contenido de ejemplo de una celda.  |
 | Otros datos | Y más contenido de ejemplo de una celda. |
 
-Si se le añade `{.compare}` al final de las tablas, los [iconos](#iconos) `check` tendrán color verde y los `times` rojo:
+Si se le añade `{.compare}` al final de las tablas, los [iconos](#iconos) `check` tendrán color verde y los `xmark` rojo:
 
 | Características                   | Netlify CMS                | Forestry                  |
 | --------------------------------- | :------------------------: | :-----------------------: |
-| Interfaz limpia<br>(grupos…)      | icon:xmark<br>desplegables | icon:check<br>deslizables |
-| Previsualizaciones                | icon:xmark                 | icon:check                |
-| Adaptado a móviles                | icon:xmark                 | icon:check                |
-| Sin límites de usuarios           | icon:check                 | icon:xmark 3              |
-| Interfaz en español               | icon:check                 | icon:xmark casi           |
-| Permite imágenes externas         | icon:check                 | icon:xmark                |
-| Edición de código razonable       | icon:check                 | icon:xmark                |
-| Sistema independiente de terceros | icon:check                 | icon:xmark                |
+| Interfaz limpia<br>(grupos…)      | :xmark:<br>desplegables | :check:<br>deslizables |
+| Previsualizaciones                | :xmark:                 | :check:                |
+| Adaptado a móviles                | :xmark:                 | :check:                |
+| Sin límites de usuarios           | :check:                 | :xmark: 3              |
+| Interfaz en español               | :check:                 | :xmark: casi           |
+| Permite imágenes externas         | :check:                 | :xmark:                |
+| Edición de código razonable       | :check:                 | :xmark:                |
+| Sistema independiente de terceros | :check:                 | :xmark:                |
 {.compare}
 
 ## Enlaces
@@ -201,32 +201,32 @@ Enlace de nota duplicado[^second].
 
 ### Botones
 
-Añadiendo `btn + espacio` delante de un enlace.
+Envolviendo el texto que hay **dentro** de un enlace entre corchetes (`[[ejemplo]](https://ejemplo.com/)`).
 
 Si hay un botón al comienzo de la linea, éste y todos los que hayan se ajustarán en anchos y márgenes (**recomendado**):
 
-[btn Botón 1](#botones)
-[btn Botón 2](#botones)
+[[Botón 1]](#botones)
+[[Botón 2]](#botones)
 
 Si no hay un botón al comienzo de la linea, éste y los siguientes saltan de línea, ocupan todo el ancho y no tendrán márgenes (**no recomendado**):
 
-Ésto es un botón: [btn Botón 1](#botones) [btn Botón 2](#botones)
+Ésto es un botón: [[Botón 1]](#botones) [[Botón 2]](#botones)
 
 ## Iconos
 
-En cualquier lugar añadiendo como texto `icon:` + seguido de un emoji o del ID del icono deseado que se puede consultar en el siguiente botón:
+En cualquier lugar añadiendo como texto el ID del icono deseado (que se puede consultar en el siguiente botón) envuelto entre el caracter `|`:
 
-[btn icon:font-awesome Font Awesome Icons](https://fontawesome.com/v6/icons?s=brands,solid).
+[[:font-awesome: Font Awesome Icons]](https://fontawesome.com/v6/icons?s=brands,solid).
 
 Ejemplos:
 
-- `star`: icon:star
-- `tag`: icon:tag
-- `home`: icon:house
-- Aquí hay un icono icon:apple de la famosa manzana
+- `star`: :star:
+- `tag`: :tag:
+- `home`: :house:
+- Aquí hay un icono :apple: de la famosa manzana
 - A continuación hay un botón con icono:
 
-[btn icon:star Botón](#iconos)
+[[:star: Botón]](#iconos)
 
 
 ## Imágenes

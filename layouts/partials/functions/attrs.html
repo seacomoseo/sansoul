@@ -1,19 +1,30 @@
-{{ $attributes := . }}
-{{ $result     := slice }}
-{{ range $key, $value := $attributes }}
+{{ $attr_str   := "" }}
+{{ $attributes := slice }}
+{{ range $key, $value := . }}
+  {{ if reflect.IsSlice $value }}
+    {{ $purged  := slice }}
+    {{ range $value }}
+      {{ with . }}
+        {{ $purged = $purged | append . }}
+      {{ end }}
+    {{ end }}
+    {{ $delimit := cond (eq $key "style") ";" " " }}
+    {{ $value    = delimit $purged $delimit }}
+  {{ end }}
   {{ if $value }}
     {{ $attr := $key }}
-    {{ if ne $value "-" }}
-      {{ if reflect.IsSlice $value }}
-        {{ $delimit := cond (eq $key "style") ";" " " }}
-        {{ $purged  := where $value "." "ne" "" }}
-        {{ $value    = delimit $purged $delimit }}
+    {{ if ne $value true }}
+      {{ if in $value "\"" }}{{/* " */}}
+        {{ $attr = print $key "='" $value "'" }}
+      {{ else }}
+        {{ $attr = print $key "=\"" $value "\"" }}
       {{ end }}
-      {{ $attr = printf "%s=\"%s\"" $key $value }}
     {{ end }}
-    {{ $result = $result | append $attr }}
+    {{ $attributes = $attributes | append $attr }}
   {{ end }}
 {{ end }}
-{{ $attrStr := delimit $result " " }}
-{{ $attrStr  = print " " $attrStr | safeHTMLAttr }}
-{{ return $attrStr }}
+{{ with $attributes }}
+  {{ $attr_str = delimit . " " }}
+  {{ $attr_str = print " " $attr_str }}
+{{ end }}
+{{ return ($attr_str | safeHTMLAttr) }}

@@ -1,6 +1,6 @@
 
 // Colors
-$text:                     #282525                           !default;
+$text:                     #282525                         !default;
 $white:                    $styles-colors-base-white         !default;
 $light:                    $styles-colors-base-light         !default;
 $dark:                     $styles-colors-base-dark          !default;
@@ -8,39 +8,39 @@ $black:                    $styles-colors-base-black         !default;
 $grey:                     $styles-colors-base-grey          !default;
 $main:                     $styles-colors-main-color         !default;
 $alt:                   if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
-$link:                     $styles-colors-link-color         !default;
+$cta:                      $styles-colors-cta-color          !default;
 
 $main-light:            if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
 $alt-light:             if($styles-colors-alt-light  != '', $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
-$link-light:            if($styles-colors-link-light != '', $styles-colors-link-light, mix($white, $link, 75%)) !default;
+$cta-light:             if($styles-colors-cta-light  != '', $styles-colors-cta-light, mix($white,  $cta,  75%)) !default;
 
 $main-dark:             if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
 $alt-dark:              if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
-$link-dark:             if($styles-colors-link-dark  != '', $styles-colors-link-dark,  mix($black, $link, 60%)) !default;
+$cta-dark:              if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,  mix($black,  $cta,  60%)) !default;
 
 $grey-contrast-neutral: text-contrast($grey)                !default;
 $main-contrast-neutral: if($styles-colors-main-contrast-text == 'true', text-contrast($main), $white) !default;
 $alt-contrast-neutral:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt ), $white) !default;
-$link-contrast-neutral: if($styles-colors-link-contrast-text == 'true', text-contrast($link), $white) !default;
+$cta-contrast-neutral:  if($styles-colors-cta-contrast-text  == 'true', text-contrast($cta),  $white) !default;
 
 $grey-contrast-colored: text-contrast($grey, $light, $dark) !default;
 $main-contrast-colored: if($styles-colors-main-contrast-text == 'true', text-contrast($main, $main-light, $main-dark), $main-light) !default;
 $alt-contrast-colored:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt,  $alt-light,  $alt-dark ), $alt-light ) !default;
-$link-contrast-colored: if($styles-colors-link-contrast-text == 'true', text-contrast($link, $link-light, $link-dark), $link-light) !default;
+$cta-contrast-colored:  if($styles-colors-cta-contrast-text  == 'true', text-contrast($cta,  $cta-light,  $cta-dark),  $cta-light ) !default;
 
 $grey-contrast-bg:      true                                           !default;
 $main-contrast-bg:      $styles-colors-main-contrast-bg      == 'true' !default;
 $alt-contrast-bg:       $styles-colors-alt-contrast-bg       == 'true' !default;
-$link-contrast-bg:      $styles-colors-link-contrast-bg      == 'true' !default;
+$cta-contrast-bg:       $styles-colors-cta-contrast-bg       == 'true' !default;
 
-$white-3d:              mix($black, $white, 25%)            !default;
-$light-3d:              mix($black, $light, 25%)            !default;
-$dark-3d:               mix($black, $dark, 25%)             !default;
-$black-3d:              mix($dark, $black, 25%)             !default;
-$grey-3d:               mix($black, $grey, 25%)             !default;
-$main-3d:               mix($black, $main, 25%)             !default;
-$alt-3d:                mix($black, $alt, 25%)              !default;
-$link-3d:               mix($black, $link, 25%)             !default;
+$white-3d:              mix($black, $white, 25%)             !default;
+$light-3d:              mix($black, $light, 25%)             !default;
+$dark-3d:               mix($black, $dark,  25%)             !default;
+$black-3d:              mix($dark,  $black, 25%)             !default;
+$grey-3d:               mix($black, $grey,  25%)             !default;
+$main-3d:               mix($black, $main,  25%)             !default;
+$alt-3d:                mix($black, $alt,   25%)             !default;
+$cta-3d:                mix($black, $cta,   25%)             !default;
 
 $options-colors: (
   'main':       $main,
@@ -49,9 +49,9 @@ $options-colors: (
   'alt':        $alt,
   'alt-light':  $alt-light,
   'alt-dark':   $alt-dark,
-  'link':       $link,
-  'link-light': $link-light,
-  'link-dark':  $link-dark,
+  'cta':        $cta,
+  'cta-light':  $cta-light,
+  'cta-dark':   $cta-dark,
   'white':      $white,
   'light':      $light,
   'grey':       $grey,
@@ -127,7 +127,6 @@ $blockquote-cursive:       $styles-fonts-blockquote-cursive == 'true' !default;
 
 // Icons Type
 $duotone:                  $styles-duotone      == 'true' !default;
-$emojis:                   $styles-emojis       == 'true' !default;
 $emojis-scale:             $styles-emojis-scale == 'true' !default;
 $menu-bar-double:          $styles-menu-bar * 1rem        !default;
 $menu-bar:                 $menu-bar-double / 2           !default;

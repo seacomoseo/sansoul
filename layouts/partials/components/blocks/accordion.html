@@ -1,7 +1,7 @@
 {{- $show     := cond (not site.Data.config.others.show) "" " show" -}}
 {{- $button   := cond (ne .accordion.button "none") .accordion.button "" -}}
 {{- $fotn_alt := cond (not .accordion.font_alt) "" "button--font-alt" -}}
-{{- $headers  := .accordion.headers -}}
+{{- $headers  := .accordion.headers }}
 <div class="accordions {{- if $headers }} accordions--headers{{ end }} box__block align-left {{- $show }}">
   {{- range $k, $v := .accordions -}}
     {{- with merge ($.accordion | default dict) . -}}
@@ -10,38 +10,38 @@
       {{- $open := and (not $k) .first_open }}
       <div class="accordion {{- if $open }} accordion--active{{ end }}">
 
-        {{/*  TITLE  */}}
+        {{- /* TITLE  */}}
         <h{{ $hn }} class="accordion__title {{- $hs }}">
-          {{ if not $headers }}
+          {{- if not $headers -}}
             {{- $icon  := cond (not .icon) "circle-question" .icon -}}
-            {{- $emoji := cond (not .icon) "❔" .icon -}}
+            {{- $emoji := cond (not .icon) "❔" .icon }}
             <button type="button" class="accordion__button button {{ $button }} {{ $fotn_alt }}">
-              {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon "emoji" $emoji) -}}
+              {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon "emoji" $emoji) }}
               <i>{{ .title }}</i>
-              {{- partial "components/icon" (dict "class" "accordion__button-dot" "icon" "plus") -}}
+              {{- partial "components/icon" (dict "class" "accordion__button-dot" "icon" "plus") }}
             </button>
-          {{ else }}
+          {{- else }}
             <i>{{ .title }}</i>
             <button type="button" class="accordion__button-dot button button--dot {{ $button }}" title="{{ i18n `more` }}">
               {{- $icon  := cond (not .icon) (site.Data.styles.icons.down | default "angle-down") .icon -}}
-              {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon) -}}
+              {{- partial "components/icon" (dict "class" "accordion__icon" "icon" $icon) }}
             </button>
-          {{ end }}
+          {{- end }}
         </h{{ $hn }}>
 
-        {{/*  CONTENT  */}}
+        {{- /* CONTENT  */}}
         <div class="accordion__content content" {{- if not $open }} hidden="until-found"{{ end }}>
           {{- with .content -}}
             {{- partial "functions/md" (dict "content" . "not_header_links" true) -}}
-          {{- end -}}
+          {{- end }}
         </div>
       </div>
     {{- end -}}
-  {{- end -}}
+  {{- end }}
 </div>
 
 
-{{/*  SCHEMA  */}}
+{{- /* SCHEMA  */ -}}
 
 {{- $schema_questions := slice -}}
 {{- range .accordions -}}
@@ -65,7 +65,7 @@
   {{- $schema = jsonify $schema -}}
 {{- else -}}
   {{- $schema = debug.Dump $schema -}}
-{{- end -}}
+{{- end }}
 <script type="application/ld+json">
   {{- $schema | safeJS -}}
 </script>

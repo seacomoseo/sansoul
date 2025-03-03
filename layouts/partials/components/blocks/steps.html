@@ -1,43 +1,47 @@
-{{ $icon_size := "" }}
-{{ with .icon_size }}
-  {{ $icon_size = print " steps--size-" . }}
-{{ end }}
-{{ $border    := print " " (.border    | default "alt") }}
-{{ $uppercase := cond (not .uppercase) "" " uppercase" }}
-{{ $underline := cond (not .underline) "" " underline" }}
-{{ $show      := cond (not site.Data.config.others.show) "" " show" }}
+{{- $icon_size := "" -}}
+{{- with .icon_size -}}
+  {{- $icon_size = print " steps--size-" . -}}
+{{- end -}}
+{{- $hn        := $.hn | default (add $.level 1) }}
+{{- $border    := print " " (.border    | default "alt") -}}
+{{- $uppercase := cond (not .uppercase) "" " uppercase" -}}
+{{- $underline := cond (not .underline) "" " underline" -}}
+{{- $show      := cond (not site.Data.config.others.show) "" " show" }}
 <ul class="steps box__block">
-  {{ range $key, $value := .steps }}
+  {{- range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">
       <div class="step__axis-wrap {{- $border }}">
         <div class="step__axis">
           <div class="step__figure">
-            {{ with .image }}
-              {{ partial "components/media/_" (dict "class" "step__figure-image" "src" . "max" 342 "ratio" "1/1") }}
-            {{ end }}
-            {{ with .icon }}
-              {{ partial "components/icon" (dict "class" "step__icon" "icon" (. | default `forward`)) }}
-            {{ end }}
-            {{ if and (not .image) (not .icon) }}
+            {{- with .image -}}
+              {{- partial "components/media/_" (dict "class" "step__figure-image" "src" . "max" 342 "ratio" "1/1") -}}
+            {{- end -}}
+            {{- with .icon }}
+              {{ partial "components/icon" (dict "class" "step__icon" "icon" (. | default `forward`)) -}}
+            {{- end -}}
+            {{- if and (not .image) (not .icon) }}
               <div class="step__number">{{ add $key 1 }}</div>
-            {{ end }}
+            {{- end }}
           </div>
         </div>
       </div>
       <div class="step__content {{- $show }}">
-        {{ with .title }}
-          {{ $hn := $.hn | default (add $.level 1) }}
+        {{- with .title -}}
           <h{{ $hn }} class="step__title h{{ $.hs | default 4 }} {{- $uppercase }}{{ $underline }}">
-            {{- . | markdownify -}}
+            {{- . | markdownify }}
           </h{{ $hn }}>
-        {{ end }}
-        {{ with .subtitle }}<p class="step__subtitle subtitle">{{ . | markdownify }}</p>{{ end }}
-        {{ with .content }}
+        {{- end -}}
+        {{- with .subtitle }}
+          <p class="step__subtitle subtitle">
+            {{- . | markdownify }}
+          </p>
+        {{- end -}}
+        {{- with .content }}
           <div class="content">
             {{ partial "functions/md" (dict "content" . "not_header_links" true) }}
           </div>
-        {{ end }}
+        {{- end }}
       </div>
     </li>
-  {{ end }}
+  {{- end }}
 </ul>

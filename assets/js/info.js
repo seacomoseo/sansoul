@@ -47,7 +47,7 @@ function setStatus (statusColor) {
   if (rebuildButton) rebuildButton.disabled = isBuilding
   if (clearCacheButton) clearCacheButton.disabled = isBuilding
   // Change deploy status color
-  deployStatusButton.style.setProperty('--link', statusColor)
+  deployStatusButton.style.setProperty('--cta', statusColor)
   timer(isBuilding)
 }
 
@@ -88,7 +88,7 @@ if (deployStatus && rebuildButton) {
     const statusNotRuningTarget = e.target.closest('#status .button:not([style])')
     const statusRuningTarget = e.target.closest('#status .button[style]')
     if (rebuildTarget || clearCacheTarget || statusNotRuningTarget) {
-      deployStatusButton.style.setProperty('--link', 'var(--light)')
+      deployStatusButton.style.setProperty('--cta', 'var(--light)')
       if (rebuildButton) rebuildButton.disabled = true
       if (clearCacheButton) clearCacheButton.disabled = true
       if (!statusInterval) statusInterval = setInterval(checkStatus, netlify ? 1000 : 5000)

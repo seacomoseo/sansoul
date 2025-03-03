@@ -1,43 +1,27 @@
 #toc {
   .toc {
     counter-reset: item;
-    li{
+    li {
       display: table-row;
-      &:before {
-        @include font-base-bold;
-        content: counters(item, ".") ". ";
-        counter-increment: item;
-        display: table-cell;
-        color: var(--link, $link);
-        padding-right: .25em;
-        text-align: right;
-        padding-top: .75em;
-        white-space: nowrap;
-      }
     }
-    nav > ol > li:first-child:before {
-      padding-top: 0;
+    li:before,
+    .li-icon > .icon {
+      @include font-base-bold;
+      display: table-cell;
+      color: var(--cta, $cta);
     }
-    .href {
+    li:not(.li-icon):before {
+      content: var(--li-counter, "");
+    }
+    // li.li-icon:before {
+    //   content: none;
+    // }
+    .link {
       @include font-base;
       color: inherit;
     }
-    svg {
+    .icon {
       color: var(--main);
-    }
-  }
-  .align-center {
-    .toc {
-      margin-left: auto;
-    }
-  }
-  .align-right {
-    .toc {
-      margin-left: auto;
-      margin-right: 0;
-      li:before {
-        content: " ." counters(item, ".");
-      }
     }
   }
 }

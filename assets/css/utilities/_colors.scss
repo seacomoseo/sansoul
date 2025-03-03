@@ -4,9 +4,9 @@
 :root,
 html,
 body,
-.bg-link,
-.bg-link-light,
-.bg-link-dark,
+.bg-cta,
+.bg-cta-light,
+.bg-cta-dark,
 .bg-main,
 .bg-main-light,
 .bg-main-dark,
@@ -19,8 +19,8 @@ body,
 .bg-dark,
 .bg-black {
   // Bases
-  --link: #{ $link };
-  --link-text: #{ $link-contrast-neutral };
+  --cta: #{ $cta };
+  --cta-text: #{ $cta-contrast-neutral };
   --main: #{ $main };
   --main-text: #{ $main-contrast-neutral };
   --alt: #{ $alt };
@@ -56,7 +56,7 @@ body,
 .bg-grey,
 .bg-main-dark,
 .bg-alt-dark,
-.bg-link-dark {
+.bg-cta-dark {
   --text: #{ $white };
   --title: #{ $white };
   --subtitle: #{ $white };
@@ -75,32 +75,32 @@ body,
   --title: #{ $alt-contrast-neutral };
   --subtitle: #{ $alt-contrast-neutral };
 }
-.bg-link {
-  --text: #{ $link-contrast-neutral };
-  --title: #{ $link-contrast-neutral };
-  --subtitle: #{ $link-contrast-neutral };
+.bg-cta {
+  --text: #{ $cta-contrast-neutral };
+  --title: #{ $cta-contrast-neutral };
+  --subtitle: #{ $cta-contrast-neutral };
 }
 
 // Link and Main
-@if $link == $main {
+@if $cta == $main {
   .bg-main,
-  .bg-link {
-    --link: var(--alt);
-    --link-text: var(--alt-text);
+  .bg-cta {
+    --cta: var(--alt);
+    --cta-text: var(--alt-text);
     --main: var(--alt);
     --main-text: var(--alt-text);
   }
 } @else {
-  .bg-link {
-    @if $link != $main {
-      --link: var(--main);
-      --link-text: var(--main-text);
+  .bg-cta {
+    @if $cta != $main {
+      --cta: var(--main);
+      --cta-text: var(--main-text);
     }
   }
   .bg-main {
-    @if $main != $link {
-      --main: var(--link);
-      --main-text: var(--link-text);
+    @if $main != $cta {
+      --main: var(--cta);
+      --main-text: var(--cta-text);
     }
   }
 }
@@ -108,8 +108,8 @@ body,
 // Alt
 .bg-alt {
   // like link
-  --alt: var(--link);
-  --alt-text: var(--link-text);
+  --alt: var(--cta);
+  --alt-text: var(--cta-text);
 }
 .bg-grey {
   // like dark
@@ -119,7 +119,7 @@ body,
 
 // Light
 .bg-light,
-.bg-link-light,
+.bg-cta-light,
 .bg-main-light,
 .bg-alt-light {
   --light: #{ $white };
@@ -141,14 +141,14 @@ body,
 }
 .bg-main {  @include invert-light($main); }
 .bg-alt {   @include invert-light($alt); }
-.bg-link {  @include invert-light($link); }
+.bg-cta {  @include invert-light($cta); }
 .bg-grey {  @include invert-light($grey); }
 
 // Contrast Background
 @mixin link-contrast($bg) {
-  @if $link-contrast-bg and $link-contrast-neutral == text-contrast($bg) {
-    --link: #{ $link-contrast-colored };
-    --link-text: #{ $bg };
+  @if $cta-contrast-bg and $cta-contrast-neutral == text-contrast($bg) {
+    --cta: #{ $cta-contrast-colored };
+    --cta-text: #{ $bg };
   }
 }
 @mixin main-contrast($bg) {
@@ -165,9 +165,9 @@ body,
 }
 
 // Background link, main and alt in light and dark
-// @if not $link-contrast-bg {
-//   .bg-link-light { @include link-contrast($white); }
-//   .bg-link-dark {  @include link-contrast($dark); }
+// @if not $cta-contrast-bg {
+//   .bg-cta-light { @include link-contrast($white); }
+//   .bg-cta-dark {  @include link-contrast($dark); }
 // }
 // @if not $main-contrast-bg {
 //   .bg-main-light { @include main-contrast($white); }
@@ -179,10 +179,10 @@ body,
 // }
 
 // Background lights and darks if contrast active
-@if $main-contrast-bg or $alt-contrast-bg or $link-contrast-bg {
+@if $main-contrast-bg or $alt-contrast-bg or $cta-contrast-bg {
   .bg-white,
   .bg-light,
-  .bg-link-light,
+  .bg-cta-light,
   .bg-main-light,
   .bg-alt-light {
     @include link-contrast($white);
@@ -192,24 +192,24 @@ body,
   .bg-black,
   .bg-dark,
   .bg-grey,
-  .bg-link-dark,
+  .bg-cta-dark,
   .bg-main-dark,
   .bg-alt-dark {
     @include link-contrast($dark);
     @include main-contrast($dark);
     @include alt-contrast($dark);
   }
-  .bg-link {
+  .bg-cta {
     @include link-contrast(text-contrast($main-contrast-neutral));
     @include link-contrast(text-contrast($alt-contrast-neutral));
   }
   .bg-main {
     @include link-contrast(text-contrast($alt-contrast-neutral));
-    @include link-contrast(text-contrast($link-contrast-neutral));
+    @include link-contrast(text-contrast($cta-contrast-neutral));
   }
   .bg-alt {
     @include link-contrast(text-contrast($main-contrast-neutral));
-    @include link-contrast(text-contrast($link-contrast-neutral));
+    @include link-contrast(text-contrast($cta-contrast-neutral));
   }
 }
 
@@ -217,9 +217,9 @@ body,
 // Bases
 
 .button,
-.link {
-  --base: var(--link);
-  --base-text: var(--link-text);
+.cta {
+  --base: var(--cta);
+  --base-text: var(--cta-text);
 }
 :root,
 .main {

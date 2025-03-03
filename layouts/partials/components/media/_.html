@@ -6,7 +6,7 @@
     {{- if partial "functions/is-iframe" $src -}}
       {{- $iframe    := partial "functions/iframe-src" (dict "src" $src "bg" .bg) -}}
       {{- $src        = partial "functions/iframe-poster" .src -}}
-      {{- $color     := cond (or (not .icon_color) (eq .icon_color "link")) "" .icon_color -}}
+      {{- $color     := cond (or (not .icon_color) (eq .icon_color "cta")) "" .icon_color -}}
       {{- $icon      := site.Data.styles.icons.play | default "play-iframe" -}}
       {{- $icon_play := partial "components/icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
       {{- $media      = merge $media (dict

@@ -1,4 +1,4 @@
-{{- if .card -}}
+{{- if .card }}
   <div class="bg-card"></div>
 {{- end -}}
 
@@ -14,12 +14,12 @@
   {{- end -}}
 
   {{- if or .color .gradient -}}
-    {{- if and .link .shadow site.Data.styles.buttons.deep -}}
+    {{- if and .link .shadow site.Data.styles.buttons.deep }}
       <div class="bg-color bg-color--3d"></div>
     {{- end -}}
   {{- end -}}
 
-  {{/*  CLASS  */}}
+  {{- /*  CLASS  */ -}}
   {{- $class := slice
     "bg-color"
     $image
@@ -27,30 +27,30 @@
   -}}
 
 
-  {{/*  STYLE  */}}
-  {{ $bg_alpha    := and (.alpha | and (ne .alpha 100)) .bg }}
-  {{ $color_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) }}
-  {{ $style := slice
+  {{- /*  STYLE  */ -}}
+  {{- $bg_alpha    := and (.alpha | and (ne .alpha 100)) .bg -}}
+  {{- $color_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) -}}
+  {{- $style := slice
     (cond (not $bg_alpha)    "" (print "--bg-alpha:"    .alpha))
     (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
-  }}
+  -}}
 
 
-  {{/*  JOIN ATTRIBUTES  */}}
-  {{ $attrs := dict
+  {{- /*  JOIN ATTRIBUTES  */ -}}
+  {{- $attrs := dict
     "class" $class
     "style" $style
-  }}
-  {{ $attrs = partial "functions/attrs" $attrs }}
+  -}}
+  {{- $attrs = partial "functions/attrs" $attrs -}}
 
 
-  {{/*  HTML  */}}
-  <div {{- $attrs }}>
+  {{- /*  HTML  */}}
+  <div {{- $attrs -}}>
     {{- $is_iframe := partial "functions/is-iframe" .bg -}}
-    {{- if $is_iframe -}}
+    {{- if $is_iframe }}
       <div class="bg-figure-video">
     {{- end -}}
-      {{- partial "components/media/_" (dict
+      {{ partial "components/media/_" (dict
         "class"     (print "bg-figure-image" $grayscale)
         "src"       .bg
         "alt"       (.hanchor | default .anchor | default .title | default .subtitle)
@@ -60,7 +60,7 @@
         "span_xl"   .span_xl
         "span_xs"   .span_xs
       ) -}}
-    {{- if $is_iframe -}}
+    {{- if $is_iframe }}
       </div>
     {{- end -}}
   </div>

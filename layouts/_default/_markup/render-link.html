@@ -1,44 +1,62 @@
-{{- $label    := .Text  | replaceRE `^btn[\w-:]* `                                         "" -}}
-{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?homefollow)?(\s?_blank)?(\s?ga4)?` "" -}}
-{{- $noindex  := cond (hasPrefix .Title "nofollow") true nil -}}
+{{- $label   := .Text -}}
+{{- $anchor  := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
+{{- $meta    := "" -}}
+{{- with .Title -}}
+  {{- $meta   = . | findRE `(?s).*\[(.+?)\].*` -}}
+  {{- with $meta -}}
+    {{- $meta = index . 0 -}}
+  {{- end -}}
+{{- end -}}
 
-{{- if in .Title "homefollow" -}}
+{{- /*  button  */ -}}
+{{- $button  := "" -}}
+{{- $dot     := "" -}}
+{{- $sm      := "" -}}
+{{- $swap    := "" -}}
+{{- if and (hasPrefix .Text "[") (hasSuffix .Text "]") -}}
+  {{- $label  = .Text  | replaceRE `(?s)^\[(.+)\]$` "$1" -}}
+  {{- $button = replace $meta "font-alt" "" -}}
+  {{- $button = findRE `(main|alt|cta|light|dark|invert|similar|whatsapp)` $button 1 -}}
+  {{- $button = index $button 0 | default "cta" -}}
+  {{- $dot    = in $meta "dot" -}}
+  {{- $sm     = in $meta "sm" -}}
+  {{- $swap   = in $meta "font-alt" -}}
+{{- end -}}
+
+{{- /*  ga4  */ -}}
+{{- $ga4 := in $meta "ga4" -}}
+
+{{- /*  blank  */ -}}
+{{- $blank := in $meta "blank" -}}
+
+{{- /*  lock  */ -}}
+{{- $lock := cond (in $meta "nofollow") true nil -}}
+{{- if in $meta "homefollow" -}}
   {{- if not page.IsHome -}}
-    {{- $noindex = true -}}
+    {{- $lock = true -}}
   {{- end -}}
 {{- end -}}
 
-{{- $button   := "none" -}}
-{{- $class    := "" -}}
-{{- if hasPrefix .Text "btn" -}}
-  {{- $other  := .Text | replaceRE `^btn:?([\w-]*).*` "$1" -}}
-  {{- range $other | findRE `dot|font-alt|sm` -}}
-    {{- $class = print $class " button--" . -}}
-  {{- end -}}
-  {{- $button  = replace $other "font-alt" "" -}}
-  {{- $button  = findRE `(main|alt|link|light|dark|invert|similar|whatsapp)` $button 1 -}}
-  {{- $button  = index $button 0 -}}
-{{- end -}}
-
-{{- if in .Title "ga4" -}}
-  {{- $class = print $class " ga4" -}}
-{{- end -}}
-
+{{- /*  move icon outside the label  */ -}}
 {{- $icon     := "" -}}
-{{- if $anchor | and (not $noindex) -}}
-  {{- $label   = $label | replaceRE `icon:[\w-]+` "" -}}
-  {{- if findRE `icon:[\w-]` .Text -}}
-    {{- $icon  = .Text | replaceRE `^.*?icon:([\w-]+).*` "$1" -}}
+{{- if $anchor | and (not $lock) -}}
+  {{- with findRE `^:([\w-]+):` $label -}}
+    {{- $icon  = . -}}
+    {{- $label = $label | replaceRE `^:[\w-]+:` "" -}}
   {{- end -}}
 {{- end -}}
 
+{{- /*  link  */ -}}
 {{- partial "components/link" (dict
-  "class"   $class
-  "link"    .Destination
-  "button"  $button
-  "icon"    $icon
-  "label"   $label
-  "anchor"  $anchor
-  "noindex" $noindex
-  "_blank"  (in .Title "_blank")
+  "button" $button
+  "dot"    $dot
+  "sm"     $sm
+  "swap"   $swap
+  "ga4"    $ga4
+  "icon"   $icon
+  "label"  $label
+  "anchor" $anchor
+  "link"   .Destination
+  "lock"   $lock
+  "blank"  $blank
 ) -}}

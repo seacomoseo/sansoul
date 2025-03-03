@@ -1,6 +1,6 @@
 ---
 title: CMS
-slug: cms
+slug: admin/info
 summary: ' '
 noindex: true
 translationKey: cms

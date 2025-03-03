@@ -2,23 +2,22 @@
   {{- with index . 0 -}}
     <i class="langs">
       {{- partial "components/link" (dict
-        "class"    .class
-        "icon"     (index $.Params 0 | default .icon)
-        "emoji"    .emoji
-        "label"    (.label | markdownify)
-        "noindex"  true
+        "class" .class
+        "icon"  (index $.Params 0 | default .icon)
+        "emoji" .emoji
+        "label" (.label | markdownify)
+        "lock"  true
       ) -}}
       <i class="langs__items">
         {{- range .items -}}
           <i class="lang" lang="{{ .lang }}" title="{{ .title }}">
             {{- partial "components/link" (dict
-              "class"    "lang__link"
-              "link"     .link
-              "button"   "none"
-              "icon"     .icon
-              "emoji"    .emoji
-              "label"    .label
-              "noindex"  true
+              "class" "lang__link"
+              "icon"  .icon
+              "emoji" .emoji
+              "label" .label
+              "link"  .link
+              "lock"  true
             ) -}}
           </i>
         {{- end -}}

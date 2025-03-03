@@ -1,9 +1,3 @@
-@if $emojis {
-  .emoji {
-    @extend svg;
-    line-height: 1em;
-  }
-}
 @if $emojis-scale {
   .emoji {
     --hue: #{ hue($main) };
@@ -17,8 +11,8 @@
   }
   .button {
     > .emoji {
-      --hue: #{ hue($link) };
-      --hue-back: #{ mix($dark, $link, 30%) };
+      --hue: #{ hue($cta) };
+      --hue-back: #{ mix($dark, $cta, 30%) };
     }
     &.main {
       > .emoji {

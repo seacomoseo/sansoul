@@ -19,7 +19,7 @@
         {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
       {{- end -}}
     {{- else if eq $param "email" -}}
-      <i class="ofuscate">
+      <i class="mail">
         {{- .email | default "mail@mail.com" | base64Encode -}}
       </i>
     {{- end -}}

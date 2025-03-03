@@ -1,30 +1,22 @@
 {{- if .icon -}}
-  {{/*  CLASS  */}}
+  {{- /*  CLASS  */ -}}
   {{- $class := slice
     "box__icon"
     (print "box__icon--" .icon_type)
     (.icon_color | default "main")
   -}}
 
-  {{/*  STYLE  */}}
+  {{- /*  STYLE  */ -}}
   {{- $icon_size := cond (and (not .icon_size) (ne .icon_size 6)) "" (print "--icon-size:" .icon_size "em") -}}
   {{- $style     := cond (not $icon_size) "" $icon_size -}}
 
-  {{/*  ATTRIBUTES  */}}
-  {{ $attrs := dict
-    "class" $class
-    "style" $style
-  }}
-  {{ $attrs = partial "functions/attrs" $attrs }}
-
   {{- if eq $.icon_type "bottom" -}}
+    {{- $attrs := dict "class" $class "style" $style -}}
+    {{- $attrs  = partial "functions/attrs" $attrs }}
     <span {{- $attrs }}>
-      {{- partial "components/icon" (dict "icon" .icon) -}}
+      {{- partial "components/icon" (dict "icon" .icon) }}
     </span>
   {{- else -}}
-    {{- partial "components/icon" (dict
-      "attr" $attrs
-      "icon" .icon
-    ) -}}
+    {{- partial "components/icon" (dict "icon" .icon "class" $class "style" $style) -}}
   {{- end -}}
 {{- end -}}

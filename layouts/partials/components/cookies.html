@@ -1,4 +1,6 @@
 {{- with site.GetPage "cookies" -}}
+
+  {{- /*  VARS  */ -}}
   {{- $color    := $.menu.color | default "white" -}}
   {{- $bgc      := partial "functions/color-background" (dict "child" $color "parent" $.background.color) -}}
   {{- $color     = $bgc.child -}}
@@ -14,31 +16,33 @@
     {{- $label_2 = i18n "cookies_accept_all" -}}
   {{- end -}}
 
-  {{- $link     := partial "components/link" (dict
-    "link"    .RelPermalink
-    "button"  "none"
-    "label"   $label_0
-    "noindex" true
-    "_blank"  true
+  {{- /*  LINKS  */ -}}
+  {{- $link := partial "components/link" (dict
+    "button" "cta"
+    "label"  $label_0
+    "link"   .RelPermalink
+    "lock"   true
+    "blank"  true
   ) -}}
   {{- $button_1 := partial "components/link" (dict
-    "class"   "cookies__button button--sm"
-    "link"    "none"
-    "button"  "link"
-    "label"   $label_1
-    "noindex" true
+    "class"  "cookies__button"
+    "button" "cta"
+    "sm"     true
+    "label"  $label_1
+    "lock"   true
   ) -}}
   {{- $button_2 := partial "components/link" (dict
-    "class"   "cookies__button button--sm cookies__button--all"
-    "link"    "none"
-    "button"  "link"
-    "label"   $label_2
-    "noindex" true
+    "class"  "cookies__button cookies__button--all"
+    "button" "cta"
+    "sm"     true
+    "label"  $label_2
+    "lock"   true
   ) -}}
 
+  {{- /*  KTML  */}}
   <aside class="{{ $class }}">
     <div class="bg-color"></div>
-    {{- if $advanced -}}
+    {{- if $advanced }}
       <div class="cookies__messaje">
         {{- $icon -}}
         <strong>{{ i18n "cookies_we_use" }}</strong>
@@ -48,7 +52,7 @@
       <div class="cookies__config">
         <div class="cookies__checks">
           {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
-          {{- range $key, $label := split (i18n "cookies_checks") "," -}}
+          {{- range $key, $label := split (i18n "cookies_checks") "," }}
             <label class="form__option">
               {{- "" -}}
               <input
@@ -60,20 +64,20 @@
               >
               {{- . -}}
             </label>
-          {{- end -}}
+          {{- end }}
         </div>
         <div class="cookies__buttons">
-          {{- $button_1 -}}
-          {{- $button_2 -}}
+          {{ $button_1 }}
+          {{ $button_2 }}
         </div>
       </div>
-    {{- else -}}
-      {{- $icon -}}
-      {{- $link -}}
+    {{- else }}
+      {{ $icon }}
+      {{ $link }}
       <div class="cookies__buttons">
-        {{- $button_1 -}}
-        {{- $button_2 -}}
+        {{ $button_1 }}
+        {{ $button_2 }}
       </div>
-    {{- end -}}
+    {{- end }}
   </aside>
 {{- end -}}

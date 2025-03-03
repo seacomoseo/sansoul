@@ -12,9 +12,9 @@ export function initScrollTop () {
       '.bg-alt',
       '.bg-alt-light',
       '.bg-alt-dark',
-      '.bg-link',
-      '.bg-link-light',
-      '.bg-link-dark',
+      '.bg-cta',
+      '.bg-cta-light',
+      '.bg-cta-dark',
       '.bg-white',
       '.bg-light',
       '.bg-grey',
@@ -26,7 +26,7 @@ export function initScrollTop () {
     const logoSticky = document.querySelector('.body-menu--transparent.body-menu--logo--sticky .logo.bg')
     let menuStickyBgBefore, menuStickyBgAfter, elementToChange
     if (sectionHeader && (menuSticky || logoSticky)) {
-      const bgRegex = /bg-(main|alt|link|white|light|grey|dark|black)[\w-]*/g
+      const bgRegex = /bg-(main|alt|cta|white|light|grey|dark|black)[\w-]*/g
       menuStickyBgBefore = sectionHeader.classList.value.match(bgRegex)[0]
       menuStickyBgAfter = (menuSticky || logoSticky).classList.value.match(bgRegex)[0]
     }
@@ -63,7 +63,7 @@ export function initScrollTop () {
       } else {
         document.body.classList.remove('body-top')
         menuChangeColor(false)
-        const c = document.body.classList
+        // const c = document.body.classList
         // if (!c.contains('sections-visibile')) c.add('sections-visibile')
       }
     }

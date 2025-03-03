@@ -1,43 +1,43 @@
-{{ $e := . }}
+{{- $e := . -}}
 
-{{ with .list }}
-  {{ if and .type (ne $.type "related") }}
-    {{ $list  := . }}
-    {{ $types := slice .type }}
-    {{ $max   := .max | default 999 }}
-    {{ if eq .type "all" }}
-      {{ $types   = slice }}
-      {{ range site.Sections }}
-        {{ $types = $types | append .Type }}
-      {{ end }}
-    {{ end }}
+{{- with .list -}}
+  {{- if and .type (ne $.type "related") -}}
+    {{- $list  := . -}}
+    {{- $types := slice .type -}}
+    {{- $max   := .max | default 999 -}}
+    {{- if eq .type "all" -}}
+      {{- $types   = slice -}}
+      {{- range site.Sections -}}
+        {{- $types = $types | append .Type -}}
+      {{- end -}}
+    {{- end -}}
 
-    {{/*  {{ $types_many := gt (len $types) 1 }}  */}}
+    {{- /* {{ $types_many := gt (len $types) 1 }}  */ -}}
 
-    {{ range $types }}
-      {{ $type   := . }}
-      {{ $parent := site.GetPage $type }}
-      {{ $pages  := $parent.RegularPages }}
-      {{ if eq $type "related" }}
-        {{ $parent = site.GetPage page.Type }}
-        {{ $pages  = $parent.Pages.Related page }}
-        {{ with page.Params.related }}
-          {{ range . | collections.Reverse }}
-            {{ $pages = slice (site.GetPage page.Type .) | append $pages }}
-          {{ end }}
-          {{ $pages = uniq $pages }}
-        {{ end }}
-      {{ else if eq $type "single" }}
-        {{ $pages = slice site.Home | append $pages }}
-      {{ end }}
-      {{/*
-      {{ if eq $parent.Params.base "event" }}
-        {{ $pages = sort $pages "Date" "desc" }}
-      {{ end }}
-      */}}
-      {{ $firsts_pages  := $pages }}
+    {{- range $types -}}
+      {{- $type   := . -}}
+      {{- $parent := site.GetPage $type -}}
+      {{- $pages  := $parent.RegularPages -}}
+      {{- if eq $type "related" -}}
+        {{- $parent = site.GetPage page.Type -}}
+        {{- $pages  = $parent.Pages.Related page -}}
+        {{- with page.Params.related -}}
+          {{- range . | collections.Reverse -}}
+            {{- $pages = slice (site.GetPage page.Type .) | append $pages -}}
+          {{- end -}}
+          {{- $pages = uniq $pages -}}
+        {{- end -}}
+      {{- else if eq $type "single" -}}
+        {{- $pages = slice site.Home | append $pages -}}
+      {{- end -}}
+      {{- /*
+      {{- if eq $parent.Params.base "event" -}}
+        {{- $pages = sort $pages "Date" "desc" -}}
+      {{- end -}}
+      */ -}}
+      {{- $firsts_pages  := $pages -}}
 
-      {{/*  TEMPLATE  */}}
+      {{- /* TEMPLATE  */ -}}
       {{- $template_box       := $.box | default dict -}}
       {{- $template_related   := dict -}}
       {{- $type_rel           := $type -}}
@@ -58,60 +58,60 @@
         $template_related
         $template_box
       -}}
-      {{ if eq $type "related" }}
-        {{ if not $.list.max }}
-          {{ $max  = $template.cols | default $template.cols_min }}
-        {{ end }}
-      {{ end }}
+      {{- if eq $type "related" -}}
+        {{- if not $.list.max -}}
+          {{- $max  = $template.cols | default $template.cols_min -}}
+        {{- end -}}
+      {{- end -}}
 
-      {{ if and page.IsSection (eq (len $types) 1) (ne $type "related") }}
-        {{/*  PAGE PARENT  */}}
-        {{ $firsts_pages = (page.Paginate $pages $max).Pages }}
-        {{ partial "functions/pagination" page
-          | replaceRE `\n|\s{2,}|<li.*?>|</li>` ``
+      {{- if and page.IsSection (eq (len $types) 1) (ne $type "related") -}}
+        {{- /* PAGE PARENT  */ -}}
+        {{- $firsts_pages = (page.Paginate $pages $max).Pages -}}
+        {{- partial "functions/pagination" page
+          | replaceRE `\n|\s{2,}|<li.*?>|</li>` ""
           | replaceRE `<ul class="pagination pagination-default">` `<div class="pagination buttons">`
           | replaceRE `</ul>` `</div>`
           | replaceRE `page-link` `button button--sm`
           | replaceRE `span` `i`
           | safeHTML
-        }}
-      {{ else }}
-        {{/*  PAGE RESTS  */}}
-        {{/*  All taxonomies  */}}
-        {{ $taxonomies  := slice }}
-        {{ range site.Sections }}
-          {{ range .Params.taxonomies }}
-            {{ $taxonomies = $taxonomies | append . }}
-          {{ end }}
-        {{ end }}
-        {{/*  Filter by taxonomies  */}}
-        {{/*  {{ range $parent.Params.taxonomies }}  */}}
-        {{ range uniq $taxonomies }}
-          {{ $filenames := index $list .name }}
-          {{ if $filenames }}
-            {{ $filenames = slice | append $filenames }}
-            {{ $pages = where $pages (print "Params." .name) (cond (not .multiple) "in" "intersect") $filenames }}
-          {{ end }}
-        {{ end }}
-        {{/*  Filter by date  */}}
-        {{ with $list.date }}
-          {{ $pages = where $pages "Date" "ge" (time .) }}
-        {{ end }}
-        {{ with $list.end }}
-          {{ $pages = where $pages "Date" "le" (time .) }}
-        {{ end }}
-        {{/*  Maximum number of pages  */}}
-        {{ $firsts_pages = $pages | first $max }}
-      {{ end }}
+        -}}
+      {{- else -}}
+        {{- /* PAGE RESTS  */ -}}
+        {{- /* All taxonomies  */ -}}
+        {{- $taxonomies  := slice -}}
+        {{- range site.Sections -}}
+          {{- range .Params.taxonomies -}}
+            {{- $taxonomies = $taxonomies | append . -}}
+          {{- end -}}
+        {{- end -}}
+        {{- /* Filter by taxonomies  */ -}}
+        {{- /* {{ range $parent.Params.taxonomies }}  */ -}}
+        {{- range uniq $taxonomies -}}
+          {{- $filenames := index $list .name -}}
+          {{- if $filenames -}}
+            {{- $filenames = slice | append $filenames -}}
+            {{- $pages = where $pages (print "Params." .name) (cond (not .multiple) "in" "intersect") $filenames -}}
+          {{- end -}}
+        {{- end -}}
+        {{- /* Filter by date  */ -}}
+        {{- with $list.date -}}
+          {{- $pages = where $pages "Date" "ge" (time .) -}}
+        {{- end -}}
+        {{- with $list.end -}}
+          {{- $pages = where $pages "Date" "le" (time .) -}}
+        {{- end -}}
+        {{- /* Maximum number of pages  */ -}}
+        {{- $firsts_pages = $pages | first $max -}}
+      {{- end -}}
 
-      {{ if len $pages }}
-        {{/*
-        {{ if $types_many }}
+      {{- if len $pages -}}
+        {{- /*
+        {{- if $types_many }}
           <p class="list-title h4">{{ $parent.Title }}</p>
-        {{ end }}
-        */}}
+        {{- end -}}
+        */ -}}
 
-        {{/*  PAGES TO BOXES  */}}
+        {{- /* PAGES TO BOXES  */ -}}
         {{- $boxes   := slice -}}
         {{- range $firsts_pages -}}
           {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
@@ -139,7 +139,7 @@
           {{- $boxes = $boxes | append $page -}}
         {{- end -}}
         
-        {{/*  BOXES  */}}
+        {{- /* BOXES  */ -}}
         {{- range slice "image" "icon" "content" -}}
           {{- if eq (index $template .) "hide" -}}
             {{- $template = merge $template (dict . "") -}}
@@ -156,26 +156,25 @@
           )
         -}}
 
-        {{/*  LAST BUTTON  */}}
-        {{/*
-        {{ if and (not page.IsSection) (gt (len $pages) (len $firsts_pages)) }}
+        {{- /* LAST BUTTON  */ -}}
+        {{- /*
+        {{- if and (not page.IsSection) (gt (len $pages) (len $firsts_pages)) }}
           <div class="buttons">
             {{- partial "components/link"
               (dict
-                "class"   ""
-                "link"    $parent.RelPermalink
-                "button"  "link"
-                "icon"    $parent.Params.icon
-                "emoji"   "➕"
-                "label"   (i18n "more")
-                "anchor"  (print (i18n "more") " " $parent.Title)
-                "noindex" true
+                "button" "cta"
+                "icon"   $parent.Params.icon
+                "emoji"  "➕"
+                "label"  (i18n "more")
+                "link"   $parent.RelPermalink
+                "anchor" (print (i18n "more") " " $parent.Title)
+                "lock"   true
               )
-            -}}
+            }}
           </div>
-        {{ end }}
-        */}}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-{{ end }}
+        {{- end -}}
+        */ -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

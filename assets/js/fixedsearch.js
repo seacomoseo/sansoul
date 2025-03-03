@@ -271,7 +271,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
             "
             data-h
           >
-            <a class="href search__result-item-link" href="${results[item].item.link}"></a>
+            <a class="link search__result-item-link" href="${results[item].item.link}"></a>
 
             {{- if $styles.buttons.deep | and $list.color -}}
               <div class="bg-color bg-color--3d"></div>
@@ -291,7 +291,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               ${searchItemImage}
             </div>
             <p class="box__title box__title--link h6">
-              <i class="href box__link" data-h><i>${results[item].item.title}</i></i>
+              <i class="link box__link" data-h><i>${results[item].item.title}</i></i>
             </p>
             ${searchItemText}
             <div class="box__tags">

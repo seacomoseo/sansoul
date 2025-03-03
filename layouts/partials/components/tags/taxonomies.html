@@ -9,15 +9,18 @@
     {{- range . -}}
       {{- $parent_type := site.GetPage $.type . -}}
       <i class="box__tag">
-        {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" $name.icon "emoji" $name.emoji) -}}
+        {{- partial "components/icon" (dict
+          "class" "box__tag-icon"
+          "icon"  $name.icon
+          "emoji" $name.emoji
+        ) -}}
         {{- if $.item.box -}}
           {{- $parent_type.Title -}}
         {{- else -}}
           {{- partial "components/link" (dict
-            "link"    $parent_type.RelPermalink
-            "button"  "none"
-            "label"   $parent_type.Title
-            "noindex" true
+            "label" $parent_type.Title
+            "link"  $parent_type.RelPermalink
+            "lock"  true
           ) -}}
         {{- end -}}
       </i>

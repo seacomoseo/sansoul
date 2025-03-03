@@ -1,11 +1,11 @@
 
 .content {
-  .href {
+  .link {
     &:not(.box, .button, .content__heading > *) {
       @include font-base-bold;
       line-height: $line-height-base;
     }
-    &:not(#toc *, .list-inline *, .content__heading-link) svg {
+    &:not(#toc *, .list-inline *, .content__heading-link) .icon {
       opacity: .5;
     }
   }
@@ -19,19 +19,19 @@
   iframe:not(.content__figure *) {
     filter: drop-shadow($shadow);
   }
-  :not(.button, li, code) > svg {
+  :not(.button, li, code) > .icon {
     color: var(--main);
   }
-  // :not(.button, li, .sign) > svg {
+  // :not(.button, li, .sign) > .icon {
   //   margin-right: .25em;
   //   &:not(:first-child > :first-child) {
   //     margin-left: .25em;
   //   }
   // }
-  // svg + svg {
+  // .icon + .icon {
   //   margin-left: 0;
   // }
-  :not(.button, .image__inner) > svg {
+  :not(.button, .image__inner) > svg.icon {
     position: relative;
     top: 0.125em;
   }

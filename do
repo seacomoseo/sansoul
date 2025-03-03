@@ -96,6 +96,13 @@ then
   hecho "NORMALIZE YAML AND MARKDOWN FILES"
   python3 ../_tools/others/yaml-normalize.py
 
+# Create woff2 and scss by font files
+elif [ $1 = spaces ]
+then
+
+  hecho "REFACTORING SPACES IN HUGO"
+  sh ../_tools/others/refactoring-spaces.sh $2
+
 # Create favicon.ico
 elif [ $1 = favicon ]
 then

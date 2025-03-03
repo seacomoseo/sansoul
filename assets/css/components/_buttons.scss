@@ -65,7 +65,7 @@
   gap: .375em;
   padding: .5em 1.5em;
   min-height: 2.5em;
-  > svg {
+  > .icon {
     font-size: 1.5em;
     color: var(--base-text);
     opacity: .75;
@@ -115,11 +115,7 @@
   &:is(
     :hover,
     :focus,
-    .box:has(> .box__button):not(:has(
-      .box .box__button,
-      > .box__button ~ .box__button,
-      .href:not(.box__link, .box__button)
-    )):where(
+    .box:has(> .box-go):not(:has(> .box-go ~ .box-go)):where(
       :hover,
       :focus
     ) > .box__button
@@ -147,11 +143,7 @@
   }
   &:is(
     :active,
-    .box:has(> .box__button):not(:has(
-      .box .box__button,
-      > .box__button ~ .box__button,
-      .href:not(.box__link, .box__button)
-    )):active > .box__button,
+    .box:has(> .box-go):not(:has(> .box-go ~ .box-go)):active > .box__button,
     .menu__button:where(.menu__item--active > *):not(:hover)
   ) {
     @if $buttons-outline {
@@ -182,7 +174,7 @@
   @if $radius > 1 or $buttons-rounded {
     --radius: 1em;
   }
-  > svg {
+  > .icon {
     font-size: 1.25em;
   }
 }
@@ -195,7 +187,7 @@
   width: 3em;
   height: 3em;
   line-height: 2;
-  > svg {
+  > .icon {
     opacity: 1;
     font-size: 2em;
   }
@@ -209,7 +201,7 @@
       @include circle;
     }
     @if $chamfer {
-      > svg {
+      > .icon {
         font-size: 1.5em;
       }
     }
@@ -250,7 +242,7 @@
 @if $buttons-outline {
   .button {
     color: var(--text);
-    > svg {
+    > .icon {
       opacity: 1;
       color: var(--base);
     }
@@ -278,7 +270,7 @@
     }
   }
   .button--dot:not(:hover,:focus,:active) {
-    > svg {
+    > .icon {
       color: var(--text);
     }
   }
@@ -297,7 +289,7 @@
   .modal__back,
   .modal__close--corner {
     // --text: var(--base);
-    // svg {
+    // .icon {
     //   color: var(--base);
     // }
     @if $chamfer and ($radius > 0.01 or $buttons-rounded or $icon-buttons-rounded) {

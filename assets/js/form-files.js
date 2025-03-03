@@ -1,7 +1,7 @@
 import { loading, formErrorFileOnload, timestamp } from '@params'
 import { slugify } from './slugify'
 
-const closeIcon = `<svg class="close" onclick="closePreview(this)">
+const closeIcon = `<svg class="icon close" onclick="closePreview(this)">
   <use href="/draws.${timestamp}.svg#xmark"></use>
 </svg>`
 
@@ -38,7 +38,7 @@ export function initFormFiles () {
             const placeholders = files.map(() => {
               const li = document.createElement('li')
               li.classList.add('form__preview-item')
-              li.innerHTML = `<svg class="spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${loading}…`
+              li.innerHTML = `<svg class="icon spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${loading}…`
               inputPreview.appendChild(li)
               return li
             })

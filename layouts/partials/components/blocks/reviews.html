@@ -1,18 +1,18 @@
 {{- $review := . -}}
 
-{{ if .slider }}
+{{- if .slider }}
   <div class="slider box__block" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
-{{ end }}
+{{- end }}
 
-<div class="reviews {{ if .slider }}slider__track{{ else }}box__block{{ end }}">
+<div class="reviews {{- if .slider }} slider__track{{- else }} box__block{{ end }}">
 
-  {{/*  REVIEWS CLASS  */}}
+  {{- /* REVIEWS CLASS  */ -}}
   {{- $slider     := cond (not .slider) "" " slider__items" -}}
   {{- $show       := cond (not site.Data.config.others.show) "" " show" -}}
   {{- $cols_class := print "boxes" $slider $show -}}
 
 
-  {{/*  REVIEWS STYLE  */}}
+  {{- /* REVIEWS STYLE  */ -}}
   {{- $cols_max   := .cols | default 1 -}}
   {{- if eq .cols 0 -}}
     {{- $cols_max  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
@@ -24,31 +24,32 @@
   {{- $col_max := cond (eq $cols_max 1) "" (print "--cols-max:" $cols_max) -}}
   {{- $col_min := cond (eq $cols_min 1) "" (print "--cols-min:" $cols_min) -}}
 
-  {{ $cols_style := slice
+  {{- $cols_style := slice
     $col_max
     $col_min
-  }}
+  -}}
 
-  {{/*  REVIEWS ATTRIBUTES JOIN  */}}
-  {{ $attrs := dict
+  {{- /* REVIEWS ATTRIBUTES JOIN  */ -}}
+  {{- $attrs := dict
     "class" $cols_class
     "style" $cols_style
-  }}
-  {{ $attrs = partial "functions/attrs" $attrs }}
+  -}}
+  {{- $attrs = partial "functions/attrs" $attrs -}}
   
+  {{- /*  HTML  */}}
   <div {{- $attrs }}>
     {{- range .reviews -}}
       {{- with merge $review . -}}
 
-        {{/*  REVIEW ITEM CLASS  */}}
+        {{- /* REVIEW ITEM CLASS  */ -}}
         {{- $bgc      := partial "functions/color-background" (dict "child" .color "parent" $.bgcp) -}}
         {{- $color    := $bgc.child -}}
         {{- $bg_color := print
           (cond (not $color) "" (print "bg-" $color))
           (cond (not .image) "" " bg-image")
         -}}
-        {{- $bg_gradient_color := "" }}
-        {{- $bg_gradient_type  := "" }}
+        {{- $bg_gradient_color := "" -}}
+        {{- $bg_gradient_type  := "" -}}
         {{- if .gradient -}}
           {{- $bg_gradient_color = print "bg-gradient-" .gradient -}}
           {{- $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
@@ -65,44 +66,44 @@
           $shadow
         -}}
 
-        {{/*  REVIEW ITEM STYLE  */}}
+        {{- /* REVIEW ITEM STYLE  */ -}}
         {{- $alpha := and (.alpha | and (ne .alpha 100)) ($color | or .gradient) -}}
         {{- $alpha  = cond (not $alpha)        "" (print "--color-alpha:" .alpha) -}}
 
-        {{ $review_style := slice $alpha }}
+        {{- $review_style := slice $alpha -}}
 
-        {{/*  REVIEW ITEM ATTRIBUTES JOIN  */}}
-        {{ $review_attrs := dict
+        {{- /* REVIEW ITEM ATTRIBUTES JOIN  */ -}}
+        {{- $review_attrs := dict
           "class" $review_class
           "style" $review_style
-        }}
-        {{ $review_attrs = partial "functions/attrs" $review_attrs }}
+        -}}
+        {{- $review_attrs = partial "functions/attrs" $review_attrs -}}
 
-        {{/*  REVIEW ITEM  */}}
+        {{- /* REVIEW ITEM  */}}
         <div class="review">
           <div {{- $review_attrs }}>
             <div class="bg-color"></div>
             {{- $icon       := or             .icon "quote-left" -}}
-            {{- $icon_right := or .icon_right .icon "quote-right" -}}
-            {{- partial "components/icon" (dict
+            {{- $icon_right := or .icon_right .icon "quote-right" }}
+            {{ partial "components/icon" (dict
               "class" "review__icon"
               "icon"  $icon
-            ) -}}
+            ) }}
             <blockquote class="review__text">
               <div class="content">
-                {{- partial "functions/md" (dict
+                {{ partial "functions/md" (dict
                   "content"          .content
                   "not_header_links" true
-                ) -}}
+                ) }}
               </div>
             </blockquote>
-            {{- partial "components/icon" (dict
+            {{ partial "components/icon" (dict
               "class" "review__icon review__icon--right"
               "icon"  $icon_right
-            ) -}}
+            ) }}
           </div>
           <div class="review__person">
-            {{- if .image -}}
+            {{- if .image }}
               <div class="review__figure">
                 <div class="bg-color"></div>
                 {{- partial "components/media/_"
@@ -114,23 +115,22 @@
                     "ratio"     "1/1"
                     "notschema" true
                   )
-                -}}
+                }}
               </div>
-            {{- end -}}
+            {{- end }}
             <div class="review__author">
-              {{- with .title -}}
+              {{- with .title }}
                 <h3 class="review__title h4">{{ . | markdownify }}</h3>
               {{- end -}}
-              {{- with .subtitle -}}
+              {{- with .subtitle }}
                 <p class="review__subtitle">{{ . | markdownify }}</p>
-                {{/*
-              {{- else -}}
-                {{- with .date -}}
+                {{- /*              {{- else -}}
+                {{- with .date }}
                   <p class="review__subtitle">{{ partial "functions/date" (dict "date" .) }}</p>
                 {{- end -}}
-                */}}
+                */ -}}
               {{- end -}}
-              {{- if ne .rating 0 -}}
+              {{- if ne .rating 0 }}
                 <p class="review__stars">
                   {{- $rating := .rating | default 5 -}}
                   {{- $int    := $rating | int -}}
@@ -142,30 +142,29 @@
                     {{- if ge $decimal 0.5 -}}
                       {{- partial "components/icon" (dict "icon" "star-fill-half") -}}
                     {{- end -}}
-                  {{- end -}}
+                  {{- end }}
                 </p>
-              {{- end -}}
+              {{- end }}
             </div>
           </div>
         </div>
       {{- end -}}
-    {{- end -}}
+    {{- end }}
   </div>
 </div>
-{{/*  SCHEMA  */}}
-{{- "" -}}
+{{- /* SCHEMA  */}}
 <script type="application/ld+json">
-  {{- partial "components/base/schema/review" . | safeJS -}}
+  {{- partial "components/base/schema/review" . | safeJS }}
 </script>
 
-{{- if .slider -}}
-  {{- partial "components/slider-buttons"
+{{- if .slider }}
+  {{ partial "components/slider-buttons"
     (dict
       "items"   (len .reviews)
       "bullets" .bullets
       "arrows"  .arrows
       "button"  .button
     )
-  -}}
+  }}
   </div>
 {{- end -}}

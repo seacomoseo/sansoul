@@ -2,12 +2,14 @@
   {{- range partial "functions/breadcrumbs" page | collections.Reverse -}}
     <i>
       {{- partial "components/link" (dict
-        "link"      .RelPermalink
-        "button"    "none"
-        "label"     .Title
-        "noindex"   .Params.noindex
+        "label" .Title
+        "link"  .RelPermalink
+        "lock"  .Params.noindex
       ) -}}
-      {{- partial "components/icon" (dict "icon" (site.Data.styles.icons.right | default "angle-right") "emoji" "➡️") -}}
+      {{- partial "components/icon" (dict
+        "icon"  (site.Data.styles.icons.right | default "angle-right")
+        "emoji" "➡️"
+      ) -}}
     </i>
   {{- end -}}
   {{/*  {{- page.Title -}}  */}}

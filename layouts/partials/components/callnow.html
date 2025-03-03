@@ -33,25 +33,25 @@
   {{- end -}}
 
   {{- with $buttons -}}
-    {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" -}}
+    {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" }}
     <aside id="callnow" class="callnow {{ $callnow_plus }}">
       {{- range . -}}
 
         {{- $class   := "" -}}
         {{- $num     := "" -}}
         {{- $link    := .link -}}
-        {{- $button  := cond (eq .button "link") "" .button -}}
+        {{- $button  := cond (eq .button "cta") "" .button -}}
         {{- $icon    := .icon -}}
         {{- $emoji   := "" -}}
         {{- $label   := .label -}}
         {{- $noindex := .ofuscate -}}
 
         {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
-          {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` `` -}}
+          {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
         {{- end -}}
 
         {{- if eq .type "custom" -}}
-          {{- $class   = (print "callnow__custom" (cond (not .ga4) "" " ga4")) -}}
+          {{- $class   = "callnow__custom" -}}
         {{- else if eq .type "phone" -}}
           {{- $class   = "contact__phone" -}}
           {{- $link    = print "tel:+" $num -}}
@@ -71,21 +71,22 @@
 
         {{- if $callnow_plus -}}<i>{{- end -}}
 
-        {{- with $label -}}
+        {{- with $label }}
           <div class="callnow__caption">{{ . }}</div>
         {{- end -}}
 
         {{- partial "components/link" (dict
-          "class"     $class
-          "link"      $link
-          "button"    $button
-          "dot"       true
-          "font_alt"  true
-          "icon"      $icon
-          "emoji"     $emoji
-          "label"     $label
-          "anchor"    .anchor
-          "noindex"   $noindex
+          "class"  $class
+          "button" $button
+          "dot"    true
+          "swap"   true
+          "ga4"    .ga4
+          "icon"   $icon
+          "emoji"  $emoji
+          "label"  $label
+          "anchor" .anchor
+          "link"   $link
+          "lock"   $noindex
         ) -}}
 
         {{- if $callnow_plus -}}</i>{{- end -}}

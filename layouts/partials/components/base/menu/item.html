@@ -2,13 +2,13 @@
   {{- $sub := add ($.sub | default 0) 1 -}}
   {{- if eq .link "langs" -}}
 
-    {{ range partial "components/base/menu/langs" . }}
+    {{- range partial "components/base/menu/langs" . -}}
       {{- partial "components/base/menu/item" (merge . (dict
         "sub"        $sub
         "hide_icons" $.hide_icons
         "ofuscate"   $.ofuscate
       )) -}}
-    {{ end }}
+    {{- end -}}
 
   {{- else -}}
 
@@ -37,57 +37,56 @@
 
       {{- if or $label $icon $emoji -}}
 
-        {{- $class := "menu__link" -}}
-        {{- with .button -}}
-          {{- if ne . "none" -}}
-            {{- $class = "menu__button button--sm" -}}
-          {{- end -}}
-        {{- end -}}
-        {{- with .ga4 -}}
-          {{- $class = print $class " ga4" -}}
-        {{- end -}}
-        {{- with .translate -}}
-          {{- $class = print $class " menu__link--translate" -}}
-        {{- end -}}
-        {{- with .class -}}
-          {{- $class = print $class " " . -}}
-        {{- end -}}
+        {{- $button_class := slice
+          (cond (not .button)    "menu__link" "menu__button")
+          (cond (not .translate) "" "menu__link--translate")
+          | append .class
+        -}}
 
-        <li class="menu__item
-          {{- if eq .link page.RelPermalink | and (not .IsHome) }} menu__item--active{{ end -}}
-          {{- if .lang   }} menu__item--lang{{ end -}}
-          {{- if .items  }} menu__item--subitems{{ end -}}
-          "
-          {{- with .lang  }} lang="{{ . }}"  {{- end -}}
-          {{- with .title }} title="{{ . }}" {{- end -}}
-          {{- if .items   }} tabindex="0"   {{- end -}}
-        >
-
+        {{- /*  li  */ -}}
+        {{- $is_active := eq .link page.RelPermalink | and (not .IsHome) -}}
+        {{- $li_class  := slice
+          "menu__item"
+          (cond $is_active "menu__item--active"   "")
+          (cond .lang      "menu__item--lang"     "")
+          (cond .items     "menu__item--subitems" "")
+        -}}
+        {{- $li_attrs := dict
+          "class"    $li_class
+          "lang"     .lang
+          "title"    .title
+          "tabindex" (cond .items "0" "")
+          -}}
+        {{- $li_attrs = partial "functions/attrs" $li_attrs }}
+        <li {{- $li_attrs }}>
+          {{- /*  link  */}}
           {{ partial "components/link" (dict
-            "class"    $class
-            "link"     .link
-            "button"   (.button | default "none")
-            "font_alt" .font_alt
-            "icon"     $icon
-            "emoji"    $emoji
-            "label"    $label
-            "anchor"   .anchor
-            "noindex"  .ofuscate
-          ) }}
+            "class"  $button_class
+            "button" .button
+            "sm"     true
+            "swap"   .font_alt
+            "ga4"    .ga4
+            "icon"   $icon
+            "emoji"  $emoji
+            "label"  $label
+            "anchor" .anchor
+            "link"   .link
+            "lock"   .ofuscate
+          ) -}}
 
-          {{- with .items -}}
-            <ul class="menu__{{ cond (eq $sub 0) `` `sub` }}items">
+          {{- /*  subitems  */ -}}
+          {{- with .items }}
+            {{- $ul_class := print "menu__" (cond (eq $sub 0) "" "sub") "items" -}}
+            <ul class="{{ $ul_class }}">
               {{- range . -}}
                 {{- partial "components/base/menu/item" (merge . (dict
                   "sub"        $sub
                   "hide_icons" $.hide_icons
                 )) -}}
-              {{- end -}}
+              {{- end }}
             </ul>
-          {{- end -}}
-          
+          {{- end }}
         </li>
-
       {{- end -}}
     {{- end -}}
 

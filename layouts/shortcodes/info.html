@@ -1,39 +1,39 @@
 {{- $netlify := or (getenv "NETLIFY") hugo.IsDevelopment -}}
 
-- icon:screwdriver-wrench [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "nofollow _blank") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "nofollow")
-- icon:google-drive       [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "nofollow")
+- :screwdriver-wrench: [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "[nofollow _blank]") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "[nofollow]")
+- :google-drive:       [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "[nofollow]")
 {{- with site.Params.drive_mails }}<br> {{ i18n "gdsheet_view" }}:
 {{- range split . ";" }}
-  - icon:envelope {{ . }}
+  - :envelope: {{ . }}
 {{ end }}
 {{- end }}
-- icon:github [{{ i18n "github_repo" }}](https://github.com/seacomoseo/{{ site.Params.domain }} "nofollow")
-- icon:gitlab [{{ i18n "gitlab_repo" }}](https://gitlab.com/seacomoseo/{{ site.Params.domain }} "nofollow")
+- :github: [{{ i18n "github_repo" }}](https://github.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
+- :gitlab: [{{ i18n "gitlab_repo" }}](https://gitlab.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
 {{- if $netlify }}
-- icon:netlify [{{ i18n "netlify_deploys" }}]({{ print "https://app.netlify.com/sites/" site.Params.name "/deploys" }} "nofollow")
+- :netlify: [{{ i18n "netlify_deploys" }}]({{ print "https://app.netlify.com/sites/" site.Params.name "/deploys" }} "[nofollow]")
 {{- else }}
-- icon:bolt [{{ i18n "cloudflare_pages_deploys" }}]({{ print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name }} "nofollow")
+- :bolt: [{{ i18n "cloudflare_pages_deploys" }}]({{ print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name }} "[nofollow]")
 {{- end }}
 
 **{{ i18n "deploy_status" }}**: \
 {{ i18n "deploy_status_info" }}
 
-[btn icon:none
+[[:none:
   <i class="loader"></i>
-  <i class="status__label status__label--success">icon:square-check {{ i18n "deploy_status_success" }}</i>
-  <i class="status__label status__label--building">icon:rotate {{ i18n "deploy_status_building" }}</i>
-  <i class="status__label status__label--canceled">icon:square-xmark {{ i18n "deploy_status_canceled" }}</i>
-  <i class="status__label status__label--error">icon:triangle-exclamation {{ i18n "deploy_status_error" }}</i>
-  <i class="status__label status__label--whaiting">icon:rotate {{ i18n "deploy_status_whaiting" }}</i>
-  <i class="status__label status__label--check">icon:person-to-portal {{ i18n "deploy_status_check" }}</i>
-  <i class="status__label status__label--end">icon:person-from-portal {{ i18n "deploy_status_end" }}</i>
+  <i class="status__label status__label--success">:square-check: {{ i18n "deploy_status_success" }}</i>
+  <i class="status__label status__label--building">:rotate: {{ i18n "deploy_status_building" }}</i>
+  <i class="status__label status__label--canceled">:square-xmark: {{ i18n "deploy_status_canceled" }}</i>
+  <i class="status__label status__label--error">:triangle-exclamation: {{ i18n "deploy_status_error" }}</i>
+  <i class="status__label status__label--whaiting">:rotate: {{ i18n "deploy_status_whaiting" }}</i>
+  <i class="status__label status__label--check">:person-to-portal: {{ i18n "deploy_status_check" }}</i>
+  <i class="status__label status__label--end">:person-from-portal: {{ i18n "deploy_status_end" }}</i>
   <strong id="deploy-time"></strong>
-](none "nofollow")
+]](none "[nofollow]")
 {#status .buttons}
 
-[btn:invert icon:rocket-launch {{ i18n "rebuild" }}](none)
+[[:rocket-launch: {{ i18n "rebuild" }}]](none "[invert]")
 {{- if and site.Params.cloudflare_id (not $netlify) }}
-[btn:similar icon:trash {{ i18n "clear_cache" }}](none)
+[[:trash: {{ i18n "clear_cache" }}]](none "[similar]")
 {{- end }}
 {.rebuild}
 

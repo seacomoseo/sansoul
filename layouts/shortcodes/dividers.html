@@ -16,24 +16,25 @@
   }
 </style>
 
-{{ range site.Data.options.divider }}
-  {{ $class := "" }}
-  {{ $style := "" }}
-  {{ with partial "components/divider-attr" (dict "section" (dict "divider" .) "next" false) }}
-    {{ $class = .class }}
-    {{ $style = .style }}
-  {{ end }}
-
+{{- range site.Data.options.divider -}}
+  {{- $attrs := "" -}}
+  {{- with partial "components/divider-attr" (dict
+    "section" (dict "divider" .)
+    "next"    false
+  ) -}}
+    {{- $class := print "divider--example " .class -}}
+    {{- $attrs  = dict "class" $class "style" .style -}}
+    {{- $attrs  = partial "functions/attrs" $attrs -}}
+  {{- end }}
   <h3 id="divider-{{ . }}">
-    {{- partial "components/link" (dict
-      "link"    (print "#divider-" .)
-      "button"  "none"
-      "label"   .
-    ) -}}
+    {{ partial "components/link" (dict
+      "label" .
+      "link"  (print "#divider-" .)
+    ) }}
     <br>
     {{ i18n (print "option-divider-" .) }}
   </h3>
-  <div class="divider--example {{ $class }}" style="{{ $style | safeCSS }}">
+  <div {{- $attrs }}>
     <div class="bg-color"></div>
   </div>
-{{ end }}
+{{- end -}}
