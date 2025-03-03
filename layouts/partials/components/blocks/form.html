@@ -189,7 +189,7 @@
     {{- $form_netlify = true -}}
   {{- end -}}
   {{- $form_name   = $form_id -}}
-  {{- $form_action = $action -}}
+  {{- $form_action = $action | base64Encode -}}
 {{- else -}}
   {{- $is_file_type  := false -}}
   {{- range where $inputs "type" "file" -}}
@@ -216,7 +216,7 @@
   "method"    "POST"
   "netlify"   $form_netlify
   "name"      $form_name
-  "action"    $action
+  "action"    $form_action
   "enctype"   $enctype
   "data-prov" $data_prov
   "target"    $target

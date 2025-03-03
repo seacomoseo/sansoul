@@ -166,7 +166,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
   -------------------------------------------------------------- */
   function searchInit () {
     if (firstRun) {
-      loadScript(window.location.origin + '/js/fuse.js').then(() => {
+      loadScript(location.origin + '/js/fuse.js').then(() => {
         searchInput.value = '' // reset default value
         firstRun = false // let's never do this again
         fetchJSON('{{ site.Home.RelPermalink }}index.json', function (data) {

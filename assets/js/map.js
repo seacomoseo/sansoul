@@ -2,7 +2,7 @@ import { scrollShot } from './scroll-shot'
 import { loadLeaflet, myIcon, fill, tile } from './leaflet'
 
 function mapStart (mapDiv) {
-  const map = window.L.map(mapDiv.id, {
+  const map = L.map(mapDiv.id, {
     setView: true,
     trackResize: true,
     scrollWheelZoom: false
@@ -10,7 +10,7 @@ function mapStart (mapDiv) {
 
   tile(map)
 
-  const bounds = window.L.latLngBounds() // Crea límites manualmente
+  const bounds = L.latLngBounds() // Crea límites manualmente
 
   Array.from(mapDiv.nextElementSibling.children).forEach(e => {
     const geo = JSON.parse(e.dataset.geo)
@@ -20,7 +20,7 @@ function mapStart (mapDiv) {
       const latlng = [geo.coordinates[1], geo.coordinates[0]]
       if (e.dataset.radius) {
         const radius = parseFloat(e.dataset.radius) * 1000 // Radio en metros
-        marker = window.L.circle(latlng, { radius, ...fill(e.dataset.color).style })
+        marker = L.circle(latlng, { radius, ...fill(e.dataset.color).style })
 
         // Conversión del radio a grados
         const deltaLat = radius / 111320 // Cambio en latitud en grados
@@ -33,11 +33,11 @@ function mapStart (mapDiv) {
         bounds.extend(corner1)
         bounds.extend(corner2)
       } else {
-        marker = window.L.marker(latlng, { icon })
+        marker = L.marker(latlng, { icon })
         bounds.extend(marker.getLatLng())
       }
     } else if (geo.type === 'Polygon') {
-      marker = window.L.geoJSON(geo, fill(e.dataset.color))
+      marker = L.geoJSON(geo, fill(e.dataset.color))
       bounds.extend(marker.getBounds())
     }
     if (e.textContent) marker.bindPopup(e.textContent)

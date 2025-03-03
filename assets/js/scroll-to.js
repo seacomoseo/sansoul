@@ -17,8 +17,8 @@ export function scrollTo (targetElement, instant) {
 
 // SCROLL IF IS HASH WHEN LOAD (FIX SHOW)
 export function initScrollToHashWhenLoad (element) {
-  if (window.location.hash) {
-    const target = document.querySelector(window.location.hash)
+  if (location.hash) {
+    const target = document.querySelector(location.hash)
     window.addEventListener('load', () => {
       setTimeout(() => {
         if (target) {

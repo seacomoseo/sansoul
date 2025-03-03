@@ -23,7 +23,7 @@ function formSubmited (form) {
     })
   }
   if (form.dataset.to) {
-    window.location.href = atob(form.dataset.to)
+    location.href = atob(form.dataset.to)
   }
 }
 
@@ -60,8 +60,8 @@ export function initFormSend () {
           const timestampInput = form.querySelector('.form-timestamp')
           if (timestampInput) timestampInput.value = now
 
-          const actionEncoded = form.action.replace(window.location.href.split('#')[0], '')
-          let action = window.atob(actionEncoded)
+          const actionEncoded = form.action.replace(location.href.split('#')[0], '')
+          let action = atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
           const netlifyForm = form.dataset.prov === 'ntlf'
           const googleScript = form.dataset.prov === 'gas'

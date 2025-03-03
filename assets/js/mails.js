@@ -1,7 +1,7 @@
 export function initMails () {
   // Decode form mail
   document.querySelectorAll('.mail').forEach(mail => {
-    mail.textContent = window.atob(mail.textContent)
+    mail.textContent = atob(mail.textContent)
   })
 
   document.addEventListener('click', e => {
@@ -21,7 +21,7 @@ export function initMails () {
         emailCopyButton.classList.add(msg)
         setTimeout(() => emailCopyButton.classList.remove(msg), 1000)
       } else {
-        window.location.href = 'mailto:' + email
+        location.href = 'mailto:' + email
       }
     }
   })

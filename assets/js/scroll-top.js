@@ -57,8 +57,8 @@ export function initScrollTop () {
         document.body.classList.add('body-top')
         menuChangeColor(true)
         // Remove hash
-        if (window.location.hash) {
-          window.history.replaceState('', '', window.location.pathname + window.location.search)
+        if (location.hash) {
+          history.replaceState('', '', location.pathname + location.search)
         }
       } else {
         document.body.classList.remove('body-top')
@@ -88,9 +88,9 @@ export function initScrollTop () {
           }
         }
         scrollTo(target)
-        // if (window.location.hash) {
+        // if (location.hash) {
         //   // Remove hash
-        //   window.history.replaceState('', '', window.location.pathname + window.location.search)
+        //   history.replaceState('', '', location.pathname + location.search)
         // }
       }
     })

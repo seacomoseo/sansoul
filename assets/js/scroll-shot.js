@@ -17,7 +17,7 @@ export function scrollShot ({
         doEnd(entry.target)
       }
     })
-  const observerScroll = new window.IntersectionObserver(callbackScroll, { rootMargin })
+  const observerScroll = new IntersectionObserver(callbackScroll, { rootMargin })
   const nodeList = document.querySelectorAll(query)
   nodeList && nodeList.forEach(nodo => {
     observerScroll.observe(nodo)

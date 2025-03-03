@@ -18,7 +18,7 @@ function mapStart (geoDiv) {
   const isMobile = window.innerWidth <= 768 // Mobile size
   const initialZoom = isMobile ? zoom - 1 : zoom // Soom adjust by device
   const initialView = JSON.parse(geoDiv.dataset.view).coordinates
-  const map = window.L.map(geoDiv, {
+  const map = L.map(geoDiv, {
     setView: true,
     trackResize: true
   }).setView(initialView, initialZoom)
@@ -29,11 +29,11 @@ function mapStart (geoDiv) {
     // Polygon and circle
     loadLeafletDraw()
       .then(() => {
-        const drawnItems = new window.L.FeatureGroup()
+        const drawnItems = new L.FeatureGroup()
         map.addLayer(drawnItems)
 
         const style = { shapeOptions: fill(geoDiv.dataset.color).style }
-        const drawControl = new window.L.Control.Draw({
+        const drawControl = new L.Control.Draw({
           edit: {
             featureGroup: drawnItems
           },
@@ -48,7 +48,7 @@ function mapStart (geoDiv) {
         })
         map.addControl(drawControl)
 
-        map.on(window.L.Draw.Event.CREATED, e => {
+        map.on(L.Draw.Event.CREATED, e => {
           const layer = e.layer
           drawnItems.clearLayers()
           drawnItems.addLayer(layer)
@@ -67,7 +67,7 @@ function mapStart (geoDiv) {
       })
   } else {
     // Marker
-    const marker = window.L.marker(initialView, { icon: myIcon(geoDiv.dataset) })
+    const marker = L.marker(initialView, { icon: myIcon(geoDiv.dataset) })
     marker.addTo(map).bindPopup(formGeo).openPopup()
 
     // Clics listen

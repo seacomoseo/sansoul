@@ -22,12 +22,12 @@ function openModal (target) {
 export function closeModal (changeHash) {
   document.documentElement.classList.remove('modal__active')
   // Remove hash
-  if (!changeHash && window.location.hash) {
+  if (!changeHash && location.hash) {
     if (hasLastSection) {
-      window.history.replaceState('', '', hasLastSection)
+      history.replaceState('', '', hasLastSection)
       hasLastSection = ''
     } else {
-      window.history.replaceState('', '', window.location.pathname + window.location.search)
+      history.replaceState('', '', location.pathname + location.search)
     }
   }
   const modalOpen = document.querySelector('dialog[open].modal')
@@ -55,7 +55,7 @@ function prevNextModal (prev) {
   // if (isModalPrevNext) {
   //   closeModal()
   //   openModal(modalPrevNext)
-  //   window.location.hash = modalPrevNext.id
+  //   location.hash = modalPrevNext.id
   // }
   const prevNext = prev ? 'prev' : 'next'
   const modalButtonPrevNext = document.querySelector(`dialog[open].modal .modal__${prevNext}`)
@@ -64,8 +64,8 @@ function prevNextModal (prev) {
 
 export function initModals () {
   // When load if modal is active
-  if (window.location.hash) {
-    const hasModal = document.querySelector((window.location.hash.replace(/=+/, '-').substring(0, 155) || 'none') + '.modal')
+  if (location.hash) {
+    const hasModal = document.querySelector((location.hash.replace(/=+/, '-').substring(0, 155) || 'none') + '.modal')
     if (hasModal) {
       // Get parent section
       let sectionSibling = hasModal.previousElementSibling
@@ -122,7 +122,7 @@ export function initModals () {
     if (buttonClose || backover) closeModal()
     // Back
     // const back = e.target.closest('.modal__back')
-    // if (back) window.history.back()
+    // if (back) history.back()
   })
 
   // When keyup escape

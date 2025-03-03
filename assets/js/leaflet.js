@@ -8,7 +8,7 @@ export function loadLeaflet () {
   if (!leafletPromise) {
     leafletPromise = new Promise((resolve, reject) => {
       // Verificamos si Leaflet ya está cargado
-      if (window.L) {
+      if (L) {
         resolve()
         return
       }
@@ -27,7 +27,7 @@ export function loadLeaflet () {
 export function loadLeafletDraw () {
   return new Promise((resolve, reject) => {
     // Verificamos si Leaflet.Draw ya está cargado
-    if (window.L && window.L.Control && window.L.Control.Draw) {
+    if (L && L.Control && L.Control.Draw) {
       resolve()
       return
     }
@@ -42,7 +42,7 @@ export function loadLeafletDraw () {
 }
 
 export function myIcon (i) {
-  return window.L.divIcon({
+  return L.divIcon({
     className: 'leaflet-data-marker',
     html: `<svg class="icon leaflet-data-marker__svg ${i.color}" viewBox="0 -5 149 188">` +
       '<path fill="var(--base)" stroke="color-mix(in srgb, var(--base), var(--base-text) 75%)" stroke-width="12" paint-order="stroke" stroke-miterlimit="10" d="M126 23l-6-6A69 69 0 0 0 74 1a69 69 0 0 0-51 22A70 70 0 0 0 1 74c0 21 7 38 22 52l43 47c6 6 11 6 16 0l48-51c12-13 18-29 18-48 0-20-8-37-22-51z"/>' +
@@ -67,7 +67,7 @@ export function fill (color = 'main') {
 }
 
 export function tile (map) {
-  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map)
 }

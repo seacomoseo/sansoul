@@ -7,9 +7,9 @@ export function initPrerender () {
         link.addEventListener('mouseover', e => {
           const t = e.currentTarget
           let href = ''
-          if (t.dataset.h) href = window.atob(t.dataset.h)
-          if (t.href) href = t.href.replace(window.location.origin, '')
-          if (href.startsWith('/') && !href.startsWith('/#') && href !== window.location.pathname) {
+          if (t.dataset.h) href = atob(t.dataset.h)
+          if (t.href) href = t.href.replace(location.origin, '')
+          if (href.startsWith('/') && !href.startsWith('/#') && href !== location.pathname) {
             href = href.replace(/#.*/, '')
             if (!document.querySelector(`link[href='${href}']`)) {
               const prerenderLink = document.createElement('link')

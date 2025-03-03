@@ -9,9 +9,9 @@ export function initMenuScrollSpy () {
       query: '.section[id]:not(footer),#header',
       doStart: e => {
         // When load if hash is section
-        const hashIsNotModal = document.querySelector((window.location.hash || 'none') + ':not(.modal)')
+        const hashIsNotModal = document.querySelector((location.hash || 'none') + ':not(.modal)')
         const bodyTop = document.querySelector('body.body-top')
-        if ((hashIsNotModal || !window.location.hash) && !bodyTop) {
+        if ((hashIsNotModal || !location.hash) && !bodyTop) {
           if (!menuItemActive) {
             // Remove menu item active
             const menuItemsActive = document.querySelectorAll('.menu__item--active')
@@ -25,8 +25,8 @@ export function initMenuScrollSpy () {
             }
           }
           // Upgrade hash without cut the flow of the smooth scroll wen there is a section in the middle
-          // const hash = e.tagName === 'HEADER' ? window.location.pathname + window.location.search : '#' + e.id
-          // window.history.replaceState('', '', hash)
+          // const hash = e.tagName === 'HEADER' ? location.pathname + location.search : '#' + e.id
+          // history.replaceState('', '', hash)
         }
       },
       doEnd: () => null // For not unobserve

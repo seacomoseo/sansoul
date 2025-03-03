@@ -6,9 +6,9 @@ export function initGa4 () {
     if (b.href) {
       label = b.href
     } else if (b.dataset.b) {
-      label = window.atob(b.dataset.b)
+      label = atob(b.dataset.b)
     } else if (b.dataset.h) {
-      label = window.atob(b.dataset.h)
+      label = atob(b.dataset.h)
     } else { // email
       label = b.parentElement.previousElementSibling.textContent
     }
