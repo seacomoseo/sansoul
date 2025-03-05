@@ -1,10 +1,12 @@
-{{- with .map -}}
+{{- $map := .map | default dict -}}
+{{- with .geos -}}
   {{- $icons := slice -}}
   {{- /*  MAP  */}}
   {{- $map_attrs := dict
     "id"        (print "map-" ($.id | default $.section.id))
-    "class"     "map box__block bg-light"
-    "data-zoom" $.zoom
+    "class"     "map box__block"
+    "data-zoom" $map.zoom
+    "data-tile" $map.tile
   -}}
   {{- $map_attrs = partial "functions/attrs" $map_attrs }}
   <div {{- $map_attrs }}></div>
@@ -12,8 +14,8 @@
     {{- /*  EACH  */ -}}
     {{- range . -}}
       {{- $radius    := .radius | default "" -}}
-      {{- $color     := .color  | default $.icon_color | default "main" -}}
-      {{- $icon      := cond (ne .type "point") "" (.icon | default $.licon | default "circle-dot") -}}
+      {{- $color     := .color  | default $map.color | default $.icon_color | default "main" -}}
+      {{- $icon      := cond (ne .type "point") "" (.icon | default $map.icon | default $.licon | default "circle-dot") -}}
       {{- $icons      = $icons  | append $icon -}}
       {{- $geo_attrs := dict
         "data-geo"    .geo

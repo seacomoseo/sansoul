@@ -416,6 +416,7 @@ boxes:
     licon: circle-dot
     view: '{"type":"Point","coordinates":[40.46367, -3.74922]}'
     zoom: 4
+    tile: hybrid # [ streets, terrain, satellite, hybrid ]
     required: true
     icon: location-check
   - type: hidden
@@ -478,17 +479,22 @@ boxes:
 ###
 
 - map:
+    zoom: 6
+    tile: hybrid # [ streets, terrain, satellite, hybrid ]
+    color: alt
+    icon: dog
+  geos:
   - type: point
-    geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
-    color: cta
-    icon: cat
     label: Punto
+    color: cta
+    geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
+    icon: cat
   - type: circle
+    label: Círculo
+    color: main
     geo: '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
     radius: 30
-    color: main
-    label: Círculo
   - type: polygon
-    geo: '{"type":"Polygon","coordinates":[[[-0.730882,37.9909474],[-0.7646935,38.5600661],[0.2231645,38.729593],[-0.730882,37.9909474]]]}'
-    color: cta
     label: Polígono
+    color: alt
+    geo: '{"type":"Polygon","coordinates":[[[-0.730882,37.9909474],[-0.7646935,38.5600661],[0.2231645,38.729593],[-0.730882,37.9909474]]]}'

@@ -61,7 +61,7 @@
   "values"         (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox" "file" "geo" "hidden"                )
   "full"           (slice                                             "textarea"          "radio" "checkbox" "file" "geo" "h2" "h3" "h4" "h5" "h6")
   "label"          (slice "text" "email" "tel" "number" "date" "time" "textarea" "select"                           "geo"                         )
-  "border_chamfer" (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox" "file"                               )
+  "border_chamfer" (slice "text" "email" "tel" "number" "date" "time" "textarea" "select" "radio" "checkbox" "file" "geo"                         )
   "tag_inputs"     (slice "text" "email" "tel" "number" "date" "time"                                        "file"                               )
   "icon"           (slice "text" "email" "tel" "number" "date" "time" "textarea" "select"                                                         )
   "min_max_length" (slice "text" "email" "tel"                                                                                                    )
@@ -267,12 +267,14 @@
     {{- $name          := .name -}}
     {{- $type          := .type -}}
     {{- $placeholder   := print (.label | default .name) (cond (not .required) "" " *") -}}
+    {{- $required      := .required -}}
     {{- $required_attr := cond (not .required) "" " data-required" | safeHTMLAttr -}}
     {{- $requiredif    := "" -}}
     {{- if or (and (not .required) .required_if) (and .required .show_if) -}}
       {{- with .required_if | default .show_if -}}
         {{- $required_attr = print ` data-requiredif="` . `"` | safeHTMLAttr -}}
         {{- $requiredif    = . -}}
+        {{- $required      = false -}}
       {{- end -}}
     {{- end -}}
 
@@ -308,11 +310,12 @@
         {{- $border_class := slice
           "form__item-border"
           (cond (eq $type "textarea"       ) "form__item-border--textarea" "")
+          (cond (eq $type "geo"            ) "form__item-border--geo"      "")
           (cond ($type | in $slices.markers) "form__item-border--fieldset" "")
         -}}
         {{- $border_attrs := dict "class" $border_class -}}
         {{- $border_attrs  = partial "functions/attrs" $border_attrs }}
-        <div {{- $border_attrs }}>
+        <div {{- $border_attrs }}></div>
       {{- end -}}
 
       {{- /*  tag_inputs  */ -}}
@@ -375,7 +378,7 @@
           "class"            "form__input"
           "type"             (cond $onfocus "text" $type)
           "name"             $name
-          "data-required"    .required
+          "data-required"    $required
           "data-requiredif"  $requiredif
           "placeholder"      $placeholder
           "data-placeholder" $placeholder_data
@@ -402,7 +405,7 @@
           <label class="form__pre">
             <i class="hide">Prefix</i>
             <select class="form__select">
-              {{- /*  <option value="">{{ i18n "box_contact_pre" }}{{ if .required }} *{{ end }}</option>  */ -}}
+              {{- /*  <option value="">{{ i18n "box_contact_pre" }}{{ if $required }} *{{ end }}</option>  */ -}}
               {{- range site.Data.utilities.phone_code -}}
                 {{- $option_attrs := dict
                   "value"    .value
@@ -420,18 +423,18 @@
         {{- $icon := .licon | default "circle-dot" -}}
         {{- $geo_attrs := dict
           "id"         (print "geo-" $form_id)
-          "class"      "form__geo-map bg-light"
+          "class"      "form__geo-map"
           "data-area"  .area
           "data-color" (.color | default "main")
           "data-icon"  $icon
           "data-zoom"  .zoom
+          "data-tile"  .tile
           "data-view"  (.view | default "{\"type\":\"Point\",\"coordinates\":[40.46367, -3.74922]}")
         -}}
         {{- $geo_attrs = partial "functions/attrs" $geo_attrs }}
-        <div {{- $geo_attrs }}>
-          {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" $icon) }}
-          <input class="form__geo form__geo--json" type="hidden" name="{{ .name }}" {{- $required_attr }}>
-        </div>
+        <div {{- $geo_attrs }}></div>
+        {{ partial "components/icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" $icon) }}
+        <input class="form__geo form__geo--json" type="hidden" name="{{ .name }}" {{- $required_attr }}>
 
       {{- /*  textarea  */ -}}
       {{- else if $type | eq "textarea" -}}
@@ -442,7 +445,7 @@
           "placeholder"     $placeholder
           "minlength"       .min
           "maxlength"       .max
-          "data-required"   .required
+          "data-required"   $required
           "data-requiredif" $requiredif
         -}}
         {{- $textarea_attrs = partial "functions/attrs" $textarea_attrs }}
@@ -474,7 +477,6 @@
               {{- $placeholder -}}
             </legend>
           {{- end -}}
-          {{- $required := .required -}}
           {{- with .options -}}
             {{- $only := eq (len .) 1 -}}
             {{- range . -}}
@@ -580,7 +582,7 @@
         {{- ". " -}}
         {{- partial "components/link" (dict
           "label" (print (i18n "read_more") "…")
-          "link"  (print (page.GetPage "privacy").RelPermalink "#" (i18n "forms"))
+          "link"  (print (site.GetPage "page" "privacy").RelPermalink "#" (i18n "forms"))
           "lock"  true
           "blank" true
         ) -}}

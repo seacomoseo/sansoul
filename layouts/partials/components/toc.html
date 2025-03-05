@@ -2,7 +2,7 @@
 {{- if .Headings }}
   <ol {{ if not .Level }} class="toc"{{ end }}>
     {{- range .Headings -}}
-      {{- $id := partial "functions/header-to-id" .Title }}
+      {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) }}
       <li>
         {{- partial "components/link" (dict
           "button" "none"

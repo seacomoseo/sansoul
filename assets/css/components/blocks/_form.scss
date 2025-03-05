@@ -17,20 +17,26 @@
   .form__select:not(.form__select--pre) {
     width: 100%;
   }
+  &.form__item--error {
+    color: var(--submit-error);
+    --border: var(--submit-error);
+  }
 }
 .form__geo {
   display: none;
 }
 .form__geo-map {
+  @include radius(0em, $radius * 1rem / 1em);
   width: 100%;
   aspect-ratio: 16/9;
-  @include radius(0em, $radius * 1rem / 1em);
+  @if not $chamfer {
+    border: 1.5px solid var(--border, transparent);
+  }
+  &:where(.form__item-border ~ *) {
+    clip-path: var(--chamfer-int-outline);
+    --outline: 1.5px;
+  }
 }
-/*! purgecss start ignore */
-.leaflet-popup-content {
-  max-width: calc(100vw - 10em);
-}
-/*! purgecss end ignore */
 .form__fieldset {
   display: flex;
   flex-direction: column;
@@ -71,6 +77,9 @@
   font-size: .75em;
   text-align: left;
   width: 100%;
+  &:where(.form--error-consent *) {
+    color: var(--submit-error);
+  }
 }
 .form__label {
   display: block;
@@ -181,15 +190,14 @@
     }
     .form__item-border {
       position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 2.5em;
       clip-path: var(--chamfer);
       background-color: var(--border);
-      &:has(~ [style], ~ * [style]) {
-        --border: red;
-      }
+    }
+    .form__item-border--geo {
+      height: auto;
+      aspect-ratio: 16 / 9;
     }
     .form__item-border--textarea {
       min-height: 5.72em;
@@ -241,8 +249,8 @@
 }
 
 .form__file {
+  container: form-file / inline-size;
   position: relative;
-  overflow: hidden;
   .form__file--button {
     position: absolute;
     float: left;
@@ -256,8 +264,10 @@
       position: absolute;
       color: var(--similar-text);
       white-space: nowrap;
+      overflow: hidden;
       text-overflow: ellipsis;
       margin-left: 2.5em;
+      max-width: calc(100cqw - 100% - 2.5em - 4.5em);
     }
   }
   .form__input {

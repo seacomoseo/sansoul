@@ -1,4 +1,4 @@
-{{- $id     := partial "functions/header-to-id" .Text -}}
+{{- $id     := partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
 
 {{- $class  := "content__heading" -}}
 {{- if (page.Params.list.underline | and (eq .Level 2)) -}}

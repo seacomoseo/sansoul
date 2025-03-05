@@ -1,12 +1,15 @@
-// SCROLL-SHOT FUNCTION
-export function scrollShot ({
-  rootMargin,
+export const scrollShot = ({
+  rootMargin = '0px',
   query,
-  doOnLoad = () => null,
-  doStart,
-  doEnd = null
-}) {
-  const callbackScroll = (entries, observer) =>
+  doOnLoad = () => {},
+  doStart = () => {},
+  doEnd = () => {}
+}) => {
+  const nodeList = document.querySelectorAll(query)
+
+  if (!nodeList?.length) return
+
+  const callbackScroll = (entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         doStart(entry.target)
@@ -17,10 +20,18 @@ export function scrollShot ({
         doEnd(entry.target)
       }
     })
+  }
+
   const observerScroll = new IntersectionObserver(callbackScroll, { rootMargin })
-  const nodeList = document.querySelectorAll(query)
-  nodeList && nodeList.forEach(nodo => {
-    observerScroll.observe(nodo)
-    doOnLoad(nodo)
+
+  nodeList.forEach(node => {
+    observerScroll.observe(node)
+    doOnLoad(node)
   })
+
+  // Return a cleanup function
+  return () => {
+    nodeList.forEach(node => observerScroll.unobserve(node))
+    observerScroll.disconnect()
+  }
 }

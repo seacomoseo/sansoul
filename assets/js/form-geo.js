@@ -20,10 +20,11 @@ function mapStart (geoDiv) {
   const initialView = JSON.parse(geoDiv.dataset.view).coordinates
   const map = L.map(geoDiv, {
     setView: true,
-    trackResize: true
+    trackResize: true,
+    scrollWheelZoom: false
   }).setView(initialView, initialZoom)
 
-  tile(map)
+  tile(map, geoDiv.dataset.tile)
 
   if (geoDiv.dataset.area === 'true') {
     // Polygon and circle

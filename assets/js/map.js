@@ -8,7 +8,7 @@ function mapStart (mapDiv) {
     scrollWheelZoom: false
   })
 
-  tile(map)
+  tile(map, mapDiv.dataset.tile)
 
   const bounds = L.latLngBounds() // Crea límites manualmente
 

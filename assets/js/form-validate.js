@@ -6,32 +6,31 @@ import {
   formErrorTel,
   formErrorFileSize,
   formErrorFileSizeTotal,
-  formErrorFileMax,
+  formErrorFileLength,
   formErrorAcept
 } from '@params'
 
 export function formValid (form) {
+  // Vars
   let valid = true
   const message = document.createElement('ul')
 
-  form.querySelectorAll(
-    '[type="text"],' +
-    '[type="email"],' +
-    '[type="number"],' +
-    '[type="date"],' +
-    '[type="time"],' +
-    'textarea'
-  ).forEach(input => {
-    if (input.value.includes("'")) {
-      input.style.setProperty('--border', 'var(--submit-error)')
-      message.innerHTML += `<li>${formErrorSingleQuotes}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
-      valid = false
+  // Functions
+  const addMessage = (error, name) => {
+    const nameError = name ? `: <strong>${name.replace(' *', '')}</strong>` : ''
+    const itemError = `<li>${error}${nameError}</li>`
+    message.innerHTML += itemError
+    valid = false
+  }
+  const setItemStyle = (element, error) => {
+    const item = element.closest('.form__item')
+    if (error) {
+      item.classList.add('form__item--error')
     } else {
-      input.removeAttribute('style')
+      item.classList.remove('form__item--error')
     }
-  })
-
-  function isInput (input) {
+  }
+  const isInput = (input) => {
     if (input.tagName === 'FIELDSET') {
       return input.querySelector('input:checked')
     } else if (input.type === 'checkbox') {
@@ -43,114 +42,131 @@ export function formValid (form) {
     }
   }
 
-  form.querySelectorAll('[data-required], [data-requiredif]').forEach(input => {
-    let required
-    if (!(input.dataset.required === undefined)) {
-      required = true
-    } else if (input.dataset.requiredif) {
-      input.dataset.requiredif.split(/\|\||&&/).forEach(requif => {
-        const inputIf = form.querySelector(`[name="${requif}"]`)
-        if (inputIf && isInput(inputIf)) required = true
-      })
-    }
-    const elementToStyle = input.classList.contains('form__geo') ? input.parentElement.children[0] : input
-    if (required) {
-      if (!isInput(input)) {
-        let formErrorMessage, formErrorName
-        if (input.tagName === 'FIELDSET') {
-          elementToStyle.style.setProperty('--border', 'var(--submit-error)')
-          formErrorMessage = formErrorRequiredCheck
-          formErrorName = input.children[0].textContent.replace(' *', '')
-        } else if (input.classList.contains('form__geo')) {
-          elementToStyle.style.color = 'var(--submit-error)'
-          formErrorMessage = formErrorRequiredFields
-          formErrorName = elementToStyle.textContent.replace(' *', '')
-        } else {
-          elementToStyle.style.setProperty('--border', 'var(--submit-error)')
-          formErrorMessage = formErrorRequiredFields
-          formErrorName = (input.placeholder || input.dataset.placeholder || input.children[0].textContent).replace(' *', '')
-        }
-        message.innerHTML += `<li>${formErrorMessage}: <strong>${formErrorName}</strong></li>`
-        valid = false
-      } else {
-        elementToStyle.removeAttribute('style')
-      }
+  // Single Quotes
+  form.querySelectorAll(
+    '[type="text"],' +
+    '[type="email"],' +
+    '[type="number"],' +
+    '[type="date"],' +
+    '[type="time"],' +
+    'textarea'
+  ).forEach(input => {
+    if (input.value.includes("'")) {
+      setItemStyle(input, true)
+      addMessage(formErrorSingleQuotes, input.placeholder)
     } else {
-      elementToStyle.removeAttribute('style')
+      setItemStyle(input, false)
     }
   })
 
+  // Required Check and Fields
+  form.querySelectorAll('[data-required], [data-requiredif]').forEach(input => {
+    let required
+    if (input.dataset.required !== undefined) {
+      required = true // Data-required fields are always mandatory
+    } else if (input.dataset.requiredif) {
+      // Split by || to handle OR conditions
+      const orGroups = input.dataset.requiredif.split(/\s*\|\|\s*/)
+      required = orGroups.some(orGroup => {
+        // Divide each OR group by && to handle AND conditions
+        const andConditions = orGroup.split(/\s*&&\s*/)
+        // All AND conditions must be true
+        return andConditions.every(cond => {
+          const inputIf = form.querySelector(`[name="${cond}"]`)
+          return inputIf && isInput(inputIf)
+        })
+      })
+    }
+    // If this is required or references is filled; and this is empty
+    if (required && !isInput(input)) {
+      let errorMessage, errorName
+      if (input.tagName === 'FIELDSET') {
+        errorMessage = formErrorRequiredCheck
+        errorName = input.children[0].textContent
+      } else if (input.classList.contains('form__geo')) {
+        errorMessage = formErrorRequiredFields
+        errorName = input.name
+      } else {
+        errorMessage = formErrorRequiredFields
+        errorName = (input.placeholder || input.dataset.placeholder || input.children[0].textContent)
+      }
+      setItemStyle(input, true)
+      addMessage(errorMessage, errorName)
+    } else {
+      setItemStyle(input, false)
+    }
+  })
+
+  // Email
   form.querySelectorAll('[type="email"]').forEach(input => {
     const emailMatch = input.value.match(/@.*\./)
     if (input.value && !emailMatch) {
-      input.style.setProperty('--border', 'var(--submit-error)')
-      message.innerHTML += `<li>${formErrorEmail}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
-      valid = false
+      setItemStyle(input, true)
+      addMessage(formErrorEmail, input.placeholder)
     } else if (input.value && emailMatch) {
-      input.removeAttribute('style')
+      setItemStyle(input, false)
     }
   })
 
+  // Telephone
   form.querySelectorAll('[type="tel"]').forEach(input => {
     const telMatch = input.value.match(/^\+?[0-9\s-+]{9,15}$/)
     if (input.value && !telMatch) {
-      input.style.setProperty('--border', 'var(--submit-error)')
-      message.innerHTML += `<li>${formErrorTel}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
-      valid = false
+      setItemStyle(input, true)
+      addMessage(formErrorTel, input.placeholder)
     } else if (input.value && telMatch) {
-      input.removeAttribute('style')
+      setItemStyle(input, false)
     }
   })
 
+  // Min
   // form.querySelectorAll('[type="number"][min]').forEach(input => {
   //   const minMatch = input.value >= input.min
   //   if (input.value && !minMatch) {
-  //     input.style.setProperty('--border', 'var(--submit-error)')
-  //     message.innerHTML += `<li>${formErrorMin.replace('{{.}}', input.min)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
-  //     valid = false
+  //     setItemStyle(input, true)
+  //     addMessage(formErrorMin.replace('{{.}}', input.min), input.placeholder)
   //   } else if (input.value && minMatch) {
-  //     input.removeAttribute('style')
+  //     setItemStyle(input, false)
   //   }
   // })
 
+  // Max
   // form.querySelectorAll('[type="number"][max]').forEach(input => {
   //   const maxMatch = input.value <= input.max
   //   if (input.value && !maxMatch) {
-  //     input.style.setProperty('--border', 'var(--submit-error)')
-  //     message.innerHTML += `<li>${formErrorMax.replace('{{.}}', input.max)}: <strong>${input.placeholder.replace(' *', '')}</strong></li>`
-  //     valid = false
+  //     setItemStyle(input, true)
+  //     addMessage(formErrorMax.replace('{{.}}', input.max), input.placeholder)
   //   } else if (input.value && maxMatch) {
-  //     input.removeAttribute('style')
+  //     setItemStyle(input, false)
   //   }
   // })
 
-  // Size Total
+  // Size Total for formErrorFileSizeTotal
   let counterTotalSize = 0
   form.querySelectorAll('.form__file [type="file"]').forEach(input => {
-    // Size
+    // FileSize
     let tooBig
     input.closest('.form__item').querySelectorAll('.form__preview :is(input, textarea)').forEach(inputPreview => {
       const size = inputPreview.dataset.size
       counterTotalSize += parseInt(size)
       if (size > 3 * 1024 * 1024) {
+        // setItemStyle(input, true)
         inputPreview.parentElement.style.setProperty('--text', 'var(--submit-error)')
         tooBig = true
       }
     })
     if (tooBig) {
-      message.innerHTML += `<li>${formErrorFileSize}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
-      valid = false
+      addMessage(formErrorFileSize, input.dataset.placeholder)
     }
 
-    // Length
+    // File Length
     const fileMax = input.dataset.max
     const inputPreview = input.closest('.form__item').querySelector('.form__preview')
     const children = [...inputPreview.children]
       .filter(child => !child.classList.contains('form__preview-item--error-load') && !child.style[0])
     if (children.length > fileMax) {
-      const error = formErrorFileMax.replace('{s}', fileMax)
-      message.innerHTML += `<li>${error}: <strong>${input.dataset.placeholder.replace(' *', '')}</strong></li>`
-      valid = false
+      const errorFileLength = formErrorFileLength.replace('{s}', fileMax)
+      addMessage(errorFileLength, input.dataset.placeholder)
       children.forEach((child, i) => {
         if (i + 1 > fileMax) {
           child.classList.add('form__preview-item--error')
@@ -164,23 +180,22 @@ export function formValid (form) {
       })
     }
   })
-  // Size Total
+
+  // FileSizeTotal
   if (counterTotalSize > 4 * 1024 * 1024) {
-    message.innerHTML += `<li>${formErrorFileSizeTotal}</li>`
+    addMessage(formErrorFileSizeTotal)
     form.classList.add('form--error-files-total-size')
-    valid = false
   } else {
     form.classList.remove('form--error-files-total-size')
   }
 
-  const accept = form.querySelector('.form__option--consent')
-  if (!accept) valid = false
-  if (!accept.querySelector('[type="checkbox"]').checked) {
-    accept.style.color = 'var(--submit-error)'
-    message.innerHTML += `<li>${formErrorAcept}</li>`
-    valid = false
+  // Acept
+  const accept = form.querySelector('.form__option--consent [type="checkbox"]')
+  if (!accept || !accept.checked) {
+    addMessage(formErrorAcept)
+    form.classList.add('form--error-consent')
   } else {
-    accept.removeAttribute('style')
+    form.classList.remove('form--error-consent')
   }
 
   return { valid, message }

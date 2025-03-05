@@ -229,23 +229,39 @@
 
 
   (dict "&BOX_ZOOM"        (dict "name" `zoom`   "widget" `number` "required" false "label" $t.box_zoom        "hint" `1 - 20` "value_type" `int` "step" 1 "min" 1 "max" 20))
+  (dict "&BOX_MAP_TILE"    (dict "name" `tile`   "widget" `select` "required" false "label" $t.box_map_tile    "options" `~OPTIONS_TILE`))
+  (dict "&BOX_MAP_COLOR"   (dict "name" `color`  "widget" `select` "required" false "label" $t.box_map_color   "options" `~OPTIONS_COLOR_BASE_W`))
+  (dict "&BOX_MAP_LABEL"   (dict "name" `label`  "widget" `number` "required" false "label" $t.box_map_label))
   (dict "&BOX_MAP_POINT"   (dict "name" `geo`    "widget" `map`    "required" false "label" $t.box_map_point   "decimals" 7 "type" `Point`))
   (dict "&BOX_MAP_POLYGON" (dict "name" `geo`    "widget" `map`    "required" false "label" $t.box_map_polygon "decimals" 7 "type" `Polygon`))
-  (dict "&BOX_MAP_COLOR"   (dict "name" `color`  "widget" `select` "required" false "label" $t.box_map_color   "options" `~OPTIONS_COLOR_BASE_W`))
   (dict "&BOX_MAP_RADIUS"  (dict "name" `radius` "widget" `number` "required" false "label" $t.box_map_radius  "hint" $t.box_map_radius_hint  "value_type" `int` "step" 1 "min" 0 "max" 20))
   (dict "&BOX_MAP" (dict
-    "name"           `map`
+    "name"      `map`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.box_map
+    "collapsed" true
+    "fields"    (slice
+      `~BOX_ZOOM`
+      `~BOX_MAP_TILE`
+      `~BOX_MAP_COLOR`
+      `~BOX_ICON_ID`
+    )
+  ))
+  (dict "&BOX_GEOS" (dict
+    "name"           `geos`
     "widget"         `list`
     "required"       false
-    "label"          $t.box_map
-    "hint"           $t.box_map_hint
+    "label"          $t.box_map_geos
+    "label_singular" $t.box_map_geos_singular
+    "hint"           $t.box_map_geos_hint
     "summary"        "{{fields.label}}{{fields.days}} {{fields.hours}}"
     "collapsed"      true
     "allow_add"      true
     "types"          (slice
-      (dict "name" `point`   "widget" `object` "required" false "label" $t.box_map_point   "fields" (slice `~BOX_MAP_POINT`   `~BOX_MAP_COLOR` `~BOX_ICON_ID`))
-      (dict "name" `circle`  "widget" `object` "required" false "label" $t.box_map_circle  "fields" (slice `~BOX_MAP_POINT`   `~BOX_MAP_COLOR` `~BOX_MAP_RADIUS`))
-      (dict "name" `polygon` "widget" `object` "required" false "label" $t.box_map_polygon "fields" (slice `~BOX_MAP_POLYGON` `~BOX_MAP_COLOR`))
+      (dict "name" `point`   "widget" `object` "required" false "label" $t.box_map_point   "fields" (slice `~BOX_MAP_LABEL` `~BOX_MAP_COLOR` `~BOX_MAP_POINT`   `~BOX_ICON_ID`))
+      (dict "name" `circle`  "widget" `object` "required" false "label" $t.box_map_circle  "fields" (slice `~BOX_MAP_LABEL` `~BOX_MAP_COLOR` `~BOX_MAP_POINT`   `~BOX_MAP_RADIUS`))
+      (dict "name" `polygon` "widget" `object` "required" false "label" $t.box_map_polygon "fields" (slice `~BOX_MAP_LABEL` `~BOX_MAP_COLOR` `~BOX_MAP_POLYGON`))
     )
   ))
 

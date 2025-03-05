@@ -16,10 +16,10 @@
   - `{sections|modals}/*.yml`
     - `contacto.yml`
       - `address.geo`
-      - `map`
+      - `geos`
       - `form.email`
     - `mapa.yml`
-      - `map`
+      - `geos`
     - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
     - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
     - `hs`

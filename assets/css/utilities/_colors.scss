@@ -18,7 +18,7 @@ body,
 .bg-grey,
 .bg-dark,
 .bg-black {
-  // Bases
+  // Bases  
   --cta: #{ $cta };
   --cta-text: #{ $cta-contrast-neutral };
   --main: #{ $main };
@@ -44,7 +44,40 @@ body,
   --text: #{ $text };
   --title: var(--dark);
   --subtitle: var(--alt);
+  // Border
   --border: color-mix(in srgb, var(--similar), var(--invert));
+  // --map-filter: color-mix(in srgb, var(--map-filter-dark), transparent var(--bg-darkening));
+  --map-filter: var(--map-filter-light);
+  // // Toggle 0-1 to light-dark
+  // --bg-darkening: calc(var(--bg-dark, 0) * 100%);
+  // // Bases
+  // --cta:          color-mix(in srgb, #{ $cta },                   transparent             var(--bg-darkening));
+  // --cta-text:     color-mix(in srgb, #{ $cta-contrast-neutral },  transparent             var(--bg-darkening));
+  // --main:         color-mix(in srgb, #{ $main },                  transparent             var(--bg-darkening));
+  // --main-text:    color-mix(in srgb, #{ $main-contrast-neutral }, transparent             var(--bg-darkening));
+  // --alt:          color-mix(in srgb, #{ $alt },                   transparent             var(--bg-darkening));
+  // --alt-text:     color-mix(in srgb, #{ $alt-contrast-neutral },  transparent             var(--bg-darkening));
+  // --grey:         color-mix(in srgb, #{ $grey },                  transparent             var(--bg-darkening));
+  // --grey-text:    color-mix(in srgb, #{ $grey-contrast-neutral }, transparent             var(--bg-darkening));
+  // --light:        color-mix(in srgb, #{ $light },                 #{ $dark }              var(--bg-darkening));
+  // --light-text:   color-mix(in srgb, #{ $text },                  #{ $light }             var(--bg-darkening));
+  // --dark:         color-mix(in srgb, #{ $dark },                  #{ $light }             var(--bg-darkening));
+  // --dark-text:    color-mix(in srgb, #{ $light },                 #{ $dark }              var(--bg-darkening));
+  // --invert:       color-mix(in srgb, var(--dark),                 var(--light)            var(--bg-darkening));
+  // --invert-text:  color-mix(in srgb, var(--dark-text),            var(--light-text)       var(--bg-darkening));
+  // --similar:      color-mix(in srgb, var(--light),                var(--dark)             var(--bg-darkening));
+  // --similar-text: color-mix(in srgb, var(--light-text),           var(--dark-text)        var(--bg-darkening));
+  // --hover:        var(--invert);
+  // --hover-text:   var(--invert-text);
+  // --active:       var(--similar);
+  // --active-text:  var(--similar-text);
+  // // Texts
+  // --text:         color-mix(in srgb, #{ $text },                  #{ $white }             var(--bg-darkening));
+  // --title:        color-mix(in srgb, var(--dark),                 #{ $white }             var(--bg-darkening));
+  // --subtitle:     color-mix(in srgb, var(--alt),                  #{ $white }             var(--bg-darkening));
+  // color: var(--text);
+  // // Border
+  // --border:       color-mix(in srgb, var(--similar),             var(--invert));
 }
 
 // Texts
@@ -64,42 +97,44 @@ body,
   --invert-text: var(--light-text);
   --similar: var(--dark);
   --similar-text: var(--dark-text);
+  --map-filter: var(--map-filter-dark);
+  // --bg-dark: 1;
 }
 .bg-main {
-  --text: #{ $main-contrast-neutral };
-  --title: #{ $main-contrast-neutral };
+  --text:     #{ $main-contrast-neutral };
+  --title:    #{ $main-contrast-neutral };
   --subtitle: #{ $main-contrast-neutral };
 }
 .bg-alt {
-  --text: #{ $alt-contrast-neutral };
-  --title: #{ $alt-contrast-neutral };
+  --text:     #{ $alt-contrast-neutral };
+  --title:    #{ $alt-contrast-neutral };
   --subtitle: #{ $alt-contrast-neutral };
 }
 .bg-cta {
-  --text: #{ $cta-contrast-neutral };
-  --title: #{ $cta-contrast-neutral };
+  --text:     #{ $cta-contrast-neutral };
+  --title:    #{ $cta-contrast-neutral };
   --subtitle: #{ $cta-contrast-neutral };
 }
 
-// Link and Main
+// CTA and Main
 @if $cta == $main {
   .bg-main,
   .bg-cta {
-    --cta: var(--alt);
-    --cta-text: var(--alt-text);
-    --main: var(--alt);
+    --cta:       var(--alt);
+    --cta-text:  var(--alt-text);
+    --main:      var(--alt);
     --main-text: var(--alt-text);
   }
 } @else {
   .bg-cta {
     @if $cta != $main {
-      --cta: var(--main);
+      --cta:      var(--main);
       --cta-text: var(--main-text);
     }
   }
   .bg-main {
     @if $main != $cta {
-      --main: var(--cta);
+      --main:      var(--cta);
       --main-text: var(--cta-text);
     }
   }
@@ -107,13 +142,13 @@ body,
 
 // Alt
 .bg-alt {
-  // like link
-  --alt: var(--cta);
+  // like cta
+  --alt:      var(--cta);
   --alt-text: var(--cta-text);
 }
 .bg-grey {
   // like dark
-  --grey: var(--dark);
+  --grey:      var(--dark);
   --grey-text: var(--dark-text);
 }
 
@@ -133,49 +168,51 @@ body,
 // Invert
 @mixin invert-light($color) {
   @if text-contrast($color) == $white {
-    --invert: var(--light);
-    --invert-text: var(--light-text);
-    --similar: var(--dark);
+    --invert:       var(--light);
+    --invert-text:  var(--light-text);
+    --similar:      var(--dark);
     --similar-text: var(--dark-text);
+    --map-filter:   var(--map-filter-dark);
+    // --bg-dark: 1;
   }
 }
 .bg-main {  @include invert-light($main); }
-.bg-alt {   @include invert-light($alt); }
-.bg-cta {  @include invert-light($cta); }
+.bg-alt  {  @include invert-light($alt);  }
+.bg-cta  {  @include invert-light($cta);  }
 .bg-grey {  @include invert-light($grey); }
 
 // Contrast Background
-@mixin link-contrast($bg) {
+@mixin cta-contrast($bg) {
   @if $cta-contrast-bg and $cta-contrast-neutral == text-contrast($bg) {
-    --cta: #{ $cta-contrast-colored };
+    --cta:      #{ $cta-contrast-colored };
     --cta-text: #{ $bg };
   }
 }
 @mixin main-contrast($bg) {
   @if $main-contrast-bg and $main-contrast-neutral == text-contrast($bg) {
-    --main: #{ $main-contrast-colored };
+    --main:      #{ $main-contrast-colored };
     --main-text: #{ $bg };
   }
 }
 @mixin alt-contrast($bg) {
   @if $alt-contrast-bg and $alt-contrast-neutral == text-contrast($bg) {
-    --alt: #{ $alt-contrast-colored };
+    --alt:      #{ $alt-contrast-colored };
     --alt-text: #{ $bg };
   }
 }
 
-// Background link, main and alt in light and dark
+// Background cta, main and alt in light and dark
 // @if not $cta-contrast-bg {
-//   .bg-cta-light { @include link-contrast($white); }
-//   .bg-cta-dark {  @include link-contrast($dark); }
+//   .bg-cta-light { @include cta-contrast($white); }
+//   .bg-cta-dark  { @include cta-contrast($dark);  }
 // }
 // @if not $main-contrast-bg {
 //   .bg-main-light { @include main-contrast($white); }
-//   .bg-main-dark {  @include main-contrast($dark); }
+//   .bg-main-dark  { @include main-contrast($dark);  }
 // }
 // @if not $alt-contrast-bg {
 //   .bg-alt-light { @include alt-contrast($white); }
-//   .bg-alt-dark {  @include alt-contrast($dark); }
+//   .bg-alt-dark  { @include alt-contrast($dark);  }
 // }
 
 // Background lights and darks if contrast active
@@ -185,7 +222,7 @@ body,
   .bg-cta-light,
   .bg-main-light,
   .bg-alt-light {
-    @include link-contrast($white);
+    @include cta-contrast($white);
     @include main-contrast($white);
     @include alt-contrast($white);
   }
@@ -195,21 +232,21 @@ body,
   .bg-cta-dark,
   .bg-main-dark,
   .bg-alt-dark {
-    @include link-contrast($dark);
+    @include cta-contrast($dark);
     @include main-contrast($dark);
     @include alt-contrast($dark);
   }
   .bg-cta {
-    @include link-contrast(text-contrast($main-contrast-neutral));
-    @include link-contrast(text-contrast($alt-contrast-neutral));
+    @include cta-contrast(text-contrast($main-contrast-neutral));
+    @include cta-contrast(text-contrast($alt-contrast-neutral));
   }
   .bg-main {
-    @include link-contrast(text-contrast($alt-contrast-neutral));
-    @include link-contrast(text-contrast($cta-contrast-neutral));
+    @include main-contrast(text-contrast($alt-contrast-neutral));
+    @include main-contrast(text-contrast($cta-contrast-neutral));
   }
   .bg-alt {
-    @include link-contrast(text-contrast($main-contrast-neutral));
-    @include link-contrast(text-contrast($cta-contrast-neutral));
+    @include alt-contrast(text-contrast($main-contrast-neutral));
+    @include alt-contrast(text-contrast($cta-contrast-neutral));
   }
 }
 
@@ -218,38 +255,38 @@ body,
 
 .button,
 .cta {
-  --base: var(--cta);
+  --base:      var(--cta);
   --base-text: var(--cta-text);
 }
 :root,
 .main {
-  --base: var(--main);
+  --base:      var(--main);
   --base-text: var(--main-text);
 }
 .alt {
-  --base: var(--alt);
+  --base:      var(--alt);
   --base-text: var(--alt-text);
 }
 .light {
-  --base: var(--light);
+  --base:      var(--light);
   --base-text: var(--light-text);
 }
 .dark {
-  --base: var(--dark);
+  --base:      var(--dark);
   --base-text: var(--dark-text);
 }
 .invert {
-  --base: var(--invert);
+  --base:      var(--invert);
   --base-text: var(--invert-text);
   // hover like grey
   --hover: var(--grey);
   --hover-text: var(--grey-text);
 }
 .similar {
-  --base: var(--similar);
+  --base:      var(--similar);
   --base-text: var(--similar-text);
   // active like grey
-  --active: var(--grey);
+  --active:      var(--grey);
   --active-text: var(--grey-text);
 }
 .whatsapp {

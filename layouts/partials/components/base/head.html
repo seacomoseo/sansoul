@@ -84,11 +84,11 @@
 {{- end -}}
 
 {{- /*  GOOGLE ANALYTICS  */ -}}
-{{- if true -}}
+{{- if hugo.IsProduction -}}
   {{- with site.Params.google_analytics -}}
     <script>
       // GA4 base
-      dataLayer = dataLayer || [];
+      window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       // GA4 function
       function googleAnalytics() {
