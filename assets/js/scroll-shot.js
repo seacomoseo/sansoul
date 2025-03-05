@@ -3,7 +3,8 @@ export const scrollShot = ({
   query,
   doOnLoad = () => {},
   doStart = () => {},
-  doEnd = () => {}
+  doEnd = () => {},
+  end = false
 }) => {
   const nodeList = document.querySelectorAll(query)
 
@@ -13,12 +14,10 @@ export const scrollShot = ({
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         doStart(entry.target)
-        console.log('HOLI!')
-        if (!doEnd) {
+        if (end) {
           observer.unobserve(entry.target)
         }
-      } else if (doEnd) {
-        console.log('BYE!')
+      } else if (!end) {
         doEnd(entry.target)
       }
     })

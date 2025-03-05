@@ -99,6 +99,6 @@ export function initFormGeo () {
         .then(() => { mapStart(geoDiv) })
         .catch(console.error)
     },
-    doEnd: () => null // For unobserve
+    end: null // For unobserve
   })
 }
