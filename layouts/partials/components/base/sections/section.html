@@ -60,8 +60,9 @@
     .
     (dict
       "id"            nil
+      "main"          true
       "deep"          0
-      "level"         0
+      "level"         (cond $header 1 (cond $modal 3 2))
       "header"        $header
       "footer"        $footer
       "modal"         $modal

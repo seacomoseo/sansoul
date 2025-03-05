@@ -132,7 +132,7 @@
       /* First child */
       :first-child,
       .bg-color + *,
-      .box__title.hide + *,
+      .box__title.hide:first-child + *,
       /* Last child */
       :last-child,
       :has(+ .box__button.hide:last-child)
@@ -190,15 +190,16 @@
 .box__block:where(:not(
   :first-child,
   .bg-color + *,
-  .box__title.hide + *
+  .box__title.hide:first-child + *
 )) {
   margin-top: Max(calc(var(--box-gap) * 2), 2em);
 }
 .box__title:where(:not(
   :first-child,
   .bg-color + *,
-  .box__title.hide + *
-  )) + .box__block {
+  .box__title.hide:first-child + *,
+  .hide
+)) + .box__block {
   margin-top: 0;
 }
 
@@ -249,7 +250,7 @@
   &:where(
     :first-child,
     .bg-color + *,
-    .box__title.hide + *
+    .box__title.hide:first-child + *
   ) {
     margin-top: .5em;
   }
@@ -353,7 +354,7 @@
   &:where(
     :first-child,
     .bg-color + *,
-    .box__title.hide + *
+    .box__title.hide:first-child + *
   ) {
     margin-bottom: auto;
   }

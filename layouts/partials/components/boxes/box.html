@@ -37,11 +37,9 @@
 {{- with $box -}}
   {{- $align := .align -}}
 
-  {{- $main    := not .deep -}}
-  {{- $level   := .level | default (cond .header 1 (cond .modal 3 2)) -}}
-  {{- $node    := .node  | default "div" -}}
+  {{- $node := .node  | default "div" -}}
 
-  {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
+  {{- $icon_type     := .icon_type | default (cond .main "bottom" "top") -}}
   {{- $show          := site.Data.config.others.show -}}
   {{- $group_radius  := .group_radius | and (not .slider) -}}
 
@@ -107,7 +105,6 @@
 
     {{- /*  ATTRIBUTES  */ -}}
     {{- $box_attr  := partial "components/boxes/attr" (merge . (dict
-      "main"         $main
       "bg_color"     .color
       "bg_image_src" $bg_image_src
       "bg"           $bg
@@ -141,8 +138,6 @@
 
     {{- /*  TITLE  */ -}}
     {{- partial "components/boxes/title" (merge . (dict
-      "main"         $main
-      "level"        $level
       "icon_type"    $icon_type
       "like_article" $like_article
       "link"         $link
@@ -172,7 +167,7 @@
     {{- /*  CONTENT  */ -}}
     {{- with .content -}}
       {{- $content_small := or (eq $.container "xs") (eq $.container "sm") -}}
-      {{- $content_align := cond (and (not $align) $main (not $.header) $content_small) " align-left" "" -}}
+      {{- $content_align := cond (and (not $align) $.main (not $.header) $content_small) " align-left" "" -}}
       {{- $cont_class    := print "box__content content" $content_align -}}
       {{- if $like_article -}}
         {{- $cont_class   = print $cont_class " box__content--small" -}}
@@ -192,8 +187,7 @@
         (.step | default dict)
         (dict
           "steps" .steps
-          "level" $level
-          "show" .show
+          "show"  .show
         )
       ) -}}
     {{- end -}}
@@ -242,8 +236,6 @@
           )
           .
           (dict
-            "main"     $main
-            "level"    $level
             "span_xl"  $span_xl
             "span_xs"  $span_xs
             "box_wrap" nil
@@ -274,17 +266,13 @@
         (dict
           "span_xl"   $span_xl
           "span_xs"   $span_xs
-          "level"     $level
         )
       ) -}}
     {{- end -}}
 
     {{- /*  ACCORDION  */ -}}
     {{- if .accordions -}}
-      {{- partial "components/blocks/accordion" (merge
-        .
-        (dict "level" $level)
-      ) -}}
+      {{- partial "components/blocks/accordion" . -}}
     {{- end -}}
 
     {{- /*  REVIEWS  */ -}}
@@ -331,8 +319,6 @@
       {{- partial "components/boxes/_" (merge
         .
         (dict
-          "main"     $main
-          "level"    $level
           "span_xl"  $span_xl
           "span_xs"  $span_xs
           "box_wrap" nil
@@ -346,10 +332,7 @@
 
     {{- /*  TAGS  */ -}}
     {{- if .tags -}}
-      {{- partial "components/tags/_" (merge
-        .
-        (dict "level" $level)
-      ) -}}
+      {{- partial "components/tags/_" . -}}
     {{- end -}}
 
     {{- /*  BUTTON  */ -}}
@@ -369,7 +352,7 @@
     {{- end -}}
 
     {{- /*  MODAL BUTTONS CLOSE, PREV AND NEXT  */ -}}
-    {{- if $main -}}
+    {{- if .main -}}
       {{- if and .modal (not .ph) }}
         <div class="buttons">
           {{- with .prev }}

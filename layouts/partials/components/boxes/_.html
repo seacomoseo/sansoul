@@ -8,6 +8,9 @@
 {{- $box     := . -}}
 {{- $deep    := .deep -}}
 {{- $level   := .level -}}
+{{- if or .title .hanchor -}}
+  {{- $level  = add (.hn | default .box.hn | default $level) 1 -}}
+{{- end -}}
 
 {{- $boxes_wrap  := or
   (and (ne .box.cols nil)     (ne .box.cols 1))
@@ -28,11 +31,8 @@
   -}}
   {{- if $boxes_wrap -}}
 
-    {{- /*  add deep and level  */ -}}
-    {{- $deep = add $deep  1 -}}
-    {{- if or $.title $.hanchor -}}
-      {{- $level = add ($.hn | default $level) 1 -}}
-    {{- end -}}
+    {{- /*  add deep  */ -}}
+    {{- $deep = add $deep 1 -}}
 
     {{- /* CLASS  */ -}}
     {{- /* {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */ -}}
@@ -49,11 +49,11 @@
 
     {{- /* STYLE  */ -}}
     {{- $style := slice
-      (cond (eq $cols.max 1)  "" (print "--cols-max:" $cols.max))
-      (cond (eq $cols.min 1)  "" (print "--cols-min:" $cols.min))
-      (cond (eq .gap nil)     "" (print "--cols-gap-max:" .gap))
-      (cond (eq .gap_min nil) "" (print "--cols-gap-min:" .gap_min))
-      (cond (eq .gap_ny nil)  "" (print "--cols-gap-ny:"  .gap_ny))
+      (cond (eq $cols.max  1) "" (print "--cols-max:"     $cols.max))
+      (cond (eq $cols.min  1) "" (print "--cols-min:"     $cols.min))
+      (cond (eq .gap     nil) "" (print "--cols-gap-max:" .gap     ))
+      (cond (eq .gap_min nil) "" (print "--cols-gap-min:" .gap_min ))
+      (cond (eq .gap_ny  nil) "" (print "--cols-gap-ny:"  .gap_ny  ))
     -}}
 
     {{- /* JOIN ATTRIBUTES  */ -}}
@@ -103,6 +103,7 @@
             $.box
             .
             (dict
+              "main"      (not $deep)
               "deep"      $deep
               "level"     $level
               "key"       $key
