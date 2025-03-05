@@ -43,7 +43,7 @@ export const initMenuScrollSpy = () => {
         // history.replaceState('', '', hash)
       }
     },
-    doEnd: () => {} // Use empty object instead of null
+    doEnd: () => {} // For unobserve
   })
 
   // Return cleanup function

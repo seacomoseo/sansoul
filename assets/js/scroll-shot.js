@@ -13,10 +13,12 @@ export const scrollShot = ({
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         doStart(entry.target)
+        console.log('HOLI!')
         if (!doEnd) {
           observer.unobserve(entry.target)
         }
       } else if (doEnd) {
+        console.log('BYE!')
         doEnd(entry.target)
       }
     })

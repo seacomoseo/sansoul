@@ -98,6 +98,7 @@ export function initFormGeo () {
       loadLeaflet()
         .then(() => { mapStart(geoDiv) })
         .catch(console.error)
-    }
+    },
+    doEnd: () => null // For unobserve
   })
 }

@@ -56,6 +56,7 @@ export function initMap () {
       loadLeaflet()
         .then(() => { mapStart(mapDiv) })
         .catch(console.error)
-    }
+    },
+    doEnd: () => null // For unobserve
   })
 }
