@@ -276,9 +276,9 @@ iframe.image__inner {
 
 // SVG EXCEPTIONS
 
-.box:not(.bg)
-> .image:not(.image--border):not(.content *)
-> .image__inner:where(.icon, img[src*=".svg"]) { // svg image without radius when not background
+.box:not(.bg) // when not background
+> .image:not(.image--border):not(.content *) // without radius and not content
+> .image__inner:where(svg, .icon, img[src*=".svg"]) { // svg image
   overflow: unset;
   @include hide-radius;
 }

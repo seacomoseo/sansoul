@@ -12,7 +12,7 @@
           {{- $class    := "" -}}
           {{- $num      := "" -}}
           {{- $link     := .link -}}
-          {{- $button   := cond (not .button) "cta" .button -}}
+          {{- $button   := .button | default "cta" -}}
           {{- $font_alt := .font_alt -}}
           {{- $icon     := .icon -}}
           {{- $emoji    := "" -}}
@@ -27,7 +27,7 @@
           {{- end -}}
 
           {{- if eq .type "custom" -}}
-            {{- $class   = "callnow__custom" -}}
+            {{- $class   = "contact__custom" -}}
           {{- else if eq .type "phone" -}}
             {{- $class   = "contact__phone" -}}
             {{- $link    = print "tel:+" $num -}}
@@ -35,7 +35,7 @@
             {{- $emoji   = .icon | default "📞" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "whatsapp" -}}
-            {{- $class   = "callnow__whatsapp" -}}
+            {{- $class   = "contact__whatsapp" -}}
             {{- $link    = print "https://wa.me/" $num -}}
             {{- $button  = cond (not .button) "whatsapp" $button -}}
             {{- $icon    = .icon | default "whatsapp" -}}

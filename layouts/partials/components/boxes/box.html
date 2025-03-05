@@ -37,9 +37,9 @@
 {{- with $box -}}
   {{- $align := .align -}}
 
-  {{- $main   := not .level -}}
-  {{- $level  := .level | default (cond .header 1 (cond .modal 3 2)) -}}
-  {{- $node   := .node | default "div" -}}
+  {{- $main    := not .deep -}}
+  {{- $level   := .level | default (cond .header 1 (cond .modal 3 2)) -}}
+  {{- $node    := .node  | default "div" -}}
 
   {{- $icon_type     := .icon_type | default (cond $main "bottom" "top") -}}
   {{- $show          := site.Data.config.others.show -}}
@@ -49,7 +49,7 @@
   {{- $span_xs := mul .span_xs (.span_min | default 1.00) -}}
 
   {{- $link           := .link -}}
-  {{- $underline      := .underline | and (not (.icon | and (eq $icon_type "bottom"))) -}}
+  {{- $underline      := and .underline (not (and .icon (eq $icon_type "bottom"))) -}}
 
   {{- $external       := hasPrefix $link "http" -}}
   {{- $is_anchor_link := hasPrefix $link "#" -}}
@@ -61,7 +61,7 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- $like_article   := and $link (or .title .hanchor) (eq .button "hide") -}}
+  {{- $like_article   := and .title $link (eq .button "hide") -}}
 
   {{- /*  WRAP  */ -}}
   {{- $box_wrap := or
@@ -115,7 +115,7 @@
       "button_is"    $button_is
       "radius"       $radius
       "shadow"       $shadow
-      "show"         (and (not .slider) (not .first) $show)
+      "show"         (and (not .slider) (not .header) $show)
     )) -}}
 
     {{- /*  BOX  */}}
@@ -144,7 +144,6 @@
       "main"         $main
       "level"        $level
       "icon_type"    $icon_type
-      "underline"    $underline
       "like_article" $like_article
       "link"         $link
     )) -}}
@@ -354,16 +353,18 @@
     {{- end -}}
 
     {{- /*  BUTTON  */ -}}
-    {{- if and $link (not $like_article) -}}
+    {{- if and (or .label $link) (ne .button "hide") -}}
+      {{- /*  anchor2: last default priority, prev $anchor_page  */}}
       {{ partial "components/link" (dict
-        "class"  "box__button box-go"
-        "button" (.button | default "cta")
-        "swap"   .font_alt
-        "icon"   .licon
-        "label"  (.label  | default (i18n "more") | markdownify)
-        "anchor" (.anchor | markdownify)
-        "link"   $link
-        "lock"   .ofuscate
+        "class"   "box__button box-go"
+        "button"  (.button | default "cta")
+        "swap"    .font_alt
+        "icon"    .licon
+        "label"   (.label  | default (i18n "more") | markdownify)
+        "anchor"  (.anchor | markdownify)
+        "anchor2" (.hanchor | default .title | markdownify)
+        "link"    $link
+        "lock"    .ofuscate
       ) -}}
     {{- end -}}
 

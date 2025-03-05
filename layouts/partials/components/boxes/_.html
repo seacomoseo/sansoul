@@ -6,6 +6,7 @@
 ) -}}
 {{- $boxes   := $cols.items -}}
 {{- $box     := . -}}
+{{- $deep    := .deep -}}
 {{- $level   := .level -}}
 
 {{- $boxes_wrap  := or
@@ -26,7 +27,12 @@
     .align_x
   -}}
   {{- if $boxes_wrap -}}
-    {{- $level = add $.level 1 -}}
+
+    {{- /*  add deep and level  */ -}}
+    {{- $deep = add $deep  1 -}}
+    {{- if or $.title $.hanchor -}}
+      {{- $level = add ($.hn | default $level) 1 -}}
+    {{- end -}}
 
     {{- /* CLASS  */ -}}
     {{- /* {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */ -}}
@@ -69,8 +75,10 @@
 {{- end -}}
 
         {{- $parent  := dict -}}
-        {{- if and (not .list_pages) (not .main) -}}
+        {{- /*  if deep >= 1  */ -}}
+        {{- if and (gt $deep 1) (not .list_pages) -}}
           {{- with $box -}}
+            {{- /*  inherit these parameters  */ -}}
             {{- $parent = dict
               "uppercase"   .uppercase
               "underline"   .underline
@@ -95,6 +103,7 @@
             $.box
             .
             (dict
+              "deep"      $deep
               "level"     $level
               "key"       $key
               "bgcp"      $.bgcp
@@ -102,7 +111,7 @@
               "span_xl"   $cols.span_xl
               "span_xs"   $cols.span_xs
               "section"   $.section
-              "first"     $.first
+              "header"    $.header
               "footer"    $.footer
               "cols"      $cols.max
               "cols_min"  $cols.min

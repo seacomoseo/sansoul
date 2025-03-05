@@ -49,18 +49,30 @@
   {{- $is_anchor_link := hasPrefix $link "#" -}}
 
   {{- /*  get page title and page lock  */ -}}
-  {{- if and (not $is_external) (not $is_anchor_link) (not .lock) -}}
-    {{- $link_cleaned  := $link | replaceRE `#.*` "" -}}
-    {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
-    {{- $page_internal := index $pages 0 | default site.Home -}}
-    {{- with $page_internal -}}
-      {{- if .Params.noindex -}}
-        {{- $lock = true -}}
-      {{- else -}}
-        {{- $anchor_page = partial "functions/anchor-page" . -}}
+  {{- if and (not .anchor) (not .lock) (not $is_external) -}}
+    {{- $link_cleaned   := $link | replaceRE `#.*` "" -}}
+    {{- if $is_anchor_link -}}
+      {{- /*  get modal anchor  */ -}}
+      {{- range partial "functions/sections" page -}}
+        {{- range .modals -}}
+          {{- if eq .id $link_cleaned -}}
+            {{- $anchor_page = .hanchor | default .title -}}
+          {{- end -}}
+        {{- end -}}
       {{- end -}}
     {{- else -}}
-      {{- $lock = true -}}
+      {{- /*  get page anchor  */ -}}
+      {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
+      {{- $page_internal := index $pages 0 | default site.Home -}}
+      {{- with $page_internal -}}
+        {{- if .Params.noindex -}}
+          {{- $lock = true -}}
+        {{- else -}}
+          {{- $anchor_page = partial "functions/anchor-page" . -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $lock = true -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 
@@ -150,7 +162,7 @@
 
 
 {{- /*  LABEL  */ -}}
-{{- $label = .anchor | default .label | default $anchor_page -}}
+{{- $label = .anchor | default $anchor_page | default .anchor2 | default .label -}}
 {{- if $label -}}
   {{- $sub_tag   := "" -}}
   {{- $sub_class := "" -}}

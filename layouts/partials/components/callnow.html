@@ -40,7 +40,7 @@
         {{- $class   := "" -}}
         {{- $num     := "" -}}
         {{- $link    := .link -}}
-        {{- $button  := cond (eq .button "cta") "" .button -}}
+        {{- $button  := .button | default "cta" -}}
         {{- $icon    := .icon -}}
         {{- $emoji   := "" -}}
         {{- $label   := .label -}}
@@ -53,7 +53,7 @@
         {{- if eq .type "custom" -}}
           {{- $class   = "callnow__custom" -}}
         {{- else if eq .type "phone" -}}
-          {{- $class   = "contact__phone" -}}
+          {{- $class   = "callnow__phone" -}}
           {{- $link    = print "tel:+" $num -}}
           {{- $icon    = .icon | default "phone" -}}
           {{- $emoji   = .icon | default "📞" -}}

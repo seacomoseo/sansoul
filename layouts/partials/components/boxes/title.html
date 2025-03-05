@@ -4,16 +4,21 @@
 
   {{/*  TAG  */}}
   {{- $hn    := "" -}}
-  {{- if not .hn -}}
-    {{- if or (not .link) (eq .level 2) -}}
-      {{- $hn = print "h" .level -}}
-    {{- else -}}
-      {{- $hn = "p" -}}
-    {{- end -}}
-  {{- else if eq .hn "p" -}}
+  {{- if or .link (eq .hn "p") -}}
     {{- $hn = "p" -}}
   {{- else -}}
-    {{- $hn = print "h" .hn -}}
+    {{- with .hn | default .level -}}
+      {{- $hn = print "h" . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{/*  HS  */}}
+  {{- $hs    := "" -}}
+  {{- if ne .hs nil -}}
+    {{- $hs = print "h" .hs -}}
+  {{- else if eq $hn "p" -}}
+    {{- $s := cond (not .like_article) .level "6" -}}
+    {{- $hs = print "h" $s -}}
   {{- end -}}
 
   {{/*  LINK  */}}
@@ -28,11 +33,11 @@
   {{- /* TITLE CLASS  */ -}}
   {{- $class := slice
     "box__title"
-    (cond (ne .hs nil) (print "h" .hs) (cond (ne $hn "p") "" (print "h" (cond (not .like_article) .level "6"))))
-    (cond (and $link .like_article) "box-go" "")
-    (cond (not .title)              "hide"   "")
-    (cond (not .uppercase)          "" "uppercase")
-    (cond (not .underline)          "" "underline")
+    $hs
+    (cond (and $link .like_article)    "box-go"    "")
+    (cond (and (not $link) .underline) "underline" "")
+    (cond (not .uppercase | not)       "uppercase" "")
+    (cond (not .title)                 "hide"      "")
   -}}
 
   {{- /* TITLE MORE  */ -}}
@@ -55,10 +60,14 @@
     {{- end -}}
 
     {{- /* ANCHOR  */ -}}
-    {{- if or .title $link -}}
+    {{- if $link -}}
+      {{- $anchor_class := slice
+        (cond (not .like_article) "" "box__link")
+        (cond (not .underline)    "" "underline")
+      -}}
       {{- /* with wrap  */ -}}
       {{- partial "components/link" (dict
-        "class"  (cond (not .like_article) "" "box__link")
+        "class"  $anchor_class
         "label"  ($title   | markdownify)
         "anchor" ($hanchor | markdownify)
         "link"   $link
@@ -67,7 +76,7 @@
       ) -}}
     {{- else -}}
       {{- /* without wrap  */ -}}
-      {{- $hanchor | markdownify -}}
+      {{- $title | markdownify -}}
     {{- end -}}
 
   {{- /*  END  */ -}}
