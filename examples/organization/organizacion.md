@@ -2,6 +2,7 @@
 slug: organizacion
 title: Organización de ejemplo
 image: base/poster.png
+icon: people-group
 
 toc: true
 draft: false

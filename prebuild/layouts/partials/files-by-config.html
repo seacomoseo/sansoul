@@ -61,7 +61,12 @@
             {{ if eq .name $name }}
               {{ $name_from    := $type_of.name }}
               {{ $base_from    := $type_of.base }}
-              {{ $taxonomies    = $taxonomies | append (merge . (dict "name" $name_from "base" $base_from)) }}
+              {{ $taxonomies    = $taxonomies
+                | append (merge . (dict
+                  "name" $name_from
+                  "base" $base_from
+                ))
+              }}
               {{ if .breadcrumbs }}
                 {{ $breadcrumbs = $name_from }}
               {{ end }}

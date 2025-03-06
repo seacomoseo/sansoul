@@ -4,6 +4,7 @@ title: Categoría 0
 summary: null # string
 image: null # string
 
+icon: null # string
 category: []
 
 toc: false

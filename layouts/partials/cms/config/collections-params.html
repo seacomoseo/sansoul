@@ -32,6 +32,7 @@
     "name"           .name
     "widget"         $type
     "required"       false
+    "label"          ($label | default .name)
   }}
 
   {{ if eq $type "number" }}
@@ -52,6 +53,7 @@
   {{ else if eq $type "select" }}
     {{ $field = merge $field (dict
       "options"        .options
+      "multiple"       .multiple
     ) }}
   {{ else if eq $type "relation" }}
     {{ $field = merge $field (dict
@@ -60,6 +62,7 @@
       "value_field"    "{{slug}}"
       "search_fields"  (slice "{{title}}")
       "display_fields" (slice "{{title}}")
+      "multiple"       .multiple
     ) }}
   {{ else if in (slice "list" "object") $type }}
     {{ $fields_children := slice }}

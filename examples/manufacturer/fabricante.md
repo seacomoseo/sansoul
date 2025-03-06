@@ -2,6 +2,7 @@
 slug: fabricante
 title: Fabricante de ejemplo
 image: base/icon.png
+icon: star
 
 toc: true
 draft: false

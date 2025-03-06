@@ -1,10 +1,9 @@
-{{- $label   := .Text -}}
-{{- $anchor  := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
-{{- $meta    := "" -}}
+{{- $label  := .Text -}}
+{{- $anchor := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
+{{- $meta   := "" -}}
 {{- with .Title -}}
-  {{- $meta   = . | findRE `(?s).*\[(.+?)\].*` -}}
-  {{- with $meta -}}
-    {{- $meta = index . 0 -}}
+  {{- with findRE `(?s).*\[.+?\].*` . 1 -}}
+    {{- $meta   = index . 0 -}}
   {{- end -}}
 {{- end -}}
 
@@ -14,7 +13,7 @@
 {{- $sm      := "" -}}
 {{- $swap    := "" -}}
 {{- if and (hasPrefix .Text "[") (hasSuffix .Text "]") -}}
-  {{- $label  = .Text  | replaceRE `(?s)^\[(.+)\]$` "$1" -}}
+  {{- $label  = .Text  | replaceRE `(?s)^\[|\]$` "" -}}
   {{- $button = replace $meta "font-alt" "" -}}
   {{- $button = findRE `(main|alt|cta|light|dark|invert|similar|whatsapp)` $button 1 -}}
   {{- $button = index $button 0 | default "cta" -}}
@@ -39,10 +38,10 @@
 
 {{- /*  move icon outside the label  */ -}}
 {{- $icon     := "" -}}
-{{- if $anchor | and (not $lock) -}}
-  {{- with findRE `^:([\w-]+):` $label -}}
-    {{- $icon  = . -}}
-    {{- $label = $label | replaceRE `^:[\w-]+:` "" -}}
+{{- with findRE `(?s)^:[\w-]+:` $label -}}
+  {{- with index . 0 -}}
+    {{- $icon  = replace . ":" "" -}}
+    {{- $label = $label | replaceRE (print "^:" $icon ": ") "" -}}
   {{- end -}}
 {{- end -}}
 

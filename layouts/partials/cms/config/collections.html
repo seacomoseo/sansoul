@@ -2,7 +2,7 @@
 
 {{ $colections := slice }}
 
-{{/*  CUSTOM TYPES  */}}
+{{/*  CUSTOM TYPES (single last)  */}}
 {{ $parents := where site.Sections "Type" "ne" "single" | append (where site.Sections "Type" "eq" "single") }}
 {{ range $parents }}
 
@@ -75,6 +75,11 @@
     `~P_SUMMARY`
     `~P_IMAGE`
   }}
+  {{ if .Params.taxonomy_of }}
+    {{ $fields = $fields | append
+      `~BOX_ICON_ID`
+    }}
+  {{ end }}
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
       `~P_DRAFT`
