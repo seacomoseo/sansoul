@@ -35,7 +35,7 @@
             {{ end }}
           {{ end }}
         {{ end }}
-        {{ $contents = partial "functions/md" (dict "content" $contents "not_header_links" true) | plainify }}
+        {{ $contents = partial "functions/md" $contents | plainify }}
         
         {{ $summary := dict
           "link"          .RelPermalink

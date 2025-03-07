@@ -362,6 +362,10 @@
   &:where(:last-child) {
     margin-top: auto;
   }
+  // With background
+  &:where(.bg > *) {
+    width: 100%;
+  }
   // Not background
   &:not(.bg > *) {
     margin-inline: var(--align-margin, auto);
@@ -376,24 +380,13 @@
     }
   }
 }
-.box--button-hide > {
-  .box__button {
-    --base: transparent;
-    --hover: transparent;
-    --active: transparent;
-    position: absolute;
-    // display: none;
-    background-image: none;
-    z-index: unset;
-  }
-}
 
 // Card
 .box--card {
   // overflow: hidden;
   // @include radius;
   justify-content: flex-end;
-  --cta: #{ $white };
+  // --cta: #{ $white };
 }
 .bg-card {
   flex-grow: 1;

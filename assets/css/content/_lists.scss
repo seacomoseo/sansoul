@@ -6,7 +6,8 @@
   ul, ol {
     display: table;
     text-align: left;
-    padding-left: .25em;
+    padding: 0;
+    // padding-left: .25em;
     margin: 0 auto 1em;
     &:last-child {
       margin-bottom: 0;
@@ -32,29 +33,39 @@
       }
       &:before,
       > .icon {
+        @include font-base-bold;
         color: var(--main);
         text-align: right;
         white-space: nowrap;
-        scale: 1.2;
-        transform-origin: right calc(var(--li-pt) + .5em);
+        // scale: 1.2;
+        // transform-origin: right calc(var(--li-pt) + .5em);
       }
-      @if $main = $cta {
-        &:not(#toc *, .list-inline *):where(:is(ul, ol):has(.link) *) {
-          &:before,
-          > .icon {
-            opacity: .5;
-          }
-        }
+      > div {
+        padding-top: var(--li-pt);
+        padding-left: .5em;
       }
+    }
+  }
+
+
+  // Unordered
+
+  ul {
+    > li {
       &:before {
         content: "\2014";
       }
       &.li-icon:before {
         content: none;
       }
-      > div {
-        padding-top: var(--li-pt);
-        padding-left: .5em;
+      @if $main == $cta {
+        // if there are links, icon...
+        &:where(ul:not(.list-inline):has(.link) *) {
+          &:before,
+          > .icon {
+            opacity: .5;
+          }
+        }
       }
     }
   }
@@ -70,6 +81,44 @@
       &:before {
         content: var(--li-counter, "");
       }
+      // if there are icons, counter...
+      &:has(> .icon):before {
+        padding-right: .25em;
+      }
+      // if there are icons, counter...
+      &:where(ol:not(.list-inline):has(.li-icon) *):before {
+        color: var(--cta);
+      }
+      @if $main == $cta {
+        // if there are links, counter...
+        &:where(ol:not(.list-inline):has(.link) *):before {
+          opacity: .5;
+        }
+        // if there are links and icons, icon...
+        &:where(ol:not(.list-inline):has(.link):has(.li-icon) *) > .icon {
+          color: inherit;
+          opacity: .5;
+        }
+      } @else {
+        // if there are links and not icon, counter...
+        &:where(ol:not(.list-inline):has(.link):has(.li-icon) *):before {
+          color: var(--cta);
+          opacity: .5;
+        }
+      }
+    }
+    // Offset margin-righ
+    --ol-level: 1;
+    ol ol { --ol-level: 2; }
+    ol ol ol { --ol-level: 3; }
+    ol ol ol ol { --ol-level: 4; }
+    ol ol ol ol ol { --ol-level: 5; }
+    ul, ol {
+      margin-left: calc(-.75em * var(--ol-level));
+    }
+    // If parent icon
+    li > .icon + div > :where(ol, ul) {
+      margin-left: calc(-.75em * var(--ol-level) - .5em);
     }
   }
 

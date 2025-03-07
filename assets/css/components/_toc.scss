@@ -1,27 +1,25 @@
 #toc {
   .toc {
-    counter-reset: item;
     li {
-      display: table-row;
+      &:before,
+      > .icon {
+        opacity: 1;
+      }
+      &:before {
+        color: var(--cta);
+      }
+      > .icon {
+        color: var(--main);
+      }
+      @if $main == $cta {
+        &:has(> .icon):before {
+          opacity: .5;
+        }
+      }
     }
-    li:before,
-    .li-icon > .icon {
-      @include font-base-bold;
-      display: table-cell;
-      color: var(--cta, $cta);
-    }
-    li:not(.li-icon):before {
-      content: var(--li-counter, "");
-    }
-    // li.li-icon:before {
-    //   content: none;
-    // }
     .link {
       @include font-base;
       color: inherit;
-    }
-    .icon {
-      color: var(--main);
     }
   }
 }

@@ -91,10 +91,7 @@
             ) }}
             <blockquote class="review__text">
               <div class="content">
-                {{ partial "functions/md" (dict
-                  "content"          .content
-                  "not_header_links" true
-                ) }}
+                {{ partial "functions/md" .content }}
               </div>
             </blockquote>
             {{ partial "components/icon" (dict

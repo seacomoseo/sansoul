@@ -1,0 +1,11 @@
+{{ $text    := . }}
+{{ $icon    := "" }}
+
+{{ with findRE `(?s)^:[\w-]+:` . }}
+  {{ with index . 0 }}
+    {{ $icon = replace . ":" "" }}
+    {{ $text = $text | replaceRE `(?s)^:[\w-]+: ?` "" }}
+  {{ end }}
+{{ end }}
+
+{{ return dict "text" $text "icon" $icon }}

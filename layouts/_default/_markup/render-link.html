@@ -36,14 +36,10 @@
   {{- end -}}
 {{- end -}}
 
-{{- /*  move icon outside the label  */ -}}
-{{- $icon     := "" -}}
-{{- with findRE `(?s)^:[\w-]+:` $label -}}
-  {{- with index . 0 -}}
-    {{- $icon  = replace . ":" "" -}}
-    {{- $label = $label | replaceRE (print "^:" $icon ": ") "" -}}
-  {{- end -}}
-{{- end -}}
+{{- /*  icon outside  */ -}}
+{{- $outside := partial "functions/icon-outside" $label -}}
+{{- $label   := $outside.text -}}
+{{- $icon    := $outside.icon -}}
 
 {{- /*  link  */ -}}
 {{- partial "components/link" (dict

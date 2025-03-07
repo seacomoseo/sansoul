@@ -1,35 +1,24 @@
-{{ $content := .content }}
-{{ if not .article }}
-  {{ $content = .content | site.Home.RenderString (dict "display" (cond (not .inline) "block" "inline")) }}
-{{ end }}
+{{ $store   := page.Store -}}
+{{ $inline  := $store.Get "content_inline" }}
+{{ $display := cond $inline "inline" "block" }}
+{{ $content := . | site.Home.RenderString (dict "display" $display) }}
 
 {{ $draws := print "/draws." site.Params.timestamp ".svg" }}
 
 {{ $content = $content
   | replaceRE `(<blockquote class="quotes.*?">)` (print `$1 <svg class="icon quote-left"><use href="` $draws `#quote-left"></use></svg><svg class="quote-right"><use href="` $draws `#quote-right"></use></svg>`)
   | replaceRE `(<blockquote class="dittos.*?">)` (print `$1 <svg class="icon quote-left"><use href="` $draws `#ditto"></use></svg><svg class="quote-right"><use href="` $draws `#ditto"></use></svg>`)
-  | replaceRE `<div class="bg-color"></div><p>` `<div class="bg-color"></div>`
+  | replaceRE `(<div class="bg-color"></div>)<p>` `$1</div>`
   | replaceRE `::(\S+)` (print `<i class="icon icon--li">$1</i>`)
   | replaceRE `:([\w-]+):` (print `<svg class="icon"><use href="` $draws `#$1"></use></svg>`)
   | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
   | replaceRE ` start="(.+?)"` ` style="--item: $1;"`
   | replaceRE `<li(.*?)>` `<li$1><div>`
-  | replaceRE `<li><div>(\n|<p>)*(<. class="link.+?>)?(<svg.*?>.+?</svg>|<i class="icon.*?">.+?</i>) ?` `<li class="li-icon">$3<div>$1$2`
+  | replaceRE `<li(.*?)><div>(\n|<p>)*(<. class="link.+?>)?(<svg.*?>.+?</svg>|<i class="icon.*?">.*?</i>) ?` `<li class="li-icon"$1>$4<div>$2$3`
   | replaceRE `</li>` `</div></li>`
   | replaceRE `(?s)<p><figure(.+?)</figure></p>` `<figure$1</figure>`
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`
+  | safeHTML
 }}
-
-{{ if .not_header_links }}
-  {{ $content = $content
-    | replaceRE `(?s)(class="content__heading.*?") id=".*?">.*?<a .*?"(>.*?)</a>` `$1$2`
-  }}
-{{ else }}
-  {{ $content = $content
-    | replaceRE `(?s)(<a class="href content__heading-link".+?)<br>(</a>)` `$1$2`
-  }}
-{{ end }}
-
-{{ $content = $content | safeHTML }}
 
 {{ return $content }}

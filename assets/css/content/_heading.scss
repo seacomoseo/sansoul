@@ -1,3 +1,18 @@
+.content__heading {
+  display: flex;
+  gap: .25rem;
+  .content__heading-index {
+    flex-shrink: 0;
+    color: var(--cta);
+  }
+  // @if $main == $cta {
+  //   &:has(> .icon) .content__heading-index {
+  //     opacity: .5;
+  //   }
+  // }
+}
+
+
 // Link
 
 .content__heading-link {
@@ -32,7 +47,7 @@
 
 .content {
   h2, h3, h4, h5, h6 {
-    &:not(:first-child, .bg-color + *, .alert__icon + *, .bg-color + .float-icon + *) {
+    &:not(:first-child, .bg-color + *, .alert__icon + *) {
       margin-top: 2em;
     }
   }

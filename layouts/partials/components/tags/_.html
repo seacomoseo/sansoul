@@ -21,15 +21,15 @@
 
         {{- if and $page.Date (not $page.IsSection) -}}
           {{- if eq $page.Params.base "article" -}}
-            {{- $time   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Lastmod -}}
-            {{- $date   := partial "functions/date-format" $page.Lastmod -}}
+            {{- $time   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date -}}
+            {{- $date   := partial "functions/date-format" $page.Date -}}
             {{- $hour   := cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
             {{- $el     := print `<time datetime="` $time `">` $date.day $hour `</time>` -}}
             {{- $items   = $items | append (dict "icon" "calendar" "label" $el) -}}
             {{- if $page.Lastmod -}}
               {{- if ne $page.Date $page.Lastmod -}}
-                {{- $time  = dateFormat "2006-01-02T15:04:05Z07:00" $page.Date -}}
-                {{- $date  = partial "functions/date-format" $page.Date -}}
+                {{- $time  = dateFormat "2006-01-02T15:04:05Z07:00" $page.Lastmod -}}
+                {{- $date  = partial "functions/date-format" $page.Lastmod -}}
                 {{- $hour  = cond (eq $date.hour "00:00") "" (print " - " $date.hour) -}}
                 {{- $el    = print ` <time datetime="` $time `">` $date.day $hour `</time>` -}}
                 {{- $items = $items | append (dict "icon" "calendar-pen" "label" $el) -}}

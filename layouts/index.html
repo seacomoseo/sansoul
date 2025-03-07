@@ -44,7 +44,9 @@
   
   {{/*  PROCESS ALL IMAGES  */}}
   {{- if hugo.IsProduction | and site.Data.config.others.process_all_images -}}
-    {{- $images := partial "functions/media-files" (dict "ext" (slice "jpeg" "jpg" "png" "gif" "webp" "avif" "svg")) -}}
+    {{- $ext := slice "jpeg" "jpg" "png" "gif" "webp" "avif" "svg" -}}
+    {{- $ext  = dict "ext" $ext -}}
+    {{- $images := partial "functions/media-files" $ext -}}
     {{- range $images -}}
       {{- $image := resources.Get . -}}
       {{/*  IF THUMBNAILS  */}}
@@ -60,5 +62,5 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{/*  {{ warnf "counter: %q \n      page: %q \n      value: %q" math.Counter page . }}  */}}
-{{/*  <pre>{{ debug.Dump site.Data.books }}</pre>  */}}
+{{- /*  {{ warnf "counter: %q \n      page: %q \n      value: %q" math.Counter page . }}  */ -}}
+{{- /*  <pre>{{ debug.Dump site.Data.books }}</pre>  */ -}}

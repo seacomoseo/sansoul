@@ -1,5 +1,40 @@
-{{- $id     := partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
+{{- /* Get the Page's Store */ -}}
+{{- $store    := .Page.Store -}}
+{{- $is_index := true -}}
+{{- $is_nav   := true -}}
 
+{{- /*  INDEX  */ -}}
+{{- $numbering := "" -}}
+{{- if $is_index -}}
+  {{- /* Store heading counters */ -}}
+  {{- /* Reset counters for levels deeper than the current heading */ -}}
+  {{- range $i := seq (add .Level 1) 6 -}}
+    {{- $store.Set (printf "h%d" $i) 0 -}}
+  {{- end -}}
+
+  {{- /* Increment the counter for the current level */ -}}
+  {{- $current_count := $store.Get (printf "h%d" .Level) | default 0 | add 1 -}}
+  {{- $store.Set (printf "h%d" .Level) $current_count -}}
+
+  {{- /* Build the numbering string from level 1 up to the current level */ -}}
+  {{- $nums := slice -}}
+  {{- range $i := seq 1 .Level -}}
+    {{- $num := $store.Get (printf "h%d" $i) | default 0 -}}
+    {{- if $num -}}
+      {{- $nums = $nums | append $num -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $nums = $nums | append "" -}}
+  {{- $numbering = delimit $nums "." -}}
+{{- end -}}
+
+{{- /* ID */ -}}
+{{- $id  := "" -}}
+{{- if $is_nav -}}
+  {{- $id = partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
+{{- end -}}
+
+{{- /* CLASS */ -}}
 {{- $class  := "content__heading" -}}
 {{- if (page.Params.list.underline | and (eq .Level 2)) -}}
   {{- $class = print $class " underline" -}}
@@ -11,16 +46,35 @@
   {{- $class = print $class " " . -}}
 {{- end -}}
 
+{{- /* ATTRIBUTES */ -}}
 {{- $attrs       := "" -}}
-{{- range $k, $v := merge .Attributes (dict "id" $id "class" $class) }}
-  {{- if . }}
-    {{- $attrs    = print $attrs " " $k `="` . `"` }}
-  {{- end }}
-{{- end }}
+{{- range $k, $v := merge .Attributes (dict "id" $id "class" $class) -}}
+  {{- if . -}}
+    {{- $attrs    = print $attrs " " $k `="` . `"` -}}
+  {{- end -}}
+{{- end -}}
 
+{{- /*  ICON outside  */ -}}
+{{- $outside := partial "functions/icon-outside" .Text -}}
+{{- $text    := $outside.text -}}
+{{- $icon    := $outside.icon -}}
+
+{{- /*  HTML  */}}
 <h{{ .Level }} {{- $attrs | safeHTMLAttr }}>
-  <a class="link content__heading-link" href="#{{ $id }}">
-    {{- .Text | safeHTML -}}
-    {{- if in $class "underline" }}<br>{{ end -}}
-  </a>
+  {{- if $icon }}
+    {{ partial "components/icon" (dict "icon" $icon) -}}
+  {{- else if $is_index }}
+    <i class="content__heading-index">{{ $numbering }}</i>
+  {{- end }}
+  <i>
+    {{- if $is_nav -}}
+    <a class="link content__heading-link" href="#{{ $id }}">
+    {{- end -}}
+      {{- $text | safeHTML -}}
+      {{- if in $class "underline" }}<br>{{ end -}}
+    {{- if $is_nav -}}
+    <br>
+    </a>
+    {{- end -}}
+  </i>
 </h{{ .Level }}>

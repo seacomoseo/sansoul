@@ -1,0 +1,44 @@
+{{- /*  SET STORE  */ -}}
+{{- $store := page.Store -}}
+{{- $store.Set "content_nav"   .content_nav   -}}
+{{- $store.Set "content_index" .content_index -}}
+
+{{- /*  ALIGN  */ -}}
+{{- $content_align  := "" -}}
+{{- with .content_align -}}
+  {{- $content_align = print "align-" . -}}
+{{- else -}}
+  {{/*  size  */}}
+  {{- $container_small := in (slice "xs" "sm") .container -}}
+  {{- if and
+    (not .align)
+    (not .header)
+    .main
+    $container_small
+  -}}
+    {{- $content_align = "align-left" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  CLASS  */ -}}
+{{- $content_class := slice
+  "box__content"
+  "content"
+  $content_align
+  (cond (not .content_align_max) "" (print "align--max-" .content_align_max))
+  (cond (not .like_article)      "" "box__content--small")
+-}}
+
+{{- /*  ATTRIBUTES  */ -}}
+{{ $content_attrs := dict "class" $content_class }}
+{{ $content_attrs  = partial "functions/attrs" $content_attrs -}}
+
+{{- /* HTML */}}
+<div {{- $content_attrs }}>
+  {{- /* <div class="float"></div><div class="float float--r"></div> */}}
+  {{ partial "functions/md" .content }}
+</div>
+
+{{- /*  DELETE STORE  */ -}}
+{{- $store.Delete "content_nav"   -}}
+{{- $store.Delete "content_index" -}}
