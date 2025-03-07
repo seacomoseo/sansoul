@@ -3,6 +3,8 @@
 {{- $store.Set "content_nav"   .content_nav   -}}
 {{- $store.Set "content_index" .content_index -}}
 
+{{ warnf "page: %q \n      value: %q" page page.Store }}
+
 {{- /*  ALIGN  */ -}}
 {{- $content_align  := "" -}}
 {{- with .content_align -}}
