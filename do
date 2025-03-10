@@ -38,6 +38,15 @@ then
   hecho "GO SANSOUL"
   cd themes/sansoul
 
+  # Check for local changes and stash them if exist
+  if [ -n "$(git status --porcelain)" ]; then
+    echo "Local changes detected, stashing them"
+    git stash push -u -m "Auto-stash before updating submodule"
+    stash_created=true
+  else
+    stash_created=false
+  fi
+
   hecho "SANSOUL FETCH"
   git fetch
 
@@ -55,9 +64,16 @@ then
 
   if [ "$current_commit" != "$new_commit" ]
   then
-    echo "Remote changes detected, skipping add, commit and push"
+    echo "Remote changes detected, skipping add/commit/push."
+    echo "Local stash (if any) remains; please review and reapply manually."
     cd ../..
   else
+    if [ "$stash_created" = true ]
+    then
+      echo "No remote changes detected. Applying stashed local changes"
+      git stash pop
+    fi
+
     hecho "SANSOUL ADD"
     git add .
 
