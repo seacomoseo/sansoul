@@ -17,7 +17,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- $description  := .Description | default .Summary | truncate 155 | plainify | replaceRE `:([1-9A-Za-z_-][\w-]*):\s?` "" -}}
+{{- $description  := .Description | default .Summary | truncate 155 | plainify | replaceRE `:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` "" -}}
 {{- $image        := (partial "functions/image-og" .).img -}}
 {{- $aas          := partial "functions/authors-article-sections" . -}}
 {{- $authors      := $aas.authors -}}

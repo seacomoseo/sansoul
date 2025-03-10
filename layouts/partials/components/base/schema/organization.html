@@ -11,7 +11,7 @@
   {{ $names_more := after 1 $names }}
 
   {{/*  Description  */}}
-  {{ $description  := or $.Summary $.Description .summary .description | plainify | replaceRE `:([1-9A-Za-z_-][\w-]*):\s?` "" }}
+  {{ $description  := or $.Summary $.Description .summary .description | plainify | replaceRE `:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` "" }}
 
   {{/*  URL  */}}
   {{ $url  := .url | default $.Page.Permalink }}
