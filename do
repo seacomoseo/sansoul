@@ -29,74 +29,23 @@ then
 elif [ $1 = sup ]
 then
 
-  hecho "Creating backup of submodule on desktop"
+  hecho "CREATING BACKUP OF SUBMODULE ON DESKTOP"
   cp -R themes/sansoul ~/Desktop/sansoul_backup_$(date +'%Y-%m-%d--%H-%M-%S')
 
-  hecho "Submodule sync"
+  hecho "SUBMODULE SYNC"
   git submodule sync --recursive
-
-  hecho "Go sansoul"
-  cd themes/sansoul
-
-  # Check for local changes and stash them if exist
-  if [ -n "$(git status --porcelain)" ]; then
-    hecho "Local changes detected, stashing them"
-    git stash push -u -m "Auto-stash before updating submodule"
-    stash_created=true
-  else
-    stash_created=false
-  fi
-
-  hecho "sansoul fetch"
-  git fetch
-
-  hecho "sansoul checkout main"
-  git checkout main
-
-  # Capture current commit hash before pull
-  current_commit=$(git rev-parse HEAD)
-
-  hecho "sansoul pull with rebase"
-  git pull --rebase origin main
-
-  # Capture new commit hash after pull
-  new_commit=$(git rev-parse HEAD)
-
-  # Check if remote changes were integrated (the commit hash changed)
-  if [ "$current_commit" != "$new_commit" ]; then
-    hecho "Remote changes detected, not applying stashed local changes."
-    hecho "Local stash remains; please update manually (e.g., run 'git pull') and reapply your changes."
-    cd ../..
-    exit 0
-  fi
-
-  # Extra check: verify if the branch is behind origin/main
-  behind_count=$(git rev-list HEAD..origin/main --count)
-  if [ "$behind_count" -gt 0 ]; then
-    hecho "Your branch is behind origin/main by $behind_count commit(s)."
-    hecho "Please run 'git pull' manually to update your branch before applying local changes."
-    cd ../..
-    exit 1
-  fi
-
-  hecho "sansoul add"
-  git add .
-
-  hecho "sansoul commit"
-  git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
-
-  hecho "sansoul push"
-  git push origin main
-
-  hecho "Go project"
-  cd ../..
-
-# Upload submodule changes with date now
-elif [ $1 = spush ]
-then
 
   hecho "GO SANSOUL"
   cd themes/sansoul
+
+  hecho "SANSOUL FETCH"
+  git fetch
+
+  hecho "SANSOUL CHECKOUT MAIN"
+  git checkout main
+
+  hecho "SANSOUL PULL WITH REBASE"
+  git pull --rebase origin main
 
   hecho "SANSOUL ADD"
   git add .
@@ -106,19 +55,6 @@ then
 
   hecho "SANSOUL PUSH"
   git push origin main
-
-  hecho "GO PROJECT"
-  cd ../..
-
-# Upload submodule changes with date now
-elif [ $1 = spull ]
-then
-
-  hecho "GO SANSOUL"
-  cd themes/sansoul
-
-  hecho "SANSOUL PULL"
-  git pull
 
   hecho "GO PROJECT"
   cd ../..
