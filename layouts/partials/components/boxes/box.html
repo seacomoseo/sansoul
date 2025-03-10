@@ -26,46 +26,109 @@
   {{- end -}}
 {{- end -}}
 
-{{- /*  bgcp  */ -}}
+
+{{- /*  MERGE VARS  */ -}}
 {{- with $box -}}
+
+  {{- /*  color and bgcp  */ -}}
   {{- $color := .color | default (cond .modal "white" (cond (not .card) "" "black")) -}}
   {{- $bgc   := partial "functions/color-background" (dict "child" $color "parent" .bgcp) -}}
-  {{- $box    = merge . (dict "bgcp" $bgc.parent "color" $bgc.child) -}}
-{{- end -}}
 
-{{- /*  BOX  */ -}}
-{{- with $box -}}
-  {{- $align := .align -}}
-
-  {{- $node := .node  | default "div" -}}
-
-  {{- $icon_type     := .icon_type | default (cond .main "bottom" "top") -}}
-  {{- $show          := site.Data.config.others.show -}}
-  {{- $group_radius  := .group_radius | and (not .slider) -}}
-
-  {{- $span_xl := mul .span_xl (.span     | default 1.00) -}}
-  {{- $span_xs := mul .span_xs (.span_min | default 1.00) -}}
-
-  {{- $link           := .link -}}
-  {{- $underline      := and .underline (not (and .icon (eq $icon_type "bottom"))) -}}
-
-  {{- $external       := hasPrefix $link "http" -}}
-  {{- $is_anchor_link := hasPrefix $link "#" -}}
-  {{- $start_slash    := $link | findRE `^/` -}}
+  {{- /*  fit col  */ -}}
+  {{- $col_vl := mul .col_vl (.fit    | default 1.00) -}}
+  {{- $col_vs := mul .col_vs (.fit_vs | default 1.00) -}}
+  
+  {{- /*  link  */ -}}
+  {{- $link             := .link -}}
   {{- if $link -}}
-    {{- if not $external | and (not $is_anchor_link) | and (not $start_slash) -}}
+    {{- $external       := hasPrefix $link "http" -}}
+    {{- $is_anchor_link := hasPrefix $link "#" -}}
+    {{- $start_slash    := $link | findRE `^/` -}}
+    {{- if and (not $external) (not $is_anchor_link) (not $start_slash) -}}
       {{- with resources.Get ((print "/media/" $link) | replaceRE `\#.*$` "") -}}
-        {{- $link      = .RelPermalink -}}
+        {{- $link        = .RelPermalink -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- $like_article   := and .title $link (eq .button "hide") -}}
+
+  {{- /*  boxes  */ -}}
+  {{- $boxes    := slice -}}
+  {{- range .boxes | default slice -}}
+    {{- $if := partial "functions/if" (dict "Page" page "if" .if) -}}
+    {{- if $if -}}
+      {{- $boxes = $boxes | append . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /*  images  */ -}}
+  {{- $gallery := .gallery -}}
+  {{- $images  := slice -}}
+  {{- range $k, $v := .images -}}
+    {{- $alt := "" -}}
+    {{- with $gallery -}}
+      {{- with .alt -}}
+        {{- $alt = print .alt " " (add $k 1) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $images = $images | append (dict
+      "image"  .
+      "alt"    $alt
+      "link"   "lightbox"
+    ) -}}
+  {{- end -}}
+  {{- range $k, $v := .limages -}}
+    {{- $alt := .alt -}}
+    {{- if not .alt -}}
+      {{- with $gallery -}}
+        {{- with .alt -}}
+          {{- $alt = print .alt " " (add $k 1) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $images = $images | append (dict
+      "image"  .image
+      "alt"    $alt
+      "link"   .link
+    ) -}}
+  {{- end -}}
+
+  {{- /*  others  */ -}}
+  {{- $icon_type     := .icon_type | default (cond .main "bottom" "top") -}}
+  {{- $show          := site.Data.config.others.show -}}
+  {{- $group_radius  := .group_radius | and (not .slider) -}}
+  {{- $underline     := and .underline (not (and .icon (eq $icon_type "bottom"))) -}}
+  {{- $like_article  := and .title $link (eq .button "hide") -}}
+
+  {{- /*  merge  */ -}}
+  {{- $box = merge . (dict
+    "bgcp"         $bgc.parent
+    "color"        $bgc.child
+    "col_vl"       $col_vl
+    "col_vs"       $col_vs
+    "link"         $link
+    "boxes"        $boxes
+    "images"       $images
+    "icon_type"    $icon_type
+    "show"         $show
+    "group_radius" $group_radius
+    "underline"    $underline
+    "like_article" $like_article
+    "box_wrap"     nil
+    "prev"         nil
+    "next"         nil
+    ) -}}
+
+{{- end -}}
+
+
+{{- /*  BOX  */ -}}
+{{- with $box -}}
 
   {{- /*  WRAP  */ -}}
   {{- $box_wrap := or
-    .box_wrap
-    .span
-    .span_min
+    $.box_wrap
+    .fit
+    .fit_vs
     .node
     .color
     .gradient
@@ -74,11 +137,13 @@
     .padding
     .pill
     .align
-    .align_max
+    .align_vl
     .align_x
     .order
-    .gap_y
+    .space
   -}}
+
+  {{- $node := .node  | default "div" -}}
 
   {{- if $box_wrap -}}
 
@@ -97,11 +162,11 @@
     {{- $radius    := true -}}
     {{- if .hide_radius
       | or (not ($bg | or ($image_src | and .inset)))
-      | or $group_radius
+      | or .group_radius
     -}}
       {{- $radius   = false -}}
     {{- end -}}
-    {{- $button_is := $link | and (ne .button "hide") -}}
+    {{- $button_is := .link | and (ne .button "hide") -}}
 
     {{- /*  ATTRIBUTES  */ -}}
     {{- $box_attr  := partial "components/boxes/attr" (merge . (dict
@@ -112,7 +177,7 @@
       "button_is"    $button_is
       "radius"       $radius
       "shadow"       $shadow
-      "show"         (and (not .slider) (not .header) $show)
+      "show"         (and (not .slider) (not .header) .show)
     )) -}}
 
     {{- /*  BOX  */}}
@@ -120,34 +185,22 @@
 
       {{- /*  BACKGROUND  */ -}}
       {{- partial "components/bg" (merge . (dict
-        "bg"       $bg_image_src
-        "shadow"   $shadow
-        "box"      true
-        "span_xl"  $span_xl
-        "span_xs"  $span_xs
+        "bg"     $bg_image_src
+        "shadow" $shadow
+        "box"    true
       )) -}}
 
   {{- end -}}
 
     {{- /*  IMAGE  */ -}}
-    {{- partial "components/boxes/image" (merge . (dict
-      "icon_type" $icon_type
-      "span_xl"   $span_xl
-      "span_xs"   $span_xs
-    )) -}}
+    {{- partial "components/boxes/image" . -}}
 
     {{- /*  TITLE  */ -}}
-    {{- partial "components/boxes/title" (merge . (dict
-      "icon_type"    $icon_type
-      "like_article" $like_article
-      "link"         $link
-    )) -}}
+    {{- partial "components/boxes/title" . -}}
 
     {{- /*  ICON BOTTOM  */ -}}
-    {{- if eq $icon_type "bottom" -}}
-      {{- partial "components/boxes/icon" (merge . (dict
-        "icon_type" $icon_type
-      )) -}}
+    {{- if eq .icon_type "bottom" -}}
+      {{- partial "components/boxes/icon" . -}}
     {{- end -}}
 
     {{- /*  SUBTITLE  */ -}}
@@ -164,12 +217,9 @@
       </div>
     {{- end -}}
 
-    {{- /*  CONTENT  */ -}}
-    {{- if .content -}}
-      {{- partial "components/boxes/content" (merge . (dict
-        "align"        $align
-        "like_article" $like_article
-      )) -}}
+    {{- /*  MD  */ -}}
+    {{- if .md -}}
+      {{- partial "components/boxes/md" . -}}
     {{- end -}}
 
     {{- /*  TYPES  */ -}}
@@ -180,40 +230,18 @@
         (.step | default dict)
         (dict
           "steps" .steps
-          "show"  .show
+          "level" .level
         )
       ) -}}
     {{- end -}}
 
     {{- /*  GALLERY  */ -}}
-    {{- if or .images .limages -}}
+    {{- if .images -}}
       {{- if eq .gallery.type "boxes" -}}
         {{- $boxes_images := slice -}}
-        {{- range $k, $v := .limages -}}
-          {{- $alt := .alt -}}
-          {{- if not .alt -}}
-            {{- with $.gallery -}}
-              {{- $alt = .alt | default (print .alt " " (add $k 1)) -}}
-            {{- end -}}
-          {{- end -}}
-          {{- $boxes_images = $boxes_images | append (dict
-            "image"  .image
-            "alt"    $alt
-            "link"   .link
-            "anchor" (.image | replaceRE `^(.+)\..*$` "$1" | humanize)
-          ) -}}
-        {{- end -}}
         {{- range $k, $v := .images -}}
-          {{- $alt := "" -}}
-          {{- with $.gallery -}}
-            {{- $alt = print .alt " " (add $k 1) -}}
-          {{- end -}}
-          {{- $boxes_images = $boxes_images | append (dict
-            "image"  .
-            "alt"    $alt
-            "link"   .
-            "anchor" (. | replaceRE `^(.+)\..*$` "$1" | humanize)
-          ) -}}
+          {{- $anchor := .alt | default .image | replaceRE `^(.+)\..*$` "$1" | humanize -}}
+          {{- $boxes_images = $boxes_images | append (merge . (dict "anchor" $anchor)) -}}
         {{- end -}}
         {{- partial "components/boxes/_" (merge
           (dict
@@ -228,25 +256,17 @@
             )
           )
           .
-          (dict
-            "span_xl"  $span_xl
-            "span_xs"  $span_xs
-            "box_wrap" nil
-            "prev"     nil
-            "next"     nil
-            "boxes"    $boxes_images
-          )
+          (dict "boxes" $boxes_images)
         ) -}}
       {{- else -}}
         {{- partial "components/blocks/gallery" (merge
           (.gallery | default dict)
           (dict
             "bgcp"      .bgcp
-            "limages"   .limages
             "images"    .images
             "container" .container
-            "span_xl"   $span_xl
-            "span_xs"   $span_xs
+            "col_vs"    .col_vs
+            "col_vl"    .col_vl
           )
         ) -}}
       {{- end -}}
@@ -254,13 +274,7 @@
 
     {{- /*  LIST  */ -}}
     {{- if .list -}}
-      {{- partial "components/blocks/list" (merge
-        .
-        (dict
-          "span_xl"   $span_xl
-          "span_xs"   $span_xs
-        )
-      ) -}}
+      {{- partial "components/blocks/list" . -}}
     {{- end -}}
 
     {{- /*  ACCORDION  */ -}}
@@ -309,16 +323,7 @@
 
     {{- /*  BOXES  */ -}}
     {{- if .boxes -}}
-      {{- partial "components/boxes/_" (merge
-        .
-        (dict
-          "span_xl"  $span_xl
-          "span_xs"  $span_xs
-          "box_wrap" nil
-          "prev"     nil
-          "next"     nil
-        )
-      ) -}}
+      {{- partial "components/boxes/_" . -}}
     {{- end -}}
 
     {{- /*  END TYPES  */ -}}
@@ -329,17 +334,17 @@
     {{- end -}}
 
     {{- /*  BUTTON  */ -}}
-    {{- if and (or .label $link) (ne .button "hide") -}}
+    {{- if and (or .label .link) (ne .button "hide") -}}
       {{- /*  anchor2: last default priority, prev $anchor_page  */}}
       {{ partial "components/link" (dict
         "class"   "box__button box-go"
         "button"  (.button | default "cta")
-        "swap"    .font_alt
+        "swap"    .swap
         "icon"    .licon
         "label"   (.label  | default (i18n "more") | markdownify)
         "anchor"  (.anchor | markdownify)
         "anchor2" (.hanchor | default .title | markdownify)
-        "link"    $link
+        "link"    .link
         "lock"    .ofuscate
       ) -}}
     {{- end -}}
@@ -348,7 +353,7 @@
     {{- if .main -}}
       {{- if and .modal (not .ph) }}
         <div class="buttons">
-          {{- with .prev }}
+          {{- with $.prev }}
             {{ partial "components/link" (dict
               "class" "modal__prev"
               "button" "cta"
@@ -362,12 +367,12 @@
           {{ partial "components/link" (dict
             "class" "modal__close"
             "button" "cta"
-            "dot"    (and .prev .next)
+            "dot"    (and $.prev $.next)
             "icon"   "xmark"
             "emoji"  "❌"
             "label"  (i18n "close")
           ) -}}
-          {{- with .next }}
+          {{- with $.next }}
             {{ partial "components/link" (dict
               "class"  "modal__next"
               "button" "cta"

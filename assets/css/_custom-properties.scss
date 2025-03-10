@@ -24,16 +24,16 @@
   --map-filter-dark: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
   // outline
   --outline: #{ $menu-bar-double };
-  // screen width
-  --vw-min: #{ $screen-min / 1px };
-  --vw-max: #{ $screen-max / 1px };
-  --vw: #{ $screen-min / 1px };
-  @media (min-width: $screen-xs) { --vw: #{ $screen-xs / 1px }; }
-  @media (min-width: $screen-sm) { --vw: #{ $screen-sm / 1px }; }
-  @media (min-width: $screen-md) { --vw: #{ $screen-md / 1px }; }
-  @media (min-width: $screen-lg) { --vw: #{ $screen-lg / 1px }; }
-  @media (min-width: $screen-xl) { --vw: #{ $screen-xl / 1px }; }
-  --run: calc(var(--vw-max) - var(--vw-min));
+  // viewport width
+  --vs: #{ $vs / 1px };
+  --vl: #{ $vl / 1px };
+  --vw: #{ $vs / 1px };
+  @media (min-width: $viewport-xs) { --vw: #{ $viewport-xs / 1px }; }
+  @media (min-width: $viewport-sm) { --vw: #{ $viewport-sm / 1px }; }
+  @media (min-width: $viewport-md) { --vw: #{ $viewport-md / 1px }; }
+  @media (min-width: $viewport-lg) { --vw: #{ $viewport-lg / 1px }; }
+  @media (min-width: $viewport-xl) { --vw: #{ $viewport-xl / 1px }; }
+  --run: calc(var(--vl) - var(--vs));
 }
 
 // EXTENDS LIKE FUNCTIONS

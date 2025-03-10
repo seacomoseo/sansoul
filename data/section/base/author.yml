@@ -10,17 +10,17 @@ boxes:
     align_x: flex-start
     align_y: top
   boxes:
-  - span: .2
-    span_min: .4
+  - fit: .2
+    fit_vs: .4
     image: '{{ author 0 image }}'
     ratio: 1/1
     border: main
-  - span: .8
-    span_min: .6
-    gap_y: .75
+  - fit: .8
+    fit_vs: .6
+    space: .75
     align: left
     title: '{{% author 0 title %}}'
-    content: |
+    md: |
       {{< author 0 summary >}}
 - if: '{{ author 1 is }}'
   box:
@@ -28,15 +28,15 @@ boxes:
     align_x: flex-end
     align_y: top
   boxes:
-  - span: .8
-    span_min: .6
-    gap_y: .75
+  - fit: .8
+    fit_vs: .6
+    space: .75
     align: right
     title: '{{% author 1 title %}}'
-    content: |
+    md: |
       {{< author 1 summary >}}
-  - span: .2
-    span_min: .4
+  - fit: .2
+    fit_vs: .4
     image: '{{ author 1 image }}'
     ratio: 1/1
     border: main
@@ -46,17 +46,17 @@ boxes:
     align_x: flex-end
     align_y: top
   boxes:
-  - span: .2
-    span_min: .4
+  - fit: .2
+    fit_vs: .4
     image: '{{ author 2 image }}'
     ratio: 1/1
     border: main
-  - span: .8
-    span_min: .6
-    gap_y: .75
+  - fit: .8
+    fit_vs: .6
+    space: .75
     align: left
     title: '{{% author 2 title %}}'
-    content: |
+    md: |
       {{< author 2 summary >}}
 - if: '{{ author 3 is }}'
   box:
@@ -64,15 +64,15 @@ boxes:
     align_x: flex-end
     align_y: top
   boxes:
-  - span: .8
-    span_min: .6
-    gap_y: .75
+  - fit: .8
+    fit_vs: .6
+    space: .75
     align: right
     title: '{{% author 3 title %}}'
-    content: |
+    md: |
       {{< author 3 summary >}}
-  - span: .2
-    span_min: .4
+  - fit: .2
+    fit_vs: .4
     image: '{{ author 3 image }}'
     ratio: 1/1
     border: main

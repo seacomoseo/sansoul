@@ -60,7 +60,7 @@
       -}}
       {{- if eq $type "related" -}}
         {{- if not $.list.max -}}
-          {{- $max  = $template.cols | default $template.cols_min -}}
+          {{- $max  = $template.cols | default $template.cols_vs -}}
         {{- end -}}
       {{- end -}}
 
@@ -115,11 +115,11 @@
         {{- $boxes   := slice -}}
         {{- range $firsts_pages -}}
           {{- $price   := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
-          {{- $content := partial "functions/summary" . -}}
+          {{- $summary := partial "functions/summary" . -}}
           {{- $params  := slice
-            (dict "param" "image"   "value" .Params.image)
-            (dict "param" "icon"    "value" .Params.icon)
-            (dict "param" "content" "value" $content)
+            (dict "param" "image" "value" .Params.image)
+            (dict "param" "icon"  "value" .Params.icon)
+            (dict "param" "md"    "value" $summary)
           -}}
           {{- $page := dict
             "Page"    .
@@ -140,7 +140,7 @@
         {{- end -}}
         
         {{- /* BOXES  */ -}}
-        {{- range slice "image" "icon" "content" -}}
+        {{- range slice "image" "icon" "md" -}}
           {{- if eq (index $template .) "hide" -}}
             {{- $template = merge $template (dict . "") -}}
           {{- end -}}

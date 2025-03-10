@@ -171,7 +171,7 @@ iframe.image__inner {
     width: calc(100cqw + var(--box-padding) * 2);
   }
 }
-.content {
+.md {
   iframe.image__inner {
     width: calc(100cqw + var(--box-padding) * 2);
   }
@@ -277,7 +277,7 @@ iframe.image__inner {
 // SVG EXCEPTIONS
 
 .box:not(.bg) // when not background
-> .image:not(.image--border):not(.content *) // without radius and not content
+> .image:not(.image--border):not(.md *) // without radius and not content
 > .image__inner:where(svg, .icon, img[src*=".svg"]) { // svg image
   overflow: unset;
   @include hide-radius;
@@ -297,7 +297,7 @@ img[src*=".svg"].image__inner {
 
 .ph > .container--fluid {
   > .image,
-  > .cols--gap-0.slider__items .image:not(.content *) {
+  > .cols--gap-0.slider__items .image:not(.md *) {
     &:before,
     > .image__inner {
       overflow: unset;

@@ -203,8 +203,8 @@ styles_rounded_radius_hint: This radius applies to corners in general, but inter
 styles_rounded_chamfer: Chamfer
 styles_rounded_chamfer_hint: Changes rounded corners to chamfers (straight cuts)
 styles_buttons: Buttons
-styles_buttons_font_main: Main Font
-styles_buttons_font_alt: Alternate Font
+styles_buttons_font: Main Font
+styles_buttons_swap: Alternate Font
 styles_buttons_sides_round: Rounded Sides
 styles_buttons_sides_round_hint: Rounds corners to the maximum
 styles_buttons_icon_circle: Circular Icons
@@ -269,7 +269,7 @@ p_seo_hint: Used for Google search results 🔷 **Recommended between 40 and 65 
 p_description: SEO Description
 p_description_hint: Used for Google search results 🔷 **Recommended between 70 and 155 characters** (~135) 🔷 Eye-catching characters allowed by Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
 p_body: Content
-p_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**font-alt**" or "**dot**", separate with any character if multiple words are added) 🔷 These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**_blank**" (opens in new window) and "**ga4**" (registers key event in GA4) 🔷 Icons can be added using, wrapped in "**:**" characters, one of the following valid names → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic)
+p_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" or "**dot**", separate with any character if multiple words are added) 🔷 These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**_blank**" (opens in new window) and "**ga4**" (registers key event in GA4) 🔷 Icons can be added using, wrapped in "**:**" characters, one of the following valid names → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic)
 p_translationKey: Translation ID
 p_translationKey_hint: Unique translation identifier for each corresponding page in each language 🔷 **Example →** Translation ID = "*i-invented-it*" exactly the same on the same page in Spanish ("*Me lo invento*"), in English ("*I invented it*"), and in French ("*Je l'ai inventé*")
 p_base: Base
@@ -347,7 +347,7 @@ box_title: Title
 box_hanchor: Hidden Title
 box_hanchor_hint: Header and Hidden Anchor/Link that will be used by the title and menu links (for SEO)
 box_subtitle: Subtitle
-box_content: Content
+box_md: Content
 box_price: Price
 box_hn: Title Tag
 box_hs: Title Size
@@ -355,19 +355,19 @@ box_uppercase: Title in Uppercase
 box_underline: Underlined Title
 box_align: Alignment
 box_align_hint: Align all elements in the Box
-box_align_max: Alignment on Desktop
-box_align_max_hint: Align all elements in the Box when the window width is ≥ 1280px
-box_content_align: Content Alignment
-box_content_align_hint: Alignment of Content Only
-box_content_align_max: Content Alignment on Desktop
-box_content_align_max_hint: Align content only when the window width is ≥ 1280px
-box_content_index: Numbering in Content Headings
-box_content_index_hint: Add the same numbering as in the indexes to content headings
-box_content_nav: IDs in Content Headings
-box_content_nav_hint: Add IDs and links in content headings
+box_align_vl: Alignment on Desktop
+box_align_vl_hint: Align all elements in the Box when the window width is ≥ 1280px
+box_md_align: Content Alignment
+box_md_align_hint: Alignment of Content Only
+box_md_align_vl: Content Alignment on Desktop
+box_md_align_vl_hint: Align content only when the window width is ≥ 1280px
+box_md_index: Numbering in Content Headings
+box_md_index_hint: Add the same numbering as in the indexes to content headings
+box_md_nav: IDs in Content Headings
+box_md_nav_hint: Add IDs and links in content headings
 box_menu_label: Menu Link Text
 box_menu_button: Menu Link Button Color
-box_menu_font_alt: Menu Link Alternative Font
+box_menu_swap: Menu Link Alternative Font
 box_icon_id: Icon
 box_icon_id_hint: Valid names → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) or emojis
 box_icon_type: Icon Type
@@ -401,7 +401,7 @@ box_button_anchor_hint: Hidden text/anchor for the link (for SEO)
 box_button_ofuscate: Obfuscated Link
 box_button_ofuscate_hint: Prevents Google from considering the link as such (for SEO)
 box_button_color: Link Button Color
-box_button_font_alt: Link Alternative Font
+box_button_swap: Link Alternative Font
 box_button_ga4: GA4
 box_button_ga4_hint: Marks it as an event in Google Analytics 4 (for later conversion)
 box_bg_color: Background Color
@@ -431,17 +431,17 @@ box_divider_flip_x: Flip Horizontal Divider
 box_divider_flip_y: Flip Vertical Divider
 box_order: Element Order on Desktop
 box_order_hint: Order of the element when window width ≥ 1280px
-box_span: Width
-box_span_hint: Width in Number of Columns
-box_span_min: Minimum Width
-box_span_min_hint: Width in Nº of Columns at Minimum Resolution
+box_fit: Width
+box_fit_hint: Width in Number of Columns
+box_fit_vs: Minimum Width
+box_fit_vs_hint: Width in Nº of Columns at Minimum Resolution
 box_grow: Fill Width
 box_grow_hint: Fills container width by increasing the width of elements or columns (does not apply if carousel is enabled)
 box_rate: Box Proportion
 box_rate_hint: Minimum height based on the set proportion 🔷 Default is automatic 🔷 **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
-box_gap_y: Margin Between Box Elements
+box_space: Margin Between Box Elements
 box_padding: Internal Margins
-box_padding_min: Minimum Internal Margins
+box_padding_vs: Minimum Internal Margins
 box_hide_shadow: Remove Shadow
 box_hide_radius: Remove Rounded Corners
 box_pill: Bullet Mode
@@ -475,10 +475,10 @@ box_tags_param_hint: Indicates the parameter name
 box_tags_custom: Custom
 box_cols: Nº of Columns
 box_cols_hint: 0 = auto-calculated based on the number of elements and their widths
-box_cols_min: Nº of Columns at Minimum Resolution
-box_cols_min_hint: 0 = auto-calculated based on the number of elements and their widths at minimum resolutions
+box_cols_vs: Nº of Columns at Minimum Resolution
+box_cols_vs_hint: 0 = auto-calculated based on the number of elements and their widths at minimum resolutions
 box_gap: Margin Between Boxes
-box_gap_min: Margin Between Boxes at Minimum Resolution
+box_gap_vs: Margin Between Boxes at Minimum Resolution
 box_gap_ny: Vertical Margin Between Boxes
 box_gap_ny_hint: Value is proportional to the **Margin Between Boxes**
 box_direction: Box Direction
@@ -623,7 +623,7 @@ box_form_inputs_h3: H3 Header
 box_form_inputs_h4: H4 Header
 box_form_inputs_h5: H5 Header
 box_form_inputs_h6: H6 Header
-box_form_inputs_content: Content
+box_form_inputs_md: Content
 box_map: Map Style
 box_map_geos: Map
 box_map_geos_singular: Elemento de Mapa

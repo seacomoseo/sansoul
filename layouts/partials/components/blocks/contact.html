@@ -2,28 +2,28 @@
   {{- $show := cond (not site.Data.config.others.show) "" " show" }}
   <div class="contact box__block {{- $show }}">
     {{- range . -}}
-      {{- with merge (dict "button" $.button "font_alt" $.font_alt) . -}}
+      {{- with merge (dict "button" $.button "swap" $.swap) . -}}
 
         {{- $full := cond (not .full) "" " contact__full" -}}
 
         {{- if eq .type "address" | and .hide -}}
         {{- else if findRE `^(phone|whatsapp|mail|address|custom)$` .type -}}
 
-          {{- $class    := "" -}}
-          {{- $num      := "" -}}
-          {{- $link     := .link -}}
-          {{- $button   := .button | default "cta" -}}
-          {{- $font_alt := .font_alt -}}
-          {{- $icon     := .icon -}}
-          {{- $emoji    := "" -}}
-          {{- $label    := .label -}}
-          {{- $noindex  := .ofuscate -}}
+          {{- $class   := "" -}}
+          {{- $num     := "" -}}
+          {{- $link    := .link -}}
+          {{- $button  := .button | default "cta" -}}
+          {{- $swap    := .swap -}}
+          {{- $icon    := .icon -}}
+          {{- $emoji   := "" -}}
+          {{- $label   := .label -}}
+          {{- $noindex := .ofuscate -}}
 
           {{- if or (eq .type "phone") (eq .type "whatsapp") -}}
             {{- $num      = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
           {{- else if findRE `^(mail|address)$` .type -}}
-            {{- $button   = cond (not .button) "main" $button -}}
-            {{- $font_alt = not .font_alt -}}
+            {{- $button = cond (not .button) "main" $button -}}
+            {{- $swap   = not .swap -}}
           {{- end -}}
 
           {{- if eq .type "custom" -}}
@@ -79,7 +79,7 @@
               {{ partial "components/link" (dict
                 "class"  (print $class $full)
                 "button" $button
-                "swap"   $font_alt
+                "swap"   $swap
                 "ga4"    .ga4
                 "icon"   $icon
                 "emoji"  $emoji

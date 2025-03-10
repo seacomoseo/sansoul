@@ -4,7 +4,7 @@
   {{- $color    := $.menu.color | default "white" -}}
   {{- $bgc      := partial "functions/color-background" (dict "child" $color "parent" $.background.color) -}}
   {{- $color     = $bgc.child -}}
-  {{- $class    := print "cookies bg bg-" $color " content" -}}
+  {{- $class    := print "cookies bg bg-" $color " md" -}}
   {{- $icon     := partial "components/icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}
   {{- $label_0  := i18n "cookies_question" -}}
   {{- $label_1  := i18n "cookies_no" -}}

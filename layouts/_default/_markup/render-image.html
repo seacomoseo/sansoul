@@ -1,19 +1,19 @@
 
 {{- $alt          := .Text -}}
 {{- $ratio        := "" -}}
-{{- $span_xl      := 1.0 -}}
-{{- $figure_class := "content__figure" -}}
+{{- $col_vl       := 1.0 -}}
+{{- $figure_class := "md__figure" -}}
 {{- $image_class  := "image" -}}
 {{- $image_style  := "" -}}
 
 {{- if in .Text "float" -}}
 
-  {{- $figure_class = print $figure_class " content__figure--float" -}}
+  {{- $figure_class = print $figure_class " md__figure--float" -}}
   {{- if in .Text "float-right" -}}
-    {{- $figure_class = print $figure_class " content__figure--float-right" -}}
+    {{- $figure_class = print $figure_class " md__figure--float-right" -}}
   {{- end -}}
-  {{- $alt = $alt | replaceRE `float(-right)?` "" -}}
-  {{- $span_xl = 0.5 -}}
+  {{- $alt    = $alt | replaceRE `float(-right)?` "" -}}
+  {{- $col_vl = 0.5 -}}
 
 {{- else -}}
 
@@ -66,14 +66,14 @@
         "ratio"     $ratio
         "alt"       $alt
         "container" "sm"
-        "span_xl"   $span_xl
-        "span_xs"   1
+        "fit_vl"    $col_vl
+        "fit_vs"    1
       )
     -}}
   </div>
 
   {{- with .Title -}}
-    <figcaption class="content__figcaption">
+    <figcaption class="md__figcaption">
       {{- . -}}
     </figcaption>
   {{- end -}}

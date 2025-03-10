@@ -104,51 +104,44 @@
 
       {{- /*          problems
           background images (sections and columns items)
-          span with grow (columns items image)
+          fit with grow (columns items image)
       */ -}}
 
-      {{- $span_xl           := .span_xl | default 1 -}}
-      {{- $span_xs           := .span_xs | default 1 -}}
-      {{- $container_sizes   := dict
-        "xs"    512
-        "sm"    720
-        "md"    960
-        "lg"    1200
-        "xl"    1440
-        "fluid" 2000
-      -}}
-      {{- $container         := .container | default `fluid` -}}
-      {{- $container_max     := index $container_sizes $container -}}
-      {{- $container_min     := 393 -}}
-      {{- /* {{ $screens := slice 375 425 768 1024 1280 }}  */ -}}
-      {{- $screens           := slice 425 768 1280 -}}
-      {{- if lt $span_xs 0.50 -}}
-        {{- $screens          = slice 375 768 1280 -}}
+      {{- $fit_vl            := .fit_vl | default 1 -}}
+      {{- $fit_vs            := .fit_vs | default 1 -}}
+      {{- $containers        := site.Data.utilities.containers -}}
+      {{- $container         := .container | default "fluid" -}}
+      {{- $container_vl      := index $containers $container -}}
+      {{- $container_vs      := 393 -}}
+      {{- /* {{ $viewports := slice 375 425 768 1024 1280 }}  */ -}}
+      {{- $viewports         := slice 425 768 1280 -}}
+      {{- if lt $fit_vs 0.50 -}}
+        {{- $viewports        = slice 375 768 1280 -}}
       {{- end -}}
       {{- if eq $container "fluid" -}}
-        {{- $screens          = $screens | append 1440 -}}
+        {{- $viewports        = $viewports | append 1440 -}}
       {{- end -}}
-      {{- $screen_min        := 375 -}}
-      {{- $screen_max        := 1232 -}}
-      {{- $size_max          := (mul $container_max $span_xl) | int -}}
-      {{- $size_min          := (mul $container_min $span_xs) | int -}}
+      {{- $viewport_vs       := site.Data.utilities.viewports.vs -}}
+      {{- $viewport_vl       := site.Data.utilities.viewports.vl -}}
+      {{- $size_vl           := mul $container_vl $fit_vl | int -}}
+      {{- $size_vs           := mul $container_vs $fit_vs | int -}}
 
       {{- $sizes_base        := slice -}}
-      {{- range $screens -}}
+      {{- range $viewports -}}
         {{- $size            := 0 -}}
         {{- if eq $container "fluid" -}}
-          {{- $size           = mul . $span_xl -}}
+          {{- $size           = mul . $fit_vl -}}
         {{- else -}}
           {{- /* y = y1 + ( ((y2 - y1) * (x - x1)) / (x2 - x1) )  */ -}}
-          {{- $size           = add $size_min (div (mul (sub $size_max $size_min) (sub . $screen_min)) (sub $screen_max $screen_min)) -}}
+          {{- $size           = add $size_vs (div (mul (sub $size_vl $size_vs) (sub . $viewport_vs)) (sub $viewport_vl $viewport_vs)) -}}
         {{- end -}}
-        {{- $sizes_base       = $sizes_base | append (dict "size" $size "screen" .) -}}
+        {{- $sizes_base       = $sizes_base | append (dict "size" $size "viewport" .) -}}
       {{- end -}}
 
       {{- /* if first > last  */ -}}
       {{- if gt (index $sizes_base 0).size (index (last 1 $sizes_base) 0).size -}}
         {{- $src_reverse      = true -}}
-        {{- $sizes_base       = $sizes_base | append (dict "size" 320 "screen" 320) -}}
+        {{- $sizes_base       = $sizes_base | append (dict "size" 320 "viewport" 320) -}}
       {{- end -}}
 
       {{- $size_prev         := 10000 -}}
@@ -175,7 +168,7 @@
 
         {{- if ge $image_size $size | and $is_size_far_prev -}}
           {{- /* each size here is a object  */ -}}
-          {{- $sizes     = $sizes | append (dict "size" (mul $size 2 | int) "screen" .screen) -}}
+          {{- $sizes     = $sizes | append (dict "size" (mul $size 2 | int) "viewport" .viewport) -}}
           {{- $size_prev = $size -}}
         {{- end -}}
 
@@ -192,7 +185,7 @@
 
       {{- /* SRCSIZES AND SRCSET  */ -}}
       {{- range sort $sizes "size" -}}
-        {{- $srcsizes    = $srcsizes | append (print "(max-width:" .screen "px) " (div .size 2) "px") -}}
+        {{- $srcsizes    = $srcsizes | append (print "(max-width:" .viewport "px) " (div .size 2) "px") -}}
         {{- $image_link := partial "functions/image-format" (dict "image" $image "size" .size) -}}
         {{- $srcset      = $srcset | append (print $image_link " " .size "w") -}}
       {{- end -}}

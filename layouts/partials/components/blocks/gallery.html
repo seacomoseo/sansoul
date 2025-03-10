@@ -1,31 +1,27 @@
 {{- $cols := partial "functions/columns" (dict
-  "items" .limages
-  "each"  (merge . (dict
-    "cols" .cols
-  ))
-  "span_xl" .span_xl
-  "span_xs" .span_xs
+  "items"  .images
+  "each"   (merge . (dict "cols" .cols))
+  "col_vl" .col_vl
+  "col_vs" .col_vs
 ) -}}
-{{- $items       := $cols.items | default slice | append (.images | default slice) -}}
 
 {{- $bgc   := partial "functions/color-background" (dict "child" .color "parent" .bgcp) -}}
 {{- $color := $bgc.child -}}
 
-{{- $button_icon      := (cond (eq .icon "none") "" .icon) -}}
-{{- $is_button_expand := eq .type "rows" | and (.images | or .link) | and (ne .button "hide") -}}
-{{- $is_button_custom := .link | and (ne .type "rows") -}}
+{{- $is_button_expand := and (eq .type "rows") (.images | or .link) (ne .button "hide") -}}
+{{- $is_button_custom := and .link (ne .type "rows") -}}
 
 {{- /* CLASS  */ -}}
 {{- $class := slice
   "box__block"
   "gallery"
   (print "gallery--" (.type | default "grid"))
-  (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.max) "")
-  (cond (not .ratio)      "" "gallery--ratio")
-  (cond (not .contain)    "" "gallery--contain")
-  (cond (not .grayscale)  "" "gallery--grayscale")
+  (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.vs) "")
+  (cond (not .ratio)                                "" "gallery--ratio")
+  (cond (not .contain)                              "" "gallery--contain")
+  (cond (not .grayscale)                            "" "gallery--grayscale")
   (cond (not $color | or (eq $color "transparent")) "" (print "bg bg-" $color))
-  (cond (not site.Data.config.others.show)           "" "show")
+  (cond (not site.Data.config.others.show)          "" "show")
 -}}
 
 {{- /* STYLE  */ -}}
@@ -34,36 +30,34 @@
   (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio)) -}}
 
 {{- /* JOIN ATTRIBUTES  */ -}}
-{{- $attrs := dict
-  "class" $class
-  "style" $style -}}
-{{- $attrs := partial "functions/attrs" $attrs }}
+{{- $attrs := dict "class" $class "style" $style -}}
+{{- $attrs  = partial "functions/attrs" $attrs -}}
 
+{{- /*  HTML  */}}
 <div {{- $attrs }}>
+
+  {{- /*  BBACKGROUND COLOR  */ -}}
   {{- if $color | and (ne $color "transparent") }}
     <div class="bg-color"></div>
-  {{- end }}
+  {{- end -}}
+
+  {{- /*  ITEMS  */}}
   <div class="gallery__items">
-    {{- range uniq $items -}}
-      {{- $image := . -}}
-      {{- $link  := "" -}}
-      {{- if reflect.IsMap . -}}
-        {{- $image = .image -}}
-        {{- $link  = .link -}}
-      {{- end -}}
-      {{- if $image -}}
-        {{- partial "components/blocks/gallery-item" (dict
-          "image"     $image
-          "link"      $link
-          "type"      $.type
-          "lightbox"  (not $.limages)
-          "cols"      $cols.max
-          "container" $.container
-          "span_xl"   $cols.span_xl
-          "span_xs"   $cols.span_xs
-        ) -}}
-      {{- end -}}
+    {{- /*  ITEM  */ -}}
+    {{- range .images -}}
+      {{- partial "components/blocks/gallery-item" (dict
+        "image"     .image
+        "link"      .link
+        "alt"       .alt
+        "type"      $.type
+        "cols"      $cols.vs
+        "container" $.container
+        "col_vl"    $cols.fit_vl
+        "col_vs"    $cols.fit_vs
+      ) -}}
     {{- end -}}
+
+    {{- /*  BUTTON EXPAND  */ -}}
     {{- if $is_button_expand }}
       {{ partial "components/link" (dict
         "class"  "gallery__expand"
@@ -76,12 +70,14 @@
     {{- end }}
   </div>
 </div>
+
+{{- /*  BUTTON CUSTOM  */}}
 {{- if $is_button_custom }}
   <div class="buttons">
     {{ partial "components/link" (dict
       "link"   .link
       "button" (.button | default "cta")
-      "swap"   .font_alt
+      "swap"   .swap
       "icon"   .icon
       "label"  .label
       "anchor" .anchor

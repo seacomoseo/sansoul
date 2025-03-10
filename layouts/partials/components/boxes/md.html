@@ -1,0 +1,44 @@
+{{- /*  SET STORE  */ -}}
+{{- $store := page.Store -}}
+{{- $store.Set "md_nav"   .md_nav   -}}
+{{- $store.Set "md_index" .md_index -}}
+
+{{- /*  ALIGN  */ -}}
+{{- $md_align  := "" -}}
+{{- with .md_align -}}
+  {{- $md_align = print "align-" . -}}
+{{- else -}}
+  {{/*  size  */}}
+  {{- $container_small := in (slice "xs" "sm") .container -}}
+  {{- if and
+    (not .align)
+    (not .header)
+    .main
+    $container_small
+  -}}
+    {{- $md_align = "align-left" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  CLASS  */ -}}
+{{- $md_class := slice
+  "box__md"
+  "md"
+  $md_align
+  (cond (not .md_align_vl)  "" (print "align--vl-" .md_align_vl))
+  (cond (not .like_article) "" "box__md--small")
+-}}
+
+{{- /*  ATTRIBUTES  */ -}}
+{{ $md_attrs := dict "class" $md_class }}
+{{ $md_attrs  = partial "functions/attrs" $md_attrs -}}
+
+{{- /* HTML */}}
+<div {{- $md_attrs }}>
+  {{- /* <div class="float"></div><div class="float float--r"></div> */}}
+  {{ partial "functions/md" .md }}
+</div>
+
+{{- /*  DELETE STORE  */ -}}
+{{- $store.Delete "md_nav"   -}}
+{{- $store.Delete "md_index" -}}

@@ -8,7 +8,7 @@
 {{ $no_content := .bg | and (not (or
   .title
   .subtitle
-  .content
+  .md
   .icon
   .image_src
   .button_is
@@ -29,6 +29,10 @@
   (cond (not .bg_color) (cond (not .card) "" "bg-black") (print "bg-" .bg_color))
   (cond (not .bg_image_src) "" " bg-image")
 }}
+
+{{ $not_fit    := or (not .fit   ) (eq .fit    1) }}
+{{ $not_fit_vs := or (not .fit_vs) (eq .fit_vs 1) }}
+
 
 {{ $rate  := .rate }}
 {{ if not $rate }}
@@ -52,25 +56,25 @@
   (cond (not (.main | and .modal)) "" "modal__container")
   (cond (not .align)               "" (print "align-" .align))
   (cond (not .align_y)             "" (print "align-self-" .align_y))
-  (cond (not .align_max)           "" (print "align--max-" .align_max))
+  (cond (not .align_vl)            "" (print "align--vl-" .align_vl))
   (cond (not $bg_color)            "" "bg")
   $bg_color
   (cond (not .gradient)            "" (print "bg-gradient-" .gradient))
   (cond (not .gradient)            "" (print "bg-gradient-" (.gradient_type | default "linear-r")))
   (cond (and (ne .parallax "box") (not (and .bg (eq .parallax "soft")))) "" "parallax")
-  (cond (ne .parallax "box")                       "" "parallax--box")
-  (cond (not (and .bg (eq .parallax "soft")))      "" "parallax--bg")
-  (cond (and (not .span) (not .span_min))          "" "box--span")
-  (cond (not .grow)                                "" "box--grow")
-  (cond (not $rate)                                "" "box--ratio")
-  (cond (not .hide_radius)                         "" "box--hide-radius")
-  (cond (not .hide_shadow)                         "" "box--hide-shadow")
-  (cond (not .card)                                "" "box--card")
-  (cond (not .pill)                                "" "pill-bottom")
-  (cond (not (or .pill .circle))                   "" "pill-top")
-  (cond (ne .button "hide")                        "" "box--button-hide")
-  (cond (not (.slider | and (not .key)))           "" "slider__item--active")
-  (cond (not .show)                                "" "show")
+  (cond (ne .parallax "box")                  "" "parallax--box")
+  (cond (not (and .bg (eq .parallax "soft"))) "" "parallax--bg")
+  (cond (and $not_fit $not_fit_vs)            "" "box--fit")
+  (cond (not .grow)                           "" "box--grow")
+  (cond (not $rate)                           "" "box--ratio")
+  (cond (not .hide_radius)                    "" "box--hide-radius")
+  (cond (not .hide_shadow)                    "" "box--hide-shadow")
+  (cond (not .card)                           "" "box--card")
+  (cond (not .pill)                           "" "pill-bottom")
+  (cond (not (or .pill .circle))              "" "pill-top")
+  (cond (ne .button "hide")                   "" "box--button-hide")
+  (cond (not (and .slider (not .key)))        "" "slider__item--active")
+  (cond (not .show)                           "" "show")
 }}
 
 
@@ -79,14 +83,14 @@
 {{ $bg_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) }}
 
 {{ $style := slice
-  (cond (not $bg_alpha)                       "" (print "--bg-alpha:" .color_alpha))
-  (cond (not .order)                          "" (print "--order:" .order))
-  (cond (eq .gap_y nil)                       "" (print "--box-gap:" .gap_y "rem"))
-  (cond (eq .padding nil)                     "" (print "--box-padding-max:" .padding))
-  (cond (eq .padding_min nil)                 "" (print "--box-padding-min:" .padding_min))
-  (cond (or (not .span) (eq .span 1))         "" (print "--box-span-max:" .span))
-  (cond (or (not .span_min) (eq .span_min 1)) "" (print "--box-span-min:" .span_min))
-  (cond (not $rate)                           "" (print "--box-ratio:" $rate))
+  (cond (not $bg_alpha)      "" (print "--bg-alpha:" .color_alpha))
+  (cond (not .order)         "" (print "--order:" .order))
+  (cond (eq .space nil)      "" (print "--box-gap:" .space "rem"))
+  (cond (eq .padding nil)    "" (print "--box-padding-vl:" .padding))
+  (cond (eq .padding_vs nil) "" (print "--box-padding-vs:" .padding_vs))
+  (cond $not_fit             "" (print "--box-fit-vl:" .fit))
+  (cond $not_fit_vs          "" (print "--box-fit-vs:" .fit_vs))
+  (cond (not $rate)          "" (print "--box-ratio:" $rate))
 }}
 
 

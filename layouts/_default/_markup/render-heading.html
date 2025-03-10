@@ -1,7 +1,7 @@
 {{- /* Get the Page's Store */ -}}
 {{- $store    := page.Store -}}
-{{- $is_index := $store.Get "content_index" | default false -}}
-{{- $is_nav   := $store.Get "content_nav"   | default false -}}
+{{- $is_index := $store.Get "md_index" | default false -}}
+{{- $is_nav   := $store.Get "md_nav"   | default false -}}
 
 {{- /*  INDEX  */ -}}
 {{- $numbering := "" -}}
@@ -35,7 +35,7 @@
 {{- end -}}
 
 {{- /* CLASS */ -}}
-{{- $class  := "content__heading" -}}
+{{- $class  := "md__heading" -}}
 {{- if (page.Params.list.underline | and (eq .Level 2)) -}}
   {{- $class = print $class " underline" -}}
 {{- end -}}
@@ -64,11 +64,11 @@
   {{- if $icon }}
     {{ partial "components/icon" (dict "icon" $icon) -}}
   {{- else if $is_index }}
-    <i class="content__heading-index">{{ $numbering }}</i>
+    <i class="md__heading-index">{{ $numbering }}</i>
   {{- end }}
   <i>
     {{- if $is_nav -}}
-    <a class="link content__heading-link" href="#{{ $id }}">
+    <a class="link md__heading-link" href="#{{ $id }}">
     {{- end -}}
       {{- $text | safeHTML -}}
       {{- if in $class "underline" }}<br>{{ end -}}

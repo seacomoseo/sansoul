@@ -181,7 +181,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               'title',
               'date',
               'summary',
-              'content',
+              'md',
               'reading_time',
               'type',
               'type_label',
@@ -226,7 +226,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
           searchItemImage = `<picture class="image__inner"><img src="${results[item].item.image}"></picture>`
         }
         if (results[item].item.summary) {
-          searchItemText = `<div class="content content--small">${results[item].item.summary}</div>`
+          searchItemText = `<div class="md md--small">${results[item].item.summary}</div>`
         }
         if (results[item].item.date) {
           searchItemType = `

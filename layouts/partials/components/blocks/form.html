@@ -367,7 +367,7 @@
             {{- partial "components/link" (dict
               "class"  "form__file--button"
               "button" (.button | default "cta")
-              "swap"   .font_alt
+              "swap"   .swap
               "icon"   (.icon | default "upload")
               "emoji"  "📤"
               "label"  $placeholder
@@ -502,9 +502,9 @@
         {{- .label | markdownify -}}
         {{- print "</" $type ">" | safeHTML -}}
 
-      {{- /*  content  */ -}}
-      {{- else if eq $type "content" }}
-        <div class="form__content content">
+      {{- /*  md  */ -}}
+      {{- else if eq $type "md" }}
+        <div class="form__md md">
           {{ partial "functions/md" . }}
         </div>
 
@@ -524,7 +524,7 @@
 
       {{- /*  hint  */ -}}
       {{- with .hint }}
-        <div class="form__hint content {{- if not ($type | findRE `^h\d`) }} align-left{{ end }}">
+        <div class="form__hint md {{- if not ($type | findRE `^h\d`) }} align-left{{ end }}">
           {{ partial "functions/md" . }}
         </div>
       {{- end -}}
@@ -552,8 +552,8 @@
 
   {{- /* Submit */ -}}
   {{- $submit_class  := "form__button contact__full button" -}}
-  {{- with $form.font_alt -}}
-    {{- $submit_class = print $submit_class " button--font-alt" -}}
+  {{- with $form.swap -}}
+    {{- $submit_class = print $submit_class " button--swap" -}}
   {{- end -}}
   {{- with $form.button -}}
     {{- if ne . "cta" -}}
@@ -577,9 +577,9 @@
     <i>
       {{- with $form.consent -}}
         {{- $store := page.Store -}}
-        {{- $store.Set "content_inline" true -}}
+        {{- $store.Set "md_inline" true -}}
         {{- partial "functions/md" (. | default (i18n "consent")) -}}
-        {{- $store.Delete "content_index" -}}
+        {{- $store.Delete "md_index" -}}
       {{- else -}}
         {{- i18n "consent" -}}
         {{- ". " -}}

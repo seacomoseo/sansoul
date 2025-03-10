@@ -14,12 +14,11 @@
 {{- $swap    := "" -}}
 {{- if and (hasPrefix .Text "[") (hasSuffix .Text "]") -}}
   {{- $label  = .Text  | replaceRE `(?s)^\[|\]$` "" -}}
-  {{- $button = replace $meta "font-alt" "" -}}
-  {{- $button = findRE `(main|alt|cta|light|dark|invert|similar|whatsapp)` $button 1 -}}
+  {{- $button = findRE `(main|alt|cta|light|dark|invert|similar|whatsapp)` $meta 1 -}}
   {{- $button = index $button 0 | default "cta" -}}
   {{- $dot    = in $meta "dot" -}}
   {{- $sm     = in $meta "sm" -}}
-  {{- $swap   = in $meta "font-alt" -}}
+  {{- $swap   = in $meta "swap" -}}
 {{- end -}}
 
 {{- /*  ga4  */ -}}

@@ -3,10 +3,10 @@
 {{/*  BOXES FIELDS BY GROUPS  */}}
 
 {{ $group := slice
-  `~BOX_COLS_MAX`
-  `~BOX_COLS_MIN`
-  `~BOX_GAP`
-  `~BOX_GAP_MIN`
+  `~BOX_COLS_VL`
+  `~BOX_COLS_VS`
+  `~BOX_GAP_VL`
+  `~BOX_GAP_VS`
   `~BOX_GAP_NY`
   `~BOX_DIRECTION`
   `~BOX_GROUP_RADIUS`
@@ -22,17 +22,17 @@
   `~BOX_HANCHOR`
   `~BOX_SUBTITLE`
   `~BOX_PRICE`
-  `~BOX_CONTENT`
+  `~BOX_MD`
   `~BOX_HS`
   `~BOX_HN`
   `~BOX_UPPERCASE`
   `~BOX_UNDERLINE`
   `~BOX_ALIGN`
-  `~BOX_ALIGN_MAX`
-  `~BOX_CONTENT_ALIGN`
-  `~BOX_CONTENT_ALIGN_MAX`
-  `~BOX_CONTENT_INDEX`
-  `~BOX_CONTENT_NAV`
+  `~BOX_ALIGN_VL`
+  `~BOX_MD_ALIGN`
+  `~BOX_MD_ALIGN_VL`
+  `~BOX_MD_INDEX`
+  `~BOX_MD_NAV`
 }}
 {{ $text_style := slice
   `~BOX_HS`
@@ -40,20 +40,20 @@
   `~BOX_UPPERCASE`
   `~BOX_UNDERLINE`
   `~BOX_ALIGN`
-  `~BOX_ALIGN_MAX`
-  `~BOX_CONTENT_ALIGN`
-  `~BOX_CONTENT_ALIGN_MAX`
-  `~BOX_CONTENT_INDEX`
-  `~BOX_CONTENT_NAV`
+  `~BOX_ALIGN_VL`
+  `~BOX_MD_ALIGN`
+  `~BOX_MD_ALIGN_VL`
+  `~BOX_MD_INDEX`
+  `~BOX_MD_NAV`
 }}
 {{ $menu := slice
   `~BOX_MENU_LABEL`
   `~BOX_MENU_BUTTON`
-  `~BOX_MENU_FONT_ALT`
+  `~BOX_MENU_SWAP`
 }}
 {{ $menu_style := slice
   `~BOX_MENU_BUTTON`
-  `~BOX_MENU_FONT_ALT`
+  `~BOX_MENU_SWAP`
 }}
 {{ $icon := slice
   `~BOX_ICON_ID`
@@ -80,7 +80,7 @@
   `~BOX_BUTTON_LABEL`
   `~BOX_BUTTON_ANCHOR`
   `~BOX_BUTTON_OFUSCATE`
-  `~BOX_BUTTON_FONT_ALT`
+  `~BOX_BUTTON_SWAP`
   `~BOX_BUTTON_GA4`
   `~BOX_BUTTON_COLOR_WITH_HIDE`
 }}
@@ -128,16 +128,16 @@
 }}
 {{ $boxi_boxes := slice
   `~BOX_ORDER`
-  `~BOX_SPAN`
-  `~BOX_SPAN_MIN`
+  `~BOX_FIT_VL`
+  `~BOX_FIT_VS`
   `~BOX_GROW`
   `~BOX_ALIGN_Y_SELF`
 }}
 {{ $boxi := slice
   `~BOX_RATE`
-  `~BOX_GAP_Y`
-  `~BOX_PADDING`
-  `~BOX_PADDING_MIN`
+  `~BOX_SPACE`
+  `~BOX_PADDING_VL`
+  `~BOX_PADDING_VS`
   `~BOX_HIDE_SHADOW`
   `~BOX_HIDE_RADIUS`
   `~BOX_PILL`

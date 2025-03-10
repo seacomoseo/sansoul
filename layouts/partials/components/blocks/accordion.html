@@ -1,6 +1,6 @@
 {{- $show     := cond (not site.Data.config.others.show) "" " show" -}}
 {{- $button   := cond (ne .accordion.button "none") .accordion.button "" -}}
-{{- $fotn_alt := cond (not .accordion.font_alt) "" "button--font-alt" -}}
+{{- $fotn_alt := cond (not .accordion.swap) "" "button--swap" -}}
 {{- $headers  := .accordion.headers }}
 <div class="accordions {{- if $headers }} accordions--headers{{ end }} box__block align-left {{- $show }}">
   {{- range $k, $v := .accordions -}}
@@ -29,9 +29,9 @@
           {{- end }}
         </h{{ $hn }}>
 
-        {{- /* CONTENT  */}}
-        <div class="accordion__content content" {{- if not $open }} hidden="until-found"{{ end }}>
-          {{- with .content -}}
+        {{- /* MD  */}}
+        <div class="accordion__md md" {{- if not $open }} hidden="until-found"{{ end }}>
+          {{- with .md -}}
             {{- partial "functions/md" . -}}
           {{- end }}
         </div>
@@ -50,7 +50,7 @@
     "name"  .title
     "acceptedAnswer" (dict
       "@type" `Answer`
-      "text"  (.content | markdownify | plainify)
+      "text"  (.md | markdownify | plainify)
     )
   ) -}}
 {{- end -}}

@@ -1,6 +1,21 @@
 {{ $vars := dict }}
 {{ with site.Data }}
   {{ $vars = dict
+    "utilities-viewport-min"             site.Data.utilities.viewports.min
+    "utilities-viewport-max"             site.Data.utilities.viewports.max
+    "utilities-viewport-xs"              site.Data.utilities.viewports.xs
+    "utilities-viewport-sm"              site.Data.utilities.viewports.sm
+    "utilities-viewport-md"              site.Data.utilities.viewports.md
+    "utilities-viewport-lg"              site.Data.utilities.viewports.lg
+    "utilities-viewport-xl"              site.Data.utilities.viewports.xl
+
+    "utilities-containers-xs"            site.Data.utilities.containers.xs
+    "utilities-containers-sm"            site.Data.utilities.containers.sm
+    "utilities-containers-md"            site.Data.utilities.containers.md
+    "utilities-containers-lg"            site.Data.utilities.containers.lg
+    "utilities-containers-xl"            site.Data.utilities.containers.xl
+    "utilities-containers-fluid"         site.Data.utilities.containers.fluid
+
     "styles-colors-base-white"           (.styles.colors.base.white               | default "#fff")
     "styles-colors-base-light"           (.styles.colors.base.light               | default "#eee")
     "styles-colors-base-dark"            (.styles.colors.base.dark                | default "#282525")
@@ -61,12 +76,12 @@
     "styles-buttons-icon_circle"         (.styles.buttons.icon_circle             | not | not | string)
     "styles-buttons-deep"                (.styles.buttons.deep                    | not | not | string)
     "styles-buttons-outline"             (.styles.buttons.outline                 | not | not | string)
-    "styles-buttons-font_main"           (.styles.buttons.font_main.type          | default "base")
-    "styles-buttons-font_main_bold"      (.styles.buttons.font_main.bold          | not | not | string)
-    "styles-buttons-font_main_uppercase" (.styles.buttons.font_main.uppercase     | not | not | string)
-    "styles-buttons-font_alt"            (.styles.buttons.font_alt.type           | default "base")
-    "styles-buttons-font_alt_bold"       (.styles.buttons.font_alt.bold           | not | not | string)
-    "styles-buttons-font_alt_uppercase"  (.styles.buttons.font_alt.uppercase      | not | not | string)
+    "styles-buttons-font"                (.styles.buttons.font.type               | default "base")
+    "styles-buttons-font_bold"           (.styles.buttons.font.bold               | not | not | string)
+    "styles-buttons-font_uppercase"      (.styles.buttons.font.uppercase          | not | not | string)
+    "styles-buttons-swap"                (.styles.buttons.swap.type               | default "base")
+    "styles-buttons-swap_bold"           (.styles.buttons.swap.bold               | not | not | string)
+    "styles-buttons-swap_uppercase"      (.styles.buttons.swap.uppercase          | not | not | string)
 
     "styles-shadow-left"                 (.styles.shadow.left                     | default 0)
     "styles-shadow-top"                  (.styles.shadow.top                      | default 0)

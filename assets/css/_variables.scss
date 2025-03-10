@@ -61,28 +61,21 @@ $options-colors: (
 
 
 // Screen
-$screen-min: 375px  !default;
-$screen-max: 1232px !default; // 1440?
-$screen-xs:  375px  !default;
-$screen-sm:  425px  !default;
-$screen-md:  768px  !default;
-$screen-lg:  1024px !default;
-$screen-xl:  1280px !default;
-$screens: (
-  xs: $screen-xs,
-  sm: $screen-sm,
-  md: $screen-md,
-  lg: $screen-lg,
-  xl: $screen-xl,
-);
+$vs:          $utilities-viewport-min * 1px !default;
+$vl:          $utilities-viewport-max * 1px !default;
+$viewport-xs: $utilities-viewport-xs  * 1px !default;
+$viewport-sm: $utilities-viewport-sm  * 1px !default;
+$viewport-md: $utilities-viewport-md  * 1px !default;
+$viewport-lg: $utilities-viewport-lg  * 1px !default;
+$viewport-xl: $utilities-viewport-xl  * 1px !default;
 
 
 // Containers
-$container-width-max-xs: 512px  !default;
-$container-width-max-sm: 720px  !default;
-$container-width-max-md: 960px  !default;
-$container-width-max-lg: 1200px !default;
-$container-width-max-xl: 1440px !default;
+$container-width-max-xs: $utilities-containers-xs * 1px !default;
+$container-width-max-sm: $utilities-containers-sm * 1px !default;
+$container-width-max-md: $utilities-containers-md * 1px !default;
+$container-width-max-lg: $utilities-containers-lg * 1px !default;
+$container-width-max-xl: $utilities-containers-xl * 1px !default;
 $containers: (
   xs: $container-width-max-xs,
   sm: $container-width-max-sm,
@@ -114,8 +107,8 @@ $line-height-base:         $styles-fonts-base-line-height             !default;
 $line-height-title:        $styles-fonts-title-line-height            !default;
 $line-height-cursive:      $styles-fonts-cursive-line-height          !default;
 // Fonts Size
-$font-size-min:            16                                         !default;
-$font-size-max:            18                                         !default;
+$font-size-vs:             16                                         !default;
+$font-size-vl:             18                                         !default;
 $font-size-title:          $styles-fonts-title-size                   !default;
 $font-size-cursive:        $styles-fonts-cursive-size                 !default;
 // Fonts Style Top
@@ -136,16 +129,16 @@ $chamfer:                  $styles-rounded-chamfer == 'true' !default;
 
 
 // Buttons
-$buttons-rounded:             $styles-buttons-sides_round         == 'true'        !default;
-$icon-buttons-rounded:        $styles-buttons-icon_circle         == 'true'        !default;
-$buttons-3d:                  $styles-buttons-deep                == 'true'        !default;
-$buttons-outline:             $styles-buttons-outline             == 'true'        !default;
-$buttons-font-main:           $styles-buttons-font_main                            !default;
-$buttons-font-main-bold:      $styles-buttons-font_main_bold      == 'true'        !default;
-$buttons-font-main-uppercase: $styles-buttons-font_main_uppercase == 'true'        !default;
-$buttons-font-alt:            $styles-buttons-font_alt                             !default;
-$buttons-font-alt-bold:       $styles-buttons-font_alt_bold       == 'true'        !default;
-$buttons-font-alt-uppercase:  $styles-buttons-font_alt_uppercase  == 'true'        !default;
+$buttons-rounded:             $styles-buttons-sides_round    == 'true' !default;
+$icon-buttons-rounded:        $styles-buttons-icon_circle    == 'true' !default;
+$buttons-3d:                  $styles-buttons-deep           == 'true' !default;
+$buttons-outline:             $styles-buttons-outline        == 'true' !default;
+$buttons-font-main:           $styles-buttons-font                     !default;
+$buttons-font-main-bold:      $styles-buttons-font_bold      == 'true' !default;
+$buttons-font-main-uppercase: $styles-buttons-font_uppercase == 'true' !default;
+$buttons-font-swap:           $styles-buttons-swap                     !default;
+$buttons-font-swap-bold:      $styles-buttons-swap_bold      == 'true' !default;
+$buttons-font-swap-uppercase: $styles-buttons-swap_uppercase == 'true' !default;
 @if $radius > 1.25em {
   $radius:                    1.25em;
   $buttons-rounded:           true;

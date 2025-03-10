@@ -39,7 +39,7 @@ menu:
     anchor: null # string
     ofuscate: true
     button: none
-    font_alt: false
+    swap: false
     ga4: false
 callnow:
   show: null # [ items, auto, hide ]

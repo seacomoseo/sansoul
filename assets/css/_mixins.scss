@@ -97,9 +97,9 @@
   $font-bold: $buttons-font-main-bold;
   $font-uppercase: $buttons-font-main-uppercase;
   @if $font == alt {
-    $font-type: $buttons-font-alt;
-    $font-bold: $buttons-font-alt-bold;
-    $font-uppercase: $buttons-font-alt-uppercase;
+    $font-type: $buttons-font-swap;
+    $font-bold: $buttons-font-swap-bold;
+    $font-uppercase: $buttons-font-swap-uppercase;
   }
 
   @if $font-bold {
@@ -152,12 +152,12 @@
 
 // FLUID SIZE
 
-@mixin fluid-size($name, $unit, $size-min, $size-max) {
+@mixin fluid-size($name, $unit, $min, $max) {
   #{$name}: calc(
     clamp(
-      min(#{$size-min}, #{$size-max}),
-      ((#{$size-max} - #{$size-min}) / var(--run)) * (var(--vw) - var(--vw-min)) + #{$size-min},
-      max(#{$size-min}, #{$size-max})
+      min(#{$min}, #{$max}),
+      ((#{$max} - #{$min}) / var(--run)) * (var(--vw) - var(--vs)) + #{$min},
+      max(#{$min}, #{$max})
     )
     * #{$unit}
   );

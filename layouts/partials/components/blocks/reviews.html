@@ -13,21 +13,18 @@
 
 
   {{- /* REVIEWS STYLE  */ -}}
-  {{- $cols_max   := .cols | default 1 -}}
+  {{- $cols_vl   := .cols | default 1 -}}
   {{- if eq .cols 0 -}}
-    {{- $cols_max  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+    {{- $cols_vl  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
   {{- end -}}
-  {{- $cols_min   := .cols_min | default 1 -}}
-  {{- if eq .cols_min 0 -}}
-    {{- $cols_min  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- $cols_vs   := .cols_vs | default 1 -}}
+  {{- if eq .cols_vs 0 -}}
+    {{- $cols_vs  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
   {{- end -}}
-  {{- $col_max := cond (eq $cols_max 1) "" (print "--cols-max:" $cols_max) -}}
-  {{- $col_min := cond (eq $cols_min 1) "" (print "--cols-min:" $cols_min) -}}
+  {{- $col_vl := cond (eq $cols_vl 1) "" (print "--cols-vl:" $cols_vl) -}}
+  {{- $col_vs := cond (eq $cols_vs 1) "" (print "--cols-vs:" $cols_vs) -}}
 
-  {{- $cols_style := slice
-    $col_max
-    $col_min
-  -}}
+  {{- $cols_style := slice $col_vl $col_vs -}}
 
   {{- /* REVIEWS ATTRIBUTES JOIN  */ -}}
   {{- $attrs := dict
@@ -90,8 +87,8 @@
               "icon"  $icon
             ) }}
             <blockquote class="review__text">
-              <div class="content">
-                {{ partial "functions/md" .content }}
+              <div class="md">
+                {{ partial "functions/md" .md }}
               </div>
             </blockquote>
             {{ partial "components/icon" (dict

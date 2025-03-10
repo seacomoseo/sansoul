@@ -83,18 +83,18 @@
 // Padding
 .container,
 .box:where(:not(.bg)) {
-  --box-padding-min: 0;
+  --box-padding-vs: 0;
 }
 .box:where(.bg:not(.boxes > *, [class*="box--padding-"])) {
-  --box-padding-min: 1;
+  --box-padding-vs: 1;
 }
 
-// Span
-.box--span {
-  --box-span-min: 1;
-  --box-span-max: var(--box-span-min, 1);
-  @include fluid-size(--box-span, 1, var(--box-span-min), var(--box-span-max));
-  --box-width: calc(var(--box-w) * var(--box-span) + var(--gap-width) * (var(--box-span) - 1));
+// Fit
+.box--fit {
+  --box-fit-vs: 1;
+  --box-fit-vl: var(--box-fit-vs, 1);
+  @include fluid-size(--box-fit, 1, var(--box-fit-vs), var(--box-fit-vl));
+  --box-width: calc(var(--box-w) * var(--box-fit) + var(--gap-width) * (var(--box-fit) - 1));
 }
 
 // Grow
@@ -325,7 +325,7 @@
 }
 
 // Content
-.box__content {
+.box__md {
   margin-bottom: auto;
   width: 100%;
   // em {
@@ -338,7 +338,7 @@
     color: inherit;
   }
 }
-.box__content--small {
+.box__md--small {
   font-size: .75em;
   margin-top: 0;
 }

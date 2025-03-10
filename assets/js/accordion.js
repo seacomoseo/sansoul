@@ -1,4 +1,4 @@
-const itemContent = item => item.querySelector('.accordion__content')
+const itemContent = item => item.querySelector('.accordion__md')
 const itemscrollHeight = item => item.style.setProperty('--max-height', item.scrollHeight + 'px')
 
 function hideAccordionActive (itemActive) {

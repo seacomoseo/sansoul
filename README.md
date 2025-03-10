@@ -93,7 +93,7 @@
 - [ ] Check `forms` `actions`
 - [ ] Check comments
 - [ ] Check Google Translate ofuscate links and la propia traducción
-- [ ] ¿Remove `cols` and `cols_min`? > Only `span` and `span_min`?
+- [ ] ¿Remove `cols` and `cols_vs`? > Only `fit` and `fit_vs`?
 - [ ] `styles.performance`
 - [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
   - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?

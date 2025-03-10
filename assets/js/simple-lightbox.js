@@ -10,7 +10,7 @@ export function initSimpleLightbox () {
       // Unique groups of ligtbox items
       let lbGroups = []
       lbItems.forEach(lbItem => {
-        const lbGroup = lbItem.closest('.gallery, .container, .boxes, .content, .menu__items')
+        const lbGroup = lbItem.closest('.gallery, .container, .boxes, .md, .menu__items')
         lbGroups.push(lbGroup)
       })
       lbGroups = [...new Set(lbGroups)]

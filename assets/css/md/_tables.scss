@@ -12,15 +12,15 @@
 
 table {
   &:not(.table-sm, .container.bg *, .boxes *) {
-    @include fluid-size(max-width, 1px, $screen-min / 1px, $container-width-max-xl / 1px);
+    @include fluid-size(max-width, 1px, $vs / 1px, $container-width-max-xl / 1px);
     @include fluid-size(--margin-table-lg, 1em, 1, 2);
     margin-inline: calc(var(--container-margin-side) + var(--margin-table-lg));
   }
-  &:where(.content *) {
+  &:where(.md *) {
     margin-bottom: 1em;
   }
 }
-@container box (min-width: $screen-md) {
+@container box (min-width: $viewport-md) {
   .table-fix {
     th, td {
       &:first-child {
@@ -56,13 +56,13 @@ table.align-right {
   margin-left: auto;
   margin-right: 0;
 }
-@media (min-width: $screen-max) {
-  .align--max-center {
+@media (min-width: $vl) {
+  .align--vl-center {
     table {
       margin-left: auto;
     }
   }
-  .align--max-right {
+  .align--vl-right {
     table {
       margin-left: auto;
       margin-right: 0;

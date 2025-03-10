@@ -11,17 +11,17 @@
 
 @each $name, $size in $containers {
   .container--#{$name} {
-    @include fluid-size(--container-#{$name}, 1px, $screen-min / 1px - 32, $size / 1px);
+    @include fluid-size(--container-#{$name}, 1px, $vs / 1px - 32, $size / 1px);
     --container-width: var(--container-#{$name});
   }
 }
 
 .container.bg:not([class*="box--padding-"]) {
-  --box-padding-min: 1;
-  --box-padding-max: 2;
+  --box-padding-vs: 1;
+  --box-padding-vl: 2;
   &.container--lg,
   &.container--xl {
-    --box-padding-max: 3;
+    --box-padding-vl: 3;
   }
 }
 

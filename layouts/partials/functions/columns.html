@@ -1,39 +1,30 @@
-{{ $items    := slice }}
-{{ range .items | default slice }}
-  {{ $if := partial "functions/if" (dict "Page" page "if" .if) }}
-  {{ if $if }}
-    {{ $items = $items | append . }}
-  {{ end }}
-{{ end }}
-
-{{ $max   := 1 }}
-{{ $min   := 1 }}
+{{ $vl   := 1 }}
+{{ $vs   := 1 }}
 {{ with .each }}
-  {{ $max  = .cols     | default 1 }}
-  {{ $min  = .cols_min | default 1 }}
+  {{ $vl  = .cols     | default 1 }}
+  {{ $vs  = .cols_vs | default 1 }}
   {{ if eq .cols 0 }}
-    {{ $span  := 0 }}
-    {{ range $items }}
-      {{ $span = add $span (.span | default .span_min | default 1) }}
+    {{ $fit  := 0 }}
+    {{ range $.items }}
+      {{ $fit = add $fit (.fit | default .fit_vs | default 1) }}
     {{ end }}
-    {{ $max  = cond (le $span 6) $span 3 }}
+    {{ $vl  = cond (le $fit 6) $fit 3 }}
   {{ end }}
-  {{ if eq .cols_min 0 }}
-    {{ $span  := 0 }}
-    {{ range $items }}
-      {{ $span = add $span (.span_min | default 1) }}
+  {{ if eq .cols_vs 0 }}
+    {{ $fit  := 0 }}
+    {{ range $.items }}
+      {{ $fit = add $fit (.fit_vs | default 1) }}
     {{ end }}
-    {{ $min  = cond (le $span 6) $span 3 }}
+    {{ $vs  = cond (le $fit 6) $fit 3 }}
   {{ end }}
 {{ end }}
 
-{{ $span_xl := div .span_xl $max }}
-{{ $span_xs := div .span_xs $min }}
+{{ $fit_vl := div .fit_vl $vl }}
+{{ $fit_vs := div .fit_vs $vs }}
 
 {{ return dict
-  "max"     $max
-  "min"     $min
-  "items"   $items
-  "span_xl" $span_xl
-  "span_xs" $span_xs
+  "vl"     $vl
+  "vs"     $vs
+  "fit_vl" $fit_vl
+  "fit_vs" $fit_vs
 }}

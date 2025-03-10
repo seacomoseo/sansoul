@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="step__content {{- $show }}">
+      <div class="step__md {{- $show }}">
         {{- with .title -}}
           {{- $hn_class := slice
             "step__title"
@@ -44,8 +44,8 @@
             {{- . | markdownify }}
           </p>
         {{- end -}}
-        {{- with .content }}
-          <div class="content">
+        {{- with .md }}
+          <div class="md">
             {{ partial "functions/md" . }}
           </div>
         {{- end }}

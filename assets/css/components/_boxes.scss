@@ -2,13 +2,13 @@
 .boxes {
   display: flex;
 
-  --cols-min: 1;
-  --cols-max: var(--cols-min, 1);
+  --cols-vs: 1;
+  --cols-vl: var(--cols-vs, 1);
 
-  @include fluid-size(--cols-gap-max-default, 1, 1, 2);
-  --cols-gap-max: var(--cols-gap-min, var(--cols-gap-max-default, 1));
+  @include fluid-size(--cols-gap-vl-default, 1, 1, 2);
+  --cols-gap-vl: var(--cols-gap-vs, var(--cols-gap-vl-default, 1));
 
-  @include fluid-size(--gap-width, 1em, var(--cols-gap-min, 1), var(--cols-gap-max));
+  @include fluid-size(--gap-width, 1em, var(--cols-gap-vs, 1), var(--cols-gap-vl));
   column-gap: var(--gap-width);
   --cols-gap-ny: 1;
   --cols-gap-y: calc(var(--gap-width) * var(--cols-gap-ny));
@@ -34,7 +34,7 @@
 .boxes--bottom,
 .boxes--radius,
 .slider__items {
-  @include fluid-size(--cols, 1, var(--cols-min), var(--cols-max));
+  @include fluid-size(--cols, 1, var(--cols-vs), var(--cols-vl));
   --col-width: calc(100cqw / var(--cols));
 
   // gap per column (gc) = gap width * gap number / columns number
@@ -43,14 +43,14 @@
   --box-w: calc(var(--col-width) - var(--gc));
   --box-width: var(--box-w);
 
-  --box-padding-min: 1;
-  --box-padding-max: var(--box-padding-min, 1);
-  @include fluid-size(--box-padding, 1em, var(--box-padding-min), var(--box-padding-max));
+  --box-padding-vs: 1;
+  --box-padding-vl: var(--box-padding-vs, 1);
+  @include fluid-size(--box-padding, 1em, var(--box-padding-vs), var(--box-padding-vl));
 }
 .boxes > *,
 .box {
   width: var(--box-width, 100%);
-  @media (min-width: $screen-max) {
+  @media (min-width: $vl) {
     order: var(--order, unset);
   }
   > .box {
@@ -60,8 +60,8 @@
 
 // Default padding and gap when columns is small (> 2 and container <= sm)
 .boxes--sm {
-  --cols-gap-max-default: 1;
-  --box-padding-min: 1;
+  --cols-gap-vl-default: 1;
+  --box-padding-vs: 1;
 }
 
 .boxes--left,

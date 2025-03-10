@@ -28,7 +28,7 @@
       "@type" "Person"
       "name"  .title
     )
-    "reviewBody"   (.content | markdownify | plainify)
+    "reviewBody"   (.md | markdownify | plainify)
     "itemReviewed" $item_reviewed
     "reviewRating" $rr
   ) }}

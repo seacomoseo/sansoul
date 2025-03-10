@@ -1,20 +1,13 @@
-{{- $image  := .image -}}
-{{- $tag    := "div" -}}
-{{- $title  := "" -}}
-{{- $target := "" -}}
-{{- $rel    := "" -}}
-{{- if not .lightbox -}}
-  {{- with .link -}}
-    {{- $tag   = "a" -}}
-    {{- $title = .image | replaceRE `\..+$` "" -}}
-    {{- if hasPrefix .link "http" -}}
-      {{- $target = "_blank" -}}
-      {{- $rel    = "noopener" -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- $image    := .image -}}
+{{- $link     := .link -}}
+{{- $tag      := "a" -}}
+{{- $lb_data  := "" -}}
+{{- $tabindex := "" -}}
+{{- $title    := "" -}}
+{{- $target   := "" -}}
+{{- $rel      := "" -}}
 
-{{- /*  ROWS TYPE  */ -}}
+{{- /*  ROWS TYPE STYLE  */ -}}
 {{- $style := "" -}}
 {{- if eq .type "rows" -}}
   {{- $cols         := .cols | default 2 -}}
@@ -68,10 +61,10 @@
   {{- end -}}
   {{- $style_width  := lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}
   {{- $style_height := lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}
-  {{- $style         = "--gallery-item-width:" $style_width ";--gallery-item-height:" $style_height "%" -}}
+  {{- $style         = print "--gallery-item-width:" $style_width ";--gallery-item-height:" $style_height "%" -}}
 {{- end -}}
 
-{{- /*  external  */ -}}
+{{- /*  EXTERNAL  */ -}}
 {{- $external := hasPrefix .image "http" -}}
 {{- if not $external -}}
   {{- if not (in $.image "/media/") -}}
@@ -81,12 +74,31 @@
   {{- end -}}
 {{- end -}}
 
-{{- /*  attrs  */ -}}
+{{- /*  LIGTHBOX  */ -}}
+{{- if eq $link "lightbox" -}}
+  {{- $lb_data   = $image | safeURL -}}
+  {{- $tabindex  = "0" -}}
+  {{- $tag       = "div" -}}
+  {{- $link      = "" -}}
+{{- else -}}
+  {{- $title = .alt -}}
+  {{- if not $title -}}
+    {{- $title = $image | replaceRE `^(.+)\..*$` "$1" | humanize -}}
+  {{- end -}}
+  {{- with $link -}}
+    {{- if hasPrefix . "http" -}}
+      {{- $target = "_blank" -}}
+      {{- $rel    = "noopener" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  ATTRIBUTES  */ -}}
 {{- $attrs := dict
   "class"         "gallery__item"
-  "data-lightbox" (cond .lightbox $image "")
-  "tabindex"      (cond (not .link) "0" "")
-  "href"          (cond (not .link) "" .link)
+  "data-lightbox" $lb_data
+  "tabindex"      $tabindex
+  "href"          $link
   "title"         $title
   "target"        $target
   "rel"           $rel
@@ -101,7 +113,7 @@
       "src"       .image
       "alt"       .alt
       "container" .container
-      "span_xl"   .span_xl
-      "span_xs"   .span_xs
+      "fit_vl"    .col_vl
+      "fit_vs"    .col_vs
   ) }}
 {{ print "</" $tag ">" | safeHTML -}}

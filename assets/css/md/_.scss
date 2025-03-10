@@ -1,11 +1,11 @@
 
-.content {
+.md {
   .link {
-    &:not(.box, .button, .content__heading > *) {
+    &:not(.box, .button, .md__heading > *) {
       @include font-base-bold;
       line-height: $line-height-base;
     }
-    &:not(#toc *, .list-inline *, .content__heading-link) .icon {
+    &:not(#toc *, .list-inline *, .md__heading-link) .icon {
       opacity: .5;
     }
   }
@@ -16,7 +16,7 @@
   // strong {
   //   color: var(--subtitle);
   // }
-  iframe:not(.content__figure *) {
+  iframe:not(.md__figure *) {
     filter: drop-shadow($shadow);
   }
   :not(.button, li, code) > .icon {
