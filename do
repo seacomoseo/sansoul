@@ -25,8 +25,7 @@ then
   hecho "PUSH"
   git push
 
-# Upload submodule changes with date now
-elif [ $1 = sup ]
+elif [ $1 = spull ]
 then
 
   hecho "CREATING BACKUP OF SUBMODULE ON DESKTOP"
@@ -47,6 +46,15 @@ then
   hecho "SANSOUL PULL WITH REBASE"
   git pull --rebase origin main
 
+  hecho "GO PROJECT"
+  cd ../..
+
+elif [ $1 = spush ]
+then
+
+  hecho "GO SANSOUL"
+  cd themes/sansoul
+
   hecho "SANSOUL ADD"
   git add .
 
@@ -58,6 +66,13 @@ then
 
   hecho "GO PROJECT"
   cd ../..
+
+# Upload submodule changes with date now
+elif [ $1 = sup ]
+then
+
+  sh do spull
+  sh do spush
 
 # Pull of repository and update the submodules
 elif [ $1 = down ]
