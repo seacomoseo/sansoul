@@ -29,6 +29,9 @@ then
 elif [ $1 = sup ]
 then
 
+  hecho "CREATING BACKUP OF SUBMODULE ON DESKTOP"
+  cp -R themes/sansoul ~/Desktop/sansoul_backup_$(date +'%Y-%m-%d--%H-%M-%S')
+
   hecho "SUBMODULE SYNC"
   git submodule sync --recursive
 
@@ -38,8 +41,42 @@ then
   hecho "SANSOUL FETCH"
   git fetch
 
-  hecho "SANSOUL CHECKOUT ORIGIN/MAIN"
-  git checkout -B main origin/main
+  hecho "SANSOUL CHECKOUT MAIN"
+  git checkout main
+
+  # Capture current commit hash before pull
+  current_commit=$(git rev-parse HEAD)
+
+  hecho "SANSOUL PULL WITH REBASE"
+  git pull --rebase origin main
+
+  # Capture new commit hash after pull
+  new_commit=$(git rev-parse HEAD)
+
+  if [ "$current_commit" != "$new_commit" ]
+  then
+    echo "Remote changes detected, skipping add, commit and push"
+    cd ../..
+  else
+    hecho "SANSOUL ADD"
+    git add .
+
+    hecho "SANSOUL COMMIT"
+    git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
+
+    hecho "SANSOUL PUSH"
+    git push origin main
+
+    hecho "GO PROJECT"
+    cd ../..
+  fi
+
+# Upload submodule changes with date now
+elif [ $1 = spush ]
+then
+
+  hecho "GO SANSOUL"
+  cd themes/sansoul
 
   hecho "SANSOUL ADD"
   git add .
@@ -48,7 +85,7 @@ then
   git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
 
   hecho "SANSOUL PUSH"
-  git push
+  git push origin main
 
   hecho "GO PROJECT"
   cd ../..
