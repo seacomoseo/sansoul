@@ -44,7 +44,7 @@
     button: hide
   - cols: 3
     color: white
-    decline: true
+    shade: true
     inset: true
     ratio: 16/9
     icon: hide
