@@ -29,13 +29,13 @@ then
 elif [ $1 = sup ]
 then
 
-  hecho "CREATING BACKUP OF SUBMODULE ON DESKTOP"
+  hecho "Creating backup of submodule on desktop"
   cp -R themes/sansoul ~/Desktop/sansoul_backup_$(date +'%Y-%m-%d--%H-%M-%S')
 
-  hecho "SUBMODULE SYNC"
+  hecho "Submodule sync"
   git submodule sync --recursive
 
-  hecho "GO SANSOUL"
+  hecho "Go sansoul"
   cd themes/sansoul
 
   # Check for local changes and stash them if exist
@@ -47,16 +47,16 @@ then
     stash_created=false
   fi
 
-  hecho "SANSOUL FETCH"
+  hecho "sansoul fetch"
   git fetch
 
-  hecho "SANSOUL CHECKOUT MAIN"
+  hecho "sansoul checkout main"
   git checkout main
 
   # Capture current commit hash before pull
   current_commit=$(git rev-parse HEAD)
 
-  hecho "SANSOUL PULL WITH REBASE"
+  hecho "sansoul pull with rebase"
   git pull --rebase origin main
 
   # Capture new commit hash after pull
@@ -64,26 +64,26 @@ then
 
   if [ "$current_commit" != "$new_commit" ]
   then
-    echo "Remote changes detected, skipping add/commit/push."
-    echo "Local stash (if any) remains; please review and reapply manually."
+    hecho "Remote changes detected, skipping add/commit/push."
+    hecho "Local stash (if any) remains; please review and reapply manually."
     cd ../..
   else
     if [ "$stash_created" = true ]
     then
-      echo "No remote changes detected. Applying stashed local changes"
+      hecho "No remote changes detected. Applying stashed local changes"
       git stash pop
     fi
 
-    hecho "SANSOUL ADD"
+    hecho "sansoul add"
     git add .
 
-    hecho "SANSOUL COMMIT"
+    hecho "sansoul commit"
     git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
 
-    hecho "SANSOUL PUSH"
+    hecho "sansoul push"
     git push origin main
 
-    hecho "GO PROJECT"
+    hecho "Go project"
     cd ../..
   fi
 
