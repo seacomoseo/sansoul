@@ -121,8 +121,8 @@
       {{- if eq $container "fluid" -}}
         {{- $viewports        = $viewports | append 1440 -}}
       {{- end -}}
-      {{- $viewport_vs       := site.Data.utilities.viewports.vs -}}
-      {{- $viewport_vl       := site.Data.utilities.viewports.vl -}}
+      {{- $vs                := site.Data.utilities.viewports.min -}}
+      {{- $vl                := site.Data.utilities.viewports.max -}}
       {{- $size_vl           := mul $container_vl $fit_vl | int -}}
       {{- $size_vs           := mul $container_vs $fit_vs | int -}}
 
@@ -133,7 +133,7 @@
           {{- $size           = mul . $fit_vl -}}
         {{- else -}}
           {{- /* y = y1 + ( ((y2 - y1) * (x - x1)) / (x2 - x1) )  */ -}}
-          {{- $size           = add $size_vs (div (mul (sub $size_vl $size_vs) (sub . $viewport_vs)) (sub $viewport_vl $viewport_vs)) -}}
+          {{- $size           = add $size_vs (div (mul (sub $size_vl $size_vs) (sub . $vs)) (sub $vl $vs)) -}}
         {{- end -}}
         {{- $sizes_base       = $sizes_base | append (dict "size" $size "viewport" .) -}}
       {{- end -}}

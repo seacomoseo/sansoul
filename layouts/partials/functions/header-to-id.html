@@ -1,13 +1,13 @@
 {{/*  id by title, but remove custom id en markdown  */}}
 {{ $id1 := .title
   | replaceRE `\.|_|/|\\` "-"
-  | replaceRE `::\S+|:[\w-]+:|<.+?>` ""
+  | replaceRE `::\S+|:([1-9A-Za-z_-][\w-]*):|<.+?>` ""
   | urlize
 }}
 
 {{/*  id with icons in title remove  */}}
 {{ $id2    := .id }}
-{{ $icons  := .title | findRE `:[\w-]+:|::\S+` }}
+{{ $icons  := .title | findRE `:([1-9A-Za-z_-][\w-]*):|::\S+` }}
 {{ range $icons }}
   {{ $icon := .   | replaceRE `:+` `` }}
   {{ $id2   = $id2 | replaceRE (print `-?\b` $icon `\b-?`) "-" }}

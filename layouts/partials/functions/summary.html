@@ -2,6 +2,6 @@
   | default .Description
   | truncate 155
   | plainify
-  | replaceRE `icon:[\w-]*\s?` ""
+  | replaceRE `:([1-9A-Za-z_-][\w-]*):\s?` ""
 }}
 {{ return $summary }}

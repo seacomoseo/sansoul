@@ -1,10 +1,10 @@
 {{ $text    := . }}
 {{ $icon    := "" }}
 
-{{ with findRE `(?s)^:[\w-]+:` . }}
+{{ with findRE `(?s)^:([1-9A-Za-z_-][\w-]*):` . }}
   {{ with index . 0 }}
     {{ $icon = replace . ":" "" }}
-    {{ $text = $text | replaceRE `(?s)^:[\w-]+: ?` "" }}
+    {{ $text = $text | replaceRE `(?s)^:([1-9A-Za-z_-][\w-]*): ?` "" }}
   {{ end }}
 {{ end }}
 
