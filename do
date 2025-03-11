@@ -5,9 +5,12 @@ PROYECT="${PWD##*/}"
 SUBMODULE_DIR="./themes/sansoul"
 
 # Functions
-hecho() {
-  echo "\033[7;37m $1 \033[0m"
-}
+hecho() { echo "\033[7;37m $1 \033[0m"; } # ⬜️ Header
+secho() { echo "\033[1;32m$1\033[0m"; }   # ✅ Success
+wecho() { echo "\033[1;33m$1\033[0m"; }   # 🟡 Warning
+eecho() { echo "\033[1;31m$1\033[0m"; }   # ❌ Error
+iecho() { echo "\033[1;34m$1\033[0m"; }   # 💙 Info
+vecho() { echo "\033[1;36m$1\033[0m"; }   # 🩵 Value
 
 ##################
 ## GIT COMMANDS ##
