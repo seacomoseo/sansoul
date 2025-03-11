@@ -28,44 +28,44 @@
 .bg-cta-dark  {  --bg-hex: #{ $cta-dark  }; @extend %bg-color; }
 .bg-white      {  --bg-hex: #{ $white      }; @extend %bg-color; }
 .bg-light      {  --bg-hex: #{ $light      }; @extend %bg-color; }
-.bg-grey       {  --bg-hex: #{ $grey       }; @extend %bg-color; }
+.bg-gray       {  --bg-hex: #{ $gray       }; @extend %bg-color; }
 .bg-dark       {  --bg-hex: #{ $dark       }; @extend %bg-color; }
 .bg-black      {  --bg-hex: #{ $black      }; @extend %bg-color; }
 
-// bg-gradient
+// bg-fade (gradient)
 
-%bg-gradient {
-  --gradient-hex: #{ $black };
-  --gradient-color: color-mix(in srgb, var(--gradient-hex), transparent calc(var(--color-alpha, 0) * 100%));
+%bg-fade {
+  --fade-hex: #{ $black };
+  --fade-color: color-mix(in srgb, var(--fade-hex), transparent calc(var(--color-alpha, 0) * 100%));
 }
 
-.bg-gradient-main       { --gradient-hex: #{ $main       }; }
-.bg-gradient-main-light { --gradient-hex: #{ $main-light }; }
-.bg-gradient-main-dark  { --gradient-hex: #{ $main-dark  }; }
-.bg-gradient-alt        { --gradient-hex: #{ $alt        }; }
-.bg-gradient-alt-light  { --gradient-hex: #{ $alt-light  }; }
-.bg-gradient-alt-dark   { --gradient-hex: #{ $alt-dark   }; }
-.bg-gradient-cta        { --gradient-hex: #{ $cta       }; }
-.bg-gradient-cta-light  { --gradient-hex: #{ $cta-light }; }
-.bg-gradient-cta-dark   { --gradient-hex: #{ $cta-dark  }; }
-.bg-gradient-white      { --gradient-hex: #{ $white      }; }
-.bg-gradient-light      { --gradient-hex: #{ $light      }; }
-.bg-gradient-grey       { --gradient-hex: #{ $grey       }; }
-.bg-gradient-dark       { --gradient-hex: #{ $dark       }; }
-.bg-gradient-black      { --gradient-hex: #{ $black      }; }
+.bg-fade-main       { --fade-hex: #{ $main       }; }
+.bg-fade-main-light { --fade-hex: #{ $main-light }; }
+.bg-fade-main-dark  { --fade-hex: #{ $main-dark  }; }
+.bg-fade-alt        { --fade-hex: #{ $alt        }; }
+.bg-fade-alt-light  { --fade-hex: #{ $alt-light  }; }
+.bg-fade-alt-dark   { --fade-hex: #{ $alt-dark   }; }
+.bg-fade-cta        { --fade-hex: #{ $cta       }; }
+.bg-fade-cta-light  { --fade-hex: #{ $cta-light }; }
+.bg-fade-cta-dark   { --fade-hex: #{ $cta-dark  }; }
+.bg-fade-white      { --fade-hex: #{ $white      }; }
+.bg-fade-light      { --fade-hex: #{ $light      }; }
+.bg-fade-gray       { --fade-hex: #{ $gray       }; }
+.bg-fade-dark       { --fade-hex: #{ $dark       }; }
+.bg-fade-black      { --fade-hex: #{ $black      }; }
 
-.bg-gradient-linear-b   { --gradient: linear-gradient(        transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-t   { --gradient: linear-gradient(0deg,   transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-r   { --gradient: linear-gradient(90deg,  transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-l   { --gradient: linear-gradient(270deg, transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-tr  { --gradient: linear-gradient(45deg,  transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-br  { --gradient: linear-gradient(135deg, transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-bl  { --gradient: linear-gradient(225deg, transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-linear-tl  { --gradient: linear-gradient(315deg, transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-radial     { --gradient: radial-gradient(        transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-circle     { --gradient: radial-gradient(circle, transparent, var(--gradient-color)); @extend %bg-gradient; }
-.bg-gradient-radial-alt { --gradient: radial-gradient(        var(--gradient-color), transparent); @extend %bg-gradient; }
-.bg-gradient-circle-alt { --gradient: radial-gradient(circle, var(--gradient-color), transparent); @extend %bg-gradient; }
+.bg-fade-linear-b   { --fade: linear-gradient(        transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-t   { --fade: linear-gradient(0deg,   transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-r   { --fade: linear-gradient(90deg,  transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-l   { --fade: linear-gradient(270deg, transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-tr  { --fade: linear-gradient(45deg,  transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-br  { --fade: linear-gradient(135deg, transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-bl  { --fade: linear-gradient(225deg, transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-linear-tl  { --fade: linear-gradient(315deg, transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-radial     { --fade: radial-gradient(        transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-circle     { --fade: radial-gradient(circle, transparent, var(--fade-color)); @extend %bg-fade; }
+.bg-fade-radial-alt { --fade: radial-gradient(        var(--fade-color), transparent); @extend %bg-fade; }
+.bg-fade-circle-alt { --fade: radial-gradient(circle, var(--fade-color), transparent); @extend %bg-fade; }
 
 
 // Radius
@@ -88,8 +88,8 @@
   z-index: -5;
   background-color: var(--bg-color);
 }
-%bg-gradient > .bg-color {
-  background-image: var(--gradient);
+%bg-fade > .bg-color {
+  background-image: var(--fade);
 }
 body > .bg-color {
   @include hide-radius;

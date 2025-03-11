@@ -1,35 +1,34 @@
-{{ $class := print "divider" (cond .next "--next" "") }}
+{{ $class := print "div" (cond .next "--next" "") }}
 {{ $style := "" }}
 
 {{ with .section }}
-  {{ with where (partial "draws/dividers" .) "id" .divider }}
+  {{ with where (partial "draws/dividers" .) "id" .div }}
     {{ with index . 0 }}
       {{ if eq .size 2 }}
-        {{ $class = print $class " divider" (cond $.next "--next" "") "--size" }}
+        {{ $class = print $class " div" (cond $.next "--next" "") "--size" }}
       {{ end }}
       {{ if not .repeat }}
-        {{ $class = print $class " divider" (cond $.next "--next" "") "--not-repeat" }}
+        {{ $class = print $class " div" (cond $.next "--next" "") "--not-repeat" }}
       {{ end }}
     {{ end }}
   {{ end }}
 
-  {{ $flip_y := cond (not .flip_y) "" "y" }}
-  {{ $flip_x := cond (not .flip_x) "" "x" }}
+  {{ $flip_y := cond (not .div_y) "" "y" }}
+  {{ $flip_x := cond (not .div_x) "" "x" }}
   {{ $flips  := "" }}
-  {{ if or .flip_x .flip_y }}
+  {{ if or .div_x .div_y }}
     {{ $flips = print $flip_x $flip_y }}
   {{ end }}
 
-  {{ $style     = print "--divider" (cond $.next "-next" "") ": url(/draws." site.Params.timestamp ".svg#div-" .divider "-" (cond $.next "ne" "pr") $flips ")" }}
-  {{ if eq .divider "gradient" }}
+  {{ $style     = print "--div" (cond $.next "-next" "") ": url(/draws." site.Params.timestamp ".svg#div-" .div "-" (cond $.next "ne" "pr") $flips ")" }}
+  {{ if eq .div "fade" }}
     {{ if $.next }}
-      {{ $style = "--divider-next: linear-gradient(black, transparent)" }}
+      {{ $style = "--div-next: linear-gradient(black, transparent)" }}
     {{ else }}
-      {{ $style = "--divider: linear-gradient(transparent, black)" }}
+      {{ $style = "--div: linear-gradient(transparent, black)" }}
     {{ end }}
   {{ end }}
 {{ end }}
-
 
 {{ return dict
   "class" $class

@@ -45,11 +45,11 @@
           (cond (not $color) "" (print "bg-" $color))
           (cond (not .image) "" " bg-image")
         -}}
-        {{- $bg_gradient_color := "" -}}
-        {{- $bg_gradient_type  := "" -}}
-        {{- if .gradient -}}
-          {{- $bg_gradient_color = print "bg-gradient-" .gradient -}}
-          {{- $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-r") -}}
+        {{- $bg_fade_color := "" -}}
+        {{- $bg_fade_type  := "" -}}
+        {{- if .fade -}}
+          {{- $bg_fade_color = print "bg-fade-" .fade -}}
+          {{- $bg_fade_type  = print "bg-fade-" (.fade_type | default "linear-r") -}}
         {{- end -}}
         {{- $bg         := cond (not $bg_color) "" "bg" -}}
         {{- $shadow     := cond (not ($color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
@@ -58,13 +58,13 @@
           "review__globe"
           $bg
           $bg_color
-          $bg_gradient_color
-          $bg_gradient_type
+          $bg_fade_color
+          $bg_fade_type
           $shadow
         -}}
 
         {{- /* REVIEW ITEM STYLE  */ -}}
-        {{- $alpha := and (.alpha | and (ne .alpha 100)) ($color | or .gradient) -}}
+        {{- $alpha := and (.alpha | and (ne .alpha 100)) ($color | or .fade) -}}
         {{- $alpha  = cond (not $alpha)        "" (print "--color-alpha:" .alpha) -}}
 
         {{- $review_style := slice $alpha -}}

@@ -7,9 +7,9 @@
   &.pill-top {
     // PILL TOP BACKGROUND
     &.bg {
-      --radius-top: calc(50cqw + var(--box-padding));
+      --radius-top: calc(50cqw + var(--box-pd));
       @if $chamfer {
-        padding-top: calc(var(--box-padding) / .7071);
+        padding-top: calc(var(--box-pd) / .7071);
       }
       // Any first element
       > *:where(
@@ -21,7 +21,7 @@
         .box__button,
         .image
       ) {
-        margin-top: calc(50cqw - var(--box-padding) * 2);
+        margin-top: calc(50cqw - var(--box-pd) * 2);
       }
       // Only first box icon top
       > .box__icon--top:where(
@@ -29,7 +29,7 @@
         .bg-color + *,
         .box__title.hide + *
       ) {
-        margin-top: calc((100cqw - var(--icon-size)) / 2 - var(--box-padding));
+        margin-top: calc((100cqw - var(--icon-size)) / 2 - var(--box-pd));
       }
     }
     // PILL TOP BUTTON FIRST CHILD
@@ -57,7 +57,7 @@
       &.image--inset {
         margin-top: calc(var(--image-margin) / .7071);
         .image__inner {
-          --radius-top: calc(50cqw + var(--box-padding));
+          --radius-top: calc(50cqw + var(--box-pd));
         }
       }
       &.image--border {
@@ -68,9 +68,9 @@
           --radius-top: calc(50cqw - var(--image-border-width));
         }
         &.image--inset {
-          --radius-top: calc(50cqw + var(--box-padding));
+          --radius-top: calc(50cqw + var(--box-pd));
           .image__inner {
-            --radius-top: calc(50cqw + var(--box-padding) - var(--image-border-width, 0em));
+            --radius-top: calc(50cqw + var(--box-pd) - var(--image-border-width, 0em));
           }
         }
       }
@@ -81,9 +81,9 @@
   &.pill-bottom {
     // PILL BOTTOM BACKGROUND
     &.bg {
-      --radius-bottom: calc(50cqw + var(--box-padding));
+      --radius-bottom: calc(50cqw + var(--box-pd));
       @if $chamfer {
-        padding-bottom: calc(var(--box-padding) / .7071);
+        padding-bottom: calc(var(--box-pd) / .7071);
       }
       // Any last element
       > *:is(
@@ -94,14 +94,14 @@
         .box__button,
         .box__icon--top
       ) {
-        padding-bottom: calc(50cqw - var(--box-padding) * 2);
+        padding-bottom: calc(50cqw - var(--box-pd) * 2);
       }
       // Only first box icon top
       > .box__icon--top:where(
         :last-child,
         :has(+ .box__button.hide:last-child)
       ) {
-        margin-bottom: calc((100cqw - var(--icon-size)) / 2 - var(--box-padding));
+        margin-bottom: calc((100cqw - var(--icon-size)) / 2 - var(--box-pd));
       }
     }
     // PILL BOTTOM BUTTON LAST CHILD
@@ -124,7 +124,7 @@
       &.image--inset {
         margin-bottom: calc(var(--image-margin) / .7071);
         .image__inner {
-          --radius-bottom: calc(50cqw + var(--box-padding));
+          --radius-bottom: calc(50cqw + var(--box-pd));
         }
       }
       &.image--border {
@@ -135,9 +135,9 @@
           --radius-bottom: calc(50cqw - var(--image-border-width));
         }
         &.image--inset {
-          --radius-bottom: calc(50cqw + var(--box-padding));
+          --radius-bottom: calc(50cqw + var(--box-pd));
           .image__inner {
-            --radius-bottom: calc(50cqw + var(--box-padding) - var(--image-border-width, 0em));
+            --radius-bottom: calc(50cqw + var(--box-pd) - var(--image-border-width, 0em));
           }
         }
       }

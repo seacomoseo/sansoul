@@ -6,14 +6,14 @@
     light-dark(rgba(186, 186, 192, .75),  rgba(31, 32, 32, .75))
     light-dark(rgba(186, 186, 192, .125), rgba(31, 32, 32, .125));
   // divider
-  --divider-height: min(12.5cqw, 5.5em);
+  --div-height: min(12.5cqw, 5.5em);
   // duotone
   --dt-main: currentColor;
   --dt-main-op: 1;
   --dt-alt: currentColor;
   --dt-alt-op: .5;
   // grayscale
-  --grayscale: grayscale(1);
+  --gray: grayscale(1);
   // form
   --form-control-color: var(--alt);
   --form-control-disabled: #959495;
@@ -42,14 +42,14 @@
   .body-menu--sticky .menu__subitems {
     // radius
     --radius: #{ $radius };
-    --radius-padding: 0em;
+    --radius-pd: 0em;
     @if $chamfer {
       --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     }
     --radius-top: var(--radius-calc);
     --radius-bottom: var(--radius-calc);
     @if $chamfer {
-      --radius-calc: calc((((var(--radius) + var(--radius-padding)) / .7071) - var(--radius-padding)) * .7071);
+      --radius-calc: calc((((var(--radius) + var(--radius-pd)) / .7071) - var(--radius-pd)) * .7071);
       --chamfer: polygon(
         var(--radius-top) 0%,
         calc(100% - var(--radius-top)) 0%,
@@ -109,7 +109,7 @@
         50% var(--outline-diamond)
       );
     } @else {
-      --radius-calc: calc(var(--radius) + var(--radius-padding));
+      --radius-calc: calc(var(--radius) + var(--radius-pd));
       --radius-end: var(--radius-top) var(--radius-top) var(--radius-bottom) var(--radius-bottom);
     }
   }

@@ -7,10 +7,10 @@ menu_label: Texto del enlace del Menú
 menu_button: cta # [ main, cta, alt, light, dark, invert, similar, none, hide ]
 menu_swap: true
 # bg
-color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
+color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
-gradient: grey # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
-gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
+fade: gray # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+fade_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 bg: base/poster.png
 alpha: 0 # [ 0.00 - 1.00 ]
 parallax: soft # [ none, fix, soft ]
@@ -22,9 +22,9 @@ ph: false
 full: true
 size: sm # [ xs, sm, md, lg, xl, fluid ]
 # divider
-divider: wavy-op
-flip_x: true
-flip_y: true
+div: wavy-op
+div_x: true
+div_y: true
 
 
 ## CONTAINER (BOX_BASE)
@@ -62,28 +62,28 @@ circle: true
 contain: false
 border: main # [ main, cta, alt, light, dark, invert, similar ]
 inset: true
-grayscale: false
-declive: false
+gray: false
+shade: false
 # button
 link: /legal/
-licon: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+pin: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 label: Legal
 anchor: Aviso Legal
 ofuscate: false
 button: none # [ main, cta, alt, light, dark, invert, similar, none, hide ]
 swap: true
 # container
-box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
+box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
 box_color_alpha: '' # [ 0.00 - 1.00 ]
-box_gradient: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
-box_gradient_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
+box_fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+box_fade_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 box_bg: base/icon.png
 box_alpha: .8 # [ 0.00 - 1.00 ]
 box_parallax: '' # [ none, soft, box ]
 # boxi
 rate: 16/9 # [ int/int ]
 space: null # [ >= 0.00 ]
-padding: null # [ >= 0.00 ]
+pd: null # [ >= 0.00 ]
 hide_shadow: true
 hide_radius: true
 pill: false
@@ -198,14 +198,14 @@ boxes:
 - gallery:
     cols: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, cols, boxes ]
-    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
+    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
     gap: 0 # [ >= 0.00 ]
     ratio: 1/1 # [ int/int ]
     contain: true
-    grayscale: true
+    gray: true
     alt: Alt prefix in each image + index
     link: /pagina-ejemplo/
-    licon: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    pin: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: Ejemplo
     anchor: Jeje
     ofuscate: false
@@ -231,7 +231,7 @@ boxes:
 - accordion:
     button: '' # [ main, cta, alt, light, dark, invert, similar, none ]
     swap: false
-    licon: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    pin: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     hn: '' # [ 1 - 6, p ]
     first_open: true
   accordions:
@@ -253,9 +253,9 @@ boxes:
 - review:
     cols: 3 # [ 0 = auto, > 0 ]
     cols_vs: 1 # [ 0 = auto, > 0 ]
-    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
-    gradient: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, grey, dark, black, invert, similar ]
-    gradient_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
+    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+    fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+    fade_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
     alpha: .5 # [ 0.00 - 1.00 ]
     hide_shadow: true
     slider: true
@@ -417,7 +417,6 @@ boxes:
     name: HOLI
     area: true
     color: cta
-    licon: circle-dot
     view: '{"type":"Point","coordinates":[40.46367, -3.74922]}'
     zoom: 4
     tile: hybrid # [ streets, terrain, satellite, hybrid ]

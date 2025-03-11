@@ -70,8 +70,8 @@
       {{- $bgc        := partial "functions/color-background" (dict "child" $color "parent" $.background.color) -}}
       {{- $color       = $bgc.child -}}
       {{- $menu_class  := print "menu bg bg-" $color -}}
-      {{- if .gradient -}}
-        {{- $menu_class = print $menu_class " bg-gradient-" .gradient " bg-gradient-" (.gradient_type | default "linear-t") -}}
+      {{- if .fade -}}
+        {{- $menu_class = print $menu_class " bg-fade-" .fade " bg-fade-" (.fade_type | default "linear-t") -}}
       {{- end -}}
       {{- $box_class  := "" -}}
       {{- if .sticky -}}

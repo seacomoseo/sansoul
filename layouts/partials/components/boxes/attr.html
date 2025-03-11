@@ -59,8 +59,8 @@
   (cond (not .align_vl)            "" (print "align--vl-" .align_vl))
   (cond (not $bg_color)            "" "bg")
   $bg_color
-  (cond (not .gradient)            "" (print "bg-gradient-" .gradient))
-  (cond (not .gradient)            "" (print "bg-gradient-" (.gradient_type | default "linear-r")))
+  (cond (not .fade)                "" (print "bg-fade-" .fade))
+  (cond (not .fade)                "" (print "bg-fade-" (.fade_type | default "linear-r")))
   (cond (and (ne .parallax "box") (not (and .bg (eq .parallax "soft")))) "" "parallax")
   (cond (ne .parallax "box")                  "" "parallax--box")
   (cond (not (and .bg (eq .parallax "soft"))) "" "parallax--bg")
@@ -80,17 +80,17 @@
 
 {{/*  STYLE  */}}
 
-{{ $bg_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .gradient) }}
+{{ $bg_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .fade) }}
 
 {{ $style := slice
-  (cond (not $bg_alpha)      "" (print "--bg-alpha:" .color_alpha))
-  (cond (not .order)         "" (print "--order:" .order))
-  (cond (eq .space nil)      "" (print "--box-gap:" .space "rem"))
-  (cond (eq .padding nil)    "" (print "--box-padding-vl:" .padding))
-  (cond (eq .padding_vs nil) "" (print "--box-padding-vs:" .padding_vs))
-  (cond $not_fit             "" (print "--box-fit-vl:" .fit))
-  (cond $not_fit_vs          "" (print "--box-fit-vs:" .fit_vs))
-  (cond (not $rate)          "" (print "--box-ratio:" $rate))
+  (cond (not $bg_alpha) "" (print "--bg-alpha:" .color_alpha))
+  (cond (not .order)    "" (print "--order:" .order))
+  (cond (eq .space nil) "" (print "--box-gap:" .space "rem"))
+  (cond (eq .pd nil)    "" (print "--box-pd-vl:" .pd))
+  (cond (eq .pd_vs nil) "" (print "--box-pd-vs:" .pd_vs))
+  (cond $not_fit        "" (print "--box-fit-vl:" .fit))
+  (cond $not_fit_vs     "" (print "--box-fit-vs:" .fit_vs))
+  (cond (not $rate)     "" (print "--box-ratio:" $rate))
 }}
 
 

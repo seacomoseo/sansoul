@@ -22,8 +22,8 @@
 
 {{- "" }}
 {{ range $k, $v := $dividers -}}
-{{- $n           := add $k 1 -}}
-{{- $s           := mul .size 1024 -}}
+{{- $n          := add $k 1 -}}
+{{- $s          := mul .size 1024 -}}
 	{{- "" -}} <g id="div-{{ .id }}" style="--y:{{ $k }}{{ if eq .size 2 }};--s:{{ .size }}{{ end }}">
 	{{- "" -}}   <defs>
 	{{- "" -}}     <g class="d" id="d-{{ .id }}">

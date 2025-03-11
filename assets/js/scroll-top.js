@@ -17,7 +17,7 @@ export function initScrollTop () {
       '.bg-cta-dark',
       '.bg-white',
       '.bg-light',
-      '.bg-grey',
+      '.bg-gray',
       '.bg-dark',
       '.bg-black'
     ]
@@ -26,7 +26,7 @@ export function initScrollTop () {
     const logoSticky = document.querySelector('.body-menu--transparent.body-menu--logo--sticky .logo.bg')
     let menuStickyBgBefore, menuStickyBgAfter, elementToChange
     if (sectionHeader && (menuSticky || logoSticky)) {
-      const bgRegex = /bg-(main|alt|cta|white|light|grey|dark|black)[\w-]*/g
+      const bgRegex = /bg-(main|alt|cta|white|light|gray|dark|black)[\w-]*/g
       menuStickyBgBefore = sectionHeader.classList.value.match(bgRegex)[0]
       menuStickyBgAfter = (menuSticky || logoSticky).classList.value.match(bgRegex)[0]
     }

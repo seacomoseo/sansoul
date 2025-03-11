@@ -2,268 +2,103 @@
 
 # Variables
 PROYECT="${PWD##*/}"
+SUBMODULE_DIR="./themes/sansoul"
 
 # Functions
 hecho() {
   echo "\033[7;37m $1 \033[0m"
 }
 
-# COMMANDS FOR PROJECTS
+##################
+## GIT COMMANDS ##
+##################
 
 # Upload with date now
-if [ $1 = up ]
-then
+if [ $1 = up ]; then
 
-  hecho "DO UP"
-
-  hecho "ADD"
-  git add .
-
-  hecho "COMMIT"
-  git commit -m "Update: `date +'%Y-%m-%d %H:%M:%S'`"
-
-  hecho "PUSH"
-  git push
-
-elif [ $1 = spull ]
-then
-
-  hecho "CREATING BACKUP OF SUBMODULE ON DESKTOP"
-  cp -R themes/sansoul ~/Desktop/sansoul_backup_$(date +'%Y-%m-%d--%H-%M-%S')
-
-  hecho "SUBMODULE SYNC"
-  git submodule sync --recursive
-
-  hecho "GO SANSOUL"
-  cd themes/sansoul
-
-  hecho "SANSOUL FETCH"
-  git fetch
-
-  hecho "SANSOUL CHECKOUT MAIN"
-  git checkout main
-
-  hecho "SANSOUL PULL WITH REBASE"
-  git pull --rebase origin main
-
-  hecho "GO PROJECT"
-  cd ../..
-
-elif [ $1 = spush ]
-then
-
-  hecho "GO SANSOUL"
-  cd themes/sansoul
-
-  hecho "SANSOUL ADD"
-  git add .
-
-  hecho "SANSOUL COMMIT"
-  git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
-
-  hecho "SANSOUL PUSH"
-  git push origin main
-
-  hecho "GO PROJECT"
-  cd ../..
+  source ../_tools/git/up.sh
 
 # Upload submodule changes with date now
-elif [ $1 = sup ]
-then
+elif [ $1 = sup ]; then
 
-  sh do spull
-  sh do spush
+  source ../_tools/git/sup.sh
 
-# Pull of repository and update the submodules
-elif [ $1 = down ]
-then
+# Pull of repository
+elif [ $1 = down ]; then
 
-  hecho "DO DOWN"
+  source ../_tools/git/down.sh
 
-  hecho "PULL"
-  git pull
+# Pull of submodules and update in the repo
+elif [ $1 = sdown ]; then
 
-  hecho "SUBMODULE UPDATE"
-  git submodule update --recursive --remote
+  source ../_tools/git/sdown.sh
 
-# Pull of repository and update the submodules
-elif [ $1 = du ]
-then
+# Repo up and down
+elif [ $1 = du ]; then
 
   sh do down
   sh do up
 
-# Hugo server with theme config
-elif [ $1 = rm-public ]
-then
+# Submodule up and down
+elif [ $1 = sdu ]; then
 
-  hecho "REMOVE PUBLIC DIRECTORIE"
-  rm -r public
+  sh do sdown
+  sh do sup
 
-# Hugo server with theme config
-elif [ $1 = server ]
-then
-
-  sh do rm-public
-  sh do prebuild
-
-  hecho "HUGO SERVER"
-  hugo server --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
+##################
+## DEV COMMANDS ##
+##################
 
 # Create woff2 and scss by font files
-elif [ $1 = normalize ]
-then
+elif [ $1 = normalize ]; then
 
   hecho "NORMALIZE YAML AND MARKDOWN FILES"
   python3 ../_tools/others/yaml-normalize.py
 
 # Create woff2 and scss by font files
-elif [ $1 = spaces ]
-then
+elif [ $1 = spaces ]; then
 
   hecho "REFACTORING SPACES IN HUGO"
   sh ../_tools/others/refactoring-spaces.sh $2
 
 # Create favicon.ico
-elif [ $1 = favicon ]
-then
+elif [ $1 = favicon ]; then
 
-  hecho "CREATE FAVICON"
-  magick \
-    -background none \
-    -gravity center \
-    -define icon:auto-resize=48,32,16 \
-    assets/media/base/icon.svg \
-    assets/media/base/favicon.ico
+  source ../_tools/others/favicon.sh
 
 # Create woff2 and scss by font files
-elif [ $1 = fonts ]
-then
+elif [ $1 = fonts ]; then
 
-  SRC_DIR="assets/fonts"
-  DEST_DIR="static/fonts"
-  CSS_FILE="assets/css/_fonts.scss"
-
-  # Create output dir if not exist
-  mkdir -p $DEST_DIR
-
-  # Each font
-  for font in $SRC_DIR/*; do
-    if [ -f "$font" ]; then
-      filename=$(basename "$font" | cut -d. -f1)
-      filename_min=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
-      fontname=$(fc-scan --format "%{family}" "$font")
-      if [ -z "$fontname" ]; then
-        fontname="$filename"
-      elif [[ $fontname == *,* ]]; then
-        fontname=${fontname%%,*}
-      fi
-
-      type=$(fc-scan --format "%{style}" "$font")
-
-      style="normal"
-      if [[ $type == *"Italic"* ]]; then
-        style="italic"
-      fi
-
-      weight="400"
-      if [[ $type == "Thin"* ]]; then
-        weight="100"
-      elif [[ $type == "ExtraLight"* ]]; then
-        weight="200"
-      elif [[ $type == "Light"* ]]; then
-        weight="300"
-      elif [[ $type == "Regular"* ]]; then
-        weight="400"
-      elif [[ $type == "Medium"* ]]; then
-        weight="500"
-      elif [[ $type == "SemiBold"* ]]; then
-        weight="600"
-      elif [[ $type == "Bold"* ]]; then
-        weight="700"
-      elif [[ $type == "ExtraBold"* ]]; then
-        weight="800"
-      elif [[ $type == "Black"* ]]; then
-        weight="900"
-      fi
-
-      # To woff2
-      woff2_compress "$font"
-      mv "$SRC_DIR/$filename.woff2" "$DEST_DIR/$filename_min.woff2"
-
-      # Add to CSS
-      echo \
-"@font-face {
-  font-family: '$fontname';
-  src: url('/fonts/$filename_min.woff2') format('woff2');
-  font-style: $style;
-  font-weight: $weight;
-  font-display: swap;
-}" >> $CSS_FILE
-
-      hecho "Converted $font to $woff2_file"
-    fi
-  done
+  source ../_tools/others/fonts.sh
 
 # Remove binary files from history
-elif [ $1 = clean ]
-then
+elif [ $1 = clean ]; then
 
-  NAME=$(basename "$PWD")
-  REPO=https://github.com/seacomoseo/$NAME.git
-  # clone-repo
-  git clone --mirror "$REPO" clean-repo
-  # go to clean-repo
-  cd clean-repo
-  # remove media and static files
-  git filter-repo --path assets/media --path static --invert-paths --force
-  # update remote repo
-  git remote add origin "$REPO"
-  git push --force --all
-  git push --force --tags
-  # go to parent
-  cd ..
-  # pull
-  git fetch origin
-  git reset --hard origin/master
-  # remove clean-repo
-  rm -rf clean-repo
+  source ../_tools/others/remove-history-binary-files.sh
 
-  sh do up
-
-  hecho "FORCE PUSH"
-  git push origin --force --all
-
-# COMMANDS FOR DEPLOY
-
-# Like purge CSS
-elif [ $1 = css-purge ]
-then
-
-  hecho "CSS PURGE"
-  node ./themes/sansoul/assets/js/node/css-purge.js
-
-# Open Graph SVG
-elif [ $1 = images ]
-then
+# Images ICO, PNG and AVIF
+elif [ $1 = images ]; then
 
   hecho "IMAGES ICO, PNG AND AVIF"
   node ./themes/sansoul/assets/js/node/images.js
 
 # Check yaml error of Static CMS
-elif [ $1 = yml ]
-then
+elif [ $1 = yml ]; then
 
   cd ../_tools
-  node others/check-yaml.js $PROYECT
+  node others/check-yaml.js $PROYECT $2
   cd ../$PROYECT
 
-# Get data of place by Google API
-elif [ $1 = places ]
-then
+# Get main color and langs
+elif [ $1 = color-langs ]; then
 
   COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
   LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+
+# Get data of place by Google API
+elif [ $1 = places ]; then
+
+  sh do color-langs
   cd ../_tools
   for LANG in $LANGS; do
     node others/fetch-place.js $PROYECT $COLOR $LANG $2
@@ -271,20 +106,53 @@ then
   cd ../$PROYECT
 
 # Scrap reviews by Google Maps
-elif [ $1 = reviews ]
-then
+elif [ $1 = reviews ]; then
 
-  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
-  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+  sh do color-langs
   cd ../_tools
   for LANG in $LANGS; do
     node others/scrape-reviews.js $PROYECT $LANG $2
   done
   cd ../$PROYECT
 
+#####################
+## SERVER COMMANDS ##
+#####################
+
+# Hugo server with theme config
+elif [ $1 = server ]; then
+
+  sh do rm-public
+  sh do prebuild
+
+  hecho "HUGO SERVER"
+  hugo server --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
+
+# CMS + hugo local
+elif [ $1 = local ]; then
+
+  export HUGO_CMS_LOCAL=true
+  npx @staticcms/proxy-server &
+  sh do server
+
+#####################
+## DEPLOY COMMANDS ##
+#####################
+
+# Remove public directorie
+elif [ $1 = rm-public ]; then
+
+  hecho "REMOVE PUBLIC DIRECTORIE"
+  rm -r public
+
+# Like purge CSS
+elif [ $1 = css-purge ]; then
+
+  hecho "CSS PURGE"
+  node ./themes/sansoul/assets/js/node/css-purge.js
+
 # Purge svg draws for online (when up to git)
-elif [ $1 = draws-purge ]
-then
+elif [ $1 = draws-purge ]; then
 
   hecho "DRAWS PURGE"
   FILE=`ls public/draws.*.svg`
@@ -315,8 +183,7 @@ then
   rm ${TEMP} ${IDSF}
 
 # Enter in to prebuild folder, build hugo and go back
-elif [ $1 = prebuild ]
-then
+elif [ $1 = prebuild ]; then
 
   hugo version
 
@@ -345,8 +212,7 @@ then
 #   fi
 
 # Hugo build as developement environement
-elif [ $1 = hugo-development ]
-then
+elif [ $1 = hugo-development ]; then
 
   sh do rm-public
   sh do prebuild
@@ -358,8 +224,7 @@ then
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # Hugo build as production environement
-elif [ $1 = hugo-production ]
-then
+elif [ $1 = hugo-production ]; then
 
   sh do rm-public
   sh do prebuild
@@ -376,9 +241,8 @@ then
   sh do images
   # sh do multilang
 
-# Hugo check environement
-elif [ $1 = hugo ]
-then
+# Hugo check environement and build
+elif [ $1 = hugo ]; then
 
   start_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
 
@@ -394,14 +258,6 @@ then
   end_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
   elapsed=$((end_ms - start_ms))
   echo "\033[1;36m🕑 $elapsed ms\033[0m"
-
-# CMS + hugo local
-elif [ $1 = local ]
-then
-
-  export HUGO_CMS_LOCAL=true
-  npx @staticcms/proxy-server &
-  sh do server
 
 else
 

@@ -284,7 +284,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
                 image--inset
                 image--ratio
                 {{ cond (not $list.contain) "" "image--contain" }}
-                {{ cond (ne $list.image "gradient") "" "image--gradient" }}
+                {{ cond (ne $list.image "fade") "" "image--fade" }}
               "
               style="--image-ratio: {{ $list.ratio | default "16/9" }}"
             >

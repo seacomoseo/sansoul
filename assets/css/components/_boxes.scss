@@ -43,9 +43,9 @@
   --box-w: calc(var(--col-width) - var(--gc));
   --box-width: var(--box-w);
 
-  --box-padding-vs: 1;
-  --box-padding-vl: var(--box-padding-vs, 1);
-  @include fluid-size(--box-padding, 1em, var(--box-padding-vs), var(--box-padding-vl));
+  --box-pd-vs: 1;
+  --box-pd-vl: var(--box-pd-vs, 1);
+  @include fluid-size(--box-pd, 1em, var(--box-pd-vs), var(--box-pd-vl));
 }
 .boxes > *,
 .box {
@@ -61,7 +61,7 @@
 // Default padding and gap when columns is small (> 2 and container <= sm)
 .boxes--sm {
   --cols-gap-vl-default: 1;
-  --box-padding-vs: 1;
+  --box-pd-vs: 1;
 }
 
 .boxes--left,
@@ -87,7 +87,7 @@
 
 .boxes--radius {
   overflow: hidden;
-  @include radius(var(--box-padding));
+  @include radius(var(--box-pd));
 }
 
 .section--full.ph .cols--gap-0 {

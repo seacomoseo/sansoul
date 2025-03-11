@@ -59,36 +59,36 @@
   {{- partial "components/boxes/box" (merge
     .
     (dict
-      "id"            nil
-      "main"          true
-      "deep"          0
-      "level"         (cond $header 1 (cond $modal 3 2))
-      "header"        $header
-      "footer"        $footer
-      "modal"         $modal
-      "bgcp"          $bgcp
-      "node"          (cond $modal .node          .box_node)
-      "bg"            (cond $modal .bg            .box_bg)
-      "alpha"         (cond $modal .alpha         .box_alpha)
-      "parallax"      (cond $modal .parallax      .box_parallax)
-      "color"         (cond $modal .color         .box_color)
-      "color_alpha"   (cond $modal .color_alpha   .box_color_alpha)
-      "gradient"      (cond $modal .gradient      .box_gradient)
-      "gradient_type" (cond $modal .gradient_type .box_gradient_type)
-      "image_align"   nil
-      "full"          nil
-      "pt"            nil
-      "pb"            nil
-      "divider"       nil
-      "flip_x"        nil
-      "flip_y"        nil
-      "if"            nil
-      "container"     $container
-      "col_vl"        1.00
-      "col_vs"        1.00
-      "section"       .
-      "box_wrap"      true
-      "parent"        .box
+      "id"          nil
+      "main"        true
+      "deep"        0
+      "level"       (cond $header 1 (cond $modal 3 2))
+      "header"      $header
+      "footer"      $footer
+      "modal"       $modal
+      "bgcp"        $bgcp
+      "node"        (cond $modal .node        .box_node)
+      "bg"          (cond $modal .bg          .box_bg)
+      "alpha"       (cond $modal .alpha       .box_alpha)
+      "parallax"    (cond $modal .parallax    .box_parallax)
+      "color"       (cond $modal .color       .box_color)
+      "color_alpha" (cond $modal .color_alpha .box_color_alpha)
+      "fade"        (cond $modal .fade        .box_fade)
+      "fade_type"   (cond $modal .fade_type   .box_fade_type)
+      "image_align" nil
+      "full"        nil
+      "pt"          nil
+      "pb"          nil
+      "div"         nil
+      "div_x"       nil
+      "div_y"       nil
+      "if"          nil
+      "container"   $container
+      "col_vl"      1.00
+      "col_vs"      1.00
+      "section"     .
+      "box_wrap"    true
+      "parent"      .box
     )
   ) -}}
 

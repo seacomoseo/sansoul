@@ -42,7 +42,7 @@
     {{ else }}
 
       {{ $base     := dict
-        "grey" (site.Data.styles.colors.base.grey  | default "#767676")
+        "gray" (site.Data.styles.colors.base.gray  | default "#767676")
         "main" (site.Data.styles.colors.main.color | default "#577399")
         "alt"  (site.Data.styles.colors.alt.color  | default "#eeeeee")
         "cta"  (site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399")
@@ -54,7 +54,7 @@
       {{ else }}
         {{ $color   = cond $invert "dark" "light" }}
       {{ end }}
-      {{ if ne .parent "grey" }}
+      {{ if ne .parent "gray" }}
         {{ $color = print .parent "-" $color }}
       {{ end }}
 

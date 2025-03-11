@@ -5,8 +5,8 @@
 .review__globe {
   // @include font-cursive;
   position: relative;
-  --box-padding: .5em;
-  padding: var(--box-padding);
+  --box-pd: .5em;
+  padding: var(--box-pd);
   height: 100%;
   display: flex;
   // flex-direction: row;
@@ -25,14 +25,14 @@
     bottom: -.75em;
     left: 1.25em + $radius;
   }
-  &.bg-gradient-linear-b,
-  &.bg-gradient-linear-l,
-  &.bg-gradient-linear-br,
-  &.bg-gradient-linear-bl,
-  &.bg-gradient-radial,
-  &.bg-gradient-circle {
+  &.bg-fade-linear-b,
+  &.bg-fade-linear-l,
+  &.bg-fade-linear-br,
+  &.bg-fade-linear-bl,
+  &.bg-fade-radial,
+  &.bg-fade-circle {
     &:after {
-      border-top-color: var(--gradient-color);
+      border-top-color: var(--fade-color);
     }
   }
 }

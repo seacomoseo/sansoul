@@ -15,7 +15,7 @@ body,
 .bg-alt-dark,
 .bg-white,
 .bg-light,
-.bg-grey,
+.bg-gray,
 .bg-dark,
 .bg-black {
   // Bases  
@@ -25,8 +25,8 @@ body,
   --main-text: #{ $main-contrast-neutral };
   --alt: #{ $alt };
   --alt-text: #{ $alt-contrast-neutral };
-  --grey: #{ $grey };
-  --grey-text: #{ $grey-contrast-neutral };
+  --gray: #{ $gray };
+  --gray-text: #{ $gray-contrast-neutral };
   --light: #{ $light };
   --light-text: #{ $text };
   --dark: #{ $dark };
@@ -57,8 +57,8 @@ body,
   // --main-text:    color-mix(in srgb, #{ $main-contrast-neutral }, transparent             var(--bg-darkening));
   // --alt:          color-mix(in srgb, #{ $alt },                   transparent             var(--bg-darkening));
   // --alt-text:     color-mix(in srgb, #{ $alt-contrast-neutral },  transparent             var(--bg-darkening));
-  // --grey:         color-mix(in srgb, #{ $grey },                  transparent             var(--bg-darkening));
-  // --grey-text:    color-mix(in srgb, #{ $grey-contrast-neutral }, transparent             var(--bg-darkening));
+  // --gray:         color-mix(in srgb, #{ $gray },                  transparent             var(--bg-darkening));
+  // --gray-text:    color-mix(in srgb, #{ $gray-contrast-neutral }, transparent             var(--bg-darkening));
   // --light:        color-mix(in srgb, #{ $light },                 #{ $dark }              var(--bg-darkening));
   // --light-text:   color-mix(in srgb, #{ $text },                  #{ $light }             var(--bg-darkening));
   // --dark:         color-mix(in srgb, #{ $dark },                  #{ $light }             var(--bg-darkening));
@@ -81,12 +81,12 @@ body,
 }
 
 // Texts
-.bg-white:not([class*="bg-gradient"]) {
+.bg-white:not([class*="bg-fade"]) {
   --text: #767676;
 }
 .bg-black,
 .bg-dark,
-.bg-grey,
+.bg-gray,
 .bg-main-dark,
 .bg-alt-dark,
 .bg-cta-dark {
@@ -146,10 +146,10 @@ body,
   --alt:      var(--cta);
   --alt-text: var(--cta-text);
 }
-.bg-grey {
+.bg-gray {
   // like dark
-  --grey:      var(--dark);
-  --grey-text: var(--dark-text);
+  --gray:      var(--dark);
+  --gray-text: var(--dark-text);
 }
 
 // Light
@@ -179,7 +179,7 @@ body,
 .bg-main {  @include invert-light($main); }
 .bg-alt  {  @include invert-light($alt);  }
 .bg-cta  {  @include invert-light($cta);  }
-.bg-grey {  @include invert-light($grey); }
+.bg-gray {  @include invert-light($gray); }
 
 // Contrast Background
 @mixin cta-contrast($bg) {
@@ -228,7 +228,7 @@ body,
   }
   .bg-black,
   .bg-dark,
-  .bg-grey,
+  .bg-gray,
   .bg-cta-dark,
   .bg-main-dark,
   .bg-alt-dark {
@@ -278,16 +278,16 @@ body,
 .invert {
   --base:      var(--invert);
   --base-text: var(--invert-text);
-  // hover like grey
-  --hover: var(--grey);
-  --hover-text: var(--grey-text);
+  // hover like gray
+  --hover: var(--gray);
+  --hover-text: var(--gray-text);
 }
 .similar {
   --base:      var(--similar);
   --base-text: var(--similar-text);
-  // active like grey
-  --active:      var(--grey);
-  --active-text: var(--grey-text);
+  // active like gray
+  --active:      var(--gray);
+  --active-text: var(--gray-text);
 }
 .whatsapp {
   --base: #25d366;

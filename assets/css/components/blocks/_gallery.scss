@@ -14,7 +14,7 @@
   --gallery-image-hover-transform: scale(1.125) rotate(2deg);
   --gallery-image-hover-transform-odd: scale(1.125) rotate(-2deg);
 }
-.gallery:not(.gallery--grayscale) {
+.gallery:not(.gallery--gray) {
   .gallery__item {
     &:hover,
     &:focus,
@@ -96,7 +96,7 @@
   }
 }
 .gallery.bg {
-  --radius-padding: var(--gallery-gap);
+  --radius-pd: var(--gallery-gap);
   padding: var(--gallery-gap);
   margin-inline: calc(-1 * var(--gallery-gap));
 }
@@ -227,11 +227,11 @@
 
 // GRAYSCALE
 
-.gallery--grayscale {
+.gallery--gray {
   .gallery__item:not(:hover, :focus, :active) {
     .gallery__image {
       &, > img {
-        filter: var(--grayscale);
+        filter: var(--gray);
       }
     }
   }

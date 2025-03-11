@@ -131,10 +131,10 @@
     .fit_vs
     .node
     .color
-    .gradient
+    .fade
     .bg
     .parallax
-    .padding
+    .pd
     .pill
     .align
     .align_vl
@@ -156,7 +156,7 @@
         {{- $bg_image_src  = .image -}}
       {{- end -}}
     {{- end -}}
-    {{- $bg        := .color | or .gradient | or $bg_image_src -}}
+    {{- $bg        := .color | or .fade | or $bg_image_src -}}
 
     {{- $shadow    := $bg | and (not .hide_shadow) -}}
     {{- $radius    := true -}}
@@ -245,14 +245,14 @@
         {{- end -}}
         {{- partial "components/boxes/_" (merge
           (dict
-            "box"      (dict
-              "button"    "hide"
-              "cols"      .cols
-              "color"     .color
-              "gap"       .gap
-              "ratio"     .ratio
-              "contain"   .contain
-              "grayscale" .grayscale
+            "box" (dict
+              "button"  "hide"
+              "cols"    .cols
+              "color"   .color
+              "gap"     .gap
+              "ratio"   .ratio
+              "contain" .contain
+              "gray"    .gray
             )
           )
           .
@@ -340,7 +340,7 @@
         "class"   "box__button box-go"
         "button"  (.button | default "cta")
         "swap"    .swap
-        "icon"    .licon
+        "icon"    .pin
         "label"   (.label  | default (i18n "more") | markdownify)
         "anchor"  (.anchor | markdownify)
         "anchor2" (.hanchor | default .title | markdownify)

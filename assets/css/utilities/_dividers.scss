@@ -1,81 +1,81 @@
-.divider {
-  margin-top: calc(var(--divider-height) * -1);
-  --divider-gradient: linear-gradient(black, black);
+.div {
+  margin-top: calc(var(--div-height) * -1);
+  --div-fade: linear-gradient(black, black);
 }
-@mixin divider-left($w, $s, $next) {
-  --divider-#{$next}: calc(((100cqw - #{$w}) / 2) + #{$w} / (#{$s} * 2) * (#{$s} - 1));
+@mixin div-left($w, $s, $next) {
+  --div-#{$next}: calc(((100cqw - #{$w}) / 2) + #{$w} / (#{$s} * 2) * (#{$s} - 1));
 }
-.divider,
-.divider--next {
-  --divider-size: 1;
-  --divider-width: calc(var(--divider-height) * 8 * var(--divider-size));
-  @include divider-left(var(--divider-width), var(--divider-size), 'left');
-  --divider-top: 1px;
-  --divider-position: var(--divider-left) var(--divider-top);
+.div,
+.div--next {
+  --div-size: 1;
+  --div-width: calc(var(--div-height) * 8 * var(--div-size));
+  @include div-left(var(--div-width), var(--div-size), 'left');
+  --div-top: 1px;
+  --div-position: var(--div-left) var(--div-top);
 }
-.divider--next {
-  --divider-next-size: 1;
-  --divider-next-width: calc(var(--divider-height) * 8 * var(--divider-next-size));
-  @include divider-left(var(--divider-next-width), var(--divider-next-size), 'next-left');
-  --divider-next-top: calc(100% - 1px);
-  --divider-next-position: var(--divider-next-left) var(--divider-next-top);
+.div--next {
+  --div-next-size: 1;
+  --div-next-width: calc(var(--div-height) * 8 * var(--div-next-size));
+  @include div-left(var(--div-next-width), var(--div-next-size), 'next-left');
+  --div-next-top: calc(100% - 1px);
+  --div-next-position: var(--div-next-left) var(--div-next-top);
 }
 
 // prev only
-.divider {
-  --divider-mask-image:
-    var(--divider),
-    var(--divider-gradient);
-  --divider-mask-size:
-    var(--divider-width) var(--divider-height),
-    var(--divider-width);
-  --divider-mask-position:
-    var(--divider-position),
-    0 var(--divider-height);
+.div {
+  --div-mask-image:
+    var(--div),
+    var(--div-fade);
+  --div-mask-size:
+    var(--div-width) var(--div-height),
+    var(--div-width);
+  --div-mask-position:
+    var(--div-position),
+    0 var(--div-height);
 }
 
 // prev and next
-.divider--next {
-  --divider-mask-image:
-    var(--divider),
-    var(--divider-gradient),
-    var(--divider-next);
-  --divider-mask-size:
-    var(--divider-width) var(--divider-height),
-    100% calc(100% - var(--divider-height) * 2),
-    var(--divider-next-width) var(--divider-height);
-  --divider-mask-position:
-    var(--divider-position),
-    0 var(--divider-height),
-    var(--divider-next-position);
+.div--next {
+  --div-mask-image:
+    var(--div),
+    var(--div-fade),
+    var(--div-next);
+  --div-mask-size:
+    var(--div-width) var(--div-height),
+    100% calc(100% - var(--div-height) * 2),
+    var(--div-next-width) var(--div-height);
+  --div-mask-position:
+    var(--div-position),
+    0 var(--div-height),
+    var(--div-next-position);
   //         mask-composite: exclude;
   // -webkit-mask-composite: xor;
 }
 
 // next only
-.divider--next:not(.divider) {
-  --divider-mask-image:
-    var(--divider-gradient),
-    var(--divider-next);
-  --divider-mask-size:
-    100% calc(100% - var(--divider-height)),
-    var(--divider-next-width) var(--divider-height);
-  --divider-mask-position:
+.div--next:not(.div) {
+  --div-mask-image:
+    var(--div-fade),
+    var(--div-next);
+  --div-mask-size:
+    100% calc(100% - var(--div-height)),
+    var(--div-next-width) var(--div-height);
+  --div-mask-position:
     0 0,
-    var(--divider-next-position);
+    var(--div-next-position);
 }
 
 // mask
-.divider,
-.divider--next {
+.div,
+.div--next {
   &.ph,
   > .bg-color {
-            mask-image: var(--divider-mask-image);
-    -webkit-mask-image: var(--divider-mask-image);
-            mask-size: var(--divider-mask-size);
-    -webkit-mask-size: var(--divider-mask-size);
-            mask-position: var(--divider-mask-position);
-    -webkit-mask-position: var(--divider-mask-position);
+            mask-image: var(--div-mask-image);
+    -webkit-mask-image: var(--div-mask-image);
+            mask-size: var(--div-mask-size);
+    -webkit-mask-size: var(--div-mask-size);
+            mask-position: var(--div-mask-position);
+    -webkit-mask-position: var(--div-mask-position);
             mask-repeat: repeat-x;
     -webkit-mask-repeat: repeat-x;
   }
@@ -83,17 +83,17 @@
 
 // others
 
-.divider--size {
-  --divider-size: 2;
+.div--size {
+  --div-size: 2;
 }
-.divider--not-repeat {
-  --divider-width: calc(100% * var(--divider-size));
-  --divider-left: 0px;
+.div--not-repeat {
+  --div-width: calc(100% * var(--div-size));
+  --div-left: 0px;
 }
-.divider--next--size {
-  --divider-next-size: 2;
+.div--next--size {
+  --div-next-size: 2;
 }
-.divider--next--not-repeat {
-  --divider-next-width: calc(100% * var(--divider-next-size));
-  --divider-next-left: 0px;
+.div--next--not-repeat {
+  --div-next-width: calc(100% * var(--div-next-size));
+  --div-next-left: 0px;
 }

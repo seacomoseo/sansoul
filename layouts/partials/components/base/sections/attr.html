@@ -21,8 +21,8 @@
 {{/*  Background  */}}
 {{ $bg                := "" }}
 {{ $bg_color          := "" }}
-{{ $bg_gradient_color := "" }}
-{{ $bg_gradient_type  := "" }}
+{{ $bg_fade_color := "" }}
+{{ $bg_fade_type  := "" }}
 {{ $bg_image_fix      := "" }}
 {{ $bg_parallax       := "" }}
 {{ $bg_video_parent   := "" }}
@@ -30,16 +30,16 @@
   {{ with .color }}
     {{ $bg_color          = print "bg-" . }}
   {{ else }}
-    {{ if and .map .ph .prev.divider }}
+    {{ if and .map .ph .prev.div }}
       {{ $bg_color        = "bg-white" }}
     {{ end }}
   {{ end }}
   {{ if .bg }}
     {{ $bg_color          = print $bg_color " bg-image" }}
   {{ end }}
-  {{ if .gradient }}
-    {{ $bg_gradient_color = print "bg-gradient-" .gradient }}
-    {{ $bg_gradient_type  = print "bg-gradient-" (.gradient_type | default "linear-b") }}
+  {{ if .fade }}
+    {{ $bg_fade_color = print "bg-fade-" .fade }}
+    {{ $bg_fade_type  = print "bg-fade-" (.fade_type | default "linear-b") }}
   {{ end }}
   {{ $bg                  = cond (not $bg_color) "" "bg" }}
   {{ $bg_image_fix        = cond (not (and .bg (eq .parallax "fix")))        "" "bg--fix" }}
@@ -50,21 +50,21 @@
 {{ end }}
 
 {{/*  Paddings  */}}
-{{ $padding_hide           := "" }}
-{{ $padding_top_divider    := "" }}
-{{ $padding_bottom_divider := "" }}
+{{ $ph     := "" }}
+{{ $pt_div := "" }}
+{{ $pb_div := "" }}
 {{ if .ph }}
-  {{ $padding_hide          = "ph" }}
+  {{ $ph    = "ph" }}
 {{ end }}
 {{ if $bg }}
   {{ with .prev }}
-    {{ if .divider }}
-      {{ $padding_top_divider = "pt-divider" }}
+    {{ if .div }}
+      {{ $pt_div = "pt-div" }}
     {{ end }}
   {{ end }}
 {{ end }}
-{{ if .divider | and (not .footer) }}
-  {{ $padding_bottom_divider = "pb-divider" }}
+{{ if .div | and (not .footer) }}
+  {{ $pb_div = "pb-div" }}
 {{ end }}
 {{ $params := partial "functions/params" . }}
 {{ $menu   := $params.menu }}
@@ -74,31 +74,31 @@
   (not $menu.sticky)
   (eq $menu.header "hide")
 }}
-  {{ $padding_top_divider = "pt-divider" }}
+  {{ $pt_div = "pt-div" }}
 {{ end }}
 
 {{/*  Divider Prev  */}}
-{{ $divider       := "" }}
-{{ $divider_style := "" }}
+{{ $div       := "" }}
+{{ $div_style := "" }}
 {{ with .prev }}
-  {{ if .divider }}
-    {{ if or $.color $.gradient $.bg (and $.map $.ph .divider) }}
+  {{ if .div }}
+    {{ if or $.color $.fade $.bg (and $.map $.ph .div) }}
       {{ with partial "components/divider-attr" (dict "section" . "next" false) }}
-        {{ $divider       = .class }}
-        {{ $divider_style = .style }}
+        {{ $div       = .class }}
+        {{ $div_style = .style }}
       {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}
 
 {{/*  Divider Next  */}}
-{{ $divider_next       := "" }}
-{{ $divider_next_style := "" }}
+{{ $div_next       := "" }}
+{{ $div_next_style := "" }}
 {{ if .next }}
-  {{ if and .divider (not .footer) (not (or .next.color .next.gradient .next.bg (and .next.map .next.ph .divider))) }}
+  {{ if and .div (not .footer) (not (or .next.color .next.fade .next.bg (and .next.map .next.ph .div))) }}
     {{ with partial "components/divider-attr" (dict "section" . "next" true) }}
-      {{ $divider_next       = .class }}
-      {{ $divider_next_style = .style }}
+      {{ $div_next       = .class }}
+      {{ $div_next_style = .style }}
     {{ end }}
   {{ end }}
 {{ end }}
@@ -109,16 +109,16 @@
   $full
   $bg
   $bg_color
-  $bg_gradient_type
-  $bg_gradient_color
+  $bg_fade_type
+  $bg_fade_color
   $bg_image_fix
   $bg_parallax
   $bg_video_parent
-  $padding_hide
-  $padding_top_divider
-  $padding_bottom_divider
-  $divider
-  $divider_next
+  $ph
+  $pt_div
+  $pb_div
+  $div
+  $div_next
   | append (.body_class | default slice)
 -}}
 
@@ -126,34 +126,34 @@
 {{/*  STYLES  */}}
 
 {{ $bg_color_alpha    := "" }}
-{{ if and (and .color_alpha (ne .color_alpha 1)) (or $bg_color $bg_gradient_color) }}
+{{ if and (and .color_alpha (ne .color_alpha 1)) (or $bg_color $bg_fade_color) }}
   {{ $bg_color_alpha   = print "--bg-alpha:" .color_alpha }}
 {{ end }}
-{{ $padding_top       := "" }}
-{{ $padding_bottom    := "" }}
+{{ $pt       := "" }}
+{{ $pb    := "" }}
 {{ if .ph }}
-  {{ $padding_top      = "" }}
-  {{ $padding_bottom   = "" }}
+  {{ $pt      = "" }}
+  {{ $pb   = "" }}
 {{ else }}
   {{ if ne .pt nil }}
-    {{ $padding_top    = print "--pt:" .pt "em" }}
+    {{ $pt    = print "--pt:" .pt "em" }}
   {{ end }}
   {{ if ne .pb nil }}
-    {{ $padding_bottom = print "--pb:" .pb "em" }}
+    {{ $pb = print "--pb:" .pb "em" }}
   {{ end }}
 {{ end }}
 {{ if $modal }}
   {{ $bg_color_alpha = "" }}
-  {{ $padding_top    = "" }}
-  {{ $padding_bottom = "" }}
+  {{ $pt    = "" }}
+  {{ $pb = "" }}
 {{ end }}
 
 {{ $style := slice
   $bg_color_alpha
-  $padding_top
-  $padding_bottom
-  $divider_style
-  $divider_next_style
+  $pt
+  $pb
+  $div_style
+  $div_next_style
 }}
 
 

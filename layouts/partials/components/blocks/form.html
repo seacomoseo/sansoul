@@ -420,7 +420,7 @@
 
       {{- /*  geo  */ -}}
       {{- else if $type | eq "geo" -}}
-        {{- $icon := .licon | default "circle-dot" -}}
+        {{- $icon := .icon | default "circle-dot" -}}
         {{- $geo_attrs := dict
           "id"         (print "geo-" $form_id)
           "class"      "form__geo-map"

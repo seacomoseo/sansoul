@@ -6,20 +6,20 @@
   {{- $image_src = "" -}}
 {{- end -}}
 
-{{- $print_image := or $image_src .declive -}}
+{{- $print_image := or $image_src .shade -}}
 
 {{- /* IMAGE INI  */ -}}
 {{- if $print_image -}}
 
   {{- /* IMAGE CLASS  */ -}}
-  {{- $hover     := cond (not .hover)     "" "image--hover"     -}}
-  {{- $contain   := cond (not .contain)   "" "image--contain"   -}}
-  {{- $inset     := cond (not .inset)     "" "image--inset"     -}}
-  {{- $circle    := cond (not .circle)    "" "image--circle"    -}}
-  {{- $grayscale := cond (not .grayscale) "" "image--grayscale" -}}
-  {{- $ratio     := cond (not .ratio)     "" "image--ratio"     -}}
-  {{- $border    := cond (not .border)    "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
-  {{- $icon_top  := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
+  {{- $hover    := cond (not .hover  ) "" "image--hover"     -}}
+  {{- $contain  := cond (not .contain) "" "image--contain"   -}}
+  {{- $inset    := cond (not .inset  ) "" "image--inset"     -}}
+  {{- $circle   := cond (not .circle ) "" "image--circle"    -}}
+  {{- $gray     := cond (not .gray   ) "" "image--gray"      -}}
+  {{- $ratio    := cond (not .ratio  ) "" "image--ratio"     -}}
+  {{- $border   := cond (not .border ) "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
+  {{- $icon_top := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
 
   {{- $class := slice
     "image"
@@ -30,7 +30,7 @@
     $circle
     $hover
     $icon_top
-    $grayscale
+    $gray
   -}}
 
   {{- /* IMAGE STYLE  */ -}}
@@ -53,9 +53,9 @@
   {{- /* HTML  */}}
   <div {{- $attrs }}>
 
-    {{- /* GRADIENT  */ -}}
-    {{- if .declive }}
-      <div class="image__inner image__inner--gradient"></div>
+    {{- /* SHADE (GRADIENT)  */ -}}
+    {{- if .shade }}
+      <div class="image__inner image__inner--shade"></div>
     {{- end -}}
 
 

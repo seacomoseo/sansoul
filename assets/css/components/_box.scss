@@ -6,12 +6,12 @@
   flex-direction: column;
   align-items: var(--align-items, center);
   max-width: 100%;
-  padding: var(--box-padding);
-  --box-inner: calc(100cqw - var(--box-padding) * 2);
+  padding: var(--box-pd);
+  --box-inner: calc(100cqw - var(--box-pd) * 2);
   --box-gap: 1rem;
   gap: var(--box-gap);
   &.bg {
-    @include radius-parent(var(--box-padding));
+    @include radius-parent(var(--box-pd));
   }
   // > *:not(.box, .image, .box__icon, .box__button:not(.bg > *)) {
   //   width: 100%;
@@ -83,10 +83,10 @@
 // Padding
 .container,
 .box:where(:not(.bg)) {
-  --box-padding-vs: 0;
+  --box-pd-vs: 0;
 }
-.box:where(.bg:not(.boxes > *, [class*="box--padding-"])) {
-  --box-padding-vs: 1;
+.box:where(.bg:not(.boxes > *, [class*="box--pd-"])) {
+  --box-pd-vs: 1;
 }
 
 // Fit
@@ -121,7 +121,7 @@
 
   // Radius min
   .box {
-    --image-inset-padding-radius: var(--box-padding);
+    --image-inset-pd-radius: var(--box-pd);
   }
   .box:not(:has(
     > :is(
@@ -138,8 +138,8 @@
       :has(+ .box__button.hide:last-child)
     )
   )) {
-    --radius-padding: 0em;
-    --image-inset-padding-radius: 0em;
+    --radius-pd: 0em;
+    --image-inset-pd-radius: 0em;
   }
 
   // Hide radius
@@ -390,20 +390,20 @@
 }
 .bg-card {
   flex-grow: 1;
-  margin: calc(-1 * var(--box-padding));
-  margin-bottom: calc(var(--box-padding) - var(--box-gap));
+  margin: calc(-1 * var(--box-pd));
+  margin-bottom: calc(var(--box-pd) - var(--box-gap));
   position: relative;
 }
 .bg-card:after {
   content: '';
   display: block;
-  --bg-card-width: calc(100cqw + var(--box-padding) * 2);
+  --bg-card-width: calc(100cqw + var(--box-pd) * 2);
   --bg-card-height: calc(var(--bg-card-width) / (var(--box-ratio)) - 100%);
   width: var(--bg-card-width);
   height: var(--bg-card-height);
   position: absolute;
   bottom: calc(-1 * var(--bg-card-height));
-  // left: calc(var(--box-padding)* -1);
+  // left: calc(var(--box-pd)* -1);
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5) calc(var(--box-gap) * 2), #000);
   @include radius-child;
   border-top-left-radius: 0;

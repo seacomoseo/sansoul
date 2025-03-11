@@ -5,7 +5,7 @@ $white:                    $styles-colors-base-white         !default;
 $light:                    $styles-colors-base-light         !default;
 $dark:                     $styles-colors-base-dark          !default;
 $black:                    $styles-colors-base-black         !default;
-$grey:                     $styles-colors-base-grey          !default;
+$gray:                     $styles-colors-base-gray          !default;
 $main:                     $styles-colors-main-color         !default;
 $alt:                   if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
 $cta:                      $styles-colors-cta-color          !default;
@@ -18,17 +18,17 @@ $main-dark:             if($styles-colors-main-dark  != '', $styles-colors-main-
 $alt-dark:              if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
 $cta-dark:              if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,  mix($black,  $cta,  60%)) !default;
 
-$grey-contrast-neutral: text-contrast($grey)                !default;
+$gray-contrast-neutral: text-contrast($gray)                !default;
 $main-contrast-neutral: if($styles-colors-main-contrast-text == 'true', text-contrast($main), $white) !default;
 $alt-contrast-neutral:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt ), $white) !default;
 $cta-contrast-neutral:  if($styles-colors-cta-contrast-text  == 'true', text-contrast($cta),  $white) !default;
 
-$grey-contrast-colored: text-contrast($grey, $light, $dark) !default;
+$gray-contrast-colored: text-contrast($gray, $light, $dark) !default;
 $main-contrast-colored: if($styles-colors-main-contrast-text == 'true', text-contrast($main, $main-light, $main-dark), $main-light) !default;
 $alt-contrast-colored:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt,  $alt-light,  $alt-dark ), $alt-light ) !default;
 $cta-contrast-colored:  if($styles-colors-cta-contrast-text  == 'true', text-contrast($cta,  $cta-light,  $cta-dark),  $cta-light ) !default;
 
-$grey-contrast-bg:      true                                           !default;
+$gray-contrast-bg:      true                                           !default;
 $main-contrast-bg:      $styles-colors-main-contrast-bg      == 'true' !default;
 $alt-contrast-bg:       $styles-colors-alt-contrast-bg       == 'true' !default;
 $cta-contrast-bg:       $styles-colors-cta-contrast-bg       == 'true' !default;
@@ -37,7 +37,7 @@ $white-3d:              mix($black, $white, 25%)             !default;
 $light-3d:              mix($black, $light, 25%)             !default;
 $dark-3d:               mix($black, $dark,  25%)             !default;
 $black-3d:              mix($dark,  $black, 25%)             !default;
-$grey-3d:               mix($black, $grey,  25%)             !default;
+$gray-3d:               mix($black, $gray,  25%)             !default;
 $main-3d:               mix($black, $main,  25%)             !default;
 $alt-3d:                mix($black, $alt,   25%)             !default;
 $cta-3d:                mix($black, $cta,   25%)             !default;
@@ -54,7 +54,7 @@ $options-colors: (
   'cta-dark':   $cta-dark,
   'white':      $white,
   'light':      $light,
-  'grey':       $grey,
+  'gray':       $gray,
   'dark':       $dark,
   'black':      $black
 );

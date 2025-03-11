@@ -17,24 +17,24 @@
   ) }}
 
   {{/* NEXT FOOTER DIVIDER WHEN THIS NOT HAVE  */}}
-  {{ if not $section.divider }}
+  {{ if not $section.div }}
     {{ if eq $section.next.id "footer" }}
       {{ $section = merge $section (dict
-        "divider" $section.next.divider
-        "flip_x"  $section.next.flip_x
-        "flip_y"  $section.next.flip_y
+        "div"   $section.next.div
+        "div_x" $section.next.div_x
+        "div_y" $section.next.div_y
       ) }}
     {{ end }}
   {{ end }}
 
   {{/* FOOTER DIVIDER WHEN PREV NOT HAVE  */}}
-  {{ if not $section.prev.divider }}
+  {{ if not $section.prev.div }}
     {{ if eq $section.id "footer" }}
       {{ $section = merge $section (dict
         "prev" (dict
-          "divider" $section.divider
-          "flip_x"  $section.flip_x
-          "flip_y"  $section.flip_y
+          "div"   $section.div
+          "div_x" $section.div_x
+          "div_y" $section.div_y
         )
       ) }}
     {{ end }}
