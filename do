@@ -13,35 +13,18 @@ hecho() {
 ## GIT COMMANDS ##
 ##################
 
-# Upload with date now
 if [ $1 = up ]; then
-
   source ../_tools/git/up.sh
-
-# Upload submodule changes with date now
 elif [ $1 = sup ]; then
-
   source ../_tools/git/sup.sh
-
-# Pull of repository
 elif [ $1 = down ]; then
-
   source ../_tools/git/down.sh
-
-# Pull of submodules and update in the repo
 elif [ $1 = sdown ]; then
-
   source ../_tools/git/sdown.sh
-
-# Repo up and down
 elif [ $1 = du ]; then
-
   sh do down
   sh do up
-
-# Submodule up and down
 elif [ $1 = sdu ]; then
-
   sh do sdown
   sh do sup
 
@@ -49,71 +32,49 @@ elif [ $1 = sdu ]; then
 ## DEV COMMANDS ##
 ##################
 
-# Create woff2 and scss by font files
-elif [ $1 = normalize ]; then
 
-  hecho "NORMALIZE YAML AND MARKDOWN FILES"
+# Normalize yaml and markdown files
+elif [ $1 = normalize ]; then
   python3 ../_tools/others/yaml-normalize.py
 
-# Create woff2 and scss by font files
+# Refactoring spaces in Hugo
 elif [ $1 = spaces ]; then
-
-  hecho "REFACTORING SPACES IN HUGO"
   sh ../_tools/others/refactoring-spaces.sh $2
 
 # Create favicon.ico
 elif [ $1 = favicon ]; then
-
   source ../_tools/others/favicon.sh
 
 # Create woff2 and scss by font files
 elif [ $1 = fonts ]; then
-
   source ../_tools/others/fonts.sh
 
 # Remove binary files from history
 elif [ $1 = clean ]; then
-
   source ../_tools/others/remove-history-binary-files.sh
-
-# Images ICO, PNG and AVIF
-elif [ $1 = images ]; then
-
-  hecho "IMAGES ICO, PNG AND AVIF"
-  node ./themes/sansoul/assets/js/node/images.js
 
 # Check yaml error of Static CMS
 elif [ $1 = yml ]; then
-
-  cd ../_tools
-  node others/check-yaml.js $PROYECT $2
-  cd ../$PROYECT
+  node ../_tools/others/check-yaml.js $PROYECT $2
 
 # Get main color and langs
 elif [ $1 = color-langs ]; then
-
   COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
   LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
 
 # Get data of place by Google API
 elif [ $1 = places ]; then
-
   sh do color-langs
-  cd ../_tools
   for LANG in $LANGS; do
-    node others/fetch-place.js $PROYECT $COLOR $LANG $2
+    node ../_tools/others/fetch-place.js $PROYECT $COLOR $LANG $2
   done
-  cd ../$PROYECT
 
 # Scrap reviews by Google Maps
 elif [ $1 = reviews ]; then
-
   sh do color-langs
-  cd ../_tools
   for LANG in $LANGS; do
-    node others/scrape-reviews.js $PROYECT $LANG $2
+    node ../_tools/others/scrape-reviews.js $PROYECT $LANG $2
   done
-  cd ../$PROYECT
 
 #####################
 ## SERVER COMMANDS ##
@@ -131,6 +92,7 @@ elif [ $1 = server ]; then
 # CMS + hugo local
 elif [ $1 = local ]; then
 
+  hecho "HUGO LOCAL"
   export HUGO_CMS_LOCAL=true
   npx @staticcms/proxy-server &
   sh do server
@@ -181,6 +143,12 @@ elif [ $1 = draws-purge ]; then
   [ -s ${FILE} ] || echo "null" > ${FILE}
   # Delete temporary files
   rm ${TEMP} ${IDSF}
+
+# Images ICO, PNG and AVIF
+elif [ $1 = images ]; then
+
+  hecho "IMAGES ICO, PNG AND AVIF"
+  node ./themes/sansoul/assets/js/node/images.js
 
 # Enter in to prebuild folder, build hugo and go back
 elif [ $1 = prebuild ]; then
