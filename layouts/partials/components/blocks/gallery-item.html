@@ -59,8 +59,8 @@
     {{- end -}}
 
   {{- end -}}
-  {{- $style_width  := lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}
-  {{- $style_height := lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}
+  {{- $style_width  := lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}{{- /*  (width / height) * (600 / cols) / 16  */ -}}
+  {{- $style_height := lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}{{- /*  (height / width) * 100  */ -}}
   {{- $style         = print "--gallery-item-width:" $style_width ";--gallery-item-height:" $style_height "%" -}}
 {{- end -}}
 
