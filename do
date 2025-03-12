@@ -120,7 +120,7 @@ elif [ $1 = css-purge ]; then
   hecho "CSS PURGE"
   node ./themes/sansoul/assets/js/node/css-purge.js
 
-# Purge svg draws for online (when up to git)
+# Purge svg draws
 elif [ $1 = draws-purge ]; then
 
   hecho "DRAWS PURGE"
