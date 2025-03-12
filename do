@@ -12,6 +12,7 @@ eecho() { echo "\033[1;31m$1\033[0m"; }   # ❌ Error
 iecho() { echo "\033[1;34m$1\033[0m"; }   # 💙 Info
 vecho() { echo "\033[1;36m$1\033[0m"; }   # 🩵 Value
 
+
 ##################
 ## GIT COMMANDS ##
 ##################
@@ -31,10 +32,10 @@ elif [ $1 = sdu ]; then
   sh do sdown
   sh do sup
 
+
 ##################
 ## DEV COMMANDS ##
 ##################
-
 
 # Normalize yaml and markdown files
 elif [ $1 = normalize ]; then
@@ -79,6 +80,7 @@ elif [ $1 = reviews ]; then
     node ../_tools/others/scrape-reviews.js $PROYECT $LANG $2
   done
 
+
 #####################
 ## SERVER COMMANDS ##
 #####################
@@ -99,6 +101,7 @@ elif [ $1 = local ]; then
   export HUGO_CMS_LOCAL=true
   npx @staticcms/proxy-server &
   sh do server
+
 
 #####################
 ## DEPLOY COMMANDS ##
