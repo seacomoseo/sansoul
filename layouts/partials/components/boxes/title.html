@@ -54,8 +54,9 @@
 
   {{- /* TITLE MORE  */ -}}
   {{- $more  := "" -}}
-  {{- if and (ne $title $hanchor) (not $link) -}}
-    {{- $more = $hanchor | markdownify | plainify -}}
+  {{- if and $hanchor (ne $title $hanchor) (not $link) -}}
+    {{- $more  = $title | markdownify | plainify -}}
+    {{- $title = print "<i>" $hanchor "</i>" -}}
   {{- end -}}
 
   {{- /* TITLE JOIN  */ -}}

@@ -341,9 +341,9 @@
         "button"  (.button | default "cta")
         "swap"    .swap
         "icon"    .pin
-        "label"   (.label  | default (i18n "more") | markdownify)
-        "anchor"  (.anchor | markdownify)
-        "anchor2" (.hanchor | default .title | markdownify)
+        "label"   (.label   | default (i18n "more") | markdownify)
+        "anchor"  (.anchor  | default .label        | markdownify)
+        "anchor2" (.hanchor | default .title        | markdownify)
         "link"    .link
         "lock"    .ofuscate
       ) -}}

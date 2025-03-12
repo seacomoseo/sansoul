@@ -57,13 +57,15 @@
                 {{- $geo = unmarshal . -}}
               {{- end -}}
             {{- end -}}
-            {{- if $geo -}}
-              {{- $y     := index $geo.coordinates 0 -}}
-              {{- $x     := index $geo.coordinates 1 -}}
-              {{- $zoom  := .zoom | default 15 -}}
-              {{- $link   = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
-            {{- else -}}
-              {{- $link  = partial "functions/map-url" (.anchor | default .label) -}}
+            {{- if not $link -}}
+              {{- if $geo -}}
+                {{- $y     := index $geo.coordinates 0 -}}
+                {{- $x     := index $geo.coordinates 1 -}}
+                {{- $zoom  := .zoom | default 15 -}}
+                {{- $link   = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
+              {{- else -}}
+                {{- $link  = partial "functions/map-url" (.anchor | default .label) -}}
+              {{- end -}}
             {{- end -}}
             {{- $icon    = .icon | default "location-dot" -}}
             {{- $emoji   = "📍" -}}
