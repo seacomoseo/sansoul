@@ -25,6 +25,8 @@ elif [ $1 = down ]; then
   source ../_tools/git/down.sh
 elif [ $1 = sdown ]; then
   source ../_tools/git/sdown.sh
+elif [ $1 = merge ]; then
+  source ../_tools/git/merge.sh
 elif [ $1 = du ]; then
   sh do down
   sh do up
