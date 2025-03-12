@@ -5,6 +5,7 @@ PROYECT="${PWD##*/}"
 SUBMODULE_DIR="./themes/sansoul"
 
 # Functions
+lecho() { echo "\033[7;34m $1 \033[0m"; } # 🟦 Header
 hecho() { echo "\033[7;37m $1 \033[0m"; } # ⬜️ Header
 secho() { echo "\033[1;32m$1\033[0m"; }   # ✅ Success
 wecho() { echo "\033[1;33m$1\033[0m"; }   # 🟡 Warning
