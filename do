@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Variable
+# Variables
 PROYECT="${PWD##*/}"
 
 # Functions
