@@ -1,1 +1,2 @@
-{{- partial "functions/param" (index .Params 0) | plainify | replaceRE `[+ ]` "" -}}
+{{- $options := dict "Page" .Page "name" (index .Params 0) -}}
+{{- partial "functions/param" $options | plainify | replaceRE `[+ ]` "" -}}

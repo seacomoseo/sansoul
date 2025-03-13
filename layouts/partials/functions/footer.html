@@ -1,22 +1,25 @@
 {{ $params := partial "functions/params" . }}
 
-{{ $footer := partial "functions/section-by-file" (dict
+{{ $file_options := dict
+  "Page" .Page
   "file" "base/footer"
   "type" "section"
-) }}
+}}
+{{ $footer := partial "functions/section-by-file" $file_options }}
 
 {{ $footer  = merge
   (dict "color" "dark")
   $footer
   (dict
-    "id"    "footer"
-    "bgcp"  ($params.background.color | default "light")
+    "id"   "footer"
+    "bgcp" ($params.background.color | default "light")
   )
 }}
 
-{{ $footer = partial "functions/replace-shortcodes" (dict
+{{ $footer_options := dict
   "Page" .Page
   "obj"  $footer
-) }}
+}}
+{{ $footer = partial "functions/replace-shortcodes" $footer_options }}
 
 {{ return slice $footer }}

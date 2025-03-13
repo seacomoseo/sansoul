@@ -1,2 +1,3 @@
-{{ $return := partial "functions/index-split" (dict "value" page.Params "path" .) }}
+{{ $options := dict "value" .Page.Params "path" .name }}
+{{ $return  := partial "functions/index-split" $options }}
 {{ return $return }}

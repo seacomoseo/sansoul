@@ -1,9 +1,12 @@
-{{/*  SECTION BY YAML FILES  */}}
 {{ $section := dict }}
 {{ if .file }}
+  {{/*  Get folder with lang and type (section/modal)  */}}
   {{ with index site.Data (slice site.Home.Lang .type) }}
+    {{/*  get file  */}}
     {{ with index . (split $.file "/") }}
-      {{ $section = . }}
+      {{/*  merge params  */}}
+      {{ $options := dict "Page" $.Page "item" . }}
+      {{ $section  = partial "functions/params-merge" $options }}
     {{ end }}
   {{ end }}
 {{ end }}

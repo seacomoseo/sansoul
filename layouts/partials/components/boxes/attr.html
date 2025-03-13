@@ -5,47 +5,45 @@
 
 {{/*  CLASS  */}}
 
-{{ $no_content := .bg | and (not (or
-  .title
-  .subtitle
-  .md
-  .icon
-  .image_src
-  .button_is
-  .boxes
-  .steps
-  .images
-  .limages
-  .list
-  .accordions
-  .reviews
-  .buttons
-  .social
-  .inputs
-  .map
-)) }}
-
-{{ $bg_color := print
-  (cond (not .bg_color) (cond (not .card) "" "bg-black") (print "bg-" .bg_color))
-  (cond (not .bg_image_src) "" " bg-image")
-}}
-
+{{ $show       := and .show (not .slider) (not .header) }}
 {{ $not_fit    := or (not .fit   ) (eq .fit    1) }}
 {{ $not_fit_vs := or (not .fit_vs) (eq .fit_vs 1) }}
 
-
-{{ $rate  := .rate }}
-{{ if not $rate }}
-  {{ $rate = cond
-    (not .card)
-    (cond (not $no_content) "" "16/9")
-    "3/4"
-  }}
+{{ $rate := .rate }}
+{{ if not .rate }}
+  {{ if .card }}
+    {{ $rate = "3/4" }}
+  {{ else }}
+    {{ $no_content := or
+      .title
+      .subtitle
+      .md
+      .icon
+      .image
+      .boxes
+      .steps
+      .images
+      .limages
+      .list
+      .accordions
+      .reviews
+      .buttons
+      .social
+      .inputs
+      .map
+      .tags
+      (and .link (ne .button "hide"))
+      | not
+    }}
+    {{ if and .is_bg $no_content }}
+      {{ $rate = "16/9" }}
+    {{ end }}
+  {{ end }}
 {{ end }}
 
 {{/*
-{{ $bg_image_fix           := cond (not (.bg_image_src | and .parallax))               "" "bg--fix" }}
-{{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bg_image_src)) "" "bg-figure-video-parent" }}
+{{ $bg_image_fix           := cond (not (.bg | and .parallax))               "" "bg--fix" }}
+{{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bg)) "" "bg-figure-video-parent" }}
 */}}
 
 {{ $class := slice
@@ -57,30 +55,31 @@
   (cond (not .align)               "" (print "align-" .align))
   (cond (not .align_y)             "" (print "align-self-" .align_y))
   (cond (not .align_vl)            "" (print "align--vl-" .align_vl))
-  (cond (not $bg_color)            "" "bg")
-  $bg_color
+  (cond (not .is_bg)               "" "bg")
+  (cond (not .bg)                  "" "bg-image")
+  (cond (not .color)               "" (print "bg-" .color))
   (cond (not .fade)                "" (print "bg-fade-" .fade))
   (cond (not .fade)                "" (print "bg-fade-" (.fade_type | default "linear-r")))
-  (cond (and (ne .parallax "box") (not (and .bg (eq .parallax "soft")))) "" "parallax")
-  (cond (ne .parallax "box")                  "" "parallax--box")
-  (cond (not (and .bg (eq .parallax "soft"))) "" "parallax--bg")
-  (cond (and $not_fit $not_fit_vs)            "" "box--fit")
-  (cond (not .grow)                           "" "box--grow")
-  (cond (not $rate)                           "" "box--ratio")
-  (cond (not .hide_radius)                    "" "box--hide-radius")
-  (cond (not .hide_shadow)                    "" "box--hide-shadow")
-  (cond (not .card)                           "" "box--card")
-  (cond (not .pill)                           "" "pill-bottom")
-  (cond (not (or .pill .circle))              "" "pill-top")
-  (cond (ne .button "hide")                   "" "box--button-hide")
-  (cond (not (and .slider (not .key)))        "" "slider__item--active")
-  (cond (not .show)                           "" "show")
+  (cond (and (ne .parallax "box") (not (and .is_bg (eq .parallax "soft")))) "" "parallax")
+  (cond (ne .parallax "box")                     "" "parallax--box")
+  (cond (not (and .is_bg (eq .parallax "soft"))) "" "parallax--bg")
+  (cond (and $not_fit $not_fit_vs)               "" "box--fit")
+  (cond (not .grow)                              "" "box--grow")
+  (cond (not $rate)                              "" "box--ratio")
+  (cond (not .card)                              "" "box--card")
+  (cond (not .pill)                              "" "pill-bottom")
+  (cond (not (or .pill .circle))                 "" "pill-top")
+  (cond (not (and .slider (not .key)))           "" "slider__item--active")
+  (cond (not .hide_radius)                       "" "box--hide-radius")
+  (cond (not .hide_shadow)                       "" "box--hide-shadow")
+  (cond (not .is_button_hide)                    "" "box--hide-button")
+  (cond (not $show)                              "" "show")
 }}
 
 
 {{/*  STYLE  */}}
 
-{{ $bg_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .fade) }}
+{{ $bg_alpha := and .color_alpha (ne .color_alpha 100) (or .color .fade) }}
 
 {{ $style := slice
   (cond (not $bg_alpha) "" (print "--bg-alpha:" .color_alpha))

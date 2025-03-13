@@ -1,19 +1,14 @@
 {{- $config := site.Data.config -}}
 
-{{- $title     := .Title -}}
+{{- $title    := "" -}}
 {{- with .Params.seo -}}
-  {{- $title    = . | markdownify -}}
+  {{- $title   = . | markdownify -}}
 {{- else -}}
-  {{- $anchor  := "" -}}
-  {{- range first 1 (partial "functions/sections" .) -}}
-    {{- $anchor = .hanchor -}}
-    {{- $title  = .title | default $.Title -}}
-  {{- end -}}
-  {{- with $anchor -}}
-    {{- $title  = . -}}
-  {{- else -}}
-    {{- $pre   := cond .IsSection (print .Params.emoji " ") "" -}}
-    {{- $title  = print $pre $title " - " site.Title -}}
+  {{- $title   = .Title | markdownify -}}
+  {{- $pre    := cond .IsSection (print .Params.emoji " ") "" -}}
+  {{- $atitle := print $pre $title " - " site.Title -}}
+  {{- if lt (len $atitle) 65 -}}
+    {{- $title = $atitle -}}
   {{- end -}}
 {{- end -}}
 

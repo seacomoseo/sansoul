@@ -16,7 +16,7 @@
   "box__block"
   "gallery"
   (print "gallery--" (.type | default "grid"))
-  (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.vs) "")
+  (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.vl) "")
   (cond (not .ratio)                                "" "gallery--ratio")
   (cond (not .contain)                              "" "gallery--contain")
   (cond (not .gray)                                 "" "gallery--gray")

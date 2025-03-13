@@ -265,7 +265,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
             class="
               search__result-item
               box
-              box--button-hide
+              box--3d
               bg bg-{{ $list.color }}
               align-{{ $list.align | default "left" -}}
             "

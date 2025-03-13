@@ -39,6 +39,7 @@
 {{- $outside := partial "functions/icon-outside" $label -}}
 {{- $label   := $outside.text -}}
 {{- $icon    := $outside.icon -}}
+{{- $pin     := $outside.pin -}}
 
 {{- /*  link  */ -}}
 {{- partial "components/link" (dict
@@ -48,6 +49,7 @@
   "swap"   $swap
   "ga4"    $ga4
   "icon"   $icon
+  "pin"    $pin
   "label"  $label
   "anchor" $anchor
   "link"   .Destination

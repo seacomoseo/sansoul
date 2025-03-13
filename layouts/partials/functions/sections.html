@@ -5,11 +5,13 @@
 {{/*  SECTIONS BY YAML FILES  */}}
 {{ range $params.sections }}
   {{ $section := . }}
-  {{ with partial "functions/section-by-file" (dict "file" .file "type" "section") }}
-    {{ $section = merge . $section }}
-  {{ end }}
-  {{ $if := partial "functions/if" (dict "Page" $.Page "if" $section.if) }}
-  {{ if $if }}
+  {{ $options := dict
+    "Page" $.Page
+    "file" .file
+    "type" "section"
+  }}
+  {{ with partial "functions/section-by-file" $options }}
+    {{ $section  = merge . $section }}
     {{ $sections = $sections | append $section }}
   {{ end }}
 {{ end }}
@@ -46,7 +48,12 @@
     {{ range . }}
       {{ $modal := . }}
       {{/*  MODAL BY YAML FILES  */}}
-      {{ with partial "functions/section-by-file" (dict "file" .file "type" "modal") }}
+      {{ $options := dict
+        "Page" $.Page
+        "file" .file
+        "type" "modal"
+      }}
+      {{ with partial "functions/section-by-file" $options }}
         {{ $modals = $modals | append
           (merge
             ($params.modal  | default dict)

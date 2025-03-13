@@ -1,5 +1,6 @@
 {{ $text    := . }}
 {{ $icon    := "" }}
+{{ $pin     := "" }}
 
 {{ with findRE `(?s)^:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):` . }}
   {{ with index . 0 }}
@@ -8,4 +9,11 @@
   {{ end }}
 {{ end }}
 
-{{ return dict "text" $text "icon" $icon }}
+{{ with findRE `(?s)^::\S+` . }}
+  {{ with index . 0 }}
+    {{ $pin  = replace . ":" "" }}
+    {{ $text = $text | replaceRE `(?s)^::\S+ ?` "" }}
+  {{ end }}
+{{ end }}
+
+{{ return dict "text" $text "icon" $icon "pin" $pin }}

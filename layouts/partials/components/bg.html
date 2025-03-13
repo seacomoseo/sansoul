@@ -14,7 +14,7 @@
   {{- end -}}
 
   {{- if or .color .fade -}}
-    {{- if and .link .shadow site.Data.styles.buttons.deep }}
+    {{- if and .link (not .hide_shadow) site.Data.styles.buttons.deep }}
       <div class="bg-color bg-color--3d"></div>
     {{- end -}}
   {{- end -}}

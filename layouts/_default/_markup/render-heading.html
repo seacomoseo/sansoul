@@ -58,13 +58,18 @@
 {{- $outside := partial "functions/icon-outside" .Text -}}
 {{- $text    := $outside.text -}}
 {{- $icon    := $outside.icon -}}
+{{- $pin     := $outside.pin -}}
 
 {{- /*  HTML  */}}
 <h{{ .Level }} {{- $attrs | safeHTMLAttr }}>
-  {{- if $icon }}
-    {{ partial "components/icon" (dict "icon" $icon) -}}
-  {{- else if $is_index }}
+  {{- if and $is_index (not $icon) (not $pin) }}
     <i class="md__heading-index">{{ $numbering }}</i>
+  {{- end -}}
+  {{- with $icon }}
+    {{ partial "components/icon" (dict "icon" .) -}}
+  {{- end -}}
+  {{- with $pin }}
+    <i class="icon icon--li">{{ . }}</i>
   {{- end }}
   <i>
     {{- if $is_nav -}}

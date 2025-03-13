@@ -75,7 +75,8 @@
 {{- end -}}
 
 {{- /*  LIGTHBOX  */ -}}
-{{- if eq $link "lightbox" -}}
+{{- $is_lightbox := eq .link .image -}}
+{{- if $is_lightbox -}}
   {{- $lb_data   = $image | safeURL -}}
   {{- $tabindex  = "0" -}}
   {{- $tag       = "div" -}}

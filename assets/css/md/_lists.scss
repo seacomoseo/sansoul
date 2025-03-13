@@ -82,9 +82,10 @@
         content: var(--li-counter, "");
       }
       // if there are icons, counter...
-      &:has(> .icon):before {
+      &:where(ol:has(.icon) *):before {
         padding-right: .25em;
       }
+      .icon--none
       // if there are icons, counter...
       &:where(ol:not(.list-inline):has(.li-icon) *):before {
         color: var(--cta);

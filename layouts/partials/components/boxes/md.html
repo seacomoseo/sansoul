@@ -3,20 +3,21 @@
 {{- $store.Set "md_nav"   .md_nav   -}}
 {{- $store.Set "md_index" .md_index -}}
 
+{{- /*  SM  */ -}}
+{{- $md_sm := .md_sm -}}
+{{- if not .md_sm -}}
+  {{- if .is_title_link -}}
+    {{- $md_sm := true -}}
+  {{- end -}}
+{{- end -}}
+
 {{- /*  ALIGN  */ -}}
-{{- $md_align  := "" -}}
-{{- with .md_align -}}
-  {{- $md_align = print "align-" . -}}
-{{- else -}}
+{{- $md_align  := .md_align -}}
+{{- if not .md_align -}}
   {{/*  size  */}}
-  {{- $container_small := in (slice "xs" "sm") .container -}}
-  {{- if and
-    (not .align)
-    (not .header)
-    .main
-    $container_small
-  -}}
-    {{- $md_align = "align-left" -}}
+  {{- $container_sm := in (slice "xs" "sm") .container -}}
+  {{- if and (not .align) (not .header) .main $container_sm -}}
+    {{- $md_align = "left" -}}
   {{- end -}}
 {{- end -}}
 
@@ -24,9 +25,9 @@
 {{- $md_class := slice
   "box__md"
   "md"
-  $md_align
-  (cond (not .md_align_vl)  "" (print "align--vl-" .md_align_vl))
-  (cond (not .like_article) "" "box__md--small")
+  (cond (not $md_align)    "" (print "align-"     $md_align))
+  (cond (not .md_align_vl) "" (print "align--vl-" .md_align_vl))
+  (cond (not $md_sm)       "" "box__md--sm")
 -}}
 
 {{- /*  ATTRIBUTES  */ -}}

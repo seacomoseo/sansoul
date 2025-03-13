@@ -1,31 +1,5 @@
+{{- $page := .Page | default page -}}
 {{- $box  := . -}}
-
-{{- /*  MERGE PARAMS  */ -}}
-{{- range .params -}}
-  {{- $value    := .value -}}
-  {{- with .value -}}
-    {{- $value   = unmarshal . -}}
-  {{- else -}}
-    {{- with .page | default .box -}}
-      {{- if eq . "filename" -}}
-        {{- $value = page.File.TranslationBaseName -}}
-      {{- else -}}
-        {{- $value = partial "functions/param" . -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  {{- if $value -}}
-    {{- $keys := split .box "." -}}
-    {{- $obj  := dict -}}
-    {{- if eq (len $keys) 2 -}}
-      {{- $obj = dict (index $keys 0) (dict (index $keys 1) $value) -}}
-    {{- else -}}
-      {{- $obj = dict (index $keys 0) $value -}}
-    {{- end -}}
-    {{- $box  = merge $box $obj -}}
-  {{- end -}}
-{{- end -}}
-
 
 {{- /*  MERGE VARS  */ -}}
 {{- with $box -}}
@@ -37,7 +11,42 @@
   {{- /*  fit col  */ -}}
   {{- $col_vl := mul .col_vl (.fit    | default 1.00) -}}
   {{- $col_vs := mul .col_vs (.fit_vs | default 1.00) -}}
-  
+
+  {{- /*  bg and image  */ -}}
+  {{- $bg    := .bg -}}
+  {{- $image := .image -}}
+  {{- if .card -}}
+    {{- $image = "" -}}
+    {{- if not .bg -}}
+      {{- $bg = .image -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $is_bg := or $bg $color .fade -}}
+
+  {{- /*  images  */ -}}
+  {{- $gallery := .gallery -}}
+  {{- $images  := slice -}}
+  {{- $rawimgs := slice -}}
+  {{- range .images -}}
+    {{- $image  := dict "image" . "link"  . -}}
+    {{- $rawimgs = $rawimgs | append $image -}}
+  {{- end -}}
+  {{- range .limages -}}
+    {{- $rawimgs = $rawimgs | append . -}}
+  {{- end -}}
+  {{- range $k, $v := $rawimgs -}}
+    {{- $alt := .alt -}}
+    {{- if not .alt -}}
+      {{- with $gallery -}}
+        {{- with .alt -}}
+          {{- $alt = print . " " (add $k 1) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $image := merge . (dict "alt" $alt) -}}
+    {{- $images = $images | append $image -}}
+  {{- end -}}
+
   {{- /*  link  */ -}}
   {{- $link             := .link -}}
   {{- if $link -}}
@@ -52,71 +61,49 @@
   {{- end -}}
 
   {{- /*  boxes  */ -}}
-  {{- $boxes    := slice -}}
-  {{- range .boxes | default slice -}}
-    {{- $if := partial "functions/if" (dict "Page" page "if" .if) -}}
-    {{- if $if -}}
+  {{- $boxes := slice -}}
+  {{- range .boxes -}}
+    {{- $opts := dict "Page" $page "item" . -}}
+    {{- with partial "functions/params-merge" $opts -}}
       {{- $boxes = $boxes | append . -}}
     {{- end -}}
   {{- end -}}
 
-  {{- /*  images  */ -}}
-  {{- $gallery := .gallery -}}
-  {{- $images  := slice -}}
-  {{- range $k, $v := .images -}}
-    {{- $alt := "" -}}
-    {{- with $gallery -}}
-      {{- with .alt -}}
-        {{- $alt = print .alt " " (add $k 1) -}}
-      {{- end -}}
-    {{- end -}}
-    {{- $images = $images | append (dict
-      "image"  .
-      "alt"    $alt
-      "link"   "lightbox"
-    ) -}}
-  {{- end -}}
-  {{- range $k, $v := .limages -}}
-    {{- $alt := .alt -}}
-    {{- if not .alt -}}
-      {{- with $gallery -}}
-        {{- with .alt -}}
-          {{- $alt = print .alt " " (add $k 1) -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-    {{- $images = $images | append (dict
-      "image"  .image
-      "alt"    $alt
-      "link"   .link
-    ) -}}
-  {{- end -}}
-
   {{- /*  others  */ -}}
-  {{- $icon_type     := .icon_type | default (cond .main "bottom" "top") -}}
-  {{- $show          := site.Data.config.others.show -}}
-  {{- $group_radius  := .group_radius | and (not .slider) -}}
-  {{- $underline     := and .underline (not (and .icon (eq $icon_type "bottom"))) -}}
-  {{- $like_article  := and .title $link (eq .button "hide") -}}
+  {{- $icon_type      := .icon_type | default (cond .main "bottom" "top") -}}
+  {{- $group_radius   := .group_radius | and (not .slider) -}}
+  {{- $underline      := and .underline (not (and .icon (eq $icon_type "bottom"))) -}}
+  {{- $show           := site.Data.config.others.show -}}
+  {{- $is_title       := or .title .hanchor .menu_label -}}
+  {{- $is_title_link  := and $link (eq .button "hide") $is_title -}}
+  {{- $is_button_hide := and $link (eq .button "hide") (not $is_title) -}}
+  {{- $is_button_show := and $link (ne .button "hide") -}}
+  {{- $is_button_link := or $is_button_show $is_button_hide -}}
 
   {{- /*  merge  */ -}}
-  {{- $box = merge . (dict
-    "bgcp"         $bgc.parent
-    "color"        $bgc.child
-    "col_vl"       $col_vl
-    "col_vs"       $col_vs
-    "link"         $link
-    "boxes"        $boxes
-    "images"       $images
-    "icon_type"    $icon_type
-    "show"         $show
-    "group_radius" $group_radius
-    "underline"    $underline
-    "like_article" $like_article
-    "box_wrap"     nil
-    "prev"         nil
-    "next"         nil
-    ) -}}
+  {{- $to_merge := dict
+    "bgcp"           $bgc.parent
+    "color"          $bgc.child
+    "col_vl"         $col_vl
+    "col_vs"         $col_vs
+    "is_bg"          $is_bg
+    "bg"             $bg
+    "image"          $image
+    "images"         $images
+    "link"           $link
+    "boxes"          $boxes
+    "icon_type"      $icon_type
+    "group_radius"   $group_radius
+    "underline"      $underline
+    "show"           $show
+    "is_title_link"  $is_title_link
+    "is_button_hide" $is_button_hide
+    "is_button_link" $is_button_link
+    "box_wrap"       nil
+    "prev"           nil
+    "next"           nil
+  -}}
+  {{- $box = merge . $to_merge -}}
 
 {{- end -}}
 
@@ -130,9 +117,7 @@
     .fit
     .fit_vs
     .node
-    .color
-    .fade
-    .bg
+    .is_bg
     .parallax
     .pd
     .pill
@@ -143,52 +128,18 @@
     .space
   -}}
 
-  {{- $node := .node  | default "div" -}}
+  {{- $node := .node | default "div" -}}
 
   {{- if $box_wrap -}}
 
-    {{- $image_src        := .image -}}
-    {{- $bg_image_src     := .bg -}}
-
-    {{- if .card -}}
-      {{- $image_src       = "" -}}
-      {{- if not .bg -}}
-        {{- $bg_image_src  = .image -}}
-      {{- end -}}
-    {{- end -}}
-    {{- $bg        := .color | or .fade | or $bg_image_src -}}
-
-    {{- $shadow    := $bg | and (not .hide_shadow) -}}
-    {{- $radius    := true -}}
-    {{- if .hide_radius
-      | or (not ($bg | or ($image_src | and .inset)))
-      | or .group_radius
-    -}}
-      {{- $radius   = false -}}
-    {{- end -}}
-    {{- $button_is := .link | and (ne .button "hide") -}}
-
     {{- /*  ATTRIBUTES  */ -}}
-    {{- $box_attr  := partial "components/boxes/attr" (merge . (dict
-      "bg_color"     .color
-      "bg_image_src" $bg_image_src
-      "bg"           $bg
-      "image_src"    $image_src
-      "button_is"    $button_is
-      "radius"       $radius
-      "shadow"       $shadow
-      "show"         (and (not .slider) (not .header) .show)
-    )) -}}
+    {{- $box_attr  := partial "components/boxes/attr" . -}}
 
     {{- /*  BOX  */}}
     {{ print "<" $node $box_attr ">" | safeHTML -}}
 
       {{- /*  BACKGROUND  */ -}}
-      {{- partial "components/bg" (merge . (dict
-        "bg"     $bg_image_src
-        "shadow" $shadow
-        "box"    true
-      )) -}}
+      {{- partial "components/bg" . -}}
 
   {{- end -}}
 
@@ -241,7 +192,8 @@
         {{- $boxes_images := slice -}}
         {{- range $k, $v := .images -}}
           {{- $anchor := .alt | default .image | replaceRE `^(.+)\..*$` "$1" | humanize -}}
-          {{- $boxes_images = $boxes_images | append (merge . (dict "anchor" $anchor)) -}}
+          {{- $boxes_image := merge . (dict "anchor" $anchor) -}}
+          {{- $boxes_images = $boxes_images | append $boxes_image -}}
         {{- end -}}
         {{- partial "components/boxes/_" (merge
           (dict
@@ -307,7 +259,7 @@
     {{- if .inputs -}}
       {{- partial "components/blocks/form" (merge
         .
-        (dict "Page" page )
+        (dict "Page" $page)
       ) -}}
     {{- end -}}
 
@@ -334,7 +286,7 @@
     {{- end -}}
 
     {{- /*  BUTTON  */ -}}
-    {{- if and (or .label .link) (ne .button "hide") -}}
+    {{- if .is_button_link -}}
       {{- /*  anchor2: last default priority, prev $anchor_page  */}}
       {{ partial "components/link" (dict
         "class"   "box__button box-go"

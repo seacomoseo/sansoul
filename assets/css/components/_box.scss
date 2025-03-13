@@ -25,29 +25,26 @@
 // direct child without brothers
 .box:has(> .box-go):not(:has(> .box-go ~ .box-go)).bg:not(.box--hide-shadow) {
   transition: filter .1s, transform .1s;
+  transform: translateY(calc(var(--box-offset) * -1));
   @if $buttons-3d {
-    transform: translateY(-.25em);
-    &.box--button-hide {
-      > .bg-color--3d {
-        transform: translateY(.25em);
-        @include like-bg-cover;
-        content: '';
-        transition: background-color .1s, transform .1s;
-        background-color: var(--cta);
-      }
+    --box-offset: .25em;
+    > .bg-color--3d {
+      transform: translateY(var(--box-offset));
+      @include like-bg-cover;
+      content: '';
+      transition: background-color .1s, transform .1s;
+      background-color: var(--cta);
     }
     // @if $chamfer {
     //   filter: drop-shadow($shadow);
     // } @else {
-    //   &.box--button-hide {
-    //     > .bg-color--3d {
-    //       box-shadow: $shadow;
-    //     }
+    //   > .bg-color--3d {
+    //     box-shadow: $shadow;
     //   }
     // }
   } @else {
     filter: drop-shadow($shadow);
-    transform: translateY(-$shadow-top);
+    --box-offset: #{$shadow-top};
   }
   // Hover
   &:has(.search__result-item-link:focus),
@@ -55,28 +52,16 @@
   &:focus {
     filter: drop-shadow($shadow-half);
     @if $buttons-3d {
-      transform: translateY(-.125em);
-      &.box--button-hide {
-        > .bg-color--3d {
-          transform: translateY(.125em);
-        }
-      }
+      --box-offset: .125em;
     } @else {
-      transform: translateY(-$shadow-top / 2);
+      --box-offset: #{$shadow-top / 2};
     }
   }
   // Active
   &:has(.search__result-item-link:active),
   &:active {
     filter: none;
-    transform: none;
-    @if $buttons-3d {
-      &.box--button-hide {
-        > .bg-color--3d {
-          transform: none;
-        }
-      }
-    }
+    --box-offset: 0em;
   }
 }
 
@@ -339,7 +324,7 @@
     color: inherit;
   }
 }
-.box__md--small {
+.box__md--sm {
   font-size: .75em;
   margin-top: 0;
 }
@@ -380,6 +365,11 @@
       color: var(--main);
     }
   }
+  &.hide {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 // Card
@@ -391,8 +381,8 @@
 }
 .bg-card {
   flex-grow: 1;
-  margin: calc(-1 * var(--box-pd));
-  margin-bottom: calc(var(--box-pd) - var(--box-gap));
+  // margin: calc(-1 * var(--box-pd));
+  // margin-bottom: calc(var(--box-pd) - var(--box-gap));
   position: relative;
   width: 100%;
 }
@@ -400,7 +390,7 @@
   content: '';
   display: block;
   --bg-card-width: calc(100cqw + var(--box-pd) * 2);
-  --bg-card-height: calc(var(--bg-card-width) / (var(--box-ratio)) - 100%);
+  --bg-card-height: calc(var(--bg-card-width) / (var(--box-ratio)) - 100% - var(--box-pd));
   width: var(--bg-card-width);
   height: var(--bg-card-height);
   position: absolute;

@@ -124,9 +124,11 @@
           {{- $page := dict
             "Page"    .
             "link"    .RelPermalink
-            "title"   .Params.title
+            "title"   .Title
             "price"   $price
             "social"  ""
+            "alt"    (.Params.anchor | default .Params.seo | default .Title)
+            "anchor" (.Params.anchor | default .Params.seo | default .Title)
           -}}
           {{- range $params -}}
             {{- $param := .param -}}
