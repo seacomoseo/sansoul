@@ -105,6 +105,12 @@
       if (!isBot && ga4ps && cooks) googleAnalytics()
     </script>
   {{- end -}}
+{{- else -}}
+  <script>
+    function gtag(...e) {
+      console.log(...e)
+    }
+  </script>
 {{- end -}}
 
 {{- /*  SCHEMA  */}}

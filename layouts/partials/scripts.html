@@ -23,6 +23,14 @@
   {{ $is_google_translate = true }}
 {{ end }}
 
+{{ if hugo.IsProduction }}
+  {{ with site.Params.google_analytics }}
+    {{ $ga4_id = . }}
+  {{ end }}
+{{ else }}
+  {{ $ga4_id = "G-XXXXXXXXXX" }}
+{{ end }}
+
 {{ with site.Data.config.others.cookies_legal }}
   {{ $cookies_legal = true }}
 {{ end }}
@@ -72,7 +80,7 @@
   (dict "path" "scroll-show" "if" $is_scroll_show "func" "ScrollShow")
   (dict "path" "cookies"     "if" $is_cookies     "func" "Cookies"   )
   (dict "path" "comments"    "if" $disqus_id      "func" "Comments"  )
-  (dict "path" "ga4"         "if" $ga4_id         "func" "Ga4"       )
+  (dict "path" "ga4"         "if" true         "func" "Ga4"       )
 }}
 {{ $conditional_srcs := slice }}
 {{ range $maybe_srcs }}
