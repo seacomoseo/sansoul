@@ -16,10 +16,17 @@
   {{- end -}}
 {{- end -}}
 
-{{- $bgc      := partial "functions/color-background" (dict "child" (cond $modal "black" .color) "parent" .bgcp) -}}
-{{- $bgcp     := $bgc.parent -}}
-{{- $bg_color := $bgc.child -}}
-{{- $is_bg    := or .bg .color .fade -}}
+{{- $color := .color -}}
+{{- if $modal -}}
+  {{- $color = "black" -}}
+{{- else if and (not .color) .geos .ph -}}
+  {{- $color = "similar" -}}
+{{- end -}}
+{{- $bgc_o := dict "child" $color "parent" .bgcp -}}
+{{- $bgc   := partial "functions/color-background" $bgc_o -}}
+{{- $bgcp  := $bgc.parent -}}
+{{- $color  = $bgc.child -}}
+{{- $is_bg := or .bg $color .fade -}}
 
 {{- $container := .size -}}
 {{- if not $container -}}
@@ -33,7 +40,7 @@
 {{- end -}}
 
 {{- $attr := partial "components/base/sections/attr" (merge . (dict
-  "color"  $bg_color
+  "color"  $color
   "header" $header
   "footer" $footer
   "modal"  $modal
@@ -46,7 +53,7 @@
   {{- if not $modal -}}
     {{- $back_opts := dict
         "is_bg"     $is_bg
-        "color"     $bg_color
+        "color"     $color
         "card"      nil
         "container" "fluid"
     -}}
