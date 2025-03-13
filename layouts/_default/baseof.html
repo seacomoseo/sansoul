@@ -76,15 +76,12 @@
   -}}
 
   {{- /*  BODY ATTRIBUTES  */ -}}
-  {{- $background := $params.background -}}
-  {{- $background  = merge $background (dict
-    "body"  true
-    "color" ($background.color | default "white")
-  ) -}}
-  {{- $body_attr  := partial "components/base/sections/attr" (merge $background (dict
-    "id"         $body_id
-    "body_class" $body_class
-  )) -}}
+  {{- $back_color := $params.color | default "white" -}}
+  {{- $back_base  := dict "body" true "is_bg" true "color" $back_color -}}
+  {{- $back       := merge $params.background $back_base -}}
+  {{- $back_attr  := dict "id" $body_id "body_class" $body_class -}}
+  {{- $merge_attr := merge $back $back_attr -}}
+  {{- $body_attr  := partial "components/base/sections/attr" $merge_attr -}}
 
   {{- /*  SECTIONS  */ -}}
   {{- $sections_all := partial "components/base/sections/_" dict -}}
@@ -101,7 +98,7 @@
   <body {{- $body_attr }}>
 
     {{- /*  BACKGROUND  */ -}}
-    {{- partial "components/bg" $background -}}
+    {{- partial "components/bg" $back -}}
 
     {{- /*  LOGO  */ -}}
     {{- partial "components/base/logo" $params -}}
@@ -125,10 +122,10 @@
     {{- partial "components/base/sections/section" (merge $footer (dict "key" 0)) -}}
 
     {{- /*  PRE BODY END  */ -}}
-    {{- partial "components/cookies"      $params         -}}
-    {{- partial "components/callnow"      $params.callnow -}}
-    {{- partial "components/up"           .               -}}
-    {{- $js := partial "scripts" .         }}
+    {{- partial "components/cookies" $params         -}}
+    {{- partial "components/callnow" $params.callnow -}}
+    {{- partial "components/up"      .               -}}
+    {{- $js := partial "scripts"     .                }}
     <script src="{{ $js.RelPermalink }}" defer></script>
     {{- $custom_html_body }}
   </body>

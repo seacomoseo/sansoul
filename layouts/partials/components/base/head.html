@@ -81,6 +81,14 @@
 {{- /*  GOOGLE ANALYTICS  */ -}}
 {{- if hugo.IsProduction -}}
   {{- with site.Params.google_analytics -}}
+    {{ $isPs := "false" }}
+    {{ if $config.others.analytics_pagespeed_disabled }}
+      {{ $isPs = "${navigator.userAgent.includes('Chrome-Lighthouse')}" }}
+    {{ end }}
+    {{ $isCk := "true" }}
+    {{ if $config.others.cookies_legal }}
+      {{ $isCk = "${localStorage.controlcookieanalytics}" }}
+    {{ end }}
     <script>
       // GA4 base
       window.dataLayer = window.dataLayer || [];
@@ -100,9 +108,9 @@
       }
       // If is not bot and if cookies law
       const isBot = navigator.userAgent.toLowerCase().match(/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/)
-      const ga4ps = `{{ cond (not $config.others.analytics_pagespeed_disabled) "" "${navigator.userAgent.includes('Chrome-Lighthouse')}" }}`
-      const cooks = `{{ cond (not $config.others.cookies_legal) "" "${localStorage.controlcookieanalytics}" }}`
-      if (!isBot && ga4ps && cooks) googleAnalytics()
+      const isPs = `{{ $isPs }}` === 'true'
+      const isCk = `{{ $isCk }}` === 'true'
+      if (!isBot && !isPs && isCk) googleAnalytics()
     </script>
   {{- end -}}
 {{- else -}}

@@ -19,14 +19,18 @@
 {{- $bgc      := partial "functions/color-background" (dict "child" (cond $modal "black" .color) "parent" .bgcp) -}}
 {{- $bgcp     := $bgc.parent -}}
 {{- $bg_color := $bgc.child -}}
+{{- $is_bg    := or .bg .color .fade -}}
 
-{{- $container := .size
-  | default (cond
-    (.ph | default false)
-    "fluid"
-    (cond $modal "sm" "lg")
-  )
--}}
+{{- $container := .size -}}
+{{- if not $container -}}
+  {{- if .ph -}}
+    {{- $container = "fluid" -}}
+  {{- else if $modal -}}
+    {{- $container = "sm" -}}
+  {{- else -}}
+    {{- $container = "lg" -}}
+  {{- end -}}
+{{- end -}}
 
 {{- $attr := partial "components/base/sections/attr" (merge . (dict
   "color"  $bg_color
@@ -40,14 +44,14 @@
 
   {{- /*  BACKGROUND  */ -}}
   {{- if not $modal -}}
-    {{- partial "components/bg" (merge
-      .
-      (dict
+    {{- $back_opts := dict
+        "is_bg"     $is_bg
         "color"     $bg_color
         "card"      nil
         "container" "fluid"
-      )
-    ) -}}
+    -}}
+    {{- $back_opts  = merge . $back_opts -}}
+    {{- partial "components/bg" $back_opts -}}
   {{- end -}}
 
   {{- /*  IMAGE LCP  */ -}}
@@ -56,41 +60,40 @@
   {{- end -}}
 
   {{- /*  BOX  */ -}}
-  {{- partial "components/boxes/box" (merge
-    .
-    (dict
-      "main"        true
-      "deep"        0
-      "level"       (cond $header 1 (cond $modal 3 2))
-      "header"      $header
-      "footer"      $footer
-      "modal"       $modal
-      "bgcp"        $bgcp
-      "node"        (cond $modal .node        .box_node)
-      "bg"          (cond $modal .bg          .box_bg)
-      "alpha"       (cond $modal .alpha       .box_alpha)
-      "parallax"    (cond $modal .parallax    .box_parallax)
-      "color"       (cond $modal .color       .box_color)
-      "color_alpha" (cond $modal .color_alpha .box_color_alpha)
-      "fade"        (cond $modal .fade        .box_fade)
-      "fade_type"   (cond $modal .fade_type   .box_fade_type)
-      "image_align" nil
-      "full"        nil
-      "pt"          nil
-      "pb"          nil
-      "div"         nil
-      "div_x"       nil
-      "div_y"       nil
-      "id"          nil
-      "if"          nil
-      "container"   $container
-      "col_vl"      1.00
-      "col_vs"      1.00
-      "section"     .
-      "box_wrap"    true
-      "parent"      .box
-    )
-  ) -}}
+  {{- $box_opts := dict
+    "main"        true
+    "deep"        0
+    "level"       (cond $header 1 (cond $modal 3 2))
+    "header"      $header
+    "footer"      $footer
+    "modal"       $modal
+    "bgcp"        $bgcp
+    "node"        (cond $modal .node        .box_node)
+    "bg"          (cond $modal .bg          .box_bg)
+    "alpha"       (cond $modal .alpha       .box_alpha)
+    "parallax"    (cond $modal .parallax    .box_parallax)
+    "color"       (cond $modal .color       .box_color)
+    "color_alpha" (cond $modal .color_alpha .box_color_alpha)
+    "fade"        (cond $modal .fade        .box_fade)
+    "fade_type"   (cond $modal .fade_type   .box_fade_type)
+    "image_align" nil
+    "full"        nil
+    "pt"          nil
+    "pb"          nil
+    "div"         nil
+    "div_x"       nil
+    "div_y"       nil
+    "id"          nil
+    "if"          nil
+    "container"   $container
+    "col_vl"      1.00
+    "col_vs"      1.00
+    "section"     .
+    "box_wrap"    true
+    "parent"      .box
+  -}}
+  {{- $box_opts  = merge . $box_opts -}}
+  {{- partial "components/boxes/box" $box_opts -}}
 
   {{- /*  MODAL BUTTONS CORNER  */ -}}
   {{- if $modal  -}}

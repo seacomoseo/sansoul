@@ -2,58 +2,47 @@
   <div class="bg-card"></div>
 {{- end -}}
 
-{{- if or .color .fade .bg -}}
+{{- if .is_bg -}}
+
+  {{- /*  3D  */ -}}
+  {{- if and .is_button_hide (not .hide_shadow) site.Data.styles.buttons.deep }}
+    <div class="bg-color bg-color--3d"></div>
+  {{- end -}}
+
+  {{- /*  CLASS  */ -}}
   {{- $image := "" -}}
   {{- $alpha := "" -}}
   {{- $gray  := "" -}}
-
   {{- if .bg -}}
     {{- $image = "bg-figure" -}}
     {{- $alpha = cond (not .alpha) "" "bg-alpha" -}}
     {{- $gray  = cond (not .gray)  "" " image--gray" -}}
   {{- end -}}
-
-  {{- if or .color .fade -}}
-    {{- if and .link (not .hide_shadow) site.Data.styles.buttons.deep }}
-      <div class="bg-color bg-color--3d"></div>
-    {{- end -}}
-  {{- end -}}
-
-  {{- /*  CLASS  */ -}}
-  {{- $class := slice
-    "bg-color"
-    $image
-    $alpha
-  -}}
-
+  {{- $class := slice "bg-color" $image $alpha -}}
 
   {{- /*  STYLE  */ -}}
-  {{- $bg_alpha    := and (.alpha | and (ne .alpha 100)) .bg -}}
-  {{- $color_alpha := and (.color_alpha | and (ne .color_alpha 100)) (.color | or .fade) -}}
+  {{- $bg_alpha    := and .alpha       (ne .alpha       100) .bg -}}
+  {{- $color_alpha := and .color_alpha (ne .color_alpha 100) (or .color .fade) -}}
   {{- $style := slice
     (cond (not $bg_alpha)    "" (print "--bg-alpha:"    .alpha))
     (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
   -}}
 
-
   {{- /*  JOIN ATTRIBUTES  */ -}}
-  {{- $attrs := dict
-    "class" $class
-    "style" $style
-  -}}
+  {{- $attrs := dict "class" $class "style" $style -}}
   {{- $attrs = partial "functions/attrs" $attrs -}}
 
-
   {{- /*  HTML  */}}
+  {{- $alt := .hanchor | default .anchor | default .title | default .subtitle -}}
+  {{- $is_iframe := partial "functions/is-iframe" .bg -}}
   <div {{- $attrs -}}>
-    {{- $is_iframe := partial "functions/is-iframe" .bg -}}
     {{- if $is_iframe }}
       <div class="bg-figure-video">
     {{- end -}}
       {{ partial "components/media/_" (dict
         "class"     (print "bg-figure-image" $gray)
         "src"       .bg
-        "alt"       (.hanchor | default .anchor | default .title | default .subtitle)
+        "alt"       $alt
         "notlazy"   .header
         "bg"        true
         "container" .container
