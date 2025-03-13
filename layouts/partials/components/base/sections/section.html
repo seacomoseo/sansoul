@@ -1,7 +1,9 @@
+{{- /*  Basic booleans  */ -}}
 {{- $header := eq .id "header" -}}
 {{- $footer := eq .id "footer" -}}
 {{- $modal  := .modal | default false -}}
 
+{{- /*  Node  */ -}}
 {{- $node := .node -}}
 {{- if $modal -}}
   {{- $node = "dialog" -}}
@@ -16,18 +18,20 @@
   {{- end -}}
 {{- end -}}
 
-{{- $color := .color -}}
-{{- if $modal -}}
-  {{- $color = "black" -}}
-{{- else if and (not .color) .geos .ph -}}
-  {{- $color = "similar" -}}
-{{- end -}}
+{{- /*  is_bg and color  */ -}}
+{{- $color := cond $modal "black" .color -}}
+{{- $is_bg := or .bg $color .fade -}}
+{{- /*  Add similar color if...  */ -}}
+{{- $types := or .geos .images .limages -}}
+{{- $add   := and $types .ph (not $is_bg) -}}
+{{- $color  = cond $add "similar" $color -}}
+{{- /*  Change color if is similar or invert and set bgcp  */ -}}
 {{- $bgc_o := dict "child" $color "parent" .bgcp -}}
 {{- $bgc   := partial "functions/color-background" $bgc_o -}}
 {{- $bgcp  := $bgc.parent -}}
 {{- $color  = $bgc.child -}}
-{{- $is_bg := or .bg $color .fade -}}
 
+{{- /*  Container size  */ -}}
 {{- $container := .size -}}
 {{- if not $container -}}
   {{- if .ph -}}
@@ -39,12 +43,15 @@
   {{- end -}}
 {{- end -}}
 
-{{- $attr := partial "components/base/sections/attr" (merge . (dict
+{{- /*  Attributes  */ -}}
+{{- $attr_opts := dict
   "color"  $color
   "header" $header
   "footer" $footer
   "modal"  $modal
-)) -}}
+-}}
+{{- $attr_opts = merge . $attr_opts -}}
+{{- $attr := partial "components/base/sections/attr" $attr_opts -}}
 
 {{- /*  SECTION  */}}
 {{ print "<" $node $attr ">" | safeHTML -}}
