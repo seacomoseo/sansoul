@@ -1,8 +1,7 @@
 ---
 title: Sitemap
 slug: sitemap
-summary: ' '
-noindex: true
+icon: sitemap
 translationKey: sitemap
 type: system
 weight: 5

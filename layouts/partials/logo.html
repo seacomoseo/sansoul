@@ -1,0 +1,51 @@
+{{- with .menu -}}
+  {{- if or .logo .title .subtitle -}}
+    {{- $color     := print "bg bg-" (.color | default "white") -}}
+    {{- $align     := cond (or (not .logo_align) (eq .logo_align "center")) "" (print " align-" .logo_align) }}
+    {{- $logo      := .image    | default (index . page.Lang).image -}}
+    {{- $title     := .title    | default (index . page.Lang).title -}}
+    {{- $subtitle  := .subtitle | default (index . page.Lang).subtitle -}}
+    {{- $container := .size     | default "lg" -}}
+    {{- if and .transparent (not .logo_sticky) -}}
+      {{- $color  = print "bg bg-" ($.back.color | default "white") -}}
+      {{- with $.sections -}}
+        {{- with index . 0 -}}
+          {{- with .color -}}
+            {{- $color  = print "bg bg-" (. | default "white") -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end }}
+    <header class="logo {{ $color }}">
+      <div class="box container container--{{ $container }} {{- $align }}">
+        {{- $alt := site.Home.Params.seo | default site.Home.Params.title | markdownify | plainify }}
+        <div class="logo__link link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link" title="{{ $alt }}">
+          {{- with $logo }}
+            {{ partial "media/_"
+              (dict
+                "svg_src"   true
+                "class"     "logo__image"
+                "src"       .
+                "alt"       $alt
+                "container" $container
+                "fit_vl"    0.25
+                "fit_vs"    1.00
+                "notlazy"   true
+              )
+            -}}
+          {{- end -}}
+          {{- if $title | or $subtitle }}
+            <div class="logo__titles">
+              {{- with $title }}
+                <i class="logo__title h1">{{ . }}</i>
+              {{- end -}}
+              {{- with $subtitle }}
+                <i class="logo__subtitle subtitle">{{ . }}</i>
+              {{- end -}}
+            </div>
+          {{- end }}
+        </div>
+      </div>
+    </header>
+  {{- end -}}
+{{- end -}}

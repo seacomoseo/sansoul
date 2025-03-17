@@ -1,7 +1,7 @@
 ---
 title: Aviso Legal
 slug: legal
-noindex: true
+icon: scale-balanced
 translationKey: legal
 type: system
 weight: 1

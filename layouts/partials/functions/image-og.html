@@ -11,8 +11,8 @@
 
 {{ if not $img }}
   {{ $img = site.Home.Params.logo
-    | default .Params.menu.logo
-    | default site.Data.types.all.template.menu.logo
+    | default site.Home.Params.menu.logo
+    | default site.Data.types.all.tpl.menu.logo
     | default site.Data.config.cms.logo
     | default site.Data.config.favicon
     | default (cond (not (resources.Get "/media/base/icon.svg")) "base/icon.png" "base/icon.svg")

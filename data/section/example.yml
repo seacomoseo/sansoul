@@ -29,25 +29,27 @@ div_y: true
 
 ## CONTAINER (BOX_BASE)
 
-# text
+# titles
 title: Título de Sección
 hanchor: Título oculto para SEO
 subtitle: Subtítulo de Sección
 price: 22 €
+hn: '' # [ 1 - 6, p ]
+hs: '' # [ 0 - 6 ]
+uppercase: true
+underline: true
+# md
 md: |
   Contenido de [Sección](#seccion)
 
   [[:link: Botón con anchor :link:]](#seccion "hola k ase [light]")
   [[:link: Botón sin anchor :link:]](#seccion "[dark]")
-hn: '' # [ 1 - 6, p ]
-hs: '' # [ 0 - 6 ]
-uppercase: true
-underline: true
-align: left # [ left, center, right ]
-align_vl: center # [ left, center, right ]
 md_align: center # [ left, center, right ]
 md_align_vl: center # [ left, center, right ]
 md_sm: false
+md_caps: false
+md_line: false
+md_border: false
 md_index: false
 md_nav: false
 # icon
@@ -85,6 +87,8 @@ box_parallax: '' # [ none, soft, box ]
 rate: 16/9 # [ int/int ]
 space: null # [ >= 0.00 ]
 pd: null # [ >= 0.00 ]
+align: left # [ left, center, right ]
+align_vl: center # [ left, center, right ]
 hide_shadow: true
 hide_radius: true
 pill: false
@@ -100,11 +104,11 @@ tag: row # [ hide, col, row, space ]
 tags:
 - type: type
 - type: date
-- type: reading-time
+- type: time
 - type: words
 - type: address
-- type: taxonomy
-  taxonomy: all
+- type: tax
+  tax: all
 - type: param
   param: job
   icon: briefcase
@@ -115,7 +119,7 @@ tags:
   icon: star
   label: ¡Holi!
 # view
-view: [] # [all, text, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, accordions, gallery, reviews, contact, form, map, gss, boxes ]
+view: [] # [all, titles, md, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, accordions, gallery, reviews, contact, form, map, gss, boxes ]
 
 
 ## BOXES
@@ -138,7 +142,7 @@ box:
   # add same to container
   # + remove `box_` of bg keys
   # + view
-  view: [] # [ all, group, text, icon, image, button, bg, boxi, others, list ]
+  view: [] # [ all, group, titles, md, icon, image, button, bg, boxi, others, list ]
 boxes:
 - id: id-ejemplo-caja-1
   title: Título de Caja 1
@@ -151,7 +155,7 @@ boxes:
   grow: false
   align_y: stretch # [ stretch, top, center, bottom ]
   # + view
-  view: [] # [ all, text, icon, image, button, bg, boxi-boxes, boxi, others, list, steps, accordions, gallery, reviews, contact, form, map, gss, boxes ]
+  view: [] # [ all, titles, md, icon, image, button, bg, boxi-boxes, boxi, others, list, steps, accordions, gallery, reviews, contact, form, map, gss, boxes ]
 - title: Título de Caja 2
 - title: Título de Caja 3
 - boxes:
@@ -291,6 +295,8 @@ boxes:
   - link: https://www.instagram.com/quantumfracture/
   - link: https://mastersoflol.com/collections/quantumfracture?YTC
     icon: star
+    label: Holi!
+    ga4: true
 - contact:
   - type: schedule
     days: Días

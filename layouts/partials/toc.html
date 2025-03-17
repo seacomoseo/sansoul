@@ -1,0 +1,23 @@
+{{- if .Headings }}
+  <ol {{ if not .Level }} class="toc"{{ end }}>
+    {{- range .Headings -}}
+      {{- /*  id  */ -}}
+      {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) -}}
+      {{- /*  li  */}}
+      <li>
+        {{- /*  if not icon, for mix of links with and without icons (fix escalar)  */ -}}
+        {{- $outside := partial "functions/icon-outside" .Title -}}
+        {{- if and (not $outside.icon) (not $outside.pin) -}}
+          <i class="icon--none"></i>
+        {{- end -}}
+        {{- /*  link  */ -}}
+        {{- partial "link" (dict
+          "button" "none"
+          "label"  (.Title | safeHTML)
+          "link"   (print "#" $id)
+        ) -}}
+        {{- partial "toc" . }}
+      </li>
+    {{- end }}
+  </ol>
+{{- end -}}

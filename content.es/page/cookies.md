@@ -1,6 +1,7 @@
 ---
 title: Cookies
 slug: cookies
+icon: cookie-bite
 noindex: true
 translationKey: cookies
 type: system

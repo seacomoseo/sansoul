@@ -1,8 +1,8 @@
-{{- $params := partial "functions/params" page -}}
-{{- if $params.toc -}}
+{{- $tpl := partial "functions/tpl" page -}}
+{{- if $tpl.toc -}}
   {{- with page.Fragments -}}
     {{- range .Headings -}}
-      {{- partial "components/toc" . -}}
+      {{- partial "toc" . -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

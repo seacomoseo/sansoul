@@ -1,8 +1,0 @@
-{{- if eq .Page.Params.base "author" -}}
-  {{- with .Page.Params.job -}}
-    <i class="box__tag">
-      {{- partial "components/icon" (dict "class" "box__tag-icon" "icon" "briefcase" "emoji" "💼") -}}
-      <i>{{ . }}</i>
-    </i>
-  {{- end -}}
-{{- end -}}

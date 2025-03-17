@@ -1,7 +1,11 @@
 {{/* partial "functions/color-background" (dict "child" "similar" "parent" "dark") */}}
 {{ $return := dict "child" .child "parent" (.child | default .parent) }}
 
-{{ if in (slice "similar" "invert") .child }}
+{{ if eq "transparent" .child }}
+
+  {{ $return = dict "child" .child "parent" .parent }}
+
+{{ else if in (slice "similar" "invert") .child }}
 
   {{ $color  := "" }}
   {{ $invert := eq .child "invert" }}

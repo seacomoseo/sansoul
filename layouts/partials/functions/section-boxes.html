@@ -1,7 +1,0 @@
-{{ $boxes := slice . }}
-
-{{ range .boxes }}
-  {{ $boxes = $boxes | append (partial "functions/section-boxes" .) }}
-{{ end }}
-
-{{ return $boxes }}

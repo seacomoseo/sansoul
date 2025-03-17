@@ -1,7 +1,7 @@
 ---
 title: Cookies
 slug: cookies
-noindex: true
+icon: cookie-bite
 translationKey: cookies
 type: system
 weight: 3

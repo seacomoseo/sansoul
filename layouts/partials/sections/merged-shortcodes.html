@@ -1,0 +1,20 @@
+{{ $obj := . | default dict }}
+{{ with $obj | jsonify }}
+  {{ $json := . }}
+  {{ with . | findRE `\{\{ .+? \}\}` }}
+    {{ range . | uniq }}
+      {{ $param := .
+        | replaceRE `^\{\{ ` "{{< "
+        | replaceRE ` \}\}$` " >}}"
+        | site.Home.RenderString
+        | plainify
+        | replaceRE `&amp;#43;` `+`
+        | replaceRE `\"` `\"`
+        | replaceRE `\n+$` ""
+      }}
+      {{ $json = $json | replaceRE . $param }}
+    {{ end }}
+    {{ $obj = unmarshal $json }}
+  {{ end }}
+{{ end }}
+{{ return $obj }}

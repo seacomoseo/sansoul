@@ -1,7 +1,16 @@
 {{/* /layouts/_default/baseof */}}
 {{- define "none" -}}
 
-  {{/*  FILES  */}}
+  {{- /*  ALL PAGES TPL IN SITE STORE
+  {{- $404   := site.GetPage "/404" -}}
+  {{- $pages := site.Pages | append $404 -}}
+  {{- range $pages -}}
+    {{- $tpl := partial "functions/tpl" . -}}
+    {{- site.Store.Set .Permalink $tpl -}}
+  {{- end -}}
+  */ -}}
+
+  {{/*  PROCESS STATIC FILES  */}}
   {{- $cms_index_path           := print .RelPermalink "admin/index.html" -}}
   {{- $google_file_verification := site.Params.google_file_verification -}}
   {{- $draws_path               := print "/draws." site.Params.timestamp ".svg" -}}
@@ -15,18 +24,18 @@
     {{- end -}}
   {{- end -}}
   {{- $resources := slice
-    (dict   "partial" `draws/_`                  "path" $draws_path)
-    (dict   "partial" `redirects`                "path" $redirects_path)
-    (dict   "partial" `og-svgs`                  "path" $svgs)
+    (dict   "partial" `draws/svg`       "path" $draws_path)
+    (dict   "partial" `files/redirects` "path" $redirects_path)
+    (dict   "partial" `files/og-svgs`   "path" $svgs)
   -}}
   {{- with $google_file_verification -}}
     {{- $resources = $resources | append
-      (dict "partial" `google-site-verification` "path" .)
+      (dict "partial" `files/google-site-verification` "path" .)
     -}}
   {{- end -}}
   {{- if not site.Data.config.cms.disabled -}}
     {{- $resources = $resources | append
-      (dict "partial" `cms/index`                "path" $cms_index_path)
+      (dict "partial" `cms/index` "path" $cms_index_path)
     -}}
   {{- end -}}
   {{- range $resources -}}
@@ -61,6 +70,5 @@
       {{- $image  = $image.RelPermalink -}}
     {{- end -}}
   {{- end -}}
+
 {{- end -}}
-{{- /*  {{ warnf "counter: %q \n      page: %q \n      value: %q" math.Counter page . }}  */ -}}
-{{- /*  <pre>{{ debug.Dump site.Data.books }}</pre>  */ -}}

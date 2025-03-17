@@ -1,7 +1,11 @@
+{{ block "none" . }}{{ end -}}
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
 
-  {{- $params := partial "functions/params" . -}}
+  {{- $tpl := partial "functions/tpl-sections" . -}}
+
+  {{- /*  Set contact phones page store from contact to callnow  */ -}}
+  {{- page.Store.Set "phones" slice -}}
 
   {{- /*  CUSTOM HTML HEAD  */ -}}
   {{- $custom_html_head  := "" -}}
@@ -36,7 +40,7 @@
   {{- $body_id = print "body-" $body_id -}}
 
   {{- /*  BODY MENU CLASS  */ -}}
-  {{- $menu  := $params.menu -}}
+  {{- $menu := $tpl.menu -}}
   {{- $body_menu             := "" -}}
   {{- $body_menu_logo        := "" -}}
   {{- $body_menu_sticky      := "" -}}
@@ -76,21 +80,28 @@
   -}}
 
   {{- /*  BODY ATTRIBUTES  */ -}}
-  {{- $back_color := $params.color | default "white" -}}
-  {{- $back_base  := dict "body" true "is_bg" true "color" $back_color -}}
-  {{- $back       := merge $params.background $back_base -}}
+  {{- $back_color := $tpl.back.color | default "light" -}}
+  {{- $back_base  := dict "is_bg" true "color" $back_color "tpl" $tpl -}}
+  {{- $back       := merge $tpl.back $back_base -}}
   {{- $back_attr  := dict "id" $body_id "body_class" $body_class -}}
   {{- $merge_attr := merge $back $back_attr -}}
-  {{- $body_attr  := partial "components/base/sections/attr" $merge_attr -}}
+  {{- $body_attr  := partial "sections/attr" $merge_attr -}}
 
   {{- /*  SECTIONS  */ -}}
-  {{- $sections_all := partial "components/base/sections/_" dict -}}
-  {{- $sections     := where $sections_all "id" "ne" "footer" -}}
-  {{- $footer       := index (last 1 $sections_all) 0 -}}
+  {{- $sections_all := slice -}}
+  {{- $sections     := slice -}}
+  {{- $footer       := dict -}}
+  {{- with $tpl -}}
+    {{- $sections_all = partial "sections/items" . -}}
+  {{- end -}}
+  {{- with $sections_all -}}
+    {{- $sections    = where . "id" "ne" "footer" -}}
+    {{- $footer      = index (last 1 .) 0 -}}
+  {{- end -}}
 
-  {{- /*  HEAD  */ -}}
+  {{- /*  HEAD  */}}
   <head>
-    {{- partial "components/base/head" . -}}
+    {{- partial "head" . -}}
     {{- $custom_html_head }}
   </head>
 
@@ -98,36 +109,35 @@
   <body {{- $body_attr }}>
 
     {{- /*  BACKGROUND  */ -}}
-    {{- partial "components/bg" $back -}}
+    {{- partial "back" $back -}}
 
     {{- /*  LOGO  */ -}}
-    {{- partial "components/base/logo" $params -}}
+    {{- partial "logo" $tpl -}}
 
     {{- /*  MENU  */ -}}
-    {{- partial "components/base/menu/_" $params -}}
+    {{- partial "menu/_" $tpl -}}
 
     {{- /*  MAIN  */}}
     <main>
-      {{- range $key, $value := $sections -}}
+      {{- range $sections -}}
         {{- /* SECTION  */ -}}
-        {{- partial "components/base/sections/section" (merge . (dict "key" $key)) -}}
+        {{- partial "sections/item" . -}}
         {{- /*  MODALS  */ -}}
-        {{- range $k, $v := .modals -}}
-          {{- partial "components/base/sections/section" (merge . (dict "key" $key "k" $k)) -}}
+        {{- range .modals -}}
+          {{- partial "sections/item" . -}}
         {{- end -}}
       {{- end }}
     </main>
 
     {{- /*  FOOTER  */ -}}
-    {{- partial "components/base/sections/section" (merge $footer (dict "key" 0)) -}}
+    {{- partial "sections/item" $footer -}}
 
     {{- /*  PRE BODY END  */ -}}
-    {{- partial "components/cookies" $params         -}}
-    {{- partial "components/callnow" $params.callnow -}}
-    {{- partial "components/up"      .               -}}
-    {{- $js := partial "scripts"     .                }}
+    {{- partial "cookies" $tpl         -}}
+    {{- partial "callnow" $tpl.callnow -}}
+    {{- partial "up"      .            -}}
+    {{- $js := partial "scripts" . }}
     <script src="{{ $js.RelPermalink }}" defer></script>
     {{- $custom_html_body }}
   </body>
 </html>
-{{- block "none" . }}{{ end }}

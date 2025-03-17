@@ -1,0 +1,161 @@
+{{/*  CLASS  */}}
+
+{{ $type := cond (not .body_class) (cond (not .modal) "section" "modal") "" }}
+
+{{/*  Key (lightbox need it)  */}}
+{{ $key_class  := print "section--" .key }}
+{{ if .body_class }}
+  {{ $key_class = "" }}
+{{ else if .modal }}
+  {{ $key_class = print "modal--" .key "-" (add .k 1) }}
+{{ end }}
+
+{{/*  Full  */}}
+{{ $full := cond (not .full) "" "section--full" }}
+
+{{/*  Background  */}}
+{{ $bg              := "" }}
+{{ $color           := "" }}
+{{ $fade_color      := "" }}
+{{ $fade_type       := "" }}
+{{ $image_fix       := "" }}
+{{ $parallax        := "" }}
+{{ $video_parent    := "" }}
+{{ if not .modal }}
+  {{ with .color }}
+    {{ $color        = print "bg-" . }}
+  {{ else }}
+    {{ if and .map .ph .prev.div }}
+      {{ $color      = "bg-white" }}
+    {{ end }}
+  {{ end }}
+  {{ if .bg }}
+    {{ $color        = print $color " bg-image" }}
+  {{ end }}
+  {{ if .fade }}
+    {{ $fade_color   = print "bg-fade-" .fade }}
+    {{ $fade_type    = print "bg-fade-" (.fade_type | default "linear-b") }}
+  {{ end }}
+  {{ $bg             = cond (not .is_bg)                          "" "bg" }}
+  {{ $image_fix      = cond (not (and .bg (eq .parallax "fix")))  "" "bg--fix" }}
+  {{ $parallax       = cond (not (and .bg (eq .parallax "soft"))) "" "parallax parallax--bg" }}
+  {{ if partial "functions/is-iframe" .bg }}
+    {{ $video_parent = "bg-figure-video-parent" }}
+  {{ end }}
+{{ end }}
+
+{{/*  Divider Prev  */}}
+{{ $pt_div    := "" }}
+{{ $div       := "" }}
+{{ $div_style := "" }}
+{{ with .prev }}
+  {{ if .div }}
+    {{ if $.div_can }}
+      {{/*  If prev have div and this can print div > pt-div and do it  */}}
+      {{ $pt_div   = "pt-div" }}
+      {{ $options := dict "section" . "next" false }}
+      {{ with partial "sections/divider-attr" $options }}
+        {{ $div       = .class }}
+        {{ $div_style = .style }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/*  Divider Next  */}}
+{{ $pb_div         := "" }}
+{{ $div_next       := "" }}
+{{ $div_next_style := "" }}
+{{ if not .footer }}
+  {{ if and .div .div_can }}
+    {{ if not .next.div_can }}
+      {{/*  If this have div (and can) and next can not print div > do it  */}}
+      {{ $options := dict "section" . "next" true }}
+      {{ with partial "sections/divider-attr" $options }}
+        {{ $div_next       = .class }}
+        {{ $div_next_style = .style }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ if and .div (or .div_can .next.div_can) }}
+    {{/*  If this have div (maybe) and next can print div > pb-div  */}}
+    {{ $pb_div = "pb-div" }}
+  {{ end }}
+{{ end }}
+
+{{/*  Paddings Hide  */}}
+{{ $ph := "" }}
+{{ if .ph }}
+  {{ $ph     = "ph" }}
+  {{ $pb_div = "" }}
+{{ end }}
+
+{{- $class := slice
+  $type
+  $key_class
+  $full
+  $bg
+  $color
+  $fade_type
+  $fade_color
+  $image_fix
+  $parallax
+  $video_parent
+  $ph
+  $pt_div
+  $pb_div
+  $div
+  $div_next
+  | append (.body_class | default slice)
+-}}
+
+
+{{/*  STYLES  */}}
+
+{{ $alpha  := "" }}
+{{ if and .color_alpha (ne .color_alpha 1) (or $color $fade_color) }}
+  {{ $alpha = print "--bg-alpha:" .color_alpha }}
+{{ end }}
+{{ $pt     := "" }}
+{{ $pb     := "" }}
+{{ if .ph }}
+  {{ $pt    = "" }}
+  {{ $pb    = "" }}
+{{ else }}
+  {{ if ne .pt nil }}
+    {{ $pt  = print "--pt:" .pt "em" }}
+  {{ end }}
+  {{ if ne .pb nil }}
+    {{ $pb  = print "--pb:" .pb "em" }}
+  {{ end }}
+{{ end }}
+{{ if .modal }}
+  {{ $alpha = "" }}
+  {{ $pt    = "" }}
+  {{ $pb    = "" }}
+{{ end }}
+
+{{ $style := slice
+  $alpha
+  $pt
+  $pb
+  $div_style
+  $div_next_style
+}}
+
+
+{{/*  HIDDEN  */}}
+{{ $hidden := cond .modal "until-found" nil }}
+
+
+{{/*  JOIN ATTRIBUTES  */}}
+{{ $attrs := dict
+  "id"     .id
+  "class"  $class
+  "style"  $style
+  "hidden" $hidden
+}}
+{{ $attrs  = partial "functions/attrs" $attrs }}
+
+
+{{ return $attrs }}

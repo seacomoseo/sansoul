@@ -1,7 +1,7 @@
 ---
 title: Mapa del Sitio
 slug: mapa-sitio
-summary: ' '
+icon: sitemap
 noindex: true
 translationKey: sitemap
 type: system

@@ -1,0 +1,98 @@
+{{- $image_src  := .image -}}
+{{- with .image -}}
+  {{- $image_src = . | plainify  -}}
+{{- end -}}
+{{- if .card -}}
+  {{- $image_src = "" -}}
+{{- end -}}
+
+{{- $print_image := or $image_src .shade -}}
+
+{{- /* IMAGE INI  */ -}}
+{{- if $print_image -}}
+
+  {{- /* IMAGE CLASS  */ -}}
+  {{- $hover    := cond (not .hover  ) "" "image--hover"     -}}
+  {{- $contain  := cond (not .contain) "" "image--contain"   -}}
+  {{- $inset    := cond (not .inset  ) "" "image--inset"     -}}
+  {{- $circle   := cond (not .circle ) "" "image--circle"    -}}
+  {{- $gray     := cond (not .gray   ) "" "image--gray"      -}}
+  {{- $ratio    := cond (not .ratio  ) "" "image--ratio"     -}}
+  {{- $border   := cond (not .border ) "" (print "image--border " (cond (ne "main" .border) .border "")) -}}
+  {{- $icon_top := cond (not (and .icon (eq .icon_type "top"))) "" "image--icon-top" -}}
+
+  {{- $class := slice
+    "image"
+    $ratio
+    $contain
+    $border
+    $inset
+    $circle
+    $hover
+    $icon_top
+    $gray
+  -}}
+
+  {{- /* IMAGE STYLE  */ -}}
+  {{- $style := "" -}}
+  {{- with .ratio -}}
+    {{- $style = print "--image-ratio:" . -}}
+  {{- end -}}
+
+  {{- /* IMAGE ATTR JOIN  */ -}}
+  {{- $attrs := dict
+    "class" $class
+    "style" $style
+  -}}
+  {{- $attrs = partial "functions/attrs" $attrs -}}
+
+  {{- /* HTML  */}}
+  <div {{- $attrs }}>
+
+    {{- /* SHADE (GRADIENT)  */ -}}
+    {{- if and .shade (not .card) }}
+      <div class="image__inner image__inner--shade"></div>
+    {{- end -}}
+
+
+    {{- /* IMAGE INNER  */ -}}
+    {{- partial "media/_" (dict
+      "class"      "image__inner"
+      "src"        $image_src
+      "alt"        (.alt | default .hanchor | default .anchor | default .title)
+      "ratio"      .ratio
+      "contain"    .contain
+      "container"  .container
+      "fit_vl"     .col_vl
+      "fit_vs"     .col_vs
+      "notlazy"    .header
+      "modal"      .modal
+      "icon_color" .icon_color
+    ) -}}
+
+    {{- /* IMAGE INNER HOVER  */ -}}
+    {{- if .hover -}}
+      {{- partial "media/_" (dict
+        "class"     "image__inner image__inner--hover"
+        "src"       (.hover | plainify)
+        "alt"       .hover_alt
+        "ratio"     .ratio
+        "contain"   .contain
+        "container" .container
+        "fit_vl"    .col_vl
+        "fit_vs"    .col_vs
+        "notlazy"   .header
+      ) -}}
+    {{- end -}}
+
+{{- end -}}
+
+{{- /* ICON TOP  */ -}}
+{{- if eq .icon_type "top" }}
+  {{ partial "boxes/icon" . -}}
+{{- end -}}
+
+{{- /* IMAGE END  */ -}}
+{{- if $print_image }}
+  </div>
+{{- end -}}

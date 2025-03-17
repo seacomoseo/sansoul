@@ -53,7 +53,7 @@
 {{/*  Echo  */}}
 <div {{- $attrs | safeHTMLAttr }}>
   <div class="bg-color"></div>
-  {{- with $icon }}{{ partial "components/icon" (dict "class" "alert__icon h4" "icon" .) }}{{ end }}
+  {{- with $icon }}{{ partial "icon" (dict "class" "alert__icon h4" "icon" .) }}{{ end }}
   {{- with .AlertTitle }}<p class="alert__heading h4">{{ . }}</p>{{ end -}}
   {{ .Text -}}
 </div>

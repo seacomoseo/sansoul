@@ -28,7 +28,7 @@
   - `single/*.md`
     - `menu.hide_anchors`
 - `types/*.yml`
-    - `template.list`
+    - `tpl.list`
       - `tags`
       - `reading_time`
       - `hide_categories`
@@ -42,14 +42,15 @@
     hide_categories: true
     reading_time: true
     button: hide
-  - cols: 3
-    color: white
-    shade: trueeeeeee
+  - cols: 4
+    align: center
+    color: similar
+    shade: true
     inset: true
-    ratio: 16/9
-    icon: hide
-    align: left
-    button: hide
+    image: hide
+    icon: ''
+    md: hide
+    button: cta
     tags:
     - type: date
     - type: address
@@ -80,8 +81,6 @@
 - [ ] `images` in `product` and `event`
 - [ ] Rehuse `boxes` partial in `reviews`
 - [ ] `search.html`
-- [ ] `.cols--gap-0`
-- [ ] cp `data/templates` > `themes/sansoul/data/templates`
 - [ ] Reset `cookies`.md
 - [ ] Reset `admin`.md
 - [ ] Check `forms` `actions`

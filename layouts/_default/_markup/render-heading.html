@@ -1,5 +1,7 @@
 {{- /* Get the Page's Store */ -}}
 {{- $store    := page.Store -}}
+{{- $is_caps  := $store.Get "md_caps"  | default false -}}
+{{- $is_line  := $store.Get "md_line"  | default false -}}
 {{- $is_index := $store.Get "md_index" | default false -}}
 {{- $is_nav   := $store.Get "md_nav"   | default false -}}
 
@@ -36,11 +38,13 @@
 
 {{- /* CLASS */ -}}
 {{- $class  := "md__heading" -}}
-{{- if (page.Params.list.underline | and (eq .Level 2)) -}}
-  {{- $class = print $class " underline" -}}
-{{- end -}}
-{{- if (page.Params.list.uppercase | and (eq .Level 2)) -}}
-  {{- $class = print $class " uppercase" -}}
+{{- if eq .Level 2 -}}
+  {{- if $is_caps -}}
+    {{- $class = print $class " uppercase" -}}
+  {{- end -}}
+  {{- if $is_line -}}
+    {{- $class = print $class " underline" -}}
+  {{- end -}}
 {{- end -}}
 {{- with .Attributes.class -}}
   {{- $class = print $class " " . -}}
@@ -66,7 +70,7 @@
     <i class="md__heading-index">{{ $numbering }}</i>
   {{- end -}}
   {{- with $icon }}
-    {{ partial "components/icon" (dict "icon" .) -}}
+    {{ partial "icon" (dict "icon" .) -}}
   {{- end -}}
   {{- with $pin }}
     <i class="icon icon--li">{{ . }}</i>

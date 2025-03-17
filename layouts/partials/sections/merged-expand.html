@@ -1,0 +1,99 @@
+{{/*  FUNTION DEFINE  */}}
+{{ define "partials/expand" }}
+  {{/*  Level  */}}
+  {{ $level  := 2 }}
+  {{ if .header }}
+    {{ $level = 1 }}
+  {{ else if .modal }}
+    {{ $level = 3 }}
+  {{ end }}
+
+  {{/*  Node  */}}
+  {{ $node := .node }}
+  {{ if .modal }}
+    {{ $node = "dialog" }}
+  {{ end }}
+  {{ if not $node }}
+    {{ if .header }}
+      {{ $node = "header" }}
+    {{ else if .footer }}
+      {{ $node = "footer" }}
+    {{ else }}
+      {{ $node = "section" }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Container size  */}}
+  {{ $container := .size }}
+  {{ if not $container }}
+    {{ if .ph }}
+      {{ $container = "fluid" }}
+    {{ else if .modal }}
+      {{ $container = "sm" }}
+    {{ else }}
+      {{ $container = "lg" }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  is_bg and color  */}}
+  {{ $color := cond .modal "black" .color }}
+  {{ $is_bg := or .bg $color .fade }}
+  {{/*  Change color if is similar or invert and set bgcp  */}}
+  {{ $bgc_o := dict "child" $color "parent" .bgcp }}
+  {{ $bgc   := partial "functions/color-background" $bgc_o }}
+  {{ $bgcp  := $bgc.parent }}
+  {{ $color  = $bgc.child }}
+
+  {{/*  Dividers  */}}
+  {{ $div_can  := or .ph $is_bg }}
+
+  {{/*  Attributes  */}}
+  {{ $section_params := dict
+    "level"     $level
+    "node"      $node
+    "container" $container
+    "is_bg"     $is_bg
+    "bgcp"      $bgcp
+    "color"     $color
+    "div_can"   $div_can
+  }}
+  {{ $box_params := dict }}
+  {{ if .modal }}
+    {{ $box_params = dict
+      "box_node"        .node
+      "box_bg"          .bg
+      "box_alpha"       .alpha
+      "box_parallax"    .parallax
+      "box_color"       .color
+      "box_color_alpha" .color_alpha
+      "box_fade"        .fade
+      "box_fade_type"   .fade_type
+    }}
+  {{ end }}
+  {{ $section := merge . $section_params $box_params }}
+
+  {{ return $section }}
+{{ end }}
+
+{{/*  SECTIONS  */}}
+{{ $sections := slice }}
+{{ range . }}
+
+  {{/*  MODALS  */}}
+  {{ $modals := slice }}
+  {{ range .modals }}
+    {{ with partial "expand" . }}
+      {{ $modals = $modals | append . }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  SECTION  */}}
+  {{ $section := partial "expand" . }}
+  {{ $section  = merge $section (dict "modals" $modals) }}
+
+  {{/*  END  */}}
+  {{ $sections = $sections | append $section }}
+
+{{ end }}
+
+{{ return $sections }}

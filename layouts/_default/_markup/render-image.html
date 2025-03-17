@@ -1,13 +1,23 @@
-
 {{- $alt          := .Text -}}
 {{- $ratio        := "" -}}
 {{- $col_vl       := 1.0 -}}
 {{- $figure_class := "md__figure" -}}
+{{- $figure_style := "" -}}
 {{- $image_class  := "image" -}}
 {{- $image_style  := "" -}}
 
+{{- /* BORDER */ -}}
+{{- /* Get the Page's Store */ -}}
+{{- $store  := page.Store -}}
+{{- $border := $store.Get "md_border" | default "" -}}
+{{- with $border -}}
+  {{- $border_class := print "image--border " (cond (ne "main" .) . "") -}}
+  {{- $figure_class  = print $figure_class " " $border_class -}}
+{{- end -}}
+
 {{- if in .Text "float" -}}
 
+  {{- /* FLOAT */ -}}
   {{- $figure_class = print $figure_class " md__figure--float" -}}
   {{- if in .Text "float-right" -}}
     {{- $figure_class = print $figure_class " md__figure--float-right" -}}
@@ -15,16 +25,17 @@
   {{- $alt    = $alt | replaceRE `float(-right)?` "" -}}
   {{- $col_vl = 0.5 -}}
 
+  {{- $img_shape := resources.Get (print "/media/" .Destination) -}}
+  {{- if not (in .Destination ".svg") -}}
+    {{- $img_shape = $img_shape | images.Filter (images.Gamma -1) -}}
+    {{- $img_shape = $img_shape.Resize (print 100 "x webp q10") -}}
+    {{- $img_shape = $img_shape | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`) -}}
+  {{- end -}}
+  {{- $figure_style = ` style="--shape:url(` $img_shape.RelPermalink `)"` -}}
+
 {{- else -}}
 
-  {{- with page.Params.list.border -}}
-    {{- $image_class  = print $image_class " image--border" -}}
-    {{- if ne . "main" -}}
-      {{- $image_class = print $image_class " " . -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{/*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */}}
+  {{- /*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */ -}}
   {{- $is_ratio  := .Text | findRE `^[\d/]+$` -}}
   {{- $is_circle := eq .Text "circle" -}}
   {{- $is_iframe := partial "functions/is-iframe" .Destination -}}
@@ -45,22 +56,9 @@
 
 {{- end -}}
 
-{{- $shape := "" -}}
-{{- if in .Text "float" -}}
-  {{- $img_shape := resources.Get (print "/media/" .Destination) -}}
-  {{- if not (in .Destination ".svg") -}}
-    {{- $img_shape = $img_shape | images.Filter (images.Gamma -1) -}}
-    {{- $img_shape = $img_shape.Resize (print 100 "x webp q10") -}}
-    {{- $img_shape = $img_shape | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`) -}}
-  {{- end -}}
-  {{- $shape = ` style="--shape:url(` $img_shape.RelPermalink `)"` -}}
-{{- end -}}
-
-<figure class="{{ $figure_class }}" {{- $shape | safeHTMLAttr }}>
-
+<figure class="{{ $figure_class }}" {{- $figure_style | safeHTMLAttr }}>
   <div class="{{ $image_class }}" {{- $image_style | safeHTMLAttr }}>
-    {{- partial "components/media/_"
-      (dict
+    {{- partial "media/_" (dict
         "class"     "image__inner"
         "src"       .Destination
         "ratio"     $ratio
@@ -68,14 +66,11 @@
         "container" "sm"
         "fit_vl"    $col_vl
         "fit_vs"    1
-      )
-    -}}
+    ) -}}
   </div>
-
   {{- with .Title -}}
     <figcaption class="md__figcaption">
       {{- . -}}
     </figcaption>
   {{- end -}}
-
 </figure>

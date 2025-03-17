@@ -1,0 +1,69 @@
+{{/*  Dates  */}}
+{{ $date := dateFormat "2006-01-02T15:04:05Z07:00" .Date                         | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+{{ $end  := dateFormat "2006-01-02T15:04:05Z07:00" (.Params.end | default .Date) | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+
+{{/*  Location  */}}
+
+{{ $location := dict }}
+{{ with .Params }}
+  {{ if .address }}
+    {{ $place   := partial "schema/address" . }}
+    {{ $address := $place.address | default dict }}
+    {{ $has_map := $place.has_map | default "" }}
+    {{ $geo     := $place.geo     | default dict }}
+    {{ $location = dict
+      "@type"   "Place"
+      "name"    $address.name
+      "address" $address
+      "hasMap"  $has_map
+      "geo"     $geo
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  Offers  */}}
+{{ $offers := dict }}
+{{ with .Params.price }}
+  {{ $offers  = dict
+    "@type"         "Offer"
+    "url"           $.Permalink
+    "price"         .
+    "priceCurrency" site.Params.currency
+    "validFrom"     (dateFormat "2006-01-02T15:04:05" now)
+    "availability"  "http://schema.org/InStock"
+  }}
+{{ end }}
+
+{{/*  Performer  */}}
+{{ $artists := slice }}
+{{ range .Params.artists }}
+  {{ if or .name .type }}
+    {{ $artists = $artists | append (dict
+      "@type" (cond (eq .type "group") "PerformingGroup" "Person")
+      "name"  .name
+    ) }}
+  {{ end }}
+{{ end }}
+
+{{/*  Status  */}}
+{{ $status := print "http://schema.org/" (cond (not .Params.cancelled) "EventScheduled" "EventCancelled") }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"               "Event"
+  "@id"                 (print .Permalink "#schema-event")
+  "name"                .Title
+  "description"         (partial "functions/summary" .)
+  "url"                 .Permalink
+  "performer"           $artists
+  "location"            $location
+  "offers"              $offers
+  "startDate"           $date
+  "endDate"             $end
+  "image"               (dict "@id" (print .Permalink "#schema-image"))
+  "organizer"           (partial "schema/organization-id" .)
+  "eventStatus"         $status
+  "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"
+}}
+
+{{ return $schema }}

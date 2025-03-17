@@ -17,34 +17,40 @@
   `~BOX_ALIGN_X`
   `~BOX_ALIGN_Y`
 }}
-{{ $text := slice
+{{ $titles := slice
   `~BOX_TITLE`
   `~BOX_HANCHOR`
   `~BOX_SUBTITLE`
   `~BOX_PRICE`
-  `~BOX_MD`
   `~BOX_HS`
   `~BOX_HN`
   `~BOX_UPPERCASE`
   `~BOX_UNDERLINE`
-  `~BOX_ALIGN`
-  `~BOX_ALIGN_VL`
+}}
+{{ $md := slice
+  `~BOX_MD`
   `~BOX_MD_ALIGN`
   `~BOX_MD_ALIGN_VL`
   `~BOX_MD_SM`
+  `~BOX_MD_CAPS`
+  `~BOX_MD_LINE`
+  `~BOX_MD_BORDER`
   `~BOX_MD_INDEX`
   `~BOX_MD_NAV`
 }}
-{{ $text_style := slice
+{{ $titles_style := slice
   `~BOX_HS`
   `~BOX_HN`
   `~BOX_UPPERCASE`
   `~BOX_UNDERLINE`
-  `~BOX_ALIGN`
-  `~BOX_ALIGN_VL`
+}}
+{{ $md_style := slice
   `~BOX_MD_ALIGN`
   `~BOX_MD_ALIGN_VL`
   `~BOX_MD_SM`
+  `~BOX_MD_CAPS`
+  `~BOX_MD_LINE`
+  `~BOX_MD_BORDER`
   `~BOX_MD_INDEX`
   `~BOX_MD_NAV`
 }}
@@ -136,6 +142,8 @@
   `~BOX_ALIGN_Y_SELF`
 }}
 {{ $boxi := slice
+  `~BOX_ALIGN`
+  `~BOX_ALIGN_VL`
   `~BOX_RATE`
   `~BOX_SPACE`
   `~BOX_PADDING_VL`
@@ -180,7 +188,8 @@
 {{ $boxes_fields := slice
   `~BOX_VIEW_BOXES`
   `~BOX_ID`
-  | append $text
+  | append $titles
+  | append $md
   | append $icon
   | append $image
   | append $button
@@ -199,7 +208,8 @@
   (dict "&BOX_FIELDS" (slice
     `~BOX_VIEW_BOX`
     | append $group
-    | append $text
+    | append $titles
+    | append $md
     | append $icon
     | append $image
     | append $button
@@ -235,7 +245,8 @@
 
   (dict "&SECTION_FIELDS" (slice
     `~BOX_VIEW_SECTION`
-    | append $text_style
+    | append $titles_style
+    | append $md_style
     | append $menu_style
     | append $icon
     | append $image
@@ -252,7 +263,8 @@
     `~BOX_NAME`
     `~BOX_VIEW_SECTIONS`
     `~BOX_ID`
-    | append $text
+    | append $titles
+    | append $md
     | append $menu
     | append $icon
     | append $image
@@ -272,7 +284,8 @@
 
   (dict "&MODAL_FIELDS" (slice
     `~BOX_VIEW_MODAL`
-    | append $text_style
+    | append $titles_style
+    | append $md_style
     | append $menu_style
     | append $icon
     | append $image
@@ -288,7 +301,8 @@
     `~BOX_NAME`
     `~BOX_VIEW_MODALS`
     `~BOX_ID`
-    | append $text
+    | append $titles
+    | append $md
     | append $menu
     | append $icon
     | append $image

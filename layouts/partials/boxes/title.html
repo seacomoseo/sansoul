@@ -1,0 +1,100 @@
+{{- $title := or .title .hanchor .menu_label -}}
+{{- if $title -}}
+  {{- $hanchor := or .hanchor .menu_label -}}
+
+  {{- /*  TAG  */ -}}
+  {{- $hn    := "" -}}
+  {{- if or .link (eq .hn "p") -}}
+    {{- $hn = "p" -}}
+  {{- else -}}
+    {{- with .hn | default .level -}}
+      {{- $hn = print "h" . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /*  HS  */ -}}
+  {{- $hs    := "" -}}
+  {{- if ne .hs nil -}}
+    {{- $hs = print "h" .hs -}}
+  {{- else if eq $hn "p" -}}
+    {{- $s := cond (not .is_title_link) .level "6" -}}
+    {{- $hs = print "h" $s -}}
+  {{- end -}}
+
+  {{- /*  LINK  */ -}}
+  {{- $link     := "" -}}
+  {{- if .is_title_link -}}
+    {{- $link    = .link -}}
+    {{- $hanchor = or .anchor $hanchor -}}
+  {{- else -}}
+    {{- $header_level := cond .modal 3 2 -}}
+    {{- if and .main (le .level $header_level) -}}
+      {{- $link = cond .header page.RelPermalink (print "#" .section.id) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* TITLE CLASS  */ -}}
+  {{- $underline := cond (and (not $link) .underline) "underline" "" -}}
+  {{- $uppercase := cond (not .uppercase     | not)   "uppercase" "" -}}
+  {{- $box_go    := cond (not .is_title_link | not)   "box-go"    "" -}}
+  {{- $hide      := cond (not .title)                 "hide"      "" -}}
+  {{- if not .title -}}
+    {{- $underline = "" -}}
+    {{- $uppercase = "" -}}
+    {{- $hs        = "" -}}
+  {{- end -}}
+  {{- $class := slice
+    "box__title"
+    $underline
+    $uppercase
+    $box_go
+    $hide
+    $hs
+  -}}
+
+  {{- /* TITLE MORE  */ -}}
+  {{- $more  := "" -}}
+  {{- if and $hanchor (ne $title $hanchor) (not $link) -}}
+    {{- $more  = $title | markdownify | plainify -}}
+    {{- $title = print "<i>" $hanchor "</i>" -}}
+  {{- end -}}
+
+  {{- /* TITLE JOIN  */ -}}
+  {{- $attrs := dict "class" $class "data-more" $more -}}
+  {{- $attrs  = partial "functions/attrs" $attrs -}}
+
+
+  {{- /* HTML  */}}
+  {{ print "<" $hn $attrs ">" | safeHTML -}}
+
+    {{- /* ICON SIDE  */ -}}
+    {{- if eq .icon_type "side" -}}
+      {{- partial "boxes/icon" . -}}
+    {{- end -}}
+
+    {{- /* ANCHOR  */ -}}
+    {{- if $link -}}
+      {{- $anchor_class := slice
+        (cond (not .is_title_link) "" "box__link")
+        (cond (not .underline)     "" "underline")
+      -}}
+      {{- if not .title -}}
+        {{- $anchor_class = "" -}}
+      {{- end -}}
+      {{- /* with wrap  */ -}}
+      {{- partial "link" (dict
+        "class"  $anchor_class
+        "label"  ($title   | markdownify)
+        "anchor" ($hanchor | markdownify)
+        "link"   $link
+        "lock"   .ofuscate
+        "nomore" $more
+      ) -}}
+    {{- else -}}
+      {{- /* without wrap  */ -}}
+      {{- $title | markdownify -}}
+    {{- end -}}
+
+  {{- /*  END  */ -}}
+  {{- print "</" $hn ">" | safeHTML -}}
+{{- end -}}

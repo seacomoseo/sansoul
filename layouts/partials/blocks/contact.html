@@ -1,0 +1,176 @@
+{{- with .contact -}}
+  {{- $show := cond (not site.Data.config.others.show) "" " show" }}
+  <div class="contact box__block {{- $show }}">
+    {{- range . -}}
+      {{- with merge (dict "button" $.button "swap" $.swap) . -}}
+
+        {{- $full := cond (not .full) "" " contact__full" -}}
+
+        {{- if eq .type "address" | and .hide -}}
+        {{- else if findRE `^(phone|whatsapp|mail|address|custom)$` .type -}}
+
+          {{- $class   := "" -}}
+          {{- $num     := "" -}}
+          {{- $link    := .link -}}
+          {{- $button  := .button | default "cta" -}}
+          {{- $swap    := .swap -}}
+          {{- $icon    := .icon -}}
+          {{- $emoji   := "" -}}
+          {{- $label   := .label -}}
+          {{- $noindex := .ofuscate -}}
+
+          {{- $is_phone_or_wa  := in (slice "phone" "whatsapp") .type -}}
+          {{- $is_custom_phone := $label | findRE `^\+?[\d\s-()]+$` -}}
+
+          {{- if $is_phone_or_wa -}}
+            {{- $num      = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
+          {{- else if findRE `^(mail|address)$` .type -}}
+            {{- $button = cond (not .button) "main" $button -}}
+            {{- $swap   = not .swap -}}
+          {{- end -}}
+
+          {{- if eq .type "custom" -}}
+            {{- $class   = "contact__custom" -}}
+          {{- else if eq .type "phone" -}}
+            {{- $class   = "contact__phone" -}}
+            {{- $link    = print "tel:+" $num -}}
+            {{- $icon    = .icon | default "phone" -}}
+            {{- $emoji   = .icon | default "📞" -}}
+            {{- $noindex = true -}}
+          {{- else if eq .type "whatsapp" -}}
+            {{- $class   = "contact__whatsapp" -}}
+            {{- $link    = print "https://wa.me/" $num -}}
+            {{- $button  = cond (not .button) "whatsapp" $button -}}
+            {{- $icon    = .icon | default "whatsapp" -}}
+            {{- $emoji   = "✆" -}}
+            {{- $noindex = true -}}
+          {{- else if eq .type "mail" -}}
+            {{- $class   = "contact__email-button" -}}
+            {{- $link    = "none" -}}
+            {{- $icon    = .icon | default "envelope" -}}
+            {{- $emoji   = "✉" -}}
+            {{- $noindex = true -}}
+          {{- else if eq .type "address" -}}
+            {{- $class   = "contact__address" -}}
+            {{- $geo := dict -}}
+            {{- with .geo -}}
+              {{- if reflect.IsMap . -}}
+                {{- $geo = . -}}
+              {{- else -}}
+                {{- $geo = unmarshal . -}}
+              {{- end -}}
+            {{- end -}}
+            {{- if not $link -}}
+              {{- if $geo -}}
+                {{- $y     := index $geo.coordinates 0 -}}
+                {{- $x     := index $geo.coordinates 1 -}}
+                {{- $zoom  := .zoom | default 15 -}}
+                {{- $link   = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
+              {{- else -}}
+                {{- $link  = partial "functions/map-url" (.anchor | default .label) -}}
+              {{- end -}}
+            {{- end -}}
+            {{- $icon    = .icon | default "location-dot" -}}
+            {{- $emoji   = "📍" -}}
+            {{- $label   = .label | default .anchor -}}
+            {{- $noindex = true -}}
+          {{- end -}}
+
+          {{- /*  PHONES TO STORE FOR AUTO CALLNOW  */}}
+          {{- if or $is_phone_or_wa $is_custom_phone -}}
+            {{- page.Store.Add "phones" (slice .) -}}
+          {{- end -}}
+
+          {{- /*  MAIL  */ -}}
+          {{- if eq .type "mail" }}
+            <i class="contact__email {{ $full }}" {{ if eq .button `none` }}data-b{{ end }}>
+              {{- $full = "" -}}
+          {{- end -}}
+
+              {{- /*  LINK  */}}
+              {{ partial "link" (dict
+                "class"  (print $class $full)
+                "button" $button
+                "swap"   $swap
+                "ga4"    .ga4
+                "icon"   $icon
+                "emoji"  $emoji
+                "label"  $label
+                "anchor" .anchor
+                "link"   $link
+                "lock"   $noindex
+              ) -}}
+
+          {{- if eq .type "mail" -}}
+              {{- $bgc := partial "functions/color-background" (dict "child" "similar" "parent" $.bgcp) -}}
+              {{- $bg  := $bgc.child }}
+              <i class="contact__email-options bg bg-{{ $bg }}" style="--copied: '{{ i18n `copied` }}'">
+                <i class="bg-color"></i>
+                {{- range slice
+                  (dict
+                    "class" "copy"
+                    "icon"  "paste"
+                    "emoji" "📋"
+                    "label" "copy_clipboard"
+                  )
+                  (dict
+                    "class" "send"
+                    "icon"  "paper-plane"
+                    "emoji" "📨"
+                    "label" "send_email"
+                  )
+                }}
+                  {{ partial "link" (dict
+                    "class"  (print "contact__email-option-" .class)
+                    "button" "cta"
+                    "sm"     true
+                    "swap"   true
+                    "icon"   .icon
+                    "emoji"  .emoji
+                    "label"  (i18n .label)
+                  ) -}}
+                {{- end }}
+              </i>
+            </i>
+          {{- end -}}
+
+        {{- else if eq .type "schedule" -}}
+
+          {{- /*  SCHEDULE  */}}
+          <div class="contact__schedule {{ $full }}">
+            {{- with .days }}
+              <div class="contact__schedule-item">
+                {{ partial "icon" (dict "icon" "calendar" "emoji" "📅") }}
+                <i>{{ . | markdownify }}</i>
+              </div>
+            {{- end -}}
+            {{- with .hours }}
+              <div class="contact__schedule-item">
+                {{ partial "icon" (dict "icon" "clock" "emoji" "🕓") }}
+                <i>{{ . | markdownify }}</i>
+              </div>
+            {{- end }}
+          </div>
+
+        {{- else if findRE `^h\d$` .type -}}
+
+          {{- /*  HN  */}}
+          {{- $h := replace .type "h" "" }}
+          <h {{- $h }} class="form__title contact__full">{{ .label | markdownify }}</h {{- $h }}>
+
+        {{- else if eq .type "hr" -}}
+
+          {{- /*  HR  */}}
+          <hr>
+
+        {{- else if eq .type "br" -}}
+
+          {{- /*  BR  */}}
+          <div class="contact__br"></div>
+
+        {{- end -}}
+
+      {{- end -}}
+    {{- end }}
+  </div>
+{{- end -}}

@@ -25,7 +25,7 @@
         {{- else if eq $param "summary" -}}
           {{ .Summary | default .Description }}
           {{ if .ContentWithoutSummary }}
-            {{- partial "components/link" (dict
+            {{- partial "link" (dict
               "label" (print (i18n "read_more") "…")
               "link"  .RelPermalink
             ) -}}

@@ -74,12 +74,8 @@
     `~P_TITLE`
     `~P_SUMMARY`
     `~P_IMAGE`
+    `~BOX_ICON_ID`
   }}
-  {{ if .Params.taxonomy_of }}
-    {{ $fields = $fields | append
-      `~BOX_ICON_ID`
-    }}
-  {{ end }}
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
       `~P_DRAFT`
@@ -87,12 +83,23 @@
       `~P_TRANSLATIONKEY`
       `~P_TITLE_SEO`
       `~P_DESCRIPTION`
-      `~TEMPLATE_BACKGROUND`
-      `~TEMPLATE_MENU_SINGLE`
-      `~TEMPLATE_CALLNOW_SINGLE`
-      `~TEMPLATE_SECTION`
-      `~TEMPLATE_MODAL`
-      `~TEMPLATE_SECTIONS`
+      (dict
+        "name"      `tpl`
+        "widget"    `object`
+        "required"  false
+        "label"     $t.types_template
+        "hint"      $t.types_template_single_hint
+        "collapsed" true
+        "i18n"      true
+        "fields"    (slice
+          `~TEMPLATE_BACKGROUND`
+          `~TEMPLATE_MENU_SINGLE`
+          `~TEMPLATE_CALLNOW_SINGLE`
+          `~TEMPLATE_SECTION`
+          `~TEMPLATE_MODAL`
+          `~TEMPLATE_SECTIONS`
+        )
+      )
       `~P_BASE`
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `article` `event`))) `~P_DATE`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `article`     )) `~P_LASTMOD`))

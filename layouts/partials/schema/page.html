@@ -1,0 +1,103 @@
+
+{{ $type                  := "WebPage" }}
+{{ $has_part              := slice }}
+{{ $thumbnail             := (partial "schema/image-main" .).url }}
+{{ $image                 := dict "@id" (print .Permalink "#schema-image") }}
+{{ $primary_image_of_page := dict "@id" (print .Permalink "#schema-image") }}
+{{ $is_part_of            := dict "@id" (print site.BaseURL "/#schema-website") }}
+{{ $potential_action      := slice (dict "@type" "ReadAction" "target" .Permalink) }}
+{{ $breadcrumbs           := "" }}
+{{ $authors               := slice }}
+
+{{/*  Self page  */}}
+{{ if eq page.Permalink .Permalink }}
+
+  {{/*  Children  */}}
+  {{ $children := partial "functions/taxonomy-children" . }}
+
+  {{/*  Type and hasPart  */}}
+  {{ with $children }}
+    {{ $type = "CollectionPage" }}
+    {{/*
+    {{ if eq page.Type "blog" }}
+      {{ $type = "BlogPosting" }}
+    {{ else if eq page.Type "article" }}
+      {{ $type = "Article" }}
+    {{ else if eq page.Type "new" }}
+      {{ $type = "NewsArticle" }}
+    {{ end }}
+    */}}
+    {{ range . }}
+      {{ $has_part = $has_part | append (partial "schema/page" .) }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Breadcrumbs  */}}
+  {{ if .Params.breadcrumbs }}
+    {{ $breadcrumbs = dict "@id" (print .Permalink "#schema-breadcrumb") }}
+  {{ end }}
+
+  {{/*  Images  */}}
+  {{ with .Params.images }}
+    {{ $image = slice $image | append (partial "schema/images" .) }}
+  {{ end }}
+
+  {{/*  Authors  */}}
+  {{ if ne .Params.base "article" }}
+    {{ $taxonomies := partial "functions/taxonomy-parents" . }}
+    {{ range $taxonomies }}
+      {{ $page := . }}
+      {{ range .Params.tax_of }}
+        {{ $is_same_type   := eq page.Type .name }}
+        {{ $is_same_schema := eq "author" .schema }}
+        {{ if and $is_same_type $is_same_schema }}
+          {{ $item   := partial "schema/author" $page }}
+          {{ $authors = $authors | append $item }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+{{ else }}
+
+  {{/*  Others  */}}
+  {{ $image                 = $thumbnail }}
+  {{ $primary_image_of_page = "" }}
+  {{ $is_part_of            = "" }}
+  {{ $potential_action      = "" }}
+
+{{ end }}
+
+
+{{/*  Title  */}}
+{{ $title  := "" }}
+{{ with .Params.seo }}
+  {{ $title = . | markdownify }}
+{{ else }}
+  {{ $title = partial "functions/anchor-page" . }}
+{{ end }}
+
+{{/*  Description  */}}
+{{ $description  := partial "functions/summary" . }}
+
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"              $type
+  "@id"                .Permalink
+  "url"                .Permalink
+  "name"               $title
+  "description"        $description
+  "thumbnailUrl"       $thumbnail
+  "isPartOf"           $is_part_of
+  "image"              $image
+  "primaryImageOfPage" $primary_image_of_page
+  "potentialAction"    $potential_action
+  "hasPart"            $has_part
+  "breadcrumb"         $breadcrumbs
+  "author"             $authors
+  "inLanguage"         .Lang
+}}
+{{ $schema = partial "functions/schema-obj" $schema }}
+
+{{ return $schema }}

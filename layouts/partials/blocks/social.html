@@ -1,0 +1,53 @@
+<div class="social box__block buttons">
+  {{- range .social -}}
+    {{- $link  := . -}}
+    {{- $icon  := "" -}}
+    {{- $label := "" -}}
+    {{- if reflect.IsMap . -}}
+      {{- $link  = .link -}}
+      {{- $icon  = .icon -}}
+      {{- $label = .label -}}
+    {{- end -}}
+    {{- with $link -}}
+      {{- if not $icon -}}
+        {{- if in . "facebook" -}}
+          {{- $icon = "facebook-f" -}}
+        {{- else if in . "twitter" -}}
+          {{- $icon = "twitter" -}}
+        {{- else if in . "tiktok" -}}
+          {{- $icon = "tiktok" -}}
+        {{- else if in . "instagram" -}}
+          {{- $icon = "instagram" -}}
+        {{- else if in . "youtube" -}}
+          {{- $icon = "youtube" -}}
+        {{- else if in . "linkedin" -}}
+          {{- $icon = "linkedin-in" -}}
+        {{- else if in . "github" -}}
+          {{- $icon = "github-alt" -}}
+        {{- else if in . "gitlab" -}}
+          {{- $icon = "gitlab" -}}
+        {{- else if in . "g.page" -}}
+          {{- $icon = "google" -}}
+        {{- else if in . "mailto" -}}
+          {{- $icon = "envelope" -}}
+        {{- else -}}
+          {{- $icon = "share-nodes" -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if not $label -}}
+        {{- $label   = print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` "$2") | title -}}
+        {{- if in . "mailto" -}}
+          {{- $label = print (i18n "follow_us") " Email" -}}
+        {{- end }}
+      {{- end }}
+      {{ partial "link" (dict
+        "link"   .
+        "button" ($.button | default "cta")
+        "dot"    true
+        "icon"   $icon
+        "label"  $label
+        "lock"   (ne $.ofuscate false)
+      ) -}}
+    {{- end -}}
+  {{- end }}
+</div>

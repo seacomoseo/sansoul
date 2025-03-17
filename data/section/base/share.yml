@@ -3,5 +3,16 @@ node: aside
 id: share
 title: '{{% i18n share %}}'
 align: center
-md: |
-  {{< share >}}
+social:
+- link: https://www.facebook.com/sharer.php?u={{ permalink }}
+  icon: facebook-f
+  label: '{{ i18n share }} Facebook'
+- link: https://twitter.com/share?url={{ permalink }}&text={{ param title }}
+  icon: twitter
+  label: '{{ i18n share }} Twitter'
+- link: https://wa.me/?text={{ permalink }}
+  icon: whatsapp
+  label: '{{ i18n share }} WhatsApp'
+- link: mailto:?body={{ permalink }}%0D%0A{{ param title }}
+  icon: envelope
+  label: '{{ i18n share }} Email'

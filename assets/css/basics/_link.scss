@@ -1,0 +1,29 @@
+.link {
+  display: inline;
+  color: var(--cta);
+  cursor: pointer;
+  --link-undeline-offset: calc(var(--top-font) * 2);
+  --link-undeline-width: var(--outline);
+  --link-undeline-top: calc(100% - var(--link-undeline-offset) - var(--link-undeline-width));
+  --link-undeline-bottom: calc(100% - var(--link-undeline-offset));
+  background-image: linear-gradient(to bottom,
+    transparent var(--link-undeline-top),
+    var(--cta) var(--link-undeline-top),
+    var(--cta) var(--link-undeline-bottom),
+    transparent var(--link-undeline-bottom)
+  );
+  background-repeat: no-repeat;
+  background-size: 0 100%;
+  transition: background-size, color;
+  transition-duration: .3s;
+  &:hover,
+  &:focus {
+    @include link-hover;
+  }
+  &:active {
+    @include link-active;
+  }
+}
+.link--swap {
+  @include font-base;
+}

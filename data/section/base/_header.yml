@@ -4,17 +4,23 @@ align: left
 boxes:
 - if: breadcrumbs
   node: nav
-  md: |
-    {{< breadcrumbs >}}
-- title: '{{% param title %}}'
+  md: '{{< breadcrumbs >}}'
+- if: icon
+  params:
+  - box: title
+  - box: icon
+  icon_type: side
+- if: not icon
+  params:
+  - box: title
 - tags:
   - type: type
   - type: date
-  # - type: reading-time
+  # - type: time
   # - type: words
   - type: address
-  - type: taxonomy
-    taxonomy: all
+  - type: tax
+    tax: all
   - type: param
     param: job
     icon: briefcase
@@ -33,3 +39,6 @@ boxes:
     box: alt
   - page: seo
     box: alt
+  - page: image
+    box: link
+  button: hide

@@ -4,13 +4,13 @@
 {{ $taxonomies   := partial "functions/taxonomy-parents" . }}
 {{ range $taxonomies }}
   {{ $page := . }}
-  {{ range .Params.taxonomy_of }}
+  {{ range .Params.tax_of }}
     {{ $is_same_type   := eq page.Type .name }}
     {{ $is_same_schema := in (slice "author" "articleSection") .schema }}
     {{ if and $is_same_type $is_same_schema }}
       {{ if eq .schema "author" }}
         {{ $type   := cond (eq $page.Params.base "author") "author" "page" }}
-        {{ $item   := partial (print "components/base/schema/" $type) $page }}
+        {{ $item   := partial (print "schema/" $type) $page }}
         {{ $authors = $authors | append $item }}
       {{ else if eq .schema "articleSection" }}
         {{ $art_sections = $art_sections | append $page.Title }}
@@ -20,7 +20,7 @@
 {{ end }}
 
 {{ if not $authors }}
-  {{ $authors = partial "components/base/schema/organization-id" . }}
+  {{ $authors = partial "schema/organization-id" . }}
 {{ end }}
 
 {{ return (dict "authors" $authors "art_sections" $art_sections) }}

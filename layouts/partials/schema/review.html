@@ -1,0 +1,59 @@
+
+{{ $item_reviewed  := dict }}
+{{ if in (slice "product" "organization") page.Params.base }}
+  {{ $item_reviewed = dict "@id" (print page.Permalink "#schema-" page.Params.base) }}
+{{ else }}
+  {{ $item_reviewed = partial "schema/organization-id" . }}
+{{ end }}
+
+{{ $schemas := slice }}
+{{ $ratings := slice }}
+{{ $sum     := 0 }}
+{{ range .reviews }}
+  {{ $rating := .rating  | default 5 }}
+  {{ $ratings = $ratings | append $rating }}
+  {{ $sum     = add $sum $rating }}
+  {{ $rr     := dict
+      "@type"       "Rating"
+      "ratingValue" $rating
+      "bestRating"  5
+  }}
+  {{ with .date }}
+    {{ $date := dateFormat "2006-01-02T15:04:05Z07:00" . | replaceRE `T00.00.00[-+]\d\d.00` "" }}
+    {{ $rr    = merge $rr (dict "datePublished" $date) }}
+  {{ end }}
+  {{ $schemas = $schemas | append (dict
+    "@type"        "Review"
+    "author"       (dict
+      "@type" "Person"
+      "name"  .title
+    )
+    "reviewBody"   (.md | markdownify | plainify)
+    "itemReviewed" $item_reviewed
+    "reviewRating" $rr
+  ) }}
+{{ end }}
+
+{{ $rating_avg  := 0 }}
+{{ with $ratings }}
+  {{ $rating_avg = div $sum (len .) | mul 100 | math.Round }}
+  {{ $rating_avg = div $rating_avg 100 }}
+{{ end }}
+
+{{ $schemas = $schemas | append (dict
+  "@type"        "AggregateRating"
+  "itemReviewed" $item_reviewed
+  "bestRating"   5
+  "ratingValue"  $rating_avg
+  "ratingCount"  (len $ratings)
+) }}
+
+{{ $schema := dict 
+  "@context" "http://schema.org"
+  "@graph"   $schemas
+}}
+
+{{ $opts  := cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ") }}
+{{ $schema = $schema | jsonify $opts }}
+
+{{ return $schema }}

@@ -1,7 +1,7 @@
 ---
 title: CMS
 slug: admin/info
-summary: ' '
+icon: screwdriver-wrench
 noindex: true
 translationKey: cms
 type: system

@@ -1,9 +1,11 @@
 ---
 slug: inicio
 title: Inicio
+noindex: false
 translationKey: home
-
 base: organization
+weight: 1
+
 types: [] # strings https://schema.org/docs/full.html > Organization...
 names: [] # strings
 legal: null # string

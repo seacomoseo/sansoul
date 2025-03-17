@@ -3,10 +3,10 @@
   {{ $lang  := .lang }}
   {{ $types := .types }}
   {{ with .src }}
-    {{ with resources.GetRemote . }}
+    {{ with try (resources.GetRemote .) }}
       {{ with .Err }}
         {{ warnf "%s" . }}
-      {{ else }}
+      {{ else with .Value }}
 
         {{ $datas := unmarshal (.Content | string) }}
         {{ if $csv }}
@@ -84,6 +84,8 @@
           {{ end }}
         {{ end }}
 
+      {{ else }}
+        {{ errorf "Unable to get remote resource: %q" . }}
       {{ end }}
     {{ else }}
       {{ errorf "Unable to get remote resource %q" . }}

@@ -1,0 +1,33 @@
+{{ $html := "" }}
+
+{{ if ne .icon "hide" }}
+  {{ $config   := site.Data.styles.icons }}
+  {{ $icon     := .icon }}
+
+  {{/*  emojis_default  */}}
+  {{ if and .emoji $config.emojis }}
+    {{ $icon = .emoji }}
+  {{ end }}
+  {{ $icon_code := $icon | urlquery }}
+  {{ $is_emoji  := in $icon_code "%" }}
+
+  {{/*  CLASS  */}}
+  {{ $class := slice "icon" }}
+  {{ with .class }}
+    {{ $class = $class | append . }}
+  {{ end }}
+  {{ if $is_emoji }}
+    {{ $class = $class | append "emoji" }}
+  {{ end }}
+  
+  {{/*  ATTRIBUTES  */}}
+  {{ $attrs := partial "functions/attrs" (dict "class" $class "style" .style) }}
+
+  {{ if $is_emoji }}
+    {{ $html = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
+  {{ else }}
+    {{ $html = print `<svg` $attrs `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}
+  {{ end }}
+{{ end }}
+
+{{ return $html }}

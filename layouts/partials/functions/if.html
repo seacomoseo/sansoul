@@ -1,13 +1,19 @@
-{{ $if := true }}
-{{ with .if }}
+{{ $if   := true }}
+{{ $not  := false }}
+{{ $cond := .if }}
+{{ if .if | findRE `^not ` }}
+  {{ $not  = true }}
+  {{ $cond = .if | replaceRE `^not ` "" }}
+{{ end }}
+{{ with $cond }}
   {{ if eq . "content" }}
     {{ $if = $.Page.RawContent }}
   {{ else if eq . "toc" }}
-    {{ $if = false }}
-    {{ $params := partial "functions/params" $.Page }}
-    {{ if $params.toc }}
+    {{ $if   = false }}
+    {{ $tpl := partial "functions/tpl" $.Page }}
+    {{ if $tpl.toc }}
       {{ with $.Page.RawContent }}
-        {{ with . | findRE `\n#* ` }}
+        {{ with . | findRE `\n#+ ` }}
           {{ $if = index . 1 }}
         {{ end }}
       {{ end }}
@@ -17,11 +23,11 @@
   {{ else if eq . "comments" }}
     {{ $if = and site.Params.disqus $.Page.Params.is_comments (not $.Page.IsSection) }}
   {{ else if eq . "children" }}
-    {{ $if = or $.Page.IsSection $.Page.Params.taxonomy_of }}
+    {{ $if = or $.Page.IsSection $.Page.Params.tax_of }}
   {{ else if eq . "collection" }}
     {{ $if = $.Page.IsSection }}
   {{ else if eq . "taxonomy" }}
-    {{ $is_parent   := $.Page.Params.taxonomy_of }}
+    {{ $is_parent   := $.Page.Params.tax_of }}
     {{ $is_not_root := not $.Page.IsSection }}
     {{ $if = and $is_parent $is_not_root }}
   {{ else if eq . "true" }}
@@ -31,5 +37,8 @@
   {{ else }}
     {{ $if = partial "functions/index-split" (dict "value" $.Page.Params "path" .) }}
   {{ end }}
+{{ end }}
+{{ if $not }}
+  {{ $if = not $if }}
 {{ end }}
 {{ return $if }}

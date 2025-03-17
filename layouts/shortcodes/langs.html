@@ -1,7 +1,7 @@
-{{- with partial "components/base/menu/langs" (dict "up" true) -}}
+{{- with partial "menu/langs" (dict "up" true) -}}
   {{- with index . 0 -}}
     <i class="langs">
-      {{- partial "components/link" (dict
+      {{- partial "link" (dict
         "class" .class
         "icon"  (index $.Params 0 | default .icon)
         "emoji" .emoji
@@ -11,7 +11,7 @@
       <i class="langs__items">
         {{- range .items -}}
           <i class="lang" lang="{{ .lang }}" title="{{ .title }}">
-            {{- partial "components/link" (dict
+            {{- partial "link" (dict
               "class" "lang__link"
               "icon"  .icon
               "emoji" .emoji

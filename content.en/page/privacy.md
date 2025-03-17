@@ -1,7 +1,7 @@
 ---
 title: Privacy
 slug: privacy
-noindex: true
+icon: shield-keyhole
 translationKey: privacy
 type: system
 weight: 2

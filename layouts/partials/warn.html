@@ -1,0 +1,18 @@
+{{ $echo := dict "_PARENT_" .
+  | jsonify
+  | transform.Remarshal "yaml"
+  | replaceRE `^_PARENT_:\n` ""
+  | replaceRE `: ("[\d.:+TZ-]+")` ": \033[1;34m$1"
+  | replaceRE `: (-?[\d.]+)`      ": \033[1;38;5;208m$1"
+  | replaceRE `: (true)`          ": \033[1;32m$1"
+  | replaceRE `: (false)`         ": \033[1;31m$1"
+  | replaceRE `: (null)`          ": \033[1;35m$1"
+  | replaceRE `(^|\n)(\s*)(- )?(\w+): ?` "$2$3\033[1;36m$4\033[1;37m: "
+  | replaceRE "\n" "\n  "
+}}
+
+{{ $warn  := print "\033[1;38;5;208m" page.RelPermalink "\n  " $echo }}
+
+{{ warnf $warn }}
+
+{{ return "" }}

@@ -1,0 +1,225 @@
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  @if $buttons-3d {
+    row-gap: 1.25em;
+  }
+  > * {
+    position: relative;
+    flex-grow: 1;
+  }
+}
+// Share and Social near Contact
+.box__title + .social:last-child,
+.social + .contact {
+  margin-top: var(--box-gap);
+}
+.contact__schedule,
+.contact__schedule-item {
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+.contact__schedule {
+  flex-wrap: wrap;
+  gap: .5em 1em;
+  padding: 0 .5em;
+  .icon {
+    font-size: 1.5em;
+    color: var(--main);
+  }
+}
+.contact__schedule-item {
+  gap: .375em;
+}
+.contact__email {
+  position: relative;
+}
+.contact__email-button {
+  width: 100%;
+  height: 100%;
+}
+.contact__email-options {
+  @if $radius > 1 or $buttons-rounded {
+    @include radius-parent(2em - $radius);
+  } @else {
+    @include radius-parent(1em);
+  }
+  padding: 1em;
+  z-index: 1;
+  position: absolute;
+  bottom: calc(100% + .35em);
+  left: 50%;
+  width: max-content;
+  transform: translate(-50%, 1em);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .3s, transform .3s, visibility .3s step-end;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  filter: drop-shadow($shadow);
+  &:after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: .75em solid transparent;
+    border-top-color: var(--bg-color);
+    border-bottom: 0;
+    position: absolute;
+    bottom: -.7em;
+    left: calc(50% - .75em);
+  }
+}
+.contact__email:hover .contact__email-options,
+.contact__email-button:focus + .contact__email-options,
+.contact__email-options:focus-within {
+  transform: translate(-50%, 0);
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .3s, transform .3s, visibility 0s step-end;
+}
+.contact__email-option-copy--active {
+  i {
+    @if $chamfer {
+      @if $radius > 1 or $buttons-rounded {
+        --radius: 1em;
+      }
+    }
+    &:after {
+      content: var(--copied);
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      padding: .25em 1em;
+      min-height: 2em;
+      width: max-content;
+      display: flex;
+      align-items: center;
+      color: $white;
+      background-color: $dark;
+      @include radius;
+      @if not $chamfer {
+        filter: drop-shadow($shadow);
+      }
+      animation: copied 1s ease 0s forwards;
+    }
+  }
+}
+.contact {
+  .link:not(.button) {
+    display: inline-flex;
+    align-items: center;
+    gap: .375em;
+    text-align: left;
+    > .icon {
+      color: var(--main);
+      font-size: 1.2em;
+    }
+  }
+}
+.contact > {
+  *:not(button, .button) {
+    justify-content: center;
+    &:not(.contact__email:has(> .button.contact__email-button)) {
+      flex-grow: 0;
+    }
+  }
+  * > .contact__email-button:not(.button) {
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: .375em;
+    text-align: left;
+  }
+  .contact__br,
+  hr {
+    flex-grow: 0;
+    width: calc(100% - #{ $radius / 2 });
+    height: 0;
+  }
+  hr {
+    border: none;
+    border-bottom: 0.125em #aaa dashed;
+  }
+}
+.contact:has(.contact__br) {
+  margin-bottom: -1rem;
+}
+.contact:has(.contact__br ~ .contact__br) {
+  margin-bottom: -2rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -3rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -4rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -5rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -6rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -7rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -8rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -9rem;
+}
+.contact:has(.contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br ~ .contact__br) {
+  margin-bottom: -10rem;
+}
+.contact__br ~ {
+  * { top: -1rem; }
+  .contact__br ~ {
+    * { top: -2rem; }
+    .contact__br ~ {
+      * { top: -3rem; }
+      .contact__br ~ {
+        * { top: -4rem; }
+        .contact__br ~ {
+          * { top: -5rem; }
+          .contact__br ~ {
+            * { top: -6rem; }
+            .contact__br ~ {
+              * { top: -7rem; }
+              .contact__br ~ {
+                * { top: -8rem; }
+                .contact__br ~ {
+                  * { top: -9rem; }
+                  .contact__br ~ {
+                    * { top: -10rem; }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.contact__custom:not(.button, button) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  gap: .5em;
+  padding: .5em 1.5em;
+  .icon {
+    color: var(--main);
+  }
+}
+.contact__full {
+  width: 100%;
+}

@@ -1,0 +1,52 @@
+{{- /*  SET STORE  */ -}}
+{{- $store := page.Store -}}
+{{- $store.Set "md_caps"   .md_caps   -}}
+{{- $store.Set "md_line"   .md_line   -}}
+{{- $store.Set "md_border" .md_border -}}
+{{- $store.Set "md_nav"    .md_nav    -}}
+{{- $store.Set "md_index"  .md_index  -}}
+
+{{- /*  SM  */ -}}
+{{- $md_sm := .md_sm -}}
+{{- if eq .md_sm nil -}}
+  {{- if .is_title_link -}}
+    {{- $md_sm := true -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  ALIGN  */ -}}
+{{- $md_align  := .md_align -}}
+{{- if not .md_align -}}
+  {{- if and (not .align) (not .header) .main -}}
+    {{- /*  if container small  */ -}}
+    {{- if in (slice "xs" "sm") .container -}}
+      {{- $md_align = "left" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  CLASS  */ -}}
+{{- $md_class := slice
+  "box__md"
+  "md"
+  (cond (not $md_align)    "" (print "align-"     $md_align))
+  (cond (not .md_align_vl) "" (print "align--vl-" .md_align_vl))
+  (cond (not $md_sm)       "" "box__md--sm")
+-}}
+
+{{- /*  ATTRIBUTES  */ -}}
+{{- $md_attrs := dict "class" $md_class -}}
+{{- $md_attrs  = partial "functions/attrs" $md_attrs -}}
+
+{{- /* HTML */}}
+<div {{- $md_attrs }}>
+  {{- /* <div class="float"></div><div class="float float--r"></div> */}}
+  {{ partial "functions/md" .md }}
+</div>
+
+{{- /*  DELETE STORE  */ -}}
+{{- $store.Delete "md_caps"   -}}
+{{- $store.Delete "md_line"   -}}
+{{- $store.Delete "md_border" -}}
+{{- $store.Delete "md_nav"    -}}
+{{- $store.Delete "md_index"  -}}

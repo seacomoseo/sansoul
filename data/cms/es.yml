@@ -102,6 +102,7 @@ types_params_multiple: Múltiple
 types_params_schema: Schema
 types_template: Plantilla
 types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
+types_template_single_hint: Plantilla para ésta página solamente (los valores sobreescriben a los de la plantilla general)
 types_lang: Textos
 types_permalinks: Enlaces Permanentes
 types_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo 🔷 **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
@@ -347,21 +348,20 @@ box_title: Título
 box_hanchor: Título Oculto
 box_hanchor_hint: Encabezado y Ancla/Anchor Oculto que tendrá el enlace del título y del menú (para SEO)
 box_subtitle: Subtítulo
-box_md: Contenido
 box_price: Precio
 box_hn: Etiqueta de Título
 box_hs: Tamaño de Título
 box_uppercase: Título en Mayúsculas
 box_underline: Título Subrayado
-box_align: Alineación
-box_align_hint: Alineación de todos los elementos de la Caja
-box_align_vl: Alineación en Escritorio
-box_align_vl_hint: Alineación de todos los elementos de la Caja cuando el ancho de la ventana ≥ 1280px
+box_md: Contenido
 box_md_align: Alineación del Contenido
 box_md_align_hint: Alineación Sólo del Contenido
 box_md_align_vl: Alineación del Contenido en Escritorio
 box_md_align_vl_hint: Alineación sólo del contenido cuando el ancho de la ventana ≥ 1280px
 box_md_sm: Contenido Pequeño
+box_md_caps: Títulos del Contenido en Mayúsculas
+box_md_line: Títulos del Contenido Subrayados
+box_md_border: Borde de Imágenes del Contenido
 box_md_index: Numeración en Encabezados de Contenido
 box_md_index_hint: Añadir la misma numeración que hay en los índices, en los encabezados del contenido
 box_md_nav: IDs en Encabezados de Contenido
@@ -386,7 +386,7 @@ box_image_ratio_hint: Automática por defecto 🔷 **Ejemplos →** 16/9, 9/16, 
 box_image_ratio_pattern: Sólo números (1-9) y barras inclinadas ("/")
 box_image_contain: Imagen Ajustada a la Proporción
 box_image_contain_hint: Para que no se recorte si se selecciona alguna proporción
-box_image_border: Color del Borde de la Imagen
+box_image_border: Borde de la Imagen
 box_image_inset: Imagen Incrustada
 box_image_inset_hint: Se incrusta en el elemento como si este no tuviese márgenes internos
 box_image_circle: Imagen en Círculo
@@ -438,6 +438,10 @@ box_fit_vs: Ancho Mínimo
 box_fit_vs_hint: Ancho en Nº Columnas en Resolución Mínima
 box_grow: Rellenar Ancho
 box_grow_hint: Rellenar el ancho de contenedor aumentando el ancho de los elementos o columnas (no aplica si se activa carrusel)
+box_align: Alineación
+box_align_hint: Alineación de todos los elementos de la Caja
+box_align_vl: Alineación en Escritorio
+box_align_vl_hint: Alineación de todos los elementos de la Caja cuando el ancho de la ventana ≥ 1280px
 box_rate: Proporción de la Caja
 box_rate_hint: Altura mínima según la proporción establecida 🔷 Automática por defecto 🔷 **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
 box_space: Margen entre Elementos de la Caja
@@ -768,7 +772,8 @@ option-tile-terrain: Terreno
 option-tile-satellite: Satélite
 option-tile-hybrid: Híbrido
 option-view-group: Grupo
-option-view-text: Texto
+option-view-titles: Títulos
+option-view-md: Contenido
 option-view-menu: Menú
 option-view-icon: Icono
 option-view-image: Imágen

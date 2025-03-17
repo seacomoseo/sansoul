@@ -1,7 +1,7 @@
 ---
 title: Ricerca
 slug: ricerca
-noindex: true
+icon: magnifying-glass
 translationKey: search
 type: system
 weight: 4

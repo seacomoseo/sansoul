@@ -102,6 +102,7 @@ types_params_multiple: Multiple
 types_params_schema: Schema
 types_template: Template
 types_template_hint: Template for pages of this type (values override those of the general template)
+types_template_single_hint: Template for this page only (values overwrite those of the general template)
 types_lang: Texts
 types_permalinks: Permalinks
 types_permalinks_hint: This is the base of the URLs or links for pages of this type 🔷 **Example →** "categories" will show "https://example.com/categories/[slug]/"
@@ -347,21 +348,20 @@ box_title: Title
 box_hanchor: Hidden Title
 box_hanchor_hint: Header and Hidden Anchor/Link that will be used by the title and menu links (for SEO)
 box_subtitle: Subtitle
-box_md: Content
 box_price: Price
 box_hn: Title Tag
 box_hs: Title Size
 box_uppercase: Title in Uppercase
 box_underline: Underlined Title
-box_align: Alignment
-box_align_hint: Align all elements in the Box
-box_align_vl: Alignment on Desktop
-box_align_vl_hint: Align all elements in the Box when the window width is ≥ 1280px
+box_md: Content
 box_md_align: Content Alignment
 box_md_align_hint: Alignment of Content Only
 box_md_align_vl: Content Alignment on Desktop
 box_md_align_vl_hint: Align content only when the window width is ≥ 1280px
 box_md_sm: Small Content
+box_md_caps: Capitalized Content Titles
+box_md_line: Underlined Content Titles
+box_md_border: Content Image Border
 box_md_index: Numbering in Content Headings
 box_md_index_hint: Add the same numbering as in the indexes to content headings
 box_md_nav: IDs in Content Headings
@@ -386,7 +386,7 @@ box_image_ratio_hint: Default is automatic 🔷 **Examples →** 16/9, 9/16, 3x2
 box_image_ratio_pattern: Only numbers (1-9) and slashes ("/")
 box_image_contain: Image Fit to Ratio
 box_image_contain_hint: Prevents cropping if a specific ratio is selected
-box_image_border: Image Border Color
+box_image_border: Image Border
 box_image_inset: Inset Image
 box_image_inset_hint: Embedded in the element as if it had no internal margins
 box_image_circle: Circular Image
@@ -438,6 +438,10 @@ box_fit_vs: Minimum Width
 box_fit_vs_hint: Width in Nº of Columns at Minimum Resolution
 box_grow: Fill Width
 box_grow_hint: Fills container width by increasing the width of elements or columns (does not apply if carousel is enabled)
+box_align: Alignment
+box_align_hint: Align all elements in the Box
+box_align_vl: Alignment on Desktop
+box_align_vl_hint: Align all elements in the Box when the window width is ≥ 1280px
 box_rate: Box Proportion
 box_rate_hint: Minimum height based on the set proportion 🔷 Default is automatic 🔷 **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
 box_space: Margin Between Box Elements
@@ -768,7 +772,8 @@ option-tile-terrain: Terrain
 option-tile-satellite: Satellite
 option-tile-hybrid: Hybrid
 option-view-group: Group
-option-view-text: Text
+option-view-titles: Titles
+option-view-md: Contents
 option-view-menu: Menu
 option-view-icon: Icon
 option-view-image: Image

@@ -1,8 +1,7 @@
 ---
 title: CMS
 slug: admin/info
-summary: ' '
-noindex: true
+icon: screwdriver-wrench
 translationKey: cms
 type: system
 weight: 6

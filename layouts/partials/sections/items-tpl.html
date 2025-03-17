@@ -1,0 +1,7 @@
+{{/*  Push tpl and pull merged sections  */}}
+{{ $footer   := dict "footer" true "color" "dark" "file" "base/footer" }}
+{{ $sections := .sections | default slice | append $footer }}
+{{ $sections  = partial "sections/merged-files"      $sections }}
+{{ $sections  = partial "sections/merged-shortcodes" $sections }}
+{{ $sections  = partial "sections/merged-params"     (dict "sections" $sections "Page" .Page) }}
+{{ return $sections }}

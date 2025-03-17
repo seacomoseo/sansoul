@@ -57,7 +57,7 @@
         {{ $breadcrumbs := "" }}
         {{ range $types }}
           {{ $type_of := . }}
-          {{ range .taxonomy_of }}
+          {{ range .tax_of }}
             {{ if eq .name $name }}
               {{ $name_from    := $type_of.name }}
               {{ $base_from    := $type_of.base }}
@@ -132,6 +132,8 @@
             "title"          $title
             "seo"            .seo
             "description"    $description
+            "icon"           $icon
+            "emoji"          $emoji
             "image"          .image
             "draft"          .disabled
             "noindex"        true
@@ -141,19 +143,17 @@
             "customs"        $customs
             "cascade"        ((dict
               "noindex"     $noindex
-              "icon"        $icon
-              "emoji"       $emoji
               "type"        $name
               "base"        $base
               "is_related"  .related
               "is_comments" .comments
               "taxonomies"  $taxonomies
-              "taxonomy_of" .taxonomy_of
+              "tax_of"      .tax_of
               "breadcrumbs" $breadcrumbs
             ))
           }}
-            {{/*  ) | merge .template)  */}}
-            {{/*  | merge site.Data.types.all.template  */}}
+            {{/*  ) | merge .tpl)  */}}
+            {{/*  | merge site.Data.types.all.tpl  */}}
           {{/*  file  */}}
           {{ $path := print "content." $lang "/" $name "/_index.md" }}
           {{ partial "file-by-obj" (dict "obj" $obj "content" (.content | default "") "path" $path) }}
@@ -285,7 +285,7 @@
     "weight" 10
   )
 }}
-{{ range where $types "taxonomy_of" "ne" nil }}
+{{ range where $types "tax_of" "ne" nil }}
   {{ $indices = $indices | append
     (dict
       "name"   .name

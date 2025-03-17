@@ -18,7 +18,7 @@
 
 {{- range site.Data.options.div -}}
   {{- $attrs := "" -}}
-  {{- with partial "components/divider-attr" (dict
+  {{- with partial "sections/divider-attr" (dict
     "section" (dict "div" .)
     "next"    false
   ) -}}
@@ -27,7 +27,7 @@
     {{- $attrs  = partial "functions/attrs" $attrs -}}
   {{- end }}
   <h3 id="div-{{ . }}">
-    {{ partial "components/link" (dict
+    {{ partial "link" (dict
       "label" .
       "link"  (print "#div-" .)
     ) }}

@@ -1,19 +1,19 @@
-.div {
+.pt-div {
   margin-top: calc(var(--div-height) * -1);
-  --div-fade: linear-gradient(black, black);
 }
 @mixin div-left($w, $s, $next) {
   --div-#{$next}: calc(((100cqw - #{$w}) / 2) + #{$w} / (#{$s} * 2) * (#{$s} - 1));
 }
 .div,
-.div--next {
+.div-next {
+  --div-fade: linear-gradient(black, black);
   --div-size: 1;
   --div-width: calc(var(--div-height) * 8 * var(--div-size));
   @include div-left(var(--div-width), var(--div-size), 'left');
   --div-top: 1px;
   --div-position: var(--div-left) var(--div-top);
 }
-.div--next {
+.div-next {
   --div-next-size: 1;
   --div-next-width: calc(var(--div-height) * 8 * var(--div-next-size));
   @include div-left(var(--div-next-width), var(--div-next-size), 'next-left');
@@ -35,7 +35,7 @@
 }
 
 // prev and next
-.div--next {
+.div-next {
   --div-mask-image:
     var(--div),
     var(--div-fade),
@@ -53,7 +53,7 @@
 }
 
 // next only
-.div--next:not(.div) {
+.div-next:not(.div) {
   --div-mask-image:
     var(--div-fade),
     var(--div-next);
@@ -67,7 +67,7 @@
 
 // mask
 .div,
-.div--next {
+.div-next {
   &.ph,
   > .bg-color {
             mask-image: var(--div-mask-image);
@@ -90,10 +90,10 @@
   --div-width: calc(100% * var(--div-size));
   --div-left: 0px;
 }
-.div--next--size {
+.div-next--size {
   --div-next-size: 2;
 }
-.div--next--not-repeat {
+.div-next--not-repeat {
   --div-next-width: calc(100% * var(--div-next-size));
   --div-next-left: 0px;
 }

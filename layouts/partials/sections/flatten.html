@@ -1,0 +1,13 @@
+{{ $items := slice }}
+
+{{ $tpl := partial "functions/tpl-sections" . }}
+{{ range $tpl.sections }}
+  {{ $items = $items | append . }}
+  {{ with .modals }}
+    {{ range . }}
+      {{ $items = $items | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $items }}

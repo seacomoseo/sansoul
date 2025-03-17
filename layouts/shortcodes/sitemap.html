@@ -1,10 +1,11 @@
-{{- range site.Sections -}}
-  {{- $parent_icon := .Params.icon }}
+{{- range site.Sections }}
   <h2 class="md__heading">
-    {{ partial "components/link" (dict
-      "class"  "md__heading-link sitemap-header-link"
-      "icon"   $parent_icon
-      "emoji"  .Params.emoji
+    {{- $parent_icon := .Params.icon -}}
+    {{- if .Params.icon }}
+      {{ partial "icon" (dict "icon" .Params.icon "emoji" .Params.emoji) -}}
+    {{- end -}}
+    {{ partial "link" (dict
+      "class"  "md__heading-link"
       "label"  .Title
       "anchor" (partial "functions/anchor-page" .)
       "link"   .RelPermalink
@@ -23,7 +24,7 @@
           {{- if ne $parent_icon .Params.icon -}}
             {{- $icon = .Params.icon -}}
           {{- end -}}
-          {{- partial "components/link" (dict
+          {{- partial "link" (dict
             "icon"   $icon
             "label"  .Title
             "link"   .RelPermalink

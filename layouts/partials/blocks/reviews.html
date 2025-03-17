@@ -1,0 +1,164 @@
+{{- $review := . -}}
+
+{{- if .slider }}
+  <div class="slider box__block" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
+{{- end }}
+
+<div class="reviews {{- if .slider }} slider__track{{- else }} box__block{{ end }}">
+
+  {{- /* REVIEWS CLASS  */ -}}
+  {{- $slider     := cond (not .slider) "" " slider__items" -}}
+  {{- $show       := cond (not site.Data.config.others.show) "" " show" -}}
+  {{- $cols_class := print "boxes" $slider $show -}}
+
+
+  {{- /* REVIEWS STYLE  */ -}}
+  {{- $cols_vl   := .cols | default 1 -}}
+  {{- if eq .cols 0 -}}
+    {{- $cols_vl  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- end -}}
+  {{- $cols_vs   := .cols_vs | default 1 -}}
+  {{- if eq .cols_vs 0 -}}
+    {{- $cols_vs  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
+  {{- end -}}
+  {{- $col_vl := cond (eq $cols_vl 1) "" (print "--cols-vl:" $cols_vl) -}}
+  {{- $col_vs := cond (eq $cols_vs 1) "" (print "--cols-vs:" $cols_vs) -}}
+
+  {{- $cols_style := slice $col_vl $col_vs -}}
+
+  {{- /* REVIEWS ATTRIBUTES JOIN  */ -}}
+  {{- $attrs := dict
+    "class" $cols_class
+    "style" $cols_style
+  -}}
+  {{- $attrs = partial "functions/attrs" $attrs -}}
+  
+  {{- /*  HTML  */}}
+  <div {{- $attrs }}>
+    {{- range .reviews -}}
+      {{- with merge $review . -}}
+
+        {{- /* REVIEW ITEM CLASS  */ -}}
+        {{- $bgc      := partial "functions/color-background" (dict "child" .color "parent" $.bgcp) -}}
+        {{- $color    := $bgc.child -}}
+        {{- $bg_color := print
+          (cond (not $color) "" (print "bg-" $color))
+          (cond (not .image) "" " bg-image")
+        -}}
+        {{- $bg_fade_color := "" -}}
+        {{- $bg_fade_type  := "" -}}
+        {{- if .fade -}}
+          {{- $bg_fade_color = print "bg-fade-" .fade -}}
+          {{- $bg_fade_type  = print "bg-fade-" (.fade_type | default "linear-r") -}}
+        {{- end -}}
+        {{- $bg         := cond (not $bg_color) "" "bg" -}}
+        {{- $shadow     := cond (not ($color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
+
+        {{- $review_class := slice
+          "review__globe"
+          $bg
+          $bg_color
+          $bg_fade_color
+          $bg_fade_type
+          $shadow
+        -}}
+
+        {{- /* REVIEW ITEM STYLE  */ -}}
+        {{- $alpha := and (.alpha | and (ne .alpha 100)) ($color | or .fade) -}}
+        {{- $alpha  = cond (not $alpha)        "" (print "--color-alpha:" .alpha) -}}
+
+        {{- $review_style := slice $alpha -}}
+
+        {{- /* REVIEW ITEM ATTRIBUTES JOIN  */ -}}
+        {{- $review_attrs := dict
+          "class" $review_class
+          "style" $review_style
+        -}}
+        {{- $review_attrs = partial "functions/attrs" $review_attrs -}}
+
+        {{- /* REVIEW ITEM  */}}
+        <div class="review">
+          <div {{- $review_attrs }}>
+            <div class="bg-color"></div>
+            {{- $icon       := or             .icon "quote-left" -}}
+            {{- $icon_right := or .icon_right .icon "quote-right" }}
+            {{ partial "icon" (dict
+              "class" "review__icon"
+              "icon"  $icon
+            ) }}
+            <blockquote class="review__text">
+              <div class="md">
+                {{ partial "functions/md" .md }}
+              </div>
+            </blockquote>
+            {{ partial "icon" (dict
+              "class" "review__icon review__icon--right"
+              "icon"  $icon_right
+            ) }}
+          </div>
+          <div class="review__person">
+            {{- if .image }}
+              <div class="review__figure">
+                <div class="bg-color"></div>
+                {{- partial "media/_"
+                  (dict
+                    "class"     "review__figure-image"
+                    "src"       .image
+                    "alt"       .title
+                    "max"       136
+                    "ratio"     "1/1"
+                    "notschema" true
+                  )
+                }}
+              </div>
+            {{- end }}
+            <div class="review__author">
+              {{- with .title }}
+                <p class="review__title h4">{{ . | markdownify }}</p>
+              {{- end -}}
+              {{- with .subtitle }}
+                <p class="review__subtitle">{{ . | markdownify }}</p>
+                {{- /*              {{- else -}}
+                {{- with .date }}
+                  <p class="review__subtitle">{{ partial "functions/date" (dict "date" .) }}</p>
+                {{- end -}}
+                */ -}}
+              {{- end -}}
+              {{- if ne .rating 0 }}
+                <p class="review__stars">
+                  {{- $rating := .rating | default 5 -}}
+                  {{- $int    := $rating | int -}}
+                  {{- range seq $int -}}
+                    {{- partial "icon" (dict "icon" "star-fill") -}}
+                  {{- end -}}
+                  {{- if ne $rating $int -}}
+                    {{- $decimal := sub $rating $int -}}
+                    {{- if ge $decimal 0.5 -}}
+                      {{- partial "icon" (dict "icon" "star-fill-half") -}}
+                    {{- end -}}
+                  {{- end }}
+                </p>
+              {{- end }}
+            </div>
+          </div>
+        </div>
+      {{- end -}}
+    {{- end }}
+  </div>
+</div>
+{{- /* SCHEMA  */}}
+<script type="application/ld+json">
+  {{- partial "schema/review" . | safeJS }}
+</script>
+
+{{- if .slider }}
+  {{ partial "boxes/slider-nav"
+    (dict
+      "items"   (len .reviews)
+      "bullets" .bullets
+      "arrows"  .arrows
+      "button"  .button
+    )
+  }}
+  </div>
+{{- end -}}
