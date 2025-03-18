@@ -91,7 +91,7 @@
 .image--border {
   --image-border-width: .5em;
   padding: var(--image-border-width);
-  &:before {
+  &::before {
     content: '';
     @include radius-child;
     @include like-bg-cover;
@@ -140,7 +140,7 @@
   width: var(--image-width);
   --image-margin: calc(var(--box-pd) * -1);
   --image-inset-block-margin: calc(max(var(--box-pd), 1em) - var(--box-gap));
-  // --image-inset-pd-radius:;
+  // --image-inset-pd-radius:
   --radius-pd: var(--image-inset-pd-radius);
   .image__inner {
     --radius-pd: calc(var(--image-inset-pd-radius) - var(--image-border-width, 0em));

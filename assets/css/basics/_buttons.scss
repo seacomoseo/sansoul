@@ -25,13 +25,13 @@
   @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
     @extend %radius;
   }
-  &:before {
+  &::before {
     content: '';
     background-image: none;
     z-index: -1;
   }
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     transition: background-color .1s;
     background-color: var(--base);
     position: absolute;
@@ -83,7 +83,7 @@
   }
   @if $buttons-3d {
     transform: translateY(-.25em);
-    &:after {
+    &::after {
       content: '';
       filter: brightness(.75);
       transform: translateY(.25em);
@@ -95,7 +95,7 @@
       filter: drop-shadow($shadow);
     } @else {
       transition: color, box-shadow, transform;
-      &:after {
+      &::after {
         box-shadow: $shadow;
       }
     }
@@ -134,13 +134,13 @@
     --base-text: var(--hover-text);
     @if $buttons-3d {
       transform: translateY(-.125em);
-      &:after {
+      &::after {
         transform: translateY(.125em);
       }
       @if $chamfer {
         filter: drop-shadow($shadow-half);
       } @else {
-        &:after {
+        &::after {
           box-shadow: $shadow-half;
         }
       }
@@ -161,7 +161,7 @@
     @if $buttons-3d {
       filter: none;
       transform: none;
-      &:after {
+      &::after {
         transform: none;
         box-shadow: 0 0 0 $shadow-color;
       }
@@ -201,8 +201,8 @@
     z-index: -2;
   }
   @if $icon-buttons-rounded {
-    &:before,
-    &:after {
+    &::before,
+    &::after {
       @include circle;
     }
     @if $chamfer {
@@ -235,8 +235,8 @@
 .sl-close,
 .sl-prev,
 .sl-next {
-  &:after,
-  &:before {
+  &::after,
+  &::before {
     content: none;
   }
 }
@@ -251,8 +251,8 @@
       opacity: 1;
       color: var(--base);
     }
-    &:before,
-    &:after {
+    &::before,
+    &::after {
       @if $chamfer and ($radius > 0.01 or $buttons-rounded or $icon-buttons-rounded) {
         clip-path: var(--chamfer-outline);
       } @else {
@@ -261,13 +261,13 @@
       }
     }
     @if $buttons-3d {
-      &:after {
+      &::after {
         opacity: .25;
       }
       @if $chamfer {
         filter: none;
       } @else {
-        &:after {
+        &::after {
           box-shadow: none;
           z-index: -2;
         }
@@ -281,8 +281,8 @@
   }
   @if $chamfer and $icon-buttons-rounded {
     .button--dot {
-      &:before,
-      &:after {
+      &::before,
+      &::after {
         clip-path: var(--diamond-outline);
       }
     }
@@ -311,7 +311,7 @@
         background-color: var(--bg-color);
       }
     } @else {
-      &:before {
+      &::before {
         background-color: var(--bg-color);
       }
     }

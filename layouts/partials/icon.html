@@ -17,13 +17,14 @@
     {{ $class = $class | append . }}
   {{ end }}
   {{ if $is_emoji }}
-    {{ $class = $class | append "emoji" }}
+    {{ $class = $class | append "icon--text" }}
   {{ end }}
   
   {{/*  ATTRIBUTES  */}}
   {{ $attrs := partial "functions/attrs" (dict "class" $class "style" .style) }}
 
   {{ if $is_emoji }}
+    {{ $icon = replace .icon ":" "" }}
     {{ $html = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
   {{ else }}
     {{ $html = print `<svg` $attrs `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}

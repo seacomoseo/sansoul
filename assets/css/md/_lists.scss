@@ -27,11 +27,11 @@
         }
       }
       > *,
-      &:before {
+      &::before {
         display: table-cell;
         // text-align: right;
       }
-      &:before,
+      &::before,
       > .icon {
         @include font-base-bold;
         color: var(--main);
@@ -52,16 +52,16 @@
 
   ul {
     > li {
-      &:before {
+      &::before {
         content: "\2014";
       }
-      &.li-icon:before {
+      &.li-icon::before {
         content: none;
       }
       @if $main == $cta {
         // if there are links, icon...
         &:where(ul:not(.list-inline):has(.link) *) {
-          &:before,
+          &::before,
           > .icon {
             opacity: .5;
           }
@@ -78,21 +78,21 @@
     > li {
       counter-increment: item;
       --li-counter: counters(item, ".") ".";
-      &:before {
+      &::before {
         content: var(--li-counter, "");
       }
       // if there are icons, counter...
-      &:where(ol:has(.icon) *):before {
+      &:where(ol:has(.icon) *)::before {
         padding-right: .25em;
       }
       .icon--none
       // if there are icons, counter...
-      &:where(ol:not(.list-inline):has(.li-icon) *):before {
+      &:where(ol:not(.list-inline):has(.li-icon) *)::before {
         color: var(--cta);
       }
       @if $main == $cta {
         // if there are links, counter...
-        &:where(ol:not(.list-inline):has(.link) *):before {
+        &:where(ol:not(.list-inline):has(.link) *)::before {
           opacity: .5;
         }
         // if there are links and icons, icon...
@@ -102,7 +102,7 @@
         }
       } @else {
         // if there are links and not icon, counter...
-        &:where(ol:not(.list-inline):has(.link):has(.li-icon) *):before {
+        &:where(ol:not(.list-inline):has(.link):has(.li-icon) *)::before {
           color: var(--cta);
           opacity: .5;
         }
@@ -136,7 +136,7 @@
       display: flex;
       gap: .5em;
       line-height: 1.25;
-      &:before {
+      &::before {
         content: none;
       }
       // > .icon {

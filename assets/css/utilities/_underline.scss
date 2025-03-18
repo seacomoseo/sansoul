@@ -1,5 +1,5 @@
 .underline {
-  &:after {
+  &::after {
     content: '';
     display: block;
     width: 2em;
@@ -11,7 +11,7 @@
     @include radius;
     order: 10;
   }
-  &.hide:after {
+  &.hide::after {
     content: none;
   }
 }
@@ -19,20 +19,20 @@
 .underline:not(.aux) {
   background-image: none;
 }
-.align-right .underline:after {
+.align-right .underline::after {
   margin-right: 0;
   --underline-margin: calc(100% - 2em);
 }
-.align-left .underline:after {
+.align-left .underline::after {
   margin-left: 0;
   --underline-margin: calc(100% - 2em);
 }
 @media (min-width: $vl) {
-  .align--vl-right .underline:after {
+  .align--vl-right .underline::after {
     margin-right: 0;
     margin-left: calc(100% - 2em);
   }
-  .align--vl-left .underline:after {
+  .align--vl-left .underline::after {
     margin-left: 0;
     margin-right: calc(100% - 2em);
   }

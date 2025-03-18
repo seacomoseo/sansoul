@@ -1,18 +1,18 @@
 #toc {
   .toc {
     li {
-      &:before,
+      &::before,
       > .icon {
         opacity: 1;
       }
-      &:before {
+      &::before {
         color: var(--cta);
       }
       > .icon {
         color: var(--main);
       }
       @if $main == $cta {
-        &:has(> .icon):before {
+        &:has(> .icon)::before {
           opacity: .5;
         }
       }

@@ -20,28 +20,28 @@
     }
     &:not(.quotes, .dittos) {
       padding-inline: 1.5em;
-      &:after,
-      &:before {
+      &::after,
+      &::before {
         font-size: 2em;
         line-height: .625;
         font-weight: 900;
         content: '“';
       }
-      &:after {
+      &::after {
         content: '”';
       }
     }
     > .icon.quote-left,
     > .icon.quote-right,
-    &:after,
-    &:before {
+    &::after,
+    &::before {
       color: var(--main);
       position: absolute;
       top: 0;
       left: 0;
     }
     > .icon.quote-right,
-    &:after {
+    &::after {
       top: unset;
       left: unset;
       bottom: 0;
@@ -53,13 +53,13 @@
       padding: 1.5em;
       > .icon.quote-left,
       > .icon.quote-right,
-      &:after,
-      &:before {
+      &::after,
+      &::before {
         top: .5em;
         left: .5em;
       }
       > .icon.quote-right,
-      &:after {
+      &::after {
         top: unset;
         left: unset;
         bottom: .5em;
@@ -74,7 +74,7 @@
       text-align: right;
       margin-top: .5em;
       color: var(--subtitle);
-      &:before {
+      &::before {
         content: '— ';
         color: $gray;
       }

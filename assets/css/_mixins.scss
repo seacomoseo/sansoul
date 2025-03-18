@@ -33,7 +33,7 @@
     &:not(strong, .link, .icon) {
       translate: 0 var(--top-font);
       > .icon:not(.box__icon--side),
-      &.underline:after {
+      &.underline::after {
         translate: 0 calc(var(--top-font) * -1);
       }
     }
@@ -68,7 +68,7 @@
     &:not(strong, .link, .icon) {
       translate: 0 var(--top-font);
       > .icon:not(.box__icon--side),
-      &.underline:after {
+      &.underline::after {
         translate: 0 calc(var(--top-font) * -1);
       }
     }
@@ -166,7 +166,7 @@
 
 // RADIUS
 
-@mixin radius-parent($padding:0em, $r:$radius) {
+@mixin radius-parent($padding: 0em, $r: $radius) {
   @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
     @extend %radius;
     @if $r != $radius {
@@ -186,7 +186,7 @@
     }
   }
 }
-@mixin radius($padding:0em, $r:$radius) {
+@mixin radius($padding: 0em, $r: $radius) {
   @include radius-parent($padding, $r);
   @include radius-child;
 }

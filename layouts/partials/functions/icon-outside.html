@@ -2,17 +2,10 @@
 {{ $icon    := "" }}
 {{ $pin     := "" }}
 
-{{ with findRE `(?s)^:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):` . }}
+{{ with findRE `(?s)^::?(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*)::?` . }}
   {{ with index . 0 }}
     {{ $icon = replace . ":" "" }}
-    {{ $text = $text | replaceRE `(?s)^:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*): ?` "" }}
-  {{ end }}
-{{ end }}
-
-{{ with findRE `(?s)^::\S+` . }}
-  {{ with index . 0 }}
-    {{ $pin  = replace . ":" "" }}
-    {{ $text = $text | replaceRE `(?s)^::\S+ ?` "" }}
+    {{ $text = $text | replaceRE `(?s)^::?(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*)::? ?` "" }}
   {{ end }}
 {{ end }}
 

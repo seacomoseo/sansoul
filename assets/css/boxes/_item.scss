@@ -175,8 +175,8 @@
   gap: .5em;
   width: 100%;
   @include radius-parent(0em, #{ $menu-bar });
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     content: '';
     display: inline-block;
     width: 2em;
@@ -196,9 +196,13 @@
 .box__icon--bottom + *:not(.box__block) {
   margin-top: calc(-.5 * var(--box-gap));
 }
+svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right) *)) {
+  width: 100%;
+}
 .box__icon--top {
   display: block;
   font-size: var(--icon-size);
+  max-width: 100%;
   color: var(--base);
   margin-block: 0;
   margin-inline: var(--align-margin);
@@ -223,7 +227,7 @@
     color: inherit;
   }
   // Remove underline if next is icon bottom
-  &:has(+ .box__icon--bottom) .underline:after {
+  &:has(+ .box__icon--bottom) .underline::after {
     content: none;
   }
   &:has(> .box__icon) {
@@ -356,7 +360,7 @@
   position: relative;
   width: 100%;
 }
-.bg-card:after {
+.bg-card::after {
   content: '';
   display: block;
   --bg-card-width: calc(100cqw + var(--box-pd) * 2);

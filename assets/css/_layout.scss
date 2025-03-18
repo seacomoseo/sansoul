@@ -1,4 +1,4 @@
-*, :before, :after {
+*, ::before, ::after {
   box-sizing: border-box;
 }
 html {
@@ -185,8 +185,8 @@ legend {
     --form-control-color: green;
   }
 }
-[type='radio']:before,
-[type="checkbox"]:before {
+[type='radio']::before,
+[type="checkbox"]::before {
   content: '';
   width: 0.7em;
   height: 0.7em;
@@ -198,8 +198,8 @@ legend {
   // Windows High Contrast Mode
   background-color: CanvasText;
 }
-[type='radio']:checked:before,
-[type="checkbox"]:checked:before {
+[type='radio']:checked::before,
+[type="checkbox"]:checked::before {
   transform: scale(1);
 }
 [type='radio']:focus,
@@ -268,11 +268,12 @@ iframe {
   flex-grow: 0;
   display: inline-block;
 }
-.icon--li {
+.icon--text {
   @include font-title;
   white-space: nowrap;
   text-align: center;
   line-height: calc(var(--top-font) + #{1em *$line-height-title});
+  width: auto;
 }
 // [href^="/draws.#{$timestamp}.svg"] {
 //   color: $main;
@@ -295,7 +296,7 @@ pre {
 }
 [data-more] {
   position: relative;
-  &:before {
+  &::before {
     content: attr(data-more);
   }
   i {

@@ -52,7 +52,7 @@
   &:not(:has(> :nth-child(2))) {
     position: relative;
     .form__option {
-      &:before {
+      &::before {
         content: '';
         position: absolute;
         top: 0;
@@ -207,7 +207,7 @@
       // top: 0.6em;
       // height: calc(100% - 0.6em);
       height: 100%;
-      &:before {
+      &::before {
         content: '';
         position: absolute;
         top: 0;
@@ -257,7 +257,7 @@
     float: left;
     height: 2.5em;
     z-index: 1;
-    i:after {
+    i::after {
       @include font-base;
       text-transform: initial;
       font-size: 1rem;
@@ -292,7 +292,7 @@
     cursor: pointer;
     z-index: 2;
   }
-  .form__input:before {
+  .form__input::before {
     content: attr(data-placeholder);
     // font-size: 1em;
     @include font-button;

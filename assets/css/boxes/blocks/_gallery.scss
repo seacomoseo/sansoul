@@ -49,7 +49,7 @@
 .gallery__expand {
   position: relative;
   transform: none;
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 0;
@@ -60,13 +60,13 @@
   }
   // Remove button 3D styles
   &:not(#aux) {
-    &:after,
+    &::after,
     &:focus,
     &:active,
     &:hover,
-    &:focus:after,
-    &:active:after,
-    &:hover:after {
+    &:focus::after,
+    &:active::after,
+    &:hover::after {
       background-color: transparent;
       transform: none;
       @if $chamfer {
@@ -75,7 +75,7 @@
         border-radius: 0;
       }
     }
-    &:before {
+    &::before {
       @if $chamfer {
         clip-path: none;
       } @else {
@@ -177,7 +177,7 @@
     flex-grow: 1;
     width: calc(1em * var(--gallery-item-width));
     flex-grow: var(--gallery-item-width);
-    &:before {
+    &::before {
       content: '';
       display: block;
       padding-bottom: var(--gallery-item-height);
@@ -201,7 +201,7 @@
       font-size: 2em;
       z-index: 60;
     }
-    &, &:before {
+    &, &::before {
       z-index: auto;
     }
   }
