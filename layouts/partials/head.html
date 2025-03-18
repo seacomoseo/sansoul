@@ -12,7 +12,12 @@
   {{- end -}}
 {{- end -}}
 
-{{- $description  := .Description | default .Summary | truncate 155 | plainify | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` "" -}}
+{{- $description  := .Description
+  | default .Summary
+  | truncate 155
+  | plainify
+  | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` ""
+-}}
 {{- $image_og     := partial "functions/image-og" . -}}
 {{- $image        := $image_og.img -}}
 {{- $aas          := partial "functions/authors-article-sections" . -}}
@@ -90,6 +95,8 @@
     {{- if $config.others.cookies_legal -}}
       {{- $isCk = "${localStorage.controlcookieanalytics}" -}}
     {{- end }}
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
     <script>
       // GA4 base
       window.dataLayer = window.dataLayer || [];
@@ -129,7 +136,9 @@
 
 {{- /*  CSS STYLES  */ -}}
 {{- $css := partial "styles" . }}
-<link rel="stylesheet" href="{{ $css.RelPermalink }}">
+<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ $css.RelPermalink }}"></noscript>
+
 
 {{- /*  FAVICON  */ -}}
 {{- $favicon := resources.Get (print "/media/" ($config.favicon | default "base/icon.svg")) -}}
@@ -190,8 +199,15 @@
       {{- end -}}
     {{- end -}}
     {{- $google_url = print ($google_url | safeHTML) "&display=swap" }}
-    <link rel="preload" href="{{ $google_url }}" as="style">
     <link href="{{ $google_url }}" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="{{ $google_url }}" rel="stylesheet"></noscript>
+  {{- end -}}
+{{- end -}}
+
+{{- /*  SELF-HOSTED FONTS  */ -}}
+{{- $files := readDir "static/fonts" -}}
+{{- range $files -}}
+  {{- if ne ".DS_Store" .Name }}
+    <link rel="preload" href="/fonts/{{ .Name }}" as="font" type="font/woff2" crossorigin>
   {{- end -}}
 {{- end -}}
