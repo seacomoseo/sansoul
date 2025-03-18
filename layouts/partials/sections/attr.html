@@ -1,6 +1,13 @@
 {{/*  CLASS  */}}
 
-{{ $type := cond (not .body_class) (cond (not .modal) "section" "modal") "" }}
+{{ $type := "" }}
+{{ if not .body_class }}
+  {{ if .modal }}
+    {{ $type = "modal bg-black" }}
+  {{ else }}
+    {{ $type = "section" }}
+  {{ end }}
+{{ end }}
 
 {{/*  Key (lightbox need it)  */}}
 {{ $key_class  := print "section--" .key }}
