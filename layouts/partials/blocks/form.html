@@ -22,7 +22,9 @@
 {{- /*  Subject  */ -}}
 {{- $subject := .form.subject -}}
 {{- if not $subject -}}
-  {{- $page_emoji    := .Page.Params.emoji -}}
+  {{- $page_emoji    := .Page.Params.emoji
+    | default .Page.CurrentSection.Params.emoji
+  -}}
   {{- $section_name  := i18n "header" -}}
   {{- if .section.footer -}}
     {{- $section_name = i18n "footer" -}}
