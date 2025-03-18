@@ -27,16 +27,11 @@
   {{ if .modals }}
     {{ $modals_raw  := .modals }}
     {{ range $k, $v := .modals }}
-      {{ $mpn := partial "prev-next" (dict
+      {{ $modal := partial "prev-next" (dict
         "item"  .
         "items" $modals_raw
         "key"   $k
       ) }}
-      {{ $mpn = dict
-        "prev" (dict "id" $mpn.prev.id)
-        "next" (dict "id" $mpn.next.id)
-      }}
-      {{ $modal := merge . $mpn }}
       {{ $modals = $modals | append $modal }}
     {{ end }}
   {{ end }}
