@@ -16,7 +16,7 @@
     margin: 0;
     position: absolute;
     top: calc(50% - var(--icon-size) / 2);
-    left: calc(50% - var(--icon-size) / 2);
+    // left: calc(50% - var(--icon-size) / 2);
     z-index: 2;
   }
 }
@@ -60,6 +60,9 @@
   background-image: linear-gradient($main, transparent);
   &:has(+ .image__inner) {
     position: absolute;
+  }
+  + .box__icon--top {
+    color: var(--base);
   }
 }
 

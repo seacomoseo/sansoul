@@ -1,16 +1,16 @@
 {{- /*  SET STORE  */ -}}
 {{- $store := page.Store -}}
-{{- $store.Set "md_caps"   .md_caps   -}}
-{{- $store.Set "md_line"   .md_line   -}}
-{{- $store.Set "md_border" .md_border -}}
-{{- $store.Set "md_nav"    .md_nav    -}}
-{{- $store.Set "md_index"  .md_index  -}}
+{{- with .md_caps   }}{{ $store.Set "md_caps"   . }}{{ end -}}
+{{- with .md_line   }}{{ $store.Set "md_line"   . }}{{ end -}}
+{{- with .md_border }}{{ $store.Set "md_border" . }}{{ end -}}
+{{- with .md_nav    }}{{ $store.Set "md_nav"    . }}{{ end -}}
+{{- with .md_index  }}{{ $store.Set "md_index"  . }}{{ end -}}
 
 {{- /*  SM  */ -}}
 {{- $md_sm := .md_sm -}}
 {{- if eq .md_sm nil -}}
   {{- if .is_title_link -}}
-    {{- $md_sm := true -}}
+    {{- $md_sm = true -}}
   {{- end -}}
 {{- end -}}
 
@@ -52,8 +52,16 @@
 </div>
 
 {{- /*  DELETE STORE  */ -}}
-{{- $store.Delete "md_caps"   -}}
-{{- $store.Delete "md_line"   -}}
-{{- $store.Delete "md_border" -}}
-{{- $store.Delete "md_nav"    -}}
-{{- $store.Delete "md_index"  -}}
+{{- if .md_caps   }}{{ $store.Delete "md_caps"   }}{{ end -}}
+{{- if .md_line   }}{{ $store.Delete "md_line"   }}{{ end -}}
+{{- if .md_border }}{{ $store.Delete "md_border" }}{{ end -}}
+{{- if .md_nav    }}{{ $store.Delete "md_nav"    }}{{ end -}}
+{{- if .md_index -}}
+  {{- $store.Delete "md_index" -}}
+  {{- $store.Delete "h1"       -}}
+  {{- $store.Delete "h2"       -}}
+  {{- $store.Delete "h3"       -}}
+  {{- $store.Delete "h4"       -}}
+  {{- $store.Delete "h5"       -}}
+  {{- $store.Delete "h6"       -}}
+{{- end -}}

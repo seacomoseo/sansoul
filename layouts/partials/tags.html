@@ -15,7 +15,7 @@
       
         {{- if not $page.IsSection -}}
           {{- $parent := $page.CurrentSection -}}
-          {{- $icon    = $page.Params.icon | default $parent.Params.icon -}}
+          {{- $icon    = $parent.Params.icon -}}
           {{- $label   = $parent.Params.singular -}}
           {{- $link    = $parent.RelPermalink -}}
         {{- end -}}
@@ -83,8 +83,7 @@
 
       {{- else if eq .type "tax" -}}
 
-        {{- $parent_icons := .parent_icons -}}
-        {{- $taxonomies   := partial "functions/taxonomy-parents" $page -}}
+        {{- $taxonomies := partial "functions/taxonomy-parents" $page -}}
         {{- /*  Will check all taxonomies of this page... Or only one  */ -}}
         {{- with .tax -}}
           {{- if not (or (not .) (eq . "all")) -}}
@@ -93,7 +92,7 @@
         {{- end -}}
         {{- /*  Check  */ -}}
         {{- range $taxonomies -}}
-          {{- $t_icon  := cond (or (not .Params.icon) $parent_icons) .CurrentSection.Params.icon .Params.icon -}}
+          {{- $t_icon  := cond (not .Params.icon) .CurrentSection.Params.icon .Params.icon -}}
           {{- $t_label := .Title -}}
           {{- $t_link  := .RelPermalink -}}
           {{- $item    := dict "icon" $t_icon "label" $t_label "link" $t_link -}}

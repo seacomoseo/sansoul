@@ -205,9 +205,10 @@
 {{- end -}}
 
 {{- /*  SELF-HOSTED FONTS  */ -}}
-{{- $files := readDir "static/fonts" -}}
-{{- range $files -}}
-  {{- if ne ".DS_Store" .Name }}
-    <link rel="preload" href="/fonts/{{ .Name }}" as="font" type="font/woff2" crossorigin>
+{{ if fileExists "static/fonts" }}
+  {{- range readDir "static/fonts" -}}
+    {{- if ne ".DS_Store" .Name }}
+      <link rel="preload" href="/fonts/{{ .Name }}" as="font" type="font/woff2" crossorigin>
+    {{- end -}}
   {{- end -}}
-{{- end -}}
+{{ end }}
