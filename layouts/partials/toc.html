@@ -12,9 +12,8 @@
         {{- end -}}
         {{- /*  link  */ -}}
         {{- partial "link" (dict
-          "button" "none"
-          "label"  (.Title | safeHTML)
-          "link"   (print "#" $id)
+          "label" (.Title | safeHTML)
+          "link"  (print "#" $id)
         ) -}}
         {{- partial "toc" . }}
       </li>

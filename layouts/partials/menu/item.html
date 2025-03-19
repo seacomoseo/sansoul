@@ -31,9 +31,10 @@
       {{- if .lang | or ((or .icon .emoji) | and (not .label)) -}}
         {{- $hide_icons = false -}}
       {{- end -}}
-      {{- $icon  := cond (not $hide_icons) .icon "" -}}
-      {{- $emoji := cond (not $hide_icons) .emoji "" -}}
-      {{- $label := .menu_label | default .label | markdownify -}}
+      {{- $icon   := cond (not $hide_icons) .icon "" -}}
+      {{- $emoji  := cond (not $hide_icons) .emoji "" -}}
+      {{- $label  := .menu_label | default .label | markdownify -}}
+      {{- $anchor := .anchor | default "auto" -}}
 
       {{- if or $label $icon $emoji -}}
 
@@ -69,7 +70,7 @@
             "icon"   $icon
             "emoji"  $emoji
             "label"  $label
-            "anchor" .anchor
+            "anchor" $anchor
             "link"   .link
             "lock"   .ofuscate
           ) -}}

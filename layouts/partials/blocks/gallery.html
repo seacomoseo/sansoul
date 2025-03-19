@@ -64,7 +64,7 @@
         "class"  "gallery__expand"
         "button" (.button | default "light")
         "icon"   (cond (eq .pin "none") "" .pin)
-        "anchor" ""
+        "anchor" (.anchor | default "auto")
         "link"   .link
         "lock"   .ofuscate
       ) -}}
@@ -81,7 +81,7 @@
       "swap"   .swap
       "icon"   .icon
       "label"  .label
-      "anchor" .anchor
+      "anchor" (.anchor | default "auto")
       "lock"   .ofuscate
     ) }}
   </div>

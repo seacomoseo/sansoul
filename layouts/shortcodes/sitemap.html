@@ -7,7 +7,7 @@
     {{ partial "link" (dict
       "class"  "md__heading-link"
       "label"  .Title
-      "anchor" (partial "functions/anchor-page" .)
+      "anchor" "auto"
       "link"   .RelPermalink
       "lock"   .Params.noindex
     ) }}
@@ -28,7 +28,7 @@
             "icon"   $icon
             "label"  .Title
             "link"   .RelPermalink
-            "anchor" (partial "functions/anchor-page" .)
+            "anchor" "auto"
             "lock"   .Params.noindex
           ) -}}
         </li>

@@ -35,12 +35,13 @@
 {{- $href      := "" -}}
 {{- $label     := "" -}}
 
-{{- $button      := cond (eq .button "none") "" .button -}}
-{{- $link        := cond (eq .link   "none") "" .link -}}
-{{- $lock        := .lock | default false -}}
-{{- $is_lightbox := false -}}
-{{- $is_external := false -}}
-{{- $anchor_page := "" -}}
+{{- $button         := cond (eq .button "none") "" .button -}}
+{{- $link           := cond (eq .link   "none") "" .link -}}
+{{- $lock           := .lock | default false -}}
+{{- $is_lightbox    := false -}}
+{{- $is_external    := false -}}
+{{- $is_auto_anchor := eq .anchor "auto" -}}
+{{- $anchor         := cond $is_auto_anchor "" .anchor -}}
 
 
 {{- /*  LINK  */ -}}
@@ -48,25 +49,28 @@
   {{- $is_lightbox           = findRE `\.(jpe?g|png|gif|webp|svg)` $link -}}
   {{- $is_external           = hasPrefix $link "http" -}}
   {{- $is_this_anchor_link  := hasPrefix $link "#" -}}
-  {{- $is_other_anchor_link := hasPrefix $link "/#" -}}
+  {{- $is_other_anchor_link := $link | findRE `^.+#` -}}
 
   {{/*  {{ partial "warn" . }}  */}}
 
   {{- /*  get page title and page lock  */ -}}
-  {{- if and (not .anchor) (not .lock) (not $is_external) -}}
+  {{- if and (not .lock) (not $is_external) -}}
     {{- if $is_this_anchor_link -}}
-      {{- /*  get modal anchor by store page  */ -}}
-      {{- $link_cleaned := $link | replaceRE `^#` "" -}}
-      {{- $anchor_page   = page.Store.Get $link_cleaned -}}
-    {{- else if not $is_other_anchor_link -}}
+      {{- if $is_auto_anchor -}}
+        {{- /*  get section/modal anchor by store page  */ -}}
+        {{- $link_cleaned := $link | replaceRE `^#` "" -}}
+        {{- $anchor        = page.Store.Get $link_cleaned -}}
+      {{- end -}}
+    {{- else -}}
       {{- /*  get page anchor  */ -}}
-      {{- $pages         := where site.Pages "RelPermalink" $link -}}
+      {{- $link_cleaned  := $link | replaceRE `#.*` "" -}}
+      {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
       {{- $page_internal := index $pages 0 | default site.Home -}}
       {{- with $page_internal -}}
         {{- if .Params.noindex -}}
           {{- $lock = true -}}
-        {{- else -}}
-          {{- $anchor_page = partial "functions/anchor-page" . -}}
+        {{- else if $is_auto_anchor -}}
+          {{- $anchor = partial "functions/anchor-page" . -}}
         {{- end -}}
       {{- else -}}
         {{- $lock = true -}}
@@ -86,9 +90,15 @@
 
   {{- /*  media link  */ -}}
   {{- with $link -}}
-    {{- $slash_prefix := hasPrefix . "/" -}}
-    {{- if and (not $slash_prefix) (not $is_external) (not $is_this_anchor_link) (not $is_other_anchor_link) -}}
-      {{- with resources.Get ((print "/media/" .) | replaceRE `\#.*$` "") -}}
+    {{- $is_slash_prefix := hasPrefix . "/" -}}
+    {{- if and
+      (not $is_slash_prefix)
+      (not $is_external)
+      (not $is_this_anchor_link)
+      (not $is_other_anchor_link)
+    -}}
+      {{- $src := print "/media/" . | replaceRE `\#.*$` "" -}}
+      {{- with resources.Get $src -}}
         {{- $link = .RelPermalink -}}
       {{- end -}}
     {{- end -}}
@@ -161,7 +171,7 @@
 
 
 {{- /*  LABEL  */ -}}
-{{- $label = .anchor | default $anchor_page | default .anchor2 | default .label -}}
+{{- $label = $anchor | default .anchor2 | default .label -}}
 {{- if $label -}}
   {{- $sub_tag   := "" -}}
   {{- $sub_class := "" -}}

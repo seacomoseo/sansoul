@@ -155,7 +155,7 @@
         "swap"    .swap
         "icon"    .pin
         "label"   (.label   | default (i18n "more") | markdownify)
-        "anchor"  (.anchor                          | markdownify)
+        "anchor"  (.anchor  | default "auto"        | markdownify)
         "anchor2" (.hanchor | default .title        | markdownify)
         "link"    .link
         "lock"    .ofuscate
@@ -168,13 +168,14 @@
         <div class="modal__nav buttons">
           {{- with $.prev }}
             {{ partial "link" (dict
-              "class" "modal__prev"
+              "class"  "modal__prev"
               "button" "cta"
-              "dot"   true
-              "icon"  (site.Data.styles.icons.left | default "chevron-left")
-              "emoji" "⬅️"
-              "label" (i18n "prev")
-              "link"  (print "#" .id)
+              "dot"    true
+              "icon"   (site.Data.styles.icons.left | default "chevron-left")
+              "emoji"  "⬅️"
+              "label"  (i18n "prev")
+              "anchor" "auto"
+              "link"   (print "#" .id)
             ) -}}
           {{- end }}
           {{ partial "link" (dict
@@ -193,6 +194,7 @@
               "icon"   (site.Data.styles.icons.right | default "chevron-right")
               "emoji"  "➡️"
               "label"  (i18n "next")
+              "anchor" "auto"
               "link"   (print "#" .id)
             ) -}}
           {{- end }}

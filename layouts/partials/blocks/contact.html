@@ -17,6 +17,7 @@
           {{- $icon    := .icon -}}
           {{- $emoji   := "" -}}
           {{- $label   := .label -}}
+          {{- $anchor  := .anchor | default "auto" -}}
           {{- $noindex := .ofuscate -}}
 
           {{- $is_phone_or_wa  := in (slice "phone" "whatsapp") .type -}}
@@ -96,7 +97,7 @@
                 "icon"   $icon
                 "emoji"  $emoji
                 "label"  $label
-                "anchor" .anchor
+                "anchor" $anchor
                 "link"   $link
                 "lock"   $noindex
               ) -}}

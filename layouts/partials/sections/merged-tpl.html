@@ -44,7 +44,7 @@
       {{ $expand := dict "key" $key "k" $k "id" $id_m "modal" true "bgcp" "dark" }}
       {{ $modal   = merge $each $modal $expand }}
       {{ $modals  = $modals | append $modal }}
-      {{/*  Set id > hanchor/title in page store for anchor links to modals  */}}
+      {{/*  Set id > hanchor/title in page store for anchor links to modal  */}}
       {{ $anchor := .hanchor | default .title }}
       {{ page.Store.Set $id_m $anchor }}
     {{ end }}
@@ -64,6 +64,10 @@
     {{ end }}
 
   {{ end }}
+
+  {{/*  Set id > hanchor/title in page store for anchor links to section  */}}
+  {{ $anchor := .hanchor | default .title }}
+  {{ page.Store.Set $id $anchor }}
 
   {{/*  END  */}}
   {{ $header  := not $key }}

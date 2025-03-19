@@ -1,5 +1,6 @@
 {{- $label  := .Text -}}
 {{- $anchor := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
+{{- $title  := "" -}}
 {{- $meta   := "" -}}
 {{- with .Title -}}
   {{- with findRE `(?s).*\[.+?\].*` . 1 -}}
@@ -27,6 +28,12 @@
 {{- /*  blank  */ -}}
 {{- $blank := in $meta "blank" -}}
 
+{{- /*  icon outside  */ -}}
+{{- $outside := partial "functions/icon-outside" $label -}}
+{{- $label   := $outside.text -}}
+{{- $icon    := $outside.icon -}}
+{{- $pin     := $outside.pin -}}
+
 {{- /*  lock  */ -}}
 {{- $lock := cond (in $meta "nofollow") true nil -}}
 {{- if in $meta "homefollow" -}}
@@ -34,12 +41,11 @@
     {{- $lock = true -}}
   {{- end -}}
 {{- end -}}
-
-{{- /*  icon outside  */ -}}
-{{- $outside := partial "functions/icon-outside" $label -}}
-{{- $label   := $outside.text -}}
-{{- $icon    := $outside.icon -}}
-{{- $pin     := $outside.pin -}}
+{{- if $lock -}}
+  {{- /*  change anchor by title and remove  */ -}}
+  {{- $title  = $anchor -}}
+  {{- $anchor = "" -}}
+{{- end -}}
 
 {{- /*  link  */ -}}
 {{- partial "link" (dict
@@ -52,6 +58,7 @@
   "pin"    $pin
   "label"  $label
   "anchor" $anchor
+  "title"  $title
   "link"   .Destination
   "lock"   $lock
   "blank"  $blank

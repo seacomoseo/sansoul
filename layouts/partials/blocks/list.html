@@ -159,35 +159,13 @@
             {{- $tpl = merge $tpl (dict . "") -}}
           {{- end -}}
         {{- end -}}
-        {{- partial "boxes/items"
-          (merge
-            $e
-            (dict
-              "box"        $tpl
-              "boxes"      $boxes
-              "list_pages" true
-            )
-          )
+        {{- $to_merge := dict
+          "box"        $tpl
+          "boxes"      $boxes
+          "list_pages" true
         -}}
-
-        {{- /* LAST BUTTON  */ -}}
-        {{- /*
-        {{- if and (not page.IsSection) (gt (len $pages) (len $firsts_pages)) }}
-          <div class="buttons">
-            {{- partial "link"
-              (dict
-                "button" "cta"
-                "icon"   $parent.Params.icon
-                "emoji"  "➕"
-                "label"  (i18n "more")
-                "link"   $parent.RelPermalink
-                "anchor" (print (i18n "more") " " $parent.Title)
-                "lock"   true
-              )
-            }}
-          </div>
-        {{- end -}}
-        */ -}}
+        {{- $merged := merge $e $to_merge -}}
+        {{- partial "boxes/items" $merged -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

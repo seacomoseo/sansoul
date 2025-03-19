@@ -1,3 +1,3 @@
 {{- with page.RawContent -}}
-  {{- partial "functions/md" . -}}
+  {{- . | site.Home.RenderString (dict "display" "inline") -}}
 {{- end -}}

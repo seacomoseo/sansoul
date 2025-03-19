@@ -25,9 +25,19 @@
   {{- end -}}
 {{- end -}}
 
+{{- /*  MD  */ -}}
+{{- $md := partial "functions/md" .md -}}
+
+
+{{ if eq page.RelPermalink "/rejilla-adaptable-sin-plugins-html-css/" }}
+{{ partial "warn" $md }}
+{{ end }}
+
+
 {{- /*  LATEX  */ -}}
 {{- $md_latex := "" -}}
-{{- if .md | findRE "$$|\\[|\\(" -}}
+{{/*  {{- partial "warn" .md -}}  */}}
+{{- if $md | findRE `\$\$|\\\[|\\\(` -}}
   {{- $md_latex = "latex" -}}
 {{- end -}}
 
@@ -48,7 +58,7 @@
 {{- /* HTML */}}
 <div {{- $md_attrs }}>
   {{- /* <div class="float"></div><div class="float float--r"></div> */}}
-  {{ partial "functions/md" .md }}
+  {{ $md }}
 </div>
 
 {{- /*  DELETE STORE  */ -}}

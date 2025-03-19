@@ -296,12 +296,12 @@ pre {
 }
 [data-more] {
   position: relative;
-  &::before {
-    content: attr(data-more);
-    order: 1;
-  }
-  i {
+  > i,
+  > i * {
     @include ofuscate;
+  }
+  &::after {
+    content: attr(data-more);
   }
 }
 

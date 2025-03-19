@@ -40,6 +40,7 @@
         {{- $icon    := .icon -}}
         {{- $emoji   := "" -}}
         {{- $label   := .label -}}
+        {{- $anchor  := .anchor | default "auto" -}}
         {{- $noindex := .ofuscate -}}
 
         {{- if in (slice "phone" "whatsapp") .type -}}
@@ -80,7 +81,7 @@
           "icon"   $icon
           "emoji"  $emoji
           "label"  $label
-          "anchor" .anchor
+          "anchor" $anchor
           "link"   $link
           "lock"   $noindex
         ) -}}
