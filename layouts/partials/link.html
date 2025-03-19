@@ -45,22 +45,22 @@
 
 {{- /*  LINK  */ -}}
 {{- if $link -}}
-  {{- $is_lightbox     = findRE `\.(jpe?g|png|gif|webp|svg)` $link -}}
-  {{- $is_external     = hasPrefix $link "http" -}}
-  {{- $is_anchor_link := hasPrefix $link "#" -}}
+  {{- $is_lightbox           = findRE `\.(jpe?g|png|gif|webp|svg)` $link -}}
+  {{- $is_external           = hasPrefix $link "http" -}}
+  {{- $is_this_anchor_link  := hasPrefix $link "#" -}}
+  {{- $is_other_anchor_link := hasPrefix $link "/#" -}}
 
   {{/*  {{ partial "warn" . }}  */}}
 
   {{- /*  get page title and page lock  */ -}}
   {{- if and (not .anchor) (not .lock) (not $is_external) -}}
-    {{- if $is_anchor_link -}}
+    {{- if $is_this_anchor_link -}}
       {{- /*  get modal anchor by store page  */ -}}
       {{- $link_cleaned := $link | replaceRE `^#` "" -}}
       {{- $anchor_page   = page.Store.Get $link_cleaned -}}
-    {{- else -}}
+    {{- else if not $is_other_anchor_link -}}
       {{- /*  get page anchor  */ -}}
-      {{- $link_cleaned  := $link | replaceRE `#.*` "" -}}
-      {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
+      {{- $pages         := where site.Pages "RelPermalink" $link -}}
       {{- $page_internal := index $pages 0 | default site.Home -}}
       {{- with $page_internal -}}
         {{- if .Params.noindex -}}
@@ -87,7 +87,7 @@
   {{- /*  media link  */ -}}
   {{- with $link -}}
     {{- $slash_prefix := hasPrefix . "/" -}}
-    {{- if and (not $is_external) (not $is_anchor_link) (not $slash_prefix) -}}
+    {{- if and (not $slash_prefix) (not $is_external) (not $is_this_anchor_link) (not $is_other_anchor_link) -}}
       {{- with resources.Get ((print "/media/" .) | replaceRE `\#.*$` "") -}}
         {{- $link = .RelPermalink -}}
       {{- end -}}
