@@ -25,6 +25,12 @@
   {{- end -}}
 {{- end -}}
 
+{{- /*  LATEX  */ -}}
+{{- $md_latex := "" -}}
+{{- if .md | findRE "$$|\\[|\\(" -}}
+  {{- $md_latex = "latex" -}}
+{{- end -}}
+
 {{- /*  CLASS  */ -}}
 {{- $md_class := slice
   "box__md"
@@ -32,6 +38,7 @@
   (cond (not $md_align)    "" (print "align-"     $md_align))
   (cond (not .md_align_vl) "" (print "align--vl-" .md_align_vl))
   (cond (not $md_sm)       "" "box__md--sm")
+  $md_latex
 -}}
 
 {{- /*  ATTRIBUTES  */ -}}
