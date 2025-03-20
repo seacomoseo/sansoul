@@ -38,7 +38,8 @@ export function initSimpleLightbox () {
       query: ':is(.menu, .section, .modal):has([data-lightbox])',
       doStart: gallery => loadScript('/js/simple-lightbox.min.js')
         .then(lightbox)
-        .catch(console.error)
+        .catch(console.error),
+      end: true
     })
   }
 }

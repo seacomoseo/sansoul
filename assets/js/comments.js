@@ -30,11 +30,10 @@ export function initComments () {
     rootMargin: '0%',
     query: '#disqus_thread',
     // () => document.querySelector('.comments__show').remove(),
-    doOnLoad: () => {
-    },
     doStart: () => {
       loadComments()
       // showComments()
-    }
+    },
+    end: true
   })
 }

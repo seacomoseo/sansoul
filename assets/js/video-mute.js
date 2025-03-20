@@ -43,7 +43,8 @@ export function initVideoMute () {
         e.autoplay = true
         e.playsinline = true
         e.play()
-      }
+      },
+      end: true
     })
   })
 }

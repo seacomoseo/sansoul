@@ -16,6 +16,7 @@ export function initGss () {
           document.querySelectorAll('.row-header-shim').forEach(e => e.remove())
         })
         .catch(console.error)
-    }
+    },
+    end: true
   })
 }

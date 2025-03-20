@@ -1,4 +1,3 @@
-// google spreadsheets
 import { scrollShot } from './scroll-shot'
 import { loadScript } from './load-script'
 
@@ -20,6 +19,7 @@ export function initLatex () {
           }
         })
         .catch(console.error)
-    }
+    },
+    end: true
   })
 }

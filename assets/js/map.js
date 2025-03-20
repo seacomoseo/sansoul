@@ -57,6 +57,6 @@ export function initMap () {
         .then(() => { mapStart(mapDiv) })
         .catch(console.error)
     },
-    end: null // For unobserve
+    end: true
   })
 }
