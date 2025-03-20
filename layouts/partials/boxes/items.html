@@ -8,7 +8,9 @@
 {{- $deep    := .deep -}}
 {{- $level   := .level -}}
 {{- if or .title .hanchor -}}
-  {{- $level  = add (.hn | default .box.hn | default $level) 1 -}}
+  {{- $hn     := cond (eq .hn     "p") 0 .hn -}}
+  {{- $box_hn := cond (eq .box.hn "p") 0 .box.hn -}}
+  {{- $level   = add ($hn | default $box_hn | default $level | int) 1 -}}
 {{- end -}}
 
 {{- $boxes_wrap  := or

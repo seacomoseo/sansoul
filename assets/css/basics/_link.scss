@@ -16,11 +16,10 @@
   background-size: 0 100%;
   transition: background-size, color;
   transition-duration: .3s;
-  &:hover,
-  &:focus {
+  &#{$hover-focus} {
     @include link-hover;
   }
-  &:active {
+  &#{$active} {
     @include link-active;
   }
 }

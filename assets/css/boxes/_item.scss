@@ -21,9 +21,8 @@
   filter: none;
 }
 
-// Hover, focus and active when only a box-go link
-// direct child without brothers
-.box:has(> .box-go):not(:has(> .box-go ~ .box-go)).bg:not(.box--hide-shadow) {
+// Hover, focus and active when only a box--go link without more childs
+.box--go.bg:not(.box--hide-shadow) {
   transition: filter .1s, transform .1s;
   transform: translateY(calc(var(--box-offset) * -1));
   @if $buttons-3d {
@@ -261,22 +260,8 @@ svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right) *)
 
 
 // Link
-.box:has(> .box-go):not(:has(> .box-go ~ .box-go)) {
+.box--go {
   cursor: pointer;
-  // Hover
-  &:has(.search__result-item-link:focus),
-  &:hover,
-  &:focus {
-    .box__link {
-      @include link-hover;
-    }
-  }
-  // Active
-  &:active {
-    .box__link {
-      @include link-active;
-    }
-  }
 }
 
 // Subtitle

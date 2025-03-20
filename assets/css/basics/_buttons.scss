@@ -117,14 +117,7 @@
 // Hover, Focus and Active
 
 .button {
-  &:is(
-    :hover,
-    :focus,
-    .box:has(> .box-go):not(:has(> .box-go ~ .box-go)):where(
-      :hover,
-      :focus
-    ) > .box__button
-  ) {
+  &#{$hover-focus} {
     @if $buttons-outline {
       color: var(--base);
     } @else {
@@ -146,11 +139,8 @@
       }
     }
   }
-  &:is(
-    :active,
-    .box:has(> .box-go):not(:has(> .box-go ~ .box-go)):active > .box__button,
-    .menu__button:where(.menu__item--active > *):not(:hover)
-  ) {
+  &#{$active},
+  &.menu__button:where(.menu__item--active > *):not(:hover) {
     @if $buttons-outline {
       color: var(--base);
     } @else {

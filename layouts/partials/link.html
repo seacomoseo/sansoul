@@ -128,8 +128,13 @@
   {{- $link_swap := cond (not .swap) "" "link--swap" -}}
   {{- $class_type = slice "link" $link_swap -}}
 {{- end -}}
+{{- /*  class type  */ -}}
 {{- with $class_type -}}
   {{- $class = . | append $class -}}
+{{- end -}}
+{{- /*  GA4  */ -}}
+{{- if .ga4 -}}
+  {{- $class = $class | append "ga4" -}}
 {{- end -}}
 
 

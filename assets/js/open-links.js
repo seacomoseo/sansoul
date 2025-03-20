@@ -62,7 +62,7 @@ export function initOpenLinks () {
         }
       } else {
         // BOX LINKS
-        const boxLink = e.target.closest('.box:has(> .box-go):not(:has(> .box-go ~ .box-go))')
+        const boxLink = e.target.closest('.box--go')
         if (boxLink) boxLink.querySelector('.button, .link').click()
       }
     }

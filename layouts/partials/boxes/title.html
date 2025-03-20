@@ -38,7 +38,6 @@
   {{- /* TITLE CLASS  */ -}}
   {{- $underline := cond (and (not $link) .underline) "underline" "" -}}
   {{- $uppercase := cond (not .uppercase     | not)   "uppercase" "" -}}
-  {{- $box_go    := cond (not .is_title_link | not)   "box-go"    "" -}}
   {{- $hide      := cond (not .title)                 "hide"      "" -}}
   {{- if not .title -}}
     {{- $underline = "" -}}
@@ -49,7 +48,6 @@
     "box__title"
     $underline
     $uppercase
-    $box_go
     $hide
     $hs
   -}}
