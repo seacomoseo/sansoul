@@ -199,7 +199,7 @@
 
     {{- /*  Only one link (box--go)  */ -}}
     {{- if not .zero -}}
-      {{- $links := $inbox | findRE `<a .*?href=| data-(h|b)=| type="submit"` -}}
+      {{- $links := $inbox | findRE `<a .*?href=| data-(h|b)=| data-lightbox=| type="submit"` -}}
       {{- $ool   := eq (len $links) 1 -}}
       {{- if $ool -}}
         {{- $ool  = dict "only_one_link" true -}}
