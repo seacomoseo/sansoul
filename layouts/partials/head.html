@@ -84,6 +84,10 @@
   <meta name="google-site-verification" content="{{ . }}">
 {{- end -}}
 
+
+{{/*  LOADER  */}}
+{{ partial "head-loader" . }}
+
 {{- /*  GOOGLE ANALYTICS  */ -}}
 {{- if hugo.IsProduction -}}
   {{- with site.Params.google_analytics -}}
@@ -121,7 +125,7 @@
       if (!isBot && !isPs && isCk) googleAnalytics()
     </script>
   {{- end -}}
-{{- else -}}
+{{- else }}
   <script>
     function gtag(...e) {
       console.log(...e)
@@ -136,7 +140,7 @@
 
 {{- /*  CSS STYLES  */ -}}
 {{- $css := partial "styles" . }}
-<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.add('css-loaded')">
 <noscript><link rel="stylesheet" href="{{ $css.RelPermalink }}"></noscript>
 
 

@@ -99,6 +99,22 @@
     {{- $footer      = index (last 1 .) 0 -}}
   {{- end -}}
 
+  {{- /*  LOADER  */}}
+  {{- $loader_bg := "" -}}
+  {{- if or (eq $back_color "white") (in $back_color "light") -}}
+    {{- $loader_bg = site.Data.styles.colors.base.light | default "#eee" -}}
+  {{- else -}}
+    {{- $loader_bg = site.Data.styles.colors.base.dark  | default "333" -}}
+  {{- end -}}
+  {{- $loader_main  := site.Data.styles.colors.main.color | default "#577399" -}}
+  {{- $loader_cta   := site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399" -}}
+  {{- $loader_style := print `style="`
+    "--loader-bg:" $loader_bg ";"
+    "--loader-main: " $loader_main ";"
+    "--loader-cta: " $loader_cta `"`
+    | safeHTMLAttr
+  -}}
+
   {{- /*  HEAD  */}}
   <head>
     {{- partial "head" . -}}
@@ -107,6 +123,12 @@
 
   {{- /*  BODY  */}}
   <body {{- $body_attr }}>
+
+
+    {{- /*  LOADER  */}}
+    <div id="bg-loader" {{ $loader_style }}>
+      <div class="loader"></div>
+    </div>
 
     {{- /*  BACKGROUND  */ -}}
     {{- partial "back" $back -}}
