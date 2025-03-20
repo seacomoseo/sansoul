@@ -48,10 +48,10 @@
 
 {{ $class := slice
   "box"
-  (cond .main                      "" (print "box--" (add .key 1)))
-  (cond (not .main)                "" "container")
-  (cond (not .main)                "" (print "container--" .container))
-  (cond (not (.main | and .modal)) "" "modal__container")
+  (cond .zero                      "" (print "box--" (add .key 1)))
+  (cond (not .zero)                "" "container")
+  (cond (not .zero)                "" (print "container--" .container))
+  (cond (not (.zero | and .modal)) "" "modal__container")
   (cond (not .align)               "" (print "align-" .align))
   (cond (not .align_y)             "" (print "align-self-" .align_y))
   (cond (not .align_vl)            "" (print "align--vl-" .align_vl))

@@ -17,7 +17,7 @@
 {{- /*  ALIGN  */ -}}
 {{- $md_align  := .md_align -}}
 {{- if not .md_align -}}
-  {{- if and (not .align) (not .header) .main -}}
+  {{- if and (not .align) (not .header) .zero -}}
     {{- /*  if container small  */ -}}
     {{- if in (slice "xs" "sm") .container -}}
       {{- $md_align = "left" -}}

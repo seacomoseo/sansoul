@@ -3,10 +3,11 @@
 
     {{- $items := slice -}}
     {{- $logo  := "" -}}
+    {{- $_lang := index . page.Lang -}}
     {{- if .logo -}}
-      {{- $logo = .image | default (index . page.Lang).image -}}
+      {{- $logo = .image | default $_lang.image -}}
     {{- end -}}
-    {{- $custom := .items | default (index . page.Lang).items -}}
+    {{- $custom := .items | default $_lang.items -}}
 
     {{- /*  ITEM HOME LINK  */ -}}
     {{- if not $logo -}}

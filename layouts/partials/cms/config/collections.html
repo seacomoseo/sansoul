@@ -76,6 +76,11 @@
     `~P_IMAGE`
     `~BOX_ICON_ID`
   }}
+  {{ if and (ne .Params.base "article") (ne .Params.base "event") }}
+    {{ $fields = $fields | append
+      `~P_WEIGHT`
+    }}
+  {{ end }}
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
       `~P_DRAFT`
