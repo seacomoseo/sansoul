@@ -1,24 +1,22 @@
-{{- $review := . -}}
-
-{{- if .slider }}
-  <div class="slider box__block" {{ with .interval }}data-interval="{{ . }}"{{ end }}>
+{{- if .review.slider }}
+  <div class="slider box__block" {{ with .review.interval }}data-interval="{{ . }}"{{ end }}>
 {{- end }}
 
 <div class="reviews {{- if .slider }} slider__track{{- else }} box__block{{ end }}">
 
   {{- /* REVIEWS CLASS  */ -}}
-  {{- $slider     := cond (not .slider) "" " slider__items" -}}
+  {{- $slider     := cond (not .review.slider) "" " slider__items" -}}
   {{- $show       := cond (not site.Data.config.others.show) "" " show" -}}
   {{- $cols_class := print "boxes" $slider $show -}}
 
 
   {{- /* REVIEWS STYLE  */ -}}
-  {{- $cols_vl   := .cols | default 1 -}}
-  {{- if eq .cols 0 -}}
+  {{- $cols_vl   := .review.cols | default 1 -}}
+  {{- if eq .review.cols 0 -}}
     {{- $cols_vl  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
   {{- end -}}
-  {{- $cols_vs   := .cols_vs | default 1 -}}
-  {{- if eq .cols_vs 0 -}}
+  {{- $cols_vs   := .review.cols_vs | default 1 -}}
+  {{- if eq .review.cols_vs 0 -}}
     {{- $cols_vs  = cond (le (len .reviews) 6) (len .reviews) 3 -}}
   {{- end -}}
   {{- $col_vl := cond (eq $cols_vl 1) "" (print "--cols-vl:" $cols_vl) -}}
@@ -36,7 +34,7 @@
   {{- /*  HTML  */}}
   <div {{- $attrs }}>
     {{- range .reviews -}}
-      {{- with merge $review . -}}
+      {{- with merge $.review . -}}
 
         {{- /* REVIEW ITEM CLASS  */ -}}
         {{- $bgc      := partial "functions/color-background" (dict "child" .color "parent" $.bgcp) -}}

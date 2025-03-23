@@ -115,6 +115,35 @@
   .space
 }}
 
+{{/*  sort  */}}
+{{ $sort := .sort
+  | default slice
+  | append
+  "image"
+  "title"
+  "icon_bottom"
+  "subtitle"
+  "price"
+  "md"
+
+  "steps"
+  "gallery"
+  "list"
+  "accordion"
+  "reviews"
+  "social"
+  "contact"
+  "form"
+  "map"
+  "gss"
+  "boxes"
+
+  "tags"
+  "button"
+  | uniq
+}}
+{{ partial "warn" $sort }}
+
 {{/*  merge  */}}
 {{ $to_merge := dict
   "Page"           $page
@@ -137,8 +166,10 @@
   "is_button_hide" $is_button_hide
   "is_button_link" $is_button_link
   "box_wrap"       $box_wrap
+  "sort"           $sort
   "prev"           nil
   "next"           nil
+  "limages"        nil
 }}
 {{ $box = merge . $to_merge }}
 

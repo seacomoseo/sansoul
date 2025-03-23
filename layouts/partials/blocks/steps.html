@@ -1,11 +1,11 @@
 {{- $icon_size := "" -}}
-{{- with .icon_size -}}
+{{- with .step.icon_size -}}
   {{- $icon_size = print " steps--size-" . -}}
 {{- end -}}
-{{- $hn        := $.hn | default (add $.level 1) }}
-{{- $border    := print " " (.border    | default "alt") -}}
-{{- $uppercase := cond (not .uppercase) "" "uppercase" -}}
-{{- $underline := cond (not .underline) "" "underline" -}}
+{{- $hn        := .step.hn | default (add .level 1) }}
+{{- $border    := print " " (.step.border    | default "alt") -}}
+{{- $uppercase := cond (not .step.uppercase) "" "uppercase" -}}
+{{- $underline := cond (not .step.underline) "" "underline" -}}
 {{- $show      := cond (not site.Data.config.others.show) "" " show" }}
 <ul class="steps box__block">
   {{- range $key, $value := .steps }}
@@ -17,7 +17,7 @@
               {{- partial "media/_" (dict "class" "step__figure-image" "src" . "max" 342 "ratio" "1/1") -}}
             {{- end -}}
             {{- with .icon }}
-              {{ partial "icon" (dict "class" "step__icon" "icon" (. | default `forward`)) -}}
+              {{ partial "icon" (dict "class" "step__icon" "icon" (. | default "forward")) -}}
             {{- end -}}
             {{- if and (not .image) (not .icon) }}
               <div class="step__number">{{ add $key 1 }}</div>
@@ -29,7 +29,7 @@
         {{- with .title -}}
           {{- $hn_class := slice
             "step__title"
-            (print "h" ($.hs | default 4))
+            (print "h" ($.step.hs | default 4))
             $uppercase
             $underline
           -}}
