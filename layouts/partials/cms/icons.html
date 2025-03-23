@@ -3,7 +3,7 @@
 {{ $icon_type  := site.Data.styles.icons.type  | default "" }}
 {{ $sharp      := cond (and $icon_sharp (ne $icon_type "duotone")) "sharp-" "" }}
 {{ $type       := $icon_type | default "solid" }}
-{{ $icons      := partialCached (print "draws/icons/" $sharp $type ".svg") . }}
+{{ $icons      := partial (print "draws/icons/" $sharp $type ".svg") . }}
 {{ $default    := site.Data.utilities.defaults }}
 
 {{ $names := slice

@@ -39,13 +39,13 @@
     -}}
   {{- end -}}
   {{- range $resources -}}
-    {{- $string   := partial .partial page | string -}}
+    {{- $string   := partialCached .partial page | string -}}
     {{- $resource := resources.FromString .path $string -}}
     {{- $resource.Publish -}}
   {{- end -}}
 
   {{/*  PROCESS ALL PDF's  */}}
-  {{- $pdfs := partial "functions/media-files" (dict "ext" (slice "pdf")) -}}
+  {{- $pdfs := partialCached "functions/media-files" (dict "ext" (slice "pdf")) -}}
   {{- range $pdfs -}}
     {{- $pdf := resources.Get . -}}
     {{- $pdf  = $pdf.RelPermalink -}}
