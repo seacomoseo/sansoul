@@ -31,7 +31,7 @@ export function initCookies () {
 
       // If acept all or analytics ckecked
       const aceptAll = c.classList.contains('cookies__button--all')
-      const analyticsCkecked = document.querySelector('.cookies [value="analytics"]').checked
+      const analyticsCkecked = document.querySelector('.cookies [value="analytics"]')?.checked
       if (aceptAll || analyticsCkecked) {
         localStorage.controlcookieanalytics = localStorage.controlcookieanalytics || 0
         localStorage.controlcookieanalytics++
