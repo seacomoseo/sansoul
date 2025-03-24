@@ -2,7 +2,7 @@
   <div class="slider box__block" {{ with .review.interval }}data-interval="{{ . }}"{{ end }}>
 {{- end }}
 
-<div class="reviews {{- if .slider }} slider__track{{- else }} box__block{{ end }}">
+<div class="reviews {{- if .review.slider }} slider__track{{- else }} box__block{{ end }}">
 
   {{- /* REVIEWS CLASS  */ -}}
   {{- $slider     := cond (not .review.slider) "" " slider__items" -}}
@@ -149,13 +149,13 @@
   {{- partial "schema/review" . | safeJS }}
 </script>
 
-{{- if .slider }}
+{{- if .review.slider }}
   {{ partial "boxes/slider-nav"
     (dict
       "items"   (len .reviews)
-      "bullets" .bullets
-      "arrows"  .arrows
-      "button"  .button
+      "bullets" .review.bullets
+      "arrows"  .review.arrows
+      "button"  .review.button
     )
   }}
   </div>
