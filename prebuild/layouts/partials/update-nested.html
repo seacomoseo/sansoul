@@ -1,0 +1,32 @@
+{{/* 
+  Partial updateNested:
+  Parámetros en .:
+    - dict: diccionario actual (map)
+    - keys: slice con las claves anidadas (ej: ["organization", "phones"])
+    - value: valor a asignar (tomado de origin)
+    - kind: "slice" u otro
+*/}}
+{{ $dict := .dict }}
+{{ if eq (len .keys) 1 }}
+  {{ $key := index .keys 0 }}
+  {{ if eq .kind "slice" }}
+    {{ $existing  := index $dict $key | default slice }}
+    {{ $new_slice := $existing | append .value }}
+    {{ $dict = merge $dict (dict $key $new_slice) }}
+  {{ else if .value }}
+    {{ $dict = merge $dict (dict $key .value) }}
+  {{ end }}
+{{ else }}
+  {{ $key       := index .keys 0 }}
+  {{ $child     := index $dict $key | default dict }}
+  {{ $rest_keys := after 1 .keys }}
+  {{ $options   := dict
+    "dict"  $child
+    "keys"  $rest_keys
+    "value" .value
+    "kind"  .kind
+  }}
+  {{ $child_updated := partial "update-nested" $options }}
+  {{ $dict = merge $dict (dict $key $child_updated) }}
+{{ end }}
+{{ return $dict }}

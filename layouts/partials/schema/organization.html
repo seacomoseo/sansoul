@@ -46,7 +46,7 @@
   {{ $logo := partial "schema/image-main" (dict "Params" (dict "image" .logo) "Permalink" $url) }}
 
   {{/*  Images  */}}
-  {{ $images := partial "schema/images" (slice .image | append .images | uniq) }}
+  {{ $images := partial "schema/images" (slice $.Params.image | append .images | uniq) }}
 
   {{/*  Opening Hours Specification  */}}
   {{ $schedule := slice }}

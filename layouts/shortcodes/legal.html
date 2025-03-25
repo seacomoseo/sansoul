@@ -3,7 +3,7 @@
 
 {{- if in (slice "name" "nif" "location" "email") $param -}}
 
-  {{- with site.Home.Params -}}
+  {{- with site.Home.Params.organization.address -}}
     {{- if eq $param "name" -}}
       {{- .legal | default site.Title -}}
     {{- else if eq $param "nif" -}}

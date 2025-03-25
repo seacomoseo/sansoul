@@ -8,10 +8,11 @@
   {{ end }}
 {{ end }}
 {{ if not $src }}
-  {{ $src := site.Data.schema.logo
+  {{ $src := site.Home.Params.organization.logo
     | default site.Home.Params.menu.logo
-    | default site.Params.cms.logo
-    | default site.Params.favicon
+    | default site.Data.types.all.tpl.menu.logo
+    | default site.Data.config.cms.logo
+    | default site.Data.config.others.favicon
     | default (cond (not (resources.Get "/media/base/icon.svg")) "base/icon.png" "base/icon.svg")
   }}
 {{ end }}
@@ -39,11 +40,7 @@
 {{ end }}
 
 {{/*  Caption  */}}
-{{ $caption := $image
-  | replaceRE `^http.+/(.*)$` "$1"
-  | replaceRE `^(.+)\..*$`    "$1"
-  | humanize
-}}
+{{ $caption := .Params.alt | default .Params.seo | default .Title }}
 
 {{/*  Schema  */}}
 {{ $schema := dict

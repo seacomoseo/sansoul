@@ -1,7 +1,7 @@
 {{ $address := dict }}
 {{ $has_map := "" }}
 {{ $geo     := dict }}
-{{ with .address }}
+{{ with .address | default .organization.address }}
   {{ if or .name .region }}
     {{ $address = dict
       "@type"           "PostalAddress"

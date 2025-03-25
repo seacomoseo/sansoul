@@ -41,9 +41,10 @@
 
 
 {{ $logo := $config.cms.logo
-  | default $config.menu.logo
-  | default site.Home.Params.logo
-  | default $config.favicon
+  | default site.Home.Params.organization.logo
+  | default site.Home.Params.menu.logo
+  | default site.Data.types.all.tpl.menu.logo
+  | default $config.others.favicon
   | default (cond (not (resources.Get "/media/base/icon.svg")) "base/icon.png" "base/icon.svg")
 }}
 {{ $logo = print "/media/" $logo }}

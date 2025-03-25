@@ -56,19 +56,16 @@
                     {{ end }}
 
                     {{ if $pair }}
-                      {{ $keys     := split .to "." }}
-                      {{ $kind     := .kind }}
-                      {{ $new_dict := dict }}
-                      {{ range collections.Reverse $keys }}
-                        {{ if eq $kind "slice" }}
-                          {{ $value   := index $obj . }}
-                          {{ $new_dict = dict . ($value | default slice | append $pair) }}
-                        {{ else }}
-                          {{ $new_dict = dict . ($new_dict | default $pair) }}
-                        {{ end }}
-                      {{ end }}
-                      {{ $obj = merge $obj $new_dict }}
+                      {{ $opts := dict
+                        "dict"  $obj
+                        "keys"  (split .to ".")
+                        "value" $pair
+                        "kind"  .kind
+                      }}
+                      {{ $new := partial "update-nested" $opts }}
+                      {{ $obj  = merge $obj $new }}
                     {{ end }}
+
                   {{ end }}
 
                   {{ $slug    := index $obj "slug"    | default $key }}
