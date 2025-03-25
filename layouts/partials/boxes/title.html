@@ -3,6 +3,28 @@
   {{- $hanchor := or .hanchor .menu_label -}}
   {{- $anchor2 := "" -}}
 
+  {{- /*  TAG  */ -}}
+  {{- $hn    := .hn -}}
+  {{- if not .hn -}}
+    {{- if and .link (not .main) -}}
+      {{- $hn = "p" -}}
+    {{- else -}}
+      {{- $hn = .level -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if ne $hn "p" -}}
+    {{- $hn   = print "h" $hn -}}
+  {{- end -}}
+
+  {{- /*  HS  */ -}}
+  {{- $hs  := "" -}}
+  {{- if ne .hs nil -}}
+    {{- $hs = print "h" .hs -}}
+  {{- else if eq $hn "p" -}}
+    {{- $s := cond (not .is_title_link) .level "6" -}}
+    {{- $hs = print "h" $s -}}
+  {{- end -}}
+
   {{- /*  LINK  */ -}}
   {{- $link     := "" -}}
   {{- if .is_title_link -}}
@@ -14,25 +36,6 @@
     {{- if and .main (le .level $header_level) -}}
       {{- $link = cond .header page.RelPermalink (print "#" .section.id) -}}
     {{- end -}}
-  {{- end -}}
-
-  {{- /*  TAG  */ -}}
-  {{- $hn := "" -}}
-  {{- if or $link (eq .hn "p") -}}
-    {{- $hn = "p" -}}
-  {{- else -}}
-    {{- with .hn | default .level -}}
-      {{- $hn = print "h" . -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{- /*  HS  */ -}}
-  {{- $hs    := "" -}}
-  {{- if ne .hs nil -}}
-    {{- $hs = print "h" .hs -}}
-  {{- else if eq $hn "p" -}}
-    {{- $s := cond (not .is_title_link) .level "6" -}}
-    {{- $hs = print "h" $s -}}
   {{- end -}}
 
   {{- /* TITLE CLASS  */ -}}
