@@ -2,6 +2,7 @@
 title: Datenschutz
 slug: datenschutz
 icon: shield-keyhole
+noindex: true
 translationKey: privacy
 type: system
 weight: 2

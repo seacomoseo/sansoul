@@ -26,7 +26,7 @@
       {{- /*  SUBTITLE  */ -}}
       {{- with $.subtitle }}
         <p class="box__subtitle subtitle">
-          {{- $ | markdownify -}}
+          {{- . | markdownify -}}
         </p>
       {{- end -}}
 
@@ -35,7 +35,7 @@
       {{- /*  PRICE  */ -}}
       {{- with $.price }}
         <div class="price">
-          {{- $ | markdownify -}}
+          {{- . | markdownify -}}
         </div>
       {{- end -}}
 
@@ -145,11 +145,6 @@
 
   {{- end -}}
 
-  {{- /*  MODAL NAV  */ -}}
-  {{- if and .zero .modal (not .ph) }}
-    {{- partial "boxes/modal-nav" $ -}}
-  {{- end -}}
-
 {{- end -}}
 
 
@@ -184,6 +179,11 @@
 
   {{- /*  INBOX  */ -}}
   {{- $inbox -}}
+
+  {{- /*  MODAL NAV  */ -}}
+  {{- if and .zero .modal (not .ph) }}
+    {{- partial "boxes/modal-nav" $ -}}
+  {{- end -}}
 
   {{- /*  END WRAP  */ -}}
   {{- if .box_wrap }}
