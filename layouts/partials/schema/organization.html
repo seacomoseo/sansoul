@@ -71,8 +71,10 @@
 
   {{/*  Departments  */}}
   {{ $departments := slice }}
-  {{ range .departments }}
-    {{ $departments = $departments | append (partial "schema/organization" (merge . (dict "department" true))) }}
+  {{ with $.Params }}
+    {{ range .departments }}
+      {{ $departments = $departments | append (partial "schema/organization" (merge . (dict "department" true))) }}
+    {{ end }}
   {{ end }}
 
   {{/*  Offer Catalog  */}}
