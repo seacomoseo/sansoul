@@ -2,6 +2,7 @@
 title: Privacidade
 slug: privacidade
 icon: shield-keyhole
+noindex: true
 translationKey: privacy
 type: system
 weight: 2

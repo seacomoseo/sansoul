@@ -2,6 +2,7 @@
 title: Rechtshinweis
 slug: legal
 icon: scale-balanced
+noindex: true
 translationKey: legal
 type: system
 weight: 1
