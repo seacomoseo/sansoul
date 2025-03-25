@@ -7,14 +7,14 @@
     {{- with merge ($.accordion | default dict) . -}}
       {{- $hn   := .hn | default (add $.level 1) -}}
       {{- if ne $hn "p" -}}
-        {{- $hn  = print "h" .hn -}}
+        {{- $hn  = print "h" $hn -}}
       {{- end -}}
       {{- $hs   := cond (eq .hs nil) "" (cond (eq .hs $hn) "" (print " h" .hs)) -}}
       {{- $open := and (not $k) .first_open }}
       <div class="accordion {{- if $open }} accordion--active{{ end }}">
 
         {{- /* TITLE  */}}
-        {{- $class := print ` class="accordion__title ` $hs `"` }}
+        {{- $class := print ` class="accordion__title` $hs `"` }}
         {{ print "<" $hn $class ">" | safeHTML -}}
           {{- if not $headers -}}
             {{- $icon  := cond (not .icon) "circle-question" .icon -}}
