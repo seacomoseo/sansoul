@@ -70,7 +70,7 @@
   {{ page.Store.Set $id $anchor }}
 
   {{/*  END  */}}
-  {{ $header  := not $key }}
+  {{ $header  := eq $key "header" }}
   {{ $bgcp    := $.back.color | default "light" }}
   {{ $expand  := dict "key" $key "id" $id "bgcp" $bgcp "header" $header "modals" $modals "modal" false }}
   {{ $section  = merge $first $alternate $section $expand }}

@@ -6,12 +6,16 @@
   {{- range $k, $v := .accordions -}}
     {{- with merge ($.accordion | default dict) . -}}
       {{- $hn   := .hn | default (add $.level 1) -}}
+      {{- if ne $hn "p" -}}
+        {{- $hn  = print "h" .hn -}}
+      {{- end -}}
       {{- $hs   := cond (eq .hs nil) "" (cond (eq .hs $hn) "" (print " h" .hs)) -}}
       {{- $open := and (not $k) .first_open }}
       <div class="accordion {{- if $open }} accordion--active{{ end }}">
 
         {{- /* TITLE  */}}
-        <h{{ $hn }} class="accordion__title {{- $hs }}">
+        {{- $class := print ` class="accordion__title ` $hs `"` }}
+        {{ print "<" $hn $class ">" | safeHTML -}}
           {{- if not $headers -}}
             {{- $icon  := cond (not .icon) "circle-question" .icon -}}
             {{- $emoji := cond (not .icon) "❔" .icon }}
@@ -27,7 +31,7 @@
               {{- partial "icon" (dict "class" "accordion__icon" "icon" $icon) }}
             </button>
           {{- end }}
-        </h{{ $hn }}>
+        {{ print "</" $hn ">" | safeHTML -}}
 
         {{- /* MD  */}}
         <div class="accordion__md md" {{- if not $open }} hidden="until-found"{{ end }}>
