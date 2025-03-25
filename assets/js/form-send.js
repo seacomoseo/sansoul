@@ -60,7 +60,7 @@ export function initFormSend () {
           const timestampInput = form.querySelector('.form-timestamp')
           if (timestampInput) timestampInput.value = now
 
-          const actionEncoded = form.action.replace(location.href.split('#')[0], '')
+          const actionEncoded = form.getAttribute('action')
           let action = atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
           const netlifyForm = form.dataset.prov === 'ntlf'

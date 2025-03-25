@@ -1,6 +1,6 @@
 {{ $schema := dict }}
 
-{{ with .Params | default . }}
+{{ with .Params.organization | default . }}
 
   {{/*  Types  */}}
   {{ $types      := .types | default (slice "Organization") }}
@@ -11,7 +11,7 @@
   {{ $names_more := after 1 $names }}
 
   {{/*  Description  */}}
-  {{ $description  := or $.Summary $.Description .summary .description | plainify | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` "" }}
+  {{ $description  := or .description $.Summary $.Description | plainify | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` "" }}
 
   {{/*  URL  */}}
   {{ $url  := .url | default $.Page.Permalink }}

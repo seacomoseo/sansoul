@@ -4,7 +4,6 @@
 {{ $is_google_translate := false }}
 {{ $ga4_id              := "" }}
 {{ $cookies_legal       := false }}
-{{ $i18n_video          := i18n "video" }}
 {{ $lang                := page.Lang }}
 
 {{ if site.Data.config.others.show }}
@@ -45,7 +44,7 @@
     "disqusId"          $disqus_id
     "isGoogleTranslate" $is_google_translate
     "cookiesLegal"      $cookies_legal
-    "i18nVideo"         $i18n_video
+    "i18nVideo"         (i18n "video")
     "lang"              $lang
     "timestamp"         site.Params.timestamp
     "loading"                 (i18n "loading")

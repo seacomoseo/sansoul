@@ -1,26 +1,5 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
-{{ $departments_fields := slice
-  `~P_TYPES`
-  `~P_NAMES`
-  `~P_SUMMARY`
-  `~P_LEGAL`
-  `~P_NIF`
-  `~P_EMAIL`
-  `~P_LOGO`
-  `~P_URL`
-  `~P_IMAGES`
-  `~P_SOCIAL`
-  `~P_PHONES`
-  `~P_ADDRESS`
-  `~P_AREAS`
-  `~P_OPEN`
-  `~P_PRICES`
-  `~P_SERVICES`
-  `~P_FOOD_MENU`
-  `~P_FOOD_TYPE`
-}}
-
 {{ return slice
 
   (dict "&P_SLUG"           (dict "name" `slug`           "widget" `string`   "i18n" true        "default" ``     "label" $t.p_slug           "hint" $t.p_slug_hint           "pattern" (slice "^[a-z0-9-/]+$" $t.pattern)))
@@ -71,7 +50,7 @@
     "required"       false
     "label"          $t.p_areas
     "label_singular" $t.p_areas_singular
-    "collapsed"      false
+    "collapsed"      true
     "summary"        "{{fields.area}}"
     "allow_add"      true
     "fields"         (slice
@@ -93,37 +72,38 @@
     )
   ))
 
-  (dict "&P_TYPES" (dict
+  (dict "&O_TYPES" (dict
     "name"           `types`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_types
+    "label"          $t.o_types
     "collapsed"      true
     "summary"        "{{fields.type}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `type` "widget" `select` "required" false "label" $t.p_types "options" `~OPTIONS_LOCATION_TYPE`)
+      (dict "name" `type` "widget" `select` "required" false "label" $t.o_types "options" `~OPTIONS_LOCATION_TYPE`)
     )
   ))
-  (dict "&P_NAMES" (dict
+  (dict "&O_NAMES" (dict
     "name"           `names`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_names
-    "label_singular" $t.p_names_singular
-    "hint"           $t.p_names_hint
+    "label"          $t.o_names
+    "label_singular" $t.o_names_singular
+    "hint"           $t.o_names_hint
     "collapsed"      true
     "summary"        "{{fields.name}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `name` "widget" `string` "required" false "label" $t.p_names_singular)
+      (dict "name" `name` "widget" `string` "required" false "label" $t.o_names_singular)
     )
   ))
-  (dict "&P_LEGAL"       (dict "name" `legal`       "required" false "label" $t.p_legal       "widget" `string`))
-  (dict "&P_NIF"         (dict "name" `nif`         "required" false "label" $t.p_nif         "widget" `string`))
-  (dict "&P_EMAIL"       (dict "name" `email`       "required" false "label" $t.p_email       "widget" `string`))
-  (dict "&P_URL"         (dict "name" `url`         "required" false "label" `URL`            "widget" `string`))
-  (dict "&P_LOGO"        (dict "name" `logo`        "required" false "label" $t.p_logo        "widget" `image` "max_file_size" 512000000))
+  (dict "&O_DESCRIPTION" (dict "name" `description` "required" false "label" $t.o_description "widget" `string`))
+  (dict "&O_LEGAL"       (dict "name" `legal`       "required" false "label" $t.o_legal       "widget" `string`))
+  (dict "&O_NIF"         (dict "name" `nif`         "required" false "label" $t.o_nif         "widget" `string`))
+  (dict "&O_EMAIL"       (dict "name" `email`       "required" false "label" $t.o_email       "widget" `string`))
+  (dict "&O_URL"         (dict "name" `url`         "required" false "label" `URL`            "widget" `string`))
+  (dict "&O_LOGO"        (dict "name" `logo`        "required" false "label" $t.o_logo        "widget" `image` "max_file_size" 512000000))
   (dict "&P_IMAGES"      (dict "name" `images`      "required" false "label" $t.p_images      "widget" `image` "multiple" true "choose_url" true))
   (dict "&P_SOCIAL"      (dict
     "name"           `social`
@@ -138,17 +118,17 @@
       (dict "name" `link` "widget" `string` "required" false "label" $t.p_social_singular)
     )
   ))
-  (dict "&P_PHONES" (dict
+  (dict "&O_PHONES" (dict
     "name"           `phones`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_phones
-    "label_singular" $t.p_phones_singular
+    "label"          $t.o_phones
+    "label_singular" $t.o_phones_singular
     "collapsed"      true
     "summary"        "{{fields.phone}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `phone` "widget" `string` "required" false "label" $t.p_phones_singular)
+      (dict "name" `phone` "widget" `string` "required" false "label" $t.o_phones_singular)
     )
   ))
   (dict "&P_ADDRESS" (dict
@@ -169,42 +149,42 @@
       (dict "name" `link`     "widget" `string` "required" false "label" $t.p_address_link    )
     )
   ))
-  (dict "&P_AREAS" (dict "<<" (slice (dict "name" `areas`) `~P_SERVICE_AREAS`)))
-  (dict "&P_OPEN" (dict
+  (dict "&O_AREAS" (dict "<<" (slice (dict "name" `areas`) `~P_SERVICE_AREAS`)))
+  (dict "&O_OPEN" (dict
     "name"           `schedule`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_schedule
-    "label_singular" $t.p_schedule_singular
+    "label"          $t.o_schedule
+    "label_singular" $t.o_schedule_singular
     "collapsed"      true
     "summary"        "{{fields.days}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `days`   "widget" `select` "required" false "label" $t.p_schedule_days "multiple" true "options" `~OPTIONS_DAYS`)
+      (dict "name" `days`   "widget" `select` "required" false "label" $t.o_schedule_days "multiple" true "options" `~OPTIONS_DAYS`)
       (dict
         "name"           `hours`
         "widget"         `list`
         "required"       false
-        "label"          $t.p_schedule_hours
+        "label"          $t.o_schedule_hours
         "collapsed"      false
         "summary"        "{{fields.open}} - {{fields.close}}"
         "allow_add"      true
         "fields"         (slice
-          (dict "name" `open`   "widget" `datetime` "required" false "label" $t.p_schedule_hours_close "format" `H:mm` "date_format" false "time_format" `HH:mm`)
-          (dict "name" `close`  "widget" `datetime` "required" false "label" $t.p_schedule_hours_close "format" `H:mm` "date_format" false "time_format" `HH:mm`)
+          (dict "name" `open`   "widget" `datetime` "required" false "label" $t.o_schedule_hours_close "format" `H:mm` "date_format" false "time_format" `HH:mm`)
+          (dict "name" `close`  "widget" `datetime` "required" false "label" $t.o_schedule_hours_close "format" `H:mm` "date_format" false "time_format" `HH:mm`)
         )
       )
-      (dict "name" `from`   "widget" `datetime` "required" false "label" $t.p_schedule_from "hint" $t.p_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false)
-      (dict "name" `to`     "widget" `datetime` "required" false "label" $t.p_schedule_to   "hint" $t.p_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false)
+      (dict "name" `from`   "widget" `datetime` "required" false "label" $t.o_schedule_from "hint" $t.o_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false)
+      (dict "name" `to`     "widget" `datetime` "required" false "label" $t.o_schedule_to   "hint" $t.o_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false)
     )
   ))
-  (dict "&P_PRICES"   (dict "name" `prices` "widget" `select` "required" false "label" $t.p_prices "options" (slice "€" "€€" "€€€" "$" "$$" "$$$")))
-  (dict "&P_SERVICES" (dict
+  (dict "&O_PRICES"   (dict "name" `prices` "widget" `select` "required" false "label" $t.o_prices "options" (slice "€" "€€" "€€€" "$" "$$" "$$$")))
+  (dict "&O_SERVICES" (dict
     "name"           `services`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_services
-    "label_singular" $t.p_services_singular
+    "label"          $t.o_services
+    "label_singular" $t.o_services_singular
     "collapsed"      true
     "summary"        "{{fields.title}}"
     "allow_add"      true
@@ -216,32 +196,58 @@
       (dict "name" `url`         "widget" `string` "required" false "label" `URL`)
     )
   ))
-  (dict "&P_FOOD_MENU" (dict
+  (dict "&O_FOOD_MENU" (dict
     "name"           `food_menu`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_food_menu
-    "label_singular" $t.p_food_menu_singular
-    "hint"           $t.p_food_menu_hint
+    "label"          $t.o_food_menu
+    "label_singular" $t.o_food_menu_singular
+    "hint"           $t.o_food_menu_hint
     "collapsed"      true
     "summary"        "{{fields.food_menu}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `food_menu` "widget" `string` "required" false "label" $t.p_food_menu_singular)
+      (dict "name" `food_menu` "widget" `string` "required" false "label" $t.o_food_menu_singular)
     )
   ))
-  (dict "&P_FOOD_TYPE" (dict
+  (dict "&O_FOOD_TYPE" (dict
     "name"           `food_type`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_food_type
-    "label_singular" $t.p_food_type_singular
-    "hint"           $t.p_food_type_hint
+    "label"          $t.o_food_type
+    "label_singular" $t.o_food_type_singular
+    "hint"           $t.o_food_type_hint
     "collapsed"      true
     "summary"        "{{fields.food_type}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `food_type` "widget" `string` "required" false "label" $t.p_food_type_singular)
+      (dict "name" `food_type` "widget" `string` "required" false "label" $t.o_food_type_singular)
+    )
+  ))
+  (dict "&P_ORGANIZATION" (dict
+    "name"           `organization`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.p_organization
+    "collapsed"      true
+    "fields"         (slice
+      `~O_TYPES`
+      `~O_NAMES`
+      `~O_DESCRIPTION`
+      `~O_LEGAL`
+      `~O_NIF`
+      `~O_EMAIL`
+      `~O_LOGO`
+      `~P_IMAGES`
+      `~P_SOCIAL`
+      `~O_PHONES`
+      `~P_ADDRESS`
+      `~O_AREAS`
+      `~O_OPEN`
+      `~O_PRICES`
+      `~O_SERVICES`
+      `~O_FOOD_MENU`
+      `~O_FOOD_TYPE`
     )
   ))
   (dict "&P_DEPARTMENTS" (dict
@@ -253,7 +259,26 @@
     "collapsed"      true
     "summary"        "{{fields.url}}"
     "allow_add"      true
-    "fields"         $departments_fields
+    "fields"         (slice
+      `~O_TYPES`
+      `~O_NAMES`
+      `~O_DESCRIPTION`
+      `~O_LEGAL`
+      `~O_NIF`
+      `~O_EMAIL`
+      `~O_LOGO`
+      `~O_URL`
+      `~P_IMAGES`
+      `~P_SOCIAL`
+      `~O_PHONES`
+      `~P_ADDRESS`
+      `~O_AREAS`
+      `~O_OPEN`
+      `~O_PRICES`
+      `~O_SERVICES`
+      `~O_FOOD_MENU`
+      `~O_FOOD_TYPE`
+    )
   ))
 
 }}
