@@ -2,9 +2,9 @@
 {{- $store := page.Store -}}
 {{- with .md_caps   }}{{ $store.Set "md_caps"   . }}{{ end -}}
 {{- with .md_line   }}{{ $store.Set "md_line"   . }}{{ end -}}
-{{- with .md_border }}{{ $store.Set "md_border" . }}{{ end -}}
 {{- with .md_nav    }}{{ $store.Set "md_nav"    . }}{{ end -}}
 {{- with .md_index  }}{{ $store.Set "md_index"  . }}{{ end -}}
+{{- with .md_border }}{{ $store.Set "md_border" . }}{{ end -}}
 
 {{- /*  SM  */ -}}
 {{- $md_sm := .md_sm -}}
@@ -56,9 +56,9 @@
 </div>
 
 {{- /*  DELETE STORE  */ -}}
+{{- if .md_border }}{{ $store.Delete "md_border" }}{{ end -}}
 {{- if .md_caps   }}{{ $store.Delete "md_caps"   }}{{ end -}}
 {{- if .md_line   }}{{ $store.Delete "md_line"   }}{{ end -}}
-{{- if .md_border }}{{ $store.Delete "md_border" }}{{ end -}}
 {{- if .md_nav    }}{{ $store.Delete "md_nav"    }}{{ end -}}
 {{- if .md_index -}}
   {{- $store.Delete "md_index" -}}

@@ -1,7 +1,7 @@
 {{- /* Get the Page's Store */ -}}
 {{- $store    := page.Store -}}
-{{- $is_caps  := $store.Get "md_caps"  | default false -}}
-{{- $is_line  := $store.Get "md_line"  | default false -}}
+{{- $lvl_caps := $store.Get "md_caps"  | default false -}}
+{{- $lvl_line := $store.Get "md_line"  | default false -}}
 {{- $is_index := $store.Get "md_index" | default false -}}
 {{- $is_nav   := $store.Get "md_nav"   | default false -}}
 
@@ -38,14 +38,6 @@
 
 {{- /* CLASS */ -}}
 {{- $class  := "md__heading" -}}
-{{- if eq .Level 2 -}}
-  {{- if $is_caps -}}
-    {{- $class = print $class " uppercase" -}}
-  {{- end -}}
-  {{- if $is_line -}}
-    {{- $class = print $class " underline" -}}
-  {{- end -}}
-{{- end -}}
 {{- with .Attributes.class -}}
   {{- $class = print $class " " . -}}
 {{- end -}}
@@ -57,6 +49,25 @@
     {{- $attrs    = print $attrs " " $k `="` . `"` -}}
   {{- end -}}
 {{- end -}}
+
+{{- /* TEXT ATTRIBUTES */ -}}
+{{- $text_attrs := "" -}}
+{{- $style := slice -}}
+{{- $lvl   := int .Level -}}
+{{- with $lvl_caps -}}
+  {{- if le $lvl . -}}
+    {{- $style = slice "uppercase" -}}
+  {{- end -}}
+{{- end -}}
+{{- with $lvl_line -}}
+  {{- if le $lvl . -}}
+    {{- $style = $style | append "underline" -}}
+  {{- end -}}
+{{- end -}}
+{{- with $style -}}
+  {{- $text_attrs = print ` class="` (delimit . " ") `"` -}}
+{{- end -}}
+{{- $text_attrs = $text_attrs | safeHTMLAttr -}}
 
 {{- /*  ICON outside  */ -}}
 {{- $outside := partial "functions/icon-outside" .Text -}}
@@ -75,14 +86,13 @@
   {{- with $pin }}
     <i class="icon icon--text">{{ . }}</i>
   {{- end }}
-  <i>
+  <i {{- $text_attrs }}>
     {{- if $is_nav -}}
     <a class="link md__heading-link" href="#{{ $id }}">
     {{- end -}}
       {{- $text | safeHTML -}}
       {{- if in $class "underline" }}<br>{{ end -}}
     {{- if $is_nav -}}
-    <br>
     </a>
     {{- end -}}
   </i>

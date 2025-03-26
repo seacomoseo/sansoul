@@ -2,7 +2,23 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
 
+  {{- /*  TPL  */ -}}
   {{- $tpl := partial "functions/tpl-sections" . -}}
+
+  {{- /*  SECTIONS  */ -}}
+  {{- $sections_all := slice -}}
+  {{- $sections     := slice -}}
+  {{- $footer       := dict -}}
+  {{- with $tpl -}}
+    {{- $sections_all = partial "sections/items" . -}}
+  {{- end -}}
+  {{- with $sections_all -}}
+    {{- $sections    = where . "id" "ne" "footer" -}}
+    {{- $footer      = index (last 1 .) 0 -}}
+  {{- end -}}
+  {{- /*  To TPL  */ -}}
+  {{ $dict_sections := dict "sections" $sections }}
+  {{ $tpl            = merge $tpl $dict_sections }}
 
   {{- /*  Set contact phones page store from contact to callnow  */ -}}
   {{- page.Store.Set "phones" slice -}}
@@ -86,18 +102,6 @@
   {{- $back_attr  := dict "id" $body_id "body_class" $body_class -}}
   {{- $merge_attr := merge $back $back_attr -}}
   {{- $body_attr  := partial "sections/attr" $merge_attr -}}
-
-  {{- /*  SECTIONS  */ -}}
-  {{- $sections_all := slice -}}
-  {{- $sections     := slice -}}
-  {{- $footer       := dict -}}
-  {{- with $tpl -}}
-    {{- $sections_all = partial "sections/items" . -}}
-  {{- end -}}
-  {{- with $sections_all -}}
-    {{- $sections    = where . "id" "ne" "footer" -}}
-    {{- $footer      = index (last 1 .) 0 -}}
-  {{- end -}}
 
   {{- /*  LOADER  */}}
   {{- $loader_bg := "" -}}

@@ -1,19 +1,14 @@
 {{ $items := slice }}
 
-{{ if .show_sections }}
-  {{ $sections  := slice }}
-  {{ with partial "sections/sections" page }}
-    {{ $sections = after 1 . }}
-  {{ end }}
-
-  {{ with where $sections "menu_button" "ne" "hide" }}
+{{ if .menu.show_sections }}
+  {{ with where .sections "menu_button" "ne" "hide" }}
     {{ range . }}
       {{ if .menu_label | or .hanchor | or .title | or (.icon | and .id) }}
 
         {{ $item := partial "menu/item-by-section" . }}
 
         {{/*  MODALS TO SUBITEMS  */}}
-        {{ if $.show_modals }}
+        {{ if $.menu.show_modals }}
           {{ $subitems := slice }}
           {{ with .modals }}
             {{ range . }}
