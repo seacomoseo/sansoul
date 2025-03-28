@@ -47,10 +47,13 @@
   {{ $items  := partial "cms/icons" . }}
   {{ $params := slice }}
   {{ range site.Sections }}
+    {{ $type := .Type }}
     {{ range .Params.customs | default slice }}
-      {{ if .pages }}
-        {{ $append := print .name ":" (delimit .pages ",")  }}
-        {{ $params  = $params | append $append }}
+      {{ if not .default }}
+        {{ if .pages }}
+          {{ $append := print $type ":" .name ":" (delimit .pages ",")  }}
+          {{ $params  = $params | append $append }}
+        {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}

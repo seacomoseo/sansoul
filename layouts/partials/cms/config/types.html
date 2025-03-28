@@ -66,6 +66,7 @@
   (dict "&SETTINGS_TYPES_PARAMS_HINT"     (dict "name" `hint`      "widget" `string`  "required" false "label" $t.types_params_hint))
   (dict "&SETTINGS_TYPES_PARAMS_TYPE"     (dict "name" `type`      "widget" `select`  "required" false "label" $t.types_params_type "options" site.Data.utilities.widgets))
   (dict "&SETTINGS_TYPES_PARAMS_MULTIPLE" (dict "name" `multiple`  "widget" `boolean` "required" false "label" $t.types_params_multiple))
+  (dict "&SETTINGS_TYPES_PARAMS_DEFAULT"  (dict "name" `default`   "widget" `string`  "required" false "label" $t.types_params_default))
   (dict "&SETTINGS_TYPES_PARAMS_SCHEMA"   (dict "name" `schema`    "widget" `string`  "required" false "label" $t.types_params_schema))
   (dict "&SETTINGS_TYPES_PARAMS_OPTIONS"  (dict
     "name"           `options`
@@ -118,7 +119,7 @@
     "collapsed"      true
     "summary"        "{{fields.lang}}"
     "allow_add"      true
-    "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
+    "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_DEFAULT` | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
   ))
 
 

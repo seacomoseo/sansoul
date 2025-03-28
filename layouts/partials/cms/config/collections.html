@@ -120,8 +120,6 @@
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `product` `service`))) `~P_PRICE`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_ORGANIZATION`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_DEPARTMENTS`))
-      `~P_TOC`
-      `~P_BODY`
     }}
   {{ else if eq .Params.base "article" }}
     {{ $fields = $fields | append
@@ -182,15 +180,16 @@
   {{ end }}
   {{ if ne .Params.base "single" }}
     {{ $fields = $fields | append
-      `~P_TOC`
       `~P_DRAFT`
       `~P_NOINDEX`
       `~P_TRANSLATIONKEY`
       `~P_TITLE_SEO`
       `~P_DESCRIPTION`
-      `~P_BODY`
     }}
   {{ end }}
+  {{ $fields = $fields | append
+    `~P_BODY`
+  }}
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict

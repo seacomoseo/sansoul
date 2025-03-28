@@ -121,11 +121,30 @@
           {{ $slug         = or .slug        (index $t (print "types_default_" $name "_slug"       )) $title          }}
           {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon          "file"          }}
           {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji         "📄"            }}
+          {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
           {{ $customs     := .params | default slice }}
           {{ with site.Data.types.all.params }}
             {{ $customs    = $customs | append . }}
           {{ end }}
-          {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
+          {{ $defs       := where $customs "default" "ne" nil }}
+          {{ $customs     = where $customs "default" "eq" nil }}
+          {{ $defaults := dict }}
+          {{ range $defs }}
+            {{ $default  := .default }}
+            {{ if      eq .type "int" }}
+              {{ $default = int .default }}
+            {{ else if eq .type "float" }}
+              {{ $default = float .default }}
+            {{ else if eq .type "boolean" }}
+              {{ $default = eq "true" .default }}
+            {{ else if eq .type "list" }}
+              {{ $default = split .default "," }}
+            {{ else if eq .type "object" }}
+              {{ $default = unmarshal .default }}
+            {{ end }}
+            {{ $defaults  = merge $defaults (dict .name $default) }}
+          {{ end }}
+
           {{ $obj         := dict 
             "slug"           $slug
             "singular"       $singular
@@ -150,7 +169,7 @@
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
               "breadcrumbs" $breadcrumbs
-            ))
+            ) | merge $defaults)
           }}
             {{/*  ) | merge .tpl)  */}}
             {{/*  | merge site.Data.types.all.tpl  */}}
