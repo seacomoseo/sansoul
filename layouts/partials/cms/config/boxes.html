@@ -49,10 +49,10 @@
   (dict "&BOX_MENU_BUTTON"   (dict "name" `menu_button` "widget" `select`  "required" false "label" $t.box_menu_button   "options" `~OPTIONS_COLOR_BASE_H`))
   (dict "&BOX_MENU_SWAP"     (dict "name" `menu_swap`   "widget" `boolean` "required" false "label" $t.box_menu_swap))
 
-  (dict "&BOX_ICON_ID"    (dict "name" `icon`       "widget" `string` "required" false "label" $t.box_icon_id    "pattern" (slice "^[a-z-]+$" $t.pattern) "hint" $t.box_icon_id_hint))
-  (dict "&BOX_ICON_TYPE"  (dict "name" `icon_type`  "widget" `select` "required" false "label" $t.box_icon_type  "options" `~OPTIONS_ICON_TYPE`           "hint" $t.box_icon_type_hint))
-  (dict "&BOX_ICON_SIZE"  (dict "name" `icon_size`  "widget" `number` "required" false "label" $t.box_icon_size  "value_type" `int` "step" 1 "min" 1 "max" 6))
-  (dict "&BOX_ICON_COLOR" (dict "name" `icon_color` "widget" `select` "required" false "label" $t.box_icon_color "options" `~OPTIONS_COLOR_BASE_W`))
+  (dict "&BOX_ICON_ID"    (dict "name" `icon`       "widget" `string` "required" false "label" $t.box_icon_id    "hint" $t.box_icon_id_hint))
+  (dict "&BOX_ICON_TYPE"  (dict "name" `icon_type`  "widget" `select` "required" false "label" $t.box_icon_type  "hint" $t.box_icon_type_hint "options" `~OPTIONS_ICON_TYPE`))
+  (dict "&BOX_ICON_SIZE"  (dict "name" `icon_size`  "widget" `number` "required" false "label" $t.box_icon_size                               "value_type" `int` "step" 1 "min" 1 "max" 6))
+  (dict "&BOX_ICON_COLOR" (dict "name" `icon_color` "widget" `select` "required" false "label" $t.box_icon_color                              "options" `~OPTIONS_COLOR_BASE_W`))
 
   (dict "&BOX_IMAGE_SRC"       (dict "name" `image`     "widget" `image`   "required" false "label" $t.box_image_src       "choose_url" true "max_file_size" 512000000 "hint" $t.box_image_src_hint))
   (dict "&BOX_IMAGE_HOVER"     (dict "name" `hover`     "widget" `image`   "required" false "label" $t.box_image_hover     "choose_url" true "max_file_size" 512000000 "hint" $t.box_image_hover_hint))

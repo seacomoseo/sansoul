@@ -29,3 +29,38 @@
     display: none;
   }
 }
+
+
+// CUSTOM PARAMS PAGES
+
+@if $params != '' {
+  $params_roots: str-split($params, '|');
+  @each $root in $params_roots {
+    @each $param in $root {
+      $parts: str-split($param, ':');
+      $name: nth($parts, 1);
+      $pages: nth($parts, 2);
+
+      .CMS_EditorControlPane_root > {
+        .CMS_EditorControl_root:has(> .name-#{$name}) {
+          display: none;
+        }
+      }
+
+      $pages_roots: str-split($pages, ',');
+      @each $root in $pages_roots {
+        @each $page in $root {
+
+          [data-hash^="#/collections/"][data-hash$="/entries/#{$page}"] {
+            .CMS_EditorControlPane_root > {
+              .CMS_EditorControl_root:has(> .name-#{$name}) {
+                display: block;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
+}

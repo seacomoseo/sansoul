@@ -1,5 +1,8 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
+{{ $widgets_last      := apply site.Data.utilities.widgets "dict" "value" "." }}
+{{ $widgets_last       = where $widgets_last "value" "not in" (slice "object" "list") }}
+{{ $widgets_last       = apply $widgets_last "index" "." "value" }}
 {{ $type_langs        := slice }}
 {{ range site.Languages }}
   {{ $type_langs       = $type_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_ITEMS` )) }}
@@ -18,6 +21,23 @@
   `~SETTINGS_TYPES_TAXONOMY_OF`
   `~SETTINGS_TYPES_PARAMS`
   `~SETTINGS_TYPES_TEMPLATE`
+}}
+{{ $params_fields := slice
+  `~SETTINGS_TYPES_PARAMS_NAME`
+  `~SETTINGS_TYPES_PARAMS_LABEL`
+  `~SETTINGS_TYPES_PARAMS_HINT`
+  `~SETTINGS_TYPES_PARAMS_TYPE`
+  `~SETTINGS_TYPES_PARAMS_OPTIONS`
+  `~SETTINGS_TYPES_PARAMS_MULTIPLE`
+  `~SETTINGS_TYPES_PARAMS_SCHEMA`
+}}
+{{ $params_fields_last := slice
+  `~SETTINGS_TYPES_PARAMS_NAME`
+  `~SETTINGS_TYPES_PARAMS_LABEL`
+  `~SETTINGS_TYPES_PARAMS_HINT`
+  `~SETTINGS_TYPES_PARAMS_TYPE_LAST`
+  `~SETTINGS_TYPES_PARAMS_OPTIONS`
+  `~SETTINGS_TYPES_PARAMS_MULTIPLE`
 }}
 
 
@@ -61,23 +81,44 @@
       (dict "name" `value` "widget" `string`  "required" false "label" $t.types_params_options_value)
     )
   ))
-  (dict "&SETTINGS_TYPES_PARAMS_TYPE_SUB"  (dict "<<" (slice (dict "options" (where site.Data.utilities.widgets "value" "not" "list")) `~SETTINGS_TYPES_PARAMS_TYPE`)))
-  (dict "&SETTINGS_TYPES_PARAMS_LIST"  (dict
-    "name"           `list`
+  (dict "&SETTINGS_TYPES_PARAMS_PAGES"  (dict
+    "name"           `pages`
     "widget"         `list`
     "required"       false
-    "label"          $t.types_params_list
+    "label"          $t.types_params_pages
+    "label_singular" $t.types_params_pages_singular
+    "collapsed"      true
+    "summary"        "{{fields.page}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `page` "widget" `string`  "required" false "label" $t.types_params_pages_singular)
+    )
+  ))
+
+  (dict "&SETTINGS_TYPES_PARAMS_TYPE_LAST" (dict "<<" (slice (dict "options" $widgets_last) `~SETTINGS_TYPES_PARAMS_TYPE`)))
+  (dict "&SETTINGS_TYPES_PARAMS_LAST"      (dict
+    "name"           `params`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.types_params_sub
+    "label_singular" $t.types_params_sub_singular
     "collapsed"      true
     "summary"        "{{fields.label}}"
     "allow_add"      true
-    "fields"         (slice
-      `~SETTINGS_TYPES_PARAMS_NAME`
-      `~SETTINGS_TYPES_PARAMS_LABEL`
-      `~SETTINGS_TYPES_PARAMS_HINT`
-      `~SETTINGS_TYPES_PARAMS_TYPE_SUB`
-      `~SETTINGS_TYPES_PARAMS_OPTIONS`
-      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
-    )
+    "fields"         $params_fields_last
+  ))
+  (dict "&SETTINGS_TYPES_PARAMS_3" (dict "<<" (slice (dict "fields" ($params_fields | append `~SETTINGS_TYPES_PARAMS_LAST`)) `~SETTINGS_TYPES_PARAMS_LAST`)))
+  (dict "&SETTINGS_TYPES_PARAMS_2" (dict "<<" (slice (dict "fields" ($params_fields | append `~SETTINGS_TYPES_PARAMS_3`)) `~SETTINGS_TYPES_PARAMS_3`)))
+  (dict "&SETTINGS_TYPES_PARAMS"   (dict
+    "name"           `params`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.types_params
+    "label_singular" $t.types_params_singular
+    "collapsed"      true
+    "summary"        "{{fields.lang}}"
+    "allow_add"      true
+    "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
   ))
 
 
@@ -101,26 +142,6 @@
       `~SETTINGS_TYPES_PARAMS_NAME`
       `~SETTINGS_TYPES_PARAMS_MULTIPLE`
       (dict "name" `breadcrumbs` "widget" `string`  "required" false "label" $t.types_breadcrumbs)
-      `~SETTINGS_TYPES_PARAMS_SCHEMA`
-    )
-  ))
-  (dict "&SETTINGS_TYPES_PARAMS"    (dict
-    "name"           `params`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_params
-    "label_singular" $t.types_params_singular
-    "collapsed"      true
-    "summary"        "{{fields.lang}}"
-    "allow_add"      true
-    "fields"         (slice
-      `~SETTINGS_TYPES_PARAMS_NAME`
-      `~SETTINGS_TYPES_PARAMS_LABEL`
-      `~SETTINGS_TYPES_PARAMS_HINT`
-      `~SETTINGS_TYPES_PARAMS_TYPE`
-      `~SETTINGS_TYPES_PARAMS_OPTIONS`
-      `~SETTINGS_TYPES_PARAMS_LIST`
-      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
       `~SETTINGS_TYPES_PARAMS_SCHEMA`
     )
   ))
