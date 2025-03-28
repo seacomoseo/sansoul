@@ -51,7 +51,6 @@
       {{ if .pages }}
         {{ $append := print .name ":" (delimit .pages ",")  }}
         {{ $params  = $params | append $append }}
-        {{ partial "warn" $append }}
       {{ end }}
     {{ end }}
   {{ end }}
