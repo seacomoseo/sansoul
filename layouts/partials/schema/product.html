@@ -60,6 +60,6 @@
     "availability"    (print "https://schema.org/" (cond (not .Params.stock) "InStock" "OutOfStock"))
   )
 }}
-{{ $schema = partial "functions/schema-obj" $schema }}
+{{ $schema = partial "functions/obj-truly" $schema }}
 
 {{ return $schema }}

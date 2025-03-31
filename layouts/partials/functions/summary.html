@@ -2,6 +2,6 @@
   | default .Description
   | truncate 155
   | plainify
-  | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` ""
+  | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""
 }}
 {{ return $summary }}

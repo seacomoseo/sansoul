@@ -1,11 +1,39 @@
 name: Footer
-# space: 2
-# boxes:
-# - social:
-#   - link: ''
-#     icon: ''
-# - button: none
-#   contact:
+color: dark
+space: 2
+params:
+- page: footer.color
+  box: color
+- page: footer.fade
+  box: fade
+- page: footer.fade_type
+  box: fade_type
+- page: footer.bg
+  box: bg
+- page: footer.alpha
+  box: alpha
+- page: footer.div
+  box: div
+- page: footer.div_x
+  box: div_x
+- page: footer.div_y
+  box: div_y
+boxes:
+- if: footer.social
+  params:
+  - page: footer.social
+    box: social
+- params:
+  - page: footer.md
+    box: md
+  md: |
+    - :copyright:      {{< internal-link index >}}
+    - :scale-balanced: {{< internal-link legal >}}
+    - :shield-keyhole: {{< internal-link privacy >}}
+    - :cookie-bite:    {{< internal-link cookies >}}
+    - :seacomoseo:     {{< i18n web_design >}} [seacomoseo.com](https://seacomoseo.com/ "[homefollow]")
+    {.list-inline}
+# - contact:
 #   - type: custom
 #     icon: copyright
 #     label: '{{% page-title index %}}'
@@ -26,10 +54,3 @@ name: Footer
 #     icon: seacomoseo
 #     label: '{{% i18n web_design %}} seacomoseo.com'
 #     link: https://seacomoseo.com/
-# - md: |
-#     - :copyright:      {{% internal-link index %}}
-#     - :scale-balanced: {{% internal-link legal %}}
-#     - :shield-keyhole: {{% internal-link privacy %}}
-#     - :cookie-bite:    {{% internal-link cookies %}}
-#     - :seacomoseo:     {{% i18n web_design %}} [seacomoseo.com](https://seacomoseo.com/ "homefollow")
-#     {.list-inline}

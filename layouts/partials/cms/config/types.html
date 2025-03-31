@@ -20,22 +20,25 @@
   `~SETTINGS_TYPES_RELATED`
   `~SETTINGS_TYPES_TAXONOMY_OF`
   `~SETTINGS_TYPES_PARAMS`
+  `~SETTINGS_TYPES_DEFAULTS`
   `~SETTINGS_TYPES_TEMPLATE`
 }}
 {{ $params_fields := slice
+  `~SETTINGS_TYPES_PARAMS_VAR`
   `~SETTINGS_TYPES_PARAMS_NAME`
   `~SETTINGS_TYPES_PARAMS_LABEL`
   `~SETTINGS_TYPES_PARAMS_HINT`
-  `~SETTINGS_TYPES_PARAMS_TYPE`
+  `~SETTINGS_TYPES_PARAMS_WIDGET`
   `~SETTINGS_TYPES_PARAMS_OPTIONS`
   `~SETTINGS_TYPES_PARAMS_MULTIPLE`
   `~SETTINGS_TYPES_PARAMS_SCHEMA`
 }}
 {{ $params_fields_last := slice
+  `~SETTINGS_TYPES_PARAMS_VAR`
   `~SETTINGS_TYPES_PARAMS_NAME`
   `~SETTINGS_TYPES_PARAMS_LABEL`
   `~SETTINGS_TYPES_PARAMS_HINT`
-  `~SETTINGS_TYPES_PARAMS_TYPE_LAST`
+  `~SETTINGS_TYPES_PARAMS_WIDGET_LAST`
   `~SETTINGS_TYPES_PARAMS_OPTIONS`
   `~SETTINGS_TYPES_PARAMS_MULTIPLE`
 }}
@@ -61,12 +64,12 @@
       (dict "<<" (slice (dict "name" `md`) `~P_BODY`))
     )
   ))
+  (dict "&SETTINGS_TYPES_PARAMS_VAR"      (dict "name" `var`       "widget" `string`  "required" false "label" $t.types_params_var))
   (dict "&SETTINGS_TYPES_PARAMS_NAME"     (dict "name" `name`      "widget" `string`  "required" false "label" $t.types_params_name))
   (dict "&SETTINGS_TYPES_PARAMS_LABEL"    (dict "name" `label`     "widget" `string`  "required" false "label" $t.types_params_label))
   (dict "&SETTINGS_TYPES_PARAMS_HINT"     (dict "name" `hint`      "widget" `string`  "required" false "label" $t.types_params_hint))
-  (dict "&SETTINGS_TYPES_PARAMS_TYPE"     (dict "name" `type`      "widget" `select`  "required" false "label" $t.types_params_type "options" site.Data.utilities.widgets))
+  (dict "&SETTINGS_TYPES_PARAMS_WIDGET"   (dict "name" `widget`    "widget" `select`  "required" false "label" $t.types_params_widget "options" site.Data.utilities.widgets))
   (dict "&SETTINGS_TYPES_PARAMS_MULTIPLE" (dict "name" `multiple`  "widget" `boolean` "required" false "label" $t.types_params_multiple))
-  (dict "&SETTINGS_TYPES_PARAMS_DEFAULT"  (dict "name" `default`   "widget" `string`  "required" false "label" $t.types_params_default))
   (dict "&SETTINGS_TYPES_PARAMS_SCHEMA"   (dict "name" `schema`    "widget" `string`  "required" false "label" $t.types_params_schema))
   (dict "&SETTINGS_TYPES_PARAMS_OPTIONS"  (dict
     "name"           `options`
@@ -96,7 +99,7 @@
     )
   ))
 
-  (dict "&SETTINGS_TYPES_PARAMS_TYPE_LAST" (dict "<<" (slice (dict "options" $widgets_last) `~SETTINGS_TYPES_PARAMS_TYPE`)))
+  (dict "&SETTINGS_TYPES_PARAMS_WIDGET_LAST" (dict "<<" (slice (dict "options" $widgets_last) `~SETTINGS_TYPES_PARAMS_WIDGET`)))
   (dict "&SETTINGS_TYPES_PARAMS_LAST"      (dict
     "name"           `params`
     "widget"         `list`
@@ -119,9 +122,27 @@
     "collapsed"      true
     "summary"        "{{fields.lang}}"
     "allow_add"      true
-    "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_DEFAULT` | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
+    "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
   ))
 
+  (dict "&SETTINGS_TYPES_DEFAULTS_VALUE" (dict "name" `value` "widget" `string` "required" false "label" $t.types_defaults_value))
+  (dict "&SETTINGS_TYPES_DEFAULTS_KIND"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.remote_pairings_kind "options" site.Data.utilities.pairing_kinds))
+  (dict "&SETTINGS_TYPES_DEFAULTS"       (dict
+    "name"           `defaults`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.types_defaults
+    "label_singular" $t.types_defaults_value
+    "hint"           $t.types_defaults_hint
+    "collapsed"      true
+    "summary"        "{{fields.lang}}"
+    "allow_add"      true
+    "fields"         (slice
+      `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_TYPES_DEFAULTS_VALUE`
+      `~SETTINGS_TYPES_DEFAULTS_KIND`
+    )
+  ))
 
   (dict "&SETTINGS_TYPES_TITLE"       (dict "name" `title`       "widget" `string`  "required" true  "label" $t.types_title "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, organization, service, page, section**")))
   (dict "&SETTINGS_TYPES_ORDER"       (dict "name" `order`       "widget" `number`  "required" false "label" $t.types_order "hint" $t.types_order_hint   "value_type" `int` "min" 0 "step" 1))

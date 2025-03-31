@@ -16,7 +16,7 @@
   | default .Summary
   | truncate 155
   | plainify
-  | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` ""
+  | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""
 -}}
 {{- $image_og     := partial "functions/image-og" . -}}
 {{- $image        := $image_og.img -}}

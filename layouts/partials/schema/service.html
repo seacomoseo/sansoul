@@ -41,6 +41,6 @@
   "image"            (dict "@id" (print .Permalink "#schema-image"))
   "mainEntityOfPage" (dict "@id" .Permalink)
 }}
-{{ $schema = partial "functions/schema-obj" $schema }}
+{{ $schema = partial "functions/obj-truly" $schema }}
 
 {{ return $schema }}

@@ -37,7 +37,7 @@
     {{ $sortable_fields   = slice "date" "end"     | append $sortable_fields }}
   {{ end }}
   {{ with .Params.customs }}
-    {{ range where . "type" "date" }}
+    {{ range where . "widget" "date" }}
       {{ $sortable_fields = $sortable_fields       | append .name }}
     {{ end }}
   {{ end }}
@@ -158,7 +158,8 @@
     }}
   {{ end }}
   {{ range (.Params.customs | default slice) | append (.Params.taxonomies | default slice) }}
-    {{ $fields = partial "cms/config/collections-params" (merge . (dict "fields" $fields "t" $t)) }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
+    {{ $fields = partial "cms/config/collections-params" $opts }}
   {{ end }}
   {{ if .Params.is_related }}
     {{ $fields = $fields | append
@@ -280,6 +281,7 @@
 
 
 {{/*  SETTINGS  */}}
+{{ $global_values_path := print `content.` .Lang `/values.yml` }}
 {{ $colections = $colections | append  (dict
   "label"           $t.collection_settings
   "name"            `settings`
@@ -292,6 +294,7 @@
     (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "fields" `~SETTINGS_REMOTE`)
     (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "fields" (slice (dict "name" `body` "widget" `text` "required" false "label" $t.redirects "hint" $t.redirects_hint)))
     (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "fields" (slice (dict "name" `body` "widget" `text` "required" false "label" `robots.txt` "hint" $t.robots_hint)))
+    (dict "file" $global_values_path   "extension" `yml` "name" `values`    "label" $t.values    "fields" `~SETTINGS_VALUES`)
   )
 ) }}
 

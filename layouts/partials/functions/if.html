@@ -35,7 +35,8 @@
   {{ else if eq . "false" }}
     {{ $if = false }}
   {{ else }}
-    {{ $if = partial "functions/index-split" (dict "value" $.Page.Params "path" .) }}
+    {{ $opts := dict "Page" page "name" . }}
+    {{ $if    = partial "functions/param" $opts }}
   {{ end }}
 {{ end }}
 {{ if $not }}

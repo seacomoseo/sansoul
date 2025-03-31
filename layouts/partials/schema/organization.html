@@ -11,7 +11,7 @@
   {{ $names_more := after 1 $names }}
 
   {{/*  Description  */}}
-  {{ $description  := or .description $.Summary $.Description | plainify | replaceRE `::|:(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*):\s?` "" }}
+  {{ $description  := or .description $.Summary $.Description | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" }}
 
   {{/*  URL  */}}
   {{ $url  := .url | default $.Page.Permalink }}
@@ -98,7 +98,7 @@
         "areaServed"  .area
         "offers"      $offers
       }}
-      {{ $service   = partial "functions/schema-obj" $service }}
+      {{ $service   = partial "functions/obj-truly" $service }}
       {{ $services  = $services | append $service }}
     {{ end }}
     {{ $offers = dict
@@ -132,7 +132,7 @@
     "menu"                      .food_menu
     "servesCuisine"             .food_type
   }}
-  {{ $schema = partial "functions/schema-obj" $schema }}
+  {{ $schema = partial "functions/obj-truly" $schema }}
 
 {{ end }}
 

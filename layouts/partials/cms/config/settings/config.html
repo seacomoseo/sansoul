@@ -56,6 +56,27 @@
     )
   ))
 
+  (dict "&SETTINGS_CONFIG_PARAMS"   (dict
+    "name"           `params`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.config_params
+    "label_singular" $t.config_params_singular
+    "collapsed"      true
+    "summary"        "{{fields.lang}}"
+    "allow_add"      true
+    "fields"         (slice
+      `~SETTINGS_TYPES_PARAMS_VAR`
+      `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_TYPES_PARAMS_LABEL`
+      `~SETTINGS_TYPES_PARAMS_HINT`
+      `~SETTINGS_TYPES_PARAMS_WIDGET`
+      `~SETTINGS_TYPES_PARAMS_OPTIONS`
+      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
+      `~SETTINGS_TYPES_PARAMS_2`
+    )
+  ))
+
   (dict "&SETTINGS_CONFIG_OTHERS" (dict
     "label"     $t.config_others
     "name"      `others`
@@ -78,6 +99,7 @@
   (dict "&SETTINGS_CONFIG" (slice
     `~SETTINGS_CONFIG_LANGS`
     `~SETTINGS_CONFIG_CMS`
+    `~SETTINGS_CONFIG_PARAMS`
     `~SETTINGS_CONFIG_OTHERS`
   ))
 }}

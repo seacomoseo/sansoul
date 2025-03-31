@@ -1,24 +1,34 @@
 {{ $fields := slice }}
 
-{{ if hasPrefix .name "~" }}
+{{ if .var }}
 
-  {{ $fields = .fields | append (dict "<<" (slice (dict "collapsed" true) .name)) }}
+  {{ $merge := dict
+    "collapsed" true
+    "name"      .name
+    "label"     .label
+    "hint"      .hint
+    "widget"    .widget
+    "options"   .options
+    "multiple"  .multiple
+  }}
+  {{ $merge = partial "functions/obj-truly" $merge }}
+  {{ $fields = .fields | append (dict "<<" (slice $merge (print "~" .var))) }}
 
 {{ else }}
 
-  {{ $type        := .type | default "relation" }}
+  {{ $widget      := .widget | default "relation" }}
   {{ $value_type  := "" }}
-  {{ if in (slice "int" "float") .type }}
-    {{ $type       = "number" }}
-    {{ $value_type = .type }}
+  {{ if in (slice "int" "float") .widget }}
+    {{ $widget     = "number" }}
+    {{ $value_type = .widget }}
   {{ end }}
   {{ $i18n  := "duplicate" }}
-  {{ if in (slice "string" "text" "markdown" "image") .type }}
+  {{ if in (slice "string" "text" "markdown" "image") .widget }}
     {{ $i18n = true }}
   {{ end }}
   {{ $label := .label | default .name | default "single" }}
   {{ $hint  := .hint | default "" }}
-  {{ if not .type }}
+  {{ if not .widget }}
     {{ $page   := site.GetPage .name }}
     {{ $cms    := $page.Params.cms }}
     {{ $label   = $cms.singular }}
@@ -30,32 +40,32 @@
 
   {{ $field := dict
     "name"           .name
-    "widget"         $type
+    "widget"         $widget
     "required"       false
     "label"          ($label | default .name)
   }}
 
-  {{ if eq $type "number" }}
+  {{ if eq $widget "number" }}
     {{ $field = merge $field (dict
       "value_type"     $value_type
     ) }}
-  {{ else if eq $type "markdown" }}
+  {{ else if eq $widget "markdown" }}
     {{ $field = merge $field (dict
       "show_raw"       true
     ) }}
-  {{ else if eq $type "date" }}
+  {{ else if eq $widget "date" }}
     {{ $field = merge $field (dict
       "format"         `yyyy-MM-dd HH:mm:ss`
       "date_format"    `yyyy-MM-dd`
       "time_format"    `HH:mm`
     ) }}
-  {{ else if eq $type "image" }}
-  {{ else if eq $type "select" }}
+  {{ else if eq $widget "image" }}
+  {{ else if eq $widget "select" }}
     {{ $field = merge $field (dict
       "options"        .options
       "multiple"       .multiple
     ) }}
-  {{ else if eq $type "relation" }}
+  {{ else if eq $widget "relation" }}
     {{ $field = merge $field (dict
       "options_length" 100
       "collection"     .name
@@ -64,10 +74,11 @@
       "display_fields" (slice "{{title}}")
       "multiple"       .multiple
     ) }}
-  {{ else if in (slice "list" "object") $type }}
+  {{ else if in (slice "list" "object") $widget }}
     {{ $fields_children := slice }}
     {{ range .params | default slice }}
-      {{ $fields_children = partial "cms/config/collections-params" (merge . (dict "fields" $fields_children "t" $.t)) }}
+      {{ $opts           := merge . (dict "fields" $fields_children "t" $.t) }}
+      {{ $fields_children = partial "cms/config/collections-params" $opts }}
     {{ end }}
     {{ $field = merge $field (dict
       "collapsed"      true

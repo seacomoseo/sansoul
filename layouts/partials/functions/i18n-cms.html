@@ -1,16 +1,18 @@
-
+{{/*
 {{ $lang := partial "functions/lang-cms" . }}
 {{ $path := print "i18n/" $lang ".yml" }}
 {{ $file := readFile $path }}
 {{ $i18n := unmarshal $file }}
-{{/*
 {{ if ne $lang "es" }}
   {{ $path_es := print "i18n/es.yml" }}
   {{ $file_es := readFile $path_es }}
   {{ $i18n_es := unmarshal $file_es }}
   {{ $i18n     = merge $i18n_es $i18n }}
 {{ end }}
-*/}}
 {{ $cms := index site.Data.cms $lang }}
 {{ $i18n = merge $i18n $cms }}
+{{ return $i18n }}
+*/}}
+{{ $lang := partial "functions/lang-cms" . }}
+{{ $i18n := index site.Data.cms $lang }}
 {{ return $i18n }}

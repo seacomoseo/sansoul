@@ -15,18 +15,22 @@ tax_of:
   breadcrumbs: null # boolean
   schema: null # string [ articleSection in article, brand or manufacturer in product, author in all ]
 params:
-- name: null # string * if has prefix '~', get YAML variable
+- base: null # string get YAML variable
+  name: null # string
   label: null # string
   hint: null # string
-  type: null # [ boolean, int, float, string, text, markdown, date, image, select, relation, list, object ] *
+  widget: null # [ boolean, int, float, string, text, markdown, date, image, select, relation, list, object ] *
   options: []
   # - label: null # string
   #   value: null # string
   multiple: null # boolean
-  default: null # string
   schema: null # strings
   pages: [] # list of filenames
-  params: [] # like params without `type: list`, `list` and `schema` in 2nd level
+  params: [] # like params without `widget: list`, `list` and `schema` in 2nd level
+defaults:
+- name: null # string
+  kind: null # [ boolean, int, float, string, slice, dict ] *
+  value: null # string
 tpl:
   toc: null # boolean
   background: {}

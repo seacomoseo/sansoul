@@ -30,7 +30,16 @@
   {{ with $config_lang }}
     {{/*  i18n  */}}
     {{ $t := index site.Data.i18n $lang }}
-    {{ $cascade = dict "singular" $t.types_default_single_singular }}
+
+    {{/*  Global Cascade  */}}
+    {{ $cascade    = dict "singular" $t.types_default_single_singular }}
+    {{ $defaults  := dict }}
+    {{ range site.Data.types.all.defaults | default slice }}
+      {{ $options := dict "string" .value "kind" .kind }}
+      {{ $value   := partial "string-to-kind" $options }}
+      {{ $defaults = merge $defaults (dict .name $value) }}
+    {{ end }}
+    {{ $cascade    = merge $defaults $cascade }}
 
     {{ $config_mix  := . }}
     {{ if gt (len $langs) 1 }}
@@ -126,23 +135,11 @@
           {{ with site.Data.types.all.params }}
             {{ $customs    = $customs | append . }}
           {{ end }}
-          {{ $defs       := where $customs "default" "ne" nil }}
-          {{ $customs     = where $customs "default" "eq" nil }}
-          {{ $defaults := dict }}
-          {{ range $defs }}
-            {{ $default  := .default }}
-            {{ if      eq .type "int" }}
-              {{ $default = int .default }}
-            {{ else if eq .type "float" }}
-              {{ $default = float .default }}
-            {{ else if eq .type "boolean" }}
-              {{ $default = eq "true" .default }}
-            {{ else if eq .type "list" }}
-              {{ $default = split .default "," }}
-            {{ else if eq .type "object" }}
-              {{ $default = unmarshal .default }}
-            {{ end }}
-            {{ $defaults  = merge $defaults (dict .name $default) }}
+          {{ $defaults    := dict }}
+          {{ range .defaults | default slice }}
+            {{ $options   := dict "string" .value "kind" .kind }}
+            {{ $value     := partial "string-to-kind" $options }}
+            {{ $defaults   = merge $defaults (dict .name $value) }}
           {{ end }}
 
           {{ $obj         := dict 
@@ -273,15 +270,20 @@
         "lang"         .
       )
       (dict
+        "source"       (print "content." . "/values.yml")
+        "target"       (print "data/values." . ".yml")
+        "lang"         .
+      )
+      (dict
         "source"       (print "content." .)
         "target"       "content"
-        "excludeFiles" (slice "section" "modal" (print "single/_index.md"))
+        "excludeFiles" (slice "section" "modal" "single/_index.md" "values.yml")
         "lang"         .
       )
       (dict
         "source"       (print "themes/sansoul/content." .)
         "target"       "content"
-        "excludeFiles" (slice "section" "modal")
+        "excludeFiles" (slice "section" "modal" "values.yml")
         "lang"         .
       )
     }}

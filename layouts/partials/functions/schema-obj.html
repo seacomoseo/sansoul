@@ -1,9 +1,0 @@
-{{ $schema := dict }}
-
-{{ range $k, $v := . }}
-  {{ with . }}
-    {{ $schema = merge $schema (dict $k .) }}
-  {{ end }}
-{{ end }}
-
-{{ return $schema }}

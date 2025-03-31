@@ -13,7 +13,7 @@
   "inLanguage" page.Lang
   "isPartOf"   (dict "@id" page.Permalink)
 -}}
-{{- $schema = partial "functions/schema-obj" $schema -}}
+{{- $schema = partial "functions/obj-truly" $schema -}}
 
 <script type="application/ld+json">
   {{- $schema | jsonify | safeJS -}}

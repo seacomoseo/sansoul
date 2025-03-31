@@ -1,11 +1,15 @@
-{{ $text    := . }}
-{{ $icon    := "" }}
-{{ $pin     := "" }}
+{{ $text := . }}
+{{ $icon := "" }}
+{{ $pin  := "" }}
 
-{{ with findRE `(?s)^::?(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*)::?` . }}
+{{ with findRE `(?s)^:([\w-]|[^\d:]{2}|[\w-]{3,}?):|^::.*?::` . }}
   {{ with index . 0 }}
-    {{ $icon = replace . ":" "" }}
-    {{ $text = $text | replaceRE `(?s)^::?(0[1-9A-Za-z_-]*|[1-9A-Za-z_-][\w-]*)::? ?` "" }}
+    {{ if in . "::" }}
+      {{ $pin = replace . "::" "" }}
+    {{ else }}
+      {{ $icon = replace . ":" "" }}
+    {{ end }}
+    {{ $text = $text | replaceRE `(?s)(^:([\w-]|[^\d:]{2}|[\w-]{3,}?):|^::.*?::)\s?` "" }}
   {{ end }}
 {{ end }}
 

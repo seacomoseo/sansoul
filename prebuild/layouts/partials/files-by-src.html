@@ -40,19 +40,9 @@
                     {{ end }}
 
                     {{ if ne .default nil }}
-                      {{ $default  := .default }}
-                      {{ if      eq .kind "int" }}
-                        {{ $default = int .default }}
-                      {{ else if eq .kind "float" }}
-                        {{ $default = float .default }}
-                      {{ else if eq .kind "boolean" }}
-                        {{ $default = eq "true" .default }}
-                      {{ else if eq .kind "slice" }}
-                        {{ $default = split .default (.delimit | default ",") }}
-                      {{ else if eq .kind "dict" }}
-                        {{ $default = unmarshal .default }}
-                      {{ end }}
-                      {{ $pair = $pair | default $default }}
+                      {{ $options  := dict "string" .default "kind" .kind "delimit" .delimit }}
+                      {{ $default  := partial "string-to-kind" $options }}
+                      {{ $pair      = $pair | default $default }}
                     {{ end }}
 
                     {{ if $pair }}
