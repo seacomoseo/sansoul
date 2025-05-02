@@ -40,7 +40,7 @@
     {{- $class := slice
       "boxes"
       (cond (or (gt $cols.vl 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
-      (cond (not (.direction | or (eq .direction "right"))) "" (print "boxes--" .direction))
+      (cond (or (not .direction) (eq .direction "right")) "" (print "boxes--" .direction))
       (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
       (cond (not .align_y) "" (print "align-items-" .align_y))
       (cond (not .align_x) "" (print "justify-" .align_x))

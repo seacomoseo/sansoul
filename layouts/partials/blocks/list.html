@@ -39,7 +39,7 @@
         {{- $pages = sort $pages "Date" "desc" -}}
       {{- end -}}
       */ -}}
-      {{- $firsts_pages  := $pages -}}
+      {{- $after_pages  := $pages -}}
 
       {{- /* TEMPLATE  */ -}}
       {{- $tpl_box        := $.box | default dict -}}
@@ -70,7 +70,7 @@
 
       {{- if and page.IsSection (eq (len $types) 1) (ne $type "related") -}}
         {{- /* PAGE PARENT  */ -}}
-        {{- $firsts_pages = (page.Paginate $pages $max).Pages -}}
+        {{- $after_pages = (page.Paginate $pages $max).Pages -}}
         {{- partial "pagination" page
           | replaceRE `\n|\s{2,}|<li.*?>|</li>` ""
           | replaceRE `<ul class="pagination pagination-default">` `<div class="pagination buttons">`
@@ -105,7 +105,12 @@
           {{- $pages = where $pages "Date" "le" (time .) -}}
         {{- end -}}
         {{- /* Maximum number of pages  */ -}}
-        {{- $firsts_pages = $pages | first $max -}}
+        {{- /* If $max < 0 use last with |$max|; if not, use first */ -}}
+        {{- $_max_ := int (math.Abs $max) -}}
+        {{- $after_pages = cond (lt $max 0)
+          (last  $_max_ $pages)
+          (first $_max_ $pages)
+        -}}
       {{- end -}}
 
       {{- if len $pages -}}
@@ -117,7 +122,7 @@
 
         {{- /* PAGES TO BOXES  */ -}}
         {{- $boxes   := slice -}}
-        {{- range $firsts_pages -}}
+        {{- range $after_pages -}}
           {{- $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
           {{- $page  := dict
             "Page"    .
