@@ -27,6 +27,7 @@
     - `rate`
   - `single/*.md`
     - `menu.hide_anchors`
+  - `section/base/footer.yml` > `values.yml > footer`
 - `types/*.yml`
     - `tpl.list`
       - `tags`
