@@ -71,7 +71,7 @@
   "cta-light"  (site.Data.styles.colors.cta.light  | default "")
   "cta-dark"   (site.Data.styles.colors.cta.dark   | default "")
   "cta-contrast-text" (or (in (slice "all" "text") site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
-  "cta-contrast-bg"   (or (in (slice "all" "bg")   site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
+  "cta-contrast-fill" (or (in (slice "all" "fill") site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
   */}}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment)

@@ -43,7 +43,19 @@
         (dict "name" `color`    "widget" `color`  "required" false "label" $t.styles_colors_color    "allow_input" true)
         (dict "name" `light`    "widget" `color`  "required" false "label" $t.styles_colors_light    "allow_input" true)
         (dict "name" `dark`     "widget" `color`  "required" false "label" $t.styles_colors_dark     "allow_input" true)
-        (dict "name" `contrast` "widget" `select` "required" false "label" $t.styles_colors_contrast "options" `~OPTIONS_CONTRAST` "hint" $t.styles_colors_contrast_hint)
+        (dict
+          "name"      `contrast`
+          "widget"    `object`
+          "required"  false
+          "label"     $t.styles_colors_contrast
+          "hint"      $t.styles_colors_contrast_hint
+          "collapsed" false
+          "fields"    (slice
+            (dict "name" `fill` "widget" `boolean` "required" false "label" $t.styles_colors_contrast_fill)
+            (dict "name" `in`   "widget" `boolean` "required" false "label" $t.styles_colors_contrast_in  )
+            (dict "name" `text` "widget" `boolean` "required" false "label" $t.styles_colors_contrast_text)
+          )
+        )
       )
     )
   )

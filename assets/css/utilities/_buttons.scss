@@ -18,7 +18,7 @@
 // Button
 
 .button {
-  color: var(--base-text);
+  color: var(--base-in);
   // background-color: transparent;
   background-color: color-mix(in srgb, var(--base), transparent 100%);
   position: relative;
@@ -67,7 +67,7 @@
   min-height: 2.5em;
   > .icon {
     font-size: 1.5em;
-    color: var(--base-text);
+    color: var(--base-in);
     opacity: .75;
     transition: color .1s;
   }
@@ -103,11 +103,11 @@
   transition-duration: .1s;
   &[disabled] {
     --base: var(--gray);
-    --base-text: var(--gray-text);
+    --base-in: var(--gray-in);
     --hover: var(--gray);
-    --hover-text: var(--gray-text);
+    --hover-in: var(--gray-in);
     --active: var(--gray);
-    --active-text: var(--gray-text);
+    --active-in: var(--gray-in);
     opacity: .5;
     cursor: not-allowed;
   }
@@ -121,10 +121,10 @@
     @if $buttons-outline {
       color: var(--base);
     } @else {
-      color: var(--base-text);
+      color: var(--base-in);
     }
     --base: var(--hover);
-    --base-text: var(--hover-text);
+    --base-in: var(--hover-in);
     @if $buttons-3d {
       transform: translateY(-.125em);
       &::after {
@@ -144,10 +144,10 @@
     @if $buttons-outline {
       color: var(--base);
     } @else {
-      color: var(--base-text);
+      color: var(--base-in);
     }
     --base: var(--active);
-    --base-text: var(--active-text);
+    --base-in: var(--active-in);
     @if $buttons-3d {
       filter: none;
       transform: none;

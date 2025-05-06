@@ -33,13 +33,17 @@
     "styles-colors-alt-dark"             (.styles.colors.alt.dark                 | default "")
     "styles-colors-cta-dark"             (.styles.colors.cta.dark                 | default "")
 
-    "styles-colors-main-contrast-text"   (or (in (slice "all" "text") .styles.colors.main.contrast) (not .styles.colors.main.contrast) | not | not | string)
-    "styles-colors-alt-contrast-text"    (or (in (slice "all" "text") .styles.colors.alt.contrast ) (not .styles.colors.alt.contrast)  | not | not | string)
-    "styles-colors-cta-contrast-text"    (or (in (slice "all" "text") .styles.colors.cta.contrast ) (not .styles.colors.cta.contrast)  | not | not | string)
+    "styles-colors-main-contrast-fill"   (.styles.colors.main.contrast.fill       | not | not | string)
+    "styles-colors-alt-contrast-fill"    (.styles.colors.alt.contrast.fill        | not | not | string)
+    "styles-colors-cta-contrast-fill"    (.styles.colors.cta.contrast.fill        | not | not | string)
 
-    "styles-colors-main-contrast-bg"     (or (in (slice "all" "bg")   .styles.colors.main.contrast) (not .styles.colors.main.contrast) | not | not | string)
-    "styles-colors-alt-contrast-bg"      (or (in (slice "all" "bg")   .styles.colors.alt.contrast ) (not .styles.colors.alt.contrast)  | not | not | string)
-    "styles-colors-cta-contrast-bg"      (or (in (slice "all" "bg")   .styles.colors.cta.contrast ) (not .styles.colors.cta.contrast)  | not | not | string)
+    "styles-colors-main-contrast-in"     (.styles.colors.main.contrast.in         | not | not | string)
+    "styles-colors-alt-contrast-in"      (.styles.colors.alt.contrast.in          | not | not | string)
+    "styles-colors-cta-contrast-in"      (.styles.colors.cta.contrast.in          | not | not | string)
+
+    "styles-colors-main-contrast-text"   (.styles.colors.main.contrast.text       | not | not | string)
+    "styles-colors-alt-contrast-text"    (.styles.colors.alt.contrast.text        | not | not | string)
+    "styles-colors-cta-contrast-text"    (.styles.colors.cta.contrast.text        | not | not | string)
 
     "styles-fonts-base-family"           (.styles.fonts.base.family               | default "Arial")
     "styles-fonts-title-family"          (.styles.fonts.title.family              | default "Arial")

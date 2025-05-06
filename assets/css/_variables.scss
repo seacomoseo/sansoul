@@ -1,46 +1,76 @@
 
 // Colors
-$text:                     #282525                         !default;
-$white:                    $styles-colors-base-white         !default;
-$light:                    $styles-colors-base-light         !default;
-$dark:                     $styles-colors-base-dark          !default;
-$black:                    $styles-colors-base-black         !default;
-$gray:                     $styles-colors-base-gray          !default;
-$main:                     $styles-colors-main-color         !default;
+$text:                     #282525                 !default;
+$white:                    $styles-colors-base-white !default;
+$light:                    $styles-colors-base-light !default;
+$dark:                     $styles-colors-base-dark  !default;
+$black:                    $styles-colors-base-black !default;
+$gray:                     $styles-colors-base-gray  !default;
+$main:                     $styles-colors-main-color !default;
 $alt:                   if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
-$cta:                      $styles-colors-cta-color          !default;
+$cta:                      $styles-colors-cta-color  !default;
 
 $main-light:            if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
 $alt-light:             if($styles-colors-alt-light  != '', $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
-$cta-light:             if($styles-colors-cta-light  != '', $styles-colors-cta-light, mix($white,  $cta,  75%)) !default;
+$cta-light:             if($styles-colors-cta-light  != '', $styles-colors-cta-light,  mix($white, $cta,  75%)) !default;
 
 $main-dark:             if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
 $alt-dark:              if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
-$cta-dark:              if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,  mix($black,  $cta,  60%)) !default;
+$cta-dark:              if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,   mix($black, $cta,  60%)) !default;
 
-$gray-contrast-neutral: text-contrast($gray)                !default;
-$main-contrast-neutral: if($styles-colors-main-contrast-text == 'true', text-contrast($main), $white) !default;
-$alt-contrast-neutral:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt ), $white) !default;
-$cta-contrast-neutral:  if($styles-colors-cta-contrast-text  == 'true', text-contrast($cta),  $white) !default;
+$is-gray-contrast-fill: true                                        !default;
+$is-main-contrast-fill: $styles-colors-main-contrast-fill == 'true' !default;
+$is-alt-contrast-fill:  $styles-colors-alt-contrast-fill  == 'true' !default;
+$is-cta-contrast-fill:  $styles-colors-cta-contrast-fill  == 'true' !default;
 
-$gray-contrast-colored: text-contrast($gray, $light, $dark) !default;
-$main-contrast-colored: if($styles-colors-main-contrast-text == 'true', text-contrast($main, $main-light, $main-dark), $main-light) !default;
-$alt-contrast-colored:  if($styles-colors-alt-contrast-text  == 'true', text-contrast($alt,  $alt-light,  $alt-dark ), $alt-light ) !default;
-$cta-contrast-colored:  if($styles-colors-cta-contrast-text  == 'true', text-contrast($cta,  $cta-light,  $cta-dark),  $cta-light ) !default;
+$is-gray-contrast-in:   true                                        !default;
+$is-main-contrast-in:   $styles-colors-main-contrast-in == 'true'   !default;
+$is-alt-contrast-in:    $styles-colors-alt-contrast-in  == 'true'   !default;
+$is-cta-contrast-in:    $styles-colors-cta-contrast-in  == 'true'   !default;
 
-$gray-contrast-bg:      true                                           !default;
-$main-contrast-bg:      $styles-colors-main-contrast-bg      == 'true' !default;
-$alt-contrast-bg:       $styles-colors-alt-contrast-bg       == 'true' !default;
-$cta-contrast-bg:       $styles-colors-cta-contrast-bg       == 'true' !default;
+$is-gray-contrast-text: true                                        !default;
+$is-main-contrast-text: $styles-colors-main-contrast-text == 'true' !default;
+$is-alt-contrast-text:  $styles-colors-alt-contrast-text  == 'true' !default;
+$is-cta-contrast-text:  $styles-colors-cta-contrast-text  == 'true' !default;
 
-$white-3d:              mix($black, $white, 25%)             !default;
-$light-3d:              mix($black, $light, 25%)             !default;
-$dark-3d:               mix($black, $dark,  25%)             !default;
-$black-3d:              mix($dark,  $black, 25%)             !default;
-$gray-3d:               mix($black, $gray,  25%)             !default;
-$main-3d:               mix($black, $main,  25%)             !default;
-$alt-3d:                mix($black, $alt,   25%)             !default;
-$cta-3d:                mix($black, $cta,   25%)             !default;
+$gray-contrast-colored: text-contrast($gray, $light,      $dark)      !default;
+$main-contrast-colored: text-contrast($main, $main-light, $main-dark) !default;
+$alt-contrast-colored:  text-contrast($alt,  $alt-light,  $alt-dark)  !default;
+$cta-contrast-colored:  text-contrast($cta,  $cta-light,  $cta-dark)  !default;
+
+$gray-contrast-neutral: text-contrast($gray) !default;
+$main-contrast-neutral: text-contrast($main) !default;
+$alt-contrast-neutral:  text-contrast($alt)  !default;
+$cta-contrast-neutral:  text-contrast($cta)  !default;
+
+$gray-contrast-neutral-flip: text-contrast($gray, $dark, $white) !default;
+$main-contrast-neutral-flip: text-contrast($main, $dark, $white) !default;
+$alt-contrast-neutral-flip:  text-contrast($alt,  $dark, $white)  !default;
+$cta-contrast-neutral-flip:  text-contrast($cta,  $dark, $white)  !default;
+
+$gray-contrast-in: text-contrast($gray)                                                          !default;
+$main-contrast-in: if($is-main-contrast-in, $main-contrast-neutral, $main-contrast-neutral-flip) !default;
+$alt-contrast-in:  if($is-alt-contrast-in,  $alt-contrast-neutral,  $alt-contrast-neutral-flip)  !default;
+$cta-contrast-in:  if($is-cta-contrast-in,  $cta-contrast-neutral,  $cta-contrast-neutral-flip)  !default;
+
+$gray-contrast-colored-in: text-contrast($gray-contrast-colored) !default;
+$main-contrast-colored-in: text-contrast($main-contrast-colored) !default;
+$alt-contrast-colored-in:  text-contrast($alt-contrast-colored)  !default;
+$cta-contrast-colored-in:  text-contrast($cta-contrast-colored)  !default;
+
+$gray-contrast-colored-in-flip: text-contrast($gray-contrast-colored-in) !default;
+$main-contrast-colored-in-flip: text-contrast($main-contrast-colored-in) !default;
+$alt-contrast-colored-in-flip:  text-contrast($alt-contrast-colored-in)  !default;
+$cta-contrast-colored-in-flip:  text-contrast($cta-contrast-colored-in)  !default;
+
+$white-3d:              mix($black, $white, 25%) !default;
+$light-3d:              mix($black, $light, 25%) !default;
+$dark-3d:               mix($black, $dark,  25%) !default;
+$black-3d:              mix($dark,  $black, 25%) !default;
+$gray-3d:               mix($black, $gray,  25%) !default;
+$main-3d:               mix($black, $main,  25%) !default;
+$alt-3d:                mix($black, $alt,   25%) !default;
+$cta-3d:                mix($black, $cta,   25%) !default;
 
 $options-colors: (
   'main':       $main,

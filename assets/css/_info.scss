@@ -4,7 +4,7 @@
   .button[style] {
     --base: var(--cta);
     @if not $buttons-outline {
-      --base-text: color-mix(in srgb, var(--light) 25%, black);
+      --base-in: color-mix(in srgb, var(--light) 25%, black);
     }
     &:hover {
       opacity: .75;
@@ -15,7 +15,7 @@
     @if $buttons-outline {
       color: var(--base);
     } @else {
-      color: var(--base-text);
+      color: var(--base-in);
     }
     opacity: .75;
   }
