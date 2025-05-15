@@ -110,7 +110,7 @@ export function formValid (form) {
 
   // Telephone
   form.querySelectorAll('[type="tel"]').forEach(input => {
-    const telMatch = input.value.match(/^\+?[0-9\s-+]{9,15}$/)
+    const telMatch = input.value.match(/^\+?[0-9\s-+]{6,20}$/)
     if (input.value && !telMatch) {
       setItemStyle(input, true)
       addMessage(formErrorTel, input.placeholder)
