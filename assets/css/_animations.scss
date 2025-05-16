@@ -72,10 +72,14 @@
     visibility: hidden;
   }
 }
+:root {
+  --show-from: translateY(3rem);
+  --opacity-from: 0;
+}
 @keyframes show-from {
   0% {
-    transform: var(--show-from, translateY(3rem));
-    opacity: var(--opacity-from, 0);
+    transform: var(--show-from);
+    opacity: var(--opacity-from);
   }
   100% {
     transform: none;
