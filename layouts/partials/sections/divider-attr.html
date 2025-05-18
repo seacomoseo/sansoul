@@ -1,16 +1,15 @@
-{{ $_next  := cond .next "-next" "" }}
-{{ $__next := cond .next "--next" "" }}
-{{ $class  := print "div" $_next }}
-{{ $style  := "" }}
+{{ $_next := cond .next "-next" "" }}
+{{ $class := print "div" $_next }}
+{{ $style := "" }}
 
 {{ with .section }}
   {{ with where (partial "draws/dividers" .) "id" .div }}
     {{ with index . 0 }}
       {{ if eq .size 2 }}
-        {{ $class = print $class " div" $__next "--size" }}
+        {{ $class = print $class " div" $_next "--size" }}
       {{ end }}
       {{ if not .repeat }}
-        {{ $class = print $class " div" $__next "--not-repeat" }}
+        {{ $class = print $class " div" $_next "--not-repeat" }}
       {{ end }}
     {{ end }}
   {{ end }}
