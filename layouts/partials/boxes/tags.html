@@ -103,9 +103,9 @@
 
         {{- $label = partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
 
-      {{- else if eq .type "custom" -}}
+      {{- else -}}
 
-        {{- $label = .label -}}
+        {{- $label = .label | markdownify -}}
 
       {{- end -}}
 
