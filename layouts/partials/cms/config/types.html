@@ -30,6 +30,7 @@
   `~SETTINGS_TYPES_PARAMS_HINT`
   `~SETTINGS_TYPES_PARAMS_WIDGET`
   `~SETTINGS_TYPES_PARAMS_OPTIONS`
+  `~SETTINGS_TYPES_PARAMS_DEFAULT`
   `~SETTINGS_TYPES_PARAMS_MULTIPLE`
   `~SETTINGS_TYPES_PARAMS_SCHEMA`
 }}
@@ -40,6 +41,7 @@
   `~SETTINGS_TYPES_PARAMS_HINT`
   `~SETTINGS_TYPES_PARAMS_WIDGET_LAST`
   `~SETTINGS_TYPES_PARAMS_OPTIONS`
+  `~SETTINGS_TYPES_PARAMS_DEFAULT`
   `~SETTINGS_TYPES_PARAMS_MULTIPLE`
 }}
 
@@ -85,7 +87,8 @@
       (dict "name" `value` "widget" `string`  "required" false "label" $t.types_params_options_value)
     )
   ))
-  (dict "&SETTINGS_TYPES_PARAMS_PAGES"  (dict
+  (dict "&SETTINGS_TYPES_PARAMS_DEFAULT"  (dict "name" `default`   "widget" `string`  "required" false "label" $t.types_params_default))
+  (dict "&SETTINGS_TYPES_PARAMS_PAGES"    (dict
     "name"           `pages`
     "widget"         `list`
     "required"       false

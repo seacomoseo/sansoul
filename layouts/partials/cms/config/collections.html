@@ -157,8 +157,12 @@
       `~P_PRICE`
     }}
   {{ end }}
-  {{ range (.Params.customs | default slice) | append (.Params.taxonomies | default slice) }}
+  {{ range .Params.customs | default slice }}
     {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
+    {{ $fields = partial "cms/config/collections-params" $opts }}
+  {{ end }}
+  {{ range .Params.taxonomies | default slice }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $t "tax") }}
     {{ $fields = partial "cms/config/collections-params" $opts }}
   {{ end }}
   {{ if .Params.is_related }}

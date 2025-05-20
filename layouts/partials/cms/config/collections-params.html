@@ -1,14 +1,29 @@
-{{ $fields := slice }}
+{{ $fields   := slice }}
+{{ $widget   := .widget | default "string" }}
+{{ $default  := .default }}
+{{ if ne .default nil }}
+  {{ $kind   := $widget }}
+  {{ if eq $widget "list" }}
+    {{ $kind  = "slice" }}
+  {{ else if eq $widget "object" }}
+    {{ $kind  = "dict" }}
+  {{ end }}
+  {{ $opts   := dict "string" .default "kind" $kind }}
+  {{ $default = partial "functions/string-to-kind" $opts }}
+{{ end }}
 
 {{ if .var }}
 
+  {{ $collapsed := in (slice "list" "object") $widget }}
+
   {{ $merge := dict
-    "collapsed" true
+    "collapsed" $collapsed
     "name"      .name
     "label"     .label
     "hint"      .hint
-    "widget"    .widget
+    "widget"    $widget
     "options"   .options
+    "default"   $default
     "multiple"  .multiple
   }}
   {{ $merge = partial "functions/obj-truly" $merge }}
@@ -16,19 +31,20 @@
 
 {{ else }}
 
-  {{ $widget      := .widget | default "relation" }}
   {{ $value_type  := "" }}
-  {{ if in (slice "int" "float") .widget }}
+  {{ if in (slice "int" "float") $widget }}
     {{ $widget     = "number" }}
-    {{ $value_type = .widget }}
+    {{ $value_type = $widget }}
   {{ end }}
   {{ $i18n  := "duplicate" }}
-  {{ if in (slice "string" "text" "markdown" "image") .widget }}
+  {{ if in (slice "string" "text" "markdown" "image") $widget }}
     {{ $i18n = true }}
   {{ end }}
-  {{ $label := .label | default .name | default "single" }}
-  {{ $hint  := .hint | default "" }}
-  {{ if not .widget }}
+  {{ $label   := .label | default .name | default "single" }}
+  {{ $hint    := .hint | default "" }}
+  {{ if .tax }}
+    {{/*  tax_of  */}}
+    {{ $widget := "relation" }}
     {{ $page   := site.GetPage .name }}
     {{ $cms    := $page.Params.cms }}
     {{ $label   = $cms.singular }}
@@ -43,6 +59,7 @@
     "widget"         $widget
     "required"       false
     "label"          ($label | default .name)
+    "default"        $default
   }}
 
   {{ if eq $widget "number" }}
