@@ -162,7 +162,7 @@
     {{ $fields = partial "cms/config/collections-params" $opts }}
   {{ end }}
   {{ range .Params.taxonomies | default slice }}
-    {{ $opts  := merge . (dict "fields" $fields "t" $t "tax") }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $t "tax" true) }}
     {{ $fields = partial "cms/config/collections-params" $opts }}
   {{ end }}
   {{ if .Params.is_related }}
