@@ -32,14 +32,16 @@
     {{ $t := index site.Data.i18n $lang }}
 
     {{/*  Global Cascade  */}}
-    {{ $cascade    = dict "singular" $t.types_default_single_singular }}
-    {{ $defaults  := dict }}
+    {{ $cascade      = dict "singular" $t.types_default_single_singular }}
+    {{ $defaults    := dict }}
+    {{ $defaults_t  := dict }}
     {{ range site.Data.types.all.defaults | default slice }}
-      {{ $options := dict "string" .value "kind" .kind }}
-      {{ $value   := partial "string-to-kind" $options }}
-      {{ $defaults = merge $defaults (dict .name $value) }}
+      {{ $options   := dict "string" .value "kind" .kind }}
+      {{ $value     := partial "string-to-kind" $options }}
+      {{ $defaults   = merge $defaults (dict .name $value) }}
+      {{ $defaults_t = merge $defaults_t (dict .name nil) }}
     {{ end }}
-    {{ $cascade    = merge $defaults $cascade }}
+    {{ $cascade      = merge $defaults $cascade }}
 
     {{ $config_mix  := . }}
     {{ if gt (len $langs) 1 }}
@@ -135,11 +137,10 @@
           {{ with site.Data.types.all.params }}
             {{ $customs    = $customs | append . }}
           {{ end }}
-          {{ $defaults    := dict }}
           {{ range .defaults | default slice }}
             {{ $options   := dict "string" .value "kind" .kind }}
             {{ $value     := partial "string-to-kind" $options }}
-            {{ $defaults   = merge $defaults (dict .name $value) }}
+            {{ $defaults_t = merge $defaults_t (dict .name $value) }}
           {{ end }}
 
           {{ $obj         := dict 
@@ -166,7 +167,7 @@
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
               "breadcrumbs" $breadcrumbs
-            ) | merge $defaults)
+            ) | merge $defaults_t)
           }}
             {{/*  ) | merge .tpl)  */}}
             {{/*  | merge site.Data.types.all.tpl  */}}
