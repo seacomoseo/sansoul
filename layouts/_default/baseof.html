@@ -1,6 +1,6 @@
 {{ block "none" . }}{{ end -}}
 <!DOCTYPE html>
-<html lang="{{ .Lang }}">
+<html lang="{{ .Params.locale | default .Lang }}">
 
   {{- /*  TPL  */ -}}
   {{- $tpl := partial "functions/tpl-sections" . -}}

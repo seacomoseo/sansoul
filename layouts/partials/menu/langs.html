@@ -17,7 +17,7 @@
       "label" .Language.LanguageName
       "title" (print .Language.LanguageName ": " .Title)
       "lock"  $.ofuscate
-      "lang"  .Lang
+      "lang"  (.Params.locale | default .Lang)
     ) }}
   {{ end }}
   {{ $items = $items | append (dict

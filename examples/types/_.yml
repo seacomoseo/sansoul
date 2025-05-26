@@ -28,10 +28,6 @@ params:
   schema: null # strings
   pages: [] # list of filenames
   params: [] # like params without `widget: list`, `list` and `schema` in 2nd level
-defaults:
-- name: null # string
-  kind: null # [ boolean, int, float, string, slice, dict ] *
-  value: null # string
 tpl:
   toc: null # boolean
   background: {}
@@ -51,6 +47,10 @@ es:
   seo: null # string
   description: null # string
   content: null # string block
+  defaults:
+  - name: null # string
+    kind: null # [ boolean, int, float, string, slice, dict ] *
+    value: null # string
 en: {}
 fr: {}
 de: {}

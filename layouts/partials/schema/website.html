@@ -11,7 +11,7 @@
   "description"   site.Params.description
   "publisher"     $organization
   "alternateName" site.Data.schema.names
-  "inLanguage"    .Lang
+  "inLanguage"    (.Params.locale | default .Lang)
 }}
 
 {{ return $schema }}

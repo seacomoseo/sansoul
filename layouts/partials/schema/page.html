@@ -96,7 +96,7 @@
   "hasPart"            $has_part
   "breadcrumb"         $breadcrumbs
   "author"             $authors
-  "inLanguage"         .Lang
+  "inLanguage"         (.Params.locale | default .Lang)
 }}
 {{ $schema = partial "functions/obj-truly" $schema }}
 

@@ -29,7 +29,7 @@
 
   "@type"            "Service"
   "@id"              (print .Permalink "#schema-service")
-  "inLanguage"       .Lang
+  "inLanguage"       (.Params.locale | default .Lang)
   "url"              .Permalink
   "name"             .Title
   "description"      (partial "functions/summary" .)

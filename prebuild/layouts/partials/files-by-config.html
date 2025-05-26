@@ -31,22 +31,27 @@
     {{/*  i18n  */}}
     {{ $t := index site.Data.i18n $lang }}
 
-    {{/*  Global Cascade  */}}
-    {{ $cascade      = dict "singular" $t.types_default_single_singular }}
-    {{ $defaults    := dict }}
-    {{ $defaults_t  := dict }}
-    {{ range site.Data.types.all.defaults | default slice }}
-      {{ $options   := dict "string" .value "kind" .kind }}
-      {{ $value     := partial "string-to-kind" $options }}
-      {{ $defaults   = merge $defaults (dict .name $value) }}
-      {{ $defaults_t = merge $defaults_t (dict .name nil) }}
-    {{ end }}
-    {{ $cascade      = merge $defaults $cascade }}
-
-    {{ $config_mix  := . }}
+    {{/*  Mix first configuration and defaults with those of the first language  */}}
+    {{ $config_mix   := . }}
+    {{ $defaults_mix := (index site.Data.types.all $lang).defaults | default slice }}
     {{ if gt (len $langs) 1 }}
       {{ $config_mix = merge $lang_first . }}
+      {{ with (index site.Data.types.all $lang_first.lang).defaults }}
+        {{ $defaults_mix = . | append $defaults_mix }}
+      {{ end }}
     {{ end }}
+
+    {{/*  Global Cascade  */}}
+    {{ $cascade    = dict "singular" $t.types_default_single_singular }}
+    {{ $defaults  := dict }}
+    {{ range $defaults_mix }}
+      {{ $options := dict "string" .value "kind" .kind }}
+      {{ $value   := partial "string-to-kind" $options }}
+      {{ $defaults = merge $defaults (dict .name $value) }}
+    {{ end }}
+    {{ $cascade    = merge $defaults $cascade }}
+
+    {{/*  Config mix language  */}}
     {{ with $config_mix }}
       {{/*  language's vars  */}}
       {{ $base_url   = .baseURL }}
@@ -137,10 +142,11 @@
           {{ with site.Data.types.all.params }}
             {{ $customs    = $customs | append . }}
           {{ end }}
+          {{ $defaults    := dict }}
           {{ range .defaults | default slice }}
             {{ $options   := dict "string" .value "kind" .kind }}
             {{ $value     := partial "string-to-kind" $options }}
-            {{ $defaults_t = merge $defaults_t (dict .name $value) }}
+            {{ $defaults   = merge $defaults (dict .name $value) }}
           {{ end }}
 
           {{ $obj         := dict 
@@ -167,7 +173,7 @@
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
               "breadcrumbs" $breadcrumbs
-            ) | merge $defaults_t)
+            ) | merge $defaults)
           }}
             {{/*  ) | merge .tpl)  */}}
             {{/*  | merge site.Data.types.all.tpl  */}}

@@ -46,7 +46,7 @@
   "description"      (partial "functions/summary" .)
   "sku"              .Params.sku
   "url"              .Permalink
-  "inLanguage"       .Lang
+  "inLanguage"       (.Params.locale | default .Lang)
   "brand"            $brand
   "manufacturer"     $manufacturer
   "image"            $image

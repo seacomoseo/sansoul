@@ -51,7 +51,7 @@
   "width"      $width
   "height"     $height
   "caption"    $caption
-  "inLanguage" .Lang
+  "inLanguage" (.Params.locale | default .Lang)
 }}
 {{ $schema = partial "functions/obj-truly" $schema }}
 

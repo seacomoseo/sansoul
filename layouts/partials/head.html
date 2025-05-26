@@ -60,9 +60,9 @@
   {{- end -}}
 {{- end }}
 <meta property="og:url" content="{{ .Permalink }}">
-<meta property="og:locale" content="{{ .Lang }}">
+<meta property="og:locale" content="{{ .Params.locale | default .Lang }}">
 {{- range .Translations }}
-  <meta property="og:locale:alternate" content="{{ .Lang }}">
+  <meta property="og:locale:alternate" content="{{ .Params.locale | default .Lang }}">
 {{- end }}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="image" content="{{ $image }}">
@@ -75,7 +75,7 @@
 <link rel="canonical" href="{{ .Permalink }}">
 {{- if .IsTranslated -}}
   {{- range .AllTranslations }}
-    <link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
+    <link rel="alternate" hreflang="{{ .Params.locale | default .Lang }}" href="{{ .Permalink }}">
   {{- end -}}
 {{- end -}}
 {{- if .Params.noindex }}

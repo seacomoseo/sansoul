@@ -13,7 +13,7 @@
   "duration"       .duration
   "contentUrl"     .contentUrl
   "embedUrl"       .embedUrl
-  "inLanguage"     page.Lang
+  "inLanguage"     (page.Params.locale | default page.Lang)
   "isPartOf"       (dict "@id" page.Permalink)
 -}}
 {{- $schema = partial "functions/obj-truly" $schema -}}

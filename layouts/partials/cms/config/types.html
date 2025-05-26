@@ -20,7 +20,6 @@
   `~SETTINGS_TYPES_RELATED`
   `~SETTINGS_TYPES_TAXONOMY_OF`
   `~SETTINGS_TYPES_PARAMS`
-  `~SETTINGS_TYPES_DEFAULTS`
   `~SETTINGS_TYPES_TEMPLATE`
 }}
 {{ $params_fields := slice
@@ -48,24 +47,6 @@
 
 {{ return slice
 
-  (dict "&SETTINGS_TYPES_ITEMS"  (dict
-    "name"           `lang`
-    "widget"         `object`
-    "required"       false
-    "label"          $t.types_lang
-    "collapsed"      true
-    "i18n"           true
-    "fields"         (slice
-      (dict "name" `permalinks`  "widget" `string` "i18n" true "required" false "label" $t.types_permalinks "hint" $t.types_permalinks_hint)
-      (dict "<<" (slice (dict "required" false "hint" $t.types_slug_hint) `~P_SLUG`))
-      (dict "name" `singular`    "widget" `string` "i18n" true "required" false "label" $t.types_singular)
-      (dict "<<" (slice (dict "required" false) `~P_TITLE`))
-      `~P_IMAGE`
-      `~P_TITLE_SEO`
-      `~P_DESCRIPTION`
-      (dict "<<" (slice (dict "name" `md`) `~P_BODY`))
-    )
-  ))
   (dict "&SETTINGS_TYPES_PARAMS_VAR"      (dict "name" `var`       "widget" `string`  "required" false "label" $t.types_params_var))
   (dict "&SETTINGS_TYPES_PARAMS_NAME"     (dict "name" `name`      "widget" `string`  "required" false "label" $t.types_params_name))
   (dict "&SETTINGS_TYPES_PARAMS_LABEL"    (dict "name" `label`     "widget" `string`  "required" false "label" $t.types_params_label))
@@ -144,6 +125,26 @@
       `~SETTINGS_TYPES_PARAMS_NAME`
       `~SETTINGS_TYPES_DEFAULTS_VALUE`
       `~SETTINGS_TYPES_DEFAULTS_KIND`
+    )
+  ))
+
+  (dict "&SETTINGS_TYPES_ITEMS"  (dict
+    "name"           `lang`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.types_lang
+    "collapsed"      true
+    "i18n"           true
+    "fields"         (slice
+      (dict "name" `permalinks`  "widget" `string` "i18n" true "required" false "label" $t.types_permalinks "hint" $t.types_permalinks_hint)
+      (dict "<<" (slice (dict "required" false "hint" $t.types_slug_hint) `~P_SLUG`))
+      (dict "name" `singular`    "widget" `string` "i18n" true "required" false "label" $t.types_singular)
+      (dict "<<" (slice (dict "required" false) `~P_TITLE`))
+      `~P_IMAGE`
+      `~P_TITLE_SEO`
+      `~P_DESCRIPTION`
+      (dict "<<" (slice (dict "name" `md`) `~P_BODY`))
+      `~SETTINGS_TYPES_DEFAULTS`
     )
   ))
 
