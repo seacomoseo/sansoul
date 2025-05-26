@@ -1,11 +1,10 @@
 {{ $fields   := slice }}
-{{ $widget   := .widget | default "string" }}
 {{ $default  := .default }}
 {{ if ne .default nil }}
-  {{ $kind   := $widget }}
-  {{ if eq $widget "list" }}
+  {{ $kind   := .widget }}
+  {{ if eq .widget "list" }}
     {{ $kind  = "slice" }}
-  {{ else if eq $widget "object" }}
+  {{ else if eq .widget "object" }}
     {{ $kind  = "dict" }}
   {{ end }}
   {{ $opts   := dict "string" .default "kind" $kind }}
@@ -14,14 +13,14 @@
 
 {{ if .var }}
 
-  {{ $collapsed := in (slice "list" "object") $widget }}
+  {{ $collapsed := in (slice "list" "object") .widget }}
 
   {{ $merge := dict
     "collapsed" $collapsed
     "name"      .name
     "label"     .label
     "hint"      .hint
-    "widget"    $widget
+    "widget"    .widget
     "options"   .options
     "default"   $default
     "multiple"  .multiple
@@ -31,6 +30,7 @@
 
 {{ else }}
 
+  {{ $widget      := .widget | default "string" }}
   {{ $value_type  := "" }}
   {{ if in (slice "int" "float") $widget }}
     {{ $widget     = "number" }}
@@ -44,7 +44,7 @@
   {{ $hint    := .hint | default "" }}
   {{ if .tax }}
     {{/*  tax_of  */}}
-    {{ $widget := "relation" }}
+    {{ $widget  = "relation" }}
     {{ $page   := site.GetPage .name }}
     {{ $cms    := $page.Params.cms }}
     {{ $label   = $cms.singular }}
