@@ -34,6 +34,8 @@
     {{ $if = true }}
   {{ else if eq . "false" }}
     {{ $if = false }}
+  {{ else if eq . "author" }}
+    {{ $if = and (not $.Page.IsSection) $.Page.Params.author }}
   {{ else }}
     {{ $opts := dict "Page" page "name" . }}
     {{ $if    = partial "functions/param" $opts }}
