@@ -19,7 +19,7 @@
       {{ end }}
     {{ end }}
   {{ else if eq . "related" }}
-    {{ $if = or $.Page.Params.related (and $.Page.Params.is_related ($.Page.CurrentSection.Pages.Related $.Page)) }}
+    {{ $if = or $.Page.Params.related (and $.Page.Params.is_related ($.Page.CurrentSection.Pages.Related $.Page)) | and (not $.Page.IsSection) }}
   {{ else if eq . "comments" }}
     {{ $if = and site.Params.disqus $.Page.Params.is_comments (not $.Page.IsSection) }}
   {{ else if eq . "children" }}
