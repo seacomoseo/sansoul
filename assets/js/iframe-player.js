@@ -22,15 +22,14 @@ export function initIframePlayer () {
     document.addEventListener('click', e => {
       const imageWithIframe = e.target.closest('.image:has(> [data-iframe])')
       if (imageWithIframe) {
-        const iframeWrap = imageWithIframe.querySelector('[data-iframe]')
+        const dataIframe = imageWithIframe.querySelector('[data-iframe]')
         let attrs = ''
         let attrsEn = ''
-        const iframe = iframeWrap.firstChild
-        const className = iframeWrap.className
-        const isYoutube = iframeWrap.dataset.youtube
-        const src = iframeWrap.dataset.youtube || iframeWrap.dataset.vimeo
+        const className = dataIframe.className
+        const isYoutube = dataIframe.dataset.youtube
+        const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo
         const idVideo = videoId(src)
-        const id = playerId(iframeWrap, idVideo)
+        const id = playerId(dataIframe, idVideo)
         if (isYoutube) {
           if (lang !== 'es') attrsEn = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           attrs =
@@ -43,7 +42,7 @@ export function initIframePlayer () {
             ` src="${src}"` +
             ' allow="fullscreen; autoplay"'
         }
-        iframeWrap.innerHTML =
+        dataIframe.outerHTML =
           '<iframe' +
             ` ${className ? ' class="' + className + '"' : ''}` +
             ` ${attrs}` +
@@ -51,14 +50,11 @@ export function initIframePlayer () {
             ' width="560" ' +
             ' height="320" ' +
           '></iframe>'
-
-        delete iframeWrap.dataset.iframe
-        delete iframeWrap.dataset.youtube
-        delete iframeWrap.dataset.vimeo
-        iframeWrap.nextElementSibling?.remove()
-
+        const iframe = imageWithIframe.querySelector('iframe')
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
         const windowObject = isYoutube ? 'YT' : 'Vimeo'
+
+        iframe.nextElementSibling?.remove()
         iframe.addEventListener('load', () => {
           loadScript(script)
             .then(() => {
@@ -96,7 +92,8 @@ export function togglePlayer (target, openModal) {
   // Play/Pause only one youtube/vimeo player
   const iframePlayers = target.querySelectorAll('.modal.ph iframe:is([src^="https://www.youtube"], [src^="https://player.vimeo.com"])')
   if (iframePlayers.length === 1) {
-    const id = playerId(target, videoId(iframePlayers[0].src))
+    const idVideo = videoId(iframePlayers[0].src)
+    const id = playerId(target, idVideo)
     const player = players[id]
     if (player) {
       if (iframePlayers[0].src.includes('https://www.youtube')) {

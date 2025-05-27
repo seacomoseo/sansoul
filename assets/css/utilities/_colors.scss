@@ -103,16 +103,37 @@ body,
   // --bg-dark: 1;
 }
 .bg-main {
-  --text:  #{ $main-contrast-neutral };
-  --title: #{ $main-contrast-neutral };
+  @if $is-main-contrast-text {
+    --text:  #{ $main-contrast-neutral };
+    --title: #{ $main-contrast-neutral };
+    --subtitle: #{ $main-contrast-colored };
+  } @else {
+    --text:  #{ $main-contrast-neutral-flip };
+    --title: #{ $main-contrast-neutral-flip };
+    --subtitle: #{ $main-contrast-colored-flip };
+  }
 }
 .bg-alt {
-  --text:  #{ $alt-contrast-neutral };
-  --title: #{ $alt-contrast-neutral };
+  @if $is-alt-contrast-text {
+    --text:  #{ $alt-contrast-neutral };
+    --title: #{ $alt-contrast-neutral };
+    --subtitle: #{ $alt-contrast-colored };
+  } @else {
+    --text:  #{ $alt-contrast-neutral-flip };
+    --title: #{ $alt-contrast-neutral-flip };
+    --subtitle: #{ $alt-contrast-colored-flip };
+  }
 }
 .bg-cta {
-  --text:  #{ $cta-contrast-neutral };
-  --title: #{ $cta-contrast-neutral };
+  @if $is-cta-contrast-text {
+    --text:  #{ $cta-contrast-neutral };
+    --title: #{ $cta-contrast-neutral };
+    --subtitle: #{ $cta-contrast-colored };
+  } @else {
+    --text:  #{ $cta-contrast-neutral-flip };
+    --title: #{ $cta-contrast-neutral-flip };
+    --subtitle: #{ $cta-contrast-colored-flip };
+  }
 }
 
 // Contrast Background
@@ -203,16 +224,16 @@ or $is-cta-contrast-text {
     @include alt-contrast($dark);
   }
   .bg-cta {
-    @include main-contrast(text-contrast($cta-contrast-neutral));
-    @include alt-contrast(text-contrast($cta-contrast-neutral));
+    @include main-contrast($cta-contrast-neutral-flip);
+    @include alt-contrast($cta-contrast-neutral-flip);
   }
   .bg-main {
-    @include alt-contrast(text-contrast($main-contrast-neutral));
-    @include cta-contrast(text-contrast($main-contrast-neutral));
+    @include alt-contrast($main-contrast-neutral-flip);
+    @include cta-contrast($main-contrast-neutral-flip);
   }
   .bg-alt {
-    @include main-contrast(text-contrast($alt-contrast-neutral));
-    @include cta-contrast(text-contrast($alt-contrast-neutral));
+    @include main-contrast($alt-contrast-neutral-flip);
+    @include cta-contrast($alt-contrast-neutral-flip);
   }
 }
 
