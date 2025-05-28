@@ -4,14 +4,9 @@ import { loadScript } from './load-script'
 
 const players = {}
 
-// Make players available globally for debugging
-if (typeof window !== 'undefined') {
-  window.debugPlayers = players
-}
-
 // Video ID
 function videoId (src) {
-  return src.match(/(youtube(-nocookie)?\.com\/embed|vimeo\.com\/video)\/([\w-]+)/)[2]
+  return src.match(/(youtube-nocookie\.com\/embed|vimeo\.com\/video)\/([\w-]+)/)[2]
 }
 
 // Player ID
@@ -20,36 +15,65 @@ function playerId (target, idVideo) {
   return `${idSection}-${idVideo}`
 }
 
-// Wait for YouTube player methods to be available
-function waitForYouTubePlayerMethods (player, method, id, maxAttempts = 30) {
-  return new Promise((resolve, reject) => {
-    let attempts = 0
-    const checkMethod = () => {
-      attempts++
-      if (player && typeof player[method] === 'function') {
-        resolve(player)
-      } else if (attempts >= maxAttempts) {
-        reject(new Error(`YouTube method ${method} not available after ${maxAttempts} attempts for player: ${id}`))
+// Wait for YouTube API to be fully ready
+function waitForYouTubeAPI () {
+  return new Promise((resolve) => {
+    const checkAPI = () => {
+      if (window.YT && window.YT.Player && typeof window.YT.Player === 'function') {
+        resolve()
       } else {
-        setTimeout(checkMethod, 200)
+        setTimeout(checkAPI, 50)
       }
     }
-    checkMethod()
+    checkAPI()
   })
 }
 
-// Safe method execution for YouTube player
-function safeExecuteYouTubeMethod (player, method, id) {
-  return waitForYouTubePlayerMethods(player, method, id)
-    .then((readyPlayer) => {
-      readyPlayer[method]()
-      console.log(`Successfully executed ${method} on YouTube player:`, id)
-      return true
+// Initialize YouTube player with proper error handling
+function initYouTubePlayer (iframe, id) {
+  return waitForYouTubeAPI().then(() => {
+    return new Promise((resolve, reject) => {
+      try {
+        const player = new window.YT.Player(iframe, {
+          events: {
+            onReady: (event) => {
+              console.log('YouTube player ready:', id)
+              players[id] = event.target
+              resolve(event.target)
+            },
+            onError: (error) => {
+              console.error('YouTube player error:', error)
+              reject(error)
+            }
+          }
+        })
+      } catch (error) {
+        console.error('Error creating YouTube player:', error)
+        reject(error)
+      }
     })
-    .catch((error) => {
-      console.log(`Failed to execute ${method}:`, error.message)
-      return false
-    })
+  })
+}
+
+// Initialize Vimeo player
+function initVimeoPlayer (iframe, id) {
+  return new Promise((resolve, reject) => {
+    if (window.Vimeo && window.Vimeo.Player) {
+      try {
+        const player = new window.Vimeo.Player(iframe)
+        players[id] = player
+        player.ready().then(() => {
+          console.log('Vimeo player ready:', id)
+          player.play()
+          resolve(player)
+        }).catch(reject)
+      } catch (error) {
+        reject(error)
+      }
+    } else {
+      reject(new Error('Vimeo API not loaded'))
+    }
+  })
 }
 
 export function initIframePlayer () {
@@ -59,22 +83,22 @@ export function initIframePlayer () {
     document.addEventListener('click', e => {
       const imageWithIframe = e.target.closest('.image:has(> [data-iframe])')
       if (imageWithIframe) {
-        const dataIframe = imageWithIframe.querySelector('[data-iframe]')
         let attrs = ''
-        let attrsEn = ''
+        let attrsLang = ''
+        const dataIframe = imageWithIframe.querySelector('[data-iframe]')
         const className = dataIframe.className
         const isYoutube = dataIframe.dataset.youtube
-        const src = (dataIframe.dataset.youtube || dataIframe.dataset.vimeo).replace('www.youtube-nocookie.com', 'www.youtube.com')
+        const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo
         const idVideo = videoId(src)
         const id = playerId(dataIframe, idVideo)
 
         if (isYoutube) {
-          if (lang !== 'es') attrsEn = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
+          if (lang !== 'es') attrsLang = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           attrs =
             ` title="${i18nVideo} · Youtube"` +
-            ` src="${src}${attrsEn}&autoplay=1&showinfo=0"` +
+            ` src="${src}${attrsLang}&autoplay=1&showinfo=0"` +
             ' allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"'
-        } else if (src.match(/vimeo\.com/s)) {
+        } else if (src.match(/vimeo\.com/)) {
           attrs =
             ` title="${i18nVideo} · Vimeo"` +
             ` src="${src}"` +
@@ -85,7 +109,6 @@ export function initIframePlayer () {
           '<iframe' +
             ` ${className ? ' class="' + className + '"' : ''}` +
             ` ${attrs}` +
-            ` id="${id}"` + // Add ID to iframe
             ' allowfullscreen ' +
             ' width="560" ' +
             ' height="320" ' +
@@ -93,50 +116,22 @@ export function initIframePlayer () {
 
         const iframe = imageWithIframe.querySelector('iframe')
         const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
-        const windowObject = isYoutube ? 'YT' : 'Vimeo'
 
         iframe.nextElementSibling?.remove()
 
         iframe.addEventListener('load', () => {
           loadScript(script)
             .then(() => {
-              const checkWindowObject = setInterval(() => {
-                if (window[windowObject] && window[windowObject].Player) {
-                  clearInterval(checkWindowObject)
-
-                  if (isYoutube) {
-                    // For YouTube, wait for YT.Player to be available
-                    if (window.YT.Player) {
-                      players[id] = new window.YT.Player(id, {
-                        events: {
-                          onReady: (event) => {
-                            console.log('YouTube player ready:', id)
-                            // Auto-play when ready (since autoplay in URL might not work)
-                            try {
-                              event.target.playVideo()
-                            } catch (error) {
-                              console.log('Error auto-playing video:', error)
-                            }
-                          },
-                          onStateChange: (event) => {
-                            console.log('Player state changed:', id, event.data)
-                          },
-                          onError: (event) => {
-                            console.error('YouTube player error:', id, event.data)
-                          }
-                        }
-                      })
-                    }
-                  } else {
-                    // For Vimeo
-                    players[id] = new window.Vimeo.Player(iframe)
-                    players[id].ready().then(() => {
-                      console.log('Vimeo player ready:', id)
-                      players[id].play()
-                    })
+              if (isYoutube) {
+                initYouTubePlayer(iframe, id).catch(console.error)
+              } else {
+                const checkVimeo = setInterval(() => {
+                  if (window.Vimeo && window.Vimeo.Player) {
+                    clearInterval(checkVimeo)
+                    initVimeoPlayer(iframe, id).catch(console.error)
                   }
-                }
-              }, 100)
+                }, 100)
+              }
             })
             .catch(console.error)
         })
@@ -165,23 +160,30 @@ export function togglePlayer (target, openModal) {
 
     if (player) {
       if (iframePlayers[0].src.includes('https://www.youtube')) {
-        // Direct method call with safe execution
-        const method = openModal ? 'playVideo' : 'pauseVideo'
-        safeExecuteYouTubeMethod(player, method, id)
-      } else {
-        // For Vimeo - direct method call
-        try {
-          if (openModal) {
-            player.play().catch(error => console.log('Vimeo play error:', error))
+        // Check if methods are available and wait if necessary
+        const executeYouTubeAction = () => {
+          if (typeof player.pauseVideo === 'function' && typeof player.playVideo === 'function') {
+            openModal ? player.playVideo() : player.pauseVideo()
           } else {
-            player.pause().catch(error => console.log('Vimeo pause error:', error))
+            // Wait a bit more for the API to be ready
+            setTimeout(() => {
+              if (typeof player.pauseVideo === 'function' && typeof player.playVideo === 'function') {
+                openModal ? player.playVideo() : player.pauseVideo()
+              } else {
+                console.log('YouTube player methods still not available for:', id)
+              }
+            }, 500)
           }
-        } catch (error) {
-          console.log('Vimeo player error:', error)
+        }
+        executeYouTubeAction()
+      } else {
+        // Vimeo
+        if (typeof player.play === 'function' && typeof player.pause === 'function') {
+          openModal ? player.play() : player.pause()
         }
       }
     } else {
-      console.log('Player not found, id:', id)
+      console.log('Player not found for id:', id)
     }
     return
   }
