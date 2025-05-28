@@ -3,6 +3,7 @@ import { i18nVideo, lang } from '@params'
 import { loadScript } from './load-script'
 
 const players = {}
+const playerReadyPromises = {}
 
 // Video ID
 function videoId (src) {
@@ -34,7 +35,7 @@ export function initIframePlayer () {
           if (lang !== 'es') attrsLang = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           attrs =
             ` title="${i18nVideo} · Youtube"` +
-            ` src="${src}${attrsLang}&origin=${location.origin}&autoplay=1&showinfo=0"` +
+            ` src="${src}${attrsLang}&autoplay=1&showinfo=0"` +
             ' allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"'
         } else if (src.match(/vimeo\.com/s)) {
           attrs =
@@ -61,19 +62,21 @@ export function initIframePlayer () {
               const checkWindowObject = setInterval(() => {
                 if (window[windowObject] && window[windowObject].Player) {
                   clearInterval(checkWindowObject)
-                  const opts = {
-                    events: {
-                      onReady: () => {
-                        console.log('YouTube/Vimeo player ready:', id)
-                        if (!isYoutube) players[id].play()
+                  playerReadyPromises[id] = new Promise((_resolve, _reject) => {
+                    players[id] = new window[windowObject].Player(iframe, {
+                      events: {
+                        onReady: (event) => {
+                          console.log('YouTube/Vimeo player ready:', id)
+                          if (!isYoutube) event.target.play()
+                          _resolve(event.target)
+                        },
+                        onError: (event) => {
+                          console.error('YouTube/Vimeo player error for ID ' + id + ':', event.data)
+                          _reject(new Error('YouTube/Vimeo player error: ' + event.data))
+                        }
                       }
-                    }
-                  }
-                  if (isYoutube) {
-                    opts.host = 'https://www.youtube-nocookie.com'
-                    opts.playerVars = { origin: location.origin }
-                  }
-                  players[id] = new window[windowObject].Player(iframe, opts)
+                    })
+                  })
                 }
               }, 100)
             })
@@ -85,7 +88,7 @@ export function initIframePlayer () {
 }
 
 // Play/Pause modal videos
-export function togglePlayer (target, openModal) {
+export async function togglePlayer (target, openModal) {
   if (openModal) {
     // Click (load and play) data iframe
     const dataIframe = target.querySelectorAll('.ph [data-iframe]')
@@ -99,20 +102,31 @@ export function togglePlayer (target, openModal) {
   if (iframePlayers.length === 1) {
     const idVideo = videoId(iframePlayers[0].src)
     const id = playerId(target, idVideo)
-    const player = players[id]
-    if (player) {
-      if (iframePlayers[0].src.includes('https://www.youtube')) {
-        // Check if playVideo and pauseVideo is set
-        if (player.pauseVideo && player.playVideo) {
-          openModal ? player.playVideo() : player.pauseVideo()
+    if (playerReadyPromises[id]) {
+      try {
+        const player = await playerReadyPromises[id]
+        if (player) {
+          const isYoutube = iframePlayers[0].src.includes('https://www.youtube')
+          if (isYoutube) {
+            // Check if playVideo and pauseVideo is set
+            if (player.playVideo && player.pauseVideo) {
+              openModal ? player.playVideo() : player.pauseVideo()
+            } else {
+              // This should not occur if the pledge was resolved successfully
+              console.error('YouTube player methods not available for id:', id)
+            }
+          } else {
+            openModal ? player.play() : player.pause()
+          }
         } else {
-          console.log((openModal ? 'playVideo' : 'pauseVideo') + ' not set')
+          console.log('Player promise for ID', id, 'resolved to null/undefined.')
         }
-      } else {
-        openModal ? player.play() : player.pause()
+      } catch (error) {
+        console.error('Error waiting for player or executing command for the ID:', id, error)
       }
     } else {
-      console.log('players is not set, id:', id)
+      // This could occur if the iframe exists but was not set by initIframePlayer.
+      console.log('Promise to prepare for player with ID was not found:', id)
     }
     return
   }
