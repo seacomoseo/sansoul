@@ -159,6 +159,14 @@ export function togglePlayer (target, openModal) {
     } else {
       console.log('Player not found, id:', id)
     }
+
+    // Debugging
+    console.log('Available players:', Object.keys(players))
+    console.log('Looking for player:', id)
+    if (players[id]) {
+      console.log('Player found, available methods:', Object.getOwnPropertyNames(players[id]))
+    }
+
     return
   }
 
