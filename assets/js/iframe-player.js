@@ -45,10 +45,13 @@ function initYouTubePlayer (iframe, id) {
           return
         }
 
+        let playerReady = false
+
         const player = new window.YT.Player(iframe, {
           events: {
             onReady: (event) => {
               console.log('YouTube player ready:', id)
+              playerReady = true
               players[id] = event.target
               resolve(event.target)
             },
@@ -58,23 +61,32 @@ function initYouTubePlayer (iframe, id) {
             },
             onStateChange: (event) => {
               console.log('YouTube player state change for', id, ':', event.data)
+
+              // If onReady hasn't fired but we have a state change, the player is working
+              if (!playerReady && event.target && typeof event.target.playVideo === 'function') {
+                console.log('Player working despite onReady not firing, saving player for:', id)
+                playerReady = true
+                players[id] = event.target
+                resolve(event.target)
+              }
             }
           }
         })
 
-        // Timeout fallback
+        // Timeout fallback - but check if player is actually working
         setTimeout(() => {
-          if (!players[id]) {
+          if (!playerReady) {
             console.warn('YouTube player initialization timeout for:', id)
-            // Try to get player anyway
+            // Try to get player anyway and test if it works
             if (player && typeof player.playVideo === 'function') {
+              console.log('Player timeout but methods available, saving player for:', id)
               players[id] = player
               resolve(player)
             } else {
               reject(new Error('Player initialization timeout'))
             }
           }
-        }, 5000)
+        }, 3000) // Reduced timeout to 3 seconds
       } catch (error) {
         console.error('Error creating YouTube player for', id, ':', error)
         reject(error)
