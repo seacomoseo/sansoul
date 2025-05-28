@@ -4,6 +4,11 @@ import { loadScript } from './load-script'
 
 const players = {}
 
+// Make players available globally for debugging
+if (typeof window !== 'undefined') {
+  window.debugPlayers = players
+}
+
 // Video ID
 function videoId (src) {
   return src.match(/(youtube-nocookie\.com\/embed|vimeo\.com\/video)\/([\w-]+)/)[2]
@@ -15,20 +20,36 @@ function playerId (target, idVideo) {
   return `${idSection}-${idVideo}`
 }
 
+// Wait for YouTube player methods to be available
+function waitForYouTubePlayerMethods (player, method, id, maxAttempts = 30) {
+  return new Promise((resolve, reject) => {
+    let attempts = 0
+    const checkMethod = () => {
+      attempts++
+      if (player && typeof player[method] === 'function') {
+        resolve(player)
+      } else if (attempts >= maxAttempts) {
+        reject(new Error(`YouTube method ${method} not available after ${maxAttempts} attempts for player: ${id}`))
+      } else {
+        setTimeout(checkMethod, 200)
+      }
+    }
+    checkMethod()
+  })
+}
+
 // Safe method execution for YouTube player
 function safeExecuteYouTubeMethod (player, method, id) {
-  try {
-    if (player && typeof player[method] === 'function') {
-      player[method]()
+  return waitForYouTubePlayerMethods(player, method, id)
+    .then((readyPlayer) => {
+      readyPlayer[method]()
+      console.log(`Successfully executed ${method} on YouTube player:`, id)
       return true
-    } else {
-      console.log(`YouTube method ${method} not available for player:`, id)
+    })
+    .catch((error) => {
+      console.log(`Failed to execute ${method}:`, error.message)
       return false
-    }
-  } catch (error) {
-    console.error(`Error executing ${method} on YouTube player ${id}:`, error)
-    return false
-  }
+    })
 }
 
 export function initIframePlayer () {
@@ -64,7 +85,7 @@ export function initIframePlayer () {
           '<iframe' +
             ` ${className ? ' class="' + className + '"' : ''}` +
             ` ${attrs}` +
-            ` id="${id}"` +
+            ` id="${id}"` + // Add ID to iframe
             ' allowfullscreen ' +
             ' width="560" ' +
             ' height="320" ' +
@@ -91,11 +112,17 @@ export function initIframePlayer () {
                           onReady: (event) => {
                             console.log('YouTube player ready:', id)
                             // Auto-play when ready (since autoplay in URL might not work)
-                            event.target.playVideo()
+                            try {
+                              event.target.playVideo()
+                            } catch (error) {
+                              console.log('Error auto-playing video:', error)
+                            }
                           },
                           onStateChange: (event) => {
-                            // Optional: Log state changes for debugging
                             console.log('Player state changed:', id, event.data)
+                          },
+                          onError: (event) => {
+                            console.error('YouTube player error:', id, event.data)
                           }
                         }
                       })
@@ -140,10 +167,7 @@ export function togglePlayer (target, openModal) {
       if (iframePlayers[0].src.includes('https://www.youtube')) {
         // Direct method call with safe execution
         const method = openModal ? 'playVideo' : 'pauseVideo'
-        const success = safeExecuteYouTubeMethod(player, method, id)
-        if (!success) {
-          console.log(`Failed to execute ${method} on YouTube player:`, id)
-        }
+        safeExecuteYouTubeMethod(player, method, id)
       } else {
         // For Vimeo - direct method call
         try {
@@ -159,14 +183,6 @@ export function togglePlayer (target, openModal) {
     } else {
       console.log('Player not found, id:', id)
     }
-
-    // Debugging
-    console.log('Available players:', Object.keys(players))
-    console.log('Looking for player:', id)
-    if (players[id]) {
-      console.log('Player found, available methods:', Object.getOwnPropertyNames(players[id]))
-    }
-
     return
   }
 
