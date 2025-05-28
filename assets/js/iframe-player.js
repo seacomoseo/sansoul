@@ -61,14 +61,16 @@ export function initIframePlayer () {
               const checkWindowObject = setInterval(() => {
                 if (window[windowObject] && window[windowObject].Player) {
                   clearInterval(checkWindowObject)
-                  players[id] = new window[windowObject].Player(iframe, {
+                  const opts = {
                     events: {
                       onReady: () => {
-                        console.log('YouTube player ready:', id)
+                        console.log('YouTube/Vimeo player ready:', id)
                         if (!isYoutube) players[id].play()
                       }
                     }
-                  })
+                  }
+                  if (isYoutube) opts.host = 'https://www.youtube-nocookie.com'
+                  players[id] = new window[windowObject].Player(iframe, opts)
                 }
               }, 100)
             })
