@@ -22,19 +22,20 @@ export function initIframePlayer () {
     document.addEventListener('click', e => {
       const imageWithIframe = e.target.closest('.image:has(> [data-iframe])')
       if (imageWithIframe) {
-        const dataIframe = imageWithIframe.querySelector('[data-iframe]')
         let attrs = ''
-        let attrsEn = ''
+        let attrsLang = ''
+        const dataIframe = imageWithIframe.querySelector('[data-iframe]')
         const className = dataIframe.className
         const isYoutube = dataIframe.dataset.youtube
         const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo
         const idVideo = videoId(src)
         const id = playerId(dataIframe, idVideo)
         if (isYoutube) {
-          if (lang !== 'es') attrsEn = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
+          const urlOrigin = encodeURIComponent(location.origin)
+          if (lang !== 'es') attrsLang = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           attrs =
             ` title="${i18nVideo} · Youtube"` +
-            ` src="${src}${attrsEn}&autoplay=1&showinfo=0"` +
+            ` src="${src}${attrsLang}&origin=${urlOrigin}&autoplay=1&showinfo=0"` +
             ' allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"'
         } else if (src.match(/vimeo\.com/s)) {
           attrs =
@@ -69,7 +70,10 @@ export function initIframePlayer () {
                       }
                     }
                   }
-                  if (isYoutube) opts.host = 'https://www.youtube-nocookie.com'
+                  if (isYoutube) {
+                    opts.host = 'https://www.youtube-nocookie.com'
+                    opts.playerVars = { origin: location.origin }
+                  }
                   players[id] = new window[windowObject].Player(iframe, opts)
                 }
               }, 100)
