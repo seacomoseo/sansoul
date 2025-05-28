@@ -31,11 +31,10 @@ export function initIframePlayer () {
         const idVideo = videoId(src)
         const id = playerId(dataIframe, idVideo)
         if (isYoutube) {
-          const urlOrigin = encodeURIComponent(location.origin)
           if (lang !== 'es') attrsLang = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           attrs =
             ` title="${i18nVideo} · Youtube"` +
-            ` src="${src}${attrsLang}&origin=${urlOrigin}&autoplay=1&showinfo=0"` +
+            ` src="${src}${attrsLang}&origin=${location.origin}&autoplay=1&showinfo=0"` +
             ' allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"'
         } else if (src.match(/vimeo\.com/s)) {
           attrs =
