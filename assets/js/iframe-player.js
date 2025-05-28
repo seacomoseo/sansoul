@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
 
 // Video ID
 function videoId (src) {
-  return src.match(/(youtube-nocookie\.com\/embed|vimeo\.com\/video)\/([\w-]+)/)[2]
+  return src.match(/(youtube(-nocookie)?\.com\/embed|vimeo\.com\/video)\/([\w-]+)/)[2]
 }
 
 // Player ID
@@ -64,7 +64,7 @@ export function initIframePlayer () {
         let attrsEn = ''
         const className = dataIframe.className
         const isYoutube = dataIframe.dataset.youtube
-        const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo
+        const src = (dataIframe.dataset.youtube || dataIframe.dataset.vimeo).replace('www.youtube-nocookie.com', 'www.youtube.com')
         const idVideo = videoId(src)
         const id = playerId(dataIframe, idVideo)
 
