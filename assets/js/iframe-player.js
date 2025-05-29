@@ -22,62 +22,66 @@ export function initIframePlayer () {
     document.addEventListener('click', e => {
       const imageWithIframe = e.target.closest('.image:has(> [data-iframe])')
       if (imageWithIframe) {
-        let attrs = ''
-        let attrsLang = ''
         const dataIframe = imageWithIframe.querySelector('[data-iframe]')
         const className = dataIframe.className
-        const isYoutube = dataIframe.dataset.youtube
+        const isYT = dataIframe.dataset.youtube
         const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo
         const idVideo = videoId(src)
         const id = playerId(dataIframe, idVideo)
-        if (isYoutube) {
-          if (lang !== 'es') attrsLang = `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
-          attrs =
-            ` title="${i18nVideo} · Youtube"` +
-            ` src="${src}${attrsLang}&autoplay=1&origin=${location.origin}&showinfo=0"` +
-            ' allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"'
-        } else if (src.match(/vimeo\.com/s)) {
-          attrs =
-            ` title="${i18nVideo} · Vimeo"` +
-            ` src="${src}"` +
-            ' allow="fullscreen; autoplay"'
-        }
-        dataIframe.outerHTML =
-          '<iframe' +
-            ` ${className ? ' class="' + className + '"' : ''}` +
-            ` ${attrs}` +
-            ' allowfullscreen ' +
-            ' width="560" ' +
-            ' height="320" ' +
-          '></iframe>'
-        const iframe = imageWithIframe.querySelector('iframe')
-        const script = isYoutube ? 'https://www.youtube.com/iframe_api' : 'https://player.vimeo.com/api/player.js'
-        const windowObject = isYoutube ? 'YT' : 'Vimeo'
+        const attrsLang = lang === 'es' ? '' : `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
+        const iframe = document.createElement('iframe')
+        iframe.className = className
+        iframe.title = i18nVideo
+        iframe.width = 560
+        iframe.height = 320
+        iframe.allowFullscreen = true
+        iframe.allow = isYT
+          ? 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay'
+          : 'fullscreen; autoplay'
+        imageWithIframe.replaceChildren(iframe)
 
+        // Remove play button
         iframe.nextElementSibling?.remove()
-        iframe.addEventListener('load', () => {
-          loadScript(script)
+
+        // Init Player
+        function initPlayer () {
+          const api = isYT
+            ? 'https://www.youtube.com/iframe_api'
+            : 'https://player.vimeo.com/api/player.js'
+          loadScript(api)
             .then(() => {
-              const checkWindowObject = setInterval(() => {
-                if (window[windowObject] && window[windowObject].Player) {
-                  clearInterval(checkWindowObject)
-                  players[id] = new window[windowObject].Player(iframe, {
+              if (isYT) {
+                // It is executed when ALL iframe API is ready
+                window.YT.ready(() => {
+                  players[id] = new window.YT.Player(iframe, {
                     host: 'https://www.youtube-nocookie.com',
-                    playerVars: {
-                      origin: window.location.origin
-                    },
+                    playerVars: { origin: location.origin },
                     events: {
-                      onReady: () => {
-                        console.log('YouTube player ready:', id)
-                        if (!isYoutube) players[id].play()
-                      }
+                      onReady: () => console.log('Player ready:', id)
                     }
                   })
-                }
-              }, 100)
+                })
+              } else {
+                // Vimeo: the constructor is ready immediately after loading the script
+                players[id] = new window.Vimeo.Player(iframe, {
+                  events: {
+                    loaded: () => console.log('Player ready:', id)
+                  }
+                })
+              }
             })
             .catch(console.error)
-        })
+        }
+
+        // If the iframe is NOW ready, create the player right now; if not, wait for it to load. This way you never lose the event.
+        if (iframe.contentWindow?.postMessage) {
+          initPlayer()
+        } else {
+          iframe.addEventListener('load', initPlayer, { once: true })
+        }
+
+        // Assigns the URL
+        iframe.src = isYT ? `${src}${attrsLang}&autoplay=1&origin=${location.origin}&showinfo=0` : src
       }
     })
   }
