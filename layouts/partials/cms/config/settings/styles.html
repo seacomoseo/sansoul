@@ -10,9 +10,11 @@
   (dict "&FONT_LINE_HEIGHT" (dict "name" `line_height` "widget" `number`  "required" false "label" $t.styles_fonts_line_height "value_type" `float` "step" 0.01 "min" 0  "max" 3))
   (dict "&FONT_SIZE"        (dict "name" `size`        "widget" `number`  "required" false "label" $t.styles_fonts_size        "value_type" `float` "step" 0.01 "min" 0  "max" 3))
   (dict "&FONT_TOP"         (dict "name" `top`         "widget" `number`  "required" false "label" $t.styles_fonts_top         "value_type" `float` "step" 0.01 "min" -2 "max" 2))
+  (dict "&FONT_GOOGLE"      (dict "name" `google`      "widget" `boolean` "required" false "label" $t.styles_fonts_google      "hint" $t.styles_fonts_google_hint))
 
   (dict "&FONT" (dict "<<" (slice
     (dict "fields" (slice
+      `~FONT_GOOGLE`
       `~FONT_FAMILY`
       `~FONT_WEIGHT`
       `~FONT_BOLD`
@@ -24,6 +26,7 @@
   (dict "&FONT_WITH_TOP" (dict "<<" (slice
     `~FONT_KEYS`
     (dict "fields" (slice
+      `~FONT_GOOGLE`
       `~FONT_FAMILY`
       `~FONT_WEIGHT`
       `~FONT_BOLD`
@@ -85,7 +88,6 @@
       "label"     $t.styles_fonts
       "collapsed" true
       "fields"    (slice
-        (dict "name" `google`             "widget" `boolean` "required" false "label" $t.styles_fonts_google             "hint" $t.styles_fonts_google_hint)
         (dict "name" `base`    "label" $t.styles_fonts_base    "<<" `~FONT`)
         (dict "name" `cursive` "label" $t.styles_fonts_cursive "<<" `~FONT_WITH_TOP`)
         (dict "name" `title`   "label" $t.styles_fonts_title   "<<" `~FONT_WITH_TOP`)

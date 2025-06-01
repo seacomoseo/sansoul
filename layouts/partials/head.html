@@ -185,23 +185,44 @@
 
 {{- /*  GOOGLE FONTS  */ -}}
 {{- with site.Data.styles.fonts -}}
-  {{- if .google }}
+  {{- $fonts := slice -}}
+  {{- range $key, $value := . -}}
+    {{- if reflect.IsMap . }}
+      {{- if .google }}
+        {{- if .weight }}
+          {{- $font := dict
+            "family" .family
+            "weight" .weight
+            "italic" .italic
+          -}}
+          {{- $fonts = $fonts | append $font -}}
+        {{- end -}}
+        {{- if .bold }}
+          {{- $bold := dict
+            "family" .family
+            "weight" .bold
+            "italic" .italic
+          -}}
+          {{- $fonts = $fonts | append $bold -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end }}
+  {{- with $fonts }}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{- $google_url := "https://fonts.googleapis.com/css2" -}}
-    {{- range $key, $value := slice .base .title .cursive -}}
-      {{- if .family -}}
-        {{- $google_url = print
-          $google_url
-          (cond (not $key) "?" "&")
-          "family=" .family
-          (cond
-            (not .italic)
-            (print ":wght@" .weight (cond (not .bold) "" (print ";" .bold)))
-            (print ":ital,wght@1," .weight (cond (not .bold) "" (print ";1," .bold)))
-          )
-        -}}
-      {{- end -}}
+    {{- range $key, $value := . -}}
+      {{- $google_url = print
+        $google_url
+        (cond (not $key) "?" "&")
+        "family=" .family
+        (cond
+          (not .italic)
+          (print ":wght@" .weight (cond (not .bold) "" (print ";" .bold)))
+          (print ":ital,wght@1," .weight (cond (not .bold) "" (print ";1," .bold)))
+        )
+      -}}
     {{- end -}}
     {{- $google_url = print ($google_url | safeHTML) "&display=swap" }}
     <link href="{{ $google_url }}" rel="stylesheet" media="print" onload="this.media='all'">
