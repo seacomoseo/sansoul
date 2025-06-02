@@ -57,6 +57,10 @@ elif [ $1 = favicon ]; then
 elif [ $1 = fonts ]; then
   source ../_tools/others/fonts.sh
 
+# Download woff2 from Google Fonts by font styles
+elif [ $1 = gfonts ]; then
+  source ../_tools/others/gfonts.js $PROYECT
+
 # Remove binary files from history
 elif [ $1 = clean ]; then
   source ../_tools/others/remove-history-binary-files.sh

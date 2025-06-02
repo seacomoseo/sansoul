@@ -1,6 +1,8 @@
 {{ $vars := dict }}
 {{ with site.Data }}
   {{ $vars = dict
+    "fonts-css"                          (hugo.Store.Get "fonts_css" | default "")
+
     "utilities-viewport-min"             site.Data.utilities.viewports.min
     "utilities-viewport-max"             site.Data.utilities.viewports.max
     "utilities-viewport-xs"              site.Data.utilities.viewports.xs
