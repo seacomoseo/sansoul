@@ -59,7 +59,7 @@ elif [ $1 = fonts ]; then
 
 # Download woff2 from Google Fonts by font styles
 elif [ $1 = gfonts ]; then
-  source ../_tools/others/gfonts.js $PROYECT
+  node ../_tools/others/gfonts.js $PROYECT
 
 # Remove binary files from history
 elif [ $1 = clean ]; then
