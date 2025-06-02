@@ -1,4 +1,4 @@
-{{- $src := .src | replaceRE `.poster\=([/\w\d\.-]+)|\#mute` "" -}}
+{{- $src := .src | replaceRE `.poster\=.+|\#mute` "" -}}
 
 {{- $alt := .alt -}}
 {{- if not $alt -}}
@@ -9,13 +9,16 @@
 
 {{- $poster  := "" -}}
 {{- if in .src "poster=" -}}
-  {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` "$1") -}}
-  {{- with resources.Get $poster -}}
-    {{- if hugo.IsProduction -}}
-      {{- .Publish -}}
-      {{- $poster = partial "functions/image-format" (dict "image" . "size" .Width) -}}
-    {{- else -}}
-      {{- $poster = .RelPermalink -}}
+  {{- $poster = .src | replaceRE `^.+?poster\=(.+?)($|#.*$)` "$1" -}}
+  {{- if not (hasPrefix $poster "http") -}}
+    {{- $media := print "/media/" $poster -}}
+    {{- with resources.Get $media -}}
+      {{- if hugo.IsProduction -}}
+        {{- .Publish -}}
+        {{- $poster = partial "functions/image-format" (dict "image" . "size" .Width) -}}
+      {{- else -}}
+        {{- $poster = .RelPermalink -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- else if $notlazy_mute -}}

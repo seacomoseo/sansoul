@@ -25,7 +25,10 @@
 
 {{- $poster  := "" -}}
 {{- if in .src "poster=" -}}
-  {{- $poster = print "/media/" (.src | replaceRE `^.+?poster\=([/\w\d\.-]+).*$` "$1") -}}
+  {{- $poster = .src | replaceRE `^.+?poster\=(.+?)($|#.*$)` "$1" -}}
+  {{- if not (hasPrefix $poster "http") -}}
+    {{- $poster = print "/media/" $poster -}}
+  {{- end -}}
 {{- else -}}
   {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
     {{- $file  := $path | replaceRE `^(.+)\..+$` (print `$1.` .) -}}
@@ -35,15 +38,17 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- with resources.Get $poster -}}
-  {{- if hugo.IsProduction -}}
-    {{- .Publish -}}
-    {{- $poster = partial "functions/image-format" (dict "image" . "size" .Width) -}}
+{{- if not (hasPrefix $poster "http") -}}
+  {{- with resources.Get $poster -}}
+    {{- if hugo.IsProduction -}}
+      {{- .Publish -}}
+      {{- $poster = partial "functions/image-format" (dict "image" . "size" .Width) -}}
+    {{- else -}}
+      {{- $poster = .RelPermalink -}}
+    {{- end -}}
   {{- else -}}
-    {{- $poster = .RelPermalink -}}
+    {{- $poster = "" -}}
   {{- end -}}
-{{- else -}}
-  {{- $poster = "" -}}
 {{- end -}}
 
 {{- $alt := .alt -}}

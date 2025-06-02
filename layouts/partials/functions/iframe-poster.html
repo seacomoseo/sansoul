@@ -1,18 +1,17 @@
 {{ $image := "" }}
 
-{{ $iframe_poster := "" }}
-{{ with . | findRE `poster=([/\w\d\.-]+)` }}
-  {{ with index . 0 }}
-    {{ with replace . "poster=" "" }}
-      {{ with resources.Get (print "/media/" .) }}
-        {{ $iframe_poster = . }}
-      {{ end }}
+{{ if in . "poster=" }}
+  {{ $image = . | replaceRE `^.+?poster\=(.+?)($|#.*$)` "$1" }}
+  {{ if not (hasPrefix $image "http") }}
+    {{ with resources.Get (print "/media/" $image) }}
+      {{ $image = replace .RelPermalink "/media/" "" }}
+    {{ else }}
+      {{ $image = "" }}
     {{ end }}
   {{ end }}
 {{ end }}
-{{ with $iframe_poster }}
-  {{ $image = replace .RelPermalink "/media/" "" }}
-{{ else }}
+
+{{ if not $image }}
   {{ if . | findRE `youtu\.be|youtube\.com` }}
     {{ $image = print "https://i3.ytimg.com/vi_webp/" (. | replaceRE `^.+?(v=|be/)(.+?)(&|\?|$).*` `$2`) "/sddefault.webp" }}
   {{ else if in . `vimeo.com` }}
