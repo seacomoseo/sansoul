@@ -17,7 +17,11 @@
             {{- i18n "authors" -}}
           {{- end -}}
         {{- else if eq $param "parent" -}}
-          {{- i18n "authors" -}}
+          {{- if $index -}}
+            {{- i18n "authors" -}}
+          {{- else -}}
+            {{- i18n "author" -}}
+          {{- end -}}
         {{- else if eq $param "is" -}}
           {{- true -}}
         {{- else if eq $param "title" -}}
