@@ -101,7 +101,13 @@
 
       {{- else if eq .type "param" -}}
 
-        {{- $label = partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
+        {{- $value := partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
+        {{- $icon   = .icon -}}
+        {{- with $value -}}
+          {{- range slice | append . -}}
+            {{- $items = $items | append (dict "icon" $icon "label" .) -}}
+          {{- end -}}
+        {{- end -}}
 
       {{- else -}}
 

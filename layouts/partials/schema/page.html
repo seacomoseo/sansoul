@@ -8,6 +8,7 @@
 {{ $potential_action      := slice (dict "@type" "ReadAction" "target" .Permalink) }}
 {{ $breadcrumbs           := "" }}
 {{ $authors               := slice }}
+{{ $main_entity           := dict }}
 
 {{/*  Self page  */}}
 {{ if eq page.Permalink .Permalink }}
@@ -15,18 +16,18 @@
   {{/*  Children  */}}
   {{ $children := partial "functions/taxonomy-children" . }}
 
-  {{/*  Type and hasPart  */}}
-  {{ with $children }}
+  {{/*  Type and mainEntity  */}}
+  {{ if eq .Params.base "author" }}
+    {{ $type = "ProfilePage" }}
+  {{ else if eq .Params.base "organization" }}
+    {{ $type = "ProfilePage" }}
+    {{ $main_entity = partial "schema/organization-id" . }}
+  {{ else if $children }}
     {{ $type = "CollectionPage" }}
-    {{/*
-    {{ if eq page.Type "blog" }}
-      {{ $type = "BlogPosting" }}
-    {{ else if eq page.Type "article" }}
-      {{ $type = "Article" }}
-    {{ else if eq page.Type "new" }}
-      {{ $type = "NewsArticle" }}
-    {{ end }}
-    */}}
+  {{ end }}
+
+  {{/*  hasPart  */}}
+  {{ with $children }}
     {{ range . }}
       {{ $has_part = $has_part | append (partial "schema/page" .) }}
     {{ end }}
@@ -96,6 +97,7 @@
   "hasPart"            $has_part
   "breadcrumb"         $breadcrumbs
   "author"             $authors
+  "mainEntity"         $main_entity
   "inLanguage"         (.Params.locale | default .Lang)
 }}
 {{ $schema = partial "functions/obj-truly" $schema }}

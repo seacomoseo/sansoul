@@ -1,3 +1,4 @@
+{{/*  Main Organization  */}}
 {{ $main          := site.GetPage (site.Params.main_organization | default "/") | default site.Home }}
 {{ $organization  := dict }}
 {{ if eq $main.Params.base "organization" }}
@@ -13,25 +14,50 @@
   }}
 {{ end }}
 
+{{/*  General  */}}
 {{ $schemas := slice
   (partial "schema/website" .)
   (partial "schema/page" .)
   (partial "schema/image-main" .)
-  $organization
-  (partial "schema/breadcrumbs" .)
 }}
 
+{{/*  Page Base  */}}
 {{ if and (not .IsSection) (ne $main .) }}
-  {{ if in (slice "article" "event" "product" "brand" "author" "service" "organization") .Params.base }}
-    {{ $schemas = $schemas | append (partial (print "schema/" .Params.base) .) }}
+  {{ $bases := slice
+    "article"
+    "event"
+    "product"
+    "brand"
+    "author"
+    "service"
+    "organization"
+  }}
+  {{ if in $bases .Params.base }}
+    {{ $tring   := print "schema/" .Params.base }}
+    {{ $partial := partial $tring . }}
+    {{ $schemas  = $schemas | append $partial }}
   {{ end }}
 {{ end }}
 
+{{/*  Main Organization append  */}}
+{{ $schemas = $schemas | append
+  $organization
+}}
+
+{{/*  Breadcrumbs  */}}
+{{ if .Params.breadcrumbs }}
+  {{ $schemas = $schemas | append
+    (partial "schema/breadcrumbs" .)
+  }}
+{{ end }}
+
+{{/*  Join (Graph)  */}}
 {{ $schema := dict 
   "@context" "http://schema.org"
   "@graph"   $schemas
 }}
 
+{{/*  JSON  */}}
 {{ $opts  := cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ") }}
 {{ $schema = $schema | jsonify $opts }}
 
