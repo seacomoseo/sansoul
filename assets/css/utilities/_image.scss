@@ -75,11 +75,13 @@
   --image-ratio-height: calc((100cqw - 2 * var(--image-border-width, 0em)) / (var(--image-ratio)));
   width: 100%;
   &:not(:has(.image__inner)) {
-    height: var(--image-ratio-height);
+    aspect-ratio: var(--image-ratio);
+    min-height: var(--image-ratio-height);
   }
   .image__inner {
     width: 100%;
-    height: var(--image-ratio-height);
+    aspect-ratio: var(--image-ratio);
+    min-height: var(--image-ratio-height);
     img {
       width: 100%;
       height: 100%;

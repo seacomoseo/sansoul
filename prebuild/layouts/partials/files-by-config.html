@@ -12,6 +12,7 @@
 {{ $lang_first  := index $langs 0 }}
 
 {{ $languages := dict }}
+{{ $cascade   := slice }}
 
 {{ range site.Data.options.langs }}
   {{ $lang       := . }}
@@ -24,34 +25,30 @@
   {{ $time_zone  := false }}
   {{ $title      := false }}
   {{ $params     := false }}
-  {{ $cascade    := false }}
 
   {{ $config_lang  := index (where $langs "lang" $lang) 0 }}
   {{ with $config_lang }}
     {{/*  i18n  */}}
     {{ $t := index site.Data.i18n $lang }}
 
-    {{/*  Mix first configuration and defaults with those of the first language  */}}
+    {{/*  Home single singular  */}}
+    {{ $home_singular := dict
+      "params" (dict
+        "singular" $t.types_default_single_singular
+      )
+      "target" (dict
+        "lang" $lang
+        "kind" "home"
+      )
+    }}
+    {{ $cascade = $cascade | append $home_singular }}
+
+    {{/*  Mix first configuration language with the others  */}}
     {{ $config_mix   := . }}
-    {{ $defaults_mix := (index site.Data.types.all $lang).defaults | default slice }}
     {{ if gt (len $langs) 1 }}
       {{ $config_mix = merge $lang_first . }}
-      {{ with (index site.Data.types.all $lang_first.lang).defaults }}
-        {{ $defaults_mix = . | append $defaults_mix }}
-      {{ end }}
     {{ end }}
 
-    {{/*  Global Cascade  */}}
-    {{ $cascade    = dict "singular" $t.types_default_single_singular }}
-    {{ $defaults  := dict }}
-    {{ range $defaults_mix }}
-      {{ $options := dict "string" .value "kind" .kind }}
-      {{ $value   := partial "string-to-kind" $options }}
-      {{ $defaults = merge $defaults (dict .name $value) }}
-    {{ end }}
-    {{ $cascade    = merge $defaults $cascade }}
-
-    {{/*  Config mix language  */}}
     {{ with $config_mix }}
       {{/*  language's vars  */}}
       {{ $base_url   = .baseURL }}
@@ -142,12 +139,48 @@
           {{ with site.Data.types.all.params }}
             {{ $customs    = $customs | append . }}
           {{ end }}
-          {{ $defaults    := dict }}
-          {{ range .defaults | default slice }}
-            {{ $options   := dict "string" .value "kind" .kind }}
-            {{ $value     := partial "string-to-kind" $options }}
-            {{ $defaults   = merge $defaults (dict .name $value) }}
-          {{ end }}
+
+          {{/*
+          {{ $parent := dict
+            "params" (dict
+              "slug"           $slug
+              "singular"       $singular
+              "title"          $title
+              "seo"            .seo
+              "description"    $description
+              "icon"           $icon
+              "emoji"          $emoji
+              "image"          .image
+              "draft"          .disabled
+              "noindex"        $ni_parent
+              "translationKey" $name
+              "weight"         (add $k 1)
+              "cms"            $cms
+              "customs"        $customs
+            )
+            "target" (dict
+              "lang" $lang
+              "path" (print "/" $name)
+            )
+          }}
+          {{ $child := dict
+            "params" (dict
+              "noindex"     .noindex
+              "type"        $name
+              "base"        $base
+              "is_related"  .related
+              "is_comments" .comments
+              "taxonomies"  $taxonomies
+              "tax_of"      .tax_of
+              "breadcrumbs" $breadcrumbs
+            )
+            "target" (dict
+              "lang" $lang
+              "path" (print "/" $name "/*")
+            )
+          }}
+          {{ $cascade = $cascade | append $parent $child }}
+          */}}
 
           {{ $obj         := dict 
             "slug"           $slug
@@ -164,7 +197,7 @@
             "weight"         (add $k 1)
             "cms"            $cms
             "customs"        $customs
-            "cascade"        ((dict
+            "cascade"        (dict
               "noindex"     .noindex
               "type"        $name
               "base"        $base
@@ -173,7 +206,7 @@
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
               "breadcrumbs" $breadcrumbs
-            ) | merge $defaults)
+            )
           }}
             {{/*  ) | merge .tpl)  */}}
             {{/*  | merge site.Data.types.all.tpl  */}}
@@ -214,10 +247,9 @@
   {{ with $label      }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
   {{ with $time_zone  }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
   {{ with $title      }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
-  {{ with $cascade    }}{{ $languages = merge $languages (dict $lang (dict "cascade"                 .))  }}{{ end }}
   {{ with $params }}
     {{ range $k, $v := . }}
-      {{ with .      }}{{ $languages = merge $languages (dict $lang (dict "params" (dict $k .))) }}{{ end }}
+      {{ with .       }}{{ $languages = merge $languages (dict $lang (dict "params"         (dict $k .))) }}{{ end }}
     {{ end }}
   {{ end }}
 
@@ -337,6 +369,34 @@
     "timestamp" (now.Format "20060102150405")
   )
 ) }}
+
+{{/*  cascade  */}}
+{{ $global := dict
+  "params" (dict
+    "emoji"  "📑"
+    "type"   "single"
+    "base"   "page"
+    "_merge" "deep"
+  )
+  "target" (dict
+    "path" "/*"
+  )
+}}
+{{ $cascade   = slice $global | append $cascade }}
+{{ $defaults := site.Data.config.defaults | default slice }}
+{{ range $defaults }}
+  {{ $options := dict "string" .value "kind" .type }}
+  {{ $value   := partial "string-to-kind" $options }}
+  {{ $params  := dict .name  $value }}
+  {{ $target  := dict }}
+  {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .path }}{{ $target = merge $target (dict "path" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ if not $target }}{{ $target = dict "path" "**" }}{{ end }}
+  {{ $default := dict "params" $params "target" $target }}
+  {{ $cascade = $cascade | append $default }}
+{{ end }}
+{{ $obj = merge $obj (dict "cascade" $cascade) }}
 
 {{/*  file  */}}
 {{ partial "file-by-obj" (dict "obj" $obj "path" "hugo.prebuild.yml") }}

@@ -42,20 +42,6 @@
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_CMS" (dict
-    "name"      `cms`
-    "widget"    `object`
-    "required"  false
-    "label"     $t.config_cms
-    "collapsed" true
-    "fields"    (slice
-      (dict "name" `logo`      "widget" `image`   "required" false "label" $t.config_cms_logo      "max_file_size" 512000000)
-      (dict "name" `lang`      "widget" `select`  "required" false "label" $t.config_cms_lang      "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~OPTIONS_LANGS_CMS`)
-      (dict "name" `editorial` "widget" `boolean` "required" false "label" $t.config_cms_editorial "hint" $t.config_cms_editorial_hint)
-      (dict "name" `disabled`  "widget" `hidden`  "required" false "label" `disabled` )
-    )
-  ))
-
   (dict "&SETTINGS_CONFIG_PARAMS"   (dict
     "name"           `params`
     "widget"         `list`
@@ -75,6 +61,45 @@
       `~SETTINGS_TYPES_PARAMS_DEFAULT`
       `~SETTINGS_TYPES_PARAMS_MULTIPLE`
       `~SETTINGS_TYPES_PARAMS_2`
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG_DEFAULTS_VALUE" (dict "name" `value` "widget" `string` "required" false "label" $t.config_defaults_value))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_TYPE"  (dict "name" `type`  "widget" `select` "required" false "label" $t.config_defaults_type                 "options" site.Data.utilities.pairing_kinds))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_KIND"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.config_defaults_kind "multiple" true "options" site.Data.utilities.default_kinds))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_LANG"  (dict "name" `lang`  "widget" `select` "required" false "label" $t.config_defaults_lang "multiple" true "options" `~OPTIONS_LANGS`))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_PATH"  (dict "name" `path`  "widget" `list`   "required" false "label" $t.config_defaults_path "multiple" true))
+  (dict "&SETTINGS_CONFIG_DEFAULTS"       (dict
+    "name"           `defaults`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.config_defaults
+    "label_singular" $t.config_defaults_value
+    "hint"           $t.config_defaults_hint
+    "collapsed"      true
+    "summary"        "{{fields.name}}: {{fields.value}}"
+    "allow_add"      true
+    "fields"         (slice
+      `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_CONFIG_DEFAULTS_VALUE`
+      `~SETTINGS_CONFIG_DEFAULTS_TYPE`
+      `~SETTINGS_CONFIG_DEFAULTS_KIND`
+      `~SETTINGS_CONFIG_DEFAULTS_LANG`
+      `~SETTINGS_CONFIG_DEFAULTS_PATH`
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG_CMS" (dict
+    "name"      `cms`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.config_cms
+    "collapsed" true
+    "fields"    (slice
+      (dict "name" `logo`      "widget" `image`   "required" false "label" $t.config_cms_logo      "max_file_size" 512000000)
+      (dict "name" `lang`      "widget" `select`  "required" false "label" $t.config_cms_lang      "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~OPTIONS_LANGS_CMS`)
+      (dict "name" `editorial` "widget" `boolean` "required" false "label" $t.config_cms_editorial "hint" $t.config_cms_editorial_hint)
+      (dict "name" `disabled`  "widget" `hidden`  "required" false "label" `disabled` )
     )
   ))
 
@@ -101,6 +126,7 @@
     `~SETTINGS_CONFIG_LANGS`
     `~SETTINGS_CONFIG_CMS`
     `~SETTINGS_CONFIG_PARAMS`
+    `~SETTINGS_CONFIG_DEFAULTS`
     `~SETTINGS_CONFIG_OTHERS`
   ))
 }}

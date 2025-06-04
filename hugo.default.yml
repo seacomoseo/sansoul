@@ -11,10 +11,13 @@ params:
   currency: EUR
   phone_code: 34
 cascade:
-  _merge: deep
-  emoji: 📑
-  type: single
-  base: page
+- params:
+    emoji: 📑
+    type: single
+    base: page
+    _merge: deep
+  target:
+    path: '**'
 _merge: deep
 
 defaultContentLanguage: es

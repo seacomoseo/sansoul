@@ -109,25 +109,6 @@
     "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
   ))
 
-  (dict "&SETTINGS_TYPES_DEFAULTS_VALUE" (dict "name" `value` "widget" `string` "required" false "label" $t.types_defaults_value))
-  (dict "&SETTINGS_TYPES_DEFAULTS_KIND"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.remote_pairings_kind "options" site.Data.utilities.pairing_kinds))
-  (dict "&SETTINGS_TYPES_DEFAULTS"       (dict
-    "name"           `defaults`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_defaults
-    "label_singular" $t.types_defaults_value
-    "hint"           $t.types_defaults_hint
-    "collapsed"      true
-    "summary"        "{{fields.lang}}"
-    "allow_add"      true
-    "fields"         (slice
-      `~SETTINGS_TYPES_PARAMS_NAME`
-      `~SETTINGS_TYPES_DEFAULTS_VALUE`
-      `~SETTINGS_TYPES_DEFAULTS_KIND`
-    )
-  ))
-
   (dict "&SETTINGS_TYPES_ITEMS"  (dict
     "name"           `lang`
     "widget"         `object`
@@ -144,7 +125,6 @@
       `~P_TITLE_SEO`
       `~P_DESCRIPTION`
       (dict "<<" (slice (dict "name" `md`) `~P_BODY`))
-      `~SETTINGS_TYPES_DEFAULTS`
     )
   ))
 
