@@ -20,16 +20,11 @@
   {{ $provider = partial "schema/organization-id" . }}
 {{ end }}
 
-{{/*  Authors and ArticleSections  */}}
-{{ $aas          := partial "functions/authors-article-sections" . }}
-{{ $authors      := $aas.authors }}
-
 {{/*  Schema  */}}
 {{ $schema := dict
 
   "@type"            "Service"
   "@id"              (print .Permalink "#schema-service")
-  "inLanguage"       (.Params.locale | default .Lang)
   "url"              .Permalink
   "name"             .Title
   "description"      (partial "functions/summary" .)
@@ -37,7 +32,6 @@
   "areaServed"       .Params.areas
   "offers"           $offers
   "provider"         $provider
-  "author"           $authors
   "image"            (dict "@id" (print .Permalink "#schema-image"))
   "mainEntityOfPage" (dict "@id" .Permalink)
 }}

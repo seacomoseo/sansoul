@@ -6,17 +6,19 @@ image: base/icon.png
 
 icon: user-secret
 prefix: Dr
+alts:
+- Piesico
 job:
 - Podólogo especialista
 orgs:
-- name: Inspirits Bar
-  url: https://inspiritsbar.de/
+- name: Clínica López del Amo
+  url: https://clinicalopezdelamo.com/
 social:
 - https://www.instagram.com/clinicadelpielopezdel/
 creds:
-- name: ESO
-  category: EGB
-  org: I.E.S. Beniaján
+- name: Podólogía Deportiva
+  category: Máster
+  org: Universidad de Murcia
 
 toc: false
 draft: false

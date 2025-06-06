@@ -44,6 +44,19 @@
   (dict "&P_SKU"            (dict "name" `sku`    "widget" `string` "i18n" true "required" false "label" `SKU`))
   
   (dict "&P_PREFIX"         (dict "name" `prefix` "widget" `string` "i18n" true "required" false "label" $t.p_prefix))
+  (dict "&P_ALTS"           (dict
+    "name"           `alts`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.p_alts
+    "label_singular" $t.p_alts_singular
+    "collapsed"      true
+    "summary"        "{{fields.alts}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `alts` "widget" `string` "required" false "label" $t.p_alts_singular)
+    )
+  ))
   (dict "&P_JOB"            (dict
     "name"           `job`
     "widget"         `list`
