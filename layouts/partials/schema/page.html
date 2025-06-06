@@ -10,6 +10,7 @@
 {{ $authors               := slice }}
 {{ $main_entity           := dict }}
 
+
 {{/*  Self page  */}}
 {{ if eq page.Permalink .Permalink }}
 
@@ -19,8 +20,11 @@
   {{/*  Type and mainEntity  */}}
   {{ if eq .Params.base "author" }}
     {{ $type = "ProfilePage" }}
+    {{ $main_entity = dict "@id" (print .Permalink "#schema-person") }}
   {{ else if eq .Params.base "organization" }}
-    {{ $type = "ProfilePage" }}
+    {{ if not .IsHome }}
+      {{ $type = "ProfilePage" }}
+    {{ end }}
     {{ $main_entity = partial "schema/organization-id" . }}
   {{ else if $children }}
     {{ $type = "CollectionPage" }}
@@ -78,8 +82,20 @@
   {{ $title = partial "functions/anchor-page" . }}
 {{ end }}
 
+
 {{/*  Description  */}}
 {{ $description  := partial "functions/summary" . }}
+
+
+{{/*  Dates  */}}
+{{ $date_created   := "" }}
+{{ $date_modified  := "" }}
+{{ with .Date }}
+  {{ $date_created  = .Format "2006-01-02T15:04:05Z07:00" }}
+{{ end }}
+{{ with .Lastmod }}
+  {{ $date_modified = .Format "2006-01-02T15:04:05Z07:00" }}
+{{ end }}
 
 
 {{/*  Schema  */}}
@@ -89,6 +105,8 @@
   "url"                .Permalink
   "name"               $title
   "description"        $description
+  "dateCreated"        $date_created
+  "dateModified"       $date_modified
   "thumbnailUrl"       $thumbnail
   "isPartOf"           $is_part_of
   "image"              $image

@@ -4,10 +4,10 @@
 
 {{ if ne $main.Params.base "organization" }}
   {{ $organization = merge $organization (dict
-    "@type"        "Organization"
-    "url"          $url
-    "name"         site.Title
-    "desccription" site.Params.description
+    "@type"       "Organization"
+    "url"         $url
+    "name"        site.Title
+    "description" site.Params.description
   ) }}
 {{ end }}
 

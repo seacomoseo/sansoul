@@ -1,16 +1,12 @@
 {{ $url    := (urls.Parse site.BaseURL).String }}
 
-{{/*  Organization  */}}
-{{ $organization := partial "schema/organization-id" . }}
-
 {{ $schema := dict
   "@type"         "WebSite"
   "@id"           (print $url "#schema-website")
   "url"           $url
   "name"          site.Title
   "description"   site.Params.description
-  "publisher"     $organization
-  "alternateName" site.Data.schema.names
+  "publisher"     (partial "schema/organization-id" .)
   "inLanguage"    (.Params.locale | default .Lang)
 }}
 

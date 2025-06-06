@@ -31,7 +31,7 @@ export function initCustomWidgets () {
 
       // Fix `types` and `view` select widgets
       if (widget === 'object') {
-        if (typeof value === 'object') {
+        if (value && typeof value === 'object') {
           if (value.types === '' || value.view === '') {
             if (Object.keys(value).length === 1) {
               wrapClass = `name-${name} is-not-set`

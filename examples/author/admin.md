@@ -5,9 +5,18 @@ summary: Soy la leche haciendo esto y lo otro, pero lo que más me gusta es scri
 image: base/icon.png
 
 icon: user-secret
-job: Podólogo especialista
+prefix: Dr
+job:
+- Podólogo especialista
+orgs:
+- name: Inspirits Bar
+  url: https://inspiritsbar.de/
 social:
 - https://www.instagram.com/clinicadelpielopezdel/
+creds:
+- name: ESO
+  category: EGB
+  org: I.E.S. Beniaján
 
 toc: false
 draft: false

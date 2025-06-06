@@ -6,11 +6,11 @@
 {{ else }}
   {{ $url         := $main.Permalink }}
   {{ $organization = dict
-    "@type"        "Organization"
-    "@id"          (print $url "#schema-organization")
-    "url"          $url
-    "name"         site.Title
-    "desccription" site.Params.description
+    "@type"       "Organization"
+    "@id"         (print $url "#schema-organization")
+    "url"         $url
+    "name"        site.Title
+    "description" site.Params.description
   }}
 {{ end }}
 

@@ -91,7 +91,7 @@
     "label"          $t.types_params_sub
     "label_singular" $t.types_params_sub_singular
     "collapsed"      true
-    "summary"        "{{fields.label}}"
+    "summary"        "{{fields.label}} ({{fields.name}})"
     "allow_add"      true
     "fields"         $params_fields_last
   ))
@@ -104,7 +104,7 @@
     "label"          $t.types_params
     "label_singular" $t.types_params_singular
     "collapsed"      true
-    "summary"        "{{fields.lang}}"
+    "summary"        "{{fields.label}} ({{fields.name}})"
     "allow_add"      true
     "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
   ))
