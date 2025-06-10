@@ -119,9 +119,9 @@
          */}}
         {{ $cms      := index . $lang_cms }}
         {{ $cms       = dict
-          "title"      (or $cms.title    $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
-          "singular"   (or $cms.singular $cms.title    (index $i18n_cms (print "types_default_" $name "_singular"   )) $name)
-          "hint"       (or $type.hint                  (index $i18n_cms (print "types_default_" $name "_hint"       )))
+          "title"      (or $cms.title    $type.title $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
+          "singular"   (or $cms.singular $cms.title  $type.title   (index $i18n_cms (print "types_default_" $name "_singular"   )) $name)
+          "hint"       (or $type.hint                              (index $i18n_cms (print "types_default_" $name "_hint"       )))
           "permalinks" $permalinks
         }}
 
