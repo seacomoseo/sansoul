@@ -158,11 +158,14 @@
 
     {{- /*  Only one link (box--go)  */ -}}
     {{- if not .zero -}}
-      {{- $links := $inbox | findRE `<a .*?href=| data-(h|b)=| data-lightbox=| type="submit"` -}}
-      {{- $ool   := eq (len $links) 1 -}}
-      {{- if $ool -}}
-        {{- $ool  = dict "only_one_link" true -}}
-        {{- $box  = merge $box $ool -}}
+      {{- $is_video := $inbox | findRE `<video |<iframe ` -}}
+      {{- if not $is_video -}}
+        {{- $links := $inbox | findRE `<a .*?href=| data-(h|b)=| data-lightbox=| type="submit"` -}}
+        {{- $ool   := eq (len $links) 1 -}}
+        {{- if $ool -}}
+          {{- $ool  = dict "only_one_link" true -}}
+          {{- $box  = merge $box $ool -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
 
