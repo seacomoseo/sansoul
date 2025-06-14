@@ -14,7 +14,13 @@
         <div class="step__axis">
           <div class="step__figure">
             {{- with .image -}}
-              {{- partial "media/_" (dict "class" "step__figure-image" "src" . "max" 342 "ratio" "1/1") -}}
+              {{- partial "media/_" (dict
+                "class"   "step__figure-image"
+                "src"     .
+                "max"     342
+                "ratio"   "1/1"
+                "notlazy" $.header
+              ) -}}
             {{- end -}}
             {{- with .icon }}
               {{ partial "icon" (dict "class" "step__icon" "icon" (. | default "forward")) -}}

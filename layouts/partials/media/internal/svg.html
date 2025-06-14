@@ -37,6 +37,7 @@
       {{- if not $alt -}}
         {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
       {{- end -}}
+      {{- $lazy := cond (not .notlazy) "lazy" "" -}}
       {{- $img_attrs := dict
         "class"     .class
         "src"       (($svg_minify | resources.FromString $src.RelPermalink).RelPermalink | safeURL)
@@ -44,7 +45,7 @@
         "width"     $svg_width
         "height"    $svg_height
         "decoding"  "async"
-        "loading"   "lazy"
+        "loading"   $lazy
       -}}
       {{- $img_attrs = partial "functions/attrs" $img_attrs }}
       <img {{- $img_attrs }}>
