@@ -321,22 +321,14 @@ img[src*=".svg"].image__inner {
     > .image .image__inner:not(.image__inner--hover) {
       &:where(.icon),
       img {
-        transform: scale(1.2) rotate(2deg);
+        transform: var(--box-hover-image-transform);
       }
     }
   }
+  --box-hover-image-transform: scale(1.2) rotate(2deg);
   // 2N CHILD
   &:nth-child(2n) {
-    &:has(.search__result-item-link:focus),
-    &:hover,
-    &:focus {
-      > .image .image__inner:not(.image__inner--hover) {
-        &:where(.icon),
-        img {
-          transform: scale(1.2) rotate(-2deg);
-        }
-      }
-    }
+    --box-hover-image-transform: scale(1.2) rotate(-2deg);
   }
 }
 .box {
