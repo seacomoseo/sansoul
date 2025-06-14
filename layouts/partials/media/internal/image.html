@@ -1,6 +1,8 @@
 {{- $image      := resources.Get .src -}}
 {{- $image_base := $image -}}
 {{- if $image -}}
+  {{/*  Image x size to srcset  */}}
+  {{- $s := 1 -}}
 
 
   {{- /*  PICTURE  */ -}}
@@ -150,7 +152,7 @@
       {{- range $key, $value := $sizes_base_sort -}}
 
         {{- $size            := .size -}}
-        {{- $image_size      := div $image.Width 1.5 -}}
+        {{- $image_size      := div $image.Width $s -}}
 
         {{- /* size = image_size only if size > image_size > next_size  */ -}}
         {{- if le $image_size .size -}}
@@ -164,11 +166,11 @@
         {{- end -}}
 
         {{- /* set size only if diference between size and size_prev is bigest that 100px  */ -}}
-        {{- $is_size_far_prev := lt (sub $size $size_prev) (div -100 1.5) -}}
+        {{- $is_size_far_prev := lt (sub $size $size_prev) (div -100 $s) -}}
 
         {{- if ge $image_size $size | and $is_size_far_prev -}}
           {{- /* each size here is a object  */ -}}
-          {{- $sizes     = $sizes | append (dict "size" (mul $size 1.5 | int) "viewport" .viewport) -}}
+          {{- $sizes     = $sizes | append (dict "size" (mul $size $s | int) "viewport" .viewport) -}}
           {{- $size_prev = $size -}}
         {{- end -}}
 
@@ -185,7 +187,7 @@
 
       {{- /* SRCSIZES AND SRCSET  */ -}}
       {{- range sort $sizes "size" -}}
-        {{- $srcsizes    = $srcsizes | append (print "(max-width:" .viewport "px) " (div .size 1.5) "px") -}}
+        {{- $srcsizes    = $srcsizes | append (print "(max-width:" .viewport "px) " (div .size $s) "px") -}}
         {{- $image_link := partial "functions/image-format" (dict "image" $image "size" .size) -}}
         {{- $srcset      = $srcset | append (print $image_link " " .size "w") -}}
       {{- end -}}
