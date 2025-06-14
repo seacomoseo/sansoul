@@ -65,7 +65,7 @@
       {{- $svg | safeHTML -}}
     {{- end -}}
   {{- else -}}
-    {{- $svg_attrs := dict "class" .class "width" $svg_width "height" $svg_height -}}
+    {{- $svg_attrs := dict "class" .class "width" $svg_width "height" $svg_height "aria-label" $alt -}}
     {{- $svg_attrs  = partial "functions/attrs" $svg_attrs -}}
     {{- $draws     := print "/draws." site.Params.timestamp ".svg" -}}
     {{- $id        := $file | replaceRE `^/media/(icons?/)?|.svg$` "" | replaceRE `/` "-" -}}
