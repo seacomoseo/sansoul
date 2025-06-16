@@ -3,7 +3,8 @@ import {
   mapTerrain,
   mapStreets,
   mapSatellite,
-  mapHybrid
+  mapHybrid,
+  lang
 } from '@params'
 import { loadScript } from './load-script'
 import { loadStyle } from './load-style'
@@ -77,9 +78,9 @@ export function tile (map, defaultNameLayer = 'streets') {
   const baseMaps = {}
   const layers = [
     { name: 'streets', title: mapStreets, url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>' } },
-    { name: 'terrain', title: mapTerrain, url: 'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', options: { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] } },
-    { name: 'satellite', title: mapSatellite, url: 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', options: { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] } },
-    { name: 'hybrid', title: mapHybrid, url: 'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', options: { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] } }
+    { name: 'terrain', title: mapTerrain, url: `http://{s}.google.com/vt/lyrs=p&hl=${lang}&x={x}&y={y}&z={z}`, options: { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] } },
+    { name: 'satellite', title: mapSatellite, url: `http://{s}.google.com/vt/lyrs=s&hl=${lang}&x={x}&y={y}&z={z}`, options: { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] } },
+    { name: 'hybrid', title: mapHybrid, url: `http://{s}.google.com/vt/lyrs=s,h&hl=${lang}&x={x}&y={y}&z={z}`, options: { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] } }
   ]
   layers.forEach(({ name, title, url, options }) => {
     const layer = L.tileLayer(url, options)
