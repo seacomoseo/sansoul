@@ -8,7 +8,7 @@
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  place-content: center;
   --image-width: calc(100cqw - var(--image-margin, 0em) * 2);
   .box__icon--top {
     color: var(--invert);
@@ -76,12 +76,12 @@
   width: 100%;
   &:not(:has(.image__inner)) {
     aspect-ratio: var(--image-ratio);
-    min-height: var(--image-ratio-height);
+    height: var(--image-ratio-height);
   }
   .image__inner {
     width: 100%;
     aspect-ratio: var(--image-ratio);
-    min-height: var(--image-ratio-height);
+    height: var(--image-ratio-height);
     img {
       width: 100%;
       height: 100%;
