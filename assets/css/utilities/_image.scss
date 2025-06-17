@@ -308,21 +308,19 @@ img[src*=".svg"].image__inner {
 // BOX HOVER
 
 .box--go {
-  > .image .image__inner {
-    &:where(.icon),
-    img {
-      transition: transform .3s;
-    }
+  > .image .image__inner:where(.icon),
+  > .image .image__inner img,
+  > .bg-figure .bg-figure-image {
+    transition: transform .3s;
   }
   // HOVER
   &:has(.search__result-item-link:focus),
   &:hover,
   &:focus {
-    > .image .image__inner:not(.image__inner--hover) {
-      &:where(.icon),
-      img {
-        transform: var(--box-hover-image-transform);
-      }
+    > .image .image__inner:not(.image__inner--hover):where(.icon),
+    > .image .image__inner:not(.image__inner--hover) img,
+    > .bg-figure .bg-figure-image {
+      transform: var(--box-hover-image-transform);
     }
   }
   --box-hover-image-transform: scale(1.2) rotate(2deg);
