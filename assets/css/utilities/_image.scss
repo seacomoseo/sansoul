@@ -9,7 +9,7 @@
   display: flex;
   flex-wrap: wrap;
   place-content: center;
-  --image-width: calc(100cqw - var(--image-margin, 0em) * 2);
+  --image-width: calc(100cqw - var(--image-border-width, 0em) * 2 - var(--image-margin, 0em) * 2);
   .box__icon--top {
     color: var(--invert);
     filter: drop-shadow($shadow);
@@ -72,7 +72,7 @@
 .image--circle,
 .image--ratio {
   --image-ratio: 1/1;
-  --image-ratio-height: calc((100cqw - 2 * var(--image-border-width, 0em)) / (var(--image-ratio)));
+  --image-ratio-height: calc(var(--image-width) / (var(--image-ratio)));
   width: 100%;
   &:not(:has(.image__inner)) {
     aspect-ratio: var(--image-ratio);
