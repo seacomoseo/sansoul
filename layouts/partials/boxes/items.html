@@ -77,7 +77,14 @@
 
         {{- $each := .box -}}
 
-        {{- $parent  := dict -}}
+        {{- $each_hide := dict -}}
+        {{- range slice "image" "icon" "md" "price" -}}
+          {{- if eq (index $each .) "hide" -}}
+            {{- $each_hide = merge $each_hide (dict . "") -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- $parent := dict -}}
         {{- /*  if deep >= 1  */ -}}
         {{- if and (gt $deep 1) (not .list_pages) -}}
           {{- with $box -}}
@@ -118,7 +125,7 @@
         {{- range $key, $this := .boxes -}}
         {{- /* BOX  */ -}}
           {{- $key  := dict "key" $key -}}
-          {{- $item := merge $parent $each $this $expand $key -}}
+          {{- $item := merge $parent $each $this $expand $each_hide $key -}}
           {{- partial "boxes/item" $item -}}
         {{- end -}}
 

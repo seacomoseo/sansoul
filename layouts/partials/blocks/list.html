@@ -123,6 +123,7 @@
         {{- /* PAGES TO BOXES  */ -}}
         {{- $boxes   := slice -}}
         {{- range $after_pages -}}
+          {{/*  {{- $price := cond (or (eq .Params.price nil) (eq $tpl.price "hide")) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}  */}}
           {{- $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) -}}
           {{- $page  := dict
             "Page"    .
@@ -139,6 +140,7 @@
             (dict "param" "image" "value" .Params.image)
             (dict "param" "icon"  "value" .Params.icon)
             (dict "param" "md"    "value" $summary)
+            (dict "param" "price" "value" $price)
           -}}
           {{- range $params -}}
             {{- $param := .param -}}
@@ -157,13 +159,7 @@
           {{- /*  append box  */ -}}
           {{- $boxes = $boxes | append $page -}}
         {{- end -}}
-        
-        {{- /* BOXES  */ -}}
-        {{- range slice "image" "icon" "md" -}}
-          {{- if eq (index $tpl .) "hide" -}}
-            {{- $tpl = merge $tpl (dict . "") -}}
-          {{- end -}}
-        {{- end -}}
+
         {{- $to_merge := dict
           "box"        $tpl
           "boxes"      $boxes
