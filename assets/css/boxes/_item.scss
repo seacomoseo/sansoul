@@ -191,8 +191,8 @@
   margin-top: calc(-.75 * var(--box-gap));
 }
 .box__title:not(.hide) + .box__subtitle,
-.box__title.underline + *:not(.box__block),
-.box__icon--bottom + *:not(.box__block) {
+.box__title.underline + *:not(.box__block, .box__button:last-child),
+.box__icon--bottom + *:not(.box__block, .box__button:last-child) {
   margin-top: calc(-.5 * var(--box-gap));
 }
 svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right) *)) {
