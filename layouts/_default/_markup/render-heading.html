@@ -61,7 +61,7 @@
 {{- end -}}
 {{- with $lvl_line -}}
   {{- if le $lvl . -}}
-    {{- $style = $style | append "underline" -}}
+    {{- $style = $style | append "line" -}}
   {{- end -}}
 {{- end -}}
 {{- with $style -}}
@@ -91,7 +91,7 @@
     <a class="link md__heading-link" href="#{{ $id }}">
     {{- end -}}
       {{- $text | safeHTML -}}
-      {{- if in $class "underline" }}<br>{{ end -}}
+      {{- if in $class "line" }}<br>{{ end -}}
     {{- if $is_nav -}}
     </a>
     {{- end -}}

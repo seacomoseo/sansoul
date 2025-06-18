@@ -90,7 +90,7 @@
 {{/*  others  */}}
 {{ $icon_type      := .icon_type | default (cond .main "bottom" "top") }}
 {{ $group_radius   := .group_radius | and (not .slider) }}
-{{ $underline      := and .underline (not (and .icon (eq $icon_type "bottom"))) }}
+{{ $line           := and .line (not (and .icon (eq $icon_type "bottom"))) }}
 {{ $show           := site.Data.config.others.show }}
 {{ $is_title       := or .title .hanchor .menu_label }}
 {{ $is_title_link  := and $link (eq .button "hide") $is_title }}
@@ -157,7 +157,7 @@
   "boxes"          $boxes
   "icon_type"      $icon_type
   "group_radius"   $group_radius
-  "underline"      $underline
+  "line"           $line
   "show"           $show
   "is_title_link"  $is_title_link
   "is_button_hide" $is_button_hide

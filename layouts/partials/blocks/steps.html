@@ -2,11 +2,11 @@
 {{- with .step.icon_size -}}
   {{- $icon_size = print " steps--size-" . -}}
 {{- end -}}
-{{- $hn        := .step.hn | default (add .level 1) }}
-{{- $border    := print " " (.step.border    | default "alt") -}}
-{{- $caps      := cond (not .step.caps)                   "" "caps" -}}
-{{- $underline := cond (not .step.underline)              "" "underline" -}}
-{{- $show      := cond (not site.Data.config.others.show) "" " show" }}
+{{- $hn     := .step.hn                 | default (add .level 1) -}}
+{{- $border := print " " (.step.border  | default "alt")         -}}
+{{- $caps   := cond (not .step.caps)                   "" "caps" -}}
+{{- $line   := cond (not .step.line)                   "" "line" -}}
+{{- $show   := cond (not site.Data.config.others.show) "" " show" }}
 <ul class="steps box__block">
   {{- range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">
@@ -37,7 +37,7 @@
             "step__title"
             (print "h" ($.step.hs | default 4))
             $caps
-            $underline
+            $line
           -}}
           {{- $hn_attrs := dict "class" $hn_class -}}
           {{- $hn_attrs  = partial "functions/attrs" $hn_attrs -}}

@@ -39,17 +39,17 @@
   {{- end -}}
 
   {{- /* TITLE CLASS  */ -}}
-  {{- $underline := cond (and (not $link) .underline) "underline" "" -}}
-  {{- $caps      := cond (not .caps | not)            "caps"      "" -}}
-  {{- $hide      := cond (not .title)                 "hide"      "" -}}
+  {{- $line  := cond (and (not $link) .line) "line" "" -}}
+  {{- $caps  := cond (not .caps | not)       "caps" "" -}}
+  {{- $hide  := cond (not .title)            "hide" "" -}}
   {{- if not .title -}}
-    {{- $underline = "" -}}
-    {{- $caps      = "" -}}
-    {{- $hs        = "" -}}
+    {{- $line = "" -}}
+    {{- $caps = "" -}}
+    {{- $hs   = "" -}}
   {{- end -}}
   {{- $class := slice
     "box__title"
-    $underline
+    $line
     $caps
     $hide
     $hs
@@ -79,7 +79,7 @@
     {{- if $link -}}
       {{- $anchor_class := slice
         (cond (not .is_title_link) "" "box__link")
-        (cond (not .underline)     "" "underline")
+        (cond (not .line)          "" "line")
       -}}
       {{- if not .title -}}
         {{- $anchor_class = "" -}}

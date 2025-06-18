@@ -1,12 +1,12 @@
-.underline {
+.line {
   &::after {
     content: '';
     display: block;
     width: 2em;
     height: $menu-bar-double;
     background-color: var(--main);
-    --underline-margin: calc(50% - 1em);
-    margin: .125em var(--underline-margin) .25em;
+    --line-margin: calc(50% - 1em);
+    margin: .125em var(--line-margin) .25em;
     --radius: #{ $menu-bar };
     @include radius;
     order: 10;
@@ -15,24 +15,24 @@
     content: none;
   }
 }
-.underline *,
-.underline:not(.aux) {
+.line *,
+.line:not(.aux) {
   background-image: none;
 }
-.align-right .underline::after {
+.align-right .line::after {
   margin-right: 0;
-  --underline-margin: calc(100% - 2em);
+  --line-margin: calc(100% - 2em);
 }
-.align-left .underline::after {
+.align-left .line::after {
   margin-left: 0;
-  --underline-margin: calc(100% - 2em);
+  --line-margin: calc(100% - 2em);
 }
 @media (min-width: $vl) {
-  .align--vl-right .underline::after {
+  .align--vl-right .line::after {
     margin-right: 0;
     margin-left: calc(100% - 2em);
   }
-  .align--vl-left .underline::after {
+  .align--vl-left .line::after {
     margin-left: 0;
     margin-right: calc(100% - 2em);
   }

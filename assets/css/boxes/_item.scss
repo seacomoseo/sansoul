@@ -191,7 +191,7 @@
   margin-top: calc(-.75 * var(--box-gap));
 }
 .box__title:not(.hide) + .box__subtitle,
-.box__title.underline + *:not(.box__block, .box__button:last-child),
+.box__title.line + *:not(.box__block, .box__button:last-child),
 .box__icon--bottom + *:not(.box__block, .box__button:last-child) {
   margin-top: calc(-.5 * var(--box-gap));
 }
@@ -226,7 +226,7 @@ svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right) *)
     color: inherit;
   }
   // Remove underline if next is icon bottom
-  &:has(+ .box__icon--bottom) .underline::after {
+  &:has(+ .box__icon--bottom) .line::after {
     content: none;
   }
   &:has(> .box__icon) {
