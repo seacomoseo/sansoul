@@ -8,6 +8,7 @@
 {{- "" -}} <style>
 {{- "" -}}   .d{transform:translate(calc(var(--x, 0) * 2048px), calc(var(--y, 0) * 128px)) scale(var(--fx, 1), var(--fy, 1));transform-origin:center;transform-box:fill-box}
 {{- "" -}}   .c{transform:scale(-1,1);x:-2048}
+{{- "" -}}   .f{transform:scale(-1, 1)translateX(-1024px)}
 {{- "" -}}   .b use:nth-child(1){--x:0;--fx:1;--fy:1}
 {{- "" -}}   .b use:nth-child(2){--x:1;--fx:-1;--fy:1}
 {{- "" -}}   .b use:nth-child(3){--x:2;--fx:1;--fy:-1}
@@ -34,12 +35,22 @@
   {{- "" -}}        {{ .paths | safeHTML }}
   {{- "" -}}      {{ end }}
   {{- "" -}}     </g>
+  {{- /* Flip second draw */ -}}
+  {{- "" -}}    {{- $f   := "" -}}
+  {{- "" -}}    {{ if eq .size 2 }}
+  {{- "" -}}       {{- $f = "f" -}}
+  {{- "" -}}       <g class="d" id="df-{{ .id }}">
+  {{- "" -}}         <g class="f" id="cf-{{ .id }}">{{ .paths | safeHTML }}</g>
+  {{- "" -}}         <use class="c" href="#cf-{{ .id }}"/>
+  {{- "" -}}       </g>
+  {{- "" -}}    {{ end }}
+  {{- /* End Flip */ -}}
   {{- "" -}}   </defs>
   {{- "" -}}   <g class="b" id="b-{{ .id }}">
   {{- "" -}}     <use href="#d-{{ .id }}"/>
+  {{- "" -}}     <use href="#d{{ $f }}-{{ .id }}"/>
   {{- "" -}}     <use href="#d-{{ .id }}"/>
-  {{- "" -}}     <use href="#d-{{ .id }}"/>
-  {{- "" -}}     <use href="#d-{{ .id }}"/>
+  {{- "" -}}     <use href="#d{{ $f }}-{{ .id }}"/>
   {{- "" -}}   </g>
   {{- "" -}}   <mask id="f-{{ .id }}"><rect/><use href="#b-{{ .id }}"/></mask>
   {{- "" -}}   <rect mask="url(#f-{{ .id }})"/>
