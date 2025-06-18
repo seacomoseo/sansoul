@@ -40,17 +40,17 @@
 
   {{- /* TITLE CLASS  */ -}}
   {{- $underline := cond (and (not $link) .underline) "underline" "" -}}
-  {{- $uppercase := cond (not .uppercase     | not)   "uppercase" "" -}}
+  {{- $caps      := cond (not .caps | not)            "caps"      "" -}}
   {{- $hide      := cond (not .title)                 "hide"      "" -}}
   {{- if not .title -}}
     {{- $underline = "" -}}
-    {{- $uppercase = "" -}}
+    {{- $caps      = "" -}}
     {{- $hs        = "" -}}
   {{- end -}}
   {{- $class := slice
     "box__title"
     $underline
-    $uppercase
+    $caps
     $hide
     $hs
   -}}

@@ -4,8 +4,8 @@
 {{- end -}}
 {{- $hn        := .step.hn | default (add .level 1) }}
 {{- $border    := print " " (.step.border    | default "alt") -}}
-{{- $uppercase := cond (not .step.uppercase) "" "uppercase" -}}
-{{- $underline := cond (not .step.underline) "" "underline" -}}
+{{- $caps      := cond (not .step.caps)                   "" "caps" -}}
+{{- $underline := cond (not .step.underline)              "" "underline" -}}
 {{- $show      := cond (not site.Data.config.others.show) "" " show" }}
 <ul class="steps box__block">
   {{- range $key, $value := .steps }}
@@ -36,7 +36,7 @@
           {{- $hn_class := slice
             "step__title"
             (print "h" ($.step.hs | default 4))
-            $uppercase
+            $caps
             $underline
           -}}
           {{- $hn_attrs := dict "class" $hn_class -}}

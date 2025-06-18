@@ -95,11 +95,11 @@
 @mixin font-button($font: main) {
   $font-type: $buttons-font-main;
   $font-bold: $buttons-font-main-bold;
-  $font-uppercase: $buttons-font-main-uppercase;
+  $font-caps: $buttons-font-main-caps;
   @if $font == alt {
     $font-type: $buttons-font-swap;
     $font-bold: $buttons-font-swap-bold;
-    $font-uppercase: $buttons-font-swap-uppercase;
+    $font-caps: $buttons-font-swap-caps;
   }
 
   @if $font-bold {
@@ -120,7 +120,7 @@
     }
   }
 
-  @if $font-uppercase {
+  @if $font-caps {
     text-transform: uppercase;
   } @else {
     text-transform: unset;
