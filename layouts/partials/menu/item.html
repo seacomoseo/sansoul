@@ -6,7 +6,7 @@
       {{- partial "menu/item" (merge . (dict
         "sub"        $sub
         "hide_icons" $.hide_icons
-        "ofuscate"   $.ofuscate
+        "lock"       $.lock
       )) -}}
     {{- end -}}
 
@@ -72,7 +72,7 @@
             "label"  $label
             "anchor" $anchor
             "link"   .link
-            "lock"   .ofuscate
+            "lock"   .lock
           ) -}}
 
           {{- /*  subitems  */ -}}

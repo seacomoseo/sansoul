@@ -41,7 +41,7 @@
         {{- $emoji   := "" -}}
         {{- $label   := .label -}}
         {{- $anchor  := .anchor | default "auto" -}}
-        {{- $noindex := .ofuscate -}}
+        {{- $noindex := .lock -}}
 
         {{- if in (slice "phone" "whatsapp") .type -}}
           {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}

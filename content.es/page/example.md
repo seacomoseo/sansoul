@@ -38,7 +38,7 @@ tpl:
       icon: 1 # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
       label: null # string
       anchor: null # string
-      ofuscate: true
+      lock: true
       button: none
       swap: false
       ga4: false
@@ -56,7 +56,7 @@ tpl:
       icon: person-from-portal
       label: Personalizado
       anchor: Mola Mazo
-      ofuscate: false
+      lock: false
       button: light # [ main, cta, alt, light, dark, invert, similar, none ]
       ga4: false
   section: []

@@ -18,7 +18,7 @@
           {{- $emoji   := "" -}}
           {{- $label   := .label -}}
           {{- $anchor  := .anchor | default "auto" -}}
-          {{- $noindex := .ofuscate -}}
+          {{- $noindex := .lock -}}
 
           {{- $is_phone_or_wa  := in (slice "phone" "whatsapp") .type -}}
           {{- $is_custom_phone := $label | findRE `^\+?[\d\s-()]+$` -}}
