@@ -23,7 +23,7 @@ organization:
   logo: base/icon.png
   images:
   - base/poster.png
-  social:
+  as:
   - https://www.facebook.com/fabricante
   - https://www.instagram.com/fabricante/
   phones:

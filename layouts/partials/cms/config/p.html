@@ -161,17 +161,17 @@
   (dict "&O_URL"         (dict "name" `url`         "required" false "label" `URL`            "widget" `string`))
   (dict "&O_LOGO"        (dict "name" `logo`        "required" false "label" $t.o_logo        "widget" `image` "max_file_size" 512000000))
   (dict "&P_IMAGES"      (dict "name" `images`      "required" false "label" $t.p_images      "widget" `image` "multiple" true "choose_url" true))
-  (dict "&P_SOCIAL"      (dict
-    "name"           `social`
+  (dict "&P_AS"          (dict
+    "name"           `as`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_social
-    "label_singular" $t.p_social_singular
+    "label"          $t.p_as
+    "label_singular" $t.p_as_singular
     "collapsed"      true
     "summary"        "{{fields.link}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `link` "widget" `string` "required" false "label" $t.p_social_singular)
+      (dict "name" `link` "widget" `string` "required" false "label" $t.p_as_singular)
     )
   ))
   (dict "&O_PHONES" (dict
@@ -295,7 +295,7 @@
       `~O_EMAIL`
       `~O_LOGO`
       `~P_IMAGES`
-      `~P_SOCIAL`
+      `~P_AS`
       `~O_PHONES`
       `~P_ADDRESS`
       `~O_AREAS`
@@ -325,7 +325,7 @@
       `~O_LOGO`
       `~O_URL`
       `~P_IMAGES`
-      `~P_SOCIAL`
+      `~P_AS`
       `~O_PHONES`
       `~P_ADDRESS`
       `~O_AREAS`

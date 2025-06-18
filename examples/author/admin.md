@@ -13,7 +13,7 @@ job:
 orgs:
 - name: Clínica López del Amo
   url: https://clinicalopezdelamo.com/
-social:
+as:
 - https://www.instagram.com/clinicadelpielopezdel/
 creds:
 - name: Podólogía Deportiva
