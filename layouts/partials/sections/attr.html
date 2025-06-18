@@ -28,6 +28,8 @@
 {{ $image_fix       := "" }}
 {{ $parallax        := "" }}
 {{ $video_parent    := "" }}
+{{ $bi_alpha        := "" }}
+{{ $color_alpha     := "" }}
 {{ if not .modal }}
   {{ with .color }}
     {{ $color        = print "bg-" . }}
@@ -49,6 +51,8 @@
   {{ if partial "functions/is-iframe" .bi }}
     {{ $video_parent = "bg-figure-video-parent" }}
   {{ end }}
+  {{ $bi_alpha       = and .bi               .alpha       (ne .alpha       1) }}
+  {{ $color_alpha    = and (or .color .fade) .color_alpha (ne .color_alpha 1) }}
 {{ end }}
 
 {{/*  Divider Prev  */}}
@@ -119,10 +123,9 @@
 
 {{/*  STYLES  */}}
 
-{{ $alpha  := "" }}
-{{ if and .color_alpha (ne .color_alpha 1) (or $color $fade_color) }}
-  {{ $alpha = print "--bg-alpha:" .color_alpha }}
-{{ end }}
+{{ $bi_alpha    := (cond (not $bi_alpha)    "" (print "--bi-alpha:"    .alpha)) }}
+{{ $color_alpha := (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha)) }}
+
 {{ $pt     := "" }}
 {{ $pb     := "" }}
 {{ if .ph }}
@@ -137,13 +140,15 @@
   {{ end }}
 {{ end }}
 {{ if .modal }}
-  {{ $alpha = "" }}
-  {{ $pt    = "" }}
-  {{ $pb    = "" }}
+  {{ $bi_alpha    = "" }}
+  {{ $color_alpha = "" }}
+  {{ $pt          = "" }}
+  {{ $pb          = "" }}
 {{ end }}
 
 {{ $style := slice
-  $alpha
+  $bi_alpha
+  $color_alpha
   $pt
   $pb
   $div_style

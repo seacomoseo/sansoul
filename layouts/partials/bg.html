@@ -11,25 +11,15 @@
 
   {{- /*  CLASS  */ -}}
   {{- $image := "" -}}
-  {{- $alpha := "" -}}
   {{- $gray  := "" -}}
   {{- if .bi -}}
     {{- $image = "bg-figure" -}}
-    {{- $alpha = cond (not .alpha) "" "bg-alpha" -}}
     {{- $gray  = cond (not .gray)  "" " image--gray" -}}
   {{- end -}}
-  {{- $class := slice "bg-color" $image $alpha -}}
-
-  {{- /*  STYLE  */ -}}
-  {{- $bi_alpha    := and .bi               .alpha       (ne .alpha       100) -}}
-  {{- $color_alpha := and (or .color .fade) .color_alpha (ne .color_alpha 100) -}}
-  {{- $style := slice
-    (cond (not $bi_alpha)    "" (print "--bg-alpha:"    .alpha))
-    (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
-  -}}
+  {{- $class := slice "bg-color" $image -}}
 
   {{- /*  JOIN ATTRIBUTES  */ -}}
-  {{- $attrs := dict "class" $class "style" $style -}}
+  {{- $attrs := dict "class" $class -}}
   {{- $attrs = partial "functions/attrs" $attrs -}}
 
   {{- /*  HTML  */}}
