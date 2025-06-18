@@ -1,5 +1,5 @@
 {{- if .review.slider }}
-  <div class="slider box__block" {{ with .review.interval }}data-interval="{{ . }}"{{ end }}>
+  <div class="slider box__block" {{ with .review.time }}data-time="{{ . }}"{{ end }}>
 {{- end }}
 
 <div class="reviews {{- if .review.slider }} slider__track{{- else }} box__block{{ end }}">

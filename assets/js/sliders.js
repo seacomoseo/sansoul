@@ -142,7 +142,7 @@ export function initSliders () {
         })
 
         // INTERVALS
-        const interval = slider.dataset.interval * 1000
+        const interval = slider.dataset.time * 1000
         if (interval) {
           let scrollInterval
           // Set intervall if not static

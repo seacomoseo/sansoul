@@ -10,7 +10,7 @@
         {{- $hn  = print "h" $hn -}}
       {{- end -}}
       {{- $hs   := cond (eq .hs nil) "" (cond (eq .hs $hn) "" (print " h" .hs)) -}}
-      {{- $open := and (not $k) .first_open }}
+      {{- $open := and (not $k) .open }}
       <div class="accordion {{- if $open }} accordion--active{{ end }}">
 
         {{- /* TITLE  */}}
