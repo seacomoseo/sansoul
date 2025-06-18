@@ -71,7 +71,7 @@
 
   {{/*  END  */}}
   {{ $header  := eq $key "header" }}
-  {{ $bgcp    := $.back.color | default "light" }}
+  {{ $bgcp    := $.bg.color | default "light" }}
   {{ $expand  := dict "key" $key "id" $id "bgcp" $bgcp "header" $header "modals" $modals "modal" false }}
   {{ $section  = merge $first $alternate $section $expand }}
   {{ $sections = $sections | append $section }}

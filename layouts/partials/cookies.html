@@ -2,7 +2,7 @@
 
   {{- /*  VARS  */ -}}
   {{- $color    := $.menu.color | default "white" -}}
-  {{- $bgc      := partial "functions/color-background" (dict "child" $color "parent" $.back.color) -}}
+  {{- $bgc      := partial "functions/color-background" (dict "child" $color "parent" $.bg.color) -}}
   {{- $color     = $bgc.child -}}
   {{- $class    := print "cookies bg bg-" $color " md" -}}
   {{- $icon     := partial "icon" (dict "icon" "cookie-bite" "emoji" "🍪") -}}

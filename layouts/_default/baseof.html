@@ -96,16 +96,16 @@
   -}}
 
   {{- /*  BODY ATTRIBUTES  */ -}}
-  {{- $back_color := $tpl.back.color | default "light" -}}
-  {{- $back_base  := dict "is_bg" true "color" $back_color "tpl" $tpl -}}
-  {{- $back       := merge $tpl.back $back_base -}}
-  {{- $back_attr  := dict "id" $body_id "body_class" $body_class -}}
-  {{- $merge_attr := merge $back $back_attr -}}
+  {{- $bg_color := $tpl.bg.color | default "light" -}}
+  {{- $bg_base  := dict "is_bg" true "color" $bg_color "tpl" $tpl -}}
+  {{- $bg       := merge $tpl.bg $bg_base -}}
+  {{- $bg_attr  := dict "id" $body_id "body_class" $body_class -}}
+  {{- $merge_attr := merge $bg $bg_attr -}}
   {{- $body_attr  := partial "sections/attr" $merge_attr -}}
 
   {{- /*  LOADER  */}}
   {{- $loader_bg := "" -}}
-  {{- if or (eq $back_color "white") (in $back_color "light") -}}
+  {{- if or (eq $bg_color "white") (in $bg_color "light") -}}
     {{- $loader_bg = site.Data.styles.colors.base.light | default "#eee" -}}
   {{- else -}}
     {{- $loader_bg = site.Data.styles.colors.base.dark  | default "333" -}}
@@ -135,7 +135,7 @@
     </div>
 
     {{- /*  BACKGROUND  */ -}}
-    {{- partial "back" $back -}}
+    {{- partial "bg" $bg -}}
 
     {{- /*  LOGO  */ -}}
     {{- partial "logo" $tpl -}}

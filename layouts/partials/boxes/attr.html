@@ -42,8 +42,8 @@
 {{ end }}
 
 {{/*
-{{ $bg_image_fix           := cond (not (.bg | and .parallax))               "" "bg--fix" }}
-{{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bg)) "" "bg-figure-video-parent" }}
+{{ $bg_image_fix           := cond (not (.bi | and .parallax))               "" "bg--fix" }}
+{{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bi)) "" "bg-figure-video-parent" }}
 */}}
 
 {{ $class := slice
@@ -56,7 +56,7 @@
   (cond (not .align_y)             "" (print "align-self-" .align_y))
   (cond (not .align_vl)            "" (print "align--vl-" .align_vl))
   (cond (not .is_bg)               "" "bg")
-  (cond (not .bg)                  "" "bg-image")
+  (cond (not .bi)                  "" "bg-image")
   (cond (not .color)               "" (print "bg-" .color))
   (cond (not .fade)                "" (print "bg-fade-" .fade))
   (cond (not .fade)                "" (print "bg-fade-" (.fade_type | default "linear-r")))

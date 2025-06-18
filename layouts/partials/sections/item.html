@@ -6,9 +6,9 @@
 
   {{- /*  BACKGROUND  */ -}}
   {{- if not .modal -}}
-    {{- $back_opts := dict "card" nil "container" "fluid" -}}
-    {{- $back_opts  = merge . $back_opts -}}
-    {{- partial "back" $back_opts -}}
+    {{- $bg_opts := dict "card" nil "container" "fluid" -}}
+    {{- $bg_opts  = merge . $bg_opts -}}
+    {{- partial "bg" $bg_opts -}}
   {{- end -}}
 
   {{- /*  IMAGE LCP  */ -}}
@@ -37,7 +37,7 @@
     "section"     .
     "parent"      .box
     "node"        .box_node
-    "bg"          .box_bg
+    "bi"          .box_bi
     "alpha"       .box_alpha
     "parallax"    .box_parallax
     "color"       .box_color

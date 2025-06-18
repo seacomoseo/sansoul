@@ -37,7 +37,7 @@
 
   {{/*  is_bg and color  */}}
   {{ $color := cond .modal "black" .color }}
-  {{ $is_bg := or .bg $color .fade }}
+  {{ $is_bg := or .bi $color .fade }}
   {{/*  Change color if is similar or invert and set bgcp  */}}
   {{ $bgc_o := dict "child" $color "parent" .bgcp }}
   {{ $bgc   := partial "functions/color-background" $bgc_o }}
@@ -61,7 +61,7 @@
   {{ if .modal }}
     {{ $box_params = dict
       "box_node"        .node
-      "box_bg"          .bg
+      "box_bi"          .bi
       "box_alpha"       .alpha
       "box_parallax"    .parallax
       "box_color"       .color

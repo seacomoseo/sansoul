@@ -13,7 +13,7 @@
   {{- $image := "" -}}
   {{- $alpha := "" -}}
   {{- $gray  := "" -}}
-  {{- if .bg -}}
+  {{- if .bi -}}
     {{- $image = "bg-figure" -}}
     {{- $alpha = cond (not .alpha) "" "bg-alpha" -}}
     {{- $gray  = cond (not .gray)  "" " image--gray" -}}
@@ -21,10 +21,10 @@
   {{- $class := slice "bg-color" $image $alpha -}}
 
   {{- /*  STYLE  */ -}}
-  {{- $bg_alpha    := and .bg               .alpha       (ne .alpha       100) -}}
+  {{- $bi_alpha    := and .bi               .alpha       (ne .alpha       100) -}}
   {{- $color_alpha := and (or .color .fade) .color_alpha (ne .color_alpha 100) -}}
   {{- $style := slice
-    (cond (not $bg_alpha)    "" (print "--bg-alpha:"    .alpha))
+    (cond (not $bi_alpha)    "" (print "--bg-alpha:"    .alpha))
     (cond (not $color_alpha) "" (print "--color-alpha:" .color_alpha))
   -}}
 
@@ -34,17 +34,17 @@
 
   {{- /*  HTML  */}}
   {{- $alt := .hanchor | default .anchor | default .title | default .subtitle -}}
-  {{- $is_iframe := partial "functions/is-iframe" .bg -}}
+  {{- $is_iframe := partial "functions/is-iframe" .bi -}}
   <div {{- $attrs -}}>
     {{- if $is_iframe }}
       <div class="bg-figure-video">
     {{- end -}}
       {{ partial "media/_" (dict
         "class"     (print "bg-figure-image" $gray)
-        "src"       .bg
+        "src"       .bi
         "alt"       $alt
         "notlazy"   .header
-        "bg"        true
+        "bi"        true
         "container" .container
         "fit_vl"    .col_vl
         "fit_vs"    .col_vs

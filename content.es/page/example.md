@@ -8,11 +8,11 @@ translationKey: single
 seo: null # string
 description: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
 tpl:
-  back:
+  bg:
     color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
     fade: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
     fade_type: null # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-    bg: null # string
+    bi: null # string
     alpha: 0 # [ 0.00 - 1.00 ]
     parallax: null # [ none, fix, soft ]
   menu:

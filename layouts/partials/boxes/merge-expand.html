@@ -19,15 +19,15 @@
 {{ $col_vs := mul .col_vs (.fit_vs | default 1.00) }}
 
 {{/*  bg and image  */}}
-{{ $bg    := .bg }}
+{{ $bi    := .bi }}
 {{ $image := .image }}
 {{ if .card }}
   {{ $image = "" }}
-  {{ if not .bg }}
-    {{ $bg = .image }}
+  {{ if not .bi }}
+    {{ $bi = .image }}
   {{ end }}
 {{ end }}
-{{ $is_bg := or $bg $color .fade }}
+{{ $is_bg := or $bi $color .fade }}
 
 {{/*  images  */}}
 {{ $gallery := .gallery }}
@@ -149,7 +149,7 @@
   "col_vl"         $col_vl
   "col_vs"         $col_vs
   "is_bg"          $is_bg
-  "bg"             $bg
+  "bi"             $bi
   "image"          $image
   "images"         $images
   "ratio"          $ratio

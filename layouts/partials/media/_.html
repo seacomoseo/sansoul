@@ -1,10 +1,10 @@
 {{- if .src -}}
   {{- $media := . -}}
   {{- $src   := .src -}}
-  {{- $mute  := cond (in $src "#mute") true .bg -}}
+  {{- $mute  := cond (in $src "#mute") true .bi -}}
   {{- if not $mute -}}
     {{- if partial "functions/is-iframe" $src -}}
-      {{- $iframe    := partial "functions/iframe-src" (dict "src" $src "bg" .bg) -}}
+      {{- $iframe    := partial "functions/iframe-src" (dict "src" $src "bi" .bi) -}}
       {{- $src        = partial "functions/iframe-poster" .src -}}
       {{- $color     := cond (or (not .icon_color) (eq .icon_color "cta")) "" .icon_color -}}
       {{- $icon      := site.Data.styles.icons.play | default "play-iframe" -}}

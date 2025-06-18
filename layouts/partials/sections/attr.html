@@ -36,7 +36,7 @@
       {{ $color      = "bg-white" }}
     {{ end }}
   {{ end }}
-  {{ if .bg }}
+  {{ if .bi }}
     {{ $color        = print $color " bg-image" }}
   {{ end }}
   {{ if .fade }}
@@ -44,9 +44,9 @@
     {{ $fade_type    = print "bg-fade-" (.fade_type | default "linear-b") }}
   {{ end }}
   {{ $bg             = cond (not .is_bg)                          "" "bg" }}
-  {{ $image_fix      = cond (not (and .bg (eq .parallax "fix")))  "" "bg--fix" }}
-  {{ $parallax       = cond (not (and .bg (eq .parallax "soft"))) "" "parallax parallax--bg" }}
-  {{ if partial "functions/is-iframe" .bg }}
+  {{ $image_fix      = cond (not (and .bi (eq .parallax "fix")))  "" "bg--fix" }}
+  {{ $parallax       = cond (not (and .bi (eq .parallax "soft"))) "" "parallax parallax--bg" }}
+  {{ if partial "functions/is-iframe" .bi }}
     {{ $video_parent = "bg-figure-video-parent" }}
   {{ end }}
 {{ end }}
