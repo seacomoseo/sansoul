@@ -1,18 +1,18 @@
 {{- $button := cond (eq .button "hide") "" .button | default "cta" -}}
 
-{{- /*  BULLETS  */ -}}
-{{- $bullets_class := "slider__bullets" -}}
-{{- if in (slice "hide" "radius") .bullets -}}
-  {{- $bullets_class = print $bullets_class " slider__bullets--" .bullets -}}
+{{- /*  PIPS  */ -}}
+{{- $pips_class := "slider__pips" -}}
+{{- if in (slice "hide" "dot") .pips -}}
+  {{- $pips_class = print $pips_class " slider__pips--" .pips -}}
 {{- end }}
-<div class="{{ $bullets_class }}">
-  {{- $bullet_class := "slider__bullet" -}}
+<div class="{{ $pips_class }}">
+  {{- $pip_class := "slider__pip" -}}
   {{- range seq .items -}}
     {{- if eq . 1 -}}
-      {{- $bullet_class = print $bullet_class " slider__bullet--active" -}}
+      {{- $pip_class = print $pip_class " slider__pip--active" -}}
     {{- end }}
     {{ partial "link" (dict
-      "class"  $bullet_class
+      "class"  $pip_class
       "button" ($button | default "cta")
       "title"  (print (i18n "slide") " " .)
     ) -}}

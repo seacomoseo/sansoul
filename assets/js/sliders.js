@@ -6,15 +6,15 @@ export function initSliders () {
       return [...item.parentElement.children].indexOf(item)
     }
 
-    function activeClass (item, bullets, remove = false) {
+    function activeClass (item, pips, remove = false) {
       const index = indexOfItem(item)
-      const bullet = bullets[index]
+      const pip = pips[index]
       if (!remove) {
         item.classList.add('slider__item--active')
-        bullet.classList.add('slider__bullet--active')
+        pip.classList.add('slider__pip--active')
       } else {
         item.classList.remove('slider__item--active')
-        bullet.classList.remove('slider__bullet--active')
+        pip.classList.remove('slider__pip--active')
       }
     }
 
@@ -114,7 +114,7 @@ export function initSliders () {
         const track = slider.querySelector('.slider__track')
         const items = slider.querySelector('.slider__items')
         const children = [...items.children]
-        const bullets = slider.querySelectorAll('.slider__bullet')
+        const pips = slider.querySelectorAll('.slider__pip')
 
         // FIRST TO START ON LOAD
         const trackChild = track.firstElementChild
@@ -126,9 +126,9 @@ export function initSliders () {
         function callbackScrollChildren (entries, observer) {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              activeClass(entry.target, bullets)
+              activeClass(entry.target, pips)
             } else {
-              activeClass(entry.target, bullets, true)
+              activeClass(entry.target, pips, true)
             }
           })
         }
@@ -180,16 +180,16 @@ export function initSliders () {
 
     // ONCLICK
     document.addEventListener('click', e => {
-      // BULLETS AND ARROWS
-      const bullet = e.target.closest('.slider__bullet')
+      // pips AND ARROWS
+      const pip = e.target.closest('.slider__pip')
       const arrowLeft = e.target.closest('.slider__arrow--left')
       const arrowRight = e.target.closest('.slider__arrow--right')
-      if (bullet || arrowLeft || arrowRight) {
+      if (pip || arrowLeft || arrowRight) {
         const slider = e.target.closest('.slider')
         const track = slider.querySelector('.slider__track')
         const items = slider.querySelector('.slider__items')
         const children = [...items.children]
-        if (bullet) scrollToItem(children[indexOfItem(bullet)], slider, track)
+        if (pip) scrollToItem(children[indexOfItem(pip)], slider, track)
         if (arrowLeft) sideScroll('left', track, children)
         if (arrowRight) sideScroll('right', track, children)
       }
