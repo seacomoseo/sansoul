@@ -1,24 +1,91 @@
+{{- $box   := .box -}}
+{{- $boxes := .boxes -}}
+
+{{- /* DUO */ -}}
+{{- $duo := int (.box.duo | default 0) -}}
+{{- if $duo -}}
+  {{- /* New slice with order and align_vl */ -}}
+  {{- $items := slice -}}
+  {{- range $i, $it  := $boxes -}}
+    {{- $idx         := mod $i 4 -}}                 {{- /* pos. in block 4 */ -}}
+    {{- $group_start := add (mul (div $i 4) 4) 1 -}} {{- /* 1,5,9… */ -}}
+
+    {{- /* Default values (without duo) */ -}}
+    {{- $order := add $i 1 -}}
+    {{- $align := .align_vl | default $.box.align_vl -}}
+    {{- $default_align := $align -}}
+
+    {{- /* DUO 1 → [1R 2L 4L 3R] */ -}}
+    {{- if eq $duo 1 -}}
+      {{- if eq $idx 2 -}}
+        {{- $order = add $group_start 3 -}}
+        {{- $align = "left" -}}
+      {{- else if eq $idx 3 -}}
+        {{- $order = add $group_start 2 -}}
+        {{- $align = "right" -}}
+      {{- else if eq $idx 0 -}}
+        {{- $align = "right" -}}
+      {{- else -}}
+        {{- $align = "left" -}}
+      {{- end -}}
+
+    {{- /* DUO 2 → [2L 1R 3R 4L] */ -}}
+    {{- else if eq $duo 2 -}}
+      {{- if eq $idx 0 -}}
+        {{- $order = add $group_start 1 -}}
+        {{- $align = "left" -}}
+      {{- else if eq $idx 1 -}}
+        {{- $order = $group_start -}}
+        {{- $align = "right" -}}
+      {{- else if eq $idx 2 -}}
+        {{- $align = "right" -}}
+      {{- else -}}
+        {{- $align = "left" -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- with $default_align -}}
+      {{- $align = . -}}
+    {{- end -}}
+
+    {{- /* Add new item to new slice */ -}}
+    {{- $item := dict "order" $order "align_vl" $align -}}
+    {{- $item  = merge $it $item -}}
+    {{- $items = $items | append $item -}}
+  {{- end -}}
+  {{- $boxes = $items -}}
+
+  {{- /*  Default columns  */ -}}
+  {{- if eq $box.cols nil -}}
+    {{- $box = merge $box (dict "cols" 2) -}}
+  {{- end -}}
+  {{- if eq $box.cols_vs nil -}}
+    {{- $box = merge $box (dict "cols_vs" 1) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* GENERAL */ -}}
 {{- $cols := partial "functions/columns" (dict
-  "each"   .box
-  "items"  .boxes
+  "each"   $box
+  "items"  $boxes
   "col_vl" .col_vl
   "col_vs" .col_vs
 ) -}}
-{{- $box     := . -}}
 {{- $deep    := .deep -}}
 {{- $level   := .level -}}
 {{- if or .title .hanchor -}}
   {{- $hn     := cond (eq .hn     "p") 0 .hn -}}
-  {{- $box_hn := cond (eq .box.hn "p") 0 .box.hn -}}
+  {{- $box_hn := cond (eq $box.hn "p") 0 $box.hn -}}
   {{- $level   = add ($hn | default $box_hn | default $level | int) 1 -}}
 {{- end -}}
 
 {{- $boxes_wrap  := or
-  (and (ne .box.cols    nil) (ne .box.cols    1))
-  (and (ne .box.cols_vs nil) (ne .box.cols_vs 1))
+  (and (ne $box.cols    nil) (ne $box.cols    1))
+  (and (ne $box.cols_vs nil) (ne $box.cols_vs 1))
 -}}
 
-{{- with .box -}}
+{{- /* BOX */ -}}
+{{- with $box -}}
   {{- $boxes_wrap = or
     $boxes_wrap
     .gap
@@ -75,19 +142,10 @@
   {{- end -}}
 {{- end -}}
 
-        {{- $each := .box -}}
-
-        {{- $each_hide := dict -}}
-        {{- range slice "image" "icon" "md" "price" -}}
-          {{- if eq (index $each .) "hide" -}}
-            {{- $each_hide = merge $each_hide (dict . "") -}}
-          {{- end -}}
-        {{- end -}}
-
         {{- $parent := dict -}}
         {{- /*  if deep >= 1  */ -}}
         {{- if and (gt $deep 1) (not .list_pages) -}}
-          {{- with $box -}}
+          {{- with $ -}}
             {{- /*  inherit these parameters  */ -}}
             {{- $parent = dict
               "caps"        .caps
@@ -122,22 +180,29 @@
           "boxes_wrap" $boxes_wrap
         -}}
 
-        {{- range $key, $this := .boxes -}}
+        {{- $box_hide := dict -}}
+        {{- range slice "image" "icon" "md" "price" -}}
+          {{- if eq (index $box .) "hide" -}}
+            {{- $box_hide = merge $box_hide (dict . "") -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- range $key, $this := $boxes -}}
         {{- /* BOX  */ -}}
           {{- $key  := dict "key" $key -}}
-          {{- $item := merge $parent $each $this $expand $each_hide $key -}}
+          {{- $item := merge $parent $box $this $expand $box_hide $key -}}
           {{- partial "boxes/item" $item -}}
         {{- end -}}
 
 {{- if $boxes_wrap -}}
-  {{- with .box }}
+  {{- with $box }}
     </div>
 
     {{- /* SLIDER BUTTONS  */ -}}
     {{- if .slider }}
       </div>
         {{- $opts := dict
-          "items"   (len $.boxes)
+          "items"   (len $boxes)
           "pips"    .pips
           "arrows"  .arrows
           "button"  .button
