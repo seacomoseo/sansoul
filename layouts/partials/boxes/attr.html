@@ -62,6 +62,7 @@
   (cond (not .color)               "" (print "bg-" .color))
   (cond (not .fade)                "" (print "bg-fade-" .fade))
   (cond (not .fade)                "" (print "bg-fade-" (.fade_type | default "linear-r")))
+  (cond (not (and .side (or .is_bg .image)))     "" (print "box--side-" .side))
   (cond (and (ne .parallax "box") (not (and .is_bg (eq .parallax "soft")))) "" "parallax")
   (cond (ne .parallax "box")                     "" "parallax--box")
   (cond (not (and .is_bg (eq .parallax "soft"))) "" "parallax--bg")

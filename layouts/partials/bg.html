@@ -23,7 +23,10 @@
   {{- $attrs = partial "functions/attrs" $attrs -}}
 
   {{- /*  HTML  */}}
-  {{- $alt := .hanchor | default .anchor | default .title | default .subtitle -}}
+  {{- $alt  := .alt -}}
+  {{- if .image -}}
+    {{- $alt = .hanchor | default .anchor | default .title | default .subtitle -}}
+  {{- end -}}
   {{- $is_iframe := partial "functions/is-iframe" .bi -}}
   <div {{- $attrs -}}>
     {{- if $is_iframe }}
