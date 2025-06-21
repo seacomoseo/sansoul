@@ -12,7 +12,7 @@ translationKey: manufacturer-example
 seo: null
 description: null
 
-organization:
+org:
   types:
   - Organization
   names:

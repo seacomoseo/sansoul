@@ -20,7 +20,7 @@
 {{ end }}
 
 {{ if not $authors }}
-  {{ $authors = partial "schema/organization-id" . }}
+  {{ $authors = partial "schema/org-id" . }}
 {{ end }}
 
 {{ return (dict "authors" $authors "art_sections" $art_sections) }}

@@ -8,7 +8,7 @@
   {{ end }}
 {{ end }}
 {{ if not $src }}
-  {{ $src := site.Home.Params.organization.logo
+  {{ $src := site.Home.Params.org.logo
     | default site.Home.Params.menu.logo
     | default site.Data.types.all.tpl.menu.logo
     | default site.Data.config.cms.logo

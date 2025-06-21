@@ -10,7 +10,7 @@
 {{ $thumbnail  := (partial "schema/image-main" .).url }}
 
 {{/*  Organization  */}}
-{{ $organization := partial "schema/organization-id" . }}
+{{ $org := partial "schema/org-id" . }}
 
 {{/*  Authors and ArticleSections  */}}
 {{ $aas          := partial "functions/authors-article-sections" . }}
@@ -30,7 +30,7 @@
   "isPartOf"         (dict "@id" .Permalink)
   "mainEntityOfPage" (dict "@id" .Permalink)
   "image"            (dict "@id" (print .Permalink "#schema-image"))
-  "publisher"        $organization
+  "publisher"        $org
   "author"           $authors
   "articleSection"   $art_sections
 }}

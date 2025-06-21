@@ -21,11 +21,11 @@
   {{ if eq .Params.base "author" }}
     {{ $type = "ProfilePage" }}
     {{ $main_entity = dict "@id" (print .Permalink "#schema-person") }}
-  {{ else if eq .Params.base "organization" }}
+  {{ else if eq .Params.base "org" }}
     {{ if not .IsHome }}
       {{ $type = "ProfilePage" }}
     {{ end }}
-    {{ $main_entity = partial "schema/organization-id" . }}
+    {{ $main_entity = partial "schema/org-id" . }}
   {{ else if $children }}
     {{ $type = "CollectionPage" }}
   {{ end }}

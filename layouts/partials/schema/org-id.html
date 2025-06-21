@@ -1,0 +1,14 @@
+{{ $main := site.GetPage (site.Params.main_org | default "/") | default site.Home }}
+{{ $url  := $main.Permalink }}
+{{ $org  := dict "@id" (print $url "#schema-org") }}
+
+{{ if ne $main.Params.base "org" }}
+  {{ $org = merge $org (dict
+    "@type"       "Organization"
+    "url"         $url
+    "name"        site.Title
+    "description" site.Params.description
+  ) }}
+{{ end }}
+
+{{ return $org }}

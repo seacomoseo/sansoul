@@ -280,38 +280,12 @@
       (dict "name" `food_type` "widget" `string` "required" false "label" $t.o_food_type_singular)
     )
   ))
-  (dict "&P_ORGANIZATION" (dict
-    "name"           `organization`
-    "widget"         `object`
-    "required"       false
-    "label"          $t.p_organization
-    "collapsed"      true
-    "fields"         (slice
-      `~O_TYPES`
-      `~O_NAMES`
-      `~O_DESCRIPTION`
-      `~O_LEGAL`
-      `~O_NIF`
-      `~O_EMAIL`
-      `~O_LOGO`
-      `~P_IMAGES`
-      `~P_AS`
-      `~O_PHONES`
-      `~P_ADDRESS`
-      `~O_AREAS`
-      `~O_OPEN`
-      `~O_PRICES`
-      `~O_SERVICES`
-      `~O_FOOD_MENU`
-      `~O_FOOD_TYPE`
-    )
-  ))
-  (dict "&P_DEPARTMENTS" (dict
-    "name"           `departments`
+  (dict "&O_DEPARTS" (dict
+    "name"           `departs`
     "widget"         `list`
     "required"       false
-    "label"          $t.p_departments
-    "label_singular" $t.p_departments_singular
+    "label"          $t.o_departs
+    "label_singular" $t.o_departs_singular
     "collapsed"      true
     "summary"        "{{fields.url}}"
     "allow_add"      true
@@ -334,6 +308,33 @@
       `~O_SERVICES`
       `~O_FOOD_MENU`
       `~O_FOOD_TYPE`
+    )
+  ))
+  (dict "&P_ORG" (dict
+    "name"           `org`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.p_org
+    "collapsed"      true
+    "fields"         (slice
+      `~O_TYPES`
+      `~O_NAMES`
+      `~O_DESCRIPTION`
+      `~O_LEGAL`
+      `~O_NIF`
+      `~O_EMAIL`
+      `~O_LOGO`
+      `~P_IMAGES`
+      `~P_AS`
+      `~O_PHONES`
+      `~P_ADDRESS`
+      `~O_AREAS`
+      `~O_OPEN`
+      `~O_PRICES`
+      `~O_SERVICES`
+      `~O_FOOD_MENU`
+      `~O_FOOD_TYPE`
+      `~O_DEPARTS`
     )
   ))
 

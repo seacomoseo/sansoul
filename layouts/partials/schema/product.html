@@ -10,7 +10,7 @@
   {{ end }}
   {{ if eq .schema "manufacturer" }}
     {{ with site.GetPage .name (index $.Params .name) }}
-      {{ $manufacturer = partial "schema/organization" . }}
+      {{ $manufacturer = partial "schema/org" . }}
     {{ end }}
   {{ end }}
 {{ end }}

@@ -3,12 +3,13 @@ slug: inicio
 title: Inicio
 noindex: false
 translationKey: home
-base: organization
+base: org
 weight: 1
 
-organization:
+org:
   types: [] # strings https://schema.org/docs/full.html > Organization...
   names: [] # strings
+  description: null # string
   legal: null # string
   nif: null # string
   email: null # string
@@ -50,6 +51,6 @@ organization:
   #   url: null # string
   food_menu: [] # string url
   food_type: [] # string (Italian, American...)
-  departments: [] # all same and...
+  departs: [] # all same and...
   # - url: null # string
 ---

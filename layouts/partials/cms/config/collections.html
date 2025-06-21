@@ -107,23 +107,22 @@
       )
       `~P_BASE`
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `article` `event`))) `~P_DATE`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `article`     )) `~P_LASTMOD`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_END`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_CANCELLED`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_ARTISTS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `product`     )) `~P_SKU`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_PREFIX`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_ALTS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_JOB`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_ORGS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_AS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author`      )) `~P_CREDS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`       )) `~P_ADDRESS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`     )) `~P_SERVICE_AREAS`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`     )) `~P_SERVICE_TYPES`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `article`)) `~P_LASTMOD`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_END`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_CANCELLED`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_ARTISTS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `product`)) `~P_SKU`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_PREFIX`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_ALTS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_JOB`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_ORGS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_AS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_CREDS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_ADDRESS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`)) `~P_SERVICE_AREAS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`)) `~P_SERVICE_TYPES`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `product` `service`))) `~P_PRICE`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_ORGANIZATION`))
-      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `organization`)) `~P_DEPARTMENTS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `org`)) `~P_ORG`))
     }}
   {{ else if eq .Params.base "article" }}
     {{ $fields = $fields | append
@@ -153,10 +152,9 @@
       `~P_AS`
       `~P_CREDS`
     }}
-  {{ else if eq .Params.base "organization" }}
+  {{ else if eq .Params.base "org" }}
     {{ $fields = $fields | append
-      `~P_ORGANIZATION`
-      `~P_DEPARTMENTS`
+      `~P_ORG`
     }}
   {{ else if eq .Params.base "service" }}
     {{ $fields = $fields | append

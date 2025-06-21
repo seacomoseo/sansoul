@@ -1,7 +1,7 @@
 {{ $return := "" }}
 
-{{ with .Page.Params.address | default .Page.Params.organization.address }}
-  {{ $is_country := and .country (ne .country site.Home.Params.organization.address.country) }}
+{{ with .Page.Params.address | default .Page.Params.org.address }}
+  {{ $is_country := and .country (ne .country site.Home.Params.org.address.country) }}
 
   {{ with .name               }}{{ $return = print $return .    }}{{ end }}
   {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}

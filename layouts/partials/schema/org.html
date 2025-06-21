@@ -1,6 +1,6 @@
 {{ $schema := dict }}
 
-{{ with .Params.organization | default . }}
+{{ with .Params.org | default . }}
 
   {{/*  Types  */}}
   {{ $types      := .types | default (slice "Organization") }}
@@ -15,10 +15,10 @@
 
   {{/*  URL  */}}
   {{ $url  := .url | default $.Page.Permalink }}
-  {{ $id   := print $url "#schema-organization" }}
-  {{ if and .department (not $url) }}
+  {{ $id   := print $url "#schema-org" }}
+  {{ if and .is_department (not $url) }}
     {{ $url = site.Home.Permalink }}
-    {{ $id  = print $url "#schema-department" }}
+    {{ $id  = print $url "#schema-departs" }}
   {{ end }}
 
   {{/*  Legal and NIF  */}}
@@ -70,10 +70,10 @@
   {{ end }}
 
   {{/*  Departments  */}}
-  {{ $departments := slice }}
+  {{ $departs := slice }}
   {{ with $.Params }}
-    {{ range .departments }}
-      {{ $departments = $departments | append (partial "schema/organization" (merge . (dict "department" true))) }}
+    {{ range .departs }}
+      {{ $departs = $departs | append (partial "schema/org" (merge . (dict "is_department" true))) }}
     {{ end }}
   {{ end }}
 
@@ -124,7 +124,7 @@
     "hasMap"                    $has_map
     "geo"                       $geo
     "openingHoursSpecification" $schedule
-    "department"                $departments
+    "department"                $departs
     "hasOfferCatalog"           $offers
     "sameAs"                    .as
     "areaServed"                .areas
