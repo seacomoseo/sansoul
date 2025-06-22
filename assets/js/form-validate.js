@@ -36,7 +36,7 @@ export function formValid (form) {
     } else if (input.type === 'checkbox') {
       return input.checked
     } else if (input.type === 'file') {
-      return input.closest('.form__item:has(.form__preview-item)').querySelector('input')
+      return input.closest('.form__item:has(.form__preview-item)')?.querySelector('input')
     } else {
       return input.value
     }
