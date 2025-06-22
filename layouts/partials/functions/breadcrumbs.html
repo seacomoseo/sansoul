@@ -11,7 +11,7 @@
   {{/*  First value  */}}
   {{ with index $v 0 }}
     {{/*  Page by filename  */}}
-    {{ with site.GetPage $type . }}
+    {{ with site.GetPage (print $type "/" .) }}
       {{/*  Append page parent  */}}
       {{ $paths = $paths | append . }}
       {{/*  Grandparent  */}}

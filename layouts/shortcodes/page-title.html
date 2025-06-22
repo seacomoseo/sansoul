@@ -2,6 +2,6 @@
 {{- if eq $param "index" -}}
   {{- site.Params.domain -}}
 {{- else -}}
-  {{- $page := site.GetPage "pages" $param -}}
+  {{- $page := site.GetPage (print "page/" $param) -}}
   {{- $page.Title -}}
 {{- end -}}

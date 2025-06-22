@@ -5,7 +5,7 @@
 
 {{ with index .Page.Params $type }}
   {{ range $k, $v := . }}
-    {{ with site.GetPage $type . }}
+    {{ with site.GetPage (print $type "/" .) }}
       {{ $paths = $paths | append (dict "Page" . "i" $i "k" $k) }}
       {{ $path := partial "functions/breadcrumbs-pre" (dict "Page" . "i" $i "k" $k) }}
       {{ range $path }}

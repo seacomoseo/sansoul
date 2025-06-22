@@ -27,7 +27,7 @@
         {{- $pages  = $parent.Pages.Related page -}}
         {{- with page.Params.related -}}
           {{- range . | collections.Reverse -}}
-            {{- $pages = slice (site.GetPage page.Type .) | append $pages -}}
+            {{- $pages = slice (site.GetPage (print page.Type "/" .)) | append $pages -}}
           {{- end -}}
           {{- $pages = uniq $pages -}}
         {{- end -}}

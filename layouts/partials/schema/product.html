@@ -4,12 +4,12 @@
 {{ $man_org_type := "" }}
 {{ range .Params.taxonomies }}
   {{ if eq .schema "brand" }}
-    {{ with site.GetPage .name (index $.Params .name) }}
+    {{ with site.GetPage (print .name "/" (index $.Params .name)) }}
       {{ $brand = partial "schema/brand" . }}
     {{ end }}
   {{ end }}
   {{ if eq .schema "manufacturer" }}
-    {{ with site.GetPage .name (index $.Params .name) }}
+    {{ with site.GetPage (print .name "/" (index $.Params .name)) }}
       {{ $manufacturer = partial "schema/org" . }}
     {{ end }}
   {{ end }}

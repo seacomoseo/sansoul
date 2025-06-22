@@ -14,7 +14,7 @@
       {{/*  Each filename taxonomy  */}}
       {{ range $filenames }}
         {{/*  Page taxonomy  */}}
-        {{ with site.GetPage $type . }}
+        {{ with site.GetPage (print $type "/" .) }}
           {{/*  Append parent  */}}
           {{ $parent = $parent | append . }}
         {{ end }}
