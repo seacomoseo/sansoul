@@ -112,8 +112,9 @@
               </div>
             {{- end }}
             <div class="review__author">
-              {{- with .title }}
-                <p class="review__title h4">{{ . | markdownify }}</p>
+              {{- with .title -}}
+                {{- $hs := $.review.hs | default 4 }}
+                <p class="review__title h{{ $hs }}">{{ . | markdownify }}</p>
               {{- end -}}
               {{- with .subtitle }}
                 <p class="review__subtitle">{{ . | markdownify }}</p>
