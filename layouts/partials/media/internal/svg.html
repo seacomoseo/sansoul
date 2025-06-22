@@ -26,8 +26,8 @@
     {{- $svg_height      = add (float (index $view_box_split 3)) (float (index $view_box_split 1)) | int -}}
     {{- $svg_not_size    = true -}}
   {{- end -}}
-  {{- if $svg | findRE `svg-src|animat|href|</linearGradient>|</style>` | or (in $src "#src") -}}
-    {{- if .svg_src | or ($svg | findRE `svg-src`) | or (in $src "#src") -}}
+  {{- if $svg | findRE `svg-src|animat|href|</linearGradient>|</style>` | or (in .src "#src") -}}
+    {{- if .svg_src | or ($svg | findRE `svg-src`) | or (in .src "#src") -}}
       {{- $svg_minify := $min.Content -}}
       {{- if $svg_not_size -}}
         {{- $svg_minify = replace $svg_minify "<svg" (print `<svg width="` $svg_width `" height="` $svg_height `"`) -}}
