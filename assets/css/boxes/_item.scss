@@ -372,7 +372,7 @@ svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right) *)
   // overflow: hidden;
   // @include radius;
   justify-content: flex-end;
-  // --cta: #{ $white };
+  --cta-text: var(--title);
 }
 .bg-card {
   flex-grow: 1;
@@ -391,7 +391,8 @@ svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right) *)
   position: absolute;
   bottom: calc(-1 * var(--bg-card-height));
   left: calc(var(--box-pd)* -1);
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5) calc(var(--box-gap) * 2), #000);
+  --bg-card-color-alpha: color-mix(in srgb, var(--bg-hex), transparent 50%);
+  background-image: linear-gradient(transparent, var(--bg-card-color-alpha) calc(var(--box-gap) * 2), var(--bg-color));
   @include radius-child;
   border-top-left-radius: 0;
   border-top-right-radius: 0;

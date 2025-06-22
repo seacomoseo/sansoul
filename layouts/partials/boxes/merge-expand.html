@@ -6,7 +6,7 @@
 {{/*  {{ $color := cond (ne .color nil) .color (cond (not .card) "" "black") }}  */}}
 
 {{ $color := .color }}
-{{ if eq $color nil }}
+{{ if not $color }}
   {{ if .card }}
     {{ $color = "black" }}
   {{ end }}

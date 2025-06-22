@@ -13,10 +13,10 @@ org:
   legal: null # string
   nif: null # string
   email: null # string
-  summary: null # string
+  description: null # string
   logo: null # string image path
   images: [] # strings image path
-  same: [] # strings
+  as: [] # strings
   phones: [] # strings
   address:
     name: null # string

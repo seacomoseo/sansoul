@@ -10,6 +10,8 @@
 - `*.yml`
   - `placeholder` > `label`
 - `content.${lang}`
+  - `section/base/footer.yml`
+  - `values.yml`
   - `_index.md`
     - `images`
     - `schedule`
@@ -28,7 +30,6 @@
   - `single/*.md`
     - `menu.hide_anchors`
     - `menu|modal|section|sections|...` > `tpl.*`
-  - `section/base/footer.yml` > `values.yml > footer`
 - `types/*.yml`
     - `tpl.list`
       - `tags`
@@ -44,15 +45,14 @@
     hide_categories: true
     reading_time: true
     button: hide
-  - cols: 4
-    align: center
+  - cols: 3
+    align: left
     color: similar
     shade: true
     inset: true
-    image: hide
-    icon: ''
-    md: hide
-    button: cta
+    ratio: 16/9
+    icon: hide
+    button: hide
     tags:
     - type: date
     - type: address
