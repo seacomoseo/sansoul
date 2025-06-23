@@ -56,9 +56,10 @@
 
   {{ $field := dict
     "name"           .name
+    "label"          ($label | default .name)
+    "hint"           $hint
     "widget"         $widget
     "required"       false
-    "label"          ($label | default .name)
     "default"        $default
   }}
 
