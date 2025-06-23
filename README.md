@@ -55,7 +55,6 @@
     button: hide
     tags:
     - type: date
-    - type: address
 - `types/*.yml|content.${lang}/single/*.md`
   - `file:` en cada modal
   - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
