@@ -68,7 +68,7 @@
 
       {{- /*  CLASS  */ -}}
       {{- $color      := .color | default "white" -}}
-      {{- $bgc        := partial "functions/color-background" (dict "child" $color "parent" $.back.color) -}}
+      {{- $bgc        := partial "functions/color-background" (dict "child" $color "parent" $.bg.color) -}}
       {{- $color       = $bgc.child -}}
       {{- $menu_class  := print "menu bg bg-" $color -}}
       {{- if .fade -}}
