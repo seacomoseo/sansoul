@@ -44,7 +44,8 @@
                 {{- if eq $date_day $end_day -}}
                   {{- if not .hide_hour -}}
                     {{- $end_hour := $page.Params.end | time.Format "15:04" -}}
-                    {{- $date      = print $date " - " $end_hour -}}
+                    {{- $end_hour  = print `<time datetime="` $end_full `">` $end_hour `</time>` -}}
+                    {{- $date      = print $date " / " $end_hour -}}
                   {{- end -}}
                 {{- else -}}
                   {{- $end := partial "functions/date-tag" (dict "date" $page.Params.end "hide_hour" .hide_hour) -}}
