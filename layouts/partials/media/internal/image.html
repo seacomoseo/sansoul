@@ -203,7 +203,9 @@
         {{ if ne $i $last }}
           {{- $viewport  = print "(min-width:" (sub .viewport 1) "px)" -}}
         {{ end }}
-        {{- $srcsizes    = $srcsizes | append (print $viewport " " (div .size $s) "px") -}}
+        {{- $size       := div .size $s -}}
+        {{- $size        = div (math.Round (mul $size 100)) 100 -}}
+        {{- $srcsizes    = $srcsizes | append (print $viewport " " $size "px") -}}
         {{- $image_link := partial "functions/image-format" (dict "image" $image "size" .size) -}}
         {{- $srcset      = $srcset | append (print $image_link " " .size "w") -}}
       {{- end -}}
