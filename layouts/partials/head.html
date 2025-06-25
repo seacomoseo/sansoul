@@ -141,7 +141,7 @@
 
 {{- /*  CSS STYLES  */ -}}
 {{- $css := partial "styles" . }}
-<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.add('css-loaded')">
+<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.add('css-ready')">
 <noscript><link rel="stylesheet" href="{{ $css.RelPermalink }}"></noscript>
 
 
