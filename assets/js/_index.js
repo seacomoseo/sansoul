@@ -1,6 +1,6 @@
 /* eslint-disable */
 import('./netlify-identity') .then(m => m.initNetlifyIdentity()      )
-import('./resize-window')    .then(m => m.initResizeWindow()         )
+// import('./resize-window')    .then(m => m.initResizeWindow()         )
 import('./menu-toggle')      .then(m => m.initMenuToggle()           )
 import('./menu-scroll-spy')  .then(m => m.initMenuScrollSpy()        )
 import('./scroll-top')       .then(m => m.initScrollTop()            )

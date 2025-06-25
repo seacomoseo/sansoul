@@ -21,8 +21,6 @@ function initMenuToggleWhenCSS () {
         // const breackPoints = [768, 1024, 1280]
         // size = breackPoints.find(bp => bp > size) ?? size
         //
-        console.log('size: ', size)
-        console.log('window: ', window.innerWidth)
         document.body.classList.remove('body-menu--sticky--calculate')
         menu.hidden = 'until-found'
       }
