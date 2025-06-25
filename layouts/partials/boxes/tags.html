@@ -24,26 +24,17 @@
 
         {{- if and $page.Date (not $page.IsSection) -}}
           {{- if eq $page.Params.base "article" -}}
-            {{- $time   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date -}}
-            {{- $date   := partial "functions/date-format" $page.Date -}}
-            {{- $hour   := cond (eq $date.hour "00:00" | or .hide_hour) "" (print " - " $date.hour) -}}
-            {{- $el     := print `<time datetime="` $time `">` $date.day $hour `</time>` -}}
-            {{- $items   = $items | append (dict "icon" "calendar" "label" $el "time" true) -}}
+            {{- $el   := partial "functions/date-tag" $page.Date -}}
+            {{- $items = $items | append (dict "icon" "calendar" "label" $el "time" true) -}}
             {{- if and $page.Lastmod (not .hide_lastmod) -}}
               {{- if ne $page.Date $page.Lastmod -}}
-                {{- $time  = dateFormat "2006-01-02T15:04:05Z07:00" $page.Lastmod -}}
-                {{- $date  = partial "functions/date-format" $page.Lastmod -}}
-                {{- $hour  = cond (eq $date.hour "00:00" | or .hide_hour) "" (print " - " $date.hour) -}}
-                {{- $el    = print ` <time datetime="` $time `">` $date.day $hour `</time>` -}}
+                {{- $el    = partial "functions/date-tag" $page.Lastmod -}}
                 {{- $items = $items | append (dict "icon" "calendar-pen" "label" $el "time" true) -}}
               {{- end -}}
             {{- end -}}
           {{- else if eq $page.Params.base "event" -}}
-            {{- $time   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date -}}
-            {{- $date   := partial "functions/date-format" $page.Date -}}
-            {{- $hour   := cond (eq $date.hour "00:00" | or .hide_hour) "" (print " - " $date.hour) -}}
-            {{- $el     := print `<time datetime="` $time `">` $date.day $hour `</time>` -}}
-            {{- $items   = $items | append (dict "icon" "calendar-check" "label" $el "time" true) -}}
+            {{- $el   := partial "functions/date-tag" $page.Date -}}
+            {{- $items = $items | append (dict "icon" "calendar-check" "label" $el "time" true) -}}
             {{- if $page.Params.end -}}
               {{- $date_full  := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date       -}}
               {{- $end_full   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
@@ -55,10 +46,8 @@
                 {{- /*  {{- else -}}  */ -}}
                   {{- /*  {{- $date = dict "day" "" "hour" ($page.Params.end | time.Format "15:04") -}}  */ -}}
                 {{- /*  {{- end -}}  */ -}}
-                {{- $time   = dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
-                {{- $hour   = cond (eq $date.hour "00:00" | or .hide_hour) "" (print " - " $date.hour) -}}
-                {{- $el     = print ` <time datetime="` $time `">` $date.day $hour `</time>` -}}
-                {{- $items  = $items | append (dict "icon" "calendar-xmark" "label" $el "time" true) -}}
+                {{- $el   := partial "functions/date-tag" $page.Date -}}
+                {{- $items = $items | append (dict "icon" "calendar-xmark" "label" $el "time" true) -}}
               {{- end -}}
             {{- end -}}
           {{- end -}}
