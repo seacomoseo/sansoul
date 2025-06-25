@@ -55,8 +55,7 @@
   {{- /*  SOURCE  */ -}}
 
   {{- $source_attrs := "" -}}
-  {{/*  {{- if hugo.IsProduction -}}  */}}
-  {{- if true -}}
+  {{- if hugo.IsProduction -}}
     {{- $type := cond (not site.Data.config.others.webp) "avif" "webp" -}}
 
     {{- /* CONTAIN  */ -}}
