@@ -3,7 +3,7 @@ import { scrollShot } from './scroll-shot'
 import { scrollTo } from './scroll-to'
 
 export function initScrollTop () {
-  window.addEventListener('load', () => {
+  window.addEventListener('DOMContentLoaded', () => {
     // Get background color of header and menu transparent
     const bgs = [
       '.bg-main',

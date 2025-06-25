@@ -106,7 +106,7 @@ export function initSliders () {
     }
     window.addEventListener('resize', slidersControlsView)
     window.addEventListener('hashchange', slidersControlsView)
-    window.addEventListener('load', () => {
+    window.addEventListener('DOMContentLoaded', () => {
       slidersControlsView()
 
       // SCROLL-SHOT AND INTERVALS

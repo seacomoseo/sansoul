@@ -11,9 +11,12 @@
     z-index: 9999;
     transition: opacity 0.3s, visibility 0.3s;
   }
-  html.css-ready #bg-loader {
+  html:not(.preload) #bg-loader {
     opacity: 0;
     visibility: hidden;
+  }
+  .section:not(/* .sections-visibile *, */ .preload *, .section--header, .section--1) {
+    content-visibility: auto;
   }
   .loader {
     transform: scale(3) rotateZ(45deg);

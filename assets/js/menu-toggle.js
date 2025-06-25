@@ -76,7 +76,7 @@ function initMenuToggleWhenCSS () {
 export function initMenuToggle () {
   document.addEventListener('DOMContentLoaded', () => {
     // 1️⃣ DOM is ready
-    if (document.documentElement.classList.contains('css-ready')) {
+    if (!document.documentElement.classList.contains('preload')) {
       // CSS was already applied from cache
       initMenuToggleWhenCSS()
       return
@@ -89,7 +89,7 @@ export function initMenuToggle () {
     } else {
       // Fallback: observe the class change
       const obs = new MutationObserver(() => {
-        if (document.documentElement.classList.contains('css-ready')) {
+        if (!document.documentElement.classList.contains('preload')) {
           obs.disconnect()
           initMenuToggleWhenCSS()
         }

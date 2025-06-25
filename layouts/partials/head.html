@@ -141,9 +141,8 @@
 
 {{- /*  CSS STYLES  */ -}}
 {{- $css := partial "styles" . }}
-<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.add('css-ready')">
+<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.remove('preload')">
 <noscript><link rel="stylesheet" href="{{ $css.RelPermalink }}"></noscript>
-
 
 {{- /*  FAVICON  */ -}}
 {{- $favicon := resources.Get (print "/media/" ($config.favicon | default "base/icon.svg")) -}}
