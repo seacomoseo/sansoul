@@ -33,8 +33,10 @@
               {{- end -}}
             {{- end -}}
           {{- else if eq $page.Params.base "event" -}}
-            {{- $date := partial "functions/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
-            {{- $end  := "" -}}
+            {{- $date  := partial "functions/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
+            {{- $end   := "" -}}
+            {{- $hours := "" -}}
+            {{- $ico   := .icon | default "calendar-check" -}}
             {{- if $page.Params.end -}}
               {{- $date_full  := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date       -}}
               {{- $end_full   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
@@ -43,18 +45,23 @@
                 {{- $end_day  := $page.Params.end | time.Format "2 Jan 2006" -}}
                 {{- if eq $date_day $end_day -}}
                   {{- if not .hide_hour -}}
-                    {{- $end_hour := $page.Params.end | time.Format "15:04" -}}
-                    {{- $end_hour  = print `<time datetime="` $end_full `">` $end_hour `</time>` -}}
-                    {{- $date      = print $date " / " $end_hour -}}
+                    {{- $date_hour := $page.Date | time.Format "15:04" -}}
+                    {{- $end_hour  := $page.Params.end | time.Format "15:04" -}}
+                    {{- $end_hour   = print `<time datetime="` $end_full `">` $end_hour `</time>` -}}
+                    {{- $hours      = print "<i>" $date_hour "</i>" " / " $end_hour -}}
+                    {{- $date       = $date | replaceRE " - .+" "" -}}
+                    {{- $ico        = .ico | default "calendar" -}}
                   {{- end -}}
                 {{- else -}}
-                  {{- $end := partial "functions/date-tag" (dict "date" $page.Params.end "hide_hour" .hide_hour) -}}
+                  {{- $end = partial "functions/date-tag" (dict "date" $page.Params.end "hide_hour" .hide_hour) -}}
                 {{- end -}}
               {{- end -}}
             {{- end -}}
-            {{- $items = $items | append (dict "icon" "calendar-check" "label" $date "time" true) -}}
+            {{- $items = $items | append (dict "icon" $ico "label" $date "time" true) -}}
             {{- if $end -}}
-              {{- $items = $items | append (dict "icon" "calendar-xmark" "label" $date "time" true) -}}
+              {{- $items = $items | append (dict "icon" "calendar-xmark" "label" $end "time" true) -}}
+            {{- else if $hours -}}
+              {{- $items = $items | append (dict "icon" "clock" "label" $hours "time" true) -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
