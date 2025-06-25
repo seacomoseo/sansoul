@@ -14,28 +14,29 @@ function initMenuToggleWhenCSS () {
       else if (document.querySelector('.body-menu--sticky--lg')) size = 1024
       else if (document.querySelector('.body-menu--sticky--xl')) size = 1280
       else if (document.querySelector('.body-menu--sticky--auto')) {
-        menu.removeAttribute('hidden')
         document.body.classList.add('body-menu--sticky--calculate')
+        menu.hidden = false
         //
-        const menuItems = [...document.querySelector('.menu__items').children]
-        menuItems.forEach(e => { size += e.offsetWidth })
-        const superiorNumbers = [768, 1024, 1280].filter(num => num > size)
-        size = Math.min(...superiorNumbers)
+        size = menu.querySelector('.menu__items').scrollWidth + 18 * 2 // 18px padding left and right
+        // const breackPoints = [768, 1024, 1280]
+        // size = breackPoints.find(bp => bp > size) ?? size
         //
-        menu.setAttribute('hidden', 'until-found')
+        console.log('size: ', size)
+        console.log('window: ', window.innerWidth)
         document.body.classList.remove('body-menu--sticky--calculate')
+        menu.hidden = 'until-found'
       }
       return size
     }
     function menuOpen () {
-      menu.removeAttribute('hidden')
+      menu.hidden = false
       menu.focus()
       document.documentElement.classList.add('menu__active')
     }
     function menuClose () {
       if (menuNoStickyVisibility()) {
         document.documentElement.classList.remove('menu__active')
-        setTimeout(() => menu.setAttribute('hidden', 'until-found'), 300)
+        setTimeout(() => { menu.hidden = 'until-found' }, 300)
       }
     }
     function menuToggle () {
@@ -48,10 +49,10 @@ function initMenuToggleWhenCSS () {
     }
     function menuVisibility () {
       if (menuNoStickyVisibility()) {
-        menu.setAttribute('hidden', 'until-found')
+        menu.hidden = 'until-found'
         document.body.classList.remove('body-menu--sticky--active')
       } else {
-        menu.removeAttribute('hidden')
+        menu.hidden = false
         document.body.classList.add('body-menu--sticky--active')
       }
     }

@@ -157,7 +157,7 @@
 
 // Sticky Calculate Auto
 
-.body-menu--sticky--calculate {
+.body-menu--sticky--calculate:not(#aux) {
   .menu {
     font-size: 18px;
     position: sticky;
@@ -166,19 +166,19 @@
   }
   .menu__items {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     transition: none;
   }
   .menu__item {
     padding: 0 .5em;
-    flex-grow: 0;
+    flex-shrink: 0;
     transition: none;
+  }
+  .menu__item--logo {
+    display: block;
   }
   .menu__subitems {
     display: none;
-  }
-  .menu__item {
-    transition: none;
   }
   .menu__item--lang {
     > .menu__link > i {
