@@ -1,5 +1,5 @@
-{{ $time := dateFormat "2006-01-02T15:04:05Z07:00" . }}
-{{ $date := partial "functions/date-format" . }}
+{{ $time := dateFormat "2006-01-02T15:04:05Z07:00" .date }}
+{{ $date := partial "functions/date-format" .date }}
 {{ $hour := cond (eq $date.hour "00:00" | or .hide_hour) "" (print " - " $date.hour) }}
 {{ $el   := print `<time datetime="` $time `">` $date.day $hour `</time>` }}
 {{ return $el }}
