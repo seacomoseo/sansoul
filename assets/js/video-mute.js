@@ -30,7 +30,7 @@ export function initVideoMute () {
   // }
 
   // When load DOM and sources
-  window.addEventListener('load', () => {
+  window.addEventListener('DOMContentLoaded', () => {
     scrollShot({
       rootMargin: '0%',
       query: '[data-mute]',

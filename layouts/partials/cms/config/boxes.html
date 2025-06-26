@@ -144,11 +144,13 @@
       (dict "name" `value` "widget" `string` "required" false "label" $t.box_params_value)
     )
   ))
-  (dict "&BOX_TAG"           (dict "name" `tag`   "widget" `select` "required" false "label" $t.box_tag               "options" `~OPTIONS_TAGS`))
-  (dict "&BOX_TAGS_LABEL"    (dict "name" `label` "widget" `string` "required" false "label" $t.box_contact_label))
-  (dict "&BOX_TAGS_TAXONOMY" (dict "name" `tax`   "widget" `select` "required" false "label" $t.box_tags_taxonomy_key "options" `~OPTIONS_TYPES`))
-  (dict "&BOX_TAGS_PARAM"    (dict "name" `param` "widget" `string` "required" false "label" $t.box_tags_param_key))
-  (dict "&BOX_TAGS"          (dict
+  (dict "&BOX_TAG"               (dict "name" `tag`          "widget" `select`  "required" false "label" $t.box_tag               "options" `~OPTIONS_TAGS`))
+  (dict "&BOX_TAGS_LABEL"        (dict "name" `label`        "widget" `string`  "required" false "label" $t.box_contact_label))
+  (dict "&BOX_TAGS_HIDE_HOURS"   (dict "name" `hide_hours`   "widget" `boolean` "required" false "label" $t.box_tags_hide_hours))
+  (dict "&BOX_TAGS_HIDE_LASTMOD" (dict "name" `hide_lastmod` "widget" `boolean` "required" false "label" $t.box_tags_hide_lastmod))
+  (dict "&BOX_TAGS_TAXONOMY"     (dict "name" `tax`          "widget" `select`  "required" false "label" $t.box_tags_taxonomy_key "options" `~OPTIONS_TYPES`))
+  (dict "&BOX_TAGS_PARAM"        (dict "name" `param`        "widget" `string`  "required" false "label" $t.box_tags_param_key))
+  (dict "&BOX_TAGS"              (dict
     "name"           `tags`
     "widget"         `list`
     "required"       false
@@ -160,7 +162,7 @@
     "allow_add"      true
     "types"          (slice
       (dict "name" `type`    "widget" `object` "required" false "label" $t.box_tags_type                                       "fields" (slice `~BOX_ICON_ID`))
-      (dict "name" `date`    "widget" `object` "required" false "label" $t.box_tags_date                                       "fields" (slice `~BOX_ICON_ID`))
+      (dict "name" `date`    "widget" `object` "required" false "label" $t.box_tags_date                                       "fields" (slice `~BOX_ICON_ID` `~BOX_TAGS_HIDE_HOURS` `~BOX_TAGS_HIDE_LASTMOD`))
       (dict "name" `time`    "widget" `object` "required" false "label" $t.box_tags_reading_time                               "fields" (slice `~BOX_ICON_ID`))
       (dict "name" `words`   "widget" `object` "required" false "label" $t.box_tags_words                                      "fields" (slice `~BOX_ICON_ID`))
       (dict "name" `address` "widget" `object` "required" false "label" $t.box_tags_address                                    "fields" (slice `~BOX_ICON_ID`))

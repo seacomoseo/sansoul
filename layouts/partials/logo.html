@@ -7,7 +7,7 @@
     {{- $subtitle  := cond (ne nil .subtitle) .subtitle (index . page.Lang).subtitle -}}
     {{- $container := .size | default "lg" -}}
     {{- if and .transparent (not .logo_sticky) -}}
-      {{- $color  = print "bg bg-" ($.back.color | default "white") -}}
+      {{- $color  = print "bg bg-" ($.bg.color | default "white") -}}
       {{- with $.sections -}}
         {{- with index . 0 -}}
           {{- with .color -}}

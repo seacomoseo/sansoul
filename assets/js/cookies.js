@@ -7,13 +7,13 @@ export function initCookies () {
 
   if (cookiesMessage && cookiesButtons && cookiesToogle) {
     function cookiesOpen () {
-      cookiesMessage.removeAttribute('hidden')
+      cookiesMessage.hidden = false
       cookiesMessage.querySelector('[data-b]').focus()
       setTimeout(() => cookiesMessage.classList.remove('cookies--hide'), 10)
     }
     function cookiesClose () {
       cookiesMessage.classList.add('cookies--hide')
-      setTimeout(() => cookiesMessage.setAttribute('hidden', 'until-found'), 300)
+      setTimeout(() => cookiesMessage.hidden = 'until-found', 300)
     }
     function cookiesToggle () {
       const isCookiesOpen = document.querySelector('.cookies[hidden="until-found"]')

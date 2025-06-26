@@ -155,6 +155,7 @@
         {{- $image_size      := div $image.Width $s -}}
 
         {{- /* size = image_size only if size > image_size > next_size  */ -}}
+        {{- /* hide because remove --vw fluid / set visual breackpoints
         {{- if le $image_size .size -}}
           {{- $size_next     := (index $sizes_base_sort (add $key 1)).size | default 0 -}}
           {{- if ge $image_size $size_next -}}
@@ -162,6 +163,16 @@
             {{- if eq $image_next 1 -}}
               {{- $size       = $image_size -}}
             {{- end -}}
+          {{- end -}}
+        {{- end -}}
+        */ -}}
+        {{/*  size = breakpoint **anterior** más cercano  */}}
+        {{- $size_prev_obj := (index $sizes_base_sort (sub $key 1)) -}}
+        {{- if $size_prev_obj -}}
+          {{- $size_prev_val := $size_prev_obj.size -}}
+          {{- /* si la imagen ya cubre el breakpoint anterior, úsalo */ -}}
+          {{- if ge $image_size $size_prev_val -}}
+            {{- $size = $size_prev_val -}}
           {{- end -}}
         {{- end -}}
 
@@ -186,15 +197,22 @@
     {{- if gt (len $sizes) 1 -}}
 
       {{- /* SRCSIZES AND SRCSET  */ -}}
-      {{- range sort $sizes "size" -}}
-        {{- $srcsizes    = $srcsizes | append (print "(max-width:" .viewport "px) " (div .size $s) "px") -}}
+      {{ $last          := sub (len $sizes) 1 }}
+      {{- range $i, $v  := sort $sizes "size" "desc" -}}
+        {{- $viewport   := "(all)" -}}
+        {{ if ne $i $last }}
+          {{- $viewport  = print "(min-width:" (sub .viewport 1) "px)" -}}
+        {{ end }}
+        {{- $size       := div .size $s -}}
+        {{- $size        = div (math.Round (mul $size 100)) 100 -}}
+        {{- $srcsizes    = $srcsizes | append (print $viewport " " $size "px") -}}
         {{- $image_link := partial "functions/image-format" (dict "image" $image "size" .size) -}}
         {{- $srcset      = $srcset | append (print $image_link " " .size "w") -}}
       {{- end -}}
 
-      {{- $srcsizes      = delimit $srcsizes "," | replaceRE "\\(max-width:[0-9]+?px\\) ([0-9]+?px)$" "(all) $1" -}}
+      {{- $srcsizes      = delimit $srcsizes "," -}}
       {{- if $src_reverse -}}
-        {{- $srcsizes    = $srcsizes | replaceRE "max" "min" -}}
+        {{- $srcsizes    = $srcsizes | replaceRE "min" "max" -}}
       {{- end -}}
       {{- $srcset        = delimit $srcset "," -}}
 
