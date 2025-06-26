@@ -29,6 +29,14 @@ elif [ $1 = merge ]; then
   source ../_tools/git/merge.sh
 elif [ $1 = smerge ]; then
   source ../_tools/git/smerge.sh
+elif [ $1 = supdate ]; then
+  source ../_tools/git/supdate.sh
+elif [ $1 = sremote ]; then
+  source ../_tools/git/sremote.sh
+elif [ $1 = scheck ]; then
+  source ../_tools/git/scheck.sh
+elif [ $1 = sbranch ]; then
+  source ../_tools/git/sbranch.sh
 elif [ $1 = du ]; then
   sh do down
   sh do up
