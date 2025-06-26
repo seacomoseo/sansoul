@@ -1,60 +1,59 @@
+const menu = document.querySelector('.menu')
+const menuSticky = document.querySelector('.body-menu--sticky')
+const breackPoint = screenSticky()
+const menuNoStickyVisibility = () => !menuSticky || window.innerWidth < breackPoint
+
+function screenSticky () {
+  let size = 0
+  if (document.querySelector('.body-menu--sticky--xs')) size = 375
+  else if (document.querySelector('.body-menu--sticky--sm')) size = 425
+  else if (document.querySelector('.body-menu--sticky--md')) size = 768
+  else if (document.querySelector('.body-menu--sticky--lg')) size = 1024
+  else if (document.querySelector('.body-menu--sticky--xl')) size = 1280
+  else if (document.querySelector('.body-menu--sticky--auto')) {
+    document.body.classList.add('body-menu--sticky--calculate')
+    menu.hidden = false
+    //
+    size = menu.querySelector('.menu__items').scrollWidth + 18 * 2 // 18px padding left and right
+    // const breackPoints = [768, 1024, 1280]
+    // size = breackPoints.find(bp => bp > size) ?? size
+    //
+    document.body.classList.remove('body-menu--sticky--calculate')
+    menu.hidden = 'until-found'
+  }
+  return size
+}
+function menuOpen () {
+  menu.hidden = false
+  menu.focus()
+  document.documentElement.classList.add('menu__active')
+}
+function menuClose () {
+  if (menuNoStickyVisibility()) {
+    document.documentElement.classList.remove('menu__active')
+    setTimeout(() => { menu.hidden = 'until-found' }, 300)
+  }
+}
+function menuToggle () {
+  const isMenuClose = document.querySelector('.menu[hidden="until-found"]')
+  if (isMenuClose) {
+    menuOpen()
+  } else {
+    menuClose()
+  }
+}
+function menuVisibility () {
+  if (menuNoStickyVisibility()) {
+    menu.hidden = 'until-found'
+    document.body.classList.remove('body-menu--sticky--active')
+  } else {
+    menu.hidden = false
+    document.body.classList.add('body-menu--sticky--active')
+  }
+}
+
 function initMenuToggleWhenCSS () {
-  const menu = document.querySelector('.menu')
-
   if (menu) {
-    const menuSticky = document.querySelector('.body-menu--sticky')
-    const breackPoint = screenSticky()
-    const menuNoStickyVisibility = () => !menuSticky || window.innerWidth < breackPoint
-
-    function screenSticky () {
-      let size = 0
-      if (document.querySelector('.body-menu--sticky--xs')) size = 375
-      else if (document.querySelector('.body-menu--sticky--sm')) size = 425
-      else if (document.querySelector('.body-menu--sticky--md')) size = 768
-      else if (document.querySelector('.body-menu--sticky--lg')) size = 1024
-      else if (document.querySelector('.body-menu--sticky--xl')) size = 1280
-      else if (document.querySelector('.body-menu--sticky--auto')) {
-        document.body.classList.add('body-menu--sticky--calculate')
-        menu.hidden = false
-        //
-        size = menu.querySelector('.menu__items').scrollWidth + 18 * 2 // 18px padding left and right
-        // const breackPoints = [768, 1024, 1280]
-        // size = breackPoints.find(bp => bp > size) ?? size
-        //
-        document.body.classList.remove('body-menu--sticky--calculate')
-        menu.hidden = 'until-found'
-      }
-      return size
-    }
-    function menuOpen () {
-      menu.hidden = false
-      menu.focus()
-      document.documentElement.classList.add('menu__active')
-    }
-    function menuClose () {
-      if (menuNoStickyVisibility()) {
-        document.documentElement.classList.remove('menu__active')
-        setTimeout(() => { menu.hidden = 'until-found' }, 300)
-      }
-    }
-    function menuToggle () {
-      const isMenuClose = document.querySelector('.menu[hidden="until-found"]')
-      if (isMenuClose) {
-        menuOpen()
-      } else {
-        menuClose()
-      }
-    }
-    function menuVisibility () {
-      if (menuNoStickyVisibility()) {
-        menu.hidden = 'until-found'
-        document.body.classList.remove('body-menu--sticky--active')
-      } else {
-        menu.hidden = false
-        document.body.classList.add('body-menu--sticky--active')
-      }
-    }
-
     // Listeners
     document.addEventListener('click', e => {
       const menuToggleButton = e.target.closest('.menu__toggle')
