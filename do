@@ -21,10 +21,14 @@ if [ $1 = up ]; then
   source ../_tools/git/up.sh
 elif [ $1 = sup ]; then
   source ../_tools/git/sup.sh
+elif [ $1 = spush ]; then
+  source ../_tools/git/spush.sh
 elif [ $1 = down ]; then
   source ../_tools/git/down.sh
 elif [ $1 = sdown ]; then
   source ../_tools/git/sdown.sh
+elif [ $1 = spull ]; then
+  source ../_tools/git/spull.sh
 elif [ $1 = merge ]; then
   source ../_tools/git/merge.sh
 elif [ $1 = smerge ]; then
