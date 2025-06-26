@@ -154,36 +154,6 @@
 
 ## New language
 
-<<<<<<< HEAD
-- gitlab pages subfolder
-  - script to add folder in the styles link (href="/sansoul.es/css/") in gitlab compiles
-  - change te links with base64Encode for .RelPermalink
-
-- not solution:
-  - video not cover in grid__item
-  - paginator not rule in "terms" of sections (maybe in taxonomies)
-  - geo coordinates not rule in netlifycms
-  - src svgs (lazyload) spaces imposible change for %20 with minify
-
-
-# New language
-
-- `./hugo.yml` (in all projects and sansoul template)
-  - `disableLanguages: [en, … new]`
-  - `languages: [en, … new]`
-- `./hugo.default.yml`
-  - `languages`
-  - `disableLanguages`
-  - `mounts`
-- `./i18n/new.yml`
-- `./data/options/langs.yml`
-- `./data/utilities/default_disable_langs.yml`
-- `./data/menu.yml`
-- `./data/config.yml`
-- `./content/*`
-- `./assets/sections.new`
-- `./assets/css/styles.new.scss`
-=======
 - `themes/sansoul`
   - [x] `./hugo.default.yml`
     - `languages`
@@ -194,4 +164,3 @@
   - [/] `./content.new/`
   - [x] `./prebuild/hugo.yml`
     - `module.mounts`
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
