@@ -84,6 +84,7 @@
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
       `~P_DRAFT`
+      `~P_HIDE`
       `~P_NOINDEX`
       `~P_TRANSLATIONKEY`
       `~P_TITLE_SEO`
@@ -192,6 +193,7 @@
   {{ if ne .Params.base "single" }}
     {{ $fields = $fields | append
       `~P_DRAFT`
+      `~P_HIDE`
       `~P_NOINDEX`
       `~P_TRANSLATIONKEY`
       `~P_TITLE_SEO`
