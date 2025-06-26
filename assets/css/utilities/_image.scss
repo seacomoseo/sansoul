@@ -72,7 +72,7 @@
 .image--circle,
 .image--ratio {
   --image-ratio: 1/1;
-  --image-ratio-height: calc(var(--image-width) / (var(--image-ratio)));
+  --image-ratio-height: calc(var(--image-width) / (var(--image-ratio)) - var(--image-border-width, 0em) * 2);
   width: 100%;
   &:not(:has(.image__inner)) {
     aspect-ratio: var(--image-ratio);
@@ -95,7 +95,7 @@
 // BORDER
 
 .image--border {
-  --image-width: calc(100cqw - var(--image-margin, 0em) * 2 - var(--image-border-width, 0em) * 2);
+  // --image-width: calc(100cqw - var(--image-margin, 0em) * 2 - var(--image-border-width, 0em) * 2);
   --image-border-width: .5em;
   padding: var(--image-border-width);
   &::before {
