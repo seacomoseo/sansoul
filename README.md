@@ -15,6 +15,8 @@
   - `_index.md`
     - `images`
     - `schedule`
+  - `{blog|event}/*.yml`
+    - `{date|lastmod}: 2025-02-18 00:00:00` (`T` > ` `)
   - `{sections|modals}/*.yml`
     - `contacto.yml`
       - `address.geo`

@@ -99,10 +99,10 @@
         {{- end -}}
         {{- /* Filter by date  */ -}}
         {{- with $list.date -}}
-          {{- $pages = where $pages "Date" "ge" (time .) -}}
+          {{- $pages = where $pages "Date" "le" (time .) -}}
         {{- end -}}
         {{- with $list.end -}}
-          {{- $pages = where $pages "Date" "le" (time .) -}}
+          {{- $pages = where $pages "Date" "ge" (time .) -}}
         {{- end -}}
         {{- /* Maximum number of pages  */ -}}
         {{- /* If $max < 0 use last with |$max|; if not, use first */ -}}
