@@ -1,0 +1,25 @@
+{{/*  id by title, but remove custom id en markdown  */}}
+{{ $id1 := .title
+  | replaceRE `\.|_|/|\\` "-"
+  | replaceRE `(:([\w-]|[^\d:]{2}|[\w-]{3,}?):|::.*?::)\s?|<.+?>` ""
+  | urlize
+}}
+
+{{/*  id with icons in title remove  */}}
+{{ $id2    := .id }}
+{{ $icons  := .title | findRE `(:([\w-]|[^\d:]{2}|[\w-]{3,}?):|::.*?::)\s?` }}
+{{ range $icons }}
+  {{ $icon := replace . ":" "" }}
+  {{ $id2   = $id2 | replaceRE (print `-?\b` $icon `\b-?`) "-" }}
+{{ end }}
+{{ $id2     = $id2 | replaceRE `^-+|_+|-+$` "" }}
+
+{{/*  que-hola-tal  */}}
+
+{{/*  get shorter  */}}
+{{ $id := $id2 }}
+{{ if lt (len $id1) (len $id2) }}
+  {{ $id = $id1 }}
+{{ end }}
+
+{{ return $id }}

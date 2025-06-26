@@ -55,17 +55,17 @@
 @keyframes copied {
   0% {
     opacity: 0;
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - .5em));
     visibility: visible;
   }
   50% {
     opacity: 1;
-    transform: translateY(-1em) translateX(-50%);
+    transform: translateY(-1em) translateX(calc(-50% - .5em));
     visibility: visible;
   }
   99% {
     opacity: 0;
-    transform: translateY(-2em) translateX(-50%);
+    transform: translateY(-2em) translateX(calc(-50% - .5em));
     visibility: visible;
   }
   100% {
@@ -74,11 +74,12 @@
 }
 :root {
   --show-from: translateY(3rem);
+  --opacity-from: 0;
 }
 @keyframes show-from {
   0% {
     transform: var(--show-from);
-    opacity: 0;
+    opacity: var(--opacity-from);
   }
   100% {
     transform: none;
@@ -92,10 +93,10 @@
 }
 @keyframes awesome-rotate {
   0% {
-    transform: perspective(600px) rotateX(15deg) rotateY(30deg) rotateZ(-15deg);
+    transform: perspective(600px) rotateY(30deg) rotateZ(-5deg);
   }
   100% {
-    transform: perspective(600px) rotateX(15deg) rotateY(-15deg) rotateZ(-10deg);
+    transform: perspective(600px) rotateY(-30deg) rotateZ(5deg);
   }
 }
 @keyframes draw {
@@ -121,5 +122,12 @@
   50%,
   100% {
     stroke-dashoffset: 0%;
+  }
+}
+@keyframes data-iframe {
+  50% {
+    filter:
+      drop-shadow($shadow-left $shadow-top 1.5em var(--base))
+      drop-shadow($shadow-left $shadow-top $shadow-blur map-get($options-colors, $styles-shadow-color));
   }
 }

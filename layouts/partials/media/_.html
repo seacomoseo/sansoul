@@ -1,0 +1,42 @@
+{{- if .src -}}
+  {{- $media := . -}}
+  {{- $src   := .src -}}
+  {{- $mute  := cond (in $src "#mute") true .bi -}}
+  {{- if not $mute -}}
+    {{- if partial "functions/is-iframe" $src -}}
+      {{- $iframe    := partial "functions/iframe-src" (dict "src" $src "bi" .bi) -}}
+      {{- $src        = partial "functions/iframe-poster" .src -}}
+      {{- $color     := cond (or (not .icon_color) (eq .icon_color "cta")) "" .icon_color -}}
+      {{- $icon      := site.Data.styles.icons.play | default "play-iframe" -}}
+      {{- $icon_play := partial "icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
+      {{- $media      = merge $media (dict
+        "iframe"    $iframe
+        "src"       $src
+        "icon_play" $icon_play
+      ) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $media = merge $media (dict "mute" $mute) -}}
+
+  {{- if hasPrefix $src "http" -}}
+    {{- if $src | findRE `\.(mp4|mov|avi|webm)` -}}
+      {{- partial "media/external/video" . -}}
+    {{- else if $src | findRE `youtu\.be|youtube\.com` -}}
+      {{- partial "media/external/youtube" . -}}
+    {{- else if and (in $src "vimeo.com") (not (in $src "/api/v2/")) -}}
+      {{- partial "media/external/vimeo" . -}}
+    {{- else -}}
+      {{- partial "media/external/image" $media -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $src   = print "/media/" $src -}}
+    {{- $media = merge $media (dict "src" $src) -}}
+    {{- if $src | findRE `\.(mp4|mov|avi|webm)` -}}
+      {{- partial "media/internal/video" $media -}}
+    {{- else if in $src ".svg" -}}
+      {{- partial "media/internal/svg" $media -}}
+    {{- else -}}
+      {{- partial "media/internal/image" $media -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

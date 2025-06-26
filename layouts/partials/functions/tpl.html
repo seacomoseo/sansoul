@@ -1,0 +1,12 @@
+{{/*  MERGE ALL  */}}
+{{ $tpl  := dict }}
+{{ $tpls := partial "functions/tpls" . }}
+{{ range $tpls }}
+  {{ with . }}
+    {{ $tpl = merge $tpl . }}
+  {{ end }}
+{{ end }}
+{{ $page := dict "Page" . }}
+{{ $tpl   = merge $tpl $page }}
+
+{{ return $tpl }}

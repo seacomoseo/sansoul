@@ -1,0 +1,32 @@
+.section--footer {
+  .link {
+    &:not(:hover) {
+      color: inherit;
+    }
+    &:not(#aux) {
+      font-family: inherit;
+      font-style: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      font-size: inherit;
+      --top-font: inherit;
+    }
+  }
+}
+.footer__float {
+  position: absolute;
+  bottom: .5em;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1em;
+  opacity: .75;
+  font-size: 1.25em;
+  .link {
+    display: block;
+    padding: .5em;
+    .icon {
+      color: inherit;
+    }
+  }
+}

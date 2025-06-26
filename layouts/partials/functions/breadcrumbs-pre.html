@@ -1,0 +1,20 @@
+{{ $paths := slice }}
+{{ $type  := page.CurrentSection.Params.breadcrumbs }}
+{{ $i     := add (.i | default 0) 1 }}
+{{ $k     := .k | default "-" }}
+
+{{ with index .Page.Params $type }}
+  {{ range $k, $v := . }}
+    {{ with site.GetPage (print $type "/" .) }}
+      {{ $paths = $paths | append (dict "Page" . "i" $i "k" $k) }}
+      {{ $path := partial "functions/breadcrumbs-pre" (dict "Page" . "i" $i "k" $k) }}
+      {{ range $path }}
+        {{ $paths = $paths | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ $paths = $paths | append (dict "Page" page "i" $i "k" $k) (dict "end" true "i" $i "k" $k) }}
+{{ end }}
+
+{{ return $paths }}

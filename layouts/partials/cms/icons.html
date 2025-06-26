@@ -1,0 +1,37 @@
+{{ $return     := slice }}
+{{ $icon_sharp := site.Data.styles.icons.sharp | default false }}
+{{ $icon_type  := site.Data.styles.icons.type  | default "" }}
+{{ $sharp      := cond (and $icon_sharp (ne $icon_type "duotone")) "sharp-" "" }}
+{{ $type       := $icon_type | default "solid" }}
+{{ $icons      := partial (print "draws/icons/" $sharp $type ".svg") . }}
+{{ $default    := site.Data.utilities.defaults }}
+
+{{ $names := slice
+  (dict "name" "section"   "icon" $default.section.icon)
+  (dict "name" "modal"     "icon" $default.modal.icon)
+  (dict "name" "types"     "icon" $default.types.icon)
+  (dict "name" "config"    "icon" $default.config.icon)
+  (dict "name" "styles"    "icon" $default.styles.icon)
+  (dict "name" "remote"    "icon" $default.remote.icon)
+  (dict "name" "redirects" "icon" $default.redirects.icon)
+  (dict "name" "robots"    "icon" $default.robots.icon)
+  (dict "name" "values"    "icon" $default.values.icon)
+}}
+
+{{ range $names }}
+  {{ $icon  := .icon }}
+  {{ $regex := print `<symbol id="` .icon `".+` }}
+  {{ $finds := findRE $regex $icons 1 }}
+  {{ $fill  := ` fill="#1976d2">` }}
+  {{ if eq $icon_type "duotone" }}
+    {{ $fill = `><style>:root{--dt-main:#1976d2;--dt-main-op:1;--dt-alt:#1976d2;--dt-alt-op:.5}</style>` }}
+  {{ end }}
+  {{ range $finds }}
+  {{ $icon = . | replaceRE `^<symbol (.*?)>` (print `<svg $1 xmlns="http://www.w3.org/2000/svg"` $fill) }}
+    {{ $icon = replace $icon "</symbol>" "</svg>" }}
+    {{ $icon = $icon | base64Encode }}
+  {{ end }}
+  {{ $return  = $return | append (print .name "," $icon) }}
+{{ end }}
+
+{{ return $return }}

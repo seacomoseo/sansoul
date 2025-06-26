@@ -1,0 +1,8 @@
+{{- $tpl := partial "functions/tpl" page -}}
+{{- if $tpl.toc -}}
+  {{- with page.Fragments -}}
+    {{- range .Headings -}}
+      {{- partial "toc" . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

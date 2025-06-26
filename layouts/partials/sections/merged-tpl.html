@@ -1,0 +1,81 @@
+{{ $sections := slice }}
+
+{{/*  ALTERNATES  */}}
+{{ $alternates := dict }}
+{{ $alts       := dict }}
+{{ with .section }}
+  {{ if gt (len .) 1 }}
+    {{ $alts = after 1 . }}
+  {{ end }}
+{{ end }}
+{{ if gt (len .sections) 1 }}
+  {{ with $alts }}
+    {{ $len_alts := add (len .) 1 }}
+    {{ range seq $len_alts }} {{/* 1, 2, 3 */}}
+      {{ $key_alt := . }}
+      {{ range seq $key_alt $len_alts (len $.sections) }} {{/* 1, 4, 7, 10 */}} {{/* 2, 5, 8 */}} {{/* 3, 6, 9 */}}
+        {{ $section   := dict (string .) (index $alts (sub $key_alt 1)) }}
+        {{ $alternates = $alternates | merge $section }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/*  NEXT  */}}
+{{ range $key, $section := .sections }}
+
+  {{ $first     := dict }}
+  {{ $modals    := slice }}
+  {{ $alternate := dict }}
+  {{ $id        := "" }}
+
+  {{ if .footer }}
+
+    {{/*  FOOTER  */}}
+    {{ $id  = "footer" }}
+    {{ $key = "footer" }}
+
+  {{ else }}
+
+    {{/*  MODALS  */}}
+    {{ range $k, $modal := .modals }}
+      {{ $each   := $.modal | default dict }}
+      {{ $id_m   := partial "functions/id-by-title" . }}
+      {{ $expand := dict "key" $key "k" $k "id" $id_m "modal" true "bgcp" "dark" }}
+      {{ $modal   = merge $each $modal $expand }}
+      {{ $modals  = $modals | append $modal }}
+      {{/*  Set id > hanchor/title in page store for anchor links to modal  */}}
+      {{ $anchor := .hanchor | default .title }}
+      {{ page.Store.Set $id_m $anchor }}
+    {{ end }}
+
+    {{/*  ALTERNATE  */}}
+    {{ with index $alternates (string $key) }}
+      {{ $alternate = . | default dict }}
+    {{ end }}
+
+    {{/*  SECTION  */}}
+    {{ $first = $.first }}
+    {{ if $key }}
+      {{ $id  = partial "functions/id-by-title" . }}
+    {{ else }}
+      {{ $id  = "header" }}
+      {{ $key = "header" }}
+    {{ end }}
+
+  {{ end }}
+
+  {{/*  Set id > hanchor/title in page store for anchor links to section  */}}
+  {{ $anchor := .hanchor | default .title }}
+  {{ page.Store.Set $id $anchor }}
+
+  {{/*  END  */}}
+  {{ $header  := eq $key "header" }}
+  {{ $bgcp    := $.bg.color | default "light" }}
+  {{ $expand  := dict "key" $key "id" $id "bgcp" $bgcp "header" $header "modals" $modals "modal" false }}
+  {{ $section  = merge $first $alternate $section $expand }}
+  {{ $sections = $sections | append $section }}
+
+{{ end }}
+
+{{ return $sections }}

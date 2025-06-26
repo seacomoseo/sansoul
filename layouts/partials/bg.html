@@ -1,0 +1,50 @@
+{{- if .card }}
+  <div class="bg-card"></div>
+{{- end -}}
+
+{{- if .is_bg -}}
+
+  {{- /*  3D  */ -}}
+  {{- if and .is_button_hide (not .hide_shadow) site.Data.styles.buttons.deep }}
+    <div class="bg-color bg-color--3d"></div>
+  {{- end -}}
+
+  {{- /*  CLASS  */ -}}
+  {{- $image := "" -}}
+  {{- $gray  := "" -}}
+  {{- if .bi -}}
+    {{- $image = "bg-figure" -}}
+    {{- $gray  = cond (not .gray)  "" " image--gray" -}}
+  {{- end -}}
+  {{- $class := slice "bg-color" $image -}}
+
+  {{- /*  JOIN ATTRIBUTES  */ -}}
+  {{- $attrs := dict "class" $class -}}
+  {{- $attrs = partial "functions/attrs" $attrs -}}
+
+  {{- /*  HTML  */}}
+  {{- $alt  := .alt -}}
+  {{- if .image -}}
+    {{- $alt = .hanchor | default .anchor | default .title | default .subtitle -}}
+  {{- end -}}
+  {{- $is_iframe := partial "functions/is-iframe" .bi -}}
+  <div {{- $attrs -}}>
+    {{- if $is_iframe }}
+      <div class="bg-figure-video">
+    {{- end -}}
+      {{ partial "media/_" (dict
+        "class"     (print "bg-figure-image" $gray)
+        "src"       .bi
+        "alt"       $alt
+        "notlazy"   .header
+        "bi"        true
+        "container" .container
+        "fit_vl"    .col_vl
+        "fit_vs"    .col_vs
+      ) -}}
+    {{- if $is_iframe }}
+      </div>
+    {{- end -}}
+  </div>
+
+{{- end -}}

@@ -1,0 +1,47 @@
+{{- with page -}}
+  {{- with .Params.author -}}
+    {{- $index    := index $.Params 0 -}}
+    {{- $param    := index $.Params 1 -}}
+    {{/*  Force value to slice  */}}
+    {{- $authors  := . -}}
+    {{- if not (reflect.IsSlice .) -}}
+      {{- $authors = slice . -}}
+    {{- end -}}
+    {{- $author   := index $authors $index -}}
+    {{- with $author -}}
+      {{- with site.GetPage (print "author/" .) -}}
+        {{- if eq $param "hanchor" -}}
+          {{- if gt (len $authors) 1 -}}
+            {{- i18n "authors" -}}
+          {{- else -}}
+            {{- i18n "authors" -}}
+          {{- end -}}
+        {{- else if eq $param "parent" -}}
+          {{- if $index -}}
+            {{- i18n "authors" -}}
+          {{- else -}}
+            {{- i18n "author" -}}
+          {{- end -}}
+        {{- else if eq $param "is" -}}
+          {{- true -}}
+        {{- else if eq $param "title" -}}
+          {{ i18n "about" }} [{{ .Title }}]({{ .RelPermalink -}})
+        {{- else if eq $param "summary" -}}
+          {{ .Summary | default .Description }}
+          {{ if .ContentWithoutSummary }}
+            {{- partial "link" (dict
+              "label" (print (i18n "read_more") "…")
+              "link"  .RelPermalink
+            ) -}}
+          {{ end }}
+        {{- else if eq $param "image" -}}
+          {{ .Params.image }}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- if eq $param "is" -}}
+        {{- false -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

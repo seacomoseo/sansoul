@@ -1,0 +1,23 @@
+.up {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 1em;
+  display: flex;
+  opacity: 0;
+  transform: translateY(4em);
+  transition: transform, opacity;
+  transition-duration: .5s;
+  z-index: 100;
+  @if not $buttons-3d {
+    button {
+      filter: drop-shadow($shadow);
+    }
+  }
+}
+body:not(.body-top) {
+  .up {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

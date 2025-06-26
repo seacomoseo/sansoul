@@ -1,0 +1,62 @@
+{{/*  Main Organization  */}}
+{{ $main  := site.GetPage (site.Params.main_org | default "/") | default site.Home }}
+{{ $org   := dict }}
+{{ if eq $main.Params.base "org" }}
+  {{ $org  = partial "schema/org" $main }}
+{{ else }}
+  {{ $url := $main.Permalink }}
+  {{ $org  = dict
+    "@type"       "Organization"
+    "@id"         (print $url "#schema-org")
+    "url"         $url
+    "name"        site.Title
+    "description" site.Params.description
+  }}
+{{ end }}
+
+{{/*  General  */}}
+{{ $schemas := slice
+  (partial "schema/website" .)
+  (partial "schema/page" .)
+  (partial "schema/image-main" .)
+}}
+
+{{/*  Page Base  */}}
+{{ if and (not .IsSection) (ne $main .) }}
+  {{ $bases := slice
+    "article"
+    "event"
+    "product"
+    "brand"
+    "author"
+    "service"
+    "org"
+  }}
+  {{ if in $bases .Params.base }}
+    {{ $tring   := print "schema/" .Params.base }}
+    {{ $partial := partial $tring . }}
+    {{ $schemas  = $schemas | append $partial }}
+  {{ end }}
+{{ end }}
+
+{{/*  Main Organization append  */}}
+{{ $schemas = $schemas | append $org }}
+
+{{/*  Breadcrumbs  */}}
+{{ if .Params.breadcrumbs }}
+  {{ $schemas = $schemas | append
+    (partial "schema/breadcrumbs" .)
+  }}
+{{ end }}
+
+{{/*  Join (Graph)  */}}
+{{ $schema := dict 
+  "@context" "http://schema.org"
+  "@graph"   $schemas
+}}
+
+{{/*  JSON  */}}
+{{ $opts  := cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ") }}
+{{ $schema = $schema | jsonify $opts }}
+
+{{ return $schema }}

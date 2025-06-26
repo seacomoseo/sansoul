@@ -4,8 +4,8 @@ User-agent: *
   {{- .Content }}
 {{ end }}
 
-{{- if in site.BaseURL "netlify" | or (in site.BaseURL "gitlab") }}
+{{- if in site.BaseURL "netlify.app" | or (in site.BaseURL "pages.dev") }}
 Disallow: /
 {{- end }}
 
-Sitemap: {{ site.BaseURL }}/sitemap.xml
+Sitemap: {{ site.BaseURL }}sitemap.xml

@@ -1,0 +1,54 @@
+title: _ # string
+base: page # [ article, event, product, brand, author, org, service, page ]
+order: null # number
+icon: file # string
+emoji: 📄 # string
+disabled: null # boolean
+noindex: null # boolean
+noindex_parent: null # boolean
+comments: null # boolean
+related: null # boolean
+hint: null # string
+tax_of:
+- name: null # string of relation name in params
+  multiple: null # boolean
+  breadcrumbs: null # boolean
+  schema: null # string [ articleSection in article, brand or manufacturer in product, author in all ]
+params:
+- var: null # string get YAML variable
+  name: null # string
+  label: null # string
+  hint: null # string
+  widget: null # [ boolean, int, float, string, text, markdown, date, image, select, relation, list, object ] *
+  options: []
+  # - label: null # string
+  #   value: null # string
+  default: null # strings
+  multiple: null # boolean
+  schema: null # strings
+  pages: [] # list of filenames
+  params: [] # like params without `widget: list`, `list` and `schema` in 2nd level
+tpl:
+  toc: null # boolean
+  bg: {}
+  menu: {}
+  callnow: {}
+  section: []
+  modal: {}
+  sections: []
+  list: {}
+  related: {}
+es:
+  permalinks: null # string
+  slug: null # string
+  singular: null # string
+  title: null # string
+  image: null # string image path
+  seo: null # string
+  description: null # string
+  content: null # string block
+en: {}
+fr: {}
+de: {}
+pt: {}
+it: {}

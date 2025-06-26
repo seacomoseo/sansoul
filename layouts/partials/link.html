@@ -1,0 +1,246 @@
+{{- /*
+  {{ partial "link" (dict
+    "class"  slice or string
+    "button" string
+    "dot"    boolean
+    "sm"     boolean
+    "swap"   boolean
+    "ga4"    boolean
+
+    "icon"   string
+    "emoji"  string
+    "pip"    string
+
+    "label"  string
+    "anchor" string
+    "title"  string
+
+    "link"   string
+    "lock"   boolean or nil
+    "blank"  boolean
+    "nomore" boolean
+  ) }}
+*/ -}}
+
+{{- $tag       := "i" -}}
+{{- $type      := "" -}}
+{{- $more_data := "" -}}
+{{- $lb_data   := "" -}}
+{{- $b_data    := "" -}}
+{{- $h_data    := "" -}}
+{{- $tabindex  := "" -}}
+{{- $role      := "" -}}
+{{- $target    := "" -}}
+{{- $rel       := "" -}}
+{{- $href      := "" -}}
+{{- $label     := "" -}}
+
+{{- $button         := cond (eq .button "none") "" .button -}}
+{{- $link           := cond (eq .link   "none") "" .link -}}
+{{- $lock           := .lock | default false -}}
+{{- $is_lightbox    := false -}}
+{{- $is_external    := false -}}
+{{- $is_auto_anchor := eq .anchor "auto" -}}
+{{- $anchor         := cond $is_auto_anchor "" .anchor -}}
+
+
+{{- /*  LINK  */ -}}
+{{- if $link -}}
+  {{- $is_lightbox           = findRE `\.(jpe?g|png|gif|webp|svg)` $link -}}
+  {{- $is_external           = hasPrefix $link "http" -}}
+  {{- $is_this_anchor_link  := hasPrefix $link "#" -}}
+  {{- $is_other_anchor_link := $link | findRE `^.+#` -}}
+
+  {{/*  {{ partial "warn" . }}  */}}
+
+  {{- /*  get page title and page lock  */ -}}
+  {{- if and (not .lock) (not $is_external) -}}
+    {{- if $is_this_anchor_link -}}
+      {{- if $is_auto_anchor -}}
+        {{- /*  get section/modal anchor by store page  */ -}}
+        {{- $link_cleaned := $link | replaceRE `^#` "" -}}
+        {{- $anchor        = page.Store.Get $link_cleaned -}}
+      {{- end -}}
+    {{- else -}}
+      {{- /*  get page anchor  */ -}}
+      {{- $link_cleaned  := $link | replaceRE `#.*` "" -}}
+      {{- $pages         := where site.Pages "RelPermalink" $link_cleaned -}}
+      {{- $page_internal := index $pages 0 | default site.Home -}}
+      {{- with $page_internal -}}
+        {{- if .Params.noindex -}}
+          {{- $lock = true -}}
+        {{- else if $is_auto_anchor -}}
+          {{- $anchor = partial "functions/anchor-page" . -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $lock = true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /*  lock in mail and tel links  */ -}}
+  {{- if findRE `^(mailto|tel):` $link -}}
+    {{- $lock = true -}}
+  {{- end -}}
+
+  {{- /*  change lock to false if explicit set false  */ -}}
+  {{- if and $lock (eq .lock false) -}}
+    {{- $lock = false -}}
+  {{- end -}}
+
+  {{- /*  media link  */ -}}
+  {{- with $link -}}
+    {{- $is_slash_prefix := hasPrefix . "/" -}}
+    {{- if and
+      (not $is_slash_prefix)
+      (not $is_external)
+      (not $is_this_anchor_link)
+      (not $is_other_anchor_link)
+    -}}
+      {{- $src := print "/media/" . | replaceRE `\#.*$` "" -}}
+      {{- with resources.Get $src -}}
+        {{- $link = .RelPermalink -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+
+{{- /*  CLASS  */ -}}
+{{- /*  button type color, swap and dot or link  */ -}}
+{{- $class        := .class | default "" -}}
+{{- $class_type   := "" -}}
+{{- if $button -}}
+  {{- $hide := eq $button "hide" -}}
+  {{- if $hide -}}
+    {{- $class_type = slice "button" "hide" -}}
+  {{- else -}}
+    {{- $class_type = slice
+      "button"
+      (cond (not .dot)         "" "button--dot")
+      (cond (not .sm)          "" "button--sm")
+      (cond (not .swap)        "" "button--swap")
+      (cond (eq $button "cta") "" $button)
+    -}}
+  {{- end -}}
+{{- else if or $link $lock -}}
+  {{- /*  set link style if link or lock  */ -}}
+  {{- $link_swap := cond (not .swap) "" "link--swap" -}}
+  {{- $class_type = slice "link" $link_swap -}}
+{{- end -}}
+{{- /*  class type  */ -}}
+{{- with $class_type -}}
+  {{- $class = . | append $class -}}
+{{- end -}}
+{{- /*  GA4  */ -}}
+{{- if .ga4 -}}
+  {{- $class = $class | append "ga4" -}}
+{{- end -}}
+
+
+{{- /*  WRAP  */ -}}
+{{- $not_link := or $lock $is_lightbox (not $link) -}}
+{{- if $not_link -}}
+  {{- if $button -}}
+    {{- $tag  = "button" -}}
+    {{- $type = "button" -}}
+  {{- else -}}
+    {{- if or $link $lock -}}
+      {{- /*  set link accesibility if link or lock  */ -}}
+      {{- $tabindex = "0" -}}
+      {{- $role     = "link" -}}
+    {{- end -}}
+    {{- if not $link -}}
+      {{- $b_data   = .blank -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $is_lightbox -}}
+    {{- $lb_data = $link | safeURL -}}
+    {{- $b_data  = true -}}
+  {{- else if $link -}}
+    {{ $link_b64 := $link | safeURL | base64Encode }}
+    {{- if or $is_external .blank -}}
+      {{- $b_data = $link_b64 -}}
+    {{- else -}}
+      {{- $h_data = $link_b64 -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $tag  = "a" -}}
+  {{- $href = $link | safeURL -}}
+  {{- if or $is_external .blank }}
+    {{- $target = "_blank" -}}
+    {{- $rel    = "noopener" -}}
+  {{ end -}}
+{{- end -}}
+
+
+{{- /*  LABEL  */ -}}
+{{- $label = $anchor | default .anchor2 | default .label -}}
+{{- if $label -}}
+  {{- $sub_tag   := "" -}}
+  {{- $sub_class := "" -}}
+  {{- $sub_more  := "" -}}
+  {{- $is_mail   := partial "functions/is-mail" (.label | default "") -}}
+  {{- $is_more   := ne $label .label -}}
+  {{- if $is_mail -}}
+    {{- $sub_class = "mail" -}}
+    {{- $label     = .label | base64Encode -}}
+    {{- $sub_tag   = true -}}
+  {{- else if eq $button "hide" -}}
+    {{- /*  if button hide, not more and not sub  */ -}}
+    {{- $sub_tag   = false -}}
+    {{- $label     = $label | plainify -}}
+  {{- else if and $is_more (not .nomore) -}}
+    {{- $label     = replace $label "<br>" "" -}}
+    {{- /*  check if already applied data-more in parent  */ -}}
+    {{- if $button -}}
+      {{- /*  if is a button, need one more child for prevent :before back problem  */ -}}
+      {{- $label    = print "<i>" $label "</i>" | safeHTML -}}
+      {{- $sub_more = .label | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" -}}
+    {{- else -}}
+      {{- /*  else data-more in wrap  */ -}}
+      {{- $more_data = .label | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" -}}
+    {{- end -}}
+    {{- $sub_tag = true -}}
+  {{- else if $button -}}
+    {{- $sub_tag = true -}}
+  {{- end -}}
+  {{- if $sub_tag -}}
+    {{- $sub_attrs := dict "class" $sub_class "data-more" $sub_more -}}
+    {{- $sub_attrs  = partial "functions/attrs" $sub_attrs -}}
+    {{- $label      = print "<i" $sub_attrs ">" $label "</i>" | safeHTML -}}
+  {{- end -}}
+{{- end -}}
+
+
+{{- /*  ATTRS  */ -}}
+{{- $attrs := dict
+  "type"          $type
+  "class"         $class
+  "data-more"     $more_data
+  "data-lightbox" $lb_data
+  "data-b"        $b_data
+  "data-h"        $h_data
+  "tabindex"      $tabindex
+  "role"          $role
+  "href"          $href
+  "target"        $target
+  "rel"           $rel
+  "title"         .title
+-}}
+{{- $attrs = partial "functions/attrs" $attrs -}}
+
+
+{{- /*  HTML  */}}
+{{- print "<" $tag $attrs ">" | safeHTML -}}
+  {{- with .icon -}}
+    {{- if ne . "hide" -}}
+      {{- partial "icon" (dict "icon" . "emoji" $.emoji) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with .pin -}}
+    <i class="icon icon--text">{{ . }}</i>
+  {{- end -}}
+  {{- $label -}}
+{{- print "</" $tag ">" | safeHTML -}}

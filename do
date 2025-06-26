@@ -1,292 +1,235 @@
 #!/bin/sh
 
-# variables
+# Variables
 PROYECT="${PWD##*/}"
-STI="\033[7;37m"
-STE="\033[0m"
 
-# COMMANDS FOR PROJECTS
+# Functions
+lecho() { echo "\033[7;34m $1 \033[0m"; } # 🟦 Header
+hecho() { echo "\033[7;37m $1 \033[0m"; } # ⬜️ Header
+secho() { echo "\033[1;32m$1\033[0m"; }   # ✅ Success
+wecho() { echo "\033[1;33m$1\033[0m"; }   # 🟡 Warning
+eecho() { echo "\033[1;31m$1\033[0m"; }   # ❌ Error
+iecho() { echo "\033[1;34m$1\033[0m"; }   # 💙 Info
+vecho() { echo "\033[1;36m$1\033[0m"; }   # 🩵 Value
 
-# upload with date now
-if [ $1 = up ]
-then
 
-  echo "${STI} ADD ${STE}"
-  git add .
+##################
+## GIT COMMANDS ##
+##################
 
-  echo "${STI} COMMIT ${STE}"
-  git commit -m "Update: `date +'%Y-%m-%d %H:%M:%S'`"
-
-  echo "${STI} PUSH ${STE}"
-  git push
-
-# upload submodule changes with date now
-elif [ $1 = sup ]
-then
-
-  echo "${STI} SUBMODULE SYNC ${STE}"
-  git submodule sync --recursive
-
-  echo "${STI} GO SANSOUL ${STE}"
-  cd themes/sansoul
-
-  echo "${STI} SANSOUL FETCH ${STE}"
-  git fetch
-
-  echo "${STI} SANSOUL CHECKOUT ORIGIN/MAIN ${STE}"
-  git checkout -B main origin/main
-
-  echo "${STI} SANSOUL ADD ${STE}"
-  git add .
-
-  echo "${STI} SANSOUL COMMIT ${STE}"
-  git commit -m "Update submodule: `date +'%Y-%m-%d %H:%M:%S'`"
-
-  echo "${STI} SANSOUL PUSH ${STE}"
-  git push
-
-  echo "${STI} GO PROJECT ${STE}"
-  cd ../..
-
-# pull of repository and update the submodules
-elif [ $1 = down ]
-then
-
-  echo "${STI} PULL ${STE}"
-  git pull
-
-  echo "${STI} SUBMODULE UPDATE ${STE}"
-  git submodule update --recursive --remote
-
-# pull of repository and update the submodules
-elif [ $1 = du ]
-then
-
-  echo "${STI} DO DOWN ${STE}"
+if [ $1 = up ]; then
+  source ../_tools/git/up.sh
+elif [ $1 = sup ]; then
+  source ../_tools/git/sup.sh
+elif [ $1 = down ]; then
+  source ../_tools/git/down.sh
+elif [ $1 = sdown ]; then
+  source ../_tools/git/sdown.sh
+elif [ $1 = merge ]; then
+  source ../_tools/git/merge.sh
+elif [ $1 = smerge ]; then
+  source ../_tools/git/smerge.sh
+elif [ $1 = du ]; then
   sh do down
-
-  echo "${STI} DO UP ${STE}"
   sh do up
+elif [ $1 = sdu ]; then
+  sh do sdown
+  sh do sup
 
-# hugo server with theme config
-elif [ $1 = server ]
-then
 
-  echo "${STI} HUGO SERVER ${STE}"
-  hugo server --config themes/sansoul/hugo.default.yml,hugo.yml
+##################
+## DEV COMMANDS ##
+##################
 
-# create woff2 and scss by font files
-elif [ $1 = normalize ]
-then
-
-  echo "${STI} NORMALIZE YAML AND MARKDOWN FILES ${STE}"
+# Normalize yaml and markdown files
+elif [ $1 = normalize ]; then
   python3 ../_tools/others/yaml-normalize.py
 
-# create woff2 and scss by font files
-elif [ $1 = fonts ]
-then
+# Refactoring spaces in Hugo
+elif [ $1 = spaces ]; then
+  sh ../_tools/others/refactoring-spaces.sh $2
 
-  SRC_DIR="assets/fonts"
-  DEST_DIR="static/fonts"
-  CSS_FILE="assets/css/_fonts.scss"
+# Create favicon.ico
+elif [ $1 = favicon ]; then
+  source ../_tools/others/favicon.sh
 
-  # Create output dir if not exist
-  mkdir -p $DEST_DIR
+# Create woff2 and scss by font files
+elif [ $1 = fonts ]; then
+  source ../_tools/others/fonts.sh
 
-  # Each font
-  for font in $SRC_DIR/*; do
-    if [ -f "$font" ]; then
-      filename=$(basename "$font" | cut -d. -f1)
-      filename_min=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
-      fontname=$(fc-scan --format "%{family}" "$font")
-      if [ -z "$fontname" ]; then
-        fontname="$filename"
-      elif [[ $fontname == *,* ]]; then
-        fontname=${fontname%%,*}
-      fi
+# Download woff2 from Google Fonts by font styles
+elif [ $1 = gfonts ]; then
+  node ../_tools/others/gfonts.js $PROYECT
 
-      type=$(fc-scan --format "%{style}" "$font")
+# Remove binary files from history
+elif [ $1 = clean ]; then
+  source ../_tools/others/remove-history-binary-files.sh
 
-      style="normal"
-      if [[ $type == *"Italic"* ]]; then
-        style="italic"
-      fi
+# Check yaml error of Static CMS
+elif [ $1 = yml ]; then
+  node ../_tools/others/check-yaml.js $PROYECT $2
 
-      weight="400"
-      if [[ $type == "Thin"* ]]; then
-        weight="100"
-      elif [[ $type == "ExtraLight"* ]]; then
-        weight="200"
-      elif [[ $type == "Light"* ]]; then
-        weight="300"
-      elif [[ $type == "Regular"* ]]; then
-        weight="400"
-      elif [[ $type == "Medium"* ]]; then
-        weight="500"
-      elif [[ $type == "SemiBold"* ]]; then
-        weight="600"
-      elif [[ $type == "Bold"* ]]; then
-        weight="700"
-      elif [[ $type == "ExtraBold"* ]]; then
-        weight="800"
-      elif [[ $type == "Black"* ]]; then
-        weight="900"
-      fi
+# Get main color and langs
+elif [ $1 = color-langs ]; then
+  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
+  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
 
-      # To woff2
-      woff2_compress "$font"
-      mv "$SRC_DIR/$filename.woff2" "$DEST_DIR/$filename_min.woff2"
-
-      # Add to CSS
-      echo \
-"@font-face {
-  font-family: '$fontname';
-  src: url('/fonts/$filename_min.woff2') format('woff2');
-  font-style: $style;
-  font-weight: $weight;
-  font-display: swap;
-}" >> $CSS_FILE
-
-      echo "${STI} Converted $font to $woff2_file ${STE}"
-    fi
+# Get data of place by Google API
+elif [ $1 = places ]; then
+  sh do color-langs
+  for LANG in $LANGS; do
+    node ../_tools/others/fetch-place.js $PROYECT $COLOR $LANG $2
   done
 
-# remove binary files from history
-elif [ $1 = clean ]
-then
+# Scrap reviews by Google Maps
+elif [ $1 = reviews ]; then
+  sh do color-langs
+  for LANG in $LANGS; do
+    node ../_tools/others/scrape-reviews.js $PROYECT $LANG $2
+  done
 
-  echo "${STI} REMOVE BINARY FILES FROM HISTORY ${STE}"
-  git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch *.ai *.bmp *.eps *.gif *.gifv *.ico *.jng *.jp2 *.jpg *.jpeg *.jpx *.jxr *.png *.psb *.psd *.svgz *.tif *.tiff *.wbmp *.webp *.pdf *.kar *.m4a *.mid *.midi *.mp3 *.ogg *.ra *.wav *.3gpp *.3gp *.as *.asf *.asx *.avi *.fla *.flv *.m4v *.mng *.mov *.mp4 *.mpeg *.mpg *.ogv *.swc *.swf *.webm *.7z *.gz *.jar *.rar *.tar *.zip *.ttf *.eot *.otf *.woff *.woff2 *.exe *.pyc' --prune-empty -- --all
 
-  echo "${STI} DO UP ${STE}"
-  sh do up
+#####################
+## SERVER COMMANDS ##
+#####################
 
-  echo "${STI} FORCE PUSH ${STE}"
-  git push origin --force --all
+# Hugo server with theme config
+elif [ $1 = server ]; then
 
-# COMMANDS FOR DEPLOY
+  sh do rm-public
+  sh do prebuild
 
-# purge svg draws for online (when up to gitlab)
-#    used draws
-#      fin all files in public folder
-#      xargs: in each
-#      grep: get draws.svg#id by regex
-#      sort
-#      unique
-#      sed regex replace: remove draws.svg# prefix
-#      join with pipeline
-#      sed regex replace: remove last pipeline
-#      save in used draws auxiliar file
-#    use the used draws auxiliar file like a variable
-#    custom draws file
-#      cat: get file draws
-#      grep: filter only used draws
-#      sed: add xml and svg data format in first line
-#      sed: add svg close tag in last line
-#      save as draws_temp.svg
-#    save draws_temp.svg as draws.svg
-#    if the file generated is empty, write "null"
-#    remove draws_temp.svg and used draws auxiliar file
-elif [ $1 = draws-purge ]
-then
+  hecho "HUGO SERVER"
+  hugo server --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
-  echo "${STI} DRAWS PURGE ${STE}"
-  PATH_DRAWS=public/draws.svg
-  PATH_DRAWS_TEMP=public/draws_temp.svg
+# CMS + hugo local
+elif [ $1 = local ]; then
+
+  hecho "HUGO LOCAL"
+  export HUGO_CMS_LOCAL=true
+  npx @staticcms/proxy-server &
+  sh do server
+
+
+#####################
+## DEPLOY COMMANDS ##
+#####################
+
+# Remove public directorie
+elif [ $1 = rm-public ]; then
+
+  hecho "REMOVE PUBLIC DIRECTORIE"
+  rm -r public
+
+# Like purge CSS
+elif [ $1 = css-purge ]; then
+
+  hecho "CSS PURGE"
+  node ./themes/sansoul/assets/js/node/css-purge.js
+
+# Purge svg draws
+elif [ $1 = draws-purge ]; then
+
+  hecho "DRAWS PURGE"
+  FILE=`ls public/draws.*.svg`
+  TEMP=temp.svg
+  IDSF=ids.txt
+  # Collect id's
   find ./public/ -type f -iname "*.*" | \
-    xargs grep -Eoh "draws.svg\#(\w|-|\.)+" | \
+    xargs grep -Eoh "draws\.[0-9]+\.svg\#(\w|-|\.)+" | \
     sort | \
     uniq | \
-    sed "s/^draws.svg\#//g" | \
+    sed -E 's/^draws\.[0-9]+\.svg#|-(pr|ne)x?y?$//g' | \
     tr "\n" "|" | \
-    sed "s/\|$$//g" > \
-    USED_DRAWS.txt
-  USED_DRAWS=`cat USED_DRAWS.txt`
-  cat ${PATH_DRAWS} | \
-    grep -Eo "^  <symbol id=\"(${USED_DRAWS})\".*</symbol>" | \
-    sed '1s/^/<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http:\/\/www.w3.org\/2000\/svg" style="display: none;">/g' | \
-    sed '$s/>$/><\/svg>/g' > \
-    ${PATH_DRAWS_TEMP}
-  cat ${PATH_DRAWS_TEMP} > \
-    ${PATH_DRAWS}
-  [ -s ${PATH_DRAWS} ] || echo "null" > ${PATH_DRAWS}
-  rm ${PATH_DRAWS_TEMP} USED_DRAWS.txt
+    sed -E 's/\|$//g' > \
+    ${IDSF}
+  IDS=`cat ${IDSF}`
+  # Filter original file
+  head -n 2 ${FILE} > ${TEMP}
+  cat ${FILE} | \
+    grep -Eo "^<(symbol|g) id=\"(${IDS})\".+$" >> \
+    ${TEMP}
+  echo "</svg>" >> ${TEMP}
+  # Replace original with filtered
+  cat ${TEMP} > \
+    ${FILE}
+  # If it has no content paint "null"
+  [ -s ${FILE} ] || echo "null" > ${FILE}
+  # Delete temporary files
+  rm ${TEMP} ${IDSF}
 
-# enter in to prebuild folder, build hugo and go back
-elif [ $1 = prebuild ]
-then
+# Images ICO, PNG and AVIF
+elif [ $1 = images ]; then
 
-  if [ -e "hugo.prebuild.yml" ]
-  then
-    echo "${STI} GO SANSOUL PREBUILD ${STE}"
-    cd themes/sansoul/prebuild
+  hecho "IMAGES ICO, PNG AND AVIF"
+  node ./themes/sansoul/assets/js/node/images.js
 
-    echo "${STI} REMOVE PUBLIC DIRECTORIE ${STE}"
-    rm -r public
-
-    echo "${STI} RUN HUGO PREBUILD ${STE}"
-    hugo --config ../../../hugo.yml,hugo.yml,../../../hugo.prebuild.yml
-
-    echo "${STI} GO PROJECT ${STE}"
-    cd ../../..
-  fi
-
-# if multilang, copy 404 file in root
-elif [ $1 = multilang ]
-then
-
-  lang=$(grep '^defaultContentLanguage:' ./hugo.yml | awk '{print $2}')
-  if [ -e "./public/${lang}/404.html" ]
-  then
-    echo "${STI} MULTILANG: COPY 404 FILE IN ROOT ${STE}"
-    cp ./public/${lang}/404.html ./public/
-  fi
-
-# hugo build in local with theme config
-elif [ $1 = hugo-local ]
-then
-
-  echo "${STI} HUGO LOCAL ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
-
-# hugo build as developement environement
-elif [ $1 = hugo-development ]
-then
+# Enter in to prebuild folder, build hugo and go back
+elif [ $1 = prebuild ]; then
 
   hugo version
 
+  hecho "GO SANSOUL PREBUILD"
+  cd themes/sansoul/prebuild
+
+  hecho "REMOVE PUBLIC DIRECTORIE"
+  rm -r public
+
+  hecho "RUN HUGO PREBUILD"
+  hugo --config ../../../hugo.yml,hugo.yml
+
+  hecho "GO PROJECT"
+  cd ../../..
+
+# # If multilang, copy 404 file in root
+# elif [ $1 = multilang ]
+# then
+
+#   lang=$(grep '^defaultContentLanguage:' ./data/langs.yml | awk '{print $2}' || echo 'es')
+#   lang=${lang:-es}
+#   if [ -e "./public/${lang}/404.html" ]
+#   then
+#     hecho "MULTILANG: COPY 404 FILE IN ROOT"
+#     cp ./public/${lang}/404.html ./public/
+#   fi
+
+# Hugo build as developement environement
+elif [ $1 = hugo-development ]; then
+
+  sh do rm-public
   sh do prebuild
 
-  echo "${STI} RUN HUGO DEVELOPMENT ${STE}"
-  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,hugo.yml
+  # remove cache directories
+  rm -rf public resources
 
-  sh do multilang
+  hecho "RUN HUGO DEVELOPMENT"
+  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
-# hugo build as production environement
-elif [ $1 = hugo-production ]
-then
+# Hugo build as production environement
+elif [ $1 = hugo-production ]; then
 
-  hugo version
-
+  sh do rm-public
   sh do prebuild
 
-  echo "${STI} COPY FILES FROM SANSOUL TO PROJECT ${STE}"
+  hecho "COPY FILES FROM SANSOUL TO PROJECT"
   cp ./themes/sansoul/package.json ./
   cp ./themes/sansoul/postcss.config.js ./
 
-  echo "${STI} RUN HUGO PRODUCTION ${STE}"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,hugo.yml
+  hecho "RUN HUGO PRODUCTION"
+  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
+  # sh do css-purge
   sh do draws-purge
+  sh do images
+  # sh do multilang
 
-  sh do multilang
+# Hugo check environement and build
+elif [ $1 = hugo ]; then
 
-# hugo check environement
-elif [ $1 = hugo ]
-then
+  start_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
 
   # Deploy with environement
-  development=$(grep '^development:' ./data/config.yml | awk '{print $2}')
+  development=$(grep '^\s\sdevelopment:' ./data/config.yml | awk '{print $2}')
   if test "$development" = "true"
   then
     sh do hugo-development
@@ -294,13 +237,9 @@ then
     sh do hugo-production
   fi
 
-# cms + hugo local
-elif [ $1 = local ]
-then
-
-  export HUGO_CMS_LOCAL=true
-  npx @staticcms/proxy-server &
-  sh do server
+  end_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
+  elapsed=$((end_ms - start_ms))
+  echo "\033[1;36m🕑 $elapsed ms\033[0m"
 
 else
 

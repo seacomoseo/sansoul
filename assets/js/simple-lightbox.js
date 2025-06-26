@@ -3,27 +3,28 @@ import { scrollShot } from './scroll-shot'
 import { loadScript } from './load-script'
 
 export function initSimpleLightbox () {
-  function lightbox () {
-    const lbItems = document.querySelectorAll('[data-lightbox]')
-    if (lbItems) {
+  // All ligtbox items
+  const lbItems = document.querySelectorAll('[data-lightbox]')
+  if (lbItems) {
+    function lightbox () {
+      // Unique groups of ligtbox items
       let lbGroups = []
       lbItems.forEach(lbItem => {
-        const lbGroup = lbItem.closest('.row, .container > .description, section.content')
+        const lbGroup = lbItem.closest('.gallery, .container, .boxes, .md, .menu__items')
         lbGroups.push(lbGroup)
-        lbItem.addEventListener('keydown', e => e.key === 'Enter' && lbItem.click())
       })
       lbGroups = [...new Set(lbGroups)]
+      // Each group
       lbGroups.forEach(lbGroup => {
-        const lbSection = lbGroup.closest('.section, .modal')
-        const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?(section--[\w-]+).*$/, '$1') : ''
-        const lbGroupElement = '.' + lbGroup.classList.value.replace(/^.*?(row--\d+).*$/, '$1').replace(' ', '.')
-        // eslint-disable-next-line
-        const localImages = new SimpleLightbox(lbGroupSection + ' ' + lbGroupElement + ' [data-lightbox]', { sourceAttr: 'data-lightbox' })
+        const lbSection = lbGroup.closest('.menu, .section, .modal')
+        const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?((section|modal)--[\w-]+|menu).*$/, '$1') : ''
+        const lbBox = lbGroup.closest('.box')
+        const lbGroupBox = lbBox ? '.' + lbBox.classList.value.replace(/^.*?(box(--\d+)?).*$/, '$1').replace(' ', '.') : ''
+        const localImages = new SimpleLightbox(`${lbGroupSection} ${lbGroupBox} [data-lightbox]`, { sourceAttr: 'data-lightbox' })
         // Gallery expand button open first child
-        document.querySelectorAll('.gallery__expand:not([href],[data-h],[data-b])').forEach(g => {
-          g.addEventListener('click', e => {
-            localImages.open(e.target.closest('.gallery').firstChild)
-          })
+        document.addEventListener('click', e => {
+          const galleryExpand = e.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
+          if (galleryExpand) localImages.open(e.target.closest('.gallery').firstChild)
         })
         // Fix combine lightbox with modal
         localImages.on('show.simplelightbox', e => {
@@ -31,11 +32,14 @@ export function initSimpleLightbox () {
         })
       })
     }
-  }
 
-  scrollShot({
-    rootMargin: '0%',
-    query: '[data-lightbox]',
-    doStart: gallery => loadScript('/js/simple-lightbox.min.js', lightbox)
-  })
+    scrollShot({
+      rootMargin: '0%',
+      query: ':is(.menu, .section, .modal):has([data-lightbox])',
+      doStart: gallery => loadScript('/js/simple-lightbox.min.js')
+        .then(lightbox)
+        .catch(console.error),
+      end: true
+    })
+  }
 }

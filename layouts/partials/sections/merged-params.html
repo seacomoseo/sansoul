@@ -1,0 +1,34 @@
+{{/*  FUNTION DEFINE  */}}
+{{ define "partials/merge-params" }}
+  {{ $section := dict }}
+  {{ with partial "functions/params-merge" . }}
+    {{ $section = . }}
+  {{ end }}
+  {{ return $section }}
+{{ end }}
+
+{{/*  SECTIONS  */}}
+{{ $sections := slice }}
+{{ range .sections }}
+
+  {{/*  MODALS  */}}
+  {{ $modals := slice }}
+  {{ range .modals }}
+    {{ $options := dict "Page" $.Page "item" . }}
+    {{ with partial "merge-params" $options }}
+      {{ $modals = $modals | append . }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  SECTION  */}}
+  {{ $options := dict "Page" $.Page "item" . }}
+  {{ with partial "merge-params" $options }}
+    {{ $section := merge . (dict "modals" $modals) }}
+  
+    {{/*  END  */}}
+    {{ $sections = $sections | append $section }}
+  {{ end }}
+
+{{ end }}
+
+{{ return $sections }}

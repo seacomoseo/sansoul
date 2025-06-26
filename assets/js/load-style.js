@@ -1,10 +1,27 @@
 // STYLE FILE LOAD FUNCTION
-export function loadStyle (url, callback) {
-  if (!document.querySelector(`link[rel='stylesheet'][href='${url}']`)) {
-    const s = document.createElement('link')
-    s.onload = callback
-    s.rel = 'stylesheet'
-    s.href = url
-    document.head.appendChild(s)
-  }
+export function loadStyle (url) {
+  return new Promise((resolve, reject) => {
+    let link = document.querySelector(`link[href='${url}']`)
+
+    if (!link) {
+      link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+
+      link.onload = resolve
+
+      link.onerror = () => {
+        reject(new Error(`Error when load style ${url}`))
+      }
+
+      document.head.appendChild(link)
+    } else if (link.getAttribute('data-loaded') === 'true') {
+      resolve()
+    } else {
+      link.addEventListener('load', resolve)
+      link.addEventListener('error', () => {
+        reject(new Error(`Error when load style ${url}`))
+      })
+    }
+  })
 }

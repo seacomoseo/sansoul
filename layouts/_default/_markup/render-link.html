@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 {{- $label := .Text | replaceRE `^btn[\w-]* ` `` -}}
 {{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` `` -}}
@@ -10,17 +11,33 @@
   {{- $button  =  replace $other "-font-alt" "" | replaceRE `^.+?(main|alt|link|light|dark|invert|whatsapp).*` `$1` -}}
   {{- range $other | findRE `icon|font-alt|sm` -}}
     {{- $class = print $class " button--" . -}}
+=======
+{{- $label  := .Text -}}
+{{- $anchor := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
+{{- $title  := "" -}}
+{{- $meta   := "" -}}
+{{- with .Title -}}
+  {{- with findRE `(?s).*\[.+?\].*` . 1 -}}
+    {{- $meta   = index . 0 -}}
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   {{- end -}}
 {{- end -}}
 
-{{- $icon     := "" -}}
-{{- if $anchor | and (not $noindex) -}}
-  {{- $label   = $label | replaceRE `icon-[\w-]+` `` -}}
-  {{- if findRE `icon-[\w-]` .Text -}}
-    {{- $icon  = .Text | replaceRE `^.*?icon-([\w-]+).*` `$1` -}}
-  {{- end -}}
+{{- /*  button  */ -}}
+{{- $button  := "" -}}
+{{- $dot     := "" -}}
+{{- $sm      := "" -}}
+{{- $swap    := "" -}}
+{{- if and (hasPrefix .Text "[") (hasSuffix .Text "]") -}}
+  {{- $label  = .Text  | replaceRE `(?s)^\[|\]$` "" -}}
+  {{- $button = findRE `(main|alt|cta|light|dark|invert|similar|whatsapp)` $meta 1 -}}
+  {{- $button = index $button 0 | default "cta" -}}
+  {{- $dot    = in $meta "dot" -}}
+  {{- $sm     = in $meta "sm" -}}
+  {{- $swap   = in $meta "swap" -}}
 {{- end -}}
 
+<<<<<<< HEAD
 {{- partial "components/link" (dict
   "class"   $class
   "link"    .Destination
@@ -31,3 +48,46 @@
   "noindex" $noindex
   "_blank"  (in .Title "_blank")
 ) -}}
+=======
+{{- /*  ga4  */ -}}
+{{- $ga4 := in $meta "ga4" -}}
+
+{{- /*  blank  */ -}}
+{{- $blank := in $meta "blank" -}}
+
+{{- /*  icon outside  */ -}}
+{{- $outside := partial "functions/icon-outside" $label -}}
+{{- $label   := $outside.text -}}
+{{- $icon    := $outside.icon -}}
+{{- $pin     := $outside.pin -}}
+
+{{- /*  lock  */ -}}
+{{- $lock := cond (in $meta "nofollow") true nil -}}
+{{- if in $meta "homefollow" -}}
+  {{- if not page.IsHome -}}
+    {{- $lock = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if $lock -}}
+  {{- /*  change anchor by title and remove  */ -}}
+  {{- $title  = $anchor -}}
+  {{- $anchor = "" -}}
+{{- end -}}
+
+{{- /*  link  */ -}}
+{{- partial "link" (dict
+  "button" $button
+  "dot"    $dot
+  "sm"     $sm
+  "swap"   $swap
+  "ga4"    $ga4
+  "icon"   $icon
+  "pin"    $pin
+  "label"  $label
+  "anchor" $anchor
+  "title"  $title
+  "link"   .Destination
+  "lock"   $lock
+  "blank"  $blank
+) -}}
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c

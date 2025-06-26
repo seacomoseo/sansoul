@@ -1,0 +1,65 @@
+// Float
+
+
+@media (min-width: $viewport-lg) {
+  .md__figure--float {
+    margin: 0;
+    .image {
+      width: auto;
+      display: block;
+      overflow: unset;
+    }
+    img,
+    .icon {
+      &:not(#aux) {
+        float: left;
+        shape-outside: var(--shape);
+        shape-margin: 1em;
+        margin: 0 1em 1em 0;
+        position: relative;
+        z-index: -1;
+        max-width: 50%;
+      }
+    }
+    .icon:not(#aux) {
+      top: unset;
+    }
+    &:first-child + *:not(#aux) {
+      margin-top: 0;
+    }
+  }
+  .md__figure--float-right {
+    img,
+    .icon {
+      &:not(#aux) {
+        float: right;
+        margin: 0 0 1em 1em;
+      }
+    }
+  }
+}
+.md__figure {
+  &:first-child {
+    margin-top: 0;
+  }
+  &[style*='.svg'] {
+    filter: none;
+  }
+}
+
+
+// Picture
+
+.md picture {
+  margin: 0 auto;
+}
+
+
+// Figcaption
+
+.md__figcaption {
+  @include font-quotes;
+  margin-top: 1em;
+  color: var(--alt);
+  text-align: center;
+}

@@ -1,30 +1,32 @@
 {{- $param := index .Params 0 -}}
 {{- $two   := index .Params 1 -}}
-{{- if eq $param "name" -}}
-  {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_name")
-    | default (partial "functions/lang-param" (dict "parent" "config" "param" "title"))
-  -}}
-{{- else if eq $param "dni" -}}
-  {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_dni")
-    | default "00000000A"
-  -}}
-{{- else if eq $param "location" -}}
-  {{- with partial "functions/lang-param" (dict "parent" "config" "param" "legal_location") -}}
-    {{- . -}}
-  {{- else -}}
-    {{- $postalAddress := index (partial "functions/contact-data" .).locations 0 | default "-" -}}
-    {{- partial "functions/postal-address" $postalAddress -}}
+
+{{- if in (slice "name" "nif" "location" "email") $param -}}
+
+  {{- with site.Home.Params.org.address -}}
+    {{- if eq $param "name" -}}
+      {{- .legal | default site.Title -}}
+    {{- else if eq $param "nif" -}}
+      {{- .nif | default "00000000A" -}}
+    {{- else if eq $param "location" -}}
+      {{- with .address -}}
+        {{- with .street }}{{ . }},{{ end }}
+        {{ with .pc }}{{ . }}{{ end }}
+        {{ with .locality }}{{ . }}{{ end }}
+        {{ with .region }},{{ . }}{{ end }}
+        {{ with .country }},{{ . }}{{ end }}
+      {{- else -}}
+        {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
+      {{- end -}}
+    {{- else if eq $param "email" -}}
+      <i class="mail">
+        {{- .email | default "mail@mail.com" | base64Encode -}}
+      </i>
+    {{- end -}}
   {{- end -}}
-{{- else if eq $param "email" -}}
-  <i class="ofuscate">
-    {{- partial "functions/lang-param" (dict "parent" "config" "param" "legal_email")
-      | default (index (partial "functions/contact-data" .).mails 0)
-      | default "mail@mail.com"
-      | base64Encode
-    -}}
-  </i>
+
 {{- else if eq $param "web" -}}
-  {{- replace site.BaseURL "https://" "" -}}
+  {{- site.Params.domain -}}
 {{- else if eq $param "https" -}}
   {{- site.BaseURL -}}
 {{- end -}}

@@ -1,0 +1,70 @@
+// ICONS
+
+// COLLECTIONS
+.CMS_Icon_root,
+.CMS_NavLink_icon {
+  svg {
+    opacity: 0.87;
+    color: var(--primary-dark);
+    fill: currentColor;
+  }
+}
+
+// Dark mode
+html[style*="--text-primary: #fff;"] .CMS_NavLink_icon {
+  filter: brightness(1.25);
+}
+
+// Menu item active
+.CMS_NavLink_link.active,
+.CMS_NestedCollection_expanded {
+  .CMS_NavLink_icon {
+    filter: brightness(6);
+  }
+}
+
+// Flags
+.CMS_NavLink_link[href*="/admin/"] svg {
+  border-radius: 50%;
+}
+
+// SETTINGS
+.CMS_Table_body-cell-link {
+  position: relative;
+}
+.CMS_Table_body-cell:first-child [href^="#/collections/settings/entries/"].CMS_Table_body-cell-link::before {
+  content: '';
+  width: 20px;
+  margin-right: .5rem;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+$roots: str-split($items, '|');
+@each $root in $roots {
+  @each $item in $root {
+    $parts: str-split($item, ',');
+    $name: nth($parts, 1);
+    $base64: nth($parts, 2);
+
+    // Settings
+    .CMS_Table_body-cell-link[href="#/collections/settings/entries/#{$name}"]::before {
+      background-image: url("data:image/svg+xml;base64,#{$base64}");
+    }
+    // Fix nested collections
+    .CMS_NavLink_link[href="#/collections/#{$name}"] .CMS_NavLink_icon {
+      background-image: url("data:image/svg+xml;base64,#{$base64}");
+    }
+  }
+}
+
+// Fix nested collections
+.CMS_NestedCollection_link .CMS_NavLink_icon {
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.87;
+  svg {
+    display: none;
+  }
+}

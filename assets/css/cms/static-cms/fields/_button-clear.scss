@@ -1,0 +1,41 @@
+// button reset
+.is-not-set::after {
+  content: '○';
+  color: var(--common-gray);
+  line-height: 1;
+  text-align: center;
+}
+.is-not-set::after,
+.button--reset {
+  position: absolute;
+  // top: .125rem;
+  top: .5rem;
+  right: var(--reset-right);
+  height: 1rem;
+  width: 1rem;
+}
+.is-not-set:has(> .CMS_WidgetList_root)::after,
+.CMS_WidgetList_root + .button--reset {
+  top: .75rem;
+}
+// boolean
+[aria-label="boolean field"] {
+  .is-not-set::after,
+  .button--reset {
+    // top: .875rem;
+    top: .75rem;
+  }
+}
+// select
+[aria-label="select field"] > .is-not-set .CMS_Select_label {
+  display: none;
+}
+// rest
+.is-not-set :is(
+  input,
+  textarea,
+  .CMS_Select_label-text,
+  .CMS_WidgetMarkdown_plate-editor
+):not(:focus) {
+  color: transparent;
+}

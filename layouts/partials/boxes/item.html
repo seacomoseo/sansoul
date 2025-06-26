@@ -1,0 +1,195 @@
+{{- $box := partial "boxes/merge-expand" . -}}
+
+{{- define "partials/inbox" -}}
+
+  {{- range .sort -}}
+
+    {{- if eq . "image" -}}
+
+      {{- /*  IMAGE  */ -}}
+      {{- partial "boxes/image" $ -}}
+
+    {{- else if eq . "title" -}}
+
+      {{- /*  TITLE  */ -}}
+      {{- partial "boxes/title" $ -}}
+
+    {{- else if eq . "icon_bottom" -}}
+
+      {{- /*  ICON BOTTOM  */ -}}
+      {{- if eq $.icon_type "bottom" -}}
+        {{- partial "boxes/icon" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "subtitle" -}}
+
+      {{- /*  SUBTITLE  */ -}}
+      {{- with $.subtitle }}
+        <p class="box__subtitle subtitle">
+          {{- . | markdownify -}}
+        </p>
+      {{- end -}}
+
+    {{- else if eq . "price" -}}
+
+      {{- /*  PRICE  */ -}}
+      {{- with $.price }}
+        <div class="price">
+          {{- . | markdownify -}}
+        </div>
+      {{- end -}}
+
+    {{- else if eq . "md" -}}
+
+      {{- /*  MD  */ -}}
+      {{- if $.md -}}
+        {{- partial "boxes/md" $ -}}
+      {{- end -}}
+
+    {{- /*  BLOCKS  */ -}}
+
+    {{- else if eq . "steps" -}}
+
+    {{- /*  STEPS  */ -}}
+    {{- if $.steps -}}
+      {{- partial "blocks/steps" $ -}}
+    {{- end -}}
+
+    {{- else if eq . "gallery" -}}
+
+      {{- /*  GALLERY  */ -}}
+      {{- if $.images -}}
+        {{- partial "blocks/gallery" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "list" -}}
+
+      {{- /*  LIST  */ -}}
+      {{- if $.list -}}
+        {{- partial "blocks/list" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "accordion" -}}
+
+      {{- /*  ACCORDION  */ -}}
+      {{- if $.accordions -}}
+        {{- partial "blocks/accordion" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "reviews" -}}
+
+      {{- /*  REVIEWS  */ -}}
+      {{- if $.reviews -}}
+        {{- partial "blocks/reviews" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "dots" -}}
+
+      {{- /*  DOTS  */ -}}
+      {{- if $.dots -}}
+        {{- partial "blocks/dots" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "contact" -}}
+
+      {{- /*  CONTACT  */ -}}
+      {{- if $.contact -}}
+        {{- partial "blocks/contact" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "form" -}}
+
+      {{- /*  FORM  */ -}}
+      {{- if $.inputs -}}
+        {{- partial "blocks/form" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "map" -}}
+
+      {{- /*  MAP  */ -}}
+      {{- if $.geos -}}
+        {{- partial "blocks/map" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "gss" -}}
+
+      {{- /*  GSS  */ -}}
+      {{- if $.gss -}}
+        {{- partial "blocks/gss" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "boxes" -}}
+
+      {{- /*  BOXES  */ -}}
+      {{- if $.boxes -}}
+        {{- partial "boxes/items" $ -}}
+      {{- end -}}
+
+    {{- /*  END BLOCKS  */ -}}
+
+    {{- else if eq . "tags" -}}
+
+      {{- /*  TAGS  */ -}}
+      {{- if $.tags -}}
+        {{- partial "boxes/tags" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "button" -}}
+
+      {{- /*  BUTTON  */ -}}
+      {{- if $.is_button_link -}}
+        {{- partial "boxes/button" $ -}}
+      {{- end -}}
+
+    {{- end -}}
+
+  {{- end -}}
+
+{{- end -}}
+
+
+{{- /*  FINAL  */ -}}
+{{- with $box -}}
+
+  {{- $node  := .node | default "div" -}}
+  {{- $inbox := partial "inbox" . -}}
+
+  {{- if .box_wrap -}}
+
+    {{- /*  Only one link (box--go)  */ -}}
+    {{- if not .zero -}}
+      {{- $is_video := $inbox | findRE `<video |<iframe ` -}}
+      {{- if not $is_video -}}
+        {{- $links := $inbox | findRE `<a .*?href=| data-(h|b)=| data-lightbox=| type="submit"` -}}
+        {{- $ool   := eq (len $links) 1 -}}
+        {{- if $ool -}}
+          {{- $ool  = dict "only_one_link" true -}}
+          {{- $box  = merge $box $ool -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- /*  ATTRIBUTES  */ -}}
+    {{- $box_attr  := partial "boxes/attr" $box -}}
+
+    {{- /*  WRAP  */}}
+    {{ print "<" $node $box_attr ">" | safeHTML -}}
+
+      {{- /*  BACKGROUND  */ -}}
+      {{- partial "bg" . -}}
+
+  {{- end -}}
+
+  {{- /*  INBOX  */ -}}
+  {{- $inbox -}}
+
+  {{- /*  MODAL NAV  */ -}}
+  {{- if and .zero .modal (not .ph) }}
+    {{- partial "boxes/modal-nav" $ -}}
+  {{- end -}}
+
+  {{- /*  END WRAP  */ -}}
+  {{- if .box_wrap }}
+    {{ print "</" $node ">" | safeHTML -}}
+  {{- end -}}
+{{- end -}}

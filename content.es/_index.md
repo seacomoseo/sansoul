@@ -1,13 +1,56 @@
 ---
-title: Inicio
-title_seo: Tema SanSoul de Hugo
 slug: inicio
-description: llll➤ SanSoul es un tema de Hugo con alma para webs de servicios ✅ por lorensansol.
-image: fondo.jpg
-draft: false
+title: Inicio
 noindex: false
 translationKey: home
-sections:
-- custom:
-    title: Tema SanSoul de Hugo
+base: org
+weight: 1
+
+org:
+  types: [] # strings https://schema.org/docs/full.html > Organization...
+  names: [] # strings
+  description: null # string
+  legal: null # string
+  nif: null # string
+  email: null # string
+  description: null # string
+  logo: null # string image path
+  images: [] # strings image path
+  as: [] # strings
+  phones: [] # strings
+  address:
+    name: null # string
+    street: null # string
+    pc: null # string
+    locality: null # string
+    region: null # string
+    country: null # string
+    geo: null # '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
+    link: null # string
+  areas: [] # strings
+  schedule: []
+  # - days:
+  #   - monday
+  #   - tuesday
+  #   - wednesday
+  #   - thursday
+  #   - friday
+  #   - saturday
+  #   - sunday
+  #   hours:
+  #   - open: 8:00
+  #     close: 14:00
+  #   from: 2014-12-24
+  #   to: 2014-12-25
+  prices: null # [ €, €€, €€€, $, $$, $$$ ]
+  services: [] # strings
+  # - title: null # strings
+  #   description: null # strings
+  #   price: null # float
+  #   area: null # string
+  #   url: null # string
+  food_menu: [] # string url
+  food_type: [] # string (Italian, American...)
+  departs: [] # all same and...
+  # - url: null # string
 ---

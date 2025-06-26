@@ -1,0 +1,83 @@
+.md {
+  blockquote {
+    &:not(h1, h2, h3, h4, h5, h6, .subtitle, .font-base) {
+      @include font-quotes;
+      font-size: larger;
+    }
+    position: relative;
+    color: var(--subtitle);
+    padding-inline: 1.25em;
+    width: fit-content;
+    margin: 1em auto;
+
+    // Quotes
+    &:not(#aux) {
+      > .icon.quote-left,
+      > .icon.quote-right {
+        margin: 0;
+        height: $line-height-cursive * 1em;
+      }
+    }
+    &:not(.quotes, .dittos) {
+      padding-inline: 1.5em;
+      &::after,
+      &::before {
+        font-size: 2em;
+        line-height: .625;
+        font-weight: 900;
+        content: '“';
+      }
+      &::after {
+        content: '”';
+      }
+    }
+    > .icon.quote-left,
+    > .icon.quote-right,
+    &::after,
+    &::before {
+      color: var(--main);
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    > .icon.quote-right,
+    &::after {
+      top: unset;
+      left: unset;
+      bottom: 0;
+      right: 0;
+    }
+
+    // Background
+    &.bg {
+      padding: 1.5em;
+      > .icon.quote-left,
+      > .icon.quote-right,
+      &::after,
+      &::before {
+        top: .5em;
+        left: .5em;
+      }
+      > .icon.quote-right,
+      &::after {
+        top: unset;
+        left: unset;
+        bottom: .5em;
+        right: .5em;
+      }
+    }
+
+    // Cite
+    cite {
+      @include font-base-bold;
+      display: block;
+      text-align: right;
+      margin-top: .5em;
+      color: var(--title);
+      &::before {
+        content: '— ';
+        color: $gray;
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+// Table inner
+
+.table-inner,
+.gss .ritz {
+  display: flex;
+  justify-content: center;
+  filter: drop-shadow($shadow);
+}
+
+
+// Table
+
+table {
+  &:not(.table-sm, .container.bg *, .boxes *) {
+    @include fluid-size(max-width, 1px, $vs / 1px, $container-width-max-xl / 1px);
+    @include fluid-size(--margin-table-lg, 1em, 1, 2);
+    margin-inline: calc(var(--container-margin-side) + var(--margin-table-lg));
+  }
+  &:where(.md *) {
+    margin-bottom: 1em;
+  }
+}
+@container box (min-width: $viewport-md) {
+  .table-fix {
+    th, td {
+      &:first-child {
+        position: sticky;
+        left: 0;
+        background: inherit;
+        max-width: calc(var(--container-inner) / 2);
+        z-index: 1;
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          right: 0;
+          display: block;
+          width: 1px;
+          height: 100%;
+          background-color: rgba($gray, .125);
+        }
+      }
+    }
+  }
+}
+
+// Aligns
+
+.align-center table,
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.align-right table,
+table.align-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+@media (min-width: $vl) {
+  .align--vl-center {
+    table {
+      margin-left: auto;
+    }
+  }
+  .align--vl-right {
+    table {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+}
+
+// Compare
+
+/*! purgecss start ignore */
+.compare {
+  .icon:has(> use[href="/draws.#{$timestamp}.svg#xmark"]) {
+    color: red;
+  }
+  .icon:has(> use[href="/draws.#{$timestamp}.svg#check"]) {
+    color: green;
+  }
+}
+/*! purgecss end ignore */
+
+.compare {
+  td, th {
+    &:not(:first-child) {
+      text-align: center;
+    }
+  }
+}

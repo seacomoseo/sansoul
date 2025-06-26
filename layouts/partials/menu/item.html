@@ -1,0 +1,95 @@
+{{- if ne .button "hide" -}}
+  {{- $sub := add ($.sub | default 0) 1 -}}
+  {{- if eq .link "langs" -}}
+
+    {{- range partial "menu/langs" . -}}
+      {{- partial "menu/item" (merge . (dict
+        "sub"        $sub
+        "hide_icons" $.hide_icons
+        "lock"       $.lock
+      )) -}}
+    {{- end -}}
+
+  {{- else -}}
+
+    {{- $item := . -}}
+    {{- if eq .link "translate" -}}
+      {{- $item = merge
+        (dict
+          "icon"      "earth-americas"
+          "emoji"     "🌎"
+          "label"     (i18n "translate")
+          "translate" true
+        )
+        .
+        (dict "link" "")
+      -}}
+    {{- end -}}
+
+    {{- with $item -}}
+      {{- $hide_icons := $.hide_icons -}}
+      {{- if .lang | or ((or .icon .emoji) | and (not .label)) -}}
+        {{- $hide_icons = false -}}
+      {{- end -}}
+      {{- $icon   := cond (not $hide_icons) .icon "" -}}
+      {{- $emoji  := cond (not $hide_icons) .emoji "" -}}
+      {{- $label  := .menu_label | default .label | markdownify -}}
+      {{- $anchor := .anchor | default "auto" -}}
+
+      {{- if or $label $icon $emoji -}}
+
+        {{- $button_class := slice
+          (cond (not .button)    "menu__link" "menu__button")
+          (cond (not .translate) "" "menu__link--translate")
+          | append .class
+        -}}
+
+        {{- /*  li  */ -}}
+        {{- $is_active := eq .link page.RelPermalink | and (not .IsHome) -}}
+        {{- $li_class  := slice
+          "menu__item"
+          (cond $is_active "menu__item--active"   "")
+          (cond .lang      "menu__item--lang"     "")
+          (cond .items     "menu__item--subitems" "")
+        -}}
+        {{- $li_attrs := dict
+          "class"    $li_class
+          "lang"     .lang
+          "title"    .title
+          "tabindex" (cond .items "0" "")
+          -}}
+        {{- $li_attrs = partial "functions/attrs" $li_attrs }}
+        <li {{- $li_attrs }}>
+          {{- /*  link  */}}
+          {{ partial "link" (dict
+            "class"  $button_class
+            "button" .button
+            "sm"     true
+            "swap"   .swap
+            "ga4"    .ga4
+            "icon"   $icon
+            "emoji"  $emoji
+            "label"  $label
+            "anchor" $anchor
+            "link"   .link
+            "lock"   .lock
+          ) -}}
+
+          {{- /*  subitems  */ -}}
+          {{- with .items }}
+            {{- $ul_class := print "menu__" (cond (eq $sub 0) "" "sub") "items" -}}
+            <ul class="{{ $ul_class }}">
+              {{- range . -}}
+                {{- partial "menu/item" (merge . (dict
+                  "sub"        $sub
+                  "hide_icons" $.hide_icons
+                )) -}}
+              {{- end }}
+            </ul>
+          {{- end }}
+        </li>
+      {{- end -}}
+    {{- end -}}
+
+  {{- end -}}
+{{- end -}}

@@ -1,8 +1,3 @@
-// Animations
-:root {
-  --draw-duration: 10s;
-  --draw-delay: -.5s;
-}
 %draw {
   stroke: var(--text);
   animation: draw var(--draw-duration) var(--draw-delay) both;
@@ -12,8 +7,4 @@
 %draw-infinite {
   @extend %draw;
   animation-iteration-count: infinite;
-}
-%awesome-rotate {
-  animation: awesome-rotate 5s infinite linear alternate-reverse;
-  transform-style: preserve-3d;
 }

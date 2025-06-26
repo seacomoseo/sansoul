@@ -11,119 +11,90 @@
 @import '_variables';
 @import '_mixins';
 @import '_extends';
+@import '_preload';
 @import '_fonts';
+@import '_custom-properties';
 @import '_layout';
 @import '_animations';
+@import '_info';
 
 // VENDORS POST VARIABLES
 @import 'vendors/_simple-lightbox';
 
 // UTILITIES
-@import 'utilities/_container';
+@import 'utilities/_image';
+@import 'utilities/_link';
+@import 'utilities/_buttons';
 @import 'utilities/_backgrounds';
 @import 'utilities/_colors';
 @import 'utilities/_paddings';
-@import 'utilities/_shadow';
 @import 'utilities/_dividers';
 @import 'utilities/_align';
-@import 'utilities/_order';
 @import 'utilities/_titles';
+@import 'utilities/_price';
 @import 'utilities/_uppercase';
 @import 'utilities/_underline';
-@import 'utilities/_description';
+@import 'utilities/_others';
+@import 'utilities/_parallax';
 
-// COMPONENTS
-@import 'components/_buttons';
-@import 'components/_buttons-callnow';
-@import 'components/_button-up';
-@import 'components/_ofuscate-links';
-@import 'components/_lightbox.scss';
-@import 'components/_emojis';
-@import 'components/_lazy-load';
-@import 'components/_scroll-show';
-@import 'components/_parallax';
-@import 'components/_columns';
-@import 'components/_pill';
-@import 'components/_image';
-@import 'components/_slider';
-@import 'components/_modal';
-@import 'components/_collapse';
-@import 'components/_search';
-@import 'components/_social';
-@import 'components/_cookies';
-@import 'components/_scrollbar';
-@import 'components/_google-translate';
+// BOXES
+@import 'boxes/_items';
+@import 'boxes/_item';
+@import 'boxes/_container';
+@import 'boxes/_pill';
+@import 'boxes/_slider';
+@import 'boxes/_pagination';
+@import 'boxes/_tags';
+// BOX BLOCKS
+@import 'boxes/blocks/_gallery';
+@import 'boxes/blocks/_steps';
+@import 'boxes/blocks/_accordion';
+@import 'boxes/blocks/_reviews';
+@import 'boxes/blocks/_contact';
+@import 'boxes/blocks/_form';
+@import 'boxes/blocks/_map';
+@import 'boxes/blocks/_gss';
 
-// SECTIONS
-// Kind
-@import 'kind/_404';
-@import 'kind/_article';
-// Common
-@import 'sections/common/_menu';
-@import 'sections/common/_logo';
-@import 'sections/common/_footer';
-// Article
-@import 'sections/article/_data';
-@import 'sections/article/_content';
-@import 'sections/article/_toc';
-@import 'sections/article/_pagination';
-// Blog
-@import 'sections/blog/_author-box';
-@import 'sections/blog/_comments';
-@import 'sections/blog/_related';
-// Sectioned
-@import 'sections/sectioned/_menu';
-@import 'sections/sectioned/_section';
-// Types (Models)
-@import 'types/_columns';
-@import 'types/_gallery';
-@import 'types/_steps';
-@import 'types/_collapsible';
-@import 'types/_reviews';
-@import 'types/_contact';
-@import 'types/_gss';
+// MD
+@import 'md/_';
+@import 'md/_heading';
+@import 'md/_lists';
+@import 'md/_figure';
+@import 'md/_tables';
+@import 'md/_blockquote';
+@import 'md/_hr';
+@import 'md/_buttons';
+@import 'md/_alerts';
+@import 'md/_signs';
+@import 'md/_footnotes';
+@import 'md/_others';
 
-// Pages with Sections Media Sizes
+// BASE
+@import 'base/_menu';
+@import 'base/_menu-sticky';
+@import 'base/_logo';
+@import 'base/_section';
+@import 'base/_modal';
+@import 'base/_footer';
+@import 'base/_cookies';
+@import 'base/_callnow';
+@import 'base/_up';
 
-{{ range partial "functions/list-sectioned-pages" . }}
-  {{ $id       := cond .IsHome .Params.slug (.RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-`) }}
-  {{ $sections := partial "functions/sections-all" . }}
-  {{ range $key, $value := $sections }}
-    {{ if .image | and (.image_min | or .image_max) }}
-      {{ $class := "header" }}
-      {{ if eq .id "footer" }}
-        {{ $class = "footer" }}
-      {{ else if $key }}
-        {{ $class = $key }}
-      {{ end }}
-      #body-{{ $id }}
-      .section--{{ $class }}
-      > .container
-      > .image
-      > .image__inner {
-        width: fluid-size( {{ .image_min | default 10 }} * 16px , {{ .image_max | default 18 }} * 18px );
-      }
-    {{ end }}
-  {{ end }}
-{{ end }}
+// MODS
+@import 'mods/_404';
+@import 'mods/_breadcrumbs';
+@import 'mods/_toc';
+@import 'mods/_comments';
+
+// OTHERS
+// @import 'others/_lazy-load';
+@import 'others/_scroll-show';
+@import 'others/_lightbox';
+@import 'others/_google-translate';
+@import 'others/_search';
 
 // PRINT
 @import '_print';
 
-// CUSTOM
-{{
-  (
-    resources.Get "css/_custom.scss"
-    | resources.ExecuteAsTemplate .Lang .
-  ).Content
-}}
-{{ $context := . }}
-{{ with partial "functions/lang-params-custom-code" (dict "params" "css") }}
-  {{-
-    (.
-      | resources.FromString (print "aux_css." $.Lang)
-      | resources.ExecuteAsTemplate (print "aux_css." $.Lang) $context
-    ).Content
-    | safeCSS
-  -}}
-{{ end }}
+// CUSTOM FILE
+@import '_custom';

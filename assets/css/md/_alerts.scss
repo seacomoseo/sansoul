@@ -1,0 +1,25 @@
+.md:not(#aux) {
+  .alert {
+    position: relative;
+    padding: 1em 1.5em 1.5em;
+    @include radius;
+    // --color-alpha: .25;
+    // filter: none;
+    &:not(:first-child) {
+      margin-top: 3em;
+    }
+    &:not(:last-child) {
+      margin-bottom: 3em;
+    }
+  }
+  .alert__icon {
+    float: left;
+    margin: 0 .25em -.25em 0;
+    &:has(+ :not(.alert__heading)) {
+      top: -.0625em;
+    }
+  }
+  .alert__heading {
+    margin-top: 0;
+  }
+}

@@ -1,0 +1,6 @@
+{{ $boxes := slice . }}
+{{ range .boxes }}
+  {{ $box  := partial "boxes/flatten" . }}
+  {{ $boxes = $boxes | append $box }}
+{{ end }}
+{{ return $boxes }}

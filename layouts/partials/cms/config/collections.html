@@ -1,0 +1,313 @@
+{{ $t := partial "functions/i18n-cms" . }}
+
+{{ $colections := slice }}
+
+{{/*  CUSTOM TYPES (single last)  */}}
+{{ $parents := where site.Sections "Type" "ne" "single" | append (where site.Sections "Type" "eq" "single") }}
+{{ range $parents }}
+
+  {{/*  Slug  */}}
+  {{ $slug  := "{{fields.slug}}" }}
+  {{ if in (slice "article" "event") .Params.base }}
+    {{ $slug = "{{year}}-{{month}}-{{day}}-{{fields.slug}}" }}
+  {{ end }}
+
+  {{/*  Permalinks  */}}
+  {{ $permalinks    := "{{fields.slug}}" }}
+  {{ with .Params.cms.permalinks }} 
+    {{ $permalinks   = replace . ":slug" "{{fields.slug}}" }}
+    {{ if in . ":" }}
+      {{ $permalinks = $permalinks | replaceRE `:(year|month|day)` "{{$1}}" }}
+    {{ end }}
+  {{ end }}
+  {{ $permalinks     = print $permalinks "/" }}
+
+  {{/*  Summary  */}}
+  {{ $summary  := "{{title}}" }}
+  {{ if in (slice "article" "event") .Params.base }}
+    {{ $summary = "📅 {{date | date('yyyy-MM-dd')}} 🕒 {{date | date('HH:mm')}} ➡️ {{title}}" }}
+  {{ end }}
+
+  {{/*  Sortable Fields  */}}
+  {{ $sortable_fields    := slice "commit_date" "title" }}
+  {{ if eq .Params.base "article" }}
+    {{ $sortable_fields   = slice "date" "lastmod" | append $sortable_fields }}
+  {{ end }}
+  {{ if eq .Params.base "event" }}
+    {{ $sortable_fields   = slice "date" "end"     | append $sortable_fields }}
+  {{ end }}
+  {{ with .Params.customs }}
+    {{ range where . "widget" "date" }}
+      {{ $sortable_fields = $sortable_fields       | append .name }}
+    {{ end }}
+  {{ end }}
+  {{ with .Params.taxonomies }}
+    {{ range . }}
+      {{ $sortable_fields = $sortable_fields       | append .name }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Groups  */}}
+  {{ $groups  := slice }}
+  {{ if in (slice "article" "event") .Params.base }}
+    {{ $groups = $groups | append
+      (dict "name" `year`    "label" $t.filter_year   "field" `date` "pattern" `^\d{4}`)
+      (dict "name" `month`   "label" $t.filter_month  "field" `date` "pattern" `^\d{4}-\d{2}`)
+    }}
+  {{ end }}
+  {{ $groups = $groups | append
+    (dict   "name" `noindex` "label" `NoIndex`        "field" `noindex`)
+    (dict   "name" `drafts`  "label" $t.filter_drafts "field" `draft`)
+  }}
+  {{ with .Params.taxonomies }}
+    {{ range . }}
+      {{ $label := (site.GetPage .name).Params.cms.title }}
+      {{ $groups = $groups | append
+        (dict "name" .name   "label" $label           "field" .name)
+      }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Fields  */}}
+  {{ $fields  := slice
+    `~P_SLUG`
+    `~P_TITLE`
+    `~P_SUMMARY`
+    `~P_IMAGE`
+    `~BOX_ICON_ID`
+  }}
+  {{ if and (ne .Params.base "article") (ne .Params.base "event") }}
+    {{ $fields = $fields | append
+      `~P_WEIGHT`
+    }}
+  {{ end }}
+  {{ if eq .Params.base "single" }}
+    {{ $fields = $fields | append
+      `~P_DRAFT`
+      `~P_HIDE`
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY`
+      `~P_TITLE_SEO`
+      `~P_DESCRIPTION`
+      (dict
+        "name"      `tpl`
+        "widget"    `object`
+        "required"  false
+        "label"     $t.types_template
+        "hint"      $t.types_template_single_hint
+        "collapsed" true
+        "i18n"      true
+        "fields"    (slice
+          `~TEMPLATE_BACKGROUND`
+          `~TEMPLATE_MENU_SINGLE`
+          `~TEMPLATE_CALLNOW_SINGLE`
+          `~TEMPLATE_SECTION`
+          `~TEMPLATE_MODAL`
+          `~TEMPLATE_SECTIONS`
+        )
+      )
+      `~P_BASE`
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `article` `event`))) `~P_DATE`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `article`)) `~P_LASTMOD`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_END`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_CANCELLED`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_ARTISTS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `product`)) `~P_SKU`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_PREFIX`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_ALTS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_JOB`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_ORGS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_AS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `author` )) `~P_CREDS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `event`  )) `~P_ADDRESS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`)) `~P_SERVICE_AREAS`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`)) `~P_SERVICE_TYPES`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `product` `service`))) `~P_PRICE`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `org`)) `~P_ORG`))
+    }}
+  {{ else if eq .Params.base "article" }}
+    {{ $fields = $fields | append
+      `~P_DATE`
+      `~P_LASTMOD`
+    }}
+  {{ else if eq .Params.base "product" }}
+    {{ $fields = $fields | append
+      `~P_SKU`
+      `~P_PRICE`
+    }}
+  {{ else if eq .Params.base "event" }}
+    {{ $fields = $fields | append
+      `~P_DATE`
+      `~P_END`
+      `~P_CANCELLED`
+      `~P_ARTISTS`
+      `~P_ADDRESS`
+      `~P_PRICE`
+    }}
+  {{ else if eq .Params.base "author" }}
+    {{ $fields = $fields | append
+      `~P_PREFIX`
+      `~P_ALTS`
+      `~P_JOB`
+      `~P_ORGS`
+      `~P_AS`
+      `~P_CREDS`
+    }}
+  {{ else if eq .Params.base "org" }}
+    {{ $fields = $fields | append
+      `~P_ORG`
+    }}
+  {{ else if eq .Params.base "service" }}
+    {{ $fields = $fields | append
+      `~P_SERVICE_AREAS`
+      `~P_SERVICE_TYPES`
+      `~P_PRICE`
+    }}
+  {{ end }}
+  {{ range .Params.customs | default slice }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
+    {{ $fields = partial "cms/config/collections-params" $opts }}
+  {{ end }}
+  {{ range .Params.taxonomies | default slice }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $t "tax" true) }}
+    {{ $fields = partial "cms/config/collections-params" $opts }}
+  {{ end }}
+  {{ if .Params.is_related }}
+    {{ $fields = $fields | append
+      (dict
+        "name"           `related`
+        "widget"         `relation`
+        "required"       false
+        "label"          $t.p_related
+        "hint"           $t.p_related_hint
+        "i18n"           `duplicate`
+        "options_length" 100
+        "collection"     .Type
+        "value_field"    "{{slug}}"
+        "search_fields"  (slice "{{title}}")
+        "display_fields" (slice "{{title}}")
+        "multiple"       true
+      )
+    }}
+  {{ end }}
+  {{ if ne .Params.base "single" }}
+    {{ $fields = $fields | append
+      `~P_DRAFT`
+      `~P_HIDE`
+      `~P_NOINDEX`
+      `~P_TRANSLATIONKEY`
+      `~P_TITLE_SEO`
+      `~P_DESCRIPTION`
+    }}
+  {{ end }}
+  {{ $fields = $fields | append
+    `~P_BODY`
+  }}
+
+  {{/*  Collection  */}}
+  {{ $colections = $colections | append (dict
+    "label"            (.Params.cms.title    | default "")
+    "label_singular"   (.Params.cms.singular | default "")
+    "name"             (.Type                | default "")
+    "icon"             (.Params.icon         | default "")
+    "description"      (.Params.cms.hint     | default "")
+    "identifier_field" `slug`
+    "folder"           (print `content.` .Lang `/` .Type)
+    "create"           true
+    "slug"             $slug
+    "preview_path"     $permalinks
+    "summary"          $summary
+    "editor"           (dict "preview" false)
+    "sortable_fields"  (dict "fields"  $sortable_fields)
+    "view_groups"      (dict "groups"  $groups)
+    "view_filters"     (dict
+      "filters" (slice
+        (dict "name" `published` "label" $t.filter_published "field" `draft`   "pattern" false)
+        (dict "name" `drafts`    "label" $t.filter_drafts    "field" `draft`   "pattern" true)
+        (dict "name" `index`     "label" `Index`             "field" `noindex` "pattern" false)
+        (dict "name" `noindex`   "label" `NoIndex`           "field" `noindex` "pattern" true)
+      )
+    )
+    "fields"           $fields
+  ) }}
+{{ end }}
+
+
+{{/*  SECTIONS  */}}
+{{ $colections = $colections | append (dict
+  "label"            $t.collection_sections
+  "label_singular"   $t.collection_sections_singular
+  "name"             `section`
+  "icon"             site.Data.utilities.defaults.section.icon
+  "description"      $t.collection_sections_description
+  "identifier_field" `name`
+  "extension"        `yml`
+  "folder"           (print `content.` .Lang `/section`)
+  "create"           true
+  "nested"           (dict "depth" 5)
+  "slug"             "{{fields.name}}"
+  "summary"          "{{dirname | upper}}{{dirname | ternary(' ➡️ ','')}}{{name}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id"))
+  "editor"           (dict "preview" false)
+  "fields"           `~SECTIONS_FIELDS`
+) }}
+
+
+{{/*  MODALS  */}}
+{{ $colections = $colections | append (dict
+  "label"            $t.collection_modals
+  "label_singular"   $t.collection_modals_singular
+  "name"             `modal`
+  "icon"             site.Data.utilities.defaults.modal.icon
+  "description"      $t.collection_modals_description
+  "identifier_field" `name`
+  "extension"        `yml`
+  "folder"           (print `content.` .Lang `/modal`)
+  "create"           true
+  "nested"           (dict "depth" 5)
+  "slug"             "{{fields.name}}"
+  "summary"          "{{dirname | upper}}{{dirname | ternary(' ➡️ ','')}}{{name}}"
+  "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id"))
+  "editor"           (dict "preview" false)
+  "fields"           `~MODALS_FIELDS`
+) }}
+
+
+{{/*  TYPES  */}}
+{{ $colections = $colections | append (dict
+  "label"            $t.collection_types
+  "label_singular"   $t.collection_types_singular
+  "name"             `types`
+  "icon"             site.Data.utilities.defaults.types.icon
+  "description"      $t.collection_types_description
+  "identifier_field" `title`
+  "extension"        `yml`
+  "folder"           `data/types`
+  "create"           true
+  "slug"             "{{fields.title}}"
+  "summary"          "{{title}}"
+  "sortable_fields"  (dict "fields" (slice "title" "order"))
+  "editor"           (dict "preview" false)
+  "fields"           `~TYPES_FIELDS`
+) }}
+
+
+{{/*  SETTINGS  */}}
+{{ $global_values_path := print `content.` .Lang `/values.yml` }}
+{{ $colections = $colections | append  (dict
+  "label"           $t.collection_settings
+  "name"            `settings`
+  "icon"            site.Data.utilities.defaults.settings.icon
+  "sortable_fields" (dict "fields" slice)
+  "editor"          (dict "preview" false)
+  "files"           (slice
+    (dict "file" `data/config.yml`     "extension" `yml` "name" `config`    "label" $t.config    "fields" `~SETTINGS_CONFIG`)
+    (dict "file" `data/styles.yml`     "extension" `yml` "name" `styles`    "label" $t.styles    "fields" `~SETTINGS_STYLES`)
+    (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "fields" `~SETTINGS_REMOTE`)
+    (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "fields" (slice (dict "name" `body` "widget" `text` "required" false "label" $t.redirects "hint" $t.redirects_hint)))
+    (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "fields" (slice (dict "name" `body` "widget" `text` "required" false "label" `robots.txt` "hint" $t.robots_hint)))
+    (dict "file" $global_values_path   "extension" `yml` "name" `values`    "label" $t.values    "fields" `~SETTINGS_VALUES`)
+  )
+) }}
+
+{{ return $colections }}

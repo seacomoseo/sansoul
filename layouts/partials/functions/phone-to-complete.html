@@ -1,23 +1,15 @@
-{{ $pre          := "+34" }}
-{{ $phone        := . | replaceRE `[^\d]` `` }}
-{{ $code         := "34" }}
-{{ $country      := partial "functions/country" . }}
-{{ $country_code := index site.Data.options.countries page.Lang }}
+{{ $phone := . | replaceRE `[^\d]` "" }}
+{{ $code  := site.Params.phone_code | default "34" }}
+{{ $codes := site.Data.utilities.phone_code }}
 {{ if in . "+" }}
-  {{ range $country_code }}
-    {{ if findRE (print `^` .code) $phone }}
-      {{ $code = .code }}
-    {{ end }}
-  {{ end }}
-{{ else }}
-  {{ range $country_code }}
-    {{ if eq $country .value }}
-      {{ $code = .code }}
+  {{ range $codes }}
+    {{ if findRE (print `^` .value) $phone }}
+      {{ $code = .value }}
     {{ end }}
   {{ end }}
 {{ end }}
-{{ $pre             = print "+" $code }}
-{{ $phone           = $phone | replaceRE (print `^` $code) `` }}
+{{ $pre            := print "+" $code }}
+{{ $phone           = $phone | replaceRE (print `^` $code) "" }}
 {{ $complete_phone := print $pre " " $phone }}
 
 {{ return $complete_phone }}

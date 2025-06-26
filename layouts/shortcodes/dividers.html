@@ -1,22 +1,40 @@
 <style>
-  .divider--example {
+  .div--example {
     position: relative;
-    --pt-divider: calc(var(--container-inner) * .2);
-    height: var(--pt-divider);
-    margin: 0;
-    width: 100%;
+    --div-height: min(12.5vw, 5.5em);
+    container: example / inline-size;
+    height: calc(var(--div-height) + 5em);
+    --margin-side: min(var(--container-margin-side, -.5em), -.5em);
+    margin: 0 var(--margin-side);
+    --div-fade: linear-gradient(black, transparent);
+    --div-mask-size: var(--div-width) var(--div-height), var(--div-width) 5em;
   }
-  .divider--example .bg-color {
+  .div--example .bg-color {
     background-color: var(--main);
     border-radius: 0;
+    clip-path: none;
   }
 </style>
 
-{{ range site.Data.options.divider }}
-  <h3 id="divider-{{ .value }}">
-    <a href="#divider-{{ .value }}">{{ .value }}</a>
+{{- range site.Data.options.div -}}
+  {{- $attrs := "" -}}
+  {{- with partial "sections/divider-attr" (dict
+    "section" (dict "div" .)
+    "next"    false
+  ) -}}
+    {{- $class := print "div--example " .class -}}
+    {{- $attrs  = dict "class" $class "style" .style -}}
+    {{- $attrs  = partial "functions/attrs" $attrs -}}
+  {{- end }}
+  <h3 id="div-{{ . }}">
+    {{ partial "link" (dict
+      "label" .
+      "link"  (print "#div-" .)
+    ) }}
     <br>
-    {{ .label }}
+    {{ i18n (print "option-divider-" .) }}
   </h3>
-  <div class="divider divider--{{ .value }} divider--example"><div class="bg-color"></div></div>
-{{ end }}
+  <div {{- $attrs }}>
+    <div class="bg-color"></div>
+  </div>
+{{- end -}}

@@ -1,15 +1,2 @@
-{{- range $key, $value := site.Params.json -}}
-  {{- with . -}}
-    {{- with getJSON . -}}
-      {{- partial "obj-to-files" (dict "obj" . "base" $key) -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-{{- range $key, $value := site.Params.csv -}}
-  {{- with . -}}
-    {{- with partial "csv-to-obj" . -}}
-      {{- partial "obj-to-files" (dict "obj" . "base" $key) -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- partial "files-by-config" . -}}
+{{- partial "files-by-src" . -}}

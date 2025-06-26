@@ -1,0 +1,25 @@
+#toc {
+  .toc {
+    li {
+      &::before,
+      > .icon {
+        opacity: 1;
+      }
+      &::before {
+        color: var(--cta);
+      }
+      > .icon {
+        color: var(--main);
+      }
+      @if $main == $cta {
+        &:has(> .icon)::before {
+          opacity: .5;
+        }
+      }
+    }
+    .link {
+      @include font-base;
+      color: inherit;
+    }
+  }
+}

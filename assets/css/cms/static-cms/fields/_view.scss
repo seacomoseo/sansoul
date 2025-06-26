@@ -1,0 +1,189 @@
+// CONFIG LANGS
+
+// No hidden if param is set
+.name-langs :has(> .name-lang:not(.is-set)) ~ * {
+  display: none;
+}
+
+
+// BOXES WIDGETS
+
+// No hidden if param is set
+:has(> .name-view) ~ :not(:has(.is-set)) {
+  display: none;
+}
+
+// No hidden if match view
+:has(> [data-view*="group"]) ~ :has(> :is(
+  .name-cols,
+  .name-cols_vs,
+  .name-gap,
+  .name-gap_ny,
+  .name-to,
+  .name-duo,
+  .name-sides,
+  .name-group_radius,
+  .name-slider,
+  .name-time,
+  .name-pips,
+  .name-arrows,
+  .name-align_x,
+  .name-align_y
+)),
+:has(> [data-view*="titles"]) ~ :has(> :is(
+  .name-title,
+  .name-hanchor,
+  .name-subtitle,
+  .name-price,
+  .name-hs,
+  .name-hn,
+  .name-caps,
+  .name-line
+)),
+:has(> [data-view*="md"]) ~ :has(> :is(
+  .name-md,
+  .name-md_align,
+  .name-md_align_vl,
+  .name-md_sm,
+  .name-md_caps,
+  .name-md_line,
+  .name-md_index,
+  .name-md_nav,
+  .name-md_border
+)),
+:has(> [data-view*="menu"]) ~ :has(> :is(
+  .name-menu_label,
+  .name-menu_button,
+  .name-menu_swap
+)),
+:has(> [data-view*="icon"]) ~ :has(> :is(
+  .name-icon,
+  .name-icon_type,
+  .name-icon_size,
+  .name-icon_color
+)),
+:has(> [data-view*="image"]) ~ :has(> :is(
+  .name-image,
+  .name-hover,
+  .name-alt,
+  .name-hover_alt,
+  .name-ratio,
+  .name-contain,
+  .name-border,
+  .name-inset,
+  .name-circle,
+  .name-gray,
+  .name-shade
+)),
+:has(> [data-view*="button"]) ~ :has(> :is(
+  .name-pin,
+  .name-link,
+  .name-label,
+  .name-anchor,
+  .name-lock,
+  .name-swap,
+  .name-ga4,
+  .name-button
+)),
+:has(> [data-view*="bg"]) ~ :has(> :is(
+  .name-color,
+  .name-fade,
+  .name-fade_type,
+  .name-color_alpha,
+  .name-bg,
+  .name-alpha,
+  .name-parallax
+)),
+:has(> [data-view*="container"]) ~ :has(> :is(
+  .name-box_color,
+  .name-box_fade,
+  .name-box_fade_type,
+  .name-box_color_alpha,
+  .name-box_bg,
+  .name-box_alpha,
+  .name-box_parallax
+)),
+:has(> [data-view*="paddings"]) ~ :has(> :is(
+  .name-pt,
+  .name-pb,
+  .name-ph
+)),
+:has(> [data-view*="size"]) ~ :has(> :is(
+  .name-size,
+  .name-full
+)),
+:has(> [data-view*="divider"]) ~ :has(> :is(
+  .name-div,
+  .name-div_x,
+  .name-div_y
+)),
+:has(> [data-view*="boxi"]) ~ :has(> :is(
+  .name-id,
+  .name-order,
+  .name-fit,
+  .name-fit_vs,
+  .name-grow,
+  .name-align_y,
+  .name-align,
+  .name-align_vl,
+  .name-side,
+  .name-rate,
+  .name-space,
+  .name-pd,
+  .name-hide_shadow,
+  .name-hide_radius,
+  .name-pill,
+  .name-card
+  )),
+:has(> [data-view*="other"]) ~ :has(> :is(
+  .name-if,
+  .name-node,
+  .name-params,
+  .name-tag,
+  .name-tags,
+  .name-sort
+)),
+:has(> [data-view*="list"]) ~ :has(> :is(
+  .name-list,
+  .name-box
+)),
+:has(> [data-view*="steps"]) ~ :has(> :is(
+  .name-step,
+  .name-steps
+)),
+:has(> [data-view*="accordion"]) ~ :has(> :is(
+  .name-accordion,
+  .name-accordions
+)),
+:has(> [data-view*="gallery"]) ~ :has(> :is(
+  .name-gallery,
+  .name-images,
+  .name-limages
+)),
+:has(> [data-view*="reviews"]) ~ :has(> :is(
+  .name-review,
+  .name-reviews
+)),
+:has(> [data-view*="contact"]) ~ :has(> :is(
+  .name-contact,
+  .name-dots
+)),
+:has(> [data-view*="form"]) ~ :has(> :is(
+  .name-form,
+  .name-inputs
+)),
+:has(> [data-view*="map"]) ~ :has(> :is(
+  .name-map,
+  .name-geos
+)),
+:has(> [data-view*="gss"]) ~ :has(> :is(
+  .name-gss,
+  .name-gss_sheet
+)),
+:has(> [data-view*="boxes"]) ~ :has(> :is(
+  .name-box,
+  .name-boxes
+))
+{
+  display: block;
+}

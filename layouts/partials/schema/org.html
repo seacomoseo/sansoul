@@ -1,0 +1,139 @@
+{{ $schema := dict }}
+
+{{ with .Params.org | default . }}
+
+  {{/*  Types  */}}
+  {{ $types      := .types | default (slice "Organization") }}
+
+  {{/*  Names  */}}
+  {{ $names      := .names | default (slice (site.Title | default "Name")) }}
+  {{ $name       := index $names 0 }}
+  {{ $names_more := after 1 $names }}
+
+  {{/*  Description  */}}
+  {{ $description  := or .description $.Summary $.Description | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" }}
+
+  {{/*  URL  */}}
+  {{ $url  := .url | default $.Page.Permalink }}
+  {{ $id   := print $url "#schema-org" }}
+  {{ if and .is_department (not $url) }}
+    {{ $url = site.Home.Permalink }}
+    {{ $id  = print $url "#schema-departs" }}
+  {{ end }}
+
+  {{/*  Legal and NIF  */}}
+  {{ $legal    := .legal }}
+  {{ $nif      := .nif }}
+  {{ if not (or $legal $nif) }}
+    {{ if not $legal }}
+      {{ $legal = site.Params.legal.name }}
+    {{ end }}
+    {{ if not $nif }}
+      {{ $nif   = site.Params.legal.nif }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Address, hasMap and geo by locations  */}}
+  {{ $location := partial "schema/address" . }}
+  {{ $address  := $location.address | default dict }}
+  {{ $has_map  := $location.has_map | default "" }}
+  {{ $geo      := $location.geo     | default dict }}
+
+  {{/*  Phones  */}}
+  {{ $phones := partial "functions/phone-variations" .phones }}
+
+  {{/*  Logo  */}}
+  {{ $logo := partial "schema/image-main" (dict "Params" (dict "image" .logo) "Permalink" $url) }}
+
+  {{/*  Images  */}}
+  {{ $images := partial "schema/images" (slice $.Params.image | append .images | uniq) }}
+
+  {{/*  Opening Hours Specification  */}}
+  {{ $schedule := slice }}
+  {{ with .schedule }}
+    {{ range . }}
+      {{ $s    := . }}
+      {{ $days := slice }}
+      {{ range .days }}
+        {{ $days = $days | append (print "https://schema.org/" (. | title)) }}
+      {{ end }}
+      {{ range .hours }}
+        {{ $o := slice }}
+        {{ with $days   }}{{ $o = merge $o (dict "dayOfWeek"    .) }}{{ end }}
+        {{ with .open   }}{{ $o = merge $o (dict "opens"        .) }}{{ end }}
+        {{ with .close  }}{{ $o = merge $o (dict "closes"       .) }}{{ end }}
+        {{ with $s.from }}{{ $o = merge $o (dict "validFrom"    .) }}{{ end }}
+        {{ with $s.to   }}{{ $o = merge $o (dict "validThrough" .) }}{{ end }}
+        {{ $schedule = $schedule | append $o }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Departments  */}}
+  {{ $departs := slice }}
+  {{ with $.Params }}
+    {{ range .departs }}
+      {{ $departs = $departs | append (partial "schema/org" (merge . (dict "is_department" true))) }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Offer Catalog  */}}
+  {{ $offers := dict }}
+  {{ with .services }}
+    {{ $services := slice }}
+    {{ range . }}
+      {{ $offers := dict }}
+      {{ with .price }}
+        {{ $offers  = dict
+          "@type"         "Offer"
+          "price"         .
+          "priceCurrency" site.Params.currency
+        }}
+      {{ end }}
+      {{ $service  := dict
+        "@type"      "Service"
+        "url"         .url
+        "name"        .title
+        "description" .description
+        "areaServed"  .area
+        "offers"      $offers
+      }}
+      {{ $service   = partial "functions/obj-truly" $service }}
+      {{ $services  = $services | append $service }}
+    {{ end }}
+    {{ $offers = dict
+      "@type"           "OfferCatalog"
+      "itemListElement" $services
+    }}
+  {{ end }}
+
+  {{/*  Schema  */}}
+  {{ $schema = dict
+    "@type"                     $types
+    "@id"                       $id
+    "name"                      $name
+    "alternateName"             $names_more
+    "legalName"                 $legal
+    "taxID"                     $nif
+    "url"                       $url
+    "description"               $description
+    "logo"                      $logo
+    "image"                     $images
+    "telephone"                 $phones
+    "address"                   $address
+    "hasMap"                    $has_map
+    "geo"                       $geo
+    "openingHoursSpecification" $schedule
+    "department"                $departs
+    "hasOfferCatalog"           $offers
+    "sameAs"                    .as
+    "areaServed"                .areas
+    "priceRange"                .prices
+    "menu"                      .food_menu
+    "servesCuisine"             .food_type
+  }}
+  {{ $schema = partial "functions/obj-truly" $schema }}
+
+{{ end }}
+
+{{ return $schema }}

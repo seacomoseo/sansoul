@@ -1,0 +1,127 @@
+// Float
+.CMS_Hint_root {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -1px;
+  // width: calc(100% + 2px);
+  width: 100%;
+  max-width: var(--hint-max-width);
+  margin-left: var(--hint-left);
+  padding: 0 .75rem .5rem;
+  border-radius: .5rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top-color: transparent;
+  border-top-width: 0;
+  border-bottom: .0625rem var(--border) solid;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, .1);
+  height: auto;
+  z-index: 20;
+  color: var(--text);
+}
+.CMS_EditorControl_root {
+  position: relative;
+}
+.hint-info:has(> input:checked) + *,
+.hint-info:has(> input:checked) + * > *:not(.CMS_Hint_root),
+:is(.hint-info + *, .hint-info + * > *):has(.CMS_Hint_root:hover) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.hint-info:has(> input:checked) + * .CMS_Hint_root,
+.CMS_Hint_root:hover {
+  display: block;
+}
+// .CMS_EditorControl_root:hover:not(:has(
+//   :where(
+//     .CMS_WidgetObject_root,
+//     .CMS_WidgetObject_list-root,
+//     .CMS_WidgetList_field-wrapper
+//   ):hover
+// )) {
+//   .CMS_Hint_root {
+//     display: block;
+//   }
+//   :where(
+//     .CMS_Field_root,
+//     .CMS_WidgetCode_root
+//   ):has(.CMS_Hint_root) {
+//     border-bottom-left-radius: 0;
+//     border-bottom-right-radius: 0;
+//   }
+// }
+// :where(
+//   .CMS_WidgetObject_root,
+//   .CMS_WidgetList_sortable-item,
+//   .CMS_WidgetList_field-wrapper
+// ):hover:not(:has(> .MuiCollapse-root:hover)) {
+//   > .CMS_Hint_root {
+//     display: block;
+//   }
+//   &:has(> .CMS_Hint_root) {
+//     border-bottom-left-radius: 0;
+//     border-bottom-right-radius: 0;
+//   }
+// }
+
+// Links underline
+.CMS_Hint_link {
+  text-decoration: underline;
+  color: var(--primary-main);
+}
+
+// Info
+.hint-info {
+  cursor: pointer;
+  font-size: 12px;
+  position: absolute;
+  // top: calc(100% - 0.875rem);
+  // left: 0.125rem;
+  bottom: .0625rem;
+  left: var(--hint-left);
+  padding: 0.125rem;
+  height: 0.75rem;
+  width: 0.75rem;
+  // border-radius: 50%;
+  border-radius: 50% 50% 0 0;
+  display: grid;
+  place-content: center;
+  background-color: var(--common-gray);
+  color: var(--bg);
+  z-index: 19;
+  &:has(> input:checked) {
+    background-color: var(--primary-dark);
+    border-radius: 0 50% 50% 0;
+  }
+  &:not(.aux):hover {
+    background-color: var(--primary-main);
+  }
+  &::after {
+    content: 'i';
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: .5px;
+  }
+  > input {
+    display: none;
+  }
+}
+// Front for touch over the info in mobile
+// .CMS_EditorControl_root {
+//   position: relative;
+//   &::before {
+//     content: '';
+//     position: absolute;
+//     bottom: -0.5rem;
+//     left: 0;
+//     display: block;
+//     width: 1rem;
+//     height: 2rem;
+//     z-index: 20;
+//   }
+// }

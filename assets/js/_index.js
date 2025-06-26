@@ -1,62 +1,27 @@
-/* eslint-disable no-eval */
-
-import {
-  isScrollShow,
-  isParallax,
-  isCookies,
-  disqusId,
-  isGoogleTranslate,
-  googleAnalyticsId
-} from '@params'
-import { initNetlifyIdentity } from './netlify-identity.js'
-import { initScrollbar } from './scrollbar.js'
-import { initScrollShow } from './scroll-show.js'
-import { initScrollTop } from './scroll-top.js'
-import { initScrollToHashWhenLoad } from './scroll-to.js'
-import { initLazyLoad } from './lazy-load.js'
-import { initOpenLinks } from './open-links.js'
-import { initMails } from './mails.js'
-import { initParallax } from './parallax.js'
-import { initModals } from './modals.js'
-import { initMenuToggle } from './menu-toggle.js'
-import { initMenuScrollSpy } from './menu-scroll-spy.js'
-import { initIframePoster } from './iframe-poster.js'
-import { initVideoMute } from './video-mute.js'
-import { initVideoFullscreen } from './video-fullscreen.js'
-import { initGss } from './gss.js'
-import { initCookies } from './cookies.js'
-import { initCollapse } from './collapse.js'
-import { initSliders } from './sliders.js'
-import { initFormValidate } from './form-validate.js'
-import { initComments } from './comments.js'
-import { initGoogleTranslate } from './google-translate.js'
-import { initSimpleLightbox } from './simple-lightbox.js'
-import { initPrerender } from './prerender.js'
-import { initGa4 } from './ga4.js'
-
-initNetlifyIdentity()
-initScrollbar()
-if (isScrollShow) initScrollShow()
-initScrollTop()
-initScrollToHashWhenLoad()
-initLazyLoad()
-initOpenLinks()
-initMails()
-if (isParallax) initParallax()
-initModals()
-initMenuToggle()
-initMenuScrollSpy()
-initIframePoster()
-initVideoMute()
-initVideoFullscreen()
-initGss()
-if (isCookies) initCookies()
-initCollapse()
-initSliders()
-initFormValidate()
-if (disqusId) initComments()
-if (isGoogleTranslate) initGoogleTranslate()
-initSimpleLightbox()
-initPrerender()
-if (googleAnalyticsId) initGa4()
-{{ . }}
+/* eslint-disable */
+import('./netlify-identity') .then(m => m.initNetlifyIdentity()      )
+// import('./resize-window')    .then(m => m.initResizeWindow()         )
+import('./menu-toggle')      .then(m => m.initMenuToggle()           )
+import('./menu-scroll-spy')  .then(m => m.initMenuScrollSpy()        )
+import('./scroll-top')       .then(m => m.initScrollTop()            )
+import('./scroll-to')        .then(m => m.initScrollToHashWhenLoad() )
+// import('./lazy-load')        .then(m => m.initLazyLoad()             )
+import('./open-links')       .then(m => m.initOpenLinks()            )
+import('./mails')            .then(m => m.initMails()                )
+import('./parallax')         .then(m => m.initParallax()             )
+import('./modals')           .then(m => m.initModals()               )
+import('./iframe-player')    .then(m => m.initIframePlayer()         )
+import('./video-mute')       .then(m => m.initVideoMute()            )
+import('./video-fullscreen') .then(m => m.initVideoFullscreen()      )
+import('./gss')              .then(m => m.initGss()                  )
+import('./latex')            .then(m => m.initLatex()                )
+import('./accordion')        .then(m => m.initAccordion()            )
+import('./sliders')          .then(m => m.initSliders()              )
+import('./map')              .then(m => m.initMap()                  )
+import('./form-geo')         .then(m => m.initFormGeo()              )
+import('./form-send')        .then(m => m.initFormSend()             )
+import('./form-files')       .then(m => m.initFormFiles()            )
+import('./form-show')        .then(m => m.initFormShow()             )
+import('./google-translate') .then(m => m.initGoogleTranslate()      )
+import('./simple-lightbox')  .then(m => m.initSimpleLightbox()       )
+import('./prerender')        .then(m => m.initPrerender()            )

@@ -1,0 +1,67 @@
+#status {
+  font-size: 1.5em;
+  margin-block: 1rem;
+  .button[style] {
+    --base: var(--cta);
+    @if not $buttons-outline {
+      --base-in: color-mix(in srgb, var(--light) 25%, black);
+    }
+    &:hover {
+      opacity: .75;
+    }
+  }
+  .loader,
+  .icon {
+    @if $buttons-outline {
+      color: var(--base);
+    } @else {
+      color: var(--base-in);
+    }
+    opacity: .75;
+  }
+  .icon {
+    scale: 1.25;
+    margin-right: .125em;
+    &:has(> use[href="/draws.#{$timestamp}.svg#rotate"]) {
+      animation: spin 2.5s linear infinite;
+    }
+  }
+}
+.status__label {
+  display: none;
+}
+#status .button[style*='#BEF9C6']/*:not(:hover)*/ i > .status__label--success,
+#status .button[style*='#F6E0A5']/*:not(:hover)*/ i > .status__label--building,
+#status .button[style*='#D2D5DB']/*:not(:hover)*/ i > .status__label--canceled,
+#status .button[style*='#FFBDBA']/*:not(:hover)*/ i > .status__label--error,
+#status .button[style*='tomato'] /*:not(:hover)*/ i > .status__label--whaiting,
+#status .button[style*='--light']                 i > .status__label--whaiting,
+#status .button:not([style])                      i > .status__label--check/*,
+#status .button[style]:not([style*='--light']):hover i > .status__label--end*/ {
+  display: inline;
+}
+#deploy-time {
+  text-transform: lowercase;
+  opacity: .75;
+}
+
+#status .button:not([style]) {
+  > .icon,
+  .loader {
+    display: none;
+  }
+}
+
+.loader {
+  position: absolute;
+  top: .375em;
+  left: 1.25em;
+  transform: rotateZ(45deg);
+  &::before,
+  &::after {
+    display: block;
+  }
+  &::after {
+    opacity: .5;
+  }
+}

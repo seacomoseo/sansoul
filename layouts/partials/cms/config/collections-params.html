@@ -1,0 +1,112 @@
+{{ $fields   := slice }}
+{{ $default  := .default }}
+{{ if ne .default nil }}
+  {{ $kind   := .widget }}
+  {{ if eq .widget "list" }}
+    {{ $kind  = "slice" }}
+  {{ else if eq .widget "object" }}
+    {{ $kind  = "dict" }}
+  {{ end }}
+  {{ $opts   := dict "string" .default "kind" $kind }}
+  {{ $default = partial "functions/string-to-kind" $opts }}
+{{ end }}
+
+{{ if .var }}
+
+  {{ $collapsed := in (slice "list" "object") .widget }}
+
+  {{ $merge := dict
+    "collapsed" $collapsed
+    "name"      .name
+    "label"     .label
+    "hint"      .hint
+    "widget"    .widget
+    "options"   .options
+    "default"   $default
+    "multiple"  .multiple
+  }}
+  {{ $merge = partial "functions/obj-truly" $merge }}
+  {{ $fields = .fields | append (dict "<<" (slice $merge (print "~" .var))) }}
+
+{{ else }}
+
+  {{ $widget      := .widget | default "string" }}
+  {{ $value_type  := "" }}
+  {{ if in (slice "int" "float") $widget }}
+    {{ $widget     = "number" }}
+    {{ $value_type = $widget }}
+  {{ end }}
+  {{ $i18n  := "duplicate" }}
+  {{ if in (slice "string" "text" "markdown" "image") $widget }}
+    {{ $i18n = true }}
+  {{ end }}
+  {{ $label   := .label | default .name | default "single" }}
+  {{ $hint    := .hint | default "" }}
+  {{ if .tax }}
+    {{/*  tax_of  */}}
+    {{ $widget  = "relation" }}
+    {{ $page   := site.GetPage .name }}
+    {{ $cms    := $page.Params.cms }}
+    {{ $label   = $cms.singular }}
+    {{ if .multiple }}
+      {{ $label = $cms.title }}
+    {{ end }}
+    {{ $hint  = print "[" .t.types_params_relations_hint "](#/collections/" .name ")" }}
+  {{ end }}
+
+  {{ $field := dict
+    "name"           .name
+    "label"          ($label | default .name)
+    "hint"           $hint
+    "widget"         $widget
+    "required"       false
+    "default"        $default
+  }}
+
+  {{ if eq $widget "number" }}
+    {{ $field = merge $field (dict
+      "value_type"     $value_type
+    ) }}
+  {{ else if eq $widget "markdown" }}
+    {{ $field = merge $field (dict
+      "show_raw"       true
+    ) }}
+  {{ else if eq $widget "date" }}
+    {{ $field = merge $field (dict
+      "format"         `yyyy-MM-dd HH:mm:ss`
+      "date_format"    `yyyy-MM-dd`
+      "time_format"    `HH:mm`
+    ) }}
+  {{ else if eq $widget "image" }}
+  {{ else if eq $widget "select" }}
+    {{ $field = merge $field (dict
+      "options"        .options
+      "multiple"       .multiple
+    ) }}
+  {{ else if eq $widget "relation" }}
+    {{ $field = merge $field (dict
+      "options_length" 100
+      "collection"     .name
+      "value_field"    "{{slug}}"
+      "search_fields"  (slice "{{title}}")
+      "display_fields" (slice "{{title}}")
+      "multiple"       .multiple
+    ) }}
+  {{ else if in (slice "list" "object") $widget }}
+    {{ $fields_children := slice }}
+    {{ range .params | default slice }}
+      {{ $opts           := merge . (dict "fields" $fields_children "t" $.t) }}
+      {{ $fields_children = partial "cms/config/collections-params" $opts }}
+    {{ end }}
+    {{ $field = merge $field (dict
+      "collapsed"      true
+      "allow_add"      true
+      "fields"         $fields_children
+    ) }}
+  {{ end }}
+
+  {{ $fields = .fields | append $field }}
+
+{{ end }}
+
+{{ return $fields }}

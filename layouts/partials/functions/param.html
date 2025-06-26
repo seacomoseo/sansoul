@@ -1,0 +1,8 @@
+{{ $options := dict "value" .Page.Params "path" .name }}
+{{ $return  := partial "functions/index-split" $options }}
+{{ if not $return }}
+  {{ $values := index site.Data (print "values." $.Page.Lang) }}
+  {{ $options = dict "value" $values "path" .name }}
+  {{ $return  = partial "functions/index-split" $options }}
+{{ end }}
+{{ return $return }}

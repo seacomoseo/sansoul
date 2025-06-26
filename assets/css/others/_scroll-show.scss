@@ -1,0 +1,22 @@
+@if $show {
+  .show {
+    transition: transform .75s, opacity 1s;
+    transform-origin: center top;
+  }
+  .show:nth-child(2n+3) {
+    transition-delay: .1s;
+  }
+  // .show:nth-child(3n+3) {
+  //   transition-delay: .2s;
+  // }
+  /*! purgecss start ignore */
+  .show--will {
+    transform: var(--show-from);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  /*! purgecss end ignore */
+  .link.show {
+    transition: transform .75s, opacity 1s, background-size .3s ease;
+  }
+}

@@ -1,95 +1,99 @@
-.divider {
-  --divider-flip-y: var(--pt-divider, 5.5em);
-  --divider-mask: var(--divider), linear-gradient(transparent calc(var(--divider-flip-y) - .5px), black 0);
-  margin-top: calc(var(--pt-divider, 0px) * -1);
-  &.map,
-  &.section--paddings-hide,
+.pt-div {
+  margin-top: calc(var(--div-height) * -1);
+}
+@mixin div-left($w, $s, $next) {
+  --div-#{$next}: calc(((100cqw - #{$w}) / 2) + #{$w} / (#{$s} * 2) * (#{$s} - 1));
+}
+.div,
+.div-next {
+  --div-fade: linear-gradient(black, black);
+  --div-size: 1;
+  --div-width: calc(var(--div-height) * 8 * var(--div-size));
+  @include div-left(var(--div-width), var(--div-size), 'left');
+  --div-top: 1px;
+  --div-position: var(--div-left) var(--div-top);
+}
+.div-next {
+  --div-next-size: 1;
+  --div-next-width: calc(var(--div-height) * 8 * var(--div-next-size));
+  @include div-left(var(--div-next-width), var(--div-next-size), 'next-left');
+  --div-next-top: calc(100% - 1px);
+  --div-next-position: var(--div-next-left) var(--div-next-top);
+}
+
+// prev only
+.div {
+  --div-mask-image:
+    var(--div),
+    var(--div-fade);
+  --div-mask-size:
+    var(--div-width) var(--div-height),
+    var(--div-width);
+  --div-mask-position:
+    var(--div-position),
+    0 var(--div-height);
+}
+
+// prev and next
+.div-next {
+  --div-mask-image:
+    var(--div),
+    var(--div-fade),
+    var(--div-next);
+  --div-mask-size:
+    var(--div-width) var(--div-height),
+    100% calc(100% - var(--div-height) * 2),
+    var(--div-next-width) var(--div-height);
+  --div-mask-position:
+    var(--div-position),
+    0 var(--div-height),
+    var(--div-next-position);
+  //         mask-composite: exclude;
+  // -webkit-mask-composite: xor;
+}
+
+// next only
+.div-next:not(.div) {
+  --div-mask-image:
+    var(--div-fade),
+    var(--div-next);
+  --div-mask-size:
+    100% calc(100% - var(--div-height)),
+    var(--div-next-width) var(--div-height);
+  --div-mask-position:
+    0 0,
+    var(--div-next-position);
+}
+
+// mask
+.div,
+.div-next {
+  &.ph,
   > .bg-color {
-            mask-image: var(--divider-mask);
-    -webkit-mask-image: var(--divider-mask);
-            mask-size: 100% var(--pt-divider, 5.5em), 100%;
-    -webkit-mask-size: 100% var(--pt-divider, 5.5em), 100%;
-            mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
-            mask-position: top;
-    -webkit-mask-position: top;
+            mask-image: var(--div-mask-image);
+    -webkit-mask-image: var(--div-mask-image);
+            mask-size: var(--div-mask-size);
+    -webkit-mask-size: var(--div-mask-size);
+            mask-position: var(--div-mask-position);
+    -webkit-mask-position: var(--div-mask-position);
+            mask-repeat: repeat-x;
+    -webkit-mask-repeat: repeat-x;
   }
 }
-// .divider--flip-y {
-//   --divider-flip-y: 0;
-//   &.map,
-//   &.section--paddings-hide,
-//   > .bg-color {
-//             mask-composite: exclude;
-//     -webkit-mask-composite: xor;
-//   }
-// }
-.divider--ratio {
-  --divider-height: var(--divider-ratio-height);
+
+// others
+
+.div--size {
+  --div-size: 2;
 }
-
-$dividers: (
-  'wavy':               ($viewbox-wavy,               $divider-wavy),
-  'wavy-op':            ($viewbox-wavy-op,            $divider-wavy-op),
-  'wavy-op-alt':        ($viewbox-wavy-op-alt,        $divider-wavy-op-alt),
-  'wavy-dashed':        ($viewbox-wavy-dashed,        $divider-wavy-dashed),
-  'wavy-alt':           ($viewbox-wavy-alt,           $divider-wavy-alt),
-  'triangle':           ($viewbox-triangle,           $divider-triangle),
-  'triangle-side':      ($viewbox-triangle-side,      $divider-triangle-side),
-  'tilt':               ($viewbox-tilt,               $divider-tilt),
-  'tilt-op':            ($viewbox-tilt-op,            $divider-tilt-op),
-  'tear':               ($viewbox-tear,               $divider-tear),
-  'tear-alt':           ($viewbox-tear-alt,           $divider-tear-alt),
-  'snowflakes':         ($viewbox-snowflakes,         $divider-snowflakes),
-  'music':              ($viewbox-music,              $divider-music),
-  'mountain':           ($viewbox-mountain,           $divider-mountain),
-  'iceberg':            ($viewbox-iceberg,            $divider-iceberg),
-  'half-circle':        ($viewbox-half-circle,        $divider-half-circle),
-  'fire':               ($viewbox-fire,               $divider-fire),
-  'fan-op':             ($viewbox-fan-op,             $divider-fan-op),
-  'fall':               ($viewbox-fall,               $divider-fall),
-  'drip':               ($viewbox-drip,               $divider-drip),
-  'dents':              ($viewbox-dents,              $divider-dents),
-  'christmas-trees':    ($viewbox-christmas-trees,    $divider-christmas-trees),
-  'curve':              ($viewbox-curve,              $divider-curve),
-  'curve-side':         ($viewbox-curve-side,         $divider-curve-side),
-  'clouds':             ($viewbox-clouds,             $divider-clouds),
-  'clouds-op':          ($viewbox-clouds-op,          $divider-clouds-op),
-  'city':               ($viewbox-city,               $divider-city),
-  'bubles':             ($viewbox-bubles,             $divider-bubles),
-  'brush':              ($viewbox-brush,              $divider-brush),
-  'book':               ($viewbox-book,               $divider-book),
-  'arrow':              ($viewbox-arrow,              $divider-arrow),
-  'arrow-two':          ($viewbox-arrow-two,          $divider-arrow-two),
-  'arrow-three':        ($viewbox-arrow-three,        $divider-arrow-three),
-  'arrow-side':         ($viewbox-arrow-side,         $divider-arrow-side),
-  'arrow-side-rounded': ($viewbox-arrow-side-rounded, $divider-arrow-side-rounded),
-  'arrow-op':           ($viewbox-arrow-op,           $divider-arrow-op),
-  'arrow-op-alt':       ($viewbox-arrow-op-alt,       $divider-arrow-op-alt),
-  'arrow-four':         ($viewbox-arrow-four,         $divider-arrow-four),
-);
-
-$ini: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'";
-$prev: "%3Crect width='100%25' height='100%25' mask='url(%23a)'/%3E%3Cmask id='a'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E";
-$next: "%3C/mask%3E";
-$end: "%3C/svg%3E";
-
-@each $name, $data in $dividers {
-
-  $viewbox: nth($data, 1);
-  $divider: nth($data, 2);
-
-  .divider--#{$name} {
-    --divider: url("#{ $ini } #{ $viewbox }%3E#{ $divider }#{ $end }");
-  }
-  .divider--x-#{$name} {
-    --divider: url("#{ $ini } style='transform:scale(-1,1)' #{ $viewbox }%3E#{ $divider }#{ $end }");
-  }
-  .divider--y-#{$name} {
-    --divider: url("#{ $ini } style='transform:scale(1,-1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
-  }
-  .divider--xy-#{$name} {
-    --divider: url("#{ $ini } style='transform:scale(-1,-1)' #{ $viewbox }%3E#{ $prev }#{ $divider }#{ $next }#{ $end }");
-  }
-
+.div--not-repeat {
+  --div-width: calc(100% * var(--div-size));
+  --div-left: 0px;
+}
+.div-next--size {
+  --div-next-size: 2;
+}
+.div-next--not-repeat {
+  --div-next-width: calc(100% * var(--div-next-size));
+  --div-next-left: 0px;
 }

@@ -1,0 +1,40 @@
+{{ $obj := . | default dict }}
+{{ with $obj | jsonify }}
+  {{ if . | findRE `%%|\{\{ ` }}
+    {{ $json := . }}
+    {{ $tmp  := false }}
+    {{ with $json | findRE `%%\{\{.+?\}\}%%` }}
+      {{ range $k, $v := . | uniq }}
+        {{ $path  := print page.RelPermalink $k }}
+        {{ $param := .
+          | replaceRE `^%+|%+$` ""
+          | replaceRE `\\` ""
+          | resources.FromString $path
+          | resources.ExecuteAsTemplate $path $path
+        }}
+        {{ $param = $param.Content }}
+        {{ $json = replace $json . $param }}
+      {{ end }}
+      {{ $tmp = true }}
+    {{ end }}
+    {{ with $json | findRE `\{\{ .+? \}\}` }}
+      {{ range . | uniq }}
+        {{ $param := .
+          | replaceRE `^\{\{ ` "{{< "
+          | replaceRE ` \}\}$` " >}}"
+          | site.Home.RenderString
+          | plainify
+          | replaceRE `&amp;#43;` `+`
+          | replaceRE `\"` `\"`
+          | replaceRE `\n+$` ""
+        }}
+        {{ $json = replace $json . $param }}
+      {{ end }}
+      {{ $tmp = true }}
+    {{ end }}
+    {{ if $tmp }}
+      {{ $obj = unmarshal $json }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $obj }}

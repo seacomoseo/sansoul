@@ -26,7 +26,6 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
     // console.log(event); // DEBUG
     // Ctrl + / to show or hide Search
     // if (event.metaKey && event.which === 191) {
-    // eslint-disable-next-line
     if (event.ctrlKey && event.which === 191) {
       searchToggleFocus(e) // toggle visibility of search box
     }
@@ -114,12 +113,12 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
     // console.log(e); // DEBUG
     // order of operations is very important to keep focus where it should stay
     if (!searchFocus) {
-      searchSubmit.innerHTML = '{{ partial "components/icon" (dict "icon" "xmark") }}'
+      searchSubmit.innerHTML = '{{ partial "icon" (dict "icon" "xmark") }}'
       searchForm.setAttribute('data-focus', true)
       searchInput.focus() // move focus to search box
       searchFocus = true
     } else {
-      searchSubmit.innerHTML = '{{ partial "components/icon" (dict "icon" "magnifying-glass" "emoji" "🔍") }}'
+      searchSubmit.innerHTML = '{{ partial "icon" (dict "icon" "magnifying-glass" "emoji" "🔍") }}'
       searchForm.setAttribute('data-focus', false)
       document.activeElement.blur() // remove focus from search box
       searchFocus = false
@@ -130,7 +129,6 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
   Fetch some json without jquery
   -------------------------------------------------------------- */
   function fetchJSON (path, callback) {
-    // eslint-disable-next-line
     const httpRequest = new XMLHttpRequest()
     httpRequest.onreadystatechange = function () {
       if (httpRequest.readyState === 4) {
@@ -168,7 +166,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
   -------------------------------------------------------------- */
   function searchInit () {
     if (firstRun) {
-      loadScript(window.location.origin + '/js/fuse.js').then(() => {
+      loadScript(location.origin + '/js/fuse.js').then(() => {
         searchInput.value = '' // reset default value
         firstRun = false // let's never do this again
         fetchJSON('{{ site.Home.RelPermalink }}index.json', function (data) {
@@ -182,13 +180,12 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
               'link',
               'title',
               'date',
-              'description',
-              'contents',
+              'summary',
+              'md',
               'reading_time',
-              'reading_words',
               'type',
-              'categories',
-              'tags',
+              'type_label',
+              'category',
               'author',
               'image'
             ]
@@ -217,7 +214,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
 
     if (results.length === 0) { // no results based on what was typed into the input box
       resultsAvailable = false
-      searchItems = '{{ i18n "search-no-results" }}'
+      searchItems = '{{ i18n "search_no_results" }}'
     } else { // build our html
       for (const item in results.slice(0, 5)) { // only show first 5 results
         let searchItemImage = ''
@@ -226,93 +223,82 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         let searchItemAuthor = ''
         let searchItemReadingTime = ''
         if (results[item].item.image) {
-          searchItemImage = `<picture class="image__inner"><img src="${results[item].item.image}" /></picture>`
+          searchItemImage = `<picture class="image__inner"><img src="${results[item].item.image}"></picture>`
         }
-        if (results[item].item.description) {
-          searchItemText = `<div class="description description--small">${results[item].item.description}</div>`
+        if (results[item].item.summary) {
+          searchItemText = `<div class="md md--small">${results[item].item.summary}</div>`
         }
         if (results[item].item.date) {
           searchItemType = `
-            <time class="data__item" >
-              {{ partial "components/icon" (dict "class" "data__icon" "icon" "calendar" "emoji" "📅") }}
+            <time class="box__tag">
+              {{ partial "icon" (dict "class" "box__tag-icon" "icon" "calendar" "emoji" "📅") }}
               ${results[item].item.date}
             </time>`
         } else {
           searchItemType = `
-            <i class="data__item">
-              <svg class="data__icon"><use xlink:href="/draws.svg#${results[item].item.icon}"></use></svg>
-              ${results[item].item.type}
+            <i class="box__tag">
+              <svg class="box__tag-icon"><use href="/draws.{{ site.Params.timestamp }}.svg#${results[item].item.icon}"></use></svg>
+              ${results[item].item.type_label}
             </i>`
         }
         if (results[item].item.author) {
           searchItemAuthor = `
-            <i class="data__item">
-              {{ partial "components/icon" (dict "class" "data__icon" "icon" "user" "emoji" "👤") }}
+            <i class="box__tag">
+              {{ partial "icon" (dict "class" "box__tag-icon" "icon" "user" "emoji" "👤") }}
               ${results[item].item.author}
             </i>`
         }
         if (results[item].item.reading_time !== '0 minutos' && results[item].item.reading_time !== '') {
           searchItemReadingTime = `
-            <div class="column__data">
-              <i class="data__item">
-              {{ partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
+            <div class="box__tags">
+              <i class="box__tag">
+              {{ partial "icon" (dict "class" "box__tag-icon" "icon" "clock" "emoji" "🕓") }}
                 ${results[item].item.reading_time}
-              </i>
-              <i class="data__item">
-                {{ partial "components/icon" (dict "class" "data__icon" "icon" "comment-dots" "emoji" "💬") }}
-                ${results[item].item.reading_words}
               </i>
             </div>`
         }
         searchItems = searchItems +
           `
-          {{- $articles := site.Data.articles.common -}}
-          {{- $design := site.Data.design -}}
+          {{- $list   := site.Params.list -}}
+          {{- $styles := site.Data.styles -}}
           <article
             class="
               search__result-item
-              column
-              column--button-hide
-              bg bg-{{ $articles.color }}
-              bg--radius-min
-              shadow
-              align-{{ $articles.align | default "left" -}}
+              box
+              box--3d
+              bg bg-{{ $list.color }}
+              align-{{ $list.align | default "left" -}}
             "
             data-h
           >
-            <a class="search__result-item-link" href="${results[item].item.link}"></a>
+            <a class="link search__result-item-link" href="${results[item].item.link}"></a>
 
-            <div class="bg-color"></div>
-            {{- if $design.buttons.deep | and $articles.color -}}
+            {{- if $styles.buttons.deep | and $list.color -}}
               <div class="bg-color bg-color--3d"></div>
             {{- end -}}
+            <div class="bg-color"></div>
 
-            <div class="column__content">
-              <div
-                class="
-                  image
-                  image--inset
-                  {{ print "image--" ($articles.ratio | default "16x9") }}
-                  {{ cond (not $articles.contain) "" "image--contain" }}
-                  {{ cond (ne $articles.image "gradient") "" "image--gradient" }}
-                "
-              >
-                ${searchItemImage}
-              </div>
-              <div class="column__header column__header--link">
-                <div class="section__title ">
-                  <p class="h6 ">
-                    <i class="column__link" data-h><i>${results[item].item.title}</i></i>
-                  </p>
-                </div>
-              </div>
-              ${searchItemText}
-              <div class="column__data">
-                ${searchItemType}
-                ${searchItemAuthor}
-              </div>
-              ${searchItemReadingTime}
+            <div
+              class="
+                image
+                image--inset
+                image--ratio
+                {{ cond (not $list.contain) "" "image--contain" }}
+                {{ cond (ne $list.image "fade") "" "image--fade" }}
+              "
+              style="--image-ratio: {{ $list.ratio | default "16/9" }}"
+            >
+              ${searchItemImage}
             </div>
+            <p class="box__title box__title--link h6">
+              <i class="link box__link" data-h><i>${results[item].item.title}</i></i>
+            </p>
+            ${searchItemText}
+            <div class="box__tags">
+              ${searchItemType}
+              ${searchItemAuthor}
+            </div>
+            ${searchItemReadingTime}
         </article>`
       }
       resultsAvailable = true

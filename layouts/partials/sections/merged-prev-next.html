@@ -1,0 +1,77 @@
+{{/*  FUNTION DEFINE  */}}
+{{ define "partials/prev-next" }}
+  {{ $prev := dict }}
+  {{ $next := dict }}
+
+  {{/*  if not first  */}}
+  {{ if .key }}
+    {{ $prev = index .items (sub .key 1) }}
+  {{ end }}
+
+  {{/*  if not last  */}}
+  {{ if ne (add .key 1) (len .items) }}
+    {{ $next = index .items (add .key 1) }}
+  {{ end }}
+
+  {{ return merge .item (dict "prev" $prev "next" $next) }}
+{{ end }}
+
+
+{{/*  ADD PREV/NEXT AND LAST/FOOTER DIVIDER  */}}
+{{ $sections := slice }}
+{{ $sections_expand := . }}
+{{ range $key, $section := . }}
+
+  {{/*  MODALS  */}}
+  {{ $modals := slice }}
+  {{ if .modals }}
+    {{ $modals_raw  := .modals }}
+    {{ range $k, $v := .modals }}
+      {{ $modal := partial "prev-next" (dict
+        "item"  .
+        "items" $modals_raw
+        "key"   $k
+      ) }}
+      {{ $modals = $modals | append $modal }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  SECTION  */}}
+  {{ $section  = partial "prev-next" (dict
+    "item"  .
+    "items" $sections_expand
+    "key"   $key
+  ) }}
+
+  {{/* Next footer divider when this not have  */}}
+  {{ if not $section.div }}
+    {{ if $section.next.footer }}
+      {{ $div_next := dict
+        "div"   $section.next.div
+        "div_x" $section.next.div_x
+        "div_y" $section.next.div_y
+      }}
+      {{ $section = merge $section $div_next }}
+    {{ end }}
+  {{ end }}
+
+  {{/* Footer self divider when prev not have  */}}
+  {{ if not $section.prev.div }}
+    {{ if $section.footer }}
+      {{ $div := dict
+        "div"   $section.div
+        "div_x" $section.div_x
+        "div_y" $section.div_y
+      }}
+      {{ $prev_div := dict "prev" $div }}
+      {{ $section   = merge $section $prev_div }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  END  */}}
+  {{ $section  = merge $section (dict "modals" $modals) }}
+  {{ $sections = $sections | append $section }}
+
+{{ end }}
+
+{{ return $sections }}

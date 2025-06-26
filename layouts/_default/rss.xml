@@ -1,39 +1,39 @@
-{{- $pctx := . -}}
-{{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
-{{- $pages := slice -}}
+{{- $title  := site.Title -}}
+{{- $email  := site.Params.legal.email -}}
+{{- $pctx   := . -}}
+{{- if .IsHome -}}{{ $pctx = site }}{{- end -}}
+{{- $pages  := slice -}}
 {{- if or $.IsHome $.IsSection -}}
   {{- $pages = $pctx.RegularPages -}}
 {{- else -}}
   {{- $pages = $pctx.Pages -}}
 {{- end -}}
-{{- $limit := .Site.Config.Services.RSS.Limit -}}
+{{- $limit  := site.Config.Services.RSS.Limit -}}
 {{- if ge $limit 1 -}}
   {{- $pages = $pages | first $limit -}}
 {{- end -}}
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ .Site.Data.config.title }}</title>
+    <title>{{ $title }}</title>
     <link>{{ .Permalink }}</link>
-    <description>{{ i18n "recent" }} {{ .Site.Data.config.title }}</description>
-    <generator>Hugo -- gohugo.io</generator>{{ with .Site.Language }}
-    <language>{{.}}</language>{{end}}{{ with .Site.Author.email }}
-    <managingEditor>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with .Site.Author.email }}
-    <webMaster>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</webMaster>{{end}}{{ with .Site.Copyright }}
-    <copyright>{{.}}</copyright>{{end}}{{ if not .Date.IsZero }}
-    <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
-    {{- with .OutputFormats.Get "RSS" -}}
-      {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
-    {{- end -}}
+    <description>{{ i18n "recent" }} {{ $title }}</description>
+    <generator>Hugo -- gohugo.io</generator>
+    {{ with site.Language }}<language>{{ . }}</language>{{ end }}
+    {{ with $email }}<managingEditor>{{ . }}{{ with $title }} ({{ . }}){{ end }}</managingEditor>{{ end }}
+    {{ with $email }}<webMaster>{{ . }}{{ with $title }} ({{ . }}){{ end }}</webMaster>{{ end }}
+    {{ with site.Copyright }}<copyright>{{ . }}</copyright>{{ end }}
+    {{ if not .Date.IsZero }}<lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
+    {{ with .OutputFormats.Get "RSS" }}<atom:link href="{{ .Permalink }}" rel="self" type="{{ .MediaType }}" />{{ end }}
     {{ range $pages }}
       {{ if not .Params.noindex }}
         <item>
           <title>{{ .Title }}</title>
           <link>{{ .Permalink }}</link>
           <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
-          {{ with .Site.Author.email }}<author>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</author>{{end}}
+          {{ with $email }}<author>{{ . }}{{ with $title }} ({{ . }}){{ end }}</author>{{ end }}
           <guid>{{ .Permalink }}</guid>
-          <description>{{ .Params.description | default .Summary | html }}</description>
+          <description>{{ .Summary | default .Description | html }}</description>
         </item>
       {{ end }}
     {{ end }}

@@ -1,35 +1,29 @@
+.container {
+  text-align: var(--align);
+  --align: center;
+  --align-items: center;
+  --align-margin: auto;
+}
 .align-center {
-  text-align: center;
-  .section__title,
-  .buttons {
-    justify-content: center;
-  }
+  text-align: var(--align);
+  --align: center;
+  --align-items: center;
+  --align-margin: auto;
+  --icon-side-order: -1;
 }
 .align-left {
-  text-align: left;
-  .section__title,
-  .buttons {
-    justify-content: flex-start;
-  }
-  .section__icon {
-    order: -1;
-  }
-  .section__icon--top {
-    margin-left: 0;
-  }
+  text-align: var(--align);
+  --align: left;
+  --align-items: flex-start;
+  --align-margin: 0 auto;
+  --icon-side-order: -1;
 }
 .align-right {
-  text-align: right;
-  .section__title,
-  .buttons {
-    justify-content: flex-end;
-  }
-  .section__icon {
-    order: 1;
-  }
-  .section__icon--top {
-    margin-right: 0;
-  }
+  text-align: var(--align);
+  --align: right;
+  --align-items: flex-end;
+  --align-margin: auto 0;
+  --icon-side-order: 1;
 }
 .align-items-top {
   align-items: flex-start;
@@ -55,45 +49,27 @@
 .align-self-stretch {
   align-self: stretch;
 }
-@media (min-width: $screen-xl) {
-  .align--xl-center {
-    text-align: center;
-    .section__title,
-    .buttons {
-      justify-content: center;
-      align-items: center;
-    }
-    .section__icon--top {
-      margin-inline: auto;
-    }
+@media (min-width: $vl) {
+  .align--vl-center {
+    text-align: var(--align);
+    --align: center;
+    --align-items: center;
+    --align-margin: auto;
+    --icon-side-order: -1;
   }
-  .align--xl-left {
-    text-align: left;
-    .section__title,
-    .buttons {
-      justify-content: flex-start;
-      // align-items: flex-start;
-    }
-    .section__icon {
-      order: -1;
-    }
-    .section__icon--top {
-      margin-left: 0;
-    }
+  .align--vl-left {
+    text-align: var(--align);
+    --align: left;
+    --align-items: flex-start;
+    --align-margin: 0 auto;
+    --icon-side-order: -1;
   }
-  .align--xl-right {
-    text-align: right;
-    .section__title,
-    .buttons {
-      justify-content: flex-end;
-      // align-items: flex-end;
-    }
-    .section__icon {
-      order: 1;
-    }
-    .section__icon--top {
-      margin-right: 0;
-    }
+  .align--vl-right {
+    text-align: var(--align);
+    --align: right;
+    --align-items: flex-end;
+    --align-margin: auto 0;
+    --icon-side-order: 1;
   }
 }
 :not(.aux) {
@@ -109,8 +85,8 @@
   .justify-space-around {
     justify-content: space-around;
   }
-  .justify-flex-star {
-    justify-content: flex-star;
+  .justify-flex-start {
+    justify-content: flex-start;
   }
   .justify-flex-end {
     justify-content: flex-end;

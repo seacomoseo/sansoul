@@ -1,94 +1,169 @@
+{{ block "none" . }}{{ end -}}
 <!DOCTYPE html>
-<html lang="{{ .Lang }}">
+<html lang="{{ .Params.locale | default .Lang }}" class="preload">
 
-  {{- $sectioned              := partial "functions/is-sectioned" . -}}
-  {{- $params                 := partial "functions/page-params" . -}}
-  {{- $sectioned_menu         := and $sectioned (not $params.header_article) -}}
+  {{- /*  TPL  */ -}}
+  {{- $tpl := partial "functions/tpl-sections" . -}}
 
-  {{- $menu                   := merge site.Data.menu ($params.menu | default dict) -}}
-  {{- $body_menu              := "" -}}
-  {{- $body_menu_logo         := "" -}}
-  {{- if not $menu.hide -}}
-    {{- $body_menu             = " body-menu" -}}
-    {{- if (and (not $sectioned) $menu.articles_sticky) | or (and $sectioned_menu $menu.logo) -}}
-      {{- $body_menu_logo      = " body-menu--logo" -}}
+  {{- /*  SECTIONS  */ -}}
+  {{- $sections_all := slice -}}
+  {{- $sections     := slice -}}
+  {{- $footer       := dict -}}
+  {{- with $tpl -}}
+    {{- $sections_all = partial "sections/items" . -}}
+  {{- end -}}
+  {{- with $sections_all -}}
+    {{- $sections    = where . "id" "ne" "footer" -}}
+    {{- $footer      = index (last 1 .) 0 -}}
+  {{- end -}}
+  {{- /*  To TPL  */ -}}
+  {{ $dict_sections := dict "sections" $sections }}
+  {{ $tpl            = merge $tpl $dict_sections }}
+
+  {{- /*  Set contact phones page store from contact to callnow  */ -}}
+  {{- page.Store.Set "phones" slice -}}
+
+  {{- /*  CUSTOM HTML HEAD  */ -}}
+  {{- $custom_html_head  := "" -}}
+  {{- with site.Params.html.head -}}
+    {{- $path            := print "aux_html_head." $.Lang -}}
+    {{- $custom_html_head = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
+    {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
+  {{- end -}}
+
+  {{- /*  CUSTOM HTML BODY  */ -}}
+  {{- $custom_html_body  := "" -}}
+  {{- with site.Params.html.body -}}
+    {{- $path            := print "aux_html_body." $.Lang -}}
+    {{- $custom_html_body = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
+    {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
+  {{- end -}}
+
+  {{- /*  BODY ID  */ -}}
+  {{- $body_id := "" -}}
+  {{- if .IsHome -}}
+    {{- $body_id = "home" -}}
+  {{- else if .IsSection -}}
+    {{- $body_id = .Type -}}
+  {{- else if eq .Kind "404" -}}
+    {{- $body_id = 404 -}}
+  {{- else -}}
+    {{- $body_id = .File.TranslationBaseName -}}
+    {{- if ne .Type "single" -}}
+      {{- $body_id = print .Type "-" $body_id -}}
     {{- end -}}
   {{- end -}}
-  {{- $body_menu_transparent  := cond (not ($menu.transparent | and ($sectioned_menu | or ((not $sectioned) | and $body_menu_logo)))) "" " body-menu--transparent" -}}
+  {{- $body_id = print "body-" $body_id -}}
 
-  {{- $bg_color               := site.Data.articles.content.color | default `light` -}}
-  {{- if $sectioned -}}
-    {{- with $menu.color -}}
-      {{- $bg_color            = . -}}
-    {{- end -}}
-  {{- end -}}
-
-  <head>
-    {{- partial "sections/common/head" . -}}
-    {{- $context := . -}}
-    {{- with partial "functions/lang-params-custom-code" (dict "params" "html_head") -}}
-      {{- (. | resources.FromString (print "aux_html_head." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_head." $.Lang) $context).Content | safeHTML -}}
-    {{- end -}}
-  </head>
-
-  <body
-    id="body-{{ cond .IsHome .Params.slug (.RelPermalink | replaceRE `/(.+)/$` `$1` | replaceRE `/` `-`) }}"
-    class="kind-{{ .Kind }} type-{{ .Type }} section-{{ .Section }} bg bg-{{ $bg_color }} body-top {{- $body_menu }} {{- $body_menu_logo }} {{- $body_menu_transparent }}"
-  >
-    <img width="8000" height="8000" alt="fondo-transparente" class="lcp" decoding="sync" loading="eager" src="data:image/svg+xml;base64,
-      {{- `<svg width='8000' height='8000' viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg'></svg>` | base64Encode -}}
-    ">
-
-    {{/*  LOGO  */}}
-    {{ if (not $sectioned) | or ($sectioned | and ($params.header_article | or $menu.logo)) }}
-      {{ partial "sections/common/logo" . }}
-    {{ end }}
-
-    {{/*  MENU  */}}
-    {{ if ne .Kind "404" }}
-      {{ partial "sections/common/menu" . }}
-    {{ end }}
-
-    {{/*  HEADER SECTIONED  */}}
-    {{ if $sectioned }}
-      {{ partial "kind/sectioned" (dict "header" true) }}
-    {{ end }}
-
-    {{/*  MAIN  */}}
-    <main id="{{ i18n `main` }}"
-      {{- if not $sectioned -}}
-        {{- with (index (partial `functions/footer` .) 0) -}}
-          {{- if .divider -}}
-            class="footer--divider
-              {{- if partial `functions/divider-ratio` .divider }}-ratio{{ end -}}
-            "
-          {{- end -}}
+  {{- /*  BODY MENU CLASS  */ -}}
+  {{- $menu := $tpl.menu -}}
+  {{- $body_menu             := "" -}}
+  {{- $body_menu_logo        := "" -}}
+  {{- $body_menu_sticky      := "" -}}
+  {{- $body_menu_logo_sticky := "" -}}
+  {{- $body_menu_transparent := "" -}}
+  {{- $body_menu_sections    := "" -}}
+  {{- with $menu -}}
+    {{- if not .hide -}}
+      {{- $body_menu             = "body-menu" -}}
+      {{- with .sticky -}}
+        {{- if ne . "none" -}}
+          {{- $body_menu_sticky = print "body-menu--sticky body-menu--sticky--" . -}}
         {{- end -}}
       {{- end -}}
-    >
-      {{ if eq .Kind "404" }}
-        {{ partial "kind/404" . }}
-      {{ else if $sectioned }}
-        {{ partial "kind/sectioned" (dict "header" false) }}
-      {{ else }}
-        {{ partial "kind/article" . }}
-      {{ end }}
+    {{- end -}}
+    {{- if or (not .hide) .logo -}}
+      {{- $body_menu_transparent = cond (not .transparent) "" "body-menu--transparent" -}}
+    {{- end -}}
+    {{- if .logo -}}
+      {{- $body_menu_logo        = "body-menu--logo" -}}
+      {{- $body_menu_logo_sticky = cond (not .logo_sticky) "" "body-menu--logo--sticky" -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /*  BODY CLASS  */ -}}
+  {{- $body_class := slice
+    (print "kind-" .Kind)
+    (print "type-" .Type)
+    (print "base-" .Params.base)
+    "body-top"
+    $body_menu
+    $body_menu_logo
+    $body_menu_sticky
+    $body_menu_logo_sticky
+    $body_menu_transparent
+    $body_menu_sections
+  -}}
+
+  {{- /*  BODY ATTRIBUTES  */ -}}
+  {{- $bg_color := $tpl.bg.color | default "light" -}}
+  {{- $bg_base  := dict "is_bg" true "color" $bg_color "tpl" $tpl -}}
+  {{- $bg       := merge $tpl.bg $bg_base -}}
+  {{- $bg_attr  := dict "id" $body_id "body_class" $body_class -}}
+  {{- $merge_attr := merge $bg $bg_attr -}}
+  {{- $body_attr  := partial "sections/attr" $merge_attr -}}
+
+  {{- /*  LOADER  */}}
+  {{- $loader_bg := "" -}}
+  {{- if or (eq $bg_color "white") (in $bg_color "light") -}}
+    {{- $loader_bg = site.Data.styles.colors.base.light | default "#eee" -}}
+  {{- else -}}
+    {{- $loader_bg = site.Data.styles.colors.base.dark  | default "333" -}}
+  {{- end -}}
+  {{- $loader_main  := site.Data.styles.colors.main.color | default "#577399" -}}
+  {{- $loader_cta   := site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399" -}}
+  {{- $loader_style := print `style="`
+    "--loader-bg:" $loader_bg ";"
+    "--loader-main: " $loader_main ";"
+    "--loader-cta: " $loader_cta `"`
+    | safeHTMLAttr
+  -}}
+
+  {{- /*  HEAD  */}}
+  <head>
+    {{- partial "head" . -}}
+    {{- $custom_html_head }}
+  </head>
+
+  {{- /*  BODY  */}}
+  <body {{- $body_attr }}>
+
+
+    {{- /*  LOADER  */}}
+    <div id="bg-loader" {{ $loader_style }}>
+      <div class="loader"></div>
+    </div>
+
+    {{- /*  BACKGROUND  */ -}}
+    {{- partial "bg" $bg -}}
+
+    {{- /*  LOGO  */ -}}
+    {{- partial "logo" $tpl -}}
+
+    {{- /*  MENU  */ -}}
+    {{- partial "menu/_" $tpl -}}
+
+    {{- /*  MAIN  */}}
+    <main>
+      {{- range $sections -}}
+        {{- /* SECTION  */ -}}
+        {{- partial "sections/item" . -}}
+        {{- /*  MODALS  */ -}}
+        {{- range .modals -}}
+          {{- partial "sections/item" . -}}
+        {{- end -}}
+      {{- end }}
     </main>
 
-    {{/*  FOOTER  */}}
-    {{ partial "kind/sectioned" (dict "footer" true "sectioned" $sectioned) }}
+    {{- /*  FOOTER  */ -}}
+    {{- partial "sections/item" $footer -}}
 
-    {{/*  PRE BODY END  */}}
-    {{ if ne .Kind "404" }}{{ partial "components/cookies" . }}{{ end }}
-    {{ if $sectioned }}{{ partial "components/buttons-callnow" . }}{{ end }}
-    {{ if $menu.google_translate }}
-      {{ partial "components/button-google-translate" . }}
-    {{ end }}
-    {{ partial "components/button-up" . }}
-    {{ partial "sections/common/scripts" . }}
-    {{ with partial "functions/lang-params-custom-code" (dict "params" "html_body") }}
-      {{ (. | resources.FromString (print "aux_html_body." $.Lang) | resources.ExecuteAsTemplate (print "aux_html_body." $.Lang) $context).Content | safeHTML }}
-    {{ end }}
+    {{- /*  PRE BODY END  */ -}}
+    {{- partial "cookies" $tpl         -}}
+    {{- partial "callnow" $tpl.callnow -}}
+    {{- partial "up"      .            -}}
+    {{- $js := partial "scripts" . }}
+    <script src="{{ $js.RelPermalink }}" defer></script>
+    {{- $custom_html_body }}
   </body>
 </html>
-{{- block "none" . }}{{ end }}

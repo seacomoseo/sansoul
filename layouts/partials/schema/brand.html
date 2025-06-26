@@ -1,0 +1,10 @@
+{{ return dict
+  "@type"            "Brand"
+  "@id"              (print .Permalink "#schema-brand")
+  "name"             .Title
+  "description"      (partial "functions/summary" .)
+  "url"              .Permalink
+  "image"            (dict "@id" (print .Permalink "#schema-image"))
+  "logo"             (dict "@id" (print .Permalink "#schema-image"))
+  "mainEntityOfPage" (dict "@id" .Permalink)
+}}

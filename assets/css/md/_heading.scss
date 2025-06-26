@@ -1,0 +1,34 @@
+.md__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: var(--align, center);
+  gap: .25em;
+  .md__heading-index {
+    flex-shrink: 0;
+    color: var(--cta);
+  }
+  // @if $main == $cta {
+  //   &:has(> .icon) .md__heading-index {
+  //     opacity: .5;
+  //   }
+  // }
+}
+
+// Link
+.md__heading-link {
+  color: inherit;
+}
+
+// Subtitle next title
+.title + .subtitle {
+  margin-top: -.75rem;
+}
+
+// HN
+.md {
+  h2, h3, h4, h5, h6 {
+    &:not(:first-child, .bg-color + *, .alert__icon + *) {
+      margin-top: 2em;
+    }
+  }
+}

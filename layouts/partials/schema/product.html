@@ -1,0 +1,65 @@
+{{/*  Brand and Manufacturer  */}}
+{{ $brand        := "" }}
+{{ $manufacturer := "" }}
+{{ $man_org_type := "" }}
+{{ range .Params.taxonomies }}
+  {{ if eq .schema "brand" }}
+    {{ with site.GetPage (print .name "/" (index $.Params .name)) }}
+      {{ $brand = partial "schema/brand" . }}
+    {{ end }}
+  {{ end }}
+  {{ if eq .schema "manufacturer" }}
+    {{ with site.GetPage (print .name "/" (index $.Params .name)) }}
+      {{ $manufacturer = partial "schema/org" . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if not $brand }}
+  {{ with .Params.brand }}
+    {{ $brand  = dict
+      "@type" "Brand"
+      "name"  .
+    }}
+  {{ end }}
+{{ end }}
+{{ if not $manufacturer }}
+  {{ with .Params.manufacturer }}
+    {{ $manufacturer  = dict
+      "@type" "Organization"
+      "name"  .
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  Images  */}}
+{{ $image  := dict "@id" (print .Permalink "#schema-image") }}
+{{ with .Params.images }}
+  {{ $image = slice $image | append (partial "schema/images" .) }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+
+  "@type"            "Product"
+  "@id"              (print .Permalink "#schema-product")
+  "name"             .Title
+  "description"      (partial "functions/summary" .)
+  "sku"              .Params.sku
+  "url"              .Permalink
+  "inLanguage"       (.Params.locale | default .Lang)
+  "brand"            $brand
+  "manufacturer"     $manufacturer
+  "image"            $image
+  "mainEntityOfPage" (dict "@id" .Permalink)
+  "potentialAction"  (dict "@type" "BuyAction" "target" .Permalink)
+  "offers"           (dict
+    "@type"           "Offer"
+    "url"             .Permalink
+    "price"           .Params.price
+    "priceCurrency"   site.Params.currency
+    "availability"    (print "https://schema.org/" (cond (not .Params.stock) "InStock" "OutOfStock"))
+  )
+}}
+{{ $schema = partial "functions/obj-truly" $schema }}
+
+{{ return $schema }}

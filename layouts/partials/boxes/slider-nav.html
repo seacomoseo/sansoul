@@ -1,0 +1,44 @@
+{{- $button := cond (eq .button "hide") "" .button | default "cta" -}}
+
+{{- /*  PIPS  */ -}}
+{{- $pips_class := "slider__pips" -}}
+{{- if in (slice "hide" "dot") .pips -}}
+  {{- $pips_class = print $pips_class " slider__pips--" .pips -}}
+{{- end }}
+<div class="{{ $pips_class }}">
+  {{- $pip_class := "slider__pip" -}}
+  {{- range seq .items -}}
+    {{- if eq . 1 -}}
+      {{- $pip_class = print $pip_class " slider__pip--active" -}}
+    {{- end }}
+    {{ partial "link" (dict
+      "class"  $pip_class
+      "button" ($button | default "cta")
+      "title"  (print (i18n "slide") " " .)
+    ) -}}
+  {{- end }}
+</div>
+
+{{- /*  ARROWS  */ -}}
+{{- $arrows_class := "slider__arrows" -}}
+{{- if in (slice "hide" "float") .arrows -}}
+  {{- $arrows_class = print $arrows_class " slider__arrows--" .arrows -}}
+{{- end }}
+<div class="{{ $arrows_class }}">
+  {{ partial "link" (dict
+    "class"  "slider__arrow slider__arrow--left"
+    "button" ($button | default "cta")
+    "dot"    true
+    "icon"   (site.Data.styles.icons.left | default "chevron-left")
+    "emoji"  "⬅️"
+    "title"  (i18n "slide_left")
+  ) }}
+  {{ partial "link" (dict
+    "class"  "slider__arrow slider__arrow--right"
+    "button" ($button | default "cta")
+    "dot"    true
+    "icon"   (site.Data.styles.icons.right | default "chevron-right")
+    "emoji"  "➡️"
+    "title"  (i18n "slide_right")
+  ) -}}
+</div>

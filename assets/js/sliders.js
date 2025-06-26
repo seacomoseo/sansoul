@@ -1,52 +1,24 @@
 export function initSliders () {
   const sliders = document.querySelectorAll('.slider')
 
-  sliders && sliders.forEach(slider => {
-    const track = slider.querySelector('.slider__track')
-    const items = slider.querySelector('.slider__items')
-    const children = [...items.children]
-    const bullets = slider.querySelectorAll('.slider__bullet')
-    const arrowLeft = slider.querySelector('.slider__arrow--left')
-    const arrowRight = slider.querySelector('.slider__arrow--right')
-
+  if (sliders) {
     function indexOfItem (item) {
-      return Array.prototype.indexOf.call(item.parentElement.children, item)
+      return [...item.parentElement.children].indexOf(item)
     }
 
-    function activeClass (item, remove = false) {
+    function activeClass (item, pips, remove = false) {
       const index = indexOfItem(item)
-      const bullet = bullets[index]
+      const pip = pips[index]
       if (!remove) {
         item.classList.add('slider__item--active')
-        bullet.classList.add('slider__bullet--active')
+        pip.classList.add('slider__pip--active')
       } else {
         item.classList.remove('slider__item--active')
-        bullet.classList.remove('slider__bullet--active')
+        pip.classList.remove('slider__pip--active')
       }
     }
 
-    // SCROLL-SHOT
-    window.addEventListener('load', () => {
-      const callbackScroll = (entries, observer) =>
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            activeClass(entry.target)
-          } else {
-            activeClass(entry.target, true)
-          }
-        })
-      // eslint-disable-next-line
-      const observerScroll = new IntersectionObserver(callbackScroll, {
-        root: slider,
-        rootMargin: '0% 0%',
-        threshold: 0.99
-      })
-      children.forEach(e => {
-        observerScroll.observe(e)
-      })
-    })
-
-    function scrollToItem (item) {
+    function scrollToItem (item, slider, track) {
       const itemLeft = item.offsetLeft
       const itemWidth = item.offsetWidth
       const sliderWidth = slider.offsetWidth // - parseFloat(getComputedStyle(document.body)['font-size'].replace('px', ''))
@@ -54,80 +26,173 @@ export function initSliders () {
       track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
     }
 
-    function scrollToNear (item, side) {
-      const trackLeft = track.scrollLeft
-      const itemWidth = item.offsetWidth
-      let scrollLeft
-      if (side === 'left') {
-        scrollLeft = trackLeft - itemWidth
-      } else {
-        scrollLeft = trackLeft + itemWidth
-      }
-      track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
+    // function scrollToNear (item, side, track) {
+    //   const trackLeft = track.scrollLeft
+    //   const itemWidth = item.offsetWidth
+    //   let scrollLeft
+    //   if (side === 'left') {
+    //     scrollLeft = trackLeft - itemWidth
+    //   } else {
+    //     scrollLeft = trackLeft + itemWidth
+    //   }
+    //   track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
+    // }
+
+    function scrollToLeft (track, width) {
+      track.scrollTo({
+        left: width,
+        behavior: 'smooth'
+      })
     }
 
-    function sideScroll (side) {
-      const activeItems = slider.querySelectorAll('.slider__item--active')
-      const lastIndex = children.length - 1
-      let keyItem, keyIndex
+    function sideScroll (side, track, children) {
+      // Bit by bit
+      const trackChild = track.firstElementChild
+      const trackStyle = window.getComputedStyle(trackChild)
+      const trackWidth = trackChild.scrollWidth
+      const padding = parseFloat(trackStyle.getPropertyValue('padding-left')) * 2
+      const gap = parseFloat(trackStyle.getPropertyValue('gap'))
+      const elementWidth = children[0].scrollWidth
+      const scrollWidth = elementWidth + gap
       if (side === 'left') {
-        keyItem = activeItems[0]
-        keyIndex = indexOfItem(keyItem)
-        if (keyIndex === 0) {
-          scrollToItem(children[lastIndex])
+        if (track.scrollLeft > 0) {
+          scrollToLeft(track, track.scrollLeft - scrollWidth)
         } else {
-          scrollToNear(keyItem, 'left')
+          scrollToLeft(track, trackWidth - scrollWidth)
         }
       } else {
-        keyItem = activeItems[activeItems.length - 1]
-        keyIndex = indexOfItem(keyItem)
-        if (keyIndex === lastIndex) {
-          scrollToItem(children[0])
+        if (track.scrollLeft < (trackWidth - scrollWidth - padding)) {
+          scrollToLeft(track, track.scrollLeft + scrollWidth)
         } else {
-          scrollToNear(keyItem, 'right')
+          scrollToLeft(track, 0)
         }
       }
+      // Next no observer in center
+      // const activeItems = slider.querySelectorAll('.slider__item--active')
+      // const lastIndex = children.length - 1
+      // let keyItem, keyIndex
+      // if (side === 'left') {
+      //   keyItem = activeItems[0]
+      //   keyIndex = indexOfItem(keyItem)
+      //   if (keyIndex === 0) {
+      //     scrollToItem(children[lastIndex], slider, track)
+      //   } else {
+      //     scrollToNear(keyItem, 'left', track)
+      //   }
+      // } else {
+      //   keyItem = activeItems[activeItems.length - 1]
+      //   keyIndex = indexOfItem(keyItem)
+      //   if (keyIndex === lastIndex) {
+      //     scrollToItem(children[0], slider, track)
+      //   } else {
+      //     scrollToNear(keyItem, 'right', track)
+      //   }
+      // }
     }
-
-    // BULLETS
-    bullets && bullets.forEach((button, i) => {
-      button.addEventListener('click', () => scrollToItem(children[i]))
-    })
-
-    // ARROWS
-    arrowLeft && arrowLeft.addEventListener('click', () => sideScroll('left'))
-    arrowRight && arrowRight.addEventListener('click', () => sideScroll('right'))
-
-    // INTERVALS
-    window.addEventListener('load', () => {
-      const interval = slider.dataset.interval * 1000
-      if (interval) {
-        let scrollInterval = setInterval(sideScroll, interval)
-        slider.addEventListener('mouseenter', () => {
-          clearInterval(scrollInterval)
-        })
-        slider.addEventListener('mouseleave', () => {
-          scrollInterval = setInterval(sideScroll, interval)
-        })
-      }
-    })
 
     // CONTROLS VIEW
     function slidersControlsView () {
-      const arrowsGroup = slider.querySelector('.slider__arrows')
-      const bulletsGroup = slider.querySelector('.slider__bullets')
-      if (slider.offsetWidth >= items.offsetWidth) {
-        if (arrowsGroup) arrowsGroup.style.display = 'none'
-        if (bulletsGroup) bulletsGroup.style.display = 'none'
-        if (track) track.style.overflowX = 'hidden'
-      } else {
-        if (arrowsGroup) arrowsGroup.style = false
-        if (bulletsGroup) bulletsGroup.style = false
-        if (track) track.style = false
-      }
+      document.querySelectorAll('.slider').forEach(slider => {
+        const items = slider.querySelector('.slider__items')
+        const itemsStyle = window.getComputedStyle(items, '')
+        const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
+        const itemsWidth = items.offsetWidth - padding
+        if (slider.offsetWidth >= itemsWidth - 1) {
+          slider.classList.add('slider--static')
+        } else {
+          slider.classList.remove('slider--static')
+        }
+      })
     }
-    window.addEventListener('load', slidersControlsView)
     window.addEventListener('resize', slidersControlsView)
     window.addEventListener('hashchange', slidersControlsView)
-  })
+    window.addEventListener('load', () => {
+      slidersControlsView()
+
+      // SCROLL-SHOT AND INTERVALS
+      sliders.forEach(slider => {
+        const track = slider.querySelector('.slider__track')
+        const items = slider.querySelector('.slider__items')
+        const children = [...items.children]
+        const pips = slider.querySelectorAll('.slider__pip')
+
+        // FIRST TO START ON LOAD
+        const trackChild = track.firstElementChild
+        const trackStyle = window.getComputedStyle(trackChild)
+        const padding = parseFloat(trackStyle.getPropertyValue('padding-left'))
+        track.scrollTo(padding, 0)
+
+        // SCROLL-SHOT
+        function callbackScrollChildren (entries, observer) {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              activeClass(entry.target, pips)
+            } else {
+              activeClass(entry.target, pips, true)
+            }
+          })
+        }
+        const observerScrollChildren = new IntersectionObserver(callbackScrollChildren, {
+          root: slider,
+          rootMargin: '0% 0%',
+          threshold: 0.95
+        })
+        children.forEach(e => {
+          observerScrollChildren.observe(e)
+        })
+
+        // INTERVALS
+        const interval = slider.dataset.time * 1000
+        if (interval) {
+          let scrollInterval
+          // Set intervall if not static
+          function setSideScrollInterval () {
+            return setInterval(() => {
+              const isStatic = slider.classList.contains('slider--static')
+              const disableParallax = document.body.classList.contains('scrolling')
+              if (!isStatic && !disableParallax) {
+                sideScroll('right', track, children)
+              }
+            }, interval)
+          }
+          // Observer
+          function callbackScrollParent (entries, observer) {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                scrollInterval = setSideScrollInterval()
+              } else {
+                clearInterval(scrollInterval)
+              }
+            })
+          }
+          const observerScrollParent = new IntersectionObserver(callbackScrollParent, { rootMargin: '0% 0%' })
+          observerScrollParent.observe(slider)
+          // Mouse hover
+          slider.addEventListener('mouseenter', () => {
+            clearInterval(scrollInterval)
+          })
+          slider.addEventListener('mouseleave', () => {
+            scrollInterval = setSideScrollInterval()
+          })
+        }
+      })
+    })
+
+    // ONCLICK
+    document.addEventListener('click', e => {
+      // pips AND ARROWS
+      const pip = e.target.closest('.slider__pip')
+      const arrowLeft = e.target.closest('.slider__arrow--left')
+      const arrowRight = e.target.closest('.slider__arrow--right')
+      if (pip || arrowLeft || arrowRight) {
+        const slider = e.target.closest('.slider')
+        const track = slider.querySelector('.slider__track')
+        const items = slider.querySelector('.slider__items')
+        const children = [...items.children]
+        if (pip) scrollToItem(children[indexOfItem(pip)], slider, track)
+        if (arrowLeft) sideScroll('left', track, children)
+        if (arrowRight) sideScroll('right', track, children)
+      }
+    })
+  }
 }

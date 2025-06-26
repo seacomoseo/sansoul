@@ -1,0 +1,113 @@
+{{ $vars := dict }}
+{{ with site.Data }}
+  {{ $vars = dict
+    "fonts-css"                          (hugo.Store.Get "fonts_css" | default "")
+
+    "utilities-viewport-min"             site.Data.utilities.viewports.min
+    "utilities-viewport-max"             site.Data.utilities.viewports.max
+    "utilities-viewport-xs"              site.Data.utilities.viewports.xs
+    "utilities-viewport-sm"              site.Data.utilities.viewports.sm
+    "utilities-viewport-md"              site.Data.utilities.viewports.md
+    "utilities-viewport-lg"              site.Data.utilities.viewports.lg
+    "utilities-viewport-xl"              site.Data.utilities.viewports.xl
+
+    "utilities-containers-xs"            site.Data.utilities.containers.xs
+    "utilities-containers-sm"            site.Data.utilities.containers.sm
+    "utilities-containers-md"            site.Data.utilities.containers.md
+    "utilities-containers-lg"            site.Data.utilities.containers.lg
+    "utilities-containers-xl"            site.Data.utilities.containers.xl
+    "utilities-containers-fluid"         site.Data.utilities.containers.fluid
+
+    "styles-colors-base-white"           (.styles.colors.base.white               | default "#fff")
+    "styles-colors-base-light"           (.styles.colors.base.light               | default "#eee")
+    "styles-colors-base-dark"            (.styles.colors.base.dark                | default "#282525")
+    "styles-colors-base-black"           (.styles.colors.base.black               | default "#000")
+    "styles-colors-base-gray"            (.styles.colors.base.gray                | default "#767676")
+    "styles-colors-main-color"           (.styles.colors.main.color               | default "#577399")
+    "styles-colors-alt-color"            (.styles.colors.alt.color                | default "")
+    "styles-colors-cta-color"            (.styles.colors.cta.color                | default .styles.colors.main.color | default "#577399")
+
+    "styles-colors-main-light"           (.styles.colors.main.light               | default "")
+    "styles-colors-alt-light"            (.styles.colors.alt.light                | default "")
+    "styles-colors-cta-light"            (.styles.colors.cta.light                | default "")
+
+    "styles-colors-main-dark"            (.styles.colors.main.dark                | default "")
+    "styles-colors-alt-dark"             (.styles.colors.alt.dark                 | default "")
+    "styles-colors-cta-dark"             (.styles.colors.cta.dark                 | default "")
+
+    "styles-colors-main-contrast-fill"   (.styles.colors.main.contrast.fill       | not | not | string)
+    "styles-colors-alt-contrast-fill"    (.styles.colors.alt.contrast.fill        | not | not | string)
+    "styles-colors-cta-contrast-fill"    (.styles.colors.cta.contrast.fill        | not | not | string)
+
+    "styles-colors-main-contrast-in"     (.styles.colors.main.contrast.in         | not | not | string)
+    "styles-colors-alt-contrast-in"      (.styles.colors.alt.contrast.in          | not | not | string)
+    "styles-colors-cta-contrast-in"      (.styles.colors.cta.contrast.in          | not | not | string)
+
+    "styles-colors-main-contrast-text"   (.styles.colors.main.contrast.text       | not | not | string)
+    "styles-colors-alt-contrast-text"    (.styles.colors.alt.contrast.text        | not | not | string)
+    "styles-colors-cta-contrast-text"    (.styles.colors.cta.contrast.text        | not | not | string)
+
+    "styles-fonts-base-family"           (.styles.fonts.base.family               | default "Arial")
+    "styles-fonts-title-family"          (.styles.fonts.title.family              | default "Arial")
+    "styles-fonts-cursive-family"        (.styles.fonts.cursive.family            | default "Arial")
+    "styles-fonts-base-weight"           (.styles.fonts.base.weight               | default 200)
+    "styles-fonts-title-weight"          (.styles.fonts.title.weight              | default 800)
+    "styles-fonts-cursive-weight"        (.styles.fonts.cursive.weight            | default 400)
+    "styles-fonts-base-bold"             (.styles.fonts.base.bold                 | default 0)
+    "styles-fonts-title-bold"            (.styles.fonts.title.bold                | default 0)
+    "styles-fonts-cursive-bold"          (.styles.fonts.cursive.bold              | default 0)
+    "styles-fonts-base-italic"           (cond (not .styles.fonts.base.italic)    "normal" "italic")
+    "styles-fonts-title-italic"          (cond (not .styles.fonts.title.italic)   "normal" "italic")
+    "styles-fonts-cursive-italic"        (cond (not .styles.fonts.cursive.italic) "normal" "italic")
+    "styles-fonts-base-line-height"      (.styles.fonts.base.line_height          | default 1.25)
+    "styles-fonts-title-line-height"     (.styles.fonts.title.line_height         | default 1.25)
+    "styles-fonts-cursive-line-height"   (.styles.fonts.cursive.line_height       | default 1.25)
+    "styles-fonts-title-size"            (.styles.fonts.title.size                | default 1)
+    "styles-fonts-cursive-size"          (.styles.fonts.cursive.size              | default 1)
+    "styles-fonts-title-top"             (.styles.fonts.title.top                 | default 0)
+    "styles-fonts-cursive-top"           (.styles.fonts.cursive.top               | default 0)
+    "styles-fonts-blockquote_cursive"    (.styles.fonts.blockquote_cursive        | not | not | string)
+
+    "styles-duotone"                     (eq .styles.icons.type   "duotone"       | not | not | string)
+    "styles-menu-bar"                    (cond (eq .styles.icons.type "thin"   ) .1
+                                         (cond (eq .styles.icons.type "light"  ) .15
+                                         (cond (eq .styles.icons.type "regular") .2
+                                                                                 .25
+                                         )))
+
+    "styles-rounded-radius"              (.styles.rounded.radius                  | default 0)
+    "styles-rounded-chamfer"             (.styles.rounded.chamfer                 | not | not | string)
+
+    "styles-buttons-sides_round"         (.styles.buttons.sides_round             | not | not | string)
+    "styles-buttons-icon_circle"         (.styles.buttons.icon_circle             | not | not | string)
+    "styles-buttons-deep"                (.styles.buttons.deep                    | not | not | string)
+    "styles-buttons-outline"             (.styles.buttons.outline                 | not | not | string)
+    "styles-buttons-font"                (.styles.buttons.font.type               | default "base")
+    "styles-buttons-font_bold"           (.styles.buttons.font.bold               | not | not | string)
+    "styles-buttons-font_caps"           (.styles.buttons.font.caps               | not | not | string)
+    "styles-buttons-swap"                (.styles.buttons.swap.type               | default "base")
+    "styles-buttons-swap_bold"           (.styles.buttons.swap.bold               | not | not | string)
+    "styles-buttons-swap_caps"           (.styles.buttons.swap.caps               | not | not | string)
+
+    "styles-shadow-left"                 (.styles.shadow.left                     | default 0)
+    "styles-shadow-top"                  (.styles.shadow.top                      | default 0)
+    "styles-shadow-blur"                 (.styles.shadow.blur                     | default 0)
+    "styles-shadow-color"                (.styles.shadow.color                    | default "black")
+    "styles-shadow-alpha"                (.styles.shadow.alpha                    | default 0)
+    "config-others-show"                 (.config.others.show                     | not | not | string)
+    "menu-google_translate"              (site.Params.google_translate            | not | not | string)
+    "timestamp"                          site.Params.timestamp
+    }}
+{{ end }}
+
+{{ $css := resources.Get (print "css/styles.scss") }}
+{{ with $css }}
+  {{ $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment) }}
+  {{ if hugo.IsProduction }}
+    {{/*  {{ $css = $css | minify | postCSS | resources.PostProcess }}  */}}
+    {{ $css = $css | minify }}
+  {{ end }}
+  {{ $css = $css | fingerprint }}
+{{ end }}
+
+{{ return $css }}

@@ -1,0 +1,75 @@
+{{- $show     := cond (not site.Data.config.others.show) "" " show" -}}
+{{- $button   := cond (ne .accordion.button "none") .accordion.button "" -}}
+{{- $fotn_alt := cond (not .accordion.swap) "" "button--swap" -}}
+{{- $headers  := .accordion.headers }}
+<div class="accordions {{- if $headers }} accordions--headers{{ end }} box__block align-left {{- $show }}">
+  {{- range $k, $v := .accordions -}}
+    {{- with merge ($.accordion | default dict) . -}}
+      {{- $hn   := .hn | default (add $.level 1) -}}
+      {{- if ne $hn "p" -}}
+        {{- $hn  = print "h" $hn -}}
+      {{- end -}}
+      {{- $hs   := cond (eq .hs nil) "" (cond (eq .hs $hn) "" (print " h" .hs)) -}}
+      {{- $open := and (not $k) .open }}
+      <div class="accordion {{- if $open }} accordion--active{{ end }}">
+
+        {{- /* TITLE  */}}
+        {{- $class := print ` class="accordion__title` $hs `"` }}
+        {{ print "<" $hn $class ">" | safeHTML -}}
+          {{- if not $headers -}}
+            {{- $icon  := cond (not .icon) "circle-question" .icon -}}
+            {{- $emoji := cond (not .icon) "❔" .icon }}
+            <button type="button" class="accordion__button button {{ $button }} {{ $fotn_alt }}">
+              {{- partial "icon" (dict "class" "accordion__icon" "icon" $icon "emoji" $emoji) }}
+              <i>{{ .title }}</i>
+              {{- partial "icon" (dict "class" "accordion__button-dot" "icon" "plus") }}
+            </button>
+          {{- else }}
+            <i>{{ .title }}</i>
+            <button type="button" class="accordion__button-dot button button--dot {{ $button }}" title="{{ i18n `more` }}">
+              {{- $icon  := cond (not .icon) (site.Data.styles.icons.down | default "angle-down") .icon -}}
+              {{- partial "icon" (dict "class" "accordion__icon" "icon" $icon) }}
+            </button>
+          {{- end }}
+        {{ print "</" $hn ">" | safeHTML -}}
+
+        {{- /* MD  */}}
+        <div class="accordion__md md" {{- if not $open }} hidden="until-found"{{ end }}>
+          {{- with .md -}}
+            {{- partial "functions/md" . -}}
+          {{- end }}
+        </div>
+      </div>
+    {{- end -}}
+  {{- end }}
+</div>
+
+
+{{- /* SCHEMA  */ -}}
+
+{{- $schema_questions := slice -}}
+{{- range .accordions -}}
+  {{- $schema_questions = $schema_questions | append (dict
+    "@type" `Question`
+    "name"  .title
+    "acceptedAnswer" (dict
+      "@type" `Answer`
+      "text"  (.md | markdownify | plainify)
+    )
+  ) -}}
+{{- end -}}
+{{- $schema := dict
+  "@context"   "https://schema.org"
+  "@type"      "FAQPage"
+  "@id"        (print page.Permalink "#schema-faq")
+  "mainEntity" $schema_questions
+  "isPartOf"   (dict "@id" page.Permalink)
+-}}
+{{- if hugo.IsProduction -}}
+  {{- $schema = jsonify $schema -}}
+{{- else -}}
+  {{- $schema = debug.Dump $schema -}}
+{{- end }}
+<script type="application/ld+json">
+  {{- $schema | safeJS -}}
+</script>

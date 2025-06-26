@@ -1,0 +1,161 @@
+{{/*  FUNTION DEFINE  */}}
+{{ define "partials/sections/searchable" }}
+  {{ $boxes := slice . }}
+  {{ range   (.boxes      | default slice)
+    | append (.steps      | default slice)
+    | append (.reviews    | default slice)
+    | append (.accordions | default slice)
+  }}
+    {{ $box  := partial "sections/searchable" . }}
+    {{ $boxes = $boxes | append $box }}
+  {{ end }}
+  {{ return $boxes }}
+{{ end }}
+{{/*
+{{ define "partials/page/flatten" }}
+  {{ $items := slice }}
+  {{ $tpl := partial "functions/tpl" . }}
+  {{ range $tpl.sections }}
+    {{ $items = $items | append . }}
+    {{ with .modals }}
+      {{ range . }}
+        {{ $items = $items | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ return $items }}
+{{ end }}
+list
+object
+{{ range partial "page/flatten" . }}
+{{ end }}
+*/}}
+
+
+{{/*  OBJECT  */}}
+{{ $index := dict }}
+{{/*  Parents  */}}
+{{ range site.Sections | append site.Home }}
+  {{ $summaries := slice }}
+  {{/*  Pages  */}}
+  {{ range .RegularPages }}
+    {{ $page := . }}
+    {{ if .File }}
+      {{/*  Not base pages  */}}
+      {{ if not (in (slice "legal" "privacy" "cookies" "search" "sitemap") .File.TranslationBaseName) }}
+
+        {{/*  Image  */}}
+        {{ $image := .Params.image }}
+        {{ if $image }}
+          {{ if hasPrefix $image "http" }}
+            {{ $image = partial "functions/iframe-poster" $image | default $image }}
+          {{ else }}
+            {{ with resources.Get (print "/media/" $image) }}
+              {{ $image = .RelPermalink }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+
+        {{/*  Content by   */}}
+        {{ $contents  := .RawContent }}
+        {{/*  ADD CUSTOM PARAMS TO CONTENT   */}}
+        {{ $page_params          := .Params }}
+        {{ $params_customs       := .Params.customs | default slice }}
+        {{/*  Direct text custom params  */}}
+        {{ $text_custom_params   := slice "seo" }}
+        {{ range where $params_customs "type" "in" (slice "string" "text" "markdown") }}
+          {{ $text_custom_params := $text_custom_params | append .name }}
+        {{ end }}
+        {{ range $text_custom_params }}
+          {{ with index $page_params . }}
+            {{ $contents = print $contents " \n\n " . }}
+          {{ end }}
+        {{ end }}
+        {{/*  List text custom params  */}}
+        {{/*  
+        {{ $lists_custom_params   := slice }}
+        {{ range where $params_customs "type" "eq" "list" }}
+          {{ $lists_custom_params := $lists_custom_params | append .name }}
+        {{ end }}
+        {{ range .Params }}
+          {{ if or (reflect.IsSlice .) (reflect.IsMap .) }}
+            {{ range . }}
+              {{ $lists_custom_params := $lists_custom_params | append .name }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+        */}}
+        {{/*  Map text custom params  */}}
+        {{ if not $contents }}
+          {{ if eq .Params.base "single" }}
+            {{ $contents = "" }}
+            {{ range partial "sections/flatten" . }}
+              {{ range partial "sections/searchable" . }}
+                {{ $section := . }}
+                {{ $text_params := slice "title" "hanchor" "subtitle" "md" "label" }}
+                {{ range $text_params }}
+                  {{ with index $section . }}
+                    {{ $contents = print $contents " \n\n " . }}
+                  {{ end }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+        {{ $contents = partial "functions/md" $contents | plainify }}
+        
+        {{ $summary := dict
+          "link"          .RelPermalink
+          "title"         .Title
+          "image"         $image
+          "summary"       (.Summary | default .Description | truncate 155 | replaceRE `icon:[\w-]*\s?` "")
+          "content"       $contents
+          "reading_time"  (i18n "reading_time" .ReadingTime)
+        }}
+
+        {{ if .Date                         }}{{ $summary = merge $summary (dict "date"          (partial "functions/date-format" .Date      )               ) }}{{ end }}
+        {{ if .Lastmod                      }}{{ $summary = merge $summary (dict "lastmod"       (partial "functions/date-format" .Lastmod   )               ) }}{{ end }}
+        {{ if .Params.end                   }}{{ $summary = merge $summary (dict "end"           (partial "functions/date-format" .Params.end)               ) }}{{ end }}
+        {{ if .Params.price                 }}{{ $summary = merge $summary (dict "price"         (.Params.price | lang.FormatCurrency 2 site.Params.currency)) }}{{ end }}
+        {{/*  {{ with .Params.sku           }}{{ $summary = merge $summary (dict "sku"           .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.artists       }}{{ $summary = merge $summary (dict "artists"       .) }}{{ end }}  */}}
+        {{ with .Params.location            }}{{ $summary = merge $summary (dict "location"      .) }}{{ end }}
+        {{ with .Params.place               }}{{ $summary = merge $summary (dict "place"         .) }}{{ end }}
+        {{ with .Params.job                 }}{{ $summary = merge $summary (dict "job"           .) }}{{ end }}
+        {{/*  {{ with .Params.as            }}{{ $summary = merge $summary (dict "as"            .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.types     }}{{ $summary = merge $summary (dict "types"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.names     }}{{ $summary = merge $summary (dict "names"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.legal     }}{{ $summary = merge $summary (dict "legal"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.nif       }}{{ $summary = merge $summary (dict "nif"           .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.email     }}{{ $summary = merge $summary (dict "email"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.images    }}{{ $summary = merge $summary (dict "images"        .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.as        }}{{ $summary = merge $summary (dict "as"            .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.phones    }}{{ $summary = merge $summary (dict "phones"        .) }}{{ end }}  */}}
+        {{ with .Params.address             }}{{ $summary = merge $summary (dict "address"       .) }}{{ end }}
+        {{ with .Params.org.address         }}{{ $summary = merge $summary (dict "address"       .) }}{{ end }}
+        {{/*  {{ with .Params.org.areas     }}{{ $summary = merge $summary (dict "areas"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.open      }}{{ $summary = merge $summary (dict "open"          .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.prices    }}{{ $summary = merge $summary (dict "prices"        .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.services  }}{{ $summary = merge $summary (dict "services"      .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.food_menu }}{{ $summary = merge $summary (dict "food_menu"     .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.food_type }}{{ $summary = merge $summary (dict "food_type"     .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.service_areas }}{{ $summary = merge $summary (dict "service_areas" .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.service_types }}{{ $summary = merge $summary (dict "service_types" .) }}{{ end }}  */}}
+
+        {{ $taxonomies := partial "functions/taxonomy-parents" . }}
+        {{ range $taxonomies }}
+          {{ $title  := index $summary .Type | default slice | append (dict "title" .Title "link" .RelPermalink) }}
+          {{ $summary = merge $summary (dict .Type $title) }}
+        {{ end }}
+
+        {{ $summaries = $summaries | append $summary }}
+
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ if $summaries }}
+    {{ $index = merge $index (dict .Type $summaries) }}
+  {{ end }}
+{{ end }}
+
+{{ return $index }}

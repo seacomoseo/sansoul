@@ -1,0 +1,95 @@
+{{- /*  Attributes  */ -}}
+{{- $attr := partial "sections/attr" . -}}
+
+{{- /*  SECTION  */}}
+{{ print "<" .node $attr ">" | safeHTML -}}
+
+  {{- /*  BACKGROUND  */ -}}
+  {{- if not .modal -}}
+    {{- $bg_opts := dict "card" nil "container" "fluid" -}}
+    {{- $bg_opts  = merge . $bg_opts -}}
+    {{- partial "bg" $bg_opts -}}
+  {{- end -}}
+
+  {{- /*  IMAGE LCP  */ -}}
+  {{- if .header }}
+    <div class="lcp">██ ████ ████ ██ ██████ ██ ███ ██████ ███ ███ ██████ ████</div>
+  {{- end -}}
+
+  {{- /*  BOX  */ -}}
+  {{- $box_opts := dict
+    "image_align" nil
+    "full"        nil
+    "pt"          nil
+    "pb"          nil
+    "div"         nil
+    "div_x"       nil
+    "div_y"       nil
+    "id"          nil
+    "if"          nil
+    "col_vl"      1.00
+    "col_vs"      1.00
+    "key"         0
+    "deep"        0
+    "zero"        true
+    "main"        true
+    "boxes_wrap"  true
+    "section"     .
+    "parent"      .box
+    "node"        .box_node
+    "bi"          .box_bi
+    "alpha"       .box_alpha
+    "parallax"    .box_parallax
+    "color"       .box_color
+    "color_alpha" .box_color_alpha
+    "fade"        .box_fade
+    "fade_type"   .box_fade_type
+  -}}
+  {{- $box_opts = merge . $box_opts -}}
+  {{- partial "boxes/item" $box_opts -}}
+
+  {{- /*  MODAL BUTTONS CORNER  */ -}}
+  {{- if .modal  -}}
+    {{- /*
+    {{- partial "link" (dict
+      "class"  "modal__back"
+      "button" "cta"
+      "dot"    true
+      "icon"   (site.Data.styles.icons.left | default "arrow-left")
+      "emoji"  "⬅️"
+      "label"  (i18n "back")
+    ) -}}
+    */}}
+    {{ partial "link" (dict
+      "class"  "modal__close--corner"
+      "button" "cta"
+      "dot"    true
+      "icon"   "xmark"
+      "emoji"  "❌"
+      "label"  (i18n "close")
+    ) -}}
+  {{- end -}}
+
+  {{- /*  COOKIES AND SITEMAP LINK  */ -}}
+  {{- if .footer }}
+    <div class="footer__float">
+      {{ partial "link" (dict
+        "class"  "cookies__toggle"
+        "icon"   "cookie-bite"
+        "emoji"  "🍪"
+        "title"  (i18n "cookies_notice")
+        "lock"   true
+      ) }}
+      {{ with site.GetPage "page/sitemap" -}}
+        {{- partial "link" (dict
+          "class"  "footer__sitemap"
+          "icon"   "sitemap"
+          "emoji"  "🗺"
+          "title"  .Title
+          "link"   .RelPermalink
+          "lock"   (not page.IsHome)
+        ) -}}
+      {{- end }}
+    </div>
+  {{- end }}
+{{ print "</" .node ">" | safeHTML -}}

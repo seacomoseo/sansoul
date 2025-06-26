@@ -1,0 +1,73 @@
+{{/* partial "functions/color-background" (dict "child" "similar" "parent" "dark") */}}
+{{ $return := dict "child" .child "parent" (.child | default .parent) }}
+
+{{ if eq "transparent" .child }}
+
+  {{ $return = dict "child" .child "parent" .parent }}
+
+{{ else if in (slice "similar" "invert") .child }}
+
+  {{ $color  := "" }}
+  {{ $invert := eq .child "invert" }}
+
+  {{ if eq .parent "white" }}
+    {{ $color = cond $invert "dark" "light" }}
+  {{ else if eq .parent "light" }}
+    {{ $color = cond $invert "dark" "white" }}
+  {{ else if eq .parent "dark" }}
+    {{ $color = cond $invert "light" "black" }}
+  {{ else if eq .parent "black" }}
+    {{ $color = cond $invert "light" "dark" }}
+  {{ else }}
+
+    {{ $prefix  := "" }}
+    {{ $suffix  := "" }}
+    {{ with split .parent "-" }}
+      {{ $prefix = index . 0 }}
+      {{ $suffix = index . 1 }}
+    {{ end }}
+
+    {{ if $suffix }}
+    
+      {{ if $invert }}
+        {{ if eq $suffix "dark" }}
+          {{ $color = print $prefix "-light" }}
+        {{ else }}
+          {{ $color = print $prefix "-dark" }}
+        {{ end }}
+      {{ else }}
+        {{ if eq $suffix "dark" }}
+          {{ $color = "dark" }}
+        {{ else }}
+          {{ $color = "white" }}
+        {{ end }}
+      {{ end }}
+
+    {{ else }}
+
+      {{ $base     := dict
+        "gray" (site.Data.styles.colors.base.gray  | default "#767676")
+        "main" (site.Data.styles.colors.main.color | default "#577399")
+        "alt"  (site.Data.styles.colors.alt.color  | default "#eeeeee")
+        "cta"  (site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399")
+      }}
+      {{ $base      = index $base .parent }}
+      {{ $contrast := partial "functions/color-contrast" $base }}
+      {{ if eq $contrast "light" }}
+        {{ $color   = cond $invert "light" "dark" }}
+      {{ else }}
+        {{ $color   = cond $invert "dark" "light" }}
+      {{ end }}
+      {{ if ne .parent "gray" }}
+        {{ $color = print .parent "-" $color }}
+      {{ end }}
+
+    {{ end }}
+
+  {{ end }}
+
+  {{ $return = dict "child" $color "parent" $color }}
+
+{{ end }}
+
+{{ return $return }}

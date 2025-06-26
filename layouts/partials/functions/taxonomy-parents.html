@@ -1,0 +1,26 @@
+{{ $parent := slice }}
+{{/*  Parent taxonomies  */}}
+{{ with .Params.taxonomies }}
+  {{/*  Each parent taxonomy  */}}
+  {{ range . }}
+    {{ $type      := .name }}
+    {{/*  Param with key name like taxonomy  */}}
+    {{ $filenames := index $.Params .name }}
+    {{ with $filenames }}
+      {{/*  Force value to slice  */}}
+      {{ if not (reflect.IsSlice .) }}
+        {{ $filenames = slice . }}
+      {{ end }}
+      {{/*  Each filename taxonomy  */}}
+      {{ range $filenames }}
+        {{/*  Page taxonomy  */}}
+        {{ with site.GetPage (print $type "/" .) }}
+          {{/*  Append parent  */}}
+          {{ $parent = $parent | append . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $parent }}

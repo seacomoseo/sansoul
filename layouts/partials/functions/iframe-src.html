@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {{ $src  := .src }}
 {{ $mute := cond (in .src "#mute") true .bg }}
 
@@ -8,9 +9,25 @@
   {{ $end  := .src | findRE `end\=\d+`     }}{{ if $end  }}{{ $end  = index $end  0 | replaceRE `end\=` ``  }}{{ end }}
   {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
   {{ $src = print
+=======
+{{ $name  := "" }}
+{{ $url   := "" }}
+{{ $src   := .src }}
+{{ $mute  := cond (in .src "#mute") true .bi }}
+
+{{ if .src | findRE `youtu\.be|youtube\.com` }}
+
+  {{ $name  = "youtube" }}
+  {{ $id   := .src | replaceRE `^.+?(v=|be/)(.+?)(&|\?|#|$).*` `$2` }}
+  {{ $url   = print "https://youtu.be/" $id }}
+  {{ $t    := .src | findRE `t\=\d+`       }}{{ if $t    }}{{ $t    = index $t    0 | replaceRE `t\=`    "" }}{{ end }}
+  {{ $end  := .src | findRE `end\=\d+`     }}{{ if $end  }}{{ $end  = index $end  0 | replaceRE `end\=`  "" }}{{ end }}
+  {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` "" }}{{ end }}
+  {{ $src   = print
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
     "https://www.youtube-nocookie.com/embed/"
     $id
-    "?rel=0&modestbranding=1"
+    "?rel=0&modestbranding=1&color=white&enablejsapi=1"
     (cond (not $mute) "" (print "&autoplay=1&loop=1&mute=1&showinfo=0" (cond (not $list) (print "&playlist=" $id) "")))
     (cond (not $t)    "" (print "&start=" $t) )
     (cond (not $end)  "" (print "&end="   $end) )
@@ -19,15 +36,16 @@
 
 {{ else if in .src `vimeo.com` }}
 
-  {{ $id := .src | replaceRE `^.+?com/(.+?)(\?|$).*` `$1` }}
-  {{ $src = print
+  {{ $name  = "vimeo" }}
+  {{ $id   := .src | replaceRE `^.+?com/(video/)?(.+?)(\?|$).*` `$2` }}
+  {{ $url   = print "https://player.vimeo.com/video/" $id }}
+  {{ $src   = print
     "https://player.vimeo.com/video/"
     $id
-    "?"
-    (cond (not $mute) "" "autoplay=1&loop=1&autopause=0&muted=1")
-    "byline=0&portrait=0&title=0"
+    "?byline=0&portrait=0&title=0"
+    (cond (not $mute) "" "&autoplay=1&loop=1&autopause=0&muted=1&controls=0")
   }}
 
 {{ end }}
 
-{{ return $src }}
+{{ return (dict "name" $name "src" $src "url" $url) }}

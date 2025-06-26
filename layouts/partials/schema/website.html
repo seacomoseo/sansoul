@@ -1,0 +1,13 @@
+{{ $url    := (urls.Parse site.BaseURL).String }}
+
+{{ $schema := dict
+  "@type"         "WebSite"
+  "@id"           (print $url "#schema-website")
+  "url"           $url
+  "name"          site.Title
+  "description"   site.Params.description
+  "publisher"     (partial "schema/org-id" .)
+  "inLanguage"    (.Params.locale | default .Lang)
+}}
+
+{{ return $schema }}

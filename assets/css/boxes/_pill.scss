@@ -1,0 +1,207 @@
+
+// PILL
+
+.box {
+
+  // PILL TOP
+  &.pill-top {
+    // PILL TOP BACKGROUND
+    &.bg {
+      --radius-top: calc(50cqw + var(--box-pd));
+      @if $chamfer {
+        padding-top: calc(var(--box-pd) / .7071);
+      }
+      // Any first element
+      > *:where(
+        :first-child,
+        .bg-color + *,
+        .box__title.hide + *
+      ):not(
+        .bg-color,
+        .box__button,
+        .image
+      ) {
+        margin-top: calc(50cqw - var(--box-pd) * 2);
+      }
+      // Only first box icon top
+      > .box__icon--top:where(
+        :first-child,
+        .bg-color + *,
+        .box__title.hide + *
+      ) {
+        margin-top: calc((100cqw - var(--icon-size)) / 2 - var(--box-pd));
+      }
+    }
+    // PILL TOP BUTTON FIRST CHILD
+    > .box__button:where(
+      :first-child,
+      .bg-color + *,
+      .box__title.hide + *
+    ) {
+      width: 100%;
+      min-height: calc(50cqw + var(--radius));
+      padding-top: 2.5em;
+      --radius-top: 50cqw;
+    }
+    // PILL TOP IMAGES FIRST CHILD
+    > .image:where(
+      :first-child,
+      .bg-color + *,
+      .box__title.hide + *
+    ) {
+      min-height: calc(50cqw + var(--image-border-width, 0em) + var(--radius) / .7071);
+      --radius-top: 50cqw;
+      .image__inner {
+        --radius-top: 50cqw;
+      }
+      &.image--inset {
+        margin-top: calc(var(--image-margin) / .7071);
+        .image__inner {
+          --radius-top: calc(50cqw + var(--box-pd));
+        }
+      }
+      &.image--border {
+        @if $chamfer {
+          padding-top: calc(var(--image-border-width) / .7071);
+        }
+        .image__inner {
+          --radius-top: calc(50cqw - var(--image-border-width));
+        }
+        &.image--inset {
+          --radius-top: calc(50cqw + var(--box-pd));
+          .image__inner {
+            --radius-top: calc(50cqw + var(--box-pd) - var(--image-border-width, 0em));
+          }
+        }
+      }
+    }
+  }
+
+  // PILL BOTTOM
+  &.pill-bottom {
+    // PILL BOTTOM BACKGROUND
+    &.bg {
+      --radius-bottom: calc(50cqw + var(--box-pd));
+      @if $chamfer {
+        padding-bottom: calc(var(--box-pd) / .7071);
+      }
+      // Any last element
+      > *:is(
+        :last-child,
+        :has(+ .box__button.hide:last-child)
+      ):not(
+        .image,
+        .box__button,
+        .box__icon--top
+      ) {
+        padding-bottom: calc(50cqw - var(--box-pd) * 2);
+      }
+      // Only first box icon top
+      > .box__icon--top:where(
+        :last-child,
+        :has(+ .box__button.hide:last-child)
+      ) {
+        margin-bottom: calc((100cqw - var(--icon-size)) / 2 - var(--box-pd));
+      }
+    }
+    // PILL BOTTOM BUTTON LAST CHILD
+    > .box__button:last-child {
+      width: 100%;
+      min-height: calc(50cqw + var(--radius));
+      padding-bottom: 2.5em;
+      --radius-bottom: 50cqw;
+    }
+    // PILL BOTTOM IMAGES LAST CHILD
+    > .image:where(
+      :last-child,
+      :has(+ .box__button.hide:last-child)
+    ) {
+      min-height: calc(50cqw + var(--image-border-width, 0em) + var(--radius) / .7071);
+      --radius-bottom: 50cqw;
+      .image__inner {
+        --radius-bottom: 50cqw;
+      }
+      &.image--inset {
+        margin-bottom: calc(var(--image-margin) / .7071);
+        .image__inner {
+          --radius-bottom: calc(50cqw + var(--box-pd));
+        }
+      }
+      &.image--border {
+        @if $chamfer {
+          padding-bottom: calc(var(--image-border-width) / .7071);
+        }
+        .image__inner {
+          --radius-bottom: calc(50cqw - var(--image-border-width));
+        }
+        &.image--inset {
+          --radius-bottom: calc(50cqw + var(--box-pd));
+          .image__inner {
+            --radius-bottom: calc(50cqw + var(--box-pd) - var(--image-border-width, 0em));
+          }
+        }
+      }
+    }
+  }
+  
+}
+
+// MD WITH SHAPE FLOAT
+// .float {
+//   // margin-top: calc(100% - var(--box-inner) / 2);
+//   width: calc(var(--box-inner) / 2);
+//   height: 100%;
+//   float: left;
+//   display: flex;
+//   align-items: flex-end;
+//   // --shape-outside: polygon(
+//   //     0%   0%,
+//   //     0% 100%,
+//   //   100% 100%,
+//   //    63%  93%,
+//   //    30%  71%,
+//   //     8%  39%
+//   // );
+//   --shape-outside: polygon(
+//       0%  calc(100% +   0 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//       0%  calc(100% + 100 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//     100%  calc(100% + 100 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//      63%  calc(100% +  93 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//      30%  calc(100% +  71 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//       8%  calc(100% +  39 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2)
+//   );
+//   // --shape-outside:
+//   //   linear-gradient(
+//   //     0deg,
+//   //     transparent calc(var(--box-inner) / 2),
+//   //     white calc(var(--box-inner) / 2)
+//   //   ),
+//   //   radial-gradient(
+//   //     circle calc(var(--box-inner) / 2) at
+//   //     calc(var(--box-inner) / 2)
+//   //     calc(100% - var(--box-inner) / 2),
+//   //     white,
+//   //     white calc(var(--box-inner) / 2),
+//   //   black
+//   //     );
+//   shape-outside: var(--shape-outside);
+//   clip-path: var(--shape-outside);
+//   background-color: red;
+//   // &::before {
+//   //   content: '';
+//   //   background-image: var(--shape-outside);
+//   //   width: calc(var(--box-inner) / 2);
+//   //   height: calc(var(--box-inner) / 2);
+//   // }
+// }
+// .float--r {
+//   float: right;
+//   --shape-outside: polygon(
+//     calc(100% -   0%)  calc(100% +   0 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//     calc(100% -   0%)  calc(100% + 100 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//     calc(100% - 100%)  calc(100% + 100 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//     calc(100% -  63%)  calc(100% +  93 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//     calc(100% -  30%)  calc(100% +  71 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2),
+//     calc(100% -   8%)  calc(100% +  39 / 100 * var(--box-inner) / 2 - var(--box-inner) / 2)
+//   );
+// }

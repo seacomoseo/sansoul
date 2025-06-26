@@ -1,45 +1,38 @@
-{{ $parents  := slice }}
-
-{{ range slice
-  "/" 
-  "pages"
-  "categories"
-  "tags"
-  "authors"
-  "blog"
-  "events"
-  "products"
-  "custom"
-}}
-  {{ with page.GetPage . }}
-    {{ if .RegularPages | or .IsHome }}
-      {{ $tax := index site.Data.utilities.taxonomies .Type }}
-      <h2>
-        {{ partial "components/link" (dict
-          "link"      .RelPermalink
-          "button"    "none"
-          "icon"      $tax.icon
-          "emoji"     $tax.emoji
-          "label"     .Title
-          "anchor"    (partial "functions/anchor-page" .)
-          "noindex"   .Params.noindex
-        ) }}
-      </h2>
-      {{ with .RegularPages }}
-        <ul>
-          {{ range sort . "Params.date_ini" "desc" }}
-            <li>
-              {{ partial "components/link" (dict
-                "link"      .RelPermalink
-                "button"    "none"
-                "label"     .Title
-                "anchor"    (partial "functions/anchor-page" .)
-                "noindex"   .Params.noindex
-              ) }}
-            </li>
-          {{ end }}
-        </ul>
-      {{ end }}
-    {{ end }}
-  {{ end }}
-{{ end }}
+{{- range site.Sections }}
+  <h2 class="md__heading">
+    {{- $parent_icon := .Params.icon -}}
+    {{- if .Params.icon }}
+      {{ partial "icon" (dict "icon" .Params.icon "emoji" .Params.emoji) -}}
+    {{- end -}}
+    {{ partial "link" (dict
+      "class"  "md__heading-link"
+      "label"  .Title
+      "anchor" "auto"
+      "link"   .RelPermalink
+      "lock"   .Params.noindex
+    ) }}
+  </h2>
+  {{- $pages := where .RegularPages "Params.hide" "ne" true -}}
+  {{- if eq .Type "single" -}}
+    {{- $pages = slice site.Home | append .RegularPages -}}
+  {{- end -}}
+  {{- with $pages }}
+    <ul>
+      {{- range sort . "Date" "desc" }}
+        <li>
+          {{- $icon  := "" -}}
+          {{- if ne $parent_icon .Params.icon -}}
+            {{- $icon = .Params.icon -}}
+          {{- end -}}
+          {{- partial "link" (dict
+            "icon"   $icon
+            "label"  .Title
+            "link"   .RelPermalink
+            "anchor" "auto"
+            "lock"   .Params.noindex
+          ) -}}
+        </li>
+      {{- end }}
+    </ul>
+  {{- end -}}
+{{- end -}}

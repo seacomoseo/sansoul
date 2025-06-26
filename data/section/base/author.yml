@@ -1,0 +1,78 @@
+name: Autores
+node: aside
+if: author
+id: author
+hanchor: '{{ author 0 hanchor }}'
+title: '{{ author 1 parent }}'
+boxes:
+- box:
+    cols: 1
+    align_x: flex-start
+    align_y: top
+  boxes:
+  - fit: .2
+    fit_vs: .4
+    image: '{{ author 0 image }}'
+    ratio: 1/1
+    border: main
+  - fit: .8
+    fit_vs: .6
+    space: .75
+    align: left
+    title: '{{% author 0 title %}}'
+    md: |
+      {{< author 0 summary >}}
+- if: '{{ author 1 is }}'
+  box:
+    cols: 1
+    align_x: flex-end
+    align_y: top
+  boxes:
+  - fit: .8
+    fit_vs: .6
+    space: .75
+    align: right
+    title: '{{% author 1 title %}}'
+    md: |
+      {{< author 1 summary >}}
+  - fit: .2
+    fit_vs: .4
+    image: '{{ author 1 image }}'
+    ratio: 1/1
+    border: main
+- if: '{{ author 2 is }}'
+  box:
+    cols: 1
+    align_x: flex-end
+    align_y: top
+  boxes:
+  - fit: .2
+    fit_vs: .4
+    image: '{{ author 2 image }}'
+    ratio: 1/1
+    border: main
+  - fit: .8
+    fit_vs: .6
+    space: .75
+    align: left
+    title: '{{% author 2 title %}}'
+    md: |
+      {{< author 2 summary >}}
+- if: '{{ author 3 is }}'
+  box:
+    cols: 1
+    align_x: flex-end
+    align_y: top
+  boxes:
+  - fit: .8
+    fit_vs: .6
+    space: .75
+    align: right
+    title: '{{% author 3 title %}}'
+    md: |
+      {{< author 3 summary >}}
+  - fit: .2
+    fit_vs: .4
+    image: '{{ author 3 image }}'
+    ratio: 1/1
+    border: main

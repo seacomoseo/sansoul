@@ -1,41 +1,69 @@
-title: SanSoul Hugo Theme
-description: ''
-logo: ''
-legal_name: ''
-legal_dni: ''
-legal_email: ''
-legal_location: ''
-country: España
-location_type:
-- Organization # https://schema.org/docs/full.html > Organization...
-alternate_name:
-- SanSoul
-price_range: '' # [ €, €€, €€€, $, $$, $$$ ]
-google_analytics: ''
-google_site_verification: ''
-google_file_verification: ''
-disqus: ''
-cookies_legal: false
-analytics_pagespeed: true
-process_all_images: true
-cms: true
-cms_editorial_workflow: false
-development: false
-custom_code:
-  html_head:
-    code: ''
-    lang: html
-  html_body:
-    code: ''
-    lang: html
-  css:
-    code: ''
-    lang: css
-  js:
-    code: ''
-    lang: javascript
-social:
-- link: ''
-  icon: ''
-es: {}
-en: {}
+langs:
+- lang: es # [ es, en, fr, de, pt, it ]
+  label: null # string
+  disabled: null # boolean
+  baseURL: null # https://sansoul.netlify.com
+  title: null # string
+  description: null # string
+  email: null # string
+  google_analytics: null # string
+  google_site_verification: null # string
+  google_file_verification: null # string
+  google_translate: null # boolean
+  disqus: null # string
+  phone_code: null # string
+  main_org: null # string page path
+  time_zone: null # string
+  currency: null # float
+  pagination: null # string
+  html:
+    head: null # string
+    body: null # string
+params: []
+# - var: null # string get YAML variable
+#   name: null # string
+#   label: null # string
+#   hint: null # string
+#   widget: null # [ boolean, int, float, string, text, markdown, date, image, select, relation, list, object ] *
+#   options: []
+#   # - label: null # string
+#   #   value: null # string
+#   default: null # string
+#   params: [] # like params without `widget: list`, `list` and `schema` in 2nd level
+# - name: footer
+#   label: Footer
+#   widget: object
+#   params:
+#   - var: BOX_SIZE
+#   - var: BOX_BG_COLOR
+#   - var: BOX_BG_FADE_COLOR
+#   - var: BOX_BG_FADE_TYPE
+#   - var: BOX_BG_IMAGE
+#   - var: BOX_BG_ALPHA
+#   - var: BOX_DIVIDER_ID
+#   - var: BOX_DIVIDER_FLIP_X
+#   - var: BOX_DIVIDER_FLIP_Y
+#   - var: BOX_DOTS
+#   - var: BOX_MD
+defaults: []
+# - name: null # string
+#   value: null # string
+#   type: null # string [ boolean, int, float, string, slice, dict ] *
+#   kind: null # array [ home, page, section, taxonomy, term ]
+#   lang: null # array [ es, en, fr, de, pt, it ]
+#   path: null # array [ '/blog', '/blog/*']
+cms:
+  logo: null # string image path
+  lang: null # [ es, en, fr, de, pt, it ]
+  editorial_workflow: null # boolean
+  disabled: null # boolean
+others:
+  favicon: null # string image path
+  lang_default_subdir: null # boolean
+  cookies_advanced: null # boolean
+  cookies_legal: null # boolean
+  analytics_pagespeed_disabled: null # boolean
+  process_all_images: null # boolean
+  development: null # boolean
+  show: null # boolean
+  webp: null # boolean

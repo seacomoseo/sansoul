@@ -1,0 +1,39 @@
+
+.md {
+  mark:has(.icon > use[href^="/draws.#{$timestamp}.svg#sign-"]) {
+    position: relative;
+    display: inline-block;
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    .icon:has(use[href^="/draws.#{$timestamp}.svg#sign-"]) {
+      position: absolute;
+      top: -0.125em;
+      left: -0.25em;
+      width: calc(100% + 0.5em);
+      height: calc(100% + 0.25em);
+      margin: 0;
+      @keyframes headline-dash {
+        0% {
+          stroke-dasharray: 0 1500;
+        }
+        20%, 80%{
+          stroke-dasharray: 1500 1500;
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      fill: none;
+      stroke: var(--main);
+      stroke-width: .25em;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      animation-name: headline-dash;
+      animation-duration: 5s;
+      animation-iteration-count: infinite;
+      animation-delay: 1s;
+    }
+  }
+}

@@ -1,0 +1,45 @@
+name: Cabecera
+node: header
+align: left
+boxes:
+# - if: breadcrumbs
+#   node: nav
+#   md: '{{< breadcrumbs >}}'
+- if: icon
+  params:
+  - box: title
+  - box: icon
+  icon_type: side
+- if: not icon
+  params:
+  - box: title
+- tags:
+  - type: type
+  - type: date
+  # - type: time
+  # - type: words
+  - type: address
+  - type: tax
+    tax: all
+  - type: param
+    param: job
+    icon: briefcase
+  - type: param
+    param: autor
+    icon: user-group
+- if: cancelled
+  md: |
+    =={{< i18n cancelled >}}==
+    {.cancelled}
+- if: image
+  node: div
+  params:
+  - page: image
+    box: image
+  - page: title
+    box: alt
+  - page: seo
+    box: alt
+  - page: image
+    box: link
+  button: hide

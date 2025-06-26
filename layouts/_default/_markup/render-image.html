@@ -1,75 +1,76 @@
-
 {{- $alt          := .Text -}}
 {{- $ratio        := "" -}}
-{{- $span         := "" -}}
-{{- $figure_class := "content__figure" -}}
+{{- $col_vl       := 1.0 -}}
+{{- $figure_class := "md__figure" -}}
+{{- $figure_style := "" -}}
 {{- $image_class  := "image" -}}
+{{- $image_style  := "" -}}
+
+{{- /* BORDER */ -}}
+{{- /* Get the Page's Store */ -}}
+{{- $store  := page.Store -}}
+{{- $border := $store.Get "md_border" | default "" -}}
+{{- with $border -}}
+  {{- $border_class := print "image--border " (cond (ne "main" .) . "") -}}
+  {{- $figure_class  = print $figure_class " " $border_class -}}
+{{- end -}}
 
 {{- if in .Text "float" -}}
 
-  {{- $figure_class = print $figure_class " content__figure--float" -}}
+  {{- /* FLOAT */ -}}
+  {{- $figure_class = print $figure_class " md__figure--float" -}}
   {{- if in .Text "float-right" -}}
-    {{- $figure_class = print $figure_class " content__figure--float-right" -}}
+    {{- $figure_class = print $figure_class " md__figure--float-right" -}}
   {{- end -}}
-  {{- $alt = $alt | replaceRE `float(-right)?` `` -}}
-  {{- $span = 2 -}}
+  {{- $alt    = $alt | replaceRE `float(-right)?` "" -}}
+  {{- $col_vl = 0.5 -}}
+
+  {{- $img_shape := resources.Get (print "/media/" .Destination) -}}
+  {{- if not (in .Destination ".svg") -}}
+    {{- $img_shape = $img_shape | images.Filter (images.Gamma -1) -}}
+    {{- $img_shape = $img_shape.Resize (print 100 "x webp q10") -}}
+    {{- $img_shape = $img_shape | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`) -}}
+  {{- end -}}
+  {{- $figure_style = ` style="--shape:url(` $img_shape.RelPermalink `)"` -}}
 
 {{- else -}}
 
-  {{- with site.Data.articles.content.border -}}
-    {{- $image_class  = print $image_class " image--border" -}}
-    {{- if ne . "main" -}}
-      {{- $image_class = print $image_class " " . -}}
+  {{- /*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */ -}}
+  {{- $is_ratio  := .Text | findRE `^[\d/]+$` -}}
+  {{- $is_circle := eq .Text "circle" -}}
+  {{- $is_iframe := partial "functions/is-iframe" .Destination -}}
+  {{- $is_video  := .Destination | findRE `\.(mp4|mov|avi|webm)` -}}
+  {{- if or $is_ratio $is_circle $is_iframe $is_video -}}
+    {{- if $is_circle -}}
+      {{- $ratio     = "1/1" -}}
+    {{- else -}}
+      {{- $ratio     = $.Text | default "16/9" -}}
     {{- end -}}
-  {{- end -}}
-
-  {{/*  RATIO IN TEXT, EXAMPLE: ![3x2](example.jpg)  */}}
-  {{- with where site.Data.options.ratio "value" .Text -}}
-    {{- $ratio       = $.Text -}}
-    {{- $image_class = print $image_class " image--" $ratio -}}
+    {{- $image_class = print $image_class " image--ratio" -}}
+    {{- $image_style = print ` style="--image-ratio:` $ratio `"` -}}
+    {{- $alt         = false -}}
+  {{- else if $is_circle -}}
+    {{- $image_class = print $image_class " image--circle" -}}
     {{- $alt         = false -}}
   {{- end -}}
 
 {{- end -}}
 
-<figure class="{{ $figure_class }}" {{ $aux := `` }}
-  {{- if in .Text `float` -}}
-    {{- $img_shape := resources.Get (print `/media/` .Destination) -}}
-    {{- if in .Destination `.svg` -}}
-    {{- else -}}
-      {{- $img_shape =
-        (
-          (
-            $img_shape
-            | images.Filter (images.Gamma -1)
-          ).Resize
-          (print 100 `x webp q10`)
-          | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`)
-        )
-      -}}
-    {{- end -}}
-    {{- ` ` | safeHTMLAttr -}}
-    style="--shape:url({{- $img_shape.RelPermalink -}})"
-  {{- end -}}
->
-
-  <div class="{{ $image_class }}">
-    {{- partial "components/image"
-      (dict
-        "class" "image__inner"
+<figure class="{{ $figure_class }}" {{- $figure_style | safeHTMLAttr }}>
+  <div class="{{ $image_class }}" {{- $image_style | safeHTMLAttr }}>
+    {{- partial "media/_" (dict
+        "class"     "image__inner"
         "src"       .Destination
         "ratio"     $ratio
         "alt"       $alt
         "container" "sm"
-        "span"      $span
-      )
-    -}}
+        "fit_vl"    $col_vl
+        "fit_vs"    1
+    ) -}}
   </div>
-
   {{- with .Title -}}
-    <figcaption class="content__figcaption">
+    <figcaption class="md__figcaption">
       {{- . -}}
     </figcaption>
   {{- end -}}
-
 </figure>

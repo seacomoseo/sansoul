@@ -1,0 +1,95 @@
+{{- if and .show (ne .show "hide") -}}
+
+  {{- $buttons := slice -}}
+
+  {{- if eq .show "items" -}}
+  
+    {{- with .items | default (index . page.Lang) -}}
+      {{- range . -}}
+        {{- $buttons = $buttons | append . -}}
+      {{- end -}}
+    {{- end -}}
+
+  {{- else if eq .show "auto" -}}
+
+    {{- /*  Get contact phones from page store  */ -}}
+    {{- $contact_buttons := page.Store.Get "phones" -}}
+    {{- with $contact_buttons -}}
+      {{- with where . "type" "whatsapp" -}}
+        {{- $buttons   = first 1 . -}}
+      {{- else -}}
+        {{- with where . "type" "phone" -}}
+          {{- $buttons = first 1 . -}}
+        {{- else -}}
+          {{- $buttons = first 1 . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+  {{- end -}}
+
+  {{- with $buttons -}}
+    {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" }}
+    <aside id="callnow" class="callnow {{ $callnow_plus }}">
+      {{- range . -}}
+
+        {{- $class   := "" -}}
+        {{- $num     := "" -}}
+        {{- $link    := .link -}}
+        {{- $button  := .button | default "cta" -}}
+        {{- $icon    := .icon -}}
+        {{- $emoji   := "" -}}
+        {{- $label   := .label -}}
+        {{- $anchor  := .anchor | default "auto" -}}
+        {{- $noindex := .lock -}}
+
+        {{- if in (slice "phone" "whatsapp") .type -}}
+          {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
+        {{- end -}}
+
+        {{- if eq .type "custom" -}}
+          {{- $class   = "callnow__custom" -}}
+        {{- else if eq .type "phone" -}}
+          {{- $class   = "callnow__phone" -}}
+          {{- $link    = print "tel:+" $num -}}
+          {{- $icon    = .icon | default "phone" -}}
+          {{- $emoji   = .icon | default "📞" -}}
+          {{- $label   = i18n "callnow_phone" -}}
+          {{- $noindex = true -}}
+        {{- else if eq .type "whatsapp" -}}
+          {{- $class   = "callnow__whatsapp" -}}
+          {{- $link    = print "https://wa.me/" $num -}}
+          {{- $button  = cond (not .button) "whatsapp" $button -}}
+          {{- $icon    = "whatsapp" -}}
+          {{- $emoji   = "✆" -}}
+          {{- $label   = i18n "callnow_whatsapp" -}}
+          {{- $noindex = true -}}
+        {{- end -}}
+
+        {{- if $callnow_plus -}}<i>{{- end -}}
+
+        {{- with $label }}
+          <div class="callnow__caption">{{ . }}</div>
+        {{- end -}}
+
+        {{- partial "link" (dict
+          "class"  $class
+          "button" $button
+          "dot"    true
+          "swap"   true
+          "ga4"    .ga4
+          "icon"   $icon
+          "emoji"  $emoji
+          "label"  $label
+          "anchor" $anchor
+          "link"   $link
+          "lock"   $noindex
+        ) -}}
+
+        {{- if $callnow_plus -}}</i>{{- end -}}
+
+      {{- end -}}
+    </aside>
+  {{- end -}}
+
+{{- end -}}

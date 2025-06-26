@@ -1,0 +1,93 @@
+.modal__active {
+  overflow-y: hidden;
+}
+.modal {
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  padding: 3em 0;
+  overscroll-behavior: contain;
+  background-color: rgba($black, .75);
+  content-visibility: auto;
+  &::backdrop {
+    background: transparent;
+  }
+}
+.modal__back,
+.modal__close--corner {
+  position: fixed;
+  top: 0.75em;
+  left: 1em;
+  @if not $buttons-3d {
+    filter: drop-shadow($shadow);
+  }
+}
+.modal__close--corner {
+  left: initial;
+  right: 1em;
+}
+.modal__container {
+  > .buttons {
+    margin-top: 4em;
+  }
+}
+.modal__nav {
+  width: 100%;
+  justify-content: center;
+}
+/*! purgecss start ignore */
+.modal[open] {
+  display: grid;
+  align-items: center;
+  animation-name: show-dialog;
+  animation-duration: .3s;
+  .modal__container {
+    animation-name: show-container;
+    animation-duration: .3s;
+    .buttons:last-child {
+      .button--dot {
+        width: 2.5em;
+        height: 2.5em;
+        > .icon {
+          font-size: 1.5em;
+        }
+      }
+    }
+  }
+  &.modal--hide {
+    animation-name: hide-dialog;
+    .modal__container {
+      animation-name: hide-container;
+    }
+  }
+}
+@keyframes show-dialog {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+@keyframes hide-dialog {
+  to {
+      opacity: 0;
+  }
+}
+@keyframes show-container {
+  from {
+      transform: translateY(50lvh);
+  }
+  to {
+      transform: translateY(0);
+  }
+}
+@keyframes hide-container{
+  to {
+      transform: translateY(50lvh);
+  }
+}
+/*! purgecss end ignore */

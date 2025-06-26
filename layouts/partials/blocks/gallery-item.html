@@ -1,0 +1,126 @@
+{{- $image    := .image -}}
+{{- $link     := .link -}}
+{{- $tag      := "a" -}}
+{{- $lb_data  := "" -}}
+{{- $tabindex := "" -}}
+{{- $title    := "" -}}
+{{- $target   := "" -}}
+{{- $rel      := "" -}}
+
+{{- /*  ROWS TYPE STYLE  */ -}}
+{{- $style := "" -}}
+{{- if eq .type "rows" -}}
+  {{- $cols         := .cols | default 2 -}}
+  {{- $width        := 200 -}}
+  {{- $height       := 100 -}}
+  {{- with .image -}}
+
+    {{- if $image | findRE `\.(mp4|mov|avi|webm)` -}} {{- /*  IS VIDEO  */ -}}
+
+      {{- /*  {{- $image   = print "/media/" $image | replaceRE `[\#\&\?].*$` "" -}}  */ -}}
+      {{- $poster := "" -}}
+      {{- if in $image "poster=" -}}
+        {{- $poster = $image | replaceRE `^.+?poster\=(.+?)($|#.*$)` "$1" -}}
+        {{- if hasPrefix $poster "http" -}}
+          {{- $image  = $poster -}}
+        {{- else -}}
+          {{- $poster = print "/media/" $poster -}}
+        {{- end -}}
+      {{- else -}}
+        {{- range (slice "jpg" "jpeg" "png" "gif" "webp" "svg") -}}
+          {{- $path  := print "/media/" $image | replaceRE `[\#\&\?].*$` "" -}}
+          {{- $file  := $path | replaceRE `^(.+)\..+$` (print `$1.` .) -}}
+          {{- $asset := print "assets" $file -}}
+          {{- if fileExists $asset -}}
+            {{- $poster = $file -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- with resources.Get $poster -}}
+        {{- $width  = .Width -}}
+        {{- $height = .Height -}}
+        {{- $image  = $poster -}}
+      {{- end -}}
+
+    {{- else -}}
+
+      {{- with resources.Get (print "/media/" .) -}}
+        {{- if in $image ".svg" -}} {{- /*  IS SVG  */ -}}
+          {{- $svg := (. | minify).Content -}}
+          {{- $view_box := $svg
+            | replaceRE
+              `.*viewBox="([\d\.-]+) ([\d\.-]+) ([\d\.-]+) ([\d\.-]+)".*`
+              `$1,$2,$3,$4`
+          -}}
+          {{- $view_box_split := split $view_box "," -}}
+          {{- $width  = sub (float (index $view_box_split 2)) (float (index $view_box_split 0)) -}}
+          {{- $height = sub (float (index $view_box_split 3)) (float (index $view_box_split 1)) -}}
+        {{- else -}}
+          {{- $width  = .Width -}}
+          {{- $height = .Height -}}
+        {{- end -}}
+      {{- end -}}
+
+    {{- end -}}
+
+  {{- end -}}
+  {{- $style_width  := lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}{{- /*  (width / height) * (600 / cols) / 16  */ -}}
+  {{- $style_height := lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}{{- /*  (height / width) * 100  */ -}}
+  {{- $style         = print "--gallery-item-width:" $style_width ";--gallery-item-height:" $style_height "%" -}}
+{{- end -}}
+
+{{- /*  EXTERNAL  */ -}}
+{{- $external := hasPrefix .image "http" -}}
+{{- if not $external -}}
+  {{- if not (in $.image "/media/") -}}
+    {{- with resources.Get (print "/media/" .image) -}}
+      {{- $image = .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  LIGTHBOX  */ -}}
+{{- $is_lightbox := eq .link .image -}}
+{{- if $is_lightbox -}}
+  {{- $lb_data   = $image | safeURL -}}
+  {{- $tabindex  = "0" -}}
+  {{- $tag       = "div" -}}
+  {{- $link      = "" -}}
+{{- else -}}
+  {{- $title = .alt -}}
+  {{- if not $title -}}
+    {{- $title = $image | replaceRE `^(.+)\..*$` "$1" | humanize -}}
+  {{- end -}}
+  {{- with $link -}}
+    {{- if hasPrefix . "http" -}}
+      {{- $target = "_blank" -}}
+      {{- $rel    = "noopener" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  ATTRIBUTES  */ -}}
+{{- $attrs := dict
+  "class"         "gallery__item"
+  "data-lightbox" $lb_data
+  "tabindex"      $tabindex
+  "href"          $link
+  "title"         $title
+  "target"        $target
+  "rel"           $rel
+  "style"         $style
+-}}
+{{- $attrs = partial "functions/attrs" $attrs -}}
+
+{{- /*  HTML  */}}
+{{ print "<" $tag $attrs ">" | safeHTML }}
+  {{- partial "media/_" (dict
+      "class"     "gallery__image"
+      "src"       .image
+      "alt"       .alt
+      "notlazy"   .notlazy
+      "container" .container
+      "fit_vl"    .col_vl
+      "fit_vs"    .col_vs
+  ) }}
+{{ print "</" $tag ">" | safeHTML -}}

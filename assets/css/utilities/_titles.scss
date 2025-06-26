@@ -1,3 +1,4 @@
+.h0 { @extend h1; --hs: 2.2; }
 .h1 { @extend h1; }
 .h2 { @extend h2; }
 .h3 { @extend h3; }
@@ -8,16 +9,19 @@
 .subtitle {
   @include font-cursive;
   display: block;
+<<<<<<< HEAD
   font-size: $font-size-cursive * 1.2;
+=======
+  font-size: $font-size-cursive * 1.2em;
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   // text-wrap: balance;
+  color: var(--subtitle);
   &:last-child {
     margin-bottom: 0;
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: var(--title);
-}
-.subtitle {
-  color: var(--subtitle);
+.list-title {
+  margin-top: 1em;
+  margin-bottom: -1em;
 }

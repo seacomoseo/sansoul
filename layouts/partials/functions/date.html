@@ -1,7 +1,7 @@
 {{ $date := "" }}
 {{ with .date }}
-  {{ if eq $.type "events" }}
-    {{ $icon   := partial "components/icon" (dict "class" "data__icon" "icon" "clock" "emoji" "🕓") }}
+  {{ if eq $.type "event" }}
+    {{ $icon   := partial "icon" (dict "class" "box__tag-icon" "icon" "clock" "emoji" "🕓") }}
     {{ $format := print "Monday, 2 Jan 2006 - 15:04" }}
     {{ $date    = . | time.Format $format | title }}
     {{ $hour   := $date | replaceRE `.*(\d\d:\d\d)$` `$1` }}

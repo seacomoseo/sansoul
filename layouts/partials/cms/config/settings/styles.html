@@ -1,0 +1,198 @@
+{{ $t := partial "functions/i18n-cms" . }}
+
+{{ return slice
+  (dict "&FONT_KEYS" (dict "widget" `object` "required" false "collapsed" true "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
+
+  (dict "&FONT_FAMILY"      (dict "name" `family`      "widget" `string`  "required" false "label" $t.styles_fonts_family      "hint" $t.styles_fonts_family_hint))
+  (dict "&FONT_WEIGHT"      (dict "name" `weight`      "widget" `select`  "required" false "label" $t.styles_fonts_weight      "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_BOLD"        (dict "name" `bold`        "widget" `select`  "required" false "label" $t.styles_fonts_bold        "options" `~OPTIONS_FONT_WEIGHT`))
+  (dict "&FONT_ITALIC"      (dict "name" `italic`      "widget" `boolean` "required" false "label" $t.styles_fonts_italic))
+  (dict "&FONT_LINE_HEIGHT" (dict "name" `line_height` "widget" `number`  "required" false "label" $t.styles_fonts_line_height "value_type" `float` "step" 0.01 "min" 0  "max" 3))
+  (dict "&FONT_SIZE"        (dict "name" `size`        "widget" `number`  "required" false "label" $t.styles_fonts_size        "value_type" `float` "step" 0.01 "min" 0  "max" 3))
+  (dict "&FONT_TOP"         (dict "name" `top`         "widget" `number`  "required" false "label" $t.styles_fonts_top         "value_type" `float` "step" 0.01 "min" -2 "max" 2))
+  (dict "&FONT_GOOGLE"      (dict "name" `google`      "widget" `boolean` "required" false "label" $t.styles_fonts_google      "hint" $t.styles_fonts_google_hint))
+
+  (dict "&FONT" (dict "<<" (slice
+    (dict "fields" (slice
+      `~FONT_GOOGLE`
+      `~FONT_FAMILY`
+      `~FONT_WEIGHT`
+      `~FONT_BOLD`
+      `~FONT_ITALIC`
+      `~FONT_LINE_HEIGHT`
+    ))
+    `~FONT_KEYS`
+  )))
+  (dict "&FONT_WITH_TOP" (dict "<<" (slice
+    `~FONT_KEYS`
+    (dict "fields" (slice
+      `~FONT_GOOGLE`
+      `~FONT_FAMILY`
+      `~FONT_WEIGHT`
+      `~FONT_BOLD`
+      `~FONT_ITALIC`
+      `~FONT_LINE_HEIGHT`
+      `~FONT_SIZE`
+      `~FONT_TOP`
+    ))
+  )))
+
+  (dict "&BASE_COLOR"
+    (dict
+      "widget"    `object`
+      "required"  false
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `color`    "widget" `color`  "required" false "label" $t.styles_colors_color    "allow_input" true)
+        (dict "name" `light`    "widget" `color`  "required" false "label" $t.styles_colors_light    "allow_input" true)
+        (dict "name" `dark`     "widget" `color`  "required" false "label" $t.styles_colors_dark     "allow_input" true)
+        (dict
+          "name"      `contrast`
+          "widget"    `object`
+          "required"  false
+          "label"     $t.styles_colors_contrast
+          "hint"      $t.styles_colors_contrast_hint
+          "collapsed" true
+          "fields"    (slice
+            (dict "name" `fill` "widget" `boolean` "required" false "label" $t.styles_colors_contrast_fill)
+            (dict "name" `in`   "widget" `boolean` "required" false "label" $t.styles_colors_contrast_in  )
+            (dict "name" `text` "widget" `boolean` "required" false "label" $t.styles_colors_contrast_text)
+          )
+        )
+      )
+    )
+  )
+
+  (dict "&SETTINGS_STYLES" (slice
+    (dict
+      "name"      `icons`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_icons
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `type`   "widget" `select`  "required" false "label" $t.styles_icons_type       "options" `~OPTIONS_ICONS_TYPE`)
+        (dict "name" `sharp`  "widget" `boolean` "required" false "label" $t.styles_icons_sharp)
+        (dict "name" `emojis` "widget" `boolean` "required" false "label" $t.styles_icons_emojis)
+        (dict "<<" (slice (dict "name" `play`  "label" $t.styles_icons_play)  `~BOX_ICON_ID`))
+        (dict "<<" (slice (dict "name" `up`    "label" $t.styles_icons_up)    `~BOX_ICON_ID`))
+        (dict "<<" (slice (dict "name" `down`  "label" $t.styles_icons_down)  `~BOX_ICON_ID`))
+        (dict "<<" (slice (dict "name" `left`  "label" $t.styles_icons_left)  `~BOX_ICON_ID`))
+        (dict "<<" (slice (dict "name" `right` "label" $t.styles_icons_right) `~BOX_ICON_ID`))
+      )
+    )
+    (dict
+      "name"      `fonts`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_fonts
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `base`    "label" $t.styles_fonts_base    "<<" `~FONT`)
+        (dict "name" `cursive` "label" $t.styles_fonts_cursive "<<" `~FONT_WITH_TOP`)
+        (dict "name" `title`   "label" $t.styles_fonts_title   "<<" `~FONT_WITH_TOP`)
+        (dict "name" `blockquote_cursive` "widget" `boolean` "required" false "label" $t.styles_fonts_blockquote_cursive "hint" $t.styles_fonts_blockquote_cursive_hint)
+      )
+    )
+    (dict
+      "name"      `colors`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_colors
+      "collapsed" true
+      "fields"    (slice
+        (dict "label" $t.styles_colors_main "name" `main` "<<" `~BASE_COLOR`)
+        (dict "label" $t.styles_colors_alt  "name" `alt`  "<<" `~BASE_COLOR` "hint" $t.styles_colors_alt_hint)
+        (dict "label" $t.styles_colors_cta  "name" `cta`  "<<" `~BASE_COLOR` "hint" $t.styles_colors_cta_hint)
+        (dict
+          "name"      `base`
+          "widget"    `object`
+          "required"  false
+          "label"     $t.styles_base
+          "collapsed" true
+          "fields"    (slice
+            (dict "name" `white` "widget" `color` "required" false "label" $t.styles_base_white "allow_input" true)
+            (dict "name" `light` "widget" `color` "required" false "label" $t.styles_base_light "allow_input" true)
+            (dict "name" `gray`  "widget" `color` "required" false "label" $t.styles_base_gray  "allow_input" true)
+            (dict "name" `dark`  "widget" `color` "required" false "label" $t.styles_base_dark  "allow_input" true)
+            (dict "name" `black` "widget" `color` "required" false "label" $t.styles_base_black "allow_input" true)
+          )
+        )
+      )
+    )
+    (dict
+      "name"      `rounded`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_rounded
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `radius`  "widget" `number`  "required" false "label" $t.styles_rounded_radius  "hint" $t.styles_rounded_radius_hint  "value_type" `float` "step" 0.01 "min" 0 "max" 1.25)
+        (dict "name" `chamfer` "widget" `boolean` "required" false "label" $t.styles_rounded_chamfer "hint" $t.styles_rounded_chamfer_hint)
+      )
+    )
+    (dict
+      "name"      `buttons`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_buttons
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `sides_round` "widget" `boolean` "required" false "label" $t.styles_buttons_sides_round "hint" $t.styles_buttons_sides_round_hint)
+        (dict "name" `icon_circle` "widget" `boolean` "required" false "label" $t.styles_buttons_icon_circle "hint" $t.styles_buttons_icon_circle_hint)
+        (dict "name" `deep`        "widget" `boolean` "required" false "label" $t.styles_buttons_deep        "hint" $t.styles_buttons_deep_hint)
+        (dict "name" `outline`     "widget" `boolean` "required" false "label" $t.styles_buttons_outline     "hint" $t.styles_buttons_outline_hint)
+        (dict
+          "name"      `font`
+          "widget"    `object`
+          "required"  false
+          "label"     $t.styles_buttons_font
+          "collapsed" true
+          "fields"    (slice
+            (dict "name" `type` "widget" `select`  "required" false "label" $t.styles_buttons_type "options" `~OPTIONS_BUTTONS_TYPE`)
+            (dict "name" `bold` "widget" `boolean` "required" false "label" $t.styles_buttons_bold)
+            (dict "name" `caps` "widget" `boolean` "required" false "label" $t.styles_buttons_caps)
+          )
+        )
+        (dict
+          "name"      `swap`
+          "widget"    `object`
+          "required"  false
+          "label"     $t.styles_buttons_swap
+          "collapsed" true
+          "fields"    (slice
+            (dict "name" `type` "widget" `select`  "required" false "label" $t.styles_buttons_type "options" `~OPTIONS_BUTTONS_TYPE`)
+            (dict "name" `bold` "widget" `boolean` "required" false "label" $t.styles_buttons_bold)
+            (dict "name" `caps` "widget" `boolean` "required" false "label" $t.styles_buttons_caps)
+          )
+        )
+      )
+    )
+    (dict
+      "name"      `inputs`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_inputs
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `fill`       "widget" `boolean` "required" false "label" $t.styles_inputs_fill       "hint" $t.styles_inputs_fill_hint)
+        (dict "name" `labels_out` "widget" `boolean` "required" false "label" $t.styles_inputs_labels_out "hint" $t.styles_inputs_labels_out_hint)
+        (dict "name" `consent`    "widget" `string`  "required" false "label" $t.styles_inputs_consent    "hint" $t.styles_inputs_consent_hint)
+      )
+    )
+    (dict
+      "name"      `shadow`
+      "widget"    `object`
+      "required"  false
+      "label"     $t.styles_shadow
+      "collapsed" true
+      "fields"    (slice
+        (dict "name" `left`  "widget" `number` "required" false "label" $t.styles_shadow_left  "value_type" `float` "step" 0.05 "min" -1 "max" 1)
+        (dict "name" `top`   "widget" `number` "required" false "label" $t.styles_shadow_top   "value_type" `float` "step" 0.05 "min" -1 "max" 1)
+        (dict "name" `blur`  "widget" `number` "required" false "label" $t.styles_shadow_blur  "value_type" `float` "step" 0.05 "min" 0  "max" 1)
+        (dict "<<" (slice (dict "label" $t.styles_shadow_color) `~BOX_BG_COLOR`))
+        (dict "name" `alpha` "widget" `number` "required" false "label" $t.styles_shadow_alpha "value_type" `float` "step" 0.05 "min" 0  "max" 1)
+      )
+    )
+  ))
+}}

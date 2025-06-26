@@ -1,0 +1,132 @@
+{{ $t := partial "functions/i18n-cms" . }}
+
+{{ return slice
+
+  (dict "&SETTINGS_CONFIG_LANGS" (dict
+    "name"           `langs`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.config_langs
+    "label_singular" $t.config_lang
+    "hint"           $t.config_langs_hint
+    "collapsed"      true
+    "summary"        "{{fields.lang}}"
+    "allow_add"      true
+    "fields"         (slice
+      (dict "name" `lang`                     "widget" `select`  "required" false "label" $t.config_lang                     "options" `~OPTIONS_LANGS`)
+      (dict "name" `disabled`                 "widget" `boolean` "required" false "label" $t.config_lang_disabled)
+      (dict "name" `title`                    "widget" `string`  "required" false "label" $t.config_title)
+      (dict "name" `description`              "widget" `text`    "required" false "label" $t.config_description)
+      (dict "name" `email`                    "widget" `string`  "required" false "label" $t.config_email                    "hint" $t.config_email_hint)
+      (dict "name" `google_analytics`         "widget" `string`  "required" false "label" $t.config_google_analytics         "hint" $t.config_google_analytics_hint)
+      (dict "name" `google_site_verification` "widget" `string`  "required" false "label" $t.config_google_site_verification "hint" $t.config_google_site_verification_hint)
+      (dict "name" `google_file_verification` "widget" `string`  "required" false "label" $t.config_google_file_verification "hint" $t.config_google_file_verification_hint)
+      (dict "name" `google_translate`         "widget" `boolean` "required" false "label" $t.config_google_translate         "hint" $t.config_google_translate_hint)
+      (dict "name" `disqus`                   "widget" `string`  "required" false "label" $t.config_disqus                   "hint" $t.config_disqus_hint)
+      (dict "name" `main_org`                 "widget" `string`  "required" false "label" $t.config_main_org                 "hint" $t.config_main_org_hint)
+      (dict "name" `phone_code`               "widget" `select`  "required" false "label" $t.config_phone_code               "hint" (print $t.default " → **+34 🇪🇸**")         "options" site.Data.utilities.phone_code)
+      (dict "name" `time_zone`                "widget" `select`  "required" false "label" $t.config_time_zone                "hint" (print $t.default " → **Europe/Madrid**")  "options" site.Data.utilities.time_zone)
+      (dict "name" `currency`                 "widget" `select`  "required" false "label" $t.config_currency                 "hint" (print $t.default " → **EUR**")            "options" `~OPTIONS_CURRENCY`)
+      (dict "name" `pagination`               "widget" `string`  "required" false "label" $t.config_pagination               "hint" $t.config_pagination_hint)
+      (dict
+        "name"      `html`
+        "widget"    `object`
+        "label"     $t.config_html
+        "required"  false
+        "collapsed" true
+        "fields"    (slice
+          (dict "name" `head` "required" false "label" $t.config_html_head "widget" `text` "default_language" `html` "output_code_only" true)
+          (dict "name" `body` "required" false "label" $t.config_html_body "widget" `text` "default_language" `html` "output_code_only" true)
+        )
+      )
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG_PARAMS"   (dict
+    "name"           `params`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.config_params
+    "label_singular" $t.config_params_singular
+    "collapsed"      true
+    "summary"        "{{fields.label}} ({{fields.name}})"
+    "allow_add"      true
+    "fields"         (slice
+      `~SETTINGS_TYPES_PARAMS_VAR`
+      `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_TYPES_PARAMS_LABEL`
+      `~SETTINGS_TYPES_PARAMS_HINT`
+      `~SETTINGS_TYPES_PARAMS_WIDGET`
+      `~SETTINGS_TYPES_PARAMS_OPTIONS`
+      `~SETTINGS_TYPES_PARAMS_DEFAULT`
+      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
+      `~SETTINGS_TYPES_PARAMS_2`
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG_DEFAULTS_VALUE" (dict "name" `value` "widget" `string` "required" false "label" $t.config_defaults_value))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_TYPE"  (dict "name" `type`  "widget" `select` "required" false "label" $t.config_defaults_type                 "options" site.Data.utilities.pairing_kinds))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_KIND"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.config_defaults_kind "multiple" true "options" site.Data.utilities.default_kinds))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_LANG"  (dict "name" `lang`  "widget" `select` "required" false "label" $t.config_defaults_lang "multiple" true "options" `~OPTIONS_LANGS`))
+  (dict "&SETTINGS_CONFIG_DEFAULTS_PATH"  (dict "name" `path`  "widget" `list`   "required" false "label" $t.config_defaults_path "multiple" true))
+  (dict "&SETTINGS_CONFIG_DEFAULTS"       (dict
+    "name"           `defaults`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.config_defaults
+    "label_singular" $t.config_defaults_value
+    "hint"           $t.config_defaults_hint
+    "collapsed"      true
+    "summary"        "{{fields.name}}: {{fields.value}}"
+    "allow_add"      true
+    "fields"         (slice
+      `~SETTINGS_TYPES_PARAMS_NAME`
+      `~SETTINGS_CONFIG_DEFAULTS_VALUE`
+      `~SETTINGS_CONFIG_DEFAULTS_TYPE`
+      `~SETTINGS_CONFIG_DEFAULTS_KIND`
+      `~SETTINGS_CONFIG_DEFAULTS_LANG`
+      `~SETTINGS_CONFIG_DEFAULTS_PATH`
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG_CMS" (dict
+    "name"      `cms`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.config_cms
+    "collapsed" true
+    "fields"    (slice
+      (dict "name" `logo`      "widget" `image`   "required" false "label" $t.config_cms_logo      "max_file_size" 512000000)
+      (dict "name" `lang`      "widget" `select`  "required" false "label" $t.config_cms_lang      "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~OPTIONS_LANGS_CMS`)
+      (dict "name" `editorial` "widget" `boolean` "required" false "label" $t.config_cms_editorial "hint" $t.config_cms_editorial_hint)
+      (dict "name" `disabled`  "widget" `hidden`  "required" false "label" `disabled` )
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG_OTHERS" (dict
+    "label"     $t.config_others
+    "name"      `others`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      (dict "name" `favicon`                      "widget" `image`   "required" false "label" $t.config_others_favicon                      "hint" $t.config_others_favicon_hint                      "max_file_size" 512000000)
+      (dict "name" `lang_default_subdir`          "widget" `boolean` "required" false "label" $t.config_others_lang_default_subdir)
+      (dict "name" `cookies_advanced`             "widget" `boolean` "required" false "label" $t.config_others_cookies_advanced             "hint" $t.config_others_cookies_advanced_hint)
+      (dict "name" `cookies_legal`                "widget" `boolean` "required" false "label" $t.config_others_cookies_legal                "hint" $t.config_others_cookies_legal_hint)
+      (dict "name" `analytics_pagespeed_disabled` "widget" `boolean` "required" false "label" $t.config_others_analytics_pagespeed_disabled "hint" $t.config_others_analytics_pagespeed_disabled_hint)
+      (dict "name" `process_all_images`           "widget" `boolean` "required" false "label" $t.config_others_process_all_images           "hint" $t.config_others_process_all_images_hint)
+      (dict "name" `development`                  "widget" `boolean` "required" false "label" $t.config_others_development                  "hint" $t.config_others_development_hint)
+      (dict "name" `show`                         "widget" `boolean` "required" false "label" $t.config_others_show                         "hint" $t.config_others_show_hint)
+      (dict "name" `webp`                         "widget" `boolean` "required" false "label" $t.config_others_webp                         "hint" $t.config_others_webp_hint)
+    )
+  ))
+
+  (dict "&SETTINGS_CONFIG" (slice
+    `~SETTINGS_CONFIG_LANGS`
+    `~SETTINGS_CONFIG_CMS`
+    `~SETTINGS_CONFIG_PARAMS`
+    `~SETTINGS_CONFIG_DEFAULTS`
+    `~SETTINGS_CONFIG_OTHERS`
+  ))
+}}

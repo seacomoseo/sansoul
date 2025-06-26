@@ -1,0 +1,60 @@
+name: Footer
+color: dark
+space: 2
+params:
+- page: footer.size
+  box: size
+- page: footer.color
+  box: color
+- page: footer.fade
+  box: fade
+- page: footer.fade_type
+  box: fade_type
+- page: footer.bi
+  box: bi
+- page: footer.alpha
+  box: alpha
+- page: footer.div
+  box: div
+- page: footer.div_x
+  box: div_x
+- page: footer.div_y
+  box: div_y
+- page: footer.boxes
+  box: boxes
+boxes:
+- if: footer.dots
+  params:
+  - page: footer.dots
+    box: dots
+- params:
+  - page: footer.md
+    box: md
+  md: |
+    - :copyright:      {{< internal-link index >}}
+    - :scale-balanced: {{< internal-link legal >}}
+    - :shield-keyhole: {{< internal-link privacy >}}
+    - :cookie-bite:    {{< internal-link cookies >}}
+    - :seacomoseo:     {{< i18n web_design >}} [seacomoseo.com](https://seacomoseo.com/ "[homefollow]")
+    {.list-inline}
+# - contact:
+#   - type: custom
+#     icon: copyright
+#     label: '{{% page-title index %}}'
+#     link: '{{% page-link index %}}'
+#   - type: custom
+#     icon: scale-balanced
+#     label: '{{% page-title legal %}}'
+#     link: '{{% page-link legal %}}'
+#   - type: custom
+#     icon: shield-keyhole
+#     label: '{{% page-title privacy %}}'
+#     link: '{{% page-link privacy %}}'
+#   - type: custom
+#     icon: cookie-bite
+#     label: '{{% page-title cookies %}}'
+#     link: '{{% page-link cookies %}}'
+#   - type: custom
+#     icon: seacomoseo
+#     label: '{{% i18n web_design %}} seacomoseo.com'
+#     link: https://seacomoseo.com/

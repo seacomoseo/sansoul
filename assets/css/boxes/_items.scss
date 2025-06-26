@@ -1,0 +1,91 @@
+.container,
+.boxes {
+  display: flex;
+
+  --cols-vs: 1;
+  --cols-vl: var(--cols-vs, 1);
+
+  @include fluid-size(--cols-gap-vl-default, 1, 1, 2);
+  --cols-gap-vl: var(--cols-gap-vs, var(--cols-gap-vl-default, 1));
+
+  @include fluid-size(--gap-width, 1em, var(--cols-gap-vs, 1), var(--cols-gap-vl));
+  column-gap: var(--gap-width);
+  --cols-gap-ny: 1;
+  --cols-gap-y: calc(var(--gap-width) * var(--cols-gap-ny));
+  row-gap: var(--cols-gap-y);
+
+  &:not(:has(> .bg)) {
+    --cols-gap-ny: 2;
+  }
+  &:not([class*="justify"]) {
+    justify-content: center;
+  }
+  &:not(.slider__items) {
+    flex-wrap: wrap;
+    > * {
+      flex-shrink: 1;
+    }
+  }
+}
+.boxes > *,
+.box,
+// Nex selectors for parents
+.boxes--top,
+.boxes--bottom,
+.boxes--radius,
+.slider__items {
+  @include fluid-size(--cols, 1, var(--cols-vs), var(--cols-vl));
+  --col-width: calc(100cqw / var(--cols));
+
+  // gap per column (gc) = gap width * gap number / columns number
+  --gc: calc(var(--gap-width) * (var(--cols) - 1) / var(--cols));
+
+  --box-w: calc(var(--col-width) - var(--gc));
+  --box-width: var(--box-w);
+
+  --box-pd-vs: 1;
+  --box-pd-vl: var(--box-pd-vs, 1);
+  @include fluid-size(--box-pd, 1rem, var(--box-pd-vs), var(--box-pd-vl));
+}
+.boxes > *,
+.box {
+  width: var(--box-width, 100%);
+  @media (min-width: $vl) {
+    order: var(--order, unset);
+  }
+  > .box {
+    --cols: 1;
+  }
+}
+
+// Default padding and gap when columns is small (> 2 and container <= sm)
+.boxes--sm {
+  --cols-gap-vl-default: 1;
+  --box-pd-vs: 1;
+}
+
+.boxes--left,
+.slider__track:has(> .boxes--left) + .slider__pips {
+  flex-direction: row-reverse;
+}
+.boxes--top,
+.boxes--bottom {
+  display: block;
+  columns: var(--box-width);
+  &:not(.gallery-wrap *) {
+    margin-bottom: calc(0em - var(--cols-gap-y));
+  }
+  > * {
+    break-inside: avoid;
+    margin-inline: auto; // is not posible align and justify items, grow is recomended
+    margin-bottom: var(--cols-gap-y);
+  }
+}
+.boxes--top {
+  direction: rtl;
+}
+
+.boxes--radius {
+  overflow: hidden;
+  @include radius(var(--box-pd));
+}

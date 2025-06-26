@@ -1,0 +1,40 @@
+
+{{/*  Offers  */}}
+{{ $offers := dict }}
+{{ with .Params.price }}
+  {{ $offers  = dict
+    "@type"         "Offer"
+    "url"           $.Permalink
+    "price"         .
+    "priceCurrency" site.Params.currency
+    "validFrom"     (dateFormat "2006-01-02T15:04:05" now)
+    "availability"  "http://schema.org/InStock"
+  }}
+{{ end }}
+
+{{/*  Provider  */}}
+{{ $provider  := "" }}
+{{ with .Params.provider }}
+  {{ $provider = . }}
+{{ else }}
+  {{ $provider = partial "schema/org-id" . }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+
+  "@type"            "Service"
+  "@id"              (print .Permalink "#schema-service")
+  "url"              .Permalink
+  "name"             .Title
+  "description"      (partial "functions/summary" .)
+  "serviceType"      .Params.service_types
+  "areaServed"       .Params.service_areas
+  "offers"           $offers
+  "provider"         $provider
+  "image"            (dict "@id" (print .Permalink "#schema-image"))
+  "mainEntityOfPage" (dict "@id" .Permalink)
+}}
+{{ $schema = partial "functions/obj-truly" $schema }}
+
+{{ return $schema }}

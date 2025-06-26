@@ -1,0 +1,325 @@
+{{ $t := partial "functions/i18n-cms" . }}
+
+{{/*  BOXES FIELDS BY GROUPS  */}}
+
+{{ $group := slice
+  `~BOX_COLS_VL`
+  `~BOX_COLS_VS`
+  `~BOX_GAP_VL`
+  `~BOX_GAP_VS`
+  `~BOX_GAP_NY`
+  `~BOX_TO`
+  `~BOX_DUO`
+  `~BOX_SIDES`
+  `~BOX_GROUP_RADIUS`
+  `~BOX_SLIDER_ACTIVE`
+  `~BOX_SLIDER_TIME`
+  `~BOX_SLIDER_PIPS`
+  `~BOX_SLIDER_ARROWS`
+  `~BOX_ALIGN_X`
+  `~BOX_ALIGN_Y`
+}}
+{{ $titles := slice
+  `~BOX_TITLE`
+  `~BOX_HANCHOR`
+  `~BOX_SUBTITLE`
+  `~BOX_PRICE`
+  `~BOX_HS`
+  `~BOX_HN`
+  `~BOX_CAPS`
+  `~BOX_LINE`
+}}
+{{ $md := slice
+  `~BOX_MD`
+  `~BOX_MD_ALIGN`
+  `~BOX_MD_ALIGN_VL`
+  `~BOX_MD_SM`
+  `~BOX_MD_CAPS`
+  `~BOX_MD_LINE`
+  `~BOX_MD_INDEX`
+  `~BOX_MD_NAV`
+  `~BOX_MD_BORDER`
+}}
+{{ $titles_style := slice
+  `~BOX_HS`
+  `~BOX_HN`
+  `~BOX_CAPS`
+  `~BOX_LINE`
+}}
+{{ $md_style := slice
+  `~BOX_MD_ALIGN`
+  `~BOX_MD_ALIGN_VL`
+  `~BOX_MD_SM`
+  `~BOX_MD_CAPS`
+  `~BOX_MD_LINE`
+  `~BOX_MD_INDEX`
+  `~BOX_MD_NAV`
+  `~BOX_MD_BORDER`
+}}
+{{ $menu := slice
+  `~BOX_MENU_LABEL`
+  `~BOX_MENU_BUTTON`
+  `~BOX_MENU_SWAP`
+}}
+{{ $menu_style := slice
+  `~BOX_MENU_BUTTON`
+  `~BOX_MENU_SWAP`
+}}
+{{ $icon := slice
+  `~BOX_ICON_ID`
+  `~BOX_ICON_TYPE`
+  `~BOX_ICON_SIZE`
+  `~BOX_ICON_COLOR`
+}}
+{{ $image := slice
+  `~BOX_IMAGE_SRC`
+  `~BOX_IMAGE_HOVER`
+  `~BOX_IMAGE_ALT`
+  `~BOX_IMAGE_HOVER_ALT`
+  `~BOX_IMAGE_RATIO`
+  `~BOX_IMAGE_CONTAIN`
+  `~BOX_IMAGE_BORDER`
+  `~BOX_IMAGE_INSET`
+  `~BOX_IMAGE_CIRCLE`
+  `~BOX_IMAGE_GRAY`
+  `~BOX_IMAGE_SHADE`
+}}
+{{ $button := slice
+  `~BOX_BUTTON_PIN`
+  `~BOX_BUTTON_LINK`
+  `~BOX_BUTTON_LABEL`
+  `~BOX_BUTTON_ANCHOR`
+  `~BOX_BUTTON_LOCK`
+  `~BOX_BUTTON_SWAP`
+  `~BOX_BUTTON_GA4`
+  `~BOX_BUTTON_COLOR_WITH_HIDE`
+}}
+{{ $bg_boxes := slice
+  `~BOX_BG_COLOR`
+  `~BOX_BG_FADE_COLOR`
+  `~BOX_BG_FADE_TYPE`
+  `~BOX_BG_COLOR_ALPHA`
+  `~BOX_BG_IMAGE`
+  `~BOX_BG_ALPHA`
+  `~BOX_PARALLAX_BOXES`
+}}
+{{ $bg_sections := slice
+  `~BOX_BG_COLOR`
+  `~BOX_BG_FADE_COLOR`
+  `~BOX_BG_FADE_TYPE`
+  `~BOX_BG_COLOR_ALPHA`
+  `~BOX_BG_IMAGE`
+  `~BOX_BG_ALPHA`
+  `~BOX_PARALLAX_SECTIONS`
+  `~BOX_CONTAINER_BG_COLOR`
+  `~BOX_CONTAINER_BG_FADE_COLOR`
+  `~BOX_CONTAINER_BG_FADE_TYPE`
+  `~BOX_CONTAINER_BG_COLOR_ALPHA`
+  `~BOX_CONTAINER_BG_IMAGE`
+  `~BOX_CONTAINER_BG_ALPHA`
+  `~BOX_CONTAINER_PARALLAX`
+}}
+{{ $padding := slice
+  `~BOX_PADDING_TOP`
+  `~BOX_PADDING_BOTTOM`
+  `~BOX_PADDING_HIDE`
+}}
+{{ $size := slice
+  `~BOX_SIZE`
+  `~BOX_FULL`
+}}
+{{ $size_modal := slice
+  `~BOX_SIZE`
+}}
+{{ $divider := slice
+  `~BOX_DIVIDER_ID`
+  `~BOX_DIVIDER_FLIP_X`
+  `~BOX_DIVIDER_FLIP_Y`
+}}
+{{ $boxi_boxes := slice
+  `~BOX_ORDER`
+  `~BOX_FIT_VL`
+  `~BOX_FIT_VS`
+  `~BOX_GROW`
+  `~BOX_ALIGN_Y_SELF`
+}}
+{{ $boxi := slice
+  `~BOX_ALIGN`
+  `~BOX_ALIGN_VL`
+  `~BOX_SIDE`
+  `~BOX_RATE`
+  `~BOX_SPACE`
+  `~BOX_PADDING_VL`
+  `~BOX_PADDING_VS`
+  `~BOX_HIDE_SHADOW`
+  `~BOX_HIDE_RADIUS`
+  `~BOX_PILL`
+  `~BOX_CARD`
+}}
+{{ $other := slice
+  `~BOX_IF`
+  `~BOX_NODE`
+  `~BOX_PARAMS`
+  `~BOX_TAG`
+  `~BOX_TAGS`
+  `~BOX_SORT`
+}}
+{{ $blocks := slice
+  `~BOX_LIST`
+  `~BOX_STEP`
+  `~BOX_STEPS`
+  `~BOX_GALLERY`
+  `~BOX_GALLERY_IMAGES`
+  `~BOX_GALLERY_LIMAGES`
+  `~BOX_ACCORDION`
+  `~BOX_ACCORDIONS`
+  `~BOX_GSS`
+  `~BOX_GSS_SHEET`
+  `~BOX_REVIEW`
+  `~BOX_REVIEWS`
+  `~BOX_CONTACT`
+  `~BOX_DOTS`
+  `~BOX_FORM`
+  `~BOX_FORM_INPUTS`
+  `~BOX_MAP`
+  `~BOX_GEOS`
+  `~BOX_ZOOM`
+}}
+
+
+{{/*  BOXES FIELDS  */}}
+
+{{ $boxes_fields := slice
+  `~BOX_VIEW_BOXES`
+  `~BOX_ID`
+  | append $titles
+  | append $md
+  | append $icon
+  | append $image
+  | append $button
+  | append $bg_boxes
+  | append $boxi_boxes
+  | append $boxi
+  | append $other
+  | append `~BOX`
+  | append $blocks
+}}
+
+
+{{/*  FINISH  */}}
+
+{{ return slice
+  (dict "&BOX_FIELDS" (slice
+    `~BOX_VIEW_BOX`
+    | append $group
+    | append $titles
+    | append $md
+    | append $icon
+    | append $image
+    | append $button
+    | append $bg_boxes
+    | append $boxi
+    | append $other
+  ))
+  (dict "&BOX" (dict
+    "name"      `box`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.box_box
+    "collapsed" true
+    "fields"    `~BOX_FIELDS`
+  ))
+
+
+  (dict "&BOXES_FIELDS" $boxes_fields)
+  (dict "&BOXES_LAST"   (dict
+    "name"           `boxes`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.box_boxes
+    "label_singular" $t.box_boxes_singular
+    "collapsed"      true
+    "summary"        "{{fields.title}}"
+    "allow_add"      true
+    "fields"         `~BOXES_FIELDS`
+  ))
+  (dict "&BOXES_2" (dict "<<" (slice (dict "fields" ($boxes_fields | append `~BOXES_LAST`)) `~BOXES_LAST`)))
+  (dict "&BOXES"   (dict "<<" (slice (dict "fields" ($boxes_fields | append `~BOXES_LAST`)) `~BOXES_2`)))
+
+
+  (dict "&SECTION_FIELDS" (slice
+    `~BOX_VIEW_SECTION`
+    | append $titles_style
+    | append $md_style
+    | append $menu_style
+    | append $icon
+    | append $image
+    | append $button
+    | append $bg_sections
+    | append $padding
+    | append $size
+    | append $divider
+    | append $boxi_boxes
+    | append $boxi
+    | append $other
+  ))
+  (dict "&SECTIONS_FIELDS" (slice
+    `~BOX_NAME`
+    `~BOX_VIEW_SECTIONS`
+    `~BOX_ID`
+    | append $titles
+    | append $md
+    | append $menu
+    | append $icon
+    | append $image
+    | append $button
+    | append $bg_sections
+    | append $padding
+    | append $size
+    | append $divider
+    | append $boxi_boxes
+    | append $boxi
+    | append $other
+    | append `~BOX`
+    | append $blocks
+    | append `~BOXES`
+  ))
+
+
+  (dict "&MODAL_FIELDS" (slice
+    `~BOX_VIEW_MODAL`
+    | append $titles_style
+    | append $md_style
+    | append $menu_style
+    | append $icon
+    | append $image
+    | append $button
+    | append $bg_sections
+    | append $padding
+    | append $size_modal
+    | append $boxi_boxes
+    | append $boxi
+    | append $other
+  ))
+  (dict "&MODALS_FIELDS" (slice
+    `~BOX_NAME`
+    `~BOX_VIEW_MODALS`
+    `~BOX_ID`
+    | append $titles
+    | append $md
+    | append $menu
+    | append $icon
+    | append $image
+    | append $button
+    | append $bg_sections
+    | append $padding
+    | append $size_modal
+    | append $boxi_boxes
+    | append $boxi
+    | append $other
+    | append `~BOX`
+    | append $blocks
+    | append `~BOXES`
+  ))
+
+}}

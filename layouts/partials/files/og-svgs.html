@@ -1,0 +1,10 @@
+{{ $svgs := slice }}
+{{ range site.Pages }}
+  {{ with partial "functions/image-og" . }}
+    {{ with .svg }}
+      {{ $svgs = $svgs | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $svgs = uniq $svgs | jsonify }}
+{{ return $svgs }}

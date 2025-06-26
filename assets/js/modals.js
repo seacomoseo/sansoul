@@ -1,3 +1,6 @@
+import { togglePlayer } from './iframe-player'
+import { scrollTo } from './scroll-to'
+
 // MODAL
 
 // Last seccion hash
@@ -5,34 +8,36 @@ let hasLastSection = ''
 
 // Open
 function openModal (target) {
-  target.removeAttribute('hidden')
+  target.hidden = false
   // setTimeout(() => {
   target.showModal()
   target.focus()
   // }, 10)
   document.documentElement.classList.add('modal__active')
   target.scrollTo({ top: 0 })
+  togglePlayer(target, true)
 }
 
 // Close
 export function closeModal (changeHash) {
   document.documentElement.classList.remove('modal__active')
   // Remove hash
-  if (!changeHash && window.location.hash) {
+  if (!changeHash && location.hash) {
     if (hasLastSection) {
-      window.history.replaceState('', '', hasLastSection)
+      history.replaceState('', '', hasLastSection)
       hasLastSection = ''
     } else {
-      window.history.replaceState('', '', window.location.pathname + window.location.search)
+      history.replaceState('', '', location.pathname + location.search)
     }
   }
   const modalOpen = document.querySelector('dialog[open].modal')
   if (modalOpen) {
+    togglePlayer(modalOpen, false)
     modalOpen.classList.add('modal--hide')
     setTimeout(() => {
       modalOpen.close()
       modalOpen.classList.remove('modal--hide')
-      modalOpen.setAttribute('hidden', 'until-found')
+      modalOpen.hidden = 'until-found'
     }, 300)
   }
 }
@@ -50,21 +55,17 @@ function prevNextModal (prev) {
   // if (isModalPrevNext) {
   //   closeModal()
   //   openModal(modalPrevNext)
-  //   window.location.hash = modalPrevNext.id
+  //   location.hash = modalPrevNext.id
   // }
-  let modalButtonPrevNext
-  if (prev) {
-    modalButtonPrevNext = document.querySelector('dialog[open].modal .modal__prev')
-  } else {
-    modalButtonPrevNext = document.querySelector('dialog[open].modal .modal__next')
-  }
+  const prevNext = prev ? 'prev' : 'next'
+  const modalButtonPrevNext = document.querySelector(`dialog[open].modal .modal__${prevNext}`)
   if (modalButtonPrevNext) modalButtonPrevNext.click()
 }
 
 export function initModals () {
   // When load if modal is active
-  if (window.location.hash) {
-    const hasModal = document.querySelector((window.location.hash.replace(/=+/, '-').substring(0, 150) || 'none') + '.modal')
+  if (location.hash) {
+    const hasModal = document.querySelector((location.hash.replace(/=+/, '-').substring(0, 155) || 'none') + '.modal')
     if (hasModal) {
       // Get parent section
       let sectionSibling = hasModal.previousElementSibling
@@ -108,24 +109,20 @@ export function initModals () {
     if (target && !target.classList.contains('modal')) {
       setTimeout(() => {
         if (windowPosition === window.scrollY) {
-          target.scrollIntoView({ behavior: 'smooth' })
+          scrollTo(target)
         }
       }, 300)
     }
   })
 
   // When click
-  const elementClickToModalClose = document.querySelectorAll('.modal, .modal__close, .modal__close--corner')
-  elementClickToModalClose.forEach(e => {
-    e.addEventListener('click', click => {
-      if (
-        click.target.classList.contains('modal') ||
-        click.currentTarget.classList.contains('modal__close') ||
-        click.currentTarget.classList.contains('modal__close--corner')
-      ) {
-        closeModal()
-      }
-    })
+  document.addEventListener('click', e => {
+    const buttonClose = e.target.closest('.modal__close, .modal__close--corner')
+    const backover = e.target.classList.contains('modal')
+    if (buttonClose || backover) closeModal()
+    // Back
+    // const back = e.target.closest('.modal__back')
+    // if (back) history.back()
   })
 
   // When keyup escape
@@ -143,11 +140,4 @@ export function initModals () {
 
   // When keyup right
   document.addEventListener('keyup', e => e.keyCode === 39 && prevNextModal(false))
-
-  // When click in back
-  document.querySelectorAll('.modal__back').forEach(e => {
-    e.addEventListener('click', click => {
-      window.history.back()
-    })
-  })
 }

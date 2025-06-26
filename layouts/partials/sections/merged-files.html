@@ -1,0 +1,43 @@
+{{/*  FUNTION DEFINE  */}}
+{{ define "partials/file" }}
+  {{ $section := dict }}
+  {{ $file    := .section.file }}
+  {{ if $file }}
+    {{/*  Get folder with lang and type (section/modal)  */}}
+    {{ with index site.Data (slice site.Home.Lang .type) }}
+      {{/*  get file  */}}
+      {{ with index . (split $file "/") }}
+        {{/*  merge section and file  */}}
+        {{ $section = merge $.section . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ return $section }}
+{{ end }}
+
+{{/*  SECTIONS  */}}
+{{ $sections := slice }}
+{{ range . }}
+
+  {{/*  MODALS  */}}
+  {{ $modals  := slice }}
+  {{ with .modals }}
+    {{ range . }}
+      {{ $opts := dict "section" . "type" "modal" }}
+      {{ with partial "file" $opts }}
+        {{ $modals = $modals | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  SECTION  */}}
+  {{ $options := dict "section" . "type" "section" }}
+  {{ $section := partial "file" $options }}
+  {{ $section  = merge $section (dict "modals" $modals) }}
+
+  {{/*  END  */}}
+  {{ $sections = $sections | append $section }}
+
+{{ end }}
+
+{{ return $sections }}

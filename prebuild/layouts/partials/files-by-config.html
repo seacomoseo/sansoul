@@ -1,0 +1,404 @@
+
+{{ $types_full  := slice }}
+{{ range $k, $v := site.Data.types }}
+  {{ if ne "all" $k }}
+    {{ $types_full = $types_full | append (merge . (dict "name" $k "base" (cond (eq $k "single") "single" (.base | default "page")))) }}
+  {{ end }}
+{{ end }}
+{{ $types_full   = sort $types_full "order" }}
+{{ $types_full   = where $types_full            "name" "eq" "single" | append (where $types_full "name" "ne" "single") }}
+{{ $types       := where $types_full            "disabled" "ne" true | default slice }}
+{{ $langs       := where site.Data.config.langs "disabled" "ne" true }}
+{{ $lang_first  := index $langs 0 }}
+
+{{ $languages := dict }}
+{{ $cascade   := slice }}
+
+{{ range site.Data.options.langs }}
+  {{ $lang       := . }}
+  {{ $language   := dict }}
+  {{ $base_url   := "" }}
+  {{ $pagination := false }}
+  {{ $enabled    := false }}
+  {{ $dir        := false }}
+  {{ $label      := false }}
+  {{ $time_zone  := false }}
+  {{ $title      := false }}
+  {{ $params     := false }}
+
+  {{ $config_lang  := index (where $langs "lang" $lang) 0 }}
+  {{ with $config_lang }}
+    {{/*  i18n  */}}
+    {{ $t := index site.Data.i18n $lang }}
+
+    {{/*  Home single singular  */}}
+    {{ $home_singular := dict
+      "params" (dict
+        "singular" $t.types_default_single_singular
+      )
+      "target" (dict
+        "lang" $lang
+        "kind" "home"
+      )
+    }}
+    {{ $cascade = $cascade | append $home_singular }}
+
+    {{/*  Mix first configuration language with the others  */}}
+    {{ $config_mix   := . }}
+    {{ if gt (len $langs) 1 }}
+      {{ $config_mix = merge $lang_first . }}
+    {{ end }}
+
+    {{ with $config_mix }}
+      {{/*  language's vars  */}}
+      {{ $base_url   = .baseURL }}
+      {{ $pagination = .pagination }}
+      {{ $enabled    = not (.disabled | default false) }}
+      {{ $dir        = cond $enabled (print "content." $lang) false }}
+      {{ $label      = .label }}
+      {{ $time_zone  = .time_zone }}
+      {{ $title      = .title }}
+      {{ $params     = . }}
+
+      {{ range $k, $type := $types_full }}
+        {{ $name  := .name }}
+        {{ $base  := .base }}
+        {{ $title := or $name .label .singular | urlize | default "" }}
+
+        {{/*  taxonomies  */}}
+        {{ $taxonomies  := slice }}
+        {{ $breadcrumbs := "" }}
+        {{ range $types }}
+          {{ $type_of := . }}
+          {{ range .tax_of }}
+            {{ if eq .name $name }}
+              {{ $name_from    := $type_of.name }}
+              {{ $base_from    := $type_of.base }}
+              {{ $taxonomies    = $taxonomies
+                | append (merge . (dict
+                  "name" $name_from
+                  "base" $base_from
+                ))
+              }}
+              {{ if .breadcrumbs }}
+                {{ $breadcrumbs = $name_from }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+
+        {{/*  type with lang  */}}
+        {{ $type_lang := index . $lang }}
+        {{ with $type_lang }}
+          {{ $type = merge $type . }}
+        {{ end }}
+
+        {{/*  permalinks  */}}
+        {{ $permalinks    := "" }}
+        {{ with $type.permalinks }}
+          {{ $permalinks     = print . "/:slug" }}
+        {{ else }}
+          {{ if eq $type.permalinks nil }}
+            {{ with index $t (print "types_default_" $name "_permalinks") }}
+              {{ $permalinks = print . "/:slug" }}
+            {{ end }}
+          {{ end }}
+          {{ if not $permalinks }}
+            {{ $permalinks   = ":slug" }}
+          {{ end }}
+        {{ end }}
+
+        {{/*  cms  */}}
+        {{ $lang_cms := site.Data.config.cms.lang | default "es" }}
+        {{ $i18n_cms := index site.Data.i18n $lang_cms }}
+        {{/*
+        {{ if ne $lang_cms "es" }}
+          {{ $i18n_cms_es := index site.Data.i18n "es" }}
+          {{ $i18n_cms     = merge $i18n_cms_es $i18n_cms }}
+        {{ end }}
+         */}}
+        {{ $cms      := index . $lang_cms }}
+        {{ $cms       = dict
+          "title"      (or $cms.title    $type.title $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
+          "singular"   (or $cms.singular $cms.title  $type.title   (index $i18n_cms (print "types_default_" $name "_singular"   )) $name)
+          "hint"       (or $type.hint                              (index $i18n_cms (print "types_default_" $name "_hint"       )))
+          "permalinks" $permalinks
+        }}
+
+        {{/*  CONFIG TO TYPE PARENT PAGES  */}}
+        {{ $slug          := "" }}
+        {{ with $type }}
+          {{ $title        = or .title       (index $t (print "types_default_" $name "_title"      )) .singular $name }}
+          {{ $singular    := or .singular    (index $t (print "types_default_" $name "_singular"   )) .title    $name }}
+          {{ $description := or .description (index $t (print "types_default_" $name "_description")) ""              }}
+          {{ $slug         = or .slug        (index $t (print "types_default_" $name "_slug"       )) $title          }}
+          {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon          "file"          }}
+          {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji         "📄"            }}
+          {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
+          {{ $customs     := .params | default slice }}
+          {{ with site.Data.types.all.params }}
+            {{ $customs    = $customs | append . }}
+          {{ end }}
+
+          {{/*
+          {{ $parent := dict
+            "params" (dict
+              "slug"           $slug
+              "singular"       $singular
+              "title"          $title
+              "seo"            .seo
+              "description"    $description
+              "icon"           $icon
+              "emoji"          $emoji
+              "image"          .image
+              "draft"          .disabled
+              "noindex"        $ni_parent
+              "translationKey" $name
+              "weight"         (add $k 1)
+              "cms"            $cms
+              "customs"        $customs
+            )
+            "target" (dict
+              "lang" $lang
+              "path" (print "/" $name)
+            )
+          }}
+          {{ $child := dict
+            "params" (dict
+              "noindex"     .noindex
+              "type"        $name
+              "base"        $base
+              "is_related"  .related
+              "is_comments" .comments
+              "taxonomies"  $taxonomies
+              "tax_of"      .tax_of
+              "breadcrumbs" $breadcrumbs
+            )
+            "target" (dict
+              "lang" $lang
+              "path" (print "/" $name "/*")
+            )
+          }}
+          {{ $cascade = $cascade | append $parent $child }}
+          */}}
+
+          {{ $obj         := dict 
+            "slug"           $slug
+            "singular"       $singular
+            "title"          $title
+            "seo"            .seo
+            "description"    $description
+            "icon"           $icon
+            "emoji"          $emoji
+            "image"          .image
+            "draft"          .disabled
+            "noindex"        $ni_parent
+            "translationKey" $name
+            "weight"         (add $k 1)
+            "cms"            $cms
+            "customs"        $customs
+            "cascade"        (dict
+              "noindex"     .noindex
+              "type"        $name
+              "base"        $base
+              "is_related"  .related
+              "is_comments" .comments
+              "taxonomies"  $taxonomies
+              "tax_of"      .tax_of
+              "breadcrumbs" $breadcrumbs
+            )
+          }}
+            {{/*  ) | merge .tpl)  */}}
+            {{/*  | merge site.Data.types.all.tpl  */}}
+          {{/*  file  */}}
+          {{ $path := print "content." $lang "/" $name "/_index.md" }}
+          {{ partial "file-by-obj" (dict "obj" $obj "content" (.content | default "") "path" $path) }}
+        {{ end }}
+
+        {{/*  language  */}}
+        {{ $language = merge $language (dict
+          $lang (dict
+            "permalinks" (dict
+              "page"    (dict $name $permalinks)
+              "section" (dict $name $slug)
+            )
+          )
+        ) }}
+
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  CONFIG TO HUGO CONFIG  */}}
+
+  {{/*  languages  */}}
+  {{ $weight := 0 }}
+  {{ range $k, $v := $langs }}
+    {{ if eq $lang .lang }}
+      {{ $weight = add $k 1 }}
+    {{ end }}
+  {{ end }}
+  {{ $languages = merge $languages $language }}
+  {{ with $base_url   }}{{ $languages = merge $languages (dict $lang (dict "baseURL"                 .))  }}{{ end }}
+  {{ with $pagination }}{{ $languages = merge $languages (dict $lang (dict "pagination" (dict "path" .))) }}{{ end }}
+  {{ with $enabled    }}{{ $languages = merge $languages (dict $lang (dict "disabled"           (not .))) }}{{ end }}
+  {{ with $weight     }}{{ $languages = merge $languages (dict $lang (dict "weight"                  .))  }}{{ end }}
+  {{ with $dir        }}{{ $languages = merge $languages (dict $lang (dict "contentDir"              .))  }}{{ end }}
+  {{ with $label      }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
+  {{ with $time_zone  }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
+  {{ with $title      }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
+  {{ with $params }}
+    {{ range $k, $v := . }}
+      {{ with .       }}{{ $languages = merge $languages (dict $lang (dict "params"         (dict $k .))) }}{{ end }}
+    {{ end }}
+  {{ end }}
+
+{{ end }}
+
+{{/*  default language  */}}
+{{ $obj := dict
+  "defaultContentLanguage" ((index $langs 0).lang | default "es")
+  "languages"              $languages
+}}
+{{ with site.Data.config.others.lang_default_subdir }}
+  {{ $obj = merge $obj (dict "defaultContentLanguageInSubdir" .) }}
+{{ end }}
+
+{{/*  module mounts  */}}
+{{ $mounts := slice
+  (dict
+    "source" "assets/robots.md"
+    "target" "assets/robots.txt"
+  )
+  (dict
+    "source" "assets/redirects.md"
+    "target" "assets/_redirects"
+  )
+  (dict
+    "source" "assets"
+    "target" "assets"
+  )
+}}
+{{ range $langs }}
+  {{ with .lang }}
+    {{ $mounts = $mounts | append
+      (dict
+        "source"       (print "content." . "/modal")
+        "target"       (print "data/" . "/modal")
+        "lang"         .
+      )
+      (dict
+        "source"       (print "content." . "/section")
+        "target"       (print "data/" . "/section")
+        "lang"         .
+      )
+      (dict
+        "source"       (print "themes/sansoul/data/section")
+        "target"       (print "data/" . "/section")
+        "excludeFiles" "**/example/*"
+        "lang"         .
+      )
+      (dict
+        "source"       (print "themes/sansoul/prebuild/public/content." .)
+        "target"       "content"
+        "lang"         .
+      )
+      (dict
+        "source"       (print "content." . "/single/_index.md")
+        "target"       "content/_index.md"
+        "lang"         .
+      )
+      (dict
+        "source"       (print "content." . "/values.yml")
+        "target"       (print "data/values." . ".yml")
+        "lang"         .
+      )
+      (dict
+        "source"       (print "content." .)
+        "target"       "content"
+        "excludeFiles" (slice "section" "modal" "single/_index.md" "values.yml")
+        "lang"         .
+      )
+      (dict
+        "source"       (print "themes/sansoul/content." .)
+        "target"       "content"
+        "excludeFiles" (slice "section" "modal" "values.yml")
+        "lang"         .
+      )
+    }}
+  {{ end }}
+{{ end }}
+{{ $mounts = $mounts | append
+  (dict
+    "source"       "data"
+    "target"       "data"
+    "excludeFiles" "**/example/*"
+  )
+}}
+{{ $obj = merge $obj (dict "module" (dict "mounts" $mounts)) }}
+
+{{/*  related  */}}
+{{ $indices := slice
+  (dict
+    "name"   "date"
+    "type"   "fragments"
+    "weight" 10
+  )
+}}
+{{ range where $types "tax_of" "ne" nil }}
+  {{ $indices = $indices | append
+    (dict
+      "name"   .name
+      "type"   "fragments"
+      "weight" 80
+    )
+  }}
+{{ end }}
+{{ $obj = merge $obj (dict
+  "related" (dict
+    "includeNewer" true
+    "threshold"    80
+    "toLower"      true
+    "indices"      $indices
+  )
+) }}
+
+{{/*  fingerprint / timestamp  */}}
+{{ $obj = merge $obj (dict
+  "params" (dict
+    "timestamp" (now.Format "20060102150405")
+  )
+) }}
+
+{{/*  cascade  */}}
+{{ $global := dict
+  "params" (dict
+    "emoji"  "📑"
+    "type"   "single"
+    "base"   "page"
+    "_merge" "deep"
+  )
+  "target" (dict
+    "path" "/*"
+  )
+}}
+{{ $cascade   = slice $global | append $cascade }}
+{{ $defaults := site.Data.config.defaults | default slice }}
+{{ range $defaults }}
+  {{ $options := dict "string" .value "kind" .type }}
+  {{ $value   := partial "string-to-kind" $options }}
+  {{ $params  := dict .name  $value }}
+  {{ $target  := dict }}
+  {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .path }}{{ $target = merge $target (dict "path" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ if not $target }}{{ $target = dict "path" "**" }}{{ end }}
+  {{ $default := dict "params" $params "target" $target }}
+  {{ $cascade = $cascade | append $default }}
+{{ end }}
+{{ $obj = merge $obj (dict "cascade" $cascade) }}
+
+{{/*  file  */}}
+{{ partial "file-by-obj" (dict "obj" $obj "path" "hugo.prebuild.yml") }}
+
+{{ return "" }}

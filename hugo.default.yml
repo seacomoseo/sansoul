@@ -1,38 +1,43 @@
 
 # default with option in cms
 
-Paginate: 24
-buildFuture: false
-logo: logo.png
+pagination:
+  disableAliases: false
+  pagerSize: 24
+  path: page
+buildFuture: true
+timeZone: Europe/Madrid
+params:
+  currency: EUR
+  phone_code: 34
+cascade:
+- params:
+    emoji: 📑
+    type: single
+    base: page
+    _merge: deep
+  target:
+    path: '**'
+_merge: deep
+
+defaultContentLanguage: es
 
 languages:
   es:
+    # baseURL: https://sansoul.netlify.com
+    contentDir: content.es
+    disabled: true
     weight: 1
     languageName: Español
-    params: { flag: 🇪🇸 }
-    paginatePath: pagina
-    permalinks:
-      page:
-        pages: :slug
-        blog: :slug
-        events: evento/:year/:month/:day/:slug
-        products: producto/:slug
-        categories: categoria/:slug
-        tags: etiqueta/:slug
-        authors: autor/:slug
-        custom: :slug
-      section:
-        pages: paginas
-        blog: blog
-        events: eventos
-        products: productos
-        categories: categorias
-        tags: etiquetas
-        authors: autores
-        custom: personalizadas
+    pagination:
+      path: pagina
   en:
+    # baseURL: https://es.sansoul.netlify.com
+    contentDir: content.en
+    disabled: true
     weight: 2
     languageName: English
+<<<<<<< HEAD
     params: { flag: 🇬🇧 }
     paginatePath: page
     permalinks:
@@ -83,14 +88,52 @@ defaultContentLanguage: es
 disableLanguages:
 - en
 - fr
+=======
+    pagination:
+      path: page
+  fr:
+    # baseURL: https://fr.sansoul.netlify.com
+    contentDir: content.fr
+    disabled: true
+    weight: 3
+    languageName: Français
+    pagination:
+      path: page
+  de:
+    # baseURL: https://de.sansoul.netlify.com
+    contentDir: content.de
+    disabled: true
+    weight: 4
+    languageName: Deutsch
+    pagination:
+      path: seite
+  pt:
+    # baseURL: https://pt.sansoul.netlify.com
+    contentDir: content.pt
+    disabled: true
+    weight: 5
+    languageName: Português
+    pagination:
+      path: pagina
+  it:
+    # baseURL: https://it.sansoul.netlify.com
+    contentDir: content.it
+    disabled: true
+    weight: 6
+    languageName: Italiano
+    pagination:
+      path: pagina
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
 
 module:
   mounts:
+
   # robots and redirects
-  - source: data/robots.md
+  - source: assets/robots.md
     target: assets/robots.txt
-  - source: data/redirects.md
+  - source: assets/redirects.md
     target: assets/_redirects
+<<<<<<< HEAD
   # sections
   - source: content.es/sections
     target: assets/sections.es
@@ -135,20 +178,26 @@ module:
   - source: data
     target: data
     includeFiles: '**.yml'
+=======
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   # assets
   - source: assets
     target: assets
 
-  # parents es
-  - source: content.es/_index/pages.md
-    target: content/pages/_index.md
+  # es
+  ## section
+  - source: content.es/section
+    target: data/section
     lang: es
-  - source: content.es/_index/blog.md
-    target: content/blog/_index.md
+  ## modal
+  - source: content.es/modal
+    target: data/modal
     lang: es
-  - source: content.es/_index/events.md
-    target: content/events/_index.md
+  ## prebuild
+  - source: themes/sansoul/prebuild/public/content.es
+    target: content
     lang: es
+<<<<<<< HEAD
   - source: content.es/_index/products.md
     target: content/products/_index.md
     lang: es
@@ -216,10 +265,14 @@ module:
     lang: fr
 
   # content project
+=======
+  ## content project
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   - source: content.es
     target: content
-    excludeFiles: [_index, sections, modals]
+    excludeFiles: [section, modal]
     lang: es
+<<<<<<< HEAD
   - source: content.en
     target: content
     excludeFiles: [_index, sections, modals]
@@ -229,10 +282,14 @@ module:
     excludeFiles: [_index, sections, modals]
     lang: fr
   # content theme
+=======
+  ## content theme
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   - source: themes/sansoul/content.es
     target: content
-    excludeFiles: [_index, sections, modals]
+    excludeFiles: [section, modal]
     lang: es
+<<<<<<< HEAD
   - source: themes/sansoul/content.en
     target: content
     excludeFiles: [_index, sections, modals]
@@ -241,6 +298,13 @@ module:
     target: content
     excludeFiles: [_index, sections, modals]
     lang: fr
+=======
+
+  # data
+  - source: data
+    target: data
+
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c
 
 # default without option in cms
 
@@ -261,9 +325,7 @@ related:
   indices:
   - name: date
     weight: 10
-  - name: categories
-    weight: 80
-  - name: tags
+  - name: category
     weight: 80
   - name: author
     weight: 80
@@ -278,6 +340,8 @@ outputs:
 mediaTypes:
   application/rss+xml:
     suffixes: [xml]
+  font/woff2:
+    suffixes: [woff2]
 
 outputFormats:
   RSS:
@@ -289,17 +353,42 @@ markup:
   tableOfContents:
     ordered: true
     endLevel: 6
+  defaultMarkdownHandler: goldmark
   goldmark:
     renderer:
       unsafe: true
     parser:
+      autoHeadingIDType: github-ascii
       attribute:
         block: true
+    extensions:
+      strikethrough: false
+      extras:
+        delete:
+          enable: true
+        insert:
+          enable: true
+        mark:
+          enable: true
+        subscript:
+          enable: true
+        superscript:
+          enable: true
+      passthrough:
+        delimiters:
+          block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+          inline:
+          - - \(
+            - \)
+        enable: true
 
 frontmatter:
   date:
   - date
-  - date_ini
   lastmod:
   - lastmod
   - :git
@@ -313,12 +402,14 @@ security:
     - ^go$
     - ^npx$
     - ^postcss$
-
-ignoreErrors:
-- error-remote-getcsv
+  funcs:
+    getenv:
+    - ^HUGO_
+    - ^CI$
+    - ^NETLIFY$
 
 caches:
-  getcsv:
+  getresource:
     maxAge: 0
 
 timeout: 240s

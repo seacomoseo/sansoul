@@ -1,42 +1,24 @@
-/*! purgecss start ignore */
-
 @import 'hugo:vars';
-
-html {
-  --text:        var(--text-primary, rgba(0, 0, 0, 0.87));
-  --input:       var(--background-main, #ffffff);
-  --bg:          var(--background-dark, #f8fafc);
-  --border:      var(--scrollbar-main, rgba(100, 116, 139, .25));
-  --shadow:      drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
-  --color-brown: rgba(238, 224, 218, .5);
-  --color-orange:rgba(250, 222, 201, .5);
-  --color-yellow:rgba(253, 236, 200, .5);
-  --color-green: rgba(219, 237, 219, .5);
-  --color-blue:  rgba(211, 229, 239, .5);
-  --color-purple:rgba(232, 222, 238, .5);
-  --color-pink:  rgba(245, 224, 233, .5);
-  --color-red:   rgba(255, 226, 221, .5);
-  --color-grey:  rgba(227, 226, 224, .5);
+@import 'cms/_variables';
+@import 'cms/_functions';
+:is(#nc-root, .MuiDrawer-root) {
+  @import 'cms/static-cms/_icons';
 }
-// Dark
-// html.dark {
-html[style*="--text-primary: #fff;"] {
-  --text:        var(--text-primary, #fff);
-  --input:       var(--background-main, #1e293b);
-  --bg:          var(--background-dark, #0f172a);
-  --border:      var(--scrollbar-main, #1e293b);
-  --color-brown: rgba(96, 59, 44, .5);
-  --color-orange:rgba(133, 76, 29, .5);
-  --color-yellow:rgba(137, 99, 42, .5);
-  --color-green: rgba(43, 89, 63, .5);
-  --color-blue:  rgba(40, 69, 108, .5);
-  --color-purple:rgba(73, 47, 100, .5);
-  --color-pink:  rgba(105, 49, 76, .5);
-  --color-red:   rgba(110, 54, 48, .5);
-  --color-grey:  rgba(90, 90, 90, .5);
+#nc-root {
+  @import 'cms/static-cms/_login';
+  @import 'cms/static-cms/_base';
+  @import 'cms/static-cms/fields/_base';
+  @import 'cms/static-cms/fields/_label';
+  @import 'cms/static-cms/fields/_button-clear';
+  @import 'cms/static-cms/fields/_error';
+  @import 'cms/static-cms/fields/_hint';
+  @import 'cms/static-cms/fields/_view';
+  @import 'cms/static-cms/fields/widgets/_text-select-relation-date';
+  @import 'cms/static-cms/fields/widgets/_boolean';
+  @import 'cms/static-cms/fields/widgets/_color';
+  @import 'cms/static-cms/fields/widgets/_image';
+  @import 'cms/static-cms/fields/widgets/_text';
+  @import 'cms/static-cms/fields/widgets/_object-list';
+  @import 'cms/static-cms/fields/widgets/_map';
 }
-
-@import 'cms/_static-cms';
-@import 'cms/_help-corner';
-
-/*! purgecss end ignore */
+@import 'cms/static-cms/_hide';

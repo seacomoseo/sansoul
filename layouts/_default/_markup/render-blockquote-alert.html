@@ -1,0 +1,59 @@
+{{/*  Types  */}}
+{{- $types := dict
+  "info"     (dict "icon" "square-info"          "bg" "main-light")
+  "question" (dict "icon" "square-question"      "bg" "main-dark")
+  "tip"      (dict "icon" "fire"                 "bg" "main")
+  "idea"     (dict "icon" "lightbulb"            "bg" "white")
+  "note"     (dict "icon" "pen"                  "bg" "main-light")
+  "check"    (dict "icon" "check"                "bg" "light")
+  "fail"     (dict "icon" "xmark"                "bg" "dark")
+  "success"  (dict "icon" "square-check"         "bg" "alt-light")
+  "warning"  (dict "icon" "triangle-exclamation" "bg" "alt")
+  "danger"   (dict "icon" "bolt"                 "bg" "alt-dark")
+-}}
+
+{{/*  Types  */}}
+{{- $type := dict -}}
+{{- with .AlertType -}}
+  {{- with index $types . -}}
+    {{- $type = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*  Icon  */}}
+{{- $icon  := .AlertType -}}
+{{- with $type -}}
+  {{- $icon = .icon -}}
+{{- else -}}
+  {{- with .Attributes.icon -}}
+    {{- $icon = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*  Background color  */}}
+{{- $bg  := "bg bg-white" -}}
+{{- with .Attributes.class | findRE `bg-[\w-]+` -}}
+  {{- $bg = print "bg" -}}
+{{- else -}}
+  {{- with $type -}}
+    {{- $bg = print "bg bg-" .bg -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*  Attributes  */}}
+{{- $attrs       := "" -}}
+{{- $class       := print "alert " (or .Attributes.class "") " " $bg -}}
+{{- $attributes  := merge .Attributes (dict "class" $class) -}}
+{{- range $k, $v := $attributes -}}
+  {{- if and . (ne $k "icon") -}}
+    {{- $attrs    = print $attrs " " $k `="` . `"` -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*  Echo  */}}
+<div {{- $attrs | safeHTMLAttr }}>
+  <div class="bg-color"></div>
+  {{- with $icon }}{{ partial "icon" (dict "class" "alert__icon h4" "icon" .) }}{{ end }}
+  {{- with .AlertTitle }}<p class="alert__heading h4">{{ . }}</p>{{ end -}}
+  {{ .Text -}}
+</div>

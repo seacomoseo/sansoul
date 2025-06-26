@@ -1,24 +1,99 @@
-{{- $id    := .Attributes.id | replaceRE `^-|<.+?>|_|#` `` | urlize -}}
-{{- $icons := .Text| findRE `icon-[\w-]+` -}}
-{{- range $icons -}}
-  {{- $id = $id | replaceRE (print "-" .) `` -}}
+{{- /* Get the Page's Store */ -}}
+{{- $store    := page.Store -}}
+{{- $lvl_caps := $store.Get "md_caps"  | default false -}}
+{{- $lvl_line := $store.Get "md_line"  | default false -}}
+{{- $is_index := $store.Get "md_index" | default false -}}
+{{- $is_nav   := $store.Get "md_nav"   | default false -}}
+
+{{- /*  INDEX  */ -}}
+{{- $numbering := "" -}}
+{{- if $is_index -}}
+  {{- /* Store heading counters */ -}}
+  {{- /* Reset counters for levels deeper than the current heading */ -}}
+  {{- range $i := seq (add .Level 1) 6 -}}
+    {{- $store.Set (printf "h%d" $i) 0 -}}
+  {{- end -}}
+
+  {{- /* Increment the counter for the current level */ -}}
+  {{- $current_count := $store.Get (printf "h%d" .Level) | default 0 | add 1 -}}
+  {{- $store.Set (printf "h%d" .Level) $current_count -}}
+
+  {{- /* Build the numbering string from level 1 up to the current level */ -}}
+  {{- $nums := slice -}}
+  {{- range $i := seq 1 .Level -}}
+    {{- $num := $store.Get (printf "h%d" $i) | default 0 -}}
+    {{- if $num -}}
+      {{- $nums = $nums | append $num -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $nums = $nums | append "" -}}
+  {{- $numbering = delimit $nums "." -}}
 {{- end -}}
 
-{{- $articles := site.Data.articles.content -}}
-{{- $class := "" -}}
-{{- if ($articles.underline | and (eq .Level 2)) -}}
-  {{- $class = "underline" -}}
+{{- /* ID */ -}}
+{{- $id  := "" -}}
+{{- if $is_nav -}}
+  {{- $id = partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
 {{- end -}}
-{{- if ($articles.uppercase | and (eq .Level 2)) -}}
-  {{- $class = print $class "uppercase" -}}
-{{- end -}}
+
+{{- /* CLASS */ -}}
+{{- $class  := "md__heading" -}}
 {{- with .Attributes.class -}}
-  {{- $class = print $class (replace . "." " ") -}}
+  {{- $class = print $class " " . -}}
 {{- end -}}
 
-<h{{ .Level }} class="content__heading {{ $class }}" id="{{ $id }}">
-  <a class="content__heading-link" href="#{{ $id }}">
-    {{- .Text | safeHTML -}}
-    {{- if in $class "underline" }}<br>{{ end -}}
-  </a>
+{{- /* ATTRIBUTES */ -}}
+{{- $attrs       := "" -}}
+{{- range $k, $v := merge .Attributes (dict "id" $id "class" $class) -}}
+  {{- if . -}}
+    {{- $attrs    = print $attrs " " $k `="` . `"` -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* TEXT ATTRIBUTES */ -}}
+{{- $text_attrs := "" -}}
+{{- $style := slice -}}
+{{- $lvl   := int .Level -}}
+{{- with $lvl_caps -}}
+  {{- if le $lvl . -}}
+    {{- $style = slice "caps" -}}
+  {{- end -}}
+{{- end -}}
+{{- with $lvl_line -}}
+  {{- if le $lvl . -}}
+    {{- $style = $style | append "line" -}}
+  {{- end -}}
+{{- end -}}
+{{- with $style -}}
+  {{- $text_attrs = print ` class="` (delimit . " ") `"` -}}
+{{- end -}}
+{{- $text_attrs = $text_attrs | safeHTMLAttr -}}
+
+{{- /*  ICON outside  */ -}}
+{{- $outside := partial "functions/icon-outside" .Text -}}
+{{- $text    := $outside.text -}}
+{{- $icon    := $outside.icon -}}
+{{- $pin     := $outside.pin -}}
+
+{{- /*  HTML  */}}
+<h{{ .Level }} {{- $attrs | safeHTMLAttr }}>
+  {{- if and $is_index (not $icon) (not $pin) }}
+    <i class="md__heading-index">{{ $numbering }}</i>
+  {{- end -}}
+  {{- with $icon }}
+    {{ partial "icon" (dict "icon" .) -}}
+  {{- end -}}
+  {{- with $pin }}
+    <i class="icon icon--text">{{ . }}</i>
+  {{- end }}
+  <i {{- $text_attrs }}>
+    {{- if $is_nav -}}
+    <a class="link md__heading-link" href="#{{ $id }}">
+    {{- end -}}
+      {{- $text | safeHTML -}}
+      {{- if in $class "line" }}<br>{{ end -}}
+    {{- if $is_nav -}}
+    </a>
+    {{- end -}}
+  </i>
 </h{{ .Level }}>

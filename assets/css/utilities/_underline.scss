@@ -1,35 +1,39 @@
-.underline {
-  --radius: #{ $menu-bar };
-  &:after {
+.line {
+  &::after {
     content: '';
     display: block;
     width: 2em;
     height: $menu-bar-double;
     background-color: var(--main);
-    margin: .125em auto .25em;
+    --line-margin: calc(50% - 1em);
+    margin: .125em var(--line-margin) .25em;
+    --radius: #{ $menu-bar };
     @include radius;
+    order: 10;
+  }
+  &.hide::after {
+    content: none;
   }
 }
-.hide .underline:after {
-  content: none;
-}
-.underline a,
-a.underline {
+.line *,
+.line:not(.aux) {
   background-image: none;
 }
-.align-right .underline:after {
+.align-right .line::after {
   margin-right: 0;
+  --line-margin: calc(100% - 2em);
 }
-.align-left .underline:after {
+.align-left .line::after {
   margin-left: 0;
+  --line-margin: calc(100% - 2em);
 }
-@media (min-width: $screen-xl) {
-  .align--xl-right .underline:after {
+@media (min-width: $vl) {
+  .align--vl-right .line::after {
     margin-right: 0;
-    margin-left: auto;
+    margin-left: calc(100% - 2em);
   }
-  .align--xl-left .underline:after {
+  .align--vl-left .line::after {
     margin-left: 0;
-    margin-right: auto;
+    margin-right: calc(100% - 2em);
   }
 }

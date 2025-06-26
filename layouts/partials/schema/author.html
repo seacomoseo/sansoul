@@ -1,0 +1,66 @@
+{{/*  ID  */}}
+{{ $id  := print .Permalink "#schema-person" }}
+
+{{/*  Image  */}}
+{{ $image  := dict "@id" (print .Permalink "#schema-image") }}
+{{/*  Not self page  */}}
+{{ if ne page.Permalink .Permalink }}
+  {{ $image = partial "schema/image-main" . }}
+{{ end }}
+
+{{/*  worksFor  */}}
+{{ $works_for := slice }}
+{{/*  Not self page  */}}
+{{ with .Params.orgs }}
+  {{ range . }}
+    {{ $org := dict
+      "@type" "Organization"
+      "name"  .name
+      "url"   .url
+    }}
+    {{ $works_for = $works_for | append $org }}
+  {{ end }}
+{{ else }}
+  {{ $works_for = partial "schema/org-id" . }}
+{{ end }}
+
+{{/*  Credentials  */}}
+{{ $creds  := slice }}
+{{ with .Params.creds }}
+  {{ range . }}
+    {{ $cred := dict
+      "@type" "EducationalOccupationalCredential"
+      "name"               .name
+      "credentialCategory" .category
+    }}
+    {{ with .org }}
+      {{ $org := dict
+        "recognizedBy" (dict
+          "@type" "EducationalOrganization"
+          "name"  .
+        )
+      }}
+      {{ $cred = merge $cred $org }}
+    {{ end }}
+    {{ $creds = $creds | append $cred }}
+  {{ end }}
+{{ end }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"           "Person"
+  "@id"             $id
+  "name"            .Title
+  "url"             .Permalink
+  "description"     (partial "functions/summary" .)
+  "alternateName"   .Params.alts
+  "honorificPrefix" .Params.prefix
+  "jobTitle"        .Params.job
+  "sameAs"          .Params.as
+  "worksFor"        $works_for
+  "hasCredential"   $creds
+  "image"           $image
+}}
+{{ $schema = partial "functions/obj-truly" $schema }}
+
+{{ return $schema }}

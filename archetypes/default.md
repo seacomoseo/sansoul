@@ -1,16 +1,14 @@
 ---
-title: "{{ replace .Name "-" " " | title }}"
-title_seo:  ''
-slug:  "{{ .Name }}"
-translationKey:  "{{ .Name }}"
-description: ''
+slug:  '{{ .Name }}'
+title: '{{ replace .Name "-" " " | title }}'
+summary: ''
 image: ''
-categories: [general]
-tags: []
-author: admin
 toc: false
 draft: true
 noindex: false
 date: {{ .Date }}
-lastmod: ''
+lastmod: 
+translationKey:  '{{ .Name }}'
+seo: ''
+description: ''
 ---

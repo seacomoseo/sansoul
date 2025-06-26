@@ -1,0 +1,98 @@
+{{- $box   := .box -}}
+{{- $boxes := .boxes -}}
+
+{{- $duo := int (.box.duo | default 0) -}}
+{{- with .box.duo -}}
+  {{- /* New slice with order and align_vl */ -}}
+  {{- $items := slice -}}
+  {{- range $i, $it  := $boxes -}}
+    {{- $idx         := mod $i 4 -}}                 {{- /* pos. in block 4 */ -}}
+    {{- $group_start := add (mul (div $i 4) 4) 1 -}} {{- /* 1,5,9… */ -}}
+
+    {{- /* Default values */ -}}
+    {{- $order := add $i 1 -}}
+    {{- $left  := false -}}
+    {{- $align := .align_vl | default $box.align_vl -}}
+
+    {{- /* DUO 1 → [1R 2L 4L 3R] */ -}}
+    {{- if eq $duo 1 -}}
+      {{- if eq $idx 2 -}}
+        {{- $order = add $group_start 3 -}}
+        {{- $left = true -}}
+      {{- else if eq $idx 3 -}}
+        {{- $order = add $group_start 2 -}}
+        {{- $left = false -}}
+      {{- else if eq $idx 0 -}}
+        {{- $left = false -}}
+      {{- else -}}
+        {{- $left = true -}}
+      {{- end -}}
+
+    {{- /* DUO 2 → [2L 1R 3R 4L] */ -}}
+    {{- else if eq $duo 2 -}}
+      {{- if eq $idx 0 -}}
+        {{- $order = add $group_start 1 -}}
+        {{- $left = true -}}
+      {{- else if eq $idx 1 -}}
+        {{- $order = $group_start -}}
+        {{- $left = false -}}
+      {{- else if eq $idx 2 -}}
+        {{- $left = false -}}
+      {{- else -}}
+        {{- $left = true -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- /* Align */ -}}
+    {{- with $align -}}
+      {{- $align = . -}}
+    {{- else -}}
+      {{- $align = cond $left "left" "right" -}}
+    {{- end -}}
+
+    {{- /* Sides */ -}}
+    {{- $side  := .side -}}
+    {{- if $box.sides -}}
+      {{- $side = cond $left "right" "left" -}}
+    {{- end -}}
+
+    {{- /* Add new item to new slice */ -}}
+    {{- $item := dict "order" $order "align_vl" $align "side" $side -}}
+    {{- $item  = merge $it $item -}}
+    {{- $items = $items | append $item -}}
+  {{- end -}}
+  {{- $boxes = $items -}}
+{{- else -}}
+  {{- /* DUO SIDE */ -}}
+  {{- if $box.sides -}}
+    {{- $items := slice -}}
+    {{- range $i, $it := $boxes -}}
+      {{- $item := dict -}}
+      {{- if not .side -}}
+        {{- $idx  := mod $i 2 -}}
+        {{- $side := "" -}}
+        {{- if eq $idx 0 -}}
+          {{- $side = "left" -}}
+        {{- else -}}
+          {{- $side = "right" -}}
+        {{- end -}}
+        {{- $item = dict "side" $side -}}
+        {{- $item = merge $it $item -}}
+      {{- end -}}
+      {{- $items = $items | append $item -}}
+    {{- end -}}
+    {{- $boxes = $items -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  Default columns  */ -}}
+{{- if or $duo $box.sides -}}
+  {{- if eq $box.cols nil -}}
+    {{- $box = merge $box (dict "cols" 2) -}}
+  {{- end -}}
+  {{- if eq $box.cols_vs nil -}}
+    {{- $box = merge $box (dict "cols_vs" 1) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return dict "box" $box "boxes" $boxes -}}

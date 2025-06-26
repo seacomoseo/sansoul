@@ -1,0 +1,299 @@
+{{ $t := partial "functions/i18n-cms" . }}
+
+{{ $colections    := slice }}
+
+
+{{/*  BACKGROUND  */}}
+{{ $colections = $colections | append
+  (dict "&TEMPLATE_BACKGROUND" (dict
+    "name"      `bg`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.template_background
+    "collapsed" true
+    "i18n"      true
+    "fields"    (slice
+      `~BOX_BG_COLOR`
+      `~BOX_BG_FADE_COLOR`
+      `~BOX_BG_FADE_TYPE`
+      `~BOX_BG_IMAGE`
+      `~BOX_BG_ALPHA`
+      `~BOX_PARALLAX_SECTIONS`
+    )
+  ))
+}}
+
+
+{{/*  MENU  */}}
+{{ $menu_langs  := slice }}
+{{ range site.Languages }}
+  {{ $menu_langs = $menu_langs | append (dict "<<" (slice
+    (dict "name" .Lang "label" (index $t (print "option-langs-" .Lang)))
+    `~MENU_LANG`
+  )) }}
+{{ end }}
+{{ $menu_fields := slice
+  `~MENU_HIDE`
+  `~MENU_LOGO`
+  `~MENU_STICKY`
+  `~MENU_LOGO_STICKY`
+  `~MENU_LOGO_ALIGN`
+  `~MENU_SIZE`
+  `~MENU_TRANSPARENT`
+  `~BOX_BG_COLOR`
+  `~BOX_BG_FADE_COLOR`
+  `~BOX_BG_FADE_TYPE`
+  `~MENU_SHOW_SECTIONS`
+  `~MENU_SHOW_MODALS`
+  `~MENU_HIDE_ICONS`
+}}
+{{ $menu_items_fields := slice
+  `~BOX_BUTTON_LINK`
+  `~BOX_ICON_ID`
+  `~BOX_BUTTON_LABEL`
+  `~BOX_BUTTON_ANCHOR`
+  `~BOX_BUTTON_LOCK`
+  `~BOX_BUTTON_COLOR`
+  `~BOX_BUTTON_SWAP`
+  `~BOX_BUTTON_GA4`
+}}
+{{ $colections = $colections | append
+
+  (dict "&MENU_SUBITEMS_LAST"   (dict
+    "name"           `items`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.template_menu_subitems
+    "label_singular" $t.template_menu_subitem
+    "collapsed"      true
+    "summary"        "{{fields.label}}"
+    "allow_add"      true
+    "i18n"           true
+    "fields"         $menu_items_fields
+  ))
+  (dict "&MENU_SUBITEMS_2" (dict "<<" (slice (dict "fields" ($menu_items_fields | append `~MENU_SUBITEMS_LAST`)) `~MENU_SUBITEMS_LAST`)))
+  (dict "&MENU_SUBITEMS"   (dict "<<" (slice (dict "fields" ($menu_items_fields | append `~MENU_SUBITEMS_LAST`)) `~MENU_SUBITEMS_2`)))
+
+  (dict "&MENU_ITEMS"  (dict
+    "name"           `items`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.template_menu_items
+    "label_singular" $t.template_menu_item
+    "collapsed"      true
+    "summary"        "{{fields.label}}"
+    "allow_add"      true
+    "i18n"           true
+    "fields"         ($menu_items_fields | append `~MENU_SUBITEMS`)
+  ))
+
+  (dict "&MENU_HIDE"             (dict "name" `hide`             "widget" `boolean` "required" false "label" $t.template_menu_hide))
+  (dict "&MENU_LOGO"             (dict "name" `logo`             "widget" `boolean` "required" false "label" $t.template_menu_logo))
+  (dict "&MENU_STICKY"           (dict "name" `sticky`           "widget" `select`  "required" false "label" $t.template_menu_sticky           "options" `~OPTIONS_SIZES` "hint" $t.template_menu_sticky_hint))
+  (dict "&MENU_LOGO_STICKY"      (dict "name" `logo_sticky`      "widget" `boolean` "required" false "label" $t.template_menu_logo_sticky                                 "hint" $t.template_menu_logo_sticky_hint))
+  (dict "&MENU_LOGO_ALIGN"       (dict "name" `logo_align`       "widget" `boolean` "required" false "label" $t.template_menu_logo_align                                  "hint" $t.template_menu_logo_align_hint))
+  (dict "&MENU_SIZE"             (dict "name" `size`             "widget" `select`  "required" false "label" $t.box_size                       "options" `~OPTIONS_SIZES`))
+  (dict "&MENU_TRANSPARENT"      (dict "name" `transparent`      "widget" `boolean` "required" false "label" $t.template_menu_transparent                                 "hint" $t.template_menu_transparent_hint))
+  (dict "&MENU_SHOW_SECTIONS"    (dict "name" `show_sections`    "widget" `boolean` "required" false "label" $t.template_menu_show_sections                               "hint" $t.template_menu_show_sections_hint))
+  (dict "&MENU_SHOW_MODALS"      (dict "name" `show_modals`      "widget" `boolean` "required" false "label" $t.template_menu_show_modals                                 "hint" $t.template_menu_show_modals_hint))
+  (dict "&MENU_HIDE_ICONS"       (dict "name" `hide_icons`       "widget" `boolean` "required" false "label" $t.template_menu_hide_icons))
+  (dict "&MENU_IMAGE"            (dict "name" `image`            "widget" `image`   "required" false "label" $t.template_menu_image            "max_file_size" 512000000))
+  (dict "&MENU_TITLE"            (dict "name" `title`            "widget" `string`  "required" false "label" $t.template_menu_title ))
+  (dict "&MENU_SUBTITLE"         (dict "name" `subtitle`         "widget" `string`  "required" false "label" $t.template_menu_subtitle))
+  (dict "&MENU_LANG"             (dict
+    "label"     `Idioma`
+    "name"      `lang`
+    "widget"    `object`
+    "collapsed" true
+    "required"  false
+    "fields"    (slice
+      `~MENU_IMAGE`
+      `~MENU_TITLE`
+      `~MENU_SUBTITLE`
+      `~MENU_ITEMS`
+    )
+  ))
+
+  (dict "&TEMPLATE_MENU_SINGLE" (dict
+    "name"      `menu`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.template_menu
+    "collapsed" true
+    "i18n"      true
+    "fields"    ($menu_fields | append `~MENU_ITEMS`)
+  ))
+  (dict "&TEMPLATE_MENU" (dict
+    "<<" (slice
+      (dict "fields" ($menu_fields | append $menu_langs))
+      (dict "i18n" false)
+      `~TEMPLATE_MENU_SINGLE`
+    )
+  ))
+}}
+
+
+{{/*  CALLNOW  */}}
+{{ $callnow_langs  := slice }}
+{{ range site.Languages }}
+  {{ $callnow_langs = $callnow_langs | append (dict "<<" (slice
+    (dict "name" .Lang "label" (print $t.template_callnow_items " " (index $t (print "option-langs-" .Lang))))
+    `~CALLNOW_ITEMS`
+  )) }}
+{{ end }}
+{{ $colections = $colections | append
+  (dict "&CALLNOW_HIDE"  (dict "name" `show` "widget" `select` "required" false "label" $t.template_callnow_show "options" `~OPTIONS_CALLNOW_SHOW`))
+  (dict "&CALLNOW_ITEMS" (dict
+    "name"           `items`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.template_callnow_items
+    "label_singular" $t.template_callnow_item
+    "summary"        "{{fields.label}}"
+    "collapsed"      true
+    "allow_add"      true
+    "types"     (slice
+      (dict "label" $t.box_contact_phone    "name" `phone`    "widget" `object` "fields" (slice `~BOX_CONTACT_LABEL_PHONE` `~BOX_BUTTON_COLOR` `~BOX_ICON_ID`))
+      (dict "label" $t.box_contact_whatsapp "name" `whatsapp` "widget" `object` "fields" (slice `~BOX_CONTACT_LABEL_PHONE` `~BOX_BUTTON_COLOR`))
+      (dict
+        "name"   `custom`
+        "widget" `object`
+        "label"  $t.box_contact_custom
+        "fields" (slice
+          `~BOX_BUTTON_LINK`
+          `~BOX_ICON_ID`
+          `~BOX_CONTACT_LABEL`
+          `~BOX_BUTTON_LOCK`
+          `~BOX_BUTTON_COLOR`
+          `~BOX_BUTTON_GA4`
+        )
+      )
+    )
+  ))
+  (dict "&TEMPLATE_CALLNOW_SINGLE" (dict
+    "name"      `callnow`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.template_callnow
+    "collapsed" true
+    "i18n"      true
+    "fields"    (slice
+      `~CALLNOW_HIDE`
+      `~CALLNOW_ITEMS`
+    )
+  ))
+  (dict "&TEMPLATE_CALLNOW" (dict
+    "<<" (slice
+      (dict "fields" (slice
+        `~CALLNOW_HIDE`
+        | append $callnow_langs
+      ))
+      (dict "i18n" false)
+      `~TEMPLATE_CALLNOW_SINGLE`
+    )
+  ))
+}}
+
+
+{{/*  SECTIONS  */}}
+{{ $colections = $colections | append
+  (dict "&TEMPLATE_SECTION"  (dict
+    "name"           `section`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.template_section
+    "label_singular" $t.template_section_singular
+    "hint"           $t.template_section_hint
+    "collapsed"      true
+    "allow_add"      true
+    "i18n"           true
+    "fields"         `~SECTION_FIELDS`
+  ))
+  (dict "&TEMPLATE_MODAL"  (dict
+    "name"           `modal`
+    "widget"         `object`
+    "required"       false
+    "label"          $t.template_modal
+    "label_singular" $t.template_modal_singular
+    "collapsed"      true
+    "i18n"           true
+    "fields"         `~MODAL_FIELDS`
+  ))
+  (dict "&TEMPLATE_SECTIONS" (dict
+    "name"           `sections`
+    "widget"         `list`
+    "required"       false
+    "label"          $t.template_sections
+    "label_singular" $t.template_sections_singular
+    "collapsed"      true
+    "summary"        "{{fields.file}}"
+    "allow_add"      true
+    "i18n"           true
+    "fields"         (slice
+      (dict
+        "name"           `file`
+        "widget"         `relation`
+        "required"       false
+        "label"          $t.template_file
+        "hint"           (print "[" $t.template_file_sections_hint "](#/collections/sections-" .Lang ")")
+        "options_length" 100
+        "collection"     `section`
+        "value_field"    "{{slug}}"
+        "search_fields"  (slice "{{slug}}" "{{name}}")
+        "display_fields" (slice "{{name}}")
+        "i18n"           true
+      )
+      (dict
+        "name"           `modals`
+        "widget"         `list`
+        "required"       false
+        "label"          $t.template_modals
+        "label_singular" $t.template_modals_singular
+        "hint"           $t.template_modals_hint
+        "collapsed"      true
+        "summary"        "{{fields.file}}"
+        "allow_add"      true
+        "i18n"           true
+        "fields"         (slice
+          (dict
+            "name"           `file`
+            "widget"         `relation`
+            "required"       false
+            "label"          $t.template_file
+            "hint"           (print "[" $t.template_file_modals_hint "](#/collections/modals-" .Lang ")")
+            "options_length" 100
+            "collection"     `modal`
+            "value_field"    "{{slug}}"
+            "search_fields"  (slice "{{slug}}" "{{name}}")
+            "display_fields" (slice "{{name}}")
+          )
+          (dict "name" `hidden` "widget" `hidden` "required" false "label" `hidden`)
+        )
+      )
+    )
+  ))
+}}
+
+
+{{/*  LISTS  */}}
+{{ $colections = $colections | append
+  (dict "&TEMPLATE_LIST" (dict
+    "name"      `list`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.template_list
+    "collapsed" true
+    "fields"    `~BOX_FIELDS`
+  ))
+  (dict "&TEMPLATE_RELATED" (dict
+    "name"      `related`
+    "widget"    `object`
+    "required"  false
+    "label"     $t.template_related
+    "collapsed" true
+    "fields"    `~BOX_FIELDS`
+  ))
+}}
+
+
+{{ return $colections }}

@@ -1,7 +1,9 @@
-{{ $postalAddress := partial "functions/postal-address" . }}
-{{ $name := "" }}
-{{ if .name }}
-  {{ $name = print .name ", " }}
+{{ $return := "" }}
+
+{{ if hasPrefix . "http" }}
+  {{ $return = . }}
+{{ else }}
+  {{ $return = print "https://maps.google.com/maps?q=" (. | replaceRE "<nil>" "" | urlquery) }}
 {{ end }}
-{{ $query := print $name $postalAddress | replaceRE "<nil>" "" | urlquery }}
-{{ return (print "https://maps.google.com/maps?q=" $query) }}
+
+{{ return $return }}

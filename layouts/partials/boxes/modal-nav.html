@@ -1,0 +1,34 @@
+<div class="modal__nav buttons">
+  {{- with .prev }}
+    {{ partial "link" (dict
+      "class"  "modal__prev"
+      "button" "cta"
+      "dot"    true
+      "icon"   (site.Data.styles.icons.left | default "chevron-left")
+      "emoji"  "⬅️"
+      "label"  (i18n "prev")
+      "anchor" "auto"
+      "link"   (print "#" .id)
+    ) -}}
+  {{- end }}
+  {{ partial "link" (dict
+    "class" "modal__close"
+    "button" "cta"
+    "dot"    (and .prev .next)
+    "icon"   "xmark"
+    "emoji"  "❌"
+    "label"  (i18n "close")
+  ) -}}
+  {{- with .next }}
+    {{ partial "link" (dict
+      "class"  "modal__next"
+      "button" "cta"
+      "dot"    true
+      "icon"   (site.Data.styles.icons.right | default "chevron-right")
+      "emoji"  "➡️"
+      "label"  (i18n "next")
+      "anchor" "auto"
+      "link"   (print "#" .id)
+    ) -}}
+  {{- end }}
+</div>

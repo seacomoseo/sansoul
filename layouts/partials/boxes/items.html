@@ -1,0 +1,152 @@
+{{- $duo   := partial "functions/duo" . -}}
+{{- $box   := $duo.box -}}
+{{- $boxes := $duo.boxes -}}
+
+{{- /* GENERAL */ -}}
+{{- $cols := partial "functions/columns" (dict
+  "each"   $box
+  "items"  $boxes
+  "col_vl" .col_vl
+  "col_vs" .col_vs
+) -}}
+{{- $deep    := .deep -}}
+{{- $level   := .level -}}
+{{- if or .title .hanchor -}}
+  {{- $hn     := cond (eq .hn     "p") 0 .hn -}}
+  {{- $box_hn := cond (eq $box.hn "p") 0 $box.hn -}}
+  {{- $level   = add ($hn | default $box_hn | default $level | int) 1 -}}
+{{- end -}}
+
+{{- $boxes_wrap  := or
+  (and (ne $box.cols    nil) (ne $box.cols    1))
+  (and (ne $box.cols_vs nil) (ne $box.cols_vs 1))
+-}}
+
+{{- /* BOX */ -}}
+{{- with $box -}}
+  {{- $boxes_wrap = or
+    $boxes_wrap
+    .gap
+    .gap_vs
+    .gap_ny
+    .to
+    .group_radius
+    .slider
+    .align_y
+    .align_x
+  -}}
+  {{- if $boxes_wrap -}}
+
+    {{- /*  add deep  */ -}}
+    {{- $deep = add $deep 1 -}}
+
+    {{- /* CLASS  */ -}}
+    {{- /* {{- $boxes_level  := print "boxes--" (sub $level 1) -}}  */ -}}
+    {{- $class := slice
+      "boxes"
+      (cond (or (gt $cols.vl 2) (eq $.container "xs") (eq $.container "sm")) "boxes--sm" "")
+      (cond (or (not .to) (eq .to "right")) "" (print "boxes--" .to))
+      (cond (not (.group_radius | and (not .slider))) "" "boxes--radius")
+      (cond (not .align_y) "" (print "align-items-" .align_y))
+      (cond (not .align_x) "" (print "justify-" .align_x))
+      (cond (not .slider)  "box__block" "slider__items")
+    -}}
+
+
+    {{- /* STYLE  */ -}}
+    {{- $style := slice
+      (cond (eq $cols.vl  1) "" (print "--cols-vl:"     $cols.vl))
+      (cond (eq $cols.vs  1) "" (print "--cols-vs:"     $cols.vs))
+      (cond (eq .gap    nil) "" (print "--cols-gap-vl:" .gap     ))
+      (cond (eq .gap_vs nil) "" (print "--cols-gap-vs:" .gap_vs  ))
+      (cond (eq .gap_ny nil) "" (print "--cols-gap-ny:" .gap_ny  ))
+    -}}
+
+    {{- /* JOIN ATTRIBUTES  */ -}}
+    {{- $attrs := dict
+      "class" $class
+      "style" $style
+    -}}
+    {{- $attrs = partial "functions/attrs" $attrs -}}
+
+    {{- /* SLIDER  */ -}}
+    {{- if .slider }}
+      <div class="slider box__block" {{ with .time }}data-time="{{ . }}"{{ end }}>
+        <div class="slider__track">
+    {{- end -}}
+
+    {{- /* BOXES  */}}
+    <div {{- $attrs }}>
+  {{- end -}}
+{{- end -}}
+
+        {{- $parent := dict -}}
+        {{- /*  if deep >= 1  */ -}}
+        {{- if and (gt $deep 1) (not .list_pages) -}}
+          {{- with $ -}}
+            {{- /*  inherit these parameters  */ -}}
+            {{- $parent = dict
+              "caps"        .caps
+              "line"        .line
+              "icon_type"   .icon_type
+              "icon_size"   .icon_size
+              "icon_color"  .icon_color
+              "ratio"       .ratio
+              "contain"     .contain
+              "border"      .border
+              "inset"       .inset
+              "gray"        .gray
+              "hide_shadow" .hide_shadow
+              "hide_radius" .hide_radius
+            -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- $expand := dict
+          "main"       (not $deep)
+          "deep"       $deep
+          "level"      $level
+          "bgcp"       $.bgcp
+          "container"  $.container
+          "section"    $.section
+          "header"     $.header
+          "footer"     $.footer
+          "cols"       $cols.vl
+          "cols_vs"    $cols.vs
+          "col_vl"     $cols.fit_vl
+          "col_vs"     $cols.fit_vs
+          "boxes_wrap" $boxes_wrap
+        -}}
+
+        {{- $box_hide := dict -}}
+        {{- range slice "image" "icon" "md" "price" -}}
+          {{- if eq (index $box .) "hide" -}}
+            {{- $box_hide = merge $box_hide (dict . "") -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- range $key, $this := $boxes -}}
+        {{- /* BOX  */ -}}
+          {{- $key  := dict "key" $key -}}
+          {{- $item := merge $parent $box $this $expand $box_hide $key -}}
+          {{- partial "boxes/item" $item -}}
+        {{- end -}}
+
+{{- if $boxes_wrap -}}
+  {{- with $box }}
+    </div>
+
+    {{- /* SLIDER BUTTONS  */ -}}
+    {{- if .slider }}
+      </div>
+        {{- $opts := dict
+          "items"   (len $boxes)
+          "pips"    .pips
+          "arrows"  .arrows
+          "button"  .button
+        }}
+        {{- partial "boxes/slider-nav" $opts }}
+      </div>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

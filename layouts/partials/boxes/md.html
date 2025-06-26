@@ -1,0 +1,71 @@
+{{- /*  SET STORE  */ -}}
+{{- $store := page.Store -}}
+{{- with .md_caps   }}{{ $store.Set "md_caps"   . }}{{ end -}}
+{{- with .md_line   }}{{ $store.Set "md_line"   . }}{{ end -}}
+{{- with .md_nav    }}{{ $store.Set "md_nav"    . }}{{ end -}}
+{{- with .md_index  }}{{ $store.Set "md_index"  . }}{{ end -}}
+{{- with .md_border }}{{ $store.Set "md_border" . }}{{ end -}}
+
+{{- /*  SM  */ -}}
+{{- $md_sm := .md_sm -}}
+{{- if eq .md_sm nil -}}
+  {{- if .is_title_link -}}
+    {{- $md_sm = true -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  ALIGN  */ -}}
+{{- $md_align  := .md_align -}}
+{{- if not .md_align -}}
+  {{- if and (not .align) (not .header) .zero -}}
+    {{- /*  if container small  */ -}}
+    {{- if in (slice "xs" "sm") .container -}}
+      {{- $md_align = "left" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /*  MD  */ -}}
+{{- $md := partial "functions/md" .md -}}
+
+{{- /*  LATEX  */ -}}
+{{- $md_latex := "" -}}
+{{/*  {{- partial "warn" .md -}}  */}}
+{{- if $md | findRE `\$\$|\\\[|\\\(` -}}
+  {{- $md_latex = "latex" -}}
+{{- end -}}
+
+{{- /*  CLASS  */ -}}
+{{- $md_class := slice
+  "box__md"
+  "md"
+  (cond (not $md_align)    "" (print "align-"     $md_align))
+  (cond (not .md_align_vl) "" (print "align--vl-" .md_align_vl))
+  (cond (not $md_sm)       "" "box__md--sm")
+  $md_latex
+-}}
+
+{{- /*  ATTRIBUTES  */ -}}
+{{- $md_attrs := dict "class" $md_class -}}
+{{- $md_attrs  = partial "functions/attrs" $md_attrs -}}
+
+{{- /* HTML */}}
+<div {{- $md_attrs }}>
+  {{- /* <div class="float"></div><div class="float float--r"></div> */}}
+  {{ $md }}
+</div>
+
+{{- /*  DELETE STORE  */ -}}
+{{- if .md_border }}{{ $store.Delete "md_border" }}{{ end -}}
+{{- if .md_caps   }}{{ $store.Delete "md_caps"   }}{{ end -}}
+{{- if .md_line   }}{{ $store.Delete "md_line"   }}{{ end -}}
+{{- if .md_nav    }}{{ $store.Delete "md_nav"    }}{{ end -}}
+{{- if .md_index -}}
+  {{- $store.Delete "md_index" -}}
+  {{- $store.Delete "h1"       -}}
+  {{- $store.Delete "h2"       -}}
+  {{- $store.Delete "h3"       -}}
+  {{- $store.Delete "h4"       -}}
+  {{- $store.Delete "h5"       -}}
+  {{- $store.Delete "h6"       -}}
+{{- end -}}

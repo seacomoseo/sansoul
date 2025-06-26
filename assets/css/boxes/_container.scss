@@ -1,0 +1,31 @@
+.container {
+  --container-width-base: calc(100% - 2em);
+  --container-width: var(--container-width-base);
+  width: var(--container-width-base);
+  max-width: var(--container-width);
+  --box-width: var(--container-width);
+
+  --container-margin-side: calc((var(--box-inner) - 100vw) / 2);
+  margin-inline: auto;
+}
+
+@each $name, $size in $containers {
+  .container--#{$name} {
+    @include fluid-size(--container-#{$name}, 1px, $vs / 1px - 32, $size / 1px);
+    --container-width: var(--container-#{$name});
+  }
+}
+
+.container.bg:not([class*="box--pd-"]) {
+  --box-pd-vs: 1;
+  --box-pd-vl: 2;
+  &.container--lg,
+  &.container--xl {
+    --box-pd-vl: 3;
+  }
+}
+
+.boxes > *,
+.container.bg {
+  --container-margin-side: calc(-1 * var(--box-pd));
+}

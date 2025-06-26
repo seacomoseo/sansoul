@@ -1,0 +1,67 @@
+[data-hash="#/collections/types/entries/all"],
+[data-hash="#/collections/types/entries/single"] {
+  [data-testid="delete-button"] {
+    display: none;
+  }
+  .CMS_EditorControlPane_root > .CMS_EditorControl_root:has(> :is(
+    .name-order,
+    .name-base,
+    .name-disabled
+  )) {
+    display: none;
+  }
+}
+[data-hash="#/collections/types/entries/all"] {
+  .CMS_EditorControlPane_root > .CMS_EditorControl_root:has(> :is(
+    .name-icon,
+    .name-emoji,
+    .name-noindex,
+    .name-related,
+    .name-hint,
+    .name-tax_of,
+    .name-es,
+    .name-en,
+    .name-fr,
+    .name-de,
+    .name-pt,
+    .name-it
+  )) {
+    display: none;
+  }
+}
+
+
+// CUSTOM PARAMS PAGES
+
+@if $params != '' {
+  $params_roots: str-split($params, '|');
+  @each $root in $params_roots {
+    @each $param in $root {
+      $parts: str-split($param, ':');
+      $type: nth($parts, 1);
+      $name: nth($parts, 2);
+      $pages: nth($parts, 3);
+
+      .CMS_EditorControlPane_root > {
+        .CMS_EditorControl_root:has(> .name-#{$name}) {
+          display: none;
+        }
+      }
+
+      $pages_roots: str-split($pages, ',');
+      @each $root in $pages_roots {
+        @each $page in $root {
+
+          [data-hash="#/collections/#{$type}/entries/#{$page}"] {
+            .CMS_EditorControlPane_root > {
+              .CMS_EditorControl_root:has(> .name-#{$name}) {
+                display: block;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
+}

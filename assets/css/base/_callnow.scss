@@ -1,0 +1,59 @@
+.callnow {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 1em;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  @if not $buttons-3d {
+    .button--dot {
+      filter: drop-shadow($shadow);
+    }
+  }
+}
+.callnow__caption {
+  position: absolute;
+  @if $radius > .75 or $buttons-rounded {
+    @include radius(0em, .75em);
+  } @else {
+    @include radius;
+  }
+  margin-bottom: -3em;
+  background-color: var(--similar);
+  color: var(--similar-in);
+  font-size: small;
+  filter: drop-shadow($shadow);
+  width: max-content;
+  text-align: center;
+  padding: .25em 1em;
+  line-height: 1;
+  animation: callnow 10s infinite;
+}
+.callnow--plus .callnow__caption {
+  --callnow-caption-top: 3.75em;
+  left: 5em;
+}
+@keyframes callnow {
+  0%,
+  30%,
+  100% {
+    transform: translateY(calc(0em + var(--callnow-caption-top, 0em)));
+    opacity: 0;
+    visibility: hidden;
+  }
+  5%,
+  15%,
+  25% {
+    transform: translateY(calc(-2.25rem + var(--callnow-caption-top, 0em)));
+    opacity: 1;
+    visibility: visible;
+  }
+  10%,
+  20% {
+    transform: translateY(calc(-2rem + var(--callnow-caption-top, 0em)));
+    opacity: 1;
+    visibility: visible;
+  }
+}

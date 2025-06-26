@@ -1,0 +1,30 @@
+{{ $vl   := 1 }}
+{{ $vs   := 1 }}
+{{ with .each }}
+  {{ $vl  = .cols    | default 1 }}
+  {{ $vs  = .cols_vs | default 1 }}
+  {{ if eq .cols 0 }}
+    {{ $fit  := 0 }}
+    {{ range $.items }}
+      {{ $fit = add $fit (.fit | default .fit_vs | default 1) }}
+    {{ end }}
+    {{ $vl  = cond (le $fit 6) $fit 3 }}
+  {{ end }}
+  {{ if eq .cols_vs 0 }}
+    {{ $fit  := 0 }}
+    {{ range $.items }}
+      {{ $fit = add $fit (.fit_vs | default 1) }}
+    {{ end }}
+    {{ $vs  = cond (le $fit 6) $fit 3 }}
+  {{ end }}
+{{ end }}
+
+{{ $fit_vl := div .col_vl $vl }}
+{{ $fit_vs := div .col_vs $vs }}
+
+{{ return dict
+  "vl"     $vl
+  "vs"     $vs
+  "fit_vl" $fit_vl
+  "fit_vs" $fit_vs
+}}

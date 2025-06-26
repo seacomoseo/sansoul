@@ -1,24 +1,100 @@
 # SanSoul Hugo Theme
 
-[![sansoul](/assets/media/logo.png)](https://github.com/lorensansol/sansoul)
+[![sansoul](/assets/media/base/icon.png)](https://github.com/seacomoseo/sansoul)
 
 
-# TO DO LIST
+## Comprobar cambios en `example.yml`
+## Script para actualizar proyectos
+### CAMBIOS Y COMPROBACIONES MANUALES
 
-- cms
-  - config split in partials
-  - pros
-    - widget conditions
-    - multiple images
-    - media subfolders
-    - multiple list with only one field = array of strings
-    - versión móvil
-    - i18n?
-  - contra
-    - booleanos se guardan forzosamente -> custom widget
-    - style demasiado compacto -> css
-    - markdown en hint's no funciona -> ahora si
-    - no tiene flujo editorial -> ahora si, aunque faltan los enlaces y estados de las vistas previas
+- `*.yml`
+  - `placeholder` > `label`
+- `content.${lang}`
+  - `section/base/footer.yml`
+  - `values.yml`
+  - `_index.md`
+    - `images`
+    - `schedule`
+  - `{blog|event}/*.yml`
+    - `{date|lastmod}: 2025-02-18 00:00:00` (`T` > ` `)
+  - `{sections|modals}/*.yml`
+    - `contacto.yml`
+      - `address.geo`
+      - `geos`
+      - `form.email`
+    - `mapa.yml`
+      - `geos`
+    - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
+    - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
+    - `hs`
+    - `ratio`
+    - `rate`
+  - `single/*.md`
+    - `menu.hide_anchors`
+    - `menu|modal|section|sections|...` > `tpl.*`
+- `types/*.yml`
+    - `tpl.list`
+      - `tags`
+      - `reading_time`
+      - `hide_categories`
+- `types/all.yml`
+  - columns: 3
+    image: gradient
+    ratio: 16x9
+    inset: true
+    align: left
+    color: white
+    hide_categories: true
+    reading_time: true
+    button: hide
+  - cols: 3
+    align: left
+    color: similar
+    shade: true
+    inset: true
+    ratio: 16/9
+    icon: hide
+    button: hide
+    tags:
+    - type: date
+- `types/*.yml|content.${lang}/single/*.md`
+  - `file:` en cada modal
+  - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
+  - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
+- `assets/css/_custom.scss`
+- `assets/js/custom.js`
+  - `submited_` > `submited-`
+- `data/config.yml`
+  - `langs.0.google_analytics`
+  - `langs.0.email`
+- coordinates
+
+
+## TO DO
+
+- [ ] Fix
+  - [ ] background gradient with parallax fix > fix!
+  - [ ] main color text/link contrast
+  - [ ] logo_sticky bg color
+  - [ ] menu scroll spy
+- [ ] Static CMS isues preview images in subdir and `public_folder: ''`
+- [ ] `i18n` editable in cms?
+- [ ] `buildFuture`
+- [ ] 404 js
+- [ ] `images` in `product` and `event`
+- [ ] Rehuse `boxes` partial in `reviews`
+- [ ] `search.html`
+- [ ] Reset `cookies`.md
+- [ ] Reset `admin`.md
+- [ ] Check `forms` `actions`
+- [ ] Check comments
+- [ ] Check Google Translate ofuscate links and la propia traducción
+- [ ] ¿Remove `cols` and `cols_vs`? > Only `fit` and `fit_vs`?
+- [ ] `styles.performance`
+- [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
+  - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
+  - [ ] ¿Quitar montaje de módulos de `hugo.default.yml`?
+  - [ ] ¿Quitar `translationKey` de cada archivo `.md` y del CMS?
 - cms
   - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
   - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
@@ -45,45 +121,40 @@
   - preSave
     - Campos de texto sin contenido: undefined (para campos no requeridos en colecciones que se puedan añadir archivos)
       - https://deploy-preview-966.staticcms.org/docs/cms-events#pre-save-event
-+ UI Visual RPA
-  - NewProject
-    - https://app.netlify.com/sites/ssndental/configuration/deploys#branches-and-deploy-contexts
-    - Configure
-    - Branch deploys: All
-    - Deploy Previews: None
-  - EndDomainProject
-    - SearchConsole
-      - Add property: click last Continue
-    - Netlify
-      - Set SSL
-  - file:///Users/lorensansol/Mi%20unidad/⚡%20Sea%20Como%20SEO/🤖%20UI.Vision/ui.vision.html?direct=1¯o=VALEVALE&macro=SanSoul/VarsToFile&cmd_var1&savelog=log1.txt
-- sansoul
-  - example.yml all files
-  - partials/\*.html
-  - cms-config.html
-- projects
-  - sections/\*.yml
-  - data/sections.yml
-  - pages/\*.md > sections
-- check
-  - ¿Añadir `.button` en `button` y quitar este de css? (16 de scss vs 44 de html)
-  - `form.fill_inputs > site.data.design.inputs.fill`
-  - `form.items > form` (ojo `actions`)
 
-- grid.html in article and partial from sectioned
+- Diferencias CMS
+  - Less important
+  - Static CMS
+    - ❌ i18n folder (edit in other lang panel)
+    - ❌ Image subfolders not show in image widgets
+    - ❌ `public_folder: ""` `"/"` coloca 1 barra antes del nombre de archivo
+    - ❌ Widget `select` with `multiple` create value `''` when load
+  - Sveltia CMS
+    - ✅ i18n
+    - ❌ `relation` widget impide cargar la colección
+    - ❌ `public_folder: ""` es igual que `media_folder`, y `"/"` coloca 2 barras antes del nombre de archivo
+    - ❌ Custom widgets (lists and booleans widgets force values)
+    - ❌ Media subfolders
+    - ❌ Nested collections
+    - ¿? Widget conditions
+    - Less important
+      - ❌ Login with Netlify Identity
+      - ❌ Mobile version (min-width: 480px)
+      - ❌ Multiple images
+      - ❌ Multiple list with only one field = array of strings
+      - ❌ Spanish UI
+      - ❌ Editorial workflow
+      - ❌ Widget keyvalue
+      - ✅ Disabling automatic deployments
+      - ✅ Pretty
+      - ✅ Local backend without `npx`
+
 - button in shpreadsheet (and CMS?) to build
 
----
 
-- underline_width
-- sitemap.html?
-- dark mode
-- screencast
-  - Forms
-  - Disqus
-  - Analytics
-  - Google My Business / Google Maps
+## New language
 
+<<<<<<< HEAD
 - gitlab pages subfolder
   - script to add folder in the styles link (href="/sansoul.es/css/") in gitlab compiles
   - change te links with base64Encode for .RelPermalink
@@ -112,3 +183,15 @@
 - `./content/*`
 - `./assets/sections.new`
 - `./assets/css/styles.new.scss`
+=======
+- `themes/sansoul`
+  - [x] `./hugo.default.yml`
+    - `languages`
+    - `mounts`
+  - [/] `./i18n/new.yml`
+  - [x] `./data/options.yml`
+    - `langs`
+  - [/] `./content.new/`
+  - [x] `./prebuild/hugo.yml`
+    - `module.mounts`
+>>>>>>> 3c1c646474044268b088da6ce391479f7976107c

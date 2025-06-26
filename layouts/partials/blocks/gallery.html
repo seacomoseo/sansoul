@@ -1,0 +1,129 @@
+{{- /* DEFINE GALLERY  */ -}}
+{{- define "partials/gallery" -}}
+  {{- $cols := partial "functions/columns" (dict
+    "items"  .images
+    "each"   (merge . (dict "cols" .cols))
+    "col_vl" .col_vl
+    "col_vs" .col_vs
+  ) -}}
+
+  {{- $bgc   := partial "functions/color-background" (dict "child" .color "parent" .bgcp) -}}
+  {{- $color := $bgc.child -}}
+
+  {{- $is_button_expand := and (eq .type "rows") (.images | or .link) (ne .button "hide") -}}
+  {{- $is_button_custom := and .link (ne .type "rows") -}}
+
+  {{- /* CLASS  */ -}}
+  {{- $class := slice
+    "box__block"
+    "gallery"
+    (print "gallery--" (.type | default "grid"))
+    (cond (or (eq .type "cols") (eq .type "grid") (not .type)) (print "gallery--cols-" $cols.vl) "")
+    (cond (not .ratio)                                "" "gallery--ratio")
+    (cond (not .contain)                              "" "gallery--contain")
+    (cond (not .gray)                                 "" "gallery--gray")
+    (cond (not $color)                                "" "bg")
+    (cond (not $color | or (eq $color "transparent")) "" (print "bg-" $color))
+    (cond (not site.Data.config.others.show)          "" "show")
+  -}}
+
+  {{- /* STYLE  */ -}}
+  {{- $style := slice
+    (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
+    (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio)) -}}
+
+  {{- /* JOIN ATTRIBUTES  */ -}}
+  {{- $attrs := dict "class" $class "style" $style -}}
+  {{- $attrs  = partial "functions/attrs" $attrs -}}
+
+  {{- /*  HTML  */}}
+  <div {{- $attrs }}>
+
+    {{- /*  BBACKGROUND COLOR  */ -}}
+    {{- if and $color (ne $color "transparent") }}
+      <div class="bg-color"></div>
+    {{- end -}}
+
+    {{- /*  ITEMS  */}}
+    <div class="gallery__items">
+      {{- /*  ITEM  */ -}}
+      {{- range .images -}}
+        {{- partial "blocks/gallery-item" (dict
+          "image"     .image
+          "link"      .link
+          "alt"       .alt
+          "notlazy"   $.notlazy
+          "type"      $.type
+          "cols"      $cols.vl
+          "container" $.container
+          "col_vl"    $cols.fit_vl
+          "col_vs"    $cols.fit_vs
+        ) -}}
+      {{- end -}}
+
+      {{- /*  BUTTON EXPAND  */ -}}
+      {{- if $is_button_expand }}
+        {{ partial "link" (dict
+          "class"  "gallery__expand"
+          "button" (.button | default "light")
+          "icon"   (cond (eq .pin "none") "" .pin)
+          "anchor" (.anchor | default "auto")
+          "link"   .link
+          "lock"   .lock
+        ) -}}
+      {{- end }}
+    </div>
+  </div>
+
+  {{- /*  BUTTON CUSTOM  */}}
+  {{- if $is_button_custom }}
+    <div class="buttons">
+      {{ partial "link" (dict
+        "link"   .link
+        "button" (.button | default "cta")
+        "swap"   .swap
+        "icon"   .icon
+        "label"  .label
+        "anchor" (.anchor | default "auto")
+        "lock"   .lock
+      ) }}
+    </div>
+  {{- end -}}
+{{- end -}}
+
+
+{{- /* GALLERY OR BOXES  */ -}}
+{{- if eq .gallery.type "boxes" -}}
+  {{- /* If eq type boxes  */ -}}
+  {{- $images   := slice -}}
+  {{- range .images -}}
+    {{- $anchor := .alt | default .image | replaceRE `^(.+)\..*$` "$1" | humanize -}}
+    {{- $image  := merge . (dict "anchor" $anchor) -}}
+    {{- $images  = $images | append $image -}}
+  {{- end -}}
+  {{- $box_each := dict
+    "button"  "hide"
+    "cols"    .cols
+    "color"   .color
+    "gap"     .gap
+    "ratio"   .ratio
+    "contain" .contain
+    "gray"    .gray
+  -}}
+  {{- $boxes := dict "boxes" $images -}}
+  {{- $items := merge (dict "box" $box_each) $ $boxes -}}
+  {{- partial "boxes/items" $items -}}
+{{- else -}}
+  {{- /* If ne type boxes  */ -}}
+  {{- $gallery := .gallery | default dict -}}
+  {{- $images  := dict
+    "images"    .images
+    "bgcp"      .bgcp
+    "container" .container
+    "col_vs"    .col_vs
+    "col_vl"    .col_vl
+    "notlazy"   .header
+  -}}
+  {{- $items := merge $gallery $images -}}
+  {{- partial "gallery" $items -}}
+{{- end -}}
