@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-{{ $src  := .src }}
-{{ $mute := cond (in .src "#mute") true .bg }}
-
-{{ if .src | findRE `youtu\.be|youtube\.com` }}
-
-  {{ $id   := .src | replaceRE `^.+?(v=|be/)(.+?)(&|\?|#|$).*` `$2` }}
-  {{ $t    := .src | findRE `t\=\d+`       }}{{ if $t    }}{{ $t    = index $t    0 | replaceRE `t\=` ``    }}{{ end }}
-  {{ $end  := .src | findRE `end\=\d+`     }}{{ if $end  }}{{ $end  = index $end  0 | replaceRE `end\=` ``  }}{{ end }}
-  {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` `` }}{{ end }}
-  {{ $src = print
-=======
 {{ $name  := "" }}
 {{ $url   := "" }}
 {{ $src   := .src }}
@@ -24,7 +12,6 @@
   {{ $end  := .src | findRE `end\=\d+`     }}{{ if $end  }}{{ $end  = index $end  0 | replaceRE `end\=`  "" }}{{ end }}
   {{ $list := .src | findRE `list\=[\w-]+` }}{{ if $list }}{{ $list = index $list 0 | replaceRE `list\=` "" }}{{ end }}
   {{ $src   = print
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
     "https://www.youtube-nocookie.com/embed/"
     $id
     "?rel=0&modestbranding=1&color=white&enablejsapi=1"

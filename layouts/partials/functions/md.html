@@ -5,15 +5,6 @@
 
 {{ $draws   := print "/draws." site.Params.timestamp ".svg" }}
 
-<<<<<<< HEAD
-{{ $content = $content
-  | replaceRE `(?s)(<blockquote class="quotes.*?">)` `$1 <svg class="quote-left"><use xlink:href='/draws.svg#quote-left'></use></svg><svg class="quote-right"><use xlink:href='/draws.svg#quote-right'></use></svg>`
-  | replaceRE `(?s)(<blockquote class="dittos.*?">)` `$1 <svg class="quote-left"><use xlink:href='/draws.svg#ditto'></use></svg><svg class="quote-right"><use xlink:href='/draws.svg#ditto'></use></svg>`
-  | replaceRE `icon-([\w-]+)` `<svg><use xlink:href='/draws.svg#$1'></use></svg>`
-  | replaceRE `\n` `∫`
-  | replaceRE `<p( class="(.+?)")?>[∫\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
-  | replaceRE `<i>(<svg.+?</svg>)(.*?)</i>` `$1<i>$2</i>`
-=======
 {{ $md = $md
   | replaceRE `(<blockquote class="quotes.*?">)` (print `$1 <svg class="icon quote-left"><use href="` $draws `#quote-left"></use></svg><svg class="quote-right"><use href="` $draws `#quote-right"></use></svg>`)
   | replaceRE `(<blockquote class="dittos.*?">)` (print `$1 <svg class="icon quote-left"><use href="` $draws `#ditto"></use></svg><svg class="quote-right"><use href="` $draws `#ditto"></use></svg>`)
@@ -21,7 +12,6 @@
   | replaceRE `::(.+?)::` (print `<i class="icon icon--text">$1</i>`)
   | replaceRE `:([\w-]|[^\d:]{2}|[\w-]{3,}?):` (print `<svg class="icon"><use href="` $draws `#$1"></use></svg>`)
   | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   | replaceRE ` start="(.+?)"` ` style="--item: $1;"`
   | replaceRE `<li(.*?)>` `<li$1><div>`
   | replaceRE `<li(.*?)><div>(\n|<p>)*(<. class="link.+?>)?(<svg.*?>.+?</svg>|<i class="icon.*?">.*?</i>) ?` `<li class="li-icon"$1>$4<div>$2$3`

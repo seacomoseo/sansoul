@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-
-{{- $label := .Text | replaceRE `^btn[\w-]* ` `` -}}
-{{- $anchor   := .Title | replaceRE `(^nofollow\s?)?(\s?_blank)?` `` -}}
-{{- $noindex  := cond (strings.HasPrefix .Title "nofollow") true nil -}}
-
-{{- $button   := "none" -}}
-{{- $class    := "" -}}
-{{- if strings.HasPrefix .Text "btn" -}}
-  {{- $other  := .Text | replaceRE `^btn-?([\w-]*).*` `$1` -}}
-  {{- $button  =  replace $other "-font-alt" "" | replaceRE `^.+?(main|alt|link|light|dark|invert|whatsapp).*` `$1` -}}
-  {{- range $other | findRE `icon|font-alt|sm` -}}
-    {{- $class = print $class " button--" . -}}
-=======
 {{- $label  := .Text -}}
 {{- $anchor := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
 {{- $title  := "" -}}
@@ -19,7 +5,6 @@
 {{- with .Title -}}
   {{- with findRE `(?s).*\[.+?\].*` . 1 -}}
     {{- $meta   = index . 0 -}}
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
   {{- end -}}
 {{- end -}}
 
@@ -37,18 +22,6 @@
   {{- $swap   = in $meta "swap" -}}
 {{- end -}}
 
-<<<<<<< HEAD
-{{- partial "components/link" (dict
-  "class"   $class
-  "link"    .Destination
-  "button"  $button
-  "icon"    $icon
-  "label"   $label
-  "anchor"  $anchor
-  "noindex" $noindex
-  "_blank"  (in .Title "_blank")
-) -}}
-=======
 {{- /*  ga4  */ -}}
 {{- $ga4 := in $meta "ga4" -}}
 
@@ -90,4 +63,3 @@
   "lock"   $lock
   "blank"  $blank
 ) -}}
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c

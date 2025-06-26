@@ -1,149 +1,6 @@
 *, ::before, ::after {
   box-sizing: border-box;
 }
-<<<<<<< HEAD
-/*! purgecss start ignore */
-:where(
-  .columns
-) {
-  // changing variables
-  // --size-min: 3.125; // 50px
-  // --size-max: 16.667; // 300px
-  // fixed variables
-  --screen-max: #{ $screen-max / 18px };
-  --screen-min: #{ $screen-min / 16px };
-  --real-size-min: calc(min(var(--size-min), var(--size-max)) * 1em);
-  --real-size-max: calc(max(var(--size-min), var(--size-max)) * 1em);
-  --preferred-size: calc(
-    (var(--size-min) * 1em)
-    + (var(--size-max) - var(--size-min))
-      * ((100vw - var(--screen-min) * 1em) / (var(--screen-max) - var(--screen-min)))
-  );
-  --fluid-size: clamp(var(--real-size-min), var(--preferred-size), var(--real-size-max));
-  // Like a SCSS function
-  // --slope: calc((var(--size-max) - var(--size-min)) / (var(--screen-max) - var(--screen-min)));
-  // --y-axis-intersection: calc(var(--screen-min) * -1 * var(--slope) + var(--size-min));
-  // --size-preferred: calc(var(--y-axis-intersection) * 1px + (var(--slope) * 100vw));
-  // --fluid-size: clamp(var(--size-min) * 1px, var(--size-preferred), var(--size-max) * 1px)
-}
-/*! purgecss end ignore */
-@if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
-  /*! purgecss start ignore */
-  :where(
-    .menu__toggle-bar,
-    .menu--sticky .menu__subitems,
-    .section__title--icon-bottom .section__icon,
-    .underline,
-    iframe,
-    table,
-    pre,
-    button,
-    .button,
-    .bg-color,
-    :not(.section) > .bg-figure,
-    .image,
-    .image__inner,
-    .image--contain img,
-    .column.bg--radius-min,
-    .bg--image-fixed,
-    .bg--image-fixed.column .bg-figure-image,
-    .column--card .column__content,
-    .pill-bottom .column__content,
-    .columns--group-radius,
-    .gallery,
-    .gallery-modal__items,
-    .review__figure-image,
-    .step__axis,
-    .step__figure,
-    .author-box__figure,
-    .author-box__figure-image,
-    .contact__email-option-copy i,
-    .contact__form-error,
-    .contact__form-submit,
-    .contact__form-item,
-    .contact__form-item-border,
-    .contact__form-fill-inputs *:where(
-      input:not([type="checkbox"], [type="radio"], [type="hidden"]),
-      textarea,
-      select
-    ),
-    .callnow__caption,
-    .bg-white .toc__box.bg-white
-  ) {
-    --radius: #{ $radius };
-    --radius-padding: 0em;
-    --radius-top: var(--radius-calc);
-    --radius-bottom: var(--radius-calc);
-    @if $chamfer {
-      --radius-calc: calc((((var(--radius) + var(--radius-padding)) / .7071) - var(--radius-padding)) * .7071);
-      --chamfer: polygon(
-        var(--radius-top) 0%,
-        calc(100% - var(--radius-top)) 0%,
-        100% var(--radius-top),
-        100% calc(100% - var(--radius-bottom)),
-        calc(100% - var(--radius-bottom)) 100%,
-        var(--radius-bottom) 100%,
-        0% calc(100% - var(--radius-bottom)),
-        0% var(--radius-top)
-      );
-      --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-      // Outline
-      --radius-outline: calc((((var(--radius) + var(--outline)) / .7071) - var(--outline)) * .7071);
-      --chamfer-outline: polygon(
-        var(--radius) 0%,
-        calc(100% - var(--radius)) 0%,
-        100% var(--radius),
-        100% calc(100% - var(--radius)),
-        calc(100% - var(--radius)) 100%,
-        var(--radius) 100%,
-        0% calc(100% - var(--radius)),
-        0% var(--radius)
-        ,
-        var(--radius) 0%
-        ,
-        var(--radius-outline) var(--outline),
-        var(--outline) var(--radius-outline),
-        var(--outline) calc(100% - var(--radius-outline)),
-        var(--radius-outline) calc(100% - var(--outline)),
-        calc(100% - var(--radius-outline)) calc(100% - var(--outline)),
-        calc(100% - var(--outline)) calc(100% - var(--radius-outline)),
-        calc(100% - var(--outline)) var(--radius-outline),
-        calc(100% - var(--radius-outline)) var(--outline)
-        ,
-        var(--radius-outline) var(--outline)
-      );
-      --chamfer-int-outline: polygon(
-        var(--radius-outline) var(--outline),
-        var(--outline) var(--radius-outline),
-        var(--outline) calc(100% - var(--radius-outline)),
-        var(--radius-outline) calc(100% - var(--outline)),
-        calc(100% - var(--radius-outline)) calc(100% - var(--outline)),
-        calc(100% - var(--outline)) calc(100% - var(--radius-outline)),
-        calc(100% - var(--outline)) var(--radius-outline),
-        calc(100% - var(--radius-outline)) var(--outline)
-      );
-      --outline-diamond: calc(var(--outline) / .7071);
-      --diamond-outline: polygon(
-        50% 0%, 100% 50%, 50% 100%, 0% 50%
-        ,
-        50% 0%
-        ,
-        50% var(--outline-diamond),
-        var(--outline-diamond) 50%,
-        50% calc(100% - var(--outline-diamond)),
-        calc(100% - var(--outline-diamond)) 50%
-        ,
-        50% var(--outline-diamond)
-      );
-    } @else {
-      --radius-calc: calc(var(--radius) + var(--radius-padding));
-      --radius-end: var(--radius-top) var(--radius-top) var(--radius-bottom) var(--radius-bottom);
-    }
-  }
-  /*! purgecss end ignore */
-}
-=======
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
 html {
   @include font-base(true);
   @include fluid-size(font-size, 1px, $font-size-vs, $font-size-vl);
@@ -239,28 +96,12 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0;
   }
 }
-<<<<<<< HEAD
-h1 { font-size: 2em; }
-h2 { font-size: 1.8em; }
-h3 { font-size: 1.6em; }
-h4 { font-size: 1.4em; }
-h5 { font-size: 1.2em; }
-h6 { font-size: 1em; }
-header,
-section {
-  position: relative;
-  padding-top: 3em;
-  padding-bottom: 3em;
-  // overflow: hidden;
-}
-=======
 h1 { --hs: 2; }
 h2 { --hs: 1.8; }
 h3 { --hs: 1.6; }
 h4 { --hs: 1.4; }
 h5 { --hs: 1.2; }
 h6 { --hs: 1; }
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
 input:not([type="checkbox"], [type="radio"], [type="hidden"]),
 textarea,
 select,
@@ -285,12 +126,9 @@ fieldset {
     // top: .125em;
   }
 }
-<<<<<<< HEAD
-=======
 select:has(option:checked[value=""]) {
   color: color-mix(in srgb, var(--text), transparent 50%);
 }
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
 input:not([type="checkbox"], [type="radio"], [type="hidden"]),
 select {
   height: 2.5em;
@@ -487,14 +325,3 @@ pre {
   border-radius: 50%;
 }
 /*! purgecss end ignore */
-<<<<<<< HEAD
-
-.compare {
-  td, th {
-    &:not(:first-child, [rowspan] + *) {
-      text-align: center;
-    }
-  }
-}
-=======
->>>>>>> 3c1c646474044268b088da6ce391479f7976107c
