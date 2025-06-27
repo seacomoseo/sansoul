@@ -31,15 +31,16 @@
 {{- end -}}
 
 {{- $attrs := dict
-  "class"       .class
-  "controls"    (not .bi)
-  "muted"       $notlazy_mute
-  "loop"        $notlazy_mute
-  "autoplay"    $notlazy_mute
-  "playsinline" $notlazy_mute
-  "preload"     $preload
-  "data-mute"   (cond $notlazy_mute "" .mute)
-  "poster"      $poster
+  "class"         .class
+  "controls"      (not .bi)
+  "muted"         $notlazy_mute
+  "loop"          $notlazy_mute
+  "autoplay"      $notlazy_mute
+  "playsinline"   $notlazy_mute
+  "preload"       $preload
+  "data-mute"     (cond $notlazy_mute "" .mute)
+  "poster"        $poster
+  "fetchpriority" "low"
 -}}
 {{- $attrs = partial "functions/attrs" $attrs -}}
 
