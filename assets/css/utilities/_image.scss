@@ -285,8 +285,10 @@ iframe.image__inner {
 .box:not(.bg) // when not background
 > .image:not(.image--border):not(.md *) // without radius and not content
 > .image__inner:where(svg, .icon, img[src*=".svg"]) { // svg image
-  overflow: unset;
   @include hide-radius;
+  &:not(img, video) { // Fix 'Obsolete APIs' in PageSpeed
+    overflow: unset;
+  }
 }
 .icon.image__inner {
   width: 100%;
