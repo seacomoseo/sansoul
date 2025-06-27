@@ -8,7 +8,7 @@ let hasLastSection = ''
 
 // Open
 function openModal (target) {
-  target.hidden = false
+  target.removeAttribute('hidden')
   // setTimeout(() => {
   target.showModal()
   target.focus()
@@ -37,7 +37,7 @@ export function closeModal (changeHash) {
     setTimeout(() => {
       modalOpen.close()
       modalOpen.classList.remove('modal--hide')
-      modalOpen.hidden = 'until-found'
+      modalOpen.setAttribute('hidden', 'until-found')
     }, 300)
   }
 }

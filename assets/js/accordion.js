@@ -3,14 +3,14 @@ const itemscrollHeight = item => item.style.setProperty('--max-height', item.scr
 
 function hideAccordionActive (itemActive) {
   const itemActiveContent = itemContent(itemActive)
-  setTimeout(() => itemActiveContent.hidden = 'until-found', 300)
+  setTimeout(() => itemActiveContent.setAttribute('hidden', 'until-found'), 300)
   setTimeout(() => itemActive.classList.remove('accordion--active'), 10)
   itemscrollHeight(itemActiveContent)
 }
 
 function showAccordionTarget (itemTarget) {
   const itemTargetContent = itemContent(itemTarget)
-  itemTargetContent.hidden = false
+  itemTargetContent.removeAttribute('hidden')
   itemscrollHeight(itemTargetContent)
   setTimeout(() => itemTarget.classList.add('accordion--active'), 10)
 }
