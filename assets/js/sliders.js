@@ -90,25 +90,7 @@ export function initSliders () {
       // }
     }
 
-    // CONTROLS VIEW
-    function slidersControlsView () {
-      document.querySelectorAll('.slider').forEach(slider => {
-        const items = slider.querySelector('.slider__items')
-        const itemsStyle = window.getComputedStyle(items, '')
-        const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
-        const itemsWidth = items.offsetWidth - padding
-        if (slider.offsetWidth >= itemsWidth - 1) {
-          slider.classList.add('slider--static')
-        } else {
-          slider.classList.remove('slider--static')
-        }
-      })
-    }
-    window.addEventListener('resize', slidersControlsView)
-    window.addEventListener('hashchange', slidersControlsView)
     window.addEventListener('load', () => {
-      slidersControlsView()
-
       // SCROLL-SHOT AND INTERVALS
       sliders.forEach(slider => {
         const track = slider.querySelector('.slider__track')
@@ -116,11 +98,18 @@ export function initSliders () {
         const children = [...items.children]
         const pips = slider.querySelectorAll('.slider__pip')
 
-        // FIRST TO START ON LOAD
-        const trackChild = track.firstElementChild
-        const trackStyle = window.getComputedStyle(trackChild)
-        const padding = parseFloat(trackStyle.getPropertyValue('padding-left'))
-        track.scrollTo(padding, 0)
+        // CONTROLS VIEW
+        const ro = new ResizeObserver(() => {
+          const itemsStyle = window.getComputedStyle(items, '')
+          const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
+          const itemsWidth = items.offsetWidth - padding
+          if (slider.offsetWidth >= itemsWidth - 1) {
+            slider.classList.add('slider--static')
+          } else {
+            slider.classList.remove('slider--static')
+          }
+        })
+        ro.observe(slider)
 
         // SCROLL-SHOT
         function callbackScrollChildren (entries, observer) {
@@ -140,6 +129,12 @@ export function initSliders () {
         children.forEach(e => {
           observerScrollChildren.observe(e)
         })
+
+        // FIRST TO START ON LOAD
+        const trackChild = track.firstElementChild
+        const trackStyle = window.getComputedStyle(trackChild)
+        const padding = parseFloat(trackStyle.getPropertyValue('padding-left'))
+        track.scrollTo(padding, 0)
 
         // INTERVALS
         const interval = slider.dataset.time * 1000

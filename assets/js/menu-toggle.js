@@ -65,10 +65,7 @@ function initMenuToggleWhenCSS () {
     })
     document.addEventListener('keyup', e => e.keyCode === 27 && menuClose())
     window.addEventListener('hashchange', menuClose)
-    window.addEventListener('resize', menuVisibility)
-
-    // Run when load
-    menuVisibility()
+    new ResizeObserver(menuVisibility).observe(document.body)
   }
 }
 
