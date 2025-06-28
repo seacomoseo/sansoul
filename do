@@ -81,21 +81,18 @@ elif [ $1 = clean ]; then
 elif [ $1 = yml ]; then
   node ../_tools/others/check-yaml.js $PROYECT $2
 
-# Get main color and langs
-elif [ $1 = color-langs ]; then
-  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
-  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
-
 # Get data of place by Google API
 elif [ $1 = places ]; then
-  sh do color-langs
+  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
+  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
   for LANG in $LANGS; do
     node ../_tools/others/fetch-place.js $PROYECT $COLOR $LANG $2
   done
 
 # Scrap reviews by Google Maps
 elif [ $1 = reviews ]; then
-  sh do color-langs
+  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+  echo "$LANGS"
   for LANG in $LANGS; do
     node ../_tools/others/scrape-reviews.js $PROYECT $LANG $2
   done
