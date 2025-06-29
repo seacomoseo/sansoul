@@ -104,7 +104,7 @@ export function initModals () {
       openModal(target)
     }
     // Menu close
-    document.body.classList.remove('menu__active')
+    document.documentElement.classList.remove('menu__active')
     // Fix scroll in android
     if (target && !target.classList.contains('modal')) {
       setTimeout(() => {

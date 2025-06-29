@@ -90,6 +90,17 @@ export function initSliders () {
       // }
     }
 
+    function slidersControlsView (slider, items) {
+      const itemsStyle = window.getComputedStyle(items, '')
+      const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
+      const itemsWidth = items.offsetWidth - padding
+      if (slider.offsetWidth >= itemsWidth - 1) {
+        slider.classList.add('slider--static')
+      } else {
+        slider.classList.remove('slider--static')
+      }
+    }
+
     window.addEventListener('load', () => {
       // SCROLL-SHOT AND INTERVALS
       sliders.forEach(slider => {
@@ -100,16 +111,11 @@ export function initSliders () {
 
         // CONTROLS VIEW
         const ro = new ResizeObserver(() => {
-          const itemsStyle = window.getComputedStyle(items, '')
-          const padding = parseFloat(itemsStyle.getPropertyValue('padding-left')) * 2
-          const itemsWidth = items.offsetWidth - padding
-          if (slider.offsetWidth >= itemsWidth - 1) {
-            slider.classList.add('slider--static')
-          } else {
-            slider.classList.remove('slider--static')
-          }
+          slidersControlsView(slider, items)
         })
         ro.observe(slider)
+        // Run when load
+        slidersControlsView(slider, items)
 
         // SCROLL-SHOT
         function callbackScrollChildren (entries, observer) {

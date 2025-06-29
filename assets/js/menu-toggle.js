@@ -65,32 +65,22 @@ function initMenuToggleWhenCSS () {
     })
     document.addEventListener('keyup', e => e.keyCode === 27 && menuClose())
     window.addEventListener('hashchange', menuClose)
-    new ResizeObserver(menuVisibility).observe(document.body)
+    new ResizeObserver(menuVisibility).observe(document.documentElement)
+
+    // Run when load
+    menuVisibility()
   }
 }
 
 export function initMenuToggle () {
   document.addEventListener('DOMContentLoaded', () => {
-    // 1️⃣ DOM is ready
-    if (!document.documentElement.classList.contains('preload')) {
-      // CSS was already applied from cache
+    const link = document.querySelector('link[as="style"][href^="/css/styles."]')
+    if (link.sheet) {
+      // CSS is loaded
       initMenuToggleWhenCSS()
-      return
-    }
-
-    // 2️⃣ Wait for the async stylesheet
-    const cssLink = document.querySelector('link[as="style"][rel="preload"]')
-    if (cssLink) {
-      cssLink.addEventListener('load', initMenuToggleWhenCSS, { once: true })
     } else {
-      // Fallback: observe the class change
-      const obs = new MutationObserver(() => {
-        if (!document.documentElement.classList.contains('preload')) {
-          obs.disconnect()
-          initMenuToggleWhenCSS()
-        }
-      })
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+      // Whait CSS load
+      link.addEventListener('load', initMenuToggleWhenCSS)
     }
   })
 }

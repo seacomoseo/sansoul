@@ -20,7 +20,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      overflow-x: auto;
       width: 100%;
       transition: padding .3s;
       padding-block: var(--menu-py);
@@ -29,6 +30,7 @@
       padding: 0 .5em;
       position: relative;
       flex-grow: 0;
+      flex-shrink: 0;
     }
     .menu__item--subitems {
       &:focus,
@@ -153,7 +155,6 @@
     }
   }
 }
-
 
 // Sticky Calculate Auto
 
