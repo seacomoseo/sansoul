@@ -44,7 +44,8 @@ function menuOpen () {
 }
 
 function menuClose () {
-  if (menuNoStickyVisibility()) {
+  const menuSticky = document.querySelector('.body-menu--sticky--active')
+  if (!menuSticky) {
     document.documentElement.classList.remove('menu__active')
     setTimeout(() => { menu.setAttribute('hidden', 'until-found') }, 300)
   }
@@ -55,7 +56,8 @@ function menuToggle () {
   isMenuClose ? menuOpen() : menuClose()
 }
 
-function menuVisibility () {
+function menuSetVisibility () {
+  document.documentElement.classList.remove('menu__active') // Close without hidden
   if (menuNoStickyVisibility()) {
     menu.setAttribute('hidden', 'until-found')
     document.body.classList.remove('body-menu--sticky--active')
@@ -78,10 +80,10 @@ function initMenuToggleWhenCSS () {
   })
   document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
   window.addEventListener('hashchange', menuClose)
-  window.addEventListener('resize', debounce(menuVisibility))
+  window.addEventListener('resize', debounce(menuSetVisibility))
 
   // Run when load
-  if (document.documentElement.clientWidth >= 375) menuVisibility()
+  if (document.documentElement.clientWidth >= 375) menuSetVisibility()
 }
 
 export function initMenuToggle () {
