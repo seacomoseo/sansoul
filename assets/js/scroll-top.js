@@ -1,8 +1,9 @@
 // Required by .body-menu--sticky-** and .up
 import { scrollShot } from './scroll-shot'
 import { scrollTo } from './scroll-to'
+import { whaitCSS } from './whait-css'
 
-export function initScrollTop () {
+function initScrollTopWhenCSS () {
   window.addEventListener('DOMContentLoaded', () => {
     // Get background color of header and menu transparent
     const bgs = [
@@ -95,4 +96,8 @@ export function initScrollTop () {
       }
     })
   })
+}
+
+export function initScrollTop () {
+  whaitCSS(initScrollTopWhenCSS)
 }

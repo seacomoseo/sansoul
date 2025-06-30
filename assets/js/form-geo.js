@@ -15,7 +15,7 @@ function updateInputGeo (json, layer, type) {
 function mapStart (geoDiv) {
   const json = geoDiv.parentElement.querySelector('.form__geo--json')
   const zoom = geoDiv.dataset.zoom || 5
-  const isMobile = window.innerWidth <= 768 // Mobile size
+  const isMobile = document.documentElement.clientWidth <= 768 // Mobile size
   const initialZoom = isMobile ? zoom - 1 : zoom // Soom adjust by device
   const initialView = JSON.parse(geoDiv.dataset.view).coordinates
   const map = L.map(geoDiv, {
@@ -82,7 +82,7 @@ function mapStart (geoDiv) {
 
     // popup over top elements when popupopen in small screen sizes
     const mapPane = document.querySelector('.leaflet-map-pane')
-    if (window.innerWidth < 480) {
+    if (document.documentElement.clientWidth < 480) {
       mapPane.style.zIndex = 10000
       map.on('popupclose', () => { mapPane.style.zIndex = '' })
       map.on('popupopen', () => { mapPane.style.zIndex = 10000 })

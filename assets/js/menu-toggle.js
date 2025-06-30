@@ -1,39 +1,55 @@
+import { debounce } from './debounce'
+import { whaitCSS } from './whait-css'
+
 const menu = document.querySelector('.menu')
 const menuSticky = document.querySelector('.body-menu--sticky')
-const breackPoint = screenSticky()
-const menuNoStickyVisibility = () => !menuSticky || window.innerWidth < breackPoint
+const menuNoStickyVisibility = () => !menuSticky || screenSticky()
 
 function screenSticky () {
-  let size = 0
-  if (document.querySelector('.body-menu--sticky--xs')) size = 375
-  else if (document.querySelector('.body-menu--sticky--sm')) size = 425
-  else if (document.querySelector('.body-menu--sticky--md')) size = 768
-  else if (document.querySelector('.body-menu--sticky--lg')) size = 1024
-  else if (document.querySelector('.body-menu--sticky--xl')) size = 1280
-  else if (document.querySelector('.body-menu--sticky--auto')) {
+  // Sticky auto
+  if (document.querySelector('.body-menu--sticky--auto')) {
     document.body.classList.add('body-menu--sticky--calculate')
     menu.removeAttribute('hidden')
-    //
-    size = menu.querySelector('.menu__items').scrollWidth + 18 * 2 // 18px padding left and right
-    // const breackPoints = [768, 1024, 1280]
-    // size = breackPoints.find(bp => bp > size) ?? size
-    //
+
+    // Calculate width based on content.
+    const menuItems = menu.querySelector('.menu__items')
+    const active = menuItems.scrollWidth > menuItems.clientWidth
+
     document.body.classList.remove('body-menu--sticky--calculate')
     menu.setAttribute('hidden', 'until-found')
+    return active
   }
-  return size
+
+  // Sticky breackpoint
+  const breackpoints = {
+    xs: 375,
+    sm: 425,
+    md: 768,
+    lg: 1024,
+    xl: 1280
+  }
+  for (const [size, width] of Object.entries(breackpoints)) {
+    if (document.querySelector(`.body-menu--sticky--${size}`)) {
+      return document.documentElement.clientWidth < width
+    }
+  }
+
+  return 0
 }
+
 function menuOpen () {
   menu.removeAttribute('hidden')
   menu.focus()
   document.documentElement.classList.add('menu__active')
 }
+
 function menuClose () {
   if (menuNoStickyVisibility()) {
     document.documentElement.classList.remove('menu__active')
     setTimeout(() => { menu.setAttribute('hidden', 'until-found') }, 300)
   }
 }
+
 function menuToggle () {
   const isMenuClose = document.querySelector('.menu[hidden="until-found"]')
   if (isMenuClose) {
@@ -42,6 +58,7 @@ function menuToggle () {
     menuClose()
   }
 }
+
 function menuVisibility () {
   if (menuNoStickyVisibility()) {
     menu.setAttribute('hidden', 'until-found')
@@ -53,34 +70,24 @@ function menuVisibility () {
 }
 
 function initMenuToggleWhenCSS () {
-  if (menu) {
-    // Listeners
-    document.addEventListener('click', e => {
-      const menuToggleButton = e.target.closest('.menu__toggle')
-      if (menuToggleButton) menuToggle()
-      const menuBackover = e.target.closest('.menu__backover')
-      if (menuBackover) menuClose()
-      const menuLink = e.target.closest('.menu__link, .menu__button')
-      if (menuLink) menuClose()
-    })
-    document.addEventListener('keyup', e => e.keyCode === 27 && menuClose())
-    window.addEventListener('hashchange', menuClose)
-    new ResizeObserver(menuVisibility).observe(document.documentElement)
+  if (!menu) return
+  // Listeners
+  document.addEventListener('click', e => {
+    const menuToggleButton = e.target.closest('.menu__toggle')
+    if (menuToggleButton) menuToggle()
+    const menuBackover = e.target.closest('.menu__backover')
+    if (menuBackover) menuClose()
+    const menuLink = e.target.closest('.menu__link, .menu__button')
+    if (menuLink) menuClose()
+  })
+  document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
+  window.addEventListener('hashchange', menuClose)
+  window.addEventListener('resize', debounce(menuVisibility))
 
-    // Run when load
-    menuVisibility()
-  }
+  // Run when load
+  if (document.documentElement.clientWidth >= 375) menuVisibility()
 }
 
 export function initMenuToggle () {
-  document.addEventListener('DOMContentLoaded', () => {
-    const link = document.querySelector('link[as="style"][href^="/css/styles."]')
-    if (link.sheet) {
-      // CSS is loaded
-      initMenuToggleWhenCSS()
-    } else {
-      // Whait CSS load
-      link.addEventListener('load', initMenuToggleWhenCSS)
-    }
-  })
+  whaitCSS(initMenuToggleWhenCSS)
 }

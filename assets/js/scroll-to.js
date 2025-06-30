@@ -1,3 +1,5 @@
+import { whaitCSS } from './whait-css'
+
 const c = document.body.classList
 
 export function scrolling () {
@@ -16,15 +18,18 @@ export function scrollTo (targetElement, instant) {
 }
 
 // SCROLL IF IS HASH WHEN LOAD (FIX SHOW)
-export function initScrollToHashWhenLoad (element) {
-  if (location.hash) {
-    const target = document.querySelector(location.hash)
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (target) {
-          scrollTo(target)
-        }
-      }, 1000)
-    })
-  }
+function initScrollToHashWhenLoadWhenCSS (element) {
+  if (!location.hash) return
+  const target = document.querySelector(location.hash)
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      if (target) {
+        scrollTo(target)
+      }
+    }, 1000)
+  })
+}
+
+export function initScrollToHashWhenLoad () {
+  whaitCSS(initScrollToHashWhenLoadWhenCSS)
 }
