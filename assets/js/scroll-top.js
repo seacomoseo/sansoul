@@ -52,7 +52,6 @@ export function initScrollTop () {
   }
   // Toogle body top and menu background color (to header)
   function toogleBodyTop (option) {
-    console.log('toogleBodyTop', option)
     if (option === 'add') {
       document.body.classList.add('body-top')
       menuChangeColor(true)
