@@ -1,5 +1,6 @@
 import { loading, formErrorFileOnload, timestamp } from '@params'
 import { slugify } from './slugify'
+import { whaitCSS } from './whait-css'
 
 const closeIcon = `<svg class="icon close" onclick="closePreview(this)">
   <use href="/draws.${timestamp}.svg#xmark"></use>
@@ -16,7 +17,7 @@ const isSafari =
   navigator.userAgent.indexOf('FxiOS') === -1
 
 export function initFormFiles () {
-  window.addEventListener('load', () => {
+  whaitCSS(() => {
     const forms = document.querySelectorAll('.form:has(input[type="file"])')
     forms.forEach(form => {
       form.querySelectorAll('input[type="file"]').forEach(input => {

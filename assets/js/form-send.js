@@ -6,6 +6,7 @@ import {
 } from '@params'
 import { formValid } from './form-validate'
 import { changeValues } from './form-change-values'
+import { whaitCSS } from './whait-css'
 
 const closeIcon =
 '<svg class="icon close" onclick="this.parentElement.remove()">' +
@@ -35,7 +36,7 @@ function formSubmitError (formMessage, message) {
 }
 
 export function initFormSend () {
-  window.addEventListener('load', () => {
+  whaitCSS(() => {
     const forms = document.querySelectorAll('.form')
     let formMessage
 
