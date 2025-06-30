@@ -3,8 +3,8 @@ import { scrollShot } from './scroll-shot'
 import { scrollTo } from './scroll-to'
 import { whaitCSS } from './whait-css'
 
-function initScrollTopWhenCSS () {
-  window.addEventListener('DOMContentLoaded', () => {
+export function initScrollTop () {
+  whaitCSS(() => {
     // Get background color of header and menu transparent
     const bgs = [
       '.bg-main',
@@ -96,8 +96,4 @@ function initScrollTopWhenCSS () {
       }
     })
   })
-}
-
-export function initScrollTop () {
-  whaitCSS(initScrollTopWhenCSS)
 }

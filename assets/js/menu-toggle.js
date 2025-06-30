@@ -67,25 +67,23 @@ function menuSetVisibility () {
   }
 }
 
-function initMenuToggleWhenCSS () {
-  if (!menu) return
-  // Listeners
-  document.addEventListener('click', e => {
-    const menuToggleButton = e.target.closest('.menu__toggle')
-    if (menuToggleButton) menuToggle()
-    const menuBackover = e.target.closest('.menu__backover')
-    if (menuBackover) menuClose()
-    const menuLink = e.target.closest('.menu__link, .menu__button')
-    if (menuLink) menuClose()
-  })
-  document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
-  window.addEventListener('hashchange', menuClose)
-  window.addEventListener('resize', debounce(menuSetVisibility))
-
-  // Run when load
-  if (document.documentElement.clientWidth >= 375) menuSetVisibility()
-}
-
 export function initMenuToggle () {
-  whaitCSS(initMenuToggleWhenCSS)
+  whaitCSS(() => {
+    if (!menu) return
+    // Listeners
+    document.addEventListener('click', e => {
+      const menuToggleButton = e.target.closest('.menu__toggle')
+      if (menuToggleButton) menuToggle()
+      const menuBackover = e.target.closest('.menu__backover')
+      if (menuBackover) menuClose()
+      const menuLink = e.target.closest('.menu__link, .menu__button')
+      if (menuLink) menuClose()
+    })
+    document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
+    window.addEventListener('hashchange', menuClose)
+    window.addEventListener('resize', debounce(menuSetVisibility))
+
+    // Run when load
+    if (document.documentElement.clientWidth >= 375) menuSetVisibility()
+  })
 }

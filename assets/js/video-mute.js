@@ -1,4 +1,5 @@
 import { scrollShot } from './scroll-shot'
+import { whaitCSS } from './whait-css'
 
 export function initVideoMute () {
   // const video = document.querySelector('video[muted]')
@@ -30,7 +31,7 @@ export function initVideoMute () {
   // }
 
   // When load DOM and sources
-  window.addEventListener('DOMContentLoaded', () => {
+  whaitCSS(() => {
     scrollShot({
       rootMargin: '0%',
       query: '[data-mute]',

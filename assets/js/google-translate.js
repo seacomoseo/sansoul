@@ -1,4 +1,5 @@
 import { isGoogleTranslate, timestamp } from '@params'
+import { whaitCSS } from './whait-css'
 
 export function initGoogleTranslate () {
   // Onclick to translate.goog
@@ -9,7 +10,7 @@ export function initGoogleTranslate () {
     })
   }
   // Reload svg uses in translate.goog
-  document.addEventListener('DOMContentLoaded', e => {
+  whaitCSS(() => {
     if (location.hostname === 'translate.goog') {
       // Remove base tag
       const baseTag = document.querySelector('base')
