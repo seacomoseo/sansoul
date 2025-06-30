@@ -16,7 +16,7 @@ function screenSticky () {
     const active = menuItems.scrollWidth > menuItems.clientWidth
 
     document.body.classList.remove('body-menu--sticky--calculate')
-    menu.setAttribute('hidden', 'until-found')
+    // menu.setAttribute('hidden', 'until-found') // Remove for fix menu close animation
     return active
   }
 
@@ -51,12 +51,8 @@ function menuClose () {
 }
 
 function menuToggle () {
-  const isMenuClose = document.querySelector('.menu[hidden="until-found"]')
-  if (isMenuClose) {
-    menuOpen()
-  } else {
-    menuClose()
-  }
+  const isMenuClose = menu.getAttribute('hidden') === 'until-found'
+  isMenuClose ? menuOpen() : menuClose()
 }
 
 function menuVisibility () {
