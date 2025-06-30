@@ -91,8 +91,8 @@ elif [ $1 = places ]; then
 
 # Scrap reviews by Google Maps
 elif [ $1 = reviews ]; then
+  # do reviews "Inspirits Bar"
   LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
-  echo "$LANGS"
   for LANG in $LANGS; do
     node ../_tools/others/scrape-reviews.js $PROYECT $LANG $2
   done
