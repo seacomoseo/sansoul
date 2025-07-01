@@ -68,17 +68,18 @@ function menuSetVisibility () {
 }
 
 export function initMenuToggle () {
+  if (!menu) return
+  document.addEventListener('click', e => {
+    const menuToggleButton = e.target.closest('.menu__toggle')
+    if (menuToggleButton) {
+      menuToggle()
+    } else {
+      const menuBackoverAndLinks = e.target.closest('.menu__backover,.menu__link, .menu__button')
+      if (menuBackoverAndLinks) menuClose()
+    }
+  })
   whaitCSS(() => {
-    if (!menu) return
     // Listeners
-    document.addEventListener('click', e => {
-      const menuToggleButton = e.target.closest('.menu__toggle')
-      if (menuToggleButton) menuToggle()
-      const menuBackover = e.target.closest('.menu__backover')
-      if (menuBackover) menuClose()
-      const menuLink = e.target.closest('.menu__link, .menu__button')
-      if (menuLink) menuClose()
-    })
     document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
     window.addEventListener('hashchange', menuClose)
     window.addEventListener('resize', debounce(menuSetVisibility))
