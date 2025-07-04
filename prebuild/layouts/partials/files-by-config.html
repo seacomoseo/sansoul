@@ -371,7 +371,7 @@
 ) }}
 
 {{/*  cascade  */}}
-{{ $global := dict
+{{ $home := dict
   "params" (dict
     "emoji"  "📑"
     "type"   "single"
@@ -382,7 +382,16 @@
     "path" "/*"
   )
 }}
-{{ $cascade   = slice $global | append $cascade }}
+{{ $global := dict
+  "params" (dict
+    "index"  true
+    "nav"    true
+  )
+  "target" (dict
+    "path" "/**"
+  )
+}}
+{{ $cascade   = slice $home | append $cascade }}
 {{ $defaults := site.Data.config.defaults | default slice }}
 {{ range $defaults }}
   {{ $options := dict "string" .value "kind" .type }}
@@ -396,6 +405,7 @@
   {{ $default := dict "params" $params "target" $target }}
   {{ $cascade = $cascade | append $default }}
 {{ end }}
+{{ $cascade = $cascade | append $global }}
 {{ $obj = merge $obj (dict "cascade" $cascade) }}
 
 {{/*  file  */}}
