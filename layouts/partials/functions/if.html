@@ -8,16 +8,6 @@
 {{ with $cond }}
   {{ if eq . "content" }}
     {{ $if = $.Page.RawContent }}
-  {{ else if eq . "toc" }}
-    {{ $if   = false }}
-    {{ $tpl := partial "functions/tpl" $.Page }}
-    {{ if $tpl.toc }}
-      {{ with $.Page.RawContent }}
-        {{ with . | findRE `\n#+ ` }}
-          {{ $if = index . 1 }}
-        {{ end }}
-      {{ end }}
-    {{ end }}
   {{ else if eq . "related" }}
     {{ $if = or $.Page.Params.related (and $.Page.Params.is_related ($.Page.CurrentSection.Pages.Related $.Page)) | and (not $.Page.IsSection) }}
   {{ else if eq . "comments" }}

@@ -124,11 +124,13 @@
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `service`)) `~P_SERVICE_TYPES`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `product` `service`))) `~P_PRICE`))
       (dict "<<" (slice (dict "condition" (dict "field" `base` "value" `org`)) `~P_ORG`))
+      (dict "<<" (slice (dict "condition" (dict "field" `base` "value" (slice `event` `article`))) `~P_TOC`))
     }}
   {{ else if eq .Params.base "article" }}
     {{ $fields = $fields | append
       `~P_DATE`
       `~P_LASTMOD`
+      `~P_TOC`
     }}
   {{ else if eq .Params.base "product" }}
     {{ $fields = $fields | append
@@ -143,6 +145,7 @@
       `~P_ARTISTS`
       `~P_ADDRESS`
       `~P_PRICE`
+      `~P_TOC`
     }}
   {{ else if eq .Params.base "author" }}
     {{ $fields = $fields | append
