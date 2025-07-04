@@ -3,8 +3,8 @@
 {{ with .Page.Params.address | default .Page.Params.org.address }}
   {{ $is_country := and .country (ne .country site.Home.Params.org.address.country) }}
 
-  {{ with .name               }}{{ $return = print $return .    }}{{ end }}
-  {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}
+  {{/*  {{ with .name               }}{{ $return = print $return .    }}{{ end }}  */}}
+  {{/*  {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}  */}}
   {{ with .street             }}{{ $return = print $return .    }}{{ end }}
   {{ if and .street .pc       }}{{ $return = print $return ", " }}{{ end }}
   {{ with .pc                 }}{{ $return = print $return .    }}{{ end }}
