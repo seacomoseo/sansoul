@@ -2,7 +2,7 @@
 {{- $image_base := $image -}}
 {{- if $image -}}
   {{/*  Image x size to srcset  */}}
-  {{- $s := 1.5 -}}
+  {{- $s := site.Data.config.others.image_sizes | default 1.5 -}}
 
 
   {{- /*  PICTURE  */ -}}
