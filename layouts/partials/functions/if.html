@@ -29,6 +29,16 @@
   {{ else }}
     {{ $opts := dict "Page" page "name" . }}
     {{ $if    = partial "functions/param" $opts }}
+    {{ if $if }}
+      {{ if eq . "toc" }}
+        {{ $if = false }}
+        {{ with $.Page.RawContent }}
+          {{ with . | findRE `\n#+ ` }}
+            {{ $if = index . 1 }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
   {{ end }}
 {{ end }}
 {{ if $not }}
