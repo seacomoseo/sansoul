@@ -60,7 +60,7 @@
           {{- $class   = "callnow__whatsapp" -}}
           {{- $link    = print "https://wa.me/" $num -}}
           {{- $button  = cond (not .button) "whatsapp" $button -}}
-          {{- $icon    = "whatsapp" -}}
+          {{- $icon    = .icon | default "whatsapp" -}}
           {{- $emoji   = "✆" -}}
           {{- $label   = i18n "callnow_whatsapp" -}}
           {{- $noindex = true -}}
