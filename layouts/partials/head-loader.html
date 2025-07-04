@@ -15,7 +15,7 @@
     opacity: 0;
     visibility: hidden;
   }
-  .section:not(/* .sections-visibile *, */ .preload *, .section--header, .section--1) {
+  .section:is(/* .sections-visibile *, */ .preload *):not(.section--header, .section--1) {
     content-visibility: auto;
   }
   .loader {
