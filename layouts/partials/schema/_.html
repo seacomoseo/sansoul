@@ -16,8 +16,8 @@
 
 {{/*  General  */}}
 {{ $schemas := slice
-  (partial "schema/website" .)
-  (partial "schema/page" .)
+  (partial "schema/website"    .)
+  (partial "schema/page"       .)
   (partial "schema/image-main" .)
 }}
 
@@ -33,8 +33,8 @@
     "org"
   }}
   {{ if in $bases .Params.base }}
-    {{ $tring   := print "schema/" .Params.base }}
-    {{ $partial := partial $tring . }}
+    {{ $string  := print "schema/" .Params.base }}
+    {{ $partial := partial $string . }}
     {{ $schemas  = $schemas | append $partial }}
   {{ end }}
 {{ end }}

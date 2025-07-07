@@ -63,15 +63,15 @@ org:
     close: 13:00
   prices: €€
   services:
-  - name: Diseño Web
+  - title: Diseño Web
     description: null
     price: 800.00
     area: Internacional
-  - name: SEO
+  - title: SEO
     description: null
     price: 250.00
     area: Internacional
-  - name: SEM
+  - title: SEM
     description: Descripción de ejemplo
     area: Internacional
   food_menu:
