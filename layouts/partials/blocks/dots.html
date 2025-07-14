@@ -1,10 +1,12 @@
 <div class="dots box__block buttons">
   {{- range .dots -}}
     {{- $link  := . -}}
+    {{- $ga4   := "" -}}
     {{- $icon  := "" -}}
     {{- $label := "" -}}
     {{- if reflect.IsMap . -}}
       {{- $link  = .link -}}
+      {{- $ga4   = .ga4 -}}
       {{- $icon  = .icon -}}
       {{- $label = .label -}}
     {{- end -}}
@@ -44,6 +46,7 @@
         "link"   .
         "button" ($.button | default "cta")
         "dot"    true
+        "ga4"    $ga4
         "icon"   $icon
         "label"  $label
         "anchor" ($.anchor | default "auto")

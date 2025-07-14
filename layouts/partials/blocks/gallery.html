@@ -66,6 +66,7 @@
         {{ partial "link" (dict
           "class"  "gallery__expand"
           "button" (.button | default "light")
+          "ga4"    .ga4
           "icon"   (cond (eq .pin "none") "" .pin)
           "anchor" (.anchor | default "auto")
           "link"   .link
@@ -82,6 +83,7 @@
         "link"   .link
         "button" (.button | default "cta")
         "swap"   .swap
+        "ga4"    .ga4
         "icon"   .icon
         "label"  .label
         "anchor" (.anchor | default "auto")
