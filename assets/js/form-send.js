@@ -78,6 +78,9 @@ export function initFormSend () {
             formSubmited(form)
             changeValues({ form, now, prev: false })
           } else {
+            const submitButton = form.querySelector('button[type="submit"]')
+            submitButton.disabled = true
+
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
@@ -125,6 +128,9 @@ export function initFormSend () {
               })
               .catch(error => {
                 formSubmitError(formMessage, error.message)
+              })
+              .finally(() => {
+                submitButton.disabled = false
               })
           }
         }
