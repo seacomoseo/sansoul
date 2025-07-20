@@ -14,9 +14,6 @@ filter_month: Month
 collection_sections: Sections
 collection_sections_singular: Section
 collection_sections_description: Sections assigned to each page. You need to create them here before you can assign them.
-collection_modals: Modals
-collection_modals_singular: Modal
-collection_modals_description: Modal windows assigned to each section. You need to create them here before you can assign them. They are hidden and must be linked as an anchor to be displayed (with "#" before the ID, Example → "#repairs-maintenance").
 collection_types: Collections
 collection_types_singular: Collection
 collection_types_description: Page types. Here they are created, edited, and configured individually, except for "All," whose parameters apply by default to all collections.
@@ -157,16 +154,10 @@ template_callnow_item: Button
 template_section: Template of each Section
 template_section_singular: Section
 template_section_hint: The 1st applies to all, the rest alternately 🔷 **Example →** If there are 3 templates, the 1st applies to all; the 2nd on 2, 5, 8… and the 3rd on 3, 6, 9…
-template_modal: Template of each Modal
-template_modal_singular: Modal
 template_sections: Sections
 template_sections_singular: Section
-template_modals: Modal Windows
-template_modals_singular: Modal Window
-template_modals_hint: Sections represented as hidden modal windows that must be linked as an anchor (with a '#' before the ID, **Example →** '*#repairs-maintenance*') to be displayed; Note that in the menu they will appear as sub-items of the corresponding section
-template_file: File
-template_file_sections_hint: Previously created section
-template_file_modals_hint: Previously created modal
+template_sections_file: File
+template_sections_file_hint: Previously created section
 template_list: Lists
 template_related: Related Lists
 # collections > settings > styles
@@ -501,8 +492,8 @@ box_node_hint: HTML tag name for the Box
 box_params: Parameters
 box_params_singular: Parameter
 box_params_hint: Custom parameters from the page or value to the box
-box_params_box: Box Parameter
 box_params_page: Page Parameter
+box_params_box: Box Parameter
 box_params_value: JSON Value
 box_tag: Tag Template
 box_tags: Tags
@@ -697,6 +688,10 @@ box_zoom: Zoom
 box_box: Box Template
 box_boxes: Boxes
 box_boxes_singular: Box
+modal: Template of each Modal
+modals: Modal Windows
+modals_singular: Modal Window
+modals_hint: Sections represented as hidden modal windows that must be linked as an anchor (with a '#' before the ID, **Example →** '*#repairs-maintenance*') to be displayed; Note that in the menu they will appear as sub-items of the corresponding section
 # patterns
 pattern: Lowercase 🔷 No spaces (use hyphens instead) 🔷 No ñ (use n instead) 🔷 No strange characters or underscores
 # options
@@ -846,6 +841,7 @@ option-view-form: Form
 option-view-map: Map
 option-view-gss: Google Drive Sheet
 option-view-boxes: SubBoxes
+option-view-modals: Modal Windows
 option-tags-row: Row
 option-tags-col: Column
 option-sort-image: Image and Top Icon

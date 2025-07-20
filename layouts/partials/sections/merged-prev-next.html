@@ -45,7 +45,7 @@
 
   {{/* Next footer divider when this not have  */}}
   {{ if not $section.div }}
-    {{ if $section.next.footer }}
+    {{ if $section.next.is_footer }}
       {{ $div_next := dict
         "div"   $section.next.div
         "div_x" $section.next.div_x
@@ -57,7 +57,7 @@
 
   {{/* Footer self divider when prev not have  */}}
   {{ if not $section.prev.div }}
-    {{ if $section.footer }}
+    {{ if $section.is_footer }}
       {{ $div := dict
         "div"   $section.div
         "div_x" $section.div_x

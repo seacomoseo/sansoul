@@ -102,7 +102,6 @@
           `~TEMPLATE_MENU_SINGLE`
           `~TEMPLATE_CALLNOW_SINGLE`
           `~TEMPLATE_SECTION`
-          `~TEMPLATE_MODAL`
           `~TEMPLATE_SECTIONS`
         )
       )
@@ -253,26 +252,6 @@
   "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id"))
   "editor"           (dict "preview" false)
   "fields"           `~SECTIONS_FIELDS`
-) }}
-
-
-{{/*  MODALS  */}}
-{{ $colections = $colections | append (dict
-  "label"            $t.collection_modals
-  "label_singular"   $t.collection_modals_singular
-  "name"             `modal`
-  "icon"             site.Data.utilities.defaults.modal.icon
-  "description"      $t.collection_modals_description
-  "identifier_field" `name`
-  "extension"        `yml`
-  "folder"           (print `content.` .Lang `/modal`)
-  "create"           true
-  "nested"           (dict "depth" 5)
-  "slug"             "{{fields.name}}"
-  "summary"          "{{dirname | upper}}{{dirname | ternary(' ➡️ ','')}}{{name}}"
-  "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id"))
-  "editor"           (dict "preview" false)
-  "fields"           `~MODALS_FIELDS`
 ) }}
 
 

@@ -5,14 +5,14 @@
 {{ print "<" .node $attr ">" | safeHTML -}}
 
   {{- /*  BACKGROUND  */ -}}
-  {{- if not .modal -}}
+  {{- if not .is_modal -}}
     {{- $bg_opts := dict "card" nil "container" "fluid" -}}
     {{- $bg_opts  = merge . $bg_opts -}}
     {{- partial "bg" $bg_opts -}}
   {{- end -}}
 
   {{- /*  IMAGE LCP  */ -}}
-  {{- if .header }}
+  {{- if .is_header }}
     <div class="lcp">██ ████ ████ ██ ██████ ██ ███ ██████ ███ ███ ██████ ████</div>
   {{- end -}}
 
@@ -49,7 +49,7 @@
   {{- partial "boxes/item" $box_opts -}}
 
   {{- /*  MODAL BUTTONS CORNER  */ -}}
-  {{- if .modal  -}}
+  {{- if .is_modal  -}}
     {{- /*
     {{- partial "link" (dict
       "class"  "modal__back"
@@ -71,7 +71,7 @@
   {{- end -}}
 
   {{- /*  COOKIES AND SITEMAP LINK  */ -}}
-  {{- if .footer }}
+  {{- if .is_footer }}
     <div class="footer__float">
       {{ partial "link" (dict
         "class"  "cookies__toggle"

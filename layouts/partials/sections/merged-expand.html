@@ -2,21 +2,21 @@
 {{ define "partials/expand" }}
   {{/*  Level  */}}
   {{ $level  := 2 }}
-  {{ if .header }}
+  {{ if .is_header }}
     {{ $level = 1 }}
-  {{ else if .modal }}
+  {{ else if .is_modal }}
     {{ $level = 3 }}
   {{ end }}
 
   {{/*  Node  */}}
   {{ $node := .node }}
-  {{ if .modal }}
+  {{ if .is_modal }}
     {{ $node = "dialog" }}
   {{ end }}
   {{ if not $node }}
-    {{ if .header }}
+    {{ if .is_header }}
       {{ $node = "header" }}
-    {{ else if .footer }}
+    {{ else if .is_footer }}
       {{ $node = "footer" }}
     {{ else }}
       {{ $node = "section" }}
@@ -28,7 +28,7 @@
   {{ if not $container }}
     {{ if .ph }}
       {{ $container = "fluid" }}
-    {{ else if .modal }}
+    {{ else if .is_modal }}
       {{ $container = "sm" }}
     {{ else }}
       {{ $container = "lg" }}
@@ -36,7 +36,7 @@
   {{ end }}
 
   {{/*  is_bg and color  */}}
-  {{ $color := cond .modal "black" .color }}
+  {{ $color := cond .is_modal "black" .color }}
   {{ $is_bg := or .bi $color .fade }}
   {{/*  Change color if is similar or invert and set bgcp  */}}
   {{ $bgc_o := dict "child" $color "parent" .bgcp }}
@@ -58,7 +58,7 @@
     "div_can"   $div_can
   }}
   {{ $box_params := dict }}
-  {{ if .modal }}
+  {{ if .is_modal }}
     {{ $box_params = dict
       "box_node"        .node
       "box_bi"          .bi

@@ -29,7 +29,7 @@
   {{ $alternate := dict }}
   {{ $id        := "" }}
 
-  {{ if .footer }}
+  {{ if .is_footer }}
 
     {{/*  FOOTER  */}}
     {{ $id  = "footer" }}
@@ -38,10 +38,10 @@
   {{ else }}
 
     {{/*  MODALS  */}}
+    {{ $each     := .modal | default dict }}
     {{ range $k, $modal := .modals }}
-      {{ $each   := $.modal | default dict }}
       {{ $id_m   := partial "functions/id-by-title" . }}
-      {{ $expand := dict "key" $key "k" $k "id" $id_m "modal" true "bgcp" "dark" }}
+      {{ $expand := dict "key" $key "k" $k "id" $id_m "bgcp" "dark" "is_modal" true }}
       {{ $modal   = merge $each $modal $expand }}
       {{ $modals  = $modals | append $modal }}
       {{/*  Set id > hanchor/title in page store for anchor links to modal  */}}
@@ -70,11 +70,11 @@
   {{ page.Store.Set $id $anchor }}
 
   {{/*  END  */}}
-  {{ $header  := eq $key "header" }}
-  {{ $bgcp    := $.bg.color | default "light" }}
-  {{ $expand  := dict "key" $key "id" $id "bgcp" $bgcp "header" $header "modals" $modals "modal" false }}
-  {{ $section  = merge $first $alternate $section $expand }}
-  {{ $sections = $sections | append $section }}
+  {{ $is_header := eq $key "header" }}
+  {{ $bgcp      := $.bg.color | default "light" }}
+  {{ $expand    := dict "key" $key "id" $id "bgcp" $bgcp "is_header" $is_header "is_modal" false "modals" $modals }}
+  {{ $section    = merge $first $alternate $section $expand }}
+  {{ $sections   = $sections | append $section }}
 
 {{ end }}
 

@@ -26,9 +26,9 @@
     | default .Page.CurrentSection.Params.emoji
   -}}
   {{- $section_name  := i18n "header" -}}
-  {{- if .section.footer -}}
+  {{- if .section.is_footer -}}
     {{- $section_name = i18n "footer" -}}
-  {{- else if not .section.header -}}
+  {{- else if not .section.is_header -}}
     {{- $section_name  = .form.id
       | default .id
       | default .section.title
@@ -40,7 +40,7 @@
     -}}
   {{- end -}}
   {{- $section_emoji  := "🧩" -}}
-  {{- if .section.modal -}}
+  {{- if .section.is_modal -}}
     {{- $section_emoji = "🪟" -}}
   {{- end -}}
 

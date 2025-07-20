@@ -32,9 +32,9 @@
     {{- $anchor2 = $hanchor -}}
     {{- $hanchor = .anchor | default "auto" -}}
   {{- else -}}
-    {{- $header_level := cond .modal 3 2 -}}
+    {{- $header_level := cond .is_modal 3 2 -}}
     {{- if and .main (le .level $header_level) -}}
-      {{- $link = cond .header page.RelPermalink (print "#" .section.id) -}}
+      {{- $link = cond .is_header page.RelPermalink (print "#" .section.id) -}}
     {{- end -}}
   {{- end -}}
 

@@ -59,7 +59,7 @@
 {{- $notlazy_mute := and .notlazy .mute -}}
 {{- $preload      := "" -}}
 {{- if and (not $notlazy_mute) (not .mute) -}}
-  {{- if or .notlazy $poster .modal -}}
+  {{- if or .notlazy $poster .is_modal -}}
     {{- $preload = "none" -}}
   {{- end -}}
 {{- end -}}

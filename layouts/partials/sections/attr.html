@@ -2,7 +2,7 @@
 
 {{ $type := "" }}
 {{ if not .body_class }}
-  {{ if .modal }}
+  {{ if .is_modal }}
     {{ $type = "modal bg-black" }}
   {{ else }}
     {{ $type = "section" }}
@@ -13,7 +13,7 @@
 {{ $key_class  := print "section--" .key }}
 {{ if .body_class }}
   {{ $key_class = "" }}
-{{ else if .modal }}
+{{ else if .is_modal }}
   {{ $key_class = print "modal--" .key "-" (add .k 1) }}
 {{ end }}
 
@@ -30,7 +30,7 @@
 {{ $video_parent    := "" }}
 {{ $bi_alpha        := "" }}
 {{ $color_alpha     := "" }}
-{{ if not .modal }}
+{{ if not .is_modal }}
   {{ with .color }}
     {{ $color        = print "bg-" . }}
   {{ else }}
@@ -77,7 +77,7 @@
 {{ $pb_div         := "" }}
 {{ $div_next       := "" }}
 {{ $div_next_style := "" }}
-{{ if not .footer }}
+{{ if not .is_footer }}
   {{ if and .div .div_can }}
     {{ if not .next.div_can }}
       {{/*  If this have div (and can) and next can not print div > do it  */}}
@@ -139,7 +139,7 @@
     {{ $pb  = print "--pb:" .pb "em" }}
   {{ end }}
 {{ end }}
-{{ if .modal }}
+{{ if .is_modal }}
   {{ $bi_alpha    = "" }}
   {{ $color_alpha = "" }}
   {{ $pt          = "" }}
@@ -157,7 +157,7 @@
 
 
 {{/*  HIDDEN  */}}
-{{ $hidden := cond .modal "until-found" nil }}
+{{ $hidden := cond .is_modal "until-found" nil }}
 
 
 {{/*  JOIN ATTRIBUTES  */}}
