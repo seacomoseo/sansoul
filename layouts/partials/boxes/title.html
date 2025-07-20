@@ -86,13 +86,13 @@
       {{- end -}}
       {{- /* with wrap  */ -}}
       {{- partial "link" (dict
-        "class"  $anchor_class
-        "label"  ($title   | markdownify)
-        "anchor" ($hanchor | markdownify)
-        "anchor" ($anchor2 | markdownify)
-        "link"   $link
-        "lock"   .lock
-        "nomore" $more
+        "class"   $anchor_class
+        "label"   ($title   | markdownify)
+        "anchor"  ($hanchor | markdownify)
+        "anchor2" ($anchor2 | markdownify)
+        "link"    $link
+        "lock"    .lock
+        "nomore"  $more
       ) -}}
     {{- else -}}
       {{- /* without wrap  */ -}}

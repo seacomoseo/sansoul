@@ -93,3 +93,8 @@
     </div>
   {{- end }}
 {{ print "</" .node ">" | safeHTML -}}
+
+{{- /*  MODALS  */ -}} 
+{{- range .modals -}}
+  {{- partial "sections/item" . -}}
+{{- end -}}

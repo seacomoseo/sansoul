@@ -11,21 +11,21 @@
 {{ $sections := slice }}
 {{ range .sections }}
 
-  {{/*  MODALS  */}}
-  {{ $modals := slice }}
-  {{ range .modals }}
-    {{ $options := dict "Page" $.Page "item" . }}
-    {{ with partial "merge-params" $options }}
-      {{ $modals = $modals | append . }}
-    {{ end }}
-  {{ end }}
-
   {{/*  SECTION  */}}
   {{ $options := dict "Page" $.Page "item" . }}
   {{ with partial "merge-params" $options }}
-    {{ $section := merge . (dict "modals" $modals) }}
-  
+
+    {{/*  MODALS  */}}
+    {{ $modals := slice }}
+    {{ range .modals }}
+      {{ $options := dict "Page" $.Page "item" . }}
+      {{ with partial "merge-params" $options }}
+        {{ $modals = $modals | append . }}
+      {{ end }}
+    {{ end }}
+
     {{/*  END  */}}
+    {{ $section := merge . (dict "modals" $modals) }}
     {{ $sections = $sections | append $section }}
   {{ end }}
 
