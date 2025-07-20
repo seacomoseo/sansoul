@@ -48,6 +48,9 @@ export function initFormSend () {
         const { valid, message } = formValid(form)
         const now = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Madrid', hour12: false })
 
+        // Fix repeat sending
+        if (form.dataset.sending === 'true') return
+
         formMessage && formMessage.remove()
         formMessage = document.createElement('div')
         formMessage.innerHTML += closeIcon
@@ -78,8 +81,11 @@ export function initFormSend () {
             formSubmited(form)
             changeValues({ form, now, prev: false })
           } else {
+            // Fix double clicks
             const submitButton = form.querySelector('button[type="submit"]')
             submitButton.disabled = true
+            // Fix repeat sending
+            form.dataset.sending = 'true'
 
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
@@ -131,6 +137,7 @@ export function initFormSend () {
               })
               .finally(() => {
                 submitButton.disabled = false
+                form.dataset.sending = 'false'
               })
           }
         }
