@@ -49,12 +49,12 @@ export function changeValues ({ form, now, prev }) {
     }
   }
   // BCC
-  const _cc = form.querySelector('input[name="_cc"]')
-  if (_cc) {
+  const cc = form.querySelector('input[name="CC"]')
+  if (cc) {
     if (prev) {
-      _cc.value = atob(_cc.value)
+      cc.value = atob(cc.value)
     } else {
-      _cc.value = btoa(_cc.value)
+      cc.value = btoa(cc.value)
     }
   }
 }
