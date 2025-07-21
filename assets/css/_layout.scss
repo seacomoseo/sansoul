@@ -297,12 +297,17 @@ pre {
 }
 [data-more] {
   position: relative;
+  &:not(.aux) {
+    display: inline-flex;
+    flex-wrap: wrap;
+  }
+  &::before {
+    content: attr(data-more);
+    order: 10;
+  }
   > i,
   > i * {
     @include ofuscate;
-  }
-  &::after {
-    content: attr(data-more);
   }
 }
 
