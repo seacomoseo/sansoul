@@ -283,22 +283,6 @@
   {{ with .lang }}
     {{ $mounts = $mounts | append
       (dict
-        "source"       (print "content." . "/modal")
-        "target"       (print "data/" . "/modal")
-        "lang"         .
-      )
-      (dict
-        "source"       (print "content." . "/section")
-        "target"       (print "data/" . "/section")
-        "lang"         .
-      )
-      (dict
-        "source"       (print "themes/sansoul/data/section")
-        "target"       (print "data/" . "/section")
-        "excludeFiles" "**/example/*"
-        "lang"         .
-      )
-      (dict
         "source"       (print "themes/sansoul/prebuild/public/content." .)
         "target"       "content"
         "lang"         .
@@ -316,13 +300,13 @@
       (dict
         "source"       (print "content." .)
         "target"       "content"
-        "excludeFiles" (slice "section" "modal" "single/_index.md" "values.yml")
+        "excludeFiles" (slice "single/_index.md" "values.yml")
         "lang"         .
       )
       (dict
         "source"       (print "themes/sansoul/content." .)
         "target"       "content"
-        "excludeFiles" (slice "section" "modal" "values.yml")
+        "excludeFiles" (slice "values.yml")
         "lang"         .
       )
     }}

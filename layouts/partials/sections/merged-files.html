@@ -3,13 +3,10 @@
   {{ $section := dict }}
   {{ $file    := .file }}
   {{ if $file }}
-    {{/*  Get folder with lang and type (section/modal)  */}}
-    {{ with index site.Data (slice site.Home.Lang "section") }}
-      {{/*  get file  */}}
-      {{ with index . (split $file "/") }}
-        {{/*  merge section and file  */}}
-        {{ $section = merge $ . }}
-      {{ end }}
+    {{/*  get file  */}}
+    {{ with index site.Data.section (split $file "/") }}
+      {{/*  merge section and file  */}}
+      {{ $section = merge $ . }}
     {{ end }}
   {{ end }}
   {{ return $section }}
