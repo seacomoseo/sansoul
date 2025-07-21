@@ -244,11 +244,10 @@
   "description"      $t.collection_sections_description
   "identifier_field" `name`
   "extension"        `yml`
-  "folder"           (print `content.` .Lang `/section`)
+  "folder"           `data/section`
   "create"           true
-  "nested"           (dict "depth" 5)
   "slug"             "{{fields.name}}"
-  "summary"          "{{dirname | upper}}{{dirname | ternary(' ➡️ ','')}}{{name}}"
+  "summary"          "{{name}}"
   "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id"))
   "editor"           (dict "preview" false)
   "fields"           `~SECTIONS_FIELDS`

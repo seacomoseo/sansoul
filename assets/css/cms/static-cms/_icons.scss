@@ -16,8 +16,7 @@ html[style*="--text-primary: #fff;"] .CMS_NavLink_icon {
 }
 
 // Menu item active
-.CMS_NavLink_link.active,
-.CMS_NestedCollection_expanded {
+.CMS_NavLink_link.active {
   .CMS_NavLink_icon {
     filter: brightness(6);
   }
@@ -52,19 +51,5 @@ $roots: str-split($items, '|');
     .CMS_Table_body-cell-link[href="#/collections/settings/entries/#{$name}"]::before {
       background-image: url("data:image/svg+xml;base64,#{$base64}");
     }
-    // Fix nested collections
-    .CMS_NavLink_link[href="#/collections/#{$name}"] .CMS_NavLink_icon {
-      background-image: url("data:image/svg+xml;base64,#{$base64}");
-    }
-  }
-}
-
-// Fix nested collections
-.CMS_NestedCollection_link .CMS_NavLink_icon {
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.87;
-  svg {
-    display: none;
   }
 }
