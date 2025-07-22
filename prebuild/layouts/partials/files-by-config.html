@@ -20,7 +20,6 @@
   {{ $base_url   := "" }}
   {{ $pagination := false }}
   {{ $enabled    := false }}
-  {{ $dir        := false }}
   {{ $label      := false }}
   {{ $time_zone  := false }}
   {{ $title      := false }}
@@ -54,7 +53,6 @@
       {{ $base_url   = .baseURL }}
       {{ $pagination = .pagination }}
       {{ $enabled    = not (.disabled | default false) }}
-      {{ $dir        = cond $enabled (print "content." $lang) false }}
       {{ $label      = .label }}
       {{ $time_zone  = .time_zone }}
       {{ $title      = .title }}
@@ -211,7 +209,7 @@
             {{/*  ) | merge .tpl)  */}}
             {{/*  | merge site.Data.types.all.tpl  */}}
           {{/*  file  */}}
-          {{ $path := print "content." $lang "/" $name "/_index.md" }}
+          {{ $path := print "content/" $name "/_index." $lang ".md" }}
           {{ partial "file-by-obj" (dict "obj" $obj "content" (.content | default "") "path" $path) }}
         {{ end }}
 
@@ -243,7 +241,6 @@
   {{ with $pagination }}{{ $languages = merge $languages (dict $lang (dict "pagination" (dict "path" .))) }}{{ end }}
   {{ with $enabled    }}{{ $languages = merge $languages (dict $lang (dict "disabled"           (not .))) }}{{ end }}
   {{ with $weight     }}{{ $languages = merge $languages (dict $lang (dict "weight"                  .))  }}{{ end }}
-  {{ with $dir        }}{{ $languages = merge $languages (dict $lang (dict "contentDir"              .))  }}{{ end }}
   {{ with $label      }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
   {{ with $time_zone  }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
   {{ with $title      }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
@@ -283,30 +280,13 @@
   {{ with .lang }}
     {{ $mounts = $mounts | append
       (dict
-        "source"       (print "themes/sansoul/prebuild/public/content." .)
-        "target"       "content"
+        "source"       (print "content/single/_home." . ".md")
+        "target"       (print "content/_index." . ".md")
         "lang"         .
       )
       (dict
-        "source"       (print "content." . "/single/_index.md")
-        "target"       "content/_index.md"
-        "lang"         .
-      )
-      (dict
-        "source"       (print "content." . "/values.yml")
+        "source"       (print "content/values." . ".yml")
         "target"       (print "data/values." . ".yml")
-        "lang"         .
-      )
-      (dict
-        "source"       (print "content." .)
-        "target"       "content"
-        "excludeFiles" (slice "single/_index.md" "values.yml")
-        "lang"         .
-      )
-      (dict
-        "source"       (print "themes/sansoul/content." .)
-        "target"       "content"
-        "excludeFiles" (slice "values.yml")
         "lang"         .
       )
     }}
