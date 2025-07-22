@@ -13,7 +13,6 @@ author: admin
 toc: true
 draft: false
 noindex: false
-translationKey: post
 seo: ▷ Título SEO Entrada de ejemplo 【Con caracteres llamativos】
 description: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
 ---

@@ -17,7 +17,7 @@ cascade:
     base: page
     _merge: deep
   target:
-    path: '**'
+    path: /
 _merge: deep
 
 defaultContentLanguage: es
@@ -25,7 +25,6 @@ defaultContentLanguage: es
 languages:
   es:
     # baseURL: https://sansoul.netlify.com
-    contentDir: content.es
     disabled: true
     weight: 1
     languageName: Español
@@ -33,7 +32,6 @@ languages:
       path: pagina
   en:
     # baseURL: https://es.sansoul.netlify.com
-    contentDir: content.en
     disabled: true
     weight: 2
     languageName: English
@@ -41,7 +39,6 @@ languages:
       path: page
   fr:
     # baseURL: https://fr.sansoul.netlify.com
-    contentDir: content.fr
     disabled: true
     weight: 3
     languageName: Français
@@ -49,7 +46,6 @@ languages:
       path: page
   de:
     # baseURL: https://de.sansoul.netlify.com
-    contentDir: content.de
     disabled: true
     weight: 4
     languageName: Deutsch
@@ -57,7 +53,6 @@ languages:
       path: seite
   pt:
     # baseURL: https://pt.sansoul.netlify.com
-    contentDir: content.pt
     disabled: true
     weight: 5
     languageName: Português
@@ -65,7 +60,6 @@ languages:
       path: pagina
   it:
     # baseURL: https://it.sansoul.netlify.com
-    contentDir: content.it
     disabled: true
     weight: 6
     languageName: Italiano
@@ -83,31 +77,12 @@ module:
   # assets
   - source: assets
     target: assets
-
-  # es
-  ## section
-  - source: content.es/section
-    target: data/section
-    lang: es
-  ## modal
-  - source: content.es/modal
-    target: data/modal
-    lang: es
   ## prebuild
-  - source: themes/sansoul/prebuild/public/content.es
+  - source: themes/sansoul/prebuild/public/content
     target: content
-    lang: es
-  ## content project
-  - source: content.es
-    target: content
-    excludeFiles: [section, modal]
-    lang: es
   ## content theme
-  - source: themes/sansoul/content.es
+  - source: themes/sansoul/content
     target: content
-    excludeFiles: [section, modal]
-    lang: es
-
   # data
   - source: data
     target: data

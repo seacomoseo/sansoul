@@ -61,7 +61,7 @@
                   {{ $slug    := index $obj "slug"    | default $key }}
                   {{ $content := index $obj "content" | default "" }}
                   {{ $obj      = merge $obj (dict "content" nil) }}
-                  {{ $path    := print "content." $lang "/" $type "/" (urlize $slug) ".md" }}
+                  {{ $path    := print "content/" $type "/" (urlize $slug) "." $lang ".md" }}
                   {{ partial "file-by-obj" (dict "obj" $obj "content" $content "path" $path) }}
 
                 {{ end }}

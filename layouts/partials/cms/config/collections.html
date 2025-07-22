@@ -29,7 +29,7 @@
   {{ end }}
 
   {{/*  Sortable Fields  */}}
-  {{ $sortable_fields    := slice "commit_date" "title" }}
+  {{ $sortable_fields    := slice "weight" "commit_date" "title" }}
   {{ if eq .Params.base "article" }}
     {{ $sortable_fields   = slice "date" "lastmod" | append $sortable_fields }}
   {{ end }}
@@ -86,7 +86,6 @@
       `~P_DRAFT`
       `~P_HIDE`
       `~P_NOINDEX`
-      `~P_TRANSLATIONKEY`
       `~P_TITLE_SEO`
       `~P_DESCRIPTION`
       (dict
@@ -197,7 +196,6 @@
       `~P_DRAFT`
       `~P_HIDE`
       `~P_NOINDEX`
-      `~P_TRANSLATIONKEY`
       `~P_TITLE_SEO`
       `~P_DESCRIPTION`
     }}
@@ -214,8 +212,9 @@
     "icon"             (.Params.icon         | default "")
     "description"      (.Params.cms.hint     | default "")
     "identifier_field" `slug`
-    "folder"           (print `content.` .Lang `/` .Type)
+    "folder"           (print `content` `/` .Type)
     "create"           true
+    "i18n"             true
     "slug"             $slug
     "preview_path"     $permalinks
     "summary"          $summary
@@ -274,7 +273,7 @@
 
 
 {{/*  SETTINGS  */}}
-{{ $global_values_path := print `content.` .Lang `/values.yml` }}
+{{ $global_values_path := print `content/values.` .Lang `.yml` }}
 {{ $colections = $colections | append  (dict
   "label"           $t.collection_settings
   "name"            `settings`

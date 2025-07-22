@@ -4,7 +4,6 @@ slug: unica
 image: base/poster.png
 draft: true
 noindex: true
-translationKey: single
 seo: null # string
 description: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
 tpl:

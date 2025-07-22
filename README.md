@@ -9,35 +9,30 @@
 
 - `*.yml`
   - `placeholder` > `label`
-- `content.${lang}`
-  - `section/base/footer.yml`
-  - `values.yml`
-  - `_index.md`
+- `content`
+  - `section/base-footer.${lang}.yml`
+  - `values.${lang}.yml`
+  - `_index.${lang}.md`
     - `images`
     - `schedule`
-  - `{blog|event}/*.yml`
+  - `{blog|event}/*.${lang}.yml`
     - `{date|lastmod}: 2025-02-18 00:00:00` (`T` > ` `)
-  - `{sections|modals}/*.yml`
-    - `contacto.yml`
-      - `address.geo`
-      - `geos`
-      - `form.email`
-    - `mapa.yml`
-      - `geos`
-    - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
-    - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
-    - `hs`
-    - `ratio`
-    - `rate`
-  - `single/*.md`
+  - `single/*.${lang}.md`
     - `menu.hide_anchors`
     - `menu|modal|section|sections|...` > `tpl.*`
-- `types/*.yml`
-    - `tpl.list`
-      - `tags`
-      - `reading_time`
-      - `hide_categories`
-- `types/all.yml`
+- `data/sections/*.yml`
+  - `contacto.yml`
+    - `address.geo`
+    - `geos`
+    - `form.email`
+  - `mapa.yml`
+    - `geos`
+  - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
+  - Ojo con `shadow: true` (en `boxes`, `box` y `review`)
+  - `hs`
+  - `ratio`
+  - `rate`
+- `data/types/all.yml`
   - columns: 3
     image: gradient
     ratio: 16x9
@@ -57,7 +52,12 @@
     button: hide
     tags:
     - type: date
-- `types/*.yml|content.${lang}/single/*.md`
+- `data/types/*.yml`
+    - `tpl.list`
+      - `tags`
+      - `reading_time`
+      - `hide_categories`
+- `data/types/*.yml|content/single/*.${lang}.md`
   - `file:` en cada modal
   - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
   - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
@@ -91,10 +91,9 @@
 - [ ] Check Google Translate ofuscate links and la propia traducción
 - [ ] ¿Remove `cols` and `cols_vs`? > Only `fit` and `fit_vs`?
 - [ ] `styles.performance`
-- [ ] [i18n](https://www.staticcms.org/docs/i18n-support)
-  - [ ] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
-  - [ ] ¿Quitar montaje de módulos de `hugo.default.yml`?
-  - [ ] ¿Quitar `translationKey` de cada archivo `.md` y del CMS?
+- [/] [i18n](https://www.staticcms.org/docs/i18n-support)
+  - [x] ¿Cambiar idiomas de carpetas (`content.es/example.md`) a archivos (`content/example.es.md`)?
+  - [x] ¿Quitar montaje de módulos de `hugo.default.yml`?
 - cms
   - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
   - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
@@ -155,12 +154,7 @@
 ## New language
 
 - `themes/sansoul`
-  - [x] `./hugo.default.yml`
-    - `languages`
-    - `mounts`
-  - [/] `./i18n/new.yml`
-  - [x] `./data/options.yml`
-    - `langs`
-  - [/] `./content.new/`
-  - [x] `./prebuild/hugo.yml`
-    - `module.mounts`
+  - [ ] `./hugo.default.yml` > `languages`
+  - [ ] `./data/options.yml` > `langs`
+  - [ ] `./i18n/new.yml`
+  - [ ] `./i18n/*.yml` add `option-langs-{lang}`

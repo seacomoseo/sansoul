@@ -55,15 +55,6 @@
 {{ end }}
 
 
-{{ $i18n := dict
-  "i18n" (dict
-    "structure"      false
-    "locales"        $langs
-    "default_locale" .Lang
-  )
-}}
-
-
 {{/*  BUTTON LOGIN WITH GITHUB  */}}
 {{/*  https://decapcms.org/docs/github-backend/  */}}
 {{- $backend := dict
@@ -97,6 +88,11 @@
     )
     "logo_url"      $logo
     "locale"        $lang_cms
+    "i18n" (dict
+      "structure"      "multiple_files"
+      "locales"        $langs
+      "default_locale" .Lang
+    )
     "slug"          (dict
       "encoding"             `ascii`
       "clean_accents"        true

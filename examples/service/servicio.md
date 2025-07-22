@@ -16,7 +16,6 @@ provider: SanSoul
 toc: true
 draft: false
 noindex: false
-translationKey: service-example
 seo: ▷ Título SEO Servicio de ejemplo 【Con caracteres llamativos】
 description: Esta es la descripción de un Servicio de ejemplo.
 ---

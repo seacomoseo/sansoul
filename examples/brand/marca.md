@@ -7,7 +7,6 @@ icon: github
 toc: true
 draft: false
 noindex: false
-translationKey: brand-example
 seo: null
 description: null
 ---

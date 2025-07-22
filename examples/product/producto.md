@@ -16,7 +16,6 @@ manufacturer: fabricante
 toc: true
 draft: false
 noindex: false
-translationKey: product-example
 seo: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
 description: Esta es la descripción SEO de un producto de ejemplo.
 ---

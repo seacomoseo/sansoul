@@ -13,7 +13,6 @@ category:
 toc: false
 draft: false
 noindex: true
-translationKey: categoria-3
 seo: null # string
 description: null # string
 ---

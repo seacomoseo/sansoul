@@ -14,7 +14,6 @@ lastmod: 2021-01-02 12:00:00
 toc: true
 draft: false
 noindex: false
-translationKey: event-example
 seo: ▷ Título SEO de Página de ejemplo 【Con caracteres llamativos】
 description: llll➤ Descripción SEO de página de ejemplo ✅ con caracteres llamativos ☎️ 679 823 145.
 ---

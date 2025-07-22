@@ -2,7 +2,6 @@
 title: Privatsphäre
 slug: privatsphaere
 noindex: true
-translationKey: privacy
 type: system
 weight: 2
 ---

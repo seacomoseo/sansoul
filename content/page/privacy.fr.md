@@ -3,7 +3,6 @@ title: Vie privée
 slug: Vie privée
 icon: shield-keyhole
 noindex: true
-translationKey: privacy
 type: system
 weight: 2
 ---

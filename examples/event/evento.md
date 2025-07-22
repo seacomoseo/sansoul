@@ -26,7 +26,6 @@ price: 30
 toc: true
 draft: false
 noindex: false
-translationKey: event-example
 seo: null # string
 description: null # string
 ---

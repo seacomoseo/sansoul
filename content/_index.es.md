@@ -2,7 +2,6 @@
 slug: inicio
 title: Inicio
 noindex: false
-translationKey: home
 base: org
 weight: 1
 

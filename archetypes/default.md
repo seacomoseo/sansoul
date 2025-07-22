@@ -8,7 +8,6 @@ draft: true
 noindex: false
 date: {{ .Date }}
 lastmod: 
-translationKey:  '{{ .Name }}'
 seo: ''
 description: ''
 ---

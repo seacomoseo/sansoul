@@ -23,7 +23,6 @@ creds:
 toc: false
 draft: false
 noindex: true
-translationKey: admin
 seo: null # string
 description: null # string
 ---

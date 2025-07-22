@@ -151,7 +151,6 @@
               "image"          .image
               "draft"          .disabled
               "noindex"        $ni_parent
-              "translationKey" $name
               "weight"         (add $k 1)
               "cms"            $cms
               "customs"        $customs
@@ -191,7 +190,6 @@
             "image"          .image
             "draft"          .disabled
             "noindex"        $ni_parent
-            "translationKey" $name
             "weight"         (add $k 1)
             "cms"            $cms
             "customs"        $customs
@@ -280,19 +278,28 @@
   {{ with .lang }}
     {{ $mounts = $mounts | append
       (dict
-        "source"       (print "content/single/_home." . ".md")
-        "target"       (print "content/_index." . ".md")
-        "lang"         .
+        "source" (print "content/single/_home." . ".md")
+        "target" (print "content/_index." . ".md")
+        "lang"   .
       )
       (dict
-        "source"       (print "content/values." . ".yml")
-        "target"       (print "data/values." . ".yml")
-        "lang"         .
+        "source" (print "content/values." . ".yml")
+        "target" (print "data/values." . ".yml")
+        "lang"   .
       )
     }}
   {{ end }}
 {{ end }}
 {{ $mounts = $mounts | append
+  (dict
+    "source"       "themes/sansoul/prebuild/public/content"
+    "target"       "content"
+  )
+  (dict
+    "source"       "content"
+    "target"       "content"
+    "excludeFiles" (slice "values.*.yml" "single/_home.*.md")
+  )
   (dict
     "source"       "data"
     "target"       "data"
@@ -343,7 +350,7 @@
     "_merge" "deep"
   )
   "target" (dict
-    "path" "/*"
+    "path" "/"
   )
 }}
 {{ $global := dict

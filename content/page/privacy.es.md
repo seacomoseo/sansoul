@@ -3,7 +3,6 @@ title: Privacidad
 slug: privacidad
 icon: shield-keyhole
 noindex: true
-translationKey: privacy
 type: system
 weight: 2
 ---

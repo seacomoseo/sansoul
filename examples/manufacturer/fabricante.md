@@ -8,7 +8,6 @@ summary: Este es el resumen de un fabricante de ejemplo.
 toc: true
 draft: false
 noindex: false
-translationKey: manufacturer-example
 seo: null
 description: null
 

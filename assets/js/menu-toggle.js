@@ -11,7 +11,7 @@ function screenSticky () {
     document.body.classList.add('body-menu--sticky--calculate')
     menu.removeAttribute('hidden')
 
-    // Calculate width based on content.
+    // Calculate width based on content
     const menuItems = menu.querySelector('.menu__items')
     const active = menuItems.scrollWidth > menuItems.clientWidth
 

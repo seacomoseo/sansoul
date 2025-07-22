@@ -8,7 +8,6 @@ summary: Esto es el resumen de una organización de ejemplo.
 toc: true
 draft: false
 noindex: false
-translationKey: org-example
 seo: ▷ Título SEO Organización de ejemplo 【Con caracteres llamativos】
 description: Esta es la descripción SEO de una organización de ejemplo.
 
