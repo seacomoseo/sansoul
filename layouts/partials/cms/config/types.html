@@ -9,7 +9,7 @@
 {{ end }}
 {{ $type_langs_fields := slice
   `~SETTINGS_TYPES_TITLE`
-  `~SETTINGS_TYPES_ORDER`
+  `~SETTINGS_TYPES_WEIGHT`
   `~SETTINGS_TYPES_BASE`
   `~SETTINGS_TYPES_HINT`
   `~BOX_ICON_ID`
@@ -128,9 +128,9 @@
     )
   ))
 
-  (dict "&SETTINGS_TYPES_TITLE"       (dict "name" `title`       "widget" `string`  "required" true  "label" $t.types_title "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, org, service, page, section**")))
-  (dict "&SETTINGS_TYPES_ORDER"       (dict "name" `order`       "widget" `number`  "required" false "label" $t.types_order "hint" $t.types_order_hint   "value_type" `int` "min" 0 "step" 1))
-  (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base  "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
+  (dict "&SETTINGS_TYPES_TITLE"       (dict "name" `title`       "widget" `string`  "required" true  "label" $t.types_title  "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, org, service, page, section**")))
+  (dict "&SETTINGS_TYPES_WEIGHT"      (dict "name" `weight`      "widget" `number`  "required" false "label" $t.types_weight "hint" $t.types_weight_hint   "value_type" `int` "min" 0 "step" 1))
+  (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base   "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
   (dict "&SETTINGS_TYPES_EMOJI"       (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_emoji))
   (dict "&SETTINGS_TYPES_DISABLED"    (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled))
   (dict "&SETTINGS_TYPES_COMMENTS"    (dict "name" `comments`    "widget" `boolean` "required" false "label" $t.types_comments))

@@ -5,7 +5,7 @@
     {{ $types_full = $types_full | append (merge . (dict "name" $k "base" (cond (eq $k "single") "single" (.base | default "page")))) }}
   {{ end }}
 {{ end }}
-{{ $types_full   = sort $types_full "order" }}
+{{ $types_full   = sort $types_full "weight" }}
 {{ $types_full   = where $types_full            "name" "eq" "single" | append (where $types_full "name" "ne" "single") }}
 {{ $types       := where $types_full            "disabled" "ne" true | default slice }}
 {{ $langs       := where site.Data.config.langs "disabled" "ne" true }}
