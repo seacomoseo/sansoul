@@ -1,175 +1,150 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
-{{ $widgets_last      := apply site.Data.utilities.widgets "dict" "value" "." }}
-{{ $widgets_last       = where $widgets_last "value" "not in" (slice "object" "list") }}
-{{ $widgets_last       = apply $widgets_last "index" "." "value" }}
-{{ $type_langs        := slice }}
+{{ $widgets_last := apply site.Data.utilities.widgets "dict" "value" "." }}
+{{ $widgets_last  = where $widgets_last "value" "not in" (slice "object" "list") }}
+{{ $widgets_last  = apply $widgets_last "index" "." "value" }}
+{{ $type_langs   := slice }}
 {{ range site.Languages }}
-  {{ $type_langs       = $type_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang " " (index $t (print "option-langs-" .Lang)))) `~SETTINGS_TYPES_ITEMS` )) }}
+  {{ $type_langs  = $type_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang " " (index $t (print "option-langs-" .Lang)))) `~types_items` )) }}
 {{ end }}
 {{ $type_langs_fields := slice
-  `~SETTINGS_TYPES_TITLE`
-  `~SETTINGS_TYPES_WEIGHT`
-  `~SETTINGS_TYPES_BASE`
-  `~SETTINGS_TYPES_HINT`
-  `~BOX_ICON_ID`
-  `~SETTINGS_TYPES_EMOJI`
-  `~SETTINGS_TYPES_DISABLED`
-  `~P_NOINDEX`
-  `~P_NOINDEX_PARENT`
-  `~SETTINGS_TYPES_RELATED`
-  `~SETTINGS_TYPES_TAXONOMY_OF`
-  `~SETTINGS_TYPES_PARAMS`
-  `~SETTINGS_TYPES_TEMPLATE`
+  `~types_title`
+  `~types_weight`
+  `~types_base`
+  `~types_hint`
+  `~box_icon_id`
+  `~types_emoji`
+  `~types_disabled`
+  `~page_noindex`
+  `~page_noindex_parent`
+  `~types_related`
+  `~types_taxonomy_of`
+  `~types_params`
+  `~types_template`
 }}
 {{ $params_fields := slice
-  `~SETTINGS_TYPES_PARAMS_VAR`
-  `~SETTINGS_TYPES_PARAMS_NAME`
-  `~SETTINGS_TYPES_PARAMS_LABEL`
-  `~SETTINGS_TYPES_PARAMS_HINT`
-  `~SETTINGS_TYPES_PARAMS_WIDGET`
-  `~SETTINGS_TYPES_PARAMS_OPTIONS`
-  `~SETTINGS_TYPES_PARAMS_DEFAULT`
-  `~SETTINGS_TYPES_PARAMS_MULTIPLE`
-  `~SETTINGS_TYPES_PARAMS_SCHEMA`
+  `~types_params_var`
+  `~types_params_name`
+  `~types_params_label`
+  `~types_params_hint`
+  `~types_params_widget`
+  `~types_params_options`
+  `~types_params_default`
+  `~types_params_multiple`
+  `~types_params_schema`
 }}
 {{ $params_fields_last := slice
-  `~SETTINGS_TYPES_PARAMS_VAR`
-  `~SETTINGS_TYPES_PARAMS_NAME`
-  `~SETTINGS_TYPES_PARAMS_LABEL`
-  `~SETTINGS_TYPES_PARAMS_HINT`
-  `~SETTINGS_TYPES_PARAMS_WIDGET_LAST`
-  `~SETTINGS_TYPES_PARAMS_OPTIONS`
-  `~SETTINGS_TYPES_PARAMS_DEFAULT`
-  `~SETTINGS_TYPES_PARAMS_MULTIPLE`
+  `~types_params_var`
+  `~types_params_name`
+  `~types_params_label`
+  `~types_params_hint`
+  `~types_params_widget_last`
+  `~types_params_options`
+  `~types_params_default`
+  `~types_params_multiple`
 }}
 
 
 {{ return slice
 
-  (dict "&SETTINGS_TYPES_PARAMS_VAR"      (dict "name" `var`       "widget" `string`  "required" false "label" $t.types_params_var))
-  (dict "&SETTINGS_TYPES_PARAMS_NAME"     (dict "name" `name`      "widget" `string`  "required" false "label" $t.types_params_name))
-  (dict "&SETTINGS_TYPES_PARAMS_LABEL"    (dict "name" `label`     "widget" `string`  "required" false "label" $t.types_params_label))
-  (dict "&SETTINGS_TYPES_PARAMS_HINT"     (dict "name" `hint`      "widget" `string`  "required" false "label" $t.types_params_hint))
-  (dict "&SETTINGS_TYPES_PARAMS_WIDGET"   (dict "name" `widget`    "widget" `select`  "required" false "label" $t.types_params_widget "options" site.Data.utilities.widgets))
-  (dict "&SETTINGS_TYPES_PARAMS_MULTIPLE" (dict "name" `multiple`  "widget" `boolean` "required" false "label" $t.types_params_multiple))
-  (dict "&SETTINGS_TYPES_PARAMS_SCHEMA"   (dict "name" `schema`    "widget" `string`  "required" false "label" $t.types_params_schema))
-  (dict "&SETTINGS_TYPES_PARAMS_OPTIONS"  (dict
-    "name"           `options`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_params_options
-    "label_singular" $t.types_params_options_singular
-    "collapsed"      true
-    "summary"        "{{fields.label}}"
-    "allow_add"      true
-    "fields"         (slice
-      (dict "name" `label` "widget" `string`  "required" false "label" $t.types_params_options_label)
-      (dict "name" `value` "widget" `string`  "required" false "label" $t.types_params_options_value)
+  (partial "cms/widget" (dict "var" `types_params_var`      "name" `var`                                                              ))
+  (partial "cms/widget" (dict "var" `types_params_name`     "name" `name`                                                             ))
+  (partial "cms/widget" (dict "var" `types_params_label`    "name" `label`                                                            ))
+  (partial "cms/widget" (dict "var" `types_params_hint`     "name" `hint`                                                             ))
+  (partial "cms/widget" (dict "var" `types_params_widget`   "name" `widget`   "widget" `select`  "options" site.Data.utilities.widgets))
+  (partial "cms/widget" (dict "var" `types_params_multiple` "name" `multiple` "widget" `boolean`                                      ))
+  (partial "cms/widget" (dict "var" `types_params_schema`   "name" `schema`                                                           ))
+  (partial "cms/widget" (dict
+    "var"     `types_params_options`
+    "name"    `options`
+    "widget"  `list`
+    "summary" "{{fields.label}}"
+    "fields"  (slice
+      (partial "cms/widget" (dict "alt" `types_params_options_label` "name" `label`))
+      (partial "cms/widget" (dict "alt" `types_params_options_value` "name" `value`))
     )
   ))
-  (dict "&SETTINGS_TYPES_PARAMS_DEFAULT"  (dict "name" `default`   "widget" `string`  "required" false "label" $t.types_params_default))
-  (dict "&SETTINGS_TYPES_PARAMS_PAGES"    (dict
-    "name"           `pages`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_params_pages
-    "label_singular" $t.types_params_pages_singular
-    "collapsed"      true
-    "summary"        "{{fields.page}}"
-    "allow_add"      true
-    "fields"         (slice
-      (dict "name" `page` "widget" `string`  "required" false "label" $t.types_params_pages_singular)
+  (partial "cms/widget" (dict "var" `types_params_default` "name" `default`))
+  (partial "cms/widget" (dict
+    "var"     `types_params_pages`
+    "name"    `pages`
+    "widget"  `list`
+    "summary" "{{fields.page}}"
+    "fields"  (slice
+      (partial "cms/widget" (dict "label" $t.types_params_pages_singular "name" `page`))
     )
   ))
 
-  (dict "&SETTINGS_TYPES_PARAMS_WIDGET_LAST" (dict "<<" (slice (dict "options" $widgets_last) `~SETTINGS_TYPES_PARAMS_WIDGET`)))
-  (dict "&SETTINGS_TYPES_PARAMS_LAST"      (dict
-    "name"           `params`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_params_sub
-    "label_singular" $t.types_params_sub_singular
-    "collapsed"      true
-    "summary"        "{{fields.label}} ({{fields.name}})"
-    "allow_add"      true
-    "fields"         $params_fields_last
+  (partial "cms/widget" (dict "var" `types_params_widget_last` "<<" `types_params_widget` "options" $widgets_last))
+  (partial "cms/widget" (dict
+    "var"     `types_params_last`
+    "name"    `params`
+    "widget"  `list`
+    "summary" "{{fields.label}} ({{fields.name}})"
+    "fields"  $params_fields_last
   ))
-  (dict "&SETTINGS_TYPES_PARAMS_3" (dict "<<" (slice (dict "fields" ($params_fields | append `~SETTINGS_TYPES_PARAMS_LAST`)) `~SETTINGS_TYPES_PARAMS_LAST`)))
-  (dict "&SETTINGS_TYPES_PARAMS_2" (dict "<<" (slice (dict "fields" ($params_fields | append `~SETTINGS_TYPES_PARAMS_3`)) `~SETTINGS_TYPES_PARAMS_3`)))
-  (dict "&SETTINGS_TYPES_PARAMS"   (dict
-    "name"           `params`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_params
-    "label_singular" $t.types_params_singular
-    "collapsed"      true
-    "summary"        "{{fields.label}} ({{fields.name}})"
-    "allow_add"      true
-    "fields"         ($params_fields | append `~SETTINGS_TYPES_PARAMS_PAGES` | append `~SETTINGS_TYPES_PARAMS_2`)
+  (partial "cms/widget" (dict "var" `types_params_3` "<<" `types_params_last` "fields" ($params_fields | append `~types_params_last`)))
+  (partial "cms/widget" (dict "var" `types_params_2` "<<" `types_params_3`    "fields" ($params_fields | append `~types_params_3`   )))
+  (partial "cms/widget" (dict
+    "var"     `types_params`
+    "name"    `params`
+    "widget"  `list`
+    "summary" "{{fields.label}} ({{fields.name}})"
+    "fields"  ($params_fields | append `~types_params_pages` | append `~types_params_2`)
   ))
 
-  (dict "&SETTINGS_TYPES_ITEMS"  (dict
-    "name"           `lang`
-    "widget"         `object`
-    "required"       false
-    "label"          $t.types_lang
-    "collapsed"      true
-    "i18n"           true
-    "fields"         (slice
-      (dict "name" `permalinks`  "widget" `string` "i18n" true "required" false "label" $t.types_permalinks "hint" $t.types_permalinks_hint)
-      (dict "<<" (slice (dict "required" false "hint" $t.types_slug_hint) `~P_SLUG`))
-      (dict "name" `singular`    "widget" `string` "i18n" true "required" false "label" $t.types_singular)
-      (dict "<<" (slice (dict "required" false) `~P_TITLE`))
-      `~P_IMAGE`
-      `~P_TITLE_SEO`
-      `~P_DESCRIPTION`
-      (dict "<<" (slice (dict "name" `md`) `~P_BODY`))
+  (partial "cms/widget" (dict
+    "var"    `types_items`
+    "name"   `lang`
+    "widget" `object`
+    "i18n"   true
+    "fields" (slice
+      (partial "cms/widget" (dict "alt" `types_permalinks`  "name" `permalinks`                       ))
+      (partial "cms/widget" (dict "<<" `page_slug`          "required" false "hint" $t.types_slug_hint))
+      (partial "cms/widget" (dict "label" $t.types_singular "name" `singular`                         ))
+      (partial "cms/widget" (dict "<<" `page_title`         "required" false                          ))
+      `~page_image`
+      `~page_title_seo`
+      `~page_description`
+      (partial "cms/widget" (dict "<<" `page_body`           "name" `md`                              ))
     )
   ))
 
-  (dict "&SETTINGS_TYPES_TITLE"       (dict "name" `title`       "widget" `string`  "required" true  "label" $t.types_title  "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, org, service, page, section**")))
-  (dict "&SETTINGS_TYPES_WEIGHT"      (dict "name" `weight`      "widget" `number`  "required" false "label" $t.types_weight "hint" $t.types_weight_hint   "value_type" `int` "min" 0 "step" 1))
-  (dict "&SETTINGS_TYPES_BASE"        (dict "name" `base`        "widget" `select`  "required" false "label" $t.types_base   "hint" $t.types_base_hint    "options" `~OPTIONS_BASE`))
-  (dict "&SETTINGS_TYPES_EMOJI"       (dict "name" `emoji`       "widget" `string`  "required" false "label" $t.types_emoji))
-  (dict "&SETTINGS_TYPES_DISABLED"    (dict "name" `disabled`    "widget" `boolean` "required" false "label" $t.disabled))
-  (dict "&SETTINGS_TYPES_COMMENTS"    (dict "name" `comments`    "widget" `boolean` "required" false "label" $t.types_comments))
-  (dict "&SETTINGS_TYPES_RELATED"     (dict "name" `related`     "widget" `boolean` "required" false "label" $t.types_related))
-  (dict "&SETTINGS_TYPES_HINT"        (dict "name" `hint`        "widget" `string`  "required" false "label" $t.types_hint))
-  (dict "&SETTINGS_TYPES_TAXONOMY_OF" (dict
-    "name"           `tax_of`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.types_taxonomy_of
-    "collapsed"      true
-    "summary"        "{{fields.lang}}"
-    "allow_add"      true
-    "fields"         (slice
-      `~SETTINGS_TYPES_PARAMS_NAME`
-      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
-      (dict "name" `breadcrumbs` "widget" `string`  "required" false "label" $t.types_breadcrumbs)
-      `~SETTINGS_TYPES_PARAMS_SCHEMA`
+  (partial "cms/widget" (dict "var" `types_title`    "name" `title`                      "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, org, service, page, section**")))
+  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `number` "value_type" `int` "min" 0 "step" 1))
+  (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "options" `~options_base`          ))
+  (partial "cms/widget" (dict "var" `types_emoji`    "name" `emoji`                                                         ))
+  (partial "cms/widget" (dict "var" `types_disabled` "name" `disabled` "widget" `boolean`                                   ))
+  (partial "cms/widget" (dict "var" `types_comments` "name" `comments` "widget" `boolean`                                   ))
+  (partial "cms/widget" (dict "var" `types_related`  "name" `related`  "widget" `boolean`                                   ))
+  (partial "cms/widget" (dict "var" `types_hint`     "name" `hint`                                                          ))
+  (partial "cms/widget" (dict
+    "var"     `types_taxonomy_of`
+    "name"    `tax_of`
+    "widget"  `list`
+    "summary" "{{fields.lang}}"
+    "fields"  (slice
+      `~types_params_name`
+      `~types_params_multiple`
+      (partial "cms/widget" (dict "alt" `types_breadcrumbs` "name" `breadcrumbs`))
+      `~types_params_schema`
     )
   ))
-  (dict "&SETTINGS_TYPES_TEMPLATE"  (dict
+  (partial "cms/widget" (dict
+    "var"       `types_template`
     "name"      `tpl`
     "widget"    `object`
-    "required"  false
-    "label"     $t.types_template
-    "hint"      $t.types_template_hint
-    "collapsed" true
-    "i18n"      true
     "fields"    (slice
-      `~TEMPLATE_BACKGROUND`
-      `~TEMPLATE_MENU`
-      `~TEMPLATE_CALLNOW`
-      `~TEMPLATE_SECTION`
-      `~TEMPLATE_SECTIONS`
-      `~TEMPLATE_LIST`
-      `~TEMPLATE_RELATED`
+      `~template_background`
+      `~template_menu`
+      `~template_callnow`
+      `~template_section`
+      `~template_sections`
+      `~template_list`
+      `~template_related`
     )
   ))
 
-  (dict "&TYPES_FIELDS" ($type_langs_fields | append $type_langs))
+  (dict "&types_fields" ($type_langs_fields | append $type_langs))
 
 }}

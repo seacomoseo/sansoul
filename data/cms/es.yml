@@ -125,10 +125,11 @@ template: Plantilla General
 template_hint: Plantilla común a todas las páginas (los valores de las páginas, personalizadas o no, con su propia plantilla sobreescriben a los de ésta)
 template_background: Fondo de Página
 template_menu: Menú
+template_menu_lang: Idioma
 template_menu_items: Elementos
-template_menu_item: Elemento
+template_menu_items_singular: Elemento
 template_menu_subitems: Sublementos
-template_menu_subitem: Sublemento
+template_menu_subitems_singular: Sublemento
 template_menu_hide: Ocultar
 template_menu_logo: Mostrar Logo
 template_menu_image: Imagen del Logo
@@ -150,7 +151,7 @@ template_menu_hide_icons: Ocultar Iconos
 template_callnow: Botones de Esquina
 template_callnow_show: Mostrar
 template_callnow_items: Botones
-template_callnow_item: Botón
+template_callnow_items_singular: Botón
 template_section: Plantilla de cada Sección
 template_section_singular: Sección
 template_section_hint: El 1º se aplica a todas, el resto de forma alterna 🔷 **Ejemplo →** si hay 3 plantillas, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
@@ -259,112 +260,112 @@ redirects_hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/r
 robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
 values: Valores Globales
 # main-page-params
-p_slug: Slug
-p_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
-p_title: Título
-p_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
-p_summary: Resumen
-p_summary_hint: Se utiliza para las miniaturas de las listas 🔷 Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido
-p_image: Imagen Principal
-p_image_hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
-p_weight: Orden
-p_weight_hint: Orden en el que aparecerá la página en los listados
-p_related: Relacionados
-p_related_hint: Selecciona manualmente o se añadirán automaticamente
-p_toc: Índice
-p_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
-p_draft: Borrador
-p_draft_hint: La página deja de existir, sólo puede verla en el editor
-p_hide: Ocultar
-p_hide_hint: Oculta la página de los listados y del mapa de sitio, pero sigue siendo accesible mediante su URL
-p_noindex: No Index
-p_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
-p_noindex_parent: No Index de la Página Padre
-p_seo: Título SEO
-p_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
-p_description: Descripción SEO
-p_description_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
-p_body: Contenido
-p_body_hint: Los enlaces cuyo texto esté envueltro entre corchetes se convertirán en botones (opcionalmente se pueden personalizar si en el title entre corchetes se añaden una o varias de estas palabras → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" o "**dot**", separar con cualquier caracter si se añaden varias) 🔷 En el title entre corchetes también se pueden añadir estas palabras → "**nofollow**" (ofuscado), "**homefollow**" (ofuscado excepto en página de inicio), "**blank**" (se abre en ventana nueva) y "**ga4**" (registra evento clave en GA4) 🔷 Se pueden añadir iconos usando, envuelto entre caracteres "**:**", uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic)
-p_base: Base
-p_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
+page_slug: Slug
+page_slug_hint: Es el final de la URL o enlace de ésta página 🔷 Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) 🔷 **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
+page_title: Título
+page_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
+page_summary: Resumen
+page_summary_hint: Se utiliza para las miniaturas de las listas 🔷 Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido
+page_image: Imagen Principal
+page_image_hint: Nombre de archivo con mismo formato que "slug" 🔷 Recomendado redimensionar ([editor online](https://photopea.com)) y comprimir ([compresor online](https://kraken.io)) antes de subir
+page_weight: Orden
+page_weight_hint: Orden en el que aparecerá la página en los listados
+page_related: Relacionados
+page_related_hint: Selecciona manualmente o se añadirán automaticamente
+page_toc: Índice
+page_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
+page_draft: Borrador
+page_draft_hint: La página deja de existir, sólo puede verla en el editor
+page_hide: Ocultar
+page_hide_hint: Oculta la página de los listados y del mapa de sitio, pero sigue siendo accesible mediante su URL
+page_noindex: No Index
+page_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
+page_noindex_parent: No Index de la Página Padre
+page_seo: Título SEO
+page_seo_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 40 y 65 caracteres** (~60) 🔷 Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+page_description: Descripción SEO
+page_description_hint: Se utiliza para los resultados de búsqueda en Google 🔷 **Recomendado entre 70 y 155 caracteres** (~135) 🔷 Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+page_body: Contenido
+page_body_hint: Los enlaces cuyo texto esté envueltro entre corchetes se convertirán en botones (opcionalmente se pueden personalizar si en el title entre corchetes se añaden una o varias de estas palabras → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" o "**dot**", separar con cualquier caracter si se añaden varias) 🔷 En el title entre corchetes también se pueden añadir estas palabras → "**nofollow**" (ofuscado), "**homefollow**" (ofuscado excepto en página de inicio), "**blank**" (se abre en ventana nueva) y "**ga4**" (registra evento clave en GA4) 🔷 Se pueden añadir iconos usando, envuelto entre caracteres "**:**", uno de los siguientes nombres válidos → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic)
+page_base: Base
+page_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
 # main-page-params article + event
-p_date: Fecha
-p_lastmod: Última Modifiación
+page_date: Fecha
+page_lastmod: Última Modifiación
 # main-page-params event
-p_end: Fecha Final
-p_cancelled: Cancelado
-p_artists: Artista/s
-p_artists_singular: Nombre
-p_artists_group: ¿Es un Grupo?
-p_artists_hint: '**Ejemplo →** "Manolo García"'
+page_end: Fecha Final
+page_cancelled: Cancelado
+page_artists: Artista/s
+page_artists_singular: Nombre
+page_artists_name_hint: '**Ejemplo →** "Manolo García"'
+page_artists_group: ¿Es un Grupo?
 # main-page-params author
-p_prefix: Prefijo Honorífico
-p_alts: Nombres Alternativos
-p_alts_singular: Nombre Alternativo
-p_job: Cargos
-p_job_singular: Cargo
-p_job_hint: '**Ejemplo →** "Podólogo Especialista"'
-p_orgs: Trabaja para...
-p_orgs_hint: Organizaciones para las que trabaja
-p_orgs_name: Nombre de la Organización
-p_creds: Títulos Credenciales
-p_creds_singular: Título Credencial
-p_creds_name: Nombre de Título
-p_creds_category: Categoría
-p_creds_category_hint: '**Ejemplos →** "Grado", "Curso", "Máster", "Doctorado", "Especialista", "Certificación", "Diploma", "Licenciatura"…'
-p_creds_org: Nombre de Organización
+page_prefix: Prefijo Honorífico
+page_alts: Nombres Alternativos
+page_alts_singular: Nombre Alternativo
+page_job: Cargos
+page_job_singular: Cargo
+page_job_hint: '**Ejemplo →** "Podólogo Especialista"'
+page_orgs: Trabaja para...
+page_orgs_hint: Organizaciones para las que trabaja
+page_orgs_name: Nombre de la Organización
+page_creds: Títulos Credenciales
+page_creds_singular: Título Credencial
+page_creds_name: Nombre de Título
+page_creds_category: Categoría
+page_creds_category_hint: '**Ejemplos →** "Grado", "Curso", "Máster", "Doctorado", "Especialista", "Certificación", "Diploma", "Licenciatura"…'
+page_creds_org: Nombre de Organización
 # main-page-params service
-p_service_types: Tipos de Servicio
-p_service_types_singular: Tipo de Servicio
+page_service_types: Tipos de Servicio
+page_service_types_singular: Tipo de Servicio
 # main-page-params organization
-p_org: Organización
-o_types: Tipo de Negocio
-o_names: Nombres
-o_names_singular: Nombre
-o_names_hint: Nombres y Variantes del Negocio / Proyecto
-o_description: Descripción
-o_legal: Nombre Legal
-o_nif: NIF / DNI
-o_email: Email Legal
-o_logo: Logo
-p_images: Imágenes
-p_as: Enlaces a Referencias
-p_as_singular: Enlaces a redes sociales y otras referencias
-o_phones: Teléfonos
-o_phones_singular: Teléfono
-p_address: Dirección
-p_address_name: Nombre en Google Maps
-p_address_street: Calle
-p_address_pc: Código Postal
-p_address_locality: Localidad
-p_address_region: Región
-p_address_country: País
-p_address_country_hint: Código de país de 2 letras
-p_address_geo: Coordenadas
-p_address_link: Enlace a Mapa
-p_areas: Áreas de Servicio
-p_areas_singular: Área de Servicio
-o_schedule: Horarios
-o_schedule_singular: Horario
-o_schedule_days: Días de la Semana
-o_schedule_hours: Horas
-o_schedule_hours_open: Apertura
-o_schedule_hours_close: Cierre
-o_schedule_from: Válido Desde
-o_schedule_to: Válido Hasta
-o_schedule_valid_hint: Formato → 2024-12-31
-o_prices: Rango de Precios
-o_services: Servicios
-o_services_singular: Servicio
-o_food_menu: Menús de Comida
-o_food_menu_singular: Menú de Comida
-o_food_menu_hint: Enlaces a cartas de menús (solo para establecimientos de comida)
-o_food_type: Tipos de Comida
-o_food_type_singular: Tipo de Comida
-o_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para establecimientos de comida)
-o_departs: Departamentos
-o_departs_singular: Departamento
+page_org: Organización
+page_org_types: Tipo de Negocio
+page_org_names: Nombres
+page_org_names_singular: Nombre
+page_org_names_hint: Nombres y Variantes del Negocio / Proyecto
+page_org_description: Descripción
+page_org_legal: Nombre Legal
+page_org_nif: NIF / DNI
+page_org_email: Email Legal
+page_org_logo: Logo
+page_images: Imágenes
+page_as: Enlaces a Referencias
+page_as_singular: Enlaces a redes sociales y otras referencias
+page_org_phones: Teléfonos
+page_org_phones_singular: Teléfono
+page_address: Dirección
+page_address_name: Nombre en Google Maps
+page_address_street: Calle
+page_address_pc: Código Postal
+page_address_locality: Localidad
+page_address_region: Región
+page_address_country: País
+page_address_country_hint: Código de país de 2 letras
+page_address_geo: Coordenadas
+page_address_link: Enlace a Mapa
+page_areas: Áreas de Servicio
+page_areas_singular: Área de Servicio
+page_org_schedule: Horarios
+page_org_schedule_singular: Horario
+page_org_schedule_days: Días de la Semana
+page_org_schedule_hours: Horas
+page_org_schedule_hours_open: Apertura
+page_org_schedule_hours_close: Cierre
+page_org_schedule_from: Válido Desde
+page_org_schedule_to: Válido Hasta
+page_org_schedule_valid_hint: Formato → 2024-12-31
+page_org_prices: Rango de Precios
+page_org_services: Servicios
+page_org_services_singular: Servicio
+page_org_food_menu: Menús de Comida
+page_org_food_menu_singular: Menú de Comida
+page_org_food_menu_hint: Enlaces a cartas de menús (solo para establecimientos de comida)
+page_org_food_type: Tipos de Comida
+page_org_food_type_singular: Tipo de Comida
+page_org_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para establecimientos de comida)
+page_org_departs: Departamentos
+page_org_departs_singular: Departamento
 # boxes and sections
 box_name: Nombre
 box_name_hint: Nombre del archivo
@@ -436,7 +437,7 @@ box_button_swap: Fuente Alternativa del Enlace
 box_button_ga4: GA4
 box_button_ga4_hint: Marcarlo como evento en Google Analytics 4 (para posterior conversión)
 box_bg_color: Color del Fondo
-box_bg_fade: Color de Gradiente del Fondo
+box_bg_fade_color: Color de Gradiente del Fondo
 box_bg_fade_type: Tipo de Gradiente del Fondo
 box_bg_color_alpha: Transparencia de color de Fondo
 box_bg_image: Imagen de Fondo
@@ -529,8 +530,8 @@ box_side: Lateral Fondo/Imagen
 box_side_hint: Coloca el fondo (o imagen) en extremo/s de la venta lateral/es
 box_group_radius: Esquinas Redondeadas en Conjunto
 box_group_radius_hint: Esquinas redondeadas en el conjunto de elementos
-box_slider: Activar Carrusel
-box_slider_hint: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
+box_slider_active: Activar Carrusel
+box_slider_active_hint: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
 box_time: Intervalo del Carrusel
 box_time_hint: Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)
 box_pips: Guías del Carrusel
@@ -607,74 +608,71 @@ box_form_to: Destino
 box_form_to_hint: URL de la página que se abrirá si el formulario se envía correctamente
 box_form_subject: Asunto
 box_form_subject_hint: Asunto que tendrá el email de recepción
-box_form_inputs: Elementos de Formulario
-box_form_input: Elemento de Formulario
-box_form_inputs_name: Nombre
-box_form_inputs_name_hint: Nombre que tendrá el campo
-box_form_inputs_label: Nombre Visible
-box_form_inputs_label_hint: Texto descriptivo del campo que aparece sobre éste 🔷 Si no se especifica, se aplicará el nombre anterior
-box_form_inputs_hint: Leyenda
-box_form_inputs_hint_hint: Texto descriptivo del campo que aparece bajo éste
-box_form_inputs_required: Requerido
-box_form_inputs_required_hint: Indica si es obligatorio completar el campo
-box_form_inputs_required_if: Requerido Si…
-box_form_inputs_required_if_hint: Indica si es obligatorio completar este campo solamente si otro campo está completado, indicando su nombre (puedes indicar varios separados por '||' o por '&&')
-box_form_inputs_show_if: Mostrar Si…
-box_form_inputs_show_if_hint: Este campo estará oculto hasta que otro campo se complete, indicando su nombre (puedes indicar varios separados por '||' si con uno es suficiente o por '&&' si se requieren todos)
-box_form_inputs_regex: Regex
-box_form_inputs_min: Mínimo
-box_form_inputs_max: Máximo
-box_form_inputs_x: Opciones en Horizontal
-box_form_inputs_accept: Archivos
-box_form_inputs_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas 🔷 **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
-box_form_inputs_base_name: Nombre Base
-box_form_inputs_base_name_hint: Usa como nombre de archivo el valor del campo al que se le haga referencia aquí en el momento de la carga, y si no lo encuentra, usa este mismo nombre
-box_form_inputs_geo_area: Áreas
-box_form_inputs_geo_area_hint: Permite añadir áreas mediante círculos y polígonos
-box_form_inputs_geo_view: Centro de Vista Inicial
-box_form_inputs_options: Opciones
-box_form_inputs_option: Opción
-box_form_inputs_option_hint: Opción que se le muestra al usuario
-box_form_inputs_value: Valor
-box_form_inputs_value_hint: Valor que recibirá el formulario
-box_form_inputs_text: Texto (Simple)
-box_form_inputs_text_hint: Campo simple de texto normal
-box_form_inputs_email: Email (Simple)
-box_form_inputs_email_hint: Campo simple de email
-box_form_inputs_tel: Teléfono (Simple)
-box_form_inputs_tel_hint: Campo simple de teléfono
-box_form_inputs_number: Número (Simple)
-box_form_inputs_number_hint: Campo simple de número
-box_form_inputs_date: Fecha (Simple)
-box_form_inputs_date_hint: Campo simple de fecha
-box_form_inputs_time: Tiempo (Simple)
-box_form_inputs_time_hint: Campo simple de tiempo
-box_form_inputs_textarea: Área de Texto (Simple)
-box_form_inputs_textarea_hint: Campo simple de área de texto 🔷 Ocupa todo el ancho
-box_form_inputs_geo: Coordenadas
-box_form_inputs_geo_hint: Mapa para establecer un punto 🔷 Ocupa todo el ancho
-box_form_inputs_select: Selección (Múltiple)
-box_form_inputs_select_hint: Campo múltiple de lista de selección desplegable 🔷 Solo permite seleccionar una opción 🔷 Ocupa todo el ancho
-box_form_inputs_radio: Radios (Múltiple)
-box_form_inputs_radio_hint: Campo múltiple de radios o círculos 🔷 Solo permite seleccionar una opción 🔷 Ocupa todo el ancho
-box_form_inputs_checkbox: Casillas (Múltiple)
-box_form_inputs_checkbox_hint: Campo múltiple de casillas de verificación 🔷 Permite seleccionar múltiples opciones 🔷 Ocupa todo el ancho
-box_form_inputs_check: Casilla (Simple)
-box_form_inputs_check_hint: Campo simple de casilla de verificación
-box_form_inputs_file: Archivo
-box_form_inputs_file_hint: Campo de archivo adjunto (máximo 8 MB)
-box_form_inputs_hidden: Oculto
-box_form_inputs_hidden_hint: Campo simple oculto a los usuarios (puede servir para indicar algo internamente en la recepción de formularios)
-box_form_inputs_h2: Encabezado h2
-box_form_inputs_h3: Encabezado h3
-box_form_inputs_h4: Encabezado h4
-box_form_inputs_h5: Encabezado h5
-box_form_inputs_h6: Encabezado h6
-box_form_inputs_md: Contenido
+box_input_name: Nombre
+box_input_name_hint: Nombre que tendrá el campo
+box_input_label: Nombre Visible
+box_input_label_hint: Texto descriptivo del campo que aparece sobre éste 🔷 Si no se especifica, se aplicará el nombre anterior
+box_input_hint: Leyenda
+box_input_hint_hint: Texto descriptivo del campo que aparece bajo éste
+box_input_required: Requerido
+box_input_required_hint: Indica si es obligatorio completar el campo
+box_input_required_if: Requerido Si…
+box_input_required_if_hint: Indica si es obligatorio completar este campo solamente si otro campo está completado, indicando su nombre (puedes indicar varios separados por '||' o por '&&')
+box_input_show_if: Mostrar Si…
+box_input_show_if_hint: Este campo estará oculto hasta que otro campo se complete, indicando su nombre (puedes indicar varios separados por '||' si con uno es suficiente o por '&&' si se requieren todos)
+box_input_regex: Regex
+box_input_min: Mínimo
+box_input_max: Máximo
+box_input_x: Opciones en Horizontal
+box_input_accept: Archivos
+box_input_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas 🔷 **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
+box_input_base_name: Nombre Base
+box_input_base_name_hint: Usa como nombre de archivo el valor del campo al que se le haga referencia aquí en el momento de la carga, y si no lo encuentra, usa este mismo nombre
+box_input_geo_area: Áreas
+box_input_geo_area_hint: Permite añadir áreas mediante círculos y polígonos
+box_input_geo_view: Centro de Vista Inicial
+box_input_options: Opciones
+box_input_option: Opción
+box_input_option_hint: Opción que se le muestra al usuario
+box_input_value: Valor
+box_input_value_hint: Valor que recibirá el formulario
+box_inputs: Elementos de Formulario
+box_inputs_singular: Elemento de Formulario
+box_inputs_text: Texto (Simple)
+box_inputs_text_hint: Campo simple de texto normal
+box_inputs_email: Email (Simple)
+box_inputs_email_hint: Campo simple de email
+box_inputs_tel: Teléfono (Simple)
+box_inputs_tel_hint: Campo simple de teléfono
+box_inputs_number: Número (Simple)
+box_inputs_number_hint: Campo simple de número
+box_inputs_date: Fecha (Simple)
+box_inputs_date_hint: Campo simple de fecha
+box_inputs_time: Tiempo (Simple)
+box_inputs_time_hint: Campo simple de tiempo
+box_inputs_textarea: Área de Texto (Simple)
+box_inputs_textarea_hint: Campo simple de área de texto 🔷 Ocupa todo el ancho
+box_inputs_geo: Coordenadas
+box_inputs_geo_hint: Mapa para establecer un punto 🔷 Ocupa todo el ancho
+box_inputs_select: Selección (Múltiple)
+box_inputs_select_hint: Campo múltiple de lista de selección desplegable 🔷 Solo permite seleccionar una opción 🔷 Ocupa todo el ancho
+box_inputs_radio: Radios (Múltiple)
+box_inputs_radio_hint: Campo múltiple de radios o círculos 🔷 Solo permite seleccionar una opción 🔷 Ocupa todo el ancho
+box_inputs_checkbox: Casillas (Múltiple)
+box_inputs_checkbox_hint: Campo múltiple de casillas de verificación 🔷 Permite seleccionar múltiples opciones 🔷 Ocupa todo el ancho
+box_inputs_check: Casilla (Simple)
+box_inputs_check_hint: Campo simple de casilla de verificación
+box_inputs_file: Archivo
+box_inputs_file_hint: Campo de archivo adjunto (máximo 8 MB)
+box_inputs_hidden: Oculto
+box_inputs_hidden_hint: Campo simple oculto a los usuarios (puede servir para indicar algo internamente en la recepción de formularios)
+box_inputs_h2: Encabezado h2
+box_inputs_h3: Encabezado h3
+box_inputs_h4: Encabezado h4
+box_inputs_h5: Encabezado h5
+box_inputs_h6: Encabezado h6
+box_inputs_md: Contenido
 box_map: Plantilla de Mapa
-box_map_geos: Mapa
-box_map_geos_singular: Elemento de Mapa
-box_map_geos_hint: Añade puntos y/o áreas para mostrar en el mapa
 box_map_tile: Capa por defecto
 box_map_color: Color
 box_map_label: Nombre
@@ -683,6 +681,9 @@ box_map_circle: Círculo
 box_map_polygon: Polígono
 box_map_radius: Radio
 box_map_radius_hint: Radio en kilómetros
+box_geos: Mapa
+box_geos_singular: Elemento de Mapa
+box_geos_hint: Añade puntos y/o áreas para mostrar en el mapa
 box_zoom: Zoom
 box_box: Plantilla de Cajas
 box_boxes: Cajas

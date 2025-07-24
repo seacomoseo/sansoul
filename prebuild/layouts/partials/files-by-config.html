@@ -1,8 +1,10 @@
-
 {{ $types_full  := slice }}
 {{ range $k, $v := site.Data.types }}
   {{ if ne "all" $k }}
-    {{ $types_full = $types_full | append (merge . (dict "name" $k "base" (cond (eq $k "single") "single" (.base | default "page")))) }}
+    {{ $type_base := cond (eq $k "single") "single" (.base | default "page") }}
+    {{ $type      := dict "name" $k "base" $type_base }}
+    {{ $type       = merge . $type }}
+    {{ $types_full = $types_full | append $type }}
   {{ end }}
 {{ end }}
 {{ $types_full   = sort $types_full "weight" }}
@@ -88,7 +90,7 @@
         {{/*  type with lang  */}}
         {{ $type_lang := index . $lang }}
         {{ with $type_lang }}
-          {{ $type = merge $type . }}
+          {{ $type = merge $type . (dict "lang_title" .title) }}
         {{ end }}
 
         {{/*  permalinks  */}}
@@ -117,21 +119,21 @@
          */}}
         {{ $cms      := index . $lang_cms }}
         {{ $cms       = dict
-          "title"      (or $cms.title    $type.title $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $name)
-          "singular"   (or $cms.singular $cms.title  $type.title   (index $i18n_cms (print "types_default_" $name "_singular"   )) $name)
-          "hint"       (or $type.hint                              (index $i18n_cms (print "types_default_" $name "_hint"       )))
+          "title"      (or $cms.title    $cms.singular (index $i18n_cms (print "types_default_" $name "_title"      )) $type.title $name)
+          "singular"   (or $cms.singular $cms.title    (index $i18n_cms (print "types_default_" $name "_singular"   )) $type.title $name)
+          "hint"       (or $type.hint                  (index $i18n_cms (print "types_default_" $name "_hint"       ))                  )
           "permalinks" $permalinks
         }}
 
         {{/*  CONFIG TO TYPE PARENT PAGES  */}}
         {{ $slug          := "" }}
         {{ with $type }}
-          {{ $title        = or .title       (index $t (print "types_default_" $name "_title"      )) .singular $name }}
-          {{ $singular    := or .singular    (index $t (print "types_default_" $name "_singular"   )) .title    $name }}
-          {{ $description := or .description (index $t (print "types_default_" $name "_description")) ""              }}
-          {{ $slug         = or .slug        (index $t (print "types_default_" $name "_slug"       )) $title          }}
-          {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon          "file"          }}
-          {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji         "📄"            }}
+          {{ $title        = or .lang_title  (index $t (print "types_default_" $name "_title"      )) .title .singular  $name }}
+          {{ $singular    := or .singular    (index $t (print "types_default_" $name "_singular"   )) .title $cms.title $name }}
+          {{ $description := or .description (index $t (print "types_default_" $name "_description")) ""                      }}
+          {{ $slug         = or .slug        (index $t (print "types_default_" $name "_slug"       )) $title                  }}
+          {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon          "file"                  }}
+          {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji         "📄"                    }}
           {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
           {{ $customs     := .params | default slice }}
           {{ with site.Data.types.all.params }}

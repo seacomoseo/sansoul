@@ -37,7 +37,7 @@
     {{ $value_type = $widget }}
   {{ end }}
   {{ $i18n  := "duplicate" }}
-  {{ if in (slice "string" "text" "markdown" "image") $widget }}
+  {{ if in (slice "string" "text" "markdown" "image" "object" "list") $widget }}
     {{ $i18n = true }}
   {{ end }}
   {{ $label   := .label | default .name | default "single" }}
@@ -55,12 +55,13 @@
   {{ end }}
 
   {{ $field := dict
-    "name"           .name
-    "label"          ($label | default .name)
-    "hint"           $hint
-    "widget"         $widget
-    "required"       false
-    "default"        $default
+    "name"     .name
+    "label"    ($label | default .name)
+    "hint"     $hint
+    "widget"   $widget
+    "required" false
+    "default"  $default
+    "i18n"     $i18n
   }}
 
   {{ if eq $widget "number" }}

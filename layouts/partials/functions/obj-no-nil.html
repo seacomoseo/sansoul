@@ -1,0 +1,9 @@
+{{ $obj := dict }}
+
+{{ range $k, $v := . }}
+  {{ if ne . nil }}
+    {{ $obj = merge $obj (dict $k .) }}
+  {{ end }}
+{{ end }}
+
+{{ return $obj }}

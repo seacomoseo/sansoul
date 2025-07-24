@@ -1,26 +1,14 @@
-{{- $t            := partial "functions/i18n-cms" . -}}
-{{- $lang_cms     := partial "functions/lang-cms" . -}}
-{{- $config       := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
-{{- $netlify      := getenv "NETLIFY" -}}
-{{- $translations := slice -}}
-{{- $default      := site.Data.utilities.defaults -}}
-{{- $icons        := slice
+{{- $t        := partial "functions/i18n-cms" . -}}
+{{- $lang_cms := partial "functions/lang-cms" . -}}
+{{- $config   := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
+{{- $netlify  := getenv "NETLIFY" -}}
+{{- $default  := site.Data.utilities.defaults -}}
+{{- $icons    := slice
   $default.single.icon
   $default.section.icon
   $default.types.icon
   $default.settings.icon
 -}}
-{{- range .Translations -}}
-  {{- $cms_link   := print .Site.Home.RelPermalink "admin/" -}}
-  {{- $icon       := print "flag-" .Lang -}}
-  {{- $translations = $translations | append (dict
-    "id"      .Lang
-    "title"   .Language.LanguageName
-    "data"    $cms_link
-    "options" (dict "icon" $icon)
-  ) -}}
-  {{- $icons = $icons | append $icon -}}
-{{- end -}}
 {{- range site.Sections -}}
   {{- $icons = $icons | append .Params.icon -}}
 {{- end -}}
@@ -117,12 +105,11 @@
     "minify"     hugo.IsProduction
     "targetPath" (print site.Home.RelPermalink "js/cms.js")
     "params"     (dict
-      "tReset"       $t.reset
-      "translations" $translations
-      "icons"        $icons
-      "netlify"      $netlify
-      "lang"         $lang_cms
-      "timestamp"    site.Params.timestamp
+      "tReset"    $t.reset
+      "icons"     $icons
+      "netlify"   $netlify
+      "lang"      $lang_cms
+      "timestamp" site.Params.timestamp
     )
   }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}

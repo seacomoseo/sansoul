@@ -1,0 +1,75 @@
+{{ $var := print "&" .var }}
+{{ $o   := . }}
+
+{{ $from := index . "<<" }}
+{{ if $from }}
+  {{ $from = print "~" $from }}
+  {{ $o    = merge . (dict "var" nil "<<" nil) }}
+  {{ $o    = partial "functions/obj-no-nil" $o }}
+  {{ $o    = dict "<<" (slice $o $from) }}
+{{ else }}
+  {{ $t   := partial "functions/i18n-cms" . }}
+  {{ $loc := .alt | default .var }}
+  {{ $widget   := .widget   | default "string" }}
+  {{ $required := .required | default false }}
+  {{ $i18n     := .i18n }}
+  {{ if not .i18n }}
+    {{ $wi18n  := slice "string" "text" "markdown" "image" "object" "list" }}
+    {{ $i18n    = cond (in $wi18n $widget) true "duplicate" }}
+  {{ end }}
+  {{ $o = dict
+    "var"      nil
+    "widget"   $widget
+    "required" $required
+    "i18n"     $i18n
+  }}
+  {{ $o = merge . $o }}
+
+  {{ if eq "datetime" $widget }}
+    {{ if not .format }}
+      {{ $f := dict
+        "format"      `yyyy-MM-dd HH:mm:ss`
+        "date_format" `yyyy-MM-dd`
+        "time_format" `HH:mm`
+      }}
+      {{ $o  = merge $o $f }}
+    {{ end }}
+  {{ else if eq "markdown" $widget }}
+    {{ $o = merge $o (dict "show_raw" true) }}
+  {{ else if eq "object" $widget }}
+    {{ $o = merge $o (dict "collapsed" true) }}
+  {{ else if eq "list" $widget }}
+    {{ $o = merge $o (dict "collapsed" true "allow_add" true) }}
+    {{ if $loc }}
+      {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
+      {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
+    {{ end }}
+  {{ else if eq "relation" $widget }}
+    {{ $o = merge $o (dict
+      "options_length" 100
+      "value_field"    "{{slug}}"
+      "search_fields"  (slice "{{title}}")
+      "display_fields" (slice "{{title}}")
+    ) }}
+  {{ end }}
+
+  {{ if not .label }}
+    {{ with $loc }}
+      {{ with index $t . }}
+        {{ $o = merge $o (dict "label" .) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ if not .hint }}
+    {{ with $loc }}
+      {{ with index $t (print . "_hint") }}
+        {{ $o = merge $o (dict "hint" .) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ $o = partial "functions/obj-no-nil" $o }}
+{{ end }}
+
+{{ $return := cond (not .var) $o (dict $var $o) }}
+{{ return $return }}

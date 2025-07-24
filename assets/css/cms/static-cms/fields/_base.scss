@@ -3,7 +3,7 @@
   --hint-max-width: calc(640px + 1.5em);
   --reset-right: .125rem;
   @media (min-width: 648px) {
-    --hint-left: calc((100dvw - 640px) / 2 - .5rem);
+    --hint-left: max(calc((100cqw - 640px) / 2 - .5rem), 0px);
     --reset-right: var(--hint-left);
   }
 }
@@ -11,6 +11,10 @@
   --hint-left: 0;
   --hint-max-width: 100%;
   --reset-right: .125rem;
+}
+
+.CMS_EditorControlPane_root {
+  container: editor-control-panel / inline-size;
 }
 
 // Parent
@@ -68,7 +72,7 @@
 .CMS_WidgetObject_list-root,
 .CMS_WidgetList_fields {
   display: flex;
-  flex-wrap: wrap;
+  // flex-wrap: wrap;
   // flex-direction: row;
   flex-direction: column;
   // gap: 1.5rem;
@@ -76,7 +80,7 @@
   // margin-right: -.75em;
   overflow: visible;
   > * {
-    flex-grow: 1;
+    // flex-grow: 1;
     // min-width: calc(50% - .75rem);
     min-width: 100%;
   }

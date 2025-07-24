@@ -1,6 +1,6 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
-{{ return dict "&SETTINGS_REMOTE" (slice
+{{ return dict "&settings_remote" (slice
   (dict
     "name"           `srcs`
     "widget"         `list`
@@ -14,7 +14,7 @@
     "fields"    (slice
       (dict "name" `src`   "widget" `string`  "required" false "label" `URL`)
       (dict "name" `csv`   "widget" `boolean` "required" false "label" $t.remote_csv)
-      (dict "name" `lang`  "widget" `select`  "required" false "label" $t.config_lang  "options" `~OPTIONS_LANGS`)
+      (dict "name" `lang`  "widget" `select`  "required" false "label" $t.config_lang  "options" `~options_langs`)
       (dict
         "name"           `types`
         "widget"         `list`
@@ -25,7 +25,7 @@
         "summary"        "{{fields.type}}"
         "allow_add"      true
         "fields"    (slice
-          (dict "name" `type`  "widget" `select`  "required" false "label" $t.remote_type  "options" `~OPTIONS_TYPES`)
+          (dict "name" `type`  "widget" `select`  "required" false "label" $t.remote_type  "options" `~options_types`)
           (dict "name" `index` "widget" `string`  "required" false "label" $t.remote_index "hint" $t.remote_index_hint)
           (dict
             "name"           `pairings`

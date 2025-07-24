@@ -2,7 +2,7 @@
 
 {{ return slice
 
-  (dict "&SETTINGS_CONFIG_LANGS" (dict
+  (dict "&settings_config_langs" (dict
     "name"           `langs`
     "widget"         `list`
     "required"       false
@@ -13,7 +13,7 @@
     "summary"        "{{fields.lang}}"
     "allow_add"      true
     "fields"         (slice
-      (dict "name" `lang`                     "widget" `select`  "required" false "label" $t.config_lang                     "options" `~OPTIONS_LANGS`)
+      (dict "name" `lang`                     "widget" `select`  "required" false "label" $t.config_lang                     "options" `~options_langs`)
       (dict "name" `disabled`                 "widget" `boolean` "required" false "label" $t.config_lang_disabled)
       (dict "name" `title`                    "widget" `string`  "required" false "label" $t.config_title)
       (dict "name" `description`              "widget" `text`    "required" false "label" $t.config_description)
@@ -26,7 +26,7 @@
       (dict "name" `main_org`                 "widget" `string`  "required" false "label" $t.config_main_org                 "hint" $t.config_main_org_hint)
       (dict "name" `phone_code`               "widget" `select`  "required" false "label" $t.config_phone_code               "hint" (print $t.default " → **+34 🇪🇸**")         "options" site.Data.utilities.phone_code)
       (dict "name" `time_zone`                "widget" `select`  "required" false "label" $t.config_time_zone                "hint" (print $t.default " → **Europe/Madrid**")  "options" site.Data.utilities.time_zone)
-      (dict "name" `currency`                 "widget" `select`  "required" false "label" $t.config_currency                 "hint" (print $t.default " → **EUR**")            "options" `~OPTIONS_CURRENCY`)
+      (dict "name" `currency`                 "widget" `select`  "required" false "label" $t.config_currency                 "hint" (print $t.default " → **EUR**")            "options" `~options_currency`)
       (dict "name" `pagination`               "widget" `string`  "required" false "label" $t.config_pagination               "hint" $t.config_pagination_hint)
       (dict
         "name"      `html`
@@ -42,7 +42,7 @@
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_PARAMS"   (dict
+  (dict "&settings_config_params"   (dict
     "name"           `params`
     "widget"         `list`
     "required"       false
@@ -52,24 +52,24 @@
     "summary"        "{{fields.label}} ({{fields.name}})"
     "allow_add"      true
     "fields"         (slice
-      `~SETTINGS_TYPES_PARAMS_VAR`
-      `~SETTINGS_TYPES_PARAMS_NAME`
-      `~SETTINGS_TYPES_PARAMS_LABEL`
-      `~SETTINGS_TYPES_PARAMS_HINT`
-      `~SETTINGS_TYPES_PARAMS_WIDGET`
-      `~SETTINGS_TYPES_PARAMS_OPTIONS`
-      `~SETTINGS_TYPES_PARAMS_DEFAULT`
-      `~SETTINGS_TYPES_PARAMS_MULTIPLE`
-      `~SETTINGS_TYPES_PARAMS_2`
+      `~types_params_var`
+      `~types_params_name`
+      `~types_params_label`
+      `~types_params_hint`
+      `~types_params_widget`
+      `~types_params_options`
+      `~types_params_default`
+      `~types_params_multiple`
+      `~types_params_2`
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_DEFAULTS_VALUE" (dict "name" `value` "widget" `string` "required" false "label" $t.config_defaults_value))
-  (dict "&SETTINGS_CONFIG_DEFAULTS_TYPE"  (dict "name" `type`  "widget" `select` "required" false "label" $t.config_defaults_type                 "options" site.Data.utilities.pairing_kinds))
-  (dict "&SETTINGS_CONFIG_DEFAULTS_KIND"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.config_defaults_kind "multiple" true "options" site.Data.utilities.default_kinds))
-  (dict "&SETTINGS_CONFIG_DEFAULTS_LANG"  (dict "name" `lang`  "widget" `select` "required" false "label" $t.config_defaults_lang "multiple" true "options" `~OPTIONS_LANGS`))
-  (dict "&SETTINGS_CONFIG_DEFAULTS_PATH"  (dict "name" `path`  "widget" `list`   "required" false "label" $t.config_defaults_path "multiple" true))
-  (dict "&SETTINGS_CONFIG_DEFAULTS"       (dict
+  (dict "&settings_config_defaults_value" (dict "name" `value` "widget" `string` "required" false "label" $t.config_defaults_value))
+  (dict "&settings_config_defaults_type"  (dict "name" `type`  "widget" `select` "required" false "label" $t.config_defaults_type                 "options" site.Data.utilities.pairing_kinds))
+  (dict "&settings_config_defaults_kind"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.config_defaults_kind "multiple" true "options" site.Data.utilities.default_kinds))
+  (dict "&settings_config_defaults_lang"  (dict "name" `lang`  "widget" `select` "required" false "label" $t.config_defaults_lang "multiple" true "options" `~options_langs`))
+  (dict "&settings_config_defaults_path"  (dict "name" `path`  "widget" `list`   "required" false "label" $t.config_defaults_path "multiple" true))
+  (dict "&settings_config_defaults"       (dict
     "name"           `defaults`
     "widget"         `list`
     "required"       false
@@ -80,16 +80,16 @@
     "summary"        "{{fields.name}}: {{fields.value}}"
     "allow_add"      true
     "fields"         (slice
-      `~SETTINGS_TYPES_PARAMS_NAME`
-      `~SETTINGS_CONFIG_DEFAULTS_VALUE`
-      `~SETTINGS_CONFIG_DEFAULTS_TYPE`
-      `~SETTINGS_CONFIG_DEFAULTS_KIND`
-      `~SETTINGS_CONFIG_DEFAULTS_LANG`
-      `~SETTINGS_CONFIG_DEFAULTS_PATH`
+      `~types_params_name`
+      `~settings_config_defaults_value`
+      `~settings_config_defaults_type`
+      `~settings_config_defaults_kind`
+      `~settings_config_defaults_lang`
+      `~settings_config_defaults_path`
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_CMS" (dict
+  (dict "&settings_config_cms" (dict
     "name"      `cms`
     "widget"    `object`
     "required"  false
@@ -97,13 +97,13 @@
     "collapsed" true
     "fields"    (slice
       (dict "name" `logo`      "widget" `image`   "required" false "label" $t.config_cms_logo      "max_file_size" 512000000)
-      (dict "name" `lang`      "widget" `select`  "required" false "label" $t.config_cms_lang      "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~OPTIONS_LANGS_CMS`)
+      (dict "name" `lang`      "widget" `select`  "required" false "label" $t.config_cms_lang      "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~options_langs_cms`)
       (dict "name" `editorial` "widget" `boolean` "required" false "label" $t.config_cms_editorial "hint" $t.config_cms_editorial_hint)
       (dict "name" `disabled`  "widget" `hidden`  "required" false "label" `disabled` )
     )
   ))
 
-  (dict "&SETTINGS_CONFIG_OTHERS" (dict
+  (dict "&settings_config_others" (dict
     "label"     $t.config_others
     "name"      `others`
     "widget"    `object`
@@ -123,11 +123,11 @@
     )
   ))
 
-  (dict "&SETTINGS_CONFIG" (slice
-    `~SETTINGS_CONFIG_LANGS`
-    `~SETTINGS_CONFIG_CMS`
-    `~SETTINGS_CONFIG_PARAMS`
-    `~SETTINGS_CONFIG_DEFAULTS`
-    `~SETTINGS_CONFIG_OTHERS`
+  (dict "&settings_config" (slice
+    `~settings_config_langs`
+    `~settings_config_cms`
+    `~settings_config_params`
+    `~settings_config_defaults`
+    `~settings_config_others`
   ))
 }}
