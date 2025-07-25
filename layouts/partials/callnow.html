@@ -1,16 +1,18 @@
-{{- if and .show (ne .show "hide") -}}
+{{- if and . (ne . "none") -}}
 
   {{- $buttons := slice -}}
 
-  {{- if eq .show "items" -}}
+  {{- if eq . "custom" -}}
   
-    {{- with .items | default (index . page.Lang) -}}
+    {{- $values := index site.Data (print "values." page.Lang) -}}
+    {{- $items  := $values.callnows -}}
+    {{- with $items -}}
       {{- range . -}}
         {{- $buttons = $buttons | append . -}}
       {{- end -}}
     {{- end -}}
 
-  {{- else if eq .show "auto" -}}
+  {{- else if eq . "auto" -}}
 
     {{- /*  Get contact phones from page store  */ -}}
     {{- $contact_buttons := page.Store.Get "phones" -}}

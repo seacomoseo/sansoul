@@ -5,4 +5,5 @@
 {{ $sections  = partial "sections/merged-shortcodes" $sections }}
 {{ $sections  = partial "sections/merged-params"     (dict "sections" $sections "Page" .Page) }}
 {{ $sections  = partial "sections/merged-shortcodes" $sections }}
+{{ $sections  = partial "sections/merged-ids"        $sections }}
 {{ return $sections }}

@@ -1,0 +1,49 @@
+{{ $sections := slice }}
+
+{{ range $key, $section := . }}
+
+  {{ $modals := slice }}
+  {{ $id     := "" }}
+
+  {{ if .is_footer }}
+
+    {{/*  FOOTER  */}}
+    {{ $id  = "footer" }}
+    {{ $key = "footer" }}
+
+  {{ else }}
+
+    {{/*  MODALS  */}}
+    {{ range $k, $modal := .modals }}
+      {{ $id_m   := partial "functions/id-by-title" . }}
+      {{ $expand := dict "key" $key "k" $k "id" $id_m "is_modal" true }}
+      {{ $modal   = merge $modal $expand }}
+      {{ $modals  = $modals | append $modal }}
+      {{/*  Set id > hanchor/title in page store for anchor links to modal  */}}
+      {{ $anchor := .hanchor | default .title }}
+      {{ page.Store.Set $id_m $anchor }}
+    {{ end }}
+
+    {{/*  SECTION  */}}
+    {{ if $key }}
+      {{ $id  = partial "functions/id-by-title" . }}
+    {{ else }}
+      {{ $id  = "header" }}
+      {{ $key = "header" }}
+    {{ end }}
+
+  {{ end }}
+
+  {{/*  Set id > hanchor/title in page store for anchor links to section  */}}
+  {{ $anchor := .hanchor | default .title }}
+  {{ page.Store.Set $id $anchor }}
+
+  {{/*  END  */}}
+  {{ $is_header := eq $key "header" }}
+  {{ $expand    := dict "key" $key "id" $id "is_header" $is_header "is_modal" false "modals" $modals }}
+  {{ $section    = merge $section $expand }}
+  {{ $sections   = $sections | append $section }}
+
+{{ end }}
+
+{{ return $sections }}

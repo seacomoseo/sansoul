@@ -1,7 +1,83 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
-{{ $fields := slice }}
+{{ $variables := slice }}
 
+
+{{/*  MENU ITEMS  */}}
+{{ $menu_items_fields := slice
+  `~box_button_link`
+  `~box_icon_id`
+  `~box_button_label`
+  `~box_button_anchor`
+  `~box_button_lock`
+  `~box_button_color`
+  `~box_button_swap`
+  `~box_button_ga4`
+}}
+{{ $variables = $variables | append
+  (partial "cms/widget" (dict
+    "var"     `values_menu_subitems_last`
+    "alt"     `values_menu_subitems`
+    "name"    `items`
+    "widget"  `list`
+    "summary" "{{fields.label}}"
+    "fields"  $menu_items_fields
+  ))
+  (partial "cms/widget" (dict "var" `values_menu_subitems_2` "<<" `values_menu_subitems_last` "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
+  (partial "cms/widget" (dict "var" `values_menu_subitems`   "<<" `values_menu_subitems_2`    "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
+  (partial "cms/widget" (dict
+    "var"     `values_menu_items`
+    "name"    `items`
+    "widget"  `list`
+    "summary" "{{fields.label}}"
+    "fields"  ($menu_items_fields | append `~values_menu_subitems`)
+  ))
+}}
+
+
+{{/*  MENU  */}}
+{{ $variables = $variables | append
+  (partial "cms/widget" (dict "var" `values_menu_image`    "name" `image`    "widget" `image` "max_file_size" 512000000))
+  (partial "cms/widget" (dict "var" `values_menu_title`    "name" `title`                                              ))
+  (partial "cms/widget" (dict "var" `values_menu_subtitle` "name" `subtitle`                                           ))
+  (partial "cms/widget" (dict
+    "var"     `values_menu`
+    "alt"     `template_menu`
+    "name"    `menu`
+    "widget"  `object`
+    "fields"  (slice
+      `~values_menu_image`
+      `~values_menu_title`
+      `~values_menu_subtitle`
+      `~values_menu_items`
+    )
+  ))
+}}
+
+
+{{/*  CALLNOWS  */}}
+{{ $variables = $variables | append
+  (partial "cms/widget" (dict
+    "var"     `values_callnows`
+    "name"    `items`
+    "widget"  `list`
+    "label"    $t.template_callnow
+    "summary" "{{fields.label}}"
+    "types"   (slice
+      (partial "cms/widget" (dict "alt" `box_contact_phone`    "name" `phone`    "widget" `object` "fields" (slice `~box_contact_label_phone` `~box_button_color` `~box_icon_id`)))
+      (partial "cms/widget" (dict "alt" `box_contact_whatsapp` "name" `whatsapp` "widget" `object` "fields" (slice `~box_contact_label_phone` `~box_button_color`               )))
+      (partial "cms/widget" (dict "alt" `box_contact_custom`   "name" `custom`   "widget" `object` "fields" (slice `~box_button_link` `~box_icon_id` `~box_contact_label` `~box_button_lock` `~box_button_color` `~box_button_ga4`)))
+    )
+  ))
+}}
+
+
+{{/*  FIELDS  */}}
+{{ $fields  := slice }}
+{{ $mn_clls := slice
+  (dict "var" "values_menu")
+  (dict "var" "values_callnows")
+}}
 {{ $default := slice (dict
   "name"     "footer"
   "label"    "Footer"
@@ -20,16 +96,13 @@
     (dict "var" "box_md")
   )
 ) }}
-
-{{ range site.Data.config.params | default $default }}
+{{ range $mn_clls | append (site.Data.config.params | default $default) }}
   {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
   {{ $fields = partial "cms/config/collections-params" $opts }}
 {{ end }}
-
-{{ if not $fields }}
-  {{ $fields = slice (dict "name" "example" "required" false) }}
-{{ end }}
-
-{{ return slice
-  (dict "&settings_values" $fields)
+{{ $variables = $variables | append
+  (dict "&values_fields" $fields)
 }}
+
+
+{{ return $variables }}

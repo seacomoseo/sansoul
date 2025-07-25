@@ -17,6 +17,8 @@ collection_sections_description: Sections assigned to each page. You need to cre
 collection_types: Collections
 collection_types_singular: Collection
 collection_types_description: Page types. Here they are created, edited, and configured individually, except for "All," whose parameters apply by default to all collections.
+collection_values: Global Values
+collection_values_description: Custom Menu, Corner Buttons, and Global Values that are used in templates and/or as translations.
 collection_settings: Settings
 # collections > settings > config
 config: Configuration
@@ -125,16 +127,8 @@ template: General Template
 template_hint: Common template for all pages (page-specific values, custom or not, with their own template override these)
 template_background: Page Background
 template_menu: Menu
-template_menu_lang: Language
-template_menu_items: Items
-template_menu_items_singular: Item
-template_menu_subitems: Sub-items
-template_menu_subitems_singular: Sub-item
 template_menu_hide: Hide
 template_menu_logo: Show Logo
-template_menu_image: Logo Image
-template_menu_title: Logo Title
-template_menu_subtitle: Logo Subtitle
 template_menu_sticky: Sticky Screen
 template_menu_sticky_hint: Fixes the menu to the top of the screen if equal to or greater than the value
 template_menu_logo_sticky: Sticky Mobile Logo
@@ -143,15 +137,12 @@ template_menu_logo_align: Logo Alignment
 template_menu_logo_align_hint: Aligns the logo without expanding the menu
 template_menu_transparent: Starts Transparent
 template_menu_transparent_hint: Takes its color when scrolling
-template_menu_show_sections: Show Sections
-template_menu_show_sections_hint: Displays links to each section
-template_menu_show_modals: Show Modals
-template_menu_show_modals_hint: Displays links to each modal window as expandable sub-items
 template_menu_hide_icons: Hide Icons
+template_menu_hide_custom: Hide Custom Links
+template_menu_auto: Automatic Links
+template_menu_auto_hint: Automatically display links that lead to each section and modal window, the latter as drop-down sub-elements
 template_callnow: Corner Buttons
-template_callnow_show: Show
-template_callnow_items: Buttons
-template_callnow_items_singular: Button
+template_callnow_hint: '**Custom →** in global settings 🔷 **Automatic →** if there is a WhatsApp or Phone button on the page'
 template_section: Template of each Section
 template_section_singular: Section
 template_section_hint: The 1st applies to all, the rest alternately 🔷 **Example →** If there are 3 templates, the 1st applies to all; the 2nd on 2, 5, 8… and the 3rd on 3, 6, 9…
@@ -161,6 +152,15 @@ template_sections_file: File
 template_sections_file_hint: Previously created section
 template_list: Lists
 template_related: Related Lists
+# collections > values
+values_menu_image: Logo Image
+values_menu_title: Logo Title
+values_menu_subtitle: Logo Subtitle
+values_menu_items: Items
+values_menu_items_singular: Item
+values_menu_subitems: Sub-items
+values_menu_subitems_singular: Sub-item
+values_callnows_singular: Button
 # collections > settings > styles
 styles: Styles
 styles_icons: Icons
@@ -258,7 +258,6 @@ remote_pairings_delimit: Separator
 redirects: Redirects
 redirects_hint: URL redirects → [Options](https://docs.netlify.com/routing/redirects/redirect-options/)
 robots_hint: Tutorial → [Robots.txt file guide](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
-values: Global Values
 # main-page-params
 page_slug: Slug
 page_slug_hint: It's the end of the URL or link for this page 🔷 It must be unique (not repeated) among all pages, short, descriptive, and without irrelevant words (of, by, for, the…) 🔷 **Example →** For the title "*Morning Walk in the New Neighborhood*" the slug could be "*morning-walk-new-neighborhood*"
@@ -778,9 +777,14 @@ option-icons_type-duotone: Duotones
 option-buttons_type-base: Base
 option-buttons_type-title: Title
 option-buttons_type-cursive: Cursive
-option-callnow_show-items: Items
-option-callnow_show-auto: Automatic
-option-callnow_show-hide: Hide
+option-menu_auto-same: Same Page
+option-menu_auto-same-modals: Same Page and Modal Windows
+option-menu_auto-home: Home Page
+option-menu_auto-home-modals: Home Page and Modal Windows
+option-menu_auto-none: None
+option-callnow-custom: Custom
+option-callnow-auto: Automatic
+option-callnow-none: None
 option-direction-right: Right
 option-direction-left: Left
 option-direction-top: Top

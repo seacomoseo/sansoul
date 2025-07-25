@@ -1,18 +1,19 @@
 {{- with .menu -}}
   {{- if and . (not .hide) -}}
 
-    {{- $items := slice -}}
-    {{- $logo  := "" -}}
-    {{- $_lang := index . page.Lang -}}
+    {{- $items  := slice -}}
+    {{- $logo   := "" -}}
+    {{- $values := index site.Data (print "values." page.Lang) -}}
+    {{- $_lang  := $values.menu -}}
+    {{- $custom := cond (not .hide_custom) $_lang.items slice -}}
     {{- if .logo -}}
-      {{- $logo = .image | default $_lang.image -}}
+      {{- $logo  = .image | default $_lang.image -}}
     {{- end -}}
-    {{- $custom := .items | default $_lang.items -}}
 
     {{- /*  ITEM HOME LINK  */ -}}
     {{- if not $logo -}}
-      {{- if not page.IsHome | and .show_sections -}}
-        {{- if not ($custom  | jsonify | findRE `"link":"/#?"`) -}}
+      {{- if and .auto (ne .auto "none") -}}
+        {{- if not ($custom | jsonify | findRE `"link":"/#?"`) -}}
           {{- with site.Home -}}
             {{- $items = $items | append (dict
               "link"     .RelPermalink
@@ -26,8 +27,8 @@
       {{- end -}}
     {{- end -}}
 
-    {{- /*  ITEMS SECTIONS  */ -}}
-    {{- range partial "menu/items-sections" $ -}}
+    {{- /*  ITEMS AUTO (SECTIONS)  */ -}}
+    {{- range partial "menu/items-auto" $ -}}
       {{- $items = $items | append . -}}
     {{- end -}}
 

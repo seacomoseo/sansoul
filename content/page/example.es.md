@@ -25,39 +25,10 @@ tpl:
     color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
     fade: null # ¿?
     fade_type: null # ¿?
-    show_sections: true
-    show_modals: false
     hide_icons: false
-    # es: <- in data/types/*.yml
-    image: null # string image path
-    title: null # string
-    subtitle: null # string
-    items:
-    - link: null # string; `langs` to relocate langs; `translate` to relocate translate
-      icon: 1 # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-      label: null # string
-      anchor: null # string
-      lock: true
-      button: none
-      swap: false
-      ga4: false
-  callnow:
-    show: null # [ items, auto, hide ]
-    es:
-    - type: phone # [phone, whatsapp, mail]
-      label: 123456789
-      button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
-    - type: whatsapp
-      label: 123456789
-      button: whatsapp # [ main, cta, alt, light, dark, invert, similar, none ]
-    - type: custom
-      link: '#principal'
-      icon: person-from-portal
-      label: Personalizado
-      anchor: Mola Mazo
-      lock: false
-      button: light # [ main, cta, alt, light, dark, invert, similar, none ]
-      ga4: false
+    hide_custom: false
+    auto: null # [ this, this-modals, home, home-modals, none ]
+  callnow: null # [ items, auto, hide ]
   section: []
   modal: {}
   sections:

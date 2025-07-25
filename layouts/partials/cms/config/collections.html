@@ -95,8 +95,8 @@
         "hint"      $t.types_template_single_hint
         "fields"    (slice
           `~template_background`
-          `~template_menu_single`
-          `~template_callnow_single`
+          `~template_menu`
+          `~template_callnow`
           `~template_section`
           `~template_sections`
         )
@@ -262,8 +262,23 @@
 ) }}
 
 
+{{/*  VALUES  */}}
+{{ $colections = $colections | append (dict
+  "label"            $t.collection_values
+  "name"             `values`
+  "icon"             site.Data.utilities.defaults.values.icon
+  "description"      $t.collection_values_description
+  "identifier_field" "{{slug}}"
+  "extension"        `yml`
+  "folder"           `content`
+  "create"           false
+  "i18n"             true
+  "editor"           (dict "preview" false)
+  "fields"           `~values_fields`
+) }}
+
+
 {{/*  SETTINGS  */}}
-{{ $global_values_path := print `content/values.` .Lang `.yml` }}
 {{ $colections = $colections | append  (dict
   "label"           $t.collection_settings
   "name"            `settings`
@@ -276,7 +291,6 @@
     (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "fields" `~settings_remote`)
     (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "alt" `redirects`                         ))))
     (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "label" `robots.txt` "hint" $t.robots_hint))))
-    (dict "file" $global_values_path   "extension" `yml` "name" `values`    "label" $t.values    "fields" `~settings_values`)
   )
 ) }}
 
