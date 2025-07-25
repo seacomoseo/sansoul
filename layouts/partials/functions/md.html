@@ -10,7 +10,7 @@
   | replaceRE `(<blockquote class="dittos.*?">)` (print `$1 <svg class="icon quote-left"><use href="` $draws `#ditto"></use></svg><svg class="quote-right"><use href="` $draws `#ditto"></use></svg>`)
   | replaceRE `(<div class="bg-color"></div>)<p>` `$1</div>`
   | replaceRE `::(.+?)::` (print `<i class="icon icon--text">$1</i>`)
-  | replaceRE `:([\w-]|[^\d:]{2}|[\w-]{3,}?):` (print `<svg class="icon"><use href="` $draws `#$1"></use></svg>`)
+  | replaceRE `(^|[^\w]):([\w-]|[^\d:]{2}|[\w-]{3,}?):($|[^\w])` (print `$1<svg class="icon"><use href="` $draws `#$2"></use></svg>$3`)
   | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
   | replaceRE ` start="(.+?)"` ` style="--item: $1;"`
   | replaceRE `<li(.*?)>` `<li$1><div>`
