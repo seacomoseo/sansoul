@@ -2,6 +2,8 @@
 
 {{ $colections := slice }}
 
+{{ $i18n := hugo.IsMultilingual }}
+
 {{/*  CUSTOM TYPES (single last)  */}}
 {{ $parents := where site.Sections "Type" "ne" "single" | append (where site.Sections "Type" "eq" "single") }}
 {{ range $parents }}
@@ -10,6 +12,10 @@
   {{ $slug  := "{{fields.slug}}" }}
   {{ if in (slice "article" "event") .Params.base }}
     {{ $slug = "{{year}}-{{month}}-{{day}}-{{fields.slug}}" }}
+  {{ end }}
+  {{/*  Fix slug i18n extension if only one language  */}}
+  {{ if not hugo.IsMultilingual }}
+    {{ $slug = print $slug "." page.Lang }}
   {{ end }}
 
   {{/*  Permalinks  */}}
@@ -202,9 +208,9 @@
     "icon"             (.Params.icon         | default "")
     "description"      (.Params.cms.hint     | default "")
     "identifier_field" `slug`
-    "folder"           (print `content` `/` .Type)
+    "folder"           (print `content/` .Type)
     "create"           true
-    "i18n"             true
+    "i18n"             $i18n
     "slug"             $slug
     "preview_path"     $permalinks
     "summary"          $summary
@@ -272,7 +278,7 @@
   "extension"        `yml`
   "folder"           `content`
   "create"           false
-  "i18n"             true
+  "i18n"             $i18n
   "editor"           (dict "preview" false)
   "fields"           `~values_fields`
 ) }}

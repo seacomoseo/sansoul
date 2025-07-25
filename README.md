@@ -3,8 +3,15 @@
 [![sansoul](/assets/media/base/icon.png)](https://github.com/seacomoseo/sansoul)
 
 
+## Scripts para actualizar proyectos nuevos
+- `node ../_tools/update-v2-modals.js`
+- `node ../_tools/update-v2-sections.js`
+- `node ../_tools/update-v2-langs.js`
+- `../_tools/update-v2-home.sh`
+- `node ../_tools/update-v2-menu.js`
+
 ## Comprobar cambios en `example.yml`
-## Script para actualizar proyectos
+## Script para actualizar proyectos antiguos
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
 - `*.yml`
