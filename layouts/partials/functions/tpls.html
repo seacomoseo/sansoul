@@ -17,6 +17,10 @@
 {{/*  ALL  */}}
 {{ $all := site.Data.types.all.tpl }}
 
+{{/*  VALUES  */}}
+{{- $values := index site.Data (print "values." page.Lang) -}}
+{{- $values  = dict "menu" $values.menu -}}
+
 {{/*  TYPE  */}}
 {{ $type := dict }}
 {{ if eq .Kind "404" }}
@@ -39,7 +43,8 @@
   {{ $self = merge $self $toc }}
 {{ end }}
 
+
 {{/*  ALL  */}}
-{{ $tpls := slice $default $all $type $self }}
+{{ $tpls := slice $values $default $all $type $self }}
 
 {{ return $tpls }}

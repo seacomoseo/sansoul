@@ -3,11 +3,9 @@
 
     {{- $items  := slice -}}
     {{- $logo   := "" -}}
-    {{- $values := index site.Data (print "values." page.Lang) -}}
-    {{- $_lang  := $values.menu -}}
-    {{- $custom := cond (not .hide_custom) $_lang.items slice -}}
+    {{- $custom := cond (not .hide_custom) .items slice -}}
     {{- if .logo -}}
-      {{- $logo  = .image | default $_lang.image -}}
+      {{- $logo  = .image -}}
     {{- end -}}
 
     {{- /*  ITEM HOME LINK  */ -}}
