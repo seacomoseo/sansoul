@@ -60,12 +60,14 @@
   {{ $path := .path }}
   {{ $value := .value }}
   {{ $result := $data }}
+
   {{ if not (strings.Contains $path ".") }}
     {{ if not (strings.Contains $path "*") }}
       {{ $result = merge $data (dict $path $value) }}
     {{ end }}
   {{ else }}
     {{ $parts := split $path "." }}
+    {{ $handled := false }}
 
     {{ range $i, $part := $parts }}
       {{ if eq $part "*" }}
@@ -96,37 +98,34 @@
           {{ $result = partial "set" (dict "data" $result "path" $array_path "value" $new_array) }}
         {{ end }}
 
+        {{ $handled = true }}
         {{ break }}
       {{ end }}
     {{ end }}
 
-    {{ if not (strings.Contains $path "*") }}
-      {{ $nested_update := dict }}
-      {{ $current := $nested_update }}
-
-      {{ range $i, $part := $parts }}
-        {{ if eq $i (sub (len $parts) 1) }}
-          {{ $current = merge $current (dict $part $value) }}
-        {{ else }}
-          {{ $next_dict := dict }}
-          {{ $current = merge $current (dict $part $next_dict) }}
-          {{ $current = index $current $part }}
-        {{ end }}
+    {{ if not $handled }}
+      {{/* Build nested dict bottom-up so it merges correctly */}}
+      {{ $n := len $parts }}
+      {{ $nested := $value }}
+      {{ range $i, $_ := seq $n }}
+        {{ $idx := sub (sub $n 1) $i }}
+        {{ $key := index $parts $idx }}
+        {{ $nested = dict $key $nested }}
       {{ end }}
-
-      {{ $result = merge $result $nested_update }}
+      {{ $result = merge $result $nested }}
     {{ end }}
   {{ end }}
   {{ return $result }}
 {{ end }}
 
 
-{{/* REMOVE */}}
+{{/* REMOVE (fixed: replace parent instead of deep-merge) */}}
 
 {{ define "partials/remove" }}
   {{ $data := .data }}
   {{ $path := .path }}
   {{ $result := $data }}
+
   {{ if not (strings.Contains $path ".") }}
     {{ if not (strings.Contains $path "*") }}
       {{ $new_result := dict }}
@@ -142,6 +141,7 @@
     {{ $last_key := index $parts (sub (len $parts) 1) }}
     {{ $parent_path := delimit (first (sub (len $parts) 1) $parts) "." }}
     {{ $parent := partial "get" (dict "data" $data "path" $parent_path) }}
+
     {{ if ne $parent nil }}
       {{ if reflect.IsSlice $parent }}
         {{ $new_parent := slice }}
@@ -158,6 +158,8 @@
             {{ $new_parent = $new_parent | append $item }}
           {{ end }}
         {{ end }}
+        {{/* Replace, do not deep-merge the parent */}}
+        {{ $result = partial "remove" (dict "data" $result "path" $parent_path) }}
         {{ $result = partial "set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
       {{ else if reflect.IsMap $parent }}
         {{ $new_parent := dict }}
@@ -166,6 +168,8 @@
             {{ $new_parent = merge $new_parent (dict $key $value) }}
           {{ end }}
         {{ end }}
+        {{/* Replace, do not deep-merge the parent */}}
+        {{ $result = partial "remove" (dict "data" $result "path" $parent_path) }}
         {{ $result = partial "set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
       {{ end }}
     {{ end }}
@@ -177,22 +181,17 @@
 {{/* APPLY */}}
 
 {{ $data := . }}
-{{/* Apply remap rules */}}
 {{ range .remap }}
   {{ $from_path := .from }}
   {{ $to_path := .to }}
   {{ $copy := .copy | default false }}
-  {{/* If to is not defined, just remove the from path */}}
+
   {{ if not $to_path }}
     {{ $data = partial "remove" (dict "data" $data "path" $from_path) }}
   {{ else }}
-    {{/* Get source value */}}
     {{ $source_value := partial "get" (dict "data" $data "path" $from_path) }}
-    {{/* Only proceed if source value exists */}}
     {{ if ne $source_value nil }}
-      {{/* Set target value */}}
       {{ $data = partial "set" (dict "data" $data "path" $to_path "value" $source_value) }}
-      {{/* Remove source if copy is false */}}
       {{ if not $copy }}
         {{ $data = partial "remove" (dict "data" $data "path" $from_path) }}
       {{ end }}
@@ -203,4 +202,5 @@
 {{/* Remove remap parameter */}}
 {{ $data = merge $data (dict "remap" nil) }}
 
+{{ partial "warn" $data }}
 {{ return $data }}
