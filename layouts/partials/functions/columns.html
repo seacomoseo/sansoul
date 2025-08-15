@@ -1,6 +1,6 @@
 {{ define "partials/auto-cols" }}
   {{ $result := 2 }}
-  {{ if gt . 2 }}
+  {{ if ge . 3 }}
     {{ if eq (mod . 2) 1 }}
       {{ $result = 3 }}
     {{ else }}
@@ -16,14 +16,14 @@
 {{ with .each }}
   {{ $vl  = .cols    | default 1 }}
   {{ $vs  = .cols_vs | default 1 }}
-  {{ if eq (int .cols) 0 }}
+  {{ if in (slice 0 "0") .cols }}
     {{ $fit  := 0 }}
     {{ range $.items }}
       {{ $fit = add $fit (.fit | default .fit_vs | default 1) }}
     {{ end }}
     {{ $vl    = partial "auto-cols" $fit }}
   {{ end }}
-  {{ if eq (int .cols_vs) 0 }}
+  {{ if in (slice 0 "0") .cols_vs }}
     {{ $fit  := 0 }}
     {{ range $.items }}
       {{ $fit = add $fit (.fit_vs | default 1) }}

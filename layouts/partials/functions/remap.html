@@ -1,6 +1,6 @@
-{{/* DEFINE GET_NESTED_VALUE */}}
+{{/* GET */}}
 
-{{ define "partials/get_nested_value" }}
+{{ define "partials/get" }}
   {{ $data := .data }}
   {{ $path := .path }}
   {{ $result := .result }}
@@ -31,7 +31,7 @@
 
         {{ range $idx, $item := $current }}
           {{ if ne $remaining_path "" }}
-            {{ $nested_value := partial "get_nested_value" (dict "data" $item "path" $remaining_path) }}
+            {{ $nested_value := partial "get" (dict "data" $item "path" $remaining_path) }}
             {{ if ne $nested_value nil }}
               {{ $results = $results | append $nested_value }}
             {{ end }}
@@ -53,9 +53,9 @@
 {{ end }}
 
 
-{{/* DEFINE SET_NESTED_VALUE */}}
+{{/* SET */}}
 
-{{ define "partials/set_nested_value" }}
+{{ define "partials/set" }}
   {{ $data := .data }}
   {{ $path := .path }}
   {{ $value := .value }}
@@ -72,14 +72,14 @@
         {{ $array_path := delimit (first $i $parts) "." }}
         {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
 
-        {{ $array_data := partial "get_nested_value" (dict "data" $result "path" $array_path) }}
+        {{ $array_data := partial "get" (dict "data" $result "path" $array_path) }}
         {{ if reflect.IsSlice $array_data }}
           {{ $new_array := slice }}
           {{ range $idx, $item := $array_data }}
             {{ if ne $remaining_path "" }}
               {{ $item_value := index $value $idx }}
               {{ if ne $item_value nil }}
-                {{ $updated_item := partial "set_nested_value" (dict "data" $item "path" $remaining_path "value" $item_value) }}
+                {{ $updated_item := partial "set" (dict "data" $item "path" $remaining_path "value" $item_value) }}
                 {{ $new_array = $new_array | append $updated_item }}
               {{ else }}
                 {{ $new_array = $new_array | append $item }}
@@ -93,7 +93,7 @@
             {{ end }}
           {{ end }}
 
-          {{ $result = partial "set_nested_value" (dict "data" $result "path" $array_path "value" $new_array) }}
+          {{ $result = partial "set" (dict "data" $result "path" $array_path "value" $new_array) }}
         {{ end }}
 
         {{ break }}
@@ -121,9 +121,9 @@
 {{ end }}
 
 
-{{/* DEFINE REMOVE_NESTED_VALUE */}}
+{{/* REMOVE */}}
 
-{{ define "partials/remove_nested_value" }}
+{{ define "partials/remove" }}
   {{ $data := .data }}
   {{ $path := .path }}
   {{ $result := $data }}
@@ -141,7 +141,7 @@
     {{ $parts := split $path "." }}
     {{ $last_key := index $parts (sub (len $parts) 1) }}
     {{ $parent_path := delimit (first (sub (len $parts) 1) $parts) "." }}
-    {{ $parent := partial "get_nested_value" (dict "data" $data "path" $parent_path) }}
+    {{ $parent := partial "get" (dict "data" $data "path" $parent_path) }}
     {{ if ne $parent nil }}
       {{ if reflect.IsSlice $parent }}
         {{ $new_parent := slice }}
@@ -158,7 +158,7 @@
             {{ $new_parent = $new_parent | append $item }}
           {{ end }}
         {{ end }}
-        {{ $result = partial "set_nested_value" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+        {{ $result = partial "set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
       {{ else if reflect.IsMap $parent }}
         {{ $new_parent := dict }}
         {{ range $key, $value := $parent }}
@@ -166,7 +166,7 @@
             {{ $new_parent = merge $new_parent (dict $key $value) }}
           {{ end }}
         {{ end }}
-        {{ $result = partial "set_nested_value" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+        {{ $result = partial "set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
       {{ end }}
     {{ end }}
   {{ end }}
@@ -184,17 +184,17 @@
   {{ $copy := .copy | default false }}
   {{/* If to is not defined, just remove the from path */}}
   {{ if not $to_path }}
-    {{ $data = partial "remove_nested_value" (dict "data" $data "path" $from_path) }}
+    {{ $data = partial "remove" (dict "data" $data "path" $from_path) }}
   {{ else }}
     {{/* Get source value */}}
-    {{ $source_value := partial "get_nested_value" (dict "data" $data "path" $from_path) }}
+    {{ $source_value := partial "get" (dict "data" $data "path" $from_path) }}
     {{/* Only proceed if source value exists */}}
     {{ if ne $source_value nil }}
       {{/* Set target value */}}
-      {{ $data = partial "set_nested_value" (dict "data" $data "path" $to_path "value" $source_value) }}
+      {{ $data = partial "set" (dict "data" $data "path" $to_path "value" $source_value) }}
       {{/* Remove source if copy is false */}}
       {{ if not $copy }}
-        {{ $data = partial "remove_nested_value" (dict "data" $data "path" $from_path) }}
+        {{ $data = partial "remove" (dict "data" $data "path" $from_path) }}
       {{ end }}
     {{ end }}
   {{ end }}
