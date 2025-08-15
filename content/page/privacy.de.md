@@ -50,7 +50,7 @@ Ebenso können die Navigationsdaten und Cookies von Kunden zu Zwecken der Verbes
 
 4. Wenn Nutzer **Kommentare auf der Website hinterlassen**, sammeln wir die Daten, die im Kommentarformular angezeigt werden, sowie die IP-Adresse des Besuchers/Benutzers und den User-Agent-String des Browsers, um Spam zu erkennen.
 \
-Ein anonymer String, der aus Ihrer E-Mail-Adresse erstellt wird (auch Hash genannt), kann an den Gravatar-Dienst übermittelt werden, um zu prüfen, ob Sie diesen verwenden. Die Datenschutzrichtlinie des Gravatar-Dienstes ist hier verfügbar: [automattic.com](https://automattic.com/privacy/ "nofollow"). Nachdem Ihr Kommentar genehmigt wurde, wird das Bild Ihres Profils öffentlich im Kontext Ihres Kommentars angezeigt.
+Ein anonymer String, der aus Ihrer E-Mail-Adresse erstellt wird (auch Hash genannt), kann an den Gravatar-Dienst übermittelt werden, um zu prüfen, ob Sie diesen verwenden. Die Datenschutzrichtlinie des Gravatar-Dienstes ist hier verfügbar: [automattic.com](https://automattic.com/privacy/ "[nofollow]"). Nachdem Ihr Kommentar genehmigt wurde, wird das Bild Ihres Profils öffentlich im Kontext Ihres Kommentars angezeigt.
 \
 Für den Fall, dass Dienstleistungen oder Produkte über die Website bestellt werden, informieren wir Sie, dass der Zweck darin besteht, Ihre Beziehung zu **{{% legal name %}}** zu verwalten, den angeforderten Service zu erbringen, den Kundenservice zu verwalten und im Allgemeinen die Verpflichtungen des vertraglich vereinbarten Services zu erfüllen.
 
@@ -166,7 +166,7 @@ Beachten Sie, dass diese Website Links zu Drittanbieter-Websites enthalten kann.
 
 Um sicherzustellen, dass Sie sich auf der Website unseres Unternehmens befinden, beginnt die URL mit "https": {{% legal https %}}
 
-**HTTPS Implementieren**. Jedes System für den Verkauf oder die Reservierung verarbeitet private Kundendaten, sowohl persönliche als auch bankbezogene. Daher ist es unerlässlich, dass unser System das [sichere Webprotokoll (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") implementiert, um diese Daten verschlüsselt zu übertragen. Dies gewährleistet die Integrität und Vertraulichkeit der Kundendaten und schützt den Ruf unseres Unternehmens.
+**HTTPS Implementieren**. Jedes System für den Verkauf oder die Reservierung verarbeitet private Kundendaten, sowohl persönliche als auch bankbezogene. Daher ist es unerlässlich, dass unser System das [sichere Webprotokoll (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "[nofollow]") implementiert, um diese Daten verschlüsselt zu übertragen. Dies gewährleistet die Integrität und Vertraulichkeit der Kundendaten und schützt den Ruf unseres Unternehmens.
 
 ## Formulare: Datenschutzklausel {#formulare}
 

@@ -143,7 +143,7 @@ Note that this website may contain links to third -party websites. If you follow
 
 To verify that it is on the website of our company, the "URL" address begins with "https": **{{% legal http %}}**
 
-**Implement https**. Any sales or reserves system works with private data of customers, both personal and banking. Therefore, it is essential that our system implements the [web protocol Segura (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") so that these data are transmitted encrypted. This will allow us to preserve the integrity and confidentiality of our clients' data, safeguarding the reputation of our business.
+**Implement https**. Any sales or reserves system works with private data of customers, both personal and banking. Therefore, it is essential that our system implements the [web protocol Segura (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "[nofollow]") so that these data are transmitted encrypted. This will allow us to preserve the integrity and confidentiality of our clients' data, safeguarding the reputation of our business.
 
 ## Forms: Data Protection Clause {#forms}
 

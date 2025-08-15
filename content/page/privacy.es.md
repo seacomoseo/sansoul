@@ -50,7 +50,7 @@ Igualmente, los datos de navegación y cookies de clientes se podrán tratar con
 
 4. Cuando los usuarios dejan **comentarios en la web** , recopilamos los datos que se muestran en el formulario de comentarios, así como la dirección IP del visitante/usuario y la cadena de agentes de usuario del navegador para ayudar a la detección de spam.
 \
-Una cadena anónima creada a partir de tu dirección de correo electrónico (también llamada hash) puede ser proporcionada al servicio de Gravatar para ver si la estás usando. La política de privacidad del servicio Gravatar está disponible aquí: [automattic.com](https://automattic.com/privacy/ "nofollow"). Después de la aprobación de tu comentario, la imagen de tu perfil es visible para el público en el contexto de su comentario.
+Una cadena anónima creada a partir de tu dirección de correo electrónico (también llamada hash) puede ser proporcionada al servicio de Gravatar para ver si la estás usando. La política de privacidad del servicio Gravatar está disponible aquí: [automattic.com](https://automattic.com/privacy/ "[nofollow]"). Después de la aprobación de tu comentario, la imagen de tu perfil es visible para el público en el contexto de su comentario.
 \
 Para el caso de contratación de servicios o productos a través de la web, le informamos que la finalidad será gestionar su relación con **{{% legal name %}}** la prestación de los servicios solicitados, la gestión de la atención al cliente y, en general, el cumplimiento de las obligaciones del servicio contratado.
 
@@ -168,7 +168,7 @@ Tenga en cuenta que la presente web puede contener enlaces a sitios web de terce
 
 Para constatar que se encuentra en la página web de nuestra empresa, la dirección "url" comienza por "https": {{% legal https %}}
 
-**Implantar HTTPS**. Cualquier sistema de ventas o reservas trabaja con datos privados de clientes, tanto personales como bancarios. Por eso, es esencial que nuestro sistema implemente el [protocolo de web segura (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") para que estos datos se transmitan cifrados. Esto nos permitirá preservar la integridad y confidencialidad de los datos de nuestros clientes, salvaguardando la reputación de nuestro negocio.
+**Implantar HTTPS**. Cualquier sistema de ventas o reservas trabaja con datos privados de clientes, tanto personales como bancarios. Por eso, es esencial que nuestro sistema implemente el [protocolo de web segura (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "[nofollow]") para que estos datos se transmitan cifrados. Esto nos permitirá preservar la integridad y confidencialidad de los datos de nuestros clientes, salvaguardando la reputación de nuestro negocio.
 
 ## Formularios: Cláusula de Protección de Datos {#formularios}
 

@@ -46,16 +46,16 @@ Vous avez la possibilité de permettre, de bloquer ou de supprimer les cookies i
 
 Vous pouvez permettre, bloquer ou supprimer les cookies installés sur votre équipement en configurant les options du navigateur installé sur votre ordinateur :
 
-- :link: [Google Chrome](https://support.google.com/accounts/answer/61416?hl=fr "nofollow")
-- :link: [Mozilla Firefox](https://support.mozilla.org/fr/kb/Supprimer%20les%20cookies "nofollow")
-- :link: [Internet Explorer](https://support.microsoft.com/fr-fr/topic/Comment-supprimer-des-fichiers-témoins-dans-Internet-Explorer-1bd4a2b1-c508-4d61-baa7-dc6f4a8dd8c4 "nofollow")
-- :link: [Safari MAC OS](https://support.apple.com/fr-fr/guide/safari/sfri11471/mac "nofollow")
-- :link: [Safari IOS iPhone et iPad](https://support.apple.com/fr-fr/HT201265 "nofollow")
+- :link: [Google Chrome](https://support.google.com/accounts/answer/61416?hl=fr "[nofollow]")
+- :link: [Mozilla Firefox](https://support.mozilla.org/fr/kb/Supprimer%20les%20cookies "[nofollow]")
+- :link: [Internet Explorer](https://support.microsoft.com/fr-fr/topic/Comment-supprimer-des-fichiers-témoins-dans-Internet-Explorer-1bd4a2b1-c508-4d61-baa7-dc6f4a8dd8c4 "[nofollow]")
+- :link: [Safari MAC OS](https://support.apple.com/fr-fr/guide/safari/sfri11471/mac "[nofollow]")
+- :link: [Safari IOS iPhone et iPad](https://support.apple.com/fr-fr/HT201265 "[nofollow]")
 
 De plus, vous pouvez également gérer le stockage des cookies dans votre navigateur à l'aide d'outils tels que les suivants :
 
-- :link: [Ghostery](http://www.ghostery.com/ "nofollow")
-- :link: [Your online choices](http://www.youronlinechoices.com/fr/ "nofollow")
+- :link: [Ghostery](http://www.ghostery.com/ "[nofollow]")
+- :link: [Your online choices](http://www.youronlinechoices.com/fr/ "[nofollow]")
 
 ## Cookies utilisés sur ce site
 
@@ -71,16 +71,16 @@ Face à ces informations, il est possible de réaliser les actions suivantes :
 
 Ce site utilise des cookies analytiques pour recueillir des statistiques sur l'activité des utilisateurs lorsqu'ils visitent la page et l'activité générale de celle-ci. Les informations collectées sont anonymes et permettent d'optimiser la navigation sur notre site web et de garantir le meilleur service possible. Nous utilisons des cookies propres et tiers (Google Analytics) pour l'analyse de notre page. L'utilisateur peut exclure son activité via les systèmes d'exclusion fournis par les outils analytiques. Générer un identifiant utilisateur unique, qui est utilisé pour compter combien de fois un utilisateur visite le site, ainsi que la date de la première et de la dernière visite du site. Enregistrer la date et l'heure d'accès à l'une des pages du site. Vérifier la nécessité de maintenir la session d'un utilisateur ouverte ou de créer une nouvelle. Identifier la session de l'utilisateur, pour collecter la localisation géographique approximative de l'ordinateur qui accède au site à des fins statistiques.
 
-- :link: [Utilisation des cookies de Google Analytics sur les sites web](https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=fr "nofollow")
-- :link: [Conditions de confidentialité de Google Analytics](https://www.google.com/policies/privacy/ "nofollow")
-- :link: [Conditions des cookies de Google](http://www.google.com/policies/technologies/types/ "nofollow")
+- :link: [Utilisation des cookies de Google Analytics sur les sites web](https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=fr "[nofollow]")
+- :link: [Conditions de confidentialité de Google Analytics](https://www.google.com/policies/privacy/ "[nofollow]")
+- :link: [Conditions des cookies de Google](http://www.google.com/policies/technologies/types/ "[nofollow]")
 
 | Cookie | Nom | Objectif | Propriétaire | Plus d'informations |
 | --- | --- | --- | --- | --- |
 | HTTP (Statistique) | `_ga` | 2 ans. Enregistre une identification unique qui est utilisée pour générer des données statistiques sur la manière dont le visiteur utilise le site web. Données envoyées aux USA, pays non conforme au RGPD. | `google.com` | [{{% legal web %}}]({{% legal https %}}) |
 | HTTP (Statistique) | `_ga_#` | 2 ans. Recueille un nombre de fois qu'un utilisateur a visité le site web, ainsi que les dates de la première visite et des visites récentes. Utilisé par Google Analytics. Données envoyées aux USA, pays non conforme au RGPD. | `google.com` | [{{% legal web %}}]({{% legal https %}}) |
-| Pixel. Session. | `_ads/ga-audiences` | Session. Utilisé par Google AdWords pour reconnecter avec les visiteurs susceptibles de devenir des clients, basé sur le comportement en ligne des clients à travers les sites web. Données envoyées aux USA, pays non conforme au RGPD. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
-| HTTP (Marketing) | `NID` | 6 mois. Enregistre une identification unique qui identifie le dispositif d'un utilisateur revenant. L'identification est utilisée pour des annonces spécifiques. Données envoyées aux USA, pays NON conforme au RGPD. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
+| Pixel. Session. | `_ads/ga-audiences` | Session. Utilisé par Google AdWords pour reconnecter avec les visiteurs susceptibles de devenir des clients, basé sur le comportement en ligne des clients à travers les sites web. Données envoyées aux USA, pays non conforme au RGPD. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "[nofollow]") |
+| HTTP (Marketing) | `NID` | 6 mois. Enregistre une identification unique qui identifie le dispositif d'un utilisateur revenant. L'identification est utilisée pour des annonces spécifiques. Données envoyées aux USA, pays NON conforme au RGPD. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "[nofollow]") |
 
 ## Acceptation des cookies
 

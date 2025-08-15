@@ -134,9 +134,20 @@
     "widget"  `list`
     "summary" "{{fields.box}}"
     "fields"  (slice
-      (partial "cms/widget" (dict "alt" `box_params_page`  "name" `page`  "i18n" `duplicate`))
-      (partial "cms/widget" (dict "alt" `box_params_box`   "name" `box`   "i18n" `duplicate`))
+      (partial "cms/widget" (dict "alt" `box_params_from`  "name" `from`  "i18n" `duplicate`))
+      (partial "cms/widget" (dict "alt" `box_params_to`    "name" `to`    "i18n" `duplicate`))
       (partial "cms/widget" (dict "alt" `box_params_value` "name" `value`                   ))
+    )
+  ))
+  (partial "cms/widget" (dict
+    "var"     `box_remap`
+    "name"    `remap`
+    "widget"  `list`
+    "summary" "{{fields.from}} → {{fields.to}}"
+    "fields"  (slice
+      (partial "cms/widget" (dict "alt" `box_remap_from` "name" `from` "i18n" `duplicate`))
+      (partial "cms/widget" (dict "alt" `box_remap_to`   "name" `to`   "i18n" `duplicate`))
+      (partial "cms/widget" (dict "alt" `box_remap_copy` "name" `copy` "widget" `boolean`))
     )
   ))
   (partial "cms/widget" (dict "var" `box_tag`               "name" `tag`          "widget" `select`                                   "options" `~options_tags` ))

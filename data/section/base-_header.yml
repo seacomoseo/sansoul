@@ -7,12 +7,12 @@ boxes:
 #   md: '{{< breadcrumbs >}}'
 - if: icon
   params:
-  - box: title
-  - box: icon
+  - to: title
+  - to: icon
   icon_type: side
 - if: not icon
   params:
-  - box: title
+  - to: title
 - tags:
   - type: type
   - type: date
@@ -34,12 +34,12 @@ boxes:
 - if: image
   node: div
   params:
-  - page: image
-    box: image
-  - page: title
-    box: alt
-  - page: seo
-    box: alt
-  - page: image
-    box: link
+  - from: image
+    to: image
+  - from: title
+    to: alt
+  - from: seo
+    to: alt
+  - from: image
+    to: link
   button: hide

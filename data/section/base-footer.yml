@@ -2,34 +2,34 @@ name: Base ➡️ Footer
 color: dark
 space: 2
 params:
-- page: footer.size
-  box: size
-- page: footer.color
-  box: color
-- page: footer.fade
-  box: fade
-- page: footer.fade_type
-  box: fade_type
-- page: footer.bi
-  box: bi
-- page: footer.alpha
-  box: alpha
-- page: footer.div
-  box: div
-- page: footer.div_x
-  box: div_x
-- page: footer.div_y
-  box: div_y
-- page: footer.boxes
-  box: boxes
+- from: footer.size
+  to: size
+- from: footer.color
+  to: color
+- from: footer.fade
+  to: fade
+- from: footer.fade_type
+  to: fade_type
+- from: footer.bi
+  to: bi
+- from: footer.alpha
+  to: alpha
+- from: footer.div
+  to: div
+- from: footer.div_x
+  to: div_x
+- from: footer.div_y
+  to: div_y
+- from: footer.boxes
+  to: boxes
 boxes:
 - if: footer.dots
   params:
-  - page: footer.dots
-    box: dots
+  - from: footer.dots
+    to: dots
 - params:
-  - page: footer.md
-    box: md
+  - from: footer.md
+    to: md
   md: |
     - :copyright:      {{< internal-link index >}}
     - :scale-balanced: {{< internal-link legal >}}

@@ -1,0 +1,206 @@
+{{/* DEFINE GET_NESTED_VALUE */}}
+
+{{ define "partials/get_nested_value" }}
+  {{ $data := .data }}
+  {{ $path := .path }}
+  {{ $result := .result }}
+  {{ if not (strings.Contains $path ".") }}
+    {{ if strings.Contains $path "*" }}
+      {{ $result = nil }}
+    {{ else }}
+      {{ $result = index $data $path }}
+    {{ end }}
+  {{ else }}
+    {{ $parts := split $path "." }}
+    {{ $current := $data }}
+
+    {{ range $i, $part := $parts }}
+      {{ if eq $current nil }}
+        {{ $current = nil }}
+        {{ break }}
+      {{ end }}
+
+      {{ if eq $part "*" }}
+        {{ if not (reflect.IsSlice $current) }}
+          {{ $current = nil }}
+          {{ break }}
+        {{ end }}
+
+        {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
+        {{ $results := slice }}
+
+        {{ range $idx, $item := $current }}
+          {{ if ne $remaining_path "" }}
+            {{ $nested_value := partial "get_nested_value" (dict "data" $item "path" $remaining_path) }}
+            {{ if ne $nested_value nil }}
+              {{ $results = $results | append $nested_value }}
+            {{ end }}
+          {{ else }}
+            {{ $results = $results | append $item }}
+          {{ end }}
+        {{ end }}
+
+        {{ $current = $results }}
+        {{ break }}
+      {{ else }}
+        {{ $current = index $current $part }}
+      {{ end }}
+    {{ end }}
+
+    {{ $result = $current }}
+  {{ end }}
+  {{ return $result }}
+{{ end }}
+
+
+{{/* DEFINE SET_NESTED_VALUE */}}
+
+{{ define "partials/set_nested_value" }}
+  {{ $data := .data }}
+  {{ $path := .path }}
+  {{ $value := .value }}
+  {{ $result := $data }}
+  {{ if not (strings.Contains $path ".") }}
+    {{ if not (strings.Contains $path "*") }}
+      {{ $result = merge $data (dict $path $value) }}
+    {{ end }}
+  {{ else }}
+    {{ $parts := split $path "." }}
+
+    {{ range $i, $part := $parts }}
+      {{ if eq $part "*" }}
+        {{ $array_path := delimit (first $i $parts) "." }}
+        {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
+
+        {{ $array_data := partial "get_nested_value" (dict "data" $result "path" $array_path) }}
+        {{ if reflect.IsSlice $array_data }}
+          {{ $new_array := slice }}
+          {{ range $idx, $item := $array_data }}
+            {{ if ne $remaining_path "" }}
+              {{ $item_value := index $value $idx }}
+              {{ if ne $item_value nil }}
+                {{ $updated_item := partial "set_nested_value" (dict "data" $item "path" $remaining_path "value" $item_value) }}
+                {{ $new_array = $new_array | append $updated_item }}
+              {{ else }}
+                {{ $new_array = $new_array | append $item }}
+              {{ end }}
+            {{ else }}
+              {{ if ne $value nil }}
+                {{ $new_array = $new_array | append (index $value $idx) }}
+              {{ else }}
+                {{ $new_array = $new_array | append $item }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+
+          {{ $result = partial "set_nested_value" (dict "data" $result "path" $array_path "value" $new_array) }}
+        {{ end }}
+
+        {{ break }}
+      {{ end }}
+    {{ end }}
+
+    {{ if not (strings.Contains $path "*") }}
+      {{ $nested_update := dict }}
+      {{ $current := $nested_update }}
+
+      {{ range $i, $part := $parts }}
+        {{ if eq $i (sub (len $parts) 1) }}
+          {{ $current = merge $current (dict $part $value) }}
+        {{ else }}
+          {{ $next_dict := dict }}
+          {{ $current = merge $current (dict $part $next_dict) }}
+          {{ $current = index $current $part }}
+        {{ end }}
+      {{ end }}
+
+      {{ $result = merge $result $nested_update }}
+    {{ end }}
+  {{ end }}
+  {{ return $result }}
+{{ end }}
+
+
+{{/* DEFINE REMOVE_NESTED_VALUE */}}
+
+{{ define "partials/remove_nested_value" }}
+  {{ $data := .data }}
+  {{ $path := .path }}
+  {{ $result := $data }}
+  {{ if not (strings.Contains $path ".") }}
+    {{ if not (strings.Contains $path "*") }}
+      {{ $new_result := dict }}
+      {{ range $key, $value := $data }}
+        {{ if ne $key $path }}
+          {{ $new_result = merge $new_result (dict $key $value) }}
+        {{ end }}
+      {{ end }}
+      {{ $result = $new_result }}
+    {{ end }}
+  {{ else }}
+    {{ $parts := split $path "." }}
+    {{ $last_key := index $parts (sub (len $parts) 1) }}
+    {{ $parent_path := delimit (first (sub (len $parts) 1) $parts) "." }}
+    {{ $parent := partial "get_nested_value" (dict "data" $data "path" $parent_path) }}
+    {{ if ne $parent nil }}
+      {{ if reflect.IsSlice $parent }}
+        {{ $new_parent := slice }}
+        {{ range $idx, $item := $parent }}
+          {{ if reflect.IsMap $item }}
+            {{ $new_item := dict }}
+            {{ range $key, $value := $item }}
+              {{ if ne $key $last_key }}
+                {{ $new_item = merge $new_item (dict $key $value) }}
+              {{ end }}
+            {{ end }}
+            {{ $new_parent = $new_parent | append $new_item }}
+          {{ else }}
+            {{ $new_parent = $new_parent | append $item }}
+          {{ end }}
+        {{ end }}
+        {{ $result = partial "set_nested_value" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+      {{ else if reflect.IsMap $parent }}
+        {{ $new_parent := dict }}
+        {{ range $key, $value := $parent }}
+          {{ if ne $key $last_key }}
+            {{ $new_parent = merge $new_parent (dict $key $value) }}
+          {{ end }}
+        {{ end }}
+        {{ $result = partial "set_nested_value" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ return $result }}
+{{ end }}
+
+
+{{/* APPLY */}}
+
+{{ $data := . }}
+{{/* Apply remap rules */}}
+{{ range .remap }}
+  {{ $from_path := .from }}
+  {{ $to_path := .to }}
+  {{ $copy := .copy | default false }}
+  {{/* If to is not defined, just remove the from path */}}
+  {{ if not $to_path }}
+    {{ $data = partial "remove_nested_value" (dict "data" $data "path" $from_path) }}
+  {{ else }}
+    {{/* Get source value */}}
+    {{ $source_value := partial "get_nested_value" (dict "data" $data "path" $from_path) }}
+    {{/* Only proceed if source value exists */}}
+    {{ if ne $source_value nil }}
+      {{/* Set target value */}}
+      {{ $data = partial "set_nested_value" (dict "data" $data "path" $to_path "value" $source_value) }}
+      {{/* Remove source if copy is false */}}
+      {{ if not $copy }}
+        {{ $data = partial "remove_nested_value" (dict "data" $data "path" $from_path) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* Remove remap parameter */}}
+{{ $data = merge $data (dict "remap" nil) }}
+
+{{ return $data }}

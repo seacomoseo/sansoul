@@ -49,7 +49,7 @@ Ebenso können Navigationsdaten und Cookies von Kunden zur Verbesserung der Zug�
 
 4. Wenn Nutzer **Kommentare auf der Website** hinterlassen, erfassen wir die in den Kommentarformularen angezeigten Daten sowie die IP-Adresse des Besuchers/Nutzers und die Benutzer-Agenten-Kette des Browsers, um die Erkennung von Spam zu unterstützen.
 \
-Eine anonyme Zeichenkette, die aus Ihrer E-Mail-Adresse erstellt wird (auch als Hash bezeichnet), kann dem Gravatar-Dienst zur Verfügung gestellt werden, um zu sehen, ob Sie diesen verwenden. Die Datenschutzrichtlinie des Gravatar-Dienstes ist hier verfügbar: [automattic.com](https://automattic.com/privacy/ "nofollow"). Nach der Genehmigung Ihres Kommentars ist Ihr Profilbild im Kontext Ihres Kommentars für die Öffentlichkeit sichtbar.
+Eine anonyme Zeichenkette, die aus Ihrer E-Mail-Adresse erstellt wird (auch als Hash bezeichnet), kann dem Gravatar-Dienst zur Verfügung gestellt werden, um zu sehen, ob Sie diesen verwenden. Die Datenschutzrichtlinie des Gravatar-Dienstes ist hier verfügbar: [automattic.com](https://automattic.com/privacy/ "[nofollow]"). Nach der Genehmigung Ihres Kommentars ist Ihr Profilbild im Kontext Ihres Kommentars für die Öffentlichkeit sichtbar.
 \
 Im Falle der Beauftragung von Dienstleistungen oder Produkten über die Website informieren wir Sie darüber, dass der Zweck darin besteht, Ihre Beziehung zu **{{% legal name %}}** zu verwalten, die angeforderten Dienstleistungen zu erbringen, den Kundenservice zu verwalten und im Allgemeinen die Verpflichtungen aus dem Vertrag zu erfüllen.
 
@@ -167,7 +167,7 @@ Bitte beachten Sie, dass diese Website Links zu Websites Dritter enthalten kann.
 
 Um sicherzustellen, dass Sie sich auf der Website unseres Unternehmens befinden, beginnt die URL-Adresse mit "https": **{{% legal https %}}**
 
-**HTTPS implementieren**. Jedes Verkaufs- oder Reservierungssystem arbeitet mit privaten Kundendaten, sowohl persönlichen als auch bankbezogenen. Daher ist es unerlässlich, dass unser System das [sichere Webprotokoll (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "nofollow") implementiert, damit diese Daten verschlüsselt übertragen werden. Dies ermöglicht es uns, die Integrität und Vertraulichkeit der Daten unserer Kunden zu wahren und den Ruf unseres Unternehmens zu schützen.
+**HTTPS implementieren**. Jedes Verkaufs- oder Reservierungssystem arbeitet mit privaten Kundendaten, sowohl persönlichen als auch bankbezogenen. Daher ist es unerlässlich, dass unser System das [sichere Webprotokoll (HTTPS)](https://www.osi.es/es/actualidad/blog/2014/02/28/que-pasa-si-una-pagina-web-no-utiliza-https "[nofollow]") implementiert, damit diese Daten verschlüsselt übertragen werden. Dies ermöglicht es uns, die Integrität und Vertraulichkeit der Daten unserer Kunden zu wahren und den Ruf unseres Unternehmens zu schützen.
 
 ## Formulare: Datenschutzklausel {#formular}
 

@@ -46,16 +46,16 @@ You have the option to allow, block, or delete cookies installed on your device 
 
 You can allow, block, or delete the cookies installed on your device by configuring the options of the browser installed on your computer:
 
-- :link: [Google Chrome](https://support.google.com/accounts/answer/61416?hl=es "nofollow")
-- :link: [Mozilla Firefox](https://support.mozilla.org/es/kb/Borrar%20cookies "nofollow")
-- :link: [Internet Explorer](https://support.microsoft.com/es-es/topic/c%C3%B3mo-eliminar-archivos-de-cookies-en-internet-explorer-bca9446f-d873-78de-77ba-d42645fa52fc "nofollow")
-- :link: [Safari MAC OS](https://support.apple.com/es-es/guide/safari/sfri11471/mac "nofollow")
-- :link: [Safari IOS iPhone and iPad](https://support.apple.com/es-es/HT201265 "nofollow")
+- :link: [Google Chrome](https://support.google.com/accounts/answer/61416?hl=es "[nofollow]")
+- :link: [Mozilla Firefox](https://support.mozilla.org/es/kb/Borrar%20cookies "[nofollow]")
+- :link: [Internet Explorer](https://support.microsoft.com/es-es/topic/c%C3%B3mo-eliminar-archivos-de-cookies-en-internet-explorer-bca9446f-d873-78de-77ba-d42645fa52fc "[nofollow]")
+- :link: [Safari MAC OS](https://support.apple.com/es-es/guide/safari/sfri11471/mac "[nofollow]")
+- :link: [Safari IOS iPhone and iPad](https://support.apple.com/es-es/HT201265 "[nofollow]")
 
 In addition, you can also manage the cookie storage in your browser through tools such as the following:
 
-- :link: [Ghostery](http://www.ghostery.com/ "nofollow")
-- :link: [Your online choices](http://www.youronlinechoices.com/es/ "nofollow")
+- :link: [Ghostery](http://www.ghostery.com/ "[nofollow]")
+- :link: [Your online choices](http://www.youronlinechoices.com/es/ "[nofollow]")
 
 ## Cookies Used on This Site
 
@@ -71,16 +71,16 @@ In response to this information, you can take the following actions:
 
 This site uses analytical cookies to collect statistics on user activity when visiting the site and the general activity of the site itself. The information collected is anonymous and allows optimizing navigation on our website and ensuring the best service to the user. We use both first-party and third-party cookies (Google Analytics) for analyzing our site. Users can exclude their activity via the exclusion systems provided by analytical tools. Generate a unique user identifier, which is used to count how many times a user visits the site, as well as the date of the first and last visit. Record the date and time of access to any page of the site. Check the need to keep a user's session open or create a new one. Identify the user's session to collect the approximate geographical location of the computer accessing the site for statistical purposes.
 
-- :link: [Use of Google Analytics cookies on websites](https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=es "nofollow")
-- :link: [Google Analytics Privacy Policy](https://www.google.com/policies/privacy/ "nofollow")
-- :link: [Google Cookies Policy](http://www.google.com/policies/technologies/types/ "nofollow")
+- :link: [Use of Google Analytics cookies on websites](https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=es "[nofollow]")
+- :link: [Google Analytics Privacy Policy](https://www.google.com/policies/privacy/ "[nofollow]")
+- :link: [Google Cookies Policy](http://www.google.com/policies/technologies/types/ "[nofollow]")
 
 | Cookie | Name | Purpose | Owner | More Information |
 | --- | --- | --- | --- | --- |
 | HTTP (Analytics) | `_ga` | 2 years. Records a unique identifier used to generate statistical data on how the visitor uses the website. Data sent to the USA, a country not compliant with GDPR. | `google.com` | [{{% legal web %}}]({{% legal https %}}) |
 | HTTP (Analytics) | `_ga_#` | 2 years. Collects the number of times a user has visited the website, as well as the dates of the first and most recent visits. Used by Google Analytics. Data sent to the USA, a country not compliant with GDPR. | `google.com` | [{{% legal web %}}]({{% legal https %}}) |
-| Pixel. Session. | `_ads/ga-audiences` | Session. Used by Google AdWords to reconnect with visitors who are likely to become clients, based on the client's online behavior across websites. Data sent to the USA, a country not compliant with GDPR. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
-| HTTP (Marketing) | `NID` | 6 months. Records a unique identifier that identifies a returning user's device. The identifier is used for specific ads. Data sent to the USA, a country NOT compliant with GDPR. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "nofollow") |
+| Pixel. Session. | `_ads/ga-audiences` | Session. Used by Google AdWords to reconnect with visitors who are likely to become clients, based on the client's online behavior across websites. Data sent to the USA, a country not compliant with GDPR. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "[nofollow]") |
+| HTTP (Marketing) | `NID` | 6 months. Records a unique identifier that identifies a returning user's device. The identifier is used for specific ads. Data sent to the USA, a country NOT compliant with GDPR. | `google.com` | [policies.google.com/privacy](https://policies.google.com/privacy "[nofollow]") |
 
 ## Acceptance of Cookies
 

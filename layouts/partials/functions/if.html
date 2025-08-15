@@ -1,47 +1,49 @@
-{{ $if   := true }}
-{{ $not  := false }}
-{{ $cond := .if }}
-{{ if .if | findRE `^not ` }}
-  {{ $not  = true }}
-  {{ $cond = .if | replaceRE `^not ` "" }}
-{{ end }}
-{{ with $cond }}
-  {{ if eq . "content" }}
-    {{ $if = $.Page.RawContent }}
-  {{ else if eq . "related" }}
-    {{ $if = or $.Page.Params.related (and $.Page.Params.is_related ($.Page.CurrentSection.Pages.Related $.Page)) | and (not $.Page.IsSection) }}
-  {{ else if eq . "comments" }}
-    {{ $if = and site.Params.disqus $.Page.Params.is_comments (not $.Page.IsSection) }}
-  {{ else if eq . "children" }}
-    {{ $if = or $.Page.IsSection $.Page.Params.tax_of }}
-  {{ else if eq . "collection" }}
-    {{ $if = $.Page.IsSection }}
-  {{ else if eq . "taxonomy" }}
-    {{ $is_parent   := $.Page.Params.tax_of }}
-    {{ $is_not_root := not $.Page.IsSection }}
-    {{ $if = and $is_parent $is_not_root }}
-  {{ else if eq . "true" }}
-    {{ $if = true }}
-  {{ else if eq . "false" }}
-    {{ $if = false }}
-  {{ else if eq . "author" }}
-    {{ $if = and (not $.Page.IsSection) $.Page.Params.author }}
-  {{ else }}
-    {{ $opts := dict "Page" page "name" . }}
-    {{ $if    = partial "functions/param" $opts }}
-    {{ if $if }}
-      {{ if eq . "toc" }}
-        {{ $if = false }}
-        {{ with $.Page.RawContent }}
-          {{ with . | findRE `\n#+ ` }}
-            {{ $if = index . 1 }}
+{{ $if := true }}
+{{ if ne .if nil }}
+  {{ $not  := false }}
+  {{ $cond := .if }}
+  {{ if .if | findRE `^not ` }}
+    {{ $not  = true }}
+    {{ $cond = .if | replaceRE `^not ` "" }}
+  {{ end }}
+  {{ with $cond }}
+    {{ if eq . "content" }}
+      {{ $if = $.Page.RawContent }}
+    {{ else if eq . "related" }}
+      {{ $if = or $.Page.Params.related (and $.Page.Params.is_related ($.Page.CurrentSection.Pages.Related $.Page)) | and (not $.Page.IsSection) }}
+    {{ else if eq . "comments" }}
+      {{ $if = and site.Params.disqus $.Page.Params.is_comments (not $.Page.IsSection) }}
+    {{ else if eq . "children" }}
+      {{ $if = or $.Page.IsSection $.Page.Params.tax_of }}
+    {{ else if eq . "collection" }}
+      {{ $if = $.Page.IsSection }}
+    {{ else if eq . "taxonomy" }}
+      {{ $is_parent   := $.Page.Params.tax_of }}
+      {{ $is_not_root := not $.Page.IsSection }}
+      {{ $if = and $is_parent $is_not_root }}
+    {{ else if eq . "true" }}
+      {{ $if = true }}
+    {{ else if eq . "false" }}
+      {{ $if = false }}
+    {{ else if eq . "author" }}
+      {{ $if = and (not $.Page.IsSection) $.Page.Params.author }}
+    {{ else }}
+      {{ $opts := dict "Page" page "name" . }}
+      {{ $if    = partial "functions/param" $opts }}
+      {{ if $if }}
+        {{ if eq . "toc" }}
+          {{ $if = false }}
+          {{ with $.Page.RawContent }}
+            {{ with . | findRE `\n#+ ` }}
+              {{ $if = index . 1 }}
+            {{ end }}
           {{ end }}
         {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}
-{{ end }}
-{{ if $not }}
-  {{ $if = not $if }}
+  {{ if $not }}
+    {{ $if = not $if }}
+  {{ end }}
 {{ end }}
 {{ return $if }}

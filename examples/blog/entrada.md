@@ -184,7 +184,7 @@ Esto es un [enlace externo de texto](http://seacomoseo.com) (se abre en una vent
 
 Esto es un [enlace interno de texto](/blog/) (se abre en la misma ventana).
 
-Esto es un [enlace ofuscado](/blog/ "nofollow") (oculto de cara a google).
+Esto es un [enlace ofuscado](/blog/ "[nofollow]") (oculto de cara a google).
 
 ### Notas al pie de página
 
