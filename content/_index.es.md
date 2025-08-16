@@ -26,6 +26,7 @@ org:
     country: null # string
     geo: null # '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
     link: null # string
+    legal: null # string
   areas: [] # strings
   schedule: []
   # - days:

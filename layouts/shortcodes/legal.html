@@ -3,20 +3,24 @@
 
 {{- if in (slice "name" "nif" "location" "email") $param -}}
 
-  {{- with site.Home.Params.org.address -}}
+  {{- with site.Home.Params.org -}}
     {{- if eq $param "name" -}}
       {{- .legal | default site.Title -}}
     {{- else if eq $param "nif" -}}
       {{- .nif | default "00000000A" -}}
     {{- else if eq $param "location" -}}
-      {{- with .address -}}
-        {{- with .street }}{{ . }},{{ end }}
-        {{ with .pc }}{{ . }}{{ end }}
-        {{ with .locality }}{{ . }}{{ end }}
-        {{ with .region }},{{ . }}{{ end }}
-        {{ with .country }},{{ . }}{{ end }}
+      {{- with .legal -}}
+        {{- . -}}
       {{- else -}}
-        {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
+        {{- with .address -}}
+          {{- with .street }}{{ . }},{{ end }}
+          {{ with .pc }}{{ . }}{{ end }}
+          {{ with .locality }}{{ . }}{{ end }}
+          {{ with .region }},{{ . }}{{ end }}
+          {{ with .country }},{{ . }}{{ end }}
+        {{- else -}}
+          {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
+        {{- end -}}
       {{- end -}}
     {{- else if eq $param "email" -}}
       <i class="mail">
