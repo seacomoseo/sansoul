@@ -9,18 +9,18 @@
     {{- else if eq $param "nif" -}}
       {{- .nif | default "00000000A" -}}
     {{- else if eq $param "location" -}}
-      {{- with .legal -}}
-        {{- . -}}
-      {{- else -}}
-        {{- with .address -}}
+      {{- with .address -}}
+        {{- with .legal -}}
+          {{- . -}}
+        {{- else -}}
           {{- with .street }}{{ . }},{{ end }}
           {{ with .pc }}{{ . }}{{ end }}
           {{ with .locality }}{{ . }}{{ end }}
           {{ with .region }},{{ . }}{{ end }}
           {{ with .country }},{{ . }}{{ end }}
-        {{- else -}}
-          {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
         {{- end -}}
+      {{- else -}}
+        {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
       {{- end -}}
     {{- else if eq $param "email" -}}
       <i class="mail">
