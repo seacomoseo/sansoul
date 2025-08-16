@@ -51,8 +51,6 @@
   {{- $is_this_anchor_link  := hasPrefix $link "#" -}}
   {{- $is_other_anchor_link := $link | findRE `^.+#` -}}
 
-  {{/*  {{ partial "warn" . }}  */}}
-
   {{- /*  get page title and page lock  */ -}}
   {{- if and (not .lock) (not $is_external) -}}
     {{- if $is_this_anchor_link -}}

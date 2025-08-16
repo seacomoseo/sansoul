@@ -2,8 +2,8 @@
 
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `box_name` "name" `name` "required" true                         ))
-  (partial "cms/widget" (dict "var" `box_id`   "name" `id`   "pattern" (slice "^[a-z-]+$" $t.pattern)))
+  (partial "cms/widget" (dict "var" `box_name` "name" `name` "required" true                                 ))
+  (partial "cms/widget" (dict "var" `box_id`   "name" `id`   "pattern" (slice "^[a-z][a-z-0-9]*$" $t.pattern)))
 
   (partial "cms/widget" (dict "var" `box_view_section`  "name" `view` "widget" `select` "alt" `box_view` "multiple" true "options" `~options_view_section` ))
   (partial "cms/widget" (dict "var" `box_view_sections` "name" `view` "widget" `select` "alt" `box_view` "multiple" true "options" `~options_view_sections`))
