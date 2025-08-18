@@ -1,12 +1,6 @@
-{{ $if := true }}
-{{ if ne .if nil }}
-  {{ $not  := false }}
-  {{ $cond := .if }}
-  {{ if .if | findRE `^not ` }}
-    {{ $not  = true }}
-    {{ $cond = .if | replaceRE `^not ` "" }}
-  {{ end }}
-  {{ with $cond }}
+{{ define "partials/check" }}
+  {{ $if := true }}
+  {{ with .if }}
     {{ if eq . "content" }}
       {{ $if = $.Page.RawContent }}
     {{ else if eq . "related" }}
@@ -42,6 +36,43 @@
       {{ end }}
     {{ end }}
   {{ end }}
+  {{ return $if }}
+{{ end }}
+
+{{ $if := true }}
+{{ if ne .if nil }}
+  {{ $not  := false }}
+  {{ $cond := .if }}
+
+  {{/*  NOT  */}}
+  {{ if .if | findRE `^not ` }}
+    {{ $not  = true }}
+    {{ $cond = .if | replaceRE `^not ` "" }}
+  {{ end }}
+
+  {{ if $cond | findRE `^or ` }}
+    {{/*  OR  */}}
+    {{ $if   = false }}
+    {{ $cond = $cond | replaceRE `^or ` "" }}
+    {{ $all := slice }}
+    {{ range split $cond " " }}
+      {{ $if = or $if (partial "check" (dict "Page" $.Page "if" .)) }}
+      {{ if eq page.Slug "blog" }}{{ partial "warn" $if }}{{ end }}
+    {{ end }}
+  {{ else if $cond | findRE `^and ` }}
+    {{/*  AND  */}}
+    {{ $if   = false }}
+    {{ $cond = $cond | replaceRE `^and ` "" }}
+    {{ $all := slice }}
+    {{ range split $cond " " }}
+      {{ $if = and $if (partial "check" (dict "Page" $.Page "if" .)) }}
+    {{ end }}
+  {{ else }}
+    {{/*  SIMPLE  */}}
+    {{ $if = partial "check" (dict "Page" .Page "if" $cond) }}
+  {{ end }}
+
+  {{/*  NOT  */}}
   {{ if $not }}
     {{ $if = not $if }}
   {{ end }}

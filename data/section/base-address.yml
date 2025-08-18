@@ -1,14 +1,15 @@
 name: Base ➡️ Ubicación de Eventos
 node: div
-if: address
+if: or address.link address.geo
 id: address
 pt: 0
-contact:
-- type: address
-  label: '{{ address }}'
-  anchor: '{{ param address.link }}'
-  button: cta
 boxes:
+- if: address.link
+  contact:
+  - type: address
+    label: '{{ address }}'
+    anchor: '{{ param address.link }}'
+    button: cta
 - if: address.geo
   geos:
   - type: point
