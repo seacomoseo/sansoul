@@ -57,7 +57,6 @@
     {{ $all := slice }}
     {{ range split $cond " " }}
       {{ $if = or $if (partial "check" (dict "Page" $.Page "if" .)) }}
-      {{ if eq page.Slug "blog" }}{{ partial "warn" $if }}{{ end }}
     {{ end }}
   {{ else if $cond | findRE `^and ` }}
     {{/*  AND  */}}
