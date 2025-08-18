@@ -16,7 +16,7 @@
       {{- end -}}
     {{- end -}}
 
-    {{- /* {{ $types_many := gt (len $types) 1 }}  */ -}}
+    {{ $types_many := gt (len $types) 1 }}
 
     {{- range $types -}}
       {{- $type   := . -}}
@@ -44,6 +44,7 @@
       {{- $after_pages  := $pages -}}
 
       {{- /* TEMPLATE  */ -}}
+      {{- $tpl_level      := cond $types_many (dict "level" (add $.level 1)) dict -}}
       {{- $tpl_box        := $.box | default dict -}}
       {{- $tpl_related    := dict -}}
       {{- $type_rel       := $type -}}
@@ -59,6 +60,7 @@
       {{- $tpl_type       := (index site.Data.types $type_rel).tpl.list -}}
       {{- $tpl_all        := site.Data.types.all.tpl.list -}}
       {{- $tpl            := merge
+        $tpl_level
         $tpl_all
         $tpl_type
         $tpl_related
@@ -116,11 +118,16 @@
       {{- end -}}
 
       {{- if len $pages -}}
-        {{- /*
         {{- if $types_many }}
-          <p class="list-title h4">{{ $parent.Title }}</p>
+          {{- $opts := dict
+            "class" "box__title--list"
+            "title" $parent.Title
+            "hn" $.hn
+            "hs" $.hs
+            "level" $.level
+          -}}
+          {{- partial "boxes/title" $opts -}}
         {{- end -}}
-        */ -}}
 
         {{- /* PAGES TO BOXES  */ -}}
         {{- $boxes   := slice -}}

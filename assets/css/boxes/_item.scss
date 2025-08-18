@@ -182,7 +182,8 @@
 .box__block:where(:not(
   :first-child,
   .bg-color + *,
-  .box__title.hide:first-child + *
+  .box__title.hide:first-child + *,
+  .box__title--list + *
 )) {
   margin-top: Max(calc(var(--box-gap) * 2), 2em);
 }
@@ -292,6 +293,9 @@ svg.box__icon--top:where(.align-center *, :not(:is(.align-left, .align-right, .a
 .container > .box__title {
   @include fluid-size(--fhs-pre, 1em, .875, 1.125);
   --fhs: calc(var(--fhs-pre) * var(--hs, 1) * #{ $font-size-title });
+}
+.box__title--list:not(:first-child) {
+  margin-top: var(--box-gap);
 }
 
 
