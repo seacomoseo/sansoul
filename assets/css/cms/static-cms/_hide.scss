@@ -42,9 +42,11 @@
       $name: nth($parts, 2);
       $pages: nth($parts, 3);
 
-      .CMS_EditorControlPane_root > {
-        .CMS_EditorControl_root:has(> .name-#{$name}) {
-          display: none;
+      [data-hash^="#/collections/#{$type}/entries/"] {
+        .CMS_EditorControlPane_root > {
+          .CMS_EditorControl_root:has(> .name-#{$name}) {
+            display: none;
+          }
         }
       }
 
