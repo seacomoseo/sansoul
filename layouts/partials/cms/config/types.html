@@ -111,13 +111,13 @@
   ))
 
   (partial "cms/widget" (dict "var" `types_title`    "name" `title`                      "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, org, service, page, section**")))
-  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `number` "value_type" `int` "min" 0 "step" 1))
-  (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "options" `~options_base`          ))
-  (partial "cms/widget" (dict "var" `types_emoji`    "name" `emoji`                                                         ))
-  (partial "cms/widget" (dict "var" `types_disabled` "name" `disabled` "widget" `boolean`                                   ))
-  (partial "cms/widget" (dict "var" `types_comments` "name" `comments` "widget" `boolean`                                   ))
-  (partial "cms/widget" (dict "var" `types_related`  "name" `related`  "widget" `boolean`                                   ))
-  (partial "cms/widget" (dict "var" `types_hint`     "name" `hint`                                                          ))
+  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `number` "min" 0 "step" 1         ))
+  (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "options" `~options_base`))
+  (partial "cms/widget" (dict "var" `types_emoji`    "name" `emoji`                                               ))
+  (partial "cms/widget" (dict "var" `types_disabled` "name" `disabled` "widget" `boolean`                         ))
+  (partial "cms/widget" (dict "var" `types_comments` "name" `comments` "widget" `boolean`                         ))
+  (partial "cms/widget" (dict "var" `types_related`  "name" `related`  "widget" `boolean`                         ))
+  (partial "cms/widget" (dict "var" `types_hint`     "name" `hint`                                                ))
   (partial "cms/widget" (dict
     "var"     `types_taxonomy_of`
     "name"    `tax_of`

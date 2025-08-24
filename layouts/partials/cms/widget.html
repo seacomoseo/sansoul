@@ -34,6 +34,10 @@
       }}
       {{ $o  = merge $o $f }}
     {{ end }}
+  {{ else if eq "number" $widget }}
+    {{ if not $o.value_type }}
+      {{ $o = merge $o (dict "value_type" `int`) }}
+    {{ end }}
   {{ else if eq "markdown" $widget }}
     {{ $o = merge $o (dict "show_raw" true) }}
   {{ else if eq "object" $widget }}

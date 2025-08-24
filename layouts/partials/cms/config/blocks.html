@@ -205,13 +205,13 @@
     )
   ))
 
-  (partial "cms/widget" (dict "var" `box_zoom`        "name" `zoom`   "widget" `number`             "value_type" `int` "step" 1 "min" 1 "max" 20 "hint" `1 - 20`))
-  (partial "cms/widget" (dict "var" `box_map_tile`    "name" `tile`   "widget" `select`             "options" `~options_tile`                                   ))
-  (partial "cms/widget" (dict "var" `box_map_color`   "name" `color`  "widget" `select`             "options" `~options_color_base_w`                           ))
-  (partial "cms/widget" (dict "var" `box_map_label`   "name" `label`                                                                                            ))
-  (partial "cms/widget" (dict "var" `box_map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`                                 ))
-  (partial "cms/widget" (dict "var" `box_map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`                               ))
-  (partial "cms/widget" (dict "var" `box_map_radius`  "name" `radius` "widget" `number` "i18n" true "value_type" `int` "step" 1 "min" 0 "max" 20                ))
+  (partial "cms/widget" (dict "var" `box_zoom`        "name" `zoom`   "widget" `number`             "step" 1 "min" 1 "max" 20 "hint" `1 - 20`))
+  (partial "cms/widget" (dict "var" `box_map_tile`    "name" `tile`   "widget" `select`             "options" `~options_tile`                ))
+  (partial "cms/widget" (dict "var" `box_map_color`   "name" `color`  "widget" `select`             "options" `~options_color_base_w`        ))
+  (partial "cms/widget" (dict "var" `box_map_label`   "name" `label`                                                                         ))
+  (partial "cms/widget" (dict "var" `box_map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`              ))
+  (partial "cms/widget" (dict "var" `box_map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`            ))
+  (partial "cms/widget" (dict "var" `box_map_radius`  "name" `radius` "widget" `number` "i18n" true "step" 1 "min" 0 "max" 20                ))
   (partial "cms/widget" (dict
     "var"     `box_map`
     "name"    `map`
