@@ -5,7 +5,7 @@
   (partial "cms/widget" (dict "var" `page_slug`           "name" `slug`                               "required" true "default" `` "pattern" (slice "^[a-z0-9-/]+$" $t.pattern)))
   (partial "cms/widget" (dict "var" `page_title`          "name" `title`                              "required" true "default" ``                                             ))
   (partial "cms/widget" (dict "var" `page_summary`        "name" `summary`        "widget" `text`                                                                              ))
-  (partial "cms/widget" (dict "var" `page_image`          "name" `image`          "widget" `image`    "choose_url" true  "max_file_size" 512000000                             ))
+  (partial "cms/widget" (dict "var" `page_image`          "name" `image`          "widget" `image`                                                                             ))
   (partial "cms/widget" (dict "var" `page_weight`         "name" `weight`         "widget" `number`                                                                            ))
 
   (partial "cms/widget" (dict "var" `page_toc`            "name" `toc`            "widget" `boolean`                 ))
@@ -118,13 +118,13 @@
       (partial "cms/widget" (dict "name" `name` "label" $t.page_org_names_singular))
     )
   ))
-  (partial "cms/widget" (dict "var" `page_org_description` "name" `description`                                                   ))
-  (partial "cms/widget" (dict "var" `page_org_legal`       "name" `legal`                                                         ))
-  (partial "cms/widget" (dict "var" `page_org_nif`         "name" `nif`                                                           ))
-  (partial "cms/widget" (dict "var" `page_org_email`       "name" `email`                                                         ))
-  (partial "cms/widget" (dict "var" `page_org_url`         "name" `url`                          "label" `URL`                    ))
-  (partial "cms/widget" (dict "var" `page_org_logo`        "name" `logo`        "widget" `image` "max_file_size" 512000000        ))
-  (partial "cms/widget" (dict "var" `page_images`          "name" `images`      "widget" `image` "multiple" true "choose_url" true))
+  (partial "cms/widget" (dict "var" `page_org_description` "name" `description`                                 ))
+  (partial "cms/widget" (dict "var" `page_org_legal`       "name" `legal`                                       ))
+  (partial "cms/widget" (dict "var" `page_org_nif`         "name" `nif`                                         ))
+  (partial "cms/widget" (dict "var" `page_org_email`       "name" `email`                                       ))
+  (partial "cms/widget" (dict "var" `page_org_url`         "name" `url`                          "label" `URL`  ))
+  (partial "cms/widget" (dict "var" `page_org_logo`        "name" `logo`        "widget" `image`                ))
+  (partial "cms/widget" (dict "var" `page_images`          "name" `images`      "widget" `image` "multiple" true))
   (partial "cms/widget" (dict
     "var"     `page_as`
     "name"    `as`

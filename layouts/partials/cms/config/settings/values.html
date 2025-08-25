@@ -37,9 +37,9 @@
 
 {{/*  MENU  */}}
 {{ $variables = $variables | append
-  (partial "cms/widget" (dict "var" `values_menu_image`    "name" `image`    "widget" `image` "max_file_size" 512000000))
-  (partial "cms/widget" (dict "var" `values_menu_title`    "name" `title`                                              ))
-  (partial "cms/widget" (dict "var" `values_menu_subtitle` "name" `subtitle`                                           ))
+  (partial "cms/widget" (dict "var" `values_menu_image`    "name" `image`    "widget" `image`))
+  (partial "cms/widget" (dict "var" `values_menu_title`    "name" `title`                    ))
+  (partial "cms/widget" (dict "var" `values_menu_subtitle` "name" `subtitle`                 ))
   (partial "cms/widget" (dict
     "var"     `values_menu`
     "alt"     `template_menu`

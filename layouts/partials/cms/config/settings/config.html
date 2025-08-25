@@ -2,56 +2,47 @@
 
 {{ return slice
 
-  (dict "&settings_config_langs" (dict
-    "name"           `langs`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.config_langs
-    "label_singular" $t.config_lang
-    "hint"           $t.config_langs_hint
-    "collapsed"      true
-    "summary"        "{{fields.lang}}"
-    "allow_add"      true
-    "fields"         (slice
-      (dict "name" `lang`                     "widget" `select`  "required" false "label" $t.config_lang                     "options" `~options_langs`)
-      (dict "name" `disabled`                 "widget" `boolean` "required" false "label" $t.config_lang_disabled)
-      (dict "name" `title`                    "widget" `string`  "required" false "label" $t.config_title)
-      (dict "name" `description`              "widget" `text`    "required" false "label" $t.config_description)
-      (dict "name" `email`                    "widget" `string`  "required" false "label" $t.config_email                    "hint" $t.config_email_hint)
-      (dict "name" `google_analytics`         "widget" `string`  "required" false "label" $t.config_google_analytics         "hint" $t.config_google_analytics_hint)
-      (dict "name" `google_site_verification` "widget" `string`  "required" false "label" $t.config_google_site_verification "hint" $t.config_google_site_verification_hint)
-      (dict "name" `google_file_verification` "widget" `string`  "required" false "label" $t.config_google_file_verification "hint" $t.config_google_file_verification_hint)
-      (dict "name" `google_translate`         "widget" `boolean` "required" false "label" $t.config_google_translate         "hint" $t.config_google_translate_hint)
-      (dict "name" `disqus`                   "widget" `string`  "required" false "label" $t.config_disqus                   "hint" $t.config_disqus_hint)
-      (dict "name" `main_org`                 "widget" `string`  "required" false "label" $t.config_main_org                 "hint" $t.config_main_org_hint)
-      (dict "name" `phone_code`               "widget" `select`  "required" false "label" $t.config_phone_code               "hint" (print $t.default " → **+34 🇪🇸**")         "options" site.Data.utilities.phone_code)
-      (dict "name" `time_zone`                "widget" `select`  "required" false "label" $t.config_time_zone                "hint" (print $t.default " → **Europe/Madrid**")  "options" site.Data.utilities.time_zone)
-      (dict "name" `currency`                 "widget" `select`  "required" false "label" $t.config_currency                 "hint" (print $t.default " → **EUR**")            "options" `~options_currency`)
-      (dict "name" `pagination`               "widget" `string`  "required" false "label" $t.config_pagination               "hint" $t.config_pagination_hint)
-      (dict
+  (partial "cms/widget" (dict
+    "var"     `settings_config_langs`
+    "alt"     `config_langs`
+    "name"    `langs`
+    "widget"  `list`
+    "summary" "{{fields.lang}}"
+    "fields"  (slice
+      (partial "cms/widget" (dict "alt" `config_lang`                     "name" `lang`                     "widget" `select`  "options" `~options_langs`                                                               ))
+      (partial "cms/widget" (dict "alt" `config_lang_disabled`            "name" `disabled`                 "widget" `boolean`                                                                                          ))
+      (partial "cms/widget" (dict "alt" `config_title`                    "name" `title`                                                                                                                                ))
+      (partial "cms/widget" (dict "alt" `config_description`              "name" `description`              "widget" `text`                                                                                             ))
+      (partial "cms/widget" (dict "alt" `config_email`                    "name" `email`                                                                                                                                ))
+      (partial "cms/widget" (dict "alt" `config_google_analytics`         "name" `google_analytics`                                                                                                                     ))
+      (partial "cms/widget" (dict "alt" `config_google_site_verification` "name" `google_site_verification`                                                                                                             ))
+      (partial "cms/widget" (dict "alt" `config_google_file_verification` "name" `google_file_verification`                                                                                                             ))
+      (partial "cms/widget" (dict "alt" `config_google_translate`         "name" `google_translate`         "widget" `boolean`                                                                                          ))
+      (partial "cms/widget" (dict "alt" `config_disqus`                   "name" `disqus`                                                                                                                               ))
+      (partial "cms/widget" (dict "alt" `config_main_org`                 "name" `main_org`                                                                                                                             ))
+      (partial "cms/widget" (dict "alt" `config_phone_code`               "name" `phone_code`               "widget" `select`  "hint" (print $t.default " → **+34 🇪🇸**")        "options" site.Data.utilities.phone_code))
+      (partial "cms/widget" (dict "alt" `config_time_zone`                "name" `time_zone`                "widget" `select`  "hint" (print $t.default " → **Europe/Madrid**") "options" site.Data.utilities.time_zone ))
+      (partial "cms/widget" (dict "alt" `config_currency`                 "name" `currency`                 "widget" `select`  "hint" (print $t.default " → **EUR**")           "options" `~options_currency`           ))
+      (partial "cms/widget" (dict "alt" `config_pagination`               "name" `pagination`                                                                                                                           ))
+      (partial "cms/widget" (dict
+        "alt"       `config_html`
         "name"      `html`
         "widget"    `object`
-        "label"     $t.config_html
-        "required"  false
-        "collapsed" true
         "fields"    (slice
-          (dict "name" `head` "required" false "label" $t.config_html_head "widget" `text` "default_language" `html` "output_code_only" true)
-          (dict "name" `body` "required" false "label" $t.config_html_body "widget" `text` "default_language" `html` "output_code_only" true)
+          (partial "cms/widget" (dict "alt" `config_html_head` "name" `head` "widget" `text` "default_language" `html` "output_code_only" true))
+          (partial "cms/widget" (dict "alt" `config_html_body` "name" `body` "widget" `text` "default_language" `html` "output_code_only" true))
         )
-      )
+      ))
     )
   ))
 
-  (dict "&settings_config_params"   (dict
-    "name"           `params`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.config_params
-    "label_singular" $t.config_params_singular
-    "collapsed"      true
-    "summary"        "{{fields.label}} ({{fields.name}})"
-    "allow_add"      true
-    "fields"         (slice
+  (partial "cms/widget" (dict
+    "var"     `settings_config_params`
+    "alt"     `config_params`
+    "name"    `params`
+    "widget"  `list`
+    "summary" "{{fields.label}} ({{fields.name}})"
+    "fields"  (slice
       `~types_params_var`
       `~types_params_name`
       `~types_params_label`
@@ -64,22 +55,18 @@
     )
   ))
 
-  (dict "&settings_config_defaults_value" (dict "name" `value` "widget" `string` "required" false "label" $t.config_defaults_value))
-  (dict "&settings_config_defaults_type"  (dict "name" `type`  "widget" `select` "required" false "label" $t.config_defaults_type                 "options" site.Data.utilities.pairing_kinds))
-  (dict "&settings_config_defaults_kind"  (dict "name" `kind`  "widget" `select` "required" false "label" $t.config_defaults_kind "multiple" true "options" site.Data.utilities.default_kinds))
-  (dict "&settings_config_defaults_lang"  (dict "name" `lang`  "widget" `select` "required" false "label" $t.config_defaults_lang "multiple" true "options" `~options_langs`))
-  (dict "&settings_config_defaults_path"  (dict "name" `path`  "widget" `list`   "required" false "label" $t.config_defaults_path "multiple" true))
-  (dict "&settings_config_defaults"       (dict
-    "name"           `defaults`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.config_defaults
-    "label_singular" $t.config_defaults_value
-    "hint"           $t.config_defaults_hint
-    "collapsed"      true
-    "summary"        "{{fields.name}}: {{fields.value}}"
-    "allow_add"      true
-    "fields"         (slice
+  (partial "cms/widget" (dict "var" `settings_config_defaults_value` "alt" `config_defaults_value` "name" `value`                                                                              ))
+  (partial "cms/widget" (dict "var" `settings_config_defaults_type`  "alt" `config_defaults_type`  "name" `type`  "widget" `select`                 "options" site.Data.utilities.pairing_kinds))
+  (partial "cms/widget" (dict "var" `settings_config_defaults_kind`  "alt" `config_defaults_kind`  "name" `kind`  "widget" `select` "multiple" true "options" site.Data.utilities.default_kinds))
+  (partial "cms/widget" (dict "var" `settings_config_defaults_lang`  "alt" `config_defaults_lang`  "name" `lang`  "widget" `select` "multiple" true "options" `~options_langs`                 ))
+  (partial "cms/widget" (dict "var" `settings_config_defaults_path`  "alt" `config_defaults_path`  "name" `path`  "widget" `list`   "multiple" true                                            ))
+  (partial "cms/widget" (dict
+    "var"     `settings_config_defaults`
+    "alt"     `config_defaults`
+    "name"    `defaults`
+    "widget"  `list`
+    "summary" "{{fields.name}}: {{fields.value}}"
+    "fields"  (slice
       `~types_params_name`
       `~settings_config_defaults_value`
       `~settings_config_defaults_type`
@@ -89,37 +76,35 @@
     )
   ))
 
-  (dict "&settings_config_cms" (dict
-    "name"      `cms`
-    "widget"    `object`
-    "required"  false
-    "label"     $t.config_cms
-    "collapsed" true
-    "fields"    (slice
-      (dict "name" `logo`      "widget" `image`   "required" false "label" $t.config_cms_logo      "max_file_size" 512000000)
-      (dict "name" `lang`      "widget" `select`  "required" false "label" $t.config_cms_lang      "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~options_langs_cms`)
-      (dict "name" `editorial` "widget" `boolean` "required" false "label" $t.config_cms_editorial "hint" $t.config_cms_editorial_hint)
-      (dict "name" `disabled`  "widget" `hidden`  "required" false "label" `disabled` )
+  (partial "cms/widget" (dict
+    "var"    `settings_config_cms`
+    "alt"    `config_cms`
+    "name"   `cms`
+    "widget" `object`
+    "fields" (slice
+      (partial "cms/widget" (dict "alt" `config_cms_logo`      "name" `logo`      "widget" `image`                                                                                                         ))
+      (partial "cms/widget" (dict "alt" `config_cms_lang`      "name" `lang`      "widget" `select`  "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~options_langs_cms`))
+      (partial "cms/widget" (dict "alt" `config_cms_editorial` "name" `editorial` "widget" `boolean`                                                                                                       ))
+      (partial "cms/widget" (dict                              "name" `disabled`  "widget" `hidden`  "label" `disabled`                                                                                    ))
     )
   ))
 
-  (dict "&settings_config_others" (dict
-    "label"     $t.config_others
-    "name"      `others`
-    "widget"    `object`
-    "collapsed" true
-    "required"  false
-    "fields"    (slice
-      (dict "name" `favicon`                      "widget" `image`   "required" false "label" $t.config_others_favicon                      "hint" $t.config_others_favicon_hint                      "max_file_size" 512000000)
-      (dict "name" `lang_default_subdir`          "widget" `boolean` "required" false "label" $t.config_others_lang_default_subdir)
-      (dict "name" `cookies_advanced`             "widget" `boolean` "required" false "label" $t.config_others_cookies_advanced             "hint" $t.config_others_cookies_advanced_hint)
-      (dict "name" `cookies_legal`                "widget" `boolean` "required" false "label" $t.config_others_cookies_legal                "hint" $t.config_others_cookies_legal_hint)
-      (dict "name" `analytics_pagespeed_disabled` "widget" `boolean` "required" false "label" $t.config_others_analytics_pagespeed_disabled "hint" $t.config_others_analytics_pagespeed_disabled_hint)
-      (dict "name" `process_all_images`           "widget" `boolean` "required" false "label" $t.config_others_process_all_images           "hint" $t.config_others_process_all_images_hint)
-      (dict "name" `development`                  "widget" `boolean` "required" false "label" $t.config_others_development                  "hint" $t.config_others_development_hint)
-      (dict "name" `show`                         "widget" `boolean` "required" false "label" $t.config_others_show                         "hint" $t.config_others_show_hint)
-      (dict "name" `webp`                         "widget" `boolean` "required" false "label" $t.config_others_webp                         "hint" $t.config_others_webp_hint)
-      (dict "name" `image_sizes`                  "widget" `number`  "required" false "label" $t.config_others_image_sizes                  "value_type" `float` "step" 0.01 "min" 1 "max" 3)
+  (partial "cms/widget" (dict
+    "var"    `settings_config_others`
+    "alt"    `config_others`
+    "name"   `others`
+    "widget" `object`
+    "fields" (slice
+      (partial "cms/widget" (dict "alt" `config_others_favicon`                      "name" `favicon`                      "widget" `image`                                                   ))
+      (partial "cms/widget" (dict "alt" `config_others_lang_default_subdir`          "name" `lang_default_subdir`          "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_cookies_advanced`             "name" `cookies_advanced`             "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_cookies_legal`                "name" `cookies_legal`                "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_analytics_pagespeed_disabled` "name" `analytics_pagespeed_disabled` "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_process_all_images`           "name" `process_all_images`           "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_development`                  "name" `development`                  "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_show`                         "name" `show`                         "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_webp`                         "name" `webp`                         "widget" `boolean`                                                 ))
+      (partial "cms/widget" (dict "alt" `config_others_image_sizes`                  "name" `image_sizes`                  "widget" `number`  "value_type" `float` "step" 0.01 "min" 1 "max" 3))
     )
   ))
 

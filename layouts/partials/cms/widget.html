@@ -1,15 +1,17 @@
 {{ $var := print "&" .var }}
 {{ $o   := . }}
+{{ $loc := .alt | default .var }}
+{{ $t   := dict }}
+{{ if $loc }}
+  {{ $t  = partial "functions/i18n-cms" . }}
+{{ end }}
 
 {{ $from := index . "<<" }}
 {{ if $from }}
   {{ $from = print "~" $from }}
-  {{ $o    = merge . (dict "var" nil "<<" nil) }}
+  {{ $o    = merge . (dict "var" nil "alt" nil "<<" nil) }}
   {{ $o    = partial "functions/obj-no-nil" $o }}
-  {{ $o    = dict "<<" (slice $o $from) }}
 {{ else }}
-  {{ $t   := partial "functions/i18n-cms" . }}
-  {{ $loc := .alt | default .var }}
   {{ $widget   := .widget   | default "string" }}
   {{ $required := .required | default false }}
   {{ $i18n     := .i18n }}
@@ -19,6 +21,7 @@
   {{ end }}
   {{ $o = dict
     "var"      nil
+    "alt"      nil
     "widget"   $widget
     "required" $required
     "i18n"     $i18n
@@ -33,6 +36,14 @@
         "time_format" `HH:mm`
       }}
       {{ $o  = merge $o $f }}
+    {{ end }}
+  {{ else if eq "color" $widget }}
+    {{ if not $o.allow_input }}
+      {{ $o = merge $o (dict "allow_input" true) }}
+    {{ end }}
+  {{ else if eq "image" $widget }}
+    {{ if not $o.allow_input }}
+      {{ $o = merge $o (dict "max_file_size" 512000000 "choose_url" true) }}
     {{ end }}
   {{ else if eq "number" $widget }}
     {{ if not $o.value_type }}
@@ -65,23 +76,27 @@
     ) }}
     */}}
   {{ end }}
+{{ end }}
 
-  {{ if not .label }}
-    {{ with $loc }}
-      {{ with index $t . }}
-        {{ $o = merge $o (dict "label" .) }}
-      {{ end }}
+{{ if not .label }}
+  {{ with $loc }}
+    {{ with index $t . }}
+      {{ $o = merge $o (dict "label" .) }}
     {{ end }}
   {{ end }}
-  {{ if not .hint }}
-    {{ with $loc }}
-      {{ with index $t (print . "_hint") }}
-        {{ $o = merge $o (dict "hint" .) }}
-      {{ end }}
+{{ end }}
+{{ if not .hint }}
+  {{ with $loc }}
+    {{ with index $t (print . "_hint") }}
+      {{ $o = merge $o (dict "hint" .) }}
     {{ end }}
   {{ end }}
+{{ end }}
 
-  {{ $o = partial "functions/obj-no-nil" $o }}
+{{ $o = partial "functions/obj-no-nil" $o }}
+
+{{ if $from }}
+  {{ $o = dict "<<" (slice $o $from) }}
 {{ end }}
 
 {{ $return := cond (not .var) $o (dict $var $o) }}

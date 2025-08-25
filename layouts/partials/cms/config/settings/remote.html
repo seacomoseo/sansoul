@@ -1,51 +1,38 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
 {{ return dict "&settings_remote" (slice
-  (dict
-    "name"           `srcs`
-    "widget"         `list`
-    "required"       false
-    "label"          $t.remote
-    "label_singular" $t.remote_singular
-    "hint"           $t.remote_hint
-    "collapsed"      false
-    "summary"        "{{fields.src}}"
-    "allow_add"      true
-    "fields"    (slice
-      (dict "name" `src`   "widget" `string`  "required" false "label" `URL`)
-      (dict "name" `csv`   "widget" `boolean` "required" false "label" $t.remote_csv)
-      (dict "name" `lang`  "widget" `select`  "required" false "label" $t.config_lang  "options" `~options_langs`)
-      (dict
-        "name"           `types`
-        "widget"         `list`
-        "required"       false
-        "label"          $t.remote_types
-        "label_singular" $t.remote_type
-        "collapsed"      true
-        "summary"        "{{fields.type}}"
-        "allow_add"      true
-        "fields"    (slice
-          (dict "name" `type`  "widget" `select`  "required" false "label" $t.remote_type  "options" `~options_types`)
-          (dict "name" `index` "widget" `string`  "required" false "label" $t.remote_index "hint" $t.remote_index_hint)
-          (dict
-            "name"           `pairings`
-            "widget"         `list`
-            "required"       false
-            "label"          $t.remote_pairings
-            "label_singular" $t.remote_pairings_singular
-            "collapsed"      true
-            "summary"        "{{fields.type}}"
-            "allow_add"      true
-            "fields"    (slice
-              (dict "name" `from`    "widget" `string` "required" false "label" $t.remote_pairings_from)
-              (dict "name" `to`      "widget" `string` "required" true  "label" $t.remote_pairings_to)
-              (dict "name" `default` "widget" `string` "required" false "label" $t.default)
-              (dict "name" `kind`    "widget" `select` "required" false "label" $t.remote_pairings_kind    "options" site.Data.utilities.pairing_kinds)
-              (dict "name" `delimit` "widget" `string` "required" false "label" $t.remote_pairings_delimit "hint" (print $t.default " → '**,**'"))
+  (partial "cms/widget" (dict
+    "alt"     `remote`
+    "name"    `srcs`
+    "widget"  `list`
+    "summary" "{{fields.src}}"
+    "fields"  (slice
+      (partial "cms/widget" (dict "label" `URL`       "name" `src`                                                ))
+      (partial "cms/widget" (dict "alt" `remote_csv`  "name" `csv`   "widget" `boolean`                           ))
+      (partial "cms/widget" (dict "alt" `config_lang` "name" `lang`  "widget" `select`  "options" `~options_langs`))
+      (partial "cms/widget" (dict
+        "alt"     `remote_types`
+        "name"    `types`
+        "widget"  `list`
+        "summary" "{{fields.type}}"
+        "fields"  (slice
+          (partial "cms/widget" (dict "alt" `remote_types_singular` "name" `type`  "widget" `select` "options" `~options_types`))
+          (partial "cms/widget" (dict "alt" `remote_index`          "name" `index`                                             ))
+          (partial "cms/widget" (dict
+            "alt"     `remote_pairings`
+            "name"    `pairings`
+            "widget"  `list`
+            "summary" "{{fields.from}}"
+            "fields"  (slice
+              (partial "cms/widget" (dict "alt" `remote_pairings_from`    "name" `from`                                                                 ))
+              (partial "cms/widget" (dict "alt" `remote_pairings_to`      "name" `to`      "required" true                                              ))
+              (partial "cms/widget" (dict "alt" `default`                 "name" `default`                                                              ))
+              (partial "cms/widget" (dict "alt" `remote_pairings_kind`    "name" `kind`    "widget" `select` "options" site.Data.utilities.pairing_kinds))
+              (partial "cms/widget" (dict "alt" `remote_pairings_delimit` "name" `delimit`                   "hint" (print $t.default " → '**,**'")     ))
             )
-          )
+          ))
         )
-      )
+      ))
     )
   ))
-}}
+) }}

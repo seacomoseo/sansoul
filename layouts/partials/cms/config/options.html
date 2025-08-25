@@ -27,8 +27,8 @@
   {{ end }}
 {{ end }}
 {{ $options_lists = $options_lists | append
-  (dict "value" "related" "label" (print site.Data.utilities.defaults.related.emoji " " $t.related))
-  (dict "value" "all"     "label" (print site.Data.utilities.defaults.all.emoji     " " $t.all))
+  (dict "value" "related" "label" (print site.Data.utilities.defaults.related.emoji " " $t.types_related))
+  (dict "value" "all"     "label" (print site.Data.utilities.defaults.all.emoji     " " $t.types_all))
 }}
 
 {{ $vars := slice
