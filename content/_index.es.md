@@ -30,13 +30,13 @@ org:
   areas: [] # strings
   schedule: []
   # - days:
-  #   - monday
-  #   - tuesday
-  #   - wednesday
-  #   - thursday
-  #   - friday
-  #   - saturday
-  #   - sunday
+  #     mon: true
+  #     tue: true
+  #     wed: true
+  #     thu: true
+  #     fri: true
+  #     sat: false
+  #     sun: false
   #   hours:
   #   - open: 8:00
   #     close: 14:00

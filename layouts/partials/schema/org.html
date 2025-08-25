@@ -51,11 +51,25 @@
   {{/*  Opening Hours Specification  */}}
   {{ $schedule := slice }}
   {{ with .schedule }}
+    {{ $day_names := dict
+      "mon" "Monday"
+      "tue" "Tuesday"
+      "wed" "Wednesday"
+      "thu" "Thursday"
+      "fri" "Friday"
+      "sat" "Saturday"
+      "sun" "Sunday"
+    }}
     {{ range . }}
       {{ $s    := . }}
       {{ $days := slice }}
-      {{ range .days }}
-        {{ $days = $days | append (print "https://schema.org/" (. | title)) }}
+      {{ range $k, $v := .days }}
+        {{ if $v }}
+          {{ $day_name := index $day_names $k }}
+          {{ with $day_name }}
+            {{ $days = $days | append (print "https://schema.org/" .) }}
+          {{ end }}
+        {{ end }}
       {{ end }}
       {{ range .hours }}
         {{ $o := slice }}

@@ -6,7 +6,10 @@
 {{ range $k, $v := site.Data.options }}
   {{ $option_values := slice }}
   {{ range . }}
-    {{ $label := index $t (print "option-" $k "-" .) | default . }}
+    {{ $label  := $t.default }}
+    {{ if ne . "" }}
+      {{ $label = index $t (print "option-" $k "-" .) | default . }}
+    {{ end }}
     {{ $option_values = $option_values | append
       (dict
         "value" .
@@ -58,7 +61,6 @@
   (dict "&options_icons_type"    $options.icons_type)
   (dict "&options_sizes"         $options.sizes)
   (dict "&options_sizes_n_fluid" (where $options.sizes "value" "ne" "fluid"))
-  (dict "&options_days"          $options.days)
   (dict "&options_gallery_types" $options.gallery_types)
   (dict "&options_tile"          $options.tile)
   (dict "&options_view_section"  (where $options.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "image" "button" "bg" "container_bg" "paddings" "size" "divider" "boxi" "other")))

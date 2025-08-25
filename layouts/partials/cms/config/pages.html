@@ -167,7 +167,20 @@
     "widget"  `list`
     "summary" "{{fields.days}}"
     "fields"  (slice
-      (partial "cms/widget" (dict "alt" `page_org_schedule_days`        "name" `days`   "widget" `select` "multiple" true "options" `~options_days`))
+      (partial "cms/widget" (dict
+        "alt"     `page_org_schedule_days`
+        "name"    `days`
+        "widget"  `object`
+        "fields"  (slice
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_mon` "name" `mon` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_tue` "name" `tue` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_wed` "name" `wed` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_thu` "name" `thu` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_fri` "name" `fri` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_sat` "name" `sat` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_schedule_days_sun` "name" `sun` "widget" `boolean`))
+        )
+      ))
       (partial "cms/widget" (dict
         "name"    `hours`
         "widget"  `list`

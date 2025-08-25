@@ -46,18 +46,20 @@ org:
   - Online
   schedule:
   - days:
-    - monday
-    - tuesday
-    - wednesday
-    - thursday
-    - friday
+      mon: true
+      tue: true
+      wed: true
+      thu: true
+      fri: true
+      sat: false
+      sun: false
     hours:
     - open: 9:00
       close: 14:00
     - open: 17:00
       close: 20:00
   - days:
-    - saturday
+      sat: true
     open: 9:00
     close: 13:00
   prices: €€
