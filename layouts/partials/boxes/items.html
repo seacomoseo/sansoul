@@ -118,12 +118,8 @@
           "boxes_wrap" $boxes_wrap
         -}}
 
-        {{- $box_hide := dict -}}
-        {{- range slice "image" "icon" "md" "price" -}}
-          {{- if eq (index $box .) "hide" -}}
-            {{- $box_hide = merge $box_hide (dict . "") -}}
-          {{- end -}}
-        {{- end -}}
+        {{/*  hide string params  */}}
+        {{ $box_hide := partial "functions/hide" (dict "item" $box "simple" true) }}
 
         {{- range $key, $this := $boxes -}}
         {{- /* BOX  */ -}}

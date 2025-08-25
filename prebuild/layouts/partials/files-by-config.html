@@ -94,18 +94,20 @@
         {{ end }}
 
         {{/*  permalinks  */}}
-        {{ $permalinks    := "" }}
+        {{ $permalinks      := "" }}
         {{ with $type.permalinks }}
-          {{ $permalinks     = print . "/:slug" }}
+          {{ if ne . "/" }}
+            {{ $permalinks   = print . "/:slug" }}
+          {{ end }}
         {{ else }}
           {{ if eq $type.permalinks nil }}
             {{ with index $t (print "types_default_" $name "_permalinks") }}
               {{ $permalinks = print . "/:slug" }}
             {{ end }}
           {{ end }}
-          {{ if not $permalinks }}
-            {{ $permalinks   = ":slug" }}
-          {{ end }}
+        {{ end }}
+        {{ if not $permalinks }}
+          {{ $permalinks     = ":slug" }}
         {{ end }}
 
         {{/*  cms  */}}

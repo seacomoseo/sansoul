@@ -11,8 +11,10 @@
 {{- $store  := page.Store -}}
 {{- $border := $store.Get "md_border" | default "" -}}
 {{- with $border -}}
-  {{- $border_class := print "image--border " (cond (ne "main" .) . "") -}}
-  {{- $figure_class  = print $figure_class " " $border_class -}}
+  {{- if ne . "hide" -}}
+    {{- $border_class := print "image--border " (cond (ne "main" .) . "") -}}
+    {{- $figure_class  = print $figure_class " " $border_class -}}
+  {{- end -}}
 {{- end -}}
 
 {{- if in .Text "float" -}}

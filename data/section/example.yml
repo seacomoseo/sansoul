@@ -7,9 +7,9 @@ menu_label: Texto del enlace del Menú
 menu_button: cta # [ main, cta, alt, light, dark, invert, similar, none, hide ]
 menu_swap: true
 # bg
-color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
-fade: gray # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+fade: gray # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
 fade_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 bi: base/poster.png
 alpha: 0 # [ 0.00 - 1.00 ]
@@ -51,7 +51,7 @@ md_caps: 3 # [ 1 - 6 ]
 md_line: 2 # [ 1 - 6 ]
 md_index: false
 md_nav: false
-md_border: false
+md_border: hide # [ main, cta, alt, light, dark, invert, similar, hide ]
 # icon
 # icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 icon_type: bottom # [ top, side, bottom ]
@@ -60,10 +60,12 @@ icon_color: '' # [ main, cta, alt, light, dark, invert, similar ]
 # image
 image: base/icon.png
 hover: base/poster.png
+alt: Descripción de la imagen
+hover_alt: Descripción de la imagen hover
 ratio: 1/1 # [ int/int ]
 circle: true
 contain: false
-border: main # [ main, cta, alt, light, dark, invert, similar ]
+border: main # [ main, cta, alt, light, dark, invert, similar, hide ]
 inset: true
 gray: false
 shade: false
@@ -77,9 +79,9 @@ button: none # [ main, cta, alt, light, dark, invert, similar, none, hide ]
 swap: true
 ga4: false
 # container
-box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
 box_color_alpha: '' # [ 0.00 - 1.00 ]
-box_fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+box_fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
 box_fade_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
 box_bi: base/icon.png
 box_alpha: .8 # [ 0.00 - 1.00 ]
@@ -204,7 +206,7 @@ boxes:
 ###
 
 - step:
-    border: cta # [ main, cta, alt, light, dark, invert, similar ]
+    border: cta # [ main, cta, alt, light, dark, invert, similar, hide ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
     hn: '' # [ 1 - 6, p ]
     hs: '' # [ 0 - 6 ]
@@ -227,7 +229,7 @@ boxes:
 - gallery:
     cols: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, cols, boxes ]
-    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
     gap: 0 # [ >= 0.00 ]
     ratio: 1/1 # [ int/int ]
     contain: true
@@ -252,8 +254,10 @@ boxes:
   - https://secure.gravatar.com/avatar/a48d43c9530f50721162853c0b68aebc?s=512&d=identicon
   limages:
   - image: base/poster.png
+    alt: Descripción de la imagen 1
     link: /
   - image: https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=512&q=60
+    alt: Descripción de la imagen 2
     link: /pagina-ejemplo/
 
 ###
@@ -285,8 +289,8 @@ boxes:
 - review:
     cols: 3 # [ 0 = auto, > 0 ]
     cols_vs: 1 # [ 0 = auto, > 0 ]
-    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
-    fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar ]
+    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
+    fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
     fade_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
     alpha: .5 # [ 0.00 - 1.00 ]
     hide_shadow: true

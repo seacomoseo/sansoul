@@ -14,6 +14,7 @@
 ## Script para actualizar proyectos antiguos
 ### CAMBIOS Y COMPROBACIONES MANUALES
 
+- `: ''`
 - `*.yml`
   - `placeholder` > `label`
 - `content`

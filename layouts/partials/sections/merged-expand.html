@@ -36,8 +36,10 @@
   {{ end }}
 
   {{/*  is_bg and color  */}}
-  {{ $color := cond .is_modal "black" .color }}
-  {{ $is_bg := or .bi $color .fade }}
+  {{ $color := cond .is_modal "black" (cond (eq .color "hide") "" .color) }}
+  {{ $bi    := cond (eq .bi   "hide") "" .bi   }}
+  {{ $fade  := cond (eq .fade "hide") "" .fade }}
+  {{ $is_bg := or $bi $color $fade }}
   {{/*  Change color if is similar or invert and set bgcp  */}}
   {{ $bgc_o := dict "child" $color "parent" .bgcp }}
   {{ $bgc   := partial "functions/color-background" $bgc_o }}
@@ -61,16 +63,19 @@
   {{ if .is_modal }}
     {{ $box_params = dict
       "box_node"        .node
-      "box_bi"          .bi
+      "box_bi"          $bi
       "box_alpha"       .alpha
       "box_parallax"    .parallax
-      "box_color"       .color
+      "box_color"       $color
       "box_color_alpha" .color_alpha
-      "box_fade"        .fade
+      "box_fade"        $fade
       "box_fade_type"   .fade_type
     }}
   {{ end }}
   {{ $section := merge . $section_params $box_params }}
+
+  {{/*  Hide string params  */}}
+  {{ $section = partial "functions/hide" (dict "item" $section) }}
 
   {{ return $section }}
 {{ end }}

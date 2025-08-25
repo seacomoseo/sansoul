@@ -6,6 +6,9 @@
 {{/*  {{ $color := cond (ne .color nil) .color (cond (not .card) "" "black") }}  */}}
 
 {{ $color := .color }}
+{{ if eq $color "hide" }}
+  {{ $color = "" }}
+{{ end }}
 {{ if not $color }}
   {{ if .card }}
     {{ $color = "black" }}
@@ -19,7 +22,8 @@
 {{ $col_vs := mul .col_vs (.fit_vs | default 1.00) }}
 
 {{/*  bg and image  */}}
-{{ $bi    := .bi }}
+{{ $fade  := cond (eq .fade "hide") "" .fade }}
+{{ $bi    := cond (eq .bi   "hide") "" .bi   }}
 {{ $image := .image }}
 {{ if .card }}
   {{ $image = "" }}
@@ -27,7 +31,7 @@
     {{ $bi = .image }}
   {{ end }}
 {{ end }}
-{{ $is_bg := or $bi $color .fade }}
+{{ $is_bg := or $bi $color $fade }}
 
 {{/*  images  */}}
 {{ $gallery := .gallery }}
@@ -150,6 +154,7 @@
   "col_vl"         $col_vl
   "col_vs"         $col_vs
   "is_bg"          $is_bg
+  "fade"           $fade
   "bi"             $bi
   "image"          $image
   "images"         $images
@@ -170,5 +175,8 @@
   "limages"        nil
 }}
 {{ $box = merge . $to_merge }}
+
+{{/*  hide string params  */}}
+{{ $box = partial "functions/hide" (dict "item" $box) }}
 
 {{ return $box }}

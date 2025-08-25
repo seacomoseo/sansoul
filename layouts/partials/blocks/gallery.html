@@ -7,8 +7,9 @@
     "col_vs" .col_vs
   ) -}}
 
-  {{- $bgc   := partial "functions/color-background" (dict "child" .color "parent" .bgcp) -}}
-  {{- $color := $bgc.child -}}
+  {{- $color := cond (eq .color "hide") "" .color -}}
+  {{- $bgc   := partial "functions/color-background" (dict "child" $color "parent" .bgcp) -}}
+  {{- $color  = $bgc.child -}}
 
   {{- $is_button_expand := and (eq .type "rows") (.images | or .link) (ne .button "hide") -}}
   {{- $is_button_custom := and .link (ne .type "rows") -}}
