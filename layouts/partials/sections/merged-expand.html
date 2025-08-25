@@ -36,9 +36,9 @@
   {{ end }}
 
   {{/*  is_bg and color  */}}
-  {{ $color := cond .is_modal "black" (cond (eq .color "hide") "" .color) }}
-  {{ $bi    := cond (eq .bi   "hide") "" .bi   }}
-  {{ $fade  := cond (eq .fade "hide") "" .fade }}
+  {{ $color := cond (eq .color "hide") "" .color }}
+  {{ $bi    := cond (eq .bi    "hide") "" .bi    }}
+  {{ $fade  := cond (eq .fade  "hide") "" .fade  }}
   {{ $is_bg := or $bi $color $fade }}
   {{/*  Change color if is similar or invert and set bgcp  */}}
   {{ $bgc_o := dict "child" $color "parent" .bgcp }}
@@ -56,7 +56,7 @@
     "container" $container
     "is_bg"     $is_bg
     "bgcp"      $bgcp
-    "color"     $color
+    "color"     (cond .is_modal "black" $color)
     "div_can"   $div_can
   }}
   {{ $box_params := dict }}
