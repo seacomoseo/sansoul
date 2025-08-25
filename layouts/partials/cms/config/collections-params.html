@@ -67,18 +67,23 @@
   {{ if eq $widget "number" }}
     {{ $field = merge $field (dict
       "value_type"     $value_type
+      "step"           (cond (eq $value_type `int`) 1 0.01)
     ) }}
   {{ else if eq $widget "markdown" }}
     {{ $field = merge $field (dict
       "show_raw"       true
     ) }}
-  {{ else if eq $widget "date" }}
+  {{ else if eq $widget "datetime" }}
     {{ $field = merge $field (dict
       "format"         `yyyy-MM-dd HH:mm:ss`
       "date_format"    `yyyy-MM-dd`
       "time_format"    `HH:mm`
     ) }}
   {{ else if eq $widget "image" }}
+    {{ $field = merge $field (dict
+      "max_file_size"  512000000
+      "choose_url"     true
+    ) }}
   {{ else if eq $widget "select" }}
     {{ $field = merge $field (dict
       "options"        .options

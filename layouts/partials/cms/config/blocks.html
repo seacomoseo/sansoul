@@ -47,9 +47,9 @@
 {{ return slice
 
   (partial "cms/widget" (dict "var" `box_list_type`  "name" `type` "widget" `select`   "options" `~options_lists`))
-  (partial "cms/widget" (dict "var" `box_list_start` "name" `date` "widget" `datetime`))
-  (partial "cms/widget" (dict "var" `box_list_end`   "name" `end`  "widget" `datetime`))
-  (partial "cms/widget" (dict "var" `box_list_max`   "name" `max`  "widget" `number`))
+  (partial "cms/widget" (dict "var" `box_list_start` "name" `date` "widget" `datetime`                           ))
+  (partial "cms/widget" (dict "var" `box_list_end`   "name" `end`  "widget" `datetime`                           ))
+  (partial "cms/widget" (dict "var" `box_list_max`   "name" `max`  "widget" `int`                                ))
   (partial "cms/widget" (dict
     "var"    `box_list`
     "name"   `list`
@@ -166,7 +166,7 @@
 
   (dict "&box_review_icon_left"  (dict "<<" (slice (dict "label" $t.box_review_icon_left  "name" `icon`)       `~box_icon_id`)))
   (dict "&box_review_icon_right" (dict "<<" (slice (dict "label" $t.box_review_icon_right "name" `icon_right`) `~box_icon_id`)))
-  (partial "cms/widget" (dict "var" `box_review_rating` "name" `rating` "widget" `number`   "value_type" `float` "step" 0.01 "min" 0 "max" 5))
+  (partial "cms/widget" (dict "var" `box_review_rating` "name" `rating` "widget" `float`    "max" 5          ))
   (partial "cms/widget" (dict "var" `box_review_date`   "name" `date`   "widget" `datetime` "alt" `page_date`))
   (partial "cms/widget" (dict
     "var"     `box_review`
@@ -205,13 +205,13 @@
     )
   ))
 
-  (partial "cms/widget" (dict "var" `box_zoom`        "name" `zoom`   "widget" `number`             "step" 1 "min" 1 "max" 20 "hint" `1 - 20`))
-  (partial "cms/widget" (dict "var" `box_map_tile`    "name" `tile`   "widget" `select`             "options" `~options_tile`                ))
-  (partial "cms/widget" (dict "var" `box_map_color`   "name" `color`  "widget" `select`             "options" `~options_color_base_w`        ))
-  (partial "cms/widget" (dict "var" `box_map_label`   "name" `label`                                                                         ))
-  (partial "cms/widget" (dict "var" `box_map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`              ))
-  (partial "cms/widget" (dict "var" `box_map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`            ))
-  (partial "cms/widget" (dict "var" `box_map_radius`  "name" `radius` "widget" `number` "i18n" true "step" 1 "min" 0 "max" 20                ))
+  (partial "cms/widget" (dict "var" `box_zoom`        "name" `zoom`   "widget" `int`                "min" 1 "max" 20 "hint" `1 - 20` ))
+  (partial "cms/widget" (dict "var" `box_map_tile`    "name" `tile`   "widget" `select`             "options" `~options_tile`        ))
+  (partial "cms/widget" (dict "var" `box_map_color`   "name" `color`  "widget" `select`             "options" `~options_color_base_w`))
+  (partial "cms/widget" (dict "var" `box_map_label`   "name" `label`                                                                 ))
+  (partial "cms/widget" (dict "var" `box_map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`      ))
+  (partial "cms/widget" (dict "var" `box_map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`    ))
+  (partial "cms/widget" (dict "var" `box_map_radius`  "name" `radius` "widget" `int`    "i18n" true "min" 0 "max" 20                 ))
   (partial "cms/widget" (dict
     "var"     `box_map`
     "name"    `map`
@@ -333,8 +333,8 @@
   (partial "cms/widget" (dict "var" `box_input_required_if` "name" `required_if`                   ))
   (partial "cms/widget" (dict "var" `box_input_show_if`     "name" `show_if`                       ))
   (partial "cms/widget" (dict "var" `box_input_regex`       "name" `regex`                         ))
-  (partial "cms/widget" (dict "var" `box_input_min`         "name" `min`         "widget" `number` ))
-  (partial "cms/widget" (dict "var" `box_input_max`         "name" `max`         "widget" `number` ))
+  (partial "cms/widget" (dict "var" `box_input_min`         "name" `min`         "widget" `int`    ))
+  (partial "cms/widget" (dict "var" `box_input_max`         "name" `max`         "widget" `int`    ))
   (partial "cms/widget" (dict "var" `box_input_x`           "name" `x`           "widget" `boolean`))
   (partial "cms/widget" (dict "var" `box_input_accept`      "name" `accept`                        ))
   (partial "cms/widget" (dict "var" `box_input_basename`    "name" `base_name`                     ))

@@ -3,14 +3,14 @@
 {{ return slice
   (partial "cms/widget" (dict "var" `font_keys` "widget" `object` "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
 
-  (partial "cms/widget" (dict "var" `font_family`      "alt" `styles_fonts_family`      "name" `family`                                                                          ))
-  (partial "cms/widget" (dict "var" `font_weight`      "alt" `styles_fonts_weight`      "name" `weight`      "widget" `select`  "options" `~options_font_weight`                 ))
-  (partial "cms/widget" (dict "var" `font_bold`        "alt" `styles_fonts_bold`        "name" `bold`        "widget" `select`  "options" `~options_font_weight`                 ))
-  (partial "cms/widget" (dict "var" `font_italic`      "alt" `styles_fonts_italic`      "name" `italic`      "widget" `boolean`                                                  ))
-  (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `number`  "value_type" `float` "step" 0.01 "min" 0  "max" 3))
-  (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `number`  "value_type" `float` "step" 0.01 "min" 0  "max" 3))
-  (partial "cms/widget" (dict "var" `font_top`         "alt" `styles_fonts_top`         "name" `top`         "widget" `number`  "value_type" `float` "step" 0.01 "min" -2 "max" 2))
-  (partial "cms/widget" (dict "var" `font_google`      "alt" `styles_fonts_google`      "name" `google`      "widget" `boolean`                                                  ))
+  (partial "cms/widget" (dict "var" `font_family`      "alt" `styles_fonts_family`      "name" `family`                                                         ))
+  (partial "cms/widget" (dict "var" `font_weight`      "alt" `styles_fonts_weight`      "name" `weight`      "widget" `select`  "options" `~options_font_weight`))
+  (partial "cms/widget" (dict "var" `font_bold`        "alt" `styles_fonts_bold`        "name" `bold`        "widget" `select`  "options" `~options_font_weight`))
+  (partial "cms/widget" (dict "var" `font_italic`      "alt" `styles_fonts_italic`      "name" `italic`      "widget" `boolean`                                 ))
+  (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `float`            "max" 3                ))
+  (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `float`            "max" 3                ))
+  (partial "cms/widget" (dict "var" `font_top`         "alt" `styles_fonts_top`         "name" `top`         "widget" `float`   "min" -2 "max" 2                ))
+  (partial "cms/widget" (dict "var" `font_google`      "alt" `styles_fonts_google`      "name" `google`      "widget" `boolean`                                 ))
 
   (partial "cms/widget" (dict "var" `font` "<<" `font_keys` "fields" (slice
     `~font_google`
@@ -105,8 +105,8 @@
       "name"   `rounded`
       "widget" `object`
       "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_rounded_radius`  "name" `radius`  "widget" `number`  "value_type" `float` "step" 0.01 "min" 0 "max" 1.25))
-        (partial "cms/widget" (dict "alt" `styles_rounded_chamfer` "name" `chamfer` "widget" `boolean`                                                    ))
+        (partial "cms/widget" (dict "alt" `styles_rounded_radius`  "name" `radius`  "widget" `float`   "max" 1.25))
+        (partial "cms/widget" (dict "alt" `styles_rounded_chamfer` "name" `chamfer` "widget" `boolean`           ))
       )
     ))
     (partial "cms/widget" (dict
@@ -155,11 +155,11 @@
       "name"   `shadow`
       "widget" `object`
       "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `number` "value_type" `float` "step" 0.05 "min" -1 "max" 1))
-        (partial "cms/widget" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `number` "value_type" `float` "step" 0.05 "min" -1 "max" 1))
-        (partial "cms/widget" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `number` "value_type" `float` "step" 0.05 "min" 0  "max" 1))
-        (partial "cms/widget" (dict "alt" `styles_shadow_color` "<<" `box_bg_color`))
-        (partial "cms/widget" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `number` "value_type" `float` "step" 0.05 "min" 0  "max" 1))
+        (partial "cms/widget" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `float` "step" 0.05 "min" -1 "max" 1))
+        (partial "cms/widget" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `float` "step" 0.05 "min" -1 "max" 1))
+        (partial "cms/widget" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `float` "step" 0.05          "max" 1))
+        (partial "cms/widget" (dict "alt" `styles_shadow_color` "<<" `box_bg_color`                                         ))
+        (partial "cms/widget" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `float` "step" 0.05          "max" 1))
       )
     ))
   ))

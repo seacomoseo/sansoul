@@ -6,7 +6,7 @@
   (partial "cms/widget" (dict "var" `page_title`          "name" `title`                              "required" true "default" ``                                             ))
   (partial "cms/widget" (dict "var" `page_summary`        "name" `summary`        "widget" `text`                                                                              ))
   (partial "cms/widget" (dict "var" `page_image`          "name" `image`          "widget" `image`                                                                             ))
-  (partial "cms/widget" (dict "var" `page_weight`         "name" `weight`         "widget" `number`                                                                            ))
+  (partial "cms/widget" (dict "var" `page_weight`         "name" `weight`         "widget" `int`                                                                               ))
 
   (partial "cms/widget" (dict "var" `page_toc`            "name" `toc`            "widget" `boolean`                 ))
   (partial "cms/widget" (dict "var" `page_draft`          "name" `draft`          "widget" `boolean`  "i18n" true    ))
@@ -35,8 +35,8 @@
     )
   ))
 
-  (partial "cms/widget" (dict "var" `page_price` "<<" `box_price` "widget" `number` "value_type" `float` "step" 0.01 "min" 0))
-  (partial "cms/widget" (dict "var" `page_sku`            "name" `sku`                                    "label" `SKU` "i18n" `duplicate`))
+  (partial "cms/widget" (dict "var" `page_price` "<<" `box_price` "widget" `float`))
+  (partial "cms/widget" (dict "var" `page_sku`   "name" `sku` "label" `SKU` "i18n" `duplicate`))
   
   (partial "cms/widget" (dict "var" `page_prefix`         "name" `prefix`))
   (partial "cms/widget" (dict
@@ -202,11 +202,11 @@
     "widget"  `list`
     "summary" "{{fields.title}}"
     "fields"  (slice
-      (partial "cms/widget" (dict "name" `title`       "label" $t.config_title                                                                 ))
-      (partial "cms/widget" (dict "name" `description` "label" $t.config_description "widget" `text`                                           ))
-      (partial "cms/widget" (dict "name" `price`       "label" $t.box_price          "widget" `number` "value_type" `float` "min" 0 "step" 0.01))
-      (partial "cms/widget" (dict "name" `area`        "label" $t.page_areas_singular                                                          ))
-      (partial "cms/widget" (dict "name" `url`         "label" `URL`                                                                           ))
+      (partial "cms/widget" (dict "name" `title`       "label" $t.config_title                       ))
+      (partial "cms/widget" (dict "name" `description` "label" $t.config_description "widget" `text` ))
+      (partial "cms/widget" (dict "name" `price`       "label" $t.box_price          "widget" `float`))
+      (partial "cms/widget" (dict "name" `area`        "label" $t.page_areas_singular                ))
+      (partial "cms/widget" (dict "name" `url`         "label" `URL`                                 ))
     )
   ))
   (partial "cms/widget" (dict

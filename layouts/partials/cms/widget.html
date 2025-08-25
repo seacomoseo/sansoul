@@ -1,6 +1,7 @@
 {{ $var := print "&" .var }}
 {{ $o   := . }}
 {{ $loc := .alt | default .var }}
+
 {{ $t   := dict }}
 {{ if $loc }}
   {{ $t  = partial "functions/i18n-cms" . }}
@@ -9,73 +10,76 @@
 {{ $from := index . "<<" }}
 {{ if $from }}
   {{ $from = print "~" $from }}
-  {{ $o    = merge . (dict "var" nil "alt" nil "<<" nil) }}
-  {{ $o    = partial "functions/obj-no-nil" $o }}
-{{ else }}
-  {{ $widget   := .widget   | default "string" }}
-  {{ $required := .required | default false }}
-  {{ $i18n     := .i18n }}
-  {{ if not .i18n }}
-    {{ $wi18n  := slice "string" "text" "markdown" "image" "object" "list" }}
-    {{ $i18n    = cond (in $wi18n $widget) true "duplicate" }}
-  {{ end }}
-  {{ $o = dict
-    "var"      nil
-    "alt"      nil
-    "widget"   $widget
-    "required" $required
-    "i18n"     $i18n
-  }}
-  {{ $o = merge . $o }}
+{{ end }}
 
-  {{ if eq "datetime" $widget }}
-    {{ if not .format }}
-      {{ $f := dict
-        "format"      `yyyy-MM-dd HH:mm:ss`
-        "date_format" `yyyy-MM-dd`
-        "time_format" `HH:mm`
-      }}
-      {{ $o  = merge $o $f }}
-    {{ end }}
-  {{ else if eq "color" $widget }}
-    {{ if not $o.allow_input }}
-      {{ $o = merge $o (dict "allow_input" true) }}
-    {{ end }}
-  {{ else if eq "image" $widget }}
-    {{ if not $o.allow_input }}
-      {{ $o = merge $o (dict "max_file_size" 512000000 "choose_url" true) }}
-    {{ end }}
-  {{ else if eq "number" $widget }}
-    {{ if not $o.value_type }}
-      {{ $o = merge $o (dict "value_type" `int`) }}
-    {{ end }}
-  {{ else if eq "markdown" $widget }}
-    {{ $o = merge $o (dict "show_raw" true) }}
-  {{ else if eq "object" $widget }}
-    {{ $o = merge $o (dict "collapsed" true) }}
-  {{ else if eq "list" $widget }}
-    {{ $o = merge $o (dict "collapsed" true "allow_add" true) }}
-    {{ if $loc }}
-      {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
-      {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
-    {{ end }}
-  {{ else if eq "relation" $widget }}
-    {{ $o = merge $o (dict
-      "options_length" 100
-      "value_field"    "{{slug}}"
-      "search_fields"  (slice "{{title}}")
-      "display_fields" (slice "{{title}}")
-    ) }}
-    {{/*
-  {{ else if eq "boolean" $widget }}
-    {{ partial "warn" $widget }}
-    {{ $t := partial "functions/i18n-cms" . }}
-    {{ $o  = merge $o (dict
-      "widget"  `select`
-      "options" `~options_boolean`
-    ) }}
-    */}}
+{{ $widget   := .widget   | default "string" }}
+{{ $required := .required | default false }}
+{{ $i18n     := .i18n }}
+{{ if not .i18n }}
+  {{ $wi18n  := slice "string" "text" "markdown" "image" "object" "list" }}
+  {{ $i18n    = cond (in $wi18n $widget) true "duplicate" }}
+{{ end }}
+{{ $o = dict
+  "var"      nil
+  "alt"      nil
+  "<<"       nil
+  "widget"   $widget
+  "required" $required
+  "i18n"     $i18n
+}}
+{{ $o = merge . $o }}
+
+{{ if eq "datetime" $widget }}
+  {{ if not .format }}
+    {{ $f := dict
+      "format"      `yyyy-MM-dd HH:mm:ss`
+      "date_format" `yyyy-MM-dd`
+      "time_format" `HH:mm`
+    }}
+    {{ $o  = merge $o $f }}
   {{ end }}
+{{ else if eq "color" $widget }}
+  {{ if not $o.allow_input }}
+    {{ $o = merge $o (dict "allow_input" true) }}
+  {{ end }}
+{{ else if eq "image" $widget }}
+  {{ if not $o.allow_input }}
+    {{ $o = merge $o (dict "max_file_size" 512000000 "choose_url" true) }}
+  {{ end }}
+{{ else if eq "int" $widget }}
+  {{ if not $o.value_type }}
+    {{ $o = merge $o (dict "widget" `number` "value_type" `int` "step" 1) }}
+  {{ end }}
+{{ else if eq "float" $widget }}
+  {{ if not $o.value_type }}
+    {{ $o = merge $o (dict "widget" `number` "value_type" `float` "step" 0.01 "min" 0) }}
+  {{ end }}
+{{ else if eq "markdown" $widget }}
+  {{ $o = merge $o (dict "show_raw" true) }}
+{{ else if eq "object" $widget }}
+  {{ $o = merge $o (dict "collapsed" true) }}
+{{ else if eq "list" $widget }}
+  {{ $o = merge $o (dict "collapsed" true "allow_add" true) }}
+  {{ if $loc }}
+    {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
+    {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
+  {{ end }}
+{{ else if eq "relation" $widget }}
+  {{ $o = merge $o (dict
+    "options_length" 100
+    "value_field"    "{{slug}}"
+    "search_fields"  (slice "{{title}}")
+    "display_fields" (slice "{{title}}")
+  ) }}
+  {{/*
+{{ else if eq "boolean" $widget }}
+  {{ partial "warn" $widget }}
+  {{ $t := partial "functions/i18n-cms" . }}
+  {{ $o  = merge $o (dict
+    "widget"  `select`
+    "options" `~options_boolean`
+  ) }}
+  */}}
 {{ end }}
 
 {{ if not .label }}
