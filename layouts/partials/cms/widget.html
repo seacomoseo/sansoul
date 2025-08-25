@@ -12,22 +12,23 @@
   {{ $from = print "~" $from }}
 {{ end }}
 
-{{ $widget   := .widget   | default "string" }}
-{{ $required := .required | default false }}
-{{ $i18n     := .i18n }}
-{{ if not .i18n }}
-  {{ $wi18n  := slice "string" "text" "markdown" "image" "object" "list" }}
-  {{ $i18n    = cond (in $wi18n $widget) true "duplicate" }}
+{{ $widget := .widget | default (cond (not $from) "string" nil) }}
+{{ $o       = merge . (dict "var" nil "alt" nil "<<"  nil) }}
+
+{{ if not $from }}
+  {{ $required := .required | default false }}
+  {{ $i18n     := .i18n }}
+  {{ if not .i18n }}
+    {{ $wi18n  := slice "string" "text" "markdown" "image" "object" "list" }}
+    {{ $i18n    = cond (in $wi18n $widget) true "duplicate" }}
+  {{ end }}
+  {{ $f := dict
+    "widget"   $widget
+    "required" $required
+    "i18n"     $i18n
+  }}
+  {{ $o = merge $o $f }}
 {{ end }}
-{{ $o = dict
-  "var"      nil
-  "alt"      nil
-  "<<"       nil
-  "widget"   $widget
-  "required" $required
-  "i18n"     $i18n
-}}
-{{ $o = merge . $o }}
 
 {{ if eq "datetime" $widget }}
   {{ if not .format }}

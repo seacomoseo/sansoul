@@ -164,8 +164,8 @@
   (partial "cms/widget" (dict "var" `box_gss_sheet` "name" `gss_sheet`))
 
 
-  (dict "&box_review_icon_left"  (dict "<<" (slice (dict "label" $t.box_review_icon_left  "name" `icon`)       `~box_icon_id`)))
-  (dict "&box_review_icon_right" (dict "<<" (slice (dict "label" $t.box_review_icon_right "name" `icon_right`) `~box_icon_id`)))
+  (partial "cms/widget" (dict "var" `box_review_icon_left`  "<<" `box_icon_id` "name" `icon`      ))
+  (partial "cms/widget" (dict "var" `box_review_icon_right` "<<" `box_icon_id` "name" `icon_right`))
   (partial "cms/widget" (dict "var" `box_review_rating` "name" `rating` "widget" `float`    "max" 5          ))
   (partial "cms/widget" (dict "var" `box_review_date`   "name" `date`   "widget" `datetime` "alt" `page_date`))
   (partial "cms/widget" (dict
@@ -247,7 +247,7 @@
   (partial "cms/widget" (dict "var" `box_contact_address_label`  "name" `label`                    ))
   (partial "cms/widget" (dict "var" `box_contact_address_anchor` "name" `anchor`                   ))
   (partial "cms/widget" (dict "var" `box_contact_hidden`         "name" `hidden` "widget" `hidden` ))
-  (dict "&box_contact_map" (dict "<<" (slice (dict "hint" $t.box_contact_map_hint) `~box_map_point`)))
+  (partial "cms/widget" (dict "var" `box_contact_map`            "<<" `box_map_point`              ))
   (partial "cms/widget" (dict "var" `box_contact_schedule` "name" `schedule` "widget" `object` "summary" "{{fields.days}} {{fields.hours}}" "fields" (slice `~box_contact_days` `~box_contact_hours` `~box_contact_full`)))
   (partial "cms/widget" (dict "var" `box_contact_phone`    "name" `phone`    "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_full` `~box_button_color` `~box_button_swap` `~box_icon_id`)))
   (partial "cms/widget" (dict "var" `box_contact_whatsapp` "name" `whatsapp` "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_full` `~box_button_color` `~box_button_swap`)))
@@ -339,7 +339,7 @@
   (partial "cms/widget" (dict "var" `box_input_accept`      "name" `accept`                        ))
   (partial "cms/widget" (dict "var" `box_input_basename`    "name" `base_name`                     ))
   (partial "cms/widget" (dict "var" `box_input_geo_area`    "name" `area`        "widget" `boolean`))
-  (dict "&box_input_geo_view" (dict "<<" (slice (dict "label" $t.box_input_geo_view "name" `view`) `~box_map_point`)))
+  (partial "cms/widget" (dict "var" `box_input_geo_view`    "<<" `box_map_point` "name" `view`     ))
   (partial "cms/widget" (dict "var" `box_input_option`      "name" `option`                        ))
   (partial "cms/widget" (dict "var" `box_input_value`       "name" `value`                         ))
   (partial "cms/widget" (dict

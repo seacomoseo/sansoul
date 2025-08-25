@@ -25,8 +25,9 @@
     "default"   $default
     "multiple"  .multiple
   }}
-  {{ $merge = partial "functions/obj-truly" $merge }}
-  {{ $fields = .fields | append (dict "<<" (slice $merge (print "~" .var))) }}
+  {{ $merge  = partial "functions/obj-truly" $merge }}
+  {{ $field := dict "<<" (slice $merge (print "~" .var)) }}
+  {{ $fields = .fields | append $field }}
 
 {{ else }}
 

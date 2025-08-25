@@ -5,7 +5,9 @@
 {{ $widgets_last  = apply $widgets_last "index" "." "value" }}
 {{ $type_langs   := slice }}
 {{ range site.Languages }}
-  {{ $type_langs  = $type_langs | append (dict "<<" (slice (dict "name" .Lang "label" (print $t.types_lang " " (index $t (print "option-langs-" .Lang)))) `~types_items` )) }}
+  {{ $label      := print $t.types_lang " " (index $t (print "option-langs-" .Lang)) }}
+  {{ $type_lang  := partial "cms/widget" (dict "<<" `types_items` "name" .Lang "label" $label) }}
+  {{ $type_langs  = $type_langs | append $type_lang }}
 {{ end }}
 {{ $type_langs_fields := slice
   `~types_title`
