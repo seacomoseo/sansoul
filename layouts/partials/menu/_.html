@@ -9,18 +9,16 @@
     {{- end -}}
 
     {{- /*  ITEM HOME LINK  */ -}}
-    {{- if not $logo -}}
-      {{- if and .auto (ne .auto "none") -}}
-        {{- if not ($custom | jsonify | findRE `"link":"/#?"`) -}}
-          {{- with site.Home -}}
-            {{- $items = $items | append (dict
-              "link"     .RelPermalink
-              "icon"     (cond (not $.menu.hide_icons) "house" "")
-              "emoji"    (cond (not $.menu.hide_icons) "🏠" "")
-              "label"    .Title
-              "anchor"   (partial "functions/anchor-page" .)
-            ) -}}
-          {{- end -}}
+    {{- if and .auto (ne .auto "none") -}}
+      {{- if not ($custom | jsonify | findRE `"link":"/#?"`) -}}
+        {{- with site.Home -}}
+          {{- $items = $items | append (dict
+            "link"     .RelPermalink
+            "icon"     (cond (not $.menu.hide_icons) "house" "")
+            "emoji"    (cond (not $.menu.hide_icons) "🏠" "")
+            "label"    .Title
+            "anchor"   (partial "functions/anchor-page" .)
+          ) -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
