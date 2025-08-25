@@ -55,6 +55,15 @@
       "search_fields"  (slice "{{title}}")
       "display_fields" (slice "{{title}}")
     ) }}
+    {{/*
+  {{ else if eq "boolean" $widget }}
+    {{ partial "warn" $widget }}
+    {{ $t := partial "functions/i18n-cms" . }}
+    {{ $o  = merge $o (dict
+      "widget"  `select`
+      "options" `~options_boolean`
+    ) }}
+    */}}
   {{ end }}
 
   {{ if not .label }}

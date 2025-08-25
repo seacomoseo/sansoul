@@ -76,6 +76,11 @@
   (dict "&options_lists"         $options_lists)
   (dict "&options_types"         (where $options_lists "value" "ne" "related"))
   (dict "&options_font_weight"   (slice 0 100 200 300 400 500 600 700 800 900))
+  (dict "&options_boolean"       (slice
+    (dict "value" nil "label" $t.default)
+    (dict "value" "y" "label" $t.true)
+    (dict "value" "n" "label" $t.false)
+  ))
 }}
 
 {{ return $vars }}
