@@ -3,11 +3,12 @@ import { waitCSS } from './wait-css'
 
 const menu = document.querySelector('.menu')
 const menuSticky = document.querySelector('.body-menu--sticky')
+const menuStickyAuto = document.querySelector('.body-menu--sticky--auto')
 const menuNoStickyVisibility = () => !menuSticky || screenSticky()
 
 function screenSticky () {
   // Sticky auto
-  if (document.querySelector('.body-menu--sticky--auto')) {
+  if (menuStickyAuto) {
     document.body.classList.add('body-menu--sticky--calculate')
     menu.removeAttribute('hidden')
 
@@ -67,8 +68,19 @@ function menuSetVisibility () {
   }
 }
 
+function setupListeners () {
+  // Listeners
+  document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
+  window.addEventListener('hashchange', menuClose)
+  window.addEventListener('resize', debounce(menuSetVisibility))
+
+  // Run when load
+  if (document.documentElement.clientWidth >= 375) menuSetVisibility()
+}
+
 export function initMenuToggle () {
   if (!menu) return
+
   document.addEventListener('click', e => {
     const menuToggleButton = e.target.closest('.menu__toggle')
     if (menuToggleButton) {
@@ -78,13 +90,10 @@ export function initMenuToggle () {
       if (menuBackoverAndLinks) menuClose()
     }
   })
-  waitCSS(async () => {
-    // Listeners
-    document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
-    window.addEventListener('hashchange', menuClose)
-    window.addEventListener('resize', debounce(menuSetVisibility))
 
-    // Run when load
-    if (document.documentElement.clientWidth >= 375) menuSetVisibility()
-  })
+  if (menuStickyAuto) {
+    waitCSS(setupListeners)
+  } else {
+    setupListeners()
+  }
 }
