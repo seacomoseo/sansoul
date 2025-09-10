@@ -29,12 +29,12 @@
       {{- $attrs  = partial "functions/attrs" $attrs -}}
     {{- end }}
     <h3 id="div-{{ . }}">
-      {{ partial "link" (dict
+      {{- partial "link" (dict
         "label" .
         "link"  (print "#div-" .)
-      ) }}
+      ) -}}
       <br>
-      {{ index $t (print "option-divider-" .) }}
+      {{- index $t (print "option-div-" .) -}}
     </h3>
     <div {{- $attrs }}>
       <div class="bg-color"></div>
