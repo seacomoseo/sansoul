@@ -125,8 +125,8 @@
       {{- end -}}
       {{- $vs                := site.Data.utilities.viewports.min -}}
       {{- $vl                := site.Data.utilities.viewports.max -}}
-      {{- $size_vl           := mul $container_vl $fit_vl | int -}}
-      {{- $size_vs           := mul $container_vs $fit_vs | int -}}
+      {{- $size_vl           := mul $container_vl $fit_vl | float -}}
+      {{- $size_vs           := mul $container_vs $fit_vs | float -}}
 
       {{- $sizes_base        := slice -}}
       {{- range $viewports -}}

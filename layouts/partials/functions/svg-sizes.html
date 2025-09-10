@@ -3,13 +3,13 @@
 {{ range $head }}
   {{ $width  := . | findRE ` width="(.+?)"`  | default 0 }}
   {{ $height := . | findRE ` height="(.+?)"` | default 0 }}
-  {{ with $width  }}{{ $width  = index . 0 | replaceRE ` width="|"`  "" | int }}{{ end }}
-  {{ with $height }}{{ $height = index . 0 | replaceRE ` height="|"` "" | int }}{{ end }}
+  {{ with $width  }}{{ $width  = index . 0 | replaceRE ` width="|"`  "" | float }}{{ end }}
+  {{ with $height }}{{ $height = index . 0 | replaceRE ` height="|"` "" | float }}{{ end }}
   {{ $view_box := . | replaceRE `.*?viewBox="[0-9eE\.\-]+ [0-9eE\.\-]+ ([0-9eE\.\-]+) ([0-9eE\.\-]+)".*` `$1,$2` -}}
   {{ $split    := split $view_box "," }}
   {{ if eq (len $split) 2 }}
-    {{ $width  = index $split 0 | int }}
-    {{ $height = index $split 1 | int }}
+    {{ $width  = index $split 0 | float }}
+    {{ $height = index $split 1 | float }}
   {{ else }}
     {{ errorf "viewBox parse error in %s" .name }}
   {{ end }}
