@@ -265,7 +265,7 @@ iframe {
   flex-shrink: 0;
   flex-grow: 0;
   font-family: 'Material Symbols';
-  font-weight: normal;
+  font-weight: #{$icons-weight};
   font-style: normal;
   font-size: 1em;
   line-height: 1;
@@ -277,12 +277,12 @@ iframe {
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    'FILL' #{$icons-fill},
+    'wght' #{$icons-weight},
+    'GRAD' #{$icons-grade},
+    'opsz' #{$icons-optical};
   @if not $is-production {
-    font-variation-settings:
-      'FILL' #{$icons-fill},
-      'wght' #{$icons-weight},
-      'GRAD' #{$icons-grade},
-      'opsz' #{$icons-optical};
   }
   scale: 1.4 + ($icons-weight - 100) * (1.125 - 1.4) / (700 - 100);
 }
