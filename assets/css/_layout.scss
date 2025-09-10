@@ -275,14 +275,17 @@ iframe {
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
-  -webkit-font-feature-settings: 'liga';
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-variation-settings:
-    'FILL' #{$icons-fill},
-    'wght' #{$icons-weight},
-    'GRAD' #{$icons-grade},
-    'opsz' #{$icons-optical};
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
   @if not $is-production {
+    font-variation-settings:
+      'FILL' #{$icons-fill},
+      'wght' #{$icons-weight},
+      'GRAD' #{$icons-grade},
+      'opsz' #{$icons-optical};
   }
   scale: 1.4 + ($icons-weight - 100) * (1.125 - 1.4) / (700 - 100);
 }

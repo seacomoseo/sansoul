@@ -112,7 +112,7 @@
   mask+rect{transform:translate(8192px,calc(var(--y, 0) * 128px))}
 </style>
 {{ delimit . "\n" | safeHTML }}
-{{ end }}
+{{- end -}}
 
 {{- /*  SVG'S CODE  */ -}}
 {{ with $svg_ }}
@@ -139,4 +139,4 @@
 {{ end }}
 
 
-{{ "</svg>" | safeHTML }}
+{{- "</svg>" | safeHTML -}}

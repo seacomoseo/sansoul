@@ -6,7 +6,9 @@
 {{ $string      := partial "files/draws-svg" page | string }}
 {{ $resource    := resources.FromString $draws_path $string }}
 {{ if hugo.IsProduction }}
-  {{ $resource   = $resource | minify }}
+  {{ $orig_path := strings.TrimPrefix "/" $resource.RelPermalink }}
+  {{ $minified  := $resource | minify }}
+  {{ $resource   = $minified.Content | resources.FromString $orig_path }}
 {{ end }}
 {{ $resource.Publish }}
 {{ return "" }}

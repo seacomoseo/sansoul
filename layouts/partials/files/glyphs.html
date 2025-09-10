@@ -1,12 +1,14 @@
 {{ if hugo.IsProduction }}
   {{ $icons := hugo.Store.Get "glyphs" | uniq | sort }}
+  {{ $icons  = delimit $icons "," | replaceRE `-` "_" }}
   {{ with site.Data.styles.icons }}
+    {{ $grade := cond (and .fill (not .grade)) 200 .grade }}
     {{/*  URL  */}}
     {{ $url := print
       "https://fonts.googleapis.com/css2"
       "?family=Material+Symbols+" (strings.FirstUpper .style)
-      ":opsz,wght,FILL,GRAD@" .optical "," .weight "," (int .fill) "," .grade
-      "&icon_names=" (delimit $icons "," | replaceRE `-` "_")
+      ":opsz,wght,FILL,GRAD@" .optical "," .weight "," (int .fill) "," (int $grade)
+      "&icon_names=" $icons
     }}
     {{/*  Get remote CSS  */}}
     {{ $ua      := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" }}
