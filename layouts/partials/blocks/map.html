@@ -15,7 +15,7 @@
     {{- range . -}}
       {{- $radius    := .radius | default "" -}}
       {{- $color     := .color  | default $map.color | default $.icon_color | default "main" -}}
-      {{- $icon      := cond (ne .type "point") "" (.icon | default $map.icon | default $.pin | default "circle-dot") -}}
+      {{- $icon      := cond (ne .type "point") "" (.icon | default $map.icon | default $.pin | default site.Data.styles.icons.geo | default site.Data.utilities.defaults.geo) -}}
       {{- $icons      = $icons  | append $icon -}}
       {{- $geo_attrs := dict
         "data-geo"    .geo
@@ -29,6 +29,6 @@
   </div>
   {{- /*  HIDDEN ICONS  */ -}}
   {{- range uniq $icons -}}
-    {{- partial "icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" .) -}}
+    {{- partial "icon" (dict "hide" true "icon" .) -}}
   {{- end -}}
 {{- end -}}

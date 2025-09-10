@@ -1,0 +1,10 @@
+{{ $dict := dict }}
+
+{{ $s := newScratch }}
+{{ $s.Set "clean" .dict }}
+{{ range .params }}
+  {{ $s.DeleteInMap "clean" . }}
+{{ end }}
+{{ $dict = $s.Get "clean" }}
+
+{{ return $dict }}

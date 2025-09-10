@@ -1,7 +1,7 @@
 ---
 title: Privacidad
 slug: privacidad
-icon: shield-keyhole
+icon: encrypted
 noindex: true
 type: system
 weight: 2

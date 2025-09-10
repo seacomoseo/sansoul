@@ -285,6 +285,7 @@
 
 
 {{/*  SETTINGS  */}}
+{{ $default   := site.Data.utilities.defaults }}
 {{ $colections = $colections | append  (dict
   "label"           $t.collection_settings
   "name"            `settings`
@@ -292,11 +293,11 @@
   "sortable_fields" (dict "fields" slice)
   "editor"          (dict "preview" false)
   "files"           (slice
-    (dict "file" `data/config.yml`     "extension" `yml` "name" `config`    "label" $t.config    "fields" `~settings_config`)
-    (dict "file" `data/styles.yml`     "extension" `yml` "name" `styles`    "label" $t.styles    "fields" `~settings_styles`)
-    (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "fields" `~settings_remote`)
-    (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "alt" `redirects`                         ))))
-    (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "label" `robots.txt` "hint" $t.robots_hint))))
+    (dict "file" `data/config.yml`     "extension" `yml` "name" `config`    "label" $t.config    "icon" $default.config.icon    "fields" `~settings_config`)
+    (dict "file" `data/styles.yml`     "extension" `yml` "name" `styles`    "label" $t.styles    "icon" $default.styles.icon    "fields" `~settings_styles`)
+    (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "icon" $default.remote.icon    "fields" `~settings_remote`)
+    (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "icon" $default.redirects.icon "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "alt" `redirects`                         ))))
+    (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "icon" $default.robots.icon    "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "label" `robots.txt` "hint" $t.robots_hint))))
   )
 ) }}
 

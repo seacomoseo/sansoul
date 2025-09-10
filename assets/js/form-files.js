@@ -1,10 +1,8 @@
-import { loading, formErrorFileOnload, timestamp } from '@params'
+import { loading, formErrorFileOnload } from '@params'
 import { slugify } from './slugify'
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
 
-const closeIcon = `<svg class="icon close" onclick="closePreview(this)">
-  <use href="/draws.${timestamp}.svg#xmark"></use>
-</svg>`
+const closeIcon = '<i class="icon close" onclick="closePreview(this)">close</i>'
 
 const canvasTest = document.createElement('canvas')
 const webpSupport = canvasTest.getContext && canvasTest.getContext('2d')
@@ -17,7 +15,7 @@ const isSafari =
   navigator.userAgent.indexOf('FxiOS') === -1
 
 export function initFormFiles () {
-  whaitCSS(() => {
+  waitCSS(() => {
     const forms = document.querySelectorAll('.form:has(input[type="file"])')
     forms.forEach(form => {
       form.querySelectorAll('input[type="file"]').forEach(input => {
@@ -39,7 +37,7 @@ export function initFormFiles () {
             const placeholders = files.map(() => {
               const li = document.createElement('li')
               li.classList.add('form__preview-item')
-              li.innerHTML = `<svg class="icon spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${loading}…`
+              li.innerHTML = `<i class="icon spin">sync</i> ${loading}…`
               inputPreview.appendChild(li)
               return li
             })

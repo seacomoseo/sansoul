@@ -1,17 +1,13 @@
 import {
   formSubmitSending,
   formSubmitOk,
-  formSubmitWrong,
-  timestamp
+  formSubmitWrong
 } from '@params'
 import { formValid } from './form-validate'
 import { changeValues } from './form-change-values'
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
 
-const closeIcon =
-'<svg class="icon close" onclick="this.parentElement.remove()">' +
-  `<use href="/draws.${timestamp}.svg#xmark"></use>` +
-'</svg>'
+const closeIcon = '<i class="icon close" onclick="this.parentElement.remove()">close</i>'
 
 function formSubmited (form) {
   const customEventSubmit = new CustomEvent('submited-' + form.id)
@@ -31,12 +27,12 @@ function formSubmited (form) {
 function formSubmitError (formMessage, message) {
   formMessage.classList.add('form__submit--error')
   formMessage.innerHTML =
-    `<svg class="icon"><use href="/draws.${timestamp}.svg#circle-xmark"></use></svg> ${closeIcon} ${formSubmitWrong}<br>` +
-    `<svg class="icon"><use href="/draws.${timestamp}.svg#circle-info"></use></svg> ${message}`
+    `<i class="icon">close</i> ${closeIcon} ${formSubmitWrong}<br>` +
+    `<i class="icon">info</i> ${message}`
 }
 
 export function initFormSend () {
-  whaitCSS(() => {
+  waitCSS(() => {
     const forms = document.querySelectorAll('.form')
     let formMessage
 
@@ -90,7 +86,7 @@ export function initFormSend () {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
-            formMessage.innerHTML = `<svg class="icon spin"><use href="/draws.${timestamp}.svg#rotate"></use></svg> ${formSubmitSending}…`
+            formMessage.innerHTML = `<i class="icon spin">sync</i> ${formSubmitSending}…`
             form.append(formMessage)
 
             const formOptions = { method: 'POST' }
@@ -121,7 +117,7 @@ export function initFormSend () {
                   throw new Error(data.message || 'Unknown error, data: ' + JSON.stringify(data))
                 }
                 formMessage.classList.add('form__submit--success')
-                formMessage.innerHTML = `<svg class="icon"><use href="/draws.${timestamp}.svg#circle-check"></use></svg> ${closeIcon} ${formSubmitOk}`
+                formMessage.innerHTML = `<i class="icon">check_circle</i> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form)
                 // Reset
                 form.reset()

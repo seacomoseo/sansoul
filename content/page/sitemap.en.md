@@ -1,7 +1,7 @@
 ---
 title: Sitemap
 slug: sitemap
-icon: sitemap
+icon: account_tree
 noindex: true
 type: system
 weight: 5

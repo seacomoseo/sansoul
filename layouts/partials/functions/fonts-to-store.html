@@ -1,0 +1,47 @@
+{{ with site.Data.styles.fonts }}
+  {{/*  Set  */}}
+  {{ $fonts := slice }}
+  {{ $gf    := slice }}
+  {{ range $key, $value := slice .base .title .cursive }}
+      {{ if .weight }}
+        {{ $font := dict
+          "family" .family
+          "weight" .weight
+          "italic" .italic
+        }}
+        {{ $fonts = $fonts | append $font }}
+        {{ if .google }}
+          {{ $gf = $gf | append $font }}
+        {{ end }}
+      {{ end }}
+      {{ if .bold }}
+        {{ $bold := dict
+          "family" .family
+          "weight" .bold
+          "italic" .italic
+        }}
+        {{ $fonts = $fonts | append $bold }}
+        {{ if .google }}
+          {{ $gf = $gf | append $bold }}
+        {{ end }}
+      {{ end }}
+  {{ end }}
+  {{/*  CSS  */}}
+  {{ $f_css := slice }}
+  {{ with $fonts }}
+    {{ range uniq . }}
+      {{ $font_face := print
+        .family "|"
+        .weight "|"
+        (cond .italic "italic" "normal") "|"
+        (print (.family | urlize) "-" .weight (cond .italic "-italic" ""))
+      }}
+      {{ $f_css = $f_css | append $font_face }}
+    {{ end }}
+  {{ end }}
+  {{ $f_css = delimit $f_css "," }}
+  {{/*  Set in hugo store  */}}
+  {{ hugo.Store.Set "fonts_css" $f_css }}
+  {{ hugo.Store.Set "google_fonts" $gf }}
+{{ end }}
+{{ return "" }}

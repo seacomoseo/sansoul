@@ -1,7 +1,7 @@
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
 
 export function initPrerender () {
-  whaitCSS(() => {
+  waitCSS(() => {
     // If connection is fast (downlink >= 2 Mbps)
     if (navigator.connection && navigator.connection.downlink >= 2) {
       const links = document.querySelectorAll('a[href^="/"]:not([href^="/#"]), [data-h]:not([data-h=""])')

@@ -1,9 +1,12 @@
 {{ $obj := dict }}
 
+{{ $s := newScratch }}
+{{ $s.Set "filtered" (dict) }}
 {{ range $k, $v := . }}
   {{ with . }}
-    {{ $obj = merge $obj (dict $k .) }}
+    {{ $s.SetInMap "filtered" $k $v }}
   {{ end }}
 {{ end }}
+{{ $obj = $s.Get "filtered" }}
 
 {{ return $obj }}

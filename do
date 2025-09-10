@@ -109,7 +109,7 @@ elif [ $1 = server ]; then
   sh do prebuild
 
   hecho "HUGO SERVER"
-  hugo server --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
+  hugo server --disableFastRender --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # CMS + hugo local
 elif [ $1 = local ]; then
@@ -127,45 +127,15 @@ elif [ $1 = local ]; then
 # Remove public directorie
 elif [ $1 = rm-public ]; then
 
-  hecho "REMOVE PUBLIC DIRECTORIE"
+  hecho "REMOVE PUBLIC AND TMP RESOURCES DIRECTORIE"
   rm -r public
+  rm -r resources
 
 # Like purge CSS
 elif [ $1 = css-purge ]; then
 
   hecho "CSS PURGE"
   node ./themes/sansoul/assets/js/node/css-purge.js
-
-# Purge svg draws
-elif [ $1 = draws-purge ]; then
-
-  hecho "DRAWS PURGE"
-  FILE=`ls public/draws.*.svg`
-  TEMP=temp.svg
-  IDSF=ids.txt
-  # Collect id's
-  find ./public/ -type f -iname "*.*" | \
-    xargs grep -Eoh "draws\.[0-9]+\.svg\#(\w|-|\.)+" | \
-    sort | \
-    uniq | \
-    sed -E 's/^draws\.[0-9]+\.svg#|-(pr|ne)x?y?$//g' | \
-    tr "\n" "|" | \
-    sed -E 's/\|$//g' > \
-    ${IDSF}
-  IDS=`cat ${IDSF}`
-  # Filter original file
-  head -n 2 ${FILE} > ${TEMP}
-  cat ${FILE} | \
-    grep -Eo "^<(symbol|g) id=\"(${IDS})\".+$" >> \
-    ${TEMP}
-  echo "</svg>" >> ${TEMP}
-  # Replace original with filtered
-  cat ${TEMP} > \
-    ${FILE}
-  # If it has no content paint "null"
-  [ -s ${FILE} ] || echo "null" > ${FILE}
-  # Delete temporary files
-  rm ${TEMP} ${IDSF}
 
 # Images ICO, PNG and AVIF
 elif [ $1 = images ]; then
@@ -228,7 +198,6 @@ elif [ $1 = hugo-production ]; then
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
   # sh do css-purge
-  sh do draws-purge
   sh do images
   # sh do multilang
 

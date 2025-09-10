@@ -60,7 +60,7 @@
   {{- $more  := "" -}}
   {{- if and $hanchor (ne $title $hanchor) (not $link) -}}
     {{- $more  = $title | markdownify | plainify -}}
-    {{- $title = print "<i>" $hanchor "</i>" -}}
+    {{- $title = print "<b>" $hanchor "</b>" -}}
   {{- end -}}
 
   {{- /* TITLE JOIN  */ -}}

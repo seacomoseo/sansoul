@@ -73,13 +73,13 @@ ___
 
 Se pueden poner [iconos](#iconos) al inicio de cada elemento:
 
-- :check: Elemento
-- :check: Elemento
-  - :xmark: Elemento
-    - :minus: Elemento
-    - :minus: Elemento
-    - :minus: Elemento
-- :check: Elemento
+- ::check:: Elemento
+- ::check:: Elemento
+  - ::xmark:: Elemento
+    - ::minus:: Elemento
+    - ::minus:: Elemento
+    - ::minus:: Elemento
+- ::check:: Elemento
 
 ### Ordenadas
 
@@ -168,14 +168,14 @@ Si se le añade `{.compare}` al final de las tablas, los [iconos](#iconos) `chec
 
 | Características                   | Netlify CMS                | Forestry                  |
 | --------------------------------- | :------------------------: | :-----------------------: |
-| Interfaz limpia<br>(grupos…)      | :xmark:<br>desplegables | :check:<br>deslizables |
-| Previsualizaciones                | :xmark:                 | :check:                |
-| Adaptado a móviles                | :xmark:                 | :check:                |
-| Sin límites de usuarios           | :check:                 | :xmark: 3              |
-| Interfaz en español               | :check:                 | :xmark: casi           |
-| Permite imágenes externas         | :check:                 | :xmark:                |
-| Edición de código razonable       | :check:                 | :xmark:                |
-| Sistema independiente de terceros | :check:                 | :xmark:                |
+| Interfaz limpia<br>(grupos…)      | ::xmark::<br>desplegables | ::check::<br>deslizables |
+| Previsualizaciones                | ::xmark::                 | ::check::                |
+| Adaptado a móviles                | ::xmark::                 | ::check::                |
+| Sin límites de usuarios           | ::check::                 | ::xmark:: 3              |
+| Interfaz en español               | ::check::                 | ::xmark:: casi           |
+| Permite imágenes externas         | ::check::                 | ::xmark::                |
+| Edición de código razonable       | ::check::                 | ::xmark::                |
+| Sistema independiente de terceros | ::check::                 | ::xmark::                |
 {.compare}
 
 ## Enlaces
@@ -215,17 +215,17 @@ Si no hay un botón al comienzo de la linea, éste y los siguientes saltan de l�
 
 En cualquier lugar añadiendo como texto el ID del icono deseado (que se puede consultar en el siguiente botón) envuelto entre el caracter `|`:
 
-[[:font-awesome: Font Awesome Icons]](https://fontawesome.com/v6/icons?s=brands,solid).
+[[::font:-awesome: Font Awesome Icons]](https://fontawesome.com/v6/icons?s=brands,solid).
 
 Ejemplos:
 
-- `star`: :star:
-- `tag`: :tag:
-- `home`: :house:
-- Aquí hay un icono :apple: de la famosa manzana
+- `star`: ::star::
+- `tag`: ::tag::
+- `home`: ::house::
+- Aquí hay un icono ::apple:: de la famosa manzana
 - A continuación hay un botón con icono:
 
-[[:star: Botón]](#iconos)
+[[::star:: Botón]](#iconos)
 
 
 ## Imágenes

@@ -16,8 +16,7 @@
     {{- if eq .link "translate" -}}
       {{- $item = merge
         (dict
-          "icon"      "earth-americas"
-          "emoji"     "🌎"
+          "default"   "translate"
           "label"     (i18n "translate")
           "translate" true
         )
@@ -28,15 +27,15 @@
 
     {{- with $item -}}
       {{- $hide_icons := $.hide_icons -}}
-      {{- if .lang | or ((or .icon .emoji) | and (not .label)) -}}
+      {{- if .lang | or ((or .icon .default) | and (not .label)) -}}
         {{- $hide_icons = false -}}
       {{- end -}}
-      {{- $icon   := cond (not $hide_icons) .icon "" -}}
-      {{- $emoji  := cond (not $hide_icons) .emoji "" -}}
-      {{- $label  := .menu_label | default .label | markdownify -}}
-      {{- $anchor := .anchor | default "auto" -}}
+      {{- $icon    := cond (not $hide_icons) .icon    "" -}}
+      {{- $default := cond (not $hide_icons) .default "" -}}
+      {{- $label   := .menu_label | default .label | markdownify -}}
+      {{- $anchor  := .anchor | default "auto" -}}
 
-      {{- if or $label $icon $emoji -}}
+      {{- if or $label $icon $default -}}
 
         {{- $button_class := slice
           (cond (not .button)    "menu__link" "menu__button")
@@ -62,17 +61,17 @@
         <li {{- $li_attrs }}>
           {{- /*  link  */}}
           {{ partial "link" (dict
-            "class"  $button_class
-            "button" .button
-            "sm"     true
-            "swap"   .swap
-            "ga4"    .ga4
-            "icon"   $icon
-            "emoji"  $emoji
-            "label"  $label
-            "anchor" $anchor
-            "link"   .link
-            "lock"   .lock
+            "class"   $button_class
+            "button"  .button
+            "sm"      true
+            "swap"    .swap
+            "ga4"     .ga4
+            "icon"    $icon
+            "default" $default
+            "label"   $label
+            "anchor"  $anchor
+            "link"    .link
+            "lock"    .lock
           ) -}}
 
           {{- /*  subitems  */ -}}

@@ -1,7 +1,7 @@
 ---
 title: Inhaltsverzeichnis
 slug: inhaltsverzeichnis
-icon: sitemap
+icon: account_tree
 noindex: true
 type: system
 weight: 5

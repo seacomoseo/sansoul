@@ -1,4 +1,4 @@
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
 
 function indexOfItem (item) {
   return [...item.parentElement.children].indexOf(item)
@@ -100,7 +100,7 @@ function slidersControlsView (slider, items) {
 }
 
 export function initSliders () {
-  whaitCSS(() => {
+  waitCSS(() => {
     const sliders = document.querySelectorAll('.slider')
     if (!sliders) return
 

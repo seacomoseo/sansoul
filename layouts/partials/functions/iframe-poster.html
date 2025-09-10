@@ -16,16 +16,10 @@
     {{ $image = print "https://i3.ytimg.com/vi_webp/" (. | replaceRE `^.+?(v=|be/)(.+?)(&|\?|$).*` `$2`) "/sddefault.webp" }}
   {{ else if in . `vimeo.com` }}
     {{ $url := print "http://vimeo.com/api/v2/video/" (. | replaceRE `^.+?com/(.+?)(\?|$).*` `$1`) ".json" }}
-    {{ with resources.GetRemote $url }}
-      {{ with .Err }}
-        {{ errorf "%s" . }}
-      {{ else }}
-        {{ with . | transform.Unmarshal }}
-          {{ $image = (index . 0).thumbnail_large }}
-        {{ end }}
+    {{ with partial "functions/get-remote" $url }}
+      {{ with . | transform.Unmarshal }}
+        {{ $image = (index . 0).thumbnail_large }}
       {{ end }}
-    {{ else }}
-      {{ errorf "Unable to get remote resource %q" $url }}
     {{ end }}
   {{ end }}
 {{ end }}

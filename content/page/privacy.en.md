@@ -1,7 +1,7 @@
 ---
 title: Privacy
 slug: privacy
-icon: shield-keyhole
+icon: encrypted
 noindex: true
 type: system
 weight: 2

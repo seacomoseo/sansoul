@@ -4,7 +4,10 @@
   // All
 
   ul, ol {
-    display: table;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .75em .5em;
+    // display: table;
     text-align: left;
     padding: 0;
     // padding-left: .25em;
@@ -16,33 +19,43 @@
       margin: 0;
     }
     > li {
-      display: table-row;
-      --li-pt: .75rem;
-      &:first-child {
-        --li-pt: 0rem;
-      }
-      ul, ol {
-        > li:first-child {
-          --li-pt: .75rem;
-        }
-      }
-      > *,
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      --li-icon-order: 0;
+      // display: table-row;
+      // --li-pt: .75rem;
+      // &:first-child {
+      //   --li-pt: 0rem;
+      // }
+      // ul, ol {
+      //   > li:first-child {
+      //     --li-pt: .75rem;
+      //   }
+      // }
+      // > *,
+      // &::before {
+      //   display: table-cell;
+      //   text-align: right;
+      // }
       &::before {
-        display: table-cell;
-        // text-align: right;
+        @include font-base-bold;
       }
       &::before,
       > .icon {
-        @include font-base-bold;
         color: var(--main);
         text-align: right;
         white-space: nowrap;
+        order: var(--li-icon-order);
         // scale: 1.2;
         // transform-origin: right calc(var(--li-pt) + .5em);
       }
       > div {
-        padding-top: var(--li-pt);
-        padding-left: .5em;
+        // padding-top: var(--li-pt);
+        // padding-left: .5em;
+        ul, ol {
+          margin-top: .75em;
+        }
       }
     }
   }
@@ -82,9 +95,9 @@
         content: var(--li-counter, "");
       }
       // if there are icons, counter...
-      &:where(ol:has(.icon) *)::before {
-        padding-right: .25em;
-      }
+      // &:where(ol:has(.icon) *)::before {
+      //   padding-right: .25em;
+      // }
       .icon--none
       // if there are icons, counter...
       &:where(ol:not(.list-inline):has(.li-icon) *)::before {
@@ -184,15 +197,16 @@ ul.align-right,
 ol.align-right {
   margin-left: auto;
   margin-right: 0;
-  direction: rtl;
+  // direction: rtl;
   text-align: right;
   > li {
-    direction: ltr;
+    // direction: ltr;
     --li-counter: "." counters(item, ".");
-    > div {
-      padding-left: 0;
-      padding-right: .75em;
-    }
+    --li-icon-order: 2;
+    // > div {
+    //   padding-left: 0;
+    //   padding-right: .75em;
+    // }
   }
 }
 // Fix in page sections
@@ -214,13 +228,13 @@ ol.align-right {
       text-align: right;
       margin-left: auto;
       margin-right: 0;
-      > li {
-        direction: ltr;
-        > div {
-          padding-left: 0;
-          padding-right: .75em;
-        }
-      }
+      // > li {
+      //   direction: ltr;
+      //   > div {
+      //     padding-left: 0;
+      //     padding-right: .75em;
+      //   }
+      // }
     }
   }
 }

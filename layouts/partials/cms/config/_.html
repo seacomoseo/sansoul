@@ -43,18 +43,11 @@
 {{ end }}
 
 
-{{ $logo := $config.cms.logo
-  | default site.Home.Params.org.logo
-  | default site.Home.Params.menu.logo
-  | default site.Data.types.all.tpl.menu.logo
-  | default $config.others.favicon
-  | default (cond (not (resources.Get "/media/base/icon.svg")) "base/icon.png" "base/icon.svg")
-}}
-{{ $logo = print "/media/" $logo }}
-{{ $logo = resources.Get $logo }}
-{{ with $logo }}
-  {{ $logo = .RelPermalink }}
-{{ end }}
+{{ $logo := partial "functions/logo" . }}
+{{ $logo  = $config.cms.logo | default $logo }}
+{{ $logo  = print "/media/" $logo }}
+{{ $logo  = resources.Get $logo }}
+{{ $logo  = $logo.Permalink }}
 
 
 {{/*  BUTTON LOGIN WITH GITHUB  */}}

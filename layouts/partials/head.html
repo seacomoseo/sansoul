@@ -24,6 +24,11 @@
 {{- $authors      := $aas.authors -}}
 {{- $art_sections := $aas.art_sections -}}
 
+{{- $logo := partial "functions/logo" . -}}
+{{- $logo  = print "/media/" $logo -}}
+{{- $logo  = resources.Get $logo -}}
+{{- $logo  = $logo.Permalink -}}
+
 {{- /*  BASIC  */}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +41,7 @@
 
 {{- /*  OPEN GRAPH  */}}
 <meta property="og:site_name" content="{{ site.Title }}">
-<meta property="og:logo" content="/favicon.png">
+<meta property="og:logo" content="{{ $logo }}">
 {{- if .IsHome }}
   <meta property="og:type" content="website">
 {{- else }}

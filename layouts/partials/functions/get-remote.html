@@ -1,0 +1,20 @@
+{{ $result := dict }}
+{{ $url    := . }}
+{{ $opts   := dict }}
+{{ if reflect.IsMap . }}
+  {{ $url   = .url }}
+  {{ $opts  = merge . (dict "url" nil) }}
+  {{ $opts  = partial "functions/obj-truly" $opts }}
+{{ end }}
+
+{{ with try (resources.GetRemote $url $opts) }}
+  {{ with .Err }}
+    {{ warnf "%s" . }}
+  {{ else with .Value }}
+    {{ $result = . }}
+  {{ else }}
+    {{ warnf "Unable to get remote resource %q" $url }}
+  {{ end }}
+{{ end }}
+
+{{ return $result }}

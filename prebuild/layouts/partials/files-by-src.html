@@ -3,79 +3,70 @@
   {{ $lang  := .lang }}
   {{ $types := .types }}
   {{ with .src }}
-    {{ with try (resources.GetRemote .) }}
-      {{ with .Err }}
-        {{ warnf "%s" . }}
-      {{ else with .Value }}
+    {{ with partial "functions/get-remote" . }}
+      {{ $datas := unmarshal (.Content | string) }}
+      {{ if $csv }}
+        {{ $datas = partial "csv" $datas }}
+      {{ end }}
 
-        {{ $datas := unmarshal (.Content | string) }}
-        {{ if $csv }}
-          {{ $datas = partial "csv" $datas }}
-        {{ end }}
+      {{ if $datas }}
+        {{ range $types }}
+          {{ $type     := .type | default "pages" }}
+          {{ $pairings := .pairings }}
 
-        {{ if $datas }}
-          {{ range $types }}
-            {{ $type     := .type | default "pages" }}
-            {{ $pairings := .pairings }}
+          {{ with .index }}
+            {{ $datas = index $datas (split . ".") }}
+          {{ end }}
+          {{ with $datas }}
+            {{/*  TO FILES  */}}
+            {{ range $key, $data := . }}
+              {{ with . }}
 
-            {{ with .index }}
-              {{ $datas = index $datas (split . ".") }}
-            {{ end }}
-            {{ with $datas }}
-              {{/*  TO FILES  */}}
-              {{ range $key, $data := . }}
-                {{ with . }}
+                {{ $obj := dict }}
+                {{ range $pairings }}
+                  {{ $from    := .from | default .to }}
 
-                  {{ $obj := dict }}
-                  {{ range $pairings }}
-                    {{ $from    := .from | default .to }}
-
-                    {{ $pair    := index $data (split $from ".") }}
-                    {{ if $pair }}
-                      {{ if eq .kind "slice" }}
-                        {{ if not (reflect.IsSlice $pair) }}
-                          {{ $pair = split $pair (.delimit | default ",") }}
-                        {{ end }}
+                  {{ $pair    := index $data (split $from ".") }}
+                  {{ if $pair }}
+                    {{ if eq .kind "slice" }}
+                      {{ if not (reflect.IsSlice $pair) }}
+                        {{ $pair = split $pair (.delimit | default ",") }}
                       {{ end }}
                     {{ end }}
-
-                    {{ if ne .default nil }}
-                      {{ $options  := dict "string" .default "kind" .kind "delimit" .delimit }}
-                      {{ $default  := partial "string-to-kind" $options }}
-                      {{ $pair      = $pair | default $default }}
-                    {{ end }}
-
-                    {{ if $pair }}
-                      {{ $opts := dict
-                        "dict"  $obj
-                        "keys"  (split .to ".")
-                        "value" $pair
-                        "kind"  .kind
-                      }}
-                      {{ $new := partial "update-nested" $opts }}
-                      {{ $obj  = merge $obj $new }}
-                    {{ end }}
-
                   {{ end }}
 
-                  {{ $slug    := index $obj "slug"    | default $key }}
-                  {{ $content := index $obj "content" | default "" }}
-                  {{ $obj      = merge $obj (dict "content" nil) }}
-                  {{ $path    := print "content/" $type "/" (urlize $slug) "." $lang ".md" }}
-                  {{ partial "file-by-obj" (dict "obj" $obj "content" $content "path" $path) }}
+                  {{ if ne .default nil }}
+                    {{ $options  := dict "string" .default "kind" .kind "delimit" .delimit }}
+                    {{ $default  := partial "string-to-kind" $options }}
+                    {{ $pair      = $pair | default $default }}
+                  {{ end }}
+
+                  {{ if $pair }}
+                    {{ $opts := dict
+                      "dict"  $obj
+                      "keys"  (split .to ".")
+                      "value" $pair
+                      "kind"  .kind
+                    }}
+                    {{ $new := partial "update-nested" $opts }}
+                    {{ $obj  = merge $obj $new }}
+                  {{ end }}
 
                 {{ end }}
-              {{ end }}
 
+                {{ $slug    := index $obj "slug"    | default $key }}
+                {{ $content := index $obj "content" | default "" }}
+                {{ $obj      = merge $obj (dict "content" nil) }}
+                {{ $path    := print "content/" $type "/" (urlize $slug) "." $lang ".md" }}
+                {{ partial "file-by-obj" (dict "obj" $obj "content" $content "path" $path) }}
+
+              {{ end }}
             {{ end }}
+
           {{ end }}
         {{ end }}
-
-      {{ else }}
-        {{ errorf "Unable to get remote resource: %q" . }}
       {{ end }}
-    {{ else }}
-      {{ errorf "Unable to get remote resource %q" . }}
+
     {{ end }}
   {{ end }}
 {{ end }}

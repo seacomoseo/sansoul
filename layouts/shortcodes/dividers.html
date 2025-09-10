@@ -16,25 +16,28 @@
   }
 </style>
 
+{{- $t := partial "functions/i18n-cms" . -}}
 {{- range site.Data.options.div -}}
-  {{- $attrs := "" -}}
-  {{- with partial "sections/divider-attr" (dict
-    "section" (dict "div" .)
-    "next"    false
-  ) -}}
-    {{- $class := print "div--example " .class -}}
-    {{- $attrs  = dict "class" $class "style" .style -}}
-    {{- $attrs  = partial "functions/attrs" $attrs -}}
-  {{- end }}
-  <h3 id="div-{{ . }}">
-    {{ partial "link" (dict
-      "label" .
-      "link"  (print "#div-" .)
-    ) }}
-    <br>
-    {{ i18n (print "option-divider-" .) }}
-  </h3>
-  <div {{- $attrs }}>
-    <div class="bg-color"></div>
-  </div>
+  {{- if ne . "hide" -}}
+    {{- $attrs := "" -}}
+    {{- with partial "sections/divider-attr" (dict
+      "section" (dict "div" .)
+      "next"    false
+    ) -}}
+      {{- $class := print "div--example " .class -}}
+      {{- $attrs  = dict "class" $class "style" .style -}}
+      {{- $attrs  = partial "functions/attrs" $attrs -}}
+    {{- end }}
+    <h3 id="div-{{ . }}">
+      {{ partial "link" (dict
+        "label" .
+        "link"  (print "#div-" .)
+      ) }}
+      <br>
+      {{ index $t (print "option-divider-" .) }}
+    </h3>
+    <div {{- $attrs }}>
+      <div class="bg-color"></div>
+    </div>
+  {{- end -}}
 {{- end -}}

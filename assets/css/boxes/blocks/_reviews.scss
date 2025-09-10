@@ -40,14 +40,16 @@
   flex-shrink: 0;
   color: var(--main);
   align-self: flex-start;
-  width: 1.5em;
-  height: 1.5em;
+  font-size: 1.5em;
   z-index: 1;
   @if $chamfer and $buttons-rounded {
     margin: .5em 0;
   } @else if $buttons-rounded {
     margin: .25em 0;
   }
+}
+.review__icon--left:not(svg) {
+  rotate: 180deg;
 }
 .review__icon--right {
   align-self: flex-end;
@@ -130,4 +132,7 @@
 .review__stars {
   font-size: .875em;
   color: #f7bc33;
+}
+.review__star--half {
+  clip-path: inset(0 50% 0 0);
 }

@@ -42,8 +42,8 @@ line: true
 md: |
   Contenido de [Sección](#seccion)
 
-  [[:link: Botón con anchor :link:]](#seccion "hola k ase [light]")
-  [[:link: Botón sin anchor :link:]](#seccion "[dark]")
+  [[::link:: Botón con anchor ::link::]](#seccion "hola k ase [light]")
+  [[::link:: Botón sin anchor ::link::]](#seccion "[dark]")
 md_align: center # [ left, center, right ]
 md_align_vl: center # [ left, center, right ]
 md_sm: false
@@ -71,7 +71,7 @@ gray: false
 shade: false
 # button
 link: /legal/
-pin: shield-halved # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+pin: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 label: Legal
 anchor: Aviso Legal
 lock: false
@@ -115,10 +115,10 @@ tags:
   tax: all
 - type: param
   param: job
-  icon: briefcase
+  icon: business_center
 - type: param
   param: author
-  icon: user-group
+  icon: people
 - type: custom
   icon: star
   label: ¡Holi!
@@ -369,7 +369,7 @@ boxes:
     label: Encabezado h6
   - type: custom
     link: '#principal'
-    icon: person-from-portal
+    icon: logout
     label: Personalizado
     full: true
     anchor: Mola Mazo
@@ -407,7 +407,7 @@ boxes:
     regex_hint: No se adminte el caracter "∑"
     min: 0
     max: 50
-    icon: user
+    icon: person
   - type: email
     name: Email
     label: Correo
@@ -416,7 +416,7 @@ boxes:
     regex: null # regex pattern
     min: 0
     max: 30
-    icon: envelope
+    icon: mail
   - type: tel
     name: Tel
     label: Teléfono
@@ -433,24 +433,24 @@ boxes:
     show_if: Text&&Email
     min: 1
     max: 10
-    icon: hashtag
+    icon: tag
   - type: date
     name: Date
     label: Fecha
     required: false
-    icon: calendar
+    icon: calendar_today
   - type: time
     name: Time
     label: Tiempo
     required: false
-    icon: clock
+    icon: schedule
   - type: textarea
     name: Textarea
     label: Mensaje
     required: false
     min: 0
     max: 155
-    icon: message
+    icon: chat_bubble
   - type: geo
     name: mapa
     label: HOLI
@@ -460,7 +460,7 @@ boxes:
     zoom: 4
     tile: hybrid # [ streets, terrain, satellite, hybrid ]
     required: true
-    icon: location-check
+    icon: beenhere
   - type: hidden
     name: Hidden
     label: Oculto
@@ -472,7 +472,7 @@ boxes:
   - type: select
     name: Select
     label: Seleción
-    icon: badge-check
+    icon: verified
     required: true
     options:
     - option: Seleción Opción 1
@@ -486,7 +486,7 @@ boxes:
     label: Radios
     required: true
     x: false
-    icon: circle-check
+    icon: check_circle
     options:
     - option: Radio Opción 1
       value: Radio Valor 1
@@ -499,7 +499,7 @@ boxes:
     label: Checkboxes
     required: true
     x: true
-    icon: square-check
+    icon: check_box
     options:
     - option: Checkbox Opción 1
       value: Checkbox Valor 1
@@ -516,7 +516,7 @@ boxes:
     required: true
     button: alt
     swap: true
-    icon: arrow-up-from-bracket
+    icon: upload
 
 ###
 
@@ -524,13 +524,13 @@ boxes:
     zoom: 6
     tile: swapid # [ streets, terrain, satellite, hybrid ]
     color: alt
-    icon: dog
+    icon: sound_detection_dog_barking
   geos:
   - type: point
     label: Punto
     color: cta
     geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
-    icon: cat
+    icon: volunteer_activism
   - type: circle
     label: Círculo
     color: main

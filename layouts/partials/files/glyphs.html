@@ -1,0 +1,33 @@
+{{ if hugo.IsProduction }}
+  {{ $icons := hugo.Store.Get "glyphs" | uniq | sort }}
+  {{ with site.Data.styles.icons }}
+    {{/*  URL  */}}
+    {{ $url := print
+      "https://fonts.googleapis.com/css2"
+      "?family=Material+Symbols+" (strings.FirstUpper .style)
+      ":opsz,wght,FILL,GRAD@" .optical "," .weight "," (int .fill) "," .grade
+      "&icon_names=" (delimit $icons ",")
+      | replaceRE `-` "_"
+    }}
+    {{/*  Get remote CSS  */}}
+    {{ $ua      := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" }}
+    {{ $headers := dict "User-Agent" $ua "Accept" "text/css,*/*;q=0.1" }}
+    {{ with partial "functions/get-remote" (dict "url" $url "headers" $headers) }}
+      {{ $woff2   := .Content | replaceRE `\n` " " | replaceRE `.+?url\((.+?)\).+` "$1" }}
+      {{/*  Get remote WOFF2  */}}
+      {{ with partial "functions/get-remote" $woff2 }}
+        {{ $time    := partial "functions/timestamp" . }}
+        {{ $name    := print "/fonts/icons." $time ".woff2" }}
+        {{ $rename  := . | resources.Copy $name }}
+        {{ $publish := $rename.Publish }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ $style := site.Data.styles.icons.style }}
+  {{ $path  := print "fonts/material-symbols-" $style ".woff2" }}
+  {{ with resources.Get $path }}
+    {{ $publish := .Publish }}
+  {{ end }}
+{{ end }}
+{{ return "" }}

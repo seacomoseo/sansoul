@@ -266,16 +266,36 @@
 {{/*  module mounts  */}}
 {{ $mounts := slice
   (dict
-    "source" "assets/robots.md"
-    "target" "assets/robots.txt"
-  )
-  (dict
-    "source" "assets/redirects.md"
-    "target" "assets/_redirects"
+    "source" "static"
+    "target" "static"
   )
   (dict
     "source" "assets"
     "target" "assets"
+  )
+  (dict
+    "source" "themes/sansoul/assets/media/icons/brands"
+    "target" "assets/media/icons/brands"
+  )
+  (dict
+    "source" "../_tools/node_modules/material-symbols"
+    "target" "assets/fonts"
+  )
+  (dict
+    "source" "../_tools/node_modules/@fortawesome/fontawesome-free/svgs/brands"
+    "target" "assets/media/icons/brands"
+  )
+  (dict
+    "source" "node_modules/@fortawesome/fontawesome-free/svgs/brands"
+    "target" "assets/media/icons/brands"
+  )
+  (dict
+    "source" "../_tools/node_modules/simple-icons/icons"
+    "target" "assets/media/icons/brands"
+  )
+  (dict
+    "source" "node_modules/simple-icons/icons"
+    "target" "assets/media/icons/brands"
   )
 }}
 {{ range $langs }}

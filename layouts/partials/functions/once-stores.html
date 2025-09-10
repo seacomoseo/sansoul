@@ -1,0 +1,23 @@
+{{/*  ALL PAGES TPL IN SITE STORE
+{{ $404   := site.GetPage "/404" }}
+{{ $pages := site.Pages | append $404 }}
+{{ range $pages }}
+  {{ $tpl := partial "functions/tpl" . }}
+  {{ site.Store.Set .Permalink $tpl }}
+{{ end }}
+*/}}
+
+{{ if and .IsHome (eq site.Language.Weight 1) }}
+  {{/*  {{ if hugo.Store.Get "is-not-once" | not }}  */}}
+    {{/*  {{ hugo.Store.Set "is-not-once" true   }}  */}}
+    {{ $now := now.Format "20060102150405"  }}
+    {{ hugo.Store.Set "timestamp"    $now   }}
+    {{ hugo.Store.Set "pages-count"  0      }}
+    {{ hugo.Store.Set "glyphs"       slice  }}
+    {{ hugo.Store.Set "svgs"         slice  }}
+    {{ hugo.Store.Set "brands"       slice  }}
+    {{ hugo.Store.Set "divs"         slice  }}
+    {{ partial "functions/fonts-to-store" . }}
+  {{/*  {{ end }}  */}}
+{{ end }}
+{{ return "" }}

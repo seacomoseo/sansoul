@@ -13,11 +13,10 @@
       {{- if not ($custom | jsonify | findRE `"link":"/#?"`) -}}
         {{- with site.Home -}}
           {{- $items = $items | append (dict
-            "link"     .RelPermalink
-            "icon"     (cond (not $.menu.hide_icons) "house" "")
-            "emoji"    (cond (not $.menu.hide_icons) "🏠" "")
-            "label"    .Title
-            "anchor"   (partial "functions/anchor-page" .)
+            "link"    .RelPermalink
+            "default" (cond (not $.menu.hide_icons) "home" "")
+            "label"   .Title
+            "anchor"  (partial "functions/anchor-page" .)
           ) -}}
         {{- end -}}
       {{- end -}}
@@ -53,10 +52,10 @@
 
       {{- /*  MENU TOGGLE  */}}
       <button type="button" class="menu__toggle button button--dot">
-        {{- "" }}<b class="menu__toggle-bar"></b>
-        {{- "" }}<b class="menu__toggle-bar"></b>
-        {{- "" }}<b class="menu__toggle-bar"></b>
-        {{- "" }}<i>{{ i18n "scroll_up" }}</i>
+        {{- "" }}<i class="menu__toggle-bar"></i>
+        {{- "" }}<i class="menu__toggle-bar"></i>
+        {{- "" }}<i class="menu__toggle-bar"></i>
+        {{- "" }}<b>{{ i18n "scroll_up" }}</b>
         {{- "" -}}
       </button>
 

@@ -52,21 +52,19 @@
   {{- if .is_modal  -}}
     {{- /*
     {{- partial "link" (dict
-      "class"  "modal__back"
-      "button" "cta"
-      "dot"    true
-      "icon"   (site.Data.styles.icons.left | default "arrow-left")
-      "emoji"  "⬅️"
-      "label"  (i18n "back")
+      "class"   "modal__back"
+      "button"  "cta"
+      "dot"     true
+      "default" "left"
+      "label"   (i18n "back")
     ) -}}
     */}}
     {{ partial "link" (dict
-      "class"  "modal__close--corner"
-      "button" "cta"
-      "dot"    true
-      "icon"   "xmark"
-      "emoji"  "❌"
-      "label"  (i18n "close")
+      "class"   "modal__close--corner"
+      "button"  "cta"
+      "dot"     true
+      "default" "close"
+      "label"   (i18n "close")
     ) -}}
   {{- end -}}
 
@@ -74,20 +72,18 @@
   {{- if .is_footer }}
     <div class="footer__float">
       {{ partial "link" (dict
-        "class"  "cookies__toggle"
-        "icon"   "cookie-bite"
-        "emoji"  "🍪"
-        "title"  (i18n "cookies_notice")
-        "lock"   true
+        "class"   "cookies__toggle"
+        "default" "cookies"
+        "title"   (i18n "cookies_notice")
+        "lock"    true
       ) }}
       {{ with site.GetPage "page/sitemap" -}}
         {{- partial "link" (dict
-          "class"  "footer__sitemap"
-          "icon"   "sitemap"
-          "emoji"  "🗺"
-          "title"  .Title
-          "link"   .RelPermalink
-          "lock"   (not page.IsHome)
+          "class"   "footer__sitemap"
+          "default" "sitemap"
+          "title"   .Title
+          "link"    .RelPermalink
+          "lock"    (not page.IsHome)
         ) -}}
       {{- end }}
     </div>

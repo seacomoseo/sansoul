@@ -65,18 +65,22 @@
   gap: .375em;
   padding: .5em 1.5em;
   min-height: 2.5em;
+  --pin-size: 1.5em;
+  --pin-color: var(--base-in);
+  --pin-opacity: .75;
   > .icon {
-    font-size: 1.5em;
-    color: var(--base-in);
-    opacity: .75;
+    font-size: var(--pin-size);
+    color: var(--pin-color);
+    opacity: var(--pin-opacity);
     transition: color .1s;
+    --bg-color: var(--base); // to SVG variable strokes
   }
   &:not(.button--dot) {
     > .icon {
       margin-left: -.125em;
     }
   }
-  > i {
+  > b {
     @include font-button;
     line-height: 1.25;
     text-align: left;
@@ -166,11 +170,9 @@
   gap: .25em;
   padding: .25em 1em;
   min-height: 2em;
+  --pin-size: 1.25em;
   @if $radius > 1 or $buttons-rounded {
     --radius: 1em;
-  }
-  > .icon {
-    font-size: 1.25em;
   }
 }
 
@@ -182,11 +184,12 @@
   width: 3em;
   height: 3em;
   line-height: 2;
+  --pin-size: 2em;
+  --pin-opacity: 1;
   > .icon {
-    opacity: 1;
-    font-size: 2em;
+    max-width: 1.25em;
   }
-  > i:not(.aux) {
+  > b:not(.aux) {
     @include ofuscate;
     z-index: -2;
   }
@@ -196,9 +199,7 @@
       @include circle;
     }
     @if $chamfer {
-      > .icon {
-        font-size: 1.5em;
-      }
+      --pin-size: 1.5em;
     }
   }
 }
@@ -207,13 +208,13 @@
 // Font Alternative
 
 .button--swap {
-  > i {
+  > b {
     @include font-button(alt);
     line-height: 1.25;
     --top-font: 0em;
   }
   &:not(.button) {
-    > i {
+    > b {
       @include font-button;
     }
   }
@@ -237,10 +238,8 @@
 @if $buttons-outline {
   .button {
     color: var(--text);
-    > .icon {
-      opacity: 1;
-      color: var(--base);
-    }
+    --pin-color: var(--base);
+    --pin-opacity: 1;
     &::before,
     &::after {
       @if $chamfer and ($radius > 0.01 or $buttons-rounded or $icon-buttons-rounded) {
@@ -265,9 +264,7 @@
     }
   }
   .button--dot:not(:hover,:focus,:active) {
-    > .icon {
-      color: var(--text);
-    }
+    --pin-color: var(--text);
   }
   @if $chamfer and $icon-buttons-rounded {
     .button--dot {

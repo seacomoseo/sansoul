@@ -1,7 +1,7 @@
 ---
 title: Suche
 slug: suche
-icon: magnifying-glass
+icon: search
 noindex: true
 type: system
 weight: 4

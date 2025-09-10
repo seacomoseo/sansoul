@@ -9,9 +9,18 @@
   $default.types.icon
   $default.values.icon
   $default.settings.icon
+
+  $default.config.icon
+  $default.styles.icon
+  $default.remote.icon
+  $default.redirects.icon
+  $default.robots.icon
 -}}
 {{- range site.Sections -}}
-  {{- $icons = $icons | append .Params.icon -}}
+  {{- with .Params.icon -}}
+    {{- $icons = $icons | append . -}}
+    {{- partial "functions/draw-to-store" . -}}
+  {{- end -}}
 {{- end -}}
 
 <!doctype html>
@@ -21,6 +30,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ $t.cms }} · {{ $config.title }}</title>
   <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1024' height='1024' viewBox='0 0 512 512' fill='%23{{ replace site.Data.styles.colors.main.color `#` `` | default `767676` }}'%3E%3Cpath d='M200 0H312l17.2 78.4c15.8 6.5 30.6 15.1 44 25.4l76.5-24.4 56 97-59.4 54.1c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l59.4 54.1-56 97-76.5-24.4c-13.4 10.3-28.2 18.9-44 25.4L312 512H200l-17.2-78.4c-15.8-6.5-30.6-15.1-44-25.4L62.3 432.5l-56-97 59.4-54.1C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L6.3 176.5l56-97 76.5 24.4c13.4-10.3 28.2-18.9 44-25.4L200 0zm56 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z'/%3E%3C/svg%3E">
 
   {{/*  CONFIG FILE  */}}
   {{ $path   := print .RelPermalink "admin/config.yml" }}
@@ -32,7 +42,6 @@
   <link href="{{ $resource.RelPermalink }}" type="text/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
-  {{ $items  := partial "cms/icons" . }}
   {{ $params := slice }}
   {{ range site.Sections }}
     {{ $type := .Type }}
@@ -46,8 +55,14 @@
     {{ end }}
   {{ end }}
   {{ $vars   := dict
-    "items"  (delimit $items  "|")
-    "params" (delimit $params "|")
+    "params"        (delimit $params "|")
+    "timestamp"     (partial "functions/timestamp" .)
+    "icons-fill"    (site.Data.styles.icons.fill    | not | not | int)
+    "icons-weight"  (site.Data.styles.icons.weight  | default 400)
+    "icons-grade"   (site.Data.styles.icons.grade   | default 0)
+    "icons-optical" (site.Data.styles.icons.optical | default 24)
+    "icons-style"   (site.Data.styles.icons.style   | default "outlined")
+    "is-production" (hugo.IsProduction | not | not | string)
   }}
   {{/*
   "white"      (site.Data.styles.colors.base.white | default "#fff")
@@ -78,22 +93,6 @@
 </head>
 <body style="--login: '{{ $t.login }}'">
 
-  {{/*  ICONS (for draws-purge)  */}}
-  <div style="display:none">
-    {{- range slice
-      $default.config.icon
-      $default.styles.icon
-      $default.remote.icon
-      $default.redirects.icon
-      $default.robots.icon
-    -}}
-      {{- $icons = $icons | append . -}}
-    {{- end -}}
-    {{- range $icons -}}
-      {{- partial "icon" (dict "icon" .) -}}
-    {{- end -}}
-  </div>
-
   {{/*  SVELTIA CMS  */}}
   {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}
 
@@ -110,7 +109,6 @@
       "icons"     $icons
       "netlify"   $netlify
       "lang"      $lang_cms
-      "timestamp" site.Params.timestamp
     )
   }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}

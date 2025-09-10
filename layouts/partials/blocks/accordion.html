@@ -17,18 +17,15 @@
         {{- $class := print ` class="accordion__title` $hs `"` }}
         {{ print "<" $hn $class ">" | safeHTML -}}
           {{- if not $headers -}}
-            {{- $icon  := cond (not .icon) "circle-question" .icon -}}
-            {{- $emoji := cond (not .icon) "❔" .icon }}
             <button type="button" class="accordion__button button {{ $button }} {{ $fotn_alt }}">
-              {{- partial "icon" (dict "class" "accordion__icon" "icon" $icon "emoji" $emoji) }}
-              <i>{{ .title }}</i>
-              {{- partial "icon" (dict "class" "accordion__button-dot" "icon" "plus") }}
+              {{- partial "icon" (dict "class" "accordion__icon" "icon" .icon "default" "question") }}
+              <b>{{ .title }}</b>
+              {{- partial "icon" (dict "class" "accordion__button-dot" "default" "plus") }}
             </button>
           {{- else }}
-            <i>{{ .title }}</i>
+            <b>{{ .title }}</b>
             <button type="button" class="accordion__button-dot button button--dot {{ $button }}" title="{{ i18n `more` }}">
-              {{- $icon  := cond (not .icon) (site.Data.styles.icons.down | default "angle-down") .icon -}}
-              {{- partial "icon" (dict "class" "accordion__icon" "icon" $icon) }}
+              {{- partial "icon" (dict "class" "accordion__icon" "icon" .icon "default" "down") }}
             </button>
           {{- end }}
         {{ print "</" $hn ">" | safeHTML -}}

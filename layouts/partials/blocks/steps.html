@@ -23,7 +23,7 @@
               ) -}}
             {{- end -}}
             {{- with .icon }}
-              {{ partial "icon" (dict "class" "step__icon" "icon" (. | default "forward")) -}}
+              {{ partial "icon" (dict "class" "step__icon" "icon" .) -}}
             {{- end -}}
             {{- if and (not .image) (not .icon) }}
               <div class="step__number">{{ add $key 1 }}</div>

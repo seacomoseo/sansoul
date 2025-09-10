@@ -1,4 +1,4 @@
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
 
 const c = document.body.classList
 
@@ -21,7 +21,7 @@ export function scrollTo (targetElement, instant) {
 export function initScrollToHashWhenLoad () {
   if (!location.hash) return
   const target = document.querySelector(location.hash)
-  whaitCSS(() => {
+  waitCSS(() => {
     if (target) scrollTo(target)
   })
 }

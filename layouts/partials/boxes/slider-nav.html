@@ -26,19 +26,17 @@
 {{- end }}
 <div class="{{ $arrows_class }}">
   {{ partial "link" (dict
-    "class"  "slider__arrow slider__arrow--left"
-    "button" ($button | default "cta")
-    "dot"    true
-    "icon"   (site.Data.styles.icons.left | default "chevron-left")
-    "emoji"  "⬅️"
-    "title"  (i18n "slide_left")
+    "class"   "slider__arrow slider__arrow--left"
+    "button"  ($button | default "cta")
+    "dot"     true
+    "default" "left"
+    "title"   (i18n "slide_left")
   ) }}
   {{ partial "link" (dict
-    "class"  "slider__arrow slider__arrow--right"
-    "button" ($button | default "cta")
-    "dot"    true
-    "icon"   (site.Data.styles.icons.right | default "chevron-right")
-    "emoji"  "➡️"
-    "title"  (i18n "slide_right")
+    "class"   "slider__arrow slider__arrow--right"
+    "button"  ($button | default "cta")
+    "dot"     true
+    "default" "right"
+    "title"   (i18n "slide_right")
   ) -}}
 </div>

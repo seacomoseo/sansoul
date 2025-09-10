@@ -1,0 +1,142 @@
+{{- /*  DIVIDERS  */ -}}
+
+{{- $div_ := slice -}}
+{{- $divs := hugo.Store.Get "divs" | uniq | sort -}}
+{{- define "partials/div" -}}
+  {{- $n := add .k 1 -}}
+  {{- $s := mul .size 1024 -}}
+  {{- "" -}} <g id="div-{{ .id }}" style="--y:{{ .k }}{{ if eq .size 2 }};--s:{{ .size }}{{ end }}">
+  {{- "" -}}   <defs>
+  {{- "" -}}     <g class="d" id="d-{{ .id }}">
+  {{- "" -}}      {{ if eq .size 2 }}
+  {{- "" -}}         <g id="c-{{ .id }}">{{ .content | safeHTML }}</g>
+  {{- "" -}}         <use class="c" href="#c-{{ .id }}"/>
+  {{- "" -}}      {{ else }}
+  {{- "" -}}        {{ .content | safeHTML }}
+  {{- "" -}}      {{ end }}
+  {{- "" -}}     </g>
+  {{- /* flip second draw */ -}}
+  {{- "" -}}    {{ $f   := "" }}
+  {{- "" -}}    {{ if eq .size 2 }}
+  {{- "" -}}       {{ $f = "f" }}
+  {{- "" -}}       <g class="d" id="df-{{ .id }}">
+  {{- "" -}}         <g class="f" id="cf-{{ .id }}">{{ .content | safeHTML }}</g>
+  {{- "" -}}         <use class="c" href="#cf-{{ .id }}"/>
+  {{- "" -}}       </g>
+  {{- "" -}}    {{ end }}
+  {{- /* end flip */ -}}
+  {{- "" -}}   </defs>
+  {{- "" -}}   <g class="b" id="b-{{ .id }}">
+  {{- "" -}}     <use href="#d-{{ .id }}"/>
+  {{- "" -}}     <use href="#d{{ $f }}-{{ .id }}"/>
+  {{- "" -}}     <use href="#d-{{ .id }}"/>
+  {{- "" -}}     <use href="#d{{ $f }}-{{ .id }}"/>
+  {{- "" -}}   </g>
+  {{- "" -}}   <mask id="f-{{ .id }}"><rect/><use href="#b-{{ .id }}"/></mask>
+  {{- "" -}}   <rect mask="url(#f-{{ .id }})"/>
+  {{- "" -}} </g>
+  {{- "" -}} <view viewBox="{{ mul 2048 0 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-pr"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 1 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-prx"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 2 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-ney"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 3 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-nexy"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 4 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-ne"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 5 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-nex"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 6 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-pry"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 7 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-prxy"/>
+{{- end -}}
+
+{{- with $divs -}}
+  {{- range $k, $id := . -}}
+    {{- if ne . "fade" -}}
+      {{- with partial "functions/dividers" $id -}}
+        {{- $path := print "/assets/media/dividers/" $id ".svg" -}}
+        {{- $file := readFile $path -}}
+        {{- if $file -}}
+          {{- $content := $file | replaceRE `<svg.+?>|</svg>` "" -}}
+          {{- with partial "div" (dict "k" $k "id" $id "size" .size "content" $content) -}}
+            {{- $div_ = $div_ | append . -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+
+{{- /*  SVG FILES  */ -}}
+
+{{- $svg_ := slice -}}
+{{- $svgs := hugo.Store.Get "svgs" | uniq -}}
+{{- range $svgs -}}
+  {{- $path := print "/media/{icons/,}" . ".svg" -}}
+  {{- $src  := resources.GetMatch $path -}}
+  {{- if $src.Content -}}
+    {{- $minify  := minify $src -}}
+    {{- $content := $minify.Content -}}
+    {{- if not ($content | findRE `svg-src`) -}}
+      {{- $id   := . | replaceRE `^icons?/` `` | replaceRE `^(brand)s/` `$1-` | replaceRE `/` `-` -}}
+      {{- $head := $content | findRE `^<svg.*?>` -}}
+      {{- $head  = index $head 0 -}}
+      {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" | replaceRE `<svg ` (print `<svg id="` $id `" `) -}}
+      {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | safeHTML -}}
+      {{- /*  {{- $time := partial "functions/timestamp" . -}}  */ -}}
+      {{- /*  {{- $refs := print "$1/draws." $time ".svg#" -}}  */ -}}
+      {{- /*  {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | replaceRE `<svg (.+?)</svg>` `<symbol $1</symbol>` | replaceRE `(url\(|href=")#` $refs | safeHTML -}}  */ -}}
+      {{- $svg_  = $svg_ | append $svg -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+
+{{- /*  XML  */ -}}
+
+{{- $x := mul 8 2048 -}}
+{{- $y := mul (add (len $div_) 1) 128 -}}
+{{ `<?xml version="1.0" encoding="UTF-8"?>` | safeHTML }}
+{{ "<svg" | safeHTML }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{ $x }} {{ $y }}" preserveAspectRatio="none">
+
+
+{{- /*  DIVIDERS CODE  */ -}}
+{{ with $div_ }}
+<style>
+  .d{transform:translate(calc(var(--x, 0) * 2048px), calc(var(--y, 0) * 128px)) scale(var(--fx, 1), var(--fy, 1));transform-origin:center;transform-box:fill-box}
+  .c{transform:scale(-1,1);x:-2048}
+  .f{transform:scale(-1, 1)translateX(-1024px)}
+  .b use:nth-child(1){--x:0;--fx:1;--fy:1}
+  .b use:nth-child(2){--x:1;--fx:-1;--fy:1}
+  .b use:nth-child(3){--x:2;--fx:1;--fy:-1}
+  .b use:nth-child(4){--x:3;--fx:-1;--fy:-1}
+  mask use{--y:0}
+  mask rect{fill:#fff}
+  mask rect,mask+rect{width:8192px;height:128px}
+  mask+rect{transform:translate(8192px,calc(var(--y, 0) * 128px))}
+</style>
+{{ delimit . "\n" | safeHTML }}
+{{ end }}
+
+{{- /*  SVG'S CODE  */ -}}
+{{ with $svg_ }}
+<style>
+  .svg-variable {
+    fill: var(--bg-color,white);
+    stroke: currentColor;
+    stroke-width: var(--stroke-width,120);
+    stroke-linejoin: var(--linejoin,round);
+    paint-order: stroke;
+    scale: calc(var(--sm-side,512) / (var(--sm-side,512) + var(--stroke-width,120)));
+    transform-origin: center;
+  }
+  .svg-no-fill {
+    opacity: calc(1 + -1 * var(--icons-fill,1));
+  }
+  .svg-fill {
+    opacity: var(--icons-fill,1);
+  }
+</style>
+<defs>
+{{ delimit . "\n" | safeHTML }}
+</defs>
+{{ end }}
+
+
+{{ "</svg>" | safeHTML }}

@@ -3,9 +3,9 @@ import { cookiesLegal } from '@params'
 export function initCookies () {
   const cookiesMessage = document.querySelector('.cookies')
   const cookiesButtons = document.querySelectorAll('.cookies__button')
-  const cookiesToogle = document.querySelector('.cookies__toggle')
+  const cookiesToggle = document.querySelector('.cookies__toggle')
 
-  if (cookiesMessage && cookiesButtons && cookiesToogle) {
+  if (cookiesMessage && cookiesButtons && cookiesToggle) {
     function cookiesOpen () {
       cookiesMessage.removeAttribute('hidden')
       cookiesMessage.querySelector('[data-b]').focus()

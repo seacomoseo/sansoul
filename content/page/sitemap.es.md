@@ -1,7 +1,7 @@
 ---
 title: Mapa del Sitio
 slug: mapa-sitio
-icon: sitemap
+icon: account_tree
 noindex: true
 type: system
 weight: 5

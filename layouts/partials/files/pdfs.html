@@ -1,0 +1,6 @@
+{{ $pdfs := partialCached "functions/media-files" (dict "ext" (slice "pdf")) }}
+{{ range $pdfs }}
+  {{ $pdf := resources.Get . }}
+  {{ $pdf  = $pdf.RelPermalink }}
+{{ end }}
+{{ return "" }}

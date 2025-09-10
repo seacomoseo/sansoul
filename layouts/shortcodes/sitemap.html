@@ -2,7 +2,7 @@
   <h2 class="md__heading">
     {{- $parent_icon := .Params.icon -}}
     {{- if .Params.icon }}
-      {{ partial "icon" (dict "icon" .Params.icon "emoji" .Params.emoji) -}}
+      {{ partial "icon" (dict "icon" (.Params.icon | default .Params.emoji)) -}}
     {{- end -}}
     {{ partial "link" (dict
       "class"  "md__heading-link"

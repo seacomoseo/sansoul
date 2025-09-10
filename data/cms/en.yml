@@ -169,9 +169,11 @@ values_callnows_singular: Button
 # collections > settings > styles
 styles: Styles
 styles_icons: Icons
-styles_icons_type: Icon Type
-styles_icons_sharp: Sharp Icons
-styles_icons_emojis: Replace base icons with emojis
+styles_icons_fill: Fill
+styles_icons_weight: Weight
+styles_icons_grade: Grade
+styles_icons_optical: Optical Size
+styles_icons_style: Style
 styles_icons_play: Play
 styles_icons_up: Up
 styles_icons_down: Down
@@ -414,7 +416,7 @@ box_menu_label: Menu Link Text
 box_menu_button: Menu Link Button Color
 box_menu_swap: Menu Link Alternative Font
 box_icon_id: Icon
-box_icon_id_hint: Valid names → [fontawesome.com](https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic) or emojis
+box_icon_id_hint: Valid names → Directly a name from [Material Symbols](https://fonts.google.com/icons) or emojis or “txt:” + any text or “brand:” + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) or “brand:” + [Simple Icons](https://simpleicons.org/) or “svg:” + the name of an svg file located in the “icons” folder of the media library
 box_icon_type: Icon Type
 box_icon_type_hint: Top in large size, Side next to the text, Bottom as underlining
 box_icon_size: Icon Size
@@ -787,11 +789,9 @@ option-fade-radial-alt: Inverted Radial
 option-icon_type-top: Top
 option-icon_type-side: Side
 option-icon_type-bottom: Bottom
-option-icons_type-thin: Thin
-option-icons_type-light: Light
-option-icons_type-regular: Regular
-option-icons_type-solid: Solid
-option-icons_type-duotone: Duotones
+option-icons_style-outlined: Outlined
+option-icons_style-rounded: Rounded
+option-icons_style-sharp: Sharp
 option-buttons_type-base: Base
 option-buttons_type-title: Title
 option-buttons_type-cursive: Cursive
@@ -877,78 +877,76 @@ option-sort-gss: Google Drive Sheet
 option-sort-boxes: SubBoxes
 option-sort-tags: Tags
 option-sort-button: Button / Link
-option-divider-arrow-four: Four-Point Arrow
-option-divider-arrow-op-alt: Transparency Alternative Arrow
-option-divider-arrow-op-fan: Transparency Fan Arrow
-option-divider-arrow-op: Transparency Arrow
-option-divider-arrow-round: Rounded Arrow
-option-divider-arrow-side-round: Rounded Side Arrow
-option-divider-arrow-side: Side Arrow
-option-divider-arrow-sides-round-op: Transparency Rounded Side Arrows
-option-divider-arrow-sides-round: Rounded Side Arrows
-option-divider-arrow-sides: Side Arrows
-option-divider-arrow-three: Three-Point Arrow
-option-divider-arrow-two: Two-Point Arrow
-option-divider-arrow: Arrow
-option-divider-book: Book
-option-divider-brush: Brush
-option-divider-bubles: Bubbles
-option-divider-central-dents: Central Dents
-option-divider-central-waves: Central Waves
-option-divider-christmas-trees: Christmas Trees
-option-divider-city: City
-option-divider-clouds-op: Transparent Clouds
-option-divider-clouds: Clouds
-option-divider-curve-corner-op: Transparent Corner Curve
-option-divider-curve-corner: Corner Curve
-option-divider-curve-edges: Edge Curve
-option-divider-curve-op: Transparent Curve
-option-divider-curve-side: Side Curve
-option-divider-curve: Curve
-option-divider-curved-alt: Alternative Curved
-option-divider-curved-bracket: Curved Brackets
-option-divider-curved: Curved
-option-divider-dents-op-alt: Transparent Alternative Dents
-option-divider-dents-op: Transparent Dents
-option-divider-dents-round: Rounded Dents
-option-divider-dents: Dents
-option-divider-diagonals-op: Transparent Diagonals
-option-divider-diagonals: Diagonals
-option-divider-drip: Drip
-option-divider-ethnic-alt: Alternative Ethnic
-option-divider-ethnic: Ethnic
-option-divider-fall: Fall
-option-divider-fire: Fire
-option-divider-fade: Fade
-option-divider-half-circle: Half Circle
-option-divider-mountain: Mountains
-option-divider-snow: Snow
-option-divider-squares: Squares
-option-divider-staggered-pill-op: Transparency Staggered Bullet
-option-divider-staggered-pill-tilt: Tilted Staggered Bullet
-option-divider-staggered-pill: Staggered Bullet
-option-divider-staggered-round: Staggered Rounded
-option-divider-staggered: Staggered
-option-divider-sun-round: Rounded Sun
-option-divider-sun: Sun
-option-divider-taj-mahal: Taj Mahal
-option-divider-tear-alt: Alternative Tear
-option-divider-tear-rough: Rough Tear
-option-divider-tear: Tear
-option-divider-tilt-curve-sides: Tilted Curve Sides
-option-divider-tilt-op-alt: Transparency Alternative Tilt
-option-divider-tilt-op: Transparency Tilt
-option-divider-tilt: Tilt
-option-divider-waves-op: Transparent Waves
-option-divider-waves: Waves
-option-divider-wavy-alt: Alternative Wavy
-option-divider-wavy-jump: Wavy Jump
-option-divider-wavy-op-alt-rep: Transparency Alternative Repeated Waves
-option-divider-wavy-op-alt: Transparency Alternative Waves
-option-divider-wavy-op: Transparent Waves
-option-divider-wavy-rep: Repeated Waves
-option-divider-wavy: Wavy
-option-divider-hide: Without Divider
+option-div-arrow-four: Four-Point Arrow
+option-div-arrow-op-alt: Transparency Alternative Arrow
+option-div-arrow-op-fan: Transparency Fan Arrow
+option-div-arrow-op: Transparency Arrow
+option-div-arrow-round: Rounded Arrow
+option-div-arrow-side-round: Rounded Side Arrow
+option-div-arrow-side: Side Arrow
+option-div-arrow-sides-round-op: Transparency Rounded Side Arrows
+option-div-arrow-sides-round: Rounded Side Arrows
+option-div-arrow-sides: Side Arrows
+option-div-arrow-three: Three-Point Arrow
+option-div-arrow-two: Two-Point Arrow
+option-div-arrow: Arrow
+option-div-book: Book
+option-div-brush: Brush
+option-div-bubles: Bubbles
+option-div-central-dents: Central Dents
+option-div-central-waves: Central Waves
+option-div-christmas-trees: Christmas Trees
+option-div-city: City
+option-div-clouds-op: Transparent Clouds
+option-div-clouds: Clouds
+option-div-curve-corner-op: Transparent Corner Curve
+option-div-curve-corner: Corner Curve
+option-div-curve-edges: Edge Curve
+option-div-curve-op: Transparent Curve
+option-div-curve-side: Side Curve
+option-div-curve: Curve
+option-div-curved-alt: Alternative Curved
+option-div-curved-bracket: Curved Brackets
+option-div-curved: Curved
+option-div-dents-op-alt: Transparent Alternative Dents
+option-div-dents-op: Transparent Dents
+option-div-dents-round: Rounded Dents
+option-div-dents: Dents
+option-div-diagonals-op: Transparent Diagonals
+option-div-diagonals: Diagonals
+option-div-drip: Drip
+option-div-ethnic-alt: Alternative Ethnic
+option-div-ethnic: Ethnic
+option-div-fall: Fall
+option-div-fire: Fire
+option-div-fade: Fade
+option-div-half-circle: Half Circle
+option-div-mountain: Mountains
+option-div-snow: Snow
+option-div-squares: Squares
+option-div-staggered-pill-op: Transparency Staggered Bullet
+option-div-staggered-pill-tilt: Tilted Staggered Bullet
+option-div-staggered-pill: Staggered Bullet
+option-div-staggered-round: Staggered Rounded
+option-div-staggered: Staggered
+option-div-sun-round: Rounded Sun
+option-div-sun: Sun
+option-div-taj-mahal: Taj Mahal
+option-div-tear-alt: Alternative Tear
+option-div-tear-rough: Rough Tear
+option-div-tear: Tear
+option-div-tilt-curve-sides: Tilted Curve Sides
+option-div-tilt-op-alt: Transparency Alternative Tilt
+option-div-tilt-op: Transparency Tilt
+option-div-tilt: Tilt
+option-div-waves-op: Transparent Waves
+option-div-waves: Waves
+option-div-wavy-alt: Alternative Wavy
+option-div-wavy-jump: Wavy Jump
+option-div-wavy-op-alt: Transparency Alternative Waves
+option-div-wavy-op: Transparent waves
+option-div-wavy: Wavy
+option-div-hide: Without Divider
 option-location_type-Organization: Organization
 option-location_type-Airline: → Airline
 option-location_type-Consortium: → Consortium

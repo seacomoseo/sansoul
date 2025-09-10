@@ -22,22 +22,23 @@
   .icon {
     scale: 1.25;
     margin-right: .125em;
-    &:has(> use[href="/draws.#{$timestamp}.svg#rotate"]) {
-      animation: spin 2.5s linear infinite;
-    }
+  }
+  .status__label--waiting > .icon,
+  .icon:has(> use[href="/draws.#{$timestamp}.svg#rotate"]) {
+    animation: spin 2.5s linear infinite reverse;
   }
 }
 .status__label {
   display: none;
 }
-#status .button[style*='#BEF9C6']/*:not(:hover)*/ i > .status__label--success,
-#status .button[style*='#F6E0A5']/*:not(:hover)*/ i > .status__label--building,
-#status .button[style*='#D2D5DB']/*:not(:hover)*/ i > .status__label--canceled,
-#status .button[style*='#FFBDBA']/*:not(:hover)*/ i > .status__label--error,
-#status .button[style*='tomato'] /*:not(:hover)*/ i > .status__label--whaiting,
-#status .button[style*='--light']                 i > .status__label--whaiting,
-#status .button:not([style])                      i > .status__label--check/*,
-#status .button[style]:not([style*='--light']):hover i > .status__label--end*/ {
+#status .button[style*='#BEF9C6']/*:not(:hover)*/ b > .status__label--success,
+#status .button[style*='#F6E0A5']/*:not(:hover)*/ b > .status__label--building,
+#status .button[style*='#D2D5DB']/*:not(:hover)*/ b > .status__label--canceled,
+#status .button[style*='#FFBDBA']/*:not(:hover)*/ b > .status__label--error,
+#status .button[style*='tomato'] /*:not(:hover)*/ b > .status__label--waiting,
+#status .button[style*='--light']                 b > .status__label--waiting,
+#status .button:not([style])                      b > .status__label--check/*,
+#status .button[style]:not([style*='--light']):hover b > .status__label--end*/ {
   display: inline;
 }
 #deploy-time {
@@ -45,6 +46,11 @@
   opacity: .75;
 }
 
+#status .button > .icon {
+  opacity: 0;
+  width: 1em;
+  height: 1em;
+}
 #status .button:not([style]) {
   > .icon,
   .loader {

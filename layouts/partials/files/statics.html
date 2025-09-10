@@ -1,0 +1,30 @@
+{{ $cms_index_path           := print .RelPermalink "admin/index.html" }}
+{{ $google_file_verification := site.Params.google_file_verification }}
+{{ $redirects_path           := "/_redirects" }}
+{{ $svgs                     := "/og-svgs.json" }}
+{{ if hugo.IsMultihost }}
+  {{ $cms_index_path   = print "../" .Lang "/admin/index.html" }}
+  {{ if hugo.IsProduction }}
+    {{ $redirects_path = print ".." $redirects_path }}
+  {{ end }}
+{{ end }}
+{{ $resources := slice
+  (dict   "partial" `files/redirects` "path" $redirects_path)
+  (dict   "partial" `files/og-svgs`   "path" $svgs)
+}}
+{{ with $google_file_verification }}
+  {{ $resources = $resources | append
+    (dict "partial" `files/google-site-verification` "path" .)
+  }}
+{{ end }}
+{{ if not site.Data.config.cms.disabled }}
+  {{ $resources = $resources | append
+    (dict "partial" `cms/index` "path" $cms_index_path)
+  }}
+{{ end }}
+{{ range $resources }}
+  {{ $string   := partial .partial page | string }}
+  {{ $resource := resources.FromString .path $string }}
+  {{ $resource.Publish }}
+{{ end }}
+{{ return "" }}

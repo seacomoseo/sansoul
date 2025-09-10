@@ -13,27 +13,27 @@
     {{- with $link -}}
       {{- if not $icon -}}
         {{- if in . "facebook" -}}
-          {{- $icon = "facebook-f" -}}
+          {{- $icon = "brand:facebook-f" -}}
         {{- else if in . "twitter" -}}
-          {{- $icon = "twitter" -}}
+          {{- $icon = "brand:x-twitter" -}}
         {{- else if in . "tiktok" -}}
-          {{- $icon = "tiktok" -}}
+          {{- $icon = "brand:tiktok" -}}
         {{- else if in . "instagram" -}}
-          {{- $icon = "instagram" -}}
+          {{- $icon = "brand:instagram" -}}
         {{- else if in . "youtube" -}}
-          {{- $icon = "youtube" -}}
+          {{- $icon = "brand:youtube" -}}
         {{- else if in . "linkedin" -}}
-          {{- $icon = "linkedin-in" -}}
+          {{- $icon = "brand:linkedin-in" -}}
         {{- else if in . "github" -}}
-          {{- $icon = "github-alt" -}}
+          {{- $icon = "brand:github-alt" -}}
         {{- else if in . "gitlab" -}}
-          {{- $icon = "gitlab" -}}
+          {{- $icon = "brand:gitlab" -}}
         {{- else if in . "g.page" -}}
-          {{- $icon = "google" -}}
+          {{- $icon = "brand:google" -}}
         {{- else if in . "mailto" -}}
-          {{- $icon = "envelope" -}}
+          {{- $icon = "mail" -}}
         {{- else -}}
-          {{- $icon = "share-nodes" -}}
+          {{- $icon = "share" -}}
         {{- end -}}
       {{- end -}}
       {{- if not $label -}}

@@ -1,7 +1,7 @@
 ---
 title: Plan du Site
 slug: plan-du-site
-icon: sitemap
+icon: account_tree
 noindex: true
 type: system
 weight: 5

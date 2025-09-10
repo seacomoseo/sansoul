@@ -113,12 +113,12 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
     // console.log(e); // DEBUG
     // order of operations is very important to keep focus where it should stay
     if (!searchFocus) {
-      searchSubmit.innerHTML = '{{ partial "icon" (dict "icon" "xmark") }}'
+      searchSubmit.innerHTML = '{{ partial "icon" (dict "default" "close") }}'
       searchForm.setAttribute('data-focus', true)
       searchInput.focus() // move focus to search box
       searchFocus = true
     } else {
-      searchSubmit.innerHTML = '{{ partial "icon" (dict "icon" "magnifying-glass" "emoji" "🔍") }}'
+      searchSubmit.innerHTML = '{{ partial "icon" (dict "default" "search") }}'
       searchForm.setAttribute('data-focus', false)
       document.activeElement.blur() // remove focus from search box
       searchFocus = false
@@ -231,20 +231,20 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         if (results[item].item.date) {
           searchItemType = `
             <time class="box__tag">
-              {{ partial "icon" (dict "class" "box__tag-icon" "icon" "calendar" "emoji" "📅") }}
+              {{ partial "icon" (dict "class" "box__tag-icon" "default" "calendar") }}
               ${results[item].item.date}
             </time>`
         } else {
           searchItemType = `
             <i class="box__tag">
-              <svg class="box__tag-icon"><use href="/draws.{{ site.Params.timestamp }}.svg#${results[item].item.icon}"></use></svg>
+              <i class="box__tag-icon">${results[item].item.icon}</i>
               ${results[item].item.type_label}
             </i>`
         }
         if (results[item].item.author) {
           searchItemAuthor = `
             <i class="box__tag">
-              {{ partial "icon" (dict "class" "box__tag-icon" "icon" "user" "emoji" "👤") }}
+              {{ partial "icon" (dict "class" "box__tag-icon" "default" "user") }}
               ${results[item].item.author}
             </i>`
         }
@@ -252,7 +252,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
           searchItemReadingTime = `
             <div class="box__tags">
               <i class="box__tag">
-              {{ partial "icon" (dict "class" "box__tag-icon" "icon" "clock" "emoji" "🕓") }}
+              {{ partial "icon" (dict "class" "box__tag-icon" "default" "clock") }}
                 ${results[item].item.reading_time}
               </i>
             </div>`

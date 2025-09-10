@@ -58,7 +58,7 @@
   (dict "&options_parallax_box"  (where $options.parallax "value" "ne" "fix"))
   (dict "&options_fade"          $options.fade)
   (dict "&options_icon_type"     $options.icon_type)
-  (dict "&options_icons_type"    $options.icons_type)
+  (dict "&options_icons_style"   $options.icons_style)
   (dict "&options_sizes"         $options.sizes)
   (dict "&options_sizes_n_fluid" (where $options.sizes "value" "ne" "fluid"))
   (dict "&options_gallery_types" $options.gallery_types)
@@ -76,6 +76,8 @@
   (dict "&options_lists"         $options_lists)
   (dict "&options_types"         (where $options_lists "value" "ne" "related"))
   (dict "&options_font_weight"   (slice 0 100 200 300 400 500 600 700 800 900))
+  (dict "&options_icons_grade"   (slice -25 0 200))
+  (dict "&options_icons_optical" (slice 20 24 40 48))
   (dict "&options_boolean"       (slice
     (dict "value" nil "label" $t.default)
     (dict "value" "y" "label" $t.true)

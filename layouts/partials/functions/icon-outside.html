@@ -1,16 +1,13 @@
 {{ $text := . }}
 {{ $icon := "" }}
-{{ $pin  := "" }}
 
-{{ with findRE `(?s)^:([\w-]|[^\d:]{2}|[\w-]{3,}?):|^::.*?::` . }}
+{{ with findRE `(?s)^::.*?::` . }}
   {{ with index . 0 }}
     {{ if in . "::" }}
-      {{ $pin = replace . "::" "" }}
-    {{ else }}
-      {{ $icon = replace . ":" "" }}
+      {{ $icon = replace . "::" "" }}
     {{ end }}
-    {{ $text = $text | replaceRE `(?s)(^:([\w-]|[^\d:]{2}|[\w-]{3,}?):|^::.*?::)\s?` "" }}
+    {{ $text = $text | replaceRE `(?s)(^::.*?::)\s?` "" }}
   {{ end }}
 {{ end }}
 
-{{ return dict "text" $text "icon" $icon "pin" $pin }}
+{{ return dict "text" $text "icon" $icon }}

@@ -7,8 +7,7 @@
       {{- $iframe    := partial "functions/iframe-src" (dict "src" $src "bi" .bi) -}}
       {{- $src        = partial "functions/iframe-poster" .src -}}
       {{- $color     := cond (or (not .icon_color) (eq .icon_color "cta")) "" .icon_color -}}
-      {{- $icon      := site.Data.styles.icons.play | default "play-iframe" -}}
-      {{- $icon_play := partial "icon" (dict "class" $color "icon" $icon "emoji" "▶️") -}}
+      {{- $icon_play := partial "icon" (dict "class" $color "default" "play") -}}
       {{- $media      = merge $media (dict
         "iframe"    $iframe
         "src"       $src

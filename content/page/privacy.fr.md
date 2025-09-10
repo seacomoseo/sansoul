@@ -1,7 +1,7 @@
 ---
 title: Vie privée
 slug: Vie privée
-icon: shield-keyhole
+icon: encrypted
 noindex: true
 type: system
 weight: 2

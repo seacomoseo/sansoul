@@ -1,7 +1,7 @@
 ---
 title: Recherche
 slug: recherche
-icon: magnifying-glass
+icon: search
 noindex: true
 type: system
 weight: 4

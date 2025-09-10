@@ -40,7 +40,7 @@
         {{- $link    := .link -}}
         {{- $button  := .button | default "cta" -}}
         {{- $icon    := .icon -}}
-        {{- $emoji   := "" -}}
+        {{- $default := "" -}}
         {{- $label   := .label -}}
         {{- $anchor  := .anchor | default "auto" -}}
         {{- $noindex := .lock -}}
@@ -54,16 +54,14 @@
         {{- else if eq .type "phone" -}}
           {{- $class   = "callnow__phone" -}}
           {{- $link    = print "tel:+" $num -}}
-          {{- $icon    = .icon | default "phone" -}}
-          {{- $emoji   = .icon | default "📞" -}}
+          {{- $default = "phone" -}}
           {{- $label   = i18n "callnow_phone" -}}
           {{- $noindex = true -}}
         {{- else if eq .type "whatsapp" -}}
           {{- $class   = "callnow__whatsapp" -}}
           {{- $link    = print "https://wa.me/" $num -}}
           {{- $button  = cond (not .button) "whatsapp" $button -}}
-          {{- $icon    = .icon | default "whatsapp" -}}
-          {{- $emoji   = "✆" -}}
+          {{- $default = "whatsapp" -}}
           {{- $label   = i18n "callnow_whatsapp" -}}
           {{- $noindex = true -}}
         {{- end -}}
@@ -75,17 +73,17 @@
         {{- end -}}
 
         {{- partial "link" (dict
-          "class"  $class
-          "button" $button
-          "dot"    true
-          "swap"   true
-          "ga4"    .ga4
-          "icon"   $icon
-          "emoji"  $emoji
-          "label"  $label
-          "anchor" $anchor
-          "link"   $link
-          "lock"   $noindex
+          "class"   $class
+          "button"  $button
+          "dot"     true
+          "swap"    true
+          "ga4"     .ga4
+          "icon"    $icon
+          "default" $default
+          "label"   $label
+          "anchor"  $anchor
+          "link"    $link
+          "lock"    $noindex
         ) -}}
 
         {{- if $callnow_plus -}}</i>{{- end -}}

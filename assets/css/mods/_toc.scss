@@ -11,15 +11,22 @@
       > .icon {
         color: var(--main);
       }
-      @if $main == $cta {
-        &:has(> .icon)::before {
-          opacity: .5;
+      &:has(> .icon) {
+        gap: .25em;
+        @if $main == $cta {
+          &::before {
+            opacity: .5;
+          }
         }
       }
     }
     .link {
       @include font-base;
       color: inherit;
+    }
+    &, li > div > :is(ul, ol) {
+      grid-template-columns: auto auto 1fr;
+      column-gap: .25em;
     }
   }
 }

@@ -1,0 +1,12 @@
+{{ $timestamp   := partial "functions/timestamp" . }}
+{{ $draws_path  := print "/draws." $timestamp ".svg" }}
+{{ if and hugo.IsMultihost hugo.IsProduction }}
+  {{ $draws_path = print ".." $draws_path }}
+{{ end }}
+{{ $string      := partial "files/draws-svg" page | string }}
+{{ $resource    := resources.FromString $draws_path $string }}
+{{ if hugo.IsProduction }}
+  {{ $resource   = $resource | minify }}
+{{ end }}
+{{ $resource.Publish }}
+{{ return "" }}

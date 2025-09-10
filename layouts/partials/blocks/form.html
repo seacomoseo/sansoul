@@ -367,12 +367,12 @@
           {{- end }}
           <label class="form__file" style="--form-file-label:'{{ $form_file_label }}'">
             {{- partial "link" (dict
-              "class"  "form__file--button"
-              "button" (.button | default "cta")
-              "swap"   .swap
-              "icon"   (.icon | default "upload")
-              "emoji"  "📤"
-              "label"  $placeholder
+              "class"   "form__file--button"
+              "button"  (.button | default "cta")
+              "swap"    .swap
+              "icon"    .icon
+              "default" "upload"
+              "label"   $placeholder
             ) -}}
         {{- end -}}
 
@@ -422,7 +422,8 @@
 
       {{- /*  geo  */ -}}
       {{- else if $type | eq "geo" -}}
-        {{- $icon := .icon | default "circle-dot" -}}
+        {{- $icon := .icon | default site.Data.styles.icons.geo | default site.Data.utilities.defaults.geo -}}
+        {{- partial "icon" (dict "hide" true "icon" $icon) -}}
         {{- $geo_attrs := dict
           "id"         (print "geo-" $form_id)
           "class"      "form__geo-map"
@@ -435,7 +436,6 @@
         -}}
         {{- $geo_attrs = partial "functions/attrs" $geo_attrs }}
         <div {{- $geo_attrs }}></div>
-        {{ partial "icon" (dict "class" "leaflet-data-marker__svg display-none" "icon" $icon) }}
         <input class="form__geo form__geo--json" type="hidden" name="{{ .name }}" {{- $required_attr }}>
 
       {{- /*  textarea  */ -}}
@@ -563,11 +563,8 @@
     {{- end -}}
   {{- end }}
   <button class="{{ $submit_class }}" type="submit" name="submit">
-    {{- partial "icon" (dict
-      "icon" ($form.icon | default "paper-plane")
-      "emoji" "📨"
-    ) -}}
-    <i>{{ $form.label | default (i18n "send") }}</i>
+    {{- partial "icon" (dict "icon" $form.icon "default" "send") -}}
+    <b>{{ $form.label | default (i18n "send") }}</b>
     {{- "" -}}
   </button>
 
@@ -597,11 +594,11 @@
   </label>
 
   {{- /* Hidden Icons */ -}}
-  {{- partial "icon" (dict "class" "display-none" "icon" "xmark"       ) -}}
-  {{- partial "icon" (dict "class" "display-none" "icon" "rotate"      ) -}}
-  {{- partial "icon" (dict "class" "display-none" "icon" "circle-check") -}}
-  {{- partial "icon" (dict "class" "display-none" "icon" "circle-xmark") -}}
-  {{- partial "icon" (dict "class" "display-none" "icon" "circle-info" ) -}}
+  {{- partial "icon" (dict "hide" true "default" "send_close"   ) -}}
+  {{- partial "icon" (dict "hide" true "default" "send_checking") -}}
+  {{- partial "icon" (dict "hide" true "default" "send_submit"  ) -}}
+  {{- partial "icon" (dict "hide" true "default" "send_error"   ) -}}
+  {{- partial "icon" (dict "hide" true "default" "send_info"    ) -}}
 
   {{- "" }}
 </form>

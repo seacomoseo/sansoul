@@ -3,8 +3,8 @@
 {{ $style := "" }}
 
 {{ with .section }}
-  {{ with where (partial "draws/dividers" .) "id" .div }}
-    {{ with index . 0 }}
+  {{ if .div }}
+    {{ with partial "functions/dividers" .div }}
       {{ if eq .size 2 }}
         {{ $class = print $class " div" $_next "--size" }}
       {{ end }}
@@ -12,27 +12,31 @@
         {{ $class = print $class " div" $_next "--not-repeat" }}
       {{ end }}
     {{ end }}
-  {{ end }}
 
-  {{ $flip_y := cond (not .div_y) "" "y" }}
-  {{ $flip_x := cond (not .div_x) "" "x" }}
-  {{ $flips  := "" }}
-  {{ if or .div_x .div_y }}
-    {{ $flips = print $flip_x $flip_y }}
-  {{ end }}
-
-  {{ $style = print
-    "--div" $_next ": url("
-    "/draws." site.Params.timestamp ".svg"
-    "#div-" .div "-" (cond $.next "ne" "pr") $flips
-    ")"
-  }}
-  {{ if eq .div "fade" }}
-    {{ if $.next }}
-      {{ $style = "--div-next: linear-gradient(black, transparent)" }}
-    {{ else }}
-      {{ $style = "--div: linear-gradient(transparent, black)" }}
+    {{ $flip_y := cond (not .div_y) "" "y" }}
+    {{ $flip_x := cond (not .div_x) "" "x" }}
+    {{ $flips  := "" }}
+    {{ if or .div_x .div_y }}
+      {{ $flips = print $flip_x $flip_y }}
     {{ end }}
+
+    {{ $time := partial "functions/timestamp" . }}
+    {{ $style = print
+      "--div" $_next ": url("
+      "/draws." $time ".svg"
+      "#div-" .div "-" (cond $.next "ne" "pr") $flips
+      ")"
+    }}
+    {{ if eq .div "fade" }}
+      {{ if $.next }}
+        {{ $style = "--div-next: linear-gradient(black, transparent)" }}
+      {{ else }}
+        {{ $style = "--div: linear-gradient(transparent, black)" }}
+      {{ end }}
+    {{ end }}
+
+    {{ $draw := print "div:" .div }}
+    {{ partial "functions/draw-to-store" $draw }}
   {{ end }}
 {{ end }}
 

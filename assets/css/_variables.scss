@@ -154,13 +154,23 @@ $blockquote-cursive:       $styles-fonts-blockquote-cursive == 'true' !default;
 
 
 // Icons Type
-$duotone:                  $styles-duotone      == 'true' !default;
-$menu-bar-double:          $styles-menu-bar * 1rem        !default;
-$menu-bar:                 $menu-bar-double / 2           !default;
+$icons-fill:    $styles-icons-fill      !default;
+$icons-weight:  $styles-icons-weight    !default;
+$icons-grade:   $styles-icons-grade     !default;
+$icons-optical: $styles-icons-optical   !default;
+$icons-style:   $styles-icons-style     !default;
+
+$linejoin:     if($icons-style == 'sharp', 'miter', 'round')           !default;
+$stroke-width: (25 + ($icons-weight - 100) * (120 - 25) / (700 - 100)) !default;
+
+// menu-bar
+$menu-bar-double: (0.1 + ($icons-weight - 100) * (0.25 - 0.1) / (700 - 100)) * 1rem !default;
+$menu-bar:        $menu-bar-double / 2                                              !default;
+
 
 // Rounded
-$radius:                   $styles-rounded-radius * 1em      !default;
-$chamfer:                  $styles-rounded-chamfer == 'true' !default;
+$radius:  $styles-rounded-radius * 1em      !default;
+$chamfer: $styles-rounded-chamfer == 'true' !default;
 
 
 // Buttons
@@ -203,6 +213,7 @@ $sl-navigation-color:   $white !default;
 // Other
 $show:             $config-others-show    == 'true' !default;
 $google-translate: $menu-google_translate == 'true' !default;
+$is-production:    $hugo-is-production    == 'true' !default;
 
 
 // String selectors

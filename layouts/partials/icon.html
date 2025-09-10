@@ -1,33 +1,71 @@
 {{ $html := "" }}
+{{ $icon := .icon }}
 
-{{ if ne .icon "hide" }}
-  {{ $config   := site.Data.styles.icons }}
-  {{ $icon     := .icon }}
-
-  {{/*  emojis_default  */}}
-  {{ if and .emoji $config.emojis }}
-    {{ $icon = .emoji }}
+{{ if not .icon }}
+  {{ with .default }}
+    {{ $icon = index site.Data.styles.icons . }}
+    {{ if not $icon }}
+      {{ $icon = index site.Data.utilities.defaults . }}
+    {{ end }}
   {{ end }}
-  {{ $icon_code := $icon | urlquery }}
-  {{ $is_emoji  := in $icon_code "%" }}
+{{ end }}
+
+{{ if ne $icon "hide" }}
+  {{ $config := site.Data.styles.icons }}
+  {{ $icon   := cond (eq $icon "none") "" $icon }}
+  {{ $type   := "icon" }}
+
+  {{/*  SVG  */}}
+  {{ $is_svg := $icon | findRE `^(svg|brand):` }}
+
+  {{/*  TXT  */}}
+  {{ $is_txt := hasPrefix $icon "txt:" | or (not $icon) }}
+  {{ if not (or $is_txt $is_svg) }}
+    {{/*  is emoji  */}}
+    {{ $icon_code := $icon | urlquery }}
+    {{ $is_txt     = in $icon_code "%" }}
+  {{ end }}
+
+  {{/*  STORE  */}}
+  {{ if not $is_txt }}
+    {{ partial "functions/draw-to-store" $icon }}
+  {{ end }}
 
   {{/*  CLASS  */}}
-  {{ $class := slice "icon" }}
+  {{ $class  := slice "icon" }}
+  {{ $width  := "" }}
+  {{ $height := "" }}
   {{ with .class }}
     {{ $class = $class | append . }}
   {{ end }}
-  {{ if $is_emoji }}
-    {{ $class = $class | append "icon--text" }}
+  {{ if $is_txt }}
+    {{ $class = $class | append "icon--txt" }}
+  {{ end }}
+  {{ if $is_svg }}
+    {{ $class = $class | append "icon--svg" }}
+    {{ $name := $icon | replaceRE `^svg:` "" | replaceRE `^brand:` "brands/" }}
+    {{ $path := print "/media/{icons/,}" $name ".svg" }}
+    {{ $src  := resources.GetMatch $path }}
+    {{ with $src }}
+      {{ with partial "functions/svg-sizes" .Content }}
+        {{ $width  = .width }}
+        {{ $height = .height }}
+      {{ end }}
+    {{ end }}
   {{ end }}
   
   {{/*  ATTRIBUTES  */}}
-  {{ $attrs := partial "functions/attrs" (dict "class" $class "style" .style) }}
+  {{ $attrs := partial "functions/attrs" (dict "class" $class "style" .style "width" $width "height" $height) }}
 
-  {{ if $is_emoji }}
-    {{ $icon = replace .icon ":" "" }}
-    {{ $html = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
-  {{ else }}
-    {{ $html = print `<svg` $attrs `><use href="/draws.` site.Params.timestamp `.svg#` $icon `"></use></svg>` | safeHTML }}
+  {{/*  HTML  */}}
+  {{ if not .hide }}
+    {{ $icon    = $icon | replaceRE `^(svg|txt):` "" | replaceRE `:|/` "-" }}
+    {{ if $is_svg }}
+      {{ $time := partial "functions/timestamp" . }}
+      {{ $html  = print `<svg` $attrs `><use href="/draws.` $time `.svg#` $icon `"></use></svg>` | safeHTML }}
+    {{ else }}
+      {{ $html  = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
+    {{ end }}
   {{ end }}
 {{ end }}
 

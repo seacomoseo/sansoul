@@ -1,9 +1,9 @@
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
 
 // const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 export function initFormShow () {
-  whaitCSS(() => {
+  waitCSS(() => {
     const forms = document.querySelectorAll('.form:has([data-showof])')
     if (forms) {
       forms.forEach(form => {

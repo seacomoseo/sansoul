@@ -31,25 +31,30 @@ html[style*="--text-primary: #fff;"] .CMS_NavLink_icon {
 .CMS_Table_body-cell-link {
   position: relative;
 }
-.CMS_Table_body-cell:first-child [href^="#/collections/settings/entries/"].CMS_Table_body-cell-link::before {
-  content: '';
-  width: 20px;
-  margin-right: .5rem;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
 
-$roots: str-split($items, '|');
-@each $root in $roots {
-  @each $item in $root {
-    $parts: str-split($item, ',');
-    $name: nth($parts, 1);
-    $base64: nth($parts, 2);
-
-    // Settings
-    .CMS_Table_body-cell-link[href="#/collections/settings/entries/#{$name}"]::before {
-      background-image: url("data:image/svg+xml;base64,#{$base64}");
-    }
+// CUSTOM
+.custom-icon {
+  font-family: 'Material Symbols';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  @if not ($is-production == 'true') {
+    font-variation-settings:
+      'FILL' #{$icons-fill},
+      'wght' #{$icons-weight},
+      'GRAD' #{$icons-grade},
+      'opsz' #{$icons-optical};
   }
+  opacity: 0.87;
+  color: var(--primary-dark);
+
 }

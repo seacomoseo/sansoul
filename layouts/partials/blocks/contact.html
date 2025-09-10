@@ -15,7 +15,7 @@
           {{- $button  := .button | default "cta" -}}
           {{- $swap    := .swap -}}
           {{- $icon    := .icon -}}
-          {{- $emoji   := "" -}}
+          {{- $default := "" -}}
           {{- $label   := .label -}}
           {{- $anchor  := .anchor | default "auto" -}}
           {{- $noindex := .lock -}}
@@ -35,21 +35,18 @@
           {{- else if eq .type "phone" -}}
             {{- $class   = "contact__phone" -}}
             {{- $link    = print "tel:+" $num -}}
-            {{- $icon    = .icon | default "phone" -}}
-            {{- $emoji   = .icon | default "📞" -}}
+            {{- $default = "phone" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "whatsapp" -}}
             {{- $class   = "contact__whatsapp" -}}
             {{- $link    = print "https://wa.me/" $num -}}
             {{- $button  = cond (not .button) "whatsapp" $button -}}
-            {{- $icon    = .icon | default "whatsapp" -}}
-            {{- $emoji   = "✆" -}}
+            {{- $default = "whatsapp" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "mail" -}}
             {{- $class   = "contact__email-button" -}}
             {{- $link    = "none" -}}
-            {{- $icon    = .icon | default "envelope" -}}
-            {{- $emoji   = "✉" -}}
+            {{- $default = "mail" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "address" -}}
             {{- $class   = "contact__address" -}}
@@ -71,8 +68,7 @@
                 {{- $link  = partial "functions/map-url" (.anchor | default .label) -}}
               {{- end -}}
             {{- end -}}
-            {{- $icon    = .icon | default "location-dot" -}}
-            {{- $emoji   = "📍" -}}
+            {{- $default = "address" -}}
             {{- $label   = .label | default .anchor -}}
             {{- $noindex = true -}}
           {{- end -}}
@@ -90,16 +86,16 @@
 
               {{- /*  LINK  */}}
               {{ partial "link" (dict
-                "class"  (print $class $full)
-                "button" $button
-                "swap"   $swap
-                "ga4"    .ga4
-                "icon"   $icon
-                "emoji"  $emoji
-                "label"  $label
-                "anchor" $anchor
-                "link"   $link
-                "lock"   $noindex
+                "class"   (print $class $full)
+                "button"  $button
+                "swap"    $swap
+                "ga4"     .ga4
+                "icon"    $icon
+                "default" $default
+                "label"   $label
+                "anchor"  $anchor
+                "link"    $link
+                "lock"    $noindex
               ) -}}
 
           {{- if eq .type "mail" -}}
@@ -109,26 +105,23 @@
                 <i class="bg-color"></i>
                 {{- range slice
                   (dict
-                    "class" "copy"
-                    "icon"  "paste"
-                    "emoji" "📋"
-                    "label" "copy_clipboard"
+                    "class"   "copy"
+                    "default" "copy"
+                    "label"   "copy_clipboard"
                   )
                   (dict
-                    "class" "send"
-                    "icon"  "paper-plane"
-                    "emoji" "📨"
-                    "label" "send_email"
+                    "class"   "send"
+                    "default" "send"
+                    "label"   "send_email"
                   )
                 }}
                   {{ partial "link" (dict
-                    "class"  (print "contact__email-option-" .class)
-                    "button" "cta"
-                    "sm"     true
-                    "swap"   true
-                    "icon"   .icon
-                    "emoji"  .emoji
-                    "label"  (i18n .label)
+                    "class"   (print "contact__email-option-" .class)
+                    "button"  "cta"
+                    "sm"      true
+                    "swap"    true
+                    "default" .default
+                    "label"   (i18n .label)
                   ) -}}
                 {{- end }}
               </i>
@@ -141,13 +134,13 @@
           <div class="contact__schedule {{ $full }}">
             {{- with .days }}
               <div class="contact__schedule-item">
-                {{ partial "icon" (dict "icon" "calendar" "emoji" "📅") }}
+                {{ partial "icon" (dict "default" "calendar") }}
                 <i>{{ . | markdownify }}</i>
               </div>
             {{- end -}}
             {{- with .hours }}
               <div class="contact__schedule-item">
-                {{ partial "icon" (dict "icon" "clock" "emoji" "🕓") }}
+                {{ partial "icon" (dict "default" "clock") }}
                 <i>{{ . | markdownify }}</i>
               </div>
             {{- end }}

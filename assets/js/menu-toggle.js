@@ -1,5 +1,6 @@
 import { debounce } from './debounce'
-import { whaitCSS } from './whait-css'
+import { waitCSS } from './wait-css'
+import { waitFonts } from './wait-fonts'
 
 const menu = document.querySelector('.menu')
 const menuSticky = document.querySelector('.body-menu--sticky')
@@ -78,7 +79,9 @@ export function initMenuToggle () {
       if (menuBackoverAndLinks) menuClose()
     }
   })
-  whaitCSS(() => {
+  waitCSS(async () => {
+    await waitFonts()
+
     // Listeners
     document.addEventListener('keyup', e => e.key === 'Escape' && menuClose())
     window.addEventListener('hashchange', menuClose)

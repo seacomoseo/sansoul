@@ -1,28 +1,28 @@
 {{- /*
   {{ partial "link" (dict
-    "class"  slice or string
-    "button" string
-    "dot"    boolean
-    "sm"     boolean
-    "swap"   boolean
-    "ga4"    boolean
+    "class"   slice or string
+    "button"  string
+    "dot"     boolean
+    "sm"      boolean
+    "swap"    boolean
+    "ga4"     boolean
 
-    "icon"   string
-    "emoji"  string
-    "pip"    string
+    "icon"    string
+    "default" string
+    "pip"     string
 
-    "label"  string
-    "anchor" string
-    "title"  string
+    "label"   string
+    "anchor"  string
+    "title"   string
 
-    "link"   string
-    "lock"   boolean or nil
-    "blank"  boolean
-    "nomore" boolean
+    "link"    string
+    "lock"    boolean or nil
+    "blank"   boolean
+    "nomore"  boolean
   ) }}
 */ -}}
 
-{{- $tag       := "i" -}}
+{{- $tag       := "b" -}}
 {{- $type      := "" -}}
 {{- $more_data := "" -}}
 {{- $lb_data   := "" -}}
@@ -194,7 +194,7 @@
     {{- /*  check if already applied data-more in parent  */ -}}
     {{- if $button -}}
       {{- /*  if is a button, need one more child for prevent :before back problem  */ -}}
-      {{- $label    = print "<i>" $label "</i>" | safeHTML -}}
+      {{- $label    = print "<b>" $label "</b>" | safeHTML -}}
       {{- $sub_more = .label | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" -}}
     {{- else -}}
       {{- /*  else data-more in wrap  */ -}}
@@ -207,7 +207,7 @@
   {{- if $sub_tag -}}
     {{- $sub_attrs := dict "class" $sub_class "data-more" $sub_more -}}
     {{- $sub_attrs  = partial "functions/attrs" $sub_attrs -}}
-    {{- $label      = print "<i" $sub_attrs ">" $label "</i>" | safeHTML -}}
+    {{- $label      = print "<b" $sub_attrs ">" $label "</b>" | safeHTML -}}
   {{- end -}}
 {{- end -}}
 
@@ -232,13 +232,10 @@
 
 {{- /*  HTML  */}}
 {{- print "<" $tag $attrs ">" | safeHTML -}}
-  {{- with .icon -}}
-    {{- if ne . "hide" -}}
-      {{- partial "icon" (dict "icon" . "emoji" $.emoji) -}}
+  {{- if or .icon .default -}}
+    {{- if ne .icon "hide" -}}
+      {{- partial "icon" (dict "icon" .icon "default" .default) -}}
     {{- end -}}
-  {{- end -}}
-  {{- with .pin -}}
-    <i class="icon icon--text">{{ . }}</i>
   {{- end -}}
   {{- $label -}}
 {{- print "</" $tag ">" | safeHTML -}}

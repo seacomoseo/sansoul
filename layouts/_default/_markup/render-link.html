@@ -32,7 +32,6 @@
 {{- $outside := partial "functions/icon-outside" $label -}}
 {{- $label   := $outside.text -}}
 {{- $icon    := $outside.icon -}}
-{{- $pin     := $outside.pin -}}
 
 {{- /*  lock  */ -}}
 {{- $lock := cond (in $meta "nofollow") true nil -}}
@@ -55,7 +54,6 @@
   "swap"   $swap
   "ga4"    $ga4
   "icon"   $icon
-  "pin"    $pin
   "label"  $label
   "anchor" $anchor
   "title"  $title
