@@ -39,7 +39,7 @@
   {{- if not $alt -}}
     {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
   {{- end  -}}
-  {{- $lazy := cond (not .notlazy) "lazy" "" -}}
+  {{- $lazy := cond (not .notlazy) "lazy" (.loading | default "") -}}
 
   {{- $img_attrs := dict
     "src"      ($image_base.RelPermalink | safeURL)
@@ -48,6 +48,7 @@
     "height"   $image_base.Height
     "decoding" "async"
     "loading"  $lazy
+    "fetchpriority" .fetchpriority
   -}}
   {{- $img_attrs = partial "functions/attrs" $img_attrs -}}
 
