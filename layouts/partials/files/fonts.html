@@ -2,37 +2,41 @@
   {{/*  Download Google Fonts  */}}
   {{ with hugo.Store.Get "google_fonts" }}
     {{/*  URL  */}}
-    {{ $gf_url := slice "https://fonts.googleapis.com/css2?display=swap" }}
+    {{ $url := slice }}
     {{ range uniq . }}
-      {{ $param := print
-        "family="
-        (replace .family " " "+")
-        (cond
-          (not .italic)
-          (print ":wght@" .weight (cond (not .bold) "" (print ";" .bold)))
-          (print ":ital,wght@1," .weight (cond (not .bold) "" (print ";1," .bold)))
-        )
-      }}
-      {{ $gf_url = $gf_url | append $param }}
+      {{ $family := urlize .family }}
+      {{ $italic := cond (not .italic) "" "-italic" }}
+      {{ $path   := print "/fonts/" $family "-" .weight $italic ".woff2" }}
+      {{ $file   := print "/static" $path }}
+      {{ if fileExists $file | not }}
+        {{ $fami := replace .family " " "+" }}
+        {{ $wght := .weight | default 400 }}
+        {{ $ital := int .italic }}
+        {{ $part := print "family=" $fami ":ital,wght@" $ital "," $wght }}
+        {{ $url   = $url | append $part }}
+      {{ end }}
     {{ end }}
-    {{ $gf_url   = delimit $gf_url "&" }}
-    {{/*  Get remote CSS  */}}
-    {{ $ua      := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" }}
-    {{ $headers := dict "User-Agent" $ua "Accept" "text/css,*/*;q=0.1" }}
-    {{ with partial "functions/get-remote" (dict "url" $gf_url "headers" $headers) }}
-      {{/*  Set each @font-faces  */}}
-      {{ $font_faces := .Content | replaceRE `\n` " " | findRE `/\* latin \*/ \@font-face \{.+?\}` }}
-      {{ range $font_faces }}
-        {{ $woff2  := . | replaceRE `.+url\((.+?)\).+` "$1" }}
-        {{ $family := . | replaceRE `.+font-family: '(.+?)'.+` "$1" | urlize }}
-        {{ $weight := . | replaceRE `.+font-weight: (.+?);.+` "$1" }}
-        {{ $style  := . | replaceRE `.+font-style: (.+?);.+` "$1" }}
-        {{ $italic := cond (eq $style "italic") "-italic" "" }}
-        {{/*  Get remote WOFF2  */}}
-        {{ with partial "functions/get-remote" $woff2 }}
-          {{ $name    := print "/fonts/" $family "-" $weight $italic ".woff2" }}
-          {{ $rename  := . | resources.Copy $name }}
-          {{ $publish := $rename.Publish }}
+    {{ if $url }}
+      {{ $url = slice "https://fonts.googleapis.com/css2?display=swap" | append $url }}
+      {{ $url = delimit $url "&" }}
+      {{/*  Get remote CSS  */}}
+      {{ $ua      := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" }}
+      {{ $headers := dict "User-Agent" $ua "Accept" "text/css,*/*;q=0.1" }}
+      {{ with partial "functions/get-remote" (dict "url" $url "headers" $headers) }}
+        {{/*  Set each @font-faces  */}}
+        {{ $font_faces := .Content | replaceRE `\n` " " | findRE `/\* latin \*/ \@font-face \{.+?\}` }}
+        {{ range $font_faces }}
+          {{ $woff2  := . | replaceRE `.+url\((.+?)\).+` "$1" }}
+          {{ $family := . | replaceRE `.+font-family: '(.+?)'.+` "$1" | urlize }}
+          {{ $weight := . | replaceRE `.+font-weight: (.+?);.+` "$1" }}
+          {{ $style  := . | replaceRE `.+font-style: (.+?);.+` "$1" }}
+          {{ $italic := cond (eq $style "italic") "-italic" "" }}
+          {{/*  Get remote WOFF2  */}}
+          {{ with partial "functions/get-remote" $woff2 }}
+            {{ $name    := print "/fonts/" $family "-" $weight $italic ".woff2" }}
+            {{ $rename  := . | resources.Copy $name }}
+            {{ $publish := $rename.Publish }}
+          {{ end }}
         {{ end }}
       {{ end }}
     {{ end }}

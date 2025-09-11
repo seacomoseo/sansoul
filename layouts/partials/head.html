@@ -90,6 +90,10 @@
   <meta name="google-site-verification" content="{{ . }}">
 {{- end -}}
 
+{{- /*  SCHEMA  */}}
+<script type="application/ld+json">
+{{ partial "schema/_" . | safeJS }}
+</script>
 
 {{/*  LOADER  */}}
 {{ partial "head-loader" . }}
@@ -139,10 +143,24 @@
   </script>
 {{- end -}}
 
-{{- /*  SCHEMA  */}}
-<script type="application/ld+json">
-{{ partial "schema/_" . | safeJS }}
-</script>
+{{- /*  SELF-HOSTED MATERIAL SYMBOLS  */ -}}
+{{- $path := print "" -}}
+{{- if hugo.IsProduction -}}
+  {{- $time := partial "functions/timestamp" . -}}
+  {{- $path  = print "/fonts/icons." $time ".woff2" -}}
+{{- else -}}
+  {{- $style := site.Data.styles.icons.style -}}
+  {{- $path   = print "/fonts/material-symbols-" $style ".woff2" -}}
+{{- end }}
+<link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
+
+{{- /*  SELF-HOSTED FONTS  */ -}}
+{{- range hugo.Store.Get "fonts" }}
+  {{ $family := urlize .family }}
+  {{ $italic := cond (not .italic) "" "-italic" }}
+  {{ $path    = print "/fonts/" $family "-" .weight $italic ".woff2" }}
+  <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
+{{- end -}}
 
 {{- /*  CSS STYLES  */ -}}
 {{- $css := partial "styles" . }}
@@ -186,12 +204,3 @@
 {{- with site.Home.OutputFormats.Get "RSS" }}
   <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Title }}">
 {{- end -}}
-
-{{- /*  SELF-HOSTED FONTS  */ -}}
-{{ if fileExists "static/fonts" }}
-  {{- range readDir "static/fonts" -}}
-    {{- if ne ".DS_Store" .Name }}
-      <link rel="preload" href="/fonts/{{ .Name }}" as="font" type="font/woff2" crossorigin>
-    {{- end -}}
-  {{- end -}}
-{{ end }}

@@ -3,8 +3,8 @@
 {{ $opts   := dict }}
 {{ if reflect.IsMap . }}
   {{ $url   = .url }}
-  {{ $opts  = merge . (dict "url" nil) }}
-  {{ $opts  = partial "functions/obj-truly" $opts }}
+  {{ $o    := dict "dict" . "params" "url" }}
+  {{ $opts  = partial "functions/delete-params" $o }}
 {{ end }}
 
 {{ with try (resources.GetRemote $url $opts) }}

@@ -2,9 +2,16 @@
 
 {{ $s := newScratch }}
 {{ $s.Set "clean" .dict }}
-{{ range .params }}
+
+{{ $params := .params }}
+{{ if reflect.IsSlice .params | not }}
+  {{ $params = slice .params }}
+{{ end }}
+
+{{ range $params }}
   {{ $s.DeleteInMap "clean" . }}
 {{ end }}
+
 {{ $dict = $s.Get "clean" }}
 
 {{ return $dict }}

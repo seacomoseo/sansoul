@@ -26,21 +26,20 @@
         {{ end }}
       {{ end }}
   {{ end }}
+  {{ $fonts = uniq $fonts }}
+  {{ $gf    = uniq $gf }}
   {{/*  CSS  */}}
   {{ $f_css := slice }}
-  {{ with $fonts }}
-    {{ range uniq . }}
-      {{ $font_face := print
-        .family "|"
-        .weight "|"
-        (cond .italic "italic" "normal") "|"
-        (print (.family | urlize) "-" .weight (cond .italic "-italic" ""))
-      }}
-      {{ $f_css = $f_css | append $font_face }}
-    {{ end }}
+  {{ range $fonts }}
+    {{ $style  := cond .italic "italic" "normal" }}
+    {{ $path   := print (.family | urlize) "-" .weight (cond .italic "-italic" "") }}
+    {{ $f_face := slice .family .weight $style $path }}
+    {{ $f_face  = delimit $f_face "|" }}
+    {{ $f_css   = $f_css | append $f_face }}
   {{ end }}
   {{ $f_css = delimit $f_css "," }}
   {{/*  Set in hugo store  */}}
+  {{ hugo.Store.Set "fonts" $fonts }}
   {{ hugo.Store.Set "fonts_css" $f_css }}
   {{ hugo.Store.Set "google_fonts" $gf }}
 {{ end }}
