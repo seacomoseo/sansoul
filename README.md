@@ -9,6 +9,8 @@
 - `node ../_tools/update-v2-langs.js`
 - `../_tools/update-v2-home.sh`
 - `node ../_tools/update-v2-menu.js`
+- `../_tools/update-v2-icons.sh`
+- `node ../_tools/update-v2-icons.js ../_tools/fontawesome-to-materialsymbol.json`
 
 ## Comprobar cambios en `example.yml`
 ## Script para actualizar proyectos antiguos
