@@ -131,7 +131,7 @@
 
     {{- /*  IMAGE LCP  */}}
     {{- $lcp := print "<svg xmlns='http://www.w3.org/2000/svg' width='2048' height='2048' style='background:linear-gradient(" $loader_main "," $loader_cta ")'><title>LCP</title></svg>" | base64Encode -}}
-    <img class="lcp" src="data:image/svg+xml;base64,{{ $lcp }}" alt="LCP" width="2048" height="2048" loading="eager">
+    <img class="lcp" src="data:image/svg+xml;base64,{{ $lcp }}" alt="LCP" width="2048" height="2048" loading="eager" fetchpriority="high" decoding="async">
 
     {{- /*  LOADER  */}}
     <div id="bg-loader" {{ $loader_style }}>
