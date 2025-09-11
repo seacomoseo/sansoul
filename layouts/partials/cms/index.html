@@ -19,8 +19,10 @@
 {{- range site.Sections -}}
   {{- with .Params.icon -}}
     {{- $icons = $icons | append . -}}
-    {{- partial "functions/draw-to-store" . -}}
   {{- end -}}
+{{- end -}}
+{{- range $icons -}}
+  {{- partial "functions/draw-to-store" . -}}
 {{- end -}}
 
 <!doctype html>
