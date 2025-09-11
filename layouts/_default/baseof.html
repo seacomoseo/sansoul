@@ -168,8 +168,8 @@
 {{- $pages_count := hugo.Store.Get "pages-count" -}}
 {{- $pages_total := mul (len site.Pages) (len site.Sites) -}}
 {{- if eq $pages_count $pages_total -}}
-  {{- partial "files/fonts"   . -}}
   {{- partial "files/statics" . -}}
+  {{- partial "files/fonts"   . -}}
   {{- partial "files/pdfs"    . -}}
   {{- partial "files/images"  . -}}
   {{- partial "files/glyphs"  . -}}
