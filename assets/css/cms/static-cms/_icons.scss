@@ -35,7 +35,7 @@ html[style*="--text-primary: #fff;"] .CMS_NavLink_icon {
 // CUSTOM
 .custom-icon {
   font-family: 'Material Symbols';
-  font-weight: normal;
+  font-weight: #{$icons-weight};
   font-style: normal;
   font-size: 24px;
   line-height: 1;
@@ -45,8 +45,11 @@ html[style*="--text-primary: #fff;"] .CMS_NavLink_icon {
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
-  -webkit-font-feature-settings: 'liga';
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
   @if not ($is-production == 'true') {
     font-variation-settings:
       'FILL' #{$icons-fill},

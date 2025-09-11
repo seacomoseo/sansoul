@@ -54,13 +54,14 @@
       {{ end }}
     {{ end }}
   {{ end }}
-  {{ $i    := site.Data.styles.icons }}
-  {{ $vars := dict
+  {{ $i       := site.Data.styles.icons }}
+  {{ $i_grade := cond (and $i.fill (not $i.grade)) 200 $i.grade }}
+  {{ $vars    := dict
     "params"        (delimit $params "|")
     "timestamp"     (partial "functions/timestamp" .)
     "icons-fill"    ($i.fill    | not | not | int)
     "icons-weight"  ($i.weight  | default 400)
-    "icons-grade"   ($i.grade   | default 0)
+    "icons-grade"   ($i_grade   | default 0)
     "icons-optical" ($i.optical | default 24)
     "icons-style"   ($i.style   | default "outlined")
     "is-production" (hugo.IsProduction | not | not | string)
