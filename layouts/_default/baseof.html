@@ -130,13 +130,10 @@
   <body {{- $body_attr }}>
 
     {{- /*  IMAGE LCP  */}}
-    {{- partial "media/_" (dict
-      "class" "lcp"
-      "src"   .Params.image
-      "alt"   site.Title
-      "loading" "eager"
-      "fetchpriority" "high"
-    ) -}}
+    {{- /*
+    {{- $lcp := print "<svg xmlns='http://www.w3.org/2000/svg' width='2048' height='2048'><title>LCP</title><rect width='2048' height='2048' fill='" $loader_main "' opacity='0.01' /></svg>" | base64Encode }}
+    <img class="lcp" src="data:image/svg+xml;base64,{{ $lcp }}" alt="back" width="2048" height="2048" loading="eager" fetchpriority="high" decoding="async">
+    */ -}}
 
     {{- /*  LOADER  */}}
     <div id="bg-loader" {{ $loader_style }}>
