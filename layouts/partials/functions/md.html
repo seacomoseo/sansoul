@@ -21,7 +21,7 @@
   | replaceRE `<p( class="(.+?)")?>[\n\s]*(<a class="button|<button)` `<p class="buttons $2">$3`
   | replaceRE ` start="(.+?)"` ` style="--item: $1;"`
   | replaceRE `<li(.*?)>` `<li$1><div>`
-  | replaceRE `<li(.*?)><div>(\n|<p>)*(<. class="link.+?>)?(<svg.*?>.+?</svg>|<i class="icon.*?">.*?</i>) ?` `<li class="li-icon"$1>$4<div>$2$3`
+  | replaceRE `<li(.*?)><div>(\n|<p>)*(<. class="link.+?>)?(<svg( aria-hidden="true")?.*?>.+?</svg>|<i( aria-hidden="true")? class="icon.*?">.*?</i>) ?` `<li class="li-icon"$1>$4<div>$2$3`
   | replaceRE `</li>` `</div></li>`
   | replaceRE `(?s)<p><figure(.+?)</figure></p>` `<figure$1</figure>`
   | replaceRE `"(footnote-ref|footnote-backref)"` `"$1 button button--sm"`

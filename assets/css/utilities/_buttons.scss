@@ -73,7 +73,9 @@
     color: var(--pin-color);
     opacity: var(--pin-opacity);
     transition: color .1s;
-    --bg-color: var(--base); // to SVG variable strokes
+    @if not $buttons-outline {
+      --bg-color: var(--base); // to SVG variable strokes
+    }
   }
   &:not(.button--dot) {
     > .icon {
