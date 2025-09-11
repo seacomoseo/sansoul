@@ -6,9 +6,13 @@
     {{ range uniq . }}
       {{ $family := urlize .family }}
       {{ $italic := cond (not .italic) "" "-italic" }}
-      {{ $path   := print "/fonts/" $family "-" .weight $italic ".woff2" }}
-      {{ $file   := print "/static" $path }}
-      {{ if fileExists $file | not }}
+      {{ $name   := print "/fonts/" $family "-" .weight $italic ".woff2" }}
+      {{ $file   := print "/media" $name }}
+      {{ $src    := resources.Get $file }}
+      {{ with $src }}
+        {{ $mv   := . | resources.Copy $name }}
+        {{ $pub  := $mv.Publish }}
+      {{ else }}
         {{ $fami := replace .family " " "+" }}
         {{ $wght := .weight | default 400 }}
         {{ $ital := int .italic }}

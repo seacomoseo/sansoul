@@ -19,8 +19,8 @@
   {{ $is_svg := $icon | findRE `^(svg|brand):` }}
 
   {{/*  TXT  */}}
-  {{ $is_txt := hasPrefix $icon "txt:" | or (not $icon) }}
-  {{ if not (or $is_txt $is_svg) }}
+  {{ $is_txt   := hasPrefix $icon "txt:" | or (not $icon) }}
+  {{ if or $is_txt $is_svg | not }}
     {{/*  is emoji  */}}
     {{ $icon_code := $icon | urlquery }}
     {{ $is_txt     = in $icon_code "%" }}
@@ -53,9 +53,18 @@
       {{ end }}
     {{ end }}
   {{ end }}
+
+  {{ $aria_hidden := cond (not $is_txt) "true" false }}
   
   {{/*  ATTRIBUTES  */}}
-  {{ $attrs := partial "functions/attrs" (dict "class" $class "style" .style "width" $width "height" $height) }}
+  {{ $attrs := dict
+    "class"       $class
+    "style"       .style
+    "width"       $width
+    "height"      $height
+    "aria-hidden" $aria_hidden
+  }}
+  {{ $attrs = partial "functions/attrs" $attrs }}
 
   {{/*  HTML  */}}
   {{ if not .hide }}
