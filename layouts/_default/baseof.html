@@ -130,7 +130,7 @@
   <body {{- $body_attr }}>
 
     {{- /*  IMAGE LCP  */}}
-    {{- $lcp := print "<svg xmlns='http://www.w3.org/2000/svg' width='2048' height='2048' style='background:linear-gradient(color-mix(in srgb," $loader_main ",transparent 99.9%),color-mix(in srgb," $loader_cta ",transparent 99.9%))'><title>LCP</title></svg>" | base64Encode -}}
+    {{- $lcp := print "<svg xmlns='http://www.w3.org/2000/svg' width='2048' height='2048'><title>LCP</title><rect width='2048' height='2048' fill='" $loader_main "' opacity='0.01' /></svg>" | base64Encode }}
     <img class="lcp" src="data:image/svg+xml;base64,{{ $lcp }}" alt="back" width="2048" height="2048" loading="eager" fetchpriority="high" decoding="async">
 
     {{- /*  LOADER  */}}
