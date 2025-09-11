@@ -143,6 +143,25 @@
   </script>
 {{- end -}}
 
+{{- /*  SELF-HOSTED MATERIAL SYMBOLS  */ -}}
+{{- $path := print "" -}}
+{{- if hugo.IsProduction -}}
+  {{- $time := partial "functions/timestamp" . -}}
+  {{- $path  = print "/fonts/icons." $time ".woff2" -}}
+{{- else -}}
+  {{- $style := site.Data.styles.icons.style -}}
+  {{- $path   = print "/fonts/material-symbols-" $style ".woff2" -}}
+{{- end }}
+<link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
+
+{{- /*  SELF-HOSTED FONTS  */ -}}
+{{- range hugo.Store.Get "fonts" }}
+  {{ $family := urlize .family }}
+  {{ $italic := cond (not .italic) "" "-italic" }}
+  {{ $path    = print "/fonts/" $family "-" .weight $italic ".woff2" }}
+  <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
+{{- end -}}
+
 {{- /*  CSS STYLES  */ -}}
 {{- $css := partial "styles" . }}
 <link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.remove('preload')">
@@ -184,23 +203,4 @@
 {{- /*  RSS  */ -}}
 {{- with site.Home.OutputFormats.Get "RSS" }}
   <link rel="alternate feed" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Title }}">
-{{- end -}}
-
-{{- /*  SELF-HOSTED MATERIAL SYMBOLS  */ -}}
-{{- $path := print "" -}}
-{{- if hugo.IsProduction -}}
-  {{- $time := partial "functions/timestamp" . -}}
-  {{- $path  = print "/fonts/icons." $time ".woff2" -}}
-{{- else -}}
-  {{- $style := site.Data.styles.icons.style -}}
-  {{- $path   = print "/fonts/material-symbols-" $style ".woff2" -}}
-{{- end }}
-<link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
-
-{{- /*  SELF-HOSTED FONTS  */ -}}
-{{- range hugo.Store.Get "fonts" }}
-  {{ $family := urlize .family }}
-  {{ $italic := cond (not .italic) "" "-italic" }}
-  {{ $path    = print "/fonts/" $family "-" .weight $italic ".woff2" }}
-  <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
 {{- end -}}
