@@ -1,6 +1,6 @@
 {{ with site.Data.styles.fonts }}
   {{/*  Download Google Fonts  */}}
-  {{ with hugo.Store.Get "google_fonts" }}
+  {{ with hugo.Store.Get "fonts" }}
     {{/*  URL  */}}
     {{ $url := slice }}
     {{ range uniq . }}

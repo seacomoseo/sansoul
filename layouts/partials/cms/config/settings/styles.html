@@ -10,10 +10,8 @@
   (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `float`            "max" 3                ))
   (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `float`            "max" 3                ))
   (partial "cms/widget" (dict "var" `font_top`         "alt" `styles_fonts_top`         "name" `top`         "widget" `float`   "min" -2 "max" 2                ))
-  (partial "cms/widget" (dict "var" `font_google`      "alt" `styles_fonts_google`      "name" `google`      "widget" `boolean`                                 ))
 
   (partial "cms/widget" (dict "var" `font` "<<" `font_keys` "fields" (slice
-    `~font_google`
     `~font_family`
     `~font_weight`
     `~font_bold`
@@ -21,7 +19,6 @@
     `~font_line_height`
   )))
   (partial "cms/widget" (dict "var" `font_with_top` "<<" `font_keys` "fields" (slice
-    `~font_google`
     `~font_family`
     `~font_weight`
     `~font_bold`
@@ -60,7 +57,7 @@
         (partial "cms/widget" (dict "alt" `styles_icons_fill`    "name" `fill`    "widget" `boolean`                                   ))
         (partial "cms/widget" (dict "alt" `styles_icons_weight`  "name" `weight`  "widget" `select`  "options" `~options_font_weight`  ))
         (partial "cms/widget" (dict "alt" `styles_icons_grade`   "name" `grade`   "widget" `select`  "options" `~options_icons_grade`  ))
-        (partial "cms/widget" (dict "alt" `styles_icons_optical` "name" `optical` "widget" `select`  "options" `~options_icons_optical`)) 
+        (partial "cms/widget" (dict "alt" `styles_icons_optical` "name" `optical` "widget" `select`  "options" `~options_icons_optical`))
         (partial "cms/widget" (dict "alt" `styles_icons_style`   "name" `style`   "widget" `select`  "options" `~options_icons_style`  ))
         (partial "cms/widget" (dict "alt" `styles_icons_play`    "<<" `box_icon_id` "name" `play` ))
         (partial "cms/widget" (dict "alt" `styles_icons_up`      "<<" `box_icon_id` "name" `up`   ))
