@@ -75,7 +75,8 @@
   .leaflet-data-marker__icon {
     color: color-mix(in srgb, var(--base), var(--base-in) 75%);
     font-size: 1.9em;
-    translate: 0 -2.525rem;
+    translate: 0 var(--translate-x);
+    @include fluid-size(--translate-x, 1rem, -2.69, -2.525);
   }
   .leaflet-overlay-pane svg {
     width: unset;
