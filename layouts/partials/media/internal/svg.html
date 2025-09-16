@@ -11,7 +11,7 @@
     {{- $width  = .width -}}
     {{- $height = .height -}}
   {{- end -}}
-  {{- if not (and $width $height) -}}
+  {{- if and $width $height | not -}}
     {{- $width  = 512 -}}
     {{- $height = 512 -}}
   {{- end -}}
