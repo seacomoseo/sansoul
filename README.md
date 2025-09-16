@@ -22,7 +22,7 @@
 - `content`
   - `section/base-footer.${lang}.yml`
   - `values.${lang}.yml`
-  - `_index.${lang}.md`
+  - `_home.${lang}.md`
     - `images`
     - `schedule`
   - `{blog|event}/*.${lang}.yml`
@@ -68,7 +68,6 @@
       - `reading_time`
       - `hide_categories`
 - `data/types/*.yml|content/single/*.${lang}.md`
-  - `file:` en cada modal
   - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
   - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
 - `assets/css/_custom.scss`
