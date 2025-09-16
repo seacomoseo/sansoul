@@ -19,7 +19,7 @@
     {{- end -}}
     {{- $content := $min.Content | replaceRE `\n` "" -}}
     {{/*  print  */}}
-    {{- if $content | findRE `svg-src|animat|href|</linearGradient>|</style>` | or (in .src "#src") -}}
+    {{- if $content | findRE `svg-src|href|</linearGradient>` | or (in .src "#src") -}}
       {{- if or .svg_src ($content | findRE `svg-src`) (in .src "#src") -}}
         {{/*  image tag  */}}
         {{- $minify := $min.Content -}}
