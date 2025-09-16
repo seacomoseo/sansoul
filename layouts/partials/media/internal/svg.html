@@ -24,7 +24,7 @@
         {{/*  image tag  */}}
         {{- $minify := $min.Content -}}
         {{- if not (and $width $height) -}}
-          {{- $minify = replace $minify "<svg" (print `<svg width="` $width `" height="` $height `"`) -}}
+          {{- $minify = replace $minify "<svg" (print `<svg width="512" height="512"`) -}}
         {{- end -}}
         {{- $src  = $minify | resources.FromString ($file | replaceRE `\.min\.svg$` `.svg`) -}}
         {{- $alt := .alt -}}
