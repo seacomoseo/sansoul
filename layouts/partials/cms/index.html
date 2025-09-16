@@ -57,7 +57,7 @@
     {{ end }}
   {{ end }}
   {{ $i       := site.Data.styles.icons }}
-  {{ $i_grade := cond (and $i.fill (not $i.grade)) 200 $i.grade }}
+  {{ $i_grade := cond (and $i.fill (not $i.grade)) -25 $i.grade }}
   {{ $vars    := dict
     "params"        (delimit $params "|")
     "timestamp"     (partial "functions/timestamp" .)

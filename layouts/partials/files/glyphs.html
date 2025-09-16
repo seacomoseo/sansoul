@@ -2,7 +2,7 @@
   {{ $icons := hugo.Store.Get "glyphs" | uniq | sort }}
   {{ $icons  = delimit $icons "," | replaceRE `-` "_" }}
   {{ with site.Data.styles.icons }}
-    {{ $grade := cond (and .fill (not .grade)) 200 .grade }}
+    {{ $grade := cond (and .fill (not .grade)) -25 .grade }}
     {{/*  URL  */}}
     {{ $url := print
       "https://fonts.googleapis.com/css2"

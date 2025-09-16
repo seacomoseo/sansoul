@@ -1,6 +1,6 @@
 {{ $vars := dict }}
 {{ with site.Data }}
-  {{ $styles_icons_grade := cond (and .styles.icons.fill (not .styles.icons.grade)) 200 .styles.icons.grade }}
+  {{ $styles_icons_grade := cond (and .styles.icons.fill (not .styles.icons.grade)) -25 .styles.icons.grade }}
   {{ $vars = dict
     "fonts-css"                         (hugo.Store.Get "fonts_css" | default "")
 
