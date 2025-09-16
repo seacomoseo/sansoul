@@ -40,8 +40,7 @@
   {{ end }}
   {{ if $is_txt }}
     {{ $class = $class | append "icon--txt" }}
-  {{ end }}
-  {{ if $is_svg }}
+  {{ else if $is_svg }}
     {{ $class = $class | append "icon--svg" }}
     {{ $name := $icon | replaceRE `^svg:` "" | replaceRE `^brand:` "brands/" }}
     {{ $path := print "/media/{icons/,}" $name ".svg" }}
