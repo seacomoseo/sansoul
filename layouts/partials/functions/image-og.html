@@ -9,30 +9,23 @@
   {{ end }}
 {{ end }}
 
-
-{{- $values := index site.Data (print "values." page.Lang) "menu" "image" -}}
-
 {{ if not $img }}
-  {{ $logo := partial "functions/logo" . }}
-  {{ $logo  = print "/media/" $logo }}
-  {{ $logo  = resources.Get $logo }}
-  {{ $logo  = $logo.Permalink }}
-  {{ $img   = $logo }}
+  {{ $img = partial "functions/logo" . }}
 {{ end }}
 
 {{ with $img }}
   {{ if not (hasPrefix . "http") }}
-    {{ with resources.Get (print "/media/" .) }}
+    {{ $path := print "/media/" . }}
+    {{ with resources.Get $path }}
 
       {{ $img = .Permalink }}
 
       {{ if in $img ".svg" }}
-        {{ $img  = .RelPermalink | replaceRE `\.svg$` `.png` }}
+        {{ $img  = .Permalink | replaceRE `\.svg$` `.png` }}
         {{ $png := resources.Get $img }}
         {{ with $png }}
           {{ $img = .Permalink }}
         {{ else }}
-          {{ $img = .Permalink | replaceRE `\.svg$` `.png` }}
           {{ $svg = print "./public" .RelPermalink }}
         {{ end }}
       {{ end }}
