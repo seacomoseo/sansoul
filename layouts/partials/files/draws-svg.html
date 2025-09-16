@@ -70,19 +70,21 @@
 {{- range $svgs -}}
   {{- $path := print "/media/{icons/,}" . ".svg" -}}
   {{- $src  := resources.GetMatch $path -}}
-  {{- if $src.Content -}}
-    {{- $minify  := minify $src -}}
-    {{- $content := $minify.Content -}}
-    {{- if not ($content | findRE `svg-src`) -}}
-      {{- $id   := . | replaceRE `^icons?/` `` | replaceRE `^(brand)s/` `$1-` | replaceRE `/` `-` -}}
-      {{- $head := $content | findRE `^<svg.*?>` -}}
-      {{- $head  = index $head 0 -}}
-      {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" | replaceRE `<svg ` (print `<svg id="` $id `" `) -}}
-      {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | safeHTML -}}
-      {{- /*  {{- $time := partial "functions/timestamp" . -}}  */ -}}
-      {{- /*  {{- $refs := print "$1/draws." $time ".svg#" -}}  */ -}}
-      {{- /*  {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | replaceRE `<svg (.+?)</svg>` `<symbol $1</symbol>` | replaceRE `(url\(|href=")#` $refs | safeHTML -}}  */ -}}
-      {{- $svg_  = $svg_ | append $svg -}}
+  {{- if $src -}}
+    {{- if $src.Content -}}
+      {{- $minify  := minify $src -}}
+      {{- $content := $minify.Content -}}
+      {{- if not ($content | findRE `svg-src`) -}}
+        {{- $id   := . | replaceRE `^icons?/` `` | replaceRE `^(brand)s/` `$1-` | replaceRE `/` `-` -}}
+        {{- $head := $content | findRE `^<svg.*?>` -}}
+        {{- $head  = index $head 0 -}}
+        {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" | replaceRE `^<svg ` (print `<svg id="` $id `" `) -}}
+        {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | safeHTML -}}
+        {{- /*  {{- $time := partial "functions/timestamp" . -}}  */ -}}
+        {{- /*  {{- $refs := print "$1/draws." $time ".svg#" -}}  */ -}}
+        {{- /*  {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | replaceRE `<svg (.+?)</svg>` `<symbol $1</symbol>` | replaceRE `(url\(|href=")#` $refs | safeHTML -}}  */ -}}
+        {{- $svg_  = $svg_ | append $svg -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
