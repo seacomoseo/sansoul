@@ -3,7 +3,7 @@
 # ---
 
 {{ $netlify := getenv "NETLIFY" -}}
-{{- with resources.Get "_redirects" -}}
+{{- with resources.Get "redirects.md" -}}
   {{- if $netlify -}}
     {{- .Content -}}
   {{- else -}}
