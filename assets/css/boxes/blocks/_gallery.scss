@@ -142,25 +142,48 @@
   &1 {
     --gallery-cols: 1;
   }
+  &3, &6, &9 {
+    --gallery-cols: 3;
+  }
   @media (min-width: $viewport-sm) {
-    &5, &6 {
+    &7, &11, &12 {
       --gallery-cols: 3;
     }
   }
   @media (min-width: $viewport-md) {
-    &3 {
-      --gallery-cols: 3;
-    }
-    &4, &5 {
+    &4, &7, &8, &10, &11, &12 {
       --gallery-cols: 4;
+    }
+    &5, &10 {
+      --gallery-cols: 5;
+    }
+    &9 {
+      --gallery-cols: 6;
     }
   }
   @media (min-width: $viewport-lg) {
-    &5 {
-      --gallery-cols: 5;
-    }
-    &6 {
+    &6, &11, &12 {
       --gallery-cols: 6;
+    }
+    &7 {
+      --gallery-cols: 7;
+    }
+    &8 {
+      --gallery-cols: 8;
+    }
+    &9 {
+      --gallery-cols: 9;
+    }
+    &10 {
+      --gallery-cols: 10;
+    }
+  }
+  @media (min-width: $viewport-xl) {
+    &11 {
+      --gallery-cols: 11;
+    }
+    &12 {
+      --gallery-cols: 12;
     }
   }
 }
