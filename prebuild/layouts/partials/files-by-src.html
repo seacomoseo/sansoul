@@ -37,7 +37,7 @@
 
                   {{ if ne .default nil }}
                     {{ $options  := dict "string" .default "kind" .kind "delimit" .delimit }}
-                    {{ $default  := partial "string-to-kind" $options }}
+                    {{ $default  := partial "functions/string-to-kind" $options }}
                     {{ $pair      = $pair | default $default }}
                   {{ end }}
 
