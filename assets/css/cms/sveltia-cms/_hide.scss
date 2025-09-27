@@ -1,0 +1,113 @@
+// TYPES
+
+[data-hash="#/collections/types/entries/all"],
+[data-hash="#/collections/types/entries/single"] {
+  .button[aria-label="Delete Entry"],
+  .field[data-key-path="weight"],
+  .field[data-key-path="base"],
+  .field[data-key-path="disabled"] {
+    display: none;
+  }
+}
+[data-hash="#/collections/types/entries/all"] {
+  .field[data-key-path="icon"],
+  .field[data-key-path="emoji"],
+  .field[data-key-path="noindex"],
+  .field[data-key-path="related"],
+  .field[data-key-path="hint"],
+  .field[data-key-path="tax_of"],
+  .field[data-key-path="es"],
+  .field[data-key-path="en"],
+  .field[data-key-path="fr"],
+  .field[data-key-path="de"],
+  .field[data-key-path="pt"],
+  .field[data-key-path="it"] {
+    display: none;
+  }
+}
+
+// SINGLE PAGE PARAMS
+[data-hash^="#/collections/single/entries/"] {
+  .field[data-key-path="base"] ~ .field:is(
+    [data-key-path="date"],
+    [data-key-path="lastmod"],
+    [data-key-path="end"],
+    [data-key-path="cancelled"],
+    [data-key-path="artists"],
+    [data-key-path="sku"],
+    [data-key-path="prefix"],
+    [data-key-path="alts"],
+    [data-key-path="job"],
+    [data-key-path="orgs"],
+    [data-key-path="as"],
+    [data-key-path="creds"],
+    [data-key-path="address"],
+    [data-key-path="service_areas"],
+    [data-key-path="service_types"],
+    [data-key-path="price"],
+    [data-key-path="org"],
+    [data-key-path="toc"],
+  ) {
+    display: none;
+  }
+  .field[data-key-path="base"] {
+    &:has( .button[aria-checked="true"][value="article"] ) ~ .field[data-key-path="date"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="date"],
+    &:has( .button[aria-checked="true"][value="article"] ) ~ .field[data-key-path="lastmod"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="end"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="cancelled"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="artists"],
+    &:has( .button[aria-checked="true"][value="product"] ) ~ .field[data-key-path="sku"],
+    &:has( .button[aria-checked="true"][value="author"]  ) ~ .field[data-key-path="prefix"],
+    &:has( .button[aria-checked="true"][value="author"]  ) ~ .field[data-key-path="alts"],
+    &:has( .button[aria-checked="true"][value="author"]  ) ~ .field[data-key-path="job"],
+    &:has( .button[aria-checked="true"][value="author"]  ) ~ .field[data-key-path="orgs"],
+    &:has( .button[aria-checked="true"][value="author"]  ) ~ .field[data-key-path="as"],
+    &:has( .button[aria-checked="true"][value="author"]  ) ~ .field[data-key-path="creds"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="address"],
+    &:has( .button[aria-checked="true"][value="service"] ) ~ .field[data-key-path="service_areas"],
+    &:has( .button[aria-checked="true"][value="service"] ) ~ .field[data-key-path="service_types"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="price"],
+    &:has( .button[aria-checked="true"][value="product"] ) ~ .field[data-key-path="price"],
+    &:has( .button[aria-checked="true"][value="service"] ) ~ .field[data-key-path="price"],
+    &:has( .button[aria-checked="true"][value="org"]     ) ~ .field[data-key-path="org"],
+    &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="toc"],
+    &:has( .button[aria-checked="true"][value="article"] ) ~ .field[data-key-path="toc"] {
+      display: block;
+    }
+  }
+}
+
+
+// PAGE CUSTOM PARAMS
+
+@if $params != '' {
+  $params_roots: str-split($params, '|');
+  @each $root in $params_roots {
+    @each $param in $root {
+      $parts: str-split($param, ':');
+      $type: nth($parts, 1);
+      $name: nth($parts, 2);
+      $pages: nth($parts, 3);
+
+      [data-hash^="#/collections/#{$type}/entries/"] {
+        .field[data-key-path="#{$name}"] {
+          display: none;
+        }
+      }
+
+      $pages_roots: str-split($pages, ',');
+      @each $root in $pages_roots {
+        @each $page in $root {
+
+          [data-hash^="#/collections/#{$type}/entries/#{$page}"] {
+            .field[data-key-path="#{$name}"] {
+              display: block;
+            }
+          }
+
+        }
+      }
+    }
+  }
+}

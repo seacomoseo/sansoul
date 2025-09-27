@@ -9,7 +9,7 @@
     "widget"  `list`
     "summary" "{{fields.lang}}"
     "fields"  (slice
-      (partial "cms/widget" (dict "alt" `config_lang`                     "name" `lang`                     "widget" `select`  "options" `~options_langs`                                                               ))
+      (partial "cms/widget" (dict "alt" `config_lang`                     "name" `lang`                     "widget" `select`  "options" `~options_langs` "dropdown_threshold" 7                                        ))
       (partial "cms/widget" (dict "alt" `config_lang_disabled`            "name" `disabled`                 "widget" `boolean`                                                                                          ))
       (partial "cms/widget" (dict "alt" `config_title`                    "name" `title`                                                                                                                                ))
       (partial "cms/widget" (dict "alt" `config_description`              "name" `description`              "widget" `text`                                                                                             ))
@@ -29,8 +29,8 @@
         "name"      `html`
         "widget"    `object`
         "fields"    (slice
-          (partial "cms/widget" (dict "alt" `config_html_head` "name" `head` "widget" `text` "default_language" `html` "output_code_only" true))
-          (partial "cms/widget" (dict "alt" `config_html_body` "name" `body` "widget" `text` "default_language" `html` "output_code_only" true))
+          (partial "cms/widget" (dict "alt" `config_html_head` "name" `head` "widget" `code`))
+          (partial "cms/widget" (dict "alt" `config_html_body` "name" `body` "widget" `code`))
         )
       ))
     )
@@ -60,6 +60,13 @@
   (partial "cms/widget" (dict "var" `settings_config_defaults_kind`  "alt" `config_defaults_kind`  "name" `kind`  "widget" `select` "multiple" true "options" site.Data.utilities.default_kinds))
   (partial "cms/widget" (dict "var" `settings_config_defaults_lang`  "alt" `config_defaults_lang`  "name" `lang`  "widget" `select` "multiple" true "options" `~options_langs`                 ))
   (partial "cms/widget" (dict "var" `settings_config_defaults_path`  "alt" `config_defaults_path`  "name" `path`  "widget" `list`   "multiple" true                                            ))
+  (partial "cms/widget" (dict
+    "var"     `settings_config_defaults_path`
+    "alt"     `config_defaults_path`
+    "name"    `path`
+    "widget"  `list`
+    "field"   (partial "cms/widget" (dict "name" `path` "alt" `config_defaults_path_singular`))
+  ))
   (partial "cms/widget" (dict
     "var"     `settings_config_defaults`
     "alt"     `config_defaults`
@@ -95,16 +102,16 @@
     "name"   `others`
     "widget" `object`
     "fields" (slice
-      (partial "cms/widget" (dict "alt" `config_others_favicon`                      "name" `favicon`                      "widget" `image`          ))
-      (partial "cms/widget" (dict "alt" `config_others_lang_default_subdir`          "name" `lang_default_subdir`          "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_cookies_advanced`             "name" `cookies_advanced`             "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_cookies_legal`                "name" `cookies_legal`                "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_analytics_pagespeed_disabled` "name" `analytics_pagespeed_disabled` "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_process_all_images`           "name" `process_all_images`           "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_development`                  "name" `development`                  "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_show`                         "name" `show`                         "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_webp`                         "name" `webp`                         "widget" `boolean`        ))
-      (partial "cms/widget" (dict "alt" `config_others_image_sizes`                  "name" `image_sizes`                  "widget" `float`   "max" 3))
+      (partial "cms/widget" (dict "alt" `config_others_favicon`                      "name" `favicon`                      "widget" `image`                  ))
+      (partial "cms/widget" (dict "alt" `config_others_lang_default_subdir`          "name" `lang_default_subdir`          "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_cookies_advanced`             "name" `cookies_advanced`             "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_cookies_legal`                "name" `cookies_legal`                "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_analytics_pagespeed_disabled` "name" `analytics_pagespeed_disabled` "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_process_all_images`           "name" `process_all_images`           "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_development`                  "name" `development`                  "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_show`                         "name" `show`                         "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_webp`                         "name" `webp`                         "widget" `boolean`                ))
+      (partial "cms/widget" (dict "alt" `config_others_image_sizes`                  "name" `image_sizes`                  "widget" `float`   "min" 1 "max" 3))
     )
   ))
 

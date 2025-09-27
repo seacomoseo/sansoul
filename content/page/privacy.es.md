@@ -2,7 +2,7 @@
 title: Privacidad
 slug: privacidad
 icon: encrypted
-noindex: true
+noindex: y
 type: system
 weight: 2
 ---

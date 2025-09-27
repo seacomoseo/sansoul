@@ -5,9 +5,9 @@ image: base/icon.png
 icon: star
 summary: Este es el resumen de un fabricante de ejemplo.
 
-toc: true
-draft: false
-noindex: false
+toc: y
+draft: n
+noindex: n
 seo: null
 description: null
 

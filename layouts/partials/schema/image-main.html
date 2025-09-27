@@ -8,11 +8,10 @@
   {{ end }}
 {{ end }}
 {{ if not $src }}
-  {{ $logo := partial "functions/logo" . }}
-  {{ $logo  = print "/media/" $logo }}
-  {{ $logo  = resources.Get $logo }}
-  {{ $logo  = $logo.Permalink }}
-  {{ $src   = $logo }}
+  {{ $src = partial "functions/logo" . }}
+  {{ with $src }}
+    {{ $src = strings.TrimPrefix . "/media/" }}
+  {{ end }}
 {{ end }}
 
 {{ $external := hasPrefix $src "http" }}

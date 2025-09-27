@@ -1,7 +1,21 @@
-{{ return site.Home.Params.org.logo
-  | default site.Home.Params.menu.logo
-  | default (index site.Data (print "values." site.Home.Lang) "menu" "image")
-  | default site.Data.config.cms.logo
-  | default site.Data.config.others.favicon
-  | default (cond (not (resources.Get "/media/base/icon.svg")) "base/icon.png" "base/icon.svg")
+{{ $logo  := "" }}
+{{ $logos := slice
+  (index site.Home.Params "org" "logo")
+  (index site.Home.Params "menu" "logo")
+  (index site.Data (print "values." site.Home.Lang) "menu" "image")
+  (index site.Data "config" "cms" "logo")
+  (index site.Data "config" "others" "favicon")
+  "base/icon.png"
+  "base/icon.svg"
 }}
+{{ range $logos }}
+  {{ with . }}
+    {{ $path  := print "/media/" . }}
+    {{ $rsc   := resources.Get $path }}
+    {{ with $rsc }}
+      {{ $logo = .Permalink }}
+      {{ break }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $logo }}

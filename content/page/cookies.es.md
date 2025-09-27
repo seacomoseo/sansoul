@@ -2,7 +2,7 @@
 title: Cookies
 slug: cookies
 icon: cookie
-noindex: true
+noindex: y
 type: system
 weight: 3
 ---

@@ -1,0 +1,206 @@
+// CONFIG LANGS
+
+// No hidden if param is set
+.field[data-key-path^="langs."][data-key-path$=".lang"] {
+  &:has( .button[value=""][aria-checked="true"] ),
+  &:not(:has( .button[aria-checked="true"] )) {
+    ~ .field {
+      display: none;
+    }
+  }
+}
+
+
+// BOXES WIDGETS
+
+.field[data-key-path$="view"] ~ .field:not(
+  /* No hidden if param is set */
+  [data-widget="object"]:has(.wrapper),
+  [data-widget="list"]:has(.item-list:not(:empty)),
+  [data-widget="image"]:has(.filled),
+  [data-widget="markdown"]:has([data-lexical-text="true"]),
+  [data-widget="boolean"]:has(button[aria-checked="true"]),
+  [data-widget="select"]:has(button[aria-checked="true"]:not([value=""])), /* Checkbox and radio */
+  [data-widget="select"]:has(.selected), /* Simple */
+  [data-widget="select"]:has(.select-tags > span), /* Multiple */
+  :has(input:not(:placeholder-shown, [type="file"])),
+  :has(textarea:not(:placeholder-shown)),
+  /* No hidden if match view */
+  :is(
+    [data-key-path$="cols"],
+    [data-key-path$="cols_vs"],
+    [data-key-path$="gap"],
+    [data-key-path$="gap_ny"],
+    [data-key-path$="to"],
+    [data-key-path$="duo"],
+    [data-key-path$="sides"],
+    [data-key-path$="group_radius"],
+    [data-key-path$="slider"],
+    [data-key-path$="time"],
+    [data-key-path$="pips"],
+    [data-key-path$="arrows"],
+    [data-key-path$="align_x"],
+    [data-key-path$="align_y"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="group"] ) ~ *),
+  :is(
+    [data-key-path$="title"],
+    [data-key-path$="hanchor"],
+    [data-key-path$="subtitle"],
+    [data-key-path$="price"],
+    [data-key-path$="hs"],
+    [data-key-path$="hn"],
+    [data-key-path$="caps"],
+    [data-key-path$="line"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="titles"] ) ~ *),
+  :is(
+    [data-key-path$="md"],
+    [data-key-path$="md_align"],
+    [data-key-path$="md_align_vl"],
+    [data-key-path$="md_sm"],
+    [data-key-path$="md_caps"],
+    [data-key-path$="md_line"],
+    [data-key-path$="md_index"],
+    [data-key-path$="md_nav"],
+    [data-key-path$="md_border"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="md"] ) ~ *),
+  :is(
+    [data-key-path$="menu_label"],
+    [data-key-path$="menu_button"],
+    [data-key-path$="menu_swap"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="menu"] ) ~ *),
+  :is(
+    [data-key-path$="icon"],
+    [data-key-path$="icon_type"],
+    [data-key-path$="icon_size"],
+    [data-key-path$="icon_color"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="icon"] ) ~ *),
+  :is(
+    [data-key-path$="image"],
+    [data-key-path$="hover"],
+    [data-key-path$="alt"],
+    [data-key-path$="hover_alt"],
+    [data-key-path$="ratio"],
+    [data-key-path$="contain"],
+    [data-key-path$="border"],
+    [data-key-path$="inset"],
+    [data-key-path$="circle"],
+    [data-key-path$="gray"],
+    [data-key-path$="shade"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="image"] ) ~ *),
+  :is(
+    [data-key-path$="pin"],
+    [data-key-path$="link"],
+    [data-key-path$="label"],
+    [data-key-path$="anchor"],
+    [data-key-path$="lock"],
+    [data-key-path$="swap"],
+    [data-key-path$="ga4"],
+    [data-key-path$="button"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="button"] ) ~ *),
+  :is(
+    [data-key-path$="color"],
+    [data-key-path$="fade"],
+    [data-key-path$="fade_type"],
+    [data-key-path$="color_alpha"],
+    [data-key-path$="bg"],
+    [data-key-path$="alpha"],
+    [data-key-path$="parallax"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="bg"] ) ~ *),
+  :is(
+    [data-key-path$="box_color"],
+    [data-key-path$="box_fade"],
+    [data-key-path$="box_fade_type"],
+    [data-key-path$="box_color_alpha"],
+    [data-key-path$="box_bg"],
+    [data-key-path$="box_alpha"],
+    [data-key-path$="box_parallax"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="container"] ) ~ *),
+  :is(
+    [data-key-path$="pt"],
+    [data-key-path$="pb"],
+    [data-key-path$="ph"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="paddings"] ) ~ *),
+  :is(
+    [data-key-path$="size"],
+    [data-key-path$="full"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="size"] ) ~ *),
+  :is(
+    [data-key-path$="div"],
+    [data-key-path$="div_x"],
+    [data-key-path$="div_y"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="divider"] ) ~ *),
+  :is(
+    [data-key-path$="id"],
+    [data-key-path$="order"],
+    [data-key-path$="fit"],
+    [data-key-path$="fit_vs"],
+    [data-key-path$="grow"],
+    [data-key-path$="align_y"],
+    [data-key-path$="align"],
+    [data-key-path$="align_vl"],
+    [data-key-path$="side"],
+    [data-key-path$="rate"],
+    [data-key-path$="space"],
+    [data-key-path$="pd"],
+    [data-key-path$="hide_shadow"],
+    [data-key-path$="hide_radius"],
+    [data-key-path$="pill"],
+    [data-key-path$="card"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="boxi"] ) ~ *),
+  :is(
+    [data-key-path$="if"],
+    [data-key-path$="node"],
+    [data-key-path$="params"],
+    [data-key-path$="remap"],
+    [data-key-path$="tag"],
+    [data-key-path$="tags"],
+    [data-key-path$="sort"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="other"] ) ~ *),
+  :is(
+    [data-key-path$="list"],
+    [data-key-path$="box"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="list"] ) ~ *),
+  :is(
+    [data-key-path$="step"],
+    [data-key-path$="steps"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="steps"] ) ~ *),
+  :is(
+    [data-key-path$="accordion"],
+    [data-key-path$="accordions"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="accordion"] ) ~ *),
+  :is(
+    [data-key-path$="gallery"],
+    [data-key-path$="images"],
+    [data-key-path$="limages"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="gallery"] ) ~ *),
+  :is(
+    [data-key-path$="review"],
+    [data-key-path$="reviews"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="reviews"] ) ~ *),
+  :is(
+    [data-key-path$="contact"],
+    [data-key-path$="dots"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="contact"] ) ~ *),
+  :is(
+    [data-key-path$="form"],
+    [data-key-path$="inputs"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="form"] ) ~ *),
+  :is(
+    [data-key-path$="map"],
+    [data-key-path$="geos"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="map"] ) ~ *),
+  :is(
+    [data-key-path$="gss"],
+    [data-key-path$="gss_sheet"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="gss"] ) ~ *),
+  :is(
+    [data-key-path$="box"],
+    [data-key-path$="boxes"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="boxes"] ) ~ *),
+  :is(
+    [data-key-path$="modal"],
+    [data-key-path$="modals"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="modals"] ) ~ *)
+) {
+  display: none;
+}

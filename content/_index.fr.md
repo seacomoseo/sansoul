@@ -2,7 +2,7 @@
 title: Accueil
 slug: accueil
 icon: ''
-noindex: false
+noindex: n
 base: page
 weight: 1
 ---

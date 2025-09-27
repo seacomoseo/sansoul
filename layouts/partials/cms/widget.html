@@ -33,8 +33,8 @@
 {{ if eq "datetime" $widget }}
   {{ if not .format }}
     {{ $f := dict
-      "format"      `yyyy-MM-dd HH:mm:ss`
-      "date_format" `yyyy-MM-dd`
+      "format"      `YYYY-MM-DD HH:mm:ss`
+      "date_format" `YYYY-MM-DD`
       "time_format" `HH:mm`
     }}
     {{ $o  = merge $o $f }}
@@ -42,6 +42,11 @@
 {{ else if eq "color" $widget }}
   {{ if not $o.allow_input }}
     {{ $o = merge $o (dict "allow_input" true) }}
+  {{ end }}
+{{ else if eq "code" $widget }}
+  {{ $o = merge $o (dict "output_code_only" true) }}
+  {{ if not $o.default_language }}
+    {{ $o = merge $o (dict "default_language" `html`) }}
   {{ end }}
 {{ else if eq "image" $widget }}
   {{ if not $o.allow_input }}
@@ -60,7 +65,7 @@
 {{ else if eq "object" $widget }}
   {{ $o = merge $o (dict "collapsed" true) }}
 {{ else if eq "list" $widget }}
-  {{ $o = merge $o (dict "collapsed" true "allow_add" true) }}
+  {{ $o = merge $o (dict "collapsed" true "minimize_collapsed" true "allow_add" true) }}
   {{ if $loc }}
     {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
     {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
@@ -72,15 +77,9 @@
     "search_fields"  (slice "{{title}}")
     "display_fields" (slice "{{title}}")
   ) }}
-  {{/*
 {{ else if eq "boolean" $widget }}
-  {{ partial "warn" $widget }}
-  {{ $t := partial "functions/i18n-cms" . }}
-  {{ $o  = merge $o (dict
-    "widget"  `select`
-    "options" `~options_boolean`
-  ) }}
-  */}}
+  {{ $opts := cond (not .required) `~options_boolean` `~options_boolean_req` }}
+  {{ $o  = merge $o (dict "widget" `select` "options" $opts) }}
 {{ end }}
 
 {{ if not .label }}

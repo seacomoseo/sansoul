@@ -32,16 +32,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ $t.cms }} · {{ $config.title }}</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1024' height='1024' viewBox='0 0 512 512' fill='%23{{ replace site.Data.styles.colors.main.color `#` `` | default `767676` }}'%3E%3Cpath d='M200 0H312l17.2 78.4c15.8 6.5 30.6 15.1 44 25.4l76.5-24.4 56 97-59.4 54.1c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l59.4 54.1-56 97-76.5-24.4c-13.4 10.3-28.2 18.9-44 25.4L312 512H200l-17.2-78.4c-15.8-6.5-30.6-15.1-44-25.4L62.3 432.5l-56-97 59.4-54.1C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L6.3 176.5l56-97 76.5 24.4c13.4-10.3 28.2-18.9 44-25.4L200 0zm56 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z'/%3E%3C/svg%3E">
 
   {{/*  CONFIG FILE  */}}
-  {{ $path   := print .RelPermalink "admin/config.yml" }}
-  {{ if hugo.IsMultihost }}
-    {{ $path  = print "../" .Lang "/admin/config.yml" }}
-  {{ end }}
-  {{ $string   := partial "cms/config/_" page | string }}
+  {{ $path     := "../admin/config.yml" }}
+  {{ $string   := partial "cms/config/_" . | string }}
   {{ $resource := resources.FromString $path $string | fingerprint }}
-  <link href="{{ $resource.RelPermalink }}" type="text/yaml" rel="cms-config-url">
+  <link href="{{ $resource.RelPermalink }}" type="application/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
   {{ $params := slice }}
@@ -56,17 +52,8 @@
       {{ end }}
     {{ end }}
   {{ end }}
-  {{ $i       := site.Data.styles.icons }}
-  {{ $i_grade := cond (and $i.fill (not $i.grade)) -25 $i.grade }}
-  {{ $vars    := dict
-    "params"        (delimit $params "|")
-    "timestamp"     (partial "functions/timestamp" .)
-    "icons-fill"    ($i.fill    | not | not | int)
-    "icons-weight"  ($i.weight  | default 400)
-    "icons-grade"   ($i_grade   | default 0)
-    "icons-optical" ($i.optical | default 24)
-    "icons-style"   ($i.style   | default "outlined")
-    "is-production" (hugo.IsProduction | not | not | string)
+  {{ $vars := dict
+    "params" (delimit $params "|")
   }}
   {{/*
   "white"      (site.Data.styles.colors.base.white | default "#fff")
@@ -89,31 +76,16 @@
   {{ end }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
 
-  {{/*  NETLIFY IDENTITY  */}}
-  {{ if $netlify }}
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  {{ end }}
-
 </head>
 <body style="--login: '{{ $t.login }}'">
 
   {{/*  SVELTIA CMS  */}}
-  {{/*  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>  */}}
-
-  {{/*  STATIC CMS  */}}
-  <link rel="stylesheet" href="https://unpkg.com/@staticcms/app@^4.0.0/dist/main.css" />
-  <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
+  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
 
   {{/*  CUSTOM SCRIPT  */}}
   {{ $opts := dict
     "minify"     hugo.IsProduction
-    "targetPath" (print site.Home.RelPermalink "js/cms.js")
-    "params"     (dict
-      "tReset"    $t.reset
-      "icons"     $icons
-      "netlify"   $netlify
-      "lang"      $lang_cms
-    )
+    "targetPath" "../js/cms.js"
   }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}
   {{ if hugo.IsProduction }}

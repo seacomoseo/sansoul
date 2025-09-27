@@ -1,15 +1,15 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
 {{ return slice
-  (partial "cms/widget" (dict "var" `font_keys` "widget" `object` "summary" "{{fields.family}} 🔷 {{fields.weight}} {{fields.italic}}"))
+  (partial "cms/widget" (dict "var" `font_keys` "widget" `object` "summary" "{{fields.family}} 🔷 {{fields.weight}} 🔷 Italic: {{fields.italic}}" "required" true))
 
-  (partial "cms/widget" (dict "var" `font_family`      "alt" `styles_fonts_family`      "name" `family`                                                         ))
-  (partial "cms/widget" (dict "var" `font_weight`      "alt" `styles_fonts_weight`      "name" `weight`      "widget" `select`  "options" `~options_font_weight`))
-  (partial "cms/widget" (dict "var" `font_bold`        "alt" `styles_fonts_bold`        "name" `bold`        "widget" `select`  "options" `~options_font_weight`))
-  (partial "cms/widget" (dict "var" `font_italic`      "alt" `styles_fonts_italic`      "name" `italic`      "widget" `boolean`                                 ))
-  (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `float`            "max" 3                ))
-  (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `float`            "max" 3                ))
-  (partial "cms/widget" (dict "var" `font_top`         "alt" `styles_fonts_top`         "name" `top`         "widget" `float`   "min" -2 "max" 2                ))
+  (partial "cms/widget" (dict "var" `font_family`      "alt" `styles_fonts_family`      "name" `family`                                                          "required" true))
+  (partial "cms/widget" (dict "var" `font_weight`      "alt" `styles_fonts_weight`      "name" `weight`      "widget" `select`  "options" `~options_font_weight` "required" true))
+  (partial "cms/widget" (dict "var" `font_bold`        "alt" `styles_fonts_bold`        "name" `bold`        "widget" `select`  "options" `~options_font_bold`   "required" true))
+  (partial "cms/widget" (dict "var" `font_italic`      "alt" `styles_fonts_italic`      "name" `italic`      "widget" `boolean`                                  "required" true))
+  (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `float`   "min" 0.01 "max" 3               "required" true))
+  (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `float`   "min" 0.01 "max" 3               "required" true))
+  (partial "cms/widget" (dict "var" `font_top`         "alt" `styles_fonts_top`         "name" `top`         "widget" `float`   "min" -2   "max" 2               "required" true))
 
   (partial "cms/widget" (dict "var" `font` "<<" `font_keys` "fields" (slice
     `~font_family`
@@ -29,20 +29,22 @@
   )))
 
   (partial "cms/widget" (dict
-    "var"    `base_color`
-    "widget" `object`
-    "fields" (slice
-      (partial "cms/widget" (dict "alt" `styles_colors_color` "name" `color` "widget" `color`))
-      (partial "cms/widget" (dict "alt" `styles_colors_light` "name" `light` "widget" `color`))
-      (partial "cms/widget" (dict "alt" `styles_colors_dark`  "name" `dark`  "widget" `color`))
+    "var"      `base_color`
+    "widget"   `object`
+    "required" true
+    "fields"   (slice
+      (partial "cms/widget" (dict "alt" `styles_colors_color` "name" `color` "widget" `color` "required" true))
+      (partial "cms/widget" (dict "alt" `styles_colors_light` "name" `light` "widget" `color` "required" true))
+      (partial "cms/widget" (dict "alt" `styles_colors_dark`  "name" `dark`  "widget" `color` "required" true))
       (partial "cms/widget" (dict
-        "alt"    `styles_colors_contrast`
-        "name"   `contrast`
-        "widget" `object`
-        "fields" (slice
-          (partial "cms/widget" (dict "alt" `styles_colors_contrast_fill` "name" `fill` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `styles_colors_contrast_in`   "name" `in`   "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `styles_colors_contrast_text` "name" `text` "widget" `boolean`))
+        "alt"      `styles_colors_contrast`
+        "name"     `contrast`
+        "widget"   `object`
+        "required" true
+        "fields"   (slice
+          (partial "cms/widget" (dict "alt" `styles_colors_contrast_fill` "name" `fill` "widget" `boolean` "required" true))
+          (partial "cms/widget" (dict "alt" `styles_colors_contrast_in`   "name" `in`   "widget" `boolean` "required" true))
+          (partial "cms/widget" (dict "alt" `styles_colors_contrast_text` "name" `text` "widget" `boolean` "required" true))
         )
       ))
     )
@@ -50,115 +52,124 @@
 
   (dict "&settings_styles" (slice
     (partial "cms/widget" (dict
-      "alt"    `styles_icons`
-      "name"   `icons`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_icons_fill`    "name" `fill`    "widget" `boolean`                                   ))
-        (partial "cms/widget" (dict "alt" `styles_icons_weight`  "name" `weight`  "widget" `select`  "options" `~options_font_weight`  ))
-        (partial "cms/widget" (dict "alt" `styles_icons_grade`   "name" `grade`   "widget" `select`  "options" `~options_icons_grade`  ))
-        (partial "cms/widget" (dict "alt" `styles_icons_optical` "name" `optical` "widget" `select`  "options" `~options_icons_optical`))
-        (partial "cms/widget" (dict "alt" `styles_icons_style`   "name" `style`   "widget" `select`  "options" `~options_icons_style`  ))
-        (partial "cms/widget" (dict "alt" `styles_icons_play`    "<<" `box_icon_id` "name" `play` ))
-        (partial "cms/widget" (dict "alt" `styles_icons_up`      "<<" `box_icon_id` "name" `up`   ))
-        (partial "cms/widget" (dict "alt" `styles_icons_down`    "<<" `box_icon_id` "name" `down` ))
-        (partial "cms/widget" (dict "alt" `styles_icons_left`    "<<" `box_icon_id` "name" `left` ))
-        (partial "cms/widget" (dict "alt" `styles_icons_right`   "<<" `box_icon_id` "name" `right`))
+      "alt"      `styles_icons`
+      "name"     `icons`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_icons_fill`    "name" `fill`    "widget" `boolean`                                    "required" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_weight`  "name" `weight`  "widget" `select`  "options" `~options_font_weight`   "required" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_grade`   "name" `grade`   "widget" `select`  "options" `~options_icons_grade`   "required" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_optical` "name" `optical` "widget" `select`  "options" `~options_icons_optical` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_style`   "name" `style`   "widget" `select`  "options" `~options_icons_style`   "required" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_play`    "<<" `box_icon_id` "name" `play`                                                      ))
+        (partial "cms/widget" (dict "alt" `styles_icons_up`      "<<" `box_icon_id` "name" `up`                                                        ))
+        (partial "cms/widget" (dict "alt" `styles_icons_down`    "<<" `box_icon_id` "name" `down`                                                      ))
+        (partial "cms/widget" (dict "alt" `styles_icons_left`    "<<" `box_icon_id` "name" `left`                                                      ))
+        (partial "cms/widget" (dict "alt" `styles_icons_right`   "<<" `box_icon_id` "name" `right`                                                     ))
       )
     ))
     (partial "cms/widget" (dict
-      "alt"    `styles_fonts`
-      "name"   `fonts`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_fonts_base`    "<<" `font`          "name" `base`                                 ))
-        (partial "cms/widget" (dict "alt" `styles_fonts_cursive` "<<" `font_with_top` "name" `cursive`                              ))
-        (partial "cms/widget" (dict "alt" `styles_fonts_title`   "<<" `font_with_top` "name" `title`                                ))
-        (partial "cms/widget" (dict "alt" `styles_fonts_blockquote_cursive`           "name" `blockquote_cursive` "widget" `boolean`))
+      "alt"      `styles_fonts`
+      "name"     `fonts`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_fonts_base`    "<<" `font`          "name" `base`                                                 ))
+        (partial "cms/widget" (dict "alt" `styles_fonts_cursive` "<<" `font_with_top` "name" `cursive`                                              ))
+        (partial "cms/widget" (dict "alt" `styles_fonts_title`   "<<" `font_with_top` "name" `title`                                                ))
+        (partial "cms/widget" (dict "alt" `styles_fonts_blockquote_cursive`           "name" `blockquote_cursive` "widget" `boolean` "required" true))
       )
     ))
     (partial "cms/widget" (dict
-      "alt"    `styles_colors`
-      "name"   `colors`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_colors_main` "<<" `base_color` "name" `main`))
-        (partial "cms/widget" (dict "alt" `styles_colors_alt`  "<<" `base_color` "name" `alt` ))
-        (partial "cms/widget" (dict "alt" `styles_colors_cta`  "<<" `base_color` "name" `cta` ))
+      "alt"      `styles_colors`
+      "name"     `colors`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_colors_main` "<<" `base_color` "name" `main` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_colors_alt`  "<<" `base_color` "name" `alt`  "required" true))
+        (partial "cms/widget" (dict "alt" `styles_colors_cta`  "<<" `base_color` "name" `cta`  "required" true))
         (partial "cms/widget" (dict
           "alt"    `styles_base`
           "name"   `base`
           "widget" `object`
           "fields" (slice
-            (partial "cms/widget" (dict "alt" `styles_base_white` "name" `white` "widget" `color`))
-            (partial "cms/widget" (dict "alt" `styles_base_light` "name" `light` "widget" `color`))
-            (partial "cms/widget" (dict "alt" `styles_base_gray`  "name" `gray`  "widget" `color`))
-            (partial "cms/widget" (dict "alt" `styles_base_dark`  "name" `dark`  "widget" `color`))
-            (partial "cms/widget" (dict "alt" `styles_base_black` "name" `black` "widget" `color`))
+            (partial "cms/widget" (dict "alt" `styles_base_white` "name" `white` "widget" `color` "required" true))
+            (partial "cms/widget" (dict "alt" `styles_base_light` "name" `light` "widget" `color` "required" true))
+            (partial "cms/widget" (dict "alt" `styles_base_gray`  "name" `gray`  "widget" `color` "required" true))
+            (partial "cms/widget" (dict "alt" `styles_base_dark`  "name" `dark`  "widget" `color` "required" true))
+            (partial "cms/widget" (dict "alt" `styles_base_black` "name" `black` "widget" `color` "required" true))
           )
         ))
       )
     ))
     (partial "cms/widget" (dict
-      "alt"    `styles_rounded`
-      "name"   `rounded`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_rounded_radius`  "name" `radius`  "widget" `float`   "max" 1.25))
-        (partial "cms/widget" (dict "alt" `styles_rounded_chamfer` "name" `chamfer` "widget" `boolean`           ))
+      "alt"      `styles_rounded`
+      "name"     `rounded`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_rounded_radius`  "name" `radius`  "widget" `float`   "max" 1.25 "required" true))
+        (partial "cms/widget" (dict "alt" `styles_rounded_chamfer` "name" `chamfer` "widget" `boolean`            "required" true))
       )
     ))
     (partial "cms/widget" (dict
-      "alt"    `styles_buttons`
-      "name"   `buttons`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_buttons_sides_round` "name" `sides_round` "widget" `boolean`))
-        (partial "cms/widget" (dict "alt" `styles_buttons_icon_circle` "name" `icon_circle` "widget" `boolean`))
-        (partial "cms/widget" (dict "alt" `styles_buttons_deep`        "name" `deep`        "widget" `boolean`))
-        (partial "cms/widget" (dict "alt" `styles_buttons_outline`     "name" `outline`     "widget" `boolean`))
+      "alt"      `styles_buttons`
+      "name"     `buttons`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_buttons_sides_round` "name" `sides_round` "widget" `boolean` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_buttons_dot_circle`  "name" `dot_circle`  "widget" `boolean` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_buttons_deep`        "name" `deep`        "widget" `boolean` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_buttons_outline`     "name" `outline`     "widget" `boolean` "required" true))
         (partial "cms/widget" (dict
-          "alt"    `styles_buttons_font`
-          "name"   `font`
-          "widget" `object`
-          "fields" (slice
-            (partial "cms/widget" (dict "alt" `styles_buttons_type` "name" `type` "widget" `select`  "options" `~options_buttons_type`))
-            (partial "cms/widget" (dict "alt" `styles_buttons_bold` "name" `bold` "widget" `boolean`))
-            (partial "cms/widget" (dict "alt" `styles_buttons_caps` "name" `caps` "widget" `boolean`))
+          "alt"      `styles_buttons_font`
+          "name"     `font`
+          "widget"   `object`
+          "required" true
+          "fields"   (slice
+            (partial "cms/widget" (dict "alt" `styles_buttons_type` "name" `type` "widget" `select`  "options" `~options_buttons_type` "required" true))
+            (partial "cms/widget" (dict "alt" `styles_buttons_bold` "name" `bold` "widget" `boolean`                                   "required" true))
+            (partial "cms/widget" (dict "alt" `styles_buttons_caps` "name" `caps` "widget" `boolean`                                   "required" true))
           )
         ))
         (partial "cms/widget" (dict
-          "alt"    `styles_buttons_swap`
-          "name"   `swap`
-          "widget" `object`
-          "fields" (slice
-            (partial "cms/widget" (dict "alt" `styles_buttons_type` "name" `type` "widget" `select`  "options" `~options_buttons_type`))
-            (partial "cms/widget" (dict "alt" `styles_buttons_bold` "name" `bold` "widget" `boolean`))
-            (partial "cms/widget" (dict "alt" `styles_buttons_caps` "name" `caps` "widget" `boolean`))
+          "alt"      `styles_buttons_swap`
+          "name"     `swap`
+          "widget"   `object`
+          "required" true
+          "fields"   (slice
+            (partial "cms/widget" (dict "alt" `styles_buttons_type` "name" `type` "widget" `select`  "options" `~options_buttons_type` "required" true))
+            (partial "cms/widget" (dict "alt" `styles_buttons_bold` "name" `bold` "widget" `boolean`                                   "required" true))
+            (partial "cms/widget" (dict "alt" `styles_buttons_caps` "name" `caps` "widget" `boolean`                                   "required" true))
           )
         ))
       )
     ))
     (partial "cms/widget" (dict
-      "alt"    `styles_inputs`
-      "name"   `inputs`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_inputs_fill`       "name" `fill`       "widget" `boolean`))
-        (partial "cms/widget" (dict "alt" `styles_inputs_labels_out` "name" `labels_out` "widget" `boolean`))
-        (partial "cms/widget" (dict "alt" `styles_inputs_consent`    "name" `consent`                      ))
+      "alt"      `styles_inputs`
+      "name"     `inputs`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_inputs_fill`       "name" `fill`       "widget" `boolean` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_inputs_labels_out` "name" `labels_out` "widget" `boolean` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_inputs_consent`    "name" `consent`                                      ))
       )
     ))
     (partial "cms/widget" (dict
-      "alt"    `styles_shadow`
-      "name"   `shadow`
-      "widget" `object`
-      "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `float` "step" 0.05 "min" -1 "max" 1))
-        (partial "cms/widget" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `float` "step" 0.05 "min" -1 "max" 1))
-        (partial "cms/widget" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `float` "step" 0.05          "max" 1))
-        (partial "cms/widget" (dict "alt" `styles_shadow_color` "<<" `box_bg_color`                                         ))
-        (partial "cms/widget" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `float` "step" 0.05          "max" 1))
+      "alt"      `styles_shadow`
+      "name"     `shadow`
+      "widget"   `object`
+      "required" true
+      "fields"   (slice
+        (partial "cms/widget" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `float`  "step" 0.05 "min" -1 "max" 1  "required" true))
+        (partial "cms/widget" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `float`  "step" 0.05 "min" -1 "max" 1  "required" true))
+        (partial "cms/widget" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `float`  "step" 0.05          "max" 1  "required" true))
+        (partial "cms/widget" (dict "alt" `styles_shadow_color` "name" `color` "widget" `select` "options" `~options_color_bg` "required" true))
+        (partial "cms/widget" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `float`  "step" 0.05          "max" 1  "required" true))
       )
     ))
   ))

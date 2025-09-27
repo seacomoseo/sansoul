@@ -72,9 +72,7 @@
     "name"    `pages`
     "widget"  `list`
     "summary" "{{fields.page}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "label" $t.types_params_pages_singular "name" `page`))
-    )
+    "field"   (partial "cms/widget" (dict "label" $t.types_params_pages_singular "name" `page`))
   ))
 
   (partial "cms/widget" (dict "var" `types_params_widget_last` "<<" `types_params_widget` "options" $widgets_last))

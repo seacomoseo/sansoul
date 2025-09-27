@@ -1,0 +1,18 @@
+build:
+  cachebusters:
+    - source: '^layouts/_default/baseof\.html'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^layouts/partials/files/statics\.html'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^layouts/partials/cms/.*'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^data/cms/.*'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^data/types/.*'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^data/[^/]*'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^assets/(css|js)/(cms/.*|_cms\.scss)'
+      target: '^admin/index\.html|admin/config\..+?\.yml'
+    - source: '^assets/(css|js)/.*'
+      target: '^admin/index\.html|admin/config\..+?\.yml'

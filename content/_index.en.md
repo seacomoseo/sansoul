@@ -2,7 +2,7 @@
 title: Home
 slug: home
 icon: ''
-noindex: false
+noindex: n
 base: page
 weight: 1
 ---

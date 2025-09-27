@@ -4,13 +4,15 @@
 
 
 ## Scripts para actualizar proyectos nuevos
-- `node ../_tools/update-v2-modals.js`
-- `node ../_tools/update-v2-sections.js`
-- `node ../_tools/update-v2-langs.js`
-- `../_tools/update-v2-home.sh`
-- `node ../_tools/update-v2-menu.js`
-- `../_tools/update-v2-icons.sh`
-- `node ../_tools/update-v2-icons.js ../_tools/fontawesome-to-materialsymbol.json`
+- `node ../_tools/updater/migrations-v2/modals.js`
+- `node ../_tools/updater/migrations-v2/sections.js`
+- `node ../_tools/updater/migrations-v2/langs.js`
+- `../_tools/updater/migrations-v2/home.sh`
+- `node ../_tools/updater/migrations-v2/menu.js`
+- `../_tools/updater/migrations-v2/icons.sh`
+- `node ../_tools/updater/migrations-v2/icons.js ../_tools/updater/migrations-v2/fontawesome-to-materialsymbol.json`
+- `# ../_tools/updater/migrations-v2/cms.sh`
+- `# ../_tools/updater/migrations-v2/v3.sh`
 
 ## Comprobar cambios en `example.yml`
 ## Script para actualizar proyectos antiguos
@@ -46,17 +48,17 @@
   - columns: 3
     image: gradient
     ratio: 16x9
-    inset: true
+    inset: y
     align: left
     color: white
-    hide_categories: true
-    reading_time: true
+    hide_categories: y
+    reading_time: y
     button: hide
   - cols: 3
     align: left
     color: similar
-    shade: true
-    inset: true
+    shade: y
+    inset: y
     ratio: 16/9
     icon: hide
     button: hide

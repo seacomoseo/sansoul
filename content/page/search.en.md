@@ -2,7 +2,7 @@
 title: Search
 slug: search
 icon: search
-noindex: true
+noindex: y
 type: system
 weight: 4
 ---

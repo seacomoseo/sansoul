@@ -2,7 +2,7 @@
 title: Startseite
 slug: startseite
 icon: ''
-noindex: false
+noindex: n
 base: page
 weight: 1
 ---

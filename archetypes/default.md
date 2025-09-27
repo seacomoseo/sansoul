@@ -3,9 +3,9 @@ slug:  '{{ .Name }}'
 title: '{{ replace .Name "-" " " | title }}'
 summary: ''
 image: ''
-toc: false
-draft: true
-noindex: false
+toc: n
+draft: y
+noindex: n
 date: {{ .Date }}
 lastmod: 
 seo: ''

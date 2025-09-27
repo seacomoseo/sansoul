@@ -4,9 +4,9 @@ title: Marca de ejemplo
 summary: Esto es el resumen de un marca de ejemplo.
 image: base/icon.png
 icon: github
-toc: true
-draft: false
-noindex: false
+toc: y
+draft: n
+noindex: n
 seo: null
 description: null
 ---

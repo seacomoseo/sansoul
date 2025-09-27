@@ -13,9 +13,9 @@ category:
 brand: marca
 manufacturer: fabricante
 
-toc: true
-draft: false
-noindex: false
+toc: y
+draft: n
+noindex: n
 seo: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
 description: Esta es la descripción SEO de un producto de ejemplo.
 ---

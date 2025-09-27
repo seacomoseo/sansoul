@@ -53,6 +53,10 @@ elif [ $1 = sdu ]; then
 ## DEV COMMANDS ##
 ##################
 
+# Update version
+elif [ $1 = update ]; then
+  python3 ../_tools/updater/index.js
+
 # Normalize yaml and markdown files
 elif [ $1 = normalize ]; then
   python3 ../_tools/others/yaml-normalize.py
@@ -114,10 +118,11 @@ elif [ $1 = server ]; then
 # CMS + hugo local
 elif [ $1 = local ]; then
 
-  hecho "HUGO LOCAL"
-  export HUGO_CMS_LOCAL=true
-  npx @staticcms/proxy-server &
-  sh do server
+  sh do rm-public
+  sh do prebuild
+
+  hecho "HUGO SERVER WITHOUT CMS CACHE"
+  hugo server --noHTTPCache --ignoreCache --disableFastRender --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.local.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 
 #####################

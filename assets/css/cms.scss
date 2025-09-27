@@ -1,25 +1,38 @@
 @import 'hugo:vars';
-@import 'cms/_variables';
 @import 'cms/_functions';
-@import 'cms/static-cms/_fonts';
-:is(#nc-root, .MuiDrawer-root) {
-  @import 'cms/static-cms/_icons';
+
+// Static CMS
+// @import 'cms/static-cms/_variables';
+// @import 'cms/static-cms/_fonts';
+// :is(#nc-root, .MuiDrawer-root) {
+//   @import 'cms/static-cms/_icons';
+// }
+// #nc-root {
+//   @import 'cms/static-cms/_login';
+//   @import 'cms/static-cms/_base';
+//   @import 'cms/static-cms/fields/_base';
+//   @import 'cms/static-cms/fields/_label';
+//   @import 'cms/static-cms/fields/_button-clear';
+//   @import 'cms/static-cms/fields/_error';
+//   @import 'cms/static-cms/fields/_hint';
+//   @import 'cms/static-cms/fields/_view';
+//   @import 'cms/static-cms/fields/widgets/_text-select-relation-date';
+//   @import 'cms/static-cms/fields/widgets/_boolean';
+//   @import 'cms/static-cms/fields/widgets/_color';
+//   @import 'cms/static-cms/fields/widgets/_image';
+//   @import 'cms/static-cms/fields/widgets/_text';
+//   @import 'cms/static-cms/fields/widgets/_object-list';
+//   @import 'cms/static-cms/fields/widgets/_map';
+// }
+// @import 'cms/static-cms/_hide';
+
+// Sveltia CMS
+:root:not(#aux) {
+  @import 'cms/sveltia-cms/_hint';
+  @import 'cms/sveltia-cms/_hide';
+  @import 'cms/sveltia-cms/_view';
+  @import 'cms/sveltia-cms/_icon';
+  @import 'cms/sveltia-cms/_boolean';
+  @import 'cms/sveltia-cms/widgets/_object';
+  @import 'cms/sveltia-cms/widgets/_list';
 }
-#nc-root {
-  @import 'cms/static-cms/_login';
-  @import 'cms/static-cms/_base';
-  @import 'cms/static-cms/fields/_base';
-  @import 'cms/static-cms/fields/_label';
-  @import 'cms/static-cms/fields/_button-clear';
-  @import 'cms/static-cms/fields/_error';
-  @import 'cms/static-cms/fields/_hint';
-  @import 'cms/static-cms/fields/_view';
-  @import 'cms/static-cms/fields/widgets/_text-select-relation-date';
-  @import 'cms/static-cms/fields/widgets/_boolean';
-  @import 'cms/static-cms/fields/widgets/_color';
-  @import 'cms/static-cms/fields/widgets/_image';
-  @import 'cms/static-cms/fields/widgets/_text';
-  @import 'cms/static-cms/fields/widgets/_object-list';
-  @import 'cms/static-cms/fields/widgets/_map';
-}
-@import 'cms/static-cms/_hide';

@@ -1,6 +1,6 @@
 {{ $t := partial "functions/i18n-cms" . }}
 
-{{ $colections    := slice }}
+{{ $colections := slice }}
 
 
 {{/*  BACKGROUND  */}}
@@ -80,10 +80,9 @@
         "alt"        `template_sections_file`
         "name"       `file`
         "widget"     `relation`
-        "hint"       (print "[" $t.template_sections_file_hint "](#/collections/sections)")
+        "hint"       (print "[" $t.template_sections_file_hint "](#/collections/section)")
         "collection" `section`
       ))
-      (partial "cms/widget" (dict "label" `hidden` "name" `hidden` "widget" `hidden`))
     )
   ))
 }}

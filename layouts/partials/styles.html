@@ -19,22 +19,23 @@
     "utilities-containers-xl"           site.Data.utilities.containers.xl
     "utilities-containers-fluid"        site.Data.utilities.containers.fluid
 
-    "styles-colors-base-white"          (.styles.colors.base.white               | default "#fff")
-    "styles-colors-base-light"          (.styles.colors.base.light               | default "#eee")
-    "styles-colors-base-dark"           (.styles.colors.base.dark                | default "#282525")
-    "styles-colors-base-black"          (.styles.colors.base.black               | default "#000")
-    "styles-colors-base-gray"           (.styles.colors.base.gray                | default "#767676")
-    "styles-colors-main-color"          (.styles.colors.main.color               | default "#577399")
-    "styles-colors-alt-color"           (.styles.colors.alt.color                | default "")
-    "styles-colors-cta-color"           (.styles.colors.cta.color                | default .styles.colors.main.color | default "#577399")
+    "styles-colors-main-color"          (cond (eq .styles.colors.main.color "#ffffff") "" .styles.colors.main.color | default "#577399")
+    "styles-colors-alt-color"           (cond (eq .styles.colors.alt.color  "#ffffff") "" .styles.colors.alt.color )
+    "styles-colors-cta-color"           (cond (eq .styles.colors.cta.color  "#ffffff") "" .styles.colors.cta.color  | default (cond (eq .styles.colors.main.color "#ffffff") "" .styles.colors.main.color | default "#577399"))
 
-    "styles-colors-main-light"          (.styles.colors.main.light               | default "")
-    "styles-colors-alt-light"           (.styles.colors.alt.light                | default "")
-    "styles-colors-cta-light"           (.styles.colors.cta.light                | default "")
+    "styles-colors-main-light"          (cond (eq .styles.colors.main.light "#ffffff") "" .styles.colors.main.light)
+    "styles-colors-alt-light"           (cond (eq .styles.colors.alt.light  "#ffffff") "" .styles.colors.alt.light )
+    "styles-colors-cta-light"           (cond (eq .styles.colors.cta.light  "#ffffff") "" .styles.colors.cta.light )
 
-    "styles-colors-main-dark"           (.styles.colors.main.dark                | default "")
-    "styles-colors-alt-dark"            (.styles.colors.alt.dark                 | default "")
-    "styles-colors-cta-dark"            (.styles.colors.cta.dark                 | default "")
+    "styles-colors-main-dark"           (cond (eq .styles.colors.main.dark  "#ffffff") "" .styles.colors.main.dark )
+    "styles-colors-alt-dark"            (cond (eq .styles.colors.alt.dark   "#ffffff") "" .styles.colors.alt.dark  )
+    "styles-colors-cta-dark"            (cond (eq .styles.colors.cta.dark   "#ffffff") "" .styles.colors.cta.dark  )
+
+    "styles-colors-base-white"          (.styles.colors.base.white               | default "#ffffff")
+    "styles-colors-base-light"          (cond (eq .styles.colors.base.light "#ffffff") "" .styles.colors.base.light | default "#eeeeee")
+    "styles-colors-base-dark"           (cond (eq .styles.colors.base.dark  "#ffffff") "" .styles.colors.base.dark  | default "#282525")
+    "styles-colors-base-black"          (cond (eq .styles.colors.base.black "#ffffff") "" .styles.colors.base.black | default "#000000")
+    "styles-colors-base-gray"           (cond (eq .styles.colors.base.gray  "#ffffff") "" .styles.colors.base.gray  | default "#767676")
 
     "styles-colors-main-contrast-fill"  (.styles.colors.main.contrast.fill       | not | not | string)
     "styles-colors-alt-contrast-fill"   (.styles.colors.alt.contrast.fill        | not | not | string)
@@ -79,7 +80,7 @@
     "styles-rounded-chamfer"            (.styles.rounded.chamfer                 | not | not | string)
 
     "styles-buttons-sides_round"        (.styles.buttons.sides_round             | not | not | string)
-    "styles-buttons-icon_circle"        (.styles.buttons.icon_circle             | not | not | string)
+    "styles-buttons-dot_circle"         (.styles.buttons.dot_circle              | not | not | string)
     "styles-buttons-deep"               (.styles.buttons.deep                    | not | not | string)
     "styles-buttons-outline"            (.styles.buttons.outline                 | not | not | string)
     "styles-buttons-font"               (.styles.buttons.font.type               | default "base")

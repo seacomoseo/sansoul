@@ -264,13 +264,12 @@
   ))
 
   (partial "cms/widget" (dict
-    "var"     `modals`
-    "name"    `modals`
-    "widget"  `list`
-    "summary" "{{fields.file}}"
-    "fields"  (slice
-      `~box_view_modals`
+    "var"    `modals`
+    "name"   `modals`
+    "widget" `list`
+    "fields" (slice
       `~box_id`
+      `~box_view_modals`
       | append $titles
       | append $md
       | append $menu
@@ -308,8 +307,8 @@
   ))
   (dict "&sections_fields" (slice
     `~box_name`
-    `~box_view_sections`
     `~box_id`
+    `~box_view_sections`
     | append $titles
     | append $md
     | append $menu

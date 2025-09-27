@@ -17,7 +17,7 @@
   (partial "cms/widget" (dict "var" `page_description`    "name" `description`    "widget" `text`                    ))
   (partial "cms/widget" (dict "var" `page_body`           "name" `body`           "widget" `markdown` "show_raw" true))
 
-  (partial "cms/widget" (dict "var" `page_base`           "name" `base`           "widget" `select`   "options" `~options_base`))
+  (partial "cms/widget" (dict "var" `page_base`           "name" `base`           "widget" `select`   "options" `~options_base` "dropdown_threshold" 10))
 
   (partial "cms/widget" (dict "var" `page_date`           "name" `date`           "widget" `datetime` "required" true))
   (partial "cms/widget" (dict "var" `page_lastmod`        "name" `lastmod`        "widget" `datetime`                ))
@@ -44,18 +44,14 @@
     "name"    `alts`
     "widget"  `list`
     "summary" "{{fields.alts}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `alts` "label" $t.page_alts_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `alts` "label" $t.page_alts_singular))
   ))
   (partial "cms/widget" (dict
     "var"     `page_job`
     "name"    `job`
     "widget"  `list`
     "summary" "{{fields.job}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `job` "label" $t.page_job_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `job` "label" $t.page_job_singular))
   ))
   (partial "cms/widget" (dict
     "var"     `page_orgs`
@@ -85,9 +81,7 @@
     "name"    `service_areas`
     "widget"  `list`
     "summary" "{{fields.area}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `area` "label" $t.page_areas_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `area` "label" $t.page_areas_singular))
   ))
   (partial "cms/widget" (dict
     "var"       `page_service_types`
@@ -95,9 +89,7 @@
     "widget"    `list`
     "collapsed" false
     "summary"   "{{fields.link}}"
-    "fields"    (slice
-      (partial "cms/widget" (dict "name" `service` "label" $t.page_service_types_singular))
-    )
+    "field"     (partial "cms/widget" (dict "name" `service` "label" $t.page_service_types_singular))
   ))
 
   (partial "cms/widget" (dict
@@ -105,18 +97,14 @@
     "name"    `types`
     "widget"  `list`
     "summary" "{{fields.type}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `type` "widget" `select` "options" `~options_location_type` "label" $t.page_org_types))
-    )
+    "field"   (partial "cms/widget" (dict "name" `type` "widget" `select` "options" `~options_location_type` "label" $t.page_org_types))
   ))
   (partial "cms/widget" (dict
     "var"     `page_org_names`
     "name"    `names`
     "widget"  `list`
     "summary" "{{fields.name}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `name` "label" $t.page_org_names_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `name` "label" $t.page_org_names_singular))
   ))
   (partial "cms/widget" (dict "var" `page_org_description` "name" `description`                                 ))
   (partial "cms/widget" (dict "var" `page_org_legal`       "name" `legal`                                       ))
@@ -130,18 +118,14 @@
     "name"    `as`
     "widget"  `list`
     "summary" "{{fields.link}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `link` "label" $t.page_as_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `link` "label" $t.page_as_singular))
   ))
   (partial "cms/widget" (dict
     "var"     `page_org_phones`
     "name"    `phones`
     "widget"  `list`
     "summary" "{{fields.phone}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `phone` "label" $t.page_org_phones_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `phone` "label" $t.page_org_phones_singular))
   ))
   (partial "cms/widget" (dict
     "var"    `page_address`
@@ -159,14 +143,13 @@
       (partial "cms/widget" (dict "alt" `page_address_legal`    "name" `legal`   ))
     )
   ))
-  (partial "cms/widget" (dict "var" `page_org_areas` "<<" `page_service_areas` "name" `link`))
+  (partial "cms/widget" (dict "var" `page_org_areas` "<<" `page_service_areas` "name" `areas`))
   (partial "cms/widget" (dict
-    "var"     `page_org_open`
-    "alt"     `page_org_schedule`
-    "name"    `schedule`
-    "widget"  `list`
-    "summary" "{{fields.days}}"
-    "fields"  (slice
+    "var"    `page_org_open`
+    "alt"    `page_org_schedule`
+    "name"   `schedule`
+    "widget" `list`
+    "fields" (slice
       (partial "cms/widget" (dict
         "alt"     `page_org_schedule_days`
         "name"    `days`
@@ -191,11 +174,11 @@
           (partial "cms/widget" (dict "alt" `page_org_schedule_hours_close` "name" `close`  "widget" `datetime` "format" `H:mm` "date_format" false "time_format" `HH:mm`))
         )
       ))
-      (partial "cms/widget" (dict "alt" `page_org_schedule_from`        "name" `from`   "widget" `datetime` "hint" $t.page_org_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false))
-      (partial "cms/widget" (dict "alt" `page_org_schedule_to`          "name" `to`     "widget" `datetime` "hint" $t.page_org_schedule_valid_hint "format" `yyyy-MM-dd` "date_format" `yyyy-MM-dd` "time_format" false))
+      (partial "cms/widget" (dict "alt" `page_org_schedule_from`        "name" `from`   "widget" `datetime` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
+      (partial "cms/widget" (dict "alt" `page_org_schedule_to`          "name" `to`     "widget" `datetime` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
     )
   ))
-  (partial "cms/widget" (dict "var" `page_org_prices` "name" `prices` "widget" `select`  "options" (slice "€" "€€" "€€€" "$" "$$" "$$$")))
+  (partial "cms/widget" (dict "var" `page_org_prices` "name" `prices` "widget" `select`  "options" `~options_prices`))
   (partial "cms/widget" (dict
     "var"     `page_org_services`
     "name"    `services`
@@ -214,18 +197,14 @@
     "name"    `food_menu`
     "widget"  `list`
     "summary" "{{fields.food_menu}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `food_menu` "label" $t.page_org_food_menu_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `food_menu` "label" $t.page_org_food_menu_singular))
   ))
   (partial "cms/widget" (dict
     "var"     `page_org_food_type`
     "name"    `food_type`
     "widget"  `list`
     "summary" "{{fields.food_type}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `food_type` "label" $t.page_org_food_type_singular))
-    )
+    "field"   (partial "cms/widget" (dict "name" `food_type` "label" $t.page_org_food_type_singular))
   ))
   (partial "cms/widget" (dict
     "var"     `page_org_departs`

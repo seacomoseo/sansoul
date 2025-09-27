@@ -6,12 +6,12 @@ image: base/poster.png
 
 date: 2023-08-01 10:00:00
 end: 2023-08-05 13:55:49
-cancelled: false
+cancelled: n
 artists:
 - name: Artista de ejemplo
-  group: false
+  group: n
 - name: Grupo de ejemplo
-  group: true
+  group: y
 address:
   name: Sala B
   street: Av. Ciclista Mariano Rojas, 20
@@ -23,9 +23,9 @@ address:
   link: https://maps.app.goo.gl/2w8fTMnWcG3qMJG36
 price: 30
 
-toc: true
-draft: false
-noindex: false
+toc: y
+draft: n
+noindex: n
 seo: null # string
 description: null # string
 ---

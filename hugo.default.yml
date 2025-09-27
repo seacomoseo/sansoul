@@ -1,11 +1,8 @@
-
-# default with option in cms
-
 pagination:
-  disableAliases: false
+  disableAliases: n
   pagerSize: 24
   path: page
-buildFuture: true
+buildFuture: y
 timeZone: Europe/Madrid
 params:
   currency: EUR
@@ -25,42 +22,42 @@ defaultContentLanguage: es
 languages:
   es:
     # baseURL: https://sansoul.netlify.com
-    disabled: true
+    disabled: y
     weight: 1
     languageName: Español
     pagination:
       path: pagina
   en:
     # baseURL: https://es.sansoul.netlify.com
-    disabled: true
+    disabled: y
     weight: 2
     languageName: English
     pagination:
       path: page
   fr:
     # baseURL: https://fr.sansoul.netlify.com
-    disabled: true
+    disabled: y
     weight: 3
     languageName: Français
     pagination:
       path: page
   de:
     # baseURL: https://de.sansoul.netlify.com
-    disabled: true
+    disabled: y
     weight: 4
     languageName: Deutsch
     pagination:
       path: seite
   pt:
     # baseURL: https://pt.sansoul.netlify.com
-    disabled: true
+    disabled: y
     weight: 5
     languageName: Português
     pagination:
       path: pagina
   it:
     # baseURL: https://it.sansoul.netlify.com
-    disabled: true
+    disabled: y
     weight: 6
     languageName: Italiano
     pagination:
@@ -91,8 +88,8 @@ module:
 # default without option in cms
 
 summaryLength: 15
-enableRobotsTXT: true
-removePathAccents: true
+enableRobotsTXT: y
+removePathAccents: y
 
 taxonomies: {}
 
@@ -101,9 +98,9 @@ disableKinds:
 - term
 
 related:
-  includeNewer: true
+  includeNewer: y
   threshold: 80
-  toLower: true
+  toLower: y
   indices:
   - name: date
     weight: 10
@@ -129,33 +126,33 @@ outputFormats:
   RSS:
     mediaType: application/rss+xml
     baseName: feed
-    permalinkable: true
+    permalinkable: y
 
 markup:
   tableOfContents:
-    ordered: true
+    ordered: y
     endLevel: 6
   defaultMarkdownHandler: goldmark
   goldmark:
     renderer:
-      unsafe: true
+      unsafe: y
     parser:
       autoHeadingIDType: github-ascii
       attribute:
-        block: true
+        block: y
     extensions:
-      strikethrough: false
+      strikethrough: n
       extras:
         delete:
-          enable: true
+          enable: y
         insert:
-          enable: true
+          enable: y
         mark:
-          enable: true
+          enable: y
         subscript:
-          enable: true
+          enable: y
         superscript:
-          enable: true
+          enable: y
       passthrough:
         delimiters:
           block:
@@ -166,7 +163,7 @@ markup:
           inline:
           - - \(
             - \)
-        enable: true
+        enable: y
 
 frontmatter:
   date:

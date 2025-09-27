@@ -77,23 +77,6 @@ $main-3d:               mix($black, $main,  25%) !default;
 $alt-3d:                mix($black, $alt,   25%) !default;
 $cta-3d:                mix($black, $cta,   25%) !default;
 
-$options-colors: (
-  'main':       $main,
-  'main-light': $main-light,
-  'main-dark':  $main-dark,
-  'alt':        $alt,
-  'alt-light':  $alt-light,
-  'alt-dark':   $alt-dark,
-  'cta':        $cta,
-  'cta-light':  $cta-light,
-  'cta-dark':   $cta-dark,
-  'white':      $white,
-  'light':      $light,
-  'gray':       $gray,
-  'dark':       $dark,
-  'black':      $black
-);
-
 
 // Screen
 $vs:          $utilities-viewport-min * 1px !default;
@@ -175,7 +158,7 @@ $chamfer: $styles-rounded-chamfer == 'true' !default;
 
 // Buttons
 $buttons-rounded:        $styles-buttons-sides_round == 'true' !default;
-$icon-buttons-rounded:   $styles-buttons-icon_circle == 'true' !default;
+$icon-buttons-rounded:   $styles-buttons-dot_circle  == 'true' !default;
 $buttons-3d:             $styles-buttons-deep        == 'true' !default;
 $buttons-outline:        $styles-buttons-outline     == 'true' !default;
 $buttons-font-main:      $styles-buttons-font                  !default;
@@ -195,13 +178,32 @@ $menu-bar-gap:                if($icon-buttons-rounded and $chamfer, .375em, .5e
 
 
 // Shadow
-$shadow-left:  $styles-shadow-left * 1rem                                                   !default;
-$shadow-top:   $styles-shadow-top  * 1rem                                                   !default;
-$shadow-blur:  $styles-shadow-blur * 1rem                                                   !default;
-$styles-shadow-opacity: 1 - $styles-shadow-alpha                                            !default;
-$shadow-color: rgba(map-get($options-colors, $styles-shadow-color), $styles-shadow-opacity) !default;
-$shadow:       $shadow-left $shadow-top $shadow-blur $shadow-color                          !default;
-$shadow-half:  ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color        !default;
+$shadow-opacity: 1 - $styles-shadow-alpha !default;
+$options-colors: (
+  'main':       rgba($main, $shadow-opacity),
+  'main-light': rgba($main-light, $shadow-opacity),
+  'main-dark':  rgba($main-dark, $shadow-opacity),
+  'alt':        rgba($alt, $shadow-opacity),
+  'alt-light':  rgba($alt-light, $shadow-opacity),
+  'alt-dark':   rgba($alt-dark, $shadow-opacity),
+  'cta':        rgba($cta, $shadow-opacity),
+  'cta-light':  rgba($cta-light, $shadow-opacity),
+  'cta-dark':   rgba($cta-dark, $shadow-opacity),
+  'white':      rgba($white, $shadow-opacity),
+  'light':      rgba($light, $shadow-opacity),
+  'gray':       rgba($gray, $shadow-opacity),
+  'dark':       rgba($dark, $shadow-opacity),
+  'black':      rgba($black, $shadow-opacity),
+  'invert':     color-mix(in srgb, var(--invert), transparent ($shadow-opacity * 100%)),
+  'similar':    color-mix(in srgb, var(--similar), transparent ($shadow-opacity * 100%)),
+  'hide':       transparent
+);
+$shadow-left:    $styles-shadow-left * 1rem                                            !default;
+$shadow-top:     $styles-shadow-top  * 1rem                                            !default;
+$shadow-blur:    $styles-shadow-blur * 1rem                                            !default;
+$shadow-color:   map-get($options-colors, $styles-shadow-color)                        !default;
+$shadow:         $shadow-left $shadow-top $shadow-blur $shadow-color                   !default;
+$shadow-half:    ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color !default;
 
 
 // Simplelightbox

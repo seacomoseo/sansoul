@@ -1,27 +1,26 @@
-{{ $local            := eq (getenv "HUGO_CMS_LOCAL") "true" }}
-{{ $config           := site.Data.config }}
-{{ $fontawesome_link := print "[fontawesome.com](https://fontawesome.com/search?o=r&s=" (site.Data.styles.icons.type | default "solid") "&f=brands%2Cclassic)" }}
-
-{{ $langs  := slice }}
-{{ range .Site.Languages }}
-  {{ $langs = $langs | append .Lang }}
-{{ end }}
+{{ $config   := site.Data.config }}
 {{ $lang_cms := partial "functions/lang-cms" . }}
-{{ $locales  := cond hugo.IsMultilingual $langs (slice .Lang "xx") }}
+{{ $locales  := slice }}
+{{ with $config.langs }}
+  {{ range . }}
+    {{ $locales = $locales | append .lang }}
+  {{ end }}
+{{ end }}
 
 
-{{/*  VARIABLES  */}}
-{{ $vars := (partial "cms/config/options" .)
-  | append  (partial "cms/config/boxes" .)
-  | append  (partial "cms/config/blocks" .)
-  | append  (partial "cms/config/sections" .)
-  | append  (partial "cms/config/templates" .)
-  | append  (partial "cms/config/pages" $fontawesome_link)
-  | append  (partial "cms/config/types" .)
-  | append  (partial "cms/config/settings/config" .)
-  | append  (partial "cms/config/settings/styles" .)
-  | append  (partial "cms/config/settings/remote" .)
-  | append  (partial "cms/config/settings/values" .)
+{{/*  YAML ANCHORS  */}}
+{{ $anchors := slice
+  | append (partial "cms/config/options" .)
+  | append (partial "cms/config/boxes" .)
+  | append (partial "cms/config/blocks" .)
+  | append (partial "cms/config/sections" .)
+  | append (partial "cms/config/templates" .)
+  | append (partial "cms/config/pages" .)
+  | append (partial "cms/config/types" .)
+  | append (partial "cms/config/settings/config" .)
+  | append (partial "cms/config/settings/styles" .)
+  | append (partial "cms/config/settings/remote" .)
+  | append (partial "cms/config/settings/values" .)
 }}
 
 
@@ -31,9 +30,7 @@
 {{- if getenv "NETLIFY" -}}
   {{ $domain       = ".netlify.app/" }}
 {{- end -}}
-{{ if $local }}
-  {{ $site_url     = site.Home.Permalink }}
-{{ else if $config.cms.editorial }}
+{{ if $config.cms.editorial }}
   {{ $site_url   = print "https://" site.Params.name $domain }}
   {{ $publish_mode = "editorial_workflow" }}
 {{ else if $config.others.development }}
@@ -43,11 +40,17 @@
 {{ end }}
 
 
-{{ $logo := partial "functions/logo" . }}
-{{ $logo  = $config.cms.logo | default $logo }}
-{{ $logo  = print "/media/" $logo }}
-{{ $logo  = resources.Get $logo }}
-{{ $logo  = $logo.Permalink }}
+{{/*  LOGO  */}}
+{{ $logo := "" }}
+{{ with index $config "cms" "logo" }}
+  {{ $path := print "/media/" . }}
+  {{ with resources.Get $path }}
+    {{ $logo = .RelPermalink }}
+  {{ end }}
+{{ end }}
+{{ if not $logo }}
+  {{ $logo = partial "functions/logo" . }}
+{{ end }}
 
 
 {{/*  BUTTON LOGIN WITH GITHUB  */}}
@@ -57,6 +60,7 @@
   "repo"     (print "seacomoseo/" site.Params.domain)
   "branch"   `main`
   "base_url" `https://sveltia-cms-auth.sansoul.workers.dev`
+  "skip_ci"  true
 -}}
 {{- if getenv "NETLIFY" -}}
   {{/*  EMAIL+PASS LOGIN WITH NETLIFY IDENTITY  */}}
@@ -65,64 +69,138 @@
     "name"        `git-gateway`
     "branch"      `main`
     "site_domain" site.Params.domain
+    "skip_ci"     true
   -}}
 {{- end -}}
 
 
 {{ $cms_config := dict
-  "_variables"    $vars
-  "backend"       $backend
-  "local_backend" $local
-  "media_folder"  `assets/media`
-  "public_folder" ``
-  "site_url"      $site_url
-  "media_library" (dict
-    "max_file_size"  512000000
-    "folder_support" true
+  "_anchors"        $anchors
+  "backend"         $backend
+  "media_folder"    `assets/media`
+  "public_folder"   `/`
+  "site_url"        $site_url
+  "media_libraries" (dict
+    "default" (dict
+      "config" (dict
+        "max_file_size"   512000000
+        "folder_support"  true
+        "transformations" (dict
+          "raster_image" (dict
+            "format"  "webp"
+            "quality" 85
+            "width"   2048
+            "height"  2048
+          )
+          "svg" (dict
+            "optimize" false
+          )
+        )
+      )
+    )
   )
-  "logo_url"      $logo
-  "locale"        $lang_cms
-  "i18n"          (dict
-    "structure"      "multiple_files"
-    "locales"        $locales
-    "default_locale" .Lang
+  "logo_url"        $logo
+  "locale"          $lang_cms
+  "i18n"            (dict
+    "structure"       "multiple_files"
+    "locales"         $locales
+    "initial_locales" $locales
+    "default_locale"  .Lang
   )
-  "slug"          (dict
+  "slug"            (dict
     "encoding"             `ascii`
     "clean_accents"        true
     "sanitize_replacement" `-`
   )
-  "yaml"          (dict
-    "parseOptions"    (dict
-      "simpleKeys" true
-    )
-    "documentOptions" (dict
-      "simpleKeys" true
-    )
-    "toStringOptions" (dict
-      "simpleKeys"   true
-      "singleQuote"  true
-      "blockQuote"   `literal`
-      "lineWidth"    0
-      "indent"       2
-      "indentSeq"    false
+  "output"          (dict
+    "omit_empty_optional_fields" true
+    "encode_file_path"           true
+    "yaml"                       (dict
+      "quote"           `none`
+      "indent_size"     2
+      "parseOptions"    (dict
+        "simpleKeys" true
+      )
+      "documentOptions" (dict
+        "simpleKeys" true
+      )
+      "toStringOptions" (dict
+        "simpleKeys"  true
+        "singleQuote" true
+        "blockQuote"  `literal`
+        "lineWidth"   0
+        "indent"      2
+        "indentSeq"   false
+      )
     )
   )
-  "collections"   (partial "cms/config/collections" .)
+  "collections"     (partial "cms/config/collections" .)
+  "singletons"      (partial "cms/config/singletons" .)
 }}
 {{ with $publish_mode }}
   {{ $cms_config = merge $cms_config (dict "publish_mode" .) }}
 {{ end }}
+
+
+{{/*  JSON TO YAML MERGES, ANCHORS AND ALIASES  */}}
+
 {{ $cms_config = $cms_config
   | jsonify
   | replaceRE `"\\u003c\\u003c":` " <<: "
   | replaceRE `\"\\u0026(.+?)\":` ` "$1": &$1 `
   | replaceRE `\"~(.+?)\"` ` *$1 `
 }}
+
+
+{{/*  YAML TO SEMI JSON  */}}
+
+{{/*
+{{ define "partials/recursive-fin-aliases" }}
+  {{ $result  := dict }}
+  {{ $json    := .json }}
+  {{ $anchors := .anchors }}
+
+  {{ $matches := $json | findRE `\"~(.+?)\"` | uniq }}
+  {{ if gt (len $matches) 0 }}
+    {{ range $matches }}
+      {{ $alias := . }}
+      {{ $anchor := . | replaceRE `\"~` "&" | replaceRE `\"$` "" }}
+      {{ with index $anchors $anchor }}
+        {{ $value := . | jsonify }}
+        {{ $json = replace $json $alias $value }}
+      {{ end }}
+    {{ end }}
+    {{ $result = partial "recursive-fin-aliases" (dict "json" $json "anchors" $anchors) }}
+  {{ else }}
+    {{ $result = $json }}
+  {{ end }}
+  {{ return $result }}
+{{ end }}
+
+{{ $anchors = dict }}
+{{ range $cms_config._anchors }}
+  {{ $anchors = merge $anchors . }}
+{{ end }}
+{{ $anchors_json := jsonify $anchors }}
+{{ $anchors_json  = partial "recursive-fin-aliases" (dict "json" $anchors_json "anchors" $anchors) }}
+{{ $anchors       = $anchors_json | unmarshal }}
+
+{{ $cms_config_json := jsonify $cms_config }}
+{{ $cms_config_json  = partial "recursive-fin-aliases" (dict "json" $cms_config_json "anchors" $anchors) }}
+{{ $cms_config       = $cms_config_json | unmarshal }}
+{{ $cms_config       = merge $cms_config (dict "_anchors" nil)
+  | jsonify
+  | replaceRE `"\\u003c\\u003c":` " <<: "
+}}
+*/}}
+
+
+{{/*  YAML TO PURE JSON  */}}
 {{/*  
 {{ $cms_config = print `aux: ` $cms_config | unmarshal }}
-{{ $cms_config = merge $cms_config.aux (dict "_variables" nil) }}
+{{ $cms_config = merge $cms_config.aux (dict "_anchors" nil) }}
 {{ $cms_config = $cms_config | jsonify }}
 {{ $cms_config = $cms_config.aux| jsonify (cond hugo.IsProduction dict (dict "prefix" "" "indent" "  ")) }}
 */}}
+
 {{ return $cms_config }}

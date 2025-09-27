@@ -2,7 +2,7 @@
 title: Legal Notice
 slug: legal
 icon: balance
-noindex: true
+noindex: y
 type: system
 weight: 1
 ---

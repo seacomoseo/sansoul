@@ -2,7 +2,7 @@
 title: CMS
 slug: admin/info
 icon: construction
-noindex: true
+noindex: y
 type: system
 weight: 6
 ---

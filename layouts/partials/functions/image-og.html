@@ -11,6 +11,9 @@
 
 {{ if not $img }}
   {{ $img = partial "functions/logo" . }}
+  {{ with $img }}
+    {{ $img = strings.TrimPrefix . "/media/" }}
+  {{ end }}
 {{ end }}
 
 {{ with $img }}

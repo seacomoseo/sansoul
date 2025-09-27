@@ -1,0 +1,39 @@
+.footer {
+  justify-content: flex-start !important;
+  position: relative;
+  &:hover {
+    z-index: 1;
+  }
+  &:has(.hint)::before {
+    content: 'info';
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    // font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    color: var(--sui-button-primary-background-color, var(--sui-primary-accent-color));
+    margin: 0.2em 0 -0.3em 0.2em;
+  }
+  &:has(.hint):hover::before {
+    z-index: 2;
+  }
+}
+.hint {
+  position: absolute;
+  padding: 10px 18px;
+  border-radius: var(--sui-control-medium-border-radius);
+  background-color: var(--sui-textbox-background-color);
+  opacity: 1;
+  &:not(.footer:hover *) {
+    display: none;
+  }
+}

@@ -9,9 +9,9 @@ category:
 - categoria-1
 - categoria-0
 
-toc: false
-draft: false
-noindex: true
+toc: n
+draft: n
+noindex: y
 seo: null # string
 description: null # string
 ---

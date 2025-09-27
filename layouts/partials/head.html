@@ -23,11 +23,7 @@
 {{- $aas          := partial "functions/authors-article-sections" . -}}
 {{- $authors      := $aas.authors -}}
 {{- $art_sections := $aas.art_sections -}}
-
-{{- $logo := partial "functions/logo" . -}}
-{{- $logo  = print "/media/" $logo -}}
-{{- $logo  = resources.Get $logo -}}
-{{- $logo  = $logo.Permalink -}}
+{{- $logo         := partial "functions/logo" . -}}
 
 {{- /*  BASIC  */}}
 <meta charset="utf-8">

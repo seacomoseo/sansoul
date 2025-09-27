@@ -7,9 +7,9 @@ image: null # string
 icon: null # string
 category: []
 
-toc: false
-draft: false
-noindex: true
+toc: n
+draft: n
+noindex: y
 seo: null # string
 description: null # string
 ---

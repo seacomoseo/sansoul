@@ -10,9 +10,9 @@ category:
 - categoria-3
 author: admin
 
-toc: true
-draft: false
-noindex: false
+toc: y
+draft: n
+noindex: n
 seo: ▷ Título SEO Entrada de ejemplo 【Con caracteres llamativos】
 description: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
 ---

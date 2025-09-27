@@ -1,0 +1,21 @@
+[data-widget="object"] {
+  > header:not(:has(.required)) {
+    padding-left: 24px;
+  }
+  > .widget-wrapper {
+    display: grid;
+    > .checkbox {
+      width: 20px;
+      margin-top: -36px;
+      label {
+        display: none;
+      }
+    }
+    &:has(> .checkbox [aria-checked="false"]) {
+      margin-top: -8px;
+      > .checkbox {
+        margin-top: -22px;
+      }
+    }
+  }
+}

@@ -2,8 +2,6 @@
 
 {{ $colections := slice }}
 
-{{ $i18n := hugo.IsMultilingual }}
-
 {{/*  CUSTOM TYPES (single last)  */}}
 {{ $parents := where site.Sections "Type" "ne" "single" | append (where site.Sections "Type" "eq" "single") }}
 {{ range $parents }}
@@ -12,10 +10,6 @@
   {{ $slug  := "{{fields.slug}}" }}
   {{ if in (slice "article" "event") .Params.base }}
     {{ $slug = "{{year}}-{{month}}-{{day}}-{{fields.slug}}" }}
-  {{ end }}
-  {{/*  Fix slug i18n extension if only one language  */}}
-  {{ if not hugo.IsMultilingual }}
-    {{ $slug = print $slug "." page.Lang }}
   {{ end }}
 
   {{/*  Permalinks  */}}
@@ -31,16 +25,19 @@
   {{/*  Summary  */}}
   {{ $summary  := "{{title}}" }}
   {{ if in (slice "article" "event") .Params.base }}
-    {{ $summary = "📅 {{date | date('yyyy-MM-dd')}} 🕒 {{date | date('HH:mm')}} ➡️ {{title}}" }}
+    {{ $summary = "📅 {{date | date('YYYY-MM-DD')}} 🕒 {{date | date('HH:mm')}} ➡️ {{title}}" }}
   {{ end }}
 
   {{/*  Sortable Fields  */}}
   {{ $sortable_fields    := slice "weight" "commit_date" "title" }}
+  {{ $sortable_default   := dict "field" "weight" "direction" "ascending" }}
   {{ if eq .Params.base "article" }}
     {{ $sortable_fields   = slice "date" "lastmod" | append $sortable_fields }}
+    {{ $sortable_default  = dict "field" "date" "direction" "descending" }}
   {{ end }}
   {{ if eq .Params.base "event" }}
     {{ $sortable_fields   = slice "date" "end"     | append $sortable_fields }}
+    {{ $sortable_default  = dict "field" "date" "direction" "descending" }}
   {{ end }}
   {{ with .Params.customs }}
     {{ range where . "widget" "date" }}
@@ -52,8 +49,9 @@
       {{ $sortable_fields = $sortable_fields       | append .name }}
     {{ end }}
   {{ end }}
+  {{ $sortable_fields     = dict "fields" $sortable_fields "default" $sortable_default }}
 
-  {{/*  Groups  */}}
+  {{/*  View Groups  */}}
   {{ $groups  := slice }}
   {{ if in (slice "article" "event") .Params.base }}
     {{ $groups = $groups | append
@@ -73,6 +71,17 @@
       }}
     {{ end }}
   {{ end }}
+  {{ $view_groups := dict "groups" $groups "default" "drafts" }}
+
+  {{/*  View Filters  */}}
+  {{ $view_filters := dict
+    "filters" (slice
+      (dict "name" `published` "label" $t.filter_published "field" `draft`   "pattern" "n")
+      (dict "name" `drafts`    "label" $t.filter_drafts    "field" `draft`   "pattern" "y")
+      (dict "name" `index`     "label" `Index`             "field" `noindex` "pattern" "n")
+      (dict "name" `noindex`   "label" `NoIndex`           "field" `noindex` "pattern" "y")
+    )
+  }}
 
   {{/*  Fields  */}}
   {{ $fields  := slice
@@ -108,24 +117,24 @@
         )
       ))
       `~page_base`
-      (partial "cms/widget" (dict "<<" `page_date`          "condition" (dict "field" `base` "value" (slice `article` `event`)          )))
-      (partial "cms/widget" (dict "<<" `page_lastmod`       "condition" (dict "field" `base` "value" `article`                          )))
-      (partial "cms/widget" (dict "<<" `page_end`           "condition" (dict "field" `base` "value" `event`                            )))
-      (partial "cms/widget" (dict "<<" `page_cancelled`     "condition" (dict "field" `base` "value" `event`                            )))
-      (partial "cms/widget" (dict "<<" `page_artists`       "condition" (dict "field" `base` "value" `event`                            )))
-      (partial "cms/widget" (dict "<<" `page_sku`           "condition" (dict "field" `base` "value" `product`                          )))
-      (partial "cms/widget" (dict "<<" `page_prefix`        "condition" (dict "field" `base` "value" `author`                           )))
-      (partial "cms/widget" (dict "<<" `page_alts`          "condition" (dict "field" `base` "value" `author`                           )))
-      (partial "cms/widget" (dict "<<" `page_job`           "condition" (dict "field" `base` "value" `author`                           )))
-      (partial "cms/widget" (dict "<<" `page_orgs`          "condition" (dict "field" `base` "value" `author`                           )))
-      (partial "cms/widget" (dict "<<" `page_as`            "condition" (dict "field" `base` "value" `author`                           )))
-      (partial "cms/widget" (dict "<<" `page_creds`         "condition" (dict "field" `base` "value" `author`                           )))
-      (partial "cms/widget" (dict "<<" `page_address`       "condition" (dict "field" `base` "value" `event`                            )))
-      (partial "cms/widget" (dict "<<" `page_service_areas` "condition" (dict "field" `base` "value" `service`                          )))
-      (partial "cms/widget" (dict "<<" `page_service_types` "condition" (dict "field" `base` "value" `service`                          )))
-      (partial "cms/widget" (dict "<<" `page_price`         "condition" (dict "field" `base` "value" (slice `event` `product` `service`))))
-      (partial "cms/widget" (dict "<<" `page_org`           "condition" (dict "field" `base` "value" `org`                              )))
-      (partial "cms/widget" (dict "<<" `page_toc`           "condition" (dict "field" `base` "value" (slice `event` `article`          ))))
+      (partial "cms/widget" (dict "<<" `page_date` "required" false))
+      `~page_lastmod`
+      `~page_end`
+      `~page_cancelled`
+      `~page_artists`
+      `~page_sku`
+      `~page_prefix`
+      `~page_alts`
+      `~page_job`
+      `~page_orgs`
+      `~page_as`
+      `~page_creds`
+      `~page_address`
+      `~page_service_areas`
+      `~page_service_types`
+      `~page_price`
+      `~page_org`
+      `~page_toc`
     }}
   {{ else if eq .Params.base "article" }}
     {{ $fields = $fields | append
@@ -210,43 +219,21 @@
     "identifier_field" `slug`
     "folder"           (print `content/` .Type)
     "create"           true
-    "i18n"             $i18n
+    "i18n"             true
     "slug"             $slug
     "preview_path"     $permalinks
     "summary"          $summary
+    "thumbnail"        (slice `img` `image` `vid` `video`)
     "editor"           (dict "preview" false)
-    "sortable_fields"  (dict "fields"  $sortable_fields)
-    "view_groups"      (dict "groups"  $groups)
-    "view_filters"     (dict
-      "filters" (slice
-        (dict "name" `published` "label" $t.filter_published "field" `draft`   "pattern" false)
-        (dict "name" `drafts`    "label" $t.filter_drafts    "field" `draft`   "pattern" true)
-        (dict "name" `index`     "label" `Index`             "field" `noindex` "pattern" false)
-        (dict "name" `noindex`   "label" `NoIndex`           "field" `noindex` "pattern" true)
-      )
-    )
+    "sortable_fields"  $sortable_fields
+    "view_groups"      $view_groups
+    "view_filters"     $view_filters
     "fields"           $fields
   ) }}
 {{ end }}
 
 
-{{/*  SECTIONS  */}}
-{{ $colections = $colections | append (dict
-  "label"            $t.collection_sections
-  "label_singular"   $t.collection_sections_singular
-  "name"             `section`
-  "icon"             site.Data.utilities.defaults.section.icon
-  "description"      $t.collection_sections_description
-  "identifier_field" `name`
-  "extension"        `yml`
-  "folder"           `data/section`
-  "create"           true
-  "slug"             "{{fields.name}}"
-  "summary"          "{{name}}"
-  "sortable_fields"  (dict "fields" (slice "commit_date" "name" "id"))
-  "editor"           (dict "preview" false)
-  "fields"           `~sections_fields`
-) }}
+{{ $colections = $colections | append (dict "divider" true) }}
 
 
 {{/*  TYPES  */}}
@@ -262,29 +249,47 @@
   "create"           true
   "slug"             "{{fields.title}}"
   "summary"          "{{title}}"
-  "sortable_fields"  (dict "fields" (slice "title" "weight"))
+  "sortable_fields"  (dict
+    "fields" (slice "title" "weight")
+    "default" (dict
+      "field"     "weight"
+      "direction" "ascending"
+    )
+  )
   "editor"           (dict "preview" false)
   "fields"           `~types_fields`
 ) }}
 
 
-{{/*  VALUES  */}}
+{{/*  SECTIONS  */}}
 {{ $colections = $colections | append (dict
-  "label"            $t.collection_values
-  "name"             `values`
-  "icon"             site.Data.utilities.defaults.values.icon
-  "description"      $t.collection_values_description
-  "identifier_field" "{{slug}}"
+  "label"            $t.collection_sections
+  "label_singular"   $t.collection_sections_singular
+  "name"             `section`
+  "icon"             site.Data.utilities.defaults.section.icon
+  "description"      $t.collection_sections_description
+  "identifier_field" `name`
   "extension"        `yml`
-  "folder"           `content`
-  "create"           false
-  "i18n"             $i18n
+  "folder"           `data/section`
+  "create"           true
+  "slug"             "{{fields.name}}"
+  "summary"          "{{name}}"
+  "thumbnail"        (slice `img` `image` `vid` `video`)
+  "sortable_fields"  (dict
+    "fields"  (slice "commit_date" "name" "id")
+    "default" (dict
+      "field"     "name"
+      "direction" "ascending"
+    )
+  )
   "editor"           (dict "preview" false)
-  "fields"           `~values_fields`
+  "fields"           `~sections_fields`
 ) }}
 
 
 {{/*  SETTINGS  */}}
+{{/*
+{{ $colections = $colections | append (dict "divider" true) }}
 {{ $default   := site.Data.utilities.defaults }}
 {{ $colections = $colections | append  (dict
   "label"           $t.collection_settings
@@ -300,5 +305,7 @@
     (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "icon" $default.robots.icon    "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "label" `robots.txt` "hint" $t.robots_hint))))
   )
 ) }}
+*/}}
+
 
 {{ return $colections }}

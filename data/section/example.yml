@@ -5,7 +5,7 @@ id: seccion
 ## menu
 menu_label: Texto del enlace del Menú
 menu_button: cta # [ main, cta, alt, light, dark, invert, similar, none, hide ]
-menu_swap: true
+menu_swap: y
 # bg
 color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
@@ -17,14 +17,14 @@ parallax: soft # [ none, fix, soft ]
 # paddings
 pt: 5 # [ >= 0.00 ]
 pb: 5 # [ >= 0.00 ]
-ph: false
+ph: n
 # size
-full: true
+full: y
 size: sm # [ xs, sm, md, lg, xl, fluid ]
 # divider
 div: wavy-op
-div_x: true
-div_y: true
+div_x: y
+div_y: y
 
 
 ## CONTAINER (BOX_BASE)
@@ -36,8 +36,8 @@ subtitle: Subtítulo de Sección
 price: 22 €
 hn: '' # [ 1 - 6, p ]
 hs: '' # [ 0 - 6 ]
-caps: true
-line: true
+caps: y
+line: y
 # md
 md: |
   Contenido de [Sección](#seccion)
@@ -46,11 +46,11 @@ md: |
   [[::link:: Botón sin anchor ::link::]](#seccion "[dark]")
 md_align: center # [ left, center, right ]
 md_align_vl: center # [ left, center, right ]
-md_sm: false
+md_sm: n
 md_caps: 3 # [ 1 - 6 ]
 md_line: 2 # [ 1 - 6 ]
-md_index: false
-md_nav: false
+md_index: n
+md_nav: n
 md_border: hide # [ main, cta, alt, light, dark, invert, similar, hide ]
 # icon
 # icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
@@ -63,21 +63,21 @@ hover: base/poster.png
 alt: Descripción de la imagen
 hover_alt: Descripción de la imagen hover
 ratio: 1/1 # [ int/int ]
-circle: true
-contain: false
+circle: y
+contain: n
 border: main # [ main, cta, alt, light, dark, invert, similar, hide ]
-inset: true
-gray: false
-shade: false
+inset: y
+gray: n
+shade: n
 # button
 link: /legal/
 pin: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 label: Legal
 anchor: Aviso Legal
-lock: false
+lock: n
 button: none # [ main, cta, alt, light, dark, invert, similar, none, hide ]
-swap: true
-ga4: false
+swap: y
+ga4: n
 # container
 box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
 box_color_alpha: '' # [ 0.00 - 1.00 ]
@@ -93,10 +93,10 @@ pd: null # [ >= 0.00 ]
 align: left # [ left, center, right ]
 align_vl: center # [ left, center, right ]
 side: right # [ left, center, right ]
-hide_shadow: true
-hide_radius: true
-pill: false
-card: false
+hide_shadow: y
+hide_radius: y
+pill: n
+card: n
 # other
 if: '' # [ 'param name', body, related ]
 node: aside # [ section, header, footer, nav, article, aside, div ]
@@ -157,9 +157,9 @@ box:
   gap_ny: null # [ >= 0.00 ]
   to: right # [ right, left, top, bottom ]
   duo: null # [ 1, 2 ]
-  sides: false
-  group_radius: false
-  slider: true
+  sides: n
+  group_radius: n
+  slider: y
   time: 5
   pips: '' # [ line, dot, hide ]
   arrows: '' # [ bottom, float, hide ]
@@ -178,7 +178,7 @@ boxes:
   order: -1 # [ int ]
   fit: 2 # [ > 0.00 ]
   fit_vs: 1 # [ > 0.00 ]
-  grow: false
+  grow: n
   align_y: stretch # [ stretch, top, center, bottom ]
   # + view
   view: [] # [ all, titles, md, icon, image, button, bg, boxi-boxes, boxi, others, list, steps, accordion, gallery, reviews, contact, form, map, gss, boxes ]
@@ -210,8 +210,8 @@ boxes:
     icon_size: 0 # [ 0 = auto, > 0.00 ]
     hn: '' # [ 1 - 6, p ]
     hs: '' # [ 0 - 6 ]
-    caps: true
-    line: true
+    caps: y
+    line: y
   steps:
   - title: Título de Paso 1
     subtitle: Subtítulo de Paso 1
@@ -232,17 +232,17 @@ boxes:
     color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
     gap: 0 # [ >= 0.00 ]
     ratio: 1/1 # [ int/int ]
-    contain: true
-    gray: true
+    contain: y
+    gray: y
     alt: Alt prefix in each image + index
     link: /pagina-ejemplo/
     pin: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: Ejemplo
     anchor: Jeje
-    lock: false
+    lock: n
     button: none # [ main, cta, alt, light, dark, invert, similar, none ]
-    swap: true
-    ga4: false
+    swap: y
+    ga4: n
   images:
   - https://images.unsplash.com/photo-1552664730-d307ca884978?fit=crop&w=512&q=60
   - https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?fit=crop&w=512&q=60
@@ -264,12 +264,12 @@ boxes:
 
 - accordion:
     button: '' # [ main, cta, alt, light, dark, invert, similar, none ]
-    swap: false
+    swap: n
     pin: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     hn: '' # [ 1 - 6, p ]
     hs: '' # [ 1 - 6 ]
-    headers: true
-    open: true
+    headers: y
+    open: y
   accordions:
   - icon: question # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     title: Título Desplegable 1
@@ -293,8 +293,8 @@ boxes:
     fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
     fade_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
     alpha: .5 # [ 0.00 - 1.00 ]
-    hide_shadow: true
-    slider: true
+    hide_shadow: y
+    slider: y
     time: 2
     pips: '' # [ line, dot, hide ]
     arrows: '' # [ bottom, float, hide ]
@@ -327,36 +327,36 @@ boxes:
   - link: https://mastersoflol.com/collections/quantumfracture?YTC
     icon: star
     label: Holi!
-    ga4: true
+    ga4: y
 - contact:
   - type: schedule
     days: Días
     hours: Horas
-    full: false
+    full: n
   - type: br
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
-    full: false
+    full: n
     button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
-    swap: false
+    swap: n
   - type: whatsapp
     label: 123456789
-    full: false
+    full: n
     button: whatsapp # [ main, cta, alt, light, dark, invert, similar, none ]
-    swap: false
+    swap: n
   - type: mail
     label: ejemplo@gmail.com
-    full: false
+    full: n
     button: button
-    swap: false
+    swap: n
   - type: address
     label: Calle País de Nunca Jamás, 42, 30000 Murcia
     anchor: Molando Ando, Calle País de Nunca Jamás, 42, 30000 Murcia, España
     geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
     zoom: 6
-    full: true
+    full: y
     button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
-    swap: false
+    swap: n
   - type: h2
     label: Encabezado h2
   - type: h3
@@ -371,12 +371,12 @@ boxes:
     link: '#principal'
     icon: logout
     label: Personalizado
-    full: true
+    full: y
     anchor: Mola Mazo
-    lock: false
+    lock: n
     button: light # [ main, cta, alt, light, dark, invert, similar, none ]
-    swap: false
-    ga4: false
+    swap: n
+    ga4: n
   - type: hr
 
 ###
@@ -387,20 +387,20 @@ boxes:
     to: '#gracias'
     subject: ''
     email: info@example.com
-    labels_out: true
-    fill: false
-    full: false
+    labels_out: y
+    fill: n
+    full: n
     icon: none # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: ¡Dale!
     button: alt
-    swap: true
+    swap: y
     consent: Consiento el tratamiento de mis datos. [Leer más...](#holi)
   inputs:
   - type: text
     name: Text
     label: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
-    required: false
+    required: n
     required_if: null # string of names separated of '||' or '&&'
     show_if: null # string of names separated of '||' or '&&'
     regex: '[^∑]*'
@@ -411,7 +411,7 @@ boxes:
   - type: email
     name: Email
     label: Correo
-    required: false
+    required: n
     required_if: Text
     regex: null # regex pattern
     min: 0
@@ -420,7 +420,7 @@ boxes:
   - type: tel
     name: Tel
     label: Teléfono
-    required: false
+    required: n
     show_if: Text||Email
     regex: null # regex pattern
     min: 0
@@ -429,7 +429,7 @@ boxes:
   - type: number
     name: Number
     label: Número
-    required: false
+    required: n
     show_if: Text&&Email
     min: 1
     max: 10
@@ -437,34 +437,34 @@ boxes:
   - type: date
     name: Date
     label: Fecha
-    required: false
+    required: n
     icon: calendar_today
   - type: time
     name: Time
     label: Tiempo
-    required: false
+    required: n
     icon: schedule
   - type: textarea
     name: Textarea
     label: Mensaje
-    required: false
+    required: n
     min: 0
     max: 155
     icon: chat_bubble
   - type: geo
     name: mapa
     label: HOLI
-    area: true
+    area: y
     color: cta
     view: '{"type":"Point","coordinates":[40.46367, -3.74922]}'
     zoom: 4
     tile: hybrid # [ streets, terrain, satellite, hybrid ]
-    required: true
+    required: y
     icon: beenhere
   - type: hidden
     name: Hidden
     label: Oculto
-    required: false
+    required: n
   - type: h3
     label: Encabezado
   - type: md
@@ -473,7 +473,7 @@ boxes:
     name: Select
     label: Seleción
     icon: verified
-    required: true
+    required: y
     options:
     - option: Seleción Opción 1
       value: Seleción Valor 1
@@ -484,8 +484,8 @@ boxes:
   - type: radio
     name: Radio
     label: Radios
-    required: true
-    x: false
+    required: y
+    x: n
     icon: check_circle
     options:
     - option: Radio Opción 1
@@ -497,8 +497,8 @@ boxes:
   - type: checkbox
     name: Checkbox
     label: Checkboxes
-    required: true
-    x: true
+    required: y
+    x: y
     icon: check_box
     options:
     - option: Checkbox Opción 1
@@ -513,9 +513,9 @@ boxes:
     accept: image/*,application/pdf
     # accept: .pdf,.png,.jpg,.jpeg
     max: 3 # [ >= 0.00 ]
-    required: true
+    required: y
     button: alt
-    swap: true
+    swap: y
     icon: upload
 
 ###
