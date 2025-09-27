@@ -62,16 +62,6 @@
   "base_url" `https://sveltia-cms-auth.sansoul.workers.dev`
   "skip_ci"  true
 -}}
-{{- if getenv "NETLIFY" -}}
-  {{/*  EMAIL+PASS LOGIN WITH NETLIFY IDENTITY  */}}
-  {{/*  https://decapcms.org/docs/git-gateway-backend/  */}}
-  {{- $backend = dict
-    "name"        `git-gateway`
-    "branch"      `main`
-    "site_domain" site.Params.domain
-    "skip_ci"     true
-  -}}
-{{- end -}}
 
 
 {{ $cms_config := dict
