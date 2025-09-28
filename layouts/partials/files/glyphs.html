@@ -1,7 +1,8 @@
 {{ if hugo.IsProduction }}
   {{ $icons := hugo.Store.Get "glyphs" | uniq | sort }}
-  {{ $icons  = delimit $icons "," | replaceRE `-` "_" | urlquery }}
+  {{ $icons  = delimit $icons "," | replaceRE `-` "_" }}
   {{ with site.Data.styles.icons }}
+    {{ $hash  := md5 $icons }}
     {{ $grade := cond (and .fill (not .grade)) -25 .grade }}
     {{/*  URL  */}}
     {{ $url := print
@@ -9,6 +10,8 @@
       "?family=Material+Symbols+" (strings.FirstUpper .style)
       ":opsz,wght,FILL,GRAD@" .optical "," .weight "," (int .fill) "," (int $grade)
       "&icon_names=" $icons
+      "&v=" $hash
+      | urlquery
     }}
     {{/*  Get remote CSS  */}}
     {{ $ua      := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" }}
