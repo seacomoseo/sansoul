@@ -196,7 +196,6 @@ elif [ $1 = hugo-production ]; then
   sh do prebuild
 
   hecho "COPY FILES FROM SANSOUL TO PROJECT"
-  cp ./themes/sansoul/package.json ./
   cp ./themes/sansoul/postcss.config.js ./
 
   hecho "RUN HUGO PRODUCTION"
