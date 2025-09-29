@@ -7,17 +7,31 @@
 {{ end }}
 */}}
 
-{{ if and .IsHome (eq site.Language.Weight 1) }}
-  {{/*  {{ if hugo.Store.Get "is-not-once" | not }}  */}}
-    {{/*  {{ hugo.Store.Set "is-not-once" true   }}  */}}
+{{/* Only in home page in the main language */}}
+{{ if and page.IsHome (eq site.Language.Weight 1) }}
+  {{ if eq . "init" }}
+    {{/* Initialize stores */}}
     {{ $now := now.Format "20060102150405"  }}
     {{ hugo.Store.Set "timestamp"    $now   }}
-    {{ hugo.Store.Set "pages-count"  0      }}
     {{ hugo.Store.Set "glyphs"       slice  }}
     {{ hugo.Store.Set "svgs"         slice  }}
     {{ hugo.Store.Set "brands"       slice  }}
     {{ hugo.Store.Set "divs"         slice  }}
     {{ partial "functions/fonts-to-store" . }}
-  {{/*  {{ end }}  */}}
+  {{ else if eq . "end" }}
+    {{/* Force render of every page to stabilize hugo.Store before reading it */}}
+    {{ range site.Sites }}
+      {{ range .RegularPages }}
+        {{ $noop := .Content }}
+      {{ end }}
+    {{ end }}
+    {{/* Generate static files from partials */}}
+    {{ partial "files/statics" page }}
+    {{ partial "files/fonts"   page }}
+    {{ partial "files/pdfs"    page }}
+    {{ partial "files/images"  page }}
+    {{ partial "files/draws"   page }}
+    {{ partial "files/glyphs"  page }}
+  {{ end }}
 {{ end }}
 {{ return "" }}

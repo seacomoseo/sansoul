@@ -1,9 +1,5 @@
 {{ if hugo.IsProduction | and site.Data.config.others.process_all_images }}
-  {{ $ext := slice "jpeg" "jpg" "png" "gif" "webp" "avif" "svg" }}
-  {{ $ext  = dict "ext" $ext }}
-  {{ $images := partial "functions/media-files" $ext }}
-  {{ range $images }}
-    {{ $image := resources.Get . }}
+  {{ range resources.Match "assets/media/**/*.{jpeg,jpg,png,gif,webp,avif,svg}" }}
     {{/*  IF THUMBNAILS  */}}
     {{/*
       {{ if .Name | findRE `\.svg$` }}
@@ -13,7 +9,7 @@
       {{ end }}
     */}}
     {{/*  ELSE  */}}
-    {{ $image  = $image.RelPermalink }}
+    {{ .Publish }}
   {{ end }}
 {{ end }}
 {{ return "" }}

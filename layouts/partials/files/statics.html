@@ -12,10 +12,8 @@
     (dict "partial" `cms/index` "path" "/admin/index.html")
   }}
 {{ end }}
-{{ $site := index site.Sites 0 }}
-{{ $page := $site.Home }}
 {{ range $resources }}
-  {{ $string   := partial .partial $page | string }}
+  {{ $string   := partial .partial . | string }}
   {{ $resource := resources.FromString .path $string }}
   {{ $resource.Publish }}
 {{ end }}
