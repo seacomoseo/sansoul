@@ -1,5 +1,6 @@
 {{ $vars := dict }}
 {{ with site.Data.styles }}
+  {{ $icons_grade := cond (and .icons.fill (not .icons.grade)) -25 .icons.grade }}
   {{ $vars = dict
     "fonts-css"                         (hugo.Store.Get "fonts_css" | default "")
 
@@ -71,7 +72,7 @@
 
     "styles-icons-fill"                 (.icons.fill                      | not | not | int)
     "styles-icons-weight"               (.icons.weight                    | default 400)
-    "styles-icons-grade"                (.icons.grade                     | default 0)
+    "styles-icons-grade"                ($icons_grade                     | default 0)
     "styles-icons-optical"              (.icons.optical                   | default 24)
     "styles-icons-style"                (.icons.style                     | default "outlined")
 
