@@ -55,7 +55,7 @@ elif [ $1 = sdu ]; then
 
 # Update version
 elif [ $1 = update ]; then
-  python3 ../_tools/updater/index.js
+  node ../_tools/updater/index.js
 
 # Normalize yaml and markdown files
 elif [ $1 = normalize ]; then
