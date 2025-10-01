@@ -3,27 +3,6 @@
 {{ $widgets_last := apply site.Data.utilities.widgets "dict" "value" "." }}
 {{ $widgets_last  = where $widgets_last "value" "not in" (slice "object" "list") }}
 {{ $widgets_last  = apply $widgets_last "index" "." "value" }}
-{{ $type_langs   := slice }}
-{{ range site.Languages }}
-  {{ $label      := print $t.types_lang " " (index $t (print "option-langs-" .Lang)) }}
-  {{ $type_lang  := partial "cms/widget" (dict "<<" `types_items` "name" .Lang "label" $label) }}
-  {{ $type_langs  = $type_langs | append $type_lang }}
-{{ end }}
-{{ $type_langs_fields := slice
-  `~types_title`
-  `~types_weight`
-  `~types_base`
-  `~types_hint`
-  `~box_icon_id`
-  `~types_emoji`
-  `~types_disabled`
-  `~page_noindex`
-  `~page_noindex_parent`
-  `~types_related`
-  `~types_taxonomy_of`
-  `~types_params`
-  `~types_template`
-}}
 {{ $params_fields := slice
   `~types_params_var`
   `~types_params_name`
@@ -93,23 +72,6 @@
     "fields"  ($params_fields | append `~types_params_pages` | append `~types_params_2`)
   ))
 
-  (partial "cms/widget" (dict
-    "var"    `types_items`
-    "name"   `lang`
-    "widget" `object`
-    "i18n"   true
-    "fields" (slice
-      (partial "cms/widget" (dict "alt" `types_permalinks`  "name" `permalinks`                       ))
-      (partial "cms/widget" (dict "<<" `page_slug`          "required" false "hint" $t.types_slug_hint))
-      (partial "cms/widget" (dict "label" $t.types_singular "name" `singular`                         ))
-      (partial "cms/widget" (dict "<<" `page_title`         "required" false                          ))
-      `~page_image`
-      `~page_title_seo`
-      `~page_description`
-      (partial "cms/widget" (dict "<<" `page_body`           "name" `md`                              ))
-    )
-  ))
-
   (partial "cms/widget" (dict "var" `types_title`    "name" `title`                      "hint" (print $t.types_title_hint " → **article, new, blog, event, product, category, brand, supplier, manufacturer, author, org, service, page, section**")))
   (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `int`    "min" 0                  ))
   (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "options" `~options_base`))
@@ -145,6 +107,19 @@
     )
   ))
 
-  (dict "&types_fields" ($type_langs_fields | append $type_langs))
+  (dict "&types_fields" (slice
+  `~types_title`
+  `~types_weight`
+  `~types_base`
+  `~types_hint`
+  `~box_icon_id`
+  `~types_emoji`
+  `~types_disabled`
+  `~page_noindex`
+  `~types_related`
+  `~types_taxonomy_of`
+  `~types_params`
+  `~types_template`
+  ))
 
 }}

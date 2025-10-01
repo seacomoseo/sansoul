@@ -50,7 +50,7 @@
   {{ end }}
 {{ else if eq "image" $widget }}
   {{ if not $o.allow_input }}
-    {{ $o = merge $o (dict "max_file_size" 512000000 "choose_url" true) }}
+    {{ $o = merge $o (dict "widget" `file` "max_file_size" 512000000 "choose_url" true "accept" `image/*,video/*`) }}
   {{ end }}
 {{ else if eq "int" $widget }}
   {{ if not $o.value_type }}

@@ -1,0 +1,22 @@
+{{ return dict
+  "&customs" (slice
+    (partial "cms/widget" (dict
+      "alt"     `customs`
+      "name"    `params`
+      "widget"  `list`
+      "summary" "{{fields.label}} ({{fields.name}})"
+      "root"    true
+      "fields"  (slice
+        `~types_params_var`
+        `~types_params_name`
+        `~types_params_label`
+        `~types_params_hint`
+        `~types_params_widget`
+        `~types_params_options`
+        `~types_params_default`
+        `~types_params_multiple`
+        `~types_params_2`
+      )
+    ))
+  )
+}}

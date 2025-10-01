@@ -1,7 +1,7 @@
 {{ $config   := site.Data.config }}
 {{ $lang_cms := partial "functions/lang-cms" . }}
 {{ $locales  := slice }}
-{{ with $config.langs }}
+{{ with site.Data.langs }}
   {{ range . }}
     {{ $locales = $locales | append .lang }}
   {{ end }}
@@ -10,17 +10,20 @@
 
 {{/*  YAML ANCHORS  */}}
 {{ $anchors := slice
-  | append (partial "cms/config/options" .)
-  | append (partial "cms/config/boxes" .)
-  | append (partial "cms/config/blocks" .)
-  | append (partial "cms/config/sections" .)
-  | append (partial "cms/config/templates" .)
-  | append (partial "cms/config/pages" .)
-  | append (partial "cms/config/types" .)
-  | append (partial "cms/config/settings/config" .)
-  | append (partial "cms/config/settings/styles" .)
-  | append (partial "cms/config/settings/remote" .)
-  | append (partial "cms/config/settings/values" .)
+  | append (partial "cms/config/options"               .)
+  | append (partial "cms/config/boxes"                 .)
+  | append (partial "cms/config/blocks"                .)
+  | append (partial "cms/config/collections/sections"  .)
+  | append (partial "cms/config/collections/templates" .)
+  | append (partial "cms/config/collections/pages"     .)
+  | append (partial "cms/config/collections/types"     .)
+  | append (partial "cms/config/singletons/config"     .)
+  | append (partial "cms/config/singletons/langs"      .)
+  | append (partial "cms/config/singletons/customs"    .)
+  | append (partial "cms/config/singletons/defaults"   .)
+  | append (partial "cms/config/singletons/styles"     .)
+  | append (partial "cms/config/singletons/remote"     .)
+  | append (partial "cms/config/singletons/values"     .)
 }}
 
 
@@ -30,10 +33,10 @@
 {{- if getenv "NETLIFY" -}}
   {{ $domain       = ".netlify.app/" }}
 {{- end -}}
-{{ if $config.cms.editorial }}
+{{ if $config.cms_editorial }}
   {{ $site_url   = print "https://" site.Params.name $domain }}
   {{ $publish_mode = "editorial_workflow" }}
-{{ else if $config.others.development }}
+{{ else if $config.development }}
   {{ $site_url     = print "https://" site.Params.name $domain }}
 {{ else }}
   {{ $site_url     = site.Home.Permalink }}
@@ -42,7 +45,7 @@
 
 {{/*  LOGO  */}}
 {{ $logo := "" }}
-{{ with index $config "cms" "logo" }}
+{{ with $config.cms_logo }}
   {{ $path := print "/media/" . }}
   {{ with resources.Get $path }}
     {{ $logo = .RelPermalink }}
@@ -106,26 +109,13 @@
     "omit_empty_optional_fields" true
     "encode_file_path"           true
     "yaml"                       (dict
-      "quote"           `none`
-      "indent_size"     2
-      "parseOptions"    (dict
-        "simpleKeys" true
-      )
-      "documentOptions" (dict
-        "simpleKeys" true
-      )
-      "toStringOptions" (dict
-        "simpleKeys"  true
-        "singleQuote" true
-        "blockQuote"  `literal`
-        "lineWidth"   0
-        "indent"      2
-        "indentSeq"   false
-      )
+      "quote"            `none`
+      "indent_size"      2
+      "indent_sequences" false
     )
   )
-  "collections"     (partial "cms/config/collections" .)
-  "singletons"      (partial "cms/config/singletons" .)
+  "collections"     (partial "cms/config/collections/_" .)
+  "singletons"      (partial "cms/config/singletons/_" .)
 }}
 {{ with $publish_mode }}
   {{ $cms_config = merge $cms_config (dict "publish_mode" .) }}

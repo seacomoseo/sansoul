@@ -54,11 +54,6 @@ types_params_schema: Schema
 types_template: Template
 types_template_hint: Template for pages of this type (values override those of the general template)
 types_template_single_hint: Template for this page only (values overwrite those of the general template)
-types_lang: Texts
-types_permalinks: Permalinks
-types_permalinks_hint: This is the base of the URLs or links for pages of this type <br> **Example →** "categories" will show "https://example.com/categories/[slug]/"
-types_slug_hint: This is the end of the URL or link for the parent page of this type <br> **Example →** "category" will show "https://example.com/category/"
-types_singular: Singular Title
 # collections > types > template
 template: General Template
 template_hint: Common template for all pages (page-specific values, custom or not, with their own template override these)
@@ -89,8 +84,127 @@ template_sections_file: File
 template_sections_file_hint: Previously created section
 template_list: Lists
 template_related: Related Lists
-# collections > singletones
-# collections > singletones > values
+# collections > page
+# collections > page > index
+index_permalinks: Permalinks
+index_permalinks_hint: This is the base of the URLs or links for pages of this type <br> **Example →** "categories" will show "https://example.com/categories/[slug]/"
+index_slug_hint: It is the end of the URL or link of this index page <br> **Example →** "category" will show "https://example.com/category/"
+index_singular: Singular Title
+# collections > page > common
+page_index: Index
+page_slug: Slug
+page_slug_hint: It's the end of the URL or link for this page <br> It must be unique (not repeated) among all pages, short, descriptive, and without irrelevant words (of, by, for, the…) <br> **Example →** For the title "*Morning Walk in the New Neighborhood*" the slug could be "*morning-walk-new-neighborhood*"
+page_title: Title
+page_title_hint: '**Example →** "Day walking in the new neighborhood"'
+page_summary: Summary
+page_summary_hint: Used for list thumbnails <br> If not specified, approximately the first 15 words or 155 characters of the content are taken
+page_image: Main Image
+page_weight: Order
+page_weight_hint: Order in which the page will appear in the listings
+page_related: Related
+page_related_hint: Manually selected or automatically added
+page_toc: Index
+page_toc_hint: Automatically generated table of contents using content headers
+page_draft: Draft
+page_draft_hint: The page no longer exists, you can only see it in the editor
+page_hide: Hide
+page_hide_hint: Hides the page from the listings and the sitemap, but it is still accessible via its URL
+page_noindex: No Index
+page_noindex_hint: Prevents Google from indexing the page (recommended if all content is copied from another website)
+page_seo: SEO Title
+page_seo_hint: Used for Google search results <br> **Recommended between 40 and 65 characters** (~60) <br> Eye-catching characters allowed by Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+page_description: SEO Description
+page_description_hint: Used for Google search results <br> **Recommended between 70 and 155 characters** (~135) <br> Eye-catching characters allowed by Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+page_body: Content
+page_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" or "**dot**", separate with any character if multiple words are added) <br> These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**blank**" (opens in new window) and "**ga4**" (registers key event in GA4) <br> Icons can be added using, wrapped in "**::**" characters, one of the following valid names → [Material Symbols](https://fonts.google.com/icons)
+page_base: Base
+page_base_hint: Determines the structured data markup this page will use (useful for SEO)
+# collections > page > article + event
+page_date: Date
+page_lastmod: Last Modified
+# collections > page > event
+page_end: End Date
+page_cancelled: Canceled
+page_artists: Artist(s)
+page_artists_singular: Name
+page_artists_name_hint: '**Example →** "Manolo García"'
+page_artists_group: Is it a Group?
+# collections > page > author
+page_prefix: Honorific prefix
+page_alts: Alternate Names
+page_alts_singular: Alternate Name
+page_job: Job Titles
+page_job_singular: Job Title
+page_job_hint: '**Example →** "Specialist Podiatrist"'
+page_orgs: Works for...
+page_orgs_hint: Organizations you work for
+page_orgs_name: Nombre de la Organización
+page_creds: Credentials
+page_creds_singular: Credential Title
+page_creds_name: Title Name
+page_creds_category: Category
+page_creds_category_hint: '**Examples →** "Degree", "Course", "Master", "PhD", "Specialist", "Certification", "Diploma", "Bachelor"…'
+page_creds_org: Organization Name
+# collections > page > service
+page_service_types: Service Types
+page_service_types_singular: Service Type
+# collections > page > organization
+page_org: Organization
+page_org_types: Business Type
+page_org_names: Names
+page_org_names_singular: Name
+page_org_names_hint: Names and Variants of the Business / Project
+page_org_description: Description
+page_org_legal: Legal Name
+page_org_nif: NIF / DNI
+page_org_email: Legal Email
+page_org_logo: Logo
+page_images: Images
+page_as: Reference Links
+page_as_singular: Reference Link
+page_as_hint: Links to social media and other references
+page_org_phones: Phones
+page_org_phones_singular: Phone
+page_address: Address
+page_address_name: Name in Google Maps
+page_address_street: Street
+page_address_pc: Postal Code
+page_address_locality: Locality
+page_address_region: Region
+page_address_country: Country
+page_address_country_hint: 2-letter country code
+page_address_geo: Coordinates
+page_address_link: Map Link
+page_address_legal: Legal
+page_areas: Service Areas
+page_areas_singular: Service Area
+page_org_schedule: Schedules
+page_org_schedule_singular: Schedule
+page_org_schedule_days: Days of the Week
+page_org_schedule_days_mon: Monday
+page_org_schedule_days_tue: Tuesday
+page_org_schedule_days_wed: Wednesday
+page_org_schedule_days_thu: Thursday
+page_org_schedule_days_fri: Friday
+page_org_schedule_days_sat: Saturday
+page_org_schedule_days_sun: Sunday
+page_org_schedule_hours: Hours
+page_org_schedule_hours_open: Opening
+page_org_schedule_hours_close: Closing
+page_org_schedule_from: Valid From
+page_org_schedule_to: Valid Until
+page_org_prices: Price Range
+page_org_services: Services
+page_org_services_singular: Service
+page_org_food_menu: Food Menus
+page_org_food_menu_singular: Food Menu
+page_org_food_menu_hint: Links to menu cards (only for food establishments)
+page_org_food_type: Food Types
+page_org_food_type_singular: Food Type
+page_org_food_type_hint: Examples → Italian, Mexican, Gaditan… (only for food establishments)
+page_org_departs: Departments
+page_org_departs_singular: Department
+# singletones > values
 values: Global Values
 values_description: Custom Menu, Corner Buttons, and Global Values that are used in templates and/or as translations.
 values_menu_image: Logo Image
@@ -101,17 +215,8 @@ values_menu_items_singular: Item
 values_menu_subitems: Sub-items
 values_menu_subitems_singular: Sub-item
 values_callnows_singular: Button
-# collections > singletones > config
+# singletones > config
 config: Configuration
-config_langs: Languages
-config_langs_hint: The 1st is considered the primary and its values are taken as defaults for the rest of the languages
-config_langs_singular: Language
-config_lang: Language
-config_lang_disabled: Disabled
-config_title: Title
-config_description: Description
-config_email: Emails
-config_email_hint: Emails separated by commas to whom the message will reach
 config_google_analytics: Analytics Code
 config_google_analytics_hint: 'Google Analytics tracking code <br> **Example →** G-XXXXXXXXXX'
 config_google_site_verification: Search Console Code
@@ -122,52 +227,50 @@ config_google_translate: Google Translator
 config_google_translate_hint: Adds a link in the menu that directly takes you to the site via Google Translate
 config_disqus: Disqus
 config_disqus_hint: Short name of the disqus.com comment system
-config_main_org: Main Organization Page
-config_main_org_hint: Internal route to the page <br> **Example →** supplier/example
+config_email: Emails
+config_email_hint: Emails separated by commas to whom the message will reach
 config_phone_code: Country Phone Code
 config_time_zone: Time Zone
 config_currency: Currency
-config_pagination: Pagination Permalink
-config_pagination_hint: Example → "page" will show "https://example.com/page/[n]/"
+config_main_org: Main Organization Page
+config_main_org_hint: Internal route to the page <br> **Example →** supplier/example
 config_html: Custom HTML
 config_html_head: Before </head>
 config_html_body: Before </body>
-config_params: Custom Global Parameters
-config_params_singular: Custom Global Parameter
-config_defaults: Default Values
-config_defaults_hint: Default Params Values
-config_defaults_singular: Value
-config_defaults_value: Value
-config_defaults_type: Type of Value
-config_defaults_kind: Kinds of Page
-config_defaults_lang: Languages
-config_defaults_path: Glob Paths
-config_defaults_path_singular: Glob Path
-config_cms: CMS (Admin Panel)
-config_cms_logo: Logo
-config_cms_lang: Language
-config_cms_editorial: Editorial Workflow
+config_cms_logo: CMS Logo
+config_cms_lang: CMS Language
+config_cms_editorial: CMS Editorial Workflow
 config_cms_editorial_hint: Allows working with preview modes during development without affecting production content (until changes are published)
-config_others: Advanced
-config_others_favicon: Favicon
-config_others_favicon_hint: Thumbnail icon representative of the website (recommended in SVG format)
-config_others_lang_default_subdir: Main Language in Subfolder
-config_others_cookies_advanced: Advanced Cookies
-config_others_cookies_advanced_hint: The Cookies message allows the user to choose options
-config_others_cookies_legal: Legal Cookies
-config_others_cookies_legal_hint: Enforces the cookie policy
-config_others_analytics_pagespeed_disabled: Analytics Disabled for PageSpeed
-config_others_analytics_pagespeed_disabled_hint: Disables Google Analytics only for [PageSpeed Insights](https://pagespeed.web.dev/)
-config_others_process_all_images: Process All Images
-config_others_process_all_images_hint: Makes all gallery images available even if they are not used on any page
-config_others_development: Development Mode
-config_others_development_hint: Speeds up development deployments and worsens loading speed for users
-config_others_show: Show Effect
-config_others_show_hint: Enable the pop-up effect when scrolling all elements (slows down performance on less powerful devices)
-config_others_webp: Images in WEBP format
-config_others_webp_hint: Compress Images in WEBP format instead of AVIF (improves loading speed at the expense of increased compilation time)
-config_others_image_sizes: Image Scaling in srcset sizes
-# collections > singletones > styles
+config_favicon: Favicon
+config_favicon_hint: Thumbnail icon representative of the website (recommended in SVG format)
+config_lang_default_subdir: Main Language in Subfolder
+config_cookies_advanced: Advanced Cookies
+config_cookies_advanced_hint: The Cookies message allows the user to choose options
+config_cookies_legal: Legal Cookies
+config_cookies_legal_hint: Enforces the cookie policy
+config_analytics_pagespeed_disabled: Analytics Disabled for PageSpeed
+config_analytics_pagespeed_disabled_hint: Disables Google Analytics only for [PageSpeed Insights](https://pagespeed.web.dev/)
+config_process_all_images: Process All Images
+config_process_all_images_hint: Makes all gallery images available even if they are not used on any page
+config_development: Development Mode
+config_development_hint: Speeds up development deployments and worsens loading speed for users
+config_show: Show Effect
+config_show_hint: Enable the pop-up effect when scrolling all elements (slows down performance on less powerful devices)
+config_webp: Images in WEBP format
+config_webp_hint: Compress images in WEBP format instead of AVIF (unchecked, improves loading speed at the expense of increasing compilation time)
+config_image_sizes: Image Scaling in srcset sizes
+# singletones > langs
+langs: Languages
+langs_singular: Language
+langs_lang: Language
+langs_disabled: Disabled
+langs_title: Title
+langs_description: Description
+langs_pagination: Pagination Permalink
+langs_pagination_hint: Example → "page" will show "https://example.com/page/[n]/"
+langs_config: Configuration
+langs_config_hint: Configuration by language that overrides the general configuration
+# singletones > styles
 styles: Styles
 styles_icons: Icons
 styles_icons_fill: Fill
@@ -246,7 +349,21 @@ styles_shadow_top: Vertical Position
 styles_shadow_blur: Blur
 styles_shadow_color: Color
 styles_shadow_alpha: Transparency
-# collections > singletones > remote
+# singletones > customs
+customs: Custom
+customs_singular: Parameter
+customs_hint: Custom Global Parameters
+# singletones > defaults
+defaults: Default Values
+defaults_hint: Default Params Values
+defaults_singular: Value
+defaults_value: Value
+defaults_type: Type of Value
+defaults_kind: Kinds of Page
+defaults_lang: Languages
+defaults_path: Glob Paths
+defaults_path_singular: Glob Path
+# singletones > remote
 remote: Remote Content
 remote_singular: Remote Resource
 remote_hint: Generates content using remote resources, such as JSON, YAML, Markdown, CSV APIs…
@@ -264,121 +381,6 @@ remote_pairings_delimit: Separator
 redirects: Redirects
 redirects_hint: URL redirects → [Options](https://docs.netlify.com/routing/redirects/redirect-options/)
 robots_hint: Tutorial → [Robots.txt file guide](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
-# main-page-params
-page_slug: Slug
-page_slug_hint: It's the end of the URL or link for this page <br> It must be unique (not repeated) among all pages, short, descriptive, and without irrelevant words (of, by, for, the…) <br> **Example →** For the title "*Morning Walk in the New Neighborhood*" the slug could be "*morning-walk-new-neighborhood*"
-page_title: Title
-page_title_hint: '**Example →** "Day walking in the new neighborhood"'
-page_summary: Summary
-page_summary_hint: Used for list thumbnails <br> If not specified, approximately the first 15 words or 155 characters of the content are taken
-page_image: Main Image
-page_image_hint: File name with the same format as "slug" <br> Recommended to resize ([online editor](https://photopea.com)) and compress ([online compressor](https://kraken.io)) before uploading
-page_weight: Order
-page_weight_hint: Order in which the page will appear in the listings
-page_related: Related
-page_related_hint: Manually selected or automatically added
-page_toc: Index
-page_toc_hint: Automatically generated table of contents using content headers
-page_draft: Draft
-page_draft_hint: The page no longer exists, you can only see it in the editor
-page_hide: Hide
-page_hide_hint: Hides the page from the listings and the sitemap, but it is still accessible via its URL
-page_noindex: No Index
-page_noindex_hint: Prevents Google from indexing the page (recommended if all content is copied from another website)
-page_noindex_parent: No Index of Parent Page
-page_seo: SEO Title
-page_seo_hint: Used for Google search results <br> **Recommended between 40 and 65 characters** (~60) <br> Eye-catching characters allowed by Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
-page_description: SEO Description
-page_description_hint: Used for Google search results <br> **Recommended between 70 and 155 characters** (~135) <br> Eye-catching characters allowed by Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
-page_body: Content
-page_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" or "**dot**", separate with any character if multiple words are added) <br> These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**blank**" (opens in new window) and "**ga4**" (registers key event in GA4) <br> Icons can be added using, wrapped in "**::**" characters, one of the following valid names → [Material Symbols](https://fonts.google.com/icons)
-page_base: Base
-page_base_hint: Determines the structured data markup this page will use (useful for SEO)
-# main-page-params article + event
-page_date: Date
-page_lastmod: Last Modified
-# main-page-params event
-page_end: End Date
-page_cancelled: Canceled
-page_artists: Artist(s)
-page_artists_singular: Name
-page_artists_name_hint: '**Example →** "Manolo García"'
-page_artists_group: Is it a Group?
-# main-page-params author
-page_prefix: Honorific prefix
-page_alts: Alternate Names
-page_alts_singular: Alternate Name
-page_job: Job Titles
-page_job_singular: Job Title
-page_job_hint: '**Example →** "Specialist Podiatrist"'
-page_orgs: Works for...
-page_orgs_hint: Organizations you work for
-page_orgs_name: Nombre de la Organización
-page_creds: Credentials
-page_creds_singular: Credential Title
-page_creds_name: Title Name
-page_creds_category: Category
-page_creds_category_hint: '**Examples →** "Degree", "Course", "Master", "PhD", "Specialist", "Certification", "Diploma", "Bachelor"…'
-page_creds_org: Organization Name
-# main-page-params service
-page_service_types: Service Types
-page_service_types_singular: Service Type
-# main-page-params organization
-page_org: Organization
-page_org_types: Business Type
-page_org_names: Names
-page_org_names_singular: Name
-page_org_names_hint: Names and Variants of the Business / Project
-page_org_description: Description
-page_org_legal: Legal Name
-page_org_nif: NIF / DNI
-page_org_email: Legal Email
-page_org_logo: Logo
-page_images: Images
-page_as: Reference Links
-page_as_singular: Reference Link
-page_as_hint: Links to social media and other references
-page_org_phones: Phones
-page_org_phones_singular: Phone
-page_address: Address
-page_address_name: Name in Google Maps
-page_address_street: Street
-page_address_pc: Postal Code
-page_address_locality: Locality
-page_address_region: Region
-page_address_country: Country
-page_address_country_hint: 2-letter country code
-page_address_geo: Coordinates
-page_address_link: Map Link
-page_address_legal: Legal
-page_areas: Service Areas
-page_areas_singular: Service Area
-page_org_schedule: Schedules
-page_org_schedule_singular: Schedule
-page_org_schedule_days: Days of the Week
-page_org_schedule_days_mon: Monday
-page_org_schedule_days_tue: Tuesday
-page_org_schedule_days_wed: Wednesday
-page_org_schedule_days_thu: Thursday
-page_org_schedule_days_fri: Friday
-page_org_schedule_days_sat: Saturday
-page_org_schedule_days_sun: Sunday
-page_org_schedule_hours: Hours
-page_org_schedule_hours_open: Opening
-page_org_schedule_hours_close: Closing
-page_org_schedule_from: Valid From
-page_org_schedule_to: Valid Until
-page_org_prices: Price Range
-page_org_services: Services
-page_org_services_singular: Service
-page_org_food_menu: Food Menus
-page_org_food_menu_singular: Food Menu
-page_org_food_menu_hint: Links to menu cards (only for food establishments)
-page_org_food_type: Food Types
-page_org_food_type_singular: Food Type
-page_org_food_type_hint: Examples → Italian, Mexican, Gaditan… (only for food establishments)
-page_org_departs: Departments
-page_org_departs_singular: Department
 # boxes and sections
 box_name: Name
 box_name_hint: File name
@@ -420,7 +422,7 @@ box_icon_type_hint: Top in large size, Side next to the text, Bottom as underlin
 box_icon_size: Icon Size
 box_icon_color: Icon Color
 box_image_src: Image
-box_image_src_hint: Supports video (including YouTube and Vimeo) via URL (only the file name previously uploaded to **Media**) <br> To set the video thumbnail, upload an image with the same name as the video file but with the image extension (jpg, png, webp…) <br> If it's a video, a thumbnail image can be set by adding '#poster=image-name.jpg' to the end of the URL, or if it's internal, upload an image with the same name as the video file but with the image extension <br> Videos can autoplay muted by adding '#mute' at the end of the URL <br> Start and end marks for the video in seconds can be set by adding '#t=2,7' or '#t=2' for just the start
+box_image_src_hint: Supports video (including YouTube and Vimeo) via URL. For YouTube and Vimeo videos, a thumbnail image can be set by adding ‘#poster=image-name.jpg’ to the end of the URL. For uploaded videos, you can also upload an image from [Media](#/assets/-/all) an image with the same name as the video file but with the image extension (jpg, png, webp, etc.) <br> You can autoplay the video with the sound muted by adding ‘#mute’ to the end of the URL <br> You can set the start and end points of the video in seconds by adding ‘#t=2.7’ or ‘#t=2’ to the end of the URL for the start point only
 box_image_hover: Alternative Image
 box_image_hover_hint: Appears when hovering the cursor
 box_image_alt: Image Alternative Text
@@ -709,7 +711,7 @@ modals: Modal Windows
 modals_singular: Modal Window
 modals_hint: Sections represented as hidden modal windows that must be linked as an anchor (with a '#' before the ID, **Example →** '*#repairs-maintenance*') to be displayed; Note that in the menu they will appear as sub-items of the corresponding section
 # patterns
-pattern: Lowercase <br> No spaces (use hyphens instead) <br> No ñ (use n instead) <br> No strange characters or underscores
+pattern: Lowercase · No spaces (use hyphens instead) · Without accents · No strange characters or underscores
 # options
 option-langs-es: 🇪🇸 Spanish
 option-langs-en: 🇬🇧 English

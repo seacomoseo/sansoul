@@ -6,7 +6,7 @@
 {{ $cookies_legal       := false }}
 {{ $lang                := page.Lang }}
 
-{{ if site.Data.config.others.show }}
+{{ if site.Data.config.show }}
   {{ $is_scroll_show = true }}
 {{ end }}
 
@@ -30,7 +30,7 @@
   {{ $ga4_id = "G-XXXXXXXXXX" }}
 {{ end }}
 
-{{ with site.Data.config.others.cookies_legal }}
+{{ with site.Data.config.cookies_legal }}
   {{ $cookies_legal = true }}
 {{ end }}
 

@@ -17,11 +17,15 @@ module:
   mounts:
   - source: ../../../
     target: assets
-    includeFiles: ../../../**/_index.*.md
+    includeFiles: ../../../content/**/_index.*.md
     excludeFiles: ../../../themes
 
   - source: ../../../data/config.yml
     target: data/config.yml
+  - source: ../../../data/langs.yml
+    target: data/langs.yml
+  - source: ../../../data/defaults.yml
+    target: data/defaults.yml
   - source: ../../../data/remote.yml
     target: data/remote.yml
   - source: ../../../data/types

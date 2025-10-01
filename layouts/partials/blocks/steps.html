@@ -4,9 +4,9 @@
 {{- end -}}
 {{- $hn     := .step.hn                 | default (add .level 1) -}}
 {{- $border := print " " (.step.border  | default "alt")         -}}
-{{- $caps   := cond (not .step.caps)                   "" "caps" -}}
-{{- $line   := cond (not .step.line)                   "" "line" -}}
-{{- $show   := cond (not site.Data.config.others.show) "" " show" }}
+{{- $caps   := cond (not .step.caps)            "" "caps" -}}
+{{- $line   := cond (not .step.line)            "" "line" -}}
+{{- $show   := cond (not site.Data.config.show) "" " show" }}
 <ul class="steps box__block">
   {{- range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">

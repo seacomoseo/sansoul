@@ -1,5 +1,5 @@
 {{- with .contact -}}
-  {{- $show := cond (not site.Data.config.others.show) "" " show" }}
+  {{- $show := cond (not site.Data.config.show) "" " show" }}
   <div class="contact box__block {{- $show }}">
     {{- range . -}}
       {{- with merge (dict "button" $.button "swap" $.swap) . -}}

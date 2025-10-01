@@ -1,7 +1,7 @@
 ---
 title: Inhaltsverzeichnis
 slug: inhaltsverzeichnis
-icon: account_tree
+icon: lan
 noindex: y
 type: system
 weight: 5

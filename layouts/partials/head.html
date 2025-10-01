@@ -98,11 +98,11 @@
 {{- if hugo.IsProduction -}}
   {{- with site.Params.google_analytics -}}
     {{- $isPs := "false" -}}
-    {{- if $config.others.analytics_pagespeed_disabled -}}
+    {{- if $config.analytics_pagespeed_disabled -}}
       {{- $isPs = "${navigator.userAgent.includes('Chrome-Lighthouse')}" -}}
     {{- end -}}
     {{- $isCk := "true" -}}
-    {{- if $config.others.cookies_legal -}}
+    {{- if $config.cookies_legal -}}
       {{- $isCk = "${localStorage.controlcookieanalytics}" -}}
     {{- end }}
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>

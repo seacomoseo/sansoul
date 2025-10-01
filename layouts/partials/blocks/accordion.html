@@ -1,4 +1,4 @@
-{{- $show     := cond (not site.Data.config.others.show) "" " show" -}}
+{{- $show     := cond (not site.Data.config.show) "" " show" -}}
 {{- $button   := cond (ne .accordion.button "none") .accordion.button "" -}}
 {{- $fotn_alt := cond (not .accordion.swap) "" "button--swap" -}}
 {{- $headers  := .accordion.headers }}

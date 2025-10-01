@@ -1,5 +1,5 @@
 {{ $image_link := "" }}
-{{ if site.Data.config.others.webp }}
+{{ if site.Data.config.webp }}
   {{ $webp      := .image.Resize (print .size "x webp") }}
   {{ $webp_path := .image.RelPermalink | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
   {{ $webp       = $webp | resources.Copy $webp_path }}

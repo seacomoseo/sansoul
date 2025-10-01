@@ -1,0 +1,36 @@
+{{ return dict
+  "&langs" (slice
+    (partial "cms/widget" (dict
+      "alt"     `langs`
+      "name"    `langs`
+      "widget"  `list`
+      "summary" "{{fields.lang}}"
+      "root"    true
+      "fields"  (slice
+        (partial "cms/widget" (dict "alt" `langs_lang`        "name" `lang`        "widget" `select`  "options" `~options_langs` "dropdown_threshold" 7))
+        (partial "cms/widget" (dict "alt" `langs_disabled`    "name" `disabled`    "widget" `boolean`                                                  ))
+        (partial "cms/widget" (dict "alt" `langs_title`       "name" `title`                                                                           ))
+        (partial "cms/widget" (dict "alt" `langs_description` "name" `description` "widget" `text`                                                     ))
+        (partial "cms/widget" (dict "alt" `langs_pagination`  "name" `pagination`                                                                      ))
+        (partial "cms/widget" (dict
+          "alt"    `langs_config`
+          "name"   `config`
+          "widget" `object`
+          "fields" (slice
+            `~config_google_analytics`
+            `~config_google_site_verification`
+            `~config_google_file_verification`
+            `~config_google_translate`
+            `~config_disqus`
+            `~config_email`
+            `~config_phone_code`
+            `~config_time_zone`
+            `~config_currency`
+            `~config_main_org`
+            `~config_html`
+          )
+        ))
+      )
+    ))
+  )
+}}

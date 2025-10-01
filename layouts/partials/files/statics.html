@@ -7,7 +7,7 @@
     (dict "partial" `files/google-site-verification` "path" .)
   }}
 {{ end }}
-{{ if not site.Data.config.cms.disabled }}
+{{ if not site.Data.config.cms_disabled }}
   {{ $resources = $resources | append
     (dict "partial" `cms/index` "path" "/admin/index.html")
   }}

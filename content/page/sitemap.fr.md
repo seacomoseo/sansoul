@@ -1,7 +1,7 @@
 ---
 title: Plan du Site
 slug: plan-du-site
-icon: account_tree
+icon: lan
 noindex: y
 type: system
 weight: 5

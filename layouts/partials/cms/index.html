@@ -1,6 +1,6 @@
 {{- $t        := partial "functions/i18n-cms" . -}}
 {{- $lang_cms := partial "functions/lang-cms" . -}}
-{{- $config   := index (where site.Data.config.langs "lang" $lang_cms) 0 -}}
+{{- $config   := index (where site.Data.langs "lang" $lang_cms) 0 -}}
 {{- $netlify  := getenv "NETLIFY" -}}
 {{- $default  := site.Data.utilities.defaults -}}
 {{- $icons    := slice

@@ -1,7 +1,7 @@
 ---
 title: Mapa del Sitio
 slug: mapa-sitio
-icon: account_tree
+icon: lan
 noindex: y
 type: system
 weight: 5

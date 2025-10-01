@@ -96,12 +96,12 @@
     (dict "var" "box_md")
   )
 ) }}
-{{ range $mn_clls | append (site.Data.config.params | default $default) }}
+{{ range $mn_clls | append (site.Data.customs | default $default) }}
   {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
-  {{ $fields = partial "cms/config/collections-params" $opts }}
+  {{ $fields = partial "cms/config/collections/customs" $opts }}
 {{ end }}
 {{ $variables = $variables | append
-  (dict "&values_fields" $fields)
+  (dict "&values" $fields)
 }}
 
 

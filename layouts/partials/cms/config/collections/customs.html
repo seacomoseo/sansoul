@@ -108,7 +108,7 @@
     {{ $fields_children := slice }}
     {{ range .params | default slice }}
       {{ $opts           := merge . (dict "fields" $fields_children "t" $.t) }}
-      {{ $fields_children = partial "cms/config/collections-params" $opts }}
+      {{ $fields_children = partial "cms/config/collections/customs" $opts }}
     {{ end }}
     {{ $field = merge $field (dict
       "collapsed"      true

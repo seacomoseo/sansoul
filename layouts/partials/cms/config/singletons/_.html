@@ -1,0 +1,14 @@
+{{ $t   := partial "functions/i18n-cms" . }}
+{{ $def := site.Data.utilities.defaults }}
+{{ return slice
+  (dict "file" "content/values.{{locale}}.yml" "extension" `yml` "name" `values`    "label" $t.values    "icon" $def.values.icon    "editor" (dict "preview" false) "fields" `~values`   "i18n" true)
+  (dict "divider" true)
+  (dict "file" `data/config.yml`               "extension" `yml` "name" `config`    "label" $t.config    "icon" $def.config.icon    "editor" (dict "preview" false) "fields" `~config`  )
+  (dict "file" `data/langs.yml`                "extension" `yml` "name" `langs`     "label" $t.langs     "icon" $def.langs.icon     "editor" (dict "preview" false) "fields" `~langs`   )
+  (dict "file" `data/styles.yml`               "extension" `yml` "name" `styles`    "label" $t.styles    "icon" $def.styles.icon    "editor" (dict "preview" false) "fields" `~styles`  )
+  (dict "file" `data/customs.yml`              "extension" `yml` "name" `customs`   "label" $t.customs   "icon" $def.customs.icon   "editor" (dict "preview" false) "fields" `~customs` )
+  (dict "file" `data/defaults.yml`             "extension" `yml` "name" `defaults`  "label" $t.defaults  "icon" $def.defaults.icon  "editor" (dict "preview" false) "fields" `~defaults`)
+  (dict "file" `data/remote.yml`               "extension" `yml` "name" `remote`    "label" $t.remote    "icon" $def.remote.icon    "editor" (dict "preview" false) "fields" `~remote`  )
+  (dict "file" `assets/_redirects`             "extension" ``    "name" `redirects` "label" $t.redirects "icon" $def.redirects.icon "editor" (dict "preview" false) "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "alt" `redirects`                         ))))
+  (dict "file" `assets/robots.txt`             "extension" `txt` "name" `robots`    "label" `Robots.txt` "icon" $def.robots.icon    "editor" (dict "preview" false) "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "label" `robots.txt` "hint" $t.robots_hint))))
+}}

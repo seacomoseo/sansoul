@@ -95,7 +95,7 @@
 {{ $icon_type      := .icon_type | default (cond .main "bottom" "top") }}
 {{ $group_radius   := .group_radius | and (not .slider) }}
 {{ $line           := and .line (not (and .icon (eq $icon_type "bottom"))) }}
-{{ $show           := site.Data.config.others.show }}
+{{ $show           := site.Data.config.show }}
 {{ $is_title       := or .title .hanchor .menu_label }}
 {{ $is_title_link  := and $link (eq .button "hide") $is_title }}
 {{ $is_button_hide := and $link (eq .button "hide") (not $is_title) }}

@@ -101,7 +101,7 @@
       `~page_draft`
       `~page_hide`
       `~page_noindex`
-      `~page_title_seo`
+      `~page_seo`
       `~page_description`
       (partial "cms/widget" (dict
         "name"      `tpl`
@@ -179,11 +179,11 @@
   {{ end }}
   {{ range .Params.customs | default slice }}
     {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
-    {{ $fields = partial "cms/config/collections-params" $opts }}
+    {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
   {{ range .Params.taxonomies | default slice }}
     {{ $opts  := merge . (dict "fields" $fields "t" $t "tax" true) }}
-    {{ $fields = partial "cms/config/collections-params" $opts }}
+    {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
   {{ if .Params.is_related }}
     {{ $fields = $fields | append
@@ -201,7 +201,7 @@
       `~page_draft`
       `~page_hide`
       `~page_noindex`
-      `~page_title_seo`
+      `~page_seo`
       `~page_description`
     }}
   {{ end }}
@@ -229,6 +229,27 @@
     "view_groups"      $view_groups
     "view_filters"     $view_filters
     "fields"           $fields
+    "index_file"       (dict
+      "name"             `_index`
+      "label"            $t.page_index
+      "icon"             `lan`
+      "create"           true
+      "i18n"             true
+      "preview_path"     $permalinks
+      "thumbnail"        (slice `img` `image` `vid` `video`)
+      "editor"           (dict "preview" false)
+      "fields"           (slice
+        (partial "cms/widget" (dict "name" `permalinks`     "label" $t.index_permalinks "hint" (print $t.index_permalinks_hint " <br> **" $t.default " →** " .Params.cms.defaults.permalinks)                  ))
+        (partial "cms/widget" (dict "<<" `page_slug`                                    "hint" (print $t.index_slug_hint       " <br> **" $t.default " →** " .Params.cms.defaults.slug)        "required" false))
+        (partial "cms/widget" (dict "name" `singular`       "label" $t.index_singular   "hint" (print                                "**" $t.default " →** " .Params.cms.defaults.singular)                    ))
+        (partial "cms/widget" (dict "<<" `page_title`                                   "hint" (print                                "**" $t.default " →** " .Params.cms.defaults.title)                       ))
+        `~page_image`
+        `~page_noindex`
+        `~page_seo`
+        (partial "cms/widget" (dict "<<" `page_description`                             "hint" (print $t.page_description_hint " <br> **" $t.default " →** " .Params.cms.defaults.description)                 ))
+        `~page_body`
+      )
+    )
   ) }}
 {{ end }}
 
@@ -285,27 +306,6 @@
   "editor"           (dict "preview" false)
   "fields"           `~sections_fields`
 ) }}
-
-
-{{/*  SETTINGS  */}}
-{{/*
-{{ $colections = $colections | append (dict "divider" true) }}
-{{ $default   := site.Data.utilities.defaults }}
-{{ $colections = $colections | append  (dict
-  "label"           $t.collection_settings
-  "name"            `settings`
-  "icon"            site.Data.utilities.defaults.settings.icon
-  "sortable_fields" (dict "fields" slice)
-  "editor"          (dict "preview" false)
-  "files"           (slice
-    (dict "file" `data/config.yml`     "extension" `yml` "name" `config`    "label" $t.config    "icon" $default.config.icon    "fields" `~settings_config`)
-    (dict "file" `data/styles.yml`     "extension" `yml` "name" `styles`    "label" $t.styles    "icon" $default.styles.icon    "fields" `~settings_styles`)
-    (dict "file" `data/remote.yml`     "extension" `yml` "name" `remote`    "label" $t.remote    "icon" $default.remote.icon    "fields" `~settings_remote`)
-    (dict "file" `assets/redirects.md` "extension" `md`  "name" `redirects` "label" $t.redirects "icon" $default.redirects.icon "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "alt" `redirects`                         ))))
-    (dict "file" `assets/robots.md`    "extension" `md`  "name" `robots`    "label" `Robots.txt` "icon" $default.robots.icon    "fields" (slice (partial "cms/widget" (dict "name" `body` "widget" `text` "label" `robots.txt` "hint" $t.robots_hint))))
-  )
-) }}
-*/}}
 
 
 {{ return $colections }}

@@ -2,7 +2,7 @@
 {{- $image_base := $image -}}
 {{- if $image -}}
   {{/*  Image x size to srcset  */}}
-  {{- $s := site.Data.config.others.image_sizes | default 1.5 -}}
+  {{- $s := site.Data.config.image_sizes | default 1.5 -}}
 
 
   {{- /*  PICTURE  */ -}}
@@ -56,7 +56,7 @@
 
   {{- $source_attrs := "" -}}
   {{- if hugo.IsProduction -}}
-    {{- $type := cond (not site.Data.config.others.webp) "avif" "webp" -}}
+    {{- $type := cond (not site.Data.config.webp) "avif" "webp" -}}
 
     {{- /* CONTAIN  */ -}}
     {{- if not .contain -}}
