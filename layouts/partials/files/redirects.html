@@ -1,30 +1,18 @@
+{{- $netlify := getenv "NETLIFY" -}}
+{{- $a := cond (not $netlify) "" "!" -}}
+
 /index.php / 301
-
 # ---
-
-{{ $netlify := getenv "NETLIFY" -}}
-{{- with resources.Get "_redirects" -}}
-  {{- if $netlify -}}
-    {{- .Content -}}
-  {{- else -}}
-    {{- .Content
-      | replaceRE `!` ""
-      | replaceRE `(?m)^(/.*?[^0124])$` "$1 301"
-    -}}
+{{- with site.Data.redirects -}}
+  {{- range . }}
+{{ .from }} {{ .to }} 301{{ $a }}
   {{- end -}}
 {{- end }}
-
 # ---
-
 /index.php/* /:splat 301
 
-{{- $a := "" -}}
-{{- if $netlify -}}
-  {{- $a := "!" -}}
-{{- end -}}
-
 {{- if .IsTranslated -}}
-  {{- if hugo.IsMultihost -}}
+  {{- if hugo.IsMultihost }}
 # multihost
     {{- range .AllTranslations }}
       {{- $siteBaseURL := .Site.BaseURL }}
@@ -47,7 +35,7 @@
   {{- end }}
 {{- end }}
 
-{{ if $netlify -}}
+{{- if $netlify }}
 /404.html /404 404{{ $a }}
 /404 /404.html 404{{ $a }}
 {{- end -}}

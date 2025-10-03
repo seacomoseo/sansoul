@@ -103,7 +103,10 @@
         {{ with $type_lang }}
           {{ if .Content | findRE `(?s)^---.+---` }}
             {{ $type_lang_params := unmarshal .Content }}
-            {{ $type_lang_title  := dict "lang_title" $type_lang_params.title }}
+            {{ $type_lang_title  := dict
+              "lang_title"     $type_lang_params.title
+              "noindex_parent" $type_lang_params.noindex
+            }}
             {{ $type = merge $type $type_lang_params $type_lang_title }}
           {{ end }}
         {{ end }}
@@ -171,6 +174,7 @@
           {{ $slug         = or .slug        $default_values.slug        $title                     }}
           {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon  "file"}}
           {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji "📄"  }}
+          {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
           {{ $customs     := .params | default slice }}
           {{ with site.Data.types.all.params }}
             {{ $customs    = $customs | append . }}
@@ -188,6 +192,7 @@
               "emoji"          $emoji
               "image"          .image
               "draft"          .disabled
+              "noindex"        $ni_parent
               "weight"         (add $k 1)
               "cms"            $cms
               "customs"        $customs
@@ -226,6 +231,7 @@
             "emoji"          $emoji
             "image"          .image
             "draft"          .disabled
+            "noindex"        $ni_parent
             "weight"         (add $k 1)
             "cms"            $cms
             "customs"        $customs
