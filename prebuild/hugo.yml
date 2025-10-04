@@ -20,27 +20,14 @@ module:
     includeFiles: ../../../content/**/_index.*.md
     excludeFiles: ../../../themes
 
-  - source: ../../../data/config.yml
-    target: data/config.yml
-  - source: ../../../data/langs.yml
-    target: data/langs.yml
-  - source: ../../../data/defaults.yml
-    target: data/defaults.yml
-  - source: ../../../data/remote.yml
-    target: data/remote.yml
-  - source: ../../../data/types
-    target: data/types
-  - source: ../data/types
-    target: data/types
+  - source: ../../../data
+    target: data
+  - source: ../data
+    target: data
+  - source: ../i18n
+    target: data/i18n
 
   - source: ../layouts/partials/functions
     target: layouts/partials/functions
   - source: layouts
     target: layouts
-
-  - source: ../i18n
-    target: data/i18n
-  - source: ../data/utilities.yml
-    target: data/utilities.yml
-  - source: ../data/options.yml
-    target: data/options.yml

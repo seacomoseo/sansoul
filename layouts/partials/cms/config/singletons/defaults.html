@@ -1,3 +1,5 @@
+{{ $u := site.Data.utilities }}
+
 {{ return dict
   "&defaults" (slice
     (partial "cms/widget" (dict
@@ -7,12 +9,12 @@
       "summary" "{{fields.name}}: {{fields.value}}"
       "root"    true
       "fields"  (slice
-        `~types_params_name`
-        (partial "cms/widget" (dict "alt" `defaults_value` "name" `value`                                                                              ))
-        (partial "cms/widget" (dict "alt" `defaults_type`  "name" `type`  "widget" `select`                 "options" site.Data.utilities.pairing_kinds))
-        (partial "cms/widget" (dict "alt" `defaults_kind`  "name" `kind`  "widget" `select` "multiple" true "options" site.Data.utilities.default_kinds))
-        (partial "cms/widget" (dict "alt" `defaults_lang`  "name" `lang`  "widget" `select` "multiple" true "options" `~options_langs`                 ))
-        (partial "cms/widget" (dict "alt" `defaults_path`  "name" `path`  "widget" `list`   "multiple" true                                            ))
+        `~customs_name`
+        (partial "cms/widget" (dict "alt" `defaults_value` "name" `value`                                                             ))
+        (partial "cms/widget" (dict "alt" `defaults_type`  "name" `type`  "widget" `select`                 "options" $u.pairing_kinds))
+        (partial "cms/widget" (dict "alt" `defaults_kind`  "name" `kind`  "widget" `select` "multiple" true "options" $u.default_kinds))
+        (partial "cms/widget" (dict "alt" `defaults_lang`  "name" `lang`  "widget" `select` "multiple" true "options" `~options_langs`))
+        (partial "cms/widget" (dict "alt" `defaults_path`  "name" `path`  "widget" `list`   "multiple" true                           ))
         (partial "cms/widget" (dict
           "alt"     `defaults_path`
           "name"    `path`

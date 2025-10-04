@@ -175,9 +175,11 @@
           {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon  "file"}}
           {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji "📄"  }}
           {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
-          {{ $customs     := .params | default slice }}
-          {{ with site.Data.types.all.params }}
-            {{ $customs    = $customs | append . }}
+          {{ $customs     := slice }}
+          {{ range site.Data.customs | default slice }}
+            {{ if in .types $name }}
+              {{ $customs  = $customs | append . }}
+            {{ end }}
           {{ end }}
 
           {{/*  GLOBAL CASCADE  */}}

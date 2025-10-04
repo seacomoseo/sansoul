@@ -1,5 +1,3 @@
-{{ $t := partial "functions/i18n-cms" . }}
-
 {{ $variables := slice }}
 
 
@@ -61,7 +59,7 @@
     "var"     `values_callnows`
     "name"    `callnows`
     "widget"  `list`
-    "label"    $t.template_callnow
+    "label"    .template_callnow
     "summary" "{{fields.label}}"
     "types"   (slice
       (partial "cms/widget" (dict "alt" `box_contact_phone`    "name" `phone`    "widget" `object` "fields" (slice `~box_contact_label_phone` `~box_button_color` `~box_icon_id`)))
@@ -78,31 +76,44 @@
   (dict "var" "values_menu")
   (dict "var" "values_callnows")
 }}
-{{ $default := slice (dict
-  "name"     "footer"
-  "label"    "Footer"
-  "widget"   "object"
-  "params"   (slice
-    (dict "var" "box_size")
-    (dict "var" "box_bg_color")
-    (dict "var" "box_bg_fade_color")
-    (dict "var" "box_bg_fade_type")
-    (dict "var" "box_bg_image")
-    (dict "var" "box_bg_alpha")
-    (dict "var" "box_divider_id")
-    (dict "var" "box_divider_flip_x")
-    (dict "var" "box_divider_flip_y")
-    (dict "var" "box_dots")
-    (dict "var" "box_md")
-  )
-) }}
-{{ range $mn_clls | append (site.Data.customs | default $default) }}
-  {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
-  {{ $fields = partial "cms/config/collections/customs" $opts }}
+{{ $global_fields := slice }}
+{{ range site.Data.customs | default slice }}
+  {{ if or (not .types) (in .types "global") }}
+    {{ $global_fields = $global_fields | append . }}
+  {{ end }}
+{{ end }}
+{{ $is_footer    := where $global_fields "name" "footer" }}
+{{ $global_fields = $mn_clls | append $global_fields }}
+{{/* append footer if there isn't */}}
+{{ if not $is_footer }}
+  {{ $footer := dict
+    "name"   "footer"
+    "label"  "Footer"
+    "widget" "object"
+    "sub"    (slice
+      (dict "var" "box_size")
+      (dict "var" "box_bg_color")
+      (dict "var" "box_bg_fade_color")
+      (dict "var" "box_bg_fade_type")
+      (dict "var" "box_bg_image")
+      (dict "var" "box_bg_alpha")
+      (dict "var" "box_divider_id")
+      (dict "var" "box_divider_flip_x")
+      (dict "var" "box_divider_flip_y")
+      (dict "var" "box_dots")
+      (dict "var" "box_md")
+    )
+  }}
+  {{ $global_fields = $global_fields | append $footer }}
+{{ end }}
+{{ range $global_fields }}
+  {{ if or .var .name }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $) }}
+    {{ $fields = partial "cms/config/collections/customs" $opts }}
+  {{ end }}
 {{ end }}
 {{ $variables = $variables | append
   (dict "&values" $fields)
 }}
-
 
 {{ return $variables }}

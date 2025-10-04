@@ -5,7 +5,7 @@
 # ---
 {{- with site.Data.redirects -}}
   {{- range . }}
-{{ .from }} {{ .to }} 301{{ $a }}
+{{ .from }} {{ .to }} {{ .type | default "301" }}{{ $a }}
   {{- end -}}
 {{- end }}
 # ---

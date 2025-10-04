@@ -1,0 +1,19 @@
+{{ $parent_hint := print .redirects_hint " → [" .customs_options "](https://developers.cloudflare.com/pages/configuration/redirects/)" }}
+{{ $type_hint   := (print .default " → **301**") }}
+
+{{ return dict
+  "&redirects" (slice
+    (partial "cms/widget" (dict
+      "alt"     `redirects`
+      "name"    `redirects`
+      "widget"  `list`
+      "hint"    $parent_hint
+      "root"    true
+      "fields"  (slice
+        (partial "cms/widget" (dict "alt" `redirects_from` "name" `from`                                                                   ))
+        (partial "cms/widget" (dict "alt" `redirects_to`   "name" `to`                                                                     ))
+        (partial "cms/widget" (dict "alt" `redirects_type` "name" `type` "widget" `select` "options" `~options_redirects` "hint" $type_hint))
+      )
+    ))
+  )
+}}

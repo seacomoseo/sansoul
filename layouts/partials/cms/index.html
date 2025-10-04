@@ -40,33 +40,23 @@
   <link href="{{ $resource.RelPermalink }}" type="application/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
-  {{ $params := slice }}
+  {{ $customs := slice }}
   {{ range site.Sections }}
     {{ $type := .Type }}
     {{ range .Params.customs | default slice }}
       {{ if not .default }}
         {{ if .pages }}
-          {{ $append := print $type ":" .name ":" (delimit .pages ",")  }}
-          {{ $params  = $params | append $append }}
+          {{ $custom := print $type ":" .name ":" (delimit .pages ",")  }}
+          {{ $customs = $customs | append $custom }}
         {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}
   {{ $vars := dict
-    "params" (delimit $params "|")
+    "customs"   (delimit $customs "|")
+    "divs"      (delimit site.Data.options.div "|")
+    "timestamp" (partial "functions/timestamp" .)
   }}
-  {{/*
-  "white"      (site.Data.styles.colors.base.white | default "#fff")
-  "light"      (site.Data.styles.colors.base.light | default "#eee")
-  "gray"       (site.Data.styles.colors.base.gray  | default "#282525")
-  "dark"       (site.Data.styles.colors.base.dark  | default "#000")
-  "black"      (site.Data.styles.colors.base.black | default "#767676")
-  "cta"        (site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399")
-  "cta-light"  (site.Data.styles.colors.cta.light  | default "")
-  "cta-dark"   (site.Data.styles.colors.cta.dark   | default "")
-  "cta-contrast-text" (or (in (slice "all" "text") site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
-  "cta-contrast-fill" (or (in (slice "all" "fill") site.Data.styles.colors.cta.contrast) (not site.Data.styles.colors.cta.contrast) | not | not | string)
-  */}}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment)
     | fingerprint

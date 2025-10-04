@@ -1,0 +1,12 @@
+{{ $hint := print "[" .robots_hint "](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)" }}
+
+{{ return dict
+  "&robots" (slice
+    (partial "cms/widget" (dict
+      "name"   `body`
+      "label"  `robots.txt`
+      "widget" `text`
+      "hint"   $hint
+    ))
+  )
+}}

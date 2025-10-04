@@ -81,33 +81,33 @@
 
 // PAGE CUSTOM PARAMS
 
-@if $params != '' {
-  $params_roots: str-split($params, '|');
-  @each $root in $params_roots {
+$d-nones: '';
+$d-blocks: '';
+@if $customs != '' {
+  $customs_roots: str-split($customs, '|');
+  @each $root in $customs_roots {
     @each $param in $root {
       $parts: str-split($param, ':');
       $type: nth($parts, 1);
       $name: nth($parts, 2);
       $pages: nth($parts, 3);
-
-      [data-hash^="#/collections/#{$type}/entries/"] {
-        .field[data-key-path="#{$name}"] {
-          display: none;
-        }
-      }
-
-      $pages_roots: str-split($pages, ',');
-      @each $root in $pages_roots {
-        @each $page in $root {
-
-          [data-hash^="#/collections/#{$type}/entries/#{$page}"] {
-            .field[data-key-path="#{$name}"] {
-              display: block;
-            }
+      $d-nones: $d-nones + ',[data-hash^="#/collections/#{$type}/entries/"] .field[data-key-path="#{$name}"]';
+      @if $pages != '' {
+        $pages_roots: str-split($pages, ',');
+        @each $root in $pages_roots {
+          @each $page in $root {
+            $d-blocks: $d-blocks + ',[data-hash^="#/collections/#{$type}/entries/#{$page}"] .field[data-key-path="#{$name}"]';
           }
-
         }
       }
     }
+  }
+}
+@if $d-nones != '' {
+  #{str-slice($d-nones, 2)} {
+    display: none;
+  }
+  #{str-slice($d-blocks, 2)} {
+    display: block;
   }
 }

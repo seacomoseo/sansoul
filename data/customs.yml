@@ -1,4 +1,6 @@
-# - var: null # string get YAML variable
+# - types: [] # string get YAML variable
+#   pages: [] # list of filenames
+#   var: null # string get YAML variable
 #   name: null # string
 #   label: null # string
 #   hint: null # string
@@ -6,11 +8,13 @@
 #   options: []
 #   # - label: null # string
 #   #   value: null # string
-#   params: [] # like params without `widget: list`, `list` and `schema` in 2nd level
+#   default: null # string
+#   multiple: null # boolean
+#   sub: [] # like root without `types` and `pages`
 # - name: footer
 #   label: Footer
 #   widget: object
-#   params:
+#   sub:
 #   - var: box_size
 #   - var: box_bg_color
 #   - var: box_bg_fade_color

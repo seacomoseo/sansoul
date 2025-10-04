@@ -30,27 +30,11 @@ types_hint: Leyenda
 types_emoji: Emoji
 types_comments: Comentarios
 types_related: Relacionados
-types_all: Todo
-types_breadcrumbs: Migas de Pan
-types_params: Parámetros Personalizados
-types_params_singular: Parámetro Personalizado
-types_params_var: Variable Existente
-types_params_name: Nombre de Parámetro
-types_params_label: Nombre Visible
-types_params_hint: Leyenda
-types_params_widget: Widget
-types_params_options: Opciones
-types_params_options_label: Título
-types_params_options_value: Valor
-types_params_default: Default Value
-types_params_pages: Páginas
-types_params_pages_singular: Página
-types_params_sub: Subparámetros
-types_params_sub_singular: Subparámetro
 types_taxonomy_of: Taxonomía de
-types_params_relations_hint: Crear previamente
-types_params_multiple: Múltiple
-types_params_schema: Schema
+types_taxonomy_of_name: Nombre de Parámetro
+types_taxonomy_of_multiple: Múltiple
+types_taxonomy_of_breadcrumbs: Migas de Pan
+types_taxonomy_of_schema: Schema
 types_template: Plantilla
 types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
 types_template_single_hint: Plantilla para ésta página solamente (los valores sobreescriben a los de la plantilla general)
@@ -349,9 +333,25 @@ styles_shadow_blur: Difuminado
 styles_shadow_color: Color
 styles_shadow_alpha: Transparencia
 # singletones > customs
-customs: Personalizado
-customs_singular: Parámetro
-customs_hint: Parámetros Globales Personalizados
+customs: Campos Personalizados
+customs_singular: Campo
+customs_hint: Campos Globales Personalizados
+customs_types: Colecciones
+customs_types_singular: Colección
+customs_pages: Páginas
+customs_pages_singular: Página
+customs_var: Variable Existente
+customs_name: Nombre de Campo
+customs_label: Nombre Visible
+customs_hint_: Leyenda
+customs_widget: Widget
+customs_options: Opciones
+customs_options_label: Título
+customs_options_value: Valor
+customs_multiple: Múltiple
+customs_sub: Subcampos
+customs_sub_singular: Subcampo
+customs_relations_hint: Crear previamente
 # singletones > defaults
 defaults: Valores por Defecto
 defaults_hint: Valores de parámetros por defecto
@@ -379,9 +379,12 @@ remote_pairings_kind: Tipo de Valor
 remote_pairings_delimit: Separador
 # singletones > redirects
 redirects: Redirecciones
-redirects_hint: Redirecciones de URL's → [Opciones](https://docs.netlify.com/routing/redirects/redirect-options/)
+redirects_hint: Redirecciones de URL's
+redirects_from: Origen
+redirects_to: Destino
+redirects_type: Tipo
 # singletones > robots
-robots_hint: Tutorial → [Guía del archivo robots.txt](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
+robots_hint: Tutorial
 # boxes and sections
 box_name: Nombre
 box_name_hint: Nombre del archivo
@@ -506,7 +509,7 @@ box_node: Nodo
 box_node_hint: Nombre de la etiqueta HTML de la Caja
 box_params: Parámetros
 box_params_singular: Parámetro
-box_params_hint: Parámetros personalizados desde la página o valor global hasta la caja
+box_params_hint: Valores de Parámetros o Campos Personalizados desde la página o valor global hasta la caja
 box_params_from: Parámetro de Origen
 box_params_to: Parámetro de Destino
 box_params_value: Valor JSON
@@ -530,7 +533,7 @@ box_tags_taxonomy: Taxonomías
 box_tags_taxonomy_key: Taxonomía
 box_tags_param: Parámetro
 box_tags_param_key: Clave del Parámetro
-box_tags_param_hint: Indica el nombre del parámetro
+box_tags_param_hint: Indica el nombre del parámetro o campo de página
 box_tags_custom: Personalizado
 box_sort: Orden de los Elementos
 box_cols_vl: Nº de Columnas
@@ -715,6 +718,9 @@ modals_hint: Son secciones representadas como ventanas modales ocultas, a las cu
 # patterns
 pattern: En minúsculas · Sin espacios (guiones medios en su lugar) · Sin tildes · Sin eñes (enes en su lugar) · Sin caracteres extraños ni barras bajas
 # options
+option-collections-related: Relacionados
+option-collections-all: Todo
+option-collections-global: Global
 option-langs-es: 🇪🇸 Español
 option-langs-en: 🇬🇧 Inglés
 option-langs-fr: 🇫🇷 Francés

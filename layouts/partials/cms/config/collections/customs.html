@@ -1,10 +1,10 @@
-{{ $fields   := slice }}
-{{ $widget   := .widget | default "string" }}
-{{ $options  := .options }}
-{{ if eq $widget "boolean" }}
-  {{ $widget  = `select` }}
-  {{ $options = `~options_boolean` }}
-{{ end }}
+{{ $fields  := .fields | default slice }}
+{{ $field   := dict }}
+{{ $label   := .label | default .name }}
+{{ $hint    := .hint }}
+{{ $widget  := .widget | default (cond (not .var) "string" nil) }}
+{{ $options := .options }}
+
 {{ $default  := .default }}
 {{ if ne .default nil }}
   {{ $kind   := $widget }}
@@ -17,108 +17,38 @@
   {{ $default = partial "functions/string-to-kind" $opts }}
 {{ end }}
 
-{{ if .var }}
-
-  {{ $collapsed := in (slice "list" "object") $widget }}
-
-  {{ $merge := dict
-    "collapsed" $collapsed
-    "name"      .name
-    "label"     .label
-    "hint"      .hint
-    "widget"    $widget
-    "options"   $options
-    "default"   $default
-    "multiple"  .multiple
-  }}
-  {{ $merge  = partial "functions/obj-truly" $merge }}
-  {{ $field := dict "<<" (slice $merge (print "~" .var)) }}
-  {{ $fields = .fields | append $field }}
-
-{{ else }}
-
-  {{ $value_type  := "" }}
-  {{ if in (slice "int" "float") $widget }}
-    {{ $widget     = "number" }}
-    {{ $value_type = $widget }}
+{{ $sub := slice }}
+{{ if .sub }}
+  {{ range .sub | default slice }}
+    {{ $opts := merge . (dict "fields" $sub "t" $.t) }}
+    {{ $sub   = partial "cms/config/collections/customs" $opts }}
   {{ end }}
-  {{ $i18n  := "duplicate" }}
-  {{ if in (slice "string" "text" "markdown" "image" "object" "list") $widget }}
-    {{ $i18n = true }}
-  {{ end }}
-  {{ $label   := .label | default .name | default "single" }}
-  {{ $hint    := .hint | default "" }}
-  {{ if .tax }}
-    {{/*  tax_of  */}}
-    {{ $widget  = "relation" }}
-    {{ $page   := site.GetPage .name }}
-    {{ $cms    := $page.Params.cms }}
-    {{ $label   = $cms.singular }}
-    {{ if .multiple }}
-      {{ $label = $cms.title }}
-    {{ end }}
-    {{ $hint  = print "[" .t.types_params_relations_hint "](#/collections/" .name ")" }}
-  {{ end }}
+{{ end }}
 
-  {{ $field := dict
-    "name"     .name
-    "label"    ($label | default .name)
-    "hint"     $hint
-    "widget"   $widget
-    "required" false
-    "default"  $default
-    "i18n"     $i18n
-  }}
+{{ if .tax }}
+  {{ $widget = "relation" }}
+  {{ $page  := site.GetPage .name }}
+  {{ $cms   := $page.Params.cms }}
+  {{ $label  = cond (not .multiple) $cms.singular $cms.title | default .name }}
+  {{ $hint   = print "[" .t.customs_relations_hint "](#/collections/" .name ")" }}
+{{ end }}
 
-  {{ if eq $widget "number" }}
-    {{ $field = merge $field (dict
-      "value_type"     $value_type
-      "step"           (cond (eq $value_type `int`) 1 0.01)
-    ) }}
-  {{ else if eq $widget "markdown" }}
-    {{ $field = merge $field (dict
-      "show_raw"       true
-    ) }}
-  {{ else if eq $widget "datetime" }}
-    {{ $field = merge $field (dict
-      "format"         `YYYY-MM-DD HH:mm:ss`
-      "date_format"    `YYYY-MM-DD`
-      "time_format"    `HH:mm`
-    ) }}
-  {{ else if eq $widget "image" }}
-    {{ $field = merge $field (dict
-      "max_file_size"  512000000
-      "choose_url"     true
-    ) }}
-  {{ else if eq $widget "select" }}
-    {{ $field = merge $field (dict
-      "options"        $options
-      "multiple"       .multiple
-    ) }}
-  {{ else if eq $widget "relation" }}
-    {{ $field = merge $field (dict
-      "options_length" 100
-      "collection"     .name
-      "value_field"    "{{slug}}"
-      "search_fields"  (slice "{{title}}")
-      "display_fields" (slice "{{title}}")
-      "multiple"       .multiple
-    ) }}
-  {{ else if in (slice "list" "object") $widget }}
-    {{ $fields_children := slice }}
-    {{ range .params | default slice }}
-      {{ $opts           := merge . (dict "fields" $fields_children "t" $.t) }}
-      {{ $fields_children = partial "cms/config/collections/customs" $opts }}
-    {{ end }}
-    {{ $field = merge $field (dict
-      "collapsed"      true
-      "allow_add"      true
-      "fields"         $fields_children
-    ) }}
-  {{ end }}
+{{ $field := dict
+  "<<"        .var
+  "name"      .name
+  "label"     $label
+  "hint"      $hint
+  "widget"    $widget
+  "options"   $options
+  "default"   $default
+  "multiple"  .multiple
+  "fields"    $sub
+}}
+{{ $field = partial "functions/obj-truly" $field }}
 
-  {{ $fields = .fields | append $field }}
-
+{{ if $field }}
+  {{ $field  = partial "cms/widget" $field }}
+  {{ $fields = $fields | append $field }}
 {{ end }}
 
 {{ return $fields }}

@@ -1,17 +1,15 @@
-{{ $t := partial "functions/i18n-cms" . }}
-
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `config_google_analytics`         "name" `google_analytics`                                                                                                                     ))
-  (partial "cms/widget" (dict "var" `config_google_site_verification` "name" `google_site_verification`                                                                                                             ))
-  (partial "cms/widget" (dict "var" `config_google_file_verification` "name" `google_file_verification`                                                                                                             ))
-  (partial "cms/widget" (dict "var" `config_google_translate`         "name" `google_translate`         "widget" `boolean`                                                                                          ))
-  (partial "cms/widget" (dict "var" `config_disqus`                   "name" `disqus`                                                                                                                               ))
-  (partial "cms/widget" (dict "var" `config_email`                    "name" `email`                                                                                                                                ))
-  (partial "cms/widget" (dict "var" `config_phone_code`               "name" `phone_code`               "widget" `select`  "hint" (print $t.default " → **+34 🇪🇸**")        "options" site.Data.utilities.phone_code))
-  (partial "cms/widget" (dict "var" `config_time_zone`                "name" `time_zone`                "widget" `select`  "hint" (print $t.default " → **Europe/Madrid**") "options" site.Data.utilities.time_zone ))
-  (partial "cms/widget" (dict "var" `config_currency`                 "name" `currency`                 "widget" `select`  "hint" (print $t.default " → **EUR**")           "options" `~options_currency`           ))
-  (partial "cms/widget" (dict "var" `config_main_org`                 "name" `main_org`                                                                                                                             ))
+  (partial "cms/widget" (dict "var" `config_google_analytics`         "name" `google_analytics`                                                                                                                   ))
+  (partial "cms/widget" (dict "var" `config_google_site_verification` "name" `google_site_verification`                                                                                                           ))
+  (partial "cms/widget" (dict "var" `config_google_file_verification` "name" `google_file_verification`                                                                                                           ))
+  (partial "cms/widget" (dict "var" `config_google_translate`         "name" `google_translate`         "widget" `boolean`                                                                                        ))
+  (partial "cms/widget" (dict "var" `config_disqus`                   "name" `disqus`                                                                                                                             ))
+  (partial "cms/widget" (dict "var" `config_email`                    "name" `email`                                                                                                                              ))
+  (partial "cms/widget" (dict "var" `config_phone_code`               "name" `phone_code`               "widget" `select`  "hint" (print .default " → **+34 🇪🇸**")        "options" site.Data.utilities.phone_code))
+  (partial "cms/widget" (dict "var" `config_time_zone`                "name" `time_zone`                "widget" `select`  "hint" (print .default " → **Europe/Madrid**") "options" site.Data.utilities.time_zone ))
+  (partial "cms/widget" (dict "var" `config_currency`                 "name" `currency`                 "widget" `select`  "hint" (print .default " → **EUR**")           "options" `~options_currency`           ))
+  (partial "cms/widget" (dict "var" `config_main_org`                 "name" `main_org`                                                                                                                           ))
   (partial "cms/widget" (dict
     "var"       `config_html`
     "name"      `html`
@@ -39,10 +37,10 @@
       "name"   `cms`
       "widget" `object`
       "fields" (slice
-        (partial "cms/widget" (dict "alt" `config_cms_logo`      "name" `logo`      "widget" `image`                                                                                                         ))
-        (partial "cms/widget" (dict "alt" `config_cms_lang`      "name" `lang`      "widget" `select`  "hint" (print $t.default " → **" (index $t "option-langs_cms-es") "**") "options" `~options_langs_cms`))
-        (partial "cms/widget" (dict "alt" `config_cms_editorial` "name" `editorial` "widget" `boolean`                                                                                                       ))
-        (partial "cms/widget" (dict                              "name" `disabled`  "widget" `hidden`  "label" `disabled`                                                                                    ))
+        (partial "cms/widget" (dict "alt" `config_cms_logo`      "name" `logo`      "widget" `image`                                                                                                      ))
+        (partial "cms/widget" (dict "alt" `config_cms_lang`      "name" `lang`      "widget" `select`  "hint" (print .default " → **" (index . "option-langs_cms-es") "**") "options" `~options_langs_cms`))
+        (partial "cms/widget" (dict "alt" `config_cms_editorial` "name" `editorial` "widget" `boolean`                                                                                                    ))
+        (partial "cms/widget" (dict                              "name" `disabled`  "widget" `hidden`  "label" `disabled`                                                                                 ))
       )
     ))
     (partial "cms/widget" (dict "alt" `config_favicon`                      "name" `favicon`                      "widget" `image`                  ))

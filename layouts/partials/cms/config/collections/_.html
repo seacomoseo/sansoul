@@ -1,5 +1,3 @@
-{{ $t := partial "functions/i18n-cms" . }}
-
 {{ $colections := slice }}
 
 {{/*  CUSTOM TYPES (single last)  */}}
@@ -55,13 +53,13 @@
   {{ $groups  := slice }}
   {{ if in (slice "article" "event") .Params.base }}
     {{ $groups = $groups | append
-      (dict "name" `year`    "label" $t.filter_year   "field" `date` "pattern" `^\d{4}`)
-      (dict "name" `month`   "label" $t.filter_month  "field" `date` "pattern" `^\d{4}-\d{2}`)
+      (dict "name" `year`    "label" $.filter_year   "field" `date` "pattern" `^\d{4}`)
+      (dict "name" `month`   "label" $.filter_month  "field" `date` "pattern" `^\d{4}-\d{2}`)
     }}
   {{ end }}
   {{ $groups = $groups | append
     (dict   "name" `noindex` "label" `NoIndex`        "field" `noindex`)
-    (dict   "name" `drafts`  "label" $t.filter_drafts "field" `draft`)
+    (dict   "name" `drafts`  "label" $.filter_drafts "field" `draft`)
   }}
   {{ with .Params.taxonomies }}
     {{ range . }}
@@ -76,8 +74,8 @@
   {{/*  View Filters  */}}
   {{ $view_filters := dict
     "filters" (slice
-      (dict "name" `published` "label" $t.filter_published "field" `draft`   "pattern" "n")
-      (dict "name" `drafts`    "label" $t.filter_drafts    "field" `draft`   "pattern" "y")
+      (dict "name" `published` "label" $.filter_published "field" `draft`   "pattern" "n")
+      (dict "name" `drafts`    "label" $.filter_drafts    "field" `draft`   "pattern" "y")
       (dict "name" `index`     "label" `Index`             "field" `noindex` "pattern" "n")
       (dict "name" `noindex`   "label" `NoIndex`           "field" `noindex` "pattern" "y")
     )
@@ -90,7 +88,23 @@
     `~page_summary`
     `~page_image`
     `~box_icon_id`
+    `~page_draft`
+    `~page_hide`
+    `~page_noindex`
+    `~page_seo`
+    `~page_description`
   }}
+  {{ if .Params.is_related }}
+    {{ $fields = $fields | append
+      (partial "cms/widget" (dict
+        "alt"            `page_related`
+        "name"           `related`
+        "widget"         `relation`
+        "collection"     .Type
+        "multiple"       true
+      ))
+    }}
+  {{ end }}
   {{ if and (ne .Params.base "article") (ne .Params.base "event") }}
     {{ $fields = $fields | append
       `~page_weight`
@@ -98,16 +112,11 @@
   {{ end }}
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
-      `~page_draft`
-      `~page_hide`
-      `~page_noindex`
-      `~page_seo`
-      `~page_description`
       (partial "cms/widget" (dict
         "name"      `tpl`
         "widget"    `object`
-        "label"     $t.types_template
-        "hint"      $t.types_template_single_hint
+        "label"     $.types_template
+        "hint"      $.types_template_single_hint
         "fields"    (slice
           `~template_background`
           `~template_menu`
@@ -178,36 +187,28 @@
     }}
   {{ end }}
   {{ range .Params.customs | default slice }}
-    {{ $opts  := merge . (dict "fields" $fields "t" $t) }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $) }}
     {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
   {{ range .Params.taxonomies | default slice }}
-    {{ $opts  := merge . (dict "fields" $fields "t" $t "tax" true) }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $ "tax" true) }}
     {{ $fields = partial "cms/config/collections/customs" $opts }}
-  {{ end }}
-  {{ if .Params.is_related }}
-    {{ $fields = $fields | append
-      (partial "cms/widget" (dict
-        "alt"            `page_related`
-        "name"           `related`
-        "widget"         `relation`
-        "collection"     .Type
-        "multiple"       true
-      ))
-    }}
-  {{ end }}
-  {{ if ne .Params.base "single" }}
-    {{ $fields = $fields | append
-      `~page_draft`
-      `~page_hide`
-      `~page_noindex`
-      `~page_seo`
-      `~page_description`
-    }}
   {{ end }}
   {{ $fields = $fields | append
     `~page_body`
   }}
+
+  {{/*  Index  */}}
+  {{ $index_permalinks_hint  := print $.index_permalinks_hint " <br> **" $.default " →** " .Params.cms.defaults.permalinks  }}
+  {{ $index_slug_hint        := print $.index_slug_hint       " <br> **" $.default " →** " .Params.cms.defaults.slug        }}
+  {{ $index_singular_hint    := print                               "**" $.default " →** " .Params.cms.defaults.singular    }}
+  {{ $index_title_hint       := print                               "**" $.default " →** " .Params.cms.defaults.title       }}
+  {{ $index_description_hint := print $.page_description_hint " <br> **" $.default " →** " .Params.cms.defaults.description }}
+  {{ $index_permalinks  := partial "cms/widget" (dict "name" `permalinks`     "label" $.index_permalinks "hint" $index_permalinks_hint                  ) }}
+  {{ $index_slug        := partial "cms/widget" (dict "<<" `page_slug`                                   "hint" $index_slug_hint        "required" false) }}
+  {{ $index_singular    := partial "cms/widget" (dict "name" `singular`       "label" $.index_singular   "hint" $index_singular_hint                    ) }}
+  {{ $index_title       := partial "cms/widget" (dict "<<" `page_title`                                  "hint" $index_title_hint                       ) }}
+  {{ $index_description := partial "cms/widget" (dict "<<" `page_description`                            "hint" $index_description_hint                ) }}
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
@@ -231,7 +232,7 @@
     "fields"           $fields
     "index_file"       (dict
       "name"             `_index`
-      "label"            $t.page_index
+      "label"            $.page_index
       "icon"             `lan`
       "create"           true
       "i18n"             true
@@ -239,14 +240,14 @@
       "thumbnail"        (slice `img` `image` `vid` `video`)
       "editor"           (dict "preview" false)
       "fields"           (slice
-        (partial "cms/widget" (dict "name" `permalinks`     "label" $t.index_permalinks "hint" (print $t.index_permalinks_hint " <br> **" $t.default " →** " .Params.cms.defaults.permalinks)                  ))
-        (partial "cms/widget" (dict "<<" `page_slug`                                    "hint" (print $t.index_slug_hint       " <br> **" $t.default " →** " .Params.cms.defaults.slug)        "required" false))
-        (partial "cms/widget" (dict "name" `singular`       "label" $t.index_singular   "hint" (print                                "**" $t.default " →** " .Params.cms.defaults.singular)                    ))
-        (partial "cms/widget" (dict "<<" `page_title`                                   "hint" (print                                "**" $t.default " →** " .Params.cms.defaults.title)                       ))
+        $index_permalinks
+        $index_slug
+        $index_singular
+        $index_title
         `~page_image`
         `~page_noindex`
         `~page_seo`
-        (partial "cms/widget" (dict "<<" `page_description`                             "hint" (print $t.page_description_hint " <br> **" $t.default " →** " .Params.cms.defaults.description)                 ))
+        $index_description
         `~page_body`
       )
     )
@@ -259,11 +260,11 @@
 
 {{/*  TYPES  */}}
 {{ $colections = $colections | append (dict
-  "label"            $t.collection_types
-  "label_singular"   $t.collection_types_singular
+  "label"            $.collection_types
+  "label_singular"   $.collection_types_singular
   "name"             `types`
   "icon"             site.Data.utilities.defaults.types.icon
-  "description"      $t.collection_types_description
+  "description"      $.collection_types_description
   "identifier_field" `title`
   "extension"        `yml`
   "folder"           `data/types`
@@ -284,11 +285,11 @@
 
 {{/*  SECTIONS  */}}
 {{ $colections = $colections | append (dict
-  "label"            $t.collection_sections
-  "label_singular"   $t.collection_sections_singular
+  "label"            $.collection_sections
+  "label_singular"   $.collection_sections_singular
   "name"             `section`
   "icon"             site.Data.utilities.defaults.section.icon
-  "description"      $t.collection_sections_description
+  "description"      $.collection_sections_description
   "identifier_field" `name`
   "extension"        `yml`
   "folder"           `data/section`

@@ -1,0 +1,22 @@
+// .field:is([data-key-path="div"], [data-key-path$=".div"])
+.listbox .option > .button[value]::before {
+  content: "";
+  background-image: var(--div);
+  width: 112px;
+  height: 14px;
+  flex-shrink: 0;
+  filter: invert(.5);
+}
+@if $divs != '' {
+  $divs_roots: str-split($divs, '|');
+  @each $root in $divs_roots {
+    @each $div in $root {
+      @if $div != 'hide' and $div != 'fade' {
+        // .field:is([data-key-path="div"], [data-key-path$=".div"])
+        .listbox .option > .button[value="#{$div}"] {
+          --div: url('/draws.#{$timestamp}.svg#div-#{$div}-pr');
+        }
+      }
+    }
+  }
+}

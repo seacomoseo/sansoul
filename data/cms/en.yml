@@ -30,27 +30,11 @@ types_hint: Legend
 types_emoji: Emoji
 types_comments: Comments
 types_related: Related
-types_all: All
-types_breadcrumbs: Breadcrumbs
-types_params: Custom Parameters
-types_params_singular: Custom Parameter
-types_params_var: Existing Variable
-types_params_name: Param Name
-types_params_label: Visible Name
-types_params_hint: Legend
-types_params_widget: Widget
-types_params_options: Options
-types_params_options_label: Title
-types_params_options_value: Value
-types_params_default: Valor por Defecto
-types_params_pages: Pages
-types_params_pages_singular: Page
-types_params_sub: Subparameters
-types_params_sub_singular: Subparameter
 types_taxonomy_of: Taxonomy of
-types_params_relations_hint: Create previously
-types_params_multiple: Multiple
-types_params_schema: Schema
+types_taxonomy_of_name: Param Name
+types_taxonomy_of_multiple: Multiple
+types_taxonomy_of_breadcrumbs: Breadcrumbs
+types_taxonomy_of_schema: Schema
 types_template: Template
 types_template_hint: Template for pages of this type (values override those of the general template)
 types_template_single_hint: Template for this page only (values overwrite those of the general template)
@@ -350,9 +334,25 @@ styles_shadow_blur: Blur
 styles_shadow_color: Color
 styles_shadow_alpha: Transparency
 # singletones > customs
-customs: Custom
-customs_singular: Parameter
-customs_hint: Custom Global Parameters
+customs: Custom Fields
+customs_singular: Field
+customs_hint: Custom Global Fields
+customs_types: Collections
+customs_types_singular: Collection
+customs_pages: Pages
+customs_pages_singular: Page
+customs_var: Existing Variable
+customs_name: Param Name
+customs_label: Visible Name
+customs_hint_: Legend
+customs_widget: Widget
+customs_options: Options
+customs_options_label: Title
+customs_options_value: Value
+customs_multiple: Multiple
+customs_sub: Subfields
+customs_sub_singular: Subfield
+customs_relations_hint: Create previously
 # singletones > defaults
 defaults: Default Values
 defaults_hint: Default Params Values
@@ -378,9 +378,14 @@ remote_pairings_from: Source Parameter
 remote_pairings_to: Destination Parameter
 remote_pairings_kind: Value Type
 remote_pairings_delimit: Separator
+# singletones > redirects
 redirects: Redirects
-redirects_hint: URL redirects → [Options](https://docs.netlify.com/routing/redirects/redirect-options/)
-robots_hint: Tutorial → [Robots.txt file guide](https://boluda.com/tutorial/guia-del-archivo-robots-txt/)
+redirects_hint: URL redirects
+redirects_from: From
+redirects_to: To
+redirects_type: Type
+# singletones > robots
+robots_hint: Tutorial
 # boxes and sections
 box_name: Name
 box_name_hint: File name
@@ -505,7 +510,7 @@ box_node: Node
 box_node_hint: HTML tag name for the Box
 box_params: Parameters
 box_params_singular: Parameter
-box_params_hint: Custom parameters from the page or global value to the box
+box_params_hint: Custom Parameter or Field Values from the page or global value to the box
 box_params_from: From Parameter
 box_params_to: To Parameter
 box_params_value: JSON Value
@@ -528,7 +533,7 @@ box_tags_taxonomy: Taxonomies
 box_tags_taxonomy_key: Taxonomy
 box_tags_param: Parameter
 box_tags_param_key: Parameter Key
-box_tags_param_hint: Indicates the parameter name
+box_tags_param_hint: Specify the name of the parameter or page field.
 box_tags_custom: Custom
 box_sort: Order of Elements
 box_cols_vl: Nº of Columns
@@ -713,6 +718,9 @@ modals_hint: Sections represented as hidden modal windows that must be linked as
 # patterns
 pattern: Lowercase · No spaces (use hyphens instead) · Without accents · No strange characters or underscores
 # options
+option-collections-related: Related
+option-collections-all: All
+option-collections-global: Global
 option-langs-es: 🇪🇸 Spanish
 option-langs-en: 🇬🇧 English
 option-langs-fr: 🇫🇷 French

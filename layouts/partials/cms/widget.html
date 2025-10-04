@@ -100,7 +100,11 @@
 {{ $o = partial "functions/obj-no-nil" $o }}
 
 {{ if $from }}
-  {{ $o = dict "<<" (slice $o $from) }}
+  {{ if $o }}
+    {{ $o = dict "<<" (slice $o $from) }}
+  {{ else }}
+    {{ $o = $from }}
+  {{ end }}
 {{ end }}
 
 {{ $return := cond (not .var) $o (dict $var $o) }}
