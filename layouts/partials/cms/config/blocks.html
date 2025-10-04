@@ -365,18 +365,18 @@
   (partial "cms/widget" (dict "var" `box_inputs_checkbox` "name" `checkbox` "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_input_x` `~box_input_options`)))
   (partial "cms/widget" (dict "var" `box_inputs_check`    "name" `check`    "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full`)))
   (partial "cms/widget" (dict "var" `box_inputs_file`     "name" `file`     "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_input_max` `~box_input_accept` `~box_input_basename` `~box_button_color_simple` `~box_button_swap`)))
-  (partial "cms/widget" (dict "var" `box_inputs_hidden`   "name" `hidden`   "widget" `object` "fields" (slice `~box_input_name`)))
-  (partial "cms/widget" (dict "var" `box_inputs_h2`       "name" `h2`       "widget" `object` "fields" (slice `~box_input_show_if` (dict "name" `label`                     "label" .box_title                        ) `~box_input_hint`  )))
-  (partial "cms/widget" (dict "var" `box_inputs_h3`       "name" `h3`       "widget" `object` "fields" (slice `~box_input_show_if` (dict "name" `label`                     "label" .box_title                        ) `~box_input_hint`  )))
-  (partial "cms/widget" (dict "var" `box_inputs_h4`       "name" `h4`       "widget" `object` "fields" (slice `~box_input_show_if` (dict "name" `label`                     "label" .box_title                        ) `~box_input_hint`  )))
-  (partial "cms/widget" (dict "var" `box_inputs_h5`       "name" `h5`       "widget" `object` "fields" (slice `~box_input_show_if` (dict "name" `label`                     "label" .box_title                        ) `~box_input_hint`  )))
-  (partial "cms/widget" (dict "var" `box_inputs_h6`       "name" `h6`       "widget" `object` "fields" (slice `~box_input_show_if` (dict "name" `label`                     "label" .box_title                        ) `~box_input_hint`  )))
-  (partial "cms/widget" (dict "var" `box_inputs_md`       "name" `md`       "widget" `object` "fields" (slice `~box_input_show_if` (dict "name" `md`    "widget" `markdown` "label" .box_contact_label "show_raw" true) `~box_contact_full`)))
+  (partial "cms/widget" (dict "var" `box_inputs_hidden`   "name" `hidden`   "widget" `object` "fields" (slice `~box_input_name` `~box_input_label`)))
+  (partial "cms/widget" (dict "var" `box_inputs_h2`       "name" `h2`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
+  (partial "cms/widget" (dict "var" `box_inputs_h3`       "name" `h3`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
+  (partial "cms/widget" (dict "var" `box_inputs_h4`       "name" `h4`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
+  (partial "cms/widget" (dict "var" `box_inputs_h5`       "name" `h5`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
+  (partial "cms/widget" (dict "var" `box_inputs_h6`       "name" `h6`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
+  (partial "cms/widget" (dict "var" `box_inputs_md`       "name" `md`       "widget" `object` "fields" (slice (dict "name" `md`    "widget" `markdown` "label" .box_contact_label) `~box_contact_full` `~box_input_show_if`)))
   (partial "cms/widget" (dict
     "var"     `box_inputs`
     "name"    `inputs`
     "widget"  `list`
-    "summary" "{{fields.label}}"
+    "summary" "{{fields.name}} - {{fields.label}}"
     "types"   (slice
       `~box_inputs_text`
       `~box_inputs_email`
