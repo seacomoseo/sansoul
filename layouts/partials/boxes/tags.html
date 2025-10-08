@@ -6,10 +6,9 @@
 
     {{- /*  EACH  */ -}}
     {{- range . -}}
-      {{- $icon    := "" -}}
-      {{- $default := "" -}}
-      {{- $label   := "" -}}
-      {{- $link    := "" -}}
+      {{- $icon  := "" -}}
+      {{- $label := "" -}}
+      {{- $link  := "" -}}
 
       {{- /*  TYPES  */ -}}
       {{- if      eq .type "type" -}}
@@ -72,19 +71,19 @@
       {{- else if eq .type "time" -}}
       
         {{- with $page.ReadingTime -}}
-          {{- $default = "clock" -}}
-          {{- $label   = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
+          {{- $icon  = site.Data.utilities.defaults.clock -}}
+          {{- $label = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
         {{- end -}}
 
       {{- else if eq .type "words" -}}
 
-        {{- $default = "words" -}}
-        {{- $label   = i18n "word_count" $page.WordCount -}}
+        {{- $icon  = site.Data.utilities.defaults.words -}}
+        {{- $label = i18n "word_count" $page.WordCount -}}
 
       {{- else if eq .type "address" -}}
 
-        {{- $default = "address" -}}
-        {{- $label   = partial "functions/address" (dict "Page" $page "url" false) -}}
+        {{- $icon  = site.Data.utilities.defaults.address -}}
+        {{- $label = partial "functions/address" (dict "Page" $page "url" false) -}}
 
       {{- else if eq .type "tax" -}}
 
@@ -107,10 +106,9 @@
       {{- else if eq .type "param" -}}
 
         {{- $value := partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
-        {{- $icon   = .icon -}}
         {{- with $value -}}
           {{- range slice | append . -}}
-            {{- $items = $items | append (dict "icon" $icon "label" .) -}}
+            {{- $items = $items | append (dict "icon" .icon "label" .) -}}
           {{- end -}}
         {{- end -}}
 
