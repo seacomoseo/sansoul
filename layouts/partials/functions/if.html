@@ -2,7 +2,7 @@
   {{ $if := true }}
   {{ with .if }}
     {{ if eq . "content" }}
-      {{ $if = $.Page.RawContent }}
+      {{ $if = trim $.Page.RawContent "\n" }}
     {{ else if eq . "related" }}
       {{ $if = or $.Page.Params.related (and $.Page.Params.is_related ($.Page.CurrentSection.Pages.Related $.Page)) | and (not $.Page.IsSection) }}
     {{ else if eq . "comments" }}
