@@ -75,11 +75,13 @@
     "summary" "{{fields.file}}"
     "fields"  (slice
       (partial "cms/widget" (dict
-        "alt"        `template_sections_file`
-        "name"       `file`
-        "widget"     `relation`
-        "hint"       (print "[" .template_sections_file_hint "](#/collections/section)")
-        "collection" `section`
+        "alt"            `template_sections_file`
+        "name"           `file`
+        "widget"         `relation`
+        "hint"           (print "[" .template_sections_file_hint "](#/collections/section)")
+        "collection"     `section`
+        "search_fields"  (slice "{{name}}")
+        "display_fields" (slice "{{name}}")
       ))
     )
   ))

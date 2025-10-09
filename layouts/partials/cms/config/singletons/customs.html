@@ -1,7 +1,7 @@
 {{ $u := site.Data.utilities }}
 
 {{ $option_global         := index . "option-collections-global" }}
-{{ $customs_types_default := print $u.defaults.values.emoji  " " $option_global }}
+{{ $customs_types_default := print $u.default.values.emoji  " " $option_global }}
 {{ $customs_types_hint    := print .default " → **" $customs_types_default "**" }}
 
 {{ $widgets_last := apply $u.widgets "dict" "value" "." }}

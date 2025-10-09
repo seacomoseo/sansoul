@@ -168,12 +168,12 @@
         {{/*  CONFIG TO TYPE PARENT PAGES  */}}
         {{ $slug          := "" }}
         {{ with $type }}
-          {{ $title        = or .lang_title  $default_values.title       .title .singular  $name    }}
-          {{ $singular    := or .singular    $default_values.singular    .title $cms.title $name    }}
-          {{ $description := or .description $default_values.description ""                         }}
-          {{ $slug         = or .slug        $default_values.slug        $title                     }}
-          {{ $icon        := or .icon        (index site.Data.utilities.defaults $name).icon  "file"}}
-          {{ $emoji       := or .emoji       (index site.Data.utilities.defaults $name).emoji "📄"  }}
+          {{ $title        = or .lang_title  $default_values.title       .title .singular  $name   }}
+          {{ $singular    := or .singular    $default_values.singular    .title $cms.title $name   }}
+          {{ $description := or .description $default_values.description ""                        }}
+          {{ $slug         = or .slug        $default_values.slug        $title                    }}
+          {{ $icon        := or .icon        (index site.Data.utilities.default $name).icon  "file"}}
+          {{ $emoji       := or .emoji       (index site.Data.utilities.default $name).emoji "📄"  }}
           {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
           {{ $customs     := slice }}
           {{ range site.Data.customs | default slice }}

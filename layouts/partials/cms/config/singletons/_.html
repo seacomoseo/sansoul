@@ -1,4 +1,4 @@
-{{ $d := site.Data.utilities.defaults }}
+{{ $d := site.Data.utilities.default }}
 
 {{ return slice
   (dict "file" "content/values.{{locale}}.yml" "extension" `yml` "name" `values`    "label" .values      "icon" $d.values.icon    "editor" (dict "preview" false) "fields" `~values`   "i18n" true)

@@ -1,0 +1,157 @@
+
+{{ $icons := slice
+  "brand:facebook-f"
+  "brand:x-twitter"
+  "brand:tiktok"
+  "brand:instagram"
+  "brand:youtube"
+  "brand:linkedin-in"
+  "brand:google"
+}}
+
+{{/*  Add defaults  */}}
+{{ $defaults := slice
+  "home"
+  "play"
+  "up"
+  "down"
+  "left"
+  "right"
+  "right_angle"
+  "close"
+  "cookies"
+  "sitemap"
+  "search"
+  "question"
+  "plus"
+  "calendar"
+  "calendar_edit"
+  "calendar_start"
+  "calendar_end"
+  "clock"
+  "geo"
+  "copy"
+  "send"
+  "send_close"
+  "send_checking"
+  "send_submit"
+  "send_error"
+  "send_info"
+  "review_star"
+  "words"
+  "address"
+  "drop_down"
+  "drop_up"
+  "phone"
+  "whatsapp"
+  "upload"
+  "mail"
+  "translate"
+  "langs"
+  "user"
+  "quote"
+}}
+{{ $d := site.Data.utilities.defaults }}
+{{ $s := site.Data.styles.icons }}
+{{ range $defaults }}
+  {{ $icon := or (index $s .) (index $d .) }}
+  {{ $icons = $icons | append $icon }}
+{{ end }}
+
+{{/*  Get all like json strin  */}}
+{{ $all := slice site.Data.section }}
+{{ range site.AllPages }}
+  {{ $all = $all | append .RawContent .Params }}
+{{ end }}
+{{ range site.Languages }}
+  {{ $values := index site.Data (print "values." .Lang) }}
+  {{ $all     = $all | append $values }}
+  {{ $icon   := print "svg:flag-" .Lang }}
+  {{ $icons   = $icons | append $icon }}
+{{ end }}
+{{ range site.Data.types }}
+  {{ $all = $all | append .tpl }}
+{{ end }}
+{{ $all = $all | uniq | jsonify }}
+
+{{/*  Get custom params  */}}
+{{ $icon_params    := slice "icon" "icon_right" "pin" "div" }}
+{{ $image_params   := slice "image" "hover" "logo" "bi" }}
+{{ $gallery_params := slice "images" "limages" }}
+{{ $icon_vars      := slice "box_icon_id" "box_button_pin" "box_divider_id" }}
+{{ $image_vars     := slice "box_image_src" "box_image_hover" "box_image_no_video" "box_bg_image" "box_container_bg_image" }}
+{{ $gallery_vars   := slice "box_gallery_images" "box_gallery_limages" }}
+{{ range site.Data.customs }}
+  {{ if in $icon_vars .var }}
+    {{/*  Icons  */}}
+    {{ with .name }}
+      {{ $icon_params = $icon_params | append . }}
+    {{ end }}
+  {{ else if or (in $image_vars .var) (eq .widget "image" | and (not .multiple)) }}
+    {{/*  Images  */}}
+    {{ with .name }}
+      {{ $image_params = $image_params | append . }}
+    {{ end }}
+  {{ else if or (in $gallery_vars .var) (eq .widget "image" | and .multiple) }}
+    {{/*  Gallery  */}}
+    {{ with .name }}
+      {{ $gallery_params = $gallery_params | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $icon_params    = delimit (uniq $icon_params )   "|" }}
+{{ $image_params   = delimit (uniq $image_params)   "|" }}
+{{ $gallery_params = delimit (uniq $gallery_params) "|" }}
+
+{{/*  Get icons  */}}
+{{ $icon_regex := print `"(` $icon_params `)":"(.*?)"|::(.*?)::` }}
+{{ range $all | findRESubmatch $icon_regex | uniq }}
+  {{ $icon := or (index . 3) (index . 2) }}
+  {{ if $icon }}
+    {{ $icons = $icons | append $icon }}
+  {{ end }}
+{{ end }}
+
+{{/*  Get images  */}}
+{{ $images := slice }}
+{{ $image_regex := print `"(` $image_params `)":"(.*?)"|!\[.*?\]\((.*?)( ".*?")?\)` }}
+{{ range $all | findRESubmatch $image_regex | uniq }}
+  {{ $image := or (index . 3) (index . 2) }}
+  {{ $images = $images | append $image }}
+{{ end }}
+{{ $gallery_regex := print `"(` $gallery_params `)":\[(.*?)\]` }}
+{{ range $all | findRESubmatch $gallery_regex | uniq }}
+  {{ $gallery := index . 2 }}
+  {{ range $gallery | findRESubmatch `"(.*?)"` | uniq }}
+    {{ $image := index . 1 }}
+    {{ $images = $images | append $image }}
+  {{ end }}
+{{ end }}
+{{ range $images }}
+  {{ if . | findRE `\.svg$` }}
+    {{ $icon := . | replaceRE `^/|^/?icons?/|\.svg$` "" | replaceRE `^(brand)s/` `$1-` }}
+    {{ $icon  = print "svg:" $icon }}
+    {{ $icons = $icons | append $icon }}
+  {{ end }}
+{{ end }}
+
+{{/*  Add to Store  */}}
+{{ range $icons | uniq }}
+  {{ if ne . "hide" }}
+    {{ $icon := . }}
+    {{ $type := "glyphs" }}
+    {{ range $icon | findRESubmatch `^(\w+):(.*)` }}
+      {{/*  {{ partial "warn" . }}  */}}
+      {{ $icon = index . 2 }}
+      {{ $type = index . 1 }}
+      {{ $type = print $type "s" }}
+      {{ if eq $type "brands" }}
+        {{ $icon = print "brands/" $icon }}
+        {{ $type = "svgs" }}
+      {{ end }}
+    {{ end }}
+    {{ page.Store.Add $type $icon }}
+  {{ end }}
+{{ end }}
+
+{{ return "" }}

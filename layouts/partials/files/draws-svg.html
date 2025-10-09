@@ -1,7 +1,7 @@
 {{- /*  DIVIDERS  */ -}}
 
 {{- $div_ := slice -}}
-{{- $divs := hugo.Store.Get "divs" | uniq | sort -}}
+{{- $divs := page.Store.Get "divs" | uniq | sort -}}
 {{- define "partials/div" -}}
   {{- $n := add .k 1 -}}
   {{- $s := mul .size 1024 -}}
@@ -66,7 +66,7 @@
 {{- /*  SVG FILES  */ -}}
 
 {{- $svg_ := slice -}}
-{{- $svgs := hugo.Store.Get "svgs" | uniq -}}
+{{- $svgs := page.Store.Get "svgs" | uniq | sort -}}
 {{- range $svgs -}}
   {{- $path := print "/media/{icons/,}" . ".svg" -}}
   {{- $src  := resources.GetMatch $path -}}

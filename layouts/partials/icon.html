@@ -26,11 +26,6 @@
     {{ $is_txt     = in $icon_code "%" }}
   {{ end }}
 
-  {{/*  STORE  */}}
-  {{ if not $is_txt }}
-    {{ partial "functions/draw-to-store" $icon }}
-  {{ end }}
-
   {{/*  CLASS  */}}
   {{ $class  := slice "icon" }}
   {{ $width  := "" }}

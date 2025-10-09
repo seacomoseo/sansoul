@@ -2,28 +2,6 @@
 {{- $lang_cms := partial "functions/lang-cms" . -}}
 {{- $config   := index (where site.Data.langs "lang" $lang_cms) 0 -}}
 {{- $netlify  := getenv "NETLIFY" -}}
-{{- $default  := site.Data.utilities.defaults -}}
-{{- $icons    := slice
-  $default.single.icon
-  $default.section.icon
-  $default.types.icon
-  $default.values.icon
-  $default.settings.icon
-
-  $default.config.icon
-  $default.styles.icon
-  $default.remote.icon
-  $default.redirects.icon
-  $default.robots.icon
--}}
-{{- range site.Sections -}}
-  {{- with .Params.icon -}}
-    {{- $icons = $icons | append . -}}
-  {{- end -}}
-{{- end -}}
-{{- range $icons -}}
-  {{- partial "functions/draw-to-store" . -}}
-{{- end -}}
 
 <!doctype html>
 <html lang="{{ $lang_cms }}">

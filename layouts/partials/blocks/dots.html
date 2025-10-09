@@ -12,27 +12,25 @@
     {{- end -}}
     {{- with $link -}}
       {{- if not $icon -}}
-        {{- if in . "facebook" -}}
-          {{- $icon = "brand:facebook-f" -}}
-        {{- else if in . "twitter" -}}
-          {{- $icon = "brand:x-twitter" -}}
-        {{- else if in . "tiktok" -}}
-          {{- $icon = "brand:tiktok" -}}
-        {{- else if in . "instagram" -}}
-          {{- $icon = "brand:instagram" -}}
-        {{- else if in . "youtube" -}}
-          {{- $icon = "brand:youtube" -}}
-        {{- else if in . "linkedin" -}}
-          {{- $icon = "brand:linkedin-in" -}}
-        {{- else if in . "github" -}}
-          {{- $icon = "brand:github-alt" -}}
-        {{- else if in . "gitlab" -}}
-          {{- $icon = "brand:gitlab" -}}
-        {{- else if in . "g.page" -}}
-          {{- $icon = "brand:google" -}}
-        {{- else if in . "mailto" -}}
-          {{- $icon = "mail" -}}
-        {{- else -}}
+        {{- $icons := dict
+          "facebook"  "brand:facebook-f"
+          "twitter"   "brand:x-twitter"
+          "tiktok"    "brand:tiktok"
+          "instagram" "brand:instagram"
+          "youtube"   "brand:youtube"
+          "linkedin"  "brand:linkedin-in"
+          "github"    "brand:github-alt"
+          "gitlab"    "brand:gitlab"
+          "g.page"    "brand:google"
+          "mailto"    "mail"
+        -}}
+        {{- range $k, $v := $icons -}}
+          {{- with in $link $k -}}
+            {{- $icon = $v -}}
+            {{- break -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if not $icon -}}
           {{- $icon = "share" -}}
         {{- end -}}
       {{- end -}}

@@ -6,9 +6,10 @@
 
     {{- /*  EACH  */ -}}
     {{- range . -}}
-      {{- $icon  := "" -}}
-      {{- $label := "" -}}
-      {{- $link  := "" -}}
+      {{- $icon    := "" -}}
+      {{- $default := "" -}}
+      {{- $label   := "" -}}
+      {{- $link    := "" -}}
 
       {{- /*  TYPES  */ -}}
       {{- if      eq .type "type" -}}
@@ -71,19 +72,19 @@
       {{- else if eq .type "time" -}}
       
         {{- with $page.ReadingTime -}}
-          {{- $icon  = site.Data.utilities.defaults.clock -}}
-          {{- $label = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
+          {{- $default = "clock" -}}
+          {{- $label   = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
         {{- end -}}
 
       {{- else if eq .type "words" -}}
 
-        {{- $icon  = site.Data.utilities.defaults.words -}}
-        {{- $label = i18n "word_count" $page.WordCount -}}
+        {{- $default = "words" -}}
+        {{- $label   = i18n "word_count" $page.WordCount -}}
 
       {{- else if eq .type "address" -}}
 
-        {{- $icon  = site.Data.utilities.defaults.address -}}
-        {{- $label = partial "functions/address" (dict "Page" $page "url" false) -}}
+        {{- $default = "address" -}}
+        {{- $label   = partial "functions/address" (dict "Page" $page "url" false) -}}
 
       {{- else if eq .type "tax" -}}
 
@@ -106,9 +107,10 @@
       {{- else if eq .type "param" -}}
 
         {{- $value := partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
+        {{- $icon   = .icon -}}
         {{- with $value -}}
           {{- range slice | append . -}}
-            {{- $items = $items | append (dict "icon" .icon "label" .) -}}
+            {{- $items = $items | append (dict "icon" $icon "label" .) -}}
           {{- end -}}
         {{- end -}}
 
@@ -121,7 +123,7 @@
       {{- /*  APPEND  */ -}}
       {{- if $label -}}
         {{- $icon  = .icon  | default $icon -}}
-        {{- $item := dict "icon" $icon "label" $label "link" $link -}}
+        {{- $item := dict "icon" $icon "default" $default "label" $label "link" $link -}}
         {{- $items = $items | append $item -}}
       {{- end -}}
     {{- end -}}

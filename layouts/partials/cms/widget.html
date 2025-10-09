@@ -31,54 +31,93 @@
 {{ end }}
 
 {{ if eq "datetime" $widget }}
-  {{ if not .format }}
-    {{ $f := dict
-      "format"      `YYYY-MM-DD HH:mm:ss`
-      "date_format" `YYYY-MM-DD`
-      "time_format" `HH:mm`
-    }}
-    {{ $o  = merge $o $f }}
+  {{ if ne nil .format }}
+    {{ $o = merge $o (dict "format" `YYYY-MM-DD HH:mm:ss`) }}
+  {{ end }}
+  {{ if ne nil .date_format }}
+    {{ $o = merge $o (dict "date_format" `YYYY-MM-DD`) }}
+  {{ end }}
+  {{ if ne nil .time_format }}
+    {{ $o = merge $o (dict "time_format" `HH:mm`) }}
   {{ end }}
 {{ else if eq "color" $widget }}
-  {{ if not $o.allow_input }}
+  {{ if ne nil .allow_input }}
     {{ $o = merge $o (dict "allow_input" true) }}
   {{ end }}
 {{ else if eq "code" $widget }}
   {{ $o = merge $o (dict "output_code_only" true) }}
-  {{ if not $o.default_language }}
+  {{ if ne nil .default_language }}
     {{ $o = merge $o (dict "default_language" `html`) }}
   {{ end }}
 {{ else if eq "image" $widget }}
-  {{ if not $o.allow_input }}
-    {{ $o = merge $o (dict "widget" `file` "max_file_size" 512000000 "choose_url" true "accept" `image/*,video/*`) }}
+  {{ $o = merge $o (dict "widget" `file`) }}
+  {{ if ne nil .max_file_size }}
+    {{ $o = merge $o (dict "max_file_size" 512000000) }}
+  {{ end }}
+  {{ if ne nil .choose_url }}
+    {{ $o = merge $o (dict "choose_url" true) }}
+  {{ end }}
+  {{ if ne nil .accept }}
+    {{ $o = merge $o (dict "accept" `image/*,video/*`) }}
   {{ end }}
 {{ else if eq "int" $widget }}
-  {{ if not $o.value_type }}
-    {{ $o = merge $o (dict "widget" `number` "value_type" `int` "step" 1) }}
+  {{ $o = merge $o (dict "widget" `number`) }}
+  {{ if ne nil .value_type }}
+    {{ $o = merge $o (dict "value_type" `int`) }}
+  {{ end }}
+  {{ if ne nil .step }}
+    {{ $o = merge $o (dict "step" 1) }}
   {{ end }}
 {{ else if eq "float" $widget }}
-  {{ if not $o.value_type }}
-    {{ $o = merge $o (dict "widget" `number` "value_type" `float` "step" 0.01 "min" 0) }}
+  {{ $o = merge $o (dict "widget" `number`) }}
+  {{ if ne nil .value_type }}
+    {{ $o = merge $o (dict "value_type" `float`) }}
+  {{ end }}
+  {{ if ne nil .step }}
+    {{ $o = merge $o (dict "step" 0.01 "min" 0) }}
+  {{ end }}
+  {{ if ne nil .min }}
+    {{ $o = merge $o (dict "min" 0) }}
   {{ end }}
 {{ else if eq "markdown" $widget }}
-  {{ $o = merge $o (dict "show_raw" true) }}
+  {{ if ne nil .show_raw }}
+    {{ $o = merge $o (dict "show_raw" true) }}
+  {{ end }}
 {{ else if eq "object" $widget }}
-  {{ $o = merge $o (dict "collapsed" true) }}
+  {{ if ne nil .collapsed }}
+    {{ $o = merge $o (dict "collapsed" true) }}
+  {{ end }}
 {{ else if eq "list" $widget }}
-  {{ $o = merge $o (dict "collapsed" true "minimize_collapsed" true "allow_add" true) }}
-  {{ if $loc }}
-    {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
-    {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
+  {{ if ne nil .collapsed }}
+    {{ $o = merge $o (dict "collapsed" true) }}
+  {{ end }}
+  {{ if ne nil .minimize_collapsed }}
+    {{ $o = merge $o (dict "minimize_collapsed" true) }}
+  {{ end }}
+  {{ if ne nil .allow_add }}
+    {{ $o = merge $o (dict "allow_add" true) }}
+  {{ end }}
+  {{ if ne nil .label_singular }}
+    {{ if $loc }}
+      {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
+      {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
+    {{ end }}
   {{ end }}
 {{ else if eq "relation" $widget }}
-  {{ $o = merge $o (dict
-    "options_length" 100
-    "value_field"    "{{slug}}"
-    "search_fields"  (slice "{{title}}")
-    "display_fields" (slice "{{title}}")
-  ) }}
+  {{ if ne nil .options_length }}
+    {{ $o = merge $o (dict "options_length" 100) }}
+  {{ end }}
+  {{ if ne nil .value_field }}
+    {{ $o = merge $o (dict "value_field" "{{slug}}") }}
+  {{ end }}
+  {{ if ne nil .search_fields }}
+    {{ $o = merge $o (dict "search_fields" (slice "{{title}}")) }}
+  {{ end }}
+  {{ if ne nil .display_fields }}
+    {{ $o = merge $o (dict "display_fields" (slice "{{title}}")) }}
+  {{ end }}
 {{ else if eq "boolean" $widget }}
-  {{ $opts := cond (not .required) `~options_boolean` `~options_boolean_req` }}
+  {{ $opts := cond (not $o.required) `~options_boolean` `~options_boolean_req` }}
   {{ $o  = merge $o (dict "widget" `select` "options" $opts) }}
 {{ end }}
 

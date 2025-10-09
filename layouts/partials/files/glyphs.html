@@ -1,5 +1,5 @@
 {{ if hugo.IsProduction }}
-  {{ $icons := hugo.Store.Get "glyphs" | uniq | sort }}
+  {{ $icons := page.Store.Get "glyphs" | uniq | sort }}
   {{ $icons  = delimit $icons "," | replaceRE `-` "_" }}
   {{ with site.Data.styles.icons }}
     {{ $grade := cond (and .fill (not .grade)) -25 .grade }}

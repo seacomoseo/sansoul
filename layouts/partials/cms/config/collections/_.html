@@ -97,11 +97,11 @@
   {{ if .Params.is_related }}
     {{ $fields = $fields | append
       (partial "cms/widget" (dict
-        "alt"            `page_related`
-        "name"           `related`
-        "widget"         `relation`
-        "collection"     .Type
-        "multiple"       true
+        "alt"        `page_related`
+        "name"       `related`
+        "widget"     `relation`
+        "collection" .Type
+        "multiple"   true
       ))
     }}
   {{ end }}
@@ -263,7 +263,7 @@
   "label"            $.collection_types
   "label_singular"   $.collection_types_singular
   "name"             `types`
-  "icon"             site.Data.utilities.defaults.types.icon
+  "icon"             site.Data.utilities.default.types.icon
   "description"      $.collection_types_description
   "identifier_field" `title`
   "extension"        `yml`
@@ -288,7 +288,7 @@
   "label"            $.collection_sections
   "label_singular"   $.collection_sections_singular
   "name"             `section`
-  "icon"             site.Data.utilities.defaults.section.icon
+  "icon"             site.Data.utilities.default.section.icon
   "description"      $.collection_sections_description
   "identifier_field" `name`
   "extension"        `yml`

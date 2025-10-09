@@ -65,14 +65,11 @@
       {{/*  svg sprite  */}}
       {{- $attrs := dict "class" .class "width" $width "height" $height "aria-label" $alt -}}
       {{- $attrs  = partial "functions/attrs" $attrs -}}
-      {{- $timestamp := partial "functions/timestamp" . -}}
-      {{- $draws     := print "/draws." $timestamp ".svg" -}}
-      {{- $icon      := $file | replaceRE `^/media/(icons?/)?|.svg$` "" | replaceRE `^(brand)s/` `$1-` -}}
-      {{- $id        := $icon | replaceRE `/` "-" -}}
-      {{- $href      := print $draws "#" $id }}
+      {{- $time  := partial "functions/timestamp" . -}}
+      {{- $draws := print "/draws." $time ".svg" -}}
+      {{- $id    := $file | replaceRE `^/media/(icons?/)?|.svg$` "" | replaceRE `^(brand)s/` `$1-` | replaceRE `/` "-" -}}
+      {{- $href  := print $draws "#" $id }}
       <svg {{- $attrs }}><use href="{{ $href }}"></use></svg>
-      {{- $icon       = print "svg:" $icon -}}
-      {{- partial "functions/draw-to-store" $icon -}}
     {{- end -}}
 
     {{- /*  schema  */}}
