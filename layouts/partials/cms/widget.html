@@ -31,89 +31,89 @@
 {{ end }}
 
 {{ if eq "datetime" $widget }}
-  {{ if ne nil .format }}
+  {{ if eq nil .format }}
     {{ $o = merge $o (dict "format" `YYYY-MM-DD HH:mm:ss`) }}
   {{ end }}
-  {{ if ne nil .date_format }}
+  {{ if eq nil .date_format }}
     {{ $o = merge $o (dict "date_format" `YYYY-MM-DD`) }}
   {{ end }}
-  {{ if ne nil .time_format }}
+  {{ if eq nil .time_format }}
     {{ $o = merge $o (dict "time_format" `HH:mm`) }}
   {{ end }}
 {{ else if eq "color" $widget }}
-  {{ if ne nil .allow_input }}
+  {{ if eq nil .allow_input }}
     {{ $o = merge $o (dict "allow_input" true) }}
   {{ end }}
 {{ else if eq "code" $widget }}
   {{ $o = merge $o (dict "output_code_only" true) }}
-  {{ if ne nil .default_language }}
+  {{ if eq nil .default_language }}
     {{ $o = merge $o (dict "default_language" `html`) }}
   {{ end }}
 {{ else if eq "image" $widget }}
   {{ $o = merge $o (dict "widget" `file`) }}
-  {{ if ne nil .max_file_size }}
+  {{ if eq nil .max_file_size }}
     {{ $o = merge $o (dict "max_file_size" 512000000) }}
   {{ end }}
-  {{ if ne nil .choose_url }}
+  {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
-  {{ if ne nil .accept }}
+  {{ if eq nil .accept }}
     {{ $o = merge $o (dict "accept" `image/*,video/*`) }}
   {{ end }}
 {{ else if eq "int" $widget }}
   {{ $o = merge $o (dict "widget" `number`) }}
-  {{ if ne nil .value_type }}
+  {{ if eq nil .value_type }}
     {{ $o = merge $o (dict "value_type" `int`) }}
   {{ end }}
-  {{ if ne nil .step }}
+  {{ if eq nil .step }}
     {{ $o = merge $o (dict "step" 1) }}
   {{ end }}
 {{ else if eq "float" $widget }}
   {{ $o = merge $o (dict "widget" `number`) }}
-  {{ if ne nil .value_type }}
+  {{ if eq nil .value_type }}
     {{ $o = merge $o (dict "value_type" `float`) }}
   {{ end }}
-  {{ if ne nil .step }}
+  {{ if eq nil .step }}
     {{ $o = merge $o (dict "step" 0.01 "min" 0) }}
   {{ end }}
-  {{ if ne nil .min }}
+  {{ if eq nil .min }}
     {{ $o = merge $o (dict "min" 0) }}
   {{ end }}
 {{ else if eq "markdown" $widget }}
-  {{ if ne nil .show_raw }}
+  {{ if eq nil .show_raw }}
     {{ $o = merge $o (dict "show_raw" true) }}
   {{ end }}
 {{ else if eq "object" $widget }}
-  {{ if ne nil .collapsed }}
+  {{ if eq nil .collapsed }}
     {{ $o = merge $o (dict "collapsed" true) }}
   {{ end }}
 {{ else if eq "list" $widget }}
-  {{ if ne nil .collapsed }}
+  {{ if eq nil .collapsed }}
     {{ $o = merge $o (dict "collapsed" true) }}
   {{ end }}
-  {{ if ne nil .minimize_collapsed }}
+  {{ if eq nil .minimize_collapsed }}
     {{ $o = merge $o (dict "minimize_collapsed" true) }}
   {{ end }}
-  {{ if ne nil .allow_add }}
+  {{ if eq nil .allow_add }}
     {{ $o = merge $o (dict "allow_add" true) }}
   {{ end }}
-  {{ if ne nil .label_singular }}
+  {{ if eq nil .label_singular }}
     {{ if $loc }}
       {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
       {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
     {{ end }}
   {{ end }}
 {{ else if eq "relation" $widget }}
-  {{ if ne nil .options_length }}
+  {{ if eq nil .options_length }}
     {{ $o = merge $o (dict "options_length" 100) }}
   {{ end }}
-  {{ if ne nil .value_field }}
+  {{ if eq nil .value_field }}
     {{ $o = merge $o (dict "value_field" "{{slug}}") }}
   {{ end }}
-  {{ if ne nil .search_fields }}
+  {{ if eq nil .search_fields }}
     {{ $o = merge $o (dict "search_fields" (slice "{{title}}")) }}
   {{ end }}
-  {{ if ne nil .display_fields }}
+  {{ if eq nil .display_fields }}
     {{ $o = merge $o (dict "display_fields" (slice "{{title}}")) }}
   {{ end }}
 {{ else if eq "boolean" $widget }}
