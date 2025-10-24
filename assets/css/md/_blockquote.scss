@@ -1,7 +1,45 @@
 .md {
-  .icon.quote-left,
-  .icon.quote:first-child {
-    transform: rotate(180deg) translateY(.25em);
+  .quote:first-child,
+  .quote:last-child {
+    translate: 0;
+  }
+  .quote:first-child,
+  .quotes::before {
+    rotate: 180deg;
+  }
+  .quotes {
+    &::before,
+    &::after {
+      content: 'format_quote';
+    }
+    &::before {
+      margin-right: .125em;
+    }
+    &::after {
+      margin-left: .125em;
+    }
+  }
+  .aquotes {
+    &::before {
+      content: 'keyboard_double_arrow_left';
+    }
+    &::after {
+      content: 'keyboard_double_arrow_right';
+    }
+  }
+  .aquotes {
+    &::before,
+    &::after {
+      translate: 0 .125em;
+    }
+  }
+  q,
+  .quotes,
+  .aquotes {
+    &::before,
+    &::after {
+      color: var(--main);
+    }
   }
   blockquote {
     &:not(h1, h2, h3, h4, h5, h6, .subtitle, .font-base) {
@@ -14,29 +52,31 @@
     width: fit-content;
     margin: 1em auto;
 
-    // Quotes
-    &:not(#aux) {
-      > .icon.quote-left,
-      > .icon.quote-right {
-        margin: 0;
+    &.quotes {
+      &::after,
+      &::before {
+        height: $line-height-cursive * .9em;
+      }
+    }
+    &.aquotes {
+      &::after,
+      &::before {
         height: $line-height-cursive * 1em;
       }
     }
-    &:not(.quotes, .dittos) {
+    &:not(.quotes, .aquotes) {
       padding-inline: 1.5em;
       &::after,
       &::before {
+        content: '“';
         font-size: 2em;
         line-height: .625;
         font-weight: 900;
-        content: '“';
       }
       &::after {
         content: '”';
       }
     }
-    > .icon.quote-left,
-    > .icon.quote-right,
     &::after,
     &::before {
       color: var(--main);
@@ -44,7 +84,6 @@
       top: 0;
       left: 0;
     }
-    > .icon.quote-right,
     &::after {
       top: unset;
       left: unset;
@@ -55,14 +94,11 @@
     // Background
     &.bg {
       padding: 1.5em;
-      > .icon.quote-left,
-      > .icon.quote-right,
       &::after,
       &::before {
         top: .5em;
         left: .5em;
       }
-      > .icon.quote-right,
       &::after {
         top: unset;
         left: unset;
