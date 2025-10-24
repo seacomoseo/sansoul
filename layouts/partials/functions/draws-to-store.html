@@ -50,10 +50,10 @@
   "user"
   "quote"
 }}
-{{ $u := site.Data.utilities.icons }}
-{{ $s := site.Data.styles.icons.def }}
+{{ $d := site.Data.utilities.defaults }}
+{{ $s := site.Data.styles.icons }}
 {{ range $def }}
-  {{ $icon := or (index $s .) (index $u .) }}
+  {{ $icon := or (index $s .) (index $d .) }}
   {{ $icons = $icons | append $icon }}
 {{ end }}
 
