@@ -50,6 +50,8 @@
       {{ $width  = 24 }}
       {{ $height = 24 }}
     {{ end }}
+  {{ else if eq $icon "format_quote" }}
+    {{ $class = $class | append "quote" }}
   {{ end }}
 
   {{ $aria_hidden := cond (not $is_txt) "true" false }}

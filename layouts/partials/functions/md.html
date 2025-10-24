@@ -9,7 +9,7 @@
   {{ $md    = replace $md . $html }}
 {{ end }}
 
-{{ range $md | findRE `(<\w+? class="(quotes|dittos).*?">)` | uniq }}
+{{ range $md | findRE `(<blockquote class="(quotes|dittos).*?">)` | uniq }}
   {{ $left  := partial "icon" (dict "class" "quote-left"  "default" "quote") }}
   {{ $right := partial "icon" (dict "class" "quote-right" "default" "quote") }}
   {{ $html  := print . $left $right }}
