@@ -1,6 +1,11 @@
 {{ $vars := dict }}
 {{ with site.Data.styles }}
-  {{ $icons_grade := cond (and .icons.fill (not .icons.grade)) -25 .icons.grade }}
+  {{ $i := .icons }}
+  {{ $d := site.Data.utilities.defaults }}
+  {{ $quote       := or $i.quote       $d.quote       }}
+  {{ $quote_left  := or $i.quote_left  $d.quote_left  }}
+  {{ $quote_right := or $i.quote_right $d.quote_right }}
+  {{ $icons_grade := cond (and $i.fill (not $i.grade)) -25 $i.grade }}
   {{ $vars = dict
     "fonts-css"                         (hugo.Store.Get "fonts_css" | default "")
 
@@ -95,10 +100,13 @@
     "styles-shadow-blur"                (.shadow.blur                     | default 0)
     "styles-shadow-color"               (.shadow.color                    | default "black")
     "styles-shadow-alpha"               (.shadow.alpha                    | default 0)
+    "hugo-is-production"                (hugo.IsProduction                | not | not | string)
     "config-others-show"                (site.Data.config.show            | not | not | string)
     "menu-google_translate"             (site.Params.google_translate     | not | not | string)
     "timestamp"                         (partial "functions/timestamp" .)
-    "hugo-is-production"                (hugo.IsProduction                | not | not | string)
+    "quote"                             $quote
+    "quote-left"                        $quote_left
+    "quote-right"                       $quote_right
     }}
 {{ end }}
 

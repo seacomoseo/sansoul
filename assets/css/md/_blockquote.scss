@@ -10,7 +10,7 @@
   .quotes {
     &::before,
     &::after {
-      content: 'format_quote';
+      content: '#{$quote}';
     }
     &::before {
       margin-right: .125em;
@@ -21,10 +21,10 @@
   }
   .aquotes {
     &::before {
-      content: 'keyboard_double_arrow_left';
+      content: '#{$quote-left}';
     }
     &::after {
-      content: 'keyboard_double_arrow_right';
+      content: '#{$quote-right}';
     }
   }
   .aquotes {
