@@ -9,12 +9,24 @@
   {{ $md    = replace $md . $html }}
 {{ end }}
 
-{{ range $md | findRE `(<blockquote class="(quotes|dittos).*?">)` | uniq }}
+{{ range $md | findRE `(<\w+? class="(quotes|dittos).*?">)` | uniq }}
   {{ $left  := partial "icon" (dict "class" "quote-left"  "default" "quote") }}
   {{ $right := partial "icon" (dict "class" "quote-right" "default" "quote") }}
   {{ $html  := print . $left $right }}
   {{ $md     = replace $md . $html }}
 {{ end }}
+{{/*
+{{ range $md | findRESubmatch `(<\w+ class="[^"]*?(quotes|dittos)[^"]*?">)(.+?)(</\w+>)` | uniq }}
+  {{ $all   := index . 0 }}
+  {{ $start := index . 1 }}
+  {{ $inner := index . 2 }}
+  {{ $end   := index . 3 }}
+  {{ $left  := partial "icon" (dict "class" "quote-left"  "default" "quote") }}
+  {{ $right := partial "icon" (dict "class" "quote-right" "default" "quote") }}
+  {{ $html  := print $start $left $inner $right $end }}
+  {{ $md     = replace $md $all $html }}
+{{ end }}
+*/}}
 
 {{ $md = $md
   | replaceRE `(<div class="bg-color"></div>)<p>` `$1</div>`
