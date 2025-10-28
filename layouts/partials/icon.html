@@ -14,6 +14,8 @@
   {{ $config := site.Data.styles.icons }}
   {{ $icon   := cond (eq $icon "none") "" $icon }}
   {{ $type   := "icon" }}
+  {{ $trans  := false }}
+  {{ $lang   := false }}
 
   {{/*  SVG  */}}
   {{ $is_svg := $icon | findRE `^(svg|brand):` }}
@@ -24,6 +26,8 @@
     {{/*  is emoji  */}}
     {{ $icon_code := $icon | urlquery }}
     {{ $is_txt     = in $icon_code "%" }}
+    {{ $trans      = "no" }}
+    {{ $lang       = "zxx" }}
   {{ end }}
 
   {{/*  CLASS  */}}
@@ -63,6 +67,8 @@
     "width"       $width
     "height"      $height
     "aria-hidden" $aria_hidden
+    "translate"   $trans
+    "lang"        $lang
   }}
   {{ $attrs = partial "functions/attrs" $attrs }}
 
