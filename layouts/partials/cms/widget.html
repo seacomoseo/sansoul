@@ -104,6 +104,9 @@
     {{ end }}
   {{ end }}
 {{ else if eq "relation" $widget }}
+  {{ if eq nil .collection }}
+    {{ $o = merge $o (dict "collection" .name) }}
+  {{ end }}
   {{ if eq nil .options_length }}
     {{ $o = merge $o (dict "options_length" 100) }}
   {{ end }}
