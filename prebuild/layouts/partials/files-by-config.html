@@ -27,7 +27,11 @@
   {{ $title      := false }}
   {{ $params     := false }}
 
-  {{ $config_lang  := index (where $langs "lang" $lang) 0 }}
+  {{ $config_lang  := where $langs "lang" $lang }}
+  {{ $config_lang   = index $config_lang 0 }}
+  {{ with $config_lang }}
+    {{ $config_lang = merge $lang_first . }}
+  {{ end }}
   {{ with $config_lang }}
     {{/*  i18n  */}}
     {{ $t := index site.Data.i18n $lang }}
