@@ -47,7 +47,9 @@ export function initFormSend () {
         // Fix repeat sending
         if (form.dataset.sending === 'true') return
 
-        formMessage && formMessage.remove()
+        // Delete any previous messages from the form itself
+        form.querySelectorAll('.form__error, .form__submit').forEach(n => n.remove())
+
         formMessage = document.createElement('div')
         formMessage.innerHTML += closeIcon
 
