@@ -1,24 +1,30 @@
 {{ $return := "" }}
 
 {{ with .Page.Params.address | default .Page.Params.org.address }}
-  {{ $is_country := and .country (ne .country site.Home.Params.org.address.country) }}
-
-  {{/*  {{ with .name               }}{{ $return = print $return .    }}{{ end }}  */}}
-  {{/*  {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}  */}}
-  {{ with .street             }}{{ $return = print $return .    }}{{ end }}
-  {{ if and .street .pc       }}{{ $return = print $return ", " }}{{ end }}
-  {{ with .pc                 }}{{ $return = print $return .    }}{{ end }}
-  {{ if and .pc .locality     }}{{ $return = print $return " "  }}{{ end }}
-  {{ with .locality           }}{{ $return = print $return .    }}{{ end }}
-  {{/*  {{ if and .locality .region }}{{ $return = print $return ", " }}{{ end }}  */}}
-  {{/*  {{ with .region             }}{{ $return = print $return .    }}{{ end }}  */}}
-  {{/*  {{ if and .region .country  }}{{ $return = print $return ", " }}{{ end }}  */}}
-  {{ if $is_country }}
-    {{ if .locality }}{{ $return = print $return ", " }}{{ end }}
-    {{ $return = print $return .country }}
+  {{ $address := . }}
+  {{ if reflect.IsSlice . }}
+    {{ $address = index . 0 }}
   {{ end }}
-  {{ if and $return $.url }}
-    {{ $return = .link | default (print "https://maps.google.com/maps/search/" ($return | urlquery)) }}
+  {{ with $address }}
+    {{ $is_country := and .country (ne .country site.Home.Params.org.address.country) }}
+
+    {{/*  {{ with .name               }}{{ $return = print $return .    }}{{ end }}  */}}
+    {{/*  {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}  */}}
+    {{ with .street             }}{{ $return = print $return .    }}{{ end }}
+    {{ if and .street .pc       }}{{ $return = print $return ", " }}{{ end }}
+    {{ with .pc                 }}{{ $return = print $return .    }}{{ end }}
+    {{ if and .pc .locality     }}{{ $return = print $return " "  }}{{ end }}
+    {{ with .locality           }}{{ $return = print $return .    }}{{ end }}
+    {{/*  {{ if and .locality .region }}{{ $return = print $return ", " }}{{ end }}  */}}
+    {{/*  {{ with .region             }}{{ $return = print $return .    }}{{ end }}  */}}
+    {{/*  {{ if and .region .country  }}{{ $return = print $return ", " }}{{ end }}  */}}
+    {{ if $is_country }}
+      {{ if .locality }}{{ $return = print $return ", " }}{{ end }}
+      {{ $return = print $return .country }}
+    {{ end }}
+    {{ if and $return $.url }}
+      {{ $return = .link | default (print "https://maps.google.com/maps/search/" ($return | urlquery)) }}
+    {{ end }}
   {{ end }}
 {{ end }}
 
