@@ -140,6 +140,23 @@
       (partial "cms/widget" (dict "alt" `page_address_legal`    "name" `legal`   ))
     )
   ))
+  (partial "cms/widget" (dict
+    "var"    `page_org_address`
+    "alt"    `page_address`
+    "name"   `address`
+    "widget" `list`
+    "fields" (slice
+      (partial "cms/widget" (dict "alt" `page_address_name`     "name" `name`    ))
+      (partial "cms/widget" (dict "alt" `page_address_street`   "name" `street`  ))
+      (partial "cms/widget" (dict "alt" `page_address_pc`       "name" `pc`      ))
+      (partial "cms/widget" (dict "alt" `page_address_locality` "name" `locality`))
+      (partial "cms/widget" (dict "alt" `page_address_region`   "name" `region`  ))
+      (partial "cms/widget" (dict "alt" `page_address_country`  "name" `country`                 "hint" (print "[" .page_address_country_hint "](https://wikipedia.org/wiki/ISO_3166-1)")))
+      (partial "cms/widget" (dict "alt" `page_address_geo`      "name" `geo`      "widget" `map` "number" 7))
+      (partial "cms/widget" (dict "alt" `page_address_link`     "name" `link`    ))
+      (partial "cms/widget" (dict "alt" `page_address_legal`    "name" `legal`   ))
+    )
+  ))
   (partial "cms/widget" (dict "var" `page_org_areas` "<<" `page_service_areas` "name" `areas`))
   (partial "cms/widget" (dict
     "var"    `page_org_open`
@@ -220,7 +237,7 @@
       `~page_images`
       `~page_as`
       `~page_org_phones`
-      `~page_address`
+      `~page_org_address`
       `~page_org_areas`
       `~page_org_open`
       `~page_org_prices`
@@ -244,7 +261,7 @@
       `~page_images`
       `~page_as`
       `~page_org_phones`
-      `~page_address`
+      `~page_org_address`
       `~page_org_areas`
       `~page_org_open`
       `~page_org_prices`

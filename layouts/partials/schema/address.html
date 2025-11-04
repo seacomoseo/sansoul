@@ -1,58 +1,70 @@
-{{ $address := dict }}
-{{ $has_map := "" }}
-{{ $geo     := dict }}
+{{ $all_address := slice }}
+{{ $all_has_map := slice }}
+{{ $all_geo     := slice }}
 {{ with .address | default .org.address }}
-  {{ if or .name .region }}
-    {{ $address = dict
-      "@type"           "PostalAddress"
-      "name"            .name
-      "streetAddress"   .street
-      "postalCode"      .pc
-      "addressLocality" .locality
-      "addressRegion"   .region
-      "addressCountry"  .country
-    }}
-    {{ $address = partial "functions/obj-truly" $address }}
-    {{ $has_map = print
-      "https://maps.google.com/maps/search/"
-      (print
-        .name     ", "
-        .street   ", "
-        .pc       " "
-        .locality ", "
-        .region   ", "
-        .country
-        | replaceRE "<nil>" ""
-        | urlquery
-      )
-    }}
+  {{ $items := . }}
+  {{ if reflect.IsMap . }}
+    {{ $items = slice . }}
   {{ end }}
-  {{ with .link }}
-    {{ $has_map = . }}
-  {{ end }}
-  {{ with .geo }}
-    {{ if reflect.IsMap . }}
-      {{ $geo = . }}
-    {{ else }}
-      {{ $geo = unmarshal . }}
+  {{ range $items }}
+    {{ $address := dict }}
+    {{ $has_map := "" }}
+    {{ $geo     := dict }}
+    {{ if or .name .region }}
+      {{ $address = dict
+        "@type"           "PostalAddress"
+        "name"            .name
+        "streetAddress"   .street
+        "postalCode"      .pc
+        "addressLocality" .locality
+        "addressRegion"   .region
+        "addressCountry"  .country
+      }}
+      {{ $address = partial "functions/obj-truly" $address }}
+      {{ $has_map = print
+        "https://maps.google.com/maps/search/"
+        (print
+          .name     ", "
+          .street   ", "
+          .pc       " "
+          .locality ", "
+          .region   ", "
+          .country
+          | replaceRE "<nil>" ""
+          | urlquery
+        )
+      }}
     {{ end }}
-    {{ $lat := index $geo.coordinates 1 }}
-    {{ $lng := index $geo.coordinates 0 }}
-    {{ $geo = dict
-      "@type"     "GeoCoordinates"
-      "latitude"  $lat
-      "longitude" $lng
-    }}
-    {{ if not $has_map }}
-      {{ $has_map = print "https://maps.google.com/maps/search/" $lat "," $lng }}
+    {{ with .link }}
+      {{ $has_map = . }}
     {{ end }}
+    {{ with .geo }}
+      {{ if reflect.IsMap . }}
+        {{ $geo = . }}
+      {{ else }}
+        {{ $geo = unmarshal . }}
+      {{ end }}
+      {{ $lat := index $geo.coordinates 1 }}
+      {{ $lng := index $geo.coordinates 0 }}
+      {{ $geo = dict
+        "@type"     "GeoCoordinates"
+        "latitude"  $lat
+        "longitude" $lng
+      }}
+      {{ if not $has_map }}
+        {{ $has_map = print "https://maps.google.com/maps/search/" $lat "," $lng }}
+      {{ end }}
+    {{ end }}
+    {{ $all_address = $all_address | append $address }}
+    {{ $all_has_map = $all_has_map | append $has_map }}
+    {{ $all_geo     = $all_geo     | append $geo     }}
   {{ end }}
 {{ end }}
 
 {{ $location := dict
-  "address" $address
-  "has_map" $has_map
-  "geo"     $geo
+  "address" $all_address
+  "has_map" $all_has_map
+  "geo"     $all_geo
 }}
 {{ $location = partial "functions/obj-truly" $location }}
 
