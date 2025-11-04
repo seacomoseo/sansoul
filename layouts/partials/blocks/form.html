@@ -130,9 +130,10 @@
 {{- end -}}
 
 {{- /*  More Vars  */ -}}
+{{- $email         := or .form.email site.Params.email -}}
 {{- $form          := merge site.Data.styles.inputs (.form | default dict) -}}
 {{- /*  {{- $netlify_forms := false -}}  */ -}}
-{{- $netlify_forms := and (getenv "NETLIFY") (not $form.action) (not $form.email) -}}
+{{- $netlify_forms := and (getenv "NETLIFY") (not $form.action) (not $email) -}}
 {{- $action_gss    := "https://script.google.com/macros/s/AKfycbzEd6cjH5eTjzVxDVk6x-3Q9QwUHDMWpR8V1Ij1g6IG7MYwpPM_epAGpxJUR1__ljrWMQ/exec" -}}
 {{- $action_def    := cond (not $netlify_forms) $action_gss (print "/" $form_id) -}}
 {{- $action        := $form.action | default $action_def -}}
@@ -243,7 +244,7 @@
     {{- with $headers }}
       <input type="hidden" name="_headers" value="{{ . | jsonify }}">
     {{- end -}}
-    {{- with .form.email | default site.Params.email }}
+    {{- with $email }}
       <input type="hidden" name="CC" value="{{ . | base64Encode }}">
     {{- end }}
     <input type="hidden" name="_domain" value="{{ site.Params.domain }}">
@@ -252,7 +253,7 @@
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
     <input type="hidden" name="{{ i18n `form_timestamp` }}" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
   {{- else if $formsubmit_co -}}
-    {{- with .form.email | default site.Params.email }}
+    {{- with $email }}
       <input type="hidden" name="CC" value="{{ . | base64Encode }}">
     {{- end }}
     <input type="hidden" name="_subject" value="{{ $subject }}">
