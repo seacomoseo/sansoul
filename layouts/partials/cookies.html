@@ -6,37 +6,7 @@
   {{- $color     = $bgc.child -}}
   {{- $class    := print "cookies bg bg-" $color " md" -}}
   {{- $icon     := partial "icon" (dict "default" "cookies") -}}
-  {{- $label_0  := i18n "cookies_question" -}}
-  {{- $label_1  := i18n "cookies_no" -}}
-  {{- $label_2  := i18n "cookies_ok" -}}
   {{- $advanced := site.Data.config.cookies_advanced -}}
-  {{- if $advanced -}}
-    {{- $label_0 = print (i18n "read_more") "…" -}}
-    {{- $label_1 = i18n "cookies_accept" -}}
-    {{- $label_2 = i18n "cookies_accept_all" -}}
-  {{- end -}}
-
-  {{- /*  LINKS  */ -}}
-  {{- $link := partial "link" (dict
-    "label"  $label_0
-    "link"   .RelPermalink
-    "lock"   true
-    "blank"  true
-  ) -}}
-  {{- $button_1 := partial "link" (dict
-    "class"  "cookies__button"
-    "button" "cta"
-    "sm"     true
-    "label"  $label_1
-    "lock"   true
-  ) -}}
-  {{- $button_2 := partial "link" (dict
-    "class"  "cookies__button cookies__button--all"
-    "button" "cta"
-    "sm"     true
-    "label"  $label_2
-    "lock"   true
-  ) -}}
 
   {{- /*  KTML  */}}
   <aside class="{{ $class }}">
@@ -44,38 +14,63 @@
     {{- if $advanced }}
       <div class="cookies__messaje">
         {{- $icon -}}
-        <strong>{{ i18n "cookies_we_use" }}</strong>
-        {{- "" }} {{ i18n "cookies_message" }}. {{ "" -}}
-        {{- $link -}}
+        {{- i18n "cookies_message" | markdownify -}}
       </div>
-      <div class="cookies__config">
-        <div class="cookies__checks">
-          {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
-          {{- range $key, $label := split (i18n "cookies_checks") "," }}
-            <label class="form__option">
-              {{- "" -}}
-              <input
-                class="form__checkbox"
-                type="checkbox"
-                name="cookies"
-                value="{{ index $values $key }}"
-                {{- if not $key }} disabled checked{{ end -}}
-              >
-              {{- . -}}
-            </label>
-          {{- end }}
-        </div>
-        <div class="cookies__buttons">
-          {{ $button_1 }}
-          {{ $button_2 }}
-        </div>
+      <div class="cookies__buttons">
+        {{ partial "link" (dict
+          "button" "similar"
+          "sm"     true
+          "swap"   true
+          "label"  (i18n "cookies_read_more")
+          "link"   .RelPermalink
+          "lock"   true
+          "blank"  true
+        ) }}
+        {{ partial "link" (dict
+          "button"  "invert"
+          "sm"      true
+          "swap"    true
+          "label"   (i18n "cookies_config")
+          "cookies" $color
+        ) }}
+        {{ partial "link" (dict
+          "class"  "cookies__button cookies__button--reject"
+          "button" "cta"
+          "sm"     true
+          "label"  (i18n "cookies_reject")
+          "lock"   true
+        ) }}
+        {{ partial "link" (dict
+          "class"  "cookies__button cookies__button--all"
+          "button" "cta"
+          "sm"     true
+          "label"  (i18n "cookies_accept")
+          "lock"   true
+        ) }}
       </div>
     {{- else }}
       {{ $icon }}
-      {{ $link }}
+      {{ partial "link" (dict
+        "label"  (i18n "cookies_question")
+        "link"   .RelPermalink
+        "lock"   true
+        "blank"  true
+      ) }}
       <div class="cookies__buttons">
-        {{ $button_1 }}
-        {{ $button_2 }}
+        {{ partial "link" (dict
+          "class"  "cookies__button cookies__button--reject"
+          "button" "cta"
+          "sm"     true
+          "label"  (i18n "cookies_no")
+          "lock"   true
+        ) }}
+        {{ partial "link" (dict
+          "class"  "cookies__button cookies__button--all"
+          "button" "cta"
+          "sm"     true
+          "label"  (i18n "cookies_ok")
+          "lock"   true
+        ) }}
       </div>
     {{- end }}
   </aside>

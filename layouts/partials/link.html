@@ -22,10 +22,10 @@
   ) }}
 */ -}}
 
-{{- /*  SUB MAIL  */ -}}
 
+{{- /*  SUB MAIL  */ -}}
 {{- define "partials/sub-mail" -}}
-  <i class="mail__options bg similar" style="--copied: '{{ i18n `copied` }}'">
+  <i class="tooltip bg similar" style="--copied: '{{ i18n `copied` }}'">
     {{- "" -}}
     <i class="bg-color"></i>
     {{- range slice
@@ -52,8 +52,40 @@
   </i>
 {{- end -}}
 
-{{- /*  VARS  */ -}}
 
+{{- /*  COOKIES CONFIG  */ -}}
+{{- define "partials/cookies-config" -}}
+  <i class="tooltip bg bg-{{ . }}">
+    <i class="bg-color"></i>
+    {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
+    {{- range $k, $v := $values -}}
+      {{- $label := i18n (print "cookies_" .) -}}
+      {{- $title := i18n (print "cookies_" . "_hint") }}
+      <label class="form__option" data-title="{{ $title }}">
+        {{- "" -}}
+        <input
+          class="form__checkbox"
+          type="checkbox"
+          name="cookies"
+          value="{{ . }}"
+          {{- if not $k }} disabled checked{{ end -}}
+        >
+        {{- partial "icon" (dict "default" "send_info") -}}
+        {{- $label -}}
+      </label>
+    {{- end }}
+    {{ partial "link" (dict
+      "class"   "cookies__button cookies__button--save"
+      "button"  "cta"
+      "sm"      true
+      "default" "save"
+      "label"   (i18n "cookies_save")
+    ) }}
+  </i>
+{{- end -}}
+
+
+{{- /*  VARS  */ -}}
 {{- $tag       := "b" -}}
 {{- $type      := "" -}}
 {{- $more_data := "" -}}
@@ -66,7 +98,6 @@
 {{- $rel       := "" -}}
 {{- $href      := "" -}}
 {{- $label     := "" -}}
-
 {{- $button         := cond (eq .button "none") "" .button -}}
 {{- $link           := cond (eq .link   "none") "" .link -}}
 {{- $lock           := .lock | default false -}}
@@ -215,7 +246,7 @@
   {{- $sub_mail  := "" -}}
   {{- $is_mail   := partial "functions/is-mail" (.label | default "") -}}
   {{- $is_more   := ne $label .label -}}
-  {{- if $is_mail -}}
+  {{- if or .cookies $is_mail -}}
     {{- $tag      = "b" -}}
     {{- $type     = "" -}}
     {{- $tabindex = "0" -}}
@@ -223,10 +254,14 @@
     {{- $b_data   = "" -}}
     {{- $h_data   = "" -}}
     {{- $href     = "" -}}
-    {{- $label    = .label | base64Encode -}}
     {{- $sub_tag  = true -}}
-    {{- $sub_mail = partial "sub-mail" . -}}
-    {{- $class    = $class | append "mail" -}}
+    {{- if $.cookies -}}
+      {{- $sub_mail = partial "cookies-config" .cookies -}}
+    {{- else if $is_mail -}}
+      {{- $label    = .label | base64Encode -}}
+      {{- $class    = $class | append "mail" -}}
+      {{- $sub_mail = partial "sub-mail" . -}}
+    {{- end -}}
   {{- else if eq $button "hide" -}}
     {{- /*  if button hide, not more and not sub  */ -}}
     {{- $sub_tag   = false -}}
