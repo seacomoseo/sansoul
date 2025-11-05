@@ -170,7 +170,7 @@
   {{/*  Not needed glyphs in dev mode  */}}
 
   {{/*  Get all svg files from media dir (omit brands because simple-icons is hard)  */}}
-  {{ $svgs   := resources.Match "media/**.svg" }}
+  {{ $svgs   := resources.Match "media/**/*.svg" }}
   {{ $brands := resources.Match "media/icons/brands/*.svg" }}
   {{ $divs   := resources.Match "media/dividers/*.svg" }}
   {{ $poster := slice "media/default-poster.svg" }}

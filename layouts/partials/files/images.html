@@ -1,5 +1,5 @@
 {{ if hugo.IsProduction | and site.Data.config.process_all_images }}
-  {{ range resources.Match "media/**.{jpeg,jpg,png,gif,webp,avif,svg}" }}
+  {{ range resources.Match "media/**/*.{jpeg,jpg,png,gif,webp,avif,svg}" }}
     {{/*  IF THUMBNAILS  */}}
     {{/*
       {{ if .Name | findRE `\.svg$` }}
