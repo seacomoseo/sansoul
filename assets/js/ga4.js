@@ -23,9 +23,9 @@ export function initGa4 () {
       label = label.replace(/^mailto:/, '')
       type = 'email_send'
     } else {
-      if (b.classList.contains('contact__email-option-send')) {
+      if (b.classList.contains('mail__option-send')) {
         type = 'email_send'
-      } else if (b.classList.contains('contact__email-option-copy')) {
+      } else if (b.classList.contains('mail__option-copy')) {
         type = 'email_copy'
       } else if (b.classList.contains('contact__address') || label.match(/https:\/\/(www.)?(maps.app.goo.gl|google.\w+?\/maps|g.page|maps.apple.com|bing.com\/maps|openstreetmap.org)\//)) {
         type = 'address'
@@ -43,9 +43,9 @@ export function initGa4 () {
       '.callnow__whatsapp,' +
       '.contact__phone,' +
       '.contact__whatsapp,' +
-      '.contact__email-option-copy,' +
-      '.contact__email-option-send,' +
       '.contact__address,' +
+      '.mail__option-copy,' +
+      '.mail__option-send,' +
       '.ga4'
     )
     if (b) ga4(b)

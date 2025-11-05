@@ -22,6 +22,38 @@
   ) }}
 */ -}}
 
+{{- /*  SUB MAIL  */ -}}
+
+{{- define "partials/sub-mail" -}}
+  <i class="mail__options bg similar" style="--copied: '{{ i18n `copied` }}'">
+    {{- "" -}}
+    <i class="bg-color"></i>
+    {{- range slice
+      (dict
+        "class"   "copy"
+        "default" "copy"
+        "label"   "copy_clipboard"
+      )
+      (dict
+        "class"   "send"
+        "default" "send"
+        "label"   "send_email"
+      )
+    -}}
+      {{- partial "link" (dict
+        "class"   (print "mail__option-" .class)
+        "button"  "cta"
+        "sm"      true
+        "swap"    true
+        "default" .default
+        "label"   (i18n .label)
+      ) -}}
+    {{- end -}}
+  </i>
+{{- end -}}
+
+{{- /*  VARS  */ -}}
+
 {{- $tag       := "b" -}}
 {{- $type      := "" -}}
 {{- $more_data := "" -}}
@@ -77,8 +109,10 @@
   {{- end -}}
 
   {{- /*  lock in mail and tel links  */ -}}
-  {{- if findRE `^(mailto|tel):` $link -}}
-    {{- $lock = true -}}
+  {{- if not $lock -}}
+    {{- if findRE `^(mailto|tel):` $link -}}
+      {{- $lock = true -}}
+    {{- end -}}
   {{- end -}}
 
   {{- /*  change lock to false if explicit set false  */ -}}
@@ -106,8 +140,8 @@
 
 {{- /*  CLASS  */ -}}
 {{- /*  button type color, swap and dot or link  */ -}}
-{{- $class        := .class | default "" -}}
-{{- $class_type   := "" -}}
+{{- $class        := .class | default slice -}}
+{{- $class_type   := slice -}}
 {{- if $button -}}
   {{- $hide := eq $button "hide" -}}
   {{- if $hide -}}
@@ -177,14 +211,22 @@
 {{- $label = $anchor | default .anchor2 | default .label -}}
 {{- if $label -}}
   {{- $sub_tag   := "" -}}
-  {{- $sub_class := "" -}}
   {{- $sub_more  := "" -}}
+  {{- $sub_mail  := "" -}}
   {{- $is_mail   := partial "functions/is-mail" (.label | default "") -}}
   {{- $is_more   := ne $label .label -}}
   {{- if $is_mail -}}
-    {{- $sub_class = "mail" -}}
-    {{- $label     = .label | base64Encode -}}
-    {{- $sub_tag   = true -}}
+    {{- $tag      = "b" -}}
+    {{- $type     = "" -}}
+    {{- $tabindex = "0" -}}
+    {{- $role     = "" -}}
+    {{- $b_data   = "" -}}
+    {{- $h_data   = "" -}}
+    {{- $href     = "" -}}
+    {{- $label    = .label | base64Encode -}}
+    {{- $sub_tag  = true -}}
+    {{- $sub_mail = partial "sub-mail" . -}}
+    {{- $class    = $class | append "mail" -}}
   {{- else if eq $button "hide" -}}
     {{- /*  if button hide, not more and not sub  */ -}}
     {{- $sub_tag   = false -}}
@@ -205,9 +247,9 @@
     {{- $sub_tag = true -}}
   {{- end -}}
   {{- if $sub_tag -}}
-    {{- $sub_attrs := dict "class" $sub_class "data-more" $sub_more -}}
+    {{- $sub_attrs := dict "data-more" $sub_more -}}
     {{- $sub_attrs  = partial "functions/attrs" $sub_attrs -}}
-    {{- $label      = print "<b" $sub_attrs ">" $label "</b>" | safeHTML -}}
+    {{- $label      = print "<b" $sub_attrs ">" $label "</b>" $sub_mail | safeHTML -}}
   {{- end -}}
 {{- end -}}
 

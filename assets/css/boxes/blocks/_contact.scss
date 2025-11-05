@@ -36,82 +36,6 @@
 .contact__schedule-item {
   gap: .375em;
 }
-.contact__email {
-  position: relative;
-}
-.contact__email-button {
-  width: 100%;
-  height: 100%;
-}
-.contact__email-options {
-  @if $radius > 1 or $buttons-rounded {
-    @include radius-parent(2em - $radius);
-  } @else {
-    @include radius-parent(1em);
-  }
-  padding: 1em;
-  z-index: 1;
-  position: absolute;
-  bottom: calc(100% + .35em);
-  left: 50%;
-  width: max-content;
-  transform: translate(-50%, 1em);
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity .3s, transform .3s, visibility .3s step-end;
-  display: flex;
-  flex-direction: column;
-  gap: 1em;
-  filter: drop-shadow($shadow);
-  &::after {
-    content: '';
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border: .75em solid transparent;
-    border-top-color: var(--bg-color);
-    border-bottom: 0;
-    position: absolute;
-    bottom: -.7em;
-    left: calc(50% - .75em);
-  }
-}
-.contact__email:hover .contact__email-options,
-.contact__email-button:focus + .contact__email-options,
-.contact__email-options:focus-within {
-  transform: translate(-50%, 0);
-  visibility: visible;
-  opacity: 1;
-  transition: opacity .3s, transform .3s, visibility 0s step-end;
-}
-.contact__email-option-copy--active {
-  i {
-    @if $chamfer {
-      @if $radius > 1 or $buttons-rounded {
-        --radius: 1em;
-      }
-    }
-    &::after {
-      content: var(--copied);
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 50%;
-      padding: .25em 1em;
-      min-height: 2em;
-      width: max-content;
-      display: flex;
-      align-items: center;
-      color: $white;
-      background-color: $dark;
-      @include radius;
-      @if not $chamfer {
-        filter: drop-shadow($shadow);
-      }
-      animation: copied 1s ease 0s forwards;
-    }
-  }
-}
 .contact {
   .link:not(.button) {
     display: inline-flex;
@@ -127,16 +51,10 @@
 .contact > {
   *:not(button, .button) {
     justify-content: center;
-    &:not(.contact__email:has(> .button.contact__email-button)) {
-      flex-grow: 0;
+    flex-grow: 0;
+    > .icon + b {
+      color: var(--text);
     }
-  }
-  * > .contact__email-button:not(.button) {
-    width: auto;
-    display: flex;
-    align-items: center;
-    gap: .375em;
-    text-align: left;
   }
   .contact__br,
   hr {

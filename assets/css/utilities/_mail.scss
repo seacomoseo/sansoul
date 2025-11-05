@@ -1,0 +1,70 @@
+.mail {
+  position: relative;
+}
+.mail__options {
+  @if $radius > 1 or $buttons-rounded {
+    @include radius-parent(2em - $radius);
+  } @else {
+    @include radius-parent(1em);
+  }
+  padding: 1em;
+  z-index: 1;
+  position: absolute;
+  bottom: calc(100% + .35em);
+  left: 50%;
+  width: max-content;
+  transform: translate(-50%, 1em);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .3s, transform .3s, visibility .3s step-end;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  filter: drop-shadow($shadow);
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: .75em solid transparent;
+    border-top-color: var(--bg-color);
+    border-bottom: 0;
+    position: absolute;
+    bottom: -.7em;
+    left: calc(50% - .75em);
+  }
+}
+.mail:hover .mail__options,
+.mail:focus .mail__options,
+.mail__options:focus-within {
+  transform: translate(-50%, 0);
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .3s, transform .3s, visibility 0s step-end;
+}
+.mail__option-copy--active > b {
+  @if $chamfer {
+    @if $radius > 1 or $buttons-rounded {
+      --radius: 1em;
+    }
+  }
+  &::after {
+    content: var(--copied);
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    padding: .25em 1em;
+    min-height: 2em;
+    width: max-content;
+    display: flex;
+    align-items: center;
+    color: var(--invert-in);
+    background-color: var(--invert);
+    @include radius;
+    @if not $chamfer {
+      filter: drop-shadow($shadow);
+    }
+    animation: copied 1s ease 0s forwards;
+  }
+}

@@ -44,8 +44,8 @@
             {{- $default = "whatsapp" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "mail" -}}
-            {{- $class   = "contact__email-button" -}}
-            {{- $link    = "none" -}}
+            {{- $class   = "contact__email" -}}
+            {{- $link    = .label -}}
             {{- $default = "mail" -}}
             {{- $noindex = true -}}
           {{- else if eq .type "address" -}}
@@ -78,55 +78,19 @@
             {{- page.Store.Add "phones" (slice .) -}}
           {{- end -}}
 
-          {{- /*  MAIL  */ -}}
-          {{- if eq .type "mail" }}
-            <i class="contact__email {{ $full }}" {{ if eq .button `none` }}data-b{{ end }}>
-              {{- $full = "" -}}
-          {{- end -}}
-
-              {{- /*  LINK  */}}
-              {{ partial "link" (dict
-                "class"   (print $class $full)
-                "button"  $button
-                "swap"    $swap
-                "ga4"     .ga4
-                "icon"    $icon
-                "default" $default
-                "label"   $label
-                "anchor"  $anchor
-                "link"    $link
-                "lock"    $noindex
-              ) -}}
-
-          {{- if eq .type "mail" -}}
-              {{- $bgc := partial "functions/color-background" (dict "child" "similar" "parent" $.bgcp) -}}
-              {{- $bg  := $bgc.child }}
-              <i class="contact__email-options bg bg-{{ $bg }}" style="--copied: '{{ i18n `copied` }}'">
-                <i class="bg-color"></i>
-                {{- range slice
-                  (dict
-                    "class"   "copy"
-                    "default" "copy"
-                    "label"   "copy_clipboard"
-                  )
-                  (dict
-                    "class"   "send"
-                    "default" "send"
-                    "label"   "send_email"
-                  )
-                }}
-                  {{ partial "link" (dict
-                    "class"   (print "contact__email-option-" .class)
-                    "button"  "cta"
-                    "sm"      true
-                    "swap"    true
-                    "default" .default
-                    "label"   (i18n .label)
-                  ) -}}
-                {{- end }}
-              </i>
-            </i>
-          {{- end -}}
+          {{- /*  LINK  */}}
+          {{ partial "link" (dict
+            "class"   (print $class $full)
+            "button"  $button
+            "swap"    $swap
+            "ga4"     .ga4
+            "icon"    $icon
+            "default" $default
+            "label"   $label
+            "anchor"  $anchor
+            "link"    $link
+            "lock"    $noindex
+          ) -}}
 
         {{- else if eq .type "schedule" -}}
 
