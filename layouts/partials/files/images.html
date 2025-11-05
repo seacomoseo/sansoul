@@ -1,14 +1,9 @@
-{{ if hugo.IsProduction | and site.Data.config.process_all_images }}
-  {{ range resources.Match "media/**/*.{jpeg,jpg,png,gif,webp,avif,svg}" }}
-    {{/*  IF THUMBNAILS  */}}
-    {{/*
-      {{ if .Name | findRE `\.svg$` }}
-        {{ $image = $image.RelPermalink }}
-      {{ else }}
-        {{ $image = ($image.Fit "151x85 webp" | resources.Copy (print "/media/thumbnails/" .Name ".webp")).RelPermalink }}
-      {{ end }}
-    */}}
-    {{/*  ELSE  */}}
+{{ if site.Data.config.process_all_images }}
+  {{ $all    := resources.Match "media/**.{jpeg,jpg,png,gif,webp,avif,svg}" }}
+  {{ $icons  := resources.Match "media/icons/**.svg" }}
+  {{ $divs   := resources.Match "media/dividers/*.svg" }}
+  {{ $kept   := $all | complement $icons $divs }}
+  {{ range $kept }}
     {{ .Publish }}
   {{ end }}
 {{ end }}
