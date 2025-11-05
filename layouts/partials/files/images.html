@@ -1,4 +1,4 @@
-{{ if site.Data.config.process_all_images }}
+{{ if and hugo.IsProduction site.Data.config.process_all_images }}
   {{ $all    := resources.Match "media/**.{jpeg,jpg,png,gif,webp,avif,svg}" }}
   {{ $icons  := resources.Match "media/icons/**.svg" }}
   {{ $divs   := resources.Match "media/dividers/*.svg" }}
