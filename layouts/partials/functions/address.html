@@ -1,12 +1,15 @@
 {{ $return := "" }}
 
-{{ with .Page.Params.address | default .Page.Params.org.address }}
+{{ $address_root := .Page.Params.address }}
+{{ $address_org  := index .Page.Params "org" "address" 0 }}
+{{ with or $address_root $address_org }}
   {{ $address := . }}
   {{ if reflect.IsSlice . }}
     {{ $address = index . 0 }}
   {{ end }}
   {{ with $address }}
-    {{ $is_country := and .country (ne .country site.Home.Params.org.address.country) }}
+    {{ $home_country := index site.Home.Params "org" "address" 0 "country" }}
+    {{ $is_country   := and .country (ne .country $home_country) }}
 
     {{/*  {{ with .name               }}{{ $return = print $return .    }}{{ end }}  */}}
     {{/*  {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}  */}}
