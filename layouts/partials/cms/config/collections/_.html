@@ -208,7 +208,7 @@
   {{ $index_slug        := partial "cms/widget" (dict "<<" `page_slug`                                   "hint" $index_slug_hint        "required" false) }}
   {{ $index_singular    := partial "cms/widget" (dict "name" `singular`       "label" $.index_singular   "hint" $index_singular_hint                    ) }}
   {{ $index_title       := partial "cms/widget" (dict "<<" `page_title`                                  "hint" $index_title_hint                       ) }}
-  {{ $index_description := partial "cms/widget" (dict "<<" `page_description`                            "hint" $index_description_hint                ) }}
+  {{ $index_description := partial "cms/widget" (dict "<<" `page_description`                            "hint" $index_description_hint                 ) }}
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
