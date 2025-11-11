@@ -39,14 +39,14 @@
 
 {{ $opts := dict
   "minify"     hugo.IsProduction
-  "targetPath" (print site.Home.RelPermalink "js/scripts.js")
+  "targetPath" "js/scripts.js"
   "params"     (dict
     "disqusId"          $disqus_id
     "isGoogleTranslate" $is_google_translate
     "cookiesLegal"      $cookies_legal
     "i18nVideo"         (i18n "video")
     "lang"              $lang
-    "timestamp"         (partial "functions/timestamp" .)
+    "draws"             (partial "functions/draws-base" .)
     "loading"                 (i18n "loading")
     "mapTerrain"              (i18n "map_terrain")
     "mapStreets"              (i18n "map_streets")

@@ -76,8 +76,8 @@
   {{ if not .hide }}
     {{ $icon    = $icon | replaceRE `^(svg|txt):` "" | replaceRE `:|/` "-" }}
     {{ if $is_svg }}
-      {{ $time := partial "functions/timestamp" . }}
-      {{ $html  = print `<svg` $attrs `><use href="/draws.` $time `.svg#` $icon `"></use></svg>` | safeHTML }}
+      {{ $base := partial "functions/draws-base" . }}
+      {{ $html  = print `<svg` $attrs `><use href="` $base `#` $icon `"></use></svg>` | safeHTML }}
     {{ else }}
       {{ $html  = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
     {{ end }}

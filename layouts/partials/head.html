@@ -143,10 +143,10 @@
 {{- $path := print "" -}}
 {{- if hugo.IsProduction -}}
   {{- $time := partial "functions/timestamp" . -}}
-  {{- $path  = print "/fonts/icons." $time ".woff2" -}}
+  {{- $path  = print site.BaseURL "fonts/icons." $time ".woff2" -}}
 {{- else -}}
   {{- $style := site.Data.styles.icons.style -}}
-  {{- $path   = print "/fonts/material-symbols-" $style ".woff2" -}}
+  {{- $path   = print site.BaseURL "fonts/material-symbols-" $style ".woff2" -}}
 {{- end }}
 <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
 
@@ -154,7 +154,7 @@
 {{- range hugo.Store.Get "fonts" }}
   {{ $family := urlize .family }}
   {{ $italic := cond (not .italic) "" "-italic" }}
-  {{ $path    = print "/fonts/" $family "-" .weight $italic ".woff2" }}
+  {{ $path    = print site.BaseURL "fonts/" $family "-" .weight $italic ".woff2" }}
   <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
 {{- end -}}
 

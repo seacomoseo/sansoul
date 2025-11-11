@@ -13,15 +13,15 @@
         font-weight: #{$weight};
         font-style: #{$style};
         font-display: swap;
-        src: url('/fonts/#{$filename}.woff2') format('woff2');
+        src: url('#{$base-url}fonts/#{$filename}.woff2') format('woff2');
       }
     }
   }
 }
 
-$icon-font-url: '/fonts/material-symbols-#{$icons-style}.woff2';
+$icon-font-url: '#{$base-url}fonts/material-symbols-#{$icons-style}.woff2';
 @if $is-production {
-  $icon-font-url: '/fonts/icons.#{$timestamp}.woff2';
+  $icon-font-url: '#{$base-url}fonts/icons.#{$timestamp}.woff2';
 }
 @font-face {
   font-family: 'Material Symbols';

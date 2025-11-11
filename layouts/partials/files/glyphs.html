@@ -19,7 +19,7 @@
       {{/*  Get remote WOFF2  */}}
       {{ with partial "functions/get-remote" (dict "url" $woff2 "headers" $headers) }}
         {{ $time    := partial "functions/timestamp" . }}
-        {{ $name    := print "/fonts/icons." $time ".woff2" }}
+        {{ $name    := print site.BaseURL "fonts/icons." $time ".woff2" }}
         {{ $rename  := . | resources.Copy $name }}
         {{ $publish := $rename.Publish }}
       {{ end }}

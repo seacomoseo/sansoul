@@ -20,10 +20,9 @@
       {{ $flips = print $flip_x $flip_y }}
     {{ end }}
 
-    {{ $time := partial "functions/timestamp" . }}
     {{ $style = print
       "--div" $_next ": url("
-      "/draws." $time ".svg"
+      (partial "functions/draws-base" .)
       "#div-" .div "-" (cond $.next "ne" "pr") $flips
       ")"
     }}

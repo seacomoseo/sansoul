@@ -1,0 +1,3 @@
+{{ $time := partial "functions/timestamp" . }}
+{{ $draw := print site.BaseURL "draws." $time ".svg" }}
+{{ return $draw }}

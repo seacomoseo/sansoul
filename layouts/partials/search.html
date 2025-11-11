@@ -23,8 +23,8 @@
     <div id="search__results" class="{{ $class }}"></div>
   </form>
   <script src="{{ `/js/fuse.js` | relURL }}" defer></script>
-  {{ $js := resources.Get `/js/fixedsearch.js`
-    | resources.ExecuteAsTemplate (print site.Home.RelPermalink `js/fixedsearch.js`) .
+  {{ $js := resources.Get "/js/fixedsearch.js"
+    | resources.ExecuteAsTemplate "js/fixedsearch.js" .
     | fingerprint
   }}
   {{ if hugo.IsProduction }}{{ $js = $js | minify }}{{ end }}

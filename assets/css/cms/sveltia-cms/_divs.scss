@@ -14,7 +14,7 @@
       @if $div != 'hide' and $div != 'fade' {
         // .field:is([data-key-path="div"], [data-key-path$=".div"])
         .listbox .option > .button[value="#{$div}"] {
-          --div: url('/draws.#{$timestamp}.svg#div-#{$div}-pr');
+          --div: url('#{$draws-base}#div-#{$div}-pr');
         }
       }
     }

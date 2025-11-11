@@ -103,7 +103,8 @@
     "hugo-is-production"                (hugo.IsProduction                | not | not | string)
     "config-others-show"                (site.Data.config.show            | not | not | string)
     "menu-google_translate"             (site.Params.google_translate     | not | not | string)
-    "timestamp"                         (partial "functions/timestamp" .)
+    "base-url"                         (site.BaseURL                                  | string)
+    "draws-base"                       (partial "functions/draws-base" .              | string)
     "quote"                             $quote
     "quote-left"                        $quote_left
     "quote-right"                       $quote_right
