@@ -1,17 +1,15 @@
 {{ $result := dict }}
-{{ $head   := . | findRE `^<svg.*?>` }}
-{{ range $head }}
-  {{ $width  := . | findRE ` width="(.+?)"`  | default 0 }}
-  {{ $height := . | findRE ` height="(.+?)"` | default 0 }}
-  {{ with $width  }}{{ $width  = index . 0 | replaceRE ` width="|"`  "" | float }}{{ end }}
-  {{ with $height }}{{ $height = index . 0 | replaceRE ` height="|"` "" | float }}{{ end }}
-  {{ $view_box := . | replaceRE `.*?viewBox="[0-9eE\.\-]+ [0-9eE\.\-]+ ([0-9eE\.\-]+) ([0-9eE\.\-]+)".*` `$1,$2` -}}
-  {{ $split    := split $view_box "," }}
-  {{ if eq (len $split) 2 }}
-    {{ $width  = index $split 0 | float }}
-    {{ $height = index $split 1 | float }}
-  {{ else }}
-    {{ errorf "viewBox parse error in %s" .name }}
+{{ $head   := . | findRE `<svg.*?>` }}
+{{ with index $head 0 }}
+  {{ $width  := 0 }}
+  {{ $height := 0 }}
+  {{ range . | findRESubmatch ` width="(.+?)"`  }}{{ $width  = index . 1 | float }}{{ end }}
+  {{ range . | findRESubmatch ` height="(.+?)"` }}{{ $height = index . 1 | float }}{{ end }}
+  {{ if and $width $height | not }}
+    {{ range . | findRESubmatch ` viewBox="([0-9eE\.\-]+) ([0-9eE\.\-]+) ([0-9eE\.\-]+) ([0-9eE\.\-]+)"` }}
+      {{ $width  = sub (float (index . 3)) (float (index . 1)) }}
+      {{ $height = sub (float (index . 4)) (float (index . 2)) }}
+    {{ end }}
   {{ end }}
   {{ $result = dict "head" . "width" $width "height" $height }}
 {{ end }}

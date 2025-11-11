@@ -7,8 +7,8 @@
   {{- $width  := "" -}}
   {{- $height := "" -}}
   {{- with partial "functions/svg-sizes" $src.Content -}}
-    {{- $head   = .head -}}
-    {{- $width  = .width -}}
+    {{- $head   = .head   -}}
+    {{- $width  = .width  -}}
     {{- $height = .height -}}
   {{- end -}}
   {{- if and $width $height | not -}}

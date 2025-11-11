@@ -46,7 +46,7 @@
     {{ $src  := resources.GetMatch $path }}
     {{ with $src }}
       {{ with partial "functions/svg-sizes" .Content }}
-        {{ $width  = .width }}
+        {{ $width  = .width  }}
         {{ $height = .height }}
       {{ end }}
     {{ end }}

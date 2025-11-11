@@ -45,16 +45,11 @@
     {{- else -}}
 
       {{- with resources.Get (print "/media/" .) -}}
-        {{- if in $image ".svg" -}} {{- /*  IS SVG  */ -}}
-          {{- $svg := (. | minify).Content -}}
-          {{- $view_box := $svg
-            | replaceRE
-              `.*viewBox="([\d\.-]+) ([\d\.-]+) ([\d\.-]+) ([\d\.-]+)".*`
-              `$1,$2,$3,$4`
-          -}}
-          {{- $view_box_split := split $view_box "," -}}
-          {{- $width  = sub (float (index $view_box_split 2)) (float (index $view_box_split 0)) -}}
-          {{- $height = sub (float (index $view_box_split 3)) (float (index $view_box_split 1)) -}}
+        {{- if hasSuffix $image ".svg" -}}
+          {{- with partial "functions/svg-sizes" .Content -}}
+            {{- $width  = .width  -}}
+            {{- $height = .height -}}
+          {{- end -}}
         {{- else -}}
           {{- $width  = .Width -}}
           {{- $height = .Height -}}
