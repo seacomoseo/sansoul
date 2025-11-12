@@ -103,20 +103,23 @@
     "hugo-is-production"                (hugo.IsProduction                | not | not | string)
     "config-others-show"                (site.Data.config.show            | not | not | string)
     "menu-google_translate"             (site.Params.google_translate     | not | not | string)
-    "base-url"                         (site.BaseURL                                  | string)
-    "draws-base"                       (partial "functions/draws-base" .              | string)
+    "base-url"                          (site.BaseURL                                 | string)
+    "draws-base"                        (partial "functions/draws-base" .             | string)
+    "timestamp"                         (partial "functions/timestamp"  .             | string)
     "quote"                             $quote
     "quote-left"                        $quote_left
     "quote-right"                       $quote_right
     }}
 {{ end }}
 
-{{ $css := resources.Get (print "css/styles.scss") }}
+{{ $css    := resources.Get (print "css/styles.scss") }}
+{{ $to_css := dict "vars" $vars "enableSourceMap" hugo.IsDevelopment }}
 {{ with $css }}
-  {{ $css = . | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment) }}
   {{ if hugo.IsProduction }}
-    {{/*  {{ $css = $css | minify | postCSS | resources.PostProcess }}  */}}
-    {{ $css = $css | minify }}
+    {{ $css = . | toCSS $to_css | minify }}
+    {{/*  | postCSS | resources.PostProcess  */}}
+  {{ else }}
+    {{ $css = . | toCSS $to_css }}
   {{ end }}
   {{ $css = $css | fingerprint }}
 {{ end }}
