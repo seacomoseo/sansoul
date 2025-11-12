@@ -1,7 +1,7 @@
 {{ $image_link := "" }}
 {{ if site.Data.config.webp }}
   {{ $webp      := .image.Resize (print .size "x webp") }}
-  {{ $webp_path := .image.RelPermalink | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
+  {{ $webp_path := .image | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
   {{ $webp       = $webp | resources.Copy $webp_path }}
   {{ $image_link = $webp.RelPermalink }}
 {{ else }}
@@ -17,6 +17,7 @@
     {{ $rsc  := resources.FromString $file $json }}
     {{ $rsc.Publish }}
   {{ end }}
-  {{ $image_link = $avif }}
+  {{ $base      := site.BaseURL | relURL }}
+  {{ $image_link = print $base $avif }}
 {{ end }}
 {{ return $image_link }}
