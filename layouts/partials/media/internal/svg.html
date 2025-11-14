@@ -23,44 +23,38 @@
     {{- end -}}
     {{- $content := $min.Content | replaceRE `\n` "" -}}
     {{/*  print  */}}
-    {{- if $content | findRE `svg-src` | or (in .src "#src") -}}
-      {{- if or .svg_src ($content | findRE `svg-src`) (in .src "#src") -}}
-        {{/*  image tag  */}}
-        {{- $minify := $min.Content -}}
-        {{- $src  = $minify | resources.FromString ($file | replaceRE `\.min\.svg$` `.svg`) -}}
-        {{- $alt := .alt -}}
-        {{- if not $alt -}}
-          {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
-        {{- end -}}
-        {{- $lazy := cond (not .notlazy) "lazy" "" -}}
-        {{- $img_attrs := dict
-          "class"    .class
-          "src"      (($minify | resources.FromString $src.RelPermalink).RelPermalink | safeURL)
-          "alt"      $alt
-          "width"    $width
-          "height"   $height
-          "decoding" "async"
-          "loading"  $lazy
-        -}}
-        {{- $img_attrs = partial "functions/attrs" $img_attrs }}
-        <img {{- $img_attrs }}>
-      {{- else -}}
-        {{/*  svg literal  */}}
-        {{- $content = readFile (print "/assets" $file) -}}
-        {{- if not ($head | findRE ` viewBox=`) -}}
-          {{- $content = replace $content "<svg" (print "<svg viewBox='0 0 " $width " " $height "'") -}}
-        {{- end -}}
-        {{- if not ($head | findRE ` width=`) -}}
-          {{- $content = replace $content "<svg" (print "<svg width='" $width "'") -}}
-        {{- end -}}
-        {{- if not ($head | findRE ` height=`) -}}
-          {{- $content = replace $content "<svg" (print "<svg height='" $height "'") -}}
-        {{- end -}}
-        {{- if .class -}}
-          {{- $content = replace $content "<svg" (print "<svg class='" .class "'") -}}
-        {{- end -}}
-        {{- $content | safeHTML -}}
+    {{- if or ($content | findRE `svg-src`) (in .src "#src") -}}
+      {{/*  image tag  */}}
+      {{- $minify := $min.Content -}}
+      {{- $src  = $minify | resources.FromString ($file | replaceRE `\.min\.svg$` `.svg`) -}}
+      {{- $alt := .alt -}}
+      {{- if not $alt -}}
+        {{- $alt = .src | replaceRE `^/media/(.+)\..*$` `$1` | humanize -}}
       {{- end -}}
+      {{- $lazy := cond (not .notlazy) "lazy" "" -}}
+      {{- $img_attrs := dict
+        "class"    .class
+        "src"      (($minify | resources.FromString $src.RelPermalink).RelPermalink | safeURL)
+        "alt"      $alt
+        "width"    $width
+        "height"   $height
+        "decoding" "async"
+        "loading"  $lazy
+      -}}
+      {{- $img_attrs = partial "functions/attrs" $img_attrs }}
+      <img {{- $img_attrs }}>
+    {{- else if $content | findRE `svg-html` -}}
+      {{/*  svg html  */}}
+      {{- if not ($head | findRE ` width=`) -}}
+        {{- $content = replace $content "<svg" (print "<svg width='" $width "'") -}}
+      {{- end -}}
+      {{- if not ($head | findRE ` height=`) -}}
+        {{- $content = replace $content "<svg" (print "<svg height='" $height "'") -}}
+      {{- end -}}
+      {{- if .class -}}
+        {{- $content = replace $content "<svg" (print "<svg class='" .class "'") -}}
+      {{- end -}}
+      {{- $content | safeHTML -}}
     {{- else -}}
       {{/*  svg sprite  */}}
       {{- $attrs := dict "class" .class "width" $width "height" $height "aria-label" $alt -}}

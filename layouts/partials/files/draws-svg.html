@@ -74,7 +74,7 @@
     {{- if $src.Content -}}
       {{- $minify  := minify $src -}}
       {{- $content := $minify.Content -}}
-      {{- if not ($content | findRE `svg-src`) -}}
+      {{- if not ($content | findRE `svg-src|svg-html`) -}}
         {{- $id   := . | replaceRE `^icons?/` `` | replaceRE `^(brand)s/` `$1-` | replaceRE `/` `-` -}}
         {{- $head := $content | findRE `^<svg.*?>` -}}
         {{- $head  = index $head 0 -}}

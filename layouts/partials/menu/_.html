@@ -90,7 +90,6 @@
               <li class="menu__item menu__item--logo">
                 <a class="link menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}{{ site.Home.RelPermalink }}{{ end }}" title="{{ $title | plainify }}">
                   {{ partial "media/_" (dict
-                    "svg_src"   true
                     "class"     "menu__logo-image"
                     "src"       .
                     "alt"       (partial "functions/anchor-page" site.Home)
