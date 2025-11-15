@@ -178,7 +178,7 @@
   {{- end }}
   <link rel="icon" sizes="any" href="/favicon.ico">
 
-  {{- if in . "svg" -}}
+  {{- if hasSuffix . "svg" -}}
     {{- (. | resources.Copy "/favicon.svg").Publish }}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     {{- with resources.Get "/media/base/icon.png" -}}

@@ -22,10 +22,19 @@ function removeDir (dirPath) {
   }
 }
 
+// Leer el archivo hugo.yml y obtener el publishDir
+let publishDir = './public'
+const hugoYAML = './hugo.yml'
+if (fs.existsSync(hugoYAML)) {
+  const hugo = fs.readFileSync(hugoYAML, 'utf8')
+  const subDirMatch = hugo.match(/^baseURL: '?https?:\/\/.+?(\/.+)\b/)
+  if (subDirMatch) publishDir += subDirMatch[1]
+}
+
 // Rutas de archivos y directorios con JSON
-const faviconsJSON = './public/favicons.json'
-const ogSVGsJSON = './public/og-svgs.json'
-const imageListDir = './public/image_list'
+const faviconsJSON = `${publishDir}/favicons.json`
+const ogSVGsJSON = `${publishDir}/og-svgs.json`
+const imageListDir = `${publishDir}/image_list`
 
 // Leer el archivo JSON y parsear los favicons
 if (fs.existsSync(faviconsJSON)) {
@@ -35,7 +44,7 @@ if (fs.existsSync(faviconsJSON)) {
     Promise.all(
       svgPaths.map(async ({ from, ext }) => {
         const inputPath = './public' + from
-        const outputPath = `./public/favicon.${ext}`
+        const outputPath = `${publishDir}/favicon.${ext}`
 
         try {
           if (ext === 'ico') {
@@ -74,9 +83,9 @@ if (fs.existsSync(faviconsJSON)) {
       })
     ).then(() => {
       console.log('🎉 Favicons completed!')
+      removeFile(faviconsJSON)
     })
   }
-  removeFile(faviconsJSON)
 }
 
 // Leer el archivo JSON de imágenes SVG para Open Graph y parsear la lista de rutas
@@ -86,10 +95,11 @@ if (fs.existsSync(ogSVGsJSON)) {
     // Convertir cada archivo SVG a PNG en paralelo
     Promise.all(
       svgPaths.map(async (svgPath) => {
-        const pngPath = svgPath.replace(/\.svg$/, '.png')
+        const initPath = './public' + svgPath
+        const pngPath = initPath.replace(/\.svg$/, '.png')
 
         try {
-          await sharp(svgPath)
+          await sharp(initPath)
             // .resize({ width: 1200 })
             .flatten({ background: { r: 255, g: 255, b: 255 } }) // Establece el fondo blanco
             .png({
@@ -98,19 +108,19 @@ if (fs.existsSync(ogSVGsJSON)) {
             })
             .toFile(pngPath)
 
-          console.log(`✅ PNG: ${svgPath} ⏩️ ${pngPath}`)
+          console.log(`✅ PNG: ${initPath} ⏩️ ${pngPath}`)
         } catch (error) {
-          console.error(`❌ Error: ${svgPath}: `, error)
+          console.error(`❌ Error: ${initPath}: `, error)
         }
       })
     ).then(() => {
       console.log('🎉 PNG completed!')
+      removeFile(ogSVGsJSON)
     })
   }
-  removeFile(ogSVGsJSON)
 }
 
-// Procesar los archivos JSON dentro de ./public/image_list
+// Procesar los archivos JSON dentro de ${publishDir}/image_list
 if (fs.existsSync(imageListDir)) {
   const jsonFiles = fs.readdirSync(imageListDir)
 
@@ -124,14 +134,15 @@ if (fs.existsSync(imageListDir)) {
         return
       }
 
-      const ext = path.extname(data.path)
-      const baseName = data.path.replace(ext, '')
+      const initPath = './public' + data.path
+      const ext = path.extname(initPath)
+      const baseName = initPath.replace(ext, '')
       const avifPath = data.width && data.height
         ? `${baseName}-${data.width}x${data.height}.avif`
         : `${baseName}.avif`
 
       try {
-        let image = sharp(data.path)
+        let image = sharp(initPath)
         if (data.width && data.height) {
           image = image.resize(data.width, data.height)
         }
@@ -143,13 +154,13 @@ if (fs.existsSync(imageListDir)) {
           })
           .toFile(avifPath)
 
-        console.log(`✅ AVIF: ${data.path} ⏩️ ${avifPath}`)
+        console.log(`✅ AVIF: ${initPath} ⏩️ ${avifPath}`)
       } catch (error) {
-        console.error(`❌ Error: ${data.path}: `, error)
+        console.error(`❌ Error: ${initPath}: `, error)
       }
     })
   ).then(() => {
     console.log('🎉 AVIF completed!')
+    removeDir(imageListDir)
   })
-  removeDir(imageListDir)
 }

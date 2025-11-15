@@ -66,10 +66,50 @@ languages:
 module:
   mounts:
 
+  # static
+  - source: static
+    target: static
   # assets
   - source: assets
     target: assets
-  ## prebuild
+  - source: ../_tools/node_modules/material-symbols
+    target: assets/fonts
+  - source: themes/sansoul/assets/media/icons/brands
+    target: assets/media/icons/brands
+  - source: node_modules/@fortawesome/fontawesome-free/svgs/brands
+    target: assets/media/icons/brands
+  - source: ../_tools/node_modules/@fortawesome/fontawesome-free/svgs/brands
+    target: assets/media/icons/brands
+  - source: node_modules/simple-icons/icons
+    target: assets/media/icons/brands
+  - source: ../_tools/node_modules/simple-icons/icons
+    target: assets/media/icons/brands
+  ## content home by langs
+  - source: content/single/_home.es.md
+    target: content/_index.es.md
+    lang: es
+  - source: content/single/_home.en.md
+    target: content/_index.en.md
+    lang: en
+  - source: content/single/_home.fr.md
+    target: content/_index.fr.md
+    lang: fr
+  - source: content/single/_home.de.md
+    target: content/_index.de.md
+    lang: de
+  - source: content/single/_home.pt.md
+    target: content/_index.pt.md
+    lang: pt
+  - source: content/single/_home.it.md
+    target: content/_index.it.md
+    lang: it
+  ## content
+  - source: content
+    target: content
+    excludeFiles:
+    - values.*.yml
+    - single/_home.*.md
+  ## content prebuild
   - source: themes/sansoul/prebuild/public/content
     target: content
   ## content theme
@@ -78,6 +118,11 @@ module:
   # data
   - source: data
     target: data
+    excludeFiles: '**/example/*'
+  - source: i18n
+    target: data/i18n
+  - source: themes/sansoul/i18n
+    target: data/i18n
 
 
 # default without option in cms

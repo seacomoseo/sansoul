@@ -1,11 +1,12 @@
-import {
-  formSubmitSending,
-  formSubmitOk,
-  formSubmitWrong
-} from '@params'
 import { formValid } from './form-validate'
 import { changeValues } from './form-change-values'
 import { waitCSS } from './wait-css'
+import params from './params'
+const {
+  formSubmitSending,
+  formSubmitOk,
+  formSubmitWrong
+} = params
 
 const closeIcon = '<i class="icon close" onclick="this.parentElement.remove()">close</i>'
 

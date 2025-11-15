@@ -29,7 +29,7 @@
         {{ with $png }}
           {{ $img = .Permalink }}
         {{ else }}
-          {{ $svg = print "./public" .RelPermalink }}
+          {{ $svg = .RelPermalink }}
         {{ end }}
       {{ end }}
 

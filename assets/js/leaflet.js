@@ -1,12 +1,13 @@
-import {
+import { loadScript } from './load-script'
+import { loadStyle } from './load-style'
+import params from './params'
+const {
   mapTerrain,
   mapStreets,
   mapSatellite,
   mapHybrid,
   lang
-} from '@params'
-import { loadScript } from './load-script'
-import { loadStyle } from './load-style'
+} = params
 
 let leafletPromise = null
 

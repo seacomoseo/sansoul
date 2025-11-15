@@ -1,37 +1,35 @@
-{{ $is_cookies          := false }}
-{{ $is_scroll_show      := false }}
-{{ $disqus_id           := "" }}
-{{ $is_google_translate := false }}
-{{ $ga4_id              := "" }}
-{{ $cookies_legal       := false }}
-{{ $lang                := page.Lang }}
+{{/*  LANGS  */}}
 
-{{ if site.Data.config.show }}
-  {{ $is_scroll_show = true }}
-{{ end }}
-
-{{ if site.GetPage "page/cookies" }}
-  {{ $is_cookies = true }}
-{{ end }}
-
-{{ with site.Params.disqus }}
-  {{ $disqus_id = . }}
-{{ end }}
-
-{{ if site.Params.google_translate }}
-  {{ $is_google_translate = true }}
-{{ end }}
-
-{{ if hugo.IsProduction }}
-  {{ with site.Params.google_analytics }}
-    {{ $ga4_id = . }}
-  {{ end }}
-{{ else }}
-  {{ $ga4_id = "G-XXXXXXXXXX" }}
-{{ end }}
-
-{{ with site.Data.config.cookies_legal }}
-  {{ $cookies_legal = true }}
+{{ $langs := dict }}
+{{ range .AllTranslations }}
+  {{ $t    := index site.Data.i18n .Lang }}
+  {{ $lang := dict
+    "lang"                    .Lang
+    "disqusId"                (or site.Params.disqus "")
+    "isGoogleTranslate"       (eq site.Params.google_translate true)
+    "i18nVideo"               $t.video
+    "loading"                 $t.loading
+    "mapTerrain"              $t.map_terrain
+    "mapStreets"              $t.map_streets
+    "mapSatellite"            $t.map_satellite
+    "mapHybrid"               $t.map_hybrid
+    "formGeo"                 $t.form_geo
+    "formErrorSingleQuotes"   $t.form_error_single_quotes
+    "formErrorRequiredFields" $t.form_error_required_fields
+    "formErrorRequiredCheck"  $t.form_error_required_check
+    "formErrorEmail"          $t.form_error_email
+    "formErrorTel"            $t.form_error_tel
+    "formErrorFileSize"       $t.form_error_file_size
+    "formErrorFileSizeTotal"  $t.form_error_file_size_total
+    "formErrorFileLength"     $t.form_error_file_length
+    "formErrorFileOnload"     $t.form_error_file_onload
+    "formErrorAcept"          $t.form_error_acept
+    "formSubmitSending"       $t.form_submit_sending
+    "formSubmitOk"            $t.form_submit_ok
+    "formSubmitWrong"         $t.form_submit_wrong
+  }}
+  {{ $lang  = dict .Lang $lang }}
+  {{ $langs = merge $langs $lang  }}
 {{ end }}
 
 
@@ -41,33 +39,38 @@
   "minify"     hugo.IsProduction
   "targetPath" "js/scripts.js"
   "params"     (dict
-    "disqusId"          $disqus_id
-    "isGoogleTranslate" $is_google_translate
-    "cookiesLegal"      $cookies_legal
-    "i18nVideo"         (i18n "video")
-    "lang"              $lang
-    "draws"             (partial "functions/draws-base" .)
-    "loading"                 (i18n "loading")
-    "mapTerrain"              (i18n "map_terrain")
-    "mapStreets"              (i18n "map_streets")
-    "mapSatellite"            (i18n "map_satellite")
-    "mapHybrid"               (i18n "map_hybrid")
-    "formGeo"                 (i18n "form_geo")
-    "formErrorSingleQuotes"   (i18n "form_error_single_quotes")
-    "formErrorRequiredFields" (i18n "form_error_required_fields")
-    "formErrorRequiredCheck"  (i18n "form_error_required_check")
-    "formErrorEmail"          (i18n "form_error_email")
-    "formErrorTel"            (i18n "form_error_tel")
-    "formErrorFileSize"       (i18n "form_error_file_size")
-    "formErrorFileSizeTotal"  (i18n "form_error_file_size_total")
-    "formErrorFileLength"     (i18n "form_error_file_length")
-    "formErrorFileOnload"     (i18n "form_error_file_onload")
-    "formErrorAcept"          (i18n "form_error_acept")
-    "formSubmitSending"       (i18n "form_submit_sending")
-    "formSubmitOk"            (i18n "form_submit_ok")
-    "formSubmitWrong"         (i18n "form_submit_wrong")
+    "draws"        (partial "functions/draws-base" .)
+    "cookiesLegal" (eq site.Data.config.cookies_legal true)
+    "name"         site.Params.name
+    "netlify"      (getenv "NETLIFY")
+    "netlifyId"    site.Params.netlify_id
+    "netlifyHook"  site.Params.netlify_hook
+    "cloudflareId" site.Params.cloudflare_id
+    "langs"        $langs
   )
 }}
+
+
+{{/*  MAYBE  */}}
+
+{{ $is_scroll_show := false }}
+{{ if site.Data.config.show }}
+  {{ $is_scroll_show = true }}
+{{ end }}
+
+{{ $is_cookies := false }}
+{{ if site.GetPage "page/cookies" }}
+  {{ $is_cookies = true }}
+{{ end }}
+
+{{ $ga4_id := "" }}
+{{ if hugo.IsProduction }}
+  {{ with site.Params.google_analytics }}
+    {{ $ga4_id = . }}
+  {{ end }}
+{{ else }}
+  {{ $ga4_id = "G-XXXXXXXXXX" }}
+{{ end }}
 
 
 {{/*  RESOURCES  */}}
@@ -78,7 +81,6 @@
 {{ $maybe_srcs := slice
   (dict "path" "scroll-show" "if" $is_scroll_show "func" "ScrollShow")
   (dict "path" "cookies"     "if" $is_cookies     "func" "Cookies"   )
-  (dict "path" "comments"    "if" $disqus_id      "func" "Comments"  )
   (dict "path" "ga4"         "if" $ga4_id         "func" "Ga4"       )
 }}
 {{ $conditional_srcs := slice }}

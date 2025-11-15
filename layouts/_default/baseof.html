@@ -21,9 +21,6 @@
   {{ $dict_sections := dict "sections" $sections }}
   {{ $tpl            = merge $tpl $dict_sections }}
 
-  {{- /*  Set contact phones page store from contact to callnow  */ -}}
-  {{- page.Store.Set "phones" slice -}}
-
   {{- /*  CUSTOM HTML HEAD  */ -}}
   {{- $custom_html_head  := "" -}}
   {{- with site.Params.html.head -}}

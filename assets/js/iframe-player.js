@@ -1,6 +1,7 @@
 // Load iframe player when hover mouse
-import { i18nVideo, lang } from '@params'
 import { loadScript } from './load-script'
+import params from './params'
+const { i18nVideo, lang } = params
 
 const players = {}
 

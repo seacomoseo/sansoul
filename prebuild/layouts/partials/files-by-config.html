@@ -371,6 +371,14 @@
     "target"       "data"
     "excludeFiles" "**/example/*"
   )
+  (dict
+    "source"       "i18n"
+    "target"       "data/i18n"
+  )
+  (dict
+    "source"       "themes/sansoul/i18n"
+    "target"       "data/i18n"
+  )
 }}
 {{ $obj = merge $obj (dict "module" (dict "mounts" $mounts)) }}
 
@@ -406,6 +414,11 @@
     "timestamp" (now.Format "20060102150405")
   )
 ) }}
+
+{{/*  fingerprint / timestamp  */}}
+{{ $publishdir := relURL site.BaseURL }}
+{{ $publishdir  = print "public" $publishdir }}
+{{ $obj = merge $obj (dict "publishdir" $publishdir) }}
 
 {{/*  cascade  */}}
 {{ $home := dict

@@ -1,6 +1,7 @@
-import { loading, formErrorFileOnload } from '@params'
 import { slugify } from './slugify'
 import { waitCSS } from './wait-css'
+import params from './params'
+const { loading, formErrorFileOnload } = params
 
 const closeIcon = '<i class="icon close" onclick="closePreview(this)">close</i>'
 

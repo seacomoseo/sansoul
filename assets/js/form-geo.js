@@ -1,6 +1,7 @@
-import { formGeo } from '@params'
 import { scrollShot } from './scroll-shot'
 import { loadLeaflet, loadLeafletDraw, myIcon, fill, tile } from './leaflet'
+import params from './params'
+const { formGeo } = params
 
 function updateInputGeo (json, layer, type) {
   if (!type) type = JSON.parse(json.value).type

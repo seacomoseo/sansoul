@@ -1,4 +1,5 @@
-import {
+import params from './params'
+const {
   formErrorSingleQuotes,
   formErrorRequiredFields,
   formErrorRequiredCheck,
@@ -8,7 +9,7 @@ import {
   formErrorFileSizeTotal,
   formErrorFileLength,
   formErrorAcept
-} from '@params'
+} = params
 
 export function formValid (form) {
   // Vars

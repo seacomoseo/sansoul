@@ -1,23 +1,23 @@
 {{ $image_link := "" }}
+{{ $image_base := .image_base | default .image }}
+{{ $path       := $image_base.RelPermalink }}
 {{ if site.Data.config.webp }}
   {{ $webp      := .image.Resize (print .size "x webp") }}
-  {{ $webp_path := .image | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
-  {{ $webp       = $webp | resources.Copy $webp_path }}
+  {{ $path      := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
+  {{ $webp       = $webp | resources.Copy $path }}
   {{ $image_link = $webp.RelPermalink }}
 {{ else }}
   {{ $height := div (mul .image.Height .size) .image.Width }}
-  {{ $avif   := .image | replaceRE `(.+)\..+$` (print "$1-" .size "x" $height ".avif") }}
+  {{ $avif   := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $height ".avif") }}
   {{ $get    := resources.Get $avif }}
   {{ with $get }}
     {{ $get.Publish }}
   {{ else }}
-    {{ $path := print "./public" .image }}
     {{ $file := print "image_list/" (replace $avif "/" "~") ".json" }}
     {{ $json := dict "path" $path "width" .size "height" $height | jsonify }}
     {{ $rsc  := resources.FromString $file $json }}
     {{ $rsc.Publish }}
   {{ end }}
-  {{ $base      := site.BaseURL | relURL }}
-  {{ $image_link = print $base $avif }}
+  {{ $image_link = $avif }}
 {{ end }}
 {{ return $image_link }}

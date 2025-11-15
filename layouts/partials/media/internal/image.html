@@ -77,12 +77,20 @@
           {{- $width_image  := $image.Width   | float -}}
           {{- $height_image := $image.Height  | float -}}
           {{- $ratio_image  := div $height_image $width_image -}}
+          {{- $w            := 300 -}}
+          {{- $h            := 300 -}}
           {{- if ne $ratio_image $ratio_aim -}}
             {{- if gt $ratio_image $ratio_aim -}}
-              {{- $image = $image.Fill (print $width_image "x" (mul $width_image $ratio_aim | int) " Center") -}}
+              {{- $w = $width_image -}}
+              {{- $h = mul $width_image $ratio_aim | int -}}
             {{- else -}}
-              {{- $image = $image.Fill (print (div $height_image $ratio_aim | int) "x" $height_image " Center") -}}
+              {{- $w = div $height_image $ratio_aim | int -}}
+              {{- $h = $height_image -}}
             {{- end -}}
+            {{- $fill := print $w "x" $h " Center" -}}
+            {{- $image = $image.Fill $fill -}}
+            {{- $path := $image | replaceRE `(.+)\.(.+)$` (print "$1-" $w "x" $h ".$2") -}}
+            {{- $image = $image | resources.Copy $path -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
@@ -206,7 +214,7 @@
         {{- $size       := div .size $s -}}
         {{- $size        = div (math.Round (mul $size 100)) 100 -}}
         {{- $srcsizes    = $srcsizes | append (print $viewport " " $size "px") -}}
-        {{- $image_link := partial "functions/image-format" (dict "image" $image "size" .size) -}}
+        {{- $image_link := partial "functions/image-format" (dict "image" $image "image_base" $image_base "size" .size) -}}
         {{- $srcset      = $srcset | append (print $image_link " " .size "w") -}}
       {{- end -}}
 
@@ -227,7 +235,7 @@
           {{- $image_width = $image_width.size -}}
         {{- end -}}
       {{- end -}}
-      {{- $image_link      := partial "functions/image-format" (dict "image" $image "size" $image_width) -}}
+      {{- $image_link      := partial "functions/image-format" (dict "image" $image "image_base" $image_base "size" $image_width) -}}
       {{- $srcset          = print $image_link " " $image_width "w" -}}
       {{- $srcsizes        = "100dvw" -}}
 

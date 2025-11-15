@@ -1,5 +1,7 @@
-import { isGoogleTranslate, draws } from '@params'
 import { waitCSS } from './wait-css'
+import { draws } from '@params'
+import params from './params'
+const { isGoogleTranslate } = params
 
 export function initGoogleTranslate () {
   // Onclick to translate.goog
