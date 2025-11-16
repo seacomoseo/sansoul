@@ -125,7 +125,7 @@
         }
       }
       // If is not bot and if cookies law
-      const isBot = navigator.userAgent.toLowerCase().match(/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/)
+      const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(navigator.userAgent)
       const isPs = `{{ $isPs }}` === 'true'
       const isCk = `{{ $isCk }}` === 'true'
       if (!isBot && !isPs && isCk) googleAnalytics()
