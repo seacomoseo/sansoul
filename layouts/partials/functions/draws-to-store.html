@@ -94,6 +94,10 @@
 {{ range $sections | uniq }}
   {{ $all = $all | append . }}
 {{ end }}
+{{/*  Footer  */}}
+{{ with index site.Data.section "base-footer" }}
+  {{ $all = $all | append . }}
+{{ end }}
 {{/*  Global values  */}}
 {{ range site.Languages }}
   {{ $values := index site.Data (print "values." .Lang) }}
