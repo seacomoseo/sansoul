@@ -113,7 +113,7 @@
       function gtag(){dataLayer.push(arguments);}
       // GA4 function
       function googleAnalytics() {
-        if (!document.querySelector(`script[src^='https://www.googletagmanager.com/']`)) {
+        if (!document.querySelector(`script[src*="gtag/js?id={{ . }}"]`)) {
           // Load GA4 script
           var ga = document.createElement('script');
           ga.async = true;
