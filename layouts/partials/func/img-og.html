@@ -20,8 +20,9 @@
       {{ $img = .Permalink }}
 
       {{ if hasSuffix $img ".svg" }}
-        {{ $img  = .Permalink | replaceRE `\.svg$` `.png` }}
-        {{ $png := resources.Get $img }}
+        {{ $img  = .Permalink    | replaceRE `\.svg$` `.png` }}
+        {{ $png := .RelPermalink | replaceRE `\.svg$` `.png` }}
+        {{ $png  = resources.Get $png }}
         {{ with $png }}
           {{ $img = .Permalink }}
         {{ else }}

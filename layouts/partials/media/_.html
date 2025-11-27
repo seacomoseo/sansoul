@@ -39,7 +39,7 @@
     {{- with $iframe -}}
       {{- $alt = print (i18n "vid") " · " .name " · " .id -}}
     {{- else -}}
-      {{- $alt = (or $img $vid) | replaceRE `^(?:/m|http.+)/(.+)\..*$` "$1" | humanize -}}
+      {{- $alt = (or $img $vid) | replaceRE `^(?:/u|http.+)/(.+)\..*$` "$1" | humanize -}}
     {{- end -}}
   {{- end -}}
 
