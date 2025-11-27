@@ -2,22 +2,22 @@
   {{- with index . 0 -}}
     <i class="langs">
       {{- partial "link" (dict
-        "class"   .class
-        "icon"    (index $.Params 0 | default .icon)
-        "default" .default
-        "label"   (.label | markdownify)
-        "lock"    true
+        "class" .class
+        "icon"  (index $.Params 0 | default .icon)
+        "def"   .def
+        "label" (.label | markdownify)
+        "lock"  true
       ) -}}
       <i class="langs__items">
         {{- range .items -}}
           <i class="lang" lang="{{ .lang }}" title="{{ .title }}">
             {{- partial "link" (dict
-              "class"   "lang__link"
-              "icon"    .icon
-              "default" .default
-              "label"   .label
-              "link"    .link
-              "lock"    true
+              "class" "lang__link"
+              "icon"  .icon
+              "def"   .def
+              "label" .label
+              "url"   .url
+              "lock"  true
             ) -}}
           </i>
         {{- end -}}

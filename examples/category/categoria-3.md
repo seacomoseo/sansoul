@@ -1,8 +1,8 @@
 ---
 slug: categoria-3
 title: Categoría 3
-summary: null # string
-image: null # string
+sum: null # string
+img: null # string
 
 icon: null # string
 category:
@@ -14,5 +14,5 @@ toc: n
 draft: n
 noindex: y
 seo: null # string
-description: null # string
+desc: null # string
 ---

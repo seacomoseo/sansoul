@@ -28,7 +28,7 @@ export function initCookies () {
       cookiesClose()
 
       // If acept all or analytics ckecked
-      const aceptAll = c.classList.contains('cookies__button--all')
+      const aceptAll = c.classList.contains('cookies__btn--all')
       const analyticsCkecked = document.querySelector('.cookies [value="analytics"]')?.checked
       if (aceptAll || analyticsCkecked) {
         localStorage.controlcookieanalytics = localStorage.controlcookieanalytics || 0
@@ -41,7 +41,7 @@ export function initCookies () {
 
     document.addEventListener('click', e => {
       // Onclick cookies accept
-      const cb = e.target.closest('.cookies__button')
+      const cb = e.target.closest('.cookies__btn')
       if (cb) {
         cookiesAccept(cb)
       } else {

@@ -1,8 +1,8 @@
 ---
 slug: admin
 title: Admin
-summary: Soy la leche haciendo esto y lo otro, pero lo que más me gusta es scribir cosas sin sentido para rellenar cosas de ejemplo.
-image: base/icon.png
+sum: Soy la leche haciendo esto y lo otro, pero lo que más me gusta es scribir cosas sin sentido para rellenar cosas de ejemplo.
+img: /u/base/icon.png
 
 icon: user-secret
 prefix: Dr
@@ -24,6 +24,6 @@ toc: n
 draft: n
 noindex: y
 seo: null # string
-description: null # string
+desc: null # string
 ---
 Contenido de ejemplo

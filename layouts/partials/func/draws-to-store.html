@@ -1,0 +1,269 @@
+{{ $icons := slice
+  "brand:facebook-f"
+  "brand:x-twitter"
+  "brand:tiktok"
+  "brand:instagram"
+  "brand:youtube"
+  "brand:linkedin-in"
+  "brand:google"
+  "brand:google-drive"
+  "brand:github-alt"
+  "brand:gitlab"
+  "brand:netlify"
+  "brand:cloudflarepages"
+}}
+
+{{/*  Add default icons  */}}
+{{ $def := slice
+  "home"
+  "play"
+  "up"
+  "down"
+  "left"
+  "right"
+  "right_angle"
+  "close"
+  "cookies"
+  "sitemap"
+  "search"
+  "question"
+  "plus"
+  "calendar"
+  "calendar_edit"
+  "calendar_start"
+  "calendar_end"
+  "clock"
+  "geo"
+  "copy"
+  "send"
+  "send_close"
+  "send_checking"
+  "send_submit"
+  "send_error"
+  "send_info"
+  "review_star"
+  "words"
+  "address"
+  "drop_down"
+  "drop_up"
+  "phone"
+  "whatsapp"
+  "upload"
+  "mail"
+  "share"
+  "translate"
+  "langs"
+  "user"
+  "quote"
+  "quote_left"
+  "quote_right"
+  "build_success"
+  "build_building"
+  "build_canceled"
+  "build_error"
+  "build_waiting"
+  "build_check"
+  "build_end"
+  "cms"
+  "rebuild"
+  "clear_cache"
+}}
+{{ range $def }}
+  {{ $icon := partial "func/default-icon" . }}
+  {{ $icons = $icons | append $icon }}
+{{ end }}
+
+{{ $imgs := slice }}
+
+{{/*  Get all contents like json strin  */}}
+{{ $all  := slice }}
+{{ $tpls := slice }}
+{{/*  Pages not draft  */}}
+{{ range site.AllPages }}
+  {{ $all = $all | append .RawContent .Params }}
+  {{ with .Params.tpl }}
+    {{ $tpls = $tpls | append . }}
+  {{ end }}
+{{ end }}
+{{/*  Types not hidden  */}}
+{{ range site.Data.types }}
+  {{ if not .hide }}
+    {{ with .tpl }}
+      {{ $tpls = $tpls | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{/*  Sections not hidden  */}}
+{{ $sections := slice }}
+{{ range $tpls | uniq }}
+  {{ $all = $all | append . }}
+  {{ with .sections }}
+    {{ range . }}
+      {{ with .file }}
+        {{ with index site.Data.section . }}
+          {{ $sections = $sections | append . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ range $sections | uniq }}
+  {{ $all = $all | append . }}
+{{ end }}
+{{/*  Footer  */}}
+{{ with index site.Data.section "base-footer" }}
+  {{ $all = $all | append . }}
+{{ end }}
+{{/*  Global values  */}}
+{{ range site.Languages }}
+  {{ $values := index site.Data (print "values." .Lang) }}
+  {{ $all     = $all | append $values }}
+  {{ $icon   := print "svg:flag-" .Lang }}
+  {{ $icons   = $icons | append $icon }}
+{{ end }}
+{{ $all = $all | uniq | jsonify }}
+
+{{/*  Change to hugo.IsProduction if inprove  */}}
+{{ if true }}
+  {{/*  Get glyphs and svg's  */}}
+
+  {{/*  Get custom params  */}}
+  {{ $icon_params    := slice "icon" "icon_right" "pin" "div" }}
+  {{ $img_params     := slice "img" "hover" "vid" "logo" "bi" }}
+  {{ $gallery_params := slice "imgs" "limgs" }}
+  {{ $icon_vars      := slice "icon" "pin" "div" }}
+  {{ $img_vars       := slice "img" "hover" "img_no_vid" "bi" "box_bi" }}
+  {{ $gallery_vars   := slice "imgs" "limgs" }}
+  {{ range site.Data.customs }}
+    {{ if in $icon_vars .var }}
+      {{/*  Icons  */}}
+      {{ with .name }}
+        {{ $icon_params = $icon_params | append . }}
+      {{ end }}
+    {{ else if or (in $img_vars .var) (eq .widget "img" | and (not .multi)) }}
+      {{/*  Images  */}}
+      {{ with .name }}
+        {{ $img_params = $img_params | append . }}
+      {{ end }}
+    {{ else if or (in $gallery_vars .var) (eq .widget "img" | and .multi) }}
+      {{/*  Gallery  */}}
+      {{ with .name }}
+        {{ $gallery_params = $gallery_params | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ $icon_params    = delimit (uniq $icon_params )   "|" }}
+  {{ $img_params   = delimit (uniq $img_params)   "|" }}
+  {{ $gallery_params = delimit (uniq $gallery_params) "|" }}
+
+  {{/*  Get icons  */}}
+  {{ $icon_regex := print `"(` $icon_params `)":"(.*?)"|::(.*?)::` }}
+  {{ range $all | findRESubmatch $icon_regex | uniq }}
+    {{ $icon := or (index . 3) (index . 2) }}
+    {{ if $icon }}
+      {{/*  Add prefix div if is  */}}
+      {{ $type := index . 1 }}
+      {{ if eq $type "div" }}
+        {{ $icon = print "div:" $icon }}
+      {{ end }}
+      {{/*  Append icon  */}}
+      {{ $icons = $icons | append $icon }}
+    {{ end }}
+  {{ end }}
+
+  {{/*  Get images  */}}
+  {{ $img_regex := print `"(?:` $img_params `)":"(.*?)"|!\[.*?\]\((.*?)(?: ".*?")?\)|` }}
+  {{ range $all | findRESubmatch $img_regex | uniq }}
+    {{ $img := or (index . 3) (index . 2) (index . 1) }}
+    {{ $imgs = $imgs | append $img }}
+  {{ end }}
+  {{ $gallery_regex := print `"(` $gallery_params `)":\[(.*?)\]` }}
+  {{ range $all | findRESubmatch $gallery_regex | uniq }}
+    {{ $gallery := index . 2 }}
+    {{ range $gallery | findRESubmatch `"(.*?)"` | uniq }}
+      {{ $img := index . 1 }}
+      {{ $imgs = $imgs | append $img }}
+    {{ end }}
+  {{ end }}
+
+{{ else }}
+  {{/*  Not needed glyphs in dev mode  */}}
+
+  {{/*  Get all svg files from up dir (omit brands because simple-icons is hard)  */}}
+  {{ $svgs   := resources.Match "u/**.svg" }}
+  {{ $brands := resources.Match "u/icons/brands/*.svg" }}
+  {{ $divs   := resources.Match "u/dividers/*.svg" }}
+  {{ $poster := slice (resources.Get "u/default-poster.svg") }}
+  {{ $kept   := $svgs | complement $brands $divs $poster }}
+  {{ range $kept }}
+    {{ $img := .RelPermalink | replaceRE `^/u/` "" }}
+    {{ $imgs = $imgs | append $img }}
+  {{ end }}
+
+  {{/*  Get brands  */}}
+  {{ $brand_regex := `(brand:[\w-]+)` }}
+  {{ range $all | findRE $brand_regex | uniq }}
+    {{ $icons = $icons | append . }}
+  {{ end }}
+
+  {{/*  Get divs  */}}
+  {{ range $divs }}
+    {{ $icon := .RelPermalink | replaceRE `^/u/dividers/|\.svg$` "" }}
+    {{ $icon  = print "div:" $icon }}
+    {{ $icons = $icons | append $icon }}
+  {{ end }}
+  {{/*  alt  */}}
+  {{/*
+  {{ $icon_regex := print `"div":"(.*?)"` }}
+  {{ range $all | findRESubmatch $icon_regex | uniq }}
+    {{ $icon := index . 2 }}
+    {{ if $icon }}
+      {{ $icon = print "div:" $icon }}
+      {{ $icons = $icons | append $icon }}
+    {{ end }}
+  {{ end }}
+  */}}
+
+{{ end }}
+
+{{/*  All Dividers  */}}
+{{ if $all | findRE `{{\\u003c dividers \\u003e}}` }}
+  {{ range resources.Match "u/dividers/*.svg" }}
+    {{ $icon := .Name | replaceRE `^/u/dividers/|\.svg$` "" }}
+    {{ $icon  = print "div:" $icon }}
+    {{ $icons = $icons | append $icon }}
+  {{ end }}
+{{ end }}
+
+{{/*  Images to icons  */}}
+{{ range $imgs }}
+  {{ if . | findRE `\.svg$` }}
+    {{ $img := . }}
+    {{ with $img | findRESubmatch `[#&?]poster=([^#&]+)` }}
+      {{ $img = index . 0 1 }}
+    {{ end }}
+    {{ $icon := $img | replaceRE `^/|^/?u/|^/?icons?/|\.svg$` "" | replaceRE `^(brand)s/` `$1-` }}
+    {{ $icon  = print "svg:" $icon }}
+    {{ $icons = $icons | append $icon }}
+  {{ end }}
+{{ end }}
+
+{{/*  Add to Store  */}}
+{{ range $icons | uniq }}
+  {{ if ne . "hide" }}
+    {{ $icon := . }}
+    {{ $type := "glyphs" }}
+    {{ range $icon | findRESubmatch `^(\w+):(.*)` }}
+      {{ $icon = index . 2 }}
+      {{ $type = index . 1 }}
+      {{ $type = print $type "s" }}
+      {{ if eq $type "brands" }}
+        {{ $icon = print "brands/" $icon }}
+        {{ $type = "svgs" }}
+      {{ end }}
+    {{ end }}
+    {{ page.Store.Add $type $icon }}
+  {{ end }}
+{{ end }}
+
+{{ return "" }}

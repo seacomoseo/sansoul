@@ -1,0 +1,55 @@
+{{- $src := .vid -}}
+{{- $ext := .vid | replaceRE `^.+\.([^#?&]+)` `$1` -}}
+
+{{- $notlazy_mute := and .notlazy .mute -}}
+
+{{- $img := .img -}}
+{{- if .img -}}
+  {{- if not .img_ext -}}
+    {{- with resources.Get .img -}}
+      {{- if hugo.IsProduction -}}
+        {{- $img = partial "func/img-format" (dict "img" . "size" .Width) -}}
+      {{- else -}}
+        {{- $img = .RelPermalink -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if $notlazy_mute -}}
+    {{- with resources.Get "default-poster.svg" -}}
+      {{- $b64  := .Content | base64Encode -}}
+      {{- $img = print "data:image/svg+xml;base64," $b64 -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $preload  := "" -}}
+{{- if and (not $notlazy_mute) $img -}}
+  {{- $preload = "none" -}}
+{{- end -}}
+
+{{- $attrs := dict
+  "class"       .class
+  "controls"    (not .mute)
+  "muted"       $notlazy_mute
+  "loop"        $notlazy_mute
+  "autoplay"    $notlazy_mute
+  "playsinline" $notlazy_mute
+  "preload"     $preload
+  "data-mute"   (cond $notlazy_mute "" .mute)
+  "poster"      $img
+-}}
+{{- $attrs = partial "func/attrs" $attrs -}}
+
+{{- /*  HTML  */}}
+<video {{- $attrs }}>
+  <source src="{{ $src }}{{ $.t }}" type="video/{{ $ext }}">
+</video>
+
+{{- /*  schema  */}}
+{{ partial "schema/vid" (dict
+  "name"         .alt
+  "thumbnailUrl" $img
+  "uploadDate"   .upload
+  "duration"     .duration
+  "contentUrl"   $src
+  "embedUrl"     nil
+) -}}

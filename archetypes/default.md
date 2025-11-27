@@ -1,13 +1,13 @@
 ---
 slug:  '{{ .Name }}'
 title: '{{ replace .Name "-" " " | title }}'
-summary: ''
-image: ''
+sum: ''
+img: ''
 toc: n
 draft: y
 noindex: n
 date: {{ .Date }}
-lastmod: 
+mod: 
 seo: ''
-description: ''
+desc: ''
 ---

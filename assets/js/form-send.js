@@ -66,11 +66,10 @@ export function initFormSend () {
           const actionEncoded = form.getAttribute('action')
           let action = atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
-          const netlifyForm = form.dataset.prov === 'ntlf'
           const googleScript = form.dataset.prov === 'gas'
           const formSubmitCo = form.dataset.prov === 'fsc'
           const formSubmitCoAjax = formSubmitCo && !isFileType
-          if (!netlifyForm && !googleScript && !formSubmitCoAjax) {
+          if (!googleScript && !formSubmitCoAjax) {
             if (formSubmitCo) action = action.replace('/ajax', '')
             form.action = action
             // like form.submit()
@@ -81,8 +80,8 @@ export function initFormSend () {
             changeValues({ form, now, prev: false })
           } else {
             // Fix double clicks
-            const submitButton = form.querySelector('button[type="submit"]')
-            submitButton.disabled = true
+            const submitBtn = form.querySelector('button[type="submit"]')
+            submitBtn.disabled = true
             // Fix repeat sending
             form.dataset.sending = 'true'
 
@@ -135,7 +134,7 @@ export function initFormSend () {
                 formSubmitError(formMessage, error.message)
               })
               .finally(() => {
-                submitButton.disabled = false
+                submitBtn.disabled = false
                 form.dataset.sending = 'false'
               })
           }

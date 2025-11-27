@@ -36,7 +36,7 @@ a {
 }
 strong,
 .strong,
-.button--swap:not(.button) > b,
+.btn--swap:not(.btn) > b,
 dt,
 legend {
   @include font-base-bold;
@@ -49,7 +49,7 @@ i {
 }
 s,
 del {
-  color: var(--subtitle);
+  color: var(--sub);
 }
 mark {
   padding-inline: .25em;
@@ -86,26 +86,37 @@ p {
 ul {
   padding-left: 1.125em;
 }
-h1, h2, h3, h4, h5, h6 {
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6,
+.h {
   @include font-title;
   display: block;
   margin-top: 0;
   margin-bottom: 1rem;
   color: var(--title, $dark);
   @include fluid-size(--fhs-pre, 1cqw, -.7, .3);
-  --fhs: calc(var(--fhs-pre) * var(--hs, 1) + var(--hs, 1) * #{ $font-size-title } * 1em);
+  @include fluid-size(--hn-pre, 1, var(--hn-vs, var(--hn, 6)), var(--hn, 6) );
+  --hn-safe: max(var(--hn-pre), 0.000001); // Fix 0 div
+  --hs-linear: calc(2.2 - 0.2 * var(--hn-safe)); // Linear part: replica scale 2, 1.8, 1.6, 1.4, 1.2, 1 with hn = 1..6
+  --hs-sing: calc(0.01 / var(--hn-safe)); // “Singular” part: hn → 0 triggers the size (for values 1..6 it is negligible)
+  --hs: calc(var(--hs-linear) + var(--hs-sing));
+  --fhs: calc(var(--fhs-pre) * var(--hs) + var(--hs) * #{ $font-size-title } * 1em);
   font-size: var(--fhs);
   // text-wrap: balance;
   &:last-child {
     margin-bottom: 0;
   }
 }
-h1 { --hs: 2; }
-h2 { --hs: 1.8; }
-h3 { --hs: 1.6; }
-h4 { --hs: 1.4; }
-h5 { --hs: 1.2; }
-h6 { --hs: 1; }
+h1, .h1 { --hn: 1; }
+h2, .h2 { --hn: 2; }
+h3, .h3 { --hn: 3; }
+h4, .h4 { --hn: 4; }
+h5, .h5 { --hn: 5; }
+h6, .h6 { --hn: 6; }
 input:not([type="checkbox"], [type="radio"], [type="hidden"]),
 textarea,
 select,
@@ -159,7 +170,7 @@ fieldset {
   border-radius: $radius;
 }
 legend {
-  color: var(--subtitle);
+  color: var(--sub);
   padding: 0 .25em;
   margin-left: -.25em;
 }
@@ -238,11 +249,11 @@ th, td {
 tr {
   background-color: var(--bg-color);
   &:nth-child(2n) {
-    background-color: var(--similar);
+    background-color: var(--such);
   }
   &:hover {
-    color: var(--invert-in);
-    background-color: var(--invert);
+    color: var(--turn-in);
+    background-color: var(--turn);
   }
 }
 thead tr {
@@ -353,7 +364,7 @@ pre {
   scroll-margin-top: calc(3em - var(--pt-div));
 }
 ::selection {
-  color: $main-contrast-neutral;
+  color: $main-turn-neutral;
   background: $main;
 }
 .icon:has(> use[href="#{$draws-base}#flag-es"]),

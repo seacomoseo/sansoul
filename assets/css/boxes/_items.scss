@@ -14,7 +14,7 @@
   --cols-gap-y: calc(var(--gap-width) * var(--cols-gap-ny));
   row-gap: var(--cols-gap-y);
 
-  &:not(:has(> .bg)) {
+  &:not(:has(> .bg), [style*="--cols-gap-"]) {
     --cols-gap-ny: 2;
   }
   &:not([class*="justify"]) {

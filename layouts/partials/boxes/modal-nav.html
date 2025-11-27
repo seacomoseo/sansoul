@@ -1,31 +1,31 @@
-<div class="modal__nav buttons">
+<div class="modal__nav btns">
   {{- with .prev }}
     {{ partial "link" (dict
-      "class"   "modal__prev"
-      "button"  "cta"
-      "dot"     true
-      "default" "left"
-      "label"   (i18n "prev")
-      "anchor"  "auto"
-      "link"    (print "#" .id)
+      "class"  "modal__prev"
+      "btn"    "cta"
+      "dot"    true
+      "def"    "left"
+      "label"  (i18n "prev")
+      "anchor" "auto"
+      "url"    (print "#" .id)
     ) -}}
   {{- end }}
   {{ partial "link" (dict
-    "class"   "modal__close"
-    "button"  "cta"
-    "dot"     (and .prev .next)
-    "default" "close"
-    "label"   (i18n "close")
+    "class" "modal__close"
+    "btn"   "cta"
+    "dot"   (and .prev .next)
+    "def"   "close"
+    "label" (i18n "close")
   ) -}}
   {{- with .next }}
     {{ partial "link" (dict
-      "class"   "modal__next"
-      "button"  "cta"
-      "dot"     true
-      "default" "right"
-      "label"   (i18n "next")
-      "anchor"  "auto"
-      "link"    (print "#" .id)
+      "class"  "modal__next"
+      "btn"    "cta"
+      "dot"    true
+      "def"    "right"
+      "label"  (i18n "next")
+      "anchor" "auto"
+      "url"    (print "#" .id)
     ) -}}
   {{- end }}
 </div>

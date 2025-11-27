@@ -2,8 +2,10 @@
 {{- with .step.icon_size -}}
   {{- $icon_size = print " steps--size-" . -}}
 {{- end -}}
-{{- $hn     := .step.hn                 | default (add .level 1) -}}
-{{- $border := print " " (.step.border  | default "alt")         -}}
+{{- $hl     := partial "func/hl" (dict "hn" .step.hn "hs" .step.hs "hs_vs" .step.hs_vs "level" .level) -}}
+{{- $hn     := $hl.node -}}
+{{- $hs     := $hl.class -}}
+{{- $border := print " " (.step.border  | default "alt") -}}
 {{- $caps   := cond (not .step.caps)            "" "caps" -}}
 {{- $line   := cond (not .step.line)            "" "line" -}}
 {{- $show   := cond (not site.Data.config.show) "" " show" }}
@@ -12,11 +14,11 @@
     <li class="step {{- $icon_size }}">
       <div class="step__axis-wrap {{- $border }}">
         <div class="step__axis">
-          <div class="step__figure">
-            {{- with .image -}}
+          <div class="step__fig">
+            {{- with .img -}}
               {{- partial "media/_" (dict
-                "class"   "step__figure-image"
-                "src"     .
+                "class"   "step__fig-img"
+                "img"     .
                 "max"     342
                 "ratio"   "1/1"
                 "notlazy" $.is_header
@@ -25,7 +27,7 @@
             {{- with .icon }}
               {{ partial "icon" (dict "class" "step__icon" "icon" .) -}}
             {{- end -}}
-            {{- if and (not .image) (not .icon) }}
+            {{- if and (not .img) (not .icon) }}
               <div class="step__number">{{ add $key 1 }}</div>
             {{- end }}
           </div>
@@ -33,26 +35,22 @@
       </div>
       <div class="step__md {{- $show }}">
         {{- with .title -}}
-          {{- $hn_class := slice
-            "step__title"
-            (print "h" ($.step.hs | default 4))
-            $caps
-            $line
-          -}}
-          {{- $hn_attrs := dict "class" $hn_class -}}
-          {{- $hn_attrs  = partial "functions/attrs" $hn_attrs -}}
-          <h {{- $hn }} {{- $hn_attrs }}>
-            {{- . | markdownify }}
-          </h {{- $hn }}>
+          {{- $hn_class := slice "step__title" $hs $caps $line -}}
+          {{- $hn_style := $hl.style -}}
+          {{- $hn_attrs := dict "class" $hn_class "style" $hn_style -}}
+          {{- $hn_attrs  = partial "func/attrs" $hn_attrs }}
+          {{ print "<" $hn $hn_attrs ">" | safeHTML -}}
+            {{- . | markdownify -}}
+          {{- print "</" $hn ">" | safeHTML -}}
         {{- end -}}
-        {{- with .subtitle }}
-          <p class="step__subtitle subtitle">
+        {{- with .sub }}
+          <p class="step__sub sub">
             {{- . | markdownify }}
           </p>
         {{- end -}}
         {{- with .md }}
           <div class="md">
-            {{ partial "functions/md" . }}
+            {{ partial "func/md" . }}
           </div>
         {{- end }}
       </div>

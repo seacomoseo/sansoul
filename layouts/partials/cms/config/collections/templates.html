@@ -1,19 +1,22 @@
 {{ $colections := slice }}
 
+{{ $tpl_menu_hide_custom_hint := print "[" .tpl_menu_hide_custom_hint "](#/collections/_singletons/entries/values)" }}
+{{ $tpl_sections_file_hint    := print "[" .tpl_sections_file_hint    "](#/collections/section)"                    }}
+
 
 {{/*  BACKGROUND  */}}
 {{ $colections = $colections | append
   (partial "cms/widget" (dict
-    "var"    `template_background`
+    "var"    `tpl_background`
     "name"   `bg`
-    "widget" `object`
+    "widget" `dict`
     "fields" (slice
-      `~box_bg_color`
-      `~box_bg_fade_color`
-      `~box_bg_fade_type`
-      `~box_bg_image`
-      `~box_bg_alpha`
-      `~box_parallax_sections`
+      `~color`
+      `~fade`
+      `~fade_to`
+      `~bi`
+      `~alpha`
+      `~scroll_sections`
     )
   ))
 }}
@@ -21,34 +24,34 @@
 
 {{/*  MENU  */}}
 {{ $colections = $colections | append
-  (partial "cms/widget" (dict "var" `template_menu_hide`          "name" `hide`          "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_logo`          "name" `logo`          "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_sticky`        "name" `sticky`        "widget" `select`  "options" `~options_sizes`                 ))
-  (partial "cms/widget" (dict "var" `template_menu_logo_sticky`   "name" `logo_sticky`   "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_logo_align`    "name" `logo_align`    "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_size`          "name" `size`          "widget" `select`  "options" `~options_sizes` "alt" `box_size`))
-  (partial "cms/widget" (dict "var" `template_menu_transparent`   "name" `transparent`   "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_hide_icons`    "name" `hide_icons`    "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_hide_custom`   "name" `hide_custom`   "widget" `boolean`                                            ))
-  (partial "cms/widget" (dict "var" `template_menu_auto`          "name" `auto`          "widget" `select`  "options" `~options_menu_auto`             ))
+  (partial "cms/widget" (dict "var" `tpl_menu_hide`        "name" `hide`        "widget" `bool`                                           ))
+  (partial "cms/widget" (dict "var" `tpl_menu_logo`        "name" `logo`        "widget" `bool`                                           ))
+  (partial "cms/widget" (dict "var" `tpl_menu_sticky`      "name" `sticky`      "widget" `select`  "options" `~options_sticky`            ))
+  (partial "cms/widget" (dict "var" `tpl_menu_logo_sticky` "name" `logo_sticky` "widget" `bool`                                           ))
+  (partial "cms/widget" (dict "var" `tpl_menu_logo_align`  "name" `logo_align`  "widget" `bool`                                           ))
+  (partial "cms/widget" (dict "var" `tpl_menu_size`        "name" `size`        "widget" `select`  "options" `~options_sizes` "alt" `size`))
+  (partial "cms/widget" (dict "var" `tpl_menu_clear`       "name" `clear`       "widget" `bool`                                           ))
+  (partial "cms/widget" (dict "var" `tpl_menu_hide_icons`  "name" `hide_icons`  "widget" `bool`                                           ))
+  (partial "cms/widget" (dict "var" `tpl_menu_hide_custom` "name" `hide_custom` "widget" `bool` "hint" $tpl_menu_hide_custom_hint         ))
+  (partial "cms/widget" (dict "var" `tpl_menu_auto`        "name" `auto`        "widget" `select`  "options" `~options_menu_auto`         ))
   (partial "cms/widget" (dict
-    "var"    `template_menu`
+    "var"    `tpl_menu`
     "name"   `menu`
-    "widget" `object`
+    "widget" `dict`
     "fields" (slice
-      `~template_menu_hide`
-      `~template_menu_logo`
-      `~template_menu_sticky`
-      `~template_menu_logo_sticky`
-      `~template_menu_logo_align`
-      `~template_menu_size`
-      `~template_menu_transparent`
-      `~box_bg_color`
-      `~box_bg_fade_color`
-      `~box_bg_fade_type`
-      `~template_menu_hide_icons`
-      `~template_menu_hide_custom`
-      `~template_menu_auto`
+      `~tpl_menu_hide`
+      `~tpl_menu_logo`
+      `~tpl_menu_sticky`
+      `~tpl_menu_logo_sticky`
+      `~tpl_menu_logo_align`
+      `~tpl_menu_size`
+      `~tpl_menu_clear`
+      `~color`
+      `~fade`
+      `~fade_to`
+      `~tpl_menu_hide_icons`
+      `~tpl_menu_hide_custom`
+      `~tpl_menu_auto`
     )
   ))
 }}
@@ -56,32 +59,38 @@
 
 {{/*  CALLNOW  */}}
 {{ $colections = $colections | append
-  (partial "cms/widget" (dict "var" `template_callnow` "name" `callnow` "widget" `select` "options" `~options_callnow`))
+  (partial "cms/widget" (dict "var" `tpl_callnow` "name" `callnow` "widget" `select` "options" `~options_callnow`))
 }}
 
 
 {{/*  SECTIONS  */}}
 {{ $colections = $colections | append
   (partial "cms/widget" (dict
-    "var"    `template_section`
+    "var"    `tpl_section`
     "name"   `section`
-    "widget" `list`
+    "widget" `slice`
     "fields" `~section_fields`
   ))
   (partial "cms/widget" (dict
-    "var"     `template_sections`
-    "name"    `sections`
-    "widget"  `list`
-    "summary" "{{fields.file}}"
-    "fields"  (slice
+    "var"    `tpl_sections`
+    "name"   `sections`
+    "widget" `slice`
+    "sum"    "{{fields.file}}"
+    "fields" (slice
       (partial "cms/widget" (dict
-        "alt"            `template_sections_file`
+        "alt"            `tpl_sections_file`
         "name"           `file`
-        "widget"         `relation`
-        "hint"           (print "[" .template_sections_file_hint "](#/collections/section)")
+        "widget"         `rel`
+        "hint"           $tpl_sections_file_hint
         "collection"     `section`
         "search_fields"  (slice "{{name}}")
         "display_fields" (slice "{{name}}")
+      ))
+      (partial "cms/widget" (dict
+        "alt"    `tpl_sections_params`
+        "name"   `params`
+        "widget" `dict`
+        "fields" `~sections_fields_params`
       ))
     )
   ))
@@ -91,15 +100,15 @@
 {{/*  LISTS  */}}
 {{ $colections = $colections | append
   (partial "cms/widget" (dict
-    "var"    `template_list`
+    "var"    `tpl_list`
     "name"   `list`
-    "widget" `object`
+    "widget" `dict`
     "fields" `~box_fields`
   ))
   (partial "cms/widget" (dict
-    "var"    `template_related`
-    "name"   `related`
-    "widget" `object`
+    "var"    `tpl_rel`
+    "name"   `rel`
+    "widget" `dict`
     "fields" `~box_fields`
   ))
 }}

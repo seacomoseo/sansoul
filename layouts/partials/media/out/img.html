@@ -1,0 +1,46 @@
+{{- $iframe_data := .iframe | not | not -}}
+{{- $iframe_name := or .iframe.name "aux" -}}
+{{- $iframe_src  := cond $iframe_data .iframe.src false -}}
+
+{{- $pic_attrs := dict
+  "class"       .class
+  "data-iframe" $iframe_data
+  $iframe_name  $iframe_src
+-}}
+{{- $img_attrs := dict
+  "src"      .img
+  "alt"      .alt
+  "decoding" "async"
+  "loading"  .lazy
+-}}
+{{- $pic_attrs = partial "func/attrs" $pic_attrs -}}
+{{- $img_attrs = partial "func/attrs" $img_attrs -}}
+
+{{- /*  HTML  */}}
+<picture {{- $pic_attrs }}><img {{- $img_attrs }}></picture>
+
+{{- /*  icon  */ -}}
+{{- with .iframe.play }}
+  {{ . -}}
+{{- end -}}
+
+{{- /*  schema  */}}
+{{ if not .notschema -}}
+  {{- with .iframe -}}
+    {{- partial "schema/vid" (dict
+      "name"         $.alt
+      "thumbnailUrl" $.img
+      "uploadDate"   $.upload
+      "duration"     $.duration
+      "contentUrl"   .url
+      "embedUrl"     .src
+    ) -}}
+  {{- else -}}
+    {{- partial "schema/img" (dict
+      "url"     .img
+      "width"   512
+      "height"  512
+      "caption" .alt
+    ) -}}
+  {{- end -}}
+{{- end -}}

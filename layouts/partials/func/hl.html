@@ -1,0 +1,46 @@
+{{ $hn := .hn }}
+{{ if not .hn }}
+  {{ if .is_title }}
+    {{ if and .url (not .main) }}
+      {{ $hn = "p" }}
+    {{ else }}
+      {{ $hn = print "h" .level }}
+    {{ end }}
+  {{ else }}
+    {{ $hn = add .level 1 }}
+    {{ $hn = print "h" $hn }}
+  {{ end }}
+{{ end }}
+
+{{ $hs      := "" }}
+{{ $hs_vl   := "" }}
+{{ $hs_vs   := "" }}
+{{ $hs_s    := .hs    | float | printf "%f" | strings.TrimRight ".0" }}
+{{ $hs_vs_s := .hs_vs | float | printf "%f" | strings.TrimRight ".0" }}
+{{ if ne .hs nil }}
+  {{ $hn_s := $hn | strings.TrimPrefix "h" }}
+  {{ if ne $hs_s $hn_s }}
+    {{ if strings.Contains $hs_s "." }}
+      {{ $hs_vl = $hs_s }}
+      {{ $hs = "h" }}
+    {{ else }}
+      {{ $hs = print "h" $hs_s }}
+    {{ end }}
+  {{ end }}
+{{ else if ne $hn nil }}
+  {{ if not (hasPrefix $hn "h") }}
+    {{ $s := cond (not .is_title_url) .level "6" }}
+    {{ $hs = print "h" $s }}
+  {{ end }}
+{{ end }}
+{{ if ne .hs_vs nil }}
+  {{ if and (ne $hs_vs_s $hs_vl) (ne $hs_vs_s $hs_s) }}
+    {{ $hs_vs = $hs_vs_s }}
+  {{ end }}
+{{ end }}
+
+{{ $style := slice
+  (cond (not $hs_vl) "" (print "--hn:"    $hs_vl))
+  (cond (not $hs_vs) "" (print "--hn-vs:" $hs_vs))
+}}
+{{ return dict "node" $hn "class" $hs "style" $style }}

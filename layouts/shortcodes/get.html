@@ -1,0 +1,7 @@
+{{- $name   := index .Params 0 -}}
+{{- $opts   := dict "Page" page "name" $name -}}
+{{- $value  := partial "func/get-param" $opts -}}
+{{- if eq $name "price" -}}
+  {{- $value = $value | lang.FormatCurrency 2 site.Params.currency -}}
+{{- end -}}
+{{- $value | plainify -}}

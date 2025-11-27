@@ -1,0 +1,18 @@
+{{ $imgs := slice }}
+
+{{ range . }}
+  {{ $img := "" }}
+  {{ $out := hasPrefix . "http" }}
+  {{ if not $out }}
+    {{ with resources.Get . }}
+      {{ $img = .Permalink }}
+    {{ end }}
+  {{ else }}
+    {{ $img = . }}
+  {{ end }}
+  {{ with $img }}
+    {{ $imgs = $imgs | append . }}
+  {{ end }}
+{{ end }}
+
+{{ return $imgs }}

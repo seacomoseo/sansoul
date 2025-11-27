@@ -16,7 +16,7 @@
   }
 </style>
 
-{{- $t := partial "functions/i18n-cms" . -}}
+{{- $t := partial "func/i18n-cms" . -}}
 {{- range site.Data.options.div -}}
   {{- if ne . "hide" -}}
     {{- $attrs := "" -}}
@@ -26,12 +26,12 @@
     ) -}}
       {{- $class := print "div--example " .class -}}
       {{- $attrs  = dict "class" $class "style" .style -}}
-      {{- $attrs  = partial "functions/attrs" $attrs -}}
+      {{- $attrs  = partial "func/attrs" $attrs -}}
     {{- end }}
     <h3 id="div-{{ . }}">
       {{- partial "link" (dict
         "label" .
-        "link"  (print "#div-" .)
+        "url"   (print "#div-" .)
       ) -}}
       <br>
       {{- index $t (print "option-div-" .) -}}

@@ -20,7 +20,7 @@
         "addressRegion"   .region
         "addressCountry"  .country
       }}
-      {{ $address = partial "functions/obj-truly" $address }}
+      {{ $address = partial "func/obj-truly" $address }}
       {{ $has_map = print
         "https://maps.google.com/maps/search/"
         (print
@@ -35,7 +35,7 @@
         )
       }}
     {{ end }}
-    {{ with .link }}
+    {{ with .url }}
       {{ $has_map = . }}
     {{ end }}
     {{ with .geo }}
@@ -66,6 +66,6 @@
   "has_map" $all_has_map
   "geo"     $all_geo
 }}
-{{ $location = partial "functions/obj-truly" $location }}
+{{ $location = partial "func/obj-truly" $location }}
 
 {{ return $location }}

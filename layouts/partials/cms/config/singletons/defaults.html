@@ -3,12 +3,12 @@
 {{ return dict
   "&defaults" (slice
     (partial "cms/widget" (dict
-      "alt"     `defaults`
-      "name"    `defaults`
-      "widget"  `list`
-      "summary" "{{fields.name}}: {{fields.value}}"
-      "root"    true
-      "fields"  (slice
+      "alt"    `defaults`
+      "name"   `defaults`
+      "widget" `slice`
+      "sum"    "{{fields.name}}: {{fields.value}}"
+      "root"   true
+      "fields" (slice
         `~customs_name`
         (partial "cms/widget" (dict "alt" `defaults_value` "name" `value`                                                             ))
         (partial "cms/widget" (dict "alt" `defaults_type`  "name" `type`  "widget" `select`                 "options" $u.pairing_kinds))
@@ -17,8 +17,8 @@
         (partial "cms/widget" (dict
           "alt"     `defaults_path`
           "name"    `path`
-          "widget"  `list`
-          "field"   (partial "cms/widget" (dict "name" `path` "alt" `config_defaults_path_singular`))
+          "widget"  `slice`
+          "field"   (partial "cms/widget" (dict "name" `path` "alt" `defaults_path_singular`))
         ))
       )
     ))

@@ -1,15 +1,15 @@
 {{- $param  := index .Params 0 -}}
 {{- $page   := site.GetPage (print "page/" $param) -}}
 {{- $title  := $page.Title -}}
-{{- $link   := $page.RelPermalink -}}
+{{- $url    := $page.RelPermalink -}}
 {{- $lock   := true -}}
 {{- if eq $param "index" -}}
   {{- $title = site.Params.domain -}}
-  {{- $link  = site.Home.RelPermalink -}}
+  {{- $url   = site.Home.RelPermalink -}}
   {{- $lock  = false -}}
 {{- end -}}
 {{- partial "link" (dict
   "label" $title
-  "link"  $link
+  "url"   $url
   "lock"  $lock
 ) -}}

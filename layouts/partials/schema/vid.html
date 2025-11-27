@@ -1,0 +1,23 @@
+{{- $thumb  := .thumbnailUrl -}}
+{{- if hasPrefix $thumb "/" -}}
+  {{- $thumb = print site.BaseURL $thumb -}}
+{{- end -}}
+{{- $schema := dict
+  "@type"          "VideoObject"
+  "@context"       "https://schema.org"
+  "@type"          "VideoObject"
+  "name"           .name
+  "description"    (.desc | default .name | markdownify | plainify)
+  "thumbnailUrl"   $thumb
+  "uploadDate"     (.uploadDate | default (page.Lastmod.Format "2006-01-02T15:04:05Z07:00"))
+  "duration"       .duration
+  "contentUrl"     .contentUrl
+  "embedUrl"       .embedUrl
+  "inLanguage"     (page.Params.locale | default page.Lang)
+  "isPartOf"       (dict "@id" page.Permalink)
+-}}
+{{- $schema = partial "func/obj-truly" $schema -}}
+
+<script type="application/ld+json">
+  {{- $schema | jsonify | safeJS -}}
+</script>

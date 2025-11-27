@@ -8,7 +8,7 @@ weight: 3
 ---
 
 Cookie-Richtlinie
-{.subtitle}
+{.sub}
 
 **{{% legal name %}}** informiert über die Verwendung von Cookies auf seiner Website: **{{% legal web %}}**
 
@@ -88,7 +88,7 @@ Wenn Sie nach der Information über unsere Cookie-Richtlinie weiter surfen, gehe
 
 Zusätzlich zur Verwendung unserer eigenen Cookies erlauben wir Drittanbietern, Cookies zu setzen und auf diese auf Ihrem Gerät zuzugreifen. Die Zustimmung zur Verwendung von Cookies durch **{{% legal name %}}** ist mit der Navigation auf dieser Webseite verbunden.
 
-Für Anfragen zur Verwendung von Cookies auf unserer Webseite können Sie sich an die E-Mail-Adresse **{{% legal email %}}** wenden.
+Für Anfragen zur Verwendung von Cookies auf unserer Webseite können Sie sich an die E-Mail-Adresse **{{% legal mail %}}** wenden.
 
 ## Änderungen der Cookie-Richtlinie
 

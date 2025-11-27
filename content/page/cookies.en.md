@@ -8,7 +8,7 @@ weight: 3
 ---
 
 Cookie Policy
-{.subtitle}
+{.sub}
 
 **{{% legal name %}}** informs about the use of cookies on its website: **{{% legal web %}}**
 
@@ -88,7 +88,7 @@ If you continue browsing after being informed about our cookie policy, we unders
 
 In addition to using our own cookies, we allow third parties to set cookies and access them on your computer. Consent to the use of cookies from this **{{% legal name %}}** is tied to browsing this website.
 
-For any questions regarding the use of cookies on our website, you can contact us by email at **{{% legal email %}}**.
+For any questions regarding the use of cookies on our website, you can contact us by email at **{{% legal mail %}}**.
 
 ## Changes to the Cookie Policy
 

@@ -1,0 +1,8 @@
+{{ $sum := .Params.sum
+  | default .Summary
+  | default .Params.desc
+  | truncate 155
+  | plainify
+  | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""
+}}
+{{ return $sum }}

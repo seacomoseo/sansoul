@@ -1,200 +1,205 @@
 {{/*  BOXES FIELDS BY GROUPS  */}}
 
 {{ $group := slice
-  `~box_cols_vl`
-  `~box_cols_vs`
-  `~box_gap_vl`
-  `~box_gap_vs`
-  `~box_gap_ny`
-  `~box_to`
-  `~box_duo`
-  `~box_sides`
-  `~box_group_radius`
-  `~box_slider_active`
-  `~box_slider_time`
-  `~box_slider_pips`
-  `~box_slider_arrows`
-  `~box_align_x`
-  `~box_align_y`
+  `~cols`
+  `~cols_vs`
+  `~gap`
+  `~gap_vs`
+  `~gap_ny`
+  `~to`
+  `~duo`
+  `~sides`
+  `~group_radius`
+  `~slider`
+  `~slider_time`
+  `~slider_pips`
+  `~slider_arrows`
+  `~align_x`
+  `~align_y`
 }}
 {{ $titles := slice
-  `~box_title`
-  `~box_hanchor`
-  `~box_subtitle`
-  `~box_price`
-  `~box_hs`
-  `~box_hn`
-  `~box_caps`
-  `~box_line`
+  `~title`
+  `~hanchor`
+  `~sub`
+  `~price`
+  `~hn`
+  `~hs`
+  `~hs_vs`
+  `~caps`
+  `~line`
 }}
 {{ $md := slice
-  `~box_md`
-  `~box_md_align`
-  `~box_md_align_vl`
-  `~box_md_sm`
-  `~box_md_caps`
-  `~box_md_line`
-  `~box_md_index`
-  `~box_md_nav`
-  `~box_md_border`
+  `~md`
+  `~md_align`
+  `~md_align_vl`
+  `~md_sm`
+  `~md_caps`
+  `~md_line`
+  `~md_index`
+  `~md_nav`
+  `~md_border`
 }}
 {{ $titles_style := slice
-  `~box_hs`
-  `~box_hn`
-  `~box_caps`
-  `~box_line`
+  `~hn`
+  `~hs`
+  `~hs_vs`
+  `~caps`
+  `~line`
 }}
 {{ $md_style := slice
-  `~box_md_align`
-  `~box_md_align_vl`
-  `~box_md_sm`
-  `~box_md_caps`
-  `~box_md_line`
-  `~box_md_index`
-  `~box_md_nav`
-  `~box_md_border`
+  `~md_align`
+  `~md_align_vl`
+  `~md_sm`
+  `~md_caps`
+  `~md_line`
+  `~md_index`
+  `~md_nav`
+  `~md_border`
 }}
 {{ $menu := slice
-  `~box_menu_label`
-  `~box_menu_button`
-  `~box_menu_swap`
+  `~menu_label`
+  `~menu_btn`
+  `~menu_swap`
 }}
 {{ $menu_style := slice
-  `~box_menu_button`
-  `~box_menu_swap`
+  `~menu_btn`
+  `~menu_swap`
 }}
 {{ $icon := slice
-  `~box_icon_id`
-  `~box_icon_type`
-  `~box_icon_size`
-  `~box_icon_color`
+  `~icon`
+  `~icon_pos`
+  `~icon_size`
+  `~icon_color`
 }}
-{{ $image := slice
-  `~box_image_src`
-  `~box_image_hover`
-  `~box_image_alt`
-  `~box_image_hover_alt`
-  `~box_image_ratio`
-  `~box_image_contain`
-  `~box_image_border`
-  `~box_image_inset`
-  `~box_image_circle`
-  `~box_image_gray`
-  `~box_image_shade`
+{{ $img := slice
+  `~img_no_vid`
+  `~hover`
+  `~alt`
+  `~hover_alt`
+  `~vid`
+  `~mute`
+  `~ratio`
+  `~contain`
+  `~border`
+  `~inset`
+  `~disc`
+  `~gray`
+  `~shade`
 }}
-{{ $button := slice
-  `~box_button_pin`
-  `~box_button_link`
-  `~box_button_label`
-  `~box_button_anchor`
-  `~box_button_lock`
-  `~box_button_swap`
-  `~box_button_ga4`
-  `~box_button_color_with_hide`
+{{ $btn := slice
+  `~pin`
+  `~url`
+  `~label`
+  `~anchor`
+  `~lock`
+  `~swap`
+  `~ga4`
+  `~btn_with_hide`
 }}
 {{ $bg_boxes := slice
-  `~box_bg_color`
-  `~box_bg_fade_color`
-  `~box_bg_fade_type`
-  `~box_bg_color_alpha`
-  `~box_bg_image`
-  `~box_bg_alpha`
-  `~box_parallax_boxes`
+  `~color`
+  `~fade`
+  `~fade_to`
+  `~color_alpha`
+  `~bi`
+  `~alpha`
+  `~scroll`
 }}
 {{ $bg_sections := slice
-  `~box_bg_color`
-  `~box_bg_fade_color`
-  `~box_bg_fade_type`
-  `~box_bg_color_alpha`
-  `~box_bg_image`
-  `~box_bg_alpha`
-  `~box_parallax_sections`
-  `~box_container_bg_color`
-  `~box_container_bg_fade_color`
-  `~box_container_bg_fade_type`
-  `~box_container_bg_color_alpha`
-  `~box_container_bg_image`
-  `~box_container_bg_alpha`
-  `~box_container_parallax`
+  `~color`
+  `~fade`
+  `~fade_to`
+  `~color_alpha`
+  `~bi`
+  `~alpha`
+  `~scroll_sections`
+  `~box_color`
+  `~box_fade`
+  `~box_fade_to`
+  `~box_color_alpha`
+  `~box_bi`
+  `~box_alpha`
+  `~box_scroll`
 }}
 {{ $padding := slice
-  `~box_padding_top`
-  `~box_padding_bottom`
-  `~box_padding_hide`
+  `~pt`
+  `~pb`
+  `~ph`
 }}
 {{ $size := slice
-  `~box_size`
-  `~box_full`
+  `~size`
+  `~full`
 }}
 {{ $size_modal := slice
-  `~box_size`
+  `~size`
 }}
 {{ $divider := slice
-  `~box_divider_id`
-  `~box_divider_flip_x`
-  `~box_divider_flip_y`
+  `~div`
+  `~flip_x`
+  `~flip_y`
 }}
 {{ $boxi_boxes := slice
-  `~box_order`
-  `~box_fit_vl`
-  `~box_fit_vs`
-  `~box_grow`
-  `~box_align_y_self`
+  `~order`
+  `~fit`
+  `~fit_vs`
+  `~grow`
+  `~align_y_self`
 }}
 {{ $boxi := slice
-  `~box_align`
-  `~box_align_vl`
-  `~box_side`
-  `~box_rate`
-  `~box_space`
-  `~box_padding_vl`
-  `~box_padding_vs`
-  `~box_hide_shadow`
-  `~box_hide_radius`
-  `~box_pill`
-  `~box_card`
+  `~align`
+  `~align_vl`
+  `~side`
+  `~rate`
+  `~space`
+  `~pd`
+  `~pd_vs`
+  `~hide_shadow`
+  `~hide_radius`
+  `~pill`
+  `~card`
 }}
 {{ $other := slice
-  `~box_if`
-  `~box_node`
-  `~box_params`
-  `~box_tag`
-  `~box_tags`
-  `~box_sort`
+  `~if`
+  `~node`
+  `~get`
+  `~tag`
+  `~tags`
+  `~sort`
 }}
 {{ $blocks := slice
-  `~box_list`
-  `~box_step`
-  `~box_steps`
-  `~box_gallery`
-  `~box_gallery_images`
-  `~box_gallery_limages`
-  `~box_accordion`
-  `~box_accordions`
-  `~box_gss`
-  `~box_gss_sheet`
-  `~box_review`
-  `~box_reviews`
-  `~box_contact`
-  `~box_dots`
-  `~box_form`
-  `~box_inputs`
-  `~box_map`
-  `~box_geos`
-  `~box_zoom`
+  `~list`
+  `~step`
+  `~steps`
+  `~gallery`
+  `~imgs`
+  `~limgs`
+  `~faq`
+  `~faqs`
+  `~gss`
+  `~gss_sheet`
+  `~review`
+  `~reviews`
+  `~when`
+  `~links`
+  `~dots`
+  `~form`
+  `~inputs`
+  `~map`
+  `~geos`
+  `~zoom`
 }}
 
 
 {{/*  BOXES FIELDS  */}}
 
 {{ $boxes_fields := slice
-  `~box_view_boxes`
-  `~box_id`
+  `~view_boxes`
+  `~id`
   | append $titles
   | append $md
   | append $icon
-  | append $image
-  | append $button
+  | append $img
+  | append $btn
   | append $bg_boxes
   | append $boxi_boxes
   | append $boxi
@@ -208,33 +213,33 @@
 
 {{ return slice
   (dict "&box_fields" (slice
-    `~box_view_box`
+    `~view_box`
     | append $group
     | append $titles
     | append $md
     | append $icon
-    | append $image
-    | append $button
+    | append $img
+    | append $btn
     | append $bg_boxes
     | append $boxi
     | append $other
   ))
   (partial "cms/widget" (dict
     "var"    `box`
-    "alt"    `box_box`
+    "alt"    `box`
     "name"   `box`
-    "widget" `object`
+    "widget" `dict`
     "fields" `~box_fields`
   ))
 
 
   (partial "cms/widget" (dict
-    "var"     `boxes_last`
-    "alt"     `box_boxes`
-    "name"    `boxes`
-    "widget"  `list`
-    "summary" "{{fields.title}}"
-    "fields"  $boxes_fields
+    "var"    `boxes_last`
+    "alt"    `boxes`
+    "name"   `boxes`
+    "widget" `slice`
+    "sum"    "{{fields.title}}"
+    "fields" $boxes_fields
   ))
   (partial "cms/widget" (dict "var" `boxes_2` "<<" `boxes_last` "fields" ($boxes_fields | append `~boxes_last`)))
   (partial "cms/widget" (dict "var" `boxes`   "<<" `boxes_2`    "fields" ($boxes_fields | append `~boxes_last`)))
@@ -243,15 +248,15 @@
   (partial "cms/widget" (dict
     "var"    `modal`
     "name"   `modal`
-    "widget" `object`
+    "widget" `dict`
     "fields" (slice
-      `~box_view_modal`
+      `~view_modal`
       | append $titles_style
       | append $md_style
       | append $menu_style
       | append $icon
-      | append $image
-      | append $button
+      | append $img
+      | append $btn
       | append $bg_sections
       | append $padding
       | append $size_modal
@@ -264,16 +269,16 @@
   (partial "cms/widget" (dict
     "var"    `modals`
     "name"   `modals`
-    "widget" `list`
+    "widget" `slice`
     "fields" (slice
-      `~box_id`
-      `~box_view_modals`
+      `~id`
+      `~view_modals`
       | append $titles
       | append $md
       | append $menu
       | append $icon
-      | append $image
-      | append $button
+      | append $img
+      | append $btn
       | append $bg_sections
       | append $padding
       | append $size_modal
@@ -288,13 +293,13 @@
 
 
   (dict "&section_fields" (slice
-    `~box_view_section`
+    `~view_section`
     | append $titles_style
     | append $md_style
     | append $menu_style
     | append $icon
-    | append $image
-    | append $button
+    | append $img
+    | append $btn
     | append $bg_sections
     | append $padding
     | append $size
@@ -304,15 +309,37 @@
     | append $other
   ))
   (dict "&sections_fields" (slice
-    `~box_name`
-    `~box_id`
-    `~box_view_sections`
+    `~name`
+    `~id`
+    `~view_sections`
     | append $titles
     | append $md
     | append $menu
     | append $icon
-    | append $image
-    | append $button
+    | append $img
+    | append $btn
+    | append $bg_sections
+    | append $padding
+    | append $size
+    | append $divider
+    | append $boxi_boxes
+    | append $boxi
+    | append $other
+    | append `~box`
+    | append $blocks
+    | append `~boxes`
+    | append `~modal`
+    | append `~modals`
+  ))
+  (dict "&sections_fields_params" (slice
+    `~id`
+    `~view_sections`
+    | append $titles
+    | append $md
+    | append $menu
+    | append $icon
+    | append $img
+    | append $btn
     | append $bg_sections
     | append $padding
     | append $size

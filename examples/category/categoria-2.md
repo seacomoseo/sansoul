@@ -1,8 +1,8 @@
 ---
 slug: categoria-2
 title: Categoría 2
-summary: null # string
-image: null # string
+sum: null # string
+imagimge: null # string
 
 icon: null # string
 category:
@@ -13,5 +13,5 @@ toc: n
 draft: n
 noindex: y
 seo: null # string
-description: null # string
+desc: null # string
 ---

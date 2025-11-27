@@ -1,0 +1,22 @@
+{{ page.Store.Set "phones" slice }}
+{{/*  Only in home page in the main language  */}}
+{{ if eq page (index site.Sites 0).Home }}
+  {{ if eq . "init" }}
+    {{/*  Initialize each store  */}}
+    {{ $now := now.Format "20060102150405"  }}
+    {{ hugo.Store.Set "timestamp"    $now   }}
+    {{ page.Store.Set "glyphs"       slice  }}
+    {{ page.Store.Set "svgs"         slice  }}
+    {{ page.Store.Set "divs"         slice  }}
+    {{ partial "func/fonts-to-store" . }}
+  {{ else if eq . "end" }}
+    {{/*  Draws and glyphs to store  */}}
+    {{ partial "func/draws-to-store" . }}
+    {{/*  Generate static files  */}}
+    {{ partial "files/statics" . }}
+    {{ partial "files/fonts"   . }}
+    {{ partial "files/draws"   . }}
+    {{ partial "files/glyphs"  . }}
+  {{ end }}
+{{ end }}
+{{ return "" }}

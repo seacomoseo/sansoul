@@ -27,7 +27,7 @@
     height: 100%;
     min-height: 2em;
     background-color: var(--base);
-    @if $chamfer and $icon-buttons-rounded {
+    @if $chamfer and $is-btns-disc {
       transform: translateY(-.25em);
       box-shadow: 0 .5em 0 var(--base);
     }
@@ -50,39 +50,39 @@
   background-color: var(--base);
   overflow: hidden;
   z-index: 0;
-  @if $icon-buttons-rounded {
-    @include circle;
+  @if $is-btns-disc {
+    @include disc;
     @if $chamfer {
       padding: calc(var(--outline) / .7071);
     }
-  } @else if $radius > 0.01 {
+  } @else if $is-radius {
     // @include fluid-size(--step-axis-radius, 1em, .8, 2.055);
     @include radius(.25em);
   }
 }
-.step__figure {
+.step__fig {
   position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  @if $buttons-outline {
+  @if $btns-outline {
     background-color: var(--bg-color);
   } @else {
     background-color: var(--main);
   }
-  @if $icon-buttons-rounded {
-    @include circle;
-  } @else if $radius > 0.01 {
-    // @include fluid-size(--step-figure-radius, 1em, .8, 2.055);
+  @if $is-btns-disc {
+    @include disc;
+  } @else if $is-radius {
+    // @include fluid-size(--step-fig-radius, 1em, .8, 2.055);
     @include radius(0em);
   }
-  @if not $chamfer and $radius > 0.01 {
+  @if not $chamfer and $is-radius {
     overflow: hidden;
   }
 }
-.step__figure-image {
+.step__fig-img {
   &, img {
     position: absolute;
     top: 0;
@@ -104,7 +104,7 @@
   max-width: 100%;
   max-height: 100%;
   z-index: 3;
-  @if $buttons-outline {
+  @if $btns-outline {
     color: var(--main);
   } @else {
     color: var(--main-in);
@@ -114,7 +114,7 @@
   @include font-title;
   line-height: 1;
   font-size: calc(var(--steps-size) * .5);
-  @if $buttons-outline {
+  @if $btns-outline {
     color: var(--text);
   } @else {
     color: var(--main-in);
@@ -136,7 +136,7 @@
     margin-left: 0;
     margin-right: calc(100% - 2em);
   }
-  .buttons {
+  .btns {
     justify-content: flex-start;
   }
 }
@@ -146,10 +146,10 @@
   gap: .25em;
 }
 .step__title,
-.step__subtitle {
+.step__sub {
   margin: 0;
 }
-.step__title + .step__subtitle,
+.step__title + .step__sub,
 .step__title.line + * {
   margin-top: -.75rem;
 }
@@ -172,7 +172,7 @@
           margin-left: calc(100% - 2em);
           margin-right: 0;
         }
-        .buttons {
+        .btns {
           justify-content: flex-end;
         }
       }

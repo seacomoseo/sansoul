@@ -30,10 +30,10 @@
       position: absolute;
       bottom: calc(100% + 1em);
       left: 0;
-      color: var(--invert-in);
-      background-color: var(--invert);
+      color: var(--turn-in);
+      background-color: var(--turn);
       padding: 1em;
-      border-radius: 1em;
+      @include radius(1em);
     }
   }
 }
@@ -44,16 +44,16 @@
   }
 }
 .cookies,
-.cookies__buttons {
+.cookies__btns {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: .5em 1em;
 }
-.cookies__buttons {
+.cookies__btns {
   justify-content: flex-end;
 }
-.cookies__button {
+.cookies__btn {
   flex-shrink: 0;
 }
 /*! purgecss start ignore */

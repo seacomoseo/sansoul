@@ -1,14 +1,17 @@
-{{ $d := site.Data.utilities.default }}
+{{ $i  := site.Data.utilities.collections.icons }}
+{{ $vf := "content/values.{{locale}}.yml" }}
 
 {{ return slice
-  (dict "file" "content/values.{{locale}}.yml" "extension" `yml` "name" `values`    "label" .values      "icon" $d.values.icon    "editor" (dict "preview" false) "fields" `~values`   "i18n" true)
+  (dict "file" $vf                   "extension" `yml`  "name" `values`    "label" .values      "icon" $i.values    "editor" (dict "preview" false) "fields" `~values`   "i18n" true)
   (dict "divider" true)
-  (dict "file" "data/config.yml"               "extension" `yml` "name" `config`    "label" .config      "icon" $d.config.icon    "editor" (dict "preview" false) "fields" `~config`              )
-  (dict "file" "data/langs.yml"                "extension" `yml` "name" `langs`     "label" .langs       "icon" $d.langs.icon     "editor" (dict "preview" false) "fields" `~langs`               )
-  (dict "file" "data/styles.yml"               "extension" `yml` "name" `styles`    "label" .styles      "icon" $d.styles.icon    "editor" (dict "preview" false) "fields" `~styles`              )
-  (dict "file" "data/customs.yml"              "extension" `yml` "name" `customs`   "label" .customs     "icon" $d.customs.icon   "editor" (dict "preview" false) "fields" `~customs`             )
-  (dict "file" "data/defaults.yml"             "extension" `yml` "name" `defaults`  "label" .defaults    "icon" $d.defaults.icon  "editor" (dict "preview" false) "fields" `~defaults`            )
-  (dict "file" "data/remote.yml"               "extension" `yml` "name" `remote`    "label" .remote      "icon" $d.remote.icon    "editor" (dict "preview" false) "fields" `~remote`              )
-  (dict "file" "data/redirects.yml"            "extension" `yml` "name" `redirects` "label" .redirects   "icon" $d.redirects.icon "editor" (dict "preview" false) "fields" `~redirects`           )
-  (dict "file" "assets/robots.txt"             "extension" `txt` "name" `robots`    "label" `Robots.txt` "icon" $d.robots.icon    "editor" (dict "preview" false) "fields" `~robots`              )
+  (dict "file" "data/config.yml"     "extension" `yml`  "name" `config`    "label" .config      "icon" $i.config    "editor" (dict "preview" false) "fields" `~config`              )
+  (dict "file" "data/langs.yml"      "extension" `yml`  "name" `langs`     "label" .langs       "icon" $i.langs     "editor" (dict "preview" false) "fields" `~langs`               )
+  (dict "file" "data/styles.yml"     "extension" `yml`  "name" `styles`    "label" .styles      "icon" $i.styles    "editor" (dict "preview" false) "fields" `~styles`              )
+  (dict "file" "data/customs.yml"    "extension" `yml`  "name" `customs`   "label" .customs     "icon" $i.customs   "editor" (dict "preview" false) "fields" `~customs`             )
+  (dict "file" "data/defaults.yml"   "extension" `yml`  "name" `defaults`  "label" .defaults    "icon" $i.defaults  "editor" (dict "preview" false) "fields" `~defaults`            )
+  (dict "file" "data/remote.yml"     "extension" `yml`  "name" `remote`    "label" .remote      "icon" $i.remote    "editor" (dict "preview" false) "fields" `~remote`              )
+  (dict "file" "data/redirects.yml"  "extension" `yml`  "name" `redirects` "label" .redirects   "icon" $i.redirects "editor" (dict "preview" false) "fields" `~redirects`           )
+  (dict "file" "assets/robots.txt"   "extension" `txt`  "name" `robots`    "label" `Robots.txt` "icon" $i.robots    "editor" (dict "preview" false) "fields" `~robots`              )
+  (dict "file" "assets/_custom.scss" "extension" `scss` "name" `css`       "label" `CSS`        "icon" $i.css       "editor" (dict "preview" false) "fields" `~custom_css`          )
+  (dict "file" "assets/custom.js"    "extension" `js`   "name" `js`        "label" `JS`         "icon" $i.js        "editor" (dict "preview" false) "fields" `~custom_js`           )
 }}

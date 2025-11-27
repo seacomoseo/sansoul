@@ -1,14 +1,13 @@
 {{ $parent_hint := print .redirects_hint " → [" .customs_options "](https://developers.cloudflare.com/pages/configuration/redirects/)" }}
-{{ $type_hint   := (print .default " → **301**") }}
+{{ $type_hint   := (print .def " → **301**") }}
 
 {{ return dict
   "&redirects" (slice
     (partial "cms/widget" (dict
       "alt"     `redirects`
       "name"    `redirects`
-      "widget"  `list`
+      "widget"  `slice`
       "hint"    $parent_hint
-      "summary" "{{fields.from}} → {{fields.to}} {{fields.type}}"
       "root"    true
       "fields"  (slice
         (partial "cms/widget" (dict "alt" `redirects_from` "name" `from`                                                                   ))

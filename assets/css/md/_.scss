@@ -1,7 +1,7 @@
 
 .md {
   .link {
-    &:not(.box, .button, .md__heading-link) {
+    &:not(.box, .btn, .md__heading-link) {
       @include font-base-bold;
       line-height: $line-height-base;
     }
@@ -11,18 +11,18 @@
   }
   em {
     @include font-cursive;
-    color: var(--subtitle);
+    color: var(--sub);
   }
   // strong {
-  //   color: var(--subtitle);
+  //   color: var(--sub);
   // }
-  iframe:not(.md__figure *) {
+  iframe:not(.md__fig *) {
     filter: drop-shadow($shadow);
   }
-  :not(.button, li, code) > .icon {
+  :not(.btn, li, code) > .icon {
     color: var(--main);
   }
-  // :not(.button, li, .sign) > .icon {
+  // :not(.btn, li, .sign) > .icon {
   //   margin-right: .25em;
   //   &:not(:first-child > :first-child) {
   //     margin-left: .25em;
@@ -31,7 +31,7 @@
   // .icon + .icon {
   //   margin-left: 0;
   // }
-  :not(.button, .image__inner) > .icon:not(.langs__drop) {
+  :not(.btn, .img__in) > .icon:not(.langs__drop) {
     translate: 0 .125em;
   }
 }

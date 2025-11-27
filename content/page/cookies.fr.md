@@ -8,7 +8,7 @@ weight: 3
 ---
 
 Politique de Cookies
-{.subtitle}
+{.sub}
 
 **{{% legal name %}}** informe sur l'utilisation des cookies sur son site web : **{{% legal web %}}**
 
@@ -88,7 +88,7 @@ Si vous continuez à naviguer après avoir été informé de notre Politique de 
 
 En plus de l'utilisation de nos propres cookies, nous permettons à des tiers de définir des cookies et d'y accéder sur votre ordinateur. Le consentement à l'utilisation des cookies de **{{% legal name %}}** est lié à la navigation sur ce site web.
 
-Pour toute question sur l'utilisation des cookies sur notre site web, vous pouvez contacter l'email **{{% legal email %}}**.
+Pour toute question sur l'utilisation des cookies sur notre site web, vous pouvez contacter l'email **{{% legal mail %}}**.
 
 ## Modifications de la Politique de Cookies
 

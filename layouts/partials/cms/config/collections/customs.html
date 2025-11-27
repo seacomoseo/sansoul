@@ -2,19 +2,13 @@
 {{ $field   := dict }}
 {{ $label   := .label | default .name }}
 {{ $hint    := .hint }}
-{{ $widget  := .widget | default (cond (not .var) "string" nil) }}
+{{ $widget  := .widget | default (cond (not .var) "str" nil) }}
 {{ $options := .options }}
 
-{{ $default  := .default }}
-{{ if ne .default nil }}
-  {{ $kind   := $widget }}
-  {{ if eq $widget "list" }}
-    {{ $kind  = "slice" }}
-  {{ else if eq $widget "object" }}
-    {{ $kind  = "dict" }}
-  {{ end }}
-  {{ $opts   := dict "string" .default "kind" $kind }}
-  {{ $default = partial "functions/string-to-kind" $opts }}
+{{ $def := .def }}
+{{ if ne .def nil }}
+  {{ $opts := dict "str" .def "kind" $widget }}
+  {{ $def   = partial "func/str-to-kind" $opts }}
 {{ end }}
 
 {{ $sub := slice }}
@@ -26,25 +20,25 @@
 {{ end }}
 
 {{ if .tax }}
-  {{ $widget = "relation" }}
+  {{ $widget = "rel" }}
   {{ $page  := site.GetPage .name }}
   {{ $cms   := $page.Params.cms }}
-  {{ $label  = cond (not .multiple) $cms.singular $cms.title | default .name }}
+  {{ $label  = cond (not .multi) $cms.singular $cms.title | default .name }}
   {{ $hint   = print "[" .t.customs_relations_hint "](#/collections/" .name ")" }}
 {{ end }}
 
 {{ $field := dict
-  "<<"        .var
-  "name"      .name
-  "label"     $label
-  "hint"      $hint
-  "widget"    $widget
-  "options"   $options
-  "default"   $default
-  "multiple"  .multiple
-  "fields"    $sub
+  "<<"       .var
+  "name"     .name
+  "label"    $label
+  "hint"     $hint
+  "widget"   $widget
+  "options"  $options
+  "def"      $def
+  "multiple" .multi
+  "fields"   $sub
 }}
-{{ $field = partial "functions/obj-truly" $field }}
+{{ $field = partial "func/obj-truly" $field }}
 
 {{ if $field }}
   {{ $field  = partial "cms/widget" $field }}

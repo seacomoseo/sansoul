@@ -1,0 +1,52 @@
+.scroll {
+  --scroll-pos: 0;
+}
+.scroll--bg > .bg-color > * {
+  @include like-bg-cover;
+  object-fit: cover;
+  background-position: center 0;
+  height: 125%;
+  transform: translateY(calc(var(--scroll-pos) * 1px));
+}
+.scroll--box:not(#aux) {
+  --scroll-transform: translateY(calc(var(--scroll-pos) * 1px + 11%));
+  // --scroll-transform: rotateX(calc(var(--scroll-pos) * .1deg + 13.5deg));
+  // --scroll-transform: rotateY(calc(var(--scroll-pos) * .2deg + 30deg));
+  transform: var(--scroll-transform);
+  transform-origin: center;
+  transition: none;
+  z-index: 1;
+}
+*:has(> .scroll--box) {
+  perspective: 30em;
+  perspective-origin: center;
+}
+// Fix scoll smoth
+.scrolling {
+  .slider__track {
+    scroll-snap-type: none;
+  }
+}
+.bg--fix {
+  filter: none; // If not, bg--fix not rule
+  // .container {
+  //   z-index: 1; // Fix .bg--fix stepping on top links in Safari
+  // }
+  > .bg-color {
+    background-attachment: fixed;
+  }
+  > .bg-fig {
+    clip-path: inset(0);
+    // z-index: 0; // Fix show dividers // Fix stepping on top links in Safari
+    .bg-fig-img {
+      position: fixed;
+      top: 0;
+      height: 100lvh;
+    }
+  }
+  &.box {
+    .bg-fig-img {
+      @include radius-child;
+    }
+  }
+}

@@ -4,22 +4,22 @@
 {{- $meta   := "" -}}
 {{- with .Title -}}
   {{- with findRE `(?s).*\[.+?\].*` . 1 -}}
-    {{- $meta   = index . 0 -}}
+    {{- $meta = index . 0 -}}
   {{- end -}}
 {{- end -}}
 
 {{- /*  button  */ -}}
-{{- $button  := "" -}}
-{{- $dot     := "" -}}
-{{- $sm      := "" -}}
-{{- $swap    := "" -}}
+{{- $btn  := "" -}}
+{{- $dot  := "" -}}
+{{- $sm   := "" -}}
+{{- $swap := "" -}}
 {{- if and (hasPrefix .Text "[") (hasSuffix .Text "]") -}}
-  {{- $label  = .Text  | replaceRE `(?s)^\[|\]$` "" -}}
-  {{- $button = findRE `(main|alt|cta|light|dark|invert|similar|whatsapp)` $meta 1 -}}
-  {{- $button = index $button 0 | default "cta" -}}
-  {{- $dot    = in $meta "dot" -}}
-  {{- $sm     = in $meta "sm" -}}
-  {{- $swap   = in $meta "swap" -}}
+  {{- $label  = .Text | strings.TrimPrefix "[" | strings.TrimSuffix "]" -}}
+  {{- $btn  = findRE `(main|alt|cta|light|dark|turn|such|whatsapp)` $meta 1 -}}
+  {{- $btn  = index $btn 0 | default "cta" -}}
+  {{- $dot  = in $meta "dot" -}}
+  {{- $sm   = in $meta "sm" -}}
+  {{- $swap = in $meta "swap" -}}
 {{- end -}}
 
 {{- /*  ga4  */ -}}
@@ -29,7 +29,7 @@
 {{- $blank := in $meta "blank" -}}
 
 {{- /*  icon outside  */ -}}
-{{- $outside := partial "functions/icon-outside" $label -}}
+{{- $outside := partial "func/icon-out" $label -}}
 {{- $label   := $outside.text -}}
 {{- $icon    := $outside.icon -}}
 
@@ -48,7 +48,7 @@
 
 {{- /*  link  */ -}}
 {{- partial "link" (dict
-  "button" $button
+  "btn"    $btn
   "dot"    $dot
   "sm"     $sm
   "swap"   $swap
@@ -57,7 +57,7 @@
   "label"  $label
   "anchor" $anchor
   "title"  $title
-  "link"   .Destination
+  "url"    .Destination
   "lock"   $lock
   "blank"  $blank
 ) -}}

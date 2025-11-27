@@ -33,7 +33,7 @@
 {{- /* ID */ -}}
 {{- $id  := "" -}}
 {{- if $is_nav -}}
-  {{- $id = partial "functions/header-to-id" (dict "id" .Anchor "title" .Text) -}}
+  {{- $id = partial "func/header-to-id" (dict "id" .Anchor "title" .Text) -}}
 {{- end -}}
 
 {{- /* CLASS */ -}}
@@ -70,7 +70,7 @@
 {{- $text_attrs = $text_attrs | safeHTMLAttr -}}
 
 {{- /*  ICON outside  */ -}}
-{{- $outside := partial "functions/icon-outside" .Text -}}
+{{- $outside := partial "func/icon-out" .Text -}}
 {{- $text    := $outside.text -}}
 {{- $icon    := $outside.icon -}}
 

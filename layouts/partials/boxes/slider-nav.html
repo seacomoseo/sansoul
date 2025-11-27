@@ -1,4 +1,4 @@
-{{- $button := cond (eq .button "hide") "" .button | default "cta" -}}
+{{- $btn := cond (eq .btn "hide") "" .btn | default "cta" -}}
 
 {{- /*  PIPS  */ -}}
 {{- $pips_class := "slider__pips" -}}
@@ -13,7 +13,7 @@
     {{- end }}
     {{ partial "link" (dict
       "class"  $pip_class
-      "button" ($button | default "cta")
+      "btn"    (or $btn "cta")
       "title"  (print (i18n "slide") " " .)
     ) -}}
   {{- end }}
@@ -26,17 +26,17 @@
 {{- end }}
 <div class="{{ $arrows_class }}">
   {{ partial "link" (dict
-    "class"   "slider__arrow slider__arrow--left"
-    "button"  ($button | default "cta")
-    "dot"     true
-    "default" "left"
-    "title"   (i18n "slide_left")
+    "class" "slider__arrow slider__arrow--left"
+    "btn"   (or $btn "cta")
+    "dot"   true
+    "def"   "left"
+    "title" (i18n "slide_left")
   ) }}
   {{ partial "link" (dict
-    "class"   "slider__arrow slider__arrow--right"
-    "button"  ($button | default "cta")
-    "dot"     true
-    "default" "right"
-    "title"   (i18n "slide_right")
+    "class" "slider__arrow slider__arrow--right"
+    "btn"   (or $btn "cta")
+    "dot"   true
+    "def"   "right"
+    "title" (i18n "slide_right")
   ) -}}
 </div>

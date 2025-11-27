@@ -6,11 +6,11 @@
     {{ end }}
   {{ end }}
   {{ return (dict
-    "link"   (print $home "#" .id)
-    "button" .menu_button
+    "url"    (print $home "#" .id)
+    "btn"    .menu_btn
     "swap"   .menu_swap
     "icon"   .icon
-    "label"  (.menu_label | default .title)
+    "label"  (or .menu_label .title)
     "anchor" .hanchor
   ) }}
 {{ end }}
@@ -26,13 +26,13 @@
     {{ if page.IsHome }}
       {{ $sections = .sections }}
     {{ else }}
-      {{ $tpl     := partial "functions/tpl-sections" site.Home }}
+      {{ $tpl     := partial "func/tpl-sections" site.Home }}
       {{ $sections = $tpl.sections }}
     {{ end }}
   {{ end }}
 
   {{ with $sections }}
-    {{ with where . "menu_button" "ne" "hide" }}
+    {{ with where . "menu_btn" "ne" "hide" }}
       {{ range . }}
         {{ if .menu_label | or .hanchor | or .title | or (.icon | and .id) }}
 

@@ -1,26 +1,26 @@
 {{/*  LIST FILTERS  */}}
 
-{{ $list_fields := slice `~box_list_type` `~box_list_max` }}
+{{ $list_fields := slice `~list_type` `~list_max` }}
 {{ $relations := slice }}
 {{ $dates     := true }}
 
 {{ $relations  := slice }}
 {{ range site.Sections }}
   {{ range .Params.taxonomies }}
-    {{ $relations = $relations | append (dict "name" .name "multiple" .multiple) }}
+    {{ $relations = $relations | append (dict "name" .name "multi" .multi) }}
   {{ end }}
   {{ with in (slice "article" "event") .Params.base }}
     {{ $dates = true }}
   {{ end }}
 {{ end }}
 {{ with $dates }}
-  {{ $list_fields = $list_fields | append `~box_list_start` `~box_list_end` }}
+  {{ $list_fields = $list_fields | append `~list_start` `~list_end` }}
 {{ end }}
 {{ range uniq $relations }}
   {{ $page   := site.GetPage .name }}
   {{ $cms    := $page.Params.cms }}
   {{ $label  := $cms.singular }}
-  {{ if .multiple }}
+  {{ if .multi }}
     {{ $label = $cms.title }}
   {{ end }}
   {{ $list_fields = $list_fields | append (dict
@@ -44,360 +44,372 @@
 
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `box_list_type`  "name" `type` "widget" `select`   "options" `~options_lists`))
-  (partial "cms/widget" (dict "var" `box_list_start` "name" `date` "widget" `datetime`                           ))
-  (partial "cms/widget" (dict "var" `box_list_end`   "name" `end`  "widget" `datetime`                           ))
-  (partial "cms/widget" (dict "var" `box_list_max`   "name" `max`  "widget" `int`                                ))
+  (partial "cms/widget" (dict "var" `list_type`  "name" `type` "widget" `select` "options" `~options_lists`))
+  (partial "cms/widget" (dict "var" `list_start` "name" `date` "widget" `time`                             ))
+  (partial "cms/widget" (dict "var" `list_end`   "name" `end`  "widget" `time`                             ))
+  (partial "cms/widget" (dict "var" `list_max`   "name" `max`  "widget" `int`                              ))
   (partial "cms/widget" (dict
-    "var"    `box_list`
+    "var"    `list`
     "name"   `list`
-    "widget" `object`
-    "summary" "{{fields.type}}"
+    "widget" `dict`
+    "sum"    "{{fields.type}}"
     "fields" $list_fields
   ))
 
 
-  (partial "cms/widget" (dict "var" `box_step_border_color` "name" `border` "widget" `select` "label" .box_steps_border "options" `~options_color_base_w`))
+  (partial "cms/widget" (dict "var" `steps_border` "name" `border` "widget" `select` "options" `~options_color_base_w`))
   (partial "cms/widget" (dict
-    "var"    `box_step`
+    "var"    `step`
     "name"   `step`
-    "widget" `object`
+    "widget" `dict`
     "fields" (slice
-      `~box_step_border_color`
-      `~box_icon_size`
-      `~box_hs`
-      `~box_hn`
-      `~box_caps`
-      `~box_line`
+      `~steps_border`
+      `~icon_size`
+      `~hn`
+      `~hs`
+      `~hs_vs`
+      `~caps`
+      `~line`
     )
   ))
   (partial "cms/widget" (dict
-    "var"     `box_steps`
-    "name"    `steps`
-    "widget"  `list`
-    "summary" "{{fields.title}}"
-    "fields"  (slice
-      `~box_title`
-      `~box_subtitle`
-      `~box_md`
-      `~box_icon_id`
-      `~box_image_no_video`
-    )
-  ))
-
-
-  (partial "cms/widget" (dict "var" `box_gallery_type` "name" `type` "widget" `select` "options" `~options_gallery_types`))
-  (partial "cms/widget" (dict
-    "var"       `box_gallery`
-    "name"      `gallery`
-    "widget"    `object`
-    "fields"    (slice
-      `~box_cols_vl`
-      `~box_gallery_type`
-      `~box_bg_color`
-      `~box_gap_vl`
-      `~box_image_ratio`
-      `~box_image_contain`
-      `~box_image_gray`
-      `~box_image_alt`
-      `~box_button_link`
-      `~box_button_pin`
-      `~box_button_label`
-      `~box_button_anchor`
-      `~box_button_lock`
-      `~box_button_color_without_none`
-      `~box_button_swap`
-    )
-  ))
-  (partial "cms/widget" (dict
-    "var"        `box_gallery_images`
-    "name"       `images`
-    "widget"     `image`
-    "i18n"       true
-    "multiple"   true
-    "choose_url" true
-  ))
-  (partial "cms/widget" (dict
-    "var"            `box_gallery_limages`
-    "name"           `limages`
-    "widget"         `list`
-    "summary"        "{{fields.image}}"
-    "fields"         (slice
-      `~box_image_no_video`
-      `~box_button_link`
-      `~box_image_alt`
+    "var"    `steps`
+    "name"   `steps`
+    "widget" `slice`
+    "sum"    "{{fields.title}}"
+    "fields" (slice
+      `~title`
+      `~sub`
+      `~md`
+      `~icon`
+      `~img`
     )
   ))
 
 
-  (partial "cms/widget" (dict "var" `box_accordion_headers` "name" `headers` "widget" `boolean`))
-  (partial "cms/widget" (dict "var" `box_accordion_open`    "name" `open`    "widget" `boolean`))
+  (partial "cms/widget" (dict "var" `gallery_type` "name" `type` "widget" `select` "options" `~options_gallery_types`))
   (partial "cms/widget" (dict
-    "var"     `box_accordion`
-    "name"    `accordion`
-    "widget"  `object`
-    "fields"  (slice
-      `~box_button_color`
-      `~box_button_swap`
-      `~box_icon_id`
-      `~box_hs`
-      `~box_hn`
-      `~box_accordion_headers`
-      `~box_accordion_open`
+    "var"    `gallery`
+    "name"   `gallery`
+    "widget" `dict`
+    "fields" (slice
+      `~cols`
+      `~gallery_type`
+      `~color`
+      `~gap`
+      `~ratio`
+      `~contain`
+      `~gray`
+      `~alt`
+      `~url`
+      `~pin`
+      `~label`
+      `~anchor`
+      `~lock`
+      `~btn_without_none`
+      `~swap`
     )
   ))
   (partial "cms/widget" (dict
-    "var"     `box_accordions`
-    "name"    `accordions`
-    "widget"  `list`
-    "summary" "{{fields.title}}"
-    "fields"  (slice
-      `~box_icon_id`
-      `~box_title`
-      `~box_md`
-    )
-  ))
-
-
-  (partial "cms/widget" (dict "var" `box_gss`       "name" `gss`      ))
-  (partial "cms/widget" (dict "var" `box_gss_sheet` "name" `gss_sheet`))
-
-
-  (partial "cms/widget" (dict "var" `box_review_icon_left`  "<<" `box_icon_id` "name" `icon`      ))
-  (partial "cms/widget" (dict "var" `box_review_icon_right` "<<" `box_icon_id` "name" `icon_right`))
-  (partial "cms/widget" (dict "var" `box_review_rating` "name" `rating` "widget" `float`    "max" 5          ))
-  (partial "cms/widget" (dict "var" `box_review_date`   "name" `date`   "widget" `datetime` "alt" `page_date`))
-  (partial "cms/widget" (dict
-    "var"     `box_review`
-    "name"    `review`
-    "widget"  `object`
-    "fields"  (slice
-      `~box_cols_vl`
-      `~box_cols_vs`
-      `~box_bg_color`
-      `~box_bg_fade_color`
-      `~box_bg_fade_type`
-      `~box_bg_alpha`
-      `~box_hide_shadow`
-      `~box_hs`
-      `~box_slider_active`
-      `~box_slider_time`
-      `~box_slider_pips`
-      `~box_slider_arrows`
-      `~box_button_color`
-      `~box_review_icon_left`
-      `~box_review_icon_right`
-    )
+    "var"      `imgs`
+    "name"     `imgs`
+    "widget"   `vimg`
+    "multiple" true
   ))
   (partial "cms/widget" (dict
-    "var"     `box_reviews`
-    "name"    `reviews`
-    "widget"  `list`
-    "summary" "{{fields.title}}"
-    "fields"  (slice
-      `~box_title`
-      `~box_subtitle`
-      `~box_image_no_video`
-      `~box_md`
-      `~box_review_rating`
-      `~box_review_date`
-    )
-  ))
-
-  (partial "cms/widget" (dict "var" `box_zoom`        "name" `zoom`   "widget" `int`                "min" 1    "max" 20 "hint" `1 - 20` ))
-  (partial "cms/widget" (dict "var" `box_map_tile`    "name" `tile`   "widget" `select`             "options" `~options_tile`           ))
-  (partial "cms/widget" (dict "var" `box_map_color`   "name" `color`  "widget" `select`             "options" `~options_color_base_w`   ))
-  (partial "cms/widget" (dict "var" `box_map_label`   "name" `label`                                                                    ))
-  (partial "cms/widget" (dict "var" `box_map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`         ))
-  (partial "cms/widget" (dict "var" `box_map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`       ))
-  (partial "cms/widget" (dict "var" `box_map_radius`  "name" `radius` "widget" `float`  "i18n" true "min" 0.01 "max" 20                 ))
-  (partial "cms/widget" (dict
-    "var"     `box_map`
-    "name"    `map`
-    "widget"  `object`
-    "fields"  (slice
-      `~box_zoom`
-      `~box_map_tile`
-      `~box_map_color`
-      `~box_icon_id`
-    )
-  ))
-  (partial "cms/widget" (dict "var" `box_geos_point`   "name" `point`   "widget" `object` "alt" `box_map_point`   "fields" (slice `~box_map_label` `~box_map_color` `~box_map_point`   `~box_icon_id`)))
-  (partial "cms/widget" (dict "var" `box_geos_circle`  "name" `circle`  "widget" `object` "alt" `box_map_circle`  "fields" (slice `~box_map_label` `~box_map_color` `~box_map_point`   `~box_map_radius`)))
-  (partial "cms/widget" (dict "var" `box_geos_polygon` "name" `polygon` "widget" `object` "alt" `box_map_polygon` "fields" (slice `~box_map_label` `~box_map_color` `~box_map_polygon`)))
-  (partial "cms/widget" (dict
-    "var"     `box_geos`
-    "name"    `geos`
-    "widget"  `list`
-    "summary" "{{fields.label}}"
-    "types"   (slice
-      `~box_geos_point`
-      `~box_geos_circle`
-      `~box_geos_polygon`
+    "var"    `limgs`
+    "name"   `limgs`
+    "widget" `slice`
+    "sum"    "{{fields.img}}"
+    "fields" (slice
+      `~img`
+      `~url`
+      `~alt`
     )
   ))
 
 
-  (partial "cms/widget" (dict "var" `box_contact_days`           "name" `days`                     ))
-  (partial "cms/widget" (dict "var" `box_contact_hours`          "name" `hours`                    ))
-  (partial "cms/widget" (dict "var" `box_contact_label`          "name" `label`                    ))
-  (partial "cms/widget" (dict "var" `box_contact_label_phone`    "name" `label`                    ))
-  (partial "cms/widget" (dict "var" `box_contact_full`           "name" `full`   "widget" `boolean`))
-  (partial "cms/widget" (dict "var" `box_contact_address_label`  "name" `label`                    ))
-  (partial "cms/widget" (dict "var" `box_contact_address_anchor` "name" `anchor`                   ))
-  (partial "cms/widget" (dict "var" `box_contact_hidden`         "name" `hidden` "widget" `hidden` ))
-  (partial "cms/widget" (dict "var" `box_contact_map`            "<<" `box_map_point`              ))
-  (partial "cms/widget" (dict "var" `box_contact_schedule` "name" `schedule` "widget" `object` "summary" "{{fields.days}} {{fields.hours}}" "fields" (slice `~box_contact_days` `~box_contact_hours` `~box_contact_full`)))
-  (partial "cms/widget" (dict "var" `box_contact_phone`    "name" `phone`    "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_full` `~box_button_color` `~box_button_swap` `~box_icon_id`)))
-  (partial "cms/widget" (dict "var" `box_contact_whatsapp` "name" `whatsapp` "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_full` `~box_button_color` `~box_button_swap`)))
-  (partial "cms/widget" (dict "var" `box_contact_mail`     "name" `mail`     "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_full` `~box_button_color` `~box_button_swap`)))
-  (partial "cms/widget" (dict "var" `box_contact_address`  "name" `address`  "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_address_label` `~box_contact_address_anchor` `~box_contact_full` `~box_button_color` `~box_button_swap` `~box_contact_map` `~box_zoom`)))
-  (partial "cms/widget" (dict "var" `box_contact_h2`       "name" `h2`       "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_h3`       "name" `h3`       "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_h4`       "name" `h4`       "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_h5`       "name" `h5`       "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_h6`       "name" `h6`       "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_contact_label` `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_br`       "name" `br`       "widget" `object` "summary" "{{fields.name}}"                  "fields" (slice `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_hr`       "name" `hr`       "widget" `object` "summary" "{{fields.name}}"                  "fields" (slice `~box_contact_hidden`)))
-  (partial "cms/widget" (dict "var" `box_contact_custom`   "name" `custom`   "widget" `object` "summary" "{{fields.label}}"                 "fields" (slice `~box_button_link` `~box_icon_id` `~box_contact_label` `~box_contact_full` `~box_button_anchor` `~box_button_lock` `~box_button_color` `~box_button_swap` `~box_button_ga4`)))
+  (partial "cms/widget" (dict "var" `faq_headers` "name" `headers` "widget" `bool`))
+  (partial "cms/widget" (dict "var" `faq_open`    "name" `open`    "widget" `bool`))
   (partial "cms/widget" (dict
-    "var"     `box_contact`
-    "name"    `contact`
-    "widget"  `list`
-    "summary" "{{fields.label}}{{fields.days}} {{fields.hours}}"
-    "types"   (slice
-      `~box_contact_schedule`
-      `~box_contact_phone`
-      `~box_contact_whatsapp`
-      `~box_contact_mail`
-      `~box_contact_address`
-      `~box_contact_h2`
-      `~box_contact_h3`
-      `~box_contact_h4`
-      `~box_contact_h5`
-      `~box_contact_h6`
-      `~box_contact_br`
-      `~box_contact_hr`
-      `~box_contact_custom`
+    "var"    `faq`
+    "name"   `faq`
+    "widget" `dict`
+    "fields" (slice
+      `~btn`
+      `~swap`
+      `~icon`
+      `~hn`
+      `~hs`
+      `~hs_vs`
+      `~faq_headers`
+      `~faq_open`
     )
   ))
   (partial "cms/widget" (dict
-    "var"     `box_dots`
-    "name"    `dots`
-    "widget"  `list`
-    "summary" "{{fields.link}}"
-    "fields"  (slice
-      `~box_button_link`
-      `~box_icon_id`
-      `~box_button_label`
-      `~box_button_ga4`
+    "var"    `faqs`
+    "name"   `faqs`
+    "widget" `slice`
+    "sum"    "{{fields.title}}"
+    "fields" (slice
+      `~icon`
+      `~title`
+      `~md`
     )
   ))
 
 
-  (partial "cms/widget" (dict "var" `box_form_id`         "name" `id`                            "label" `ID`                    ))
-  (partial "cms/widget" (dict "var" `box_form_action`     "name" `action`                                                        ))
-  (partial "cms/widget" (dict "var" `box_form_to`         "name" `to`                                                            ))
-  (partial "cms/widget" (dict "var" `box_form_subject`    "name" `subject`                                                       ))
-  (partial "cms/widget" (dict "var" `box_form_email`      "name" `email`                         "alt" `config_email`            ))
-  (partial "cms/widget" (dict "var" `box_form_labels_out` "name" `labels_out` "widget" `boolean` "alt" `styles_inputs_labels_out`))
-  (partial "cms/widget" (dict "var" `box_form_fill`       "name" `fill`       "widget" `boolean` "alt" `styles_inputs_fill`      ))
-  (partial "cms/widget" (dict "var" `box_form_consent`    "name" `consent`                       "alt" `styles_inputs_consent`   ))
+  (partial "cms/widget" (dict "var" `gss`       "name" `gss`      ))
+  (partial "cms/widget" (dict "var" `gss_sheet` "name" `gss_sheet`))
+
+
+  (partial "cms/widget" (dict "var" `review_icon_left`  "<<" `icon` "name" `icon`      ))
+  (partial "cms/widget" (dict "var" `review_icon_right` "<<" `icon` "name" `icon_right`))
+  (partial "cms/widget" (dict "var" `review_rating` "name" `rating` "widget" `float` "max" 5          ))
+  (partial "cms/widget" (dict "var" `review_date`   "name" `date`   "widget" `time`  "alt" `page_date`))
   (partial "cms/widget" (dict
-    "var"     `box_form`
-    "name"    `form`
-    "widget"  `object`
-    "summary" "{{fields.id}}"
-    "fields"  (slice
-      `~box_form_id`
-      `~box_form_action`
-      `~box_form_to`
-      `~box_form_subject`
-      `~box_form_email`
-      `~box_form_labels_out`
-      `~box_form_fill`
-      `~box_contact_full`
-      `~box_icon_id`
-      `~box_button_label`
-      `~box_button_color_simple`
-      `~box_button_swap`
-      `~box_form_consent`
+    "var"    `review`
+    "name"   `review`
+    "widget" `dict`
+    "fields" (slice
+      `~cols`
+      `~cols_vs`
+      `~color`
+      `~fade`
+      `~fade_to`
+      `~alpha`
+      `~hide_shadow`
+      `~hs`
+      `~hs_vs`
+      `~slider`
+      `~slider_time`
+      `~slider_pips`
+      `~slider_arrows`
+      `~btn`
+      `~review_icon_left`
+      `~review_icon_right`
+    )
+  ))
+  (partial "cms/widget" (dict
+    "var"    `reviews`
+    "name"   `reviews`
+    "widget" `slice`
+    "sum"    "{{fields.title}}"
+    "fields" (slice
+      `~title`
+      `~sub`
+      `~img`
+      `~md`
+      `~review_rating`
+      `~review_date`
     )
   ))
 
-  (partial "cms/widget" (dict "var" `box_input_name`        "name" `name`                          ))
-  (partial "cms/widget" (dict "var" `box_input_label`       "name" `label`                         ))
-  (partial "cms/widget" (dict "var" `box_input_hint`        "name" `hint`                          ))
-  (partial "cms/widget" (dict "var" `box_input_required`    "name" `required`    "widget" `boolean`))
-  (partial "cms/widget" (dict "var" `box_input_required_if` "name" `required_if`                   ))
-  (partial "cms/widget" (dict "var" `box_input_show_if`     "name" `show_if`                       ))
-  (partial "cms/widget" (dict "var" `box_input_regex`       "name" `regex`                         ))
-  (partial "cms/widget" (dict "var" `box_input_min`         "name" `min`         "widget" `int`    ))
-  (partial "cms/widget" (dict "var" `box_input_max`         "name" `max`         "widget" `int`    ))
-  (partial "cms/widget" (dict "var" `box_input_x`           "name" `x`           "widget" `boolean`))
-  (partial "cms/widget" (dict "var" `box_input_accept`      "name" `accept`                        ))
-  (partial "cms/widget" (dict "var" `box_input_basename`    "name" `base_name`                     ))
-  (partial "cms/widget" (dict "var" `box_input_geo_area`    "name" `area`        "widget" `boolean`))
-  (partial "cms/widget" (dict "var" `box_input_geo_view`    "<<" `box_map_point` "name" `view`     ))
-  (partial "cms/widget" (dict "var" `box_input_option`      "name" `option`                        ))
-  (partial "cms/widget" (dict "var" `box_input_value`       "name" `value`                         ))
+  (partial "cms/widget" (dict "var" `zoom`        "name" `zoom`   "widget" `int`         "min" 1    "max" 20 "hint" `1 - 20` ))
+  (partial "cms/widget" (dict "var" `map_tile`    "name" `tile`   "widget" `select`      "options" `~options_tile`           ))
+  (partial "cms/widget" (dict "var" `map_color`   "name" `color`  "widget" `select`      "options" `~options_color_base_w`   ))
+  (partial "cms/widget" (dict "var" `map_label`   "name" `label`                                                             ))
+  (partial "cms/widget" (dict "var" `map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`  ))
+  (partial "cms/widget" (dict "var" `map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`))
+  (partial "cms/widget" (dict "var" `map_radius`  "name" `radius` "widget" `float`  "i18n" true "min" 0.01 "max" 20          ))
   (partial "cms/widget" (dict
-    "var"     `box_input_options`
-    "name"    `options`
-    "widget"  `list`
-    "summary" "{{fields.option}}"
-    "types"   (slice
-      `~box_input_option`
-      `~box_input_value`
+    "var"    `map`
+    "name"   `map`
+    "widget" `dict`
+    "fields" (slice
+      `~zoom`
+      `~map_tile`
+      `~map_color`
+      `~icon`
     )
-    "label_singular" .box_input_option
   ))
-  (partial "cms/widget" (dict "var" `box_inputs_text`     "name" `text`     "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full` `~box_input_min` `~box_input_max` `~box_input_regex`)))
-  (partial "cms/widget" (dict "var" `box_inputs_email`    "name" `email`    "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full` `~box_input_min` `~box_input_max` `~box_input_regex`)))
-  (partial "cms/widget" (dict "var" `box_inputs_tel`      "name" `tel`      "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full` `~box_input_min` `~box_input_max` `~box_input_regex`)))
-  (partial "cms/widget" (dict "var" `box_inputs_number`   "name" `number`   "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full` `~box_input_min` `~box_input_max` `~box_input_regex`)))
-  (partial "cms/widget" (dict "var" `box_inputs_date`     "name" `date`     "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full`)))
-  (partial "cms/widget" (dict "var" `box_inputs_time`     "name" `time`     "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full`)))
-  (partial "cms/widget" (dict "var" `box_inputs_textarea` "name" `textarea` "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_input_min` `~box_input_max`)))
-  (partial "cms/widget" (dict "var" `box_inputs_geo`      "name" `geo`      "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_zoom`     `~box_input_geo_view` `~box_map_color` `~box_map_tile` `~box_input_geo_area`)))
-  (partial "cms/widget" (dict "var" `box_inputs_select`   "name" `select`   "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full` `~box_input_options`)))
-  (partial "cms/widget" (dict "var" `box_inputs_radio`    "name" `radio`    "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_input_x` `~box_input_options`)))
-  (partial "cms/widget" (dict "var" `box_inputs_checkbox` "name" `checkbox` "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_input_x` `~box_input_options`)))
-  (partial "cms/widget" (dict "var" `box_inputs_check`    "name" `check`    "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_contact_full`)))
-  (partial "cms/widget" (dict "var" `box_inputs_file`     "name" `file`     "widget" `object` "fields" (slice `~box_input_name` `~box_input_label` `~box_input_hint` `~box_input_required` `~box_input_required_if` `~box_input_show_if` `~box_icon_id` `~box_input_max` `~box_input_accept` `~box_input_basename` `~box_button_color_simple` `~box_button_swap`)))
-  (partial "cms/widget" (dict "var" `box_inputs_hidden`   "name" `hidden`   "widget" `object` "fields" (slice `~box_input_name` `~box_input_label`)))
-  (partial "cms/widget" (dict "var" `box_inputs_h2`       "name" `h2`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
-  (partial "cms/widget" (dict "var" `box_inputs_h3`       "name" `h3`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
-  (partial "cms/widget" (dict "var" `box_inputs_h4`       "name" `h4`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
-  (partial "cms/widget" (dict "var" `box_inputs_h5`       "name" `h5`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
-  (partial "cms/widget" (dict "var" `box_inputs_h6`       "name" `h6`       "widget" `object` "fields" (slice (dict "name" `label`                     "label" .box_title        ) `~box_input_hint`   `~box_input_show_if`)))
-  (partial "cms/widget" (dict "var" `box_inputs_md`       "name" `md`       "widget" `object` "fields" (slice (dict "name" `md`    "widget" `markdown` "label" .box_contact_label) `~box_contact_full` `~box_input_show_if`)))
+  (partial "cms/widget" (dict "var" `geos_point`   "name" `point`   "widget" `dict` "alt" `map_point`   "fields" (slice `~map_label` `~map_color` `~map_point` `~icon`      )))
+  (partial "cms/widget" (dict "var" `geos_circle`  "name" `circle`  "widget" `dict` "alt" `map_circle`  "fields" (slice `~map_label` `~map_color` `~map_point` `~map_radius`)))
+  (partial "cms/widget" (dict "var" `geos_polygon` "name" `polygon` "widget" `dict` "alt" `map_polygon` "fields" (slice `~map_label` `~map_color` `~map_polygon`            )))
   (partial "cms/widget" (dict
-    "var"     `box_inputs`
-    "name"    `inputs`
-    "widget"  `list`
-    "summary" "{{fields.name}} - {{fields.label}}"
-    "types"   (slice
-      `~box_inputs_text`
-      `~box_inputs_email`
-      `~box_inputs_tel`
-      `~box_inputs_number`
-      `~box_inputs_date`
-      `~box_inputs_time`
-      `~box_inputs_textarea`
-      `~box_inputs_geo`
-      `~box_inputs_select`
-      `~box_inputs_radio`
-      `~box_inputs_checkbox`
-      `~box_inputs_check`
-      `~box_inputs_file`
-      `~box_inputs_hidden`
-      `~box_inputs_h2`
-      `~box_inputs_h3`
-      `~box_inputs_h4`
-      `~box_inputs_h5`
-      `~box_inputs_h6`
-      `~box_inputs_md`
+    "var"    `geos`
+    "name"   `geos`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "types"  (slice
+      `~geos_point`
+      `~geos_circle`
+      `~geos_polygon`
+    )
+  ))
+
+
+  (partial "cms/widget" (dict "var" `full` "name" `full` "widget" `bool`  ))
+
+
+  (partial "cms/widget" (dict "var" `when_days`  "name" `days` ))
+  (partial "cms/widget" (dict "var" `when_hours` "name" `hours`))
+  (partial "cms/widget" (dict
+    "var"    `when`
+    "name"   `when`
+    "widget" `slice`
+    "sum"    "{{fields.days}} {{fields.hours}}"
+    "fields" (slice
+      `~when_days`
+      `~when_hours`
+      `~full`
+    )
+  ))
+
+
+  (partial "cms/widget" (dict "var" `links_label`          "name" `label`                   ))
+  (partial "cms/widget" (dict "var" `links_label_phone`    "name" `label`                   ))
+  (partial "cms/widget" (dict "var" `links_address_label`  "name" `label`                   ))
+  (partial "cms/widget" (dict "var" `links_address_anchor` "name" `anchor`                  ))
+  (partial "cms/widget" (dict "var" `links_hidden`         "name" `hidden` "widget" `hidden`))
+  (partial "cms/widget" (dict "var" `links_map`            "<<" `map_point`                 ))
+  (partial "cms/widget" (dict "var" `links_phone`    "name" `phone`    "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~full` `~btn` `~swap` `~icon`)))
+  (partial "cms/widget" (dict "var" `links_whatsapp` "name" `whatsapp` "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~full` `~btn` `~swap`)))
+  (partial "cms/widget" (dict "var" `links_mail`     "name" `mail`     "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~full` `~btn` `~swap`)))
+  (partial "cms/widget" (dict "var" `links_address`  "name" `address`  "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_address_label` `~links_address_anchor` `~full` `~btn` `~swap` `~links_map` `~zoom`)))
+  (partial "cms/widget" (dict "var" `links_h2`       "name" `h2`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_h3`       "name" `h3`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_h4`       "name" `h4`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_h5`       "name" `h5`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_h6`       "name" `h6`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_br`       "name" `br`       "widget" `dict` "sum" "{{fields.name}}"  "fields" (slice `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_hr`       "name" `hr`       "widget" `dict` "sum" "{{fields.name}}"  "fields" (slice `~links_hidden`)))
+  (partial "cms/widget" (dict "var" `links_custom`   "name" `custom`   "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~url` `~icon` `~links_label` `~full` `~anchor` `~lock` `~btn` `~swap` `~ga4`)))
+  (partial "cms/widget" (dict
+    "var"    `links`
+    "name"   `links`
+    "widget" `slice`
+    "sum"    "{{fields.label}}{{fields.days}} {{fields.hours}}"
+    "types"  (slice
+      `~links_phone`
+      `~links_whatsapp`
+      `~links_mail`
+      `~links_address`
+      `~links_h2`
+      `~links_h3`
+      `~links_h4`
+      `~links_h5`
+      `~links_h6`
+      `~links_br`
+      `~links_hr`
+      `~links_custom`
+    )
+  ))
+  (partial "cms/widget" (dict
+    "var"    `dots`
+    "name"   `dots`
+    "widget" `slice`
+    "sum"    "{{fields.url}}"
+    "fields" (slice
+      `~url`
+      `~icon`
+      `~label`
+      `~ga4`
+    )
+  ))
+
+
+  (partial "cms/widget" (dict "var" `form_id`      "name" `id`                                                    "label" `ID`                 ))
+  (partial "cms/widget" (dict "var" `form_action`  "name" `action`                                                                             ))
+  (partial "cms/widget" (dict "var" `form_to`      "name" `to`                                                                                 ))
+  (partial "cms/widget" (dict "var" `form_subject` "name" `subject`                                                                            ))
+  (partial "cms/widget" (dict "var" `form_mail`    "name" `mail`                                                  "alt" `config_mail`          ))
+  (partial "cms/widget" (dict "var" `form_labels`  "name" `labels`  "widget" `select` "options" `~options_labels` "alt" `styles_inputs_labels` ))
+  (partial "cms/widget" (dict "var" `form_fill`    "name" `fill`    "widget" `bool`                               "alt" `styles_inputs_fill`   ))
+  (partial "cms/widget" (dict "var" `form_consent` "name" `consent`                                               "alt" `styles_inputs_consent`))
+  (partial "cms/widget" (dict
+    "var"    `form`
+    "name"   `form`
+    "widget" `dict`
+    "sum"    "{{fields.id}}"
+    "fields" (slice
+      `~form_id`
+      `~form_action`
+      `~form_to`
+      `~form_subject`
+      `~form_mail`
+      `~form_labels`
+      `~form_fill`
+      `~full`
+      `~icon`
+      `~label`
+      `~btn_simple`
+      `~swap`
+      `~form_consent`
+    )
+  ))
+
+  (partial "cms/widget" (dict "var" `input_name`      "name" `name`                       ))
+  (partial "cms/widget" (dict "var" `input_label`     "name" `label`                      ))
+  (partial "cms/widget" (dict "var" `input_hint`      "name" `hint`                       ))
+  (partial "cms/widget" (dict "var" `input_req`       "name" `req`         "widget" `bool`))
+  (partial "cms/widget" (dict "var" `input_req_if`    "name" `req_if`                     ))
+  (partial "cms/widget" (dict "var" `input_show_if`   "name" `show_if`                    ))
+  (partial "cms/widget" (dict "var" `input_regex`     "name" `regex`                      ))
+  (partial "cms/widget" (dict "var" `input_min`       "name" `min`         "widget" `int` ))
+  (partial "cms/widget" (dict "var" `input_max`       "name" `max`         "widget" `int` ))
+  (partial "cms/widget" (dict "var" `input_x`         "name" `x`           "widget" `bool`))
+  (partial "cms/widget" (dict "var" `input_accept`    "name" `accept`                     ))
+  (partial "cms/widget" (dict "var" `input_base_name` "name" `base_name`                  ))
+  (partial "cms/widget" (dict "var" `input_geo_area`  "name" `area`        "widget" `bool`))
+  (partial "cms/widget" (dict "var" `input_geo_view`  "<<" `map_point`     "name" `view`  ))
+  (partial "cms/widget" (dict
+    "var"    `input_items`
+    "name"   `items`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "types"  (slice
+      (partial "cms/widget" (dict "alt" `input_items_label` "name" `label`))
+      (partial "cms/widget" (dict "alt" `input_items_key`   "name" `key`  ))
+    )
+    "label_singular" .input_items_label
+  ))
+  (partial "cms/widget" (dict "var" `inputs_text`   "name" `text`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_mail`   "name" `mail`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_phone`  "name" `phone`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_number` "name" `number` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_date`   "name" `date`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full`)))
+  (partial "cms/widget" (dict "var" `inputs_time`   "name" `time`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full`)))
+  (partial "cms/widget" (dict "var" `inputs_area`   "name" `area`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_min` `~input_max`)))
+  (partial "cms/widget" (dict "var" `inputs_geo`    "name" `geo`    "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~zoom`     `~input_geo_view` `~map_color` `~map_tile` `~input_geo_area`)))
+  (partial "cms/widget" (dict "var" `inputs_select` "name" `select` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_items`)))
+  (partial "cms/widget" (dict "var" `inputs_radio`  "name" `radio`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_x` `~input_items`)))
+  (partial "cms/widget" (dict "var" `inputs_checks` "name" `checks` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_x` `~input_items`)))
+  (partial "cms/widget" (dict "var" `inputs_check`  "name" `check`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full`)))
+  (partial "cms/widget" (dict "var" `inputs_file`   "name" `file`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_max` `~input_accept` `~input_base_name` `~btn_simple` `~swap`)))
+  (partial "cms/widget" (dict "var" `inputs_hidden` "name" `hidden` "widget" `dict` "fields" (slice `~input_name`)))
+  (partial "cms/widget" (dict "var" `inputs_h2`     "name" `h2`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
+  (partial "cms/widget" (dict "var" `inputs_h3`     "name" `h3`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
+  (partial "cms/widget" (dict "var" `inputs_h4`     "name" `h4`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
+  (partial "cms/widget" (dict "var" `inputs_h5`     "name" `h5`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
+  (partial "cms/widget" (dict "var" `inputs_h6`     "name" `h6`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
+  (partial "cms/widget" (dict "var" `inputs_md`     "name" `md`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `md`    "widget" `md` "label" .links_label "show_raw" true) `~full`      )))
+  (partial "cms/widget" (dict
+    "var"    `inputs`
+    "name"   `inputs`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "types"  (slice
+      `~inputs_text`
+      `~inputs_mail`
+      `~inputs_phone`
+      `~inputs_number`
+      `~inputs_date`
+      `~inputs_time`
+      `~inputs_area`
+      `~inputs_geo`
+      `~inputs_select`
+      `~inputs_radio`
+      `~inputs_checks`
+      `~inputs_check`
+      `~inputs_file`
+      `~inputs_hidden`
+      `~inputs_h2`
+      `~inputs_h3`
+      `~inputs_h4`
+      `~inputs_h5`
+      `~inputs_h6`
+      `~inputs_md`
     )
   ))
 

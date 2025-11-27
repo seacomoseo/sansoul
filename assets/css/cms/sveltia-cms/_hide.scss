@@ -5,7 +5,7 @@
   .button[aria-label="Delete Entry"],
   .field[data-key-path="weight"],
   .field[data-key-path="base"],
-  .field[data-key-path="disabled"] {
+  .field[data-key-path="hide"] {
     display: none;
   }
 }
@@ -13,15 +13,9 @@
   .field[data-key-path="icon"],
   .field[data-key-path="emoji"],
   .field[data-key-path="noindex"],
-  .field[data-key-path="related"],
+  .field[data-key-path="rel"],
   .field[data-key-path="hint"],
-  .field[data-key-path="tax_of"],
-  .field[data-key-path="es"],
-  .field[data-key-path="en"],
-  .field[data-key-path="fr"],
-  .field[data-key-path="de"],
-  .field[data-key-path="pt"],
-  .field[data-key-path="it"] {
+  .field[data-key-path="tax_of"] {
     display: none;
   }
 }
@@ -30,7 +24,7 @@
 [data-hash^="#/collections/single/entries/"] {
   .field[data-key-path="base"] ~ .field:is(
     [data-key-path="date"],
-    [data-key-path="lastmod"],
+    [data-key-path="mod"],
     [data-key-path="end"],
     [data-key-path="cancelled"],
     [data-key-path="artists"],
@@ -53,7 +47,7 @@
   .field[data-key-path="base"] {
     &:has( .button[aria-checked="true"][value="article"] ) ~ .field[data-key-path="date"],
     &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="date"],
-    &:has( .button[aria-checked="true"][value="article"] ) ~ .field[data-key-path="lastmod"],
+    &:has( .button[aria-checked="true"][value="article"] ) ~ .field[data-key-path="mod"],
     &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="end"],
     &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="cancelled"],
     &:has( .button[aria-checked="true"][value="event"]   ) ~ .field[data-key-path="artists"],

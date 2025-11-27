@@ -1,81 +1,81 @@
 
 // Colors
-$text:                     #282525                 !default;
-$white:                    $styles-colors-base-white !default;
-$light:                    $styles-colors-base-light !default;
-$dark:                     $styles-colors-base-dark  !default;
-$black:                    $styles-colors-base-black !default;
-$gray:                     $styles-colors-base-gray  !default;
-$main:                     $styles-colors-main-color !default;
-$alt:                   if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
-$cta:                      $styles-colors-cta-color  !default;
+$text:   #282525                 !default;
+$white:  $styles-colors-base-white !default;
+$light:  $styles-colors-base-light !default;
+$dark:   $styles-colors-base-dark  !default;
+$black:  $styles-colors-base-black !default;
+$gray:   $styles-colors-base-gray  !default;
+$main:   $styles-colors-main-color !default;
+$alt: if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
+$cta:    $styles-colors-cta-color  !default;
 
-$main-light:            if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
-$alt-light:             if($styles-colors-alt-light  != '', $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
-$cta-light:             if($styles-colors-cta-light  != '', $styles-colors-cta-light,  mix($white, $cta,  75%)) !default;
+$main-light: if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
+$alt-light:  if($styles-colors-alt-light  != '', $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
+$cta-light:  if($styles-colors-cta-light  != '', $styles-colors-cta-light,  mix($white, $cta,  75%)) !default;
 
-$main-dark:             if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
-$alt-dark:              if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
-$cta-dark:              if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,   mix($black, $cta,  60%)) !default;
+$main-dark:  if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
+$alt-dark:   if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
+$cta-dark:   if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,   mix($black, $cta,  60%)) !default;
 
-$is-gray-contrast-fill: true                                        !default;
-$is-main-contrast-fill: $styles-colors-main-contrast-fill == 'true' !default;
-$is-alt-contrast-fill:  $styles-colors-alt-contrast-fill  == 'true' !default;
-$is-cta-contrast-fill:  $styles-colors-cta-contrast-fill  == 'true' !default;
+$is-gray-turn-fill: true                                        !default;
+$is-main-turn-fill: $styles-colors-main-turn-fill == 'true' !default;
+$is-alt-turn-fill:  $styles-colors-alt-turn-fill  == 'true' !default;
+$is-cta-turn-fill:  $styles-colors-cta-turn-fill  == 'true' !default;
 
-$is-gray-contrast-in:   true                                        !default;
-$is-main-contrast-in:   $styles-colors-main-contrast-in == 'true'   !default;
-$is-alt-contrast-in:    $styles-colors-alt-contrast-in  == 'true'   !default;
-$is-cta-contrast-in:    $styles-colors-cta-contrast-in  == 'true'   !default;
+$is-gray-turn-in:   true                                        !default;
+$is-main-turn-in:   $styles-colors-main-turn-in == 'true'   !default;
+$is-alt-turn-in:    $styles-colors-alt-turn-in  == 'true'   !default;
+$is-cta-turn-in:    $styles-colors-cta-turn-in  == 'true'   !default;
 
-$is-gray-contrast-text: true                                        !default;
-$is-main-contrast-text: $styles-colors-main-contrast-text == 'true' !default;
-$is-alt-contrast-text:  $styles-colors-alt-contrast-text  == 'true' !default;
-$is-cta-contrast-text:  $styles-colors-cta-contrast-text  == 'true' !default;
+$is-gray-turn-text: true                                        !default;
+$is-main-turn-text: $styles-colors-main-turn-text == 'true' !default;
+$is-alt-turn-text:  $styles-colors-alt-turn-text  == 'true' !default;
+$is-cta-turn-text:  $styles-colors-cta-turn-text  == 'true' !default;
 
-$gray-contrast-colored: text-contrast($gray, $light,      $dark)      !default;
-$main-contrast-colored: text-contrast($main, $main-light, $main-dark) !default;
-$alt-contrast-colored:  text-contrast($alt,  $alt-light,  $alt-dark)  !default;
-$cta-contrast-colored:  text-contrast($cta,  $cta-light,  $cta-dark)  !default;
+$gray-turn-colored: text-turn($gray, $light,      $dark)      !default;
+$main-turn-colored: text-turn($main, $main-light, $main-dark) !default;
+$alt-turn-colored:  text-turn($alt,  $alt-light,  $alt-dark)  !default;
+$cta-turn-colored:  text-turn($cta,  $cta-light,  $cta-dark)  !default;
 
-$gray-contrast-colored-flip: text-contrast($gray, $dark,      $light)      !default;
-$main-contrast-colored-flip: text-contrast($main, $main-dark, $main-light) !default;
-$alt-contrast-colored-flip:  text-contrast($alt,  $alt-dark,  $alt-light)  !default;
-$cta-contrast-colored-flip:  text-contrast($cta,  $cta-dark,  $cta-light)  !default;
+$gray-turn-colored-flip: text-turn($gray, $dark,      $light)      !default;
+$main-turn-colored-flip: text-turn($main, $main-dark, $main-light) !default;
+$alt-turn-colored-flip:  text-turn($alt,  $alt-dark,  $alt-light)  !default;
+$cta-turn-colored-flip:  text-turn($cta,  $cta-dark,  $cta-light)  !default;
 
-$gray-contrast-neutral: text-contrast($gray) !default;
-$main-contrast-neutral: text-contrast($main) !default;
-$alt-contrast-neutral:  text-contrast($alt)  !default;
-$cta-contrast-neutral:  text-contrast($cta)  !default;
+$gray-turn-neutral: text-turn($gray) !default;
+$main-turn-neutral: text-turn($main) !default;
+$alt-turn-neutral:  text-turn($alt)  !default;
+$cta-turn-neutral:  text-turn($cta)  !default;
 
-$gray-contrast-neutral-flip: text-contrast($gray, $dark, $white) !default;
-$main-contrast-neutral-flip: text-contrast($main, $dark, $white) !default;
-$alt-contrast-neutral-flip:  text-contrast($alt,  $dark, $white)  !default;
-$cta-contrast-neutral-flip:  text-contrast($cta,  $dark, $white)  !default;
+$gray-turn-neutral-flip: text-turn($gray, $dark, $white) !default;
+$main-turn-neutral-flip: text-turn($main, $dark, $white) !default;
+$alt-turn-neutral-flip:  text-turn($alt,  $dark, $white)  !default;
+$cta-turn-neutral-flip:  text-turn($cta,  $dark, $white)  !default;
 
-$gray-contrast-in: text-contrast($gray)                                                          !default;
-$main-contrast-in: if($is-main-contrast-in, $main-contrast-neutral, $main-contrast-neutral-flip) !default;
-$alt-contrast-in:  if($is-alt-contrast-in,  $alt-contrast-neutral,  $alt-contrast-neutral-flip)  !default;
-$cta-contrast-in:  if($is-cta-contrast-in,  $cta-contrast-neutral,  $cta-contrast-neutral-flip)  !default;
+$gray-turn-in: text-turn($gray)                                                          !default;
+$main-turn-in: if($is-main-turn-in, $main-turn-neutral, $main-turn-neutral-flip) !default;
+$alt-turn-in:  if($is-alt-turn-in,  $alt-turn-neutral,  $alt-turn-neutral-flip)  !default;
+$cta-turn-in:  if($is-cta-turn-in,  $cta-turn-neutral,  $cta-turn-neutral-flip)  !default;
 
-$gray-contrast-colored-in: text-contrast($gray-contrast-colored) !default;
-$main-contrast-colored-in: text-contrast($main-contrast-colored) !default;
-$alt-contrast-colored-in:  text-contrast($alt-contrast-colored)  !default;
-$cta-contrast-colored-in:  text-contrast($cta-contrast-colored)  !default;
+$gray-turn-colored-in: text-turn($gray-turn-colored) !default;
+$main-turn-colored-in: text-turn($main-turn-colored) !default;
+$alt-turn-colored-in:  text-turn($alt-turn-colored)  !default;
+$cta-turn-colored-in:  text-turn($cta-turn-colored)  !default;
 
-$gray-contrast-colored-in-flip: text-contrast($gray-contrast-colored-in) !default;
-$main-contrast-colored-in-flip: text-contrast($main-contrast-colored-in) !default;
-$alt-contrast-colored-in-flip:  text-contrast($alt-contrast-colored-in)  !default;
-$cta-contrast-colored-in-flip:  text-contrast($cta-contrast-colored-in)  !default;
+$gray-turn-colored-in-flip: text-turn($gray-turn-colored-in) !default;
+$main-turn-colored-in-flip: text-turn($main-turn-colored-in) !default;
+$alt-turn-colored-in-flip:  text-turn($alt-turn-colored-in)  !default;
+$cta-turn-colored-in-flip:  text-turn($cta-turn-colored-in)  !default;
 
-$white-3d:              mix($black, $white, 25%) !default;
-$light-3d:              mix($black, $light, 25%) !default;
-$dark-3d:               mix($black, $dark,  25%) !default;
-$black-3d:              mix($dark,  $black, 25%) !default;
-$gray-3d:               mix($black, $gray,  25%) !default;
-$main-3d:               mix($black, $main,  25%) !default;
-$alt-3d:                mix($black, $alt,   25%) !default;
-$cta-3d:                mix($black, $cta,   25%) !default;
+$white-3d: mix($black, $white, 25%) !default;
+$light-3d: mix($black, $light, 25%) !default;
+$dark-3d:  mix($black, $dark,  25%) !default;
+$black-3d: mix($dark,  $black, 25%) !default;
+$gray-3d:  mix($black, $gray,  25%) !default;
+$main-3d:  mix($black, $main,  25%) !default;
+$alt-3d:   mix($black, $alt,   25%) !default;
+$cta-3d:   mix($black, $cta,   25%) !default;
 
 
 // Screen
@@ -158,24 +158,26 @@ $chamfer: $styles-rounded-chamfer == 'true' !default;
 
 
 // Buttons
-$buttons-rounded:        $styles-buttons-sides_round == 'true' !default;
-$icon-buttons-rounded:   $styles-buttons-dot_circle  == 'true' !default;
-$buttons-3d:             $styles-buttons-deep        == 'true' !default;
-$buttons-outline:        $styles-buttons-outline     == 'true' !default;
-$buttons-font-main:      $styles-buttons-font                  !default;
-$buttons-font-main-bold: $styles-buttons-font_bold   == 'true' !default;
-$buttons-font-main-caps: $styles-buttons-font_caps   == 'true' !default;
-$buttons-font-swap:      $styles-buttons-swap                  !default;
-$buttons-font-swap-bold: $styles-buttons-swap_bold   == 'true' !default;
-$buttons-font-swap-caps: $styles-buttons-swap_caps   == 'true' !default;
+$is-btns-pill:        $styles-btns-pill      == 'true' !default;
+$is-btns-disc:        $styles-btns-disc      == 'true' !default;
+$btns-3d:             $styles-btns-deep      == 'true' !default;
+$btns-outline:        $styles-btns-outline   == 'true' !default;
+$btns-font-main:      $styles-btns-font                !default;
+$btns-font-main-bold: $styles-btns-font_bold == 'true' !default;
+$btns-font-main-caps: $styles-btns-font_caps == 'true' !default;
+$btns-font-swap:      $styles-btns-swap                !default;
+$btns-font-swap-bold: $styles-btns-swap_bold == 'true' !default;
+$btns-font-swap-caps: $styles-btns-swap_caps == 'true' !default;
 @if $radius > 1.25em {
-  $radius:                    1.25em;
-  $buttons-rounded:           true;
+  $radius:            1.25em;
+  $is-btns-pill:      true;
 }
-@if $buttons-rounded {
-  $icon-buttons-rounded:      true;
+@if $is-btns-pill {
+  $is-btns-disc:      true;
 }
-$menu-bar-gap:                if($icon-buttons-rounded and $chamfer, .375em, .5em) !default;
+$is-radius:           $radius > 0.01;
+$is-any-radius:       $is-radius or $is-btns-pill or $is-btns-disc;
+$menu-bar-gap:        if($is-btns-disc and $chamfer, .375em, .5em) !default;
 
 
 // Shadow
@@ -195,8 +197,8 @@ $options-colors: (
   'gray':       rgba($gray, $shadow-opacity),
   'dark':       rgba($dark, $shadow-opacity),
   'black':      rgba($black, $shadow-opacity),
-  'invert':     color-mix(in srgb, var(--invert), transparent ($shadow-opacity * 100%)),
-  'similar':    color-mix(in srgb, var(--similar), transparent ($shadow-opacity * 100%)),
+  'turn':       color-mix(in srgb, var(--turn), transparent ($shadow-opacity * 100%)),
+  'such':       color-mix(in srgb, var(--such), transparent ($shadow-opacity * 100%)),
   'hide':       transparent
 );
 $shadow-left:    $styles-shadow-left * 1rem                                            !default;
@@ -214,9 +216,9 @@ $sl-navigation-color:   $white !default;
 
 
 // Other
-$show:             $config-others-show    == 'true' !default;
-$google-translate: $menu-google_translate == 'true' !default;
-$is-production:    $hugo-is-production    == 'true' !default;
+$show:          $config-others-show == 'true' !default;
+$g-translate:   $menu-g_translate   == 'true' !default;
+$is-production: $hugo-is-production == 'true' !default;
 
 
 // String selectors

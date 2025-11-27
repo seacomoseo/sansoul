@@ -15,9 +15,7 @@
   // form
   --form-control-color: var(--alt);
   --form-control-disabled: #959495;
-  // top font
-  --top-font: 0em;
-  // top font
+  // map filter
   --map-filter-light: none;
   --map-filter-dark: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
   // outline
@@ -39,7 +37,7 @@
 }
 
 // EXTENDS LIKE FUNCTIONS
-@if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
+@if $is-any-radius {
   %radius,
   .body-menu--sticky .menu__subitems {
     // radius

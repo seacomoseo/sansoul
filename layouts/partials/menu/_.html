@@ -5,18 +5,18 @@
     {{- $logo   := "" -}}
     {{- $custom := cond (not .hide_custom) .items slice -}}
     {{- if .logo -}}
-      {{- $logo  = .image -}}
+      {{- $logo  = .img -}}
     {{- end -}}
 
     {{- /*  ITEM HOME LINK  */ -}}
     {{- if and .auto (ne .auto "none") -}}
-      {{- if not ($custom | jsonify | findRE `"link":"/#?"`) -}}
+      {{- if not ($custom | jsonify | findRE `"url":"/#?"`) -}}
         {{- with site.Home -}}
           {{- $items = $items | append (dict
-            "link"    .RelPermalink
-            "default" (cond (not $.menu.hide_icons) "home" "")
-            "label"   .Title
-            "anchor"  (partial "functions/anchor-page" .)
+            "url"    .RelPermalink
+            "def"    (cond (not $.menu.hide_icons) "home" "")
+            "label"  .Title
+            "anchor" (partial "func/anchor-page" .)
           ) -}}
         {{- end -}}
       {{- end -}}
@@ -34,15 +34,15 @@
 
     {{- /*  ITEM LANGS  */ -}}
     {{- if page.IsTranslated -}}
-      {{- if not ($custom | jsonify | findRE `"link":"langs"`) -}}
-        {{- $items = $items | append (dict "link" "langs") -}}
+      {{- if not ($custom | jsonify | findRE `"url":"langs"`) -}}
+        {{- $items = $items | append (dict "url" "langs") -}}
       {{- end -}}
     {{- end -}}
 
     {{- /*  ITEM TRANSLATE  */ -}}
-    {{- if site.Params.google_translate -}}
-      {{- if not ($custom | jsonify | findRE `"link":"translate"`) -}}
-        {{- $items = $items | append (dict "link" "translate") -}}
+    {{- if site.Params.g_translate -}}
+      {{- if not ($custom | jsonify | findRE `"url":"translate"`) -}}
+        {{- $items = $items | append (dict "url" "translate") -}}
       {{- end -}}
     {{- end -}}
 
@@ -51,7 +51,7 @@
     {{- if $items -}}
 
       {{- /*  MENU TOGGLE  */}}
-      <button type="button" class="menu__toggle button button--dot">
+      <button type="button" class="menu__toggle btn btn--dot">
         {{- "" }}<i class="menu__toggle-bar"></i>
         {{- "" }}<i class="menu__toggle-bar"></i>
         {{- "" }}<i class="menu__toggle-bar"></i>
@@ -64,11 +64,11 @@
 
       {{- /*  CLASS  */ -}}
       {{- $color      := .color | default "white" -}}
-      {{- $bgc        := partial "functions/color-background" (dict "child" $color "parent" $.bg.color) -}}
+      {{- $bgc        := partial "func/color-background" (dict "child" $color "parent" $.bg.color) -}}
       {{- $color       = $bgc.child -}}
       {{- $menu_class  := print "menu bg bg-" $color -}}
       {{- if .fade -}}
-        {{- $menu_class = print $menu_class " bg-fade-" .fade " bg-fade-" (.fade_type | default "linear-t") -}}
+        {{- $menu_class = print $menu_class " bg-fade-" .fade " bg-fade-" (.fade_to | default "t") -}}
       {{- end -}}
       {{- $box_class  := "" -}}
       {{- if .sticky -}}
@@ -90,9 +90,9 @@
               <li class="menu__item menu__item--logo">
                 <a class="link menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}{{ site.Home.RelPermalink }}{{ end }}" title="{{ $title | plainify }}">
                   {{ partial "media/_" (dict
-                    "class"     "menu__logo-image"
-                    "src"       .
-                    "alt"       (partial "functions/anchor-page" site.Home)
+                    "class"     "menu__logo-img"
+                    "img"       .
+                    "alt"       (partial "func/anchor-page" site.Home)
                     "notlazy"   true
                     "container" ($.menu.size | default "lg")
                     "fit_vl"    0.25

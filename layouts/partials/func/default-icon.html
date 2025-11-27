@@ -1,0 +1,4 @@
+{{ $s := site.Data.styles.icons }}
+{{ $u := site.Data.utilities.icons }}
+{{ $result := or (index $s "def" .) (index $u .) }}
+{{ return $result }}

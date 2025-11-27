@@ -1,10 +1,10 @@
-{{- $alt          := .Text -}}
-{{- $ratio        := "" -}}
-{{- $col_vl       := 1.0 -}}
-{{- $figure_class := "md__figure" -}}
-{{- $figure_style := "" -}}
-{{- $image_class  := "image" -}}
-{{- $image_style  := "" -}}
+{{- $alt       := .Text -}}
+{{- $ratio     := "" -}}
+{{- $col_vl    := 1.0 -}}
+{{- $fig_class := "md__fig" -}}
+{{- $fig_style := "" -}}
+{{- $img_class := "img" -}}
+{{- $img_style := "" -}}
 
 {{- /* BORDER */ -}}
 {{- /* Get the Page's Store */ -}}
@@ -12,57 +12,56 @@
 {{- $border := $store.Get "md_border" | default "" -}}
 {{- with $border -}}
   {{- if ne . "hide" -}}
-    {{- $border_class := print "image--border " (cond (ne "main" .) . "") -}}
-    {{- $figure_class  = print $figure_class " " $border_class -}}
+    {{- $border_class := print "img--border " (cond (ne "main" .) . "") -}}
+    {{- $fig_class     = print $fig_class " " $border_class -}}
   {{- end -}}
 {{- end -}}
 
 {{- if in .Text "float" -}}
 
   {{- /* FLOAT */ -}}
-  {{- $figure_class = print $figure_class " md__figure--float" -}}
+  {{- $fig_class = print $fig_class " md__fig--float" -}}
   {{- if in .Text "float-right" -}}
-    {{- $figure_class = print $figure_class " md__figure--float-right" -}}
+    {{- $fig_class = print $fig_class " md__fig--float-right" -}}
   {{- end -}}
   {{- $alt    = $alt | replaceRE `float(-right)?` "" -}}
   {{- $col_vl = 0.5 -}}
 
-  {{- $img_shape := resources.Get (print "/media/" .Destination) -}}
+  {{- $img_shape := resources.Get .Destination -}}
   {{- if not (in .Destination ".svg") -}}
     {{- $img_shape = $img_shape | images.Filter (images.Gamma -1) -}}
     {{- $img_shape = $img_shape.Resize (print 100 "x webp q10") -}}
     {{- $img_shape = $img_shape | resources.Copy ($img_shape | replaceRE `^(.+)\..+` `$1-shape.webp`) -}}
   {{- end -}}
-  {{- $figure_style = ` style="--shape:url(` $img_shape.RelPermalink `)"` -}}
+  {{- $fig_style = ` style="--shape:url(` $img_shape.RelPermalink `)"` -}}
 
 {{- else -}}
 
-  {{- /*  RATIO or CIRCLE IN TEXT, EXAMPLE: ![3/2](example.jpg)  */ -}}
-  {{- $is_ratio  := .Text | findRE `^[\d/]+$` -}}
-  {{- $is_circle := eq .Text "circle" -}}
-  {{- $is_iframe := partial "functions/is-iframe" .Destination -}}
-  {{- $is_video  := .Destination | findRE `\.(mp4|mov|avi|webm)` -}}
-  {{- if or $is_ratio $is_circle $is_iframe $is_video -}}
-    {{- if $is_circle -}}
+  {{- /*  RATIO or DISC IN TEXT, EXAMPLE: ![3/2](/u/example.jpg)  */ -}}
+  {{- $is_ratio := .Text | findRE `^[\d/]+$` -}}
+  {{- $is_disc  := eq .Text "disc" -}}
+  {{- $is_vid   := partial "func/is-vid" .Destination -}}
+  {{- if or $is_ratio $is_disc $is_vid -}}
+    {{- if $is_disc -}}
       {{- $ratio     = "1/1" -}}
     {{- else -}}
-      {{- $ratio     = $.Text | default "16/9" -}}
+      {{- $ratio     = or .Text "16/9" -}}
     {{- end -}}
-    {{- $image_class = print $image_class " image--ratio" -}}
-    {{- $image_style = print ` style="--image-ratio:` $ratio `"` -}}
+    {{- $img_class = print $img_class " img--ratio" -}}
+    {{- $img_style = print ` style="--img-ratio:` $ratio `"` -}}
     {{- $alt         = false -}}
-  {{- else if $is_circle -}}
-    {{- $image_class = print $image_class " image--circle" -}}
+  {{- else if $is_disc -}}
+    {{- $img_class = print $img_class " img--disc" -}}
     {{- $alt         = false -}}
   {{- end -}}
 
 {{- end -}}
 
-<figure class="{{ $figure_class }}" {{- $figure_style | safeHTMLAttr }}>
-  <div class="{{ $image_class }}" {{- $image_style | safeHTMLAttr }}>
+<figure class="{{ $fig_class }}" {{- $fig_style | safeHTMLAttr }}>
+  <div class="{{ $img_class }}" {{- $img_style | safeHTMLAttr }}>
     {{- partial "media/_" (dict
-        "class"     "image__inner"
-        "src"       .Destination
+        "class"     "img__in"
+        "img"       .Destination
         "ratio"     $ratio
         "alt"       $alt
         "container" "sm"

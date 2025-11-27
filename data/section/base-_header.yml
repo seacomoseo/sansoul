@@ -1,19 +1,20 @@
 name: Base ➡️ Cabecera
 node: header
+
 align: left
 boxes:
 # - if: breadcrumbs
 #   node: nav
 #   md: '{{< breadcrumbs >}}'
 - if: icon
-  params:
+  get:
   - to: title
   - from: h1
     to: title
   - to: icon
-  icon_type: side
+  icon_pos: side
 - if: not icon
-  params:
+  get:
   - to: title
   - from: h1
     to: title
@@ -35,16 +36,16 @@ boxes:
   md: |
     =={{< i18n cancelled >}}==
     {.cancelled}
-- if: image
+- if: img
   node: div
-  params:
-  - from: image
-    to: image
+  get:
+  - from: img
+    to: img
   - from: title
     to: alt
   - from: seo
     to: alt
-  - from: image
-    to: link
+  - from: img
+    to: url
   - to: ratio
-  button: hide
+  btn: hide

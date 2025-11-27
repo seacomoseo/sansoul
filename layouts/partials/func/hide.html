@@ -1,0 +1,21 @@
+{{ $item := cond (not .simple) .item dict }}
+{{/*  Hide string params  */}}
+{{ range slice
+  "icon"
+  "pin"
+  "img"
+  "hover"
+  "alt"
+  "hover_alt"
+  "title"
+  "sub"
+  "md"
+  "price"
+  "url"
+  "label"
+}}
+  {{ if eq (index $.item .) "hide" }}
+    {{ $item = merge $item (dict . "") }}
+  {{ end }}
+{{ end }}
+{{ return $item }}

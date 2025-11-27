@@ -1,8 +1,8 @@
 ---
 slug: servicio
 title: Servicio de ejemplo
-summary: Este es el resumen de un Servicio de ejemplo.
-image: base/poster.png
+sum: Este es el resumen de un Servicio de ejemplo.
+img: /u/base/poster.png
 
 price: 149.99
 service_types:
@@ -17,6 +17,6 @@ toc: y
 draft: n
 noindex: n
 seo: ▷ Título SEO Servicio de ejemplo 【Con caracteres llamativos】
-description: Esta es la descripción de un Servicio de ejemplo.
+desc: Esta es la descripción de un Servicio de ejemplo.
 ---
 Contenido

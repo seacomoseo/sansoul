@@ -1,0 +1,24 @@
+{{- $attrs := dict
+  "class"           .class
+  "width"           "640"
+  "height"          "360"
+  "src"             .iframe.src
+  "title"           .alt
+  "allow"           .iframe.allow
+  "allowfullscreen" true
+  "loading"         .lazy
+-}}
+{{- $attrs = partial "func/attrs" $attrs -}}
+
+{{- /*  HTML  */}}
+<iframe {{- $attrs }}></iframe>
+
+{{- /*  schema  */}}
+{{ partial "schema/vid" (dict
+  "name"         .alt
+  "thumbnailUrl" .img
+  "uploadDate"   .upload
+  "duration"     .duration
+  "contentUrl"   .iframe.url
+  "embedUrl"     .iframe.src
+) -}}

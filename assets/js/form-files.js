@@ -74,12 +74,12 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   let compressedFile = file
   let previewMedia
   let fileName = file.name
-  const isImage = file.type.startsWith('image')
+  const isImg = file.type.startsWith('image')
   const isSVG = file.type === 'image/svg'
   const isHeic = file.type === 'image/heic' || file.type === 'image/heif'
 
   // If it is an image (and not SVG), compress it and update the file if needed
-  if (isImage && !isSVG && !(isHeic && !isSafari)) {
+  if (isImg && !isSVG && !(isHeic && !isSafari)) {
     base64File = await new Promise((resolve, reject) => {
       const img = new Image()
       img.src = base64File
@@ -128,11 +128,11 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   }
 
   // Configure the preview media depending on whether it is an image or not
-  if (isImage) {
+  if (isImg) {
     const blobUrl = URL.createObjectURL(compressedFile)
     const previewImg = new Image()
     previewImg.src = blobUrl
-    previewImg.classList.add('form__preview-image')
+    previewImg.classList.add('form__preview-img')
     previewMedia = previewImg
   } else {
     previewMedia = document.createElement('strong')
@@ -144,7 +144,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
   const fileInput = document.createElement(form.dataset.prov === 'gas' ? 'textarea' : 'input')
   fileInput.name = input.name
   fileInput.placeholder = input.dataset.placeholder
-  fileInput.dataset.basename = input.dataset.basename
+  fileInput.dataset.baseName = input.dataset.baseName
   fileInput.dataset.size = compressedFile.size
   fileInput.dataset.ext = compressedFile.name.replace(/^.+(\..+)$/, '$1')
   fileInput.classList.add('form__preview-input', 'display-none')
@@ -174,7 +174,7 @@ async function formFile ({ form, file, reader, input, i, length, placeholder }) 
 
 export function newFileNames (form, input, i, length, now) {
   const fileName = []
-  const baseName = input.dataset.basename
+  const baseName = input.dataset.baseName
   const baseInput = form.querySelector(`[name="${baseName}"]`)
   if (baseInput) fileName.push(baseInput.value || baseName)
   fileName.push(now.replace(/ |:/g, '-'))

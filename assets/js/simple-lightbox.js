@@ -20,14 +20,14 @@ export function initSimpleLightbox () {
         const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?((section|modal)--[\w-]+|menu).*$/, '$1') : ''
         const lbBox = lbGroup.closest('.box')
         const lbGroupBox = lbBox ? '.' + lbBox.classList.value.replace(/^.*?(box(--\d+)?).*$/, '$1').replace(' ', '.') : ''
-        const localImages = new SimpleLightbox(`${lbGroupSection} ${lbGroupBox} [data-lightbox]`, { sourceAttr: 'data-lightbox' })
+        const localImgs = new SimpleLightbox(`${lbGroupSection} ${lbGroupBox} [data-lightbox]`, { sourceAttr: 'data-lightbox' })
         // Gallery expand button open first child
         document.addEventListener('click', e => {
           const galleryExpand = e.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
-          if (galleryExpand) localImages.open(e.target.closest('.gallery').firstChild)
+          if (galleryExpand) localImgs.open(e.target.closest('.gallery').firstChild)
         })
         // Fix combine lightbox with modal
-        localImages.on('show.simplelightbox', e => {
+        localImgs.on('show.simplelightbox', e => {
           closeModal(true)
         })
       })

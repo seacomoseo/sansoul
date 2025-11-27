@@ -53,14 +53,14 @@
   "@type"               "Event"
   "@id"                 (print .Permalink "#schema-event")
   "name"                .Title
-  "description"         (partial "functions/summary" .)
+  "description"         (partial "func/summary" .)
   "url"                 .Permalink
   "performer"           $artists
   "location"            $location
   "offers"              $offers
   "startDate"           $date
   "endDate"             $end
-  "image"               (dict "@id" (print .Permalink "#schema-image"))
+  "image"               (dict "@id" (print .Permalink "#schema-img"))
   "organizer"           (partial "schema/org-id" .)
   "eventStatus"         $status
   "eventAttendanceMode" "http://schema.org/OfflineEventAttendanceMode"

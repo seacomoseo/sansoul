@@ -15,33 +15,33 @@
   {{ end }}
 {{ end }}
 
-{{ $bgc   := partial "functions/color-background" (dict "child" $color "parent" .bgcp) }}
+{{ $bgc   := partial "func/color-background" (dict "child" $color "parent" .bgcp) }}
 
 {{/*  fit col  */}}
 {{ $col_vl := mul .col_vl (.fit    | default 1.00) }}
 {{ $col_vs := mul .col_vs (.fit_vs | default 1.00) }}
 
 {{/*  bg and image  */}}
-{{ $fade  := cond (eq .fade "hide") "" .fade }}
-{{ $bi    := cond (eq .bi   "hide") "" .bi   }}
-{{ $image := .image }}
+{{ $fade := cond (eq .fade "hide") "" .fade }}
+{{ $bi   := cond (eq .bi   "hide") "" .bi   }}
+{{ $img  := .img }}
 {{ if .card }}
-  {{ $image = "" }}
+  {{ $img = "" }}
   {{ if not .bi }}
-    {{ $bi = .image }}
+    {{ $bi = .img }}
   {{ end }}
 {{ end }}
 {{ $is_bg := or $bi $color $fade }}
 
 {{/*  images  */}}
 {{ $gallery := .gallery }}
-{{ $images  := slice }}
+{{ $imgs    := slice }}
 {{ $rawimgs := slice }}
-{{ range .images }}
-  {{ $image  := dict "image" . "link"  . }}
-  {{ $rawimgs = $rawimgs | append $image }}
+{{ range .imgs }}
+  {{ $img    := dict "img" . "url"  . }}
+  {{ $rawimgs = $rawimgs | append $img }}
 {{ end }}
-{{ range .limages }}
+{{ range .limgs }}
   {{ $rawimgs = $rawimgs | append . }}
 {{ end }}
 {{ range $k, $v := $rawimgs }}
@@ -53,8 +53,8 @@
       {{ end }}
     {{ end }}
   {{ end }}
-  {{ $image := merge . (dict "alt" $alt) }}
-  {{ $images = $images | append $image }}
+  {{ $img := merge . (dict "alt" $alt) }}
+  {{ $imgs = $imgs | append $img }}
 {{ end }}
 
 {{/*  shade  */}}
@@ -64,20 +64,20 @@
     {{ $ratio = print . "/1" }}
   {{ end }}
 {{ else }}
-  {{ if and .shade (not $image) }}
+  {{ if and .shade (not $img) }}
     {{ $ratio = "16/9" }}
   {{ end }}
 {{ end }}
 
-{{/*  link  */}}
-{{ $link             := .link }}
-{{ if $link }}
-  {{ $external       := hasPrefix $link "http" }}
-  {{ $is_anchor_link := hasPrefix $link "#" }}
-  {{ $start_slash    := $link | findRE `^/` }}
-  {{ if and (not $external) (not $is_anchor_link) (not $start_slash) }}
-    {{ with resources.Get ((print "/media/" $link) | replaceRE `\#.*$` "") }}
-      {{ $link        = .RelPermalink }}
+{{/*  url  */}}
+{{ $url             := .url }}
+{{ if $url }}
+  {{ $out           := hasPrefix $url "http" }}
+  {{ $is_anchor_url := hasPrefix $url "#" }}
+  {{ $start_slash   := $url | findRE `^/` }}
+  {{ if and (not $out) (not $is_anchor_url) (not $start_slash) }}
+    {{ with resources.Get ($url | replaceRE `\#.*$` "") }}
+      {{ $url        = .RelPermalink }}
     {{ end }}
   {{ end }}
 {{ end }}
@@ -86,21 +86,21 @@
 {{ $boxes := slice }}
 {{ range .boxes }}
   {{ $opts := dict "Page" $page "item" . }}
-  {{ with partial "functions/params-merge" $opts }}
+  {{ with partial "func/get-params-merge" $opts }}
     {{ $boxes = $boxes | append . }}
   {{ end }}
 {{ end }}
 
 {{/*  others  */}}
-{{ $icon_type      := .icon_type | default (cond .main "bottom" "top") }}
+{{ $icon_pos       := .icon_pos | default (cond .main "sub" "top") }}
 {{ $group_radius   := .group_radius | and (not .slider) }}
-{{ $line           := and .line (not (and .icon (eq $icon_type "bottom"))) }}
+{{ $line           := and .line (not (and .icon (eq $icon_pos "sub"))) }}
 {{ $show           := site.Data.config.show }}
 {{ $is_title       := or .title .hanchor .menu_label }}
-{{ $is_title_link  := and $link (eq .button "hide") $is_title }}
-{{ $is_button_hide := and $link (eq .button "hide") (not $is_title) }}
-{{ $is_button_show := and $link (ne .button "hide") }}
-{{ $is_button_link := or $is_button_show $is_button_hide }}
+{{ $is_title_url   := and $url (eq .btn "hide") $is_title }}
+{{ $is_btn_hide    := and $url (eq .btn "hide") (not $is_title) }}
+{{ $is_btn_show    := and $url (ne .btn "hide") }}
+{{ $is_btn_url     := or $is_btn_show $is_btn_hide }}
 
 {{/*  wrap  */}}
 {{ $box_wrap := or
@@ -110,7 +110,7 @@
   .node
   $is_bg
   .side
-  .parallax
+  .scroll
   .pd
   .pill
   .align
@@ -124,59 +124,60 @@
 {{ $sort := .sort
   | default slice
   | append
-  "image"
+  "img"
   "title"
-  "icon_bottom"
-  "subtitle"
+  "icon_sub"
+  "sub"
   "price"
   "md"
   "steps"
   "gallery"
   "list"
-  "accordion"
+  "faq"
   "reviews"
   "dots"
-  "contact"
+  "when"
+  "links"
   "form"
   "map"
   "gss"
   "boxes"
   "tags"
-  "button"
+  "btn"
   | uniq
 }}
 
 {{/*  merge  */}}
 {{ $to_merge := dict
-  "Page"           $page
-  "bgcp"           $bgc.parent
-  "color"          $bgc.child
-  "col_vl"         $col_vl
-  "col_vs"         $col_vs
-  "is_bg"          $is_bg
-  "fade"           $fade
-  "bi"             $bi
-  "image"          $image
-  "images"         $images
-  "ratio"          $ratio
-  "link"           $link
-  "boxes"          $boxes
-  "icon_type"      $icon_type
-  "group_radius"   $group_radius
-  "line"           $line
-  "show"           $show
-  "is_title_link"  $is_title_link
-  "is_button_hide" $is_button_hide
-  "is_button_link" $is_button_link
-  "box_wrap"       $box_wrap
-  "sort"           $sort
-  "prev"           nil
-  "next"           nil
-  "limages"        nil
+  "Page"         $page
+  "bgcp"         $bgc.parent
+  "color"        $bgc.child
+  "col_vl"       $col_vl
+  "col_vs"       $col_vs
+  "is_bg"        $is_bg
+  "fade"         $fade
+  "bi"           $bi
+  "img"          $img
+  "imgs"         $imgs
+  "ratio"        $ratio
+  "url"          $url
+  "boxes"        $boxes
+  "icon_pos"     $icon_pos
+  "group_radius" $group_radius
+  "line"         $line
+  "show"         $show
+  "is_title_url" $is_title_url
+  "is_btn_hide"  $is_btn_hide
+  "is_btn_url"   $is_btn_url
+  "box_wrap"     $box_wrap
+  "sort"         $sort
+  "prev"         nil
+  "next"         nil
+  "limgs"        nil
 }}
 {{ $box = merge . $to_merge }}
 
 {{/*  hide string params  */}}
-{{ $box = partial "functions/hide" (dict "item" $box) }}
+{{ $box = partial "func/hide" (dict "item" $box) }}
 
 {{ return $box }}

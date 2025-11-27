@@ -10,15 +10,15 @@
     "@id"         (print $url "#schema-org")
     "url"         $url
     "name"        site.Title
-    "description" site.Params.description
+    "description" site.Params.desc
   }}
 {{ end }}
 
 {{/*  General  */}}
 {{ $schemas := slice
-  (partial "schema/website"    .)
-  (partial "schema/page"       .)
-  (partial "schema/image-main" .)
+  (partial "schema/website"  .)
+  (partial "schema/page"     .)
+  (partial "schema/img-main" .)
 }}
 
 {{/*  Page Base  */}}
@@ -33,9 +33,9 @@
     "org"
   }}
   {{ if in $bases .Params.base }}
-    {{ $string  := print "schema/" .Params.base }}
-    {{ $partial := partial $string . }}
-    {{ $schemas  = $schemas | append $partial }}
+    {{ $str    := print "schema/" .Params.base }}
+    {{ $schema := partial $str . }}
+    {{ $schemas = $schemas | append $schema }}
   {{ end }}
 {{ end }}
 

@@ -1,0 +1,23 @@
+{{ $img_link := "" }}
+{{ $img_base := .img_base | default .img }}
+{{ $path     := $img_base.RelPermalink }}
+{{ if site.Data.config.webp }}
+  {{ $webp    := .img.Resize (print .size "x webp") }}
+  {{ $path    := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
+  {{ $webp     = $webp | resources.Copy $path }}
+  {{ $img_link = $webp.RelPermalink }}
+{{ else }}
+  {{ $height := div (mul .img.Height .size) .img.Width }}
+  {{ $avif   := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $height ".avif") }}
+  {{ $get    := resources.Get $avif }}
+  {{ with $get }}
+    {{ $get.Publish }}
+  {{ else }}
+    {{ $file := print "img_list/" (replace $avif "/" "~") ".json" }}
+    {{ $json := dict "path" $path "width" .size "height" $height | jsonify }}
+    {{ $rsc  := resources.FromString $file $json }}
+    {{ $rsc.Publish }}
+  {{ end }}
+  {{ $img_link = $avif }}
+{{ end }}
+{{ return $img_link }}

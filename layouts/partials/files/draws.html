@@ -1,13 +1,13 @@
-{{ $timestamp   := partial "functions/timestamp" . }}
+{{ $timestamp   := partial "func/timestamp" . }}
 {{ $draws_path  := print "/draws." $timestamp ".svg" }}
 {{ if and hugo.IsMultihost hugo.IsProduction }}
   {{ $draws_path = print ".." $draws_path }}
 {{ end }}
-{{ $string      := partial "files/draws-svg" page | string }}
-{{ $resource    := resources.FromString $draws_path $string }}
+{{ $str   := partial "files/draws-svg" page | string }}
+{{ $src   := resources.FromString $draws_path $str }}
 {{ if hugo.IsProduction }}
-  {{ $minified  := $resource | minify }}
-  {{ $resource   = resources.FromString $draws_path $minified.Content }}
+  {{ $min := $src | minify }}
+  {{ $src  = resources.FromString $draws_path $min.Content }}
 {{ end }}
-{{ $resource.Publish }}
+{{ $src.Publish }}
 {{ return "" }}

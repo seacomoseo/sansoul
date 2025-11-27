@@ -1,0 +1,116 @@
+{{- with .links -}}
+  {{- $show := cond (not site.Data.config.show) "" " show" }}
+  <div class="links box__block {{- $show }}">
+    {{- range . -}}
+      {{- with merge (dict "btn" $.btn "swap" $.swap) . -}}
+
+        {{- $full := cond (not .full) "" " full" -}}
+
+        {{- if eq .type "address" | and .hide -}}
+        {{- else if findRE `^(phone|whatsapp|mail|address|custom)$` .type -}}
+
+          {{- $class   := "" -}}
+          {{- $num     := "" -}}
+          {{- $url     := .url -}}
+          {{- $btn     := .btn | default "cta" -}}
+          {{- $swap    := .swap -}}
+          {{- $icon    := .icon -}}
+          {{- $def     := "" -}}
+          {{- $label   := .label -}}
+          {{- $anchor  := .anchor | default "auto" -}}
+          {{- $noindex := .lock -}}
+
+          {{- $is_phone_or_wa  := in (slice "phone" "whatsapp") .type -}}
+          {{- $is_custom_phone := $label | findRE `^\+?[\d\s-()]+$` -}}
+
+          {{- if $is_phone_or_wa -}}
+            {{- $num  = partial "func/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
+          {{- else if findRE `^(mail|address)$` .type -}}
+            {{- $btn  = cond (not .btn) "main" $btn -}}
+            {{- $swap = not .swap -}}
+          {{- end -}}
+
+          {{- if eq .type "custom" -}}
+            {{- $class   = "link__custom" -}}
+          {{- else if eq .type "phone" -}}
+            {{- $class   = "link__phone" -}}
+            {{- $url     = print "tel:+" $num -}}
+            {{- $def     = "phone" -}}
+            {{- $noindex = true -}}
+          {{- else if eq .type "whatsapp" -}}
+            {{- $class   = "link__whatsapp" -}}
+            {{- $url     = print "https://wa.me/" $num -}}
+            {{- $btn     = cond (not .btn) "whatsapp" $btn -}}
+            {{- $def     = "whatsapp" -}}
+            {{- $noindex = true -}}
+          {{- else if eq .type "mail" -}}
+            {{- $class   = "link__mail" -}}
+            {{- $url     = .label -}}
+            {{- $def     = "mail" -}}
+            {{- $noindex = true -}}
+          {{- else if eq .type "address" -}}
+            {{- $class   = "link__address" -}}
+            {{- $geo := dict -}}
+            {{- with .geo -}}
+              {{- if reflect.IsMap . -}}
+                {{- $geo = . -}}
+              {{- else -}}
+                {{- $geo = unmarshal . -}}
+              {{- end -}}
+            {{- end -}}
+            {{- if not $url -}}
+              {{- if $geo -}}
+                {{- $y     := index $geo.coordinates 0 -}}
+                {{- $x     := index $geo.coordinates 1 -}}
+                {{- $zoom  := .zoom | default 15 -}}
+                {{- $url    = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
+              {{- else -}}
+                {{- $url    = partial "func/map-url" (.anchor | default .label) -}}
+              {{- end -}}
+            {{- end -}}
+            {{- $def     = "address" -}}
+            {{- $label   = .label | default .anchor -}}
+            {{- $noindex = true -}}
+          {{- end -}}
+
+          {{- /*  PHONES TO STORE FOR AUTO CALLNOW  */}}
+          {{- if or $is_phone_or_wa $is_custom_phone -}}
+            {{- page.Store.Add "phones" (slice .) -}}
+          {{- end -}}
+
+          {{- /*  LINK  */}}
+          {{ partial "link" (dict
+            "class"  (print $class $full)
+            "btn"    $btn
+            "swap"   $swap
+            "ga4"    .ga4
+            "icon"   $icon
+            "def"    $def
+            "label"  $label
+            "anchor" $anchor
+            "url"    $url
+            "lock"   $noindex
+          ) -}}
+
+        {{- else if findRE `^h\d$` .type -}}
+
+          {{- /*  HN  */}}
+          {{- $h := replace .type "h" "" }}
+          <h {{- $h }} class="form__title full">{{ .label | markdownify }}</h {{- $h }}>
+
+        {{- else if eq .type "hr" -}}
+
+          {{- /*  HR  */}}
+          <hr>
+
+        {{- else if eq .type "br" -}}
+
+          {{- /*  BR  */}}
+          <div class="link__br"></div>
+
+        {{- end -}}
+
+      {{- end -}}
+    {{- end }}
+  </div>
+{{- end -}}

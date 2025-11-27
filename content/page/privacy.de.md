@@ -8,7 +8,7 @@ weight: 2
 ---
 
 Datenschutzerklärung
-{.subtitle}
+{.sub}
 
 **DETAILLIERTE INFORMATIONEN ZUM DATENSCHUTZ**
 
@@ -29,7 +29,7 @@ Wir sind ein Unternehmen, das mit der Absicht gegründet wurde, die Bedürfnisse
 - Name: **{{% legal name %}}**
 - NIF: **{{% legal nif %}}**
 - Adresse: **{{% legal location %}}**
-- E-Mail-Adresse: **{{% legal email %}}**
+- E-Mail-Adresse: **{{% legal mail %}}**
 
 Der Kunde kann sich zur Ausübung des Rechts auf Änderung oder Löschung seiner personenbezogenen Daten oder zur Klärung von Fragen zur Verarbeitung seiner personenbezogenen Daten über die oben angegebenen Kontaktmöglichkeiten an uns wenden.
 
@@ -42,7 +42,7 @@ Wir verarbeiten die Daten des Kunden zur Erbringung des angeforderten oder vertr
 
 2. **Erfüllung einer rechtlichen Verpflichtung**, wie z.B. die Erfüllung unserer buchhalterischen und steuerlichen Pflichten oder die Speicherung von Verkehrsdaten zur Einhaltung der geltenden Datenschutzgesetze, unter anderem.
 
-3. **Verarbeitung Ihrer Daten auf Grundlage Ihrer Einwilligung**, wenn **{{% legal name %}}** nicht auf eine andere Rechtsgrundlage zurückgreifen kann. Zum Beispiel, um Ihnen Werbung von Dritten zuzusenden, mit denen **{{% legal name %}}** kommerzielle Vereinbarungen hat. In jedem Fall können Sie die erteilte Einwilligung jederzeit widerrufen. Für weitere Informationen kontaktieren Sie uns bitte per E-Mail unter **{{% legal email %}}** und geben Sie Ihr Anliegen an.
+3. **Verarbeitung Ihrer Daten auf Grundlage Ihrer Einwilligung**, wenn **{{% legal name %}}** nicht auf eine andere Rechtsgrundlage zurückgreifen kann. Zum Beispiel, um Ihnen Werbung von Dritten zuzusenden, mit denen **{{% legal name %}}** kommerzielle Vereinbarungen hat. In jedem Fall können Sie die erteilte Einwilligung jederzeit widerrufen. Für weitere Informationen kontaktieren Sie uns bitte per E-Mail unter **{{% legal mail %}}** und geben Sie Ihr Anliegen an.
 \
 Der Kunde ist allein verantwortlich für alle Informationen, die er **{{% legal name %}}** zur Verwaltung und Vertragsabwicklung von Produkten und Dienstleistungen zur Verfügung stellt, und garantiert, dass er befugt ist und gegebenenfalls die Zustimmung anderer Nutzer oder Ansprechpartner zur Übermittlung dieser Informationen eingeholt hat. **{{% legal name %}}** übernimmt keine Verantwortung für die Nutzung von falschen, ungenauen, unvollständigen oder nicht aktualisierten Daten, die vom Kunden bereitgestellt wurden.
 \
@@ -106,7 +106,7 @@ Der Kunde/Benutzer ist verantwortlich für die Richtigkeit der mitgeteilten Date
 
 Sie haben das Recht, auf Ihre Daten zuzugreifen, sie zu berichtigen und zu löschen, sowie weitere Rechte gemäß den zusätzlichen Informationen auszuüben.
 
-Gemäß den Artikeln 15 bis 22 der Allgemeinen Datenschutzverordnung können Sie jederzeit Ihre Rechte auf Zugang, Berichtigung, Löschung, Einschränkung der Verarbeitung, Portabilität, Widerspruch und das Recht, nicht einer automatisierten Einzelentscheidung unterzogen zu werden, schriftlich ausüben, indem Sie uns per Post oder E-Mail an **{{% legal email %}}** kontaktieren.
+Gemäß den Artikeln 15 bis 22 der Allgemeinen Datenschutzverordnung können Sie jederzeit Ihre Rechte auf Zugang, Berichtigung, Löschung, Einschränkung der Verarbeitung, Portabilität, Widerspruch und das Recht, nicht einer automatisierten Einzelentscheidung unterzogen zu werden, schriftlich ausüben, indem Sie uns per Post oder E-Mail an **{{% legal mail %}}** kontaktieren.
 
 Sie können Ihre erteilte Zustimmung jederzeit widerrufen oder der Verarbeitung Ihrer Daten für einen bestimmten Zweck widersprechen. In diesem Fall werden Ihre personenbezogenen Daten nur für die Ausübung oder Abwehr möglicher Ansprüche aufbewahrt.
 
@@ -141,7 +141,7 @@ Damit dieser Kanal für alle nützlich ist, müssen einige grundlegende Regeln b
 
 1. Denken Sie daran, dass dies ein öffentlicher Raum ist. Wenn Sie Daten, Kommentare oder Informationen posten, gehen Sie davon aus, dass sie von anderen Nutzern dieses sozialen Netzwerks und von {{% legal name %}} gesehen werden können.
 2. Bitte sprechen Sie in der ersten Person und versuchen Sie, Wert in Ihren Kommentaren zu schaffen, indem Sie fundierte Informationen beisteuern. Denken Sie daran, dass Sie für Ihre Beiträge und die Auswirkungen auf Ihr Image und Ihren Ruf verantwortlich sind. Wenn Sie Zweifel haben, veröffentlichen Sie lieber nichts.
-3. Dieser Kanal ist nicht dafür gedacht, Diskussionen zu entfachen, andere Nutzer oder Dritte zu disqualifizieren oder Beschwerden und Reklamationen zu äußern. Letztere sollten über die speziellen Kanäle bearbeitet werden, die {{% legal name %}} für diesen Zweck eingerichtet hat. Wenn Sie Anfragen, Vorschläge oder Beschwerden zu den angebotenen Dienstleistungen haben, senden Sie bitte eine E-Mail an **{{% legal email %}}**.
+3. Dieser Kanal ist nicht dafür gedacht, Diskussionen zu entfachen, andere Nutzer oder Dritte zu disqualifizieren oder Beschwerden und Reklamationen zu äußern. Letztere sollten über die speziellen Kanäle bearbeitet werden, die {{% legal name %}} für diesen Zweck eingerichtet hat. Wenn Sie Anfragen, Vorschläge oder Beschwerden zu den angebotenen Dienstleistungen haben, senden Sie bitte eine E-Mail an **{{% legal mail %}}**.
 4. Behandeln Sie andere Nutzer mit Respekt. Verwenden Sie angemessene und höfliche Sprache.
 5. Vermeiden Sie es, Werbematerial zu veröffentlichen oder dieses Profil für die Jobsuche zu nutzen.
 6. Ihre Beiträge sollten wahre und konkrete Daten enthalten. Es ist erlaubt, Zitate oder kleine Textausschnitte aus Büchern oder anderen Werken Dritter zu verwenden, sofern die Quelle und der Name des Autors angegeben sind.
@@ -160,7 +160,7 @@ Damit dieser Kanal für alle nützlich ist, müssen einige grundlegende Regeln b
 
 Wir haben angemessene technische und organisatorische Sicherheitsmaßnahmen ergriffen, um zu verhindern, dass Ihre personenbezogenen Daten versehentlich verloren gehen, unbefugt genutzt oder darauf zugegriffen wird, verändert oder offenbart wird, alles gemäß den Bestimmungen der **Verordnung (EU) 2016/679 des Europäischen Parlaments und des Rates vom 27. April 2016 über den Schutz natürlicher Personen bei der Verarbeitung personenbezogener Daten und zum freien Verkehr dieser Daten sowie den nationalen Vorschriften, die anwendbar sind**. Außerdem haben wir Verfahren implementiert, um verdächtige Verstöße gegen die Sicherheit personenbezogener Daten zu behandeln. Sollte ein solcher Vorfall auftreten, werden wir Sie sowie die zuständige Aufsichtsbehörde (Spanische Datenschutzbehörde) benachrichtigen. Dennoch, obwohl wir uns bemühen, Ihre persönlichen Daten zu schützen, verhindert die Natur des Internets und von Instant-Messaging-Diensten (wie WhatsApp), dass wir eine 100%-ige Sicherheit garantieren können. Daher erfolgt jede Datenübertragung über das Internet auf Ihr eigenes Risiko, und wir empfehlen Ihnen, alle Vorsichtsmaßnahmen zu treffen, um Ihre persönlichen Daten während der Nutzung des Internets zu schützen.
 
-Wenn Sie Fragen zu dieser Datenschutzerklärung oder zur Nutzung/Verarbeitung Ihrer personenbezogenen Daten haben, können Sie sich jederzeit über **{{% legal email %}}** an uns wenden. Sollte die Antwort auf Ihre Anfrage oder die Nutzung Ihrer personenbezogenen Daten nicht zu Ihrer Zufriedenheit ausfallen, können Sie sich an die **SPANISCHE DATENSCHUTZBEHÖRDE** wenden.
+Wenn Sie Fragen zu dieser Datenschutzerklärung oder zur Nutzung/Verarbeitung Ihrer personenbezogenen Daten haben, können Sie sich jederzeit über **{{% legal mail %}}** an uns wenden. Sollte die Antwort auf Ihre Anfrage oder die Nutzung Ihrer personenbezogenen Daten nicht zu Ihrer Zufriedenheit ausfallen, können Sie sich an die **SPANISCHE DATENSCHUTZBEHÖRDE** wenden.
 
 Beachten Sie, dass diese Website Links zu Drittanbieter-Websites enthalten kann. Wenn Sie auf einen dieser Links klicken, beachten Sie bitte, dass diese eigenen Datenschutzrichtlinien haben, für die wir keine Verantwortung übernehmen. Lesen Sie diese Richtlinien, bevor Sie persönliche Informationen an diese Drittanbieter-Websites übermitteln.
 
@@ -179,5 +179,5 @@ Um sicherzustellen, dass Sie sich auf der Website unseres Unternehmens befinden,
 3. Bei der Erhebung und Verarbeitung personenbezogener Daten wurden geeignete Sicherheitsmaßnahmen ergriffen, um deren Verlust, unbefugten Zugang oder Manipulation zu verhindern, gemäß den Bestimmungen der **DSGVO**. Die Kontaktdaten potenzieller Kunden werden für **1 JAHR** aufbewahrt.
 4. **Das Unternehmen** verpflichtet sich, die vertraulichen Informationen, zu denen es Zugang hat, zu schützen.
 5. **Das Unternehmen** wird personenbezogene Daten niemals an Dritte weitergeben, um Dienstleistungen zu erbringen, die nicht in Abschnitt `a)` dieses Dokuments genannt sind, oder zu eigenen Zwecken.
-6. Der Benutzer kann jederzeit seine Rechte auf Zugang, Berichtigung, Löschung und Datenportabilität sowie auf Widerspruch und Einschränkung der Verarbeitung seiner personenbezogenen Daten ausüben, ebenso wie seine Zustimmung zur Verarbeitung dieser Daten widerrufen, indem er einen unterschriebenen Brief an unsere Postadresse **{{% legal location %}}** oder per E-Mail an **{{% legal email %}}** sendet. Die Anfrage muss die Kontaktdaten enthalten und eine Kopie des Personalausweises/Steueridentifikationsnummer oder eines Dokuments enthalten, das die Identität nachweist. Wenn er glaubt, dass er mit der Ausübung seiner Rechte nicht vollständig zufrieden ist, kann der Benutzer eine Beschwerde bei der nationalen Aufsichtsbehörde einreichen, indem er sich an die **Spanische Datenschutzbehörde** wendet.
+6. Der Benutzer kann jederzeit seine Rechte auf Zugang, Berichtigung, Löschung und Datenportabilität sowie auf Widerspruch und Einschränkung der Verarbeitung seiner personenbezogenen Daten ausüben, ebenso wie seine Zustimmung zur Verarbeitung dieser Daten widerrufen, indem er einen unterschriebenen Brief an unsere Postadresse **{{% legal location %}}** oder per E-Mail an **{{% legal mail %}}** sendet. Die Anfrage muss die Kontaktdaten enthalten und eine Kopie des Personalausweises/Steueridentifikationsnummer oder eines Dokuments enthalten, das die Identität nachweist. Wenn er glaubt, dass er mit der Ausübung seiner Rechte nicht vollständig zufrieden ist, kann der Benutzer eine Beschwerde bei der nationalen Aufsichtsbehörde einreichen, indem er sich an die **Spanische Datenschutzbehörde** wendet.
 7. Der Benutzer ermächtigt die automatisierte Verarbeitung der bereitgestellten personenbezogenen Daten gemäß den oben genannten Bedingungen. Drücken Sie dazu die Schaltfläche **"SENDEN"** hinter dem Kontaktformular.

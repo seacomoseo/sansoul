@@ -3,7 +3,7 @@
   .menu__toggle {
     top: 0.375em;
     transition: top .3s, filter .3s;
-    @if not $buttons-3d {
+    @if not $btns-3d {
       filter: none;
     }
   }
@@ -49,7 +49,7 @@
       justify-content: flex-end;
     }
   }
-  .logo__image {
+  .logo__img {
     &, img, svg {
       display: block;
       width: auto;
@@ -68,22 +68,22 @@
   }
   .logo__title {
     color: var(--title);
-    + .logo__subtitle {
+    + .logo__sub {
       margin-top: -1.25em;
     }
   }
-  .logo__subtitle {
+  .logo__sub {
     display: block;
     font-size: 1.2em;
-    color: var(--subtitle);
+    color: var(--sub);
   }
 
   // BODY-TOP
-  // TRANSPARENT NO STICKY
+  // CLEAR NO STICKY
   &.body-top,
-  &.body-menu--transparent:not(.body-menu--logo--sticky) {
+  &.body-menu--clear:not(.body-menu--logo--sticky) {
     --menu-py: 2.25em;
-    .logo__image {
+    .logo__img {
       height: 4em;
     }
     .logo__titles {
@@ -91,7 +91,7 @@
     }
     .menu__toggle {
       top: 1.875em;
-      @if not $buttons-3d {
+      @if not $btns-3d {
         filter: drop-shadow($shadow);
       }
     }
@@ -118,39 +118,39 @@
     }
   }
 
-  // NO TRANSPARENT
-  &:not(.body-menu--transparent) {
+  // NO CLEAR
+  &:not(.body-menu--clear) {
     .logo {
       transition: padding .3s;
     }
   }
 
-  // NO TRANSPARENT STICKY
-  &:not(.body-menu--transparent).body-menu--logo--sticky {
+  // NO CLEAR STICKY
+  &:not(.body-menu--clear).body-menu--logo--sticky {
     .logo {
       position: sticky;
     }
   }
 
-  // NO TRANSPARENT NO STICKY
-  &:not(.body-menu--transparent, .body-menu--logo--sticky) {
+  // NO CLEAR NO STICKY
+  &:not(.body-menu--clear, .body-menu--logo--sticky) {
     .logo {
       position: relative;
     }
   }
 
-  // TRANSPARENT
-  &.body-menu--transparent {
+  // CLEAR
+  &.body-menu--clear {
     .logo {
       transition: background-color .3s, filter .3s, padding .3s;
     }
-    .logo__image {
+    .logo__img {
       transition: height .3s;
     }
   }
 
-  // TRANSPARENT NOT STICKY
-  &.body-menu--transparent:not(.body-menu--logo--sticky) {
+  // CLEAR NOT STICKY
+  &.body-menu--clear:not(.body-menu--logo--sticky) {
     .logo {
       position: absolute;
       background-color: transparent;
@@ -158,8 +158,8 @@
     }
   }
 
-  // TRANSPARENT BODY-TOP STICKY
-  &.body-menu--transparent.body-top.body-menu--logo--sticky {
+  // CLEAR BODY-TOP STICKY
+  &.body-menu--clear.body-top.body-menu--logo--sticky {
     .logo {
       // position: sticky;
       background-color: transparent;

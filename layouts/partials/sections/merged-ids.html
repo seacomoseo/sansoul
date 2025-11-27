@@ -15,7 +15,7 @@
 
     {{/*  MODALS  */}}
     {{ range $k, $modal := .modals }}
-      {{ $id_m   := partial "functions/id-by-title" . }}
+      {{ $id_m   := partial "func/id-by-title" . }}
       {{ $expand := dict "key" $key "k" $k "id" $id_m "is_modal" true }}
       {{ $modal   = merge $modal $expand }}
       {{ $modals  = $modals | append $modal }}
@@ -26,7 +26,7 @@
 
     {{/*  SECTION  */}}
     {{ if $key }}
-      {{ $id  = partial "functions/id-by-title" . }}
+      {{ $id  = partial "func/id-by-title" . }}
     {{ else }}
       {{ $id  = "header" }}
       {{ $key = "header" }}

@@ -4,29 +4,29 @@
 {{ range .AllTranslations }}
   {{ $t    := index site.Data.i18n .Lang }}
   {{ $lang := dict
-    "lang"                    .Lang
-    "disqusId"                (or site.Params.disqus "")
-    "isGoogleTranslate"       (eq site.Params.google_translate true)
-    "i18nVideo"               $t.video
-    "loading"                 $t.loading
-    "mapTerrain"              $t.map_terrain
-    "mapStreets"              $t.map_streets
-    "mapSatellite"            $t.map_satellite
-    "mapHybrid"               $t.map_hybrid
-    "formGeo"                 $t.form_geo
-    "formErrorSingleQuotes"   $t.form_error_single_quotes
-    "formErrorRequiredFields" $t.form_error_required_fields
-    "formErrorRequiredCheck"  $t.form_error_required_check
-    "formErrorEmail"          $t.form_error_email
-    "formErrorTel"            $t.form_error_tel
-    "formErrorFileSize"       $t.form_error_file_size
-    "formErrorFileSizeTotal"  $t.form_error_file_size_total
-    "formErrorFileLength"     $t.form_error_file_length
-    "formErrorFileOnload"     $t.form_error_file_onload
-    "formErrorAcept"          $t.form_error_acept
-    "formSubmitSending"       $t.form_submit_sending
-    "formSubmitOk"            $t.form_submit_ok
-    "formSubmitWrong"         $t.form_submit_wrong
+    "lang"                   .Lang
+    "disqusId"               (or site.Params.disqus "")
+    "isGoogleTranslate"      (eq site.Params.google_translate true)
+    "vid"                    $t.vid
+    "loading"                $t.loading
+    "mapTerrain"             $t.map_terrain
+    "mapStreets"             $t.map_streets
+    "mapSatellite"           $t.map_satellite
+    "mapHybrid"              $t.map_hybrid
+    "formGeo"                $t.form_geo
+    "formErrorSingleQuotes"  $t.form_error_single_quotes
+    "formErrorReqFields"     $t.form_error_req_fields
+    "formErrorReqCheck"      $t.form_error_req_check
+    "formErrorMail"          $t.form_error_mail
+    "formErrorPhone"         $t.form_error_phone
+    "formErrorFileSize"      $t.form_error_file_size
+    "formErrorFileSizeTotal" $t.form_error_file_size_total
+    "formErrorFileLength"    $t.form_error_file_length
+    "formErrorFileOnload"    $t.form_error_file_onload
+    "formErrorAcept"         $t.form_error_acept
+    "formSubmitSending"      $t.form_submit_sending
+    "formSubmitOk"           $t.form_submit_ok
+    "formSubmitWrong"        $t.form_submit_wrong
   }}
   {{ $lang  = dict .Lang $lang }}
   {{ $langs = merge $langs $lang  }}
@@ -39,7 +39,7 @@
   "minify"     hugo.IsProduction
   "targetPath" "js/scripts.js"
   "params"     (dict
-    "draws"        (partial "functions/draws-base" .)
+    "draws"        (partial "func/draws-base" .)
     "cookiesLegal" (eq site.Data.config.cookies_legal true)
     "name"         site.Params.name
     "netlify"      (getenv "NETLIFY")
@@ -65,7 +65,7 @@
 
 {{ $ga4_id := "" }}
 {{ if hugo.IsProduction }}
-  {{ with site.Params.google_analytics }}
+  {{ with site.Params.ga4 }}
     {{ $ga4_id = . }}
   {{ end }}
 {{ else }}
@@ -75,8 +75,8 @@
 
 {{/*  RESOURCES  */}}
 
-{{ $_index := resources.Get "js/_index.js" }}
-{{ $custom := resources.Get "js/custom.js" }}
+{{ $_index := resources.Get "scripts.js" }}
+{{ $custom := resources.Get "custom.js" }}
 
 {{ $maybe_srcs := slice
   (dict "path" "scroll-show" "if" $is_scroll_show "func" "ScrollShow")

@@ -2,10 +2,10 @@
 {{ $id  := print .Permalink "#schema-person" }}
 
 {{/*  Image  */}}
-{{ $image  := dict "@id" (print .Permalink "#schema-image") }}
+{{ $img  := dict "@id" (print .Permalink "#schema-img") }}
 {{/*  Not self page  */}}
 {{ if ne page.Permalink .Permalink }}
-  {{ $image = partial "schema/image-main" . }}
+  {{ $img = partial "schema/img-main" . }}
 {{ end }}
 
 {{/*  worksFor  */}}
@@ -52,15 +52,15 @@
   "@id"             $id
   "name"            .Title
   "url"             .Permalink
-  "description"     (partial "functions/summary" .)
+  "description"     (partial "func/summary" .)
   "alternateName"   .Params.alts
   "honorificPrefix" .Params.prefix
   "jobTitle"        .Params.job
   "sameAs"          .Params.as
   "worksFor"        $works_for
   "hasCredential"   $creds
-  "image"           $image
+  "image"           $img
 }}
-{{ $schema = partial "functions/obj-truly" $schema }}
+{{ $schema = partial "func/obj-truly" $schema }}
 
 {{ return $schema }}

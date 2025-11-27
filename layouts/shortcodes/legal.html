@@ -1,7 +1,7 @@
 {{- $param := index .Params 0 -}}
 {{- $two   := index .Params 1 -}}
 
-{{- if in (slice "name" "nif" "location" "email") $param -}}
+{{- if in (slice "name" "nif" "location" "mail") $param -}}
 
   {{- with site.Home.Params.org -}}
     {{- if eq $param "name" -}}
@@ -28,9 +28,9 @@
       {{- else -}}
         {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
       {{- end -}}
-    {{- else if eq $param "email" -}}
+    {{- else if eq $param "mail" -}}
       <i class="mail">
-        {{- .email | default "mail@mail.com" | base64Encode -}}
+        {{- .mail | default "mail@mail.com" | base64Encode -}}
       </i>
     {{- end -}}
   {{- end -}}

@@ -21,38 +21,38 @@
 {{ $full := cond (not .full) "" "section--full" }}
 
 {{/*  Background  */}}
-{{ $bg              := "" }}
-{{ $color           := "" }}
-{{ $fade_color      := "" }}
-{{ $fade_type       := "" }}
-{{ $image_fix       := "" }}
-{{ $parallax        := "" }}
-{{ $video_parent    := "" }}
-{{ $bi_alpha        := "" }}
-{{ $color_alpha     := "" }}
+{{ $bg          := "" }}
+{{ $color       := "" }}
+{{ $fade_color  := "" }}
+{{ $fade_to     := "" }}
+{{ $img_fix     := "" }}
+{{ $scroll      := "" }}
+{{ $vid_parent  := "" }}
+{{ $bi_alpha    := "" }}
+{{ $color_alpha := "" }}
 {{ if not .is_modal }}
   {{ with .color }}
-    {{ $color        = print "bg-" . }}
+    {{ $color      = print "bg-" . }}
   {{ else }}
     {{ if and .map .ph .prev.div }}
-      {{ $color      = "bg-white" }}
+      {{ $color    = "bg-white" }}
     {{ end }}
   {{ end }}
   {{ if .bi }}
-    {{ $color        = print $color " bg-image" }}
+    {{ $color      = print $color " bg-img" }}
   {{ end }}
   {{ if .fade }}
-    {{ $fade_color   = print "bg-fade-" .fade }}
-    {{ $fade_type    = print "bg-fade-" (.fade_type | default "linear-b") }}
+    {{ $fade_color = print "bg-fade-" .fade }}
+    {{ $fade_to    = print "bg-fade-" (.fade_to | default "b") }}
   {{ end }}
-  {{ $bg             = cond (not .is_bg)                          "" "bg" }}
-  {{ $image_fix      = cond (not (and .bi (eq .parallax "fix")))  "" "bg--fix" }}
-  {{ $parallax       = cond (not (and .bi (eq .parallax "soft"))) "" "parallax parallax--bg" }}
-  {{ if partial "functions/is-iframe" .bi }}
-    {{ $video_parent = "bg-figure-video-parent" }}
+  {{ $bg           = cond (not .is_bg)                        "" "bg" }}
+  {{ $img_fix      = cond (not (and .bi (eq .scroll "fix")))  "" "bg--fix" }}
+  {{ $scroll       = cond (not (and .bi (eq .scroll "soft"))) "" "scroll scroll--bg" }}
+  {{ if partial "func/is-iframe" .bi }}
+    {{ $vid_parent = "bg-fig-vid-parent" }}
   {{ end }}
-  {{ $bi_alpha       = and .bi               .alpha       (ne .alpha       1) }}
-  {{ $color_alpha    = and (or .color .fade) .color_alpha (ne .color_alpha 1) }}
+  {{ $bi_alpha     = and .bi               .alpha       (ne .alpha       1) }}
+  {{ $color_alpha  = and (or .color .fade) .color_alpha (ne .color_alpha 1) }}
 {{ end }}
 
 {{/*  Divider Prev  */}}
@@ -107,11 +107,11 @@
   $full
   $bg
   $color
-  $fade_type
+  $fade_to
   $fade_color
-  $image_fix
-  $parallax
-  $video_parent
+  $img_fix
+  $scroll
+  $vid_parent
   $ph
   $pt_div
   $pb_div
@@ -167,7 +167,7 @@
   "style"  $style
   "hidden" $hidden
 }}
-{{ $attrs  = partial "functions/attrs" $attrs }}
+{{ $attrs  = partial "func/attrs" $attrs }}
 
 
 {{ return $attrs }}

@@ -60,15 +60,15 @@
       box-sizing: content-box;
       transition: height .3s, padding .3s, background-size .3s;
     }
-    .menu__logo-image {
+    .menu__logo-img {
       &, img {
         height: 100%;
         width: auto;
       }
     }
-    .menu__button {
+    .menu__btn {
       margin: .306em 0;
-      @if $buttons-3d {
+      @if $btns-3d {
         margin-bottom: .125em;
       }
     }
@@ -86,7 +86,7 @@
       transform-origin: top;
       transition: background-color .3s, transform .3s;
       background-color: var(--bg-hex);
-      @if $radius > 0.01 {
+      @if $is-radius {
         @if $chamfer {
           clip-path: var(--chamfer);
         } @else {
@@ -94,10 +94,10 @@
         }
         --radius-top: 0em;
       }
-      @if ($radius > 1 or ($radius > 0.01 and $buttons-rounded)) {
+      @if ($radius > 1 or ($is-radius and $is-btns-pill)) {
         --radius: 1em;
         --radius-pd: 1em;
-      } @else if $radius > 0.01 {
+      } @else if $is-radius {
         --radius-pd: 1em;
       }
       .menu__item {
@@ -107,10 +107,10 @@
         width: max-content;
         min-width: 100%;
       }
-      .menu__button {
+      .menu__btn {
         margin: .5em 0;
       }
-      .menu__item:last-child > .menu__button {
+      .menu__item:last-child > .menu__btn {
         margin-bottom: 0;
       }
     }
@@ -123,7 +123,7 @@
       }
     }
   }
-  &.body-menu--transparent {
+  &.body-menu--clear {
     .menu {
       position: fixed;
     }
@@ -141,7 +141,7 @@
         padding: 0;
       }
     }
-    &.body-menu--transparent {
+    &.body-menu--clear {
       .menu {
         filter: none;
         --color-alpha: 1;
@@ -181,7 +181,7 @@
     }
   }
   .menu__link,
-  .menu__button > b {
+  .menu__btn > b {
     font-family: Verdana, Geneva, "DejaVu Sans", Arial, sans-serif;
   }
   .icon {

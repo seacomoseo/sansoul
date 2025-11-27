@@ -3,7 +3,7 @@
   {{ $lang  := .lang }}
   {{ $types := .types }}
   {{ with .src }}
-    {{ with partial "functions/get-remote" . }}
+    {{ with partial "func/get-remote" . }}
       {{ $datas := unmarshal (.Content | string) }}
       {{ if $csv }}
         {{ $datas = partial "csv" $datas }}
@@ -11,8 +11,8 @@
 
       {{ if $datas }}
         {{ range $types }}
-          {{ $type     := .type | default "pages" }}
-          {{ $pairings := .pairings }}
+          {{ $type := .type | default "pages" }}
+          {{ $map  := .map }}
 
           {{ with .index }}
             {{ $datas = index $datas (split . ".") }}
@@ -23,21 +23,21 @@
               {{ with . }}
 
                 {{ $obj := dict }}
-                {{ range $pairings }}
+                {{ range $map }}
                   {{ $from    := .from | default .to }}
 
                   {{ $pair    := index $data (split $from ".") }}
                   {{ if $pair }}
                     {{ if eq .kind "slice" }}
                       {{ if not (reflect.IsSlice $pair) }}
-                        {{ $pair = split $pair (.delimit | default ",") }}
+                        {{ $pair = split $pair (.sep | default ",") }}
                       {{ end }}
                     {{ end }}
                   {{ end }}
 
-                  {{ if ne .default nil }}
-                    {{ $options  := dict "string" .default "kind" .kind "delimit" .delimit }}
-                    {{ $default  := partial "functions/string-to-kind" $options }}
+                  {{ if ne .def nil }}
+                    {{ $options  := dict "str" .def "kind" .kind "sep" .sep }}
+                    {{ $default  := partial "func/str-to-kind" $options }}
                     {{ $pair      = $pair | default $default }}
                   {{ end }}
 

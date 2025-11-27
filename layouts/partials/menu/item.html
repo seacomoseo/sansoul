@@ -1,6 +1,6 @@
-{{- if ne .button "hide" -}}
+{{- if ne .btn "hide" -}}
   {{- $sub := add ($.sub | default 0) 1 -}}
-  {{- if eq .link "langs" -}}
+  {{- if eq .url "langs" -}}
 
     {{- range partial "menu/langs" . -}}
       {{- partial "menu/item" (merge . (dict
@@ -13,38 +13,38 @@
   {{- else -}}
 
     {{- $item := . -}}
-    {{- if eq .link "translate" -}}
+    {{- if eq .url "translate" -}}
       {{- $item = merge
         (dict
-          "default"   "translate"
+          "def"       "translate"
           "label"     (i18n "translate")
           "translate" true
         )
         .
-        (dict "link" "")
+        (dict "url" "")
       -}}
     {{- end -}}
 
     {{- with $item -}}
       {{- $hide_icons := $.hide_icons -}}
-      {{- if .lang | or ((or .icon .default) | and (not .label)) -}}
+      {{- if .lang | or ((or .icon .def) | and (not .label)) -}}
         {{- $hide_icons = false -}}
       {{- end -}}
-      {{- $icon    := cond (not $hide_icons) .icon    "" -}}
-      {{- $default := cond (not $hide_icons) .default "" -}}
-      {{- $label   := .menu_label | default .label | markdownify -}}
-      {{- $anchor  := .anchor | default "auto" -}}
+      {{- $icon   := cond (not $hide_icons) .icon    "" -}}
+      {{- $def    := cond (not $hide_icons) .def "" -}}
+      {{- $label  := .menu_label | default .label | markdownify -}}
+      {{- $anchor := .anchor | default "auto" -}}
 
-      {{- if or $label $icon $default -}}
+      {{- if or $label $icon $def -}}
 
-        {{- $button_class := slice
-          (cond (not .button)    "menu__link" "menu__button")
+        {{- $btn_class := slice
+          (cond (not .btn)       "menu__link" "menu__btn")
           (cond (not .translate) "" "menu__link--translate")
           | append .class
         -}}
 
         {{- /*  li  */ -}}
-        {{- $is_active := eq .link page.RelPermalink | and (not .IsHome) -}}
+        {{- $is_active := eq .url page.RelPermalink | and (not .IsHome) -}}
         {{- $li_class  := slice
           "menu__item"
           (cond $is_active "menu__item--active"   "")
@@ -57,21 +57,21 @@
           "title"    .title
           "tabindex" (cond .items "0" "")
           -}}
-        {{- $li_attrs = partial "functions/attrs" $li_attrs }}
+        {{- $li_attrs = partial "func/attrs" $li_attrs }}
         <li {{- $li_attrs }}>
           {{- /*  link  */}}
           {{ partial "link" (dict
-            "class"   $button_class
-            "button"  .button
-            "sm"      true
-            "swap"    .swap
-            "ga4"     .ga4
-            "icon"    $icon
-            "default" $default
-            "label"   $label
-            "anchor"  $anchor
-            "link"    .link
-            "lock"    .lock
+            "class"  $btn_class
+            "btn"    .btn
+            "sm"     true
+            "swap"   .swap
+            "ga4"    .ga4
+            "icon"   $icon
+            "def"    $def
+            "label"  $label
+            "anchor" $anchor
+            "url"    .url
+            "lock"   .lock
           ) -}}
 
           {{- /*  subitems  */ -}}

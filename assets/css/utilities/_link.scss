@@ -2,15 +2,13 @@
   display: inline;
   color: var(--cta-text);
   cursor: pointer;
-  --link-undeline-offset: calc(var(--top-font) * 2);
-  --link-undeline-width: var(--outline);
-  --link-undeline-top: calc(100% - var(--link-undeline-offset) - var(--link-undeline-width));
-  --link-undeline-bottom: calc(100% - var(--link-undeline-offset));
+  --link-line-top: calc(100% - var(--outline));
+  --link-line-bottom: calc(100%);
   background-image: linear-gradient(to bottom,
-    transparent var(--link-undeline-top),
-    var(--cta) var(--link-undeline-top),
-    var(--cta) var(--link-undeline-bottom),
-    transparent var(--link-undeline-bottom)
+    transparent var(--link-line-top),
+    var(--cta) var(--link-line-top),
+    var(--cta) var(--link-line-bottom),
+    transparent var(--link-line-bottom)
   );
   background-repeat: no-repeat;
   background-size: 0 100%;

@@ -1,0 +1,13 @@
+{{ $text := . }}
+{{ $icon := "" }}
+
+{{ range . | findRESubmatch `(?s)^::(.*?)::\s?(.*)` }}
+  {{ with index . 1 }}
+    {{ $icon = . }}
+  {{ end }}
+  {{ with index . 2 }}
+    {{ $text = . }}
+  {{ end }}
+{{ end }}
+
+{{ return dict "text" $text "icon" $icon }}

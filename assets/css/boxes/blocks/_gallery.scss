@@ -11,16 +11,16 @@
   overflow: hidden;
 }
 :root {
-  --gallery-image-hover-transform: scale(1.125) rotate(2deg);
-  --gallery-image-hover-transform-odd: scale(1.125) rotate(-2deg);
+  --gallery-img-hover-transform: scale(1.125) rotate(2deg);
+  --gallery-img-hover-transform-odd: scale(1.125) rotate(-2deg);
 }
 .gallery:not(.gallery--gray) {
   .gallery__item {
     &:hover,
     &:focus,
     &:active {
-      > .gallery__image {
-        transform: var(--gallery-image-hover-transform);
+      > .gallery__img {
+        transform: var(--gallery-img-hover-transform);
       }
     }
   }
@@ -28,13 +28,13 @@
     &:hover,
     &:focus,
     &:active {
-      > .gallery__image {
-        transform: var(--gallery-image-hover-transform-odd);
+      > .gallery__img {
+        transform: var(--gallery-img-hover-transform-odd);
       }
     }
   }
 }
-.gallery__image {
+.gallery__img {
   &, > img {
     display: block;
     width: 100%;
@@ -206,7 +206,7 @@
       padding-bottom: var(--gallery-item-height);
     }
   }
-  .gallery__image {
+  .gallery__img {
     &, > img {
       position: absolute;
       top: 0;
@@ -234,8 +234,7 @@
 // IMAGE SIZE / OBJECT FIT
 
 .gallery--contain {
-  .gallery__image,
-  .gallery-modal__image {
+  .gallery__img {
     &, > img {
       object-fit: contain;
     }
@@ -252,7 +251,7 @@
 
 .gallery--gray {
   .gallery__item:not(:hover, :focus, :active) {
-    .gallery__image {
+    .gallery__img {
       &, > img {
         filter: var(--grayscale);
       }

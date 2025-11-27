@@ -1,0 +1,242 @@
+.md {
+
+
+  // All
+
+  ul, ol {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .75em .5em;
+    // display: table;
+    width: fit-content;
+    text-align: left;
+    padding: 0;
+    // padding-left: .25em;
+    margin: 0 auto 1em;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    p {
+      margin: 0;
+    }
+    > li {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: baseline;
+      --li-icon-order: 0;
+      // display: table-row;
+      // --li-pt: .75rem;
+      // &:first-child {
+      //   --li-pt: 0rem;
+      // }
+      // ul, ol {
+      //   > li:first-child {
+      //     --li-pt: .75rem;
+      //   }
+      // }
+      // > *,
+      // &::before {
+      //   display: table-cell;
+      //   text-align: right;
+      // }
+      &::before {
+        @include font-base-bold;
+      }
+      &::before,
+      > .icon {
+        color: var(--main);
+        text-align: right;
+        white-space: nowrap;
+        order: var(--li-icon-order);
+        // scale: 1.2;
+        // transform-origin: right calc(var(--li-pt) + .5em);
+      }
+      > div {
+        // padding-top: var(--li-pt);
+        // padding-left: .5em;
+        ul, ol {
+          margin-top: .75em;
+        }
+      }
+    }
+  }
+
+
+  // Unordered
+
+  ul {
+    > li {
+      &::before {
+        content: "\2014";
+      }
+      &.li-icon::before {
+        content: none;
+      }
+      @if $main == $cta {
+        // if there are links, icon...
+        &:where(ul:not(.list-inline):has(.link) *) {
+          &::before,
+          > .icon {
+            opacity: .5;
+          }
+        }
+      }
+    }
+  }
+
+
+  // Ordered
+
+  ol {
+    counter-reset: item calc(var(--item, 1) - 1);
+    > li {
+      counter-increment: item;
+      --li-counter: counters(item, ".") ".";
+      &::before {
+        content: var(--li-counter, "");
+      }
+      // if there are icons, counter...
+      // &:where(ol:has(.icon) *)::before {
+      //   padding-right: .25em;
+      // }
+      .icon--none
+      // if there are icons, counter...
+      &:where(ol:not(.list-inline):has(.li-icon) *)::before {
+        color: var(--cta);
+      }
+      @if $main == $cta {
+        // if there are links, counter...
+        &:where(ol:not(.list-inline):has(.link) *)::before {
+          opacity: .5;
+        }
+        // if there are links and icons, icon...
+        &:where(ol:not(.list-inline):has(.link):has(.li-icon) *) > .icon {
+          color: inherit;
+          opacity: .5;
+        }
+      } @else {
+        // if there are links and not icon, counter...
+        &:where(ol:not(.list-inline):has(.link):has(.li-icon) *)::before {
+          color: var(--cta);
+          opacity: .5;
+        }
+      }
+    }
+    // Offset margin-righ
+    --ol-level: 1;
+    ol ol { --ol-level: 2; }
+    ol ol ol { --ol-level: 3; }
+    ol ol ol ol { --ol-level: 4; }
+    ol ol ol ol ol { --ol-level: 5; }
+    ul, ol {
+      margin-left: calc(-.75em * var(--ol-level));
+    }
+    // If parent icon
+    li > .icon + div > :where(ol, ul) {
+      margin-left: calc(-.75em * var(--ol-level) - .5em);
+    }
+  }
+
+
+  // List inline
+
+  .list-inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5em;
+    li {
+      display: flex;
+      gap: .5em;
+      line-height: 1.25;
+      &::before {
+        content: none;
+      }
+      // > .icon {
+      //   top: 0;
+      // }
+      > div {
+        padding: 0;
+        display: flex;
+        gap: .5em;
+      }
+    }
+    .md__fig {
+      margin-block: 0;
+    }
+  }
+
+
+  // Definitions
+
+  dt, dd {
+    &:not(:last-child) {
+      margin-bottom: .75em;
+    }
+  }
+}
+
+
+// Aligns
+
+.align-left ul,
+.align-left ol,
+ul.align-left,
+ol.align-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+ul.align-center,
+ol.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.align-right ul,
+.align-right ol,
+ul.align-right,
+ol.align-right {
+  margin-left: auto;
+  margin-right: 0;
+  // direction: rtl;
+  text-align: right;
+  > li {
+    // direction: ltr;
+    --li-counter: "." counters(item, ".");
+    --li-icon-order: 2;
+    // > div {
+    //   padding-left: 0;
+    //   padding-right: .75em;
+    // }
+  }
+}
+// Fix in page sections
+.align-right .md {
+  ul, ol {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+@media (min-width: $vl) {
+  .align--vl-left {
+    ul, ol {
+      margin-left: 0;
+    }
+  }
+  .align--vl-right {
+    ul, ol {
+      direction: rtl;
+      text-align: right;
+      margin-left: auto;
+      margin-right: 0;
+      // > li {
+      //   direction: ltr;
+      //   > div {
+      //     padding-left: 0;
+      //     padding-right: .75em;
+      //   }
+      // }
+    }
+  }
+}

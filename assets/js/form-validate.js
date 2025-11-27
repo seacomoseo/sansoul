@@ -1,10 +1,10 @@
 import params from './params'
 const {
   formErrorSingleQuotes,
-  formErrorRequiredFields,
-  formErrorRequiredCheck,
-  formErrorEmail,
-  formErrorTel,
+  formErrorReqFields,
+  formErrorReqCheck,
+  formErrorMail,
+  formErrorPhone,
   formErrorFileSize,
   formErrorFileSizeTotal,
   formErrorFileLength,
@@ -61,14 +61,14 @@ export function formValid (form) {
   })
 
   // Required Check and Fields
-  form.querySelectorAll('[data-required], [data-requiredif]').forEach(input => {
-    let required
-    if (input.dataset.required !== undefined) {
-      required = true // Data-required fields are always mandatory
-    } else if (input.dataset.requiredif) {
+  form.querySelectorAll('[data-req], [data-req-if]').forEach(input => {
+    let req
+    if (input.dataset.req !== undefined) {
+      req = true // Data-req fields are always mandatory
+    } else if (input.dataset.reqIf) {
       // Split by || to handle OR conditions
-      const orGroups = input.dataset.requiredif.split(/\s*\|\|\s*/)
-      required = orGroups.some(orGroup => {
+      const orGroups = input.dataset.reqIf.split(/\s*\|\|\s*/)
+      req = orGroups.some(orGroup => {
         // Divide each OR group by && to handle AND conditions
         const andConditions = orGroup.split(/\s*&&\s*/)
         // All AND conditions must be true
@@ -78,17 +78,17 @@ export function formValid (form) {
         })
       })
     }
-    // If this is required or references is filled; and this is empty
-    if (required && !isInput(input)) {
+    // If this is req or references is filled; and this is empty
+    if (req && !isInput(input)) {
       let errorMessage, errorName
       if (input.tagName === 'FIELDSET') {
-        errorMessage = formErrorRequiredCheck
+        errorMessage = formErrorReqCheck
         errorName = input.children[0].textContent
       } else if (input.classList.contains('form__geo')) {
-        errorMessage = formErrorRequiredFields
+        errorMessage = formErrorReqFields
         errorName = input.name
       } else {
-        errorMessage = formErrorRequiredFields
+        errorMessage = formErrorReqFields
         errorName = (input.placeholder || input.dataset.placeholder || input.children[0].textContent)
       }
       setItemStyle(input, true)
@@ -98,24 +98,24 @@ export function formValid (form) {
     }
   })
 
-  // Email
+  // Mail
   form.querySelectorAll('[type="email"]').forEach(input => {
-    const emailMatch = input.value.match(/@.*\./)
-    if (input.value && !emailMatch) {
+    const mailMatch = input.value.match(/@.*\./)
+    if (input.value && !mailMatch) {
       setItemStyle(input, true)
-      addMessage(formErrorEmail, input.placeholder)
-    } else if (input.value && emailMatch) {
+      addMessage(formErrorMail, input.placeholder)
+    } else if (input.value && mailMatch) {
       setItemStyle(input, false)
     }
   })
 
   // Telephone
   form.querySelectorAll('[type="tel"]').forEach(input => {
-    const telMatch = input.value.match(/^\+?[0-9\s-+]{6,20}$/)
-    if (input.value && !telMatch) {
+    const phoneMatch = input.value.match(/^\+?[0-9\s-+]{6,20}$/)
+    if (input.value && !phoneMatch) {
       setItemStyle(input, true)
-      addMessage(formErrorTel, input.placeholder)
-    } else if (input.value && telMatch) {
+      addMessage(formErrorPhone, input.placeholder)
+    } else if (input.value && phoneMatch) {
       setItemStyle(input, false)
     }
   })

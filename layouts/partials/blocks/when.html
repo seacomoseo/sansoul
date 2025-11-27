@@ -1,0 +1,22 @@
+{{- with .when -}}
+  {{- $show := cond (not site.Data.config.show) "" " show" }}
+  <div class="whens box__block {{- $show }}">
+    {{- range . -}}
+      {{- $full := cond (not .full) "" " full" -}}
+      <div class="when {{- $full }}">
+        {{- with .days }}
+          <div class="when__data">
+            {{ partial "icon" (dict "def" "calendar") }}
+            <i>{{ . | markdownify }}</i>
+          </div>
+        {{- end -}}
+        {{- with .hours }}
+          <div class="when__data">
+            {{ partial "icon" (dict "def" "clock") }}
+            <i>{{ . | markdownify }}</i>
+          </div>
+        {{- end }}
+      </div>
+    {{- end }}
+  </div>
+{{- end -}}

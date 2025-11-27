@@ -1,0 +1,14 @@
+
+{{ $value  := .str }}
+{{ if      eq .kind "int" }}
+  {{ $value = int .str }}
+{{ else if eq .kind "float" }}
+  {{ $value = float .str }}
+{{ else if eq .kind "bool" }}
+  {{ $value = eq "true" .str }}
+{{ else if eq .kind "slice" }}
+  {{ $value = split .str (.sep | default ",") }}
+{{ else if eq .kind "dict" }}
+  {{ $value = unmarshal .str }}
+{{ end }}
+{{ return $value }}

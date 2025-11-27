@@ -4,28 +4,28 @@
 
   {{- range .sort -}}
 
-    {{- if eq . "image" -}}
+    {{- if eq . "img" -}}
 
       {{- /*  IMAGE  */ -}}
-      {{- partial "boxes/image" $ -}}
+      {{- partial "boxes/img" $ -}}
 
     {{- else if eq . "title" -}}
 
       {{- /*  TITLE  */ -}}
       {{- partial "boxes/title" $ -}}
 
-    {{- else if eq . "icon_bottom" -}}
+    {{- else if eq . "icon_sub" -}}
 
-      {{- /*  ICON BOTTOM  */ -}}
-      {{- if eq $.icon_type "bottom" -}}
+      {{- /*  ICON SUB  */ -}}
+      {{- if eq $.icon_pos "sub" -}}
         {{- partial "boxes/icon" $ -}}
       {{- end -}}
 
-    {{- else if eq . "subtitle" -}}
+    {{- else if eq . "sub" -}}
 
-      {{- /*  SUBTITLE  */ -}}
-      {{- with $.subtitle }}
-        <p class="box__subtitle subtitle">
+      {{- /*  SUB  */ -}}
+      {{- with $.sub }}
+        <p class="box__sub sub">
           {{- . | markdownify -}}
         </p>
       {{- end -}}
@@ -58,7 +58,7 @@
     {{- else if eq . "gallery" -}}
 
       {{- /*  GALLERY  */ -}}
-      {{- if $.images -}}
+      {{- if $.imgs -}}
         {{- partial "blocks/gallery" $ -}}
       {{- end -}}
 
@@ -69,11 +69,11 @@
         {{- partial "blocks/list" $ -}}
       {{- end -}}
 
-    {{- else if eq . "accordion" -}}
+    {{- else if eq . "faq" -}}
 
-      {{- /*  ACCORDION  */ -}}
-      {{- if $.accordions -}}
-        {{- partial "blocks/accordion" $ -}}
+      {{- /*  FAQ  */ -}}
+      {{- if $.faqs -}}
+        {{- partial "blocks/faq" $ -}}
       {{- end -}}
 
     {{- else if eq . "reviews" -}}
@@ -90,11 +90,18 @@
         {{- partial "blocks/dots" $ -}}
       {{- end -}}
 
-    {{- else if eq . "contact" -}}
+    {{- else if eq . "when" -}}
 
-      {{- /*  CONTACT  */ -}}
-      {{- if $.contact -}}
-        {{- partial "blocks/contact" $ -}}
+      {{- /*  WHEN  */ -}}
+      {{- if $.when -}}
+        {{- partial "blocks/when" $ -}}
+      {{- end -}}
+
+    {{- else if eq . "links" -}}
+
+      {{- /*  LINKS  */ -}}
+      {{- if $.links -}}
+        {{- partial "blocks/links" $ -}}
       {{- end -}}
 
     {{- else if eq . "form" -}}
@@ -134,11 +141,11 @@
         {{- partial "boxes/tags" $ -}}
       {{- end -}}
 
-    {{- else if eq . "button" -}}
+    {{- else if eq . "btn" -}}
 
       {{- /*  BUTTON  */ -}}
-      {{- if $.is_button_link -}}
-        {{- partial "boxes/button" $ -}}
+      {{- if $.is_btn_url -}}
+        {{- partial "boxes/btn" $ -}}
       {{- end -}}
 
     {{- end -}}
@@ -158,8 +165,8 @@
 
     {{- /*  Only one link (box--go)  */ -}}
     {{- if not .zero -}}
-      {{- $is_video := $inbox | findRE `<video |<iframe ` -}}
-      {{- if not $is_video -}}
+      {{- $is_vid := $inbox | findRE `<video |<iframe ` -}}
+      {{- if not $is_vid -}}
         {{- $links := $inbox | findRE `<a .*?href=| data-(h|b)=| data-lightbox=| type="submit"` -}}
         {{- $ool   := eq (len $links) 1 -}}
         {{- if $ool -}}

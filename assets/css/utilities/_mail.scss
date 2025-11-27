@@ -1,6 +1,6 @@
 .mail__option-copy--active > b {
   @if $chamfer {
-    @if $radius > 1 or $buttons-rounded {
+    @if $radius > 1 or $is-btns-pill {
       --radius: 1em;
     }
   }
@@ -15,8 +15,8 @@
     width: max-content;
     display: flex;
     align-items: center;
-    color: var(--invert-in);
-    background-color: var(--invert);
+    color: var(--turn-in);
+    background-color: var(--turn);
     @include radius;
     @if not $chamfer {
       filter: drop-shadow($shadow);

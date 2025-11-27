@@ -1,0 +1,4 @@
+{{ $time := partial "func/timestamp" . }}
+{{ $base := site.BaseURL | replaceRE `^https?://.+?(/.*)` "$1" }}
+{{ $draw := print $base "draws." $time ".svg" }}
+{{ return $draw }}

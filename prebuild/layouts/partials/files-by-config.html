@@ -1,3 +1,5 @@
+{{ $c := site.Data.utilities.collections }}
+
 {{ $types_full  := slice }}
 {{ range $k, $v := site.Data.types }}
   {{ if ne "all" $k }}
@@ -9,23 +11,23 @@
 {{ end }}
 {{ $types_full   = sort $types_full "weight" }}
 {{ $types_full   = where $types_full     "name" "eq" "single" | append (where $types_full "name" "ne" "single") }}
-{{ $types       := where $types_full     "disabled" "ne" true | default slice }}
-{{ $langs       := where site.Data.langs "disabled" "ne" true }}
+{{ $types       := where $types_full     "hide" "ne" true | default slice }}
+{{ $langs       := where site.Data.langs "hide" "ne" true }}
 {{ $lang_first  := index $langs 0 }}
 
 {{ $languages := dict }}
 {{ $cascade   := slice }}
 
 {{ range site.Data.options.langs }}
-  {{ $lang       := . }}
-  {{ $language   := dict }}
-  {{ $base_url   := "" }}
-  {{ $pagination := false }}
-  {{ $enabled    := false }}
-  {{ $label      := false }}
-  {{ $time_zone  := false }}
-  {{ $title      := false }}
-  {{ $params     := false }}
+  {{ $lang      := . }}
+  {{ $language  := dict }}
+  {{ $base_url  := "" }}
+  {{ $pager     := false }}
+  {{ $on        := false }}
+  {{ $label     := false }}
+  {{ $time_zone := false }}
+  {{ $title     := false }}
+  {{ $params    := false }}
 
   {{ $config_lang  := where $langs "lang" $lang }}
   {{ $config_lang   = index $config_lang 0 }}
@@ -39,7 +41,7 @@
     {{/*  Home single singular  */}}
     {{ $home_singular := dict
       "params" (dict
-        "singular" $t.types_default_single_singular
+        "singular" $t.types_def_single_singular
       )
       "target" (dict
         "lang" $lang
@@ -51,29 +53,29 @@
     {{/*  Mix first configuration language with the others  */}}
     {{ $config := site.Data.config }}
     {{ $config  = dict
-      "google_analytics"         $config.google_analytics
-      "google_site_verification" $config.google_site_verification
-      "google_file_verification" $config.google_file_verification
-      "google_translate"         $config.google_translate
-      "disqus"                   $config.disqus
-      "email"                    $config.email
-      "phone_code"               $config.phone_code
-      "time_zone"                $config.time_zone
-      "currency"                 $config.currency
-      "main_org"                 $config.main_org
-      "html"                     $config.html
+      "ga4"           $config.ga4
+      "g_site_verify" $config.g_site_verify
+      "g_file_verify" $config.g_file_verify
+      "g_translate"   $config.g_translate
+      "disqus"        $config.disqus
+      "mail"          $config.mail
+      "phone_code"    $config.phone_code
+      "time_zone"     $config.time_zone
+      "currency"      $config.currency
+      "main_org"      $config.main_org
+      "html"          $config.html
     }}
     {{ $config_mix := merge $config . .config (dict "config" nil) }}
 
     {{ with $config_mix }}
       {{/*  language's vars  */}}
-      {{ $base_url   = .baseURL }}
-      {{ $pagination = .pagination }}
-      {{ $enabled    = not (.disabled | default false) }}
-      {{ $label      = .label }}
-      {{ $time_zone  = index . "config" "time_zone" }}
-      {{ $title      = .title }}
-      {{ $params     = . }}
+      {{ $base_url  = .baseURL }}
+      {{ $pager     = .pager }}
+      {{ $on        = not (.hide | default false) }}
+      {{ $label     = .label }}
+      {{ $time_zone = index . "config" "time_zone" }}
+      {{ $title     = .title }}
+      {{ $params    = . }}
 
       {{ range $k, $type := $types_full }}
         {{ $name  := .name }}
@@ -95,7 +97,7 @@
                   "base" $base_from
                 ))
               }}
-              {{ if .breadcrumbs }}
+              {{ if .crumbs }}
                 {{ $breadcrumbs = $name_from }}
               {{ end }}
             {{ end }}
@@ -123,7 +125,7 @@
           {{ end }}
         {{ else }}
           {{ if eq $type.permalinks nil }}
-            {{ with index $t (print "types_default_" $name "_permalinks") }}
+            {{ with index $t (print "types_def_" $name "_permalinks") }}
               {{ $permalinks = print . "/:slug" }}
             {{ end }}
           {{ end }}
@@ -149,59 +151,67 @@
             {{ $cms = merge $type $type_params }}
           {{ end }}
         {{ end }}
-        {{ $cms_defaults := dict
-          "title"    (index $i18n_cms (print "types_default_" $name "_title"   ))
-          "singular" (index $i18n_cms (print "types_default_" $name "_singular"))
-          "hint"     (index $i18n_cms (print "types_default_" $name "_hint"    ))
+        {{ $is_body := .body }}
+        {{ if eq .body nil }}
+          {{ $def_names := slice "article" "blog" "new" "event" "product" "author" "page" }}
+          {{ if in $def_names $name }}
+            {{ $is_body = true }}
+          {{ end }}
+        {{ end }}
+        {{ $cms_defs := dict
+          "title"    (index $i18n_cms (print "types_def_" $name "_title"   ))
+          "singular" (index $i18n_cms (print "types_def_" $name "_singular"))
+          "hint"     (index $i18n_cms (print "types_def_" $name "_hint"    ))
         }}
         {{ $default_values := dict
-          "permalinks"  (index $t (print "types_default_" $name "_permalinks" ))
-          "slug"        (index $t (print "types_default_" $name "_slug"       ))
-          "singular"    (index $t (print "types_default_" $name "_singular"   ))
-          "title"       (index $t (print "types_default_" $name "_title"      ))
-          "description" (index $t (print "types_default_" $name "_description"))
+          "permalinks" (index $t (print "types_def_" $name "_permalinks" ))
+          "slug"       (index $t (print "types_def_" $name "_slug"       ))
+          "singular"   (index $t (print "types_def_" $name "_singular"   ))
+          "title"      (index $t (print "types_def_" $name "_title"      ))
+          "desc"       (index $t (print "types_def_" $name "_desc"       ))
         }}
         {{ $cms = dict
-          "title"      (or $cms.title    $cms.singular $cms_defaults.title    $type.title $name)
-          "singular"   (or $cms.singular $cms.title    $cms_defaults.singular $type.title $name)
-          "hint"       (or $type.hint                  $cms_defaults.hint                      )
+          "title"      (or $cms.title    $cms.singular $cms_defs.title    $type.title $name)
+          "singular"   (or $cms.singular $cms.title    $cms_defs.singular $type.title $name)
+          "hint"       (or $type.hint                  $cms_defs.hint                      )
           "permalinks" $permalinks
           "defaults"   $default_values
+          "body"       $is_body
         }}
 
         {{/*  CONFIG TO TYPE PARENT PAGES  */}}
-        {{ $slug          := "" }}
+        {{ $slug         := "" }}
         {{ with $type }}
-          {{ $title        = or .lang_title  $default_values.title       .title .singular  $name   }}
-          {{ $singular    := or .singular    $default_values.singular    .title $cms.title $name   }}
-          {{ $description := or .description $default_values.description ""                        }}
-          {{ $slug         = or .slug        $default_values.slug        $title                    }}
-          {{ $icon        := or .icon        (index site.Data.utilities.default $name).icon  "file"}}
-          {{ $emoji       := or .emoji       (index site.Data.utilities.default $name).emoji "📄"  }}
-          {{ $ni_parent   := cond (eq .noindex_parent nil) true .noindex_parent }}
-          {{ $customs     := slice }}
+          {{ $title       = or .lang_title  $default_values.title    .title .singular  $name }}
+          {{ $singular   := or .singular    $default_values.singular .title $cms.title $name }}
+          {{ $desc       := or .desc        $default_values.desc     ""                      }}
+          {{ $slug        = or .slug        $default_values.slug     $title                  }}
+          {{ $icon       := or .icon        (index $c.icons  $name)  "file"                  }}
+          {{ $emoji      := or .emoji       (index $c.emojis $name)  "📄"                    }}
+          {{ $ni_parent  := cond (eq .noindex_parent nil) true .noindex_parent }}
+          {{ $customs    := slice }}
           {{ range site.Data.customs | default slice }}
             {{ if in .types $name }}
-              {{ $customs  = $customs | append . }}
+              {{ $customs = $customs | append . }}
             {{ end }}
           {{ end }}
 
           {{/*  GLOBAL CASCADE  */}}
           {{ $parent := dict
             "params" (dict
-              "slug"           $slug
-              "singular"       $singular
-              "title"          $title
-              "seo"            .seo
-              "description"    $description
-              "icon"           $icon
-              "emoji"          $emoji
-              "image"          .image
-              "draft"          .disabled
-              "noindex"        $ni_parent
-              "weight"         (add $k 1)
-              "cms"            $cms
-              "customs"        $customs
+              "slug"     $slug
+              "singular" $singular
+              "title"    $title
+              "seo"      .seo
+              "desc"     $desc
+              "icon"     $icon
+              "emoji"    $emoji
+              "img"      .img
+              "draft"    .hide
+              "noindex"  $ni_parent
+              "weight"   (add $k 1)
+              "cms"      $cms
+              "customs"  $customs
             )
             "target" (dict
               "lang" $lang
@@ -213,7 +223,7 @@
               "noindex"     .noindex
               "type"        $name
               "base"        $base
-              "is_related"  .related
+              "is_related"  .rel
               "is_comments" .comments
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
@@ -228,24 +238,24 @@
 
           {{/*  FILE  */}}
           {{ $obj         := dict 
-            "slug"           $slug
-            "singular"       $singular
-            "title"          $title
-            "seo"            .seo
-            "description"    $description
-            "icon"           $icon
-            "emoji"          $emoji
-            "image"          .image
-            "draft"          .disabled
-            "noindex"        $ni_parent
-            "weight"         (add $k 1)
-            "cms"            $cms
-            "customs"        $customs
-            "cascade"        (dict
+            "slug"     $slug
+            "singular" $singular
+            "title"    $title
+            "seo"      .seo
+            "desc"     $desc
+            "icon"     $icon
+            "emoji"    $emoji
+            "img"      .img
+            "draft"    .hide
+            "noindex"  $ni_parent
+            "weight"   (add $k 1)
+            "cms"      $cms
+            "customs"  $customs
+            "cascade"  (dict
               "noindex"     .noindex
               "type"        $name
               "base"        $base
-              "is_related"  .related
+              "is_related"  .rel
               "is_comments" .comments
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
@@ -281,16 +291,16 @@
     {{ end }}
   {{ end }}
   {{ $languages = merge $languages $language }}
-  {{ with $base_url   }}{{ $languages = merge $languages (dict $lang (dict "baseURL"                 .))  }}{{ end }}
-  {{ with $pagination }}{{ $languages = merge $languages (dict $lang (dict "pagination" (dict "path" .))) }}{{ end }}
-  {{ with $enabled    }}{{ $languages = merge $languages (dict $lang (dict "disabled"           (not .))) }}{{ end }}
-  {{ with $weight     }}{{ $languages = merge $languages (dict $lang (dict "weight"                  .))  }}{{ end }}
-  {{ with $label      }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
-  {{ with $time_zone  }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
-  {{ with $title      }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
+  {{ with $base_url  }}{{ $languages = merge $languages (dict $lang (dict "baseURL"                 .))  }}{{ end }}
+  {{ with $pager     }}{{ $languages = merge $languages (dict $lang (dict "pagination" (dict "path" .))) }}{{ end }}
+  {{ with $on        }}{{ $languages = merge $languages (dict $lang (dict "disabled"           (not .))) }}{{ end }}
+  {{ with $weight    }}{{ $languages = merge $languages (dict $lang (dict "weight"                  .))  }}{{ end }}
+  {{ with $label     }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
+  {{ with $time_zone }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
+  {{ with $title     }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
   {{ with $params }}
     {{ range $k, $v := . }}
-      {{ with .       }}{{ $languages = merge $languages (dict $lang (dict "params"         (dict $k .))) }}{{ end }}
+      {{ with .      }}{{ $languages = merge $languages (dict $lang (dict "params"         (dict $k .))) }}{{ end }}
     {{ end }}
   {{ end }}
 
@@ -301,11 +311,12 @@
   "defaultContentLanguage" (index $langs 0 "lang" | default "es")
   "languages"              $languages
 }}
-{{ with site.Data.config.lang_default_subdir }}
+{{ with site.Data.config.lang_main_subdir }}
   {{ $obj = merge $obj (dict "defaultContentLanguageInSubdir" .) }}
 {{ end }}
 
 {{/*  module mounts  */}}
+
 {{ $mounts := slice
   (dict
     "source" "static"
@@ -316,28 +327,37 @@
     "target" "assets"
   )
   (dict
+    "source" "uploads"
+    "target" "static/u"
+    "excludeFiles" (slice "fonts")
+  )
+  (dict
+    "source" "uploads"
+    "target" "assets/u"
+  )
+  (dict
     "source" "../_tools/node_modules/material-symbols"
     "target" "assets/fonts"
   )
   (dict
-    "source" "themes/sansoul/assets/media/icons/brands"
-    "target" "assets/media/icons/brands"
+    "source" "themes/sansoul/assets/u/icons/brands"
+    "target" "assets/u/icons/brands"
   )
   (dict
     "source" "node_modules/@fortawesome/fontawesome-free/svgs/brands"
-    "target" "assets/media/icons/brands"
+    "target" "assets/u/icons/brands"
   )
   (dict
     "source" "../_tools/node_modules/@fortawesome/fontawesome-free/svgs/brands"
-    "target" "assets/media/icons/brands"
+    "target" "assets/u/icons/brands"
   )
   (dict
     "source" "node_modules/simple-icons/icons"
-    "target" "assets/media/icons/brands"
+    "target" "assets/u/icons/brands"
   )
   (dict
     "source" "../_tools/node_modules/simple-icons/icons"
-    "target" "assets/media/icons/brands"
+    "target" "assets/u/icons/brands"
   )
 }}
 {{ range $langs }}
@@ -360,7 +380,10 @@
   (dict
     "source"       "content"
     "target"       "content"
-    "excludeFiles" (slice "values.*.yml" "single/_home.*.md")
+    "excludeFiles" (slice
+      "values.*.yml"
+      "single/_home.*.md"
+    )
   )
   (dict
     "source"       "themes/sansoul/prebuild/public/content"
@@ -445,9 +468,9 @@
 {{ $cascade   = slice $home | append $cascade }}
 {{ $defaults := site.Data.defaults | default slice }}
 {{ range $defaults }}
-  {{ $options := dict "string" .value "kind" .type }}
-  {{ $value   := partial "functions/string-to-kind" $options }}
-  {{ $params  := dict .name  $value }}
+  {{ $options := dict "str" .value "kind" .type }}
+  {{ $value   := partial "func/str-to-kind" $options }}
+  {{ $params  := dict .name $value }}
   {{ $target  := dict }}
   {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
   {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}

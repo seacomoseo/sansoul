@@ -4,7 +4,7 @@
   right: 1em;
   top: .75em;
   z-index: 220;
-  @if not $buttons-3d {
+  @if not $btns-3d {
     filter: drop-shadow($shadow);
   }
 }
@@ -12,7 +12,7 @@
   position: absolute;
   display: block;
   height: $menu-bar-double;
-  @if $icon-buttons-rounded and $chamfer {
+  @if $is-btns-disc and $chamfer {
     width: calc(100% - 1.5em);
     margin-left: .25em;
   } @else {
@@ -135,7 +135,7 @@
   // margin: 2em 0 1em;
   display: none;
 }
-.menu__logo-image {
+.menu__logo-img {
   &, img {
     width: 100%;
     height: auto;
@@ -143,11 +143,11 @@
     fill: inherit;
   }
 }
-.menu__button {
+.menu__btn {
   margin: .5em 0;
   width: 100%;
   word-break: normal;
-  // @if $buttons-3d {
+  // @if $btns-3d {
   //   transition: background-color, color, filter, transform;
   //   transition-duration: .1s;
   // } @else if $main == $alt {
@@ -159,8 +159,8 @@
   > .menu__link {
     background-size: 100% 100%;
   }
-  > .menu__button:not(:hover) {
-    @if $buttons-outline {
+  > .menu__btn:not(:hover) {
+    @if $btns-outline {
       color: var(--base);
     }
   }

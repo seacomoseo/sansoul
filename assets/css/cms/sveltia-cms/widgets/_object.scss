@@ -1,21 +1,20 @@
 [data-widget="object"] {
+  position: relative;
   > header:not(:has(.required)) {
-    padding-left: 24px;
+    padding-left: var(--sui-checkbox-height);
   }
   > .widget-wrapper {
     display: grid;
     > .checkbox {
-      width: 20px;
-      margin-top: -36px;
+      position: absolute;
+      top: calc(var(--field-editor-padding) + (var(--sui-button-small-height) - 24px) / 2);
+      margin: 0;
       label {
         display: none;
       }
     }
     &:has(> .checkbox [aria-checked="false"]) {
       margin-top: -8px;
-      > .checkbox {
-        margin-top: -22px;
-      }
     }
   }
 }

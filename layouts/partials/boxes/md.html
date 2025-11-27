@@ -9,7 +9,7 @@
 {{- /*  SM  */ -}}
 {{- $md_sm := .md_sm -}}
 {{- if eq .md_sm nil -}}
-  {{- if .is_title_link -}}
+  {{- if .is_title_url -}}
     {{- $md_sm = true -}}
   {{- end -}}
 {{- end -}}
@@ -26,11 +26,10 @@
 {{- end -}}
 
 {{- /*  MD  */ -}}
-{{- $md := partial "functions/md" .md -}}
+{{- $md := partial "func/md" .md -}}
 
 {{- /*  LATEX  */ -}}
 {{- $md_latex := "" -}}
-{{/*  {{- partial "warn" .md -}}  */}}
 {{- if $md | findRE `\$\$|\\\[|\\\(` -}}
   {{- $md_latex = "latex" -}}
 {{- end -}}
@@ -47,7 +46,7 @@
 
 {{- /*  ATTRIBUTES  */ -}}
 {{- $md_attrs := dict "class" $md_class -}}
-{{- $md_attrs  = partial "functions/attrs" $md_attrs -}}
+{{- $md_attrs  = partial "func/attrs" $md_attrs -}}
 
 {{- /* HTML */}}
 <div {{- $md_attrs }}>

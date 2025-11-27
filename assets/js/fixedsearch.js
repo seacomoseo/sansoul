@@ -113,12 +113,12 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
     // console.log(e); // DEBUG
     // order of operations is very important to keep focus where it should stay
     if (!searchFocus) {
-      searchSubmit.innerHTML = '{{ partial "icon" (dict "default" "close") }}'
+      searchSubmit.innerHTML = '{{ partial "icon" (dict "def" "close") }}'
       searchForm.setAttribute('data-focus', true)
       searchInput.focus() // move focus to search box
       searchFocus = true
     } else {
-      searchSubmit.innerHTML = '{{ partial "icon" (dict "default" "search") }}'
+      searchSubmit.innerHTML = '{{ partial "icon" (dict "def" "search") }}'
       searchForm.setAttribute('data-focus', false)
       document.activeElement.blur() // remove focus from search box
       searchFocus = false
@@ -169,7 +169,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
       loadScript(location.origin + '/js/fuse.js').then(() => {
         searchInput.value = '' // reset default value
         firstRun = false // let's never do this again
-        fetchJSON('{{ site.Home.RelPermalink }}index.json', function (data) {
+        fetchJSON('{{ site.BaseURL }}index.json', function (data) {
           const options = { // fuse.js options; check fuse.js website for details
             shouldSort: true,
             location: 0,
@@ -177,17 +177,17 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
             threshold: 0.4,
             minMatchCharLength: 2,
             keys: [
-              'link',
+              'url',
               'title',
               'date',
-              'summary',
+              'sum',
               'md',
               'reading_time',
               'type',
               'type_label',
               'category',
               'author',
-              'image'
+              'img'
             ]
           }
 
@@ -217,21 +217,21 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
       searchItems = '{{ i18n "search_no_results" }}'
     } else { // build our html
       for (const item in results.slice(0, 5)) { // only show first 5 results
-        let searchItemImage = ''
+        let searchItemImg = ''
         let searchItemText = ''
         let searchItemType = ''
         let searchItemAuthor = ''
         let searchItemReadingTime = ''
-        if (results[item].item.image) {
-          searchItemImage = `<picture class="image__inner"><img src="${results[item].item.image}"></picture>`
+        if (results[item].item.img) {
+          searchItemImg = `<picture class="img__in"><img src="${results[item].item.img}"></picture>`
         }
-        if (results[item].item.summary) {
-          searchItemText = `<div class="md md--small">${results[item].item.summary}</div>`
+        if (results[item].item.sum) {
+          searchItemText = `<div class="md md--small">${results[item].item.sum}</div>`
         }
         if (results[item].item.date) {
           searchItemType = `
             <time class="box__tag">
-              {{ partial "icon" (dict "class" "box__tag-icon" "default" "calendar") }}
+              {{ partial "icon" (dict "class" "box__tag-icon" "def" "calendar") }}
               ${results[item].item.date}
             </time>`
         } else {
@@ -244,7 +244,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         if (results[item].item.author) {
           searchItemAuthor = `
             <i class="box__tag">
-              {{ partial "icon" (dict "class" "box__tag-icon" "default" "user") }}
+              {{ partial "icon" (dict "class" "box__tag-icon" "def" "user") }}
               ${results[item].item.author}
             </i>`
         }
@@ -252,7 +252,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
           searchItemReadingTime = `
             <div class="box__tags">
               <i class="box__tag">
-              {{ partial "icon" (dict "class" "box__tag-icon" "default" "clock") }}
+              {{ partial "icon" (dict "class" "box__tag-icon" "def" "clock") }}
                 ${results[item].item.reading_time}
               </i>
             </div>`
@@ -271,24 +271,24 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
             "
             data-h
           >
-            <a class="link search__result-item-link" href="${results[item].item.link}"></a>
+            <a class="link search__result-item-link" href="${results[item].item.url}"></a>
 
-            {{- if $styles.buttons.deep | and $list.color -}}
+            {{- if $styles.btns.deep | and $list.color -}}
               <div class="bg-color bg-color--3d"></div>
             {{- end -}}
             <div class="bg-color"></div>
 
             <div
               class="
-                image
-                image--inset
-                image--ratio
-                {{ cond (not $list.contain) "" "image--contain" }}
-                {{ cond (ne $list.image "fade") "" "image--fade" }}
+                img
+                img--inset
+                img--ratio
+                {{ cond (not $list.contain) "" "img--contain" }}
+                {{ cond (ne $list.img "fade") "" "img--fade" }}
               "
-              style="--image-ratio: {{ $list.ratio | default "16/9" }}"
+              style="--img-ratio: {{ $list.ratio | default "16/9" }}"
             >
-              ${searchItemImage}
+              ${searchItemImg}
             </div>
             <p class="box__title box__title--link h6">
               <i class="link box__link" data-h><i>${results[item].item.title}</i></i>

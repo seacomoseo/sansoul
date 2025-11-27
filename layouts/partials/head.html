@@ -12,25 +12,26 @@
   {{- end -}}
 {{- end -}}
 
-{{- $description  := .Description
+{{- $desc := .Params.desc
+  | default .Params.sum
   | default .Summary
   | truncate 155
   | plainify
   | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""
 -}}
-{{- $image_og     := partial "functions/image-og" . -}}
-{{- $image        := $image_og.img -}}
-{{- $aas          := partial "functions/authors-article-sections" . -}}
+{{- $img_og       := partial "func/img-og" . -}}
+{{- $img          := $img_og.img -}}
+{{- $aas          := partial "func/authors-article-sections" . -}}
 {{- $authors      := $aas.authors -}}
 {{- $art_sections := $aas.art_sections -}}
-{{- $logo         := partial "functions/logo" . -}}
+{{- $logo         := partial "func/logo" . -}}
 
 {{- /*  BASIC  */}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ $title }}</title>
 
-{{- with $description }}
+{{- with $desc }}
   <meta name="description" content="{{ . }}">
   <meta property="og:description" content="{{ . }}">
 {{- end -}}
@@ -66,8 +67,8 @@
   <meta property="og:locale:alternate" content="{{ .Params.locale | default .Lang }}">
 {{- end }}
 <meta name="twitter:card" content="summary_large_image">
-<meta name="image" content="{{ $image }}">
-<meta property="og:image" content="{{ $image }}">
+<meta name="image" content="{{ $img }}">
+<meta property="og:image" content="{{ $img }}">
 
 {{- /*  ANDROID THEME COLOR  */}}
 <meta name="theme-color" content="{{ site.Data.styles.colors.main.color }}">
@@ -82,7 +83,7 @@
 {{- if .Params.noindex }}
   <meta name="robots" content="noindex">
 {{- end -}}
-{{- with site.Params.google_site_verification }}
+{{- with site.Params.g_site_verify }}
   <meta name="google-site-verification" content="{{ . }}">
 {{- end -}}
 
@@ -96,9 +97,9 @@
 
 {{- /*  GOOGLE ANALYTICS  */ -}}
 {{- if hugo.IsProduction -}}
-  {{- with site.Params.google_analytics -}}
+  {{- with site.Params.ga4 -}}
     {{- $isPs := "false" -}}
-    {{- if $config.analytics_pagespeed_disabled -}}
+    {{- if $config.ga4_pagespeed_hide -}}
       {{- $isPs = "${navigator.userAgent.includes('Chrome-Lighthouse')}" -}}
     {{- end -}}
     {{- $isCk := "true" -}}
@@ -142,7 +143,7 @@
 {{- /*  SELF-HOSTED MATERIAL SYMBOLS  */ -}}
 {{- $path := print "" -}}
 {{- if hugo.IsProduction -}}
-  {{- $time := partial "functions/timestamp" . -}}
+  {{- $time := partial "func/timestamp" . -}}
   {{- $path  = print site.BaseURL "fonts/icons." $time ".woff2" -}}
 {{- else -}}
   {{- $style := site.Data.styles.icons.style -}}
@@ -164,14 +165,14 @@
 <noscript><link rel="stylesheet" href="{{ $css.RelPermalink }}"></noscript>
 
 {{- /*  FAVICON  */ -}}
-{{- $favicon := resources.Get (print "/media/" ($config.favicon | default "base/icon.svg")) -}}
+{{- $favicon := resources.Get ($config.favicon | default "/u/base/icon.svg") -}}
 {{- if not $favicon -}}
-  {{- $favicon = resources.Get "/media/base/icon.png" -}}
+  {{- $favicon = resources.Get "/u/base/icon.png" -}}
 {{- end -}}
 
 {{- with $favicon -}}
   {{- $favicons := slice -}}
-  {{- with resources.Get "/media/base/favicon.ico" -}}
+  {{- with resources.Get "/u/base/favicon.ico" -}}
     {{- (. | resources.Copy "/favicon.ico").Publish -}}
   {{- else -}}
     {{- $favicons = slice (dict "from" .RelPermalink "ext" "ico") -}}
@@ -181,7 +182,7 @@
   {{- if hasSuffix . "svg" -}}
     {{- (. | resources.Copy "/favicon.svg").Publish }}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    {{- with resources.Get "/media/base/icon.png" -}}
+    {{- with resources.Get "/u/base/icon.png" -}}
       {{- (.Resize "192x192 png q1" | resources.Copy "/favicon.png").Publish -}}
     {{- else -}}
       {{- $favicons = $favicons | append (dict "from" .RelPermalink "ext" "png") -}}

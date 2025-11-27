@@ -1,0 +1,34 @@
+{{ $return := "" }}
+
+{{ $address_root := .Page.Params.address }}
+{{ $address_org  := index .Page.Params "org" "address" 0 }}
+{{ with or $address_root $address_org }}
+  {{ $address := . }}
+  {{ if reflect.IsSlice . }}
+    {{ $address = index . 0 }}
+  {{ end }}
+  {{ with $address }}
+    {{ $home_country := index site.Home.Params "org" "address" 0 "country" }}
+    {{ $is_country   := and .country (ne .country $home_country) }}
+
+    {{/*  {{ with .name               }}{{ $return = print $return .    }}{{ end }}  */}}
+    {{/*  {{ if and .name .street     }}{{ $return = print $return ", " }}{{ end }}  */}}
+    {{ with .street             }}{{ $return = print $return .    }}{{ end }}
+    {{ if and .street .pc       }}{{ $return = print $return ", " }}{{ end }}
+    {{ with .pc                 }}{{ $return = print $return .    }}{{ end }}
+    {{ if and .pc .locality     }}{{ $return = print $return " "  }}{{ end }}
+    {{ with .locality           }}{{ $return = print $return .    }}{{ end }}
+    {{/*  {{ if and .locality .region }}{{ $return = print $return ", " }}{{ end }}  */}}
+    {{/*  {{ with .region             }}{{ $return = print $return .    }}{{ end }}  */}}
+    {{/*  {{ if and .region .country  }}{{ $return = print $return ", " }}{{ end }}  */}}
+    {{ if $is_country }}
+      {{ if .locality }}{{ $return = print $return ", " }}{{ end }}
+      {{ $return = print $return .country }}
+    {{ end }}
+    {{ if and $return $.url }}
+      {{ $return = .url | default (print "https://maps.google.com/maps/search/" ($return | urlquery)) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $return }}

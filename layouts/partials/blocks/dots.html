@@ -1,16 +1,16 @@
-<div class="dots box__block buttons">
+<div class="dots box__block btns">
   {{- range .dots -}}
-    {{- $link  := . -}}
+    {{- $url   := . -}}
     {{- $ga4   := "" -}}
     {{- $icon  := "" -}}
     {{- $label := "" -}}
     {{- if reflect.IsMap . -}}
-      {{- $link  = .link -}}
+      {{- $url   = .url -}}
       {{- $ga4   = .ga4 -}}
       {{- $icon  = .icon -}}
       {{- $label = .label -}}
     {{- end -}}
-    {{- with $link -}}
+    {{- with $url -}}
       {{- if not $icon -}}
         {{- $icons := dict
           "facebook"  "brand:facebook-f"
@@ -22,32 +22,32 @@
           "github"    "brand:github-alt"
           "gitlab"    "brand:gitlab"
           "g.page"    "brand:google"
-          "mailto"    "mail"
+          "mailto"    (partial "func/default-icon" "mail")
         -}}
         {{- range $k, $v := $icons -}}
-          {{- with in $link $k -}}
+          {{- with in $url $k -}}
             {{- $icon = $v -}}
             {{- break -}}
           {{- end -}}
         {{- end -}}
         {{- if not $icon -}}
-          {{- $icon = "share" -}}
+          {{- $icon = partial "func/default-icon" "share" -}}
         {{- end -}}
       {{- end -}}
       {{- if not $label -}}
         {{- $label   = print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` "$2") | title -}}
-        {{- if in . "mailto" -}}
+        {{- if hasPrefix . "mailto" -}}
           {{- $label = print (i18n "follow_us") " Email" -}}
         {{- end }}
       {{- end }}
       {{ partial "link" (dict
-        "link"   .
-        "button" ($.button | default "cta")
+        "url"    .
+        "btn"    (or $.btn "cta")
         "dot"    true
         "ga4"    $ga4
         "icon"   $icon
         "label"  $label
-        "anchor" ($.anchor | default "auto")
+        "anchor" (or $.anchor "auto")
         "lock"   (ne $.lock false)
       ) -}}
     {{- end -}}

@@ -3,14 +3,14 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
-  --submit-waiting: color-mix(in srgb, var(--invert) 25%, gray);
-  --submit-success: color-mix(in srgb, var(--invert) 25%, green);
-  --submit-error: color-mix(in srgb, var(--invert) 25%, red);
+  --submit-waiting: color-mix(in srgb, var(--turn) 25%, gray);
+  --submit-success: color-mix(in srgb, var(--turn) 25%, green);
+  --submit-error: color-mix(in srgb, var(--turn) 25%, red);
 }
 .form__item {
   position: relative;
   flex-grow: 1;
-  &:not(.contact__full) {
+  &:not(.full) {
     width: 280px;
   }
   > *,
@@ -43,7 +43,7 @@
   gap: 1em;
   padding: .5625em 1em;
   text-align: left;
-  // --border: color-mix(in srgb, var(--similar), var(--invert));
+  // --border: color-mix(in srgb, var(--such), var(--turn));
   &:has(> :nth-child(2)) {
     padding-block: .66em;
   }
@@ -100,7 +100,7 @@
 .form__hint {
   margin-top: .25rem;
   font-size: .75em;
-  color: var(--subtitle);
+  color: var(--sub);
   p, ul, ol {
     &:not(:last-child) {
       margin-bottom: .125em;
@@ -160,13 +160,13 @@
   display: none;
 }
 .form--fill-inputs {
-  --border: color-mix(in srgb, var(--similar), var(--invert) 25%);
+  --border: color-mix(in srgb, var(--such), var(--turn) 25%);
   input:not([type="checkbox"], [type="radio"], [type="hidden"]),
   textarea,
   select {
     @if $chamfer and $radius > .01 {
       border: none;
-      @if not $buttons-rounded and $radius <= .01 {
+      @if not $is-btns-pill and $radius <= .01 {
         border: var(--outline) var(--border) solid;
         box-shadow: $shadow inset;
       } @else {
@@ -178,11 +178,11 @@
       box-shadow: $shadow inset;
       border-radius: $radius;
     }
-    background-color: var(--similar);
-    color: var(--similar-in);
+    background-color: var(--such);
+    color: var(--such-in);
   }
   .form__fieldset {
-    background-color: var(--similar);
+    background-color: var(--such);
   }
   @if $chamfer and $radius > .01 {
     fieldset {
@@ -202,7 +202,7 @@
       height: auto;
       aspect-ratio: 16 / 9;
     }
-    .form__item-border--textarea {
+    .form__item-border--area {
       min-height: 5.72em;
     }
     .form__item-border--fieldset {
@@ -219,7 +219,7 @@
         @extend %radius;
         --outline: 1px;
         clip-path: var(--chamfer-int-outline);
-        background-color: var(--similar);
+        background-color: var(--such);
       }
       ~ * {
         position: relative;
@@ -255,19 +255,19 @@
   container: form-file / inline-size;
   position: relative;
   text-align: left;
-  .form__file--button {
+  .form__file--btn {
     float: left;
     height: 2.5em;
     margin-bottom: -100%;
     pointer-events: none; // Fix click
     z-index: 1;
-    i::after {
+    b::after {
       @include font-base;
       text-transform: initial;
       font-size: 1rem;
       content: var(--form-file-label);
       position: absolute;
-      color: var(--similar-in);
+      color: var(--such-in);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -286,7 +286,7 @@
       }
     }
   }
-  ::file-selector-button {
+  ::file-selector-btn {
     position: absolute;
     top: 0;
     left: 0;
@@ -299,13 +299,13 @@
   .form__input::before {
     content: attr(data-placeholder);
     // font-size: 1em;
-    @include font-button;
+    @include font-btn;
     margin-inline: -1rem 1rem;
     padding-inline: 3.25rem 1.5rem;
     opacity: 0;
   }
-  .button--swap + .form__input::before {
-    @include font-button(alt);
+  .btn--swap + .form__input::before {
+    @include font-btn(alt);
   }
 }
 
@@ -331,7 +331,7 @@
 .form__preview-media {
   @include radius;
   overflow: hidden;
-  background-color: var(--similar);
+  background-color: var(--such);
   > * {
     width: 2.5em;
     height: 2.5em;
@@ -339,9 +339,6 @@
     display: grid;
     place-content: center;
   }
-}
-.form__preview-file {
-  translate: 0 var(--top-font);
 }
 .form__preview-name {
   margin-right: auto;
@@ -393,7 +390,7 @@
 legend, .form__label {
   .form__icon {
     position: static;
-    translate: 0 .125em;
+    translate: 0 .25em;
     margin-right: .25em;
     width: 1em;
     height: 1em;
@@ -401,7 +398,7 @@ legend, .form__label {
   }
 }
 .form__input:has(~ .form__icon),
-.form__textarea:has(~ .form__icon),
+.form__area:has(~ .form__icon),
 .form__select:is(label:has(~ .form__icon) > *) {
   padding-left: 2.625em;
 }
@@ -411,7 +408,7 @@ legend, .form__label {
 .form__input:has(~ .form__pre):has(~ .form__icon) {
   padding-left: 6.5em;
 }
-.form__item[data-showif] {
+.form__item[data-show-if] {
   // max-height: 0;
   translate: 0 -1em;
   opacity: 0;
@@ -420,7 +417,7 @@ legend, .form__label {
   transition-duration: .3s;
   transition-behavior: allow-discrete;
 }
-.form__item[data-showif].form__item--show {
+.form__item[data-show-if].form__item--show {
   // max-height: 100vh;
   translate: 0;
   opacity: 1;

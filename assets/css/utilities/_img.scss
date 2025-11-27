@@ -1,0 +1,405 @@
+
+// MAIN
+
+.img {
+  @include radius-parent;
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  place-content: center;
+  --img-width: calc(100cqw - var(--img-margin, 0em) * 2);
+  .box__icon--top {
+    color: var(--turn);
+    filter: drop-shadow($shadow);
+    margin: 0;
+    position: absolute;
+    top: calc(50% - var(--icon-size) / 2);
+    // left: calc(50% - var(--icon-size) / 2);
+    z-index: 2;
+  }
+}
+.img__in {
+  @include radius;
+  position: relative;
+  max-width: 100%;
+  width: auto; // for svg that have width
+  height: auto;
+  fill: initial;
+  overflow: hidden;
+  &:not(.img--border *) {
+    --radius-end: inherit;
+  }
+}
+.icon.img__in {
+  height: 100%;
+  &:not([width]) {
+    width: var(--box-in);
+  }
+}
+
+// ALIGN
+
+.img--left {
+  justify-content: flex-start;
+  margin-left: 0;
+}
+.img--right {
+  justify-content: flex-end;
+  margin-right: 0;
+}
+
+
+// TYPES
+
+.img__in--shade {
+  width: 100%;
+  height: 100%;
+  min-height: calc(var(--img-width) / (var(--img-ratio, 16/9)));
+  background-image: linear-gradient($main, transparent);
+  &:has(+ .img__in) {
+    position: absolute;
+  }
+  + .box__icon--top {
+    color: var(--base);
+  }
+}
+
+
+// RATIO
+
+.img--disc,
+.img--ratio,
+.img:has(> iframe) {
+  --img-ratio: 1/1;
+  --img-ratio-height: calc(var(--img-width) / (var(--img-ratio)) - var(--img-border-width, 0em) * 2);
+  width: 100%;
+  &:not(:has(.img__in)) {
+    aspect-ratio: var(--img-ratio);
+    height: var(--img-ratio-height);
+  }
+  iframe,
+  .img__in {
+    width: 100%;
+    aspect-ratio: var(--img-ratio);
+    height: var(--img-ratio-height);
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+}
+.img:has(> iframe) {
+  --img-ratio: 16/9;
+}
+
+
+// BORDER
+
+.img--border {
+  // --img-width: calc(100cqw - var(--img-margin, 0em) * 2 - var(--img-border-width, 0em) * 2);
+  --img-border-width: .5em;
+  padding: var(--img-border-width);
+  &::before {
+    content: '';
+    @include radius-child;
+    @include like-bg-cover;
+    background-color: var(--base);
+  }
+  .img__in {
+    --radius-pd: calc(var(--img-border-width) * -1);
+    // background-color: var(--bg-color);
+  }
+  // picture[style] {
+  //   background-image: none;
+  // }
+}
+
+
+// CONTAIN
+
+.img--contain {
+  .img__in {
+    // display: grid;
+    // place-content: center;
+    background-image: none;
+    img, & {
+      // height: auto;
+      // max-height: calc(100cqw * var(--img-ratio));
+      object-fit: contain;
+    }
+  }
+  &:not(.img--inset:not(.img--border)) {
+    .img__in {
+      img {
+        @include radius-child;
+      }
+    }
+  }
+}
+
+
+// INSET
+
+.img--inset {
+  // &, .icon.img__in:not([width]) {
+  //   width: 100cqw;
+  // }
+  margin: var(--img-margin);
+  width: var(--img-width);
+  --img-margin: calc(var(--box-pd) * -1);
+  --img-inset-block-margin: calc(max(var(--box-pd), 1em) - var(--box-gap));
+  // --img-inset-pd-radius:
+  --radius-pd: var(--img-inset-pd-radius);
+  .img__in {
+    --radius-pd: calc(var(--img-inset-pd-radius) - var(--img-border-width, 0em));
+  }
+  // Not first child
+  &:not(:where(
+    :first-child,
+    .bg-color + *,
+    .box__title.hide + *
+  )) {
+    margin-top: var(--img-inset-block-margin);
+    &, .img__in {
+      --radius-top: 0em;
+    }
+  }
+  // Not last child
+  &:not(:last-child, :has(+ .box__btn.hide:last-child)) {
+    margin-bottom: var(--img-inset-block-margin);
+    &, .img__in {
+      --radius-bottom: 0em;
+    }
+  }
+}
+
+
+// FOR IFRAME
+
+iframe.img__in {
+  width: var(--box-in);
+}
+.img--inset {
+  iframe.img__in {
+    width: calc(100cqw + var(--box-pd) * 2);
+  }
+}
+.md {
+  iframe.img__in {
+    width: calc(100cqw + var(--box-pd) * 2);
+  }
+}
+// .img {
+//   &:not(
+//     .img--ratio,
+//     .img--disc
+//   ) {
+//     &.img--border {
+//       iframe.img__in {
+//         width: var(--box-in);
+//         height: calc(var(--box-in) * .5625);
+//         max-width: calc((var(--box-in) - 1em));
+//         max-height: calc((var(--box-in) - 1em) * .5625); // 16x9
+//       }
+//     }
+//     &.img--inset {
+//       iframe.img__in {
+//         width: calc(100cqw + var(--box-pd) * 2);
+//         height: calc((100cqw + var(--box-pd) * 2) * .5625); // 16x9
+//       }
+//       &.img--border {
+//         iframe.img__in {
+//           max-width: calc(100cqw - 1em + var(--box-pd) * 2);
+//           max-height: calc((100cqw - 1em + var(--box-pd) * 2) * .5625); // 16x9
+//         }
+//       }
+//     }
+//   }
+// }
+
+
+// move here for priority
+
+
+// DISC
+
+.img--disc {
+  &, .img__in {
+    &:not(.aux.aux) { // only for priority
+      --radius-top: 50%;
+      --radius-bottom: 50%;
+      @include disc;
+    }
+  }
+  @if $chamfer {
+    &.img--border {
+      padding: calc(var(--img-border-width) / .7071);
+    }
+  }
+}
+
+
+// WITH ICON TOP
+
+.img--icon-top .img__in {
+  opacity: .5;
+}
+
+
+// IFRAME POSTER
+
+[data-iframe]:not(.aux.aux) {
+  cursor: pointer;
+  ~ .icon {
+    cursor: pointer;
+    width: 5em;
+    height: 5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--base);
+    fill: var(--base-in);
+    transition: color .1s;
+    filter: drop-shadow($shadow);
+    animation: data-iframe 5s 0s infinite;
+    &:has([href$="#youtube-iframe"]) {
+      width: 4.25em;
+      height: 3em;
+    }
+  }
+  &:hover ~ .icon,
+  ~ .icon:hover {
+    color: var(--hover);
+    fill: var(--hover-in);
+  }
+  &:active ~ .icon,
+  ~ .icon:active {
+    color: var(--active);
+    fill: var(--active-in);
+  }
+}
+
+
+// SVG EXCEPTIONS
+
+.box:not(.bg) // when not background
+> .img:not(.img--border):not(.md *) // without radius and not content
+> .img__in:where(svg, .icon, img[src*=".svg"]) { // svg image
+  @include hide-radius;
+  &:not(img, video) { // Fix 'Obsolete APIs' in PageSpeed
+    overflow: unset;
+  }
+}
+.icon.img__in {
+  width: 100%;
+}
+// SVG from IMG tag like SVG tag
+/*! purgecss start ignore */
+img[src*=".svg"].img__in {
+  object-fit: contain;
+}
+/*! purgecss end ignore */
+
+
+// SHADOW
+
+.img:not(.box.bg *, .box--hide-shadow *) {
+  filter: drop-shadow($shadow);
+}
+
+
+// BOX HOVER
+
+.box--go {
+  > .img .img__in:where(.icon),
+  > .img .img__in img,
+  > .bg-fig .bg-fig-img {
+    transition: transform .3s;
+  }
+  // HOVER
+  &:has(.search__result-item-link:focus),
+  &:hover,
+  &:focus {
+    > .img .img__in:not(.img__in--hover):where(.icon),
+    > .img .img__in:not(.img__in--hover) img,
+    > .bg-fig .bg-fig-img {
+      transform: var(--box-hover-image-transform);
+    }
+  }
+  --box-hover-image-transform: scale(1.2) rotate(2deg);
+  // 2N CHILD
+  &:nth-child(2n) {
+    --box-hover-image-transform: scale(1.2) rotate(-2deg);
+  }
+}
+.box {
+  // IMAGE HOVER
+  > .img--hover {
+    .img__in:not(.img__in--hover) {
+      transition: transform .3s, opacity .3s;
+    }
+    .img__in--hover {
+      position: absolute;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    &.img--border {
+      .img__in--hover {
+        margin: 0;
+        max-width: inherit;
+        max-height: inherit;
+      }
+    }
+  }
+  // IMAGE HOVER HOVER
+  &:has(.search__result-item-link:focus),
+  &:hover,
+  &:focus {
+    > .img--hover {
+      .img__in:not(.img__in--hover) {
+        opacity: 0;
+      }
+      .img__in--hover {
+        opacity: 1;
+      }
+    }
+  }
+  // GRAYSCALE
+  &:not(#aux) {
+    > .img--gray {
+      &.bg-fig-img,
+      .img__in {
+        filter: var(--grayscale);
+        transition: filter .3s;
+      }
+    }
+    // HOVER
+    &:has(.search__result-item-link:focus),
+    &:hover,
+    &:focus,
+    &:active {
+      > .img--gray {
+        &.bg-fig-img,
+        .img__in {
+          filter: none;
+          transform: none;
+        }
+      }
+    }
+  }
+}
+
+
+// HIDE RADIUS
+
+.box--hide-radius {
+  .img,
+  .img__in {
+    @include hide-radius;
+  }
+}

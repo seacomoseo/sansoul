@@ -1,0 +1,9 @@
+{{ $id := .id
+  | default (.menu_label | markdownify)
+  | default (.hanchor | markdownify)
+  | default (.title | markdownify)
+  | default .name
+  | default .file
+}}
+{{ $id = $id | urlize }}
+{{ return $id }}

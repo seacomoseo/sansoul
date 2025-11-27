@@ -1,0 +1,58 @@
+{{ $item := .item }}
+
+{{/*  Get params  */}}
+{{ with .item.get }}
+  {{ range . }}
+    {{/*  .value: string like obj  */}}
+    {{ $value  := .value }}
+    {{ with .value }}
+      {{ $value = unmarshal . }}
+    {{ else }}
+      {{/*  Name param = .from or .to  */}}
+      {{ with .from | default .to }}
+        {{ if eq . "filename" }}
+          {{/*  Get filename  */}}
+          {{ with $.Page.File }}
+            {{ $value = .TranslationBaseName }}
+          {{ end }}
+        {{ else if eq . "content" }}
+          {{/*  Get content  */}}
+          {{ $value = $.Page.RawContent }}
+        {{ else }}
+          {{/*  Get value from page param with name "from" or "to"  */}}
+          {{ $opts := dict "Page" $.Page "name" . }}
+          {{ $value = partial "func/get-param" $opts }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ if $value }}
+      {{/*  Merge page param in box  */}}
+      {{ $keys := split .to "." }}
+      {{ $obj  := dict }}
+      {{ if eq (len $keys) 2 }}
+        {{/*  2 levels  */}}
+        {{ $obj = dict (index $keys 0) (dict (index $keys 1) $value) }}
+      {{ else }}
+        {{/*  1 level  */}}
+        {{ $obj = dict (index $keys 0) $value }}
+      {{ end }}
+      {{ $item  = merge $item $obj }}
+    {{ end }}
+  {{ end }}
+  {{/*  Remove "params" field  */}}
+  {{ $item  = merge $item (dict "params" nil) }}
+{{ end }}
+
+{{/*  Remap fields  */}}
+{{ if $item.remap }}
+  {{ $item = partial "func/remap" $item }}
+{{ end }}
+
+{{/*  Check "if" param and remove if not  */}}
+{{ $opts  := dict "Page" .Page "if" $item.if }}
+{{ $if    := partial "func/if" $opts }}
+{{ if not $if }}
+  {{ $item = dict }}
+{{ end }}
+
+{{ return $item }}

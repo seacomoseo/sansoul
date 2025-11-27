@@ -1,9 +1,9 @@
-{{- $duo   := partial "functions/duo" . -}}
+{{- $duo   := partial "func/duo" . -}}
 {{- $box   := $duo.box -}}
 {{- $boxes := $duo.boxes -}}
 
 {{- /* GENERAL */ -}}
-{{- $cols := partial "functions/columns" (dict
+{{- $cols := partial "func/columns" (dict
   "each"   $box
   "items"  $boxes
   "col_vl" .col_vl
@@ -12,9 +12,10 @@
 {{- $deep    := .deep -}}
 {{- $level   := .level -}}
 {{- if or .title .hanchor -}}
-  {{- $hn     := cond (eq .hn     "p") 0 .hn -}}
-  {{- $box_hn := cond (eq $box.hn "p") 0 $box.hn -}}
-  {{- $level   = add ($hn | default $box_hn | default $level | int) 1 -}}
+  {{- $hm     := dict "h1" 1 "h2" 2 "h3" 3 "h4" 4 "h5" 5 "h6" 6 "def" 0 -}}
+  {{- $hn     := index $hm (or .hn     "def") -}}
+  {{- $box_hn := index $hm (or $box.hn "def") -}}
+  {{- $level   = add (or $hn $box_hn $level | int) 1 -}}
 {{- end -}}
 
 {{- $boxes_wrap  := or
@@ -67,7 +68,7 @@
       "class" $class
       "style" $style
     -}}
-    {{- $attrs = partial "functions/attrs" $attrs -}}
+    {{- $attrs = partial "func/attrs" $attrs -}}
 
     {{- /* SLIDER  */ -}}
     {{- if .slider }}
@@ -88,7 +89,7 @@
             {{- $parent = dict
               "caps"        .caps
               "line"        .line
-              "icon_type"   .icon_type
+              "icon_pos"    .icon_pos
               "icon_size"   .icon_size
               "icon_color"  .icon_color
               "ratio"       .ratio
@@ -119,7 +120,7 @@
         -}}
 
         {{/*  hide string params  */}}
-        {{ $box_hide := partial "functions/hide" (dict "item" $box "simple" true) }}
+        {{ $box_hide := partial "func/hide" (dict "item" $box "simple" true) }}
 
         {{- range $key, $this := $boxes -}}
         {{- /* BOX  */ -}}
@@ -136,10 +137,10 @@
     {{- if .slider }}
       </div>
         {{- $opts := dict
-          "items"   (len $boxes)
-          "pips"    .pips
-          "arrows"  .arrows
-          "button"  .button
+          "items"  (len $boxes)
+          "pips"   .pips
+          "arrows" .arrows
+          "btn"    .btn
         }}
         {{- partial "boxes/slider-nav" $opts }}
       </div>

@@ -26,16 +26,16 @@
           {{- true -}}
         {{- else if eq $param "title" -}}
           {{ i18n "about" }} [{{ .Title }}]({{ .RelPermalink -}})
-        {{- else if eq $param "summary" -}}
-          {{ .Summary | default .Description }}
+        {{- else if eq $param "sum" -}}
+          {{ .Params.sum | default .Summary | default .Params.desc }}
           {{ if .ContentWithoutSummary }}
             {{- partial "link" (dict
               "label" (print (i18n "read_more") "…")
-              "link"  .RelPermalink
+              "url"   .RelPermalink
             ) -}}
           {{ end }}
-        {{- else if eq $param "image" -}}
-          {{ .Params.image }}
+        {{- else if eq $param "img" -}}
+          {{ .Params.img }}
         {{- end -}}
       {{- end -}}
     {{- else -}}

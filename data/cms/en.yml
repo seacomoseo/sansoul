@@ -2,11 +2,10 @@
 cms: Content Manager
 login: Log in
 recent: Recent content from
-default: Default
+def: Default
 true: 'Yes'
 false: 'No'
-enabled: Enabled
-disabled: Disabled
+hide: Disabled
 reset: Default value / remove
 filter_published: Published
 filter_drafts: Drafts
@@ -15,10 +14,10 @@ filter_month: Month
 # collections
 collection_sections: Sections
 collection_sections_singular: Section
-collection_sections_description: Sections assigned to each page. You need to create them here before you can assign them.
+collection_sections_desc: Sections assigned to each page. You need to create them here before you can assign them.
 collection_types: Collections
 collection_types_singular: Collection
-collection_types_description: Page types. Here they are created, edited, and configured individually, except for "All," whose parameters apply by default to all collections.
+collection_types_desc: Page types. Here they are created, edited, and configured individually, except for "All," whose parameters apply by default to all collections.
 # collections > types
 types_title: Name
 types_title_hint: Some names autofill icon, emoji, and text fields in all languages
@@ -29,45 +28,49 @@ types_base_hint: Determines the structured data markup (useful for SEO) and the 
 types_hint: Legend
 types_emoji: Emoji
 types_comments: Comments
-types_related: Related
+types_hide: Disabled
+types_rel: Related
 types_taxonomy_of: Taxonomy of
 types_taxonomy_of_name: Param Name
-types_taxonomy_of_multiple: Multiple
-types_taxonomy_of_breadcrumbs: Breadcrumbs
+types_taxonomy_of_multi: Multiple
+types_taxonomy_of_crumbs: Breadcrumbs
 types_taxonomy_of_schema: Schema
 types_template: Template
-types_template_hint: Template for pages of this type (values override those of the general template)
-types_template_single_hint: Template for this page only (values overwrite those of the general template)
+types_tpl_hint: Template for pages of this type (values override those of the general template)
+types_tpl_single_hint: Template for this page only (values overwrite those of the general template)
 # collections > types > template
 template: General Template
-template_hint: Common template for all pages (page-specific values, custom or not, with their own template override these)
-template_background: Page Background
-template_menu: Menu
-template_menu_hide: Hide
-template_menu_logo: Show Logo
-template_menu_sticky: Sticky Screen
-template_menu_sticky_hint: Fixes the menu to the top of the screen if equal to or greater than the value
-template_menu_logo_sticky: Sticky Mobile Logo
-template_menu_logo_sticky_hint: Fixes the logo to the top of the screen if the menu is not adjusted
-template_menu_logo_align: Logo Alignment
-template_menu_logo_align_hint: Aligns the logo without expanding the menu
-template_menu_transparent: Starts Transparent
-template_menu_transparent_hint: Takes its color when scrolling
-template_menu_hide_icons: Hide Icons
-template_menu_hide_custom: Hide Custom Links
-template_menu_auto: Automatic Links
-template_menu_auto_hint: Automatically display links that lead to each section and modal window, the latter as drop-down sub-elements
-template_callnow: Corner Buttons
-template_callnow_hint: '**Custom →** in global settings <br> **Automatic →** if there is a WhatsApp or Phone button on the page'
-template_section: Template of each Section
-template_section_singular: Section
-template_section_hint: The 1st applies to all, the rest alternately <br> **Example →** If there are 3 templates, the 1st applies to all; the 2nd on 2, 5, 8… and the 3rd on 3, 6, 9…
-template_sections: Sections
-template_sections_singular: Section
-template_sections_file: File
-template_sections_file_hint: Previously created section
-template_list: Lists
-template_related: Related Lists
+tpl_hint: Common template for all pages (page-specific values, custom or not, with their own template override these)
+tpl_background: Page Background
+tpl_menu: Menu
+tpl_menu_hide: Hide
+tpl_menu_logo: Show Logo
+tpl_menu_sticky: Sticky Screen
+tpl_menu_sticky_hint: Fixes the menu to the top of the screen if equal to or greater than the value
+tpl_menu_logo_sticky: Sticky Mobile Logo
+tpl_menu_logo_sticky_hint: Fixes the logo to the top of the screen if the menu is not adjusted
+tpl_menu_logo_align: Logo Alignment
+tpl_menu_logo_align_hint: Aligns the logo without expanding the menu
+tpl_menu_clear: Starts Transparent
+tpl_menu_clear_hint: Takes its color when scrolling
+tpl_menu_hide_icons: Hide Icons
+tpl_menu_hide_custom: Hide Custom Links
+tpl_menu_hide_custom_hint: In global settings
+tpl_menu_auto: Automatic Links
+tpl_menu_auto_hint: Automatically display links that lead to each section and modal window, the latter as drop-down sub-elements
+tpl_callnow: Corner Buttons
+tpl_callnow_hint: '**Custom →** [in global settings](#/collections/_singletons/entries/values) <br> **Automatic →** if there is a WhatsApp or Phone button on the page'
+tpl_section: Template of each Section
+tpl_section_singular: Section
+tpl_section_hint: The 1st applies to all, the rest alternately <br> **Example →** If there are 3 templates, the 1st applies to all; the 2nd on 2, 5, 8… and the 3rd on 3, 6, 9…
+tpl_sections: Sections
+tpl_sections_singular: Section
+tpl_sections_file: File
+tpl_sections_file_hint: Previously created section
+tpl_sections_params: Parameters
+tpl_sections_params_hint: Rewrite of the file
+tpl_list: Lists
+tpl_rel: Related Lists
 # collections > page
 # collections > page > index
 index_permalinks: Permalinks
@@ -80,32 +83,32 @@ page_slug: Slug
 page_slug_hint: It's the end of the URL or link for this page <br> It must be unique (not repeated) among all pages, short, descriptive, and without irrelevant words (of, by, for, the…) <br> **Example →** For the title "*Morning Walk in the New Neighborhood*" the slug could be "*morning-walk-new-neighborhood*"
 page_title: Title
 page_title_hint: '**Example →** "Day walking in the new neighborhood"'
-page_summary: Summary
-page_summary_hint: Used for list thumbnails <br> If not specified, approximately the first 15 words or 155 characters of the content are taken
-page_image: Main Image
-page_weight: Order
-page_weight_hint: Order in which the page will appear in the listings
-page_related: Related
-page_related_hint: Manually selected or automatically added
+page_img: Main Image
+page_body: Content
+page_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**turn**", "**such**", "**swap**" or "**dot**", separate with any character if multiple words are added) <br> These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**blank**" (opens in new window) and "**ga4**" (registers key event in GA4) <br> Icons can be added using, wrapped in "**::**" characters, one of the following valid names → [Material Symbols](https://fonts.google.com/icons)
 page_toc: Index
 page_toc_hint: Automatically generated table of contents using content headers
+page_sum: Summary
+page_sum_hint: Used for list thumbnails <br> If not specified, approximately the first 15 words or 155 characters of the content are taken (if there are any)
+page_seo: SEO Title
+page_seo_hint: Used for Google search results <br> **Recommended between 40 and 65 characters** (~60) <br> Eye-catching characters allowed by Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+page_desc: SEO Description
+page_desc_hint: Used for Google search results <br> **Recommended between 70 and 155 characters** (~135) <br> Eye-catching characters allowed by Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+page_noindex: No Index
+page_noindex_hint: Prevents Google from indexing the page (recommended if all content is copied from another website)
 page_draft: Draft
 page_draft_hint: The page no longer exists, you can only see it in the editor
 page_hide: Hide
 page_hide_hint: Hides the page from the listings and the sitemap, but it is still accessible via its URL
-page_noindex: No Index
-page_noindex_hint: Prevents Google from indexing the page (recommended if all content is copied from another website)
-page_seo: SEO Title
-page_seo_hint: Used for Google search results <br> **Recommended between 40 and 65 characters** (~60) <br> Eye-catching characters allowed by Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
-page_description: SEO Description
-page_description_hint: Used for Google search results <br> **Recommended between 70 and 155 characters** (~135) <br> Eye-catching characters allowed by Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
-page_body: Content
-page_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" or "**dot**", separate with any character if multiple words are added) <br> These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**blank**" (opens in new window) and "**ga4**" (registers key event in GA4) <br> Icons can be added using, wrapped in "**::**" characters, one of the following valid names → [Material Symbols](https://fonts.google.com/icons)
+page_rel: Related
+page_rel_hint: Manually selected or automatically added
+page_weight: Order
+page_weight_hint: Order in which the page will appear in the listings
 page_base: Base
 page_base_hint: Determines the structured data markup this page will use (useful for SEO)
 # collections > page > article + event
 page_date: Date
-page_lastmod: Last Modified
+page_mod: Last Modified
 # collections > page > event
 page_end: End Date
 page_cancelled: Canceled
@@ -138,12 +141,12 @@ page_org_types: Business Type
 page_org_names: Names
 page_org_names_singular: Name
 page_org_names_hint: Names and Variants of the Business / Project
-page_org_description: Description
+page_org_desc: Description
 page_org_legal: Legal Name
 page_org_nif: NIF / DNI
-page_org_email: Legal Email
+page_org_mail: Legal Email
 page_org_logo: Logo
-page_images: Images
+page_imgs: Images
 page_as: Reference Links
 page_as_singular: Reference Link
 page_as_hint: Links to social media and other references
@@ -158,27 +161,25 @@ page_address_region: Region
 page_address_country: Country
 page_address_country_hint: 2-letter country code
 page_address_geo: Coordinates
-page_address_link: Map Link
+page_address_url: Map Link
 page_address_legal: Legal
-page_org_address: Addresses
-page_org_address_singular: Address
 page_areas: Service Areas
 page_areas_singular: Service Area
-page_org_schedule: Schedules
-page_org_schedule_singular: Schedule
-page_org_schedule_days: Days of the Week
-page_org_schedule_days_mon: Monday
-page_org_schedule_days_tue: Tuesday
-page_org_schedule_days_wed: Wednesday
-page_org_schedule_days_thu: Thursday
-page_org_schedule_days_fri: Friday
-page_org_schedule_days_sat: Saturday
-page_org_schedule_days_sun: Sunday
-page_org_schedule_hours: Hours
-page_org_schedule_hours_open: Opening
-page_org_schedule_hours_close: Closing
-page_org_schedule_from: Valid From
-page_org_schedule_to: Valid Until
+page_org_when: Schedules
+page_org_when_singular: Schedule
+page_org_when_days: Days of the Week
+page_org_when_days_mon: Monday
+page_org_when_days_tue: Tuesday
+page_org_when_days_wed: Wednesday
+page_org_when_days_thu: Thursday
+page_org_when_days_fri: Friday
+page_org_when_days_sat: Saturday
+page_org_when_days_sun: Sunday
+page_org_when_hours: Hours
+page_org_when_hours_open: Opening
+page_org_when_hours_close: Closing
+page_org_when_from: Valid From
+page_org_when_to: Valid Until
 page_org_prices: Price Range
 page_org_services: Services
 page_org_services_singular: Service
@@ -192,29 +193,31 @@ page_org_departs: Departments
 page_org_departs_singular: Department
 # singletones > values
 values: Global Values
-values_description: Custom Menu, Corner Buttons, and Global Values that are used in templates and/or as translations.
-values_menu_image: Logo Image
+values_hint: Custom Menu, Corner Buttons, and Global Values that are used in templates and/or as translations.
+values_menu: Custom Menu
+values_menu_img: Logo Image
 values_menu_title: Logo Title
-values_menu_subtitle: Logo Subtitle
+values_menu_sub: Logo Subtitle
 values_menu_items: Items
 values_menu_items_singular: Item
 values_menu_subitems: Sub-items
 values_menu_subitems_singular: Sub-item
+values_callnows: Custom Corner Buttons
 values_callnows_singular: Button
 # singletones > config
 config: Configuration
-config_google_analytics: Analytics Code
-config_google_analytics_hint: 'Google Analytics tracking code <br> **Example →** G-XXXXXXXXXX'
-config_google_site_verification: Search Console Code
-config_google_site_verification_hint: Google Search Console Verification Code
-config_google_file_verification: Search Console File
-config_google_file_verification_hint: Google Search Console Verification File Name <br> **Example →** google7467d923cbb3eb4c.html
-config_google_translate: Google Translator
-config_google_translate_hint: Adds a link in the menu that directly takes you to the site via Google Translate
+config_ga4: GA4 Code
+config_ga4_hint: 'Google Analytics 4 tracking code <br> **Example →** G-XXXXXXXXXX'
+config_g_site_verify: Search Console Code
+config_g_site_verify_hint: Google Search Console Verification Code
+config_g_file_verify: Search Console File
+config_g_file_verify_hint: Google Search Console Verification File Name <br> **Example →** google7467d923cbb3eb4c.html
+config_g_translate: Google Translator
+config_g_translate_hint: Adds a link in the menu that directly takes you to the site via Google Translate
 config_disqus: Disqus
 config_disqus_hint: Short name of the disqus.com comment system
-config_email: Emails
-config_email_hint: Emails separated by commas to whom the message will reach
+config_mail: Emails
+config_mail_hint: Emails separated by commas that will receive messages from the forms
 config_phone_code: Country Phone Code
 config_time_zone: Time Zone
 config_currency: Currency
@@ -229,31 +232,29 @@ config_cms_editorial: CMS Editorial Workflow
 config_cms_editorial_hint: Allows working with preview modes during development without affecting production content (until changes are published)
 config_favicon: Favicon
 config_favicon_hint: Thumbnail icon representative of the website (recommended in SVG format)
-config_lang_default_subdir: Main Language in Subfolder
+config_lang_main_subdir: Main Language in Subfolder
 config_cookies_advanced: Advanced Cookies
 config_cookies_advanced_hint: The Cookies message allows the user to choose options
 config_cookies_legal: Legal Cookies
 config_cookies_legal_hint: Enforces the cookie policy
-config_analytics_pagespeed_disabled: Analytics Disabled for PageSpeed
-config_analytics_pagespeed_disabled_hint: Disables Google Analytics only for [PageSpeed Insights](https://pagespeed.web.dev/)
-config_process_all_images: Process All Images
-config_process_all_images_hint: Makes all gallery images available even if they are not used on any page
+config_ga4_pagespeed_hide: Hide GA4 to PageSpeed
+config_ga4_pagespeed_hide_hint: Hide Google Analytics 4 only for [PageSpeed Insights](https://pagespeed.web.dev/)
 config_development: Development Mode
 config_development_hint: Speeds up development deployments and worsens loading speed for users
 config_show: Show Effect
 config_show_hint: Enable the pop-up effect when scrolling all elements (slows down performance on less powerful devices)
 config_webp: Images in WEBP format
 config_webp_hint: Compress images in WEBP format instead of AVIF (unchecked, improves loading speed at the expense of increasing compilation time)
-config_image_sizes: Image Scaling in srcset sizes
+config_img_sizes: Image Scaling in srcset sizes
 # singletones > langs
 langs: Languages
 langs_singular: Language
 langs_lang: Language
-langs_disabled: Disabled
+langs_hide: Disabled
 langs_title: Title
-langs_description: Description
-langs_pagination: Pagination Permalink
-langs_pagination_hint: Example → "page" will show "https://example.com/page/[n]/"
+langs_desc: Description
+langs_pager: Pagination Permalink
+langs_pager_hint: Example → "page" will show "https://example.com/page/[n]/"
 langs_config: Configuration
 langs_config_hint: Configuration by language that overrides the general configuration
 # singletones > styles
@@ -264,11 +265,48 @@ styles_icons_weight: Weight
 styles_icons_grade: Grade
 styles_icons_optical: Optical Size
 styles_icons_style: Style
-styles_icons_play: Play
-styles_icons_up: Up
-styles_icons_down: Down
-styles_icons_left: Left
-styles_icons_right: Right
+styles_icons_def: Default
+styles_icons_def_home: Home
+styles_icons_def_play: Play
+styles_icons_def_up: Up
+styles_icons_def_down: Down
+styles_icons_def_left: Left
+styles_icons_def_right: Right
+styles_icons_def_right_angle: Right Angle
+styles_icons_def_close: Close
+styles_icons_def_cookies: Cookies
+styles_icons_def_sitemap: Sitemap
+styles_icons_def_search: Search
+styles_icons_def_question: Question
+styles_icons_def_plus: Plus
+styles_icons_def_calendar: Calendar
+styles_icons_def_calendar_edit: Calendar Edit
+styles_icons_def_calendar_start: Calendar Start
+styles_icons_def_calendar_end: Calendar End
+styles_icons_def_clock: Clock
+styles_icons_def_geo: Geo
+styles_icons_def_copy: Copy
+styles_icons_def_send: Send
+styles_icons_def_send_close: Send Close
+styles_icons_def_send_checking: Send Checking
+styles_icons_def_send_submit: Send Submit
+styles_icons_def_send_error: Send Error
+styles_icons_def_send_info: Send Info
+styles_icons_def_review_star: Review Star
+styles_icons_def_words: Words
+styles_icons_def_address: Address
+styles_icons_def_drop_down: Drop Down
+styles_icons_def_drop_up: Drop Up
+styles_icons_def_phone: Phone
+styles_icons_def_whatsapp: WhatsApp
+styles_icons_def_upload: Upload
+styles_icons_def_mail: Mail
+styles_icons_def_translate: Translate
+styles_icons_def_langs: Langs
+styles_icons_def_user: User
+styles_icons_def_quote: Quote
+styles_icons_def_quote_left: Left Quote
+styles_icons_def_quote_right: Right Quote
 styles_fonts: Fonts
 styles_fonts_base: Base Font
 styles_fonts_cursive: Cursive
@@ -281,7 +319,6 @@ styles_fonts_weight: Weight
 styles_fonts_bold: Bold Weight
 styles_fonts_italic: Italic
 styles_fonts_line_height: Line Height
-styles_fonts_top: Vertical Adjustment
 styles_fonts_size: Size (default = 1)
 styles_colors: Colors
 styles_colors_main: Main
@@ -292,11 +329,11 @@ styles_colors_cta_hint: Default color for links and buttons <br> If not specifie
 styles_colors_color: Color
 styles_colors_light: Light Version
 styles_colors_dark: Dark Version
-styles_colors_contrast: Contrasts
-styles_colors_contrast_hint: Change of the color according to the background if there is not enough contrast
-styles_colors_contrast_fill: General Fillings
-styles_colors_contrast_in: Button Text
-styles_colors_contrast_text: General Text
+styles_colors_turn: Contrasts
+styles_colors_turn_hint: Change of the color according to the background if there is not enough contrast
+styles_colors_turn_fill: General Fillings
+styles_colors_turn_in: Button Text
+styles_colors_turn_text: General Text
 styles_base: Base
 styles_base_white: White
 styles_base_light: Light
@@ -308,25 +345,24 @@ styles_rounded_radius: Radius
 styles_rounded_radius_hint: This radius applies to corners in general, but internal margin is added if it wraps another element with rounded corners <br> If the value is 0, nothing is rounded <br> If the value is 0.01, only elements wrapping other corners are rounded <br> Maximum 1.25
 styles_rounded_chamfer: Chamfer
 styles_rounded_chamfer_hint: Changes rounded corners to chamfers (straight cuts)
-styles_buttons: Buttons
-styles_buttons_font: Main Font
-styles_buttons_swap: Alternate Font
-styles_buttons_sides_round: Rounded Sides
-styles_buttons_sides_round_hint: Rounds corners to the maximum
-styles_buttons_dot_circle: Circular Icons
-styles_buttons_dot_circle_hint: Rounds corners to form circles for single large icons
-styles_buttons_deep: 3D
-styles_buttons_deep_hint: 3D or depth effect
-styles_buttons_outline: Border and Hollow
-styles_buttons_outline_hint: Leaves solid borders and transparent fills
-styles_buttons_type: Type
-styles_buttons_bold: Bold
-styles_buttons_caps: Uppercase
+styles_btns: Buttons
+styles_btns_font: Main Font
+styles_btns_swap: Alternate Font
+styles_btns_pill: Rounded Sides
+styles_btns_pill_hint: Rounds corners to the maximum
+styles_btns_disc: Circular Icons
+styles_btns_disc_hint: Rounds corners to form circles for single large icons
+styles_btns_deep: 3D
+styles_btns_deep_hint: 3D or depth effect
+styles_btns_outline: Border and Hollow
+styles_btns_outline_hint: Leaves solid borders and transparent fills
+styles_btns_type: Type
+styles_btns_bold: Bold
+styles_btns_caps: Uppercase
 styles_inputs: Form Fields
 styles_inputs_fill: Filled
 styles_inputs_fill_hint: Applies a white background with rounded corners to each simple field
-styles_inputs_labels_out: Labels Outside
-styles_inputs_labels_out_hint: Places each field's labels outside it
+styles_inputs_labels: Label Position
 styles_inputs_consent: Consent
 styles_inputs_consent_hint: Text next to the consent checkbox
 styles_shadow: Shadows
@@ -343,15 +379,16 @@ customs_types: Collections
 customs_types_singular: Collection
 customs_pages: Pages
 customs_pages_singular: Page
-customs_var: Existing Variable
+customs_var: Existing Base Field
 customs_name: Param Name
 customs_label: Visible Name
 customs_hint_: Legend
 customs_widget: Widget
 customs_options: Options
+customs_options_singular: Option
 customs_options_label: Title
 customs_options_value: Value
-customs_multiple: Multiple
+customs_multi: Multiple
 customs_sub: Subfields
 customs_sub_singular: Subfield
 customs_relations_hint: Create previously
@@ -373,13 +410,14 @@ remote_csv: Is it a CSV?
 remote_types: Page Types
 remote_types_singular: Page Type
 remote_index: Index
-remote_index_hint: Path to the desired object separated by dots <br> **Example →** "shop.articles.products"
-remote_pairings: Pairings
-remote_pairings_singular: Pairing
-remote_pairings_from: Source Parameter
-remote_pairings_to: Destination Parameter
-remote_pairings_kind: Value Type
-remote_pairings_delimit: Separator
+remote_index_hint: Path to the desired array separated by dots <br> **Example →** "shop.articles.products"
+remote_maps: Mappings
+remote_maps_singular: Mapping
+remote_maps_hint: Parameters mappings
+remote_maps_from: Source Parameter
+remote_maps_to: Destination Parameter
+remote_maps_kind: Value Type
+remote_maps_sep: Separator
 # singletones > redirects
 redirects: Redirects
 redirects_hint: URL redirects
@@ -389,330 +427,335 @@ redirects_type: Type
 # singletones > robots
 robots_hint: Tutorial
 # boxes and sections
-box_name: Name
-box_name_hint: File name
-box_id: ID
-box_id_hint: Identifier for anchor links <br> Must be unique (not repeated) among all sections and boxes <br> Short <br> Descriptive <br> Without irrelevant words (of, by, for, the…) <br> **Example →** frequently-asked-questions
-box_view: View
-box_view_hint: Groups of options to display
-box_title: Title
-box_hanchor: Hidden Title
-box_hanchor_hint: Header and Hidden Anchor/Anchor to have the title (and menu if linked) for SEO
-box_subtitle: Subtitle
-box_price: Price
-box_hn: Title Tag
-box_hs: Title Size
-box_caps: Title in Uppercase
-box_line: Underlined Title
-box_md: Content
-box_md_align: Content Alignment
-box_md_align_hint: Alignment of Content Only
-box_md_align_vl: Content Alignment on Desktop
-box_md_align_vl_hint: Align content only when the window width is ≥ 1280px
-box_md_sm: Small Content
-box_md_caps: Capitalized Content Headings
-box_md_caps_hint: Up to the selected heading depth level
-box_md_line: Underlined Content Headings
-box_md_line_hint: Up to the selected heading depth level
-box_md_index: Numbering in Content Headings
-box_md_index_hint: Add the same numbering as in the indexes to content headings
-box_md_nav: IDs in Content Headings
-box_md_nav_hint: Add IDs and links in content headings
-box_md_border: Content Image Border
-box_menu_label: Menu Link Text
-box_menu_button: Menu Link Button Color
-box_menu_swap: Menu Link Alternative Font
-box_icon_id: Icon
-box_icon_id_hint: Valid names → Directly a name from [Material Symbols](https://fonts.google.com/icons) or emojis or “txt:” + any text or “brand:” + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) or “brand:” + [Simple Icons](https://simpleicons.org/) or “svg:” + the name of an svg file located in the “icons” folder of the media library
-box_icon_type: Icon Type
-box_icon_type_hint: Top in large size, Side next to the text, Bottom as underlining
-box_icon_size: Icon Size
-box_icon_color: Icon Color
-box_image_src: Image
-box_image_src_hint: Supports video (including YouTube and Vimeo) via URL. For YouTube and Vimeo videos, a thumbnail image can be set by adding ‘#poster=image-name.jpg’ to the end of the URL. For uploaded videos, you can also upload an image from [Media](#/assets/-/all) an image with the same name as the video file but with the image extension (jpg, png, webp, etc.) <br> You can autoplay the video with the sound muted by adding ‘#mute’ to the end of the URL <br> You can set the start and end points of the video in seconds by adding ‘#t=2.7’ or ‘#t=2’ to the end of the URL for the start point only
-box_image_hover: Alternative Image
-box_image_hover_hint: Appears when hovering the cursor
-box_image_alt: Image Alternative Text
-box_image_hover_alt: Alternative Image Alternative Text
-box_image_ratio: Image Ratio
-box_image_ratio_hint: Default is automatic <br> **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
-box_image_ratio_pattern: Only numbers (1-9) and slashes ("/")
-box_image_contain: Image Fit to Ratio
-box_image_contain_hint: Prevents cropping if a specific ratio is selected
-box_image_border: Image Border
-box_image_inset: Inset Image
-box_image_inset_hint: Embedded in the element as if it had no internal margins
-box_image_circle: Circular Image
-box_image_gray: Grayscale Image
-box_image_gray_hint: Regains color when hovering over it
-box_image_shade: Gradient Image
-box_image_shade_hint: Background gradient downwards
-box_button_link: Link
-box_button_pin: Link Icon
-box_button_label: Link Text
-box_button_anchor: Link Anchor
-box_button_anchor_hint: Hidden text/anchor for the link (for SEO)
-box_button_lock: Obfuscated Link
-box_button_lock_hint: Prevents Google from considering the link as such (for SEO)
-box_button_color: Link Button Color
-box_button_swap: Link Alternative Font
-box_button_ga4: GA4
-box_button_ga4_hint: Marks it as an event in Google Analytics 4 (for later conversion)
-box_bg_color: Background Color
-box_bg_fade_color: Background Gradient Color
-box_bg_fade_type: Background Gradient Type
-box_bg_color_alpha: Background Color Transparency
-box_bg_image: Background Image
-box_bg_alpha: Background Image Transparency
-box_parallax: Parallax
-box_parallax_hint: Applies a scrolling effect
-box_container_bg_color: Box Background Color
-box_container_bg_fade_color: Box Background Gradient Color
-box_container_bg_fade_type: Box Background Gradient Type
-box_container_bg_color_alpha: Box Background Color Transparency
-box_container_bg_image: Box Background Image
-box_container_bg_alpha: Box Background Image Transparency
-box_container_parallax: Box Parallax
-box_padding_top: Top Padding
-box_padding_bottom: Bottom Padding
-box_padding_hide: Hide Padding
-box_size: Container Size
-box_size_hint: Default → **Large** for Sections and Menu, **Small** for Modals
-box_full: Minimum Height = Screen
-box_divider_id: Divider
-box_divider_id_hint: Visible on
-box_divider_flip_x: Flip Horizontal Divider
-box_divider_flip_y: Flip Vertical Divider
-box_order: Element Order on Desktop
-box_order_hint: Order of the element when window width ≥ 1280px
-box_fit_vl: Width
-box_fit_vl_hint: Width in Number of Columns
-box_fit_vs: Minimum Width
-box_fit_vs_hint: Width in Nº of Columns at Minimum Resolution
-box_grow: Fill Width
-box_grow_hint: Fills container width by increasing the width of elements or columns (does not apply if carousel is enabled)
-box_align: Alignment
-box_align_hint: Align all elements in the Box
-box_align_vl: Alignment on Desktop
-box_align_vl_hint: Align all elements in the Box when the window width is ≥ 1280px
-box_rate: Box Proportion
-box_rate_hint: Minimum height based on the set proportion <br> Default is automatic <br> **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
-box_space: Margin Between Box Elements
-box_padding_vl: Internal Margins
-box_padding_vs: Minimum Internal Margins
-box_hide_shadow: Remove Shadow
-box_hide_radius: Remove Rounded Corners
-box_pill: Bullet Mode
-box_pill_hint: Rounds top and bottom
-box_card: Card Mode
-box_card_hint: Uses the image as background + leaves a top margin to make the background visible + aligns content below and adds a black gradient
-box_if: Conditional
-box_if_hint: Checks if the value exists in the page's custom parameters to process the box
-box_node: Node
-box_node_hint: HTML tag name for the Box
-box_params: Parameters
-box_params_singular: Parameter
-box_params_hint: Custom Parameter or Field Values from the page or global value to the box
-box_params_from: From Parameter
-box_params_to: To Parameter
-box_params_value: JSON Value
-box_remap: Remap Parameters
-box_remap_from: From Name
-box_remap_to: To Name
-box_remap_copy: Copy
-box_tag: Tag Template
-box_tags: Tags
-box_tags_singular: Tag
-box_tags_hint: List of data as relative tags to the page
-box_tags_type: Type
-box_tags_date: Date
-box_tags_reading_time: Reading Time
-box_tags_words: Word Count
-box_tags_address: Address
-box_tags_hide_hours: Hide Time
-box_tags_hide_lastmod: Hide Last Modification
-box_tags_taxonomy: Taxonomies
-box_tags_taxonomy_key: Taxonomy
-box_tags_param: Parameter
-box_tags_param_key: Parameter Key
-box_tags_param_hint: Specify the name of the parameter or page field.
-box_tags_custom: Custom
-box_sort: Order of Elements
-box_cols_vl: Nº of Columns
-box_cols_vl_hint: 0 = auto-calculated based on the number of elements and their widths
-box_cols_vs: Nº of Columns at Minimum Resolution
-box_cols_vs_hint: 0 = auto-calculated based on the number of elements and their widths at minimum resolutions
-box_gap_vl: Margin Between Boxes
-box_gap_vs: Margin Between Boxes at Minimum Resolution
-box_gap_ny: Vertical Margin Between Boxes
-box_gap_ny_hint: Value is proportional to the **Margin Between Boxes**
-box_to: Box Direction
-box_duo: Pair Pode
-box_duo_hint: Defines how blocks of four elements are grouped in desktop resolutions
-box_sides: Alternate Sides Backgrounds/Images
-box_sides_hint: Places backgrounds (or images) at left-right ends of the sale alternately
-box_side: Side Background/Image
-box_side_hint: Places background (or image) at end/s of the side sale/s
-box_group_radius: Group Rounded Corners
-box_group_radius_hint: Rounded corners for the group of elements
-box_slider_active: Enable Carousel
-box_slider_active_hint: When enabled, line breaks between elements are replaced by sliders (if required)
-box_time: Carousel Interval
-box_time_hint: If specified, it will automatically scroll at that interval in milliseconds (not recommended)
-box_pips: Carousel Guides
-box_arrows: Carousel Arrows
-box_align_x: Box Horizontal Alignment
-box_align_y: Box Vertical Alignment
-box_align_y_self: Box Vertical Self Alignment
-box_list: List
-box_list_hint: List of Pages
-box_list_type: Type
-box_list_max: Max Nº
-box_list_max_hint: Maximum number of visible items, to see the rest a '+ More' button will appear linking to the Article Type
-box_list_start: Start Date
-box_list_end: End Date
-box_step: Step Template
-box_steps: Steps
-box_steps_singular: Step
-box_steps_border: Border Color
-box_gallery: Gallery Template
-box_gallery_images: Image Gallery
-box_gallery_images_hint: Upload several images at once that allow clicking to enlarge (as a slideshow)
-box_gallery_limages: Linked Image Gallery
-box_gallery_limages_singular: Linked Image
-box_gallery_type: Gallery Type
-box_accordion: Accordion Template
-box_accordions: Accordions
-box_accordions_singular: Accordion
-box_accordions_hint: Buttons with accordion content, often used for FAQs
-box_accordion_headers: Header Mode
-box_accordion_open: First Open
-box_gss: G.Drive Sheet File
-box_gss_hint: Identifier for Google Drive sheet-type file <br> **Example →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
-box_gss_sheet: G.Drive Sheet Tab
-box_gss_sheet_hint: Tab Identifier <br> **Example →** "1861644079"
-box_review: Review Template
-box_reviews: Reviews
-box_reviews_singular: Review
-box_review_icon_left: Left Icon
-box_review_icon_right: Right Icon
-box_review_rating: Rating
-box_contact: Contact Buttons
-box_contact_singular: Contact Button
-box_contact_hint: Contact data displayed as buttons, links, or texts
-box_contact_days: Days
-box_contact_hours: Hours
-box_contact_label: Text
-box_contact_label_phone: Phone Number
-box_contact_full: Full Width
-box_contact_address: Address to Show
-box_contact_anchor: Address for Linking
-box_contact_anchor_hint: Used to generate an automatic link to GMaps
-box_contact_schedule: Contact Schedules
-box_contact_pre: Prefix
-box_contact_phone: Phone
-box_contact_whatsapp: WhatsApp
-box_contact_mail: eMail
-box_contact_address: Address
-box_contact_map_hint: If you select a location, the link will lead to a map with exact coordinates
-box_contact_h2: H2 Header
-box_contact_h3: H3 Header
-box_contact_h4: H4 Header
-box_contact_h5: H5 Header
-box_contact_h6: H6 Header
-box_contact_br: Line Break
-box_contact_hr: Separator
-box_contact_custom: Custom
-box_dots: Dot Buttons
-box_dots_singular: Dot Button
-box_dots_hint: Buttons linking to Social Media and others
-box_form: Form
-box_form_action: Action
-box_form_action_hint: Action executed when submitting the form
-box_form_to: Destination
-box_form_to_hint: URL of the page that opens when the form is successfully submitted
-box_form_subject: Subject
-box_form_subject_hint: Subject of the receiving email
-box_input_name: Name
-box_input_name_hint: Name of the field
-box_input_label: Visible Name
-box_input_label_hint: Descriptive text of the field appearing above it <br> If unspecified, the previous name will be applied
-box_input_hint: Legend
-box_input_hint_hint: Descriptive text of the field appearing below it
-box_input_required: Required
-box_input_required_hint: Indicates if completing the field is mandatory
-box_input_required_if: Required If…
-box_input_required_if_hint: Indicates if this field is mandatory only if another field is completed, specifying its name (you can specify several separated by '||' or '&&')
-box_input_show_if: Show If…
-box_input_show_if_hint: This field will remain hidden until another field is completed, specifying its name (you can specify several separated by '||' for any or '&&' for all)
-box_input_regex: Regex
-box_input_min: Minimum
-box_input_max: Maximum
-box_input_x: Horizontal Options
-box_input_accept: Files
-box_input_accept_hint: Accepted file extensions, adding the period in front and separated by commas <br> **Example →** ".pdf,.png,.jpg,.jpeg"
-box_input_base_name: Base Name
-box_input_base_name_hint: Use as file name the value of the field referenced here at the time of loading, and if it is not found, use this same name
-box_input_geo_area: Areas
-box_input_geo_area_hint: Allows you to add areas using circles and polygons
-box_input_geo_view: Initial View Center
-box_input_options: Options
-box_input_option: Option
-box_input_option_hint: Option displayed to the user
-box_input_value: Value
-box_input_value_hint: Value received by the form
-box_inputs: Form Fields
-box_inputs_singular: Form Field
-box_inputs_text: Text (Simple)
-box_inputs_text_hint: Simple text field
-box_inputs_email: Email (Simple)
-box_inputs_email_hint: Simple email field
-box_inputs_tel: Phone (Simple)
-box_inputs_tel_hint: Simple phone field
-box_inputs_number: Number (Simple)
-box_inputs_number_hint: Simple number field
-box_inputs_date: Date (Simple)
-box_inputs_date_hint: Simple date field
-box_inputs_time: Time (Simple)
-box_inputs_time_hint: Simple time field
-box_inputs_textarea: Text Area (Simple)
-box_inputs_textarea_hint: Simple text area field <br> Occupies the entire width
-box_inputs_geo: Coordinates
-box_inputs_geo_hint: Map to set a point <br> Occupies the entire width
-box_inputs_select: Selection (Multiple)
-box_inputs_select_hint: Multiple dropdown selection list field <br> Allows selecting only one option <br> Occupies the entire width
-box_inputs_radio: Radios (Multiple)
-box_inputs_radio_hint: Multiple radio or circle field <br> Allows selecting only one option <br> Occupies the entire width
-box_inputs_checkbox: Checkboxes (Multiple)
-box_inputs_checkbox_hint: Multiple checkbox field <br> Allows selecting multiple options <br> Occupies the entire width
-box_inputs_check: Checkbox (Simple)
-box_inputs_check_hint: Simple checkbox field
-box_inputs_file: File
-box_inputs_file_hint: Attachment field (maximum 8 MB)
-box_inputs_hidden: Hidden
-box_inputs_hidden_hint: Simple field hidden from users (useful for internal information on form submissions)
-box_inputs_h2: H2 Header
-box_inputs_h3: H3 Header
-box_inputs_h4: H4 Header
-box_inputs_h5: H5 Header
-box_inputs_h6: H6 Header
-box_inputs_md: Content
-box_map: Map Template
-box_map_tile: Default Tile
-box_map_color: Color
-box_map_label: Name
-box_map_point: Point
-box_map_circle: Circle
-box_map_polygon: Polygon
-box_map_radius: Radius
-box_map_radius_hint: Radius in kilometers
-box_geos: Map
-box_geos_singular: Elemento de Mapa
-box_geos_hint: Añade puntos y/o áreas para mostrar en el mapa
-box_zoom: Zoom
-box_box: Box Template
-box_boxes: Boxes
-box_boxes_singular: Box
+name: Name
+name_hint: File name
+id: ID
+id_hint: Identifier for anchor links <br> Must be unique (not repeated) among all sections and boxes <br> Short <br> Descriptive <br> Without irrelevant words (of, by, for, the…) <br> **Example →** frequently-asked-questions
+view: View
+view_hint: Groups of options to display
+title: Title
+hanchor: Hidden Title
+hanchor_hint: Header and Hidden Anchor/Anchor to have the title (and menu if linked) for SEO
+sub: Subtitle
+price: Price
+hn: Title Tag
+hs: Title Size
+hs_vs: Minimum Title Size
+caps: Title in Uppercase
+line: Underlined Title
+md: Content
+md_align: Content Alignment
+md_align_hint: Alignment of Content Only
+md_align_vl: Content Alignment on Desktop
+md_align_vl_hint: Align content only when the window width is ≥ 1280px
+md_sm: Small Content
+md_caps: Capitalized Content Headings
+md_caps_hint: Up to the selected heading depth level
+md_line: Underlined Content Headings
+md_line_hint: Up to the selected heading depth level
+md_index: Numbering in Content Headings
+md_index_hint: Add the same numbering as in the indexes to content headings
+md_nav: IDs in Content Headings
+md_nav_hint: Add IDs and links in content headings
+md_border: Content Image Border
+menu_label: Menu Link Text
+menu_btn: Menu Link Button Color
+menu_swap: Menu Link Alternative Font
+icon: Icon
+icon_hint: Valid names → Directly a name from [Material Symbols](https://fonts.google.com/icons) or emojis or “txt:” + any text or “brand:” + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) or “brand:” + [Simple Icons](https://simpleicons.org/) or “svg:” + the name of an svg file located in the “icons” folder of the media library
+icon_pos: Icon Position
+icon_pos_hint: Top in large size, Side next to the title, Bottom as underlining
+icon_size: Icon Size
+icon_color: Icon Color
+img: Image
+hover: Alternative Image
+hover_hint: Appears when hovering the cursor
+alt: Image Alternative Text
+hover_alt: Alternative Image Alternative Text
+vid: Video
+vid_hint: Supports YouTube and Vimeo URLs <br> **Thumbnail →** in the corresponding field above <br> **Start and end marks →** Can be set in seconds by adding ‘#t=2,7’ or ‘#t=2’ to the end of the URL
+mute: Autoplay Video
+mute_hint: Muted video that loop and auto-plays
+ratio: Image Ratio
+ratio_hint: Default is automatic <br> **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+ratio_pattern: Only numbers (1-9) and slashes ("/")
+contain: Image Fit to Ratio
+contain_hint: Prevents cropping if a specific ratio is selected
+border: Image Border
+inset: Inset Image
+inset_hint: Embedded in the element as if it had no internal margins
+disc: Circular Image
+gray: Grayscale Image
+gray_hint: Regains color when hovering over it
+shade: Gradient Image
+shade_hint: Background gradient downwards
+url: Link
+pin: Link Icon
+label: Link Text
+anchor: Link Anchor
+anchor_hint: Hidden text/anchor for the link (for SEO)
+lock: Obfuscated Link
+lock_hint: Prevents Google from considering the link as such (for SEO)
+btn: Link Button Color
+swap: Link Alternative Font
+ga4: GA4 Key Event
+ga4_hint: Marks it as an key event in Google Analytics 4 (for later conversion)
+color: Background Color
+fade: Background Gradient Color
+fade_to: Background Gradient Direction
+color_alpha: Background Color Transparency
+bi: Background Image
+alpha: Background Image Transparency
+scroll: Parallax
+scroll_hint: Applies a scrolling effect
+box_color: Box Background Color
+box_fade: Box Background Gradient Color
+box_fade_to: Box Background Gradient Direction
+box_color_alpha: Box Background Color Transparency
+box_bi: Box Background Image
+box_alpha: Box Background Image Transparency
+box_scroll: Box Parallax
+pt: Top Padding
+pb: Bottom Padding
+ph: Hide Padding
+size: Container Size
+size_hint: Default → **Large** for Sections and Menu, **Small** for Modals
+full: Minimum Height = Screen
+div: Divider
+div_hint: Visible on
+flip_x: Flip Horizontal Divider
+flip_y: Flip Vertical Divider
+order: Element Order on Desktop
+order_hint: Order of the element when window width ≥ 1280px
+fit: Width
+fit_hint: Width in Number of Columns
+fit_vs: Minimum Width
+fit_vs_hint: Width in Nº of Columns at Minimum Resolution
+grow: Fill Width
+grow_hint: Fills container width by increasing the width of elements or columns (does not apply if carousel is enabled)
+align: Alignment
+align_hint: Align all elements in the Box
+align_vl: Alignment on Desktop
+align_vl_hint: Align all elements in the Box when the window width is ≥ 1280px
+rate: Box Proportion
+rate_hint: Minimum height based on the set proportion <br> Default is automatic <br> **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+space: Margin Between Box Elements
+pd: Paddings
+pd_vs: Minimum Paddings
+hide_shadow: Remove Shadow
+hide_radius: Remove Rounded Corners
+pill: Bullet Mode
+pill_hint: Rounds top and bottom
+card: Card Mode
+card_hint: Uses the image as background + leaves a top margin to make the background visible + aligns content below and adds a black gradient
+if: Conditional
+if_hint: Checks if the value exists in the page's custom parameters to process the box
+node: Node
+node_hint: HTML tag name for the Box
+get: Get Parameters
+get_singular: Parameter
+get_hint: Get Values of Parameters or Custom Fields from the page or global value to the box
+get_from: From Parameter
+get_to: To Parameter
+get_value: JSON Value
+remap: Remap Parameters
+remap_from: From Name
+remap_to: To Name
+remap_copy: Copy
+tag: Tag Template
+tags: Tags
+tags_singular: Tag
+tags_hint: List of data as relative tags to the page
+tags_type: Type
+tags_date: Date
+tags_time: Reading Time
+tags_words: Word Count
+tags_address: Address
+tags_hide_hours: Hide Time
+tags_hide_mod: Hide Last Modification
+tags_tax: Taxonomies
+tags_tax_key: Taxonomy
+tags_param: Parameter
+tags_param_key: Parameter Key
+tags_param_hint: Specify the name of the parameter or page field.
+tags_custom: Custom
+sort: Order of Elements
+cols: Nº of Columns
+cols_hint: 0 = auto-calculated based on the number of elements and their widths
+cols_vs: Nº of Columns at Minimum Resolution
+cols_vs_hint: 0 = auto-calculated based on the number of elements and their widths at minimum resolutions
+gap: Margin Between Boxes
+gap_vs: Margin Between Boxes at Minimum Resolution
+gap_ny: Vertical Margin Between Boxes
+gap_ny_hint: Value is proportional to the **Margin Between Boxes**
+to: Box Direction
+duo: Pair Pode
+duo_hint: Defines how blocks of four elements are grouped in desktop resolutions
+sides: Alternate Sides Backgrounds/Images
+sides_hint: Places backgrounds (or images) at left-right ends of the sale alternately
+side: Side Background/Image
+side_hint: Places background (or image) at end/s of the side sale/s
+group_radius: Group Rounded Corners
+group_radius_hint: Rounded corners for the group of elements
+slider: Enable Carousel
+slider_hint: When enabled, line breaks between elements are replaced by sliders (if required)
+time: Carousel Interval
+time_hint: If specified, it will automatically scroll at that interval in milliseconds (not recommended)
+pips: Carousel Guides
+arrows: Carousel Arrows
+align_x: Box Horizontal Alignment
+align_y: Box Vertical Alignment
+align_y_self: Box Vertical Self Alignment
+list: List
+list_hint: List of Pages
+list_type: Type
+list_max: Max Nº
+list_max_hint: Maximum number of visible items, to see the rest a '+ More' button will appear linking to the Article Type
+list_start: Start Date
+list_end: End Date
+step: Step Template
+steps: Steps
+steps_singular: Step
+steps_border: Border Color
+gallery: Gallery Template
+imgs: Image Gallery
+imgs_hint: Upload several images at once that allow clicking to enlarge (as a slideshow)
+limgs: Linked Image Gallery
+limgs_singular: Linked Image
+gallery_type: Gallery Type
+faq: FAQ Template
+faqs: FAQ's
+faqs_singular: FAQ
+faqs_hint: Buttons with FAQ content, often used for FAQ's
+faq_headers: Header Mode
+faq_open: First Open
+gss: G.Drive Sheet File
+gss_hint: Identifier for Google Drive sheet-type file <br> **Example →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
+gss_sheet: G.Drive Sheet Tab
+gss_sheet_hint: Tab Identifier <br> **Example →** "1861644079"
+review: Review Template
+reviews: Reviews
+reviews_singular: Review
+review_icon_left: Left Icon
+review_icon_right: Right Icon
+review_rating: Rating
+full: Full Width
+when: Schedules
+when_singular: Schedule
+when_days: Days
+when_hours: Hours
+links: Links Group
+links_singular: Links
+links_hint: By default, they will appear as buttons.
+links_label: Text
+links_label_phone: Phone Number
+links_address: Address to Show
+links_anchor: Address for Linking
+links_anchor_hint: Used to generate an automatic link to GMaps
+links_pre: Prefix
+links_phone: Phone
+links_whatsapp: WhatsApp
+links_mail: eMail
+links_address: Address
+links_map_hint: If you select a location, the link will lead to a map with exact coordinates
+links_h2: H2 Header
+links_h3: H3 Header
+links_h4: H4 Header
+links_h5: H5 Header
+links_h6: H6 Header
+links_br: Line Break
+links_hr: Separator
+links_custom: Custom
+dots: Dot Buttons
+dots_singular: Dot Button
+dots_hint: Buttons linking to Social Media and others
+form: Form
+form_action: Action
+form_action_hint: Action executed when submitting the form
+form_to: Destination
+form_to_hint: URL of the page that opens when the form is successfully submitted
+form_subject: Subject
+form_subject_hint: Subject of the receiving email
+input_name: Name
+input_name_hint: Name of the field
+input_label: Visible Name
+input_label_hint: Descriptive text of the field appearing above it <br> If unspecified, the previous name will be applied
+input_hint: Legend
+input_hint_hint: Descriptive text of the field appearing below it
+input_req: Required
+input_req_hint: Indicates if completing the field is mandatory
+input_req_if: Required If…
+input_req_if_hint: Indicates if this field is mandatory only if another field is completed, specifying its name (you can specify several separated by '||' or '&&')
+input_show_if: Show If…
+input_show_if_hint: This field will remain hidden until another field is completed, specifying its name (you can specify several separated by '||' for any or '&&' for all)
+input_regex: Regex
+input_min: Minimum
+input_max: Maximum
+input_x: Horizontal Options
+input_accept: Files
+input_accept_hint: Accepted file extensions, adding the period in front and separated by commas <br> **Example →** ".pdf,.png,.jpg,.jpeg"
+input_base_name: Base Name
+input_base_name_hint: Use as file name the value of the field referenced here at the time of loading, and if it is not found, use this same name
+input_geo_area: Areas
+input_geo_area_hint: Allows you to add areas using circles and polygons
+input_geo_view: Initial View Center
+input_items: Options
+input_items_label: Option
+input_items_label_hint: Option displayed to the user
+input_items_key: Value
+input_items_key_hint: Value received by the form
+inputs: Form Fields
+inputs_singular: Form Field
+inputs_text: Text (Simple)
+inputs_text_hint: Simple text field
+inputs_mail: Email (Simple)
+inputs_mail_hint: Simple email field
+inputs_phone: Phone (Simple)
+inputs_phone_hint: Simple phone field
+inputs_number: Number (Simple)
+inputs_number_hint: Simple number field
+inputs_date: Date (Simple)
+inputs_date_hint: Simple date field
+inputs_time: Time (Simple)
+inputs_time_hint: Simple time field
+inputs_area: Text Area (Simple)
+inputs_area_hint: Simple text area field <br> Occupies the entire width
+inputs_geo: Coordinates
+inputs_geo_hint: Map to set a point <br> Occupies the entire width
+inputs_select: Selection (Multiple)
+inputs_select_hint: Multiple dropdown selection list field <br> Allows selecting only one option <br> Occupies the entire width
+inputs_radio: Radios (Multiple)
+inputs_radio_hint: Multiple radio or circle field <br> Allows selecting only one option <br> Occupies the entire width
+inputs_checks: Checkboxes (Multiple)
+inputs_checks_hint: Multiple checkbox field <br> Allows selecting multiple options <br> Occupies the entire width
+inputs_check: Checkbox (Simple)
+inputs_check_hint: Simple checkbox field
+inputs_file: File
+inputs_file_hint: Attachment field (maximum 8 MB)
+inputs_hidden: Hidden
+inputs_hidden_hint: Simple field hidden from users (useful for internal information on form submissions)
+inputs_h2: H2 Header
+inputs_h3: H3 Header
+inputs_h4: H4 Header
+inputs_h5: H5 Header
+inputs_h6: H6 Header
+inputs_md: Content
+map: Map Template
+map_tile: Default Tile
+map_color: Color
+map_label: Name
+map_point: Point
+map_circle: Circle
+map_polygon: Polygon
+map_radius: Radius
+map_radius_hint: Radius in kilometers
+geos: Map
+geos_singular: Elemento de Mapa
+geos_hint: Añade puntos y/o áreas para mostrar en el mapa
+zoom: Zoom
+box: Box Template
+boxes: Boxes
+boxes_singular: Box
 modal: Template of each Modal
 modals: Modal Windows
 modals_singular: Modal Window
@@ -720,7 +763,7 @@ modals_hint: Sections represented as hidden modal windows that must be linked as
 # patterns
 pattern: Lowercase · No spaces (use hyphens instead) · Without accents · No strange characters or underscores
 # options
-option-collections-related: Related
+option-collections-rel: Related
 option-collections-all: All
 option-collections-global: Global
 option-langs-es: 🇪🇸 Spanish
@@ -775,36 +818,36 @@ option-color-light: Light
 option-color-gray: Gray
 option-color-dark: Dark
 option-color-black: Black
-option-color-invert: Inverted (Light or Dark depending on background)
-option-color-similar: Similar (Dark or Light depending on background)
+option-color-turn: Inverted (Light or Dark depending on background)
+option-color-such: Similar (Dark or Light depending on background)
 option-color-whatsapp: WhatsApp
 option-color-none: No Color (simple link type)
 option-color-hide: Hide
-option-parallax-none: Disabled
-option-parallax-fix: Fixed in Background
-option-parallax-soft: Soft in Background
-option-parallax-box: Soft in Box
-option-fade-linear-b: Linear Down
-option-fade-linear-t: Linear Up
-option-fade-linear-r: Linear Right
-option-fade-linear-l: Linear Left
-option-fade-linear-tr: Linear Top-Right
-option-fade-linear-br: Linear Bottom-Right
-option-fade-linear-tl: Linear Top-Left
-option-fade-linear-bl: Linear Bottom-Left
-option-fade-circle: Circular
-option-fade-circle-alt: Inverted Circular
-option-fade-radial: Radial
-option-fade-radial-alt: Inverted Radial
-option-icon_type-top: Top
-option-icon_type-side: Side
-option-icon_type-bottom: Bottom
+option-scroll-none: Disabled
+option-scroll-fix: Fixed in Background
+option-scroll-soft: Soft in Background
+option-scroll-box: Soft in Box
+option-fade-b: Linear Down
+option-fade-t: Linear Up
+option-fade-r: Linear Right
+option-fade-l: Linear Left
+option-fade-tr: Linear Top-Right
+option-fade-br: Linear Bottom-Right
+option-fade-tl: Linear Top-Left
+option-fade-bl: Linear Bottom-Left
+option-fade-disc: Circular
+option-fade-disc-alt: Inverted Circular
+option-fade-rad: Radial
+option-fade-rad-alt: Inverted Radial
+option-icon_pos-top: Top
+option-icon_pos-side: Side
+option-icon_pos-sub: Bottom
 option-icons_style-outlined: Outlined
 option-icons_style-rounded: Rounded
 option-icons_style-sharp: Sharp
-option-buttons_type-base: Base
-option-buttons_type-title: Title
-option-buttons_type-cursive: Cursive
+option-btns_type-base: Base
+option-btns_type-title: Title
+option-btns_type-cursive: Cursive
 option-menu_auto-same: Same Page
 option-menu_auto-same-modals: Same Page and Modal Windows
 option-menu_auto-home: Home Page
@@ -832,6 +875,13 @@ option-sizes-md: Medium
 option-sizes-lg: Large
 option-sizes-xl: Extra Large
 option-sizes-fluid: Fluid
+option-sticky-auto: Auto
+option-sticky-xs: Extra Small
+option-sticky-sm: Small
+option-sticky-md: Medium
+option-sticky-lg: Large
+option-sticky-xl: Extra Large
+option-sticky-none: No Adjustment
 option-gallery_types-grid: Grid
 option-gallery_types-grid-contain: Adjusted Grid
 option-gallery_types-rows: Rows
@@ -841,13 +891,16 @@ option-tile-streets: Streets
 option-tile-terrain: Terrain
 option-tile-satellite: Satellite
 option-tile-hybrid: Hybrid
+option-labels-in: In
+option-labels-out: Out
+option-labels-both: Both
 option-view-group: Group
 option-view-titles: Titles
 option-view-md: Contents
 option-view-menu: Menu
 option-view-icon: Icon
-option-view-image: Image
-option-view-button: Button
+option-view-img: Image
+option-view-btn: Button
 option-view-bg: Background
 option-view-container: Main Container Background
 option-view-paddings: Internal Margins
@@ -857,10 +910,10 @@ option-view-boxi: Box
 option-view-other: Others
 option-view-list: List
 option-view-steps: Steps
-option-view-accordion: Accordion
+option-view-faq: FAQ
 option-view-gallery: Gallery
 option-view-reviews: Reviews
-option-view-contact: Contact Buttons
+option-view-links: Links Group
 option-view-form: Form
 option-view-map: Map
 option-view-gss: Google Drive Sheet
@@ -868,25 +921,25 @@ option-view-boxes: SubBoxes
 option-view-modals: Modal Windows
 option-tags-row: Row
 option-tags-col: Column
-option-sort-image: Image and Top Icon
+option-sort-img: Image and Top Icon
 option-sort-title: Title
-option-sort-icon_bottom: Bottom Icon
-option-sort-subtitle: Subtitle
+option-sort-icon_sub: Bottom Icon
+option-sort-sub: Subtitle
 option-sort-price: Price
 option-sort-md: Content
 option-sort-steps: Steps
 option-sort-gallery: Gallery
 option-sort-list: List
-option-sort-accordion: Accordion
+option-sort-faq: FAQ
 option-sort-reviews: Reviews
 option-sort-dots: Dot Buttons
-option-sort-contact: Contact Buttons
+option-sort-links: Links Group
 option-sort-form: Form
 option-sort-map: Map
 option-sort-gss: Google Drive Sheet
 option-sort-boxes: SubBoxes
 option-sort-tags: Tags
-option-sort-button: Button / Link
+option-sort-btn: Button / Link
 option-div-arrow-four: Four-Point Arrow
 option-div-arrow-op-alt: Transparency Alternative Arrow
 option-div-arrow-op-fan: Transparency Fan Arrow
@@ -1299,4 +1352,18 @@ option-currency-ZAR: ZAR 🇿🇦 South African Rand
 option-currency-ZMW: ZMW 🇿🇲 Zambian Kwacha
 option-currency-ZWG: ZWG 🇿🇼 Zimbabwean Gold
 option-currency-ZWL: ZWL 🇿🇼 Zimbabwean Dollar
+option-widget-bool: Boolean
+option-widget-int: Int Number
+option-widget-float: Float Number
+option-widget-str: String
+option-widget-txt: Text Box
+option-widget-md: Markdown (Rich Text)
+option-widget-time: Time
+option-widget-img: Image
+option-widget-vid: Video
+option-widget-vimg: Image and Video
+option-widget-select: Select
+option-widget-rel: Relation
+option-widget-slice: List
+option-widget-dict: Group
 option-font_bold-0: Disabled

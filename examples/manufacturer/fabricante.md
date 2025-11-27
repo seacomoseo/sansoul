@@ -1,27 +1,27 @@
 ---
 slug: fabricante
 title: Fabricante de ejemplo
-image: base/icon.png
+img: /u/base/icon.png
 icon: star
-summary: Este es el resumen de un fabricante de ejemplo.
+sum: Este es el resumen de un fabricante de ejemplo.
 
 toc: y
 draft: n
 noindex: n
 seo: null
-description: null
+desc: null
 
 org:
   types:
   - Organization
   names:
   - Fabricante
-  description: Esta es la descripción de un fabricante de ejemplo.
+  desc: Esta es la descripción de un fabricante de ejemplo.
   legal: FABRICANTE S.L.
   nif: 00000000A
-  logo: base/icon.png
-  images:
-  - base/poster.png
+  logo: /u/base/icon.png
+  imgs:
+  - /u/base/poster.png
   as:
   - https://www.facebook.com/fabricante
   - https://www.instagram.com/fabricante/
@@ -36,7 +36,7 @@ org:
     region: Murcia
     country: ES
     geo: '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
-    link: https://g.page/r/CQsVjy4qsR1NEBM
+    url: https://g.page/r/CQsVjy4qsR1NEBM
   areas:
   - España
   - Online

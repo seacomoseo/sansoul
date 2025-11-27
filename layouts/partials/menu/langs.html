@@ -7,26 +7,26 @@
     {{ $class = print $class " langs__parent--flag" }}
     {{ $icon  = print "svg:flag-" page.Lang }}
   {{ end }}
-  {{ $default := cond (not $.up) "drop_down" "drop_up" }}
-  {{ $label   := print page.Lang (partial "icon" (dict "class" "langs__drop" "default" $default)) }}
-  {{ $langs   := slice }}
+  {{ $def   := cond (not $.up) "drop_down" "drop_up" }}
+  {{ $label := print page.Lang (partial "icon" (dict "class" "langs__drop" "def" $def)) }}
+  {{ $langs := slice }}
   {{ range page.AllTranslations }}
     {{ $langs = $langs | append (dict
-      "link"    .RelPermalink
-      "icon"    (print "svg:flag-" .Lang)
-      "emoji"   (i18n "flag")
-      "label"   .Language.LanguageName
-      "title"   (print .Language.LanguageName ": " .Title)
-      "lock"    $.lock
-      "lang"    (.Params.locale | default .Lang)
+      "url"   .RelPermalink
+      "icon"  (print "svg:flag-" .Lang)
+      "emoji" (i18n "flag")
+      "label" .Language.LanguageName
+      "title" (print .Language.LanguageName ": " .Title)
+      "lock"  $.lock
+      "lang"  (.Params.locale | default .Lang)
     ) }}
   {{ end }}
   {{ $items = $items | append (dict
-    "class"   $class
-    "icon"    $icon
-    "default" "langs"
-    "label"   $label
-    "items"   $langs
+    "class" $class
+    "icon"  $icon
+    "def"   "langs"
+    "label" $label
+    "items" $langs
   ) }}
 {{ end }}
 

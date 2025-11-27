@@ -1,15 +1,15 @@
 {{/*  Types  */}}
 {{- $types := dict
-  "info"     (dict "default" "info"     "bg" "main-light")
-  "question" (dict "default" "question" "bg" "main-dark")
-  "tip"      (dict "default" "tip"      "bg" "main")
-  "idea"     (dict "default" "idea"     "bg" "white")
-  "note"     (dict "default" "note"     "bg" "main-light")
-  "check"    (dict "default" "check"    "bg" "light")
-  "fail"     (dict "default" "fail"     "bg" "dark")
-  "success"  (dict "default" "success"  "bg" "alt-light")
-  "warning"  (dict "default" "warning"  "bg" "alt")
-  "danger"   (dict "default" "danger"   "bg" "alt-dark")
+  "info"     (dict "def" "info"     "bg" "main-light")
+  "question" (dict "def" "question" "bg" "main-dark")
+  "tip"      (dict "def" "tip"      "bg" "main")
+  "idea"     (dict "def" "idea"     "bg" "white")
+  "note"     (dict "def" "note"     "bg" "main-light")
+  "check"    (dict "def" "check"    "bg" "light")
+  "fail"     (dict "def" "fail"     "bg" "dark")
+  "success"  (dict "def" "success"  "bg" "alt-light")
+  "warning"  (dict "def" "warning"  "bg" "alt")
+  "danger"   (dict "def" "danger"   "bg" "alt-dark")
 -}}
 
 {{/*  Types  */}}
@@ -21,10 +21,10 @@
 {{- end -}}
 
 {{/*  Icon  */}}
-{{- $icon    := .AlertType -}}
-{{- $default := "" -}}
+{{- $icon := .AlertType -}}
+{{- $def  := "" -}}
 {{- with $type -}}
-  {{- $default = .default -}}
+  {{- $def = .def -}}
 {{- else -}}
   {{- with .Attributes.icon -}}
     {{- $icon = . -}}
@@ -54,7 +54,7 @@
 {{/*  Echo  */}}
 <div {{- $attrs | safeHTMLAttr }}>
   <div class="bg-color"></div>
-  {{- if or $icon $default }}{{ partial "icon" (dict "class" "alert__icon h4" "icon" $icon "default" $default) }}{{ end }}
+  {{- if or $icon $def }}{{ partial "icon" (dict "class" "alert__icon h4" "icon" $icon "def" $def) }}{{ end }}
   {{- with .AlertTitle }}<p class="alert__heading h4">{{ . }}</p>{{ end -}}
   {{ .Text -}}
 </div>

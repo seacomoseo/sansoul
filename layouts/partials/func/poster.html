@@ -1,0 +1,33 @@
+{{ $img := "" }}
+
+{{ with . | findRESubmatch `[#&?]poster=([^#&]+)` }}
+  {{ $img = index . 0 1 }}
+  {{ $img = partial "func/check-media" $img }}
+{{ end }}
+
+{{ if not $img }}
+  {{ with . | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtu\.be/)([\w-]+)` }}
+    {{ $id := index . 0 1 }}
+    {{ $img = print "https://i3.ytimg.com/vi_webp/" $id "/sddefault.webp" }}
+  {{ else with . | findRESubmatch `vimeo\.com/(?:video/)?([^#&]+)` }}
+    {{ $id  := index . 0 1 }}
+    {{ $url := print "http://vimeo.com/api/v2/video/" $id ".json" }}
+    {{ with partial "func/get-remote" $url }}
+      {{ with unmarshal . }}
+        {{ $img = index . 0 "thumbnail_large" }}
+      {{ end }}
+    {{ end }}
+  {{ else with . | findRESubmatch `^(.+)\.(?:mp4|mov|avi|webm)` }}
+    {{ $stem := index . 0 1 }}
+    {{ $out  := hasPrefix $stem "http" }}
+    {{ if not $out }}
+      {{ $path := print $stem ".{jpg,jpeg,png,gif,webp,svg}" }}
+      {{ $src  := resources.GetMatch $path }}
+      {{ with $src }}
+        {{ $img = $src.RelPermalink }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $img }}

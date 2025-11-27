@@ -1,11 +1,11 @@
 ---
 slug: entrada
 title: Entrada de ejemplo
-summary: Esto es una entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
-image: base/poster.png
+sum: Esto es una entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
+img: /u/base/poster.png
 
 date: 2020-01-01 00:00:00
-lastmod: 2021-01-01 00:00:00
+mod: 2021-01-01 00:00:00
 category:
 - categoria-3
 author: admin
@@ -14,7 +14,7 @@ toc: y
 draft: n
 noindex: n
 seo: ▷ Título SEO Entrada de ejemplo 【Con caracteres llamativos】
-description: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
+desc: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
 ---
 Este es un ejemplo de párrafo:
 
@@ -235,7 +235,7 @@ Ejemplos:
 
 Imagen con enlace de nota de página
 
-![Alt text](base/icon.png "Icono")
+![Alt text](/u/base/icon.png "Icono")
 
 Con la referencia a la URL después
 

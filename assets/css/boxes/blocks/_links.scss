@@ -1,0 +1,121 @@
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  @if $btns-3d {
+    row-gap: 1.25em;
+  }
+  > * {
+    position: relative;
+    flex-grow: 1;
+  }
+}
+// Share and Social near Links
+.box__title + .dots:last-child,
+.whens + .links,
+.dots + .links {
+  margin-top: var(--box-gap);
+}
+.links {
+  .link:not(.btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: .375em;
+    text-align: left;
+    > .icon {
+      color: var(--main);
+      font-size: 1.2em;
+    }
+  }
+}
+.links > {
+  *:not(button, .btn) {
+    justify-content: center;
+    flex-grow: 0;
+    > .icon + b {
+      color: var(--text);
+    }
+  }
+  .link__br,
+  hr {
+    flex-grow: 0;
+    width: calc(100% - #{ $radius / 2 });
+    height: 0;
+  }
+  hr {
+    border: none;
+    border-bottom: 0.125em #aaa dashed;
+  }
+}
+.links:has(.link__br) {
+  margin-bottom: -1rem;
+}
+.links:has(.link__br ~ .link__br) {
+  margin-bottom: -2rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -3rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -4rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -5rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -6rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -7rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -8rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -9rem;
+}
+.links:has(.link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br ~ .link__br) {
+  margin-bottom: -10rem;
+}
+.link__br ~ {
+  * { top: -1rem; }
+  .link__br ~ {
+    * { top: -2rem; }
+    .link__br ~ {
+      * { top: -3rem; }
+      .link__br ~ {
+        * { top: -4rem; }
+        .link__br ~ {
+          * { top: -5rem; }
+          .link__br ~ {
+            * { top: -6rem; }
+            .link__br ~ {
+              * { top: -7rem; }
+              .link__br ~ {
+                * { top: -8rem; }
+                .link__br ~ {
+                  * { top: -9rem; }
+                  .link__br ~ {
+                    * { top: -10rem; }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.link__custom:not(.btn, button) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  gap: .5em;
+  padding: .5em 1.5em;
+  .icon {
+    color: var(--main);
+  }
+}

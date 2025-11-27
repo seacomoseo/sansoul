@@ -82,11 +82,11 @@ export function initMenuToggle () {
   if (!menu) return
 
   document.addEventListener('click', e => {
-    const menuToggleButton = e.target.closest('.menu__toggle')
-    if (menuToggleButton) {
+    const menuToggleBtn = e.target.closest('.menu__toggle')
+    if (menuToggleBtn) {
       menuToggle()
     } else {
-      const menuBackoverAndLinks = e.target.closest('.menu__backover,.menu__link, .menu__button')
+      const menuBackoverAndLinks = e.target.closest('.menu__backover,.menu__link, .menu__btn')
       if (menuBackoverAndLinks) menuClose()
     }
   })

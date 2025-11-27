@@ -1,71 +1,66 @@
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `page_slug`           "name" `slug`                            "required" true "pattern" (slice "^[a-z0-9-/]*$" .pattern)))
-  (partial "cms/widget" (dict "var" `page_title`          "name" `title`                           "required" true                                           ))
-  (partial "cms/widget" (dict "var" `page_summary`        "name" `summary`     "widget" `text`                                                               ))
-  (partial "cms/widget" (dict "var" `page_image`          "name" `image`       "widget" `image`                                                              ))
-  (partial "cms/widget" (dict "var" `page_weight`         "name" `weight`      "widget" `int`                                                                ))
+  (partial "cms/widget" (dict "var" `page_slug`      "name" `slug`                          "req" true "pattern" (slice "^[a-z0-9-/]*$" .pattern)))
+  (partial "cms/widget" (dict "var" `page_title`     "name" `title`                         "req" true                                           ))
+  (partial "cms/widget" (dict "var" `page_img`       "name" `img`       "widget" `vimg`                                                          ))
+  (partial "cms/widget" (dict "var" `page_body`      "name" `body`      "widget" `md`                                                            ))
+  (partial "cms/widget" (dict "var" `page_toc`       "name" `toc`       "widget" `bool`                                                          ))
+  (partial "cms/widget" (dict "var" `page_sum`       "name" `sum`       "widget" `txt`                                                           ))
+  (partial "cms/widget" (dict "var" `page_seo`       "name" `seo`                                                                                ))
+  (partial "cms/widget" (dict "var" `page_desc`      "name" `desc`      "widget" `txt`                                                           ))
+  (partial "cms/widget" (dict "var" `page_noindex`   "name" `noindex`   "widget" `bool` "i18n" true                                              ))
+  (partial "cms/widget" (dict "var" `page_draft`     "name" `draft`     "widget" `bool` "i18n" true                                              ))
+  (partial "cms/widget" (dict "var" `page_hide`      "name" `hide`      "widget" `bool` "i18n" true                                              ))
+  (partial "cms/widget" (dict "var" `page_weight`    "name" `weight`    "widget" `int`                                                           ))
+  (partial "cms/widget" (dict "var" `page_base`      "name" `base`      "widget" `select`   "options" `~options_base` "dropdown_threshold" 10    ))
 
-  (partial "cms/widget" (dict "var" `page_toc`            "name" `toc`         "widget" `boolean`                 ))
-  (partial "cms/widget" (dict "var" `page_draft`          "name" `draft`       "widget" `boolean`  "i18n" true    ))
-  (partial "cms/widget" (dict "var" `page_hide`           "name" `hide`        "widget" `boolean`  "i18n" true    ))
-  (partial "cms/widget" (dict "var" `page_noindex`        "name" `noindex`     "widget" `boolean`  "i18n" true    ))
-  (partial "cms/widget" (dict "var" `page_seo`            "name" `seo`                                            ))
-  (partial "cms/widget" (dict "var" `page_description`    "name" `description` "widget" `text`                    ))
-  (partial "cms/widget" (dict "var" `page_body`           "name" `body`        "widget" `markdown` "show_raw" true))
+  (partial "cms/widget" (dict "var" `page_date`      "name" `date`      "widget" `time`     "req" true))
+  (partial "cms/widget" (dict "var" `page_mod`       "name" `mod`       "widget" `time`               ))
 
-  (partial "cms/widget" (dict "var" `page_base`           "name" `base`        "widget" `select`   "options" `~options_base` "dropdown_threshold" 10))
-
-  (partial "cms/widget" (dict "var" `page_date`           "name" `date`        "widget" `datetime` "required" true))
-  (partial "cms/widget" (dict "var" `page_lastmod`        "name" `lastmod`     "widget" `datetime`                ))
-
-  (partial "cms/widget" (dict "var" `page_end`            "name" `end`         "widget" `datetime`                ))
-  (partial "cms/widget" (dict "var" `page_cancelled`      "name" `cancelled`   "widget" `boolean`                 ))
+  (partial "cms/widget" (dict "var" `page_end`       "name" `end`       "widget" `time`               ))
+  (partial "cms/widget" (dict "var" `page_cancelled` "name" `cancelled` "widget" `bool`               ))
   (partial "cms/widget" (dict
-    "var"     `page_artists`
-    "name"    `artists`
-    "widget"  `list`
-    "summary" "{{fields.link}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "alt" `page_artists_name`  "name" `name`                     "label" .page_artists_singular))
-      (partial "cms/widget" (dict "alt" `page_artists_group` "name" `group` "widget" `boolean`))
+    "var"    `page_artists`
+    "name"   `artists`
+    "widget" `slice`
+    "fields" (slice
+      (partial "cms/widget" (dict "alt" `page_artists_name`  "name" `name`  "label" .page_artists_singular))
+      (partial "cms/widget" (dict "alt" `page_artists_group` "name" `group` "widget" `bool`))
     )
   ))
 
-  (partial "cms/widget" (dict "var" `page_price` "<<" `box_price` "widget" `float`))
+  (partial "cms/widget" (dict "var" `page_price` "<<" `price` "widget" `float`))
   (partial "cms/widget" (dict "var" `page_sku`   "name" `sku` "label" `SKU` "i18n" `duplicate`))
   
-  (partial "cms/widget" (dict "var" `page_prefix`         "name" `prefix`))
+  (partial "cms/widget" (dict "var" `page_prefix` "name" `prefix`))
   (partial "cms/widget" (dict
-    "var"     `page_alts`
-    "name"    `alts`
-    "widget"  `list`
-    "summary" "{{fields.alts}}"
-    "field"   (partial "cms/widget" (dict "name" `alts` "label" .page_alts_singular))
+    "var"    `page_alts`
+    "name"   `alts`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `alts` "label" .page_alts_singular))
   ))
   (partial "cms/widget" (dict
-    "var"     `page_job`
-    "name"    `job`
-    "widget"  `list`
-    "summary" "{{fields.job}}"
-    "field"   (partial "cms/widget" (dict "name" `job` "label" .page_job_singular))
+    "var"    `page_job`
+    "name"   `job`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `job` "label" .page_job_singular))
   ))
   (partial "cms/widget" (dict
-    "var"     `page_orgs`
-    "name"    `orgs`
-    "widget"  `list`
-    "summary" "{{fields.org}}"
-    "fields"  (slice
+    "var"    `page_orgs`
+    "name"   `orgs`
+    "widget" `slice`
+    "sum"    "{{fields.org}}"
+    "fields" (slice
       (partial "cms/widget" (dict "name" `name` "label" .page_orgs_name))
       (partial "cms/widget" (dict "name" `url`  "label" `URL`))
     )
   ))
   (partial "cms/widget" (dict
-    "var"     `page_creds`
-    "name"    `creds`
-    "widget"  `list`
-    "summary" "{{fields.name}}"
-    "fields"  (slice
+    "var"    `page_creds`
+    "name"   `creds`
+    "widget" `slice`
+    "sum"    "{{fields.name}}"
+    "fields" (slice
       (partial "cms/widget" (dict "alt" `page_creds_name`     "name" `name`    ))
       (partial "cms/widget" (dict "alt" `page_creds_category` "name" `category`))
       (partial "cms/widget" (dict "alt" `page_creds_org`      "name" `org`     ))
@@ -73,167 +68,159 @@
   ))
 
   (partial "cms/widget" (dict
-    "var"     `page_service_areas`
-    "alt"     `page_areas`
-    "name"    `service_areas`
-    "widget"  `list`
-    "summary" "{{fields.area}}"
-    "field"   (partial "cms/widget" (dict "name" `area` "label" .page_areas_singular))
+    "var"    `page_service_areas`
+    "alt"    `page_areas`
+    "name"   `service_areas`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `area` "label" .page_areas_singular))
   ))
   (partial "cms/widget" (dict
-    "var"       `page_service_types`
-    "name"      `service_types`
-    "widget"    `list`
-    "collapsed" false
-    "summary"   "{{fields.link}}"
-    "field"     (partial "cms/widget" (dict "name" `service` "label" .page_service_types_singular))
+    "var"    `page_service_types`
+    "name"   `service_types`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `service` "label" .page_service_types_singular))
   ))
 
   (partial "cms/widget" (dict
-    "var"     `page_org_types`
-    "name"    `types`
-    "widget"  `list`
-    "summary" "{{fields.type}}"
-    "field"   (partial "cms/widget" (dict "name" `type` "widget" `select` "options" `~options_location_type` "label" .page_org_types))
+    "var"    `page_org_types`
+    "name"   `types`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `type` "widget" `select` "options" `~options_location_type` "label" .page_org_types))
   ))
   (partial "cms/widget" (dict
-    "var"     `page_org_names`
-    "name"    `names`
-    "widget"  `list`
-    "summary" "{{fields.name}}"
-    "field"   (partial "cms/widget" (dict "name" `name` "label" .page_org_names_singular))
+    "var"    `page_org_names`
+    "name"   `names`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `name` "label" .page_org_names_singular))
   ))
-  (partial "cms/widget" (dict "var" `page_org_description` "name" `description`                                 ))
-  (partial "cms/widget" (dict "var" `page_org_legal`       "name" `legal`                                       ))
-  (partial "cms/widget" (dict "var" `page_org_nif`         "name" `nif`                                         ))
-  (partial "cms/widget" (dict "var" `page_org_email`       "name" `email`                                       ))
-  (partial "cms/widget" (dict "var" `page_org_url`         "name" `url`                          "label" `URL`  ))
-  (partial "cms/widget" (dict "var" `page_org_logo`        "name" `logo`        "widget" `image`                ))
-  (partial "cms/widget" (dict "var" `page_images`          "name" `images`      "widget" `image` "multiple" true))
+  (partial "cms/widget" (dict "var" `page_org_desc`  "name" `desc`                                 ))
+  (partial "cms/widget" (dict "var" `page_org_legal` "name" `legal`                                ))
+  (partial "cms/widget" (dict "var" `page_org_nif`   "name" `nif`                                  ))
+  (partial "cms/widget" (dict "var" `page_org_mail`  "name" `mail`                                 ))
+  (partial "cms/widget" (dict "var" `page_org_url`   "name" `url`                   "label" `URL`  ))
+  (partial "cms/widget" (dict "var" `page_org_logo`  "name" `logo`  "widget" `img`                 ))
+  (partial "cms/widget" (dict "var" `page_imgs`      "name" `imgs`  "widget" `vimg` "multiple" true))
   (partial "cms/widget" (dict
-    "var"     `page_as`
-    "name"    `as`
-    "widget"  `list`
-    "summary" "{{fields.link}}"
-    "field"   (partial "cms/widget" (dict "name" `link` "label" .page_as_singular))
+    "var"    `page_as`
+    "name"   `as`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `url` "label" .page_as_singular))
   ))
   (partial "cms/widget" (dict
-    "var"     `page_org_phones`
-    "name"    `phones`
-    "widget"  `list`
-    "summary" "{{fields.phone}}"
-    "field"   (partial "cms/widget" (dict "name" `phone` "label" .page_org_phones_singular))
+    "var"    `page_org_phones`
+    "name"   `phones`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `phone` "label" .page_org_phones_singular))
   ))
   (partial "cms/widget" (dict
     "var"    `page_address`
     "name"   `address`
-    "widget" `object`
+    "widget" `dict`
     "fields" (slice
       (partial "cms/widget" (dict "alt" `page_address_name`     "name" `name`    ))
       (partial "cms/widget" (dict "alt" `page_address_street`   "name" `street`  ))
       (partial "cms/widget" (dict "alt" `page_address_pc`       "name" `pc`      ))
       (partial "cms/widget" (dict "alt" `page_address_locality` "name" `locality`))
       (partial "cms/widget" (dict "alt" `page_address_region`   "name" `region`  ))
-      (partial "cms/widget" (dict "alt" `page_address_country`  "name" `country`                 "hint" (print "[" .page_address_country_hint "](https://wikipedia.org/wiki/ISO_3166-1)")))
+      (partial "cms/widget" (dict "alt" `page_address_country`  "name" `country`  "hint" (print "[" .page_address_country_hint "](https://wikipedia.org/wiki/ISO_3166-1)")))
       (partial "cms/widget" (dict "alt" `page_address_geo`      "name" `geo`      "widget" `map` "number" 7))
-      (partial "cms/widget" (dict "alt" `page_address_link`     "name" `link`    ))
+      (partial "cms/widget" (dict "alt" `page_address_url`      "name" `url`     ))
       (partial "cms/widget" (dict "alt" `page_address_legal`    "name" `legal`   ))
     )
   ))
   (partial "cms/widget" (dict
     "var"    `page_org_address`
+    "alt"    `page_address`
     "name"   `address`
-    "widget" `list`
+    "widget" `slice`
     "fields" (slice
       (partial "cms/widget" (dict "alt" `page_address_name`     "name" `name`    ))
       (partial "cms/widget" (dict "alt" `page_address_street`   "name" `street`  ))
       (partial "cms/widget" (dict "alt" `page_address_pc`       "name" `pc`      ))
       (partial "cms/widget" (dict "alt" `page_address_locality` "name" `locality`))
       (partial "cms/widget" (dict "alt" `page_address_region`   "name" `region`  ))
-      (partial "cms/widget" (dict "alt" `page_address_country`  "name" `country`                 "hint" (print "[" .page_address_country_hint "](https://wikipedia.org/wiki/ISO_3166-1)")))
+      (partial "cms/widget" (dict "alt" `page_address_country`  "name" `country`  "hint" (print "[" .page_address_country_hint "](https://wikipedia.org/wiki/ISO_3166-1)")))
       (partial "cms/widget" (dict "alt" `page_address_geo`      "name" `geo`      "widget" `map` "number" 7))
-      (partial "cms/widget" (dict "alt" `page_address_link`     "name" `link`    ))
+      (partial "cms/widget" (dict "alt" `page_address_url`      "name" `url`    ))
       (partial "cms/widget" (dict "alt" `page_address_legal`    "name" `legal`   ))
     )
   ))
   (partial "cms/widget" (dict "var" `page_org_areas` "<<" `page_service_areas` "name" `areas`))
   (partial "cms/widget" (dict
     "var"    `page_org_open`
-    "alt"    `page_org_schedule`
-    "name"   `schedule`
-    "widget" `list`
+    "alt"    `page_org_when`
+    "name"   `when`
+    "widget" `slice`
     "fields" (slice
       (partial "cms/widget" (dict
-        "alt"     `page_org_schedule_days`
+        "alt"     `page_org_when_days`
         "name"    `days`
-        "widget"  `object`
+        "widget"  `dict`
         "fields"  (slice
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_mon` "name" `mon` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_tue` "name" `tue` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_wed` "name" `wed` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_thu` "name" `thu` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_fri` "name" `fri` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_sat` "name" `sat` "widget" `boolean`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_days_sun` "name" `sun` "widget" `boolean`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_mon` "name" `mon` "widget" `bool`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_tue` "name" `tue` "widget" `bool`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_wed` "name" `wed` "widget" `bool`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_thu` "name" `thu` "widget" `bool`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_fri` "name" `fri` "widget" `bool`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_sat` "name" `sat` "widget" `bool`))
+          (partial "cms/widget" (dict "alt" `page_org_when_days_sun` "name" `sun` "widget" `bool`))
         )
       ))
       (partial "cms/widget" (dict
-        "name"    `hours`
-        "widget"  `list`
-        "label"   .page_org_schedule_hours
-        "summary" "{{fields.open}} - {{fields.close}}"
-        "fields"  (slice
-          (partial "cms/widget" (dict "alt" `page_org_schedule_hours_open`  "name" `open`  "widget" `datetime` "format" `H:mm` "date_format" false "time_format" `HH:mm`))
-          (partial "cms/widget" (dict "alt" `page_org_schedule_hours_close` "name" `close` "widget" `datetime` "format" `H:mm` "date_format" false "time_format" `HH:mm`))
+        "name"   `hours`
+        "widget" `slice`
+        "label"  .page_org_when_hours
+        "sum"    "{{fields.open}} - {{fields.close}}"
+        "fields" (slice
+          (partial "cms/widget" (dict "alt" `page_org_when_hours_open`  "name" `open`  "widget" `time` "format" `H:mm` "date_format" false "time_format" `HH:mm`))
+          (partial "cms/widget" (dict "alt" `page_org_when_hours_close` "name" `close` "widget" `time` "format" `H:mm` "date_format" false "time_format" `HH:mm`))
         )
       ))
-      (partial "cms/widget" (dict "alt" `page_org_schedule_from` "name" `from` "widget" `datetime` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
-      (partial "cms/widget" (dict "alt" `page_org_schedule_to`   "name" `to`   "widget" `datetime` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
+      (partial "cms/widget" (dict "alt" `page_org_when_from` "name" `from` "widget" `time` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
+      (partial "cms/widget" (dict "alt" `page_org_when_to`   "name" `to`   "widget" `time` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
     )
   ))
   (partial "cms/widget" (dict "var" `page_org_prices` "name" `prices` "widget" `select`  "options" `~options_prices`))
   (partial "cms/widget" (dict
-    "var"     `page_org_services`
-    "name"    `services`
-    "widget"  `list`
-    "summary" "{{fields.title}}"
-    "fields"  (slice
-      (partial "cms/widget" (dict "name" `title`       "label" .config_title                        ))
-      (partial "cms/widget" (dict "name" `description` "label" .config_description  "widget" `text` ))
-      (partial "cms/widget" (dict "name" `price`       "label" .box_price           "widget" `float`))
-      (partial "cms/widget" (dict "name" `area`        "label" .page_areas_singular                 ))
-      (partial "cms/widget" (dict "name" `url`         "label" `URL`                                ))
+    "var"    `page_org_services`
+    "name"   `services`
+    "widget" `slice`
+    "sum"    "{{fields.title}}"
+    "fields" (slice
+      (partial "cms/widget" (dict "name" `title` "label" .page_title                          ))
+      (partial "cms/widget" (dict "name" `desc`  "label" .page_org_desc       "widget" `txt`  ))
+      (partial "cms/widget" (dict "name" `price` "label" .price               "widget" `float`))
+      (partial "cms/widget" (dict "name" `area`  "label" .page_areas_singular                 ))
+      (partial "cms/widget" (dict "name" `url`   "label" `URL`                                ))
     )
   ))
   (partial "cms/widget" (dict
-    "var"     `page_org_food_menu`
-    "name"    `food_menu`
-    "widget"  `list`
-    "summary" "{{fields.food_menu}}"
-    "field"   (partial "cms/widget" (dict "name" `food_menu` "label" .page_org_food_menu_singular))
+    "var"    `page_org_food_menu`
+    "name"   `food_menu`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `food_menu` "label" .page_org_food_menu_singular))
   ))
   (partial "cms/widget" (dict
-    "var"     `page_org_food_type`
-    "name"    `food_type`
-    "widget"  `list`
-    "summary" "{{fields.food_type}}"
-    "field"   (partial "cms/widget" (dict "name" `food_type` "label" .page_org_food_type_singular))
+    "var"    `page_org_food_type`
+    "name"   `food_type`
+    "widget" `slice`
+    "field"  (partial "cms/widget" (dict "name" `food_type` "label" .page_org_food_type_singular))
   ))
   (partial "cms/widget" (dict
-    "var"     `page_org_departs`
-    "name"    `departs`
-    "widget"  `list`
-    "summary" "{{fields.url}}"
-    "fields"  (slice
+    "var"    `page_org_departs`
+    "name"   `departs`
+    "widget" `slice`
+    "sum"    "{{fields.url}}"
+    "fields" (slice
       `~page_org_types`
       `~page_org_names`
-      `~page_org_description`
+      `~page_org_desc`
       `~page_org_legal`
       `~page_org_nif`
-      `~page_org_email`
+      `~page_org_mail`
       `~page_org_logo`
       `~page_org_url`
-      `~page_images`
+      `~page_imgs`
       `~page_as`
       `~page_org_phones`
       `~page_org_address`
@@ -248,16 +235,16 @@
   (partial "cms/widget" (dict
     "var"    `page_org`
     "name"   `org`
-    "widget" `object`
+    "widget" `dict`
     "fields" (slice
       `~page_org_types`
       `~page_org_names`
-      `~page_org_description`
+      `~page_org_desc`
       `~page_org_legal`
       `~page_org_nif`
-      `~page_org_email`
+      `~page_org_mail`
       `~page_org_logo`
-      `~page_images`
+      `~page_imgs`
       `~page_as`
       `~page_org_phones`
       `~page_org_address`

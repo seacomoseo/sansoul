@@ -2,18 +2,18 @@
   <ol {{ if not .Level }} class="toc"{{ end }}>
     {{- range .Headings -}}
       {{- /*  id  */ -}}
-      {{- $id := partial "functions/header-to-id" (dict "id" .ID "title" .Title) -}}
+      {{- $id := partial "func/header-to-id" (dict "id" .ID "title" .Title) -}}
       {{- /*  li  */}}
       <li>
         {{- /*  if not icon, for mix of links with and without icons (fix escalar)  */ -}}
-        {{- $outside := partial "functions/icon-outside" .Title -}}
+        {{- $outside := partial "func/icon-out" .Title -}}
         {{- if and (not $outside.icon) (not $outside.pin) -}}
           <i class="icon--none"></i>
         {{- end -}}
         {{- /*  link  */ -}}
         {{- partial "link" (dict
           "label" (.Title | safeHTML)
-          "link"  (print "#" $id)
+          "url"   (print "#" $id)
         ) -}}
         {{- partial "toc" . }}
       </li>

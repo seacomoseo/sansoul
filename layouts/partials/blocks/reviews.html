@@ -29,7 +29,7 @@
     "class" $cols_class
     "style" $cols_style
   -}}
-  {{- $attrs = partial "functions/attrs" $attrs -}}
+  {{- $attrs = partial "func/attrs" $attrs -}}
   
   {{- /*  HTML  */}}
   <div {{- $attrs }}>
@@ -37,17 +37,17 @@
       {{- with merge $.review . -}}
 
         {{- /* REVIEW ITEM CLASS  */ -}}
-        {{- $bgc      := partial "functions/color-background" (dict "child" .color "parent" $.bgcp) -}}
+        {{- $bgc      := partial "func/color-background" (dict "child" .color "parent" $.bgcp) -}}
         {{- $color    := $bgc.child -}}
         {{- $bg_color := print
           (cond (not $color) "" (print "bg-" $color))
-          (cond (not .image) "" " bg-image")
+          (cond (not .img) "" " bg-img")
         -}}
         {{- $bg_fade_color := "" -}}
-        {{- $bg_fade_type  := "" -}}
+        {{- $bg_fade_to    := "" -}}
         {{- if .fade -}}
           {{- $bg_fade_color = print "bg-fade-" .fade -}}
-          {{- $bg_fade_type  = print "bg-fade-" (.fade_type | default "linear-r") -}}
+          {{- $bg_fade_to    = print "bg-fade-" (.fade_to | default "r") -}}
         {{- end -}}
         {{- $bg         := cond (not $bg_color) "" "bg" -}}
         {{- $shadow     := cond (not ($color | and (not .hide_shadow))) "box--hide-shadow" "" -}}
@@ -57,7 +57,7 @@
           $bg
           $bg_color
           $bg_fade_color
-          $bg_fade_type
+          $bg_fade_to
           $shadow
         -}}
 
@@ -72,36 +72,36 @@
           "class" $review_class
           "style" $review_style
         -}}
-        {{- $review_attrs = partial "functions/attrs" $review_attrs -}}
+        {{- $review_attrs = partial "func/attrs" $review_attrs -}}
 
         {{- /* REVIEW ITEM  */}}
         <div class="review">
           <div {{- $review_attrs }}>
             <div class="bg-color"></div>
             {{ partial "icon" (dict
-              "class"   "review__icon review__icon--left"
-              "icon"    .icon
-              "default" "quote"
+              "class" "review__icon review__icon--left"
+              "icon"  .icon
+              "def"   "quote"
               ) }}
             <blockquote class="review__text">
               <div class="md">
-                {{ partial "functions/md" .md }}
+                {{ partial "func/md" .md }}
               </div>
             </blockquote>
             {{ partial "icon" (dict
-              "class"   "review__icon review__icon--right"
-              "icon"    (.icon_right | default .icon)
-              "default" "quote"
+              "class" "review__icon review__icon--right"
+              "icon"  (.icon_right | default .icon)
+              "def"   "quote"
               ) }}
           </div>
           <div class="review__person">
-            {{- if .image }}
-              <div class="review__figure">
+            {{- if .img }}
+              <div class="review__fig">
                 <div class="bg-color"></div>
                 {{- partial "media/_"
                   (dict
-                    "class"     "review__figure-image"
-                    "src"       .image
+                    "class"     "review__fig-img"
+                    "img"       .img
                     "alt"       .title
                     "notlazy"   $.is_header
                     "max"       136
@@ -113,14 +113,21 @@
             {{- end }}
             <div class="review__author">
               {{- with .title -}}
-                {{- $hs := $.review.hs | default 4 }}
-                <p class="review__title h{{ $hs }}">{{ . | markdownify }}</p>
+                {{- $hl           := partial "func/hl" (merge (dict "hs" 4 "level" 4) $.review) -}}
+                {{- $hs           := $hl.class -}}
+                {{- $author_class := slice "review__title" $hs -}}
+                {{- $author_style := $hl.style -}}
+                {{- $author_attrs := dict "class" $author_class "style" $author_style -}}
+                {{- $author_attrs  = partial "func/attrs" $author_attrs }}
+                {{ print "<p" $author_attrs ">" | safeHTML -}}
+                  {{- . | markdownify -}}
+                {{- print "</p>" | safeHTML -}}
               {{- end -}}
-              {{- with .subtitle }}
-                <p class="review__subtitle">{{ . | markdownify }}</p>
+              {{- with .sub }}
+                <p class="review__sub">{{ . | markdownify }}</p>
                 {{- /*              {{- else -}}
                 {{- with .date }}
-                  <p class="review__subtitle">{{ partial "functions/date" (dict "date" .) }}</p>
+                  <p class="review__sub">{{ partial "func/date" (dict "date" .) }}</p>
                 {{- end -}}
                 */ -}}
               {{- end -}}
@@ -129,12 +136,12 @@
                   {{- $rating := .rating | default 5 -}}
                   {{- $int    := $rating | int -}}
                   {{- range seq $int -}}
-                    {{- partial "icon" (dict "class" "review__star" "default" "review_star") -}}
+                    {{- partial "icon" (dict "class" "review__star" "def" "review_star") -}}
                   {{- end -}}
                   {{- if ne $rating $int -}}
                     {{- $decimal := sub $rating $int -}}
                     {{- if ge $decimal 0.5 -}}
-                      {{- partial "icon" (dict "class" "review__star review__star--half" "default" "review_star") -}}
+                      {{- partial "icon" (dict "class" "review__star review__star--half" "def" "review_star") -}}
                     {{- end -}}
                   {{- end }}
                 </p>
@@ -157,7 +164,7 @@
       "items"  (len .reviews)
       "pips"   .review.pips
       "arrows" .review.arrows
-      "button" .review.button
+      "btn"    .review.btn
     )
   }}
   </div>

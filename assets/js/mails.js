@@ -5,23 +5,23 @@ export function initMails () {
   })
 
   document.addEventListener('click', e => {
-    const emailCopyButton = e.target.closest(
+    const mailCopyBtn = e.target.closest(
       '.mail__option-copy,' +
       '.mail__option-send'
     )
-    if (emailCopyButton) {
-      const email = emailCopyButton
+    if (mailCopyBtn) {
+      const mail = mailCopyBtn
         .closest('.mail')
         .querySelector('.mail > b')
         .textContent
-      // If copy button then copy in clipbard; if not then send email
-      if (emailCopyButton.classList.value.includes('copy')) {
-        navigator.clipboard.writeText(email)
+      // If copy button then copy in clipbard; if not then send mail
+      if (mailCopyBtn.classList.value.includes('copy')) {
+        navigator.clipboard.writeText(mail)
         const msg = 'mail__option-copy--active'
-        emailCopyButton.classList.add(msg)
-        setTimeout(() => emailCopyButton.classList.remove(msg), 1000)
+        mailCopyBtn.classList.add(msg)
+        setTimeout(() => mailCopyBtn.classList.remove(msg), 1000)
       } else {
-        location.href = 'mailto:' + email
+        location.href = 'mailto:' + mail
       }
     }
   })

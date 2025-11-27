@@ -1,0 +1,36 @@
+{{ $img := "" }}
+{{ $svg := "" }}
+
+{{ with .Params.img }}
+  {{ if partial "func/is-vid" . }}
+    {{ $img = partial "func/poster" . }}
+  {{ else }}
+    {{ $img = . }}
+  {{ end }}
+{{ end }}
+
+{{ if not $img }}
+  {{ $img = partial "func/logo" . }}
+{{ end }}
+
+{{ with $img }}
+  {{ if not (hasPrefix . "http") }}
+    {{ with resources.Get . }}
+
+      {{ $img = .Permalink }}
+
+      {{ if hasSuffix $img ".svg" }}
+        {{ $img  = .Permalink | replaceRE `\.svg$` `.png` }}
+        {{ $png := resources.Get $img }}
+        {{ with $png }}
+          {{ $img = .Permalink }}
+        {{ else }}
+          {{ $svg = .RelPermalink }}
+        {{ end }}
+      {{ end }}
+
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return (dict "img" $img "svg" $svg) }}

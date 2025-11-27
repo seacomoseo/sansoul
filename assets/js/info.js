@@ -2,9 +2,9 @@ import { name, netlify, netlifyHook, netlifyId, cloudflareId } from '@params'
 
 const deployStatus = document.getElementById('status')
 const deployTime = document.getElementById('deploy-time')
-const deployStatusButton = document.querySelector('#status > .button')
-const rebuildButton = document.querySelector('.rebuild > *:nth-child(1)')
-const clearCacheButton = document.querySelector('.rebuild > *:nth-child(2)')
+const deployStatusBtn = document.querySelector('#status > .btn')
+const rebuildBtn = document.querySelector('.rebuild > *:nth-child(1)')
+const clearCacheBtn = document.querySelector('.rebuild > *:nth-child(2)')
 
 let statusColor
 let counter = 0
@@ -44,10 +44,10 @@ function setStatus (statusColor) {
   console.log('color: ', statusColor)
   const isBuilding = statusColor === '#F6E0A5'
   // Disable rebuild button if is building color
-  if (rebuildButton) rebuildButton.disabled = isBuilding
-  if (clearCacheButton) clearCacheButton.disabled = isBuilding
+  if (rebuildBtn) rebuildBtn.disabled = isBuilding
+  if (clearCacheBtn) clearCacheBtn.disabled = isBuilding
   // Change deploy status color
-  deployStatusButton.style.setProperty('--cta', statusColor)
+  deployStatusBtn.style.setProperty('--cta', statusColor)
   timer(isBuilding)
 }
 
@@ -81,16 +81,16 @@ function getStatusColorCloudflare (url) {
     })
 }
 
-if (deployStatus && rebuildButton) {
+if (deployStatus && rebuildBtn) {
   document.addEventListener('click', e => {
     const rebuildTarget = e.target.closest('.rebuild > *:nth-child(1)')
     const clearCacheTarget = e.target.closest('.rebuild > *:nth-child(2)')
-    const statusNotRuningTarget = e.target.closest('#status .button:not([style])')
-    const statusRuningTarget = e.target.closest('#status .button[style]')
+    const statusNotRuningTarget = e.target.closest('#status .btn:not([style])')
+    const statusRuningTarget = e.target.closest('#status .btn[style]')
     if (rebuildTarget || clearCacheTarget || statusNotRuningTarget) {
-      deployStatusButton.style.setProperty('--cta', 'var(--light)')
-      if (rebuildButton) rebuildButton.disabled = true
-      if (clearCacheButton) clearCacheButton.disabled = true
+      deployStatusBtn.style.setProperty('--cta', 'var(--light)')
+      if (rebuildBtn) rebuildBtn.disabled = true
+      if (clearCacheBtn) clearCacheBtn.disabled = true
       if (!statusInterval) statusInterval = setInterval(checkStatus, netlify ? 1000 : 5000)
     }
     if (rebuildTarget) {
@@ -100,9 +100,9 @@ if (deployStatus && rebuildButton) {
     } else if (statusRuningTarget) {
       clearInterval(statusInterval)
       statusInterval = null
-      deployStatusButton.removeAttribute('style')
-      if (rebuildButton) rebuildButton.disabled = false
-      if (clearCacheButton) clearCacheButton.disabled = false
+      deployStatusBtn.removeAttribute('style')
+      if (rebuildBtn) rebuildBtn.disabled = false
+      if (clearCacheBtn) clearCacheBtn.disabled = false
     }
   })
 

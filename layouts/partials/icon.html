@@ -2,16 +2,13 @@
 {{ $icon := .icon }}
 
 {{ if not .icon }}
-  {{ with .default }}
-    {{ $icon = index site.Data.styles.icons . }}
-    {{ if not $icon }}
-      {{ $icon = index site.Data.utilities.defaults . }}
-    {{ end }}
+  {{ with .def }}
+    {{ $icon = partial "func/default-icon" . }}
   {{ end }}
 {{ end }}
 
 {{ if ne $icon "hide" }}
-  {{ $config := site.Data.styles.icons }}
+  {{ $config := site.Data.styles.icons.def }}
   {{ $icon   := cond (eq $icon "none") "" $icon }}
   {{ $type   := "icon" }}
   {{ $trans  := false }}
@@ -42,10 +39,10 @@
   {{ else if $is_svg }}
     {{ $class = $class | append "icon--svg" }}
     {{ $name := $icon | replaceRE `^svg:` "" | replaceRE `^brand:` "brands/" }}
-    {{ $path := print "/media/{icons/,}" $name ".svg" }}
+    {{ $path := print "/u/{icons/,}" $name ".svg" }}
     {{ $src  := resources.GetMatch $path }}
     {{ with $src }}
-      {{ with partial "functions/svg-sizes" .Content }}
+      {{ with partial "func/svg-sizes" .Content }}
         {{ $width  = .width  }}
         {{ $height = .height }}
       {{ end }}
@@ -70,17 +67,15 @@
     "translate"   $trans
     "lang"        $lang
   }}
-  {{ $attrs = partial "functions/attrs" $attrs }}
+  {{ $attrs = partial "func/attrs" $attrs }}
 
   {{/*  HTML  */}}
-  {{ if not .hide }}
-    {{ $icon    = $icon | replaceRE `^(svg|txt):` "" | replaceRE `:|/` "-" }}
-    {{ if $is_svg }}
-      {{ $base := partial "functions/draws-base" . }}
-      {{ $html  = print `<svg` $attrs `><use href="` $base `#` $icon `"></use></svg>` | safeHTML }}
-    {{ else }}
-      {{ $html  = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
-    {{ end }}
+  {{ $icon    = $icon | replaceRE `^(svg|txt):` "" | replaceRE `:|/` "-" }}
+  {{ if $is_svg }}
+    {{ $base := partial "func/draws-base" . }}
+    {{ $html  = print `<svg` $attrs `><use href="` $base `#` $icon `"></use></svg>` | safeHTML }}
+  {{ else }}
+    {{ $html  = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
   {{ end }}
 {{ end }}
 

@@ -1,8 +1,8 @@
 ---
 slug: producto
 title: Producto de ejemplo
-summary: Esto es el resumen de un producto de ejemplo.
-image: base/poster.png
+sum: Esto es el resumen de un producto de ejemplo.
+img: /u/base/poster.png
 
 sku: PRO001
 price: 10.50
@@ -17,6 +17,6 @@ toc: y
 draft: n
 noindex: n
 seo: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
-description: Esta es la descripción SEO de un producto de ejemplo.
+desc: Esta es la descripción SEO de un producto de ejemplo.
 ---
 Contenido

@@ -1,23 +1,9 @@
-// CONFIG LANGS
-
-// No hidden if param is set
-.field[data-key-path^="langs."][data-key-path$=".lang"] {
-  &:has( .button[value=""][aria-checked="true"] ),
-  &:not(:has( .button[aria-checked="true"] )) {
-    ~ .field {
-      display: none;
-    }
-  }
-}
-
-
-// BOXES WIDGETS
-
 .field[data-key-path$="view"] ~ .field:not(
   /* No hidden if param is set */
   [data-widget="object"]:has(.wrapper),
   [data-widget="list"]:has(.item-list:not(:empty)),
   [data-widget="image"]:has(.filled),
+  [data-widget="file"]:has(.filled),
   [data-widget="markdown"]:has([data-lexical-text="true"]),
   [data-widget="boolean"]:has(button[aria-checked="true"]),
   [data-widget="select"]:has(button[aria-checked="true"]:not([value=""])), /* Checkbox and radio */
@@ -45,9 +31,10 @@
   :is(
     [data-key-path="title"], [data-key-path$=".title"],
     [data-key-path="hanchor"], [data-key-path$=".hanchor"],
-    [data-key-path="subtitle"], [data-key-path$=".subtitle"],
+    [data-key-path="sub"], [data-key-path$=".sub"],
     [data-key-path="price"], [data-key-path$=".price"],
     [data-key-path="hs"], [data-key-path$=".hs"],
+    [data-key-path="hs_vs"], [data-key-path$=".hs_vs"],
     [data-key-path="hn"], [data-key-path$=".hn"],
     [data-key-path="caps"], [data-key-path$=".caps"],
     [data-key-path="line"], [data-key-path$=".line"]
@@ -65,31 +52,33 @@
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="md"] ) ~ *),
   :is(
     [data-key-path="menu_label"], [data-key-path$=".menu_label"],
-    [data-key-path="menu_button"], [data-key-path$=".menu_button"],
+    [data-key-path="menu_btn"], [data-key-path$=".menu_btn"],
     [data-key-path="menu_swap"], [data-key-path$=".menu_swap"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="menu"] ) ~ *),
   :is(
     [data-key-path="icon"], [data-key-path$=".icon"],
-    [data-key-path="icon_type"], [data-key-path$=".icon_type"],
+    [data-key-path="icon_pos"], [data-key-path$=".icon_pos"],
     [data-key-path="icon_size"], [data-key-path$=".icon_size"],
     [data-key-path="icon_color"], [data-key-path$=".icon_color"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="icon"] ) ~ *),
   :is(
-    [data-key-path="image"], [data-key-path$=".image"],
+    [data-key-path="img"], [data-key-path$=".img"],
     [data-key-path="hover"], [data-key-path$=".hover"],
     [data-key-path="alt"], [data-key-path$=".alt"],
     [data-key-path="hover_alt"], [data-key-path$=".hover_alt"],
+    [data-key-path="vid"], [data-key-path$=".vid"],
+    [data-key-path="mute"], [data-key-path$=".mute"],
     [data-key-path="ratio"], [data-key-path$=".ratio"],
     [data-key-path="contain"], [data-key-path$=".contain"],
     [data-key-path="border"], [data-key-path$=".border"],
     [data-key-path="inset"], [data-key-path$=".inset"],
-    [data-key-path="circle"], [data-key-path$=".circle"],
+    [data-key-path="disc"], [data-key-path$=".disc"],
     [data-key-path="gray"], [data-key-path$=".gray"],
     [data-key-path="shade"], [data-key-path$=".shade"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="image"] ) ~ *),
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="img"] ) ~ *),
   :is(
     [data-key-path="pin"], [data-key-path$=".pin"],
-    [data-key-path="link"], [data-key-path$=".link"],
+    [data-key-path="url"], [data-key-path$=".url"],
     [data-key-path="label"], [data-key-path$=".label"],
     [data-key-path="anchor"], [data-key-path$=".anchor"],
     [data-key-path="lock"], [data-key-path$=".lock"],
@@ -100,20 +89,20 @@
   :is(
     [data-key-path="color"], [data-key-path$=".color"],
     [data-key-path="fade"], [data-key-path$=".fade"],
-    [data-key-path="fade_type"], [data-key-path$=".fade_type"],
+    [data-key-path="fade_to"], [data-key-path$=".fade_to"],
     [data-key-path="color_alpha"], [data-key-path$=".color_alpha"],
-    [data-key-path="bg"], [data-key-path$=".bg"],
+    [data-key-path="bi"], [data-key-path$=".bi"],
     [data-key-path="alpha"], [data-key-path$=".alpha"],
-    [data-key-path="parallax"], [data-key-path$=".parallax"]
+    [data-key-path="scroll"], [data-key-path$=".scroll"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="bg"] ) ~ *),
   :is(
     [data-key-path="box_color"], [data-key-path$=".box_color"],
     [data-key-path="box_fade"], [data-key-path$=".box_fade"],
-    [data-key-path="box_fade_type"], [data-key-path$=".box_fade_type"],
+    [data-key-path="box_fade_to"], [data-key-path$=".box_fade_to"],
     [data-key-path="box_color_alpha"], [data-key-path$=".box_color_alpha"],
-    [data-key-path="box_bg"], [data-key-path$=".box_bg"],
+    [data-key-path="box_bi"], [data-key-path$=".box_bi"],
     [data-key-path="box_alpha"], [data-key-path$=".box_alpha"],
-    [data-key-path="box_parallax"], [data-key-path$=".box_parallax"]
+    [data-key-path="box_scroll"], [data-key-path$=".box_scroll"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="container"] ) ~ *),
   :is(
     [data-key-path="pt"], [data-key-path$=".pt"],
@@ -150,7 +139,7 @@
   :is(
     [data-key-path="if"], [data-key-path$=".if"],
     [data-key-path="node"], [data-key-path$=".node"],
-    [data-key-path="params"], [data-key-path$=".params"],
+    [data-key-path="get"], [data-key-path$=".get"],
     [data-key-path="remap"], [data-key-path$=".remap"],
     [data-key-path="tag"], [data-key-path$=".tag"],
     [data-key-path="tags"], [data-key-path$=".tags"],
@@ -165,22 +154,25 @@
     [data-key-path="steps"], [data-key-path$=".steps"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="steps"] ) ~ *),
   :is(
-    [data-key-path="accordion"], [data-key-path$=".accordion"],
-    [data-key-path="accordions"], [data-key-path$=".accordions"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="accordion"] ) ~ *),
+    [data-key-path="faq"], [data-key-path$=".faq"],
+    [data-key-path="faqs"], [data-key-path$=".faqs"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="faq"] ) ~ *),
   :is(
     [data-key-path="gallery"], [data-key-path$=".gallery"],
-    [data-key-path="images"], [data-key-path$=".images"],
-    [data-key-path="limages"], [data-key-path$=".limages"]
+    [data-key-path="imgs"], [data-key-path$=".imgs"],
+    [data-key-path="limgs"], [data-key-path$=".limgs"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="gallery"] ) ~ *),
   :is(
     [data-key-path="review"], [data-key-path$=".review"],
     [data-key-path="reviews"], [data-key-path$=".reviews"]
   ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="reviews"] ) ~ *),
   :is(
-    [data-key-path="contact"], [data-key-path$=".contact"],
+    [data-key-path="when"], [data-key-path$=".when"]
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="when"] ) ~ *),
+  :is(
+    [data-key-path="links"], [data-key-path$=".links"],
     [data-key-path="dots"], [data-key-path$=".dots"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="contact"] ) ~ *),
+  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="links"] ) ~ *),
   :is(
     [data-key-path="form"], [data-key-path$=".form"],
     [data-key-path="inputs"], [data-key-path$=".inputs"]

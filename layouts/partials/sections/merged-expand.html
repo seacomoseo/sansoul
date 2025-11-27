@@ -40,9 +40,9 @@
   {{ $bi    := cond (eq .bi    "hide") "" .bi    }}
   {{ $fade  := cond (eq .fade  "hide") "" .fade  }}
   {{ $is_bg := or $bi $color $fade }}
-  {{/*  Change color if is similar or invert and set bgcp  */}}
+  {{/*  Change color if is such or turn and set bgcp  */}}
   {{ $bgc_o := dict "child" $color "parent" .bgcp }}
-  {{ $bgc   := partial "functions/color-background" $bgc_o }}
+  {{ $bgc   := partial "func/color-background" $bgc_o }}
   {{ $bgcp  := $bgc.parent }}
   {{ $color  = $bgc.child }}
 
@@ -65,17 +65,17 @@
       "box_node"        .node
       "box_bi"          $bi
       "box_alpha"       .alpha
-      "box_parallax"    .parallax
+      "box_scroll"      .scroll
       "box_color"       $color
       "box_color_alpha" .color_alpha
       "box_fade"        $fade
-      "box_fade_type"   .fade_type
+      "box_fade_to"     .fade_to
     }}
   {{ end }}
   {{ $section := merge . $section_params $box_params }}
 
   {{/*  Hide string params  */}}
-  {{ $section = partial "functions/hide" (dict "item" $section) }}
+  {{ $section = partial "func/hide" (dict "item" $section) }}
 
   {{ return $section }}
 {{ end }}

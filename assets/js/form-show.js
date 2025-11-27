@@ -4,7 +4,7 @@ import { waitCSS } from './wait-css'
 
 export function initFormShow () {
   waitCSS(() => {
-    const forms = document.querySelectorAll('.form:has([data-showof])')
+    const forms = document.querySelectorAll('.form:has([data-show-of])')
     if (forms) {
       forms.forEach(form => {
         // Mark the callback as async to be able to use await
@@ -12,10 +12,10 @@ export function initFormShow () {
           const input = changed.target
           const nameShow = input.name
           // Convert the NodeList to array to be able to iterate with for...of
-          const itemsShowIf = [...form.querySelectorAll(`[data-showif*="{${nameShow}}"]`)]
+          const itemsShowIf = [...form.querySelectorAll(`[data-show-if*="{${nameShow}}"]`)]
           for (const itemShowIf of itemsShowIf) {
             let show = []
-            const namesShowIf = itemShowIf.dataset.showif
+            const namesShowIf = itemShowIf.dataset.showIf
             // Use for...of instead of forEach to be able to use await in each iteration
             const splitNames = namesShowIf.split(/\|\||&&/)
             for (const nameShowOf of splitNames) {

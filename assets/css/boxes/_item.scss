@@ -7,13 +7,13 @@
   align-items: var(--align-items, center);
   max-width: 100%;
   padding: var(--box-pd);
-  --box-inner: calc(100cqw - var(--box-pd) * 2);
+  --box-in: calc(100cqw - var(--box-pd) * 2);
   --box-gap: 1rem;
   gap: var(--box-gap);
   &.bg {
     @include radius-parent(var(--box-pd));
   }
-  // > *:not(.box, .image, .box__icon, .box__button:not(.bg > *)) {
+  // > *:not(.box, .img, .box__icon, .box__btn:not(.bg > *)) {
   //   width: 100%;
   // }
 }
@@ -25,7 +25,7 @@
 .box--go.bg:not(.box--hide-shadow) {
   transition: filter .1s, transform .1s;
   transform: translateY(calc(var(--box-offset) * -1));
-  @if $buttons-3d {
+  @if $btns-3d {
     --box-offset: .25em;
     > .bg-color--3d {
       transform: translateY(var(--box-offset));
@@ -50,7 +50,7 @@
   &:hover,
   &:focus {
     filter: drop-shadow($shadow-half);
-    @if $buttons-3d {
+    @if $btns-3d {
       --box-offset: .125em;
     } @else {
       --box-offset: #{$shadow-top / 2};
@@ -93,12 +93,12 @@
   --radius-left: 0em;
   --radius-right: 0em;
   > .bg-color,
-  &:not(:has(> .bg-color)) > .image {
+  &:not(:has(> .bg-color)) > .img {
     margin-inline: var(--box-side-left) var(--box-side-right);
     width: calc(100dvw / var(--box-side-k));
     --radius-end: var(--radius-left) var(--radius-right) var(--radius-right) var(--radius-left);
   }
-  &:not(:has(> .bg-color)) > .image > .image__inner {
+  &:not(:has(> .bg-color)) > .img > .img__in {
     height: auto; // Fix image ratio
   }
 }
@@ -137,16 +137,16 @@
   }
 }
 
-@if $radius > 0.01 {
+@if $is-radius {
 
   // Radius min
   .box {
-    --image-inset-pd-radius: var(--box-pd);
+    --img-inset-pd-radius: var(--box-pd);
   }
   .box:not(:has(
     > :is(
-      .image:not(.image--inset), /* Image */
-      .box__button:not(.hide), /* Box button */
+      .img:not(.img--inset), /* Image */
+      .box__btn:not(.hide), /* Box button */
       .map:is(*, .boxes:last-child > .box:last-child > *), /* Map */
     ):is(
       /* First child */
@@ -155,11 +155,11 @@
       .box__title.hide:first-child + *,
       /* Last child */
       :last-child,
-      :has(+ .box__button.hide:last-child)
+      :has(+ .box__btn.hide:last-child)
     )
   )) {
     --radius-pd: 0em;
-    --image-inset-pd-radius: 0em;
+    --img-inset-pd-radius: 0em;
   }
 
   // Hide radius
@@ -167,8 +167,8 @@
     .bg-color {
       @include hide-radius;
     }
-    .image--inset {
-      --image-inset-radius: 0;
+    .img--inset {
+      --img-inset-radius: 0;
     }
   }
 
@@ -204,7 +204,7 @@
   order: var(--icon-side-order, -1);
   translate: 0 .125em;
 }
-.box__icon--bottom {
+.box__icon--sub {
   display: flex;
   align-items: center;
   justify-content: var(--align, center);
@@ -224,12 +224,12 @@
     font-size: 2em;
   }
 }
-.box__title:not(.hide) + .box__icon--bottom{
+.box__title:not(.hide) + .box__icon--sub{
   margin-top: calc(-.75 * var(--box-gap));
 }
-.box__title:not(.hide) + .box__subtitle,
-.box__title.line + *:not(.box__block, .box__button:last-child),
-.box__icon--bottom + *:not(.box__block, .box__button:last-child) {
+.box__title:not(.hide) + .box__sub,
+.box__title.line + *:not(.box__block, .box__btn:last-child),
+.box__icon--sub + *:not(.box__block, .box__btn:last-child) {
   margin-top: calc(-.5 * var(--box-gap));
 }
 .box__icon--top {
@@ -260,7 +260,7 @@
     color: inherit;
   }
   // Remove underline if next is icon bottom
-  &:has(+ .box__icon--bottom) .line::after {
+  &:has(+ .box__icon--sub) .line::after {
     content: none;
   }
   &:has(> .box__icon) {
@@ -302,7 +302,7 @@
 }
 
 // Subtitle
-.box__subtitle {
+.box__sub {
   margin: 0;
 }
 
@@ -331,7 +331,7 @@
 // }
 
 // Button
-.box__button {
+.box__btn {
   // First child
   &:where(
     :first-child,
@@ -353,7 +353,7 @@
     margin-inline: var(--align-margin, auto);
   }
   // Text link style
-  &:not(.button) {
+  &:not(.btn) {
     display: flex;
     justify-content: center;
     gap: .25em;

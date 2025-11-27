@@ -1,18 +1,19 @@
 {{- $netlify := or (getenv "NETLIFY") hugo.IsDevelopment -}}
+{{- $icons   := site.Data.utilities.icons -}}
 
-- ::construction::       [{{ i18n "cms" }}]({{ site.Home.RelPermalink }}admin/ "[nofollow blank]") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "[nofollow]")
+- ::{{ $icons.cms   }}:: [{{ i18n "cms"     }}]({{ (index site.Sites 0).Home.RelPermalink }}admin/ "[nofollow blank]") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "[nofollow]")
 - ::brand:google-drive:: [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "[nofollow]")
 {{- with site.Params.drive_mails }}<br> {{ i18n "gdsheet_view" }}:
-{{- range split . ";" }}
+{{- range split . "," }}
   - ::mail:: {{ . }}
 {{ end }}
 {{- end }}
-- ::brand:github:: [{{ i18n "github_repo" }}](https://github.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
-- ::brand:gitlab:: [{{ i18n "gitlab_repo" }}](https://gitlab.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
+- ::brand:github-alt:: [{{ i18n "github_repo" }}](https://github.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
+- ::brand:gitlab::     [{{ i18n "gitlab_repo" }}](https://gitlab.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
 {{- if $netlify }}
 - ::brand:netlify:: [{{ i18n "netlify_deploys" }}]({{ print "https://app.netlify.com/sites/" site.Params.name "/deploys" }} "[nofollow]")
 {{- else }}
-- ::bolt:: [{{ i18n "cloudflare_pages_deploys" }}]({{ print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name }} "[nofollow]")
+- ::brand:cloudflarepages:: [{{ i18n "cloudflare_pages_deploys" }}]({{ print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name }} "[nofollow]")
 {{- end }}
 
 **{{ i18n "deploy_status" }}**: \
@@ -20,20 +21,20 @@
 
 [[::none::
   <i class="loader"></i>
-  <i class="status__label status__label--success">::check_box:: {{ i18n "deploy_status_success" }}</i>
-  <i class="status__label status__label--building">::sync:: {{ i18n "deploy_status_building" }}</i>
-  <i class="status__label status__label--canceled">::dangerous:: {{ i18n "deploy_status_canceled" }}</i>
-  <i class="status__label status__label--error">::warning:: {{ i18n "deploy_status_error" }}</i>
-  <i class="status__label status__label--waiting">::sync:: {{ i18n "deploy_status_waiting" }}</i>
-  <i class="status__label status__label--check">::login:: {{ i18n "deploy_status_check" }}</i>
-  <i class="status__label status__label--end">::search:: {{ i18n "deploy_status_end" }}</i>
+  <i class="status__label status__label--success">::{{ $icons.build_success }}:: {{ i18n "deploy_status_success" }}</i>
+  <i class="status__label status__label--building">::{{ $icons.build_building }}:: {{ i18n "deploy_status_building" }}</i>
+  <i class="status__label status__label--canceled">::{{ $icons.build_canceled }}:: {{ i18n "deploy_status_canceled" }}</i>
+  <i class="status__label status__label--error">::{{ $icons.build_error }}:: {{ i18n "deploy_status_error" }}</i>
+  <i class="status__label status__label--waiting">::{{ $icons.build_waiting }}:: {{ i18n "deploy_status_waiting" }}</i>
+  <i class="status__label status__label--check">::{{ $icons.build_check }}:: {{ i18n "deploy_status_check" }}</i>
+  <i class="status__label status__label--end">::{{ $icons.build_end }}:: {{ i18n "deploy_status_end" }}</i>
   <strong id="deploy-time"></strong>
 ]](none "[nofollow]")
-{#status .buttons}
+{#status .btns}
 
-[[::rocket_launch:: {{ i18n "rebuild" }}]](none "[invert]")
+[[::{{ $icons.rebuild     }}:: {{ i18n "rebuild" }}]](none "[turn]")
 {{- if and site.Params.cloudflare_id (not $netlify) }}
-[[::delete:: {{ i18n "clear_cache" }}]](none "[similar]")
+[[::{{ $icons.clear_cache }}:: {{ i18n "clear_cache" }}]](none "[such]")
 {{- end }}
 {.rebuild}
 

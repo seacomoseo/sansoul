@@ -7,13 +7,13 @@
 {{ end }}
 
 {{/*  Thumbnail  */}}
-{{ $thumbnail  := (partial "schema/image-main" .).url }}
+{{ $thumbnail  := (partial "schema/img-main" .).url }}
 
 {{/*  Organization  */}}
 {{ $org := partial "schema/org-id" . }}
 
 {{/*  Authors and ArticleSections  */}}
-{{ $aas          := partial "functions/authors-article-sections" . }}
+{{ $aas          := partial "func/authors-article-sections" . }}
 {{ $authors      := $aas.authors }}
 {{ $art_sections := $aas.art_sections }}
 
@@ -29,11 +29,11 @@
   "inLanguage"       (.Params.locale | default .Lang)
   "isPartOf"         (dict "@id" .Permalink)
   "mainEntityOfPage" (dict "@id" .Permalink)
-  "image"            (dict "@id" (print .Permalink "#schema-image"))
+  "image"            (dict "@id" (print .Permalink "#schema-img"))
   "publisher"        $org
   "author"           $authors
   "articleSection"   $art_sections
 }}
-{{ $schema = partial "functions/obj-truly" $schema }}
+{{ $schema = partial "func/obj-truly" $schema }}
 
 {{ return $schema }}

@@ -1,10 +1,10 @@
 {{/*  FUNTION DEFINE  */}}
 {{ define "partials/sections/searchable" }}
   {{ $boxes := slice . }}
-  {{ range   (.boxes      | default slice)
-    | append (.steps      | default slice)
-    | append (.reviews    | default slice)
-    | append (.accordions | default slice)
+  {{ range   (or .boxes   slice)
+    | append (or .steps   slice)
+    | append (or .reviews slice)
+    | append (or .faqs    slice)
   }}
     {{ $box  := partial "sections/searchable" . }}
     {{ $boxes = $boxes | append $box }}
@@ -14,7 +14,7 @@
 {{/*
 {{ define "partials/page/flatten" }}
   {{ $items := slice }}
-  {{ $tpl := partial "functions/tpl" . }}
+  {{ $tpl := partial "func/tpl" . }}
   {{ range $tpl.sections }}
     {{ $items = $items | append . }}
     {{ with .modals }}
@@ -36,7 +36,7 @@ object
 {{ $index := dict }}
 {{/*  Parents  */}}
 {{ range site.Sections | append site.Home }}
-  {{ $summaries := slice }}
+  {{ $sums := slice }}
   {{/*  Pages  */}}
   {{ range .RegularPages }}
     {{ $page := . }}
@@ -45,20 +45,18 @@ object
       {{ if not (in (slice "legal" "privacy" "cookies" "search" "sitemap") .File.TranslationBaseName) }}
 
         {{/*  Image  */}}
-        {{ $image := .Params.image }}
-        {{ if $image }}
-          {{ if hasPrefix $image "http" }}
-            {{ $image = partial "functions/iframe-poster" $image | default $image }}
-          {{ else }}
-            {{ with resources.Get (print "/media/" $image) }}
-              {{ $image = .RelPermalink }}
-            {{ end }}
+        {{ $img := .Params.img }}
+        {{ with $img }}
+          {{ with partial "func/is-vid" . }}
+            {{ $img = partial "func/poster" $img }}
+          {{ else with partial "func/check-media" . }}
+            {{ $img = . }}
           {{ end }}
         {{ end }}
 
         {{/*  Summary  */}}
-        {{ $summary := .Summary | default .Description | truncate 155 }}
-        {{ $summary  = partial "functions/md" $summary }}
+        {{ $sum := .Params.sum | default .Summary | default .Params.desc | truncate 155 }}
+        {{ $sum  = partial "func/md" $sum }}
 
         {{/*  Content by   */}}
         {{ $contents  := .RawContent }}
@@ -67,7 +65,7 @@ object
         {{ $params_customs       := .Params.customs | default slice }}
         {{/*  Direct text custom params  */}}
         {{ $text_custom_params   := slice "seo" }}
-        {{ range where $params_customs "type" "in" (slice "string" "text" "markdown") }}
+        {{ range where $params_customs "widget" "in" (slice "str" "text" "md") }}
           {{ $text_custom_params := $text_custom_params | append .name }}
         {{ end }}
         {{ range $text_custom_params }}
@@ -78,7 +76,7 @@ object
         {{/*  List text custom params  */}}
         {{/*  
         {{ $lists_custom_params   := slice }}
-        {{ range where $params_customs "type" "eq" "list" }}
+        {{ range where $params_customs "widget" "eq" "slice" }}
           {{ $lists_custom_params := $lists_custom_params | append .name }}
         {{ end }}
         {{ range .Params }}
@@ -96,7 +94,7 @@ object
             {{ range partial "sections/flatten" . }}
               {{ range partial "sections/searchable" . }}
                 {{ $section := . }}
-                {{ $text_params := slice "title" "hanchor" "subtitle" "md" "label" }}
+                {{ $text_params := slice "title" "hanchor" "sub" "md" "label" }}
                 {{ range $text_params }}
                   {{ with index $section . }}
                     {{ $contents = print $contents " \n\n " . }}
@@ -106,59 +104,59 @@ object
             {{ end }}
           {{ end }}
         {{ end }}
-        {{ $contents = partial "functions/md" $contents | plainify }}
+        {{ $contents = partial "func/md" $contents | plainify }}
         
-        {{ $summary := dict
-          "link"          .RelPermalink
-          "title"         .Title
-          "image"         $image
-          "summary"       $summary
-          "content"       $contents
-          "reading_time"  (i18n "reading_time" .ReadingTime)
+        {{ $sum := dict
+          "url"          .RelPermalink
+          "title"        .Title
+          "img"          $img
+          "sum"          $sum
+          "content"      $contents
+          "reading_time" (i18n "reading_time" .ReadingTime)
         }}
 
-        {{ if .Date                         }}{{ $summary = merge $summary (dict "date"          (partial "functions/date-format" .Date      )               ) }}{{ end }}
-        {{ if .Lastmod                      }}{{ $summary = merge $summary (dict "lastmod"       (partial "functions/date-format" .Lastmod   )               ) }}{{ end }}
-        {{ if .Params.end                   }}{{ $summary = merge $summary (dict "end"           (partial "functions/date-format" .Params.end)               ) }}{{ end }}
-        {{ if .Params.price                 }}{{ $summary = merge $summary (dict "price"         (.Params.price | lang.FormatCurrency 2 site.Params.currency)) }}{{ end }}
-        {{/*  {{ with .Params.sku           }}{{ $summary = merge $summary (dict "sku"           .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.artists       }}{{ $summary = merge $summary (dict "artists"       .) }}{{ end }}  */}}
-        {{ with .Params.location            }}{{ $summary = merge $summary (dict "location"      .) }}{{ end }}
-        {{ with .Params.place               }}{{ $summary = merge $summary (dict "place"         .) }}{{ end }}
-        {{ with .Params.job                 }}{{ $summary = merge $summary (dict "job"           .) }}{{ end }}
-        {{/*  {{ with .Params.as            }}{{ $summary = merge $summary (dict "as"            .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.types     }}{{ $summary = merge $summary (dict "types"         .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.names     }}{{ $summary = merge $summary (dict "names"         .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.legal     }}{{ $summary = merge $summary (dict "legal"         .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.nif       }}{{ $summary = merge $summary (dict "nif"           .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.email     }}{{ $summary = merge $summary (dict "email"         .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.images    }}{{ $summary = merge $summary (dict "images"        .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.as        }}{{ $summary = merge $summary (dict "as"            .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.phones    }}{{ $summary = merge $summary (dict "phones"        .) }}{{ end }}  */}}
-        {{ with .Params.address             }}{{ $summary = merge $summary (dict "address"       .) }}{{ end }}
-        {{ with .Params.org.address         }}{{ $summary = merge $summary (dict "address"       .) }}{{ end }}
-        {{/*  {{ with .Params.org.areas     }}{{ $summary = merge $summary (dict "areas"         .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.open      }}{{ $summary = merge $summary (dict "open"          .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.prices    }}{{ $summary = merge $summary (dict "prices"        .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.services  }}{{ $summary = merge $summary (dict "services"      .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.food_menu }}{{ $summary = merge $summary (dict "food_menu"     .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.org.food_type }}{{ $summary = merge $summary (dict "food_type"     .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.service_areas }}{{ $summary = merge $summary (dict "service_areas" .) }}{{ end }}  */}}
-        {{/*  {{ with .Params.service_types }}{{ $summary = merge $summary (dict "service_types" .) }}{{ end }}  */}}
+        {{ if .Date                         }}{{ $sum = merge $sum (dict "date"          (partial "func/date-format" .Date      )               ) }}{{ end }}
+        {{ if .Lastmod                      }}{{ $sum = merge $sum (dict "mod"           (partial "func/date-format" .Lastmod   )               ) }}{{ end }}
+        {{ if .Params.end                   }}{{ $sum = merge $sum (dict "end"           (partial "func/date-format" .Params.end)               ) }}{{ end }}
+        {{ if .Params.price                 }}{{ $sum = merge $sum (dict "price"         (.Params.price | lang.FormatCurrency 2 site.Params.currency)) }}{{ end }}
+        {{/*  {{ with .Params.sku           }}{{ $sum = merge $sum (dict "sku"           .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.artists       }}{{ $sum = merge $sum (dict "artists"       .) }}{{ end }}  */}}
+        {{ with .Params.location            }}{{ $sum = merge $sum (dict "location"      .) }}{{ end }}
+        {{ with .Params.place               }}{{ $sum = merge $sum (dict "place"         .) }}{{ end }}
+        {{ with .Params.job                 }}{{ $sum = merge $sum (dict "job"           .) }}{{ end }}
+        {{/*  {{ with .Params.as            }}{{ $sum = merge $sum (dict "as"            .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.types     }}{{ $sum = merge $sum (dict "types"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.names     }}{{ $sum = merge $sum (dict "names"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.legal     }}{{ $sum = merge $sum (dict "legal"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.nif       }}{{ $sum = merge $sum (dict "nif"           .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.mail      }}{{ $sum = merge $sum (dict "mail"          .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.imgs      }}{{ $sum = merge $sum (dict "imgs"          .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.as        }}{{ $sum = merge $sum (dict "as"            .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.phones    }}{{ $sum = merge $sum (dict "phones"        .) }}{{ end }}  */}}
+        {{ with .Params.address             }}{{ $sum = merge $sum (dict "address"       .) }}{{ end }}
+        {{ with .Params.org.address         }}{{ $sum = merge $sum (dict "address"       .) }}{{ end }}
+        {{/*  {{ with .Params.org.areas     }}{{ $sum = merge $sum (dict "areas"         .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.open      }}{{ $sum = merge $sum (dict "open"          .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.prices    }}{{ $sum = merge $sum (dict "prices"        .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.services  }}{{ $sum = merge $sum (dict "services"      .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.food_menu }}{{ $sum = merge $sum (dict "food_menu"     .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.org.food_type }}{{ $sum = merge $sum (dict "food_type"     .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.service_areas }}{{ $sum = merge $sum (dict "service_areas" .) }}{{ end }}  */}}
+        {{/*  {{ with .Params.service_types }}{{ $sum = merge $sum (dict "service_types" .) }}{{ end }}  */}}
 
-        {{ $taxonomies := partial "functions/taxonomy-parents" . }}
+        {{ $taxonomies := partial "func/taxonomy-parents" . }}
         {{ range $taxonomies }}
-          {{ $title  := index $summary .Type | default slice | append (dict "title" .Title "link" .RelPermalink) }}
-          {{ $summary = merge $summary (dict .Type $title) }}
+          {{ $title := index $sum .Type | default slice | append (dict "title" .Title "url" .RelPermalink) }}
+          {{ $sum    = merge $sum (dict .Type $title) }}
         {{ end }}
 
-        {{ $summaries = $summaries | append $summary }}
+        {{ $sums = $sums | append $sum }}
 
       {{ end }}
     {{ end }}
   {{ end }}
-  {{ if $summaries }}
-    {{ $index = merge $index (dict .Type $summaries) }}
+  {{ if $sums }}
+    {{ $index = merge $index (dict .Type $sums) }}
   {{ end }}
 {{ end }}
 

@@ -3,50 +3,49 @@
 
 {{/*  MENU ITEMS  */}}
 {{ $menu_items_fields := slice
-  `~box_button_link`
-  `~box_icon_id`
-  `~box_button_label`
-  `~box_button_anchor`
-  `~box_button_lock`
-  `~box_button_color`
-  `~box_button_swap`
-  `~box_button_ga4`
+  `~url`
+  `~icon`
+  `~label`
+  `~anchor`
+  `~lock`
+  `~btn`
+  `~swap`
+  `~ga4`
 }}
 {{ $variables = $variables | append
   (partial "cms/widget" (dict
-    "var"     `values_menu_subitems_last`
-    "alt"     `values_menu_subitems`
-    "name"    `items`
-    "widget"  `list`
-    "summary" "{{fields.label}}"
-    "fields"  $menu_items_fields
+    "var"    `values_menu_subitems_last`
+    "alt"    `values_menu_subitems`
+    "name"   `items`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "fields" $menu_items_fields
   ))
   (partial "cms/widget" (dict "var" `values_menu_subitems_2` "<<" `values_menu_subitems_last` "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
   (partial "cms/widget" (dict "var" `values_menu_subitems`   "<<" `values_menu_subitems_2`    "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
   (partial "cms/widget" (dict
-    "var"     `values_menu_items`
-    "name"    `items`
-    "widget"  `list`
-    "summary" "{{fields.label}}"
-    "fields"  ($menu_items_fields | append `~values_menu_subitems`)
+    "var"    `values_menu_items`
+    "name"   `items`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "fields" ($menu_items_fields | append `~values_menu_subitems`)
   ))
 }}
 
 
 {{/*  MENU  */}}
 {{ $variables = $variables | append
-  (partial "cms/widget" (dict "var" `values_menu_image`    "name" `image`    "widget" `image`))
-  (partial "cms/widget" (dict "var" `values_menu_title`    "name" `title`                    ))
-  (partial "cms/widget" (dict "var" `values_menu_subtitle` "name" `subtitle`                 ))
+  (partial "cms/widget" (dict "var" `values_menu_img`   "name" `img`   "widget" `img`))
+  (partial "cms/widget" (dict "var" `values_menu_title` "name" `title`               ))
+  (partial "cms/widget" (dict "var" `values_menu_sub`   "name" `sub`                 ))
   (partial "cms/widget" (dict
     "var"     `values_menu`
-    "alt"     `template_menu`
     "name"    `menu`
-    "widget"  `object`
+    "widget"  `dict`
     "fields"  (slice
-      `~values_menu_image`
+      `~values_menu_img`
       `~values_menu_title`
-      `~values_menu_subtitle`
+      `~values_menu_sub`
       `~values_menu_items`
     )
   ))
@@ -56,15 +55,14 @@
 {{/*  CALLNOWS  */}}
 {{ $variables = $variables | append
   (partial "cms/widget" (dict
-    "var"     `values_callnows`
-    "name"    `callnows`
-    "widget"  `list`
-    "label"    .template_callnow
-    "summary" "{{fields.label}}"
-    "types"   (slice
-      (partial "cms/widget" (dict "alt" `box_contact_phone`    "name" `phone`    "widget" `object` "fields" (slice `~box_contact_label_phone` `~box_button_color` `~box_icon_id`)))
-      (partial "cms/widget" (dict "alt" `box_contact_whatsapp` "name" `whatsapp` "widget" `object` "fields" (slice `~box_contact_label_phone` `~box_button_color`               )))
-      (partial "cms/widget" (dict "alt" `box_contact_custom`   "name" `custom`   "widget" `object` "fields" (slice `~box_button_link` `~box_icon_id` `~box_contact_label` `~box_button_lock` `~box_button_color` `~box_button_ga4`)))
+    "var"    `values_callnows`
+    "name"   `callnows`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "types"  (slice
+      (partial "cms/widget" (dict "alt" `links_phone`    "name" `phone`    "widget" `dict` "fields" (slice `~links_label_phone` `~btn` `~icon`)))
+      (partial "cms/widget" (dict "alt" `links_whatsapp` "name" `whatsapp` "widget" `dict` "fields" (slice `~links_label_phone` `~btn`               )))
+      (partial "cms/widget" (dict "alt" `links_custom`   "name" `custom`   "widget" `dict` "fields" (slice `~url` `~icon` `~links_label` `~lock` `~btn` `~ga4`)))
     )
   ))
 }}
@@ -89,19 +87,19 @@
   {{ $footer := dict
     "name"   "footer"
     "label"  "Footer"
-    "widget" "object"
+    "widget" "dict"
     "sub"    (slice
-      (dict "var" "box_size")
-      (dict "var" "box_bg_color")
-      (dict "var" "box_bg_fade_color")
-      (dict "var" "box_bg_fade_type")
-      (dict "var" "box_bg_image")
-      (dict "var" "box_bg_alpha")
-      (dict "var" "box_divider_id")
-      (dict "var" "box_divider_flip_x")
-      (dict "var" "box_divider_flip_y")
-      (dict "var" "box_dots")
-      (dict "var" "box_md")
+      (dict "var" "size")
+      (dict "var" "color")
+      (dict "var" "fade")
+      (dict "var" "fade_to")
+      (dict "var" "bi")
+      (dict "var" "alpha")
+      (dict "var" "div")
+      (dict "var" "flip_x")
+      (dict "var" "flip_y")
+      (dict "var" "dots")
+      (dict "var" "md")
     )
   }}
   {{ $global_fields = $global_fields | append $footer }}

@@ -1,0 +1,360 @@
+
+// Colors by backgrounds
+
+:root,
+html,
+body,
+.bg-cta,
+.bg-cta-light,
+.bg-cta-dark,
+.bg-main,
+.bg-main-light,
+.bg-main-dark,
+.bg-alt,
+.bg-alt-light,
+.bg-alt-dark,
+.bg-white,
+.bg-light,
+.bg-gray,
+.bg-dark,
+.bg-black {
+  // Bases  
+  --cta: #{ $cta };
+  --cta-in: #{ $cta-turn-in };
+  --main: #{ $main };
+  --main-in: #{ $main-turn-in };
+  --alt: #{ $alt };
+  --alt-in: #{ $alt-turn-in };
+  --gray: #{ $gray };
+  --gray-in: #{ $gray-turn-in };
+  --light: #{ $light };
+  --light-in: #{ $text };
+  --dark: #{ $dark };
+  --dark-in: #{ $light };
+  --turn: var(--dark);
+  --turn-in: var(--dark-in);
+  --such: var(--light);
+  --such-in: var(--light-in);
+  --hover: var(--turn);
+  --hover-in: var(--turn-in);
+  --active: var(--such);
+  --active-in: var(--such-in);
+  // Texts
+  color: var(--text);
+  --text: #{ $text };
+  --title: var(--dark);
+  --sub: var(--alt-text);
+  --main-text: #{ $main };
+  --alt-text: #{ $alt };
+  --cta-text: #{ $cta };
+  // Border
+  --border: color-mix(in srgb, var(--such), var(--turn));
+  // --map-filter: color-mix(in srgb, var(--map-filter-dark), transparent var(--bg-darkening));
+  --map-filter: var(--map-filter-light);
+  // // Toggle 0-1 to light-dark
+  // --bg-darkening: calc(var(--bg-dark, 0) * 100%);
+  // // Bases
+  // --cta:       color-mix(in srgb, #{ $cta },              transparent             var(--bg-darkening));
+  // --cta-in:    color-mix(in srgb, #{ $cta-turn-in },  transparent             var(--bg-darkening));
+  // --main:      color-mix(in srgb, #{ $main },             transparent             var(--bg-darkening));
+  // --main-in:   color-mix(in srgb, #{ $main-turn-in }, transparent             var(--bg-darkening));
+  // --alt:       color-mix(in srgb, #{ $alt },              transparent             var(--bg-darkening));
+  // --alt-in:    color-mix(in srgb, #{ $alt-turn-in },  transparent             var(--bg-darkening));
+  // --gray:      color-mix(in srgb, #{ $gray },             transparent             var(--bg-darkening));
+  // --gray-in:   color-mix(in srgb, #{ $gray-turn-in }, transparent             var(--bg-darkening));
+  // --light:     color-mix(in srgb, #{ $light },            #{ $dark }              var(--bg-darkening));
+  // --light-in:  color-mix(in srgb, #{ $text },             #{ $light }             var(--bg-darkening));
+  // --dark:      color-mix(in srgb, #{ $dark },             #{ $light }             var(--bg-darkening));
+  // --dark-in:   color-mix(in srgb, #{ $light },            #{ $dark }              var(--bg-darkening));
+  // --turn:      color-mix(in srgb, var(--dark),            var(--light)            var(--bg-darkening));
+  // --turn-in:   color-mix(in srgb, var(--dark-in),         var(--light-in)         var(--bg-darkening));
+  // --such:      color-mix(in srgb, var(--light),           var(--dark)             var(--bg-darkening));
+  // --such-in:   color-mix(in srgb, var(--light-in),        var(--dark-in)          var(--bg-darkening));
+  // --hover:     var(--turn);
+  // --hover-in:  var(--turn-in);
+  // --active:    var(--such);
+  // --active-in: var(--such-in);
+  // // Texts
+  // --text:      color-mix(in srgb, #{ $text },                  #{ $white }             var(--bg-darkening));
+  // --title:     color-mix(in srgb, var(--dark),                 #{ $white }             var(--bg-darkening));
+  // --sub:       color-mix(in srgb, var(--alt),                  #{ $white }             var(--bg-darkening));
+  // color: var(--text);
+  // // Border
+  // --border:    color-mix(in srgb, var(--such),             var(--turn));
+}
+
+// Texts
+.bg-white:not([class*="bg-fade"]) {
+  --text: #767676;
+}
+.bg-black,
+.bg-dark,
+.bg-gray,
+.bg-main-dark,
+.bg-alt-dark,
+.bg-cta-dark {
+  --text: #{ $white };
+  --title: #{ $white };
+  --turn: var(--light);
+  --turn-in: var(--light-in);
+  --such: var(--dark);
+  --such-in: var(--dark-in);
+  --map-filter: var(--map-filter-dark);
+  // --bg-dark: 1;
+}
+.bg-main {
+  @if $is-main-turn-text {
+    --text:  #{ $main-turn-neutral };
+    --title: #{ $main-turn-neutral };
+    --sub:   #{ $main-turn-colored };
+  } @else {
+    --text:  #{ $main-turn-neutral-flip };
+    --title: #{ $main-turn-neutral-flip };
+    --sub:   #{ $main-turn-colored-flip };
+  }
+}
+.bg-alt {
+  @if $is-alt-turn-text {
+    --text:  #{ $alt-turn-neutral };
+    --title: #{ $alt-turn-neutral };
+    --sub:   #{ $alt-turn-colored };
+  } @else {
+    --text:  #{ $alt-turn-neutral-flip };
+    --title: #{ $alt-turn-neutral-flip };
+    --sub:   #{ $alt-turn-colored-flip };
+  }
+}
+.bg-cta {
+  @if $is-cta-turn-text {
+    --text:  #{ $cta-turn-neutral };
+    --title: #{ $cta-turn-neutral };
+    --sub:   #{ $cta-turn-colored };
+  } @else {
+    --text:  #{ $cta-turn-neutral-flip };
+    --title: #{ $cta-turn-neutral-flip };
+    --sub:   #{ $cta-turn-colored-flip };
+  }
+}
+
+// Contrast Background
+@mixin cta-turn($bg-wd) {
+  @if $cta-turn-neutral == text-turn($bg-wd) {
+    @if $is-cta-turn-fill {
+      --cta: #{ $cta-turn-colored };
+      @if $is-cta-turn-in {
+        --cta-in: #{ $cta-turn-colored-in };
+      } @else {
+        --cta-in: #{ $cta-turn-colored-in-flip };
+      }
+    }
+    @if $is-cta-turn-text {
+      --cta-text: #{ $cta-turn-colored };
+    }
+  }
+}
+@mixin main-turn($bg-wd) {
+  @if $main-turn-neutral == text-turn($bg-wd) {
+    @if $is-main-turn-fill {
+      --main: #{ $main-turn-colored };
+      @if $is-main-turn-in {
+        --main-in: #{ $main-turn-colored-in };
+      } @else {
+        --main-in: #{ $main-turn-colored-in-flip };
+      }
+    }
+    @if $is-main-turn-text {
+      --main-text: #{ $main-turn-colored };
+    }
+  }
+}
+@mixin alt-turn($bg-wd) {
+  @if $alt-turn-neutral == text-turn($bg-wd) {
+    @if $is-alt-turn-fill {
+      --alt: #{ $alt-turn-colored };
+      @if $is-alt-turn-in {
+        --alt-in: #{ $alt-turn-colored-in };
+      } @else {
+        --alt-in: #{ $alt-turn-colored-in-flip };
+      }
+    }
+    @if $is-alt-turn-text {
+      --alt-text: #{ $alt-turn-colored };
+    }
+  }
+}
+
+// Background cta, main and alt in light and dark
+// @if not $cta-turn-fill {
+//   .bg-cta-light { @include cta-turn($white); }
+//   .bg-cta-dark  { @include cta-turn($dark);  }
+// }
+// @if not $main-turn-fill {
+//   .bg-main-light { @include main-turn($white); }
+//   .bg-main-dark  { @include main-turn($dark);  }
+// }
+// @if not $alt-turn-fill {
+//   .bg-alt-light { @include alt-turn($white); }
+//   .bg-alt-dark  { @include alt-turn($dark);  }
+// }
+
+// Background lights and darks if contrast active
+@if $is-main-turn-fill
+or $is-alt-turn-fill
+or $is-cta-turn-fill
+or $is-main-turn-text
+or $is-alt-turn-text
+or $is-cta-turn-text {
+  .bg-white,
+  .bg-light,
+  .bg-cta-light,
+  .bg-main-light,
+  .bg-alt-light {
+    @include cta-turn($white);
+    @include main-turn($white);
+    @include alt-turn($white);
+  }
+  .bg-black,
+  .bg-dark,
+  .bg-gray,
+  .bg-cta-dark,
+  .bg-main-dark,
+  .bg-alt-dark {
+    @include cta-turn($dark);
+    @include main-turn($dark);
+    @include alt-turn($dark);
+  }
+  .bg-cta {
+    @include main-turn($cta-turn-neutral-flip);
+    @include alt-turn($cta-turn-neutral-flip);
+  }
+  .bg-main {
+    @include alt-turn($main-turn-neutral-flip);
+    @include cta-turn($main-turn-neutral-flip);
+  }
+  .bg-alt {
+    @include main-turn($alt-turn-neutral-flip);
+    @include cta-turn($alt-turn-neutral-flip);
+  }
+}
+
+// CTA and Main
+@if $cta == $main {
+  .bg-main,
+  .bg-cta {
+    --cta:       var(--alt);
+    --cta-in:    var(--alt-in);
+    --cta-text:  var(--alt-text);
+    --main:      var(--alt);
+    --main-in:   var(--alt-in);
+    --main-text: var(--alt-text);
+  }
+} @else {
+  .bg-cta {
+    --cta:       var(--main);
+    --cta-in:    var(--main-in);
+    --cta-text:  var(--main-text);
+  }
+  .bg-main {
+    --main:      var(--cta);
+    --main-in:   var(--cta-in);
+    --main-text: var(--cta-text);
+  }
+}
+
+// Alt
+.bg-alt {
+  // like main
+  --alt:      var(--main);
+  --alt-in:   var(--main-in);
+  --alt-text: var(--main-text);
+}
+.bg-gray {
+  // like dark
+  --gray:    var(--dark);
+  --gray-in: var(--dark-in);
+}
+
+// Light
+.bg-light,
+.bg-cta-light,
+.bg-main-light,
+.bg-alt-light {
+  --light: #{ $white };
+}
+
+// Dark
+.bg-dark {
+  --dark: #{ $black };
+}
+
+// Turn
+@mixin turn-light($color) {
+  @if text-turn($color) == $white {
+    --turn:     var(--light);
+    --turn-in:  var(--light-in);
+    --such:    var(--dark);
+    --such-in: var(--dark-in);
+    --map-filter: var(--map-filter-dark);
+    // --bg-dark: 1;
+  }
+}
+.bg-main { @include turn-light($main); }
+.bg-alt  { @include turn-light($alt);  }
+.bg-cta  { @include turn-light($cta);  }
+.bg-gray { @include turn-light($gray); }
+
+
+// Bases
+
+.btn,
+.cta {
+  --base:    var(--cta);
+  --base-in: var(--cta-in);
+}
+:root,
+.main {
+  --base:    var(--main);
+  --base-in: var(--main-in);
+}
+.alt {
+  --base:    var(--alt);
+  --base-in: var(--alt-in);
+}
+.light {
+  --base:    var(--light);
+  --base-in: var(--light-in);
+}
+.dark {
+  --base:    var(--dark);
+  --base-in: var(--dark-in);
+}
+.turn {
+  --base:    var(--turn);
+  --base-in: var(--turn-in);
+  // hover like gray
+  --hover: var(--gray);
+  --hover-in: var(--gray-in);
+}
+.such {
+  --base:    var(--such);
+  --base-in: var(--such-in);
+  // active like gray
+  --active:    var(--gray);
+  --active-in: var(--gray-in);
+}
+.whatsapp {
+  --base: #25d366;
+  --base-in: #fff;
+  --hover: #128c7e;
+  --hover-in: #fff;
+  --active: #075e54;
+  --active-in: #fff;
+}
+
+.whatsapp:where(:has([href$=".svg#brand-whatsapp-o"])) {
+  --base: #128c7e;
+  --hover: #25d366;
+}
+.icon:has([href$=".svg#brand-whatsapp-o"]) {
+  opacity: 1;
+}

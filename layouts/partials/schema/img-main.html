@@ -1,0 +1,52 @@
+{{/*  URL  */}}
+{{ $img := "" }}
+
+{{ $src := .Params.img }}
+{{ if not $src }}
+  {{ with .Params.imgs }}
+    {{ $src := index . 0 }}
+  {{ end }}
+{{ end }}
+
+{{ $out := hasPrefix $src "http" }}
+{{ if $src }}
+  {{ $src := partial "func/check-media" $src }}
+{{ else }}
+  {{ $src = partial "func/logo" . }}
+{{ end }}
+
+{{ if $src }}
+  {{ if partial "func/is-vid" $src }}
+    {{ $src = partial "func/poster" $src }}
+  {{ end }}
+{{ end }}
+
+{{/*  Width and Height  */}}
+{{ $width  := 1280 }}
+{{ $height := 960 }}
+{{ if $img }}
+  {{ if or (hasSuffix $src ".svg") $out | not }}
+    {{ with resources.Get $src }}
+      {{ $width  = .Width }}
+      {{ $height = .Height }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/*  Caption  */}}
+{{ $caption := or .Params.alt .Params.seo .Title }}
+
+{{/*  Schema  */}}
+{{ $schema := dict
+  "@type"      "ImageObject"
+  "@id"        (print .Permalink "#schema-img")
+  "url"        $img
+  "contentUrl" $img
+  "width"      $width
+  "height"     $height
+  "caption"    $caption
+  "inLanguage" (or .Params.locale .Lang)
+}}
+{{ $schema = partial "func/obj-truly" $schema }}
+
+{{ return $schema }}

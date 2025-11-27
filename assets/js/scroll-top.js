@@ -22,8 +22,8 @@ export function initScrollTop () {
   ]
 
   const sectionHeader = document.querySelector(`.section--header:is(${bgs.join(', ')})`) || document.body
-  const menuSticky = document.querySelector('.body-menu--transparent.body-menu--sticky .menu.bg')
-  const logoSticky = document.querySelector('.body-menu--transparent.body-menu--logo--sticky .logo.bg')
+  const menuSticky = document.querySelector('.body-menu--clear.body-menu--sticky .menu.bg')
+  const logoSticky = document.querySelector('.body-menu--clear.body-menu--logo--sticky .logo.bg')
   let menuStickyBgBefore, menuStickyBgAfter, elementToChange
 
   if (sectionHeader && (menuSticky || logoSticky)) {

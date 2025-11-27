@@ -4,7 +4,7 @@
 
 {{ with .section }}
   {{ if .div }}
-    {{ with partial "functions/dividers" .div }}
+    {{ with index site.Data.utilities.divs .div }}
       {{ if eq .size 2 }}
         {{ $class = print $class " div" $_next "--size" }}
       {{ end }}
@@ -22,8 +22,8 @@
 
     {{ $style = print
       "--div" $_next ": url("
-      (partial "functions/draws-base" .)
-      "#div-" .div "-" (cond $.next "ne" "pr") $flips
+        (partial "func/draws-base" .)
+        "#div-" .div "-" (cond $.next "ne" "pr") $flips
       ")"
     }}
     {{ if eq .div "fade" }}

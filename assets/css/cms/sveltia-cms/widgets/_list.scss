@@ -1,6 +1,11 @@
 [data-widget="list"] {
-  > header:not(:has(.required)) {
-    padding-left: 52px;
+  --item-top: calc(var(--field-editor-padding) + (var(--sui-button-small-height) - 24px) / 2);
+  --button-top: calc(var(--item-top) + (24px - var(--sui-checkbox-height)) / 2);
+  --badge-top: calc(var(--item-top) + 1px);
+  position: relative;
+  > header {
+    padding-left: calc(var(--sui-checkbox-height) + 6px + 22px);
+    
   }
   > .widget-wrapper
   > .group
@@ -8,20 +13,25 @@
   > .toolbar.top:first-child {
     min-height: 32px;
     > .button:first-child {
-      width: 24px;
-      height: 24px;
-      margin-top: -68px;
-      margin-left: 0px;
+      position: absolute;
+      top: var(--button-top);
+      margin: 0;
+      width: var(--sui-checkbox-height);
+      height: var(--sui-checkbox-height);
       border-radius: var(--sui-button-small-border-radius);
       border-width: var(--sui-button-tertiary-border-width, 1px);
       border-style: var(--sui-button-tertiary-border-style, solid);
       border-color: var(--sui-button-tertiary-border-color, var(--sui-button-border-color));
       background-color: var(--sui-button-tertiary-background-color, var(--sui-button-background-color));
       transition: none;
+      > .icon {
+        font-size: calc(var(--sui-checkbox-height) - 2px);
+      }
     }
     > .summary {
-      margin-top: -72px;
-      margin-left: 4px;
+      position: absolute;
+      top: var(--badge-top);
+      margin-left: calc(var(--sui-checkbox-height) + 6px);
       font-size: 12px;
       padding-block: calc((22px - 2ch) / 2);
       padding-inline: calc((22px - var(--wch, 1ch) * 0.925) / 2);
@@ -59,10 +69,14 @@
       ~ .toolbar.top.add {
         margin-bottom: -8px !important;
         > .button {
-          width: 24px;
-          height: 24px;
-          margin-top: -40px;
-          margin-left: 0px;
+          position: absolute;
+          top: var(--button-top);
+          margin: 0;
+          max-width: var(--sui-checkbox-height);
+          max-height: var(--sui-checkbox-height);
+          > .icon {
+            font-size: var(--sui-checkbox-height);
+          }
           > .label {
             display: none;
           }

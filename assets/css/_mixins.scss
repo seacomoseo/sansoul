@@ -6,7 +6,6 @@
   font-style: $font-style-base;
   font-weight: $font-weight-base;
   line-height: $line-height-base;
-  --top-font: 0em;
   @if not $root {
     font-size: 1em;
   }
@@ -28,18 +27,6 @@
   font-weight: $font-weight-title;
   line-height: $line-height-title;
   font-size: $font-size-title * 1em;
-  @if $top-title != 0 {
-    --top-font: #{#{ $top-title }em};
-    &:not(strong, .link, .icon) {
-      translate: 0 var(--top-font);
-      > .icon:not(.box__icon--side),
-      &.line::after {
-        translate: 0 calc(var(--top-font) * -1);
-      }
-    }
-  } @else {
-    --top-font: 0em;
-  }
   @if not $hide-nested {
     @if $font-weight-bold-title > 0 {
       strong,
@@ -63,18 +50,6 @@
   font-weight: $font-weight-cursive;
   line-height: $line-height-cursive;
   font-size: $font-size-cursive * 1em;
-  @if $top-cursive != 0 {
-    --top-font: #{#{ $top-cursive }em};
-    &:not(strong, .link, .icon) {
-      translate: 0 var(--top-font);
-      > .icon:not(.box__icon--side),
-      &.line::after {
-        translate: 0 calc(var(--top-font) * -1);
-      }
-    }
-  } @else {
-    --top-font: 0em;
-  }
   @if not $hide-nested {
     @if $font-weight-bold-cursive > 0 {
       strong,
@@ -92,14 +67,14 @@
   }
 }
 // Font Button
-@mixin font-button($font: main) {
-  $font-type: $buttons-font-main;
-  $font-bold: $buttons-font-main-bold;
-  $font-caps: $buttons-font-main-caps;
+@mixin font-btn($font: main) {
+  $font-type: $btns-font-main;
+  $font-bold: $btns-font-main-bold;
+  $font-caps: $btns-font-main-caps;
   @if $font == alt {
-    $font-type: $buttons-font-swap;
-    $font-bold: $buttons-font-swap-bold;
-    $font-caps: $buttons-font-swap-caps;
+    $font-type: $btns-font-swap;
+    $font-bold: $btns-font-swap-bold;
+    $font-caps: $btns-font-swap-caps;
   }
 
   @if $font-bold {
@@ -167,7 +142,7 @@
 // RADIUS
 
 @mixin radius-parent($padding: 0em, $r: $radius) {
-  @if $radius > 0.01 or $buttons-rounded or $icon-buttons-rounded {
+  @if $is-any-radius {
     @extend %radius;
     @if $r != $radius {
       --radius: #{ $r };
@@ -178,7 +153,7 @@
   }
 }
 @mixin radius-child {
-  @if $radius > 0.01 {
+  @if $is-radius {
     @if $chamfer {
       clip-path: var(--chamfer);
     } @else {
@@ -190,7 +165,7 @@
   @include radius-parent($padding, $r);
   @include radius-child;
 }
-@mixin circle {
+@mixin disc {
   @if $chamfer {
     clip-path: var(--diamond);
   } @else {
@@ -198,7 +173,7 @@
   }
 }
 @mixin hide-radius {
-  @if $radius > 0.01 {
+  @if $is-radius {
     @if $chamfer {
       clip-path: none;
     } @else {

@@ -1,0 +1,73 @@
+{{/* partial "func/color-background" (dict "child" "such" "parent" "dark") */}}
+{{ $return := dict "child" .child "parent" (.child | default .parent) }}
+
+{{ if eq "transparent" .child }}
+
+  {{ $return = dict "child" .child "parent" .parent }}
+
+{{ else if in (slice "such" "turn") .child }}
+
+  {{ $color := "" }}
+  {{ $turn  := eq .child "turn" }}
+
+  {{ if eq .parent "white" }}
+    {{ $color = cond $turn "dark" "light" }}
+  {{ else if eq .parent "light" }}
+    {{ $color = cond $turn "dark" "white" }}
+  {{ else if eq .parent "dark" }}
+    {{ $color = cond $turn "light" "black" }}
+  {{ else if eq .parent "black" }}
+    {{ $color = cond $turn "light" "dark" }}
+  {{ else }}
+
+    {{ $prefix  := "" }}
+    {{ $suffix  := "" }}
+    {{ with split .parent "-" }}
+      {{ $prefix = index . 0 }}
+      {{ $suffix = index . 1 }}
+    {{ end }}
+
+    {{ if $suffix }}
+    
+      {{ if $turn }}
+        {{ if eq $suffix "dark" }}
+          {{ $color = print $prefix "-light" }}
+        {{ else }}
+          {{ $color = print $prefix "-dark" }}
+        {{ end }}
+      {{ else }}
+        {{ if eq $suffix "dark" }}
+          {{ $color = "dark" }}
+        {{ else }}
+          {{ $color = "white" }}
+        {{ end }}
+      {{ end }}
+
+    {{ else }}
+
+      {{ $base     := dict
+        "gray" (site.Data.styles.colors.base.gray  | default "#767676")
+        "main" (site.Data.styles.colors.main.color | default "#577399")
+        "alt"  (site.Data.styles.colors.alt.color  | default "#eeeeee")
+        "cta"  (site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399")
+      }}
+      {{ $base      = index $base .parent }}
+      {{ $contrast := partial "func/color-turn" $base }}
+      {{ if eq $contrast "light" }}
+        {{ $color   = cond $turn "light" "dark" }}
+      {{ else }}
+        {{ $color   = cond $turn "dark" "light" }}
+      {{ end }}
+      {{ if ne .parent "gray" }}
+        {{ $color = print .parent "-" $color }}
+      {{ end }}
+
+    {{ end }}
+
+  {{ end }}
+
+  {{ $return = dict "child" $color "parent" $color }}
+
+{{ end }}
+
+{{ return $return }}

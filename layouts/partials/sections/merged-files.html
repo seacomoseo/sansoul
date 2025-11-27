@@ -1,22 +1,13 @@
-{{/*  FUNTION DEFINE  */}}
-{{ define "partials/file" }}
-  {{ $section := dict }}
-  {{ $file    := .file }}
-  {{ if $file }}
-    {{/*  get file  */}}
-    {{ with index site.Data.section (split $file "/") }}
-      {{/*  merge section and file  */}}
-      {{ $section = merge $ . }}
-    {{ end }}
-  {{ end }}
-  {{ return $section }}
-{{ end }}
-
-{{/*  SECTIONS  */}}
 {{ $sections := slice }}
 {{ range . }}
-  {{ $section := partial "file" . }}
+  {{ $section := .params | default dict }}
+  {{ with .file }}
+    {{/*  get file  */}}
+    {{ with index site.Data.section . }}
+      {{/*  merge section params and file  */}}
+      {{ $section = merge $section . }}
+    {{ end }}
+  {{ end }}
   {{ $sections = $sections | append $section }}
 {{ end }}
-
 {{ return $sections }}

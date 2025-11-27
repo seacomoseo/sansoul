@@ -1,0 +1,74 @@
+{{- $show     := cond (not site.Data.config.show) "" " show" -}}
+{{- $btn      := cond (ne .faq.btn "none") .faq.btn "" -}}
+{{- $fotn_alt := cond (not .faq.swap) "" "btn--swap" -}}
+{{- $headers  := .faq.headers }}
+<div class="faqs {{- if $headers }} faqs--headers{{ end }} box__block align-left {{- $show }}">
+  {{- range $k, $v := .faqs -}}
+    {{- with merge ($.faq | default dict) . -}}
+      {{- $hl   := partial "func/hl" (dict "hn" .hn "hs" .hs "hs_vs" .hs_vs "level" $.level) -}}
+      {{- $hn   := $hl.node -}}
+      {{- $hs   := $hl.class -}}
+      {{- $open := and (not $k) .open }}
+      <div class="faq {{- if $open }} faq--active{{ end }}">
+
+        {{- /* TITLE  */}}
+        {{- $class := slice "faq__title" $hs -}}
+        {{- $style := $hl.style -}}
+        {{- $attrs := dict "class" $class "style" $style -}}
+        {{- $attrs  = partial "func/attrs" $attrs }}
+
+        {{ print "<" $hn $attrs ">" | safeHTML -}}
+          {{- if not $headers -}}
+            <button type="button" class="faq__btn btn {{ $btn }} {{ $fotn_alt }}">
+              {{- partial "icon" (dict "class" "faq__icon" "icon" .icon "def" "question") }}
+              <b>{{ .title }}</b>
+              {{- partial "icon" (dict "class" "faq__btn-dot" "def" "plus") }}
+            </button>
+          {{- else }}
+            <b>{{ .title }}</b>
+            <button type="button" class="faq__btn-dot btn btn--dot {{ $btn }}" title="{{ i18n `more` }}">
+              {{- partial "icon" (dict "class" "faq__icon" "icon" .icon "def" "down") }}
+            </button>
+          {{- end }}
+        {{ print "</" $hn ">" | safeHTML -}}
+
+        {{- /* MD  */}}
+        <div class="faq__md md" {{- if not $open }} hidden="until-found"{{ end }}>
+          {{- with .md -}}
+            {{- partial "func/md" . -}}
+          {{- end }}
+        </div>
+      </div>
+    {{- end -}}
+  {{- end }}
+</div>
+
+
+{{- /* SCHEMA  */ -}}
+
+{{- $schema_questions := slice -}}
+{{- range .faqs -}}
+  {{- $schema_questions = $schema_questions | append (dict
+    "@type" `Question`
+    "name"  .title
+    "acceptedAnswer" (dict
+      "@type" `Answer`
+      "text"  (.md | markdownify | plainify)
+    )
+  ) -}}
+{{- end -}}
+{{- $schema := dict
+  "@context"   "https://schema.org"
+  "@type"      "FAQPage"
+  "@id"        (print page.Permalink "#schema-faq")
+  "mainEntity" $schema_questions
+  "isPartOf"   (dict "@id" page.Permalink)
+-}}
+{{- if hugo.IsProduction -}}
+  {{- $schema = jsonify $schema -}}
+{{- else -}}
+  {{- $schema = debug.Dump $schema -}}
+{{- end }}
+<script type="application/ld+json">
+  {{- $schema | safeJS -}}
+</script>

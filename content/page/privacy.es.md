@@ -8,7 +8,7 @@ weight: 2
 ---
 
 Política de Privacidad
-{.subtitle}
+{.sub}
 
 **INFORMACIÓN DETALLADA SOBRE PROTECCIÓN DE DATOS**
 
@@ -29,7 +29,7 @@ Somos una empresa que ha nacido con la intención de satisfacer las necesidades 
 - Nombre: **{{% legal name %}}**
 - NIF: **{{% legal nif %}}**
 - Domicilio: **{{% legal location %}}**
-- Correo electrónico: **{{% legal email %}}**
+- Correo electrónico: **{{% legal mail %}}**
 
 El cliente podrá contactar para ejercer su derecho a modificación o eliminación de sus datos personales o resolver sus dudas del tratamiento de sus datos personales a través de las formas de contacto anteriormente expuestas.
 
@@ -42,7 +42,7 @@ Tratamos los datos del cliente para la prestación del servicio solicitado o con
 
 2. **Cumplir con una obligación legal**, como, por ejemplo, dar cumplimiento a nuestras obligaciones contables y fiscales, o retener tus datos de tráfico para cumplir con la legislación vigente en materia de conservación de datos, entre otras.
 
-3. **Tratar tus datos conforme al consentimiento que nos hayas dado en los casos en los que {{% legal name %}} no se base en otro fundamento jurídico**. Por ejemplo, mandarte publicidad de terceras entidades con las que** {{% legal name %}}**, tenga acuerdos comerciales. En todo caso, siempre podrás revocar el consentimiento que nos hubieras proporcionado. Para obtener más información, contacte a través del correo electrónico **{{% legal email %}}** indicando su petición.
+3. **Tratar tus datos conforme al consentimiento que nos hayas dado en los casos en los que {{% legal name %}} no se base en otro fundamento jurídico**. Por ejemplo, mandarte publicidad de terceras entidades con las que** {{% legal name %}}**, tenga acuerdos comerciales. En todo caso, siempre podrás revocar el consentimiento que nos hubieras proporcionado. Para obtener más información, contacte a través del correo electrónico **{{% legal mail %}}** indicando su petición.
 \
 El Cliente será el único responsable de toda la información que proporcione a **{{% legal name %}}** para la gestión y contratación de los productos y servicios, garantizando que está facultado y, en su caso, ha obtenido el consentimiento del resto de usuarios o interlocutores para la entrega. **{{% legal name %}}** no se responsabilizan de la utilización de datos falsos, inexactos, incompletos, no actualizados proporcionados por el Cliente.
 \
@@ -108,7 +108,7 @@ El cliente/usuario es responsable de la veracidad de los datos comunicados y deb
 
 Tiene derecho a acceder, rectificar y suprimir los datos, así como a ejercer otros derechos como se explica en la información adicional.
 
-En virtud de lo dispuesto en los artículos 15 a 22 del Reglamento Europeo de Protección de Datos, en cualquier momento usted podrá ejercer sus derechos de acceso, rectificación, supresión, limitación del tratamiento, portabilidad, oposición y a no ser objeto de decisiones individualizadas automatizadas, dirigiéndose por escrito a través del correo ordinario o por correo electrónico a **{{% legal email %}}**.
+En virtud de lo dispuesto en los artículos 15 a 22 del Reglamento Europeo de Protección de Datos, en cualquier momento usted podrá ejercer sus derechos de acceso, rectificación, supresión, limitación del tratamiento, portabilidad, oposición y a no ser objeto de decisiones individualizadas automatizadas, dirigiéndose por escrito a través del correo ordinario o por correo electrónico a **{{% legal mail %}}**.
 
 El usuario podrá retirar el consentimiento otorgado en cualquier momento, oponiéndose al tratamiento de sus datos para una determinada finalidad, sin que ello afecte a la licitud del tratamiento basado en el consentimiento previo a su retirada o bien oponerse al mismo, en cuyo caso sus datos personales únicamente serán conservados para el ejercicio o la defensa de posibles reclamaciones.
 
@@ -143,7 +143,7 @@ Para que este canal sea útil para todos, es necesario respetar unas reglas bás
 
 1. Recuerde que este es un foro público. Cuando usted publica cualquier dato, comentario o información, asume que éste puede ser visto por los restantes usuarios de esta red social y por {{% legal name %}}
 2. Le pedimos que hable en primera persona y que trate de aportar valor en sus comentarios, facilitando informaciones contrastadas. Recuerde que usted es responsable de sus aportaciones y de las consecuencias en su imagen y reputación. Si tiene dudas, mejor no haga una contribución.
-3. Este canal no es para crear polémica, descalificar a otros usuarios o a terceros, ni para presentar quejas y reclamaciones, que deben canalizarse a través de las vías específicas que {{% legal name %}} tiene establecidas para esa finalidad. Si está interesado en gestionar solicitudes, sugerencias y reclamaciones sobre los servicios disponibles, puede enviar un mensaje a **{{% legal email %}}**
+3. Este canal no es para crear polémica, descalificar a otros usuarios o a terceros, ni para presentar quejas y reclamaciones, que deben canalizarse a través de las vías específicas que {{% legal name %}} tiene establecidas para esa finalidad. Si está interesado en gestionar solicitudes, sugerencias y reclamaciones sobre los servicios disponibles, puede enviar un mensaje a **{{% legal mail %}}**
 4. Trate con respeto a los otros usuarios. Use un lenguaje apropiado y correcto.
 5. No publique material publicitario ni haga uso de este perfil para buscar trabajo.
 6. Su contribución debe presentar datos reales y concretos. Se permiten citas o la reproducción de pequeños fragmentos de textos, libros u obras en general de terceros, siempre y cuando se indique la fuente y el nombre del autor.
@@ -162,7 +162,7 @@ Para que este canal sea útil para todos, es necesario respetar unas reglas bás
 
 Hemos implementado las medidas de seguridad técnicas y organizativas adecuadas para evitar que sus datos personales se pierdan, se utilicen o se acceda a ellos accidentalmente de forma no autorizada, sean modificados o divulgados, todo ello conforme a lo dispuesto en el **Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016, relativo a la protección de las personas físicas en lo que respecta al tratamiento de datos personales, así como lo que se establezca en la normativa nacional que sea de aplicación**. Asimismo, hemos implementado procedimientos para tratar cualquier sospecha de violación de la seguridad de los datos personales. En caso de producirse, se lo notificaremos a usted y a cualquier entidad reguladora pertinente (Agencia Española de Protección de Datos). No obstante, si bien nos esforzamos por proteger su información personal, la naturaleza de Internet y de mensajerías instantáneas (como whastApp), impide que sea posible garantizar la seguridad de la información que al 100%. Con esto en mente, cualquier transmisión de datos realizada a través de internet será bajo su propio riesgo, por lo que le instamos a tomar todas las precauciones para proteger su información personal mientras está en línea.
 
-Asimismo, si usted tiene alguna pregunta/cuestión sobre la presente Política de Privacidado en relación con nuestro uso/tratamiento de sus datos personales, puede ponerse en contacto con nosotros a través de la dirección **{{% legal email %}}**. En el supuesto de que finalmente no esté satisfecho con el uso que hacemos de sus datos personales o con nuestra respuesta ante cualquier solicitud de Derechos que ejercite, e, puede realizar la oportuna queja ante la **AGENCIA ESPAÑOLA DE PROTECCIÓN DE DATOS**.
+Asimismo, si usted tiene alguna pregunta/cuestión sobre la presente Política de Privacidado en relación con nuestro uso/tratamiento de sus datos personales, puede ponerse en contacto con nosotros a través de la dirección **{{% legal mail %}}**. En el supuesto de que finalmente no esté satisfecho con el uso que hacemos de sus datos personales o con nuestra respuesta ante cualquier solicitud de Derechos que ejercite, e, puede realizar la oportuna queja ante la **AGENCIA ESPAÑOLA DE PROTECCIÓN DE DATOS**.
 
 Tenga en cuenta que la presente web puede contener enlaces a sitios web de terceros. Si sigue un enlace a cualquiera de estos sitios web, tenga en cuenta que tienen sus propias Políticas de Privacidad y que no aceptamos ninguna responsabilidad por dichas políticas o el tratamiento de su información personal. Consulte estas políticas antes de enviar información personal a dichos sitios web de terceros.
 
@@ -181,5 +181,5 @@ Para constatar que se encuentra en la página web de nuestra empresa, la direcci
 3. En la recogida y el tratamiento de los datos de carácter personal se han adoptado las medidas de seguridad adecuadas para evitar la pérdida, el acceso no autorizado o la manipulación de los mismos, de acuerdo con lo establecido en el **RGPD**. Los datos de contacto de los potenciales clientes se conservaran durante **1 AÑO**.
 4. **la empresa** se compromete a proteger la información confidencial a la que tenga acceso.
 5. **la empresa** no empleará en ningún caso los datos de carácter personal que usted ponga a su disposición para prestar servicios a terceros distintos a los referidos en el apartado `a)` del presente documento o, en su caso, para lograr una utilidad propia.
-6. El Usuario puede, en todo momento, ejercitar sus derechos de acceso, rectificación, supresión y portabilidad de datos y oposición y limitación a su tratamiento sobre sus datos personales así como el de revocación del consentimiento para cualquiera de las finalidades antes señaladas, enviando a **{{% legal name %}}** carta debidamente firmada a nuestra dirección postal **{{% legal location %}}** o bien al correo electrónico **{{% legal email %}}**, donde consten claramente los datos de contacto, a la cual deberá acompañarse fotocopia de su DNI/NIF o documento que acredite su identidad.Si considera que no ha obtenido satisfacción plena en el ejercicio de sus derechos, podrá presentar una reclamación ante la autoridad nacional de control dirigiéndose a estos efectos a la **Agencia Española de Protección de Datos** , C/ Jorge Juan, 6 – 28001 Madrid.
+6. El Usuario puede, en todo momento, ejercitar sus derechos de acceso, rectificación, supresión y portabilidad de datos y oposición y limitación a su tratamiento sobre sus datos personales así como el de revocación del consentimiento para cualquiera de las finalidades antes señaladas, enviando a **{{% legal name %}}** carta debidamente firmada a nuestra dirección postal **{{% legal location %}}** o bien al correo electrónico **{{% legal mail %}}**, donde consten claramente los datos de contacto, a la cual deberá acompañarse fotocopia de su DNI/NIF o documento que acredite su identidad.Si considera que no ha obtenido satisfacción plena en el ejercicio de sus derechos, podrá presentar una reclamación ante la autoridad nacional de control dirigiéndose a estos efectos a la **Agencia Española de Protección de Datos** , C/ Jorge Juan, 6 – 28001 Madrid.
 7. El Usuario autoriza al tratamiento automatizado de los datos personales suministrados en los términos indicados. Para ello pulse el botón **"ENVIAR"** que se encuentra tras el formulario de contacto.

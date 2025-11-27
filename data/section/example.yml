@@ -4,16 +4,16 @@ name: Ejemplo
 id: seccion
 ## menu
 menu_label: Texto del enlace del Menú
-menu_button: cta # [ main, cta, alt, light, dark, invert, similar, none, hide ]
+menu_btn: cta # [ main, cta, alt, light, dark, turn, such, none, hide ]
 menu_swap: y
 # bg
-color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
+color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
-fade: gray # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
-fade_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-bi: base/poster.png
+fade: gray # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
+bi: /u/base/poster.png
 alpha: 0 # [ 0.00 - 1.00 ]
-parallax: soft # [ none, fix, soft ]
+scroll: soft # [ none, fix, soft ]
 # paddings
 pt: 5 # [ >= 0.00 ]
 pb: 5 # [ >= 0.00 ]
@@ -32,10 +32,11 @@ div_y: y
 # titles
 title: Título de Sección
 hanchor: Título oculto para SEO
-subtitle: Subtítulo de Sección
+sub: Subtítulo de Sección
 price: 22 €
-hn: '' # [ 1 - 6, p ]
-hs: '' # [ 0 - 6 ]
+hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
+hs: null # [ 0.001 - 6.00 ]
+hs_vs: null # [ 0.001 - 6.00 ]
 caps: y
 line: y
 # md
@@ -51,45 +52,48 @@ md_caps: 3 # [ 1 - 6 ]
 md_line: 2 # [ 1 - 6 ]
 md_index: n
 md_nav: n
-md_border: hide # [ main, cta, alt, light, dark, invert, similar, hide ]
+md_border: hide # [ main, cta, alt, light, dark, turn, such, hide ]
 # icon
 # icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-icon_type: bottom # [ top, side, bottom ]
+icon_pos: sub # [ top, side, sub ]
 icon_size: 0 # [ 0 = auto, > 0.00 ]
-icon_color: '' # [ main, cta, alt, light, dark, invert, similar ]
+icon_color: '' # [ main, cta, alt, light, dark, turn, such ]
 # image
-image: base/icon.png
-hover: base/poster.png
+img: /u/base/icon.png
+hover: /u/base/poster.png
 alt: Descripción de la imagen
 hover_alt: Descripción de la imagen hover
+vid: https://www.youtube.com/watch?v=Pql69BV9rAU
+mute: false
 ratio: 1/1 # [ int/int ]
-circle: y
+disc: y
 contain: n
-border: main # [ main, cta, alt, light, dark, invert, similar, hide ]
+border: main # [ main, cta, alt, light, dark, turn, such, hide ]
 inset: y
 gray: n
 shade: n
 # button
-link: /legal/
+url: /legal/
 pin: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
 label: Legal
 anchor: Aviso Legal
 lock: n
-button: none # [ main, cta, alt, light, dark, invert, similar, none, hide ]
+btn: none # [ main, cta, alt, light, dark, turn, such, none, hide ]
 swap: y
 ga4: n
 # container
-box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
+box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
 box_color_alpha: '' # [ 0.00 - 1.00 ]
-box_fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
-box_fade_type: linear-t # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
-box_bi: base/icon.png
+box_fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+box_fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
+box_bi: /u/base/icon.png
 box_alpha: .8 # [ 0.00 - 1.00 ]
-box_parallax: '' # [ none, soft, box ]
+box_scroll: '' # [ none, soft, box ]
 # boxi
 rate: 16/9 # [ int/int ]
 space: null # [ >= 0.00 ]
 pd: null # [ >= 0.00 ]
+pd_vs: null # [ >= 0.00 ]
 align: left # [ left, center, right ]
 align_vl: center # [ left, center, right ]
 side: right # [ left, center, right ]
@@ -98,9 +102,9 @@ hide_radius: y
 pill: n
 card: n
 # other
-if: '' # [ 'param name', body, related ]
+if: '' # [ 'param name', body, rel ]
 node: aside # [ section, header, footer, nav, article, aside, div ]
-params: [] # [ { from, to, value } ]
+get: [] # [ { from, to, value } ]
 # - from: null # string like example.path.to.param
 #   to: null # string like box.cols
 #   value: null # string like obj
@@ -127,27 +131,28 @@ tags:
   icon: star
   label: ¡Holi!
 sort: # default:
-- image
+- img
 - title
-- icon_bottom
-- subtitle
+- icon_sub
+- sub
 - price
 - md
 - steps
 - gallery
 - list
-- accordion
+- faq
 - reviews
 - dots
-- contact
+- when
+- links
 - form
 - map
 - gss
 - boxes
 - tags
-- button
+- btn
 # view
-view: [] # [all, titles, md, menu, icon, image, button, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, accordion, gallery, reviews, contact, form, map, gss, boxes, modals ]
+view: [] # [all, titles, md, menu, icon, img, btn, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, faq, gallery, reviews, links, form, map, gss, boxes, modals ]
 
 
 ## BOXES
@@ -172,7 +177,7 @@ box:
   # add same to container
   # + remove `box_` of bg keys
   # + view
-  view: [] # [ all, group, titles, md, icon, image, button, bg, boxi, others, list ]
+  view: [] # [ all, group, titles, md, icon, img, btn, bg, boxi, others, list ]
 boxes:
 - id: id-ejemplo-caja-1
   title: Título de Caja 1
@@ -185,7 +190,7 @@ boxes:
   grow: n
   align_y: stretch # [ stretch, top, center, bottom ]
   # + view
-  view: [] # [ all, titles, md, icon, image, button, bg, boxi-boxes, boxi, others, list, steps, accordion, gallery, reviews, contact, form, map, gss, boxes ]
+  view: [] # [ all, titles, md, icon, img, btn, bg, boxi-boxes, boxi, others, list, steps, faq, gallery, reviews, links, form, map, gss, boxes ]
 - title: Título de Caja 2
 - title: Título de Caja 3
 - boxes:
@@ -193,10 +198,10 @@ boxes:
   - title: Título de SubCaja 2
 
 
-## TYPES
+## BLOCKS
 
 - list:
-    type: null # [ all, blog, event, product, category, author, page, ..., /, related ]
+    type: null # [ all, blog, event, product, category, author, page, ..., /, rel ]
     max: 4 # int
     date: 2023-05-01 00:00:00 # date
     end: 2023-11-01 00:00:00 # date
@@ -210,21 +215,22 @@ boxes:
 ###
 
 - step:
-    border: cta # [ main, cta, alt, light, dark, invert, similar, hide ]
+    border: cta # [ main, cta, alt, light, dark, turn, such, hide ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
-    hn: '' # [ 1 - 6, p ]
-    hs: '' # [ 0 - 6 ]
+    hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
+    hs: null # [ 0.001 - 6.00 ]
+    hs_vs: null # [ 0.001 - 6.00 ]
     caps: y
     line: y
   steps:
   - title: Título de Paso 1
-    subtitle: Subtítulo de Paso 1
+    sub: Subtítulo de Paso 1
     md: |
       Contenido de Paso 1
     icon: 1 # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-    image: base/poster.png
+    img: /u/base/poster.png
   - title: Título de Paso 2
-    subtitle: Subtítulo de Paso 2
+    sub: Subtítulo de Paso 2
     md: |
       Contenido de Paso 2
 
@@ -233,21 +239,21 @@ boxes:
 - gallery:
     cols: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, cols, boxes ]
-    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
+    color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
     gap: 0 # [ >= 0.00 ]
     ratio: 1/1 # [ int/int ]
     contain: y
     gray: y
     alt: Alt prefix in each image + index
-    link: /pagina-ejemplo/
+    url: /pagina-ejemplo/
     pin: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: Ejemplo
     anchor: Jeje
     lock: n
-    button: none # [ main, cta, alt, light, dark, invert, similar, none ]
+    btn: none # [ main, cta, alt, light, dark, turn, such, none ]
     swap: y
     ga4: n
-  images:
+  imgs:
   - https://images.unsplash.com/photo-1552664730-d307ca884978?fit=crop&w=512&q=60
   - https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?fit=crop&w=512&q=60
   - https://images.unsplash.com/photo-1522071820081-009f0129c71c?fit=crop&w=512&q=60
@@ -256,25 +262,26 @@ boxes:
   - https://images.unsplash.com/photo-1516321497487-e288fb19713f?fit=crop&w=512&q=60
   - https://images.unsplash.com/photo-1556761175-b413da4baf72?fit=crop&w=512&q=60
   - https://secure.gravatar.com/avatar/a48d43c9530f50721162853c0b68aebc?s=512&d=identicon
-  limages:
-  - image: base/poster.png
+  limgs:
+  - img: /u/base/poster.png
     alt: Descripción de la imagen 1
-    link: /
-  - image: https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=512&q=60
+    url: /
+  - img: https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=512&q=60
     alt: Descripción de la imagen 2
-    link: /pagina-ejemplo/
+    url: /pagina-ejemplo/
 
 ###
 
-- accordion:
-    button: '' # [ main, cta, alt, light, dark, invert, similar, none ]
+- faq:
+    btn: '' # [ main, cta, alt, light, dark, turn, such, none ]
     swap: n
     pin: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-    hn: '' # [ 1 - 6, p ]
+    hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
     hs: '' # [ 1 - 6 ]
+    hs_vs: '' # [ 1 - 6 ]
     headers: y
     open: y
-  accordions:
+  faqs:
   - icon: question # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     title: Título Desplegable 1
     md: |
@@ -293,32 +300,34 @@ boxes:
 - review:
     cols: 3 # [ 0 = auto, > 0 ]
     cols_vs: 1 # [ 0 = auto, > 0 ]
-    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
-    fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, invert, similar, hide ]
-    fade_type: linear-tr # [ linear-r, linear-b, linear-t, linear-r, linear-l, linear-tr, linear-br, linear-tl, linear-bl, circle, circle-alt, radial, radial-alt ]
+    color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+    fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+    fade_to: tr # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
     alpha: .5 # [ 0.00 - 1.00 ]
     hide_shadow: y
+    hs: null # [ 0.001 - 6.00 ]
+    hs_vs: null # [ 0.001 - 6.00 ]
     slider: y
     time: 2
     pips: '' # [ line, dot, hide ]
     arrows: '' # [ bottom, float, hide ]
-    button: '' # [ main, cta, alt, light, dark, invert, similar ]
+    btn: '' # [ main, cta, alt, light, dark, turn, such ]
   reviews:
   - title: Título Reseña 1
-    subtitle: Subtítulo Reseña 1
-    image: base/icon.png
+    sub: Subtítulo Reseña 1
+    img: /u/base/icon.png
     rating: 4.75
     md: |
       Contenido Reseña 1
   - title: Título Reseña 2
-    subtitle: Subtítulo Reseña 2
-    image: base/poster.png
+    sub: Subtítulo Reseña 2
+    img: /u/base/poster.png
     rating: 4.25
     md: |
       Contenido Reseña 2
   - title: Título Reseña 3
-    subtitle: Subtítulo Reseña 3
-    image: base/poster.png
+    sub: Subtítulo Reseña 3
+    img: /u/base/poster.png
     rating: 4
     md: |
       Contenido Reseña 3
@@ -326,32 +335,31 @@ boxes:
 ###
 
 - dots:
-  - link: https://www.facebook.com/QuantumFracture
-  - link: https://www.instagram.com/quantumfracture/
-  - link: https://mastersoflol.com/collections/quantumfracture?YTC
+  - url: https://www.facebook.com/QuantumFracture
+  - url: https://www.instagram.com/quantumfracture/
+  - url: https://mastersoflol.com/collections/quantumfracture?YTC
     icon: star
     label: Holi!
     ga4: y
-- contact:
-  - type: schedule
-    days: Días
+- when:
+  - days: Días
     hours: Horas
     full: n
-  - type: br
+  links:
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
     full: n
-    button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
+    btn: cta # [ main, cta, alt, light, dark, turn, such, none ]
     swap: n
   - type: whatsapp
     label: 123456789
     full: n
-    button: whatsapp # [ main, cta, alt, light, dark, invert, similar, none ]
+    btn: whatsapp # [ main, cta, alt, light, dark, turn, such, none ]
     swap: n
   - type: mail
     label: ejemplo@gmail.com
     full: n
-    button: button
+    btn: btn
     swap: n
   - type: address
     label: Calle País de Nunca Jamás, 42, 30000 Murcia
@@ -359,7 +367,7 @@ boxes:
     geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
     zoom: 6
     full: y
-    button: cta # [ main, cta, alt, light, dark, invert, similar, none ]
+    btn: cta # [ main, cta, alt, light, dark, turn, such, none ]
     swap: n
   - type: h2
     label: Encabezado h2
@@ -372,13 +380,13 @@ boxes:
   - type: h6
     label: Encabezado h6
   - type: custom
-    link: '#principal'
+    url: '#principal'
     icon: logout
     label: Personalizado
     full: y
     anchor: Mola Mazo
     lock: n
-    button: light # [ main, cta, alt, light, dark, invert, similar, none ]
+    btn: light # [ main, cta, alt, light, dark, turn, such, none ]
     swap: n
     ga4: n
   - type: hr
@@ -390,13 +398,13 @@ boxes:
     action: ''
     to: '#gracias'
     subject: ''
-    email: info@example.com
-    labels_out: y
+    mail: info@example.com
+    labels: out
     fill: n
     full: n
     icon: none # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: ¡Dale!
-    button: alt
+    btn: alt
     swap: y
     consent: Consiento el tratamiento de mis datos. [Leer más...](#holi)
   inputs:
@@ -404,19 +412,19 @@ boxes:
     name: Text
     label: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
-    required: n
-    required_if: null # string of names separated of '||' or '&&'
+    req: n
+    req_if: null # string of names separated of '||' or '&&'
     show_if: null # string of names separated of '||' or '&&'
     regex: '[^∑]*'
     regex_hint: No se adminte el caracter "∑"
     min: 0
     max: 50
     icon: person
-  - type: email
+  - type: mail
     name: Email
     label: Correo
-    required: n
-    required_if: Text
+    req: n
+    req_if: Text
     regex: null # regex pattern
     min: 0
     max: 30
@@ -424,7 +432,7 @@ boxes:
   - type: tel
     name: Tel
     label: Teléfono
-    required: n
+    req: n
     show_if: Text||Email
     regex: null # regex pattern
     min: 0
@@ -433,7 +441,7 @@ boxes:
   - type: number
     name: Number
     label: Número
-    required: n
+    req: n
     show_if: Text&&Email
     min: 1
     max: 10
@@ -441,17 +449,17 @@ boxes:
   - type: date
     name: Date
     label: Fecha
-    required: n
+    req: n
     icon: calendar_today
   - type: time
     name: Time
     label: Tiempo
-    required: n
+    req: n
     icon: schedule
-  - type: textarea
+  - type: area
     name: Textarea
     label: Mensaje
-    required: n
+    req: n
     min: 0
     max: 155
     icon: chat_bubble
@@ -463,12 +471,12 @@ boxes:
     view: '{"type":"Point","coordinates":[40.46367, -3.74922]}'
     zoom: 4
     tile: hybrid # [ streets, terrain, satellite, hybrid ]
-    required: y
+    req: y
     icon: beenhere
   - type: hidden
     name: Hidden
     label: Oculto
-    required: n
+    req: n
   - type: h3
     label: Encabezado
   - type: md
@@ -477,48 +485,53 @@ boxes:
     name: Select
     label: Seleción
     icon: verified
-    required: y
-    options:
-    - option: Seleción Opción 1
-      value: Seleción Valor 1
-    - option: Seleción Opción 2
-      value: Seleción Valor 2
-    - option: Seleción Opción 3
-      value: Seleción Valor 3
+    req: y
+    items:
+    - label: Seleción Opción 1
+      key: Seleción Valor 1
+    - label: Seleción Opción 2
+      key: Seleción Valor 2
+    - label: Seleción Opción 3
+      key: Seleción Valor 3
   - type: radio
     name: Radio
     label: Radios
-    required: y
+    req: y
     x: n
     icon: check_circle
-    options:
-    - option: Radio Opción 1
-      value: Radio Valor 1
-    - option: Radio Opción 2
-      value: Radio Valor 2
-    - option: Radio Opción 3
-      value: Radio Valor 3
-  - type: checkbox
+    items:
+    - label: Radio Opción 1
+      key: Radio Valor 1
+    - label: Radio Opción 2
+      key: Radio Valor 2
+    - label: Radio Opción 3
+      key: Radio Valor 3
+  - type: checks
     name: Checkbox
     label: Checkboxes
-    required: y
+    req: y
     x: y
     icon: check_box
-    options:
-    - option: Checkbox Opción 1
-      value: Checkbox Valor 1
-    - option: Checkbox Opción 2
-      value: Checkbox Valor 2
-    - option: Checkbox Opción 3
-      value: Checkbox Valor 3
+    items:
+    - label: Checkbox Opción 1
+      key: Checkbox Valor 1
+    - label: Checkbox Opción 2
+      key: Checkbox Valor 2
+    - label: Checkbox Opción 3
+      key: Checkbox Valor 3
+  - type: check
+    name: Check
+    label: Checkbox alone
+    req: y
   - type: file
     name: Factura
     hint: Adjunta tu factura eléctrica
     accept: image/*,application/pdf
     # accept: .pdf,.png,.jpg,.jpeg
     max: 3 # [ >= 0.00 ]
-    required: y
-    button: alt
+    base_name: Number
+    req: y
+    btn: alt
     swap: y
     icon: upload
 

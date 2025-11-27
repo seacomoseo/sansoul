@@ -21,10 +21,10 @@ export function initIframePlayer () {
 
   if (posterIframe) {
     document.addEventListener('click', e => {
-      const imageWithIframe = e.target.closest('.image:has(> [data-iframe])')
-      if (imageWithIframe) {
-        const dataIframe = imageWithIframe.querySelector('[data-iframe]')
-        const className = dataIframe.className
+      const imgWithIframe = e.target.closest('.img')
+      if (imgWithIframe) {
+        const dataIframe = imgWithIframe.querySelector('[data-iframe]')
+        const className = dataIframe.className?.baseVal || dataIframe.className // baseVal to fix svg's
         const isYT = dataIframe.dataset.youtube
         const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo
         const idVideo = videoId(src)
@@ -39,7 +39,7 @@ export function initIframePlayer () {
         iframe.allow = isYT
           ? 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay'
           : 'fullscreen; autoplay'
-        imageWithIframe.replaceChildren(iframe)
+        imgWithIframe.replaceChildren(iframe)
 
         // Remove play button
         iframe.nextElementSibling?.remove()

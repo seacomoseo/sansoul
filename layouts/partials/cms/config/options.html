@@ -1,4 +1,4 @@
-{{ $d := site.Data.utilities.default }}
+{{ $e := site.Data.utilities.collections.emojis }}
 
 {{/*  OPTIONS WITH TRANSLATE  */}}
 {{ $o := dict }}
@@ -6,38 +6,36 @@
   {{ $values := slice }}
   {{ range . }}
     {{ $label := index $ (print "option-" $k "-" .) | default . | string }}
-    {{ $values = $values | append (dict "value" . "label" $label) }}
+    {{ $value := dict "value" . "label" $label }}
+    {{ $values = $values | append $value }}
   {{ end }}
-  {{ if not (in (slice "icons_style" "buttons_type" "tile" "view" "sort" "location_type") $k) }}
+  {{ if not (in (slice "icons_style" "btns_type" "tile" "view" "sort" "location_type" "labels") $k) }}
     {{ $first := index . 0 }}
     {{ $type  := printf "%T" $first }}
     {{ if eq $type "string" }}
-      {{ $values = slice (dict "value" "" "label" $.default) | append $values }}
+      {{ $value := dict "value" "" "label" $.def }}
+      {{ $values = slice $value | append $values }}
     {{ end }}
   {{ end }}
   {{ $o = merge $o (dict $k $values) }}
 {{ end }}
 
-{{ $o_customs := slice }}
-{{ $o_remotes := slice }}
-{{ $o_lists   := slice }}
-{{ $o_tax     := slice }}
+{{ $o_types  := slice }}
+{{ $o_tax    := slice }}
 {{ range site.Sections }}
   {{ $label  := print .Params.emoji " " .Title }}
   {{ $option := dict "value" .Type "label" $label }}
-  {{ $o_customs = $o_customs | append $option }}
-  {{ $o_remotes = $o_remotes | append $option }}
-  {{ $o_lists   = $o_lists   | append $option }}
+  {{ $o_types = $o_types   | append $option }}
   {{ if .Params.tax_of }}
-    {{ $o_tax   = $o_tax     | append $option }}
+    {{ $o_tax = $o_tax     | append $option }}
   {{ end }}
 {{ end }}
-{{ $global   := dict "value" "global"  "label" (print $d.values.emoji  " " (index . "option-collections-global" )) }}
-{{ $all      := dict "value" "all"     "label" (print $d.all.emoji     " " (index . "option-collections-all"    )) }}
-{{ $related  := dict "value" "related" "label" (print $d.related.emoji " " (index . "option-collections-related")) }}
-{{ $o_customs = $o_customs | append $global       }}
-{{ $o_lists   = $o_lists   | append $all $related }}
-{{ $o_tax     = $o_tax     | append $all          }}
+{{ $global    := dict "value" "global" "label" (print $e.values " " (index . "option-collections-global")) }}
+{{ $all       := dict "value" "all"    "label" (print $e.all    " " (index . "option-collections-all"   )) }}
+{{ $rel       := dict "value" "rel"    "label" (print $e.rel    " " (index . "option-collections-rel"   )) }}
+{{ $o_customs := $o_types | append $global   }}
+{{ $o_lists   := $o_types | append $all $rel }}
+{{ $o_tax     := $o_types | append $all      }}
 
 {{ $vars := dict
   "&options_langs"         $o.langs
@@ -45,46 +43,47 @@
   "&options_base"          $o.base
   "&options_prices"        $o.prices
   "&options_hn"            $o.hn
-  "&options_hs"            $o.hs
   "&options_h"             $o.h
   "&options_align"         $o.align
   "&options_align_x"       $o.align_x
   "&options_align_y"       $o.align_y
   "&options_side"          $o.side
   "&options_sort"          $o.sort
-  "&options_buttons_type"  $o.buttons_type
+  "&options_btns_type"     $o.btns_type
   "&options_menu_auto"     $o.menu_auto
   "&options_callnow"       $o.callnow
   "&options_direction"     $o.direction
   "&options_duo"           $o.duo
   "&options_pips"          $o.pips
   "&options_arrows"        $o.arrows
-  "&options_color_base"    (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "invert" "similar" "whatsapp" "none"))
-  "&options_color_base_w"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "invert" "similar"))
-  "&options_color_base_n"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "invert" "similar" "whatsapp" "hide"))
-  "&options_color_base_h"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "invert" "similar" "whatsapp" "none" "hide"))
-  "&options_color_bg"      (where $o.color "value" "in" (slice "main" "main-light" "main-dark" "alt" "alt-light" "alt-dark" "cta" "cta-light" "cta-dark" "white" "light" "gray" "dark" "black" "invert" "similar" "hide"))
-  "&options_parallax_sect" (where $o.parallax "value" "ne" "box")
-  "&options_parallax_box"  (where $o.parallax "value" "ne" "fix")
+  "&options_color_base"    (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" "none"))
+  "&options_color_base_w"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such"))
+  "&options_color_base_n"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" "hide"))
+  "&options_color_base_h"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" "none" "hide"))
+  "&options_color_bg"      (where $o.color "value" "in" (slice "main" "main-light" "main-dark" "alt" "alt-light" "alt-dark" "cta" "cta-light" "cta-dark" "white" "light" "gray" "dark" "black" "turn" "such" "hide"))
+  "&options_scroll_sect"   (where $o.scroll "value" "ne" "box")
+  "&options_scroll_box"    (where $o.scroll "value" "ne" "fix")
   "&options_fade"          $o.fade
-  "&options_icon_type"     $o.icon_type
+  "&options_icon_pos"      $o.icon_pos
   "&options_icons_style"   $o.icons_style
   "&options_sizes"         $o.sizes
-  "&options_sizes_n_fluid" (where $o.sizes "value" "ne" "fluid")
+  "&options_sticky"        $o.sticky
   "&options_gallery_types" $o.gallery_types
   "&options_tile"          $o.tile
-  "&options_view_section"  (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "image" "button" "bg" "container" "paddings" "size" "divider" "boxi" "other"))
-  "&options_view_sections" (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "image" "button" "bg" "container" "paddings" "size" "divider" "boxi" "other" "list" "steps" "accordions" "gallery" "reviews" "contact" "form" "map" "gss" "boxes" "modals"))
-  "&options_view_modal"    (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "image" "button" "bg" "paddings" "size" "boxi" "other"))
-  "&options_view_modals"   (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "image" "button" "bg" "paddings" "size" "boxi" "other" "list" "steps" "accordions" "gallery" "reviews" "contact" "form" "map" "gss" "boxes"))
-  "&options_view_box"      (where $o.view "value" "in" (slice "all" "group" "titles" "md" "icon" "image" "button" "bg" "boxi" "other" "list"))
-  "&options_view_boxes"    (where $o.view "value" "in" (slice "all" "titles" "md" "icon" "image" "button" "bg" "boxi" "other" "list" "steps" "accordions" "gallery" "reviews" "contact" "form" "map" "gss" "boxes"))
+  "&options_labels"        $o.labels
+  "&options_view_section"  (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "img" "btn" "bg" "container" "paddings" "size" "divider" "boxi" "other"))
+  "&options_view_sections" (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "img" "btn" "bg" "container" "paddings" "size" "divider" "boxi" "other" "list" "steps" "faqs" "gallery" "reviews" "when" "links" "form" "map" "gss" "boxes" "modals"))
+  "&options_view_modal"    (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "img" "btn" "bg" "paddings" "size" "boxi" "other"))
+  "&options_view_modals"   (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "img" "btn" "bg" "paddings" "size" "boxi" "other" "list" "steps" "faqs" "gallery" "reviews" "when" "links" "form" "map" "gss" "boxes"))
+  "&options_view_box"      (where $o.view "value" "in" (slice "all" "group" "titles" "md" "icon" "img" "btn" "bg" "boxi" "other" "list"))
+  "&options_view_boxes"    (where $o.view "value" "in" (slice "all" "titles" "md" "icon" "img" "btn" "bg" "boxi" "other" "list" "steps" "faqs" "gallery" "reviews" "when" "links" "form" "map" "gss" "boxes"))
   "&options_tags"          $o.tags
   "&options_divider"       $o.div
   "&options_location_type" $o.location_type
   "&options_currency"      $o.currency
   "&options_customs"       $o_customs
-  "&options_remotes"       $o_remotes
+  "&options_types"         $o_types
+  "&options_schema"        (slice "articleSection (article)" "brand (product)" "manufacturer (product)" "author (all)")
   "&options_lists"         $o_lists
   "&options_tax"           $o_tax
   "&options_font_weight"   $o.font_weight
@@ -92,8 +91,9 @@
   "&options_icons_grade"   $o.icons_grade
   "&options_icons_optical" $o.icons_optical
   "&options_redirects"     $o.redirects
+  "&options_widgets"       $o.widgets
   "&options_boolean"       (slice
-    (dict "value" nil "label" .default)
+    (dict "value" nil "label" .def)
     (dict "value" "y" "label" .true)
     (dict "value" "n" "label" .false)
   )

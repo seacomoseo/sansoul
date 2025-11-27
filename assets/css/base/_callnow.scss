@@ -7,22 +7,22 @@
   display: flex;
   flex-direction: column;
   gap: 1em;
-  @if not $buttons-3d {
-    .button--dot {
+  @if not $btns-3d {
+    .btn--dot {
       filter: drop-shadow($shadow);
     }
   }
 }
 .callnow__caption {
   position: absolute;
-  @if $radius > .75 or $buttons-rounded {
+  @if $radius > .75 or $is-btns-pill {
     @include radius(0em, .75em);
   } @else {
     @include radius;
   }
   margin-bottom: -3em;
-  background-color: var(--similar);
-  color: var(--similar-in);
+  background-color: var(--such);
+  color: var(--such-in);
   font-size: small;
   filter: drop-shadow($shadow);
   width: max-content;

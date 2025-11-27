@@ -8,13 +8,13 @@ weight: 1
 org:
   types: [] # strings https://schema.org/docs/full.html > Organization...
   names: [] # strings
-  description: null # string
+  desc: null # string
   legal: null # string
   nif: null # string
-  email: null # string
-  description: null # string
+  mail: null # string
+  desc: null # string
   logo: null # string image path
-  images: [] # strings image path
+  imgs: [] # strings image path
   as: [] # strings
   phones: [] # strings
   address:
@@ -25,10 +25,10 @@ org:
     region: null # string
     country: null # string
     geo: null # '{"type":"Point","coordinates":[-1.1306520,37.9922180]}'
-    link: null # string
+    url: null # string
     legal: null # string
   areas: [] # strings
-  schedule: []
+  when: []
   # - days:
   #     mon: y
   #     tue: y
@@ -45,7 +45,7 @@ org:
   prices: null # [ €, €€, €€€, $, $$, $$$ ]
   services: [] # strings
   # - title: null # strings
-  #   description: null # strings
+  #   desc: null # strings
   #   price: null # float
   #   area: null # string
   #   url: null # string

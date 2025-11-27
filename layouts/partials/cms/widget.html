@@ -4,7 +4,7 @@
 
 {{ $t   := dict }}
 {{ if $loc }}
-  {{ $t  = partial "functions/i18n-cms" . }}
+  {{ $t  = partial "func/i18n-cms" . }}
 {{ end }}
 
 {{ $from := index . "<<" }}
@@ -12,25 +12,34 @@
   {{ $from = print "~" $from }}
 {{ end }}
 
-{{ $widget := .widget | default (cond (not $from) "string" nil) }}
-{{ $o       = merge . (dict "var" nil "alt" nil "<<"  nil) }}
+{{ $widget := .widget | default (cond (not $from) "str" nil) }}
+{{ $o       = merge . (dict "var" nil "alt" nil "req" nil "sum" nil "<<" nil) }}
 
 {{ if not $from }}
-  {{ $required := .required | default false }}
-  {{ $i18n     := .i18n }}
+  {{ $req  := .req | default false }}
+  {{ $i18n := .i18n }}
   {{ if not .i18n }}
-    {{ $wi18n  := slice "string" "text" "markdown" "image" "object" "list" }}
-    {{ $i18n    = cond (in $wi18n $widget) true "duplicate" }}
+    {{ $wi18n := slice "str" "txt" "md" "img" "vid" "vimg" "dict" "slice" }}
+    {{ $i18n   = cond (in $wi18n $widget) true "duplicate" }}
   {{ end }}
   {{ $f := dict
     "widget"   $widget
-    "required" $required
+    "required" $req
     "i18n"     $i18n
   }}
   {{ $o = merge $o $f }}
 {{ end }}
 
-{{ if eq "datetime" $widget }}
+{{ with .sum }}
+  {{ $o = merge $o (dict "summary" .) }}
+{{ end }}
+
+{{ if eq "str" $widget }}
+  {{ $o = merge $o (dict "widget" `string`) }}
+{{else if eq "txt" $widget }}
+  {{ $o = merge $o (dict "widget" `text`) }}
+{{else if eq "time" $widget }}
+  {{ $o = merge $o (dict "widget" `datetime`) }}
   {{ if eq nil .format }}
     {{ $o = merge $o (dict "format" `YYYY-MM-DD HH:mm:ss`) }}
   {{ end }}
@@ -49,7 +58,15 @@
   {{ if eq nil .default_language }}
     {{ $o = merge $o (dict "default_language" `html`) }}
   {{ end }}
-{{ else if eq "image" $widget }}
+{{ else if eq "img" $widget }}
+  {{ $o = merge $o (dict "widget" `image`) }}
+  {{ if eq nil .max_file_size }}
+    {{ $o = merge $o (dict "max_file_size" 512000000) }}
+  {{ end }}
+  {{ if eq nil .choose_url }}
+    {{ $o = merge $o (dict "choose_url" true) }}
+  {{ end }}
+{{ else if eq "vid" $widget }}
   {{ $o = merge $o (dict "widget" `file`) }}
   {{ if eq nil .max_file_size }}
     {{ $o = merge $o (dict "max_file_size" 512000000) }}
@@ -58,7 +75,18 @@
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
   {{ if eq nil .accept }}
-    {{ $o = merge $o (dict "accept" `image/*,video/*`) }}
+    {{ $o = merge $o (dict "accept" ".mp4,.mov,.avi,.webm") }}
+  {{ end }}
+{{ else if eq "vimg" $widget }}
+  {{ $o = merge $o (dict "widget" `file`) }}
+  {{ if eq nil .max_file_size }}
+    {{ $o = merge $o (dict "max_file_size" 512000000) }}
+  {{ end }}
+  {{ if eq nil .choose_url }}
+    {{ $o = merge $o (dict "choose_url" true) }}
+  {{ end }}
+  {{ if eq nil .accept }}
+    {{ $o = merge $o (dict "accept" ".jpeg,.jpg,.png,.gif,.webp,.svg,.mp4,.mov,.avi,.webm") }}
   {{ end }}
 {{ else if eq "int" $widget }}
   {{ $o = merge $o (dict "widget" `number`) }}
@@ -79,17 +107,21 @@
   {{ if eq nil .min }}
     {{ $o = merge $o (dict "min" 0) }}
   {{ end }}
-{{ else if eq "markdown" $widget }}
+{{ else if eq "md" $widget }}
+  {{ $o = merge $o (dict "widget" `markdown`) }}
   {{ if eq nil .show_raw }}
     {{ $o = merge $o (dict "show_raw" true) }}
   {{ end }}
-{{ else if eq "object" $widget }}
+{{ else if eq "dict" $widget }}
+  {{ $o = merge $o (dict "widget" `object`) }}
   {{ if eq nil .collapsed }}
     {{ $o = merge $o (dict "collapsed" true) }}
   {{ end }}
-{{ else if eq "list" $widget }}
+{{ else if eq "slice" $widget }}
+  {{ $o = merge $o (dict "widget" `list`) }}
   {{ if eq nil .collapsed }}
-    {{ $o = merge $o (dict "collapsed" true) }}
+    {{ $collapsed := eq nil .field }}
+    {{ $o = merge $o (dict "collapsed" $collapsed) }}
   {{ end }}
   {{ if eq nil .minimize_collapsed }}
     {{ $o = merge $o (dict "minimize_collapsed" true) }}
@@ -97,13 +129,8 @@
   {{ if eq nil .allow_add }}
     {{ $o = merge $o (dict "allow_add" true) }}
   {{ end }}
-  {{ if eq nil .label_singular }}
-    {{ if $loc }}
-      {{ $sing := .label_singular | default (index $t (print $loc "_singular")) }}
-      {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
-    {{ end }}
-  {{ end }}
-{{ else if eq "relation" $widget }}
+{{ else if eq "rel" $widget }}
+  {{ $o = merge $o (dict "widget" `relation`) }}
   {{ if eq nil .collection }}
     {{ $o = merge $o (dict "collection" .name) }}
   {{ end }}
@@ -119,27 +146,29 @@
   {{ if eq nil .display_fields }}
     {{ $o = merge $o (dict "display_fields" (slice "{{title}}")) }}
   {{ end }}
-{{ else if eq "boolean" $widget }}
-  {{ $opts := cond (not $o.required) `~options_boolean` `~options_boolean_req` }}
+{{ else if eq "bool" $widget }}
+  {{ $opts := cond (not $o.req) `~options_boolean` `~options_boolean_req` }}
   {{ $o  = merge $o (dict "widget" `select` "options" $opts) }}
 {{ end }}
 
-{{ if not .label }}
-  {{ with $loc }}
+{{ with $loc }}
+  {{ if eq nil $.label }}
     {{ with index $t . }}
       {{ $o = merge $o (dict "label" .) }}
     {{ end }}
   {{ end }}
-{{ end }}
-{{ if not .hint }}
-  {{ with $loc }}
+  {{ if eq nil $.label_singular }}
+    {{ $sing := $.label_singular | default (index $t (print . "_singular")) }}
+    {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
+  {{ end }}
+  {{ if eq nil $.hint }}
     {{ with index $t (print . "_hint") }}
       {{ $o = merge $o (dict "hint" .) }}
     {{ end }}
   {{ end }}
 {{ end }}
 
-{{ $o = partial "functions/obj-no-nil" $o }}
+{{ $o = partial "func/obj-no-nil" $o }}
 
 {{ if $from }}
   {{ if $o }}

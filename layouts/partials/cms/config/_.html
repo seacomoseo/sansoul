@@ -1,6 +1,6 @@
 {{ $config   := site.Data.config }}
-{{ $t        := partial "functions/i18n-cms" . }}
-{{ $lang_cms := partial "functions/lang-cms" . }}
+{{ $t        := partial "func/i18n-cms" . }}
+{{ $lang_cms := partial "func/lang-cms" . }}
 {{ $locales  := slice }}
 {{ with site.Data.langs }}
   {{ range . }}
@@ -26,6 +26,8 @@
   | append (partial "cms/config/singletons/remote"     $t)
   | append (partial "cms/config/singletons/redirects"  $t)
   | append (partial "cms/config/singletons/robots"     $t)
+  | append (partial "cms/config/singletons/custom-css" $t)
+  | append (partial "cms/config/singletons/custom-js"  $t)
   | append (partial "cms/config/singletons/values"     $t)
 }}
 
@@ -39,7 +41,7 @@
 {{ if $config.cms_editorial }}
   {{ $site_url   = print "https://" site.Params.name $domain }}
   {{ $publish_mode = "editorial_workflow" }}
-{{ else if $config.development }}
+{{ else if $config.dev }}
   {{ $site_url     = print "https://" site.Params.name $domain }}
 {{ else }}
   {{ $site_url     = site.Home.Permalink }}
@@ -49,13 +51,13 @@
 {{/*  LOGO  */}}
 {{ $logo := "" }}
 {{ with $config.cms_logo }}
-  {{ $path := print "/media/" . }}
+  {{ $path := . }}
   {{ with resources.Get $path }}
     {{ $logo = .RelPermalink }}
   {{ end }}
 {{ end }}
 {{ if not $logo }}
-  {{ $logo = partial "functions/logo" . }}
+  {{ $logo = partial "func/logo" . }}
 {{ end }}
 
 
@@ -73,15 +75,16 @@
 {{ $cms_config := dict
   "_anchors"        $anchors
   "backend"         $backend
-  "media_folder"    `assets/media`
-  "public_folder"   `/`
+  "media_folder"    `uploads`
+  "public_folder"   `/u/`
   "site_url"        $site_url
   "media_libraries" (dict
     "default" (dict
       "config" (dict
-        "max_file_size"   512000000
-        "folder_support"  true
-        "transformations" (dict
+        "max_file_size"    512000000
+        "slugify_filename" true
+        "folder_support"   true
+        "transformations"  (dict
           "raster_image" (dict
             "format"  "webp"
             "quality" 85

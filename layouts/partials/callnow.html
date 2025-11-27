@@ -1,6 +1,6 @@
 {{- if and . (ne . "none") -}}
 
-  {{- $buttons := slice -}}
+  {{- $btns := slice -}}
 
   {{- if eq . "custom" -}}
   
@@ -8,60 +8,60 @@
     {{- $items  := $values.callnows -}}
     {{- with $items -}}
       {{- range . -}}
-        {{- $buttons = $buttons | append . -}}
+        {{- $btns = $btns | append . -}}
       {{- end -}}
     {{- end -}}
 
   {{- else if eq . "auto" -}}
 
-    {{- /*  Get contact phones from page store  */ -}}
-    {{- $contact_buttons := page.Store.Get "phones" -}}
-    {{- with $contact_buttons -}}
+    {{- /*  Get link phones from page store  */ -}}
+    {{- $phones := page.Store.Get "phones" -}}
+    {{- with $phones -}}
       {{- with where . "type" "whatsapp" -}}
-        {{- $buttons   = first 1 . -}}
+        {{- $btns   = first 1 . -}}
       {{- else -}}
         {{- with where . "type" "phone" -}}
-          {{- $buttons = first 1 . -}}
+          {{- $btns = first 1 . -}}
         {{- else -}}
-          {{- $buttons = first 1 . -}}
+          {{- $btns = first 1 . -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
 
   {{- end -}}
 
-  {{- with $buttons -}}
+  {{- with $btns -}}
     {{- $callnow_plus := cond (eq (len .) 1) "" "callnow--plus" }}
     <aside id="callnow" class="callnow {{ $callnow_plus }}">
       {{- range . -}}
 
         {{- $class   := "" -}}
         {{- $num     := "" -}}
-        {{- $link    := .link -}}
-        {{- $button  := .button | default "cta" -}}
+        {{- $url     := .url -}}
+        {{- $btn     := .btn | default "cta" -}}
         {{- $icon    := .icon -}}
-        {{- $default := "" -}}
+        {{- $def     := "" -}}
         {{- $label   := .label -}}
         {{- $anchor  := .anchor | default "auto" -}}
         {{- $noindex := .lock -}}
 
         {{- if in (slice "phone" "whatsapp") .type -}}
-          {{- $num   = partial "functions/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
+          {{- $num   = partial "func/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
         {{- end -}}
 
         {{- if eq .type "custom" -}}
           {{- $class   = "callnow__custom" -}}
         {{- else if eq .type "phone" -}}
           {{- $class   = "callnow__phone" -}}
-          {{- $link    = print "tel:+" $num -}}
-          {{- $default = "phone" -}}
+          {{- $url     = print "tel:+" $num -}}
+          {{- $def     = "phone" -}}
           {{- $label   = i18n "callnow_phone" -}}
           {{- $noindex = true -}}
         {{- else if eq .type "whatsapp" -}}
           {{- $class   = "callnow__whatsapp" -}}
-          {{- $link    = print "https://wa.me/" $num -}}
-          {{- $button  = cond (not .button) "whatsapp" $button -}}
-          {{- $default = "whatsapp" -}}
+          {{- $url     = print "https://wa.me/" $num -}}
+          {{- $btn     = cond (not .btn) "whatsapp" $btn -}}
+          {{- $def     = "whatsapp" -}}
           {{- $label   = i18n "callnow_whatsapp" -}}
           {{- $noindex = true -}}
         {{- end -}}
@@ -73,17 +73,17 @@
         {{- end -}}
 
         {{- partial "link" (dict
-          "class"   $class
-          "button"  $button
-          "dot"     true
-          "swap"    true
-          "ga4"     .ga4
-          "icon"    $icon
-          "default" $default
-          "label"   $label
-          "anchor"  $anchor
-          "link"    $link
-          "lock"    $noindex
+          "class"  $class
+          "btn"    $btn
+          "dot"    true
+          "swap"   true
+          "ga4"    .ga4
+          "icon"   $icon
+          "def"    $def
+          "label"  $label
+          "anchor" $anchor
+          "url"    $url
+          "lock"   $noindex
         ) -}}
 
         {{- if $callnow_plus -}}</i>{{- end -}}

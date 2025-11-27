@@ -15,6 +15,7 @@ export function initInputs () {
   // Inject a input value in it wrap attribute
   const injectIconValue = (input, wrap) => {
     if (!wrap) wrap = input.closest(wrapIconSelector)
+    if (!wrap) return
     wrap.dataset.icon = input.value
   }
 
@@ -28,27 +29,57 @@ export function initInputs () {
     }, true)
   })
 
-  // Watch SPA mutations and inject on newly added chunks
+  const scan = root => {
+    // Placeholders
+    if (root.matches?.(inputsPlaceholderSelector)) {
+      injectPlaceholders(root)
+    } else {
+      root.querySelectorAll?.(inputsPlaceholderSelector)?.forEach(injectPlaceholders)
+    }
+    // Icons
+    if (root.matches?.(inputIconSelector)) {
+      injectIconValue(root)
+    } else {
+      root.querySelectorAll?.(inputIconSelector)?.forEach(injectIconValue)
+    }
+  }
+
+  // Init
+  scan(document.body)
+
+  // set of unique roots (no overlaps)
+  const roots = new Set()
+  const addRoot = node => {
+    if (node.nodeType !== 1) return
+    // if already covered by an existing root, do not add
+    for (const r of roots) {
+      if (r.contains(node)) return
+    }
+    // if the new node contains existing roots, remove them
+    for (const r of Array.from(roots)) {
+      if (node.contains(r)) roots.delete(r)
+    }
+    roots.add(node)
+  }
+
+  let timer = null
+  const waitMs = 500
+
+  const flush = () => {
+    for (const r of roots) scan(r)
+    roots.clear()
+  }
+
+  // Watch mutations and inject on newly added chunks
   const mo = new MutationObserver(mutations => {
     for (const m of mutations) {
-      for (const node of m.addedNodes) {
-        if (node.nodeType !== 1) continue
-        // Placeholders
-        if (node.matches?.(inputsPlaceholderSelector)) {
-          injectPlaceholders(node)
-        } else {
-          const inputs = node.querySelectorAll(inputsPlaceholderSelector)
-          if (inputs) inputs.forEach(input => injectPlaceholders(input))
-        }
-        // Icon inputs
-        if (node.matches?.(inputIconSelector)) {
-          injectIconValue(node)
-        } else {
-          const inputs = node.querySelectorAll(inputIconSelector)
-          if (inputs) inputs.forEach(input => injectIconValue(input))
-        }
-      }
+      for (const n of m.addedNodes) addRoot(n)
     }
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      timer = null
+      flush()
+    }, waitMs)
   })
 
   mo.observe(document.body, { childList: true, subtree: true })

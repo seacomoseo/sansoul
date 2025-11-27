@@ -7,9 +7,9 @@
     {{- /*  EACH  */ -}}
     {{- range . -}}
       {{- $icon    := "" -}}
-      {{- $default := "" -}}
+      {{- $def := "" -}}
       {{- $label   := "" -}}
-      {{- $link    := "" -}}
+      {{- $url     := "" -}}
 
       {{- /*  TYPES  */ -}}
       {{- if      eq .type "type" -}}
@@ -18,23 +18,23 @@
           {{- $parent := $page.CurrentSection -}}
           {{- $icon    = $parent.Params.icon -}}
           {{- $label   = $parent.Params.singular -}}
-          {{- $link    = $parent.RelPermalink -}}
+          {{- $url     = $parent.RelPermalink -}}
         {{- end -}}
 
       {{- else if eq .type "date" -}}
 
         {{- if and $page.Date (not $page.IsSection) -}}
           {{- if eq $page.Params.base "article" -}}
-            {{- $date := partial "functions/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
-            {{- $items = $items | append (dict "default" "calendar" "label" $date "time" true) -}}
-            {{- if and $page.Lastmod (not .hide_lastmod) -}}
+            {{- $date := partial "func/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
+            {{- $items = $items | append (dict "def" "calendar" "label" $date "time" true) -}}
+            {{- if and $page.Lastmod (not .hide_mod) -}}
               {{- if ne $page.Date $page.Lastmod -}}
-                {{- $date  = partial "functions/date-tag" (dict "date" $page.Lastmod "hide_hour" .hide_hour) -}}
-                {{- $items = $items | append (dict "default" "calendar_edit" "label" $date "time" true) -}}
+                {{- $date  = partial "func/date-tag" (dict "date" $page.Lastmod "hide_hour" .hide_hour) -}}
+                {{- $items = $items | append (dict "def" "calendar_edit" "label" $date "time" true) -}}
               {{- end -}}
             {{- end -}}
           {{- else if eq $page.Params.base "event" -}}
-            {{- $date  := partial "functions/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
+            {{- $date  := partial "func/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
             {{- $end   := "" -}}
             {{- $hours := "" -}}
             {{- $ico   := .icon -}}
@@ -56,15 +56,15 @@
                     {{- $def        = "calendar" -}}
                   {{- end -}}
                 {{- else -}}
-                  {{- $end = partial "functions/date-tag" (dict "date" $page.Params.end "hide_hour" .hide_hour) -}}
+                  {{- $end = partial "func/date-tag" (dict "date" $page.Params.end "hide_hour" .hide_hour) -}}
                 {{- end -}}
               {{- end -}}
             {{- end -}}
-            {{- $items = $items | append (dict "icon" $ico "default" $def "label" $date "time" true) -}}
+            {{- $items = $items | append (dict "icon" $ico "def" $def "label" $date "time" true) -}}
             {{- if $end -}}
-              {{- $items = $items | append (dict "default" "calendar_end" "label" $end "time" true) -}}
+              {{- $items = $items | append (dict "def" "calendar_end" "label" $end "time" true) -}}
             {{- else if $hours -}}
-              {{- $items = $items | append (dict "default" "clock" "label" $hours "time" true) -}}
+              {{- $items = $items | append (dict "def" "clock" "label" $hours "time" true) -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
@@ -72,23 +72,23 @@
       {{- else if eq .type "time" -}}
       
         {{- with $page.ReadingTime -}}
-          {{- $default = "clock" -}}
-          {{- $label   = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
+          {{- $def   = "clock" -}}
+          {{- $label = print (i18n "reading_time" .) " " (i18n "of_reading") -}}
         {{- end -}}
 
       {{- else if eq .type "words" -}}
 
-        {{- $default = "words" -}}
-        {{- $label   = i18n "word_count" $page.WordCount -}}
+        {{- $def   = "words" -}}
+        {{- $label = i18n "word_count" $page.WordCount -}}
 
       {{- else if eq .type "address" -}}
 
-        {{- $default = "address" -}}
-        {{- $label   = partial "functions/address" (dict "Page" $page "url" false) -}}
+        {{- $def   = "address" -}}
+        {{- $label = partial "func/address" (dict "Page" $page "url" false) -}}
 
       {{- else if eq .type "tax" -}}
 
-        {{- $taxonomies := partial "functions/taxonomy-parents" $page -}}
+        {{- $taxonomies := partial "func/taxonomy-parents" $page -}}
         {{- /*  Will check all taxonomies of this page... Or only one  */ -}}
         {{- with .tax -}}
           {{- if not (or (not .) (eq . "all")) -}}
@@ -99,14 +99,14 @@
         {{- range $taxonomies -}}
           {{- $t_icon  := cond (not .Params.icon) .CurrentSection.Params.icon .Params.icon -}}
           {{- $t_label := .Title -}}
-          {{- $t_link  := .RelPermalink -}}
-          {{- $item    := dict "icon" $t_icon "label" $t_label "link" $t_link -}}
+          {{- $t_url   := .RelPermalink -}}
+          {{- $item    := dict "icon" $t_icon "label" $t_label "url" $t_url -}}
           {{- $items    = $items | append $item -}}
         {{- end -}}
 
       {{- else if eq .type "param" -}}
 
-        {{- $value := partial "functions/index-split" (dict "value" $page.Params "path" .param) -}}
+        {{- $value := partial "func/index-split" (dict "value" $page.Params "path" .param) -}}
         {{- $icon   = .icon -}}
         {{- with $value -}}
           {{- range slice | append . -}}
@@ -123,7 +123,7 @@
       {{- /*  APPEND  */ -}}
       {{- if $label -}}
         {{- $icon  = .icon  | default $icon -}}
-        {{- $item := dict "icon" $icon "default" $default "label" $label "link" $link -}}
+        {{- $item := dict "icon" $icon "def" $def "label" $label "url" $url -}}
         {{- $items = $items | append $item -}}
       {{- end -}}
     {{- end -}}
@@ -135,8 +135,8 @@
         {{- range . }}
           <i class="box__tag">
             {{- /*  icon  */ -}}
-            {{- if or .icon .default -}}
-              {{- $opts := dict "class" "box__tag-icon" "icon" .icon "default" .default -}}
+            {{- if or .icon .def -}}
+              {{- $opts := dict "class" "box__tag-icon" "icon" .icon "def" .def -}}
               {{- partial "icon" $opts -}}
             {{- end }}
             {{- if .time -}}
@@ -144,8 +144,8 @@
               {{ .label | safeHTML }}
             {{- else }}
               {{- /*  label (and link if not also in box)  */ -}}
-              {{- $link := cond (not $.link) .link "" -}}
-              {{- $opts := dict "label" .label "link" $link "swap" true -}}
+              {{- $url  := cond (not $.url) .url "" -}}
+              {{- $opts := dict "label" .label "url" $url "swap" true -}}
               {{- partial "link" $opts -}}
             {{- end }}
           </i>

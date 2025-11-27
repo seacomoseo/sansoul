@@ -1,5 +1,5 @@
-{{- $t        := partial "functions/i18n-cms" . -}}
-{{- $lang_cms := partial "functions/lang-cms" . -}}
+{{- $t        := partial "func/i18n-cms" . -}}
+{{- $lang_cms := partial "func/lang-cms" . -}}
 {{- $config   := index (where site.Data.langs "lang" $lang_cms) 0 -}}
 {{- $netlify  := getenv "NETLIFY" -}}
 
@@ -12,17 +12,17 @@
   <meta name="robots" content="noindex">
 
   {{/*  CONFIG FILE  */}}
-  {{ $path     := "../admin/config.yml" }}
-  {{ $string   := partial "cms/config/_" . | string }}
-  {{ $resource := resources.FromString $path $string | fingerprint }}
-  <link href="{{ $resource.RelPermalink }}" type="application/yaml" rel="cms-config-url">
+  {{ $path := "../admin/config.yml" }}
+  {{ $str  := partial "cms/config/_" . | string }}
+  {{ $src  := resources.FromString $path $str | fingerprint }}
+  <link href="{{ $src.RelPermalink }}" type="application/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
   {{ $customs := slice }}
   {{ range site.Sections }}
     {{ $type := .Type }}
     {{ range .Params.customs | default slice }}
-      {{ if not .default }}
+      {{ if not .def }}
         {{ if .pages }}
           {{ $custom := print $type ":" .name ":" (delimit .pages ",")  }}
           {{ $customs = $customs | append $custom }}
@@ -33,7 +33,7 @@
   {{ $vars := dict
     "customs"   (delimit $customs "|")
     "divs"      (delimit site.Data.options.div "|")
-    "timestamp" (partial "functions/timestamp" .)
+    "timestamp" (partial "func/timestamp" .)
   }}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment)

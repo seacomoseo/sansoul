@@ -1,0 +1,21 @@
+{{/*  Add first section and merge all  */}}
+{{ $tpl  := dict }}
+{{ $tpls := partial "func/tpls" . }}
+{{ range $tpls }}
+  {{ with . }}
+    {{/*  Create first section and merge all  */}}
+    {{ $first := dict }}
+    {{ with .section }}
+      {{ with index . 0 }}
+        {{ $first = merge $first . }}
+        {{ $first = dict "first" $first }}
+      {{ end }}
+    {{ end }}
+    {{ $tpl = merge $tpl . $first }}
+  {{ end }}
+{{ end }}
+{{ $options  := dict "sections" $tpl.sections "Page" . }}
+{{ $sections := partial "sections/items-tpl" $options }}
+{{ $sections  = dict "sections" $sections }}
+{{ $tpl       = merge $tpl $sections }}
+{{ return $tpl }}

@@ -18,23 +18,23 @@
   {{ else }}
     {{ $no_content := or
       .title
-      .subtitle
+      .sub
       .md
       .icon
-      .image
+      .img
       .boxes
       .steps
-      .images
-      .limages
+      .imgs
+      .limgs
       .list
-      .accordions
+      .faqs
       .reviews
-      .buttons
+      .btns
       .dots
       .inputs
       .map
       .tags
-      (and .link (ne .button "hide"))
+      (and .url (ne .btn "hide"))
       | not
     }}
     {{ if and .is_bg $no_content }}
@@ -44,8 +44,8 @@
 {{ end }}
 
 {{/*
-{{ $bg_image_fix           := cond (not (.bi | and .parallax))               "" "bg--fix" }}
-{{ $bg_figure_video_parent := cond (not (partial `functions/is-iframe` .bi)) "" "bg-figure-video-parent" }}
+{{ $bg_img_fix           := cond (not (.bi | and .scroll))         "" "bg--fix" }}
+{{ $bg_fig_vid_parent := cond (not (partial `func/is-iframe` .bi)) "" "bg-fig-vid-parent" }}
 */}}
 
 {{ $class := slice
@@ -58,24 +58,24 @@
   (cond (not .align_y)                "" (print "align-self-" .align_y))
   (cond (not .align_vl)               "" (print "align--vl-" .align_vl))
   (cond (not .is_bg)                  "" "bg")
-  (cond (not .bi)                     "" "bg-image")
+  (cond (not .bi)                     "" "bg-img")
   (cond (not .color)                  "" (print "bg-" .color))
   (cond (not .fade)                   "" (print "bg-fade-" .fade))
-  (cond (not .fade)                   "" (print "bg-fade-" (.fade_type | default "linear-r")))
-  (cond (not (and .side (or .is_bg .image)))     "" (print "box--side-" .side))
-  (cond (and (ne .parallax "box") (not (and .is_bg (eq .parallax "soft")))) "" "parallax")
-  (cond (ne .parallax "box")                     "" "parallax--box")
-  (cond (not (and .is_bg (eq .parallax "soft"))) "" "parallax--bg")
+  (cond (not .fade)                   "" (print "bg-fade-" (.fade_to | default "r")))
+  (cond (not (and .side (or .is_bg .img)))     "" (print "box--side-" .side))
+  (cond (and (ne .scroll "box") (not (and .is_bg (eq .scroll "soft")))) "" "scroll")
+  (cond (ne .scroll "box")                       "" "scroll--box")
+  (cond (not (and .is_bg (eq .scroll "soft")))   "" "scroll--bg")
   (cond (and $not_fit $not_fit_vs)               "" "box--fit")
   (cond (not .grow)                              "" "box--grow")
   (cond (not $rate)                              "" "box--ratio")
   (cond (not .card)                              "" "box--card")
   (cond (not .pill)                              "" "pill-bottom")
-  (cond (not (or .pill .circle))                 "" "pill-top")
+  (cond (not (or .pill .disc))                   "" "pill-top")
   (cond (not (and .slider (not .key)))           "" "slider__item--active")
   (cond (not .hide_radius)                       "" "box--hide-radius")
   (cond (not .hide_shadow)                       "" "box--hide-shadow")
-  (cond (not .is_button_hide)                    "" "box--hide-button")
+  (cond (not .is_btn_hide)                       "" "box--hide-btn")
   (cond (not $show)                              "" "show")
   (cond (not .only_one_link)                     "" "box--go")
 }}
@@ -103,6 +103,6 @@
   "class" $class
   "style" $style
 }}
-{{ $attrs = partial "functions/attrs" $attrs }}
+{{ $attrs = partial "func/attrs" $attrs }}
 
 {{ return $attrs }}

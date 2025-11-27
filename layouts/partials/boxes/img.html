@@ -1,0 +1,101 @@
+{{- $img_src  := .img -}}
+{{- with .img -}}
+  {{- $img_src = . | plainify  -}}
+{{- end -}}
+{{- if .card -}}
+  {{- $img_src = "" -}}
+{{- end -}}
+
+{{- $print_img := or $img_src .shade -}}
+
+{{- /* IMAGE INI  */ -}}
+{{- if $print_img -}}
+
+  {{- /* IMAGE CLASS  */ -}}
+  {{- $hover    := cond (not .hover  ) "" "img--hover"     -}}
+  {{- $contain  := cond (not .contain) "" "img--contain"   -}}
+  {{- $inset    := cond (not .inset  ) "" "img--inset"     -}}
+  {{- $disc     := cond (not .disc   ) "" "img--disc"      -}}
+  {{- $gray     := cond (not .gray   ) "" "img--gray"      -}}
+  {{- $ratio    := cond (not .ratio  ) "" "img--ratio"     -}}
+  {{- $border   := cond (not .border ) "" (print "img--border " (cond (ne "main" .border) .border "")) -}}
+  {{- $icon_top := cond (not (and .icon (eq .icon_pos "top"))) "" "img--icon-top" -}}
+
+  {{- $class := slice
+    "img"
+    $ratio
+    $contain
+    $border
+    $inset
+    $disc
+    $hover
+    $icon_top
+    $gray
+  -}}
+
+  {{- /* IMAGE STYLE  */ -}}
+  {{- $style := "" -}}
+  {{- with .ratio -}}
+    {{- $style = print "--img-ratio:" . -}}
+  {{- end -}}
+
+  {{- /* IMAGE ATTR JOIN  */ -}}
+  {{- $attrs := dict
+    "class" $class
+    "style" $style
+  -}}
+  {{- $attrs = partial "func/attrs" $attrs -}}
+
+  {{- /* HTML  */}}
+  <div {{- $attrs }}>
+
+    {{- /* SHADE (GRADIENT)  */ -}}
+    {{- if and .shade (not .card) }}
+      <div class="img__in img__in--shade"></div>
+    {{- end -}}
+
+
+    {{- /* IMAGE INNER  */ -}}
+    {{- partial "media/_" (dict
+      "class"      "img__in"
+      "img"        $img_src
+      "vid"        .vid
+      "mute"       .mute
+      "alt"        (.alt | default .hanchor | default .anchor | default .title)
+      "ratio"      .ratio
+      "disc"       .disc
+      "contain"    .contain
+      "container"  .container
+      "fit_vl"     .col_vl
+      "fit_vs"     .col_vs
+      "notlazy"    .is_header
+      "is_modal"   .is_modal
+      "icon_color" .icon_color
+    ) -}}
+
+    {{- /* IMAGE INNER HOVER  */ -}}
+    {{- if .hover -}}
+      {{- partial "media/_" (dict
+        "class"     "img__in img__in--hover"
+        "img"       (.hover | plainify)
+        "alt"       .hover_alt
+        "ratio"     .ratio
+        "contain"   .contain
+        "container" .container
+        "fit_vl"    .col_vl
+        "fit_vs"    .col_vs
+        "notlazy"   .is_header
+      ) -}}
+    {{- end -}}
+
+{{- end -}}
+
+{{- /* ICON TOP  */ -}}
+{{- if eq .icon_pos "top" }}
+  {{ partial "boxes/icon" . -}}
+{{- end -}}
+
+{{- /* IMAGE END  */ -}}
+{{- if $print_img }}
+  </div>
+{{- end -}}

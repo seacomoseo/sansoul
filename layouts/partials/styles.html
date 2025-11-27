@@ -1,119 +1,119 @@
 {{ $vars := dict }}
 {{ with site.Data.styles }}
-  {{ $i := .icons }}
-  {{ $d := site.Data.utilities.defaults }}
-  {{ $quote       := or $i.quote       $d.quote       }}
-  {{ $quote_left  := or $i.quote_left  $d.quote_left  }}
-  {{ $quote_right := or $i.quote_right $d.quote_right }}
-  {{ $icons_grade := cond (and $i.fill (not $i.grade)) -25 $i.grade }}
+  {{ $icons_grade := cond (and .icons.fill (not .icons.grade)) -25 .icons.grade }}
   {{ $vars = dict
-    "fonts-css"                         (hugo.Store.Get "fonts_css" | default "")
+    "fonts-css"                        (hugo.Store.Get "fonts_css" | default "")
 
-    "utilities-viewport-min"            site.Data.utilities.viewports.min
-    "utilities-viewport-max"            site.Data.utilities.viewports.max
-    "utilities-viewport-xs"             site.Data.utilities.viewports.xs
-    "utilities-viewport-sm"             site.Data.utilities.viewports.sm
-    "utilities-viewport-md"             site.Data.utilities.viewports.md
-    "utilities-viewport-lg"             site.Data.utilities.viewports.lg
-    "utilities-viewport-xl"             site.Data.utilities.viewports.xl
+    "utilities-viewport-min"           site.Data.utilities.viewports.min
+    "utilities-viewport-max"           site.Data.utilities.viewports.max
+    "utilities-viewport-xs"            site.Data.utilities.viewports.xs
+    "utilities-viewport-sm"            site.Data.utilities.viewports.sm
+    "utilities-viewport-md"            site.Data.utilities.viewports.md
+    "utilities-viewport-lg"            site.Data.utilities.viewports.lg
+    "utilities-viewport-xl"            site.Data.utilities.viewports.xl
 
-    "utilities-containers-xs"           site.Data.utilities.containers.xs
-    "utilities-containers-sm"           site.Data.utilities.containers.sm
-    "utilities-containers-md"           site.Data.utilities.containers.md
-    "utilities-containers-lg"           site.Data.utilities.containers.lg
-    "utilities-containers-xl"           site.Data.utilities.containers.xl
-    "utilities-containers-fluid"        site.Data.utilities.containers.fluid
+    "utilities-containers-xs"          site.Data.utilities.containers.xs
+    "utilities-containers-sm"          site.Data.utilities.containers.sm
+    "utilities-containers-md"          site.Data.utilities.containers.md
+    "utilities-containers-lg"          site.Data.utilities.containers.lg
+    "utilities-containers-xl"          site.Data.utilities.containers.xl
+    "utilities-containers-fluid"       site.Data.utilities.containers.fluid
 
-    "styles-colors-main-color"          (cond (eq .colors.main.color "#ffffff") "" .colors.main.color | default "#577399")
-    "styles-colors-alt-color"           (cond (eq .colors.alt.color  "#ffffff") "" .colors.alt.color )
-    "styles-colors-cta-color"           (cond (eq .colors.cta.color  "#ffffff") "" .colors.cta.color  | default (cond (eq .colors.main.color "#ffffff") "" .colors.main.color | default "#577399"))
+    "styles-colors-main-color"         (cond (eq .colors.main.color "#ffffff") "" .colors.main.color | default "#577399")
+    "styles-colors-alt-color"          (cond (eq .colors.alt.color  "#ffffff") "" .colors.alt.color )
+    "styles-colors-cta-color"          (cond (eq .colors.cta.color  "#ffffff") "" .colors.cta.color  | default (cond (eq .colors.main.color "#ffffff") "" .colors.main.color | default "#577399"))
 
-    "styles-colors-main-light"          (cond (eq .colors.main.light "#ffffff") "" .colors.main.light)
-    "styles-colors-alt-light"           (cond (eq .colors.alt.light  "#ffffff") "" .colors.alt.light )
-    "styles-colors-cta-light"           (cond (eq .colors.cta.light  "#ffffff") "" .colors.cta.light )
+    "styles-colors-main-light"         (cond (eq .colors.main.light "#ffffff") "" .colors.main.light)
+    "styles-colors-alt-light"          (cond (eq .colors.alt.light  "#ffffff") "" .colors.alt.light )
+    "styles-colors-cta-light"          (cond (eq .colors.cta.light  "#ffffff") "" .colors.cta.light )
 
-    "styles-colors-main-dark"           (cond (eq .colors.main.dark  "#ffffff") "" .colors.main.dark )
-    "styles-colors-alt-dark"            (cond (eq .colors.alt.dark   "#ffffff") "" .colors.alt.dark  )
-    "styles-colors-cta-dark"            (cond (eq .colors.cta.dark   "#ffffff") "" .colors.cta.dark  )
+    "styles-colors-main-dark"          (cond (eq .colors.main.dark  "#ffffff") "" .colors.main.dark )
+    "styles-colors-alt-dark"           (cond (eq .colors.alt.dark   "#ffffff") "" .colors.alt.dark  )
+    "styles-colors-cta-dark"           (cond (eq .colors.cta.dark   "#ffffff") "" .colors.cta.dark  )
 
-    "styles-colors-base-white"          (.colors.base.white               | default "#ffffff")
-    "styles-colors-base-light"          (cond (eq .colors.base.light "#ffffff") "" .colors.base.light | default "#eeeeee")
-    "styles-colors-base-dark"           (cond (eq .colors.base.dark  "#ffffff") "" .colors.base.dark  | default "#282525")
-    "styles-colors-base-black"          (cond (eq .colors.base.black "#ffffff") "" .colors.base.black | default "#000000")
-    "styles-colors-base-gray"           (cond (eq .colors.base.gray  "#ffffff") "" .colors.base.gray  | default "#767676")
+    "styles-colors-base-white"         (.colors.base.white               | default "#ffffff")
+    "styles-colors-base-light"         (cond (eq .colors.base.light "#ffffff") "" .colors.base.light | default "#eeeeee")
+    "styles-colors-base-dark"          (cond (eq .colors.base.dark  "#ffffff") "" .colors.base.dark  | default "#282525")
+    "styles-colors-base-black"         (cond (eq .colors.base.black "#ffffff") "" .colors.base.black | default "#000000")
+    "styles-colors-base-gray"          (cond (eq .colors.base.gray  "#ffffff") "" .colors.base.gray  | default "#767676")
 
-    "styles-colors-main-contrast-fill"  (.colors.main.contrast.fill       | not | not | string)
-    "styles-colors-alt-contrast-fill"   (.colors.alt.contrast.fill        | not | not | string)
-    "styles-colors-cta-contrast-fill"   (.colors.cta.contrast.fill        | not | not | string)
+    "styles-colors-main-turn-fill"     (.colors.main.turn.fill           | not | not | string)
+    "styles-colors-alt-turn-fill"      (.colors.alt.turn.fill            | not | not | string)
+    "styles-colors-cta-turn-fill"      (.colors.cta.turn.fill            | not | not | string)
 
-    "styles-colors-main-contrast-in"    (.colors.main.contrast.in         | not | not | string)
-    "styles-colors-alt-contrast-in"     (.colors.alt.contrast.in          | not | not | string)
-    "styles-colors-cta-contrast-in"     (.colors.cta.contrast.in          | not | not | string)
+    "styles-colors-main-turn-in"       (.colors.main.turn.in             | not | not | string)
+    "styles-colors-alt-turn-in"        (.colors.alt.turn.in              | not | not | string)
+    "styles-colors-cta-turn-in"        (.colors.cta.turn.in              | not | not | string)
 
-    "styles-colors-main-contrast-text"  (.colors.main.contrast.text       | not | not | string)
-    "styles-colors-alt-contrast-text"   (.colors.alt.contrast.text        | not | not | string)
-    "styles-colors-cta-contrast-text"   (.colors.cta.contrast.text        | not | not | string)
+    "styles-colors-main-turn-text"     (.colors.main.turn.text           | not | not | string)
+    "styles-colors-alt-turn-text"      (.colors.alt.turn.text            | not | not | string)
+    "styles-colors-cta-turn-text"      (.colors.cta.turn.text            | not | not | string)
 
-    "styles-fonts-base-family"          (.fonts.base.family               | default "Arial")
-    "styles-fonts-title-family"         (.fonts.title.family              | default "Arial")
-    "styles-fonts-cursive-family"       (.fonts.cursive.family            | default "Arial")
-    "styles-fonts-base-weight"          (.fonts.base.weight               | default 200)
-    "styles-fonts-title-weight"         (.fonts.title.weight              | default 800)
-    "styles-fonts-cursive-weight"       (.fonts.cursive.weight            | default 400)
-    "styles-fonts-base-bold"            (.fonts.base.bold                 | default 0)
-    "styles-fonts-title-bold"           (.fonts.title.bold                | default 0)
-    "styles-fonts-cursive-bold"         (.fonts.cursive.bold              | default 0)
-    "styles-fonts-base-italic"          (cond (not .fonts.base.italic)    "normal" "italic")
-    "styles-fonts-title-italic"         (cond (not .fonts.title.italic)   "normal" "italic")
-    "styles-fonts-cursive-italic"       (cond (not .fonts.cursive.italic) "normal" "italic")
-    "styles-fonts-base-line-height"     (.fonts.base.line_height          | default 1.25)
-    "styles-fonts-title-line-height"    (.fonts.title.line_height         | default 1.25)
-    "styles-fonts-cursive-line-height"  (.fonts.cursive.line_height       | default 1.25)
-    "styles-fonts-title-size"           (.fonts.title.size                | default 1)
-    "styles-fonts-cursive-size"         (.fonts.cursive.size              | default 1)
-    "styles-fonts-title-top"            (.fonts.title.top                 | default 0)
-    "styles-fonts-cursive-top"          (.fonts.cursive.top               | default 0)
-    "styles-fonts-blockquote_cursive"   (.fonts.blockquote_cursive        | not | not | string)
+    "styles-fonts-base-family"         (.fonts.base.family               | default "Arial")
+    "styles-fonts-title-family"        (.fonts.title.family              | default "Arial")
+    "styles-fonts-cursive-family"      (.fonts.cursive.family            | default "Arial")
+    "styles-fonts-base-weight"         (.fonts.base.weight               | default 200)
+    "styles-fonts-title-weight"        (.fonts.title.weight              | default 800)
+    "styles-fonts-cursive-weight"      (.fonts.cursive.weight            | default 400)
+    "styles-fonts-base-bold"           (.fonts.base.bold                 | default 0)
+    "styles-fonts-title-bold"          (.fonts.title.bold                | default 0)
+    "styles-fonts-cursive-bold"        (.fonts.cursive.bold              | default 0)
+    "styles-fonts-base-italic"         (cond (not .fonts.base.italic)    "normal" "italic")
+    "styles-fonts-title-italic"        (cond (not .fonts.title.italic)   "normal" "italic")
+    "styles-fonts-cursive-italic"      (cond (not .fonts.cursive.italic) "normal" "italic")
+    "styles-fonts-base-line-height"    (.fonts.base.line_height          | default 1.25)
+    "styles-fonts-title-line-height"   (.fonts.title.line_height         | default 1.25)
+    "styles-fonts-cursive-line-height" (.fonts.cursive.line_height       | default 1.25)
+    "styles-fonts-title-size"          (.fonts.title.size                | default 1)
+    "styles-fonts-cursive-size"        (.fonts.cursive.size              | default 1)
+    "styles-fonts-title-top"           (.fonts.title.top                 | default 0)
+    "styles-fonts-cursive-top"         (.fonts.cursive.top               | default 0)
+    "styles-fonts-blockquote_cursive"  (.fonts.blockquote_cursive        | not | not | string)
 
-    "styles-icons-fill"                 (.icons.fill                      | not | not | int)
-    "styles-icons-weight"               (.icons.weight                    | default 400)
-    "styles-icons-grade"                ($icons_grade                     | default 0)
-    "styles-icons-optical"              (.icons.optical                   | default 24)
-    "styles-icons-style"                (.icons.style                     | default "outlined")
+    "styles-icons-fill"                (.icons.fill                      | not | not | int)
+    "styles-icons-weight"              (.icons.weight                    | default 400)
+    "styles-icons-grade"               ($icons_grade                     | default 0)
+    "styles-icons-optical"             (.icons.optical                   | default 24)
+    "styles-icons-style"               (.icons.style                     | default "outlined")
 
-    "styles-rounded-radius"             (.rounded.radius                  | default 0)
-    "styles-rounded-chamfer"            (.rounded.chamfer                 | not | not | string)
+    "styles-rounded-radius"            (.rounded.radius                  | default 0)
+    "styles-rounded-chamfer"           (.rounded.chamfer                 | not | not | string)
 
-    "styles-buttons-sides_round"        (.buttons.sides_round             | not | not | string)
-    "styles-buttons-dot_circle"         (.buttons.dot_circle              | not | not | string)
-    "styles-buttons-deep"               (.buttons.deep                    | not | not | string)
-    "styles-buttons-outline"            (.buttons.outline                 | not | not | string)
-    "styles-buttons-font"               (.buttons.font.type               | default "base")
-    "styles-buttons-font_bold"          (.buttons.font.bold               | not | not | string)
-    "styles-buttons-font_caps"          (.buttons.font.caps               | not | not | string)
-    "styles-buttons-swap"               (.buttons.swap.type               | default "base")
-    "styles-buttons-swap_bold"          (.buttons.swap.bold               | not | not | string)
-    "styles-buttons-swap_caps"          (.buttons.swap.caps               | not | not | string)
+    "styles-btns-pill"                 (.btns.pill                       | not | not | string)
+    "styles-btns-disc"                 (.btns.disc                       | not | not | string)
+    "styles-btns-deep"                 (.btns.deep                       | not | not | string)
+    "styles-btns-outline"              (.btns.outline                    | not | not | string)
+    "styles-btns-font"                 (.btns.font.type                  | default "base")
+    "styles-btns-font_bold"            (.btns.font.bold                  | not | not | string)
+    "styles-btns-font_caps"            (.btns.font.caps                  | not | not | string)
+    "styles-btns-swap"                 (.btns.swap.type                  | default "base")
+    "styles-btns-swap_bold"            (.btns.swap.bold                  | not | not | string)
+    "styles-btns-swap_caps"            (.btns.swap.caps                  | not | not | string)
 
-    "styles-shadow-left"                (.shadow.left                     | default 0)
-    "styles-shadow-top"                 (.shadow.top                      | default 0)
-    "styles-shadow-blur"                (.shadow.blur                     | default 0)
-    "styles-shadow-color"               (.shadow.color                    | default "black")
-    "styles-shadow-alpha"               (.shadow.alpha                    | default 0)
-    "hugo-is-production"                (hugo.IsProduction                | not | not | string)
-    "config-others-show"                (site.Data.config.show            | not | not | string)
-    "menu-google_translate"             (site.Params.google_translate     | not | not | string)
-    "base-url"                          (site.BaseURL                                 | string)
-    "draws-base"                        (partial "functions/draws-base" .             | string)
-    "timestamp"                         (partial "functions/timestamp"  .             | string)
-    "quote"                             $quote
-    "quote-left"                        $quote_left
-    "quote-right"                       $quote_right
+    "styles-shadow-left"               (.shadow.left                     | default 0)
+    "styles-shadow-top"                (.shadow.top                      | default 0)
+    "styles-shadow-blur"               (.shadow.blur                     | default 0)
+    "styles-shadow-color"              (.shadow.color                    | default "black")
+    "styles-shadow-alpha"              (.shadow.alpha                    | default 0)
+    "hugo-is-production"               (hugo.IsProduction                | not | not | string)
+    "config-others-show"               (site.Data.config.show            | not | not | string)
+    "menu-g_translate"                 (site.Params.g_translate          | not | not | string)
+    "base-url"                         (site.BaseURL                                 | string)
+    "draws-base"                       (partial "func/draws-base" .                  | string)
+    "timestamp"                        (partial "func/timestamp"  .                  | string)
+    "quote"                            (partial "func/default-icon" "quote"          | string)
+    "quote-left"                       (partial "func/default-icon" "quote_left"     | string)
+    "quote-right"                      (partial "func/default-icon" "quote_right"    | string)
     }}
 {{ end }}
 
-{{ $css    := resources.Get (print "css/styles.scss") }}
-{{ $to_css := dict "vars" $vars "enableSourceMap" hugo.IsDevelopment }}
+{{ $css    := resources.Get (print "styles.scss") }}
+{{ $to_css := dict
+  "vars"            $vars
+  "enableSourceMap" hugo.IsDevelopment
+  "outputStyle"     (cond hugo.IsDevelopment "expanded" "compressed")
+  "targetPath"      "css/styles.css"
+}}
 {{ with $css }}
   {{ if hugo.IsProduction }}
     {{ $css = . | toCSS $to_css | minify }}

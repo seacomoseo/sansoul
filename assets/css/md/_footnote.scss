@@ -1,0 +1,30 @@
+
+.md {
+  .footnote-ref,
+  .footnote-backref {
+    display: inline-block;
+    font-size: 0.75em;
+    min-height: auto;
+    @if $is-btns-disc {
+      &::before,
+      &::after {
+        @include disc;
+      }
+    }
+  }
+  .footnote-ref {
+    margin-left: .25em;
+  }
+  .footnote-backref {
+    padding: 0 .25em;
+    // @if $chamfer and $radius > .75 {
+    //   &::before,
+    //   &::after {
+    //     @include radius(0em, .75em);
+    //   }
+    // }
+  }
+  .footnotes {
+    padding: 0;
+  }
+}

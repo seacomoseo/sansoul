@@ -3,34 +3,36 @@
 {{ return dict
   "&remote" (slice
     (partial "cms/widget" (dict
-      "alt"     `remote`
-      "name"    `srcs`
-      "widget"  `list`
-      "summary" "{{fields.src}}"
-      "root"    true
-      "fields"  (slice
-        (partial "cms/widget" (dict "label" `URL`       "name" `src`                                                ))
-        (partial "cms/widget" (dict "alt" `remote_csv`  "name" `csv`   "widget" `boolean`                           ))
-        (partial "cms/widget" (dict "alt" `config_lang` "name" `lang`  "widget" `select`  "options" `~options_langs`))
+      "alt"    `remote`
+      "name"   `srcs`
+      "widget" `slice`
+      "sum"    "{{fields.src}}"
+      "root"   true
+      "fields" (slice
+        (partial "cms/widget" (dict "label" `URL`         "name" `src`                      "req" true                ))
+        (partial "cms/widget" (dict "alt" `remote_csv`    "name" `csv`   "widget" `bool`                              ))
+        (partial "cms/widget" (dict "alt" `defaults_lang` "name" `lang`  "widget" `select`  "options" `~options_langs`))
         (partial "cms/widget" (dict
-          "alt"     `remote_types`
-          "name"    `types`
-          "widget"  `list`
-          "summary" "{{fields.type}}"
-          "fields"  (slice
-            (partial "cms/widget" (dict "alt" `remote_types_singular` "name" `type`  "widget" `select` "options" `~options_remotes`))
-            (partial "cms/widget" (dict "alt" `remote_index`          "name" `index`                                               ))
+          "alt"    `remote_types`
+          "name"   `types`
+          "widget" `slice`
+          "sum"    "{{fields.type}}"
+          "req"    true
+          "fields" (slice
+            (partial "cms/widget" (dict "alt" `remote_types_singular` "name" `type`  "widget" `select` "options" `~options_types` "req" true))
+            (partial "cms/widget" (dict "alt" `remote_index`          "name" `index`                                                        ))
             (partial "cms/widget" (dict
-              "alt"     `remote_pairings`
-              "name"    `pairings`
-              "widget"  `list`
-              "summary" "{{fields.from}}"
-              "fields"  (slice
-                (partial "cms/widget" (dict "alt" `remote_pairings_from`    "name" `from`                                                          ))
-                (partial "cms/widget" (dict "alt" `remote_pairings_to`      "name" `to`      "required" true                                       ))
-                (partial "cms/widget" (dict "alt" `default`                 "name" `default`                                                       ))
-                (partial "cms/widget" (dict "alt" `remote_pairings_kind`    "name" `kind`    "widget" `select` "options" $u.pairing_kinds          ))
-                (partial "cms/widget" (dict "alt" `remote_pairings_delimit` "name" `delimit`                   "hint" (print .default " → '**,**'")))
+              "alt"    `remote_maps`
+              "name"   `maps`
+              "widget" `slice`
+              "sum"    "{{fields.from}}"
+              "req"    true
+              "fields" (slice
+                (partial "cms/widget" (dict "alt" `remote_maps_from` "name" `from`                                              ))
+                (partial "cms/widget" (dict "alt" `remote_maps_to`   "name" `to`   "req" true                                   ))
+                (partial "cms/widget" (dict "alt" `default`          "name" `def`                                               ))
+                (partial "cms/widget" (dict "alt" `remote_maps_kind` "name" `kind` "widget" `select` "options" $u.pairing_kinds ))
+                (partial "cms/widget" (dict "alt" `remote_maps_sep`  "name" `sep`  "hint" (print .def " → '**,**'")             ))
               )
             ))
           )

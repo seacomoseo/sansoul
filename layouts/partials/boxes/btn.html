@@ -1,0 +1,13 @@
+{{- /*  anchor2: last default priority, prev $anchor_page  */}}
+{{ partial "link" (dict
+  "class"   "box__btn"
+  "btn"     (.btn | default "cta")
+  "swap"    .swap
+  "ga4"     .ga4
+  "icon"    .pin
+  "label"   (.label   | default (i18n "more") | markdownify)
+  "anchor"  (.anchor  | default "auto"        | markdownify)
+  "anchor2" (.hanchor | default .title        | markdownify)
+  "url"     .url
+  "lock"    .lock
+) -}}

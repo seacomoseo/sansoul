@@ -1,0 +1,11 @@
+{{ $media := "" }}
+{{ $out   := hasPrefix . "http" }}
+{{ if $out }}
+  {{ $media   = . }}
+{{ else }}
+  {{ $path   := . }}
+  {{ with resources.Get $path }}
+    {{ $media = .RelPermalink }}
+  {{ end }}
+{{ end }}
+{{ return $media }}

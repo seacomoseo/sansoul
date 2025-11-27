@@ -1,6 +1,6 @@
 # SanSoul Hugo Theme
 
-[![sansoul](/assets/media/base/icon.png)](https://github.com/seacomoseo/sansoul)
+[![sansoul](/uploads/base/icon.png)](https://github.com/seacomoseo/sansoul)
 
 
 ## Scripts para actualizar proyectos nuevos
@@ -11,8 +11,8 @@
 - `node ../_tools/updater/migrations-v2/menu.js`
 - `../_tools/updater/migrations-v2/icons.sh`
 - `node ../_tools/updater/migrations-v2/icons.js ../_tools/updater/migrations-v2/fontawesome-to-materialsymbol.json`
-- `# ../_tools/updater/migrations-v2/cms.sh`
-- `# ../_tools/updater/migrations-v2/v3.sh`
+- `../_tools/updater/migrations-v2/cms.sh`
+- `../_tools/updater/migrations-v2/v3.sh`
 
 ## Comprobar cambios en `example.yml`
 ## Script para actualizar proyectos antiguos
@@ -22,21 +22,21 @@
 - `*.yml`
   - `placeholder` > `label`
 - `content`
-  - `section/base-footer.${lang}.yml`
   - `values.${lang}.yml`
   - `_home.${lang}.md`
     - `images`
     - `schedule`
   - `{blog|event}/*.${lang}.yml`
-    - `{date|lastmod}: 2025-02-18 00:00:00` (`T` > ` `)
+    - `{date|mod}: 2025-02-18 00:00:00` (`T` > ` `)
   - `single/*.${lang}.md`
     - `menu.hide_anchors`
     - `menu|modal|section|sections|...` > `tpl.*`
-- `data/sections/*.yml`
+- `data/section/*.yml`
+  - `base-footer.yml`
   - `contacto.yml`
     - `address.geo`
     - `geos`
-    - `form.email`
+    - `form.mail`
   - `mapa.yml`
     - `geos`
   - Cambiar enlaces que apuntan a `#principal|#main` por id de la siguiente section a `header`
@@ -56,12 +56,12 @@
     button: hide
   - cols: 3
     align: left
-    color: similar
+    color: such
     shade: y
     inset: y
     ratio: 16/9
     icon: hide
-    button: hide
+    btn: hide
     tags:
     - type: date
 - `data/types/*.yml`
@@ -72,19 +72,19 @@
 - `data/types/*.yml|content/single/*.${lang}.md`
   - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
   - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
-- `assets/css/_custom.scss`
-- `assets/js/custom.js`
+- `assets/_custom.scss`
+- `assets/custom.js`
   - `submited_` > `submited-`
 - `data/config.yml`
-  - `langs.0.google_analytics`
-  - `langs.0.email`
+  - `ga4`
+  - `mail`
 - coordinates
 
 
 ## TO DO
 
 - [ ] Fix
-  - [ ] background gradient with parallax fix > fix!
+  - [ ] background gradient with scroll fix > fix!
 - [ ] `buildFuture`
 - [ ] Rehuse `boxes` partial in `reviews`
 - [ ] `search.html`

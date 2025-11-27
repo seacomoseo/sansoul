@@ -27,14 +27,14 @@
   "@id"              (print .Permalink "#schema-service")
   "url"              .Permalink
   "name"             .Title
-  "description"      (partial "functions/summary" .)
+  "description"      (partial "func/summary" .)
   "serviceType"      .Params.service_types
   "areaServed"       .Params.service_areas
   "offers"           $offers
   "provider"         $provider
-  "image"            (dict "@id" (print .Permalink "#schema-image"))
+  "image"            (dict "@id" (print .Permalink "#schema-img"))
   "mainEntityOfPage" (dict "@id" .Permalink)
 }}
-{{ $schema = partial "functions/obj-truly" $schema }}
+{{ $schema = partial "func/obj-truly" $schema }}
 
 {{ return $schema }}

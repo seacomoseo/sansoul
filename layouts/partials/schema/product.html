@@ -32,9 +32,9 @@
 {{ end }}
 
 {{/*  Images  */}}
-{{ $image  := dict "@id" (print .Permalink "#schema-image") }}
-{{ with .Params.images }}
-  {{ $image = slice $image | append (partial "schema/images" .) }}
+{{ $img  := dict "@id" (print .Permalink "#schema-img") }}
+{{ with .Params.imgs }}
+  {{ $img = slice $img | append (partial "schema/imgs" .) }}
 {{ end }}
 
 {{/*  Schema  */}}
@@ -43,13 +43,13 @@
   "@type"            "Product"
   "@id"              (print .Permalink "#schema-product")
   "name"             .Title
-  "description"      (partial "functions/summary" .)
+  "description"      (partial "func/summary" .)
   "sku"              .Params.sku
   "url"              .Permalink
   "inLanguage"       (.Params.locale | default .Lang)
   "brand"            $brand
   "manufacturer"     $manufacturer
-  "image"            $image
+  "image"            $img
   "mainEntityOfPage" (dict "@id" .Permalink)
   "potentialAction"  (dict "@type" "BuyAction" "target" .Permalink)
   "offers"           (dict
@@ -60,6 +60,6 @@
     "availability"    (print "https://schema.org/" (cond (not .Params.stock) "InStock" "OutOfStock"))
   )
 }}
-{{ $schema = partial "functions/obj-truly" $schema }}
+{{ $schema = partial "func/obj-truly" $schema }}
 
 {{ return $schema }}

@@ -143,10 +143,10 @@ elif [ $1 = css-purge ]; then
   node ./themes/sansoul/assets/js/node/css-purge.js
 
 # Images ICO, PNG and AVIF
-elif [ $1 = images ]; then
+elif [ $1 = imgs ]; then
 
   hecho "IMAGES ICO, PNG AND AVIF"
-  node ./themes/sansoul/assets/js/node/images.js
+  node ./themes/sansoul/assets/js/node/imgs.js
 
 # Enter in to prebuild folder, build hugo and go back
 elif [ $1 = prebuild ]; then
@@ -202,7 +202,7 @@ elif [ $1 = hugo-production ]; then
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
   # sh do css-purge
-  sh do images
+  sh do imgs
   # sh do multilang
 
 # Hugo check environement and build

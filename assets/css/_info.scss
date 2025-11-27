@@ -1,9 +1,9 @@
 #status {
   font-size: 1.5em;
   margin-block: 1rem;
-  .button[style] {
+  .btn[style] {
     --base: var(--cta);
-    @if not $buttons-outline {
+    @if not $btns-outline {
       --base-in: color-mix(in srgb, var(--light) 25%, black);
     }
     &:hover {
@@ -12,7 +12,7 @@
   }
   .loader,
   .icon {
-    @if $buttons-outline {
+    @if $btns-outline {
       color: var(--base);
     } @else {
       color: var(--base-in);
@@ -31,14 +31,14 @@
 .status__label {
   display: none;
 }
-#status .button[style*='#BEF9C6']/*:not(:hover)*/ b > .status__label--success,
-#status .button[style*='#F6E0A5']/*:not(:hover)*/ b > .status__label--building,
-#status .button[style*='#D2D5DB']/*:not(:hover)*/ b > .status__label--canceled,
-#status .button[style*='#FFBDBA']/*:not(:hover)*/ b > .status__label--error,
-#status .button[style*='tomato'] /*:not(:hover)*/ b > .status__label--waiting,
-#status .button[style*='--light']                 b > .status__label--waiting,
-#status .button:not([style])                      b > .status__label--check/*,
-#status .button[style]:not([style*='--light']):hover b > .status__label--end*/ {
+#status .btn[style*='#BEF9C6']/*:not(:hover)*/ b > .status__label--success,
+#status .btn[style*='#F6E0A5']/*:not(:hover)*/ b > .status__label--building,
+#status .btn[style*='#D2D5DB']/*:not(:hover)*/ b > .status__label--canceled,
+#status .btn[style*='#FFBDBA']/*:not(:hover)*/ b > .status__label--error,
+#status .btn[style*='tomato'] /*:not(:hover)*/ b > .status__label--waiting,
+#status .btn[style*='--light']                 b > .status__label--waiting,
+#status .btn:not([style])                      b > .status__label--check/*,
+#status .btn[style]:not([style*='--light']):hover b > .status__label--end*/ {
   display: inline;
 }
 #deploy-time {
@@ -46,12 +46,12 @@
   opacity: .75;
 }
 
-#status .button > .icon {
+#status .btn > .icon {
   opacity: 0;
   width: 1em;
   height: 1em;
 }
-#status .button:not([style]) {
+#status .btn:not([style]) {
   > .icon,
   .loader {
     display: none;

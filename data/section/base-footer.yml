@@ -1,21 +1,21 @@
 name: Base ➡️ Footer
 color: dark
 space: 2
-params:
+get:
 - from: footer.size
   to: size
 - from: footer.color
   to: color
 - from: footer.fade
   to: fade
-- from: footer.fade_type
-  to: fade_type
+- from: footer.fade_to
+  to: fade_to
 - from: footer.bi
   to: bi
 - from: footer.alpha
   to: alpha
-- from: footer.parallax
-  to: parallax
+- from: footer.scroll
+  to: scroll
 - from: footer.div
   to: div
 - from: footer.div_x
@@ -26,10 +26,10 @@ params:
   to: boxes
 boxes:
 - if: footer.dots
-  params:
+  get:
   - from: footer.dots
     to: dots
-- params:
+- get:
   - from: footer.md
     to: md
   md: |
@@ -39,24 +39,24 @@ boxes:
     - ::cookie::           {{< internal-link cookies >}}
     - ::brand:seacomoseo:: {{< i18n web_design >}} [seacomoseo.com](https://seacomoseo.com/ "[homefollow]")
     {.list-inline}
-# - contact:
+# - links:
 #   - type: custom
 #     icon: copyright
 #     label: '{{% page-title index %}}'
-#     link: '{{% page-link index %}}'
+#     url: '{{% page-link index %}}'
 #   - type: custom
 #     icon: balance
 #     label: '{{% page-title legal %}}'
-#     link: '{{% page-link legal %}}'
+#     url: '{{% page-link legal %}}'
 #   - type: custom
 #     icon: encrypted
 #     label: '{{% page-title privacy %}}'
-#     link: '{{% page-link privacy %}}'
+#     url: '{{% page-link privacy %}}'
 #   - type: custom
 #     icon: cookie
 #     label: '{{% page-title cookies %}}'
-#     link: '{{% page-link cookies %}}'
+#     url: '{{% page-link cookies %}}'
 #   - type: custom
 #     icon: brand:seacomoseo
 #     label: '{{% i18n web_design %}} seacomoseo.com'
-#     link: https://seacomoseo.com/
+#     url: https://seacomoseo.com/

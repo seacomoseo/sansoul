@@ -1,41 +1,80 @@
-{{- if .src -}}
-  {{- $media := . -}}
-  {{- $src   := .src -}}
-  {{- $mute  := cond (in $src "#mute") true .bi -}}
-  {{- if not $mute -}}
-    {{- if partial "functions/is-iframe" $src -}}
-      {{- $iframe    := partial "functions/iframe-src" (dict "src" $src "bi" .bi) -}}
-      {{- $src        = partial "functions/iframe-poster" .src -}}
-      {{- $color     := cond (or (not .icon_color) (eq .icon_color "cta")) "" .icon_color -}}
-      {{- $icon_play := partial "icon" (dict "class" $color "default" "play") -}}
-      {{- $media      = merge $media (dict
-        "iframe"    $iframe
-        "src"       $src
-        "icon_play" $icon_play
-      ) -}}
+{{- $src := or .vid .img -}}
+{{- if $src  -}}
+  {{- $media  := . -}}
+  {{- $img    := .img -}}
+  {{- $vid    := .vid -}}
+  {{- $mute   := .mute -}}
+  {{- $iframe := dict -}}
+  {{- $alt    := .alt -}}
+  {{- $t      := "" -}}
+
+  {{- if and .img (not .vid) -}}
+    {{- if partial "func/is-vid" .img -}}
+      {{- $vid = .img -}}
+      {{- $img = partial "func/poster" .img -}}
+      {{- if not .mute -}}
+        {{- $mute = strings.Contains .img "#mute" -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- $media = merge $media (dict "mute" $mute) -}}
-
-  {{- if hasPrefix $src "http" -}}
-    {{- if $src | findRE `\.(mp4|mov|avi|webm)` -}}
-      {{- partial "media/external/video" . -}}
-    {{- else if $src | findRE `youtu\.be|youtube\.com` -}}
-      {{- partial "media/external/youtube" . -}}
-    {{- else if and (in $src "vimeo.com") (not (in $src "/api/v2/")) -}}
-      {{- partial "media/external/vimeo" . -}}
+  {{- if $vid -}}
+    {{- $opts  := dict "url" $vid "mute" $mute "icon_color" .icon_color -}}
+    {{- $iframe = partial "media/iframe" $opts -}}
+    {{- if $iframe -}}
+      {{- $vid = "" -}}
     {{- else -}}
-      {{- partial "media/external/image" $media -}}
+      {{- with $vid | findRESubmatch `[#&?](t=[\d,]+)` -}}
+        {{- $t = index . 0 1 -}}
+        {{- $t = print "#" $t -}}
+      {{- end -}}
+      {{- $vid = $vid | replaceRE `[#&?].*$` "" -}}
+      {{- $vid = partial "func/check-media" $vid -}}
     {{- end -}}
-  {{- else -}}
-    {{- $src   = print "/media/" $src -}}
-    {{- $media = merge $media (dict "src" $src) -}}
-    {{- if $src | findRE `\.(mp4|mov|avi|webm)` -}}
-      {{- partial "media/internal/video" $media -}}
-    {{- else if in $src ".svg" -}}
-      {{- partial "media/internal/svg" $media -}}
+  {{- end -}}
+  {{- with $img -}}
+    {{- $img = partial "func/check-media" . -}}
+  {{- end -}}
+
+  {{- if not .alt -}}
+    {{- with $iframe -}}
+      {{- $alt = print (i18n "vid") " · " .name " · " .id -}}
     {{- else -}}
-      {{- partial "media/internal/image" $media -}}
+      {{- $alt = (or $img $vid) | replaceRE `^(?:/m|http.+)/(.+)\..*$` "$1" | humanize -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $lazy    := cond (not .notlazy) "lazy" "" -}}
+  {{- $img_ext := hasPrefix $img "http" -}}
+
+  {{- $media_new := dict
+    "img"     $img
+    "vid"   $vid
+    "mute"    $mute
+    "iframe"  $iframe
+    "alt"     $alt
+    "t"       $t
+    "lazy"    $lazy
+    "img_ext" $img_ext
+  -}}
+  {{- $media = merge $media $media_new -}}
+
+  {{- if $vid -}}
+    {{- if hasPrefix $vid "http" -}}
+      {{- partial "media/out/vid" $media -}}
+    {{- else -}}
+      {{- partial "media/in/vid" $media -}}
+    {{- end -}}
+  {{- else if and $iframe $mute -}}
+      {{- partial "media/out/iframe" $media -}}
+  {{- else -}}
+    {{- if $img_ext -}}
+      {{- partial "media/out/img" $media -}}
+    {{- else -}}
+      {{- if hasSuffix $img ".svg" -}}
+        {{- partial "media/in/svg" $media -}}
+      {{- else -}}
+        {{- partial "media/in/img" $media -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

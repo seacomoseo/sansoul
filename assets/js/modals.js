@@ -58,8 +58,8 @@ function prevNextModal (prev) {
   //   location.hash = modalPrevNext.id
   // }
   const prevNext = prev ? 'prev' : 'next'
-  const modalButtonPrevNext = document.querySelector(`dialog[open].modal .modal__${prevNext}`)
-  if (modalButtonPrevNext) modalButtonPrevNext.click()
+  const modalBtnPrevNext = document.querySelector(`dialog[open].modal .modal__${prevNext}`)
+  if (modalBtnPrevNext) modalBtnPrevNext.click()
 }
 
 export function initModals () {
@@ -117,9 +117,9 @@ export function initModals () {
 
   // When click
   document.addEventListener('click', e => {
-    const buttonClose = e.target.closest('.modal__close, .modal__close--corner')
+    const btnClose = e.target.closest('.modal__close, .modal__close--corner')
     const backover = e.target.classList.contains('modal')
-    if (buttonClose || backover) closeModal()
+    if (btnClose || backover) closeModal()
     // Back
     // const back = e.target.closest('.modal__back')
     // if (back) history.back()

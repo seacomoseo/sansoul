@@ -5,7 +5,14 @@
 {{- define "partials/div" -}}
   {{- $n := add .k 1 -}}
   {{- $s := mul .size 1024 -}}
-  {{- "" -}} <g id="div-{{ .id }}" style="--y:{{ .k }}{{ if eq .size 2 }};--s:{{ .size }}{{ end }}">
+  {{- $s := mul .size 1024 -}}
+  {{- $style := slice (print "--y:" .k) -}}
+  {{ if eq .size 2 }}
+    {{- $style = $style | append (print "--s:" .size) -}}
+  {{ end }}
+  {{- $attrs := dict "style" $style -}}
+  {{- $attrs  = partial "func/attrs" $attrs -}}
+  {{- "" -}} <g id="div-{{ .id }}" {{- $attrs -}}>
   {{- "" -}}   <defs>
   {{- "" -}}     <g class="d" id="d-{{ .id }}">
   {{- "" -}}      {{ if eq .size 2 }}
@@ -48,11 +55,11 @@
 {{- with $divs -}}
   {{- range $k, $id := . -}}
     {{- if ne . "fade" -}}
-      {{- with partial "functions/dividers" $id -}}
-        {{- $path := print "/assets/media/dividers/" $id ".svg" -}}
-        {{- $file := readFile $path -}}
+      {{- with index site.Data.utilities.divs $id -}}
+        {{- $path := print "/u/dividers/" $id ".svg" -}}
+        {{- $file := resources.Get $path -}}
         {{- if $file -}}
-          {{- $content := $file | replaceRE `<svg.+?>|</svg>` "" -}}
+          {{- $content := $file.Content | replaceRE `<svg.+?>|</svg>` "" -}}
           {{- with partial "div" (dict "k" $k "id" $id "size" .size "content" $content) -}}
             {{- $div_ = $div_ | append . -}}
           {{- end -}}
@@ -68,7 +75,7 @@
 {{- $svg_ := slice -}}
 {{- $svgs := page.Store.Get "svgs" | uniq | sort -}}
 {{- range $svgs -}}
-  {{- $path := print "/media/{icons/,}" . ".svg" -}}
+  {{- $path := print "/u/{,icons/}" . ".svg" -}}
   {{- $src  := resources.GetMatch $path -}}
   {{- if $src -}}
     {{- if $src.Content -}}
@@ -80,7 +87,7 @@
         {{- $head  = index $head 0 -}}
         {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" | replaceRE `^<svg ` (print `<svg id="` $id `" `) -}}
         {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | safeHTML -}}
-        {{- /*  {{- $time := partial "functions/timestamp" . -}}  */ -}}
+        {{- /*  {{- $time := partial "func/timestamp" . -}}  */ -}}
         {{- /*  {{- $refs := print "$1/draws." $time ".svg#" -}}  */ -}}
         {{- /*  {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | replaceRE `<svg (.+?)</svg>` `<symbol $1</symbol>` | replaceRE `(url\(|href=")#` $refs | safeHTML -}}  */ -}}
         {{- $svg_  = $svg_ | append $svg -}}

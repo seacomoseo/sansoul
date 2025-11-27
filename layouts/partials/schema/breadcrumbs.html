@@ -1,7 +1,7 @@
 {{ $schema := dict }}
 
 {{ $items := slice }}
-{{ range $k, $v := partial "functions/breadcrumbs" . | collections.Reverse | append page }}
+{{ range $k, $v := partial "func/breadcrumbs" . | collections.Reverse | append page }}
   {{ $items = $items | append (dict
     "@type"    "ListItem"
     "position" (add $k 1)

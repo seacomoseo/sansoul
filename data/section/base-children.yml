@@ -4,12 +4,13 @@ if: children
 id: lists
 size: md
 pt: 0
+
 boxes:
 - if: collection
   list:
     type: '{{ type }}'
 - if: taxonomy
-  params:
+  get:
   - from: filename
     to: list.{{ type }}
   list:

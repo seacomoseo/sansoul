@@ -8,7 +8,7 @@ weight: 2
 ---
 
 Privacy Policy
-{.subtitle}
+{.sub}
 
 **DETAILED INFORMATION ON DATA PROTECTION**
 
@@ -28,7 +28,7 @@ Who is the Data Controller?
 Name: **{{% legal name %}}**
 NIF: **{{% legal nif %}}**
 Address: **{{% legal location %}}**
-Email: **{{% legal email %}}**
+Email: **{{% legal mail %}}**
 The customer may contact to exercise their right to modification or elimination...
 
 
@@ -156,5 +156,5 @@ To verify that it is on the website of our company, the "URL" address begins wit
 3. In the collection and processing of personal data, appropriate security measures have been adopted to avoid loss, unauthorized access or manipulation of them, in accordance with the provisions of **RGPD** . The contact data of the potential clients will be kept for **1 year**.
 4. **The company** undertakes to protect the confidential information to which you have access.
 5. **The company** will not use the personal data that you make available to provide services to third parties other than those referred to in section `a)` of this document or, where appropriate, to achieve a own utility.
-6. The user can, at all times, exercise their rights of access, rectification, suppression and portability of data and opposition and limitation to their treatment on their personal data as well as the revocation of consent for any of the aforementioned purposes, sending a **{{% legal name %}}** letter duly signed to our postal address **{{% legal location %}}** or to email **{{% legal email %}}**, where the contact data is clearly Control addressing the **Spanish Agency for Data Protection**, C/ Jorge Juan, 6 - 28001 Madrid.
+6. The user can, at all times, exercise their rights of access, rectification, suppression and portability of data and opposition and limitation to their treatment on their personal data as well as the revocation of consent for any of the aforementioned purposes, sending a **{{% legal name %}}** letter duly signed to our postal address **{{% legal location %}}** or to email **{{% legal mail %}}**, where the contact data is clearly Control addressing the **Spanish Agency for Data Protection**, C/ Jorge Juan, 6 - 28001 Madrid.
 7. The user authorizes the automated treatment of the personal data provided in the indicated terms. To do this, press the **"send"** button that is behind the contact form.

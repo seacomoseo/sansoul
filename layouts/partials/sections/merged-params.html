@@ -1,7 +1,7 @@
 {{/*  FUNTION DEFINE  */}}
 {{ define "partials/merge-params" }}
   {{ $section := dict }}
-  {{ with partial "functions/params-merge" . }}
+  {{ with partial "func/get-params-merge" . }}
     {{ $section = . }}
   {{ end }}
   {{ return $section }}

@@ -1,18 +1,18 @@
 {{- /* DEFINE GALLERY  */ -}}
 {{- define "partials/gallery" -}}
-  {{- $cols := partial "functions/columns" (dict
-    "items"  .images
+  {{- $cols := partial "func/columns" (dict
+    "items"  .imgs
     "each"   (merge . (dict "cols" .cols))
     "col_vl" .col_vl
     "col_vs" .col_vs
   ) -}}
 
   {{- $color := cond (eq .color "hide") "" .color -}}
-  {{- $bgc   := partial "functions/color-background" (dict "child" $color "parent" .bgcp) -}}
+  {{- $bgc   := partial "func/color-background" (dict "child" $color "parent" .bgcp) -}}
   {{- $color  = $bgc.child -}}
 
-  {{- $is_button_expand := and (eq .type "rows") (.images | or .link) (ne .button "hide") -}}
-  {{- $is_button_custom := and .link (ne .type "rows") -}}
+  {{- $is_btn_expand := and (eq .type "rows") (.imgs | or .url) (ne .btn "hide") -}}
+  {{- $is_btn_custom := and .url (ne .type "rows") -}}
 
   {{- /* CLASS  */ -}}
   {{- $class := slice
@@ -31,11 +31,12 @@
   {{- /* STYLE  */ -}}
   {{- $style := slice
     (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
-    (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio)) -}}
+    (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
+  -}}
 
   {{- /* JOIN ATTRIBUTES  */ -}}
   {{- $attrs := dict "class" $class "style" $style -}}
-  {{- $attrs  = partial "functions/attrs" $attrs -}}
+  {{- $attrs  = partial "func/attrs" $attrs -}}
 
   {{- /*  HTML  */}}
   <div {{- $attrs }}>
@@ -48,10 +49,10 @@
     {{- /*  ITEMS  */}}
     <div class="gallery__items">
       {{- /*  ITEM  */ -}}
-      {{- range .images -}}
+      {{- range .imgs -}}
         {{- partial "blocks/gallery-item" (dict
-          "image"     .image
-          "link"      .link
+          "img"       .img
+          "url"      .url
           "alt"       .alt
           "notlazy"   $.notlazy
           "type"      $.type
@@ -63,14 +64,14 @@
       {{- end -}}
 
       {{- /*  BUTTON EXPAND  */ -}}
-      {{- if $is_button_expand }}
+      {{- if $is_btn_expand }}
         {{ partial "link" (dict
           "class"  "gallery__expand"
-          "button" (.button | default "light")
+          "btn"    (or .btn "light")
           "ga4"    .ga4
           "icon"   (cond (eq .pin "none") "" .pin)
-          "anchor" (.anchor | default "auto")
-          "link"   .link
+          "anchor" (or .anchor "auto")
+          "url"    .url
           "lock"   .lock
         ) -}}
       {{- end }}
@@ -78,16 +79,16 @@
   </div>
 
   {{- /*  BUTTON CUSTOM  */}}
-  {{- if $is_button_custom }}
-    <div class="buttons">
+  {{- if $is_btn_custom }}
+    <div class="btns">
       {{ partial "link" (dict
-        "link"   .link
-        "button" (.button | default "cta")
+        "url"    .url
+        "btn"    (or .btn "cta")
         "swap"   .swap
         "ga4"    .ga4
         "icon"   .icon
         "label"  .label
-        "anchor" (.anchor | default "auto")
+        "anchor" (or .anchor "auto")
         "lock"   .lock
       ) }}
     </div>
@@ -98,14 +99,14 @@
 {{- /* GALLERY OR BOXES  */ -}}
 {{- if eq .gallery.type "boxes" -}}
   {{- /* If eq type boxes  */ -}}
-  {{- $images   := slice -}}
-  {{- range .images -}}
-    {{- $anchor := .alt | default .image | replaceRE `^(.+)\..*$` "$1" | humanize -}}
-    {{- $image  := merge . (dict "anchor" $anchor) -}}
-    {{- $images  = $images | append $image -}}
+  {{- $imgs   := slice -}}
+  {{- range .imgs -}}
+    {{- $anchor := .alt | default .img | replaceRE `^(.+)\..*$` "$1" | humanize -}}
+    {{- $img    := merge . (dict "anchor" $anchor) -}}
+    {{- $imgs    = $imgs | append $img -}}
   {{- end -}}
   {{- $box_each := dict
-    "button"  "hide"
+    "btn"     "hide"
     "cols"    .cols
     "color"   .color
     "gap"     .gap
@@ -113,20 +114,20 @@
     "contain" .contain
     "gray"    .gray
   -}}
-  {{- $boxes := dict "boxes" $images -}}
+  {{- $boxes := dict "boxes" $imgs -}}
   {{- $items := merge (dict "box" $box_each) $ $boxes -}}
   {{- partial "boxes/items" $items -}}
 {{- else -}}
   {{- /* If ne type boxes  */ -}}
   {{- $gallery := .gallery | default dict -}}
-  {{- $images  := dict
-    "images"    .images
+  {{- $imgs  := dict
+    "imgs"      .imgs
     "bgcp"      .bgcp
     "container" .container
     "col_vs"    .col_vs
     "col_vl"    .col_vl
     "notlazy"   .is_header
   -}}
-  {{- $items := merge $gallery $images -}}
+  {{- $items := merge $gallery $imgs -}}
   {{- partial "gallery" $items -}}
 {{- end -}}

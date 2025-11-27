@@ -1,20 +1,20 @@
-{{ $resources := slice
+{{ $srcs := slice
   (dict   "partial" `files/redirects` "path" "../_redirects")
   (dict   "partial" `files/og-svgs`   "path" "/og-svgs.json")
 }}
-{{ with site.Params.google_file_verification }}
-  {{ $resources = $resources | append
+{{ with site.Params.g_file_verify }}
+  {{ $srcs = $srcs | append
     (dict "partial" `files/google-site-verification` "path" .)
   }}
 {{ end }}
-{{ if not site.Data.config.cms_disabled }}
-  {{ $resources = $resources | append
+{{ if not site.Data.config.cms_hide }}
+  {{ $srcs = $srcs | append
     (dict "partial" `cms/index` "path" "/admin/index.html")
   }}
 {{ end }}
-{{ range $resources }}
-  {{ $string   := partial .partial . | string }}
-  {{ $resource := resources.FromString .path $string }}
-  {{ $resource.Publish }}
+{{ range $srcs }}
+  {{ $str := partial .partial . | string }}
+  {{ $src := resources.FromString .path $str }}
+  {{ $src.Publish }}
 {{ end }}
 {{ return "" }}

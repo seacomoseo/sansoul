@@ -3,15 +3,16 @@ base: page # [ article, event, product, brand, author, org, service, page ]
 weight: null # number
 icon: file # string
 emoji: 📄 # string
-disabled: null # boolean
+hide: null # boolean
 noindex: null # boolean
+body: null # boolean
 comments: null # boolean
-related: null # boolean
+rel: null # boolean
 hint: null # string
 tax_of:
 - name: null # string of relation name in params
-  multiple: null # boolean
-  breadcrumbs: null # boolean
+  multi: null # boolean
+  crumbs: null # boolean
   schema: null # string [ articleSection in article, brand or manufacturer in product, author in all ]
 tpl:
   toc: null # boolean
@@ -21,4 +22,4 @@ tpl:
   section: []
   sections: []
   list: {}
-  related: {}
+  rel: {}

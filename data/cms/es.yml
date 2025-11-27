@@ -2,11 +2,10 @@
 cms: Gestor de Contenidos
 login: Iniciar sesión
 recent: Contenido reciente de
-default: Por defecto
+def: Por defecto
 true: 'Sí'
 false: 'No'
-enabled: Activado
-disabled: Desactivado
+hide: Desactivado
 reset: Valor por defecto / eliminar
 filter_published: Publicados
 filter_drafts: Borradores
@@ -15,10 +14,10 @@ filter_month: Mes
 # collections
 collection_sections: Secciones
 collection_sections_singular: Sección
-collection_sections_description: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
+collection_sections_desc: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
 collection_types: Colecciones
 collection_types_singular: Colección
-collection_types_description: Tipos de Páginas. Aquí se crean, editan y configuran de forma individual, a excepción de "Todas", cuyos parámetros se aplican por defecto a todas las colecciones.
+collection_types_desc: Tipos de Páginas. Aquí se crean, editan y configuran de forma individual, a excepción de "Todas", cuyos parámetros se aplican por defecto a todas las colecciones.
 # collections > types
 types_title: Nombre
 types_title_hint: Algunos nombres rellenan por defecto los campos de icono, emoji y textos en todos los idiomas
@@ -28,46 +27,50 @@ types_base: Base
 types_base_hint: Determina el marcado de datos estructurados (útil para el SEO) y los parámetros mínimos que deben tener
 types_hint: Leyenda
 types_emoji: Emoji
+types_hide: Desactivado
 types_comments: Comentarios
-types_related: Relacionados
-types_taxonomy_of: Taxonomía de
-types_taxonomy_of_name: Nombre de Parámetro
-types_taxonomy_of_multiple: Múltiple
-types_taxonomy_of_breadcrumbs: Migas de Pan
-types_taxonomy_of_schema: Schema
+types_rel: Relacionados
+types_tax_of: Taxonomía de
+types_tax_of_name: Nombre de Parámetro
+types_tax_of_multi: Múltiple
+types_tax_of_crumbs: Migas de Pan
+types_tax_of_schema: Schema
 types_template: Plantilla
-types_template_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
-types_template_single_hint: Plantilla para ésta página solamente (los valores sobreescriben a los de la plantilla general)
+types_tpl_hint: Plantilla para las páginas de este tipo (los valores sobreescriben a los de la plantilla general)
+types_tpl_single_hint: Plantilla para ésta página solamente (los valores sobreescriben a los de la plantilla general)
 # collections > types > template
 template: Plantilla General
-template_hint: Plantilla común a todas las páginas (los valores de las páginas, personalizadas o no, con su propia plantilla sobreescriben a los de ésta)
-template_background: Fondo de Página
-template_menu: Menú
-template_menu_hide: Ocultar
-template_menu_logo: Mostrar Logo
-template_menu_sticky: Pantalla de Ajuste
-template_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
-template_menu_logo_sticky: Logo Fijo en Móvil
-template_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
-template_menu_logo_align: Alineación del Logo
-template_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
-template_menu_transparent: Inicia Transparente
-template_menu_transparent_hint: Al hacer scroll toma su color
-template_menu_hide_icons: Ocultar Iconos
-template_menu_hide_custom: Ocultar Enlaces Personalizados
-template_menu_auto: Enlaces Automáticos
-template_menu_auto_hint: Muestra automáticamente enlaces que llevan a cada sección y ventana modal, éstas últimas como subelementos desplegables
-template_callnow: Botones de Esquina
-template_callnow_hint: '**Personalizados →** en parámetros globales <br> **Automáticos →** si hay algún botón de WhatsApp o Teléfono en la página'
-template_section: Plantilla de cada Sección
-template_section_singular: Sección
-template_section_hint: El 1º se aplica a todas, el resto de forma alterna <br> **Ejemplo →** si hay 3 plantillas, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
-template_sections: Secciones
-template_sections_singular: Sección
-template_sections_file: Archivo
-template_sections_file_hint: Sección previamente creada
-template_list: Listas
-template_related: Listas de Relacionados
+tpl_hint: Plantilla común a todas las páginas (los valores de las páginas, personalizadas o no, con su propia plantilla sobreescriben a los de ésta)
+tpl_background: Fondo de Página
+tpl_menu: Menú
+tpl_menu_hide: Ocultar
+tpl_menu_logo: Mostrar Logo
+tpl_menu_sticky: Pantalla de Ajuste
+tpl_menu_sticky_hint: Pega el menú a la parte superior de la pantalla si es igual o mayor que el valor
+tpl_menu_logo_sticky: Logo Fijo en Móvil
+tpl_menu_logo_sticky_hint: Pega el logo a la parte superior de la pantalla si no se ajusta el menú
+tpl_menu_logo_align: Alineación del Logo
+tpl_menu_logo_align_hint: Alineación del logo sin que el menú se despliegue
+tpl_menu_clear: Inicia Transparente
+tpl_menu_clear_hint: Al hacer scroll toma su color
+tpl_menu_hide_icons: Ocultar Iconos
+tpl_menu_hide_custom: Ocultar Enlaces Personalizados
+tpl_menu_hide_custom_hint: En parámetros globales
+tpl_menu_auto: Enlaces Automáticos
+tpl_menu_auto_hint: Muestra automáticamente enlaces que llevan a cada sección y ventana modal, éstas últimas como subelementos desplegables
+tpl_callnow: Botones de Esquina
+tpl_callnow_hint: '**Personalizados →** [en parámetros globales](#/collections/_singletons/entries/values) <br> **Automáticos →** si hay algún botón de WhatsApp o Teléfono en la página'
+tpl_section: Plantilla de cada Sección
+tpl_section_singular: Sección
+tpl_section_hint: El 1º se aplica a todas, el resto de forma alterna <br> **Ejemplo →** si hay 3 plantillas, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
+tpl_sections: Secciones
+tpl_sections_singular: Sección
+tpl_sections_file: Archivo
+tpl_sections_file_hint: Sección previamente creada
+tpl_sections_params: Parámetros
+tpl_sections_params_hint: Sobreescriben a los del archivo
+tpl_list: Listas
+tpl_rel: Listas de Relacionados
 # collections > page
 # collections > page > index
 index_permalinks: Enlaces Permanentes
@@ -80,32 +83,32 @@ page_slug: Slug
 page_slug_hint: Es el final de la URL o enlace de ésta página <br> Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) <br> **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
 page_title: Título
 page_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
-page_summary: Resumen
-page_summary_hint: Se utiliza para las miniaturas de las listas <br> Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido
-page_image: Imagen Principal
-page_weight: Orden
-page_weight_hint: Orden en el que aparecerá la página en los listados
-page_related: Relacionados
-page_related_hint: Selecciona manualmente o se añadirán automaticamente
+page_img: Imagen Principal
+page_body: Contenido
+page_body_hint: Los enlaces cuyo texto esté envueltro entre corchetes se convertirán en botones (opcionalmente se pueden personalizar si en el title entre corchetes se añaden una o varias de estas palabras → "**main**", "**alt**", "**light**", "**dark**", "**turn**", "**such**", "**swap**" o "**dot**", separar con cualquier caracter si se añaden varias) <br> En el title entre corchetes también se pueden añadir estas palabras → "**nofollow**" (ofuscado), "**homefollow**" (ofuscado excepto en página de inicio), "**blank**" (se abre en ventana nueva) y "**ga4**" (registra evento clave en GA4) <br> Se pueden añadir iconos usando, envuelto entre caracteres "**::**", uno de los siguientes nombres válidos → [Material Symbols](https://fonts.google.com/icons)
 page_toc: Índice
 page_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
+page_sum: Resumen
+page_sum_hint: Se utiliza para las miniaturas de las listas <br> Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido (si hay)
+page_seo: Título SEO
+page_seo_hint: Se utiliza para los resultados de búsqueda en Google <br> **Recomendado entre 40 y 65 caracteres** (~60) <br> Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+page_desc: Descripción SEO
+page_desc_hint: Se utiliza para los resultados de búsqueda en Google <br> **Recomendado entre 70 y 155 caracteres** (~135) <br> Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+page_noindex: No Index
+page_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
 page_draft: Borrador
 page_draft_hint: La página deja de existir, sólo puede verla en el editor
 page_hide: Ocultar
 page_hide_hint: Oculta la página de los listados y del mapa de sitio, pero sigue siendo accesible mediante su URL
-page_noindex: No Index
-page_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
-page_seo: Título SEO
-page_seo_hint: Se utiliza para los resultados de búsqueda en Google <br> **Recomendado entre 40 y 65 caracteres** (~60) <br> Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
-page_description: Descripción SEO
-page_description_hint: Se utiliza para los resultados de búsqueda en Google <br> **Recomendado entre 70 y 155 caracteres** (~135) <br> Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
-page_body: Contenido
-page_body_hint: Los enlaces cuyo texto esté envueltro entre corchetes se convertirán en botones (opcionalmente se pueden personalizar si en el title entre corchetes se añaden una o varias de estas palabras → "**main**", "**alt**", "**light**", "**dark**", "**invert**", "**similar**", "**swap**" o "**dot**", separar con cualquier caracter si se añaden varias) <br> En el title entre corchetes también se pueden añadir estas palabras → "**nofollow**" (ofuscado), "**homefollow**" (ofuscado excepto en página de inicio), "**blank**" (se abre en ventana nueva) y "**ga4**" (registra evento clave en GA4) <br> Se pueden añadir iconos usando, envuelto entre caracteres "**::**", uno de los siguientes nombres válidos → [Material Symbols](https://fonts.google.com/icons)
+page_rel: Relacionados
+page_rel_hint: Selecciona manualmente o se añadirán automaticamente
+page_weight: Orden
+page_weight_hint: Orden en el que aparecerá la página en los listados
 page_base: Base
 page_base_hint: Determina el marcado de datos estructurados que usará esta página (útil para el SEO)
 # collections > page > article + event
 page_date: Fecha
-page_lastmod: Última Modifiación
+page_mod: Última Modifiación
 # collections > page > event
 page_end: Fecha Final
 page_cancelled: Cancelado
@@ -138,12 +141,12 @@ page_org_types: Tipo de Negocio
 page_org_names: Nombres
 page_org_names_singular: Nombre
 page_org_names_hint: Nombres y Variantes del Negocio / Proyecto
-page_org_description: Descripción
+page_org_desc: Descripción
 page_org_legal: Nombre Legal
 page_org_nif: NIF / DNI
-page_org_email: Email Legal
+page_org_mail: Email Legal
 page_org_logo: Logo
-page_images: Imágenes
+page_imgs: Imágenes
 page_as: Enlaces a Referencias
 page_as_singular: Enlace a Referencia
 page_as_hint: Enlaces a redes sociales y otras referencias
@@ -158,27 +161,25 @@ page_address_region: Región
 page_address_country: País
 page_address_country_hint: Código de país de 2 letras
 page_address_geo: Coordenadas
-page_address_link: Enlace a Mapa
+page_address_url: Enlace a Mapa
 page_address_legal: Legal
-page_org_address: Direcciones
-page_org_address_singular: Dirección
 page_areas: Áreas de Servicio
 page_areas_singular: Área de Servicio
-page_org_schedule: Horarios
-page_org_schedule_singular: Horario
-page_org_schedule_days: Días de la Semana
-page_org_schedule_days_mon: Lunes
-page_org_schedule_days_tue: Martes
-page_org_schedule_days_wed: Miércoles
-page_org_schedule_days_thu: Jueves
-page_org_schedule_days_fri: Viernes
-page_org_schedule_days_sat: Sábado
-page_org_schedule_days_sun: Domingo
-page_org_schedule_hours: Horas
-page_org_schedule_hours_open: Apertura
-page_org_schedule_hours_close: Cierre
-page_org_schedule_from: Válido Desde
-page_org_schedule_to: Válido Hasta
+page_org_when: Horarios
+page_org_when_singular: Horario
+page_org_when_days: Días de la Semana
+page_org_when_days_mon: Lunes
+page_org_when_days_tue: Martes
+page_org_when_days_wed: Miércoles
+page_org_when_days_thu: Jueves
+page_org_when_days_fri: Viernes
+page_org_when_days_sat: Sábado
+page_org_when_days_sun: Domingo
+page_org_when_hours: Horas
+page_org_when_hours_open: Apertura
+page_org_when_hours_close: Cierre
+page_org_when_from: Válido Desde
+page_org_when_to: Válido Hasta
 page_org_prices: Rango de Precios
 page_org_services: Servicios
 page_org_services_singular: Servicio
@@ -192,29 +193,31 @@ page_org_departs: Departamentos
 page_org_departs_singular: Departamento
 # singletones > values
 values: Valores Globales
-values_description: Menú Personalizado, Botones de Esquina y Valores Globales que se se utilizan en plantillas y/o como traducciones.
-values_menu_image: Imagen del Logo
+values_hint: Menú Personalizado, Botones de Esquina y Valores Globales que se se utilizan en plantillas y/o como traducciones.
+values_menu_: Menú Personalizado
+values_menu_img: Imagen del Logo
 values_menu_title: Título del Logo
-values_menu_subtitle: Subtítulo del Logo
+values_menu_sub: Subtítulo del Logo
 values_menu_items: Elementos
 values_menu_items_singular: Elemento
 values_menu_subitems: Sublementos
 values_menu_subitems_singular: Sublemento
+values_callnows: Botones de Esquina Personalizados
 values_callnows_singular: Botón
 # singletones > config
 config: Configuración
-config_google_analytics: Código Analytics
-config_google_analytics_hint: 'Código de seguimiento de Google Analytics <br> **Ejemplo →** G-XXXXXXXXXX'
-config_google_site_verification: Código Search Console
-config_google_site_verification_hint: Código de Verificación de Google Search Console
-config_google_file_verification: Archivo Search Console
-config_google_file_verification_hint: Nombre de Archivo de Verificación de Google Search Console <br> **Ejemplo →** google7467d923cbb3eb4c.html
-config_google_translate: Traductor de Google
-config_google_translate_hint: Añade un enlace en el menú que lleva directamente al sitio web desde el traductor de Google
+config_ga4: Código GA4
+config_ga4_hint: 'Código de seguimiento de Google Analytics 4 <br> **Ejemplo →** G-XXXXXXXXXX'
+config_g_site_verify: Código Search Console
+config_g_site_verify_hint: Código de Verificación de Google Search Console
+config_g_file_verify: Archivo Search Console
+config_g_file_verify_hint: Nombre de Archivo de Verificación de Google Search Console <br> **Ejemplo →** google7467d923cbb3eb4c.html
+config_g_translate: Traductor de Google
+config_g_translate_hint: Añade un enlace en el menú que lleva directamente al sitio web desde el traductor de Google
 config_disqus: Disqus
 config_disqus_hint: Nombre corto del sistema de comentarios disqus.com
-config_email: Emails
-config_email_hint: Emails separados por comas a los que le llegarán el mensaje
+config_mail: Emails
+config_mail_hint: Emails separados por comas a los que le llegarán mensajes de los formularios
 config_phone_code: Prefijo Telefónico de País
 config_time_zone: Zona Horaria
 config_currency: Moneda
@@ -229,45 +232,81 @@ config_cms_editorial: CMS Flujo Editorial
 config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarrollo sin afectar al contenido en producción (hasta que se publiquen los cambios)
 config_favicon: Favicono
 config_favicon_hint: Icono en miniatura representativo del sitio web (recomendable en formato SVG)
-config_lang_default_subdir: Idioma Principal en Subcarpeta
+config_lang_main_subdir: Idioma Principal en Subcarpeta
 config_cookies_advanced: Cookies Avanzadas
 config_cookies_advanced_hint: El mensaje de Cookies le permite al usuario elegir opciones
 config_cookies_legal: Cookies Legales
 config_cookies_legal_hint: Hace efectiva la política de cookies
-config_analytics_pagespeed_disabled: Analytics Desactivado para PageSpeed
-config_analytics_pagespeed_disabled_hint: Desactiva Google Analytics solo para [PageSpeed Insights](https://pagespeed.web.dev/)
-config_process_all_images: Procesar Todas las Imágenes
-config_process_all_images_hint: Hace que todas las imágenes de la galería estén disponibles aunque no se usen en ninguna página
+config_ga4_pagespeed_hide: Ocultar GA4 a PageSpeed
+config_ga4_pagespeed_hide_hint: Ocultar Google Analytics 4 solo para [PageSpeed Insights](https://pagespeed.web.dev/)
 config_development: Modo Desarrollo
 config_development_hint: Acelera las implementaciones para desarrollo y empeora la velocidad de carga para los usuarios
 config_show: Efecto Aparecer
 config_show_hint: Activar efecto de aparecer al hacer scroll en todos los elementos (empeora el rendimiento en dispositivos poco potentes)
 config_webp: Imágenes en formato WEBP
 config_webp_hint: Comprimir Imágenes en formato WEBP en vez de AVIF (desmarcada, mejora la velocidad de carga a costa de aumentar el tiempo de compilación)
-config_image_sizes: Escalado de Imágenes en srcset sizes
+config_img_sizes: Escalado de Imágenes en srcset sizes
 # singletones > langs
 langs: Idiomas
 langs_singular: Idioma
 langs_lang: Idioma
-langs_disabled: Desactivado
+langs_hide: Desactivado
 langs_title: Título
-langs_description: Descripción
-langs_pagination: Enlace Permanente de Paginación
-langs_pagination_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
+langs_desc: Descripción
+langs_pager: Enlace Permanente de Paginación
+langs_pager_hint: Ejemplo → "pagina" mostrará "https://ejemplo.com/pagina/[n]/"
 langs_config: Configuración
 langs_config_hint: Configuración por idioma que sobreescribe a la configuración general
 # singletones > styles
 styles: Estilos
+styles_icons: Iconos
 styles_icons_fill: Relleno
 styles_icons_weight: Peso
 styles_icons_grade: Grado
 styles_icons_optical: Tamaño Óptico
 styles_icons_style: Estilo
-styles_icons_play: Play
-styles_icons_up: Arriba
-styles_icons_down: Abajo
-styles_icons_left: Izquierda
-styles_icons_right: Derecha
+styles_icons_def: Por defecto
+styles_icons_def_home: Inicio
+styles_icons_def_play: Reproducir
+styles_icons_def_up: Arriba
+styles_icons_def_down: Abajo
+styles_icons_def_left: Izquierda
+styles_icons_def_right: Derecha
+styles_icons_def_right_angle: Derecha Ángulo Recto
+styles_icons_def_close: Cerrar
+styles_icons_def_cookies: Cookies
+styles_icons_def_sitemap: Mapa del Sitio
+styles_icons_def_search: Buscar
+styles_icons_def_question: Pregunta
+styles_icons_def_plus: Más
+styles_icons_def_calendar: Calendario
+styles_icons_def_calendar_edit: Calendario Editar
+styles_icons_def_calendar_start: Calendario Inicio
+styles_icons_def_calendar_end: Calendario Fin
+styles_icons_def_clock: Reloj
+styles_icons_def_geo: Geo
+styles_icons_def_copy: Copiar
+styles_icons_def_send: Enviar
+styles_icons_def_send_close: Enviar Cerrar
+styles_icons_def_send_checking: Enviar Comprobando
+styles_icons_def_send_submit: Enviado
+styles_icons_def_send_error: Enviar Error
+styles_icons_def_send_info: Enviar Info
+styles_icons_def_review_star: Revisar Estrella
+styles_icons_def_words: Palabras
+styles_icons_def_address: Dirección
+styles_icons_def_drop_down: Desplegable Abajo
+styles_icons_def_drop_up: Desplegable Arriba
+styles_icons_def_phone: Teléfono
+styles_icons_def_whatsapp: WhatsApp
+styles_icons_def_upload: Subir
+styles_icons_def_mail: Correo
+styles_icons_def_translate: Traducir
+styles_icons_def_langs: Idiomas
+styles_icons_def_user: Usuario
+styles_icons_def_quote: Comillas
+styles_icons_def_quote_left: Comillas Izquierda
+styles_icons_def_quote_right: Comillas Derecha
 styles_fonts: Fuentes
 styles_fonts_base: Fuente Base
 styles_fonts_cursive: Manuscrita
@@ -280,7 +319,6 @@ styles_fonts_weight: Grosor
 styles_fonts_bold: Grosor Negrita
 styles_fonts_italic: Cursiva
 styles_fonts_line_height: Alto de Línea
-styles_fonts_top: Ajuste Vertical
 styles_fonts_size: Tamaño (por defecto = 1)
 styles_colors: Colores
 styles_colors_main: Principal
@@ -291,11 +329,11 @@ styles_colors_cta_hint: Color para los enlaces y botones por defecto <br> Si no 
 styles_colors_color: Color
 styles_colors_light: Versión Clara
 styles_colors_dark: Versión Oscura
-styles_colors_contrast: Contrastes
-styles_colors_contrast_hint: Cambio del color según el fondo si no hay suficiente contraste
-styles_colors_contrast_fill: Rellenos Generales
-styles_colors_contrast_in: Texto de los Botones
-styles_colors_contrast_text: Texto General
+styles_colors_turn: Contrastes
+styles_colors_turn_hint: Cambio del color según el fondo si no hay suficiente contraste
+styles_colors_turn_fill: Rellenos Generales
+styles_colors_turn_in: Texto de los Botones
+styles_colors_turn_text: Texto General
 styles_base: Base
 styles_base_white: Blanco
 styles_base_light: Claro
@@ -307,25 +345,24 @@ styles_rounded_radius: Radio
 styles_rounded_radius_hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas <br> Si el valor es 0 no se redondea nada <br> Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas <br> Máximo 1.25
 styles_rounded_chamfer: Chaflán
 styles_rounded_chamfer_hint: Cambia las esquinas redondeadas por chaflanes (cortes rectos)
-styles_buttons: Botones
-styles_buttons_font: Fuente Principal
-styles_buttons_swap: Fuente Alternativa
-styles_buttons_sides_round: Laterales Redondos
-styles_buttons_sides_round_hint: Redondea las esquinas hasta el máximo
-styles_buttons_dot_circle: Iconos Círculares
-styles_buttons_dot_circle_hint: Redondea las esquinas hasta convertir en círculos los que solamente tienen un icono grande
-styles_buttons_deep: 3D
-styles_buttons_deep_hint: Efecto 3D o de profundidad
-styles_buttons_outline: Borde y Hueco
-styles_buttons_outline_hint: Deja bordes sólidos y rellenos transparente
-styles_buttons_type: Tipo
-styles_buttons_bold: Negrita
-styles_buttons_caps: Mayúsculas
+styles_btns: Botones
+styles_btns_font: Fuente Principal
+styles_btns_swap: Fuente Alternativa
+styles_btns_pill: Laterales Redondos
+styles_btns_pill_hint: Redondea las esquinas hasta el máximo
+styles_btns_disc: Iconos Círculares
+styles_btns_disc_hint: Redondea las esquinas hasta convertir en círculos los que solamente tienen un icono grande
+styles_btns_deep: 3D
+styles_btns_deep_hint: Efecto 3D o de profundidad
+styles_btns_outline: Borde y Hueco
+styles_btns_outline_hint: Deja bordes sólidos y rellenos transparente
+styles_btns_type: Tipo
+styles_btns_bold: Negrita
+styles_btns_caps: Mayúsculas
 styles_inputs: Campos de Formularios
 styles_inputs_fill: Rellenos
 styles_inputs_fill_hint: Aplica un fondo de color blanco con esquinas redondeadas en cada campo simple
-styles_inputs_labels_out: Etiquetas Fuera
-styles_inputs_labels_out_hint: Coloca las etiquetas de cada campo fuera de éste
+styles_inputs_labels: Posición de Etiquetas
 styles_inputs_consent: Consentimiento
 styles_inputs_consent_hint: Texto junto a la casilla de verificación del consentimiento
 styles_shadow: Sombras
@@ -342,15 +379,16 @@ customs_types: Colecciones
 customs_types_singular: Colección
 customs_pages: Páginas
 customs_pages_singular: Página
-customs_var: Variable Existente
+customs_var: Campo Base Existente
 customs_name: Nombre de Campo
 customs_label: Nombre Visible
 customs_hint_: Leyenda
 customs_widget: Widget
 customs_options: Opciones
+customs_options_singular: Opción
 customs_options_label: Título
 customs_options_value: Valor
-customs_multiple: Múltiple
+customs_multi: Múltiple
 customs_sub: Subcampos
 customs_sub_singular: Subcampo
 customs_relations_hint: Crear previamente
@@ -372,13 +410,14 @@ remote_csv: ¿Es un CSV?
 remote_types: Tipos de Páginas
 remote_types_singular: Tipo de Página
 remote_index: Índice
-remote_index_hint: Ruta hacia el objeto deseado separado por puntos <br> **Ejemplo →** "shop.articles.products"
-remote_pairings: Emparejamientos
-remote_pairings_singular: Emparejamiento
-remote_pairings_from: Parámetro de Origen
-remote_pairings_to: Parámetro de Destino
-remote_pairings_kind: Tipo de Valor
-remote_pairings_delimit: Separador
+remote_index_hint: Ruta hacia el array deseado separado por puntos <br> **Ejemplo →** "shop.articles.products"
+remote_maps: Mapeos
+remote_maps_singular: Mapeo
+remote_maps_hint: Mapeo de parámetros
+remote_maps_from: Parámetro de Origen
+remote_maps_to: Parámetro de Destino
+remote_maps_kind: Tipo de Valor
+remote_maps_sep: Separador
 # singletones > redirects
 redirects: Redirecciones
 redirects_hint: Redirecciones de URL's
@@ -388,331 +427,335 @@ redirects_type: Tipo
 # singletones > robots
 robots_hint: Tutorial
 # boxes and sections
-box_name: Nombre
-box_name_hint: Nombre del archivo
-box_id: ID
-box_id_hint: Identificador para enlaces ancla <br> Debe ser único (no repetirse) entre todas las secciones y cajas <br> Corto <br> Descriptivo <br> Sin palabras irrelevantes (de, por, para, el…) <br> **Ejemplo →** preguntas-frecuentes
-box_view: Ver
-box_view_hint: Grupos de opciones a mostras
-box_title: Título
-box_hanchor: Título Oculto
-box_hanchor_hint: Encabezado y Ancla/Anchor Oculto que tendrá el título (y el menú si está vinculado) para SEO
-box_subtitle: Subtítulo
-box_price: Precio
-box_hn: Etiqueta de Título
-box_hs: Tamaño de Título
-box_caps: Título en Mayúsculas
-box_line: Título Subrayado
-box_md: Contenido
-box_md_align: Alineación del Contenido
-box_md_align_hint: Alineación Sólo del Contenido
-box_md_align_vl: Alineación del Contenido en Escritorio
-box_md_align_vl_hint: Alineación sólo del contenido cuando el ancho de la ventana ≥ 1280px
-box_md_sm: Contenido Pequeño
-box_md_caps: Encabezados del Contenido en Mayúsculas
-box_md_caps_hint: Hasta el nivel de profundidad de encabezado seleccionado
-box_md_line: Encabezados del Contenido Subrayados
-box_md_line_hint: Hasta el nivel de profundidad de encabezado seleccionado
-box_md_index: Numeración en Encabezados de Contenido
-box_md_index_hint: Añadir la misma numeración que hay en los índices, en los encabezados del contenido
-box_md_nav: IDs en Encabezados de Contenido
-box_md_nav_hint: Añadir IDs y enlaces en los encabezados del contenido
-box_md_border: Borde de Imágenes del Contenido
-box_menu_label: Texto del Enlace del Menú
-box_menu_button: Color del Botón del Enlace del Menú
-box_menu_swap: Fuente Alternativa del Enlace del Menú
-box_icon_id: Icono
-box_icon_id_hint: Nombres válidos → Directamente un nombre de [Material Symbols](https://fonts.google.com/icons) o emojis o "txt:" + cualquier texto o "brand:" + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) o "brand:" + [Simple Icons](https://simpleicons.org/) o "svg:" + el nombre de un archivo svg que haya en la carpeta "icons" de la biblioteca de medios
-box_icon_type: Tipo de Icono
-box_icon_type_hint: Arriba en grande, Lateral junto al texto y Abajo a modo de subrayado
-box_icon_size: Tamaño de Icono
-box_icon_color: Color de Icono
-box_image_src: Imagen
-box_image_src_hint: Admite vídeo (incluido de youtube y vimeo) mediante URL <br> En caso de ser un vídeo de youtube y vimeo, puede establecerse una imagen de miniatura si a la URL se le añade al final '#poster=nombre-de-imagen.jpg' o, si es vídeo subido, subir también desde [Medios](#/assets/-/all) una imagen con el mismo nombre del archivo de vídeo pero con la extensión de la imagen (jpg, png, webp…) <br> Se puede autoreproducir el vídeo dejándolo mudo añadiéndole al final de la URL '#mute' <br> Se pueden establecer marcas de inicio y final del vídeo en segundos añadiendo al final de la URL '#t=2,7' o '#t=2' para el inicio solamente
-box_image_hover: Imagen Alternativa
-box_image_hover_hint: Aparecerá al pasar el cursor por encima
-box_image_alt: Texto Alternativo de Imagen
-box_image_hover_alt: Texto Alternativo de Imagen Alternativa
-box_image_ratio: Proporción de la Imagen
-box_image_ratio_hint: Automática por defecto <br> **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
-box_image_ratio_pattern: Sólo números (1-9) y barras inclinadas ("/")
-box_image_contain: Imagen Ajustada a la Proporción
-box_image_contain_hint: Para que no se recorte si se selecciona alguna proporción
-box_image_border: Borde de la Imagen
-box_image_inset: Imagen Incrustada
-box_image_inset_hint: Se incrusta en el elemento como si este no tuviese márgenes internos
-box_image_circle: Imagen en Círculo
-box_image_gray: Imagen en Blanco y Negro
-box_image_gray_hint: Recuperan el color al pasar el cursor por encima
-box_image_shade: Imagen con Gradiente
-box_image_shade_hint: Gradiente de fondo hacia abajo
-box_button_link: Enlace
-box_button_pin: Icono del Enlace
-box_button_label: Texto del Enlace
-box_button_anchor: Ancla del Enlace
-box_button_anchor_hint: Texto/Anchor oculto que tendrá el enlace (para SEO)
-box_button_lock: Enlace Ofuscado
-box_button_lock_hint: Ésto hace que Google no considere el enlace como tal (para SEO)
-box_button_color: Color del Botón del Enlace
-box_button_swap: Fuente Alternativa del Enlace
-box_button_ga4: GA4
-box_button_ga4_hint: Marcarlo como evento en Google Analytics 4 (para posterior conversión)
-box_bg_color: Color del Fondo
-box_bg_fade_color: Color de Gradiente del Fondo
-box_bg_fade_type: Tipo de Gradiente del Fondo
-box_bg_color_alpha: Transparencia de color de Fondo
-box_bg_image: Imagen de Fondo
-box_bg_alpha: Transparencia de imagen de Fondo
-box_parallax: Paralaje
-box_parallax_hint: Aplica un efecto de desplazamiento al hacer scroll
-box_container_bg_color: Color del Fondo de la Caja
-box_container_bg_fade_color: Color de Gradiente del Fondo de la Caja
-box_container_bg_fade_type: Tipo de Gradiente del Fondo de la Caja
-box_container_bg_color_alpha: Transparencia de color de Fondo de la Caja
-box_container_bg_image: Imagen de Fondo de la Caja
-box_container_bg_alpha: Transparencia de imagen de Fondo de la Caja
-box_container_parallax: Paralaje de la Caja
-box_padding_top: Márgenes Interior Superior
-box_padding_bottom: Márgenes Interior Inferior
-box_padding_hide: Ocultar Márgenes Interiores
-box_size: Tamaño del Contenedor
-box_size_hint: Por defecto → **Grande** en Secciones y Menú, **Pequeño** en Modales
-box_full: Alto Mínimo = Pantalla
-box_divider_id: Divisor
-box_divider_id_hint: Visibles en
-box_divider_flip_x: Voltear Divisor Horizontal
-box_divider_flip_y: Voltear Divisor Vertical
-box_order: Orden del Elemento en Escritorio
-box_order_hint: Orden del elemento cuando el ancho de la ventana ≥ 1280px
-box_fit_vl: Ancho
-box_fit_vl_hint: Ancho en Número de Columnas
-box_fit_vs: Ancho Mínimo
-box_fit_vs_hint: Ancho en Nº Columnas en Resolución Mínima
-box_grow: Rellenar Ancho
-box_grow_hint: Rellenar el ancho de contenedor aumentando el ancho de los elementos o columnas (no aplica si se activa carrusel)
-box_align: Alineación
-box_align_hint: Alineación de todos los elementos de la Caja
-box_align_vl: Alineación en Escritorio
-box_align_vl_hint: Alineación de todos los elementos de la Caja cuando el ancho de la ventana ≥ 1280px
-box_rate: Proporción de la Caja
-box_rate_hint: Altura mínima según la proporción establecida <br> Automática por defecto <br> **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
-box_space: Margen entre Elementos de la Caja
-box_padding_vl: Márgenes Interiores
-box_padding_vs: Márgenes Interiores Mínimos
-box_hide_shadow: Quitar Sombra
-box_hide_radius: Quitar Esquinas Redondeadas
-box_pill: Modo Bala
-box_pill_hint: Redondea la parte superior e inferior
-box_card: Modo Tarjeta
-box_card_hint: Utiliza la imagen como fondo + deja un margen superior para que se vea dicho fondo + alinea los contenido abajo y les añade un degradado a negro
-box_if: Condicional
-box_if_hint: Comprueba si existe el valor en los parámetros personalizados de la página para procesar la caja
-box_node: Nodo
-box_node_hint: Nombre de la etiqueta HTML de la Caja
-box_params: Parámetros
-box_params_singular: Parámetro
-box_params_hint: Valores de Parámetros o Campos Personalizados desde la página o valor global hasta la caja
-box_params_from: Parámetro de Origen
-box_params_to: Parámetro de Destino
-box_params_value: Valor JSON
-box_remap: Remapeo de Parámetros
-box_remap_from: Nombre Origen
-box_remap_to: Nombre Destino
-box_remap_copy: Copiar
-box_tag: Plantilla de Etiquetas
-box_tags: Etiquetas
-box_tags_singular: Etiqueta
-box_tags_hint: Lista de datos a modo de etiquetas relativas a la página
-box_tags_type: Tipo
-box_tags_date: Fecha
-box_tags_reading_time: Tiempo de Lectura
-box_tags_words: Nº de Palabras
-box_tags_address: Dirección
-box_tags_hide_hours: Ocultar Hora
-box_tags_hide_lastmod: Ocultar Última Modificación
-box_hide_lastmod: Taxonomías
-box_tags_taxonomy: Taxonomías
-box_tags_taxonomy_key: Taxonomía
-box_tags_param: Parámetro
-box_tags_param_key: Clave del Parámetro
-box_tags_param_hint: Indica el nombre del parámetro o campo de página
-box_tags_custom: Personalizado
-box_sort: Orden de los Elementos
-box_cols_vl: Nº de Columnas
-box_cols_vl_hint: 0 = se calcula automático según el número de elementos y sus anchos
-box_cols_vs: Nº Columnas en Resolución Mínima
-box_cols_vs_hint: 0 = se calcula automático según el número de elementos y sus anchos en resoluciones mínimas
-box_gap_vl: Margen entre Cajas
-box_gap_vs: Margen entre Cajas en Resolución Mínima
-box_gap_ny: Margen Vertical entre Cajas
-box_gap_ny_hint: El valor es en relación proporcional al **Margen entre Cajas**
-box_to: Dirección de las Cajas
-box_duo: Modo de Parejas
-box_duo_hint: Define cómo se agrupan los bloques de cuatro elementos en resoluciones de escritorio
-box_sides: Laterales Alternos Fondos/Imágenes
-box_sides_hint: Coloca los fondos (o imágenes) en extremos de la venta izquierda-derecha alternamente
-box_side: Lateral Fondo/Imagen
-box_side_hint: Coloca el fondo (o imagen) en extremo/s de la venta lateral/es
-box_group_radius: Esquinas Redondeadas en Conjunto
-box_group_radius_hint: Esquinas redondeadas en el conjunto de elementos
-box_slider_active: Activar Carrusel
-box_slider_active_hint: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
-box_time: Intervalo del Carrusel
-box_time_hint: Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)
-box_pips: Guías del Carrusel
-box_arrows: Flechas del Carrusel
-box_align_x: Alineación Horizontal de Cajas
-box_align_y: Alineación Vertical de Cajas
-box_align_y_self: Alineación Vertical de la Caja
-box_list: Lista
-box_list_hint: Lista de Páginas
-box_list_type: Tipo
-box_list_max: Nº Máximo
-box_list_max_hint: Número máximo de elementos visibles, para ver el resto aparecerá un botón '+ Más' que llevará al Tipo de Artículo
-box_list_start: Fecha Inicial
-box_list_end: Fecha Final
-box_step: Plantilla de Pasos
-box_steps: Pasos
-box_steps_singular: Paso
-box_steps_border: Color del Borde
-box_gallery: Plantilla de Galería
-box_gallery_images: Galería de Imágenes
-box_gallery_images_hint: Sube varias imágenes, de una sola vez, que permitan hacer click para que se amplíen (como pase de diapositivas)
-box_gallery_limages: Galería de Imágenes con Enlaces
-box_gallery_limages_singular: Imágen con Enlace
-box_gallery_type: Tipo de Galería
-box_accordion: Plantilla de Acordeones
-box_accordions: Acordeones
-box_accordions_singular: Acordeón
-box_accordions_hint: Botones con contenido desplegable, muy usado para preguntas frecuentes
-box_accordion_headers: Modo Encabezados
-box_accordion_open: Primero Desplegado
-box_gss: Hoja G.Drive Archivo
-box_gss_hint: Identificador del archivo de tipo hoja de Google Drive <br> **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
-box_gss_sheet: Hoja G.Drive Pestaña
-box_gss_sheet_hint: Identificador de la pestaña <br> **Ejemplo →** "1861644079"
-box_review: Plantilla de Reseñas
-box_reviews: Reseñas
-box_reviews_singular: Reseña
-box_review_icon_left: Icono Izquierda
-box_review_icon_right: Icono Derecha
-box_review_rating: Valoración
-box_contact: Botones de Contacto
-box_contact_singular: Botón de Contacto
-box_contact_hint: Datos de contacto que se verán como botones, enlaces, o textos
-box_contact_days: Días
-box_contact_hours: Horas
-box_contact_label: Texto
-box_contact_label_phone: Número de Teléfono
-box_contact_full: Ancho Completo
-box_contact_address: Dirección para Mostrar
-box_contact_anchor: Dirección para Enlazar
-box_contact_anchor_hint: Usado para generar enlace automático a GMaps
-box_contact_schedule: Horarios de Contacto
-box_contact_pre: Prefijo
-box_contact_phone: Teléfono
-box_contact_whatsapp: WhatsApp
-box_contact_mail: eMail
-box_contact_address: Dirección
-box_contact_map_hint: Si seleccionas una ubicación, el enlace llevará a un mapa con las coordenadas exactas
-box_contact_h2: Encabezado H2
-box_contact_h3: Encabezado H3
-box_contact_h4: Encabezado H4
-box_contact_h5: Encabezado H5
-box_contact_h6: Encabezado H6
-box_contact_br: Salto de Línea
-box_contact_hr: Separador
-box_contact_custom: Personalizado
-box_dots: Botones de Puntos
-box_dots_singular: Botón de Punto
-box_dots_hint: Botones con enlaces hacia Redes Sociales y otros
-box_form: Formulario
-box_form_action: Acción
-box_form_action_hint: Acción que se ejecuta al enviar el formulario
-box_form_to: Destino
-box_form_to_hint: URL de la página que se abrirá si el formulario se envía correctamente
-box_form_subject: Asunto
-box_form_subject_hint: Asunto que tendrá el email de recepción
-box_input_name: Nombre
-box_input_name_hint: Nombre que tendrá el campo
-box_input_label: Nombre Visible
-box_input_label_hint: Texto descriptivo del campo que aparece sobre éste <br> Si no se especifica, se aplicará el nombre anterior
-box_input_hint: Leyenda
-box_input_hint_hint: Texto descriptivo del campo que aparece bajo éste
-box_input_required: Requerido
-box_input_required_hint: Indica si es obligatorio completar el campo
-box_input_required_if: Requerido Si…
-box_input_required_if_hint: Indica si es obligatorio completar este campo solamente si otro campo está completado, indicando su nombre (puedes indicar varios separados por '||' o por '&&')
-box_input_show_if: Mostrar Si…
-box_input_show_if_hint: Este campo estará oculto hasta que otro campo se complete, indicando su nombre (puedes indicar varios separados por '||' si con uno es suficiente o por '&&' si se requieren todos)
-box_input_regex: Regex
-box_input_min: Mínimo
-box_input_max: Máximo
-box_input_x: Opciones en Horizontal
-box_input_accept: Archivos
-box_input_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas <br> **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
-box_input_base_name: Nombre Base
-box_input_base_name_hint: Usa como nombre de archivo el valor del campo al que se le haga referencia aquí en el momento de la carga, y si no lo encuentra, usa este mismo nombre
-box_input_geo_area: Áreas
-box_input_geo_area_hint: Permite añadir áreas mediante círculos y polígonos
-box_input_geo_view: Centro de Vista Inicial
-box_input_options: Opciones
-box_input_option: Opción
-box_input_option_hint: Opción que se le muestra al usuario
-box_input_value: Valor
-box_input_value_hint: Valor que recibirá el formulario
-box_inputs: Elementos de Formulario
-box_inputs_singular: Elemento de Formulario
-box_inputs_text: Texto (Simple)
-box_inputs_text_hint: Campo simple de texto normal
-box_inputs_email: Email (Simple)
-box_inputs_email_hint: Campo simple de email
-box_inputs_tel: Teléfono (Simple)
-box_inputs_tel_hint: Campo simple de teléfono
-box_inputs_number: Número (Simple)
-box_inputs_number_hint: Campo simple de número
-box_inputs_date: Fecha (Simple)
-box_inputs_date_hint: Campo simple de fecha
-box_inputs_time: Tiempo (Simple)
-box_inputs_time_hint: Campo simple de tiempo
-box_inputs_textarea: Área de Texto (Simple)
-box_inputs_textarea_hint: Campo simple de área de texto <br> Ocupa todo el ancho
-box_inputs_geo: Coordenadas
-box_inputs_geo_hint: Mapa para establecer un punto <br> Ocupa todo el ancho
-box_inputs_select: Selección (Múltiple)
-box_inputs_select_hint: Campo múltiple de lista de selección desplegable <br> Solo permite seleccionar una opción <br> Ocupa todo el ancho
-box_inputs_radio: Radios (Múltiple)
-box_inputs_radio_hint: Campo múltiple de radios o círculos <br> Solo permite seleccionar una opción <br> Ocupa todo el ancho
-box_inputs_checkbox: Casillas (Múltiple)
-box_inputs_checkbox_hint: Campo múltiple de casillas de verificación <br> Permite seleccionar múltiples opciones <br> Ocupa todo el ancho
-box_inputs_check: Casilla (Simple)
-box_inputs_check_hint: Campo simple de casilla de verificación
-box_inputs_file: Archivo
-box_inputs_file_hint: Campo de archivo adjunto (máximo 8 MB)
-box_inputs_hidden: Oculto
-box_inputs_hidden_hint: Campo simple oculto a los usuarios (puede servir para indicar algo internamente en la recepción de formularios)
-box_inputs_h2: Encabezado h2
-box_inputs_h3: Encabezado h3
-box_inputs_h4: Encabezado h4
-box_inputs_h5: Encabezado h5
-box_inputs_h6: Encabezado h6
-box_inputs_md: Contenido
-box_map: Plantilla de Mapa
-box_map_tile: Capa por defecto
-box_map_color: Color
-box_map_label: Nombre
-box_map_point: Punto
-box_map_circle: Círculo
-box_map_polygon: Polígono
-box_map_radius: Radio
-box_map_radius_hint: Radio en kilómetros
-box_geos: Mapa
-box_geos_singular: Elemento de Mapa
-box_geos_hint: Añade puntos y/o áreas para mostrar en el mapa
-box_zoom: Zoom
-box_box: Plantilla de Cajas
-box_boxes: Cajas
-box_boxes_singular: Caja
+name: Nombre
+name_hint: Nombre del archivo
+id: ID
+id_hint: Identificador para enlaces ancla <br> Debe ser único (no repetirse) entre todas las secciones y cajas <br> Corto <br> Descriptivo <br> Sin palabras irrelevantes (de, por, para, el…) <br> **Ejemplo →** preguntas-frecuentes
+view: Ver
+view_hint: Grupos de opciones a mostras
+title: Título
+hanchor: Título Oculto
+hanchor_hint: Encabezado y Ancla/Anchor Oculto que tendrá el título (y el menú si está vinculado) para SEO
+sub: Subtítulo
+price: Precio
+hn: Etiqueta de Título
+hs: Tamaño de Título
+hs_vs: Tamaño de Título Mínimo
+caps: Título en Mayúsculas
+line: Título Subrayado
+md: Contenido
+md_align: Alineación del Contenido
+md_align_hint: Alineación Sólo del Contenido
+md_align_vl: Alineación del Contenido en Escritorio
+md_align_vl_hint: Alineación sólo del contenido cuando el ancho de la ventana ≥ 1280px
+md_sm: Contenido Pequeño
+md_caps: Encabezados del Contenido en Mayúsculas
+md_caps_hint: Hasta el nivel de profundidad de encabezado seleccionado
+md_line: Encabezados del Contenido Subrayados
+md_line_hint: Hasta el nivel de profundidad de encabezado seleccionado
+md_index: Numeración en Encabezados de Contenido
+md_index_hint: Añadir la misma numeración que hay en los índices, en los encabezados del contenido
+md_nav: IDs en Encabezados de Contenido
+md_nav_hint: Añadir IDs y enlaces en los encabezados del contenido
+md_border: Borde de Imágenes del Contenido
+menu_label: Texto del Enlace del Menú
+menu_btn: Color del Botón del Enlace del Menú
+menu_swap: Fuente Alternativa del Enlace del Menú
+icon: Icono
+icon_hint: Nombres válidos → Directamente un nombre de [Material Symbols](https://fonts.google.com/icons) o emojis o "txt:" + cualquier texto o "brand:" + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) o "brand:" + [Simple Icons](https://simpleicons.org/) o "svg:" + el nombre de un archivo svg que haya en la carpeta "icons" de la biblioteca de medios
+icon_pos: Posición de Icono
+icon_pos_hint: Arriba en grande, Lateral junto al título y Abajo a modo de subrayado
+icon_size: Tamaño de Icono
+icon_color: Color de Icono
+img: Imagen
+hover: Imagen Alternativa
+hover_hint: Aparecerá al pasar el cursor por encima
+alt: Texto Alternativo de Imagen
+hover_alt: Texto Alternativo de Imagen Alternativa
+vid: Vídeo
+vid_hint: Admite URL de YouTube y Vimeo <br> **Miniatura →** en el campo anterior correspondiente <br> **Marcas de inicio y final →** Se pueden establecer en segundos añadiendo al final de la URL '#t=2,7' o '#t=2'
+mute: Auto-reproducir Vídeo
+mute_hint: Vídeo silenciado que se reproduce automáticamente en bucle
+ratio: Proporción de la Imagen
+ratio_hint: Automática por defecto <br> **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+ratio_pattern: Sólo números (1-9) y barras inclinadas ("/")
+contain: Imagen Ajustada a la Proporción
+contain_hint: Para que no se recorte si se selecciona alguna proporción
+border: Borde de la Imagen
+inset: Imagen Incrustada
+inset_hint: Se incrusta en el elemento como si este no tuviese márgenes internos
+disc: Imagen en Círculo
+gray: Imagen en Blanco y Negro
+gray_hint: Recuperan el color al pasar el cursor por encima
+shade: Imagen con Gradiente
+shade_hint: Gradiente de fondo hacia abajo
+url: Enlace
+pin: Icono del Enlace
+label: Texto del Enlace
+anchor: Ancla del Enlace
+anchor_hint: Texto/Anchor oculto que tendrá el enlace (para SEO)
+lock: Enlace Ofuscado
+lock_hint: Ésto hace que Google no considere el enlace como tal (para SEO)
+btn: Color del Botón del Enlace
+swap: Fuente Alternativa del Enlace
+ga4: Evento Clave en GA4
+ga4_hint: Marcarlo como evento clave en Google Analytics 4 (para posterior conversión)
+color: Color del Fondo
+fade: Color de Gradiente del Fondo
+fade_to: Dirección de Gradiente del Fondo
+color_alpha: Transparencia de color de Fondo
+bi: Imagen de Fondo
+alpha: Transparencia de imagen de Fondo
+scroll: Paralaje
+scroll_hint: Aplica un efecto de desplazamiento al hacer scroll
+box_color: Color del Fondo de la Caja
+box_fade: Color de Gradiente del Fondo de la Caja
+box_fade_to: Dirección de Gradiente del Fondo de la Caja
+box_color_alpha: Transparencia de color de Fondo de la Caja
+box_bi: Imagen de Fondo de la Caja
+box_alpha: Transparencia de imagen de Fondo de la Caja
+box_scroll: Paralaje de la Caja
+pt: Margen Interior Superior
+pb: Margen Interior Inferior
+ph: Ocultar Márgenes Interiores
+size: Tamaño del Contenedor
+size_hint: Por defecto → **Grande** en Secciones y Menú, **Pequeño** en Modales
+full: Alto Mínimo = Pantalla
+div: Divisor
+div_hint: Visibles en
+flip_x: Voltear Divisor Horizontal
+flip_y: Voltear Divisor Vertical
+order: Orden del Elemento en Escritorio
+order_hint: Orden del elemento cuando el ancho de la ventana ≥ 1280px
+fit: Ancho
+fit_hint: Ancho en Número de Columnas
+fit_vs: Ancho Mínimo
+fit_vs_hint: Ancho en Nº Columnas en Resolución Mínima
+grow: Rellenar Ancho
+grow_hint: Rellenar el ancho de contenedor aumentando el ancho de los elementos o columnas (no aplica si se activa carrusel)
+align: Alineación
+align_hint: Alineación de todos los elementos de la Caja
+align_vl: Alineación en Escritorio
+align_vl_hint: Alineación de todos los elementos de la Caja cuando el ancho de la ventana ≥ 1280px
+rate: Proporción de la Caja
+rate_hint: Altura mínima según la proporción establecida <br> Automática por defecto <br> **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+space: Margen entre Elementos de la Caja
+pd: Márgenes Interiores
+pd_vs: Márgenes Interiores Mínimos
+hide_shadow: Quitar Sombra
+hide_radius: Quitar Esquinas Redondeadas
+pill: Modo Bala
+pill_hint: Redondea la parte superior e inferior
+card: Modo Tarjeta
+card_hint: Utiliza la imagen como fondo + deja un margen superior para que se vea dicho fondo + alinea los contenido abajo y les añade un degradado a negro
+if: Condicional
+if_hint: Comprueba si existe el valor en los parámetros personalizados de la página para procesar la caja
+node: Nodo
+node_hint: Nombre de la etiqueta HTML de la Caja
+get: Obtener Parámetros
+get_singular: Parámetro
+get_hint: Obtener Valores de Parámetros o Campos Personalizados desde la página o valor global hasta la caja
+get_from: Parámetro de Origen
+get_to: Parámetro de Destino
+get_value: Valor JSON
+remap: Remapeo de Parámetros
+remap_from: Nombre Origen
+remap_to: Nombre Destino
+remap_copy: Copiar
+tag: Plantilla de Etiquetas
+tags: Etiquetas
+tags_singular: Etiqueta
+tags_hint: Lista de datos a modo de etiquetas relativas a la página
+tags_type: Tipo
+tags_date: Fecha
+tags_time: Tiempo de Lectura
+tags_words: Nº de Palabras
+tags_address: Dirección
+tags_hide_hours: Ocultar Hora
+tags_hide_mod: Ocultar Última Modificación
+tags_tax: Taxonomías
+tags_tax_key: Taxonomía
+tags_param: Parámetro
+tags_param_key: Clave del Parámetro
+tags_param_hint: Indica el nombre del parámetro o campo de página
+tags_custom: Personalizado
+sort: Orden de los Elementos
+cols: Nº de Columnas
+cols_hint: 0 = se calcula automático según el número de elementos y sus anchos
+cols_vs: Nº Columnas en Resolución Mínima
+cols_vs_hint: 0 = se calcula automático según el número de elementos y sus anchos en resoluciones mínimas
+gap: Margen entre Cajas
+gap_vs: Margen entre Cajas en Resolución Mínima
+gap_ny: Margen Vertical entre Cajas
+gap_ny_hint: El valor es en relación proporcional al **Margen entre Cajas**
+to: Dirección de las Cajas
+duo: Modo de Parejas
+duo_hint: Define cómo se agrupan los bloques de cuatro elementos en resoluciones de escritorio
+sides: Laterales Alternos Fondos/Imágenes
+sides_hint: Coloca los fondos (o imágenes) en extremos de la venta izquierda-derecha alternamente
+side: Lateral Fondo/Imagen
+side_hint: Coloca el fondo (o imagen) en extremo/s de la venta lateral/es
+group_radius: Esquinas Redondeadas en Conjunto
+group_radius_hint: Esquinas redondeadas en el conjunto de elementos
+slider: Activar Carrusel
+slider_hint: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
+time: Intervalo del Carrusel
+time_hint: Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)
+pips: Guías del Carrusel
+arrows: Flechas del Carrusel
+align_x: Alineación Horizontal de Cajas
+align_y: Alineación Vertical de Cajas
+align_y_self: Alineación Vertical de la Caja
+list: Lista
+list_hint: Lista de Páginas
+list_type: Tipo
+list_max: Nº Máximo
+list_max_hint: Número máximo de elementos visibles, para ver el resto aparecerá un botón '+ Más' que llevará al Tipo de Artículo
+list_start: Fecha Inicial
+list_end: Fecha Final
+step: Plantilla de Pasos
+steps: Pasos
+steps_singular: Paso
+steps_border: Color del Borde
+gallery: Plantilla de Galería
+imgs: Galería de Imágenes
+imgs_hint: Sube varias imágenes, de una sola vez, que permitan hacer click para que se amplíen (como pase de diapositivas)
+limgs: Galería de Imágenes con Enlaces
+limgs_singular: Imágen con Enlace
+gallery_type: Tipo de Galería
+faq: Plantilla de FAQ's
+faqs: FAQ's
+faqs_singular: FAQ
+faqs_hint: Botones con contenido desplegable, muy usado para preguntas frecuentes
+faq_headers: Modo Encabezados
+faq_open: Primero Desplegado
+gss: Hoja G.Drive Archivo
+gss_hint: Identificador del archivo de tipo hoja de Google Drive <br> **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
+gss_sheet: Hoja G.Drive Pestaña
+gss_sheet_hint: Identificador de la pestaña <br> **Ejemplo →** "1861644079"
+review: Plantilla de Reseñas
+reviews: Reseñas
+reviews_singular: Reseña
+review_icon_left: Icono Izquierda
+review_icon_right: Icono Derecha
+review_rating: Valoración
+full: Ancho Completo
+when: Horarios
+when_singular: Horario
+when_days: Días
+when_hours: Horas
+links: Grupo de Enlaces
+links_singular: Enlace
+links_hint: Por defecto se verán como botones
+links_label: Texto
+links_label_phone: Número de Teléfono
+links_address: Dirección para Mostrar
+links_anchor: Dirección para Enlazar
+links_anchor_hint: Usado para generar enlace automático a GMaps
+links_pre: Prefijo
+links_phone: Teléfono
+links_whatsapp: WhatsApp
+links_mail: eMail
+links_address: Dirección
+links_map_hint: Si seleccionas una ubicación, el enlace llevará a un mapa con las coordenadas exactas
+links_h2: Encabezado H2
+links_h3: Encabezado H3
+links_h4: Encabezado H4
+links_h5: Encabezado H5
+links_h6: Encabezado H6
+links_br: Salto de Línea
+links_hr: Separador
+links_custom: Personalizado
+dots: Botones de Puntos
+dots_singular: Botón de Punto
+dots_hint: Botones con enlaces hacia Redes Sociales y otros
+form: Formulario
+form_action: Acción
+form_action_hint: Acción que se ejecuta al enviar el formulario
+form_to: Destino
+form_to_hint: URL de la página que se abrirá si el formulario se envía correctamente
+form_subject: Asunto
+form_subject_hint: Asunto que tendrá el email de recepción
+input_name: Nombre
+input_name_hint: Nombre que tendrá el campo
+input_label: Nombre Visible
+input_label_hint: Texto descriptivo del campo que aparece sobre éste <br> Si no se especifica, se aplicará el nombre anterior
+input_hint: Leyenda
+input_hint_hint: Texto descriptivo del campo que aparece bajo éste
+input_req: Requerido
+input_req_hint: Indica si es obligatorio completar el campo
+input_req_if: Requerido Si…
+input_req_if_hint: Indica si es obligatorio completar este campo solamente si otro campo está completado, indicando su nombre (puedes indicar varios separados por '||' o por '&&')
+input_show_if: Mostrar Si…
+input_show_if_hint: Este campo estará oculto hasta que otro campo se complete, indicando su nombre (puedes indicar varios separados por '||' si con uno es suficiente o por '&&' si se requieren todos)
+input_regex: Regex
+input_min: Mínimo
+input_max: Máximo
+input_x: Opciones en Horizontal
+input_accept: Archivos
+input_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas <br> **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
+input_base_name: Nombre Base
+input_base_name_hint: Usa como nombre de archivo el valor del campo al que se le haga referencia aquí en el momento de la carga, y si no lo encuentra, usa este mismo nombre
+input_geo_area: Áreas
+input_geo_area_hint: Permite añadir áreas mediante círculos y polígonos
+input_geo_view: Centro de Vista Inicial
+input_items: Opciones
+input_items_label: Opción
+input_items_label_hint: Opción que se le muestra al usuario
+input_items_key: Valor
+input_items_key_hint: Valor que recibirá el formulario
+inputs: Elementos de Formulario
+inputs_singular: Elemento de Formulario
+inputs_text: Texto (Simple)
+inputs_text_hint: Campo simple de texto normal
+inputs_mail: Email (Simple)
+inputs_mail_hint: Campo simple de email
+inputs_phone: Teléfono (Simple)
+inputs_phone_hint: Campo simple de teléfono
+inputs_number: Número (Simple)
+inputs_number_hint: Campo simple de número
+inputs_date: Fecha (Simple)
+inputs_date_hint: Campo simple de fecha
+inputs_time: Tiempo (Simple)
+inputs_time_hint: Campo simple de tiempo
+inputs_area: Área de Texto (Simple)
+inputs_area_hint: Campo simple de área de texto <br> Ocupa todo el ancho
+inputs_geo: Coordenadas
+inputs_geo_hint: Mapa para establecer un punto <br> Ocupa todo el ancho
+inputs_select: Selección (Múltiple)
+inputs_select_hint: Campo múltiple de lista de selección desplegable <br> Solo permite seleccionar una opción <br> Ocupa todo el ancho
+inputs_radio: Radios (Múltiple)
+inputs_radio_hint: Campo múltiple de radios o círculos <br> Solo permite seleccionar una opción <br> Ocupa todo el ancho
+inputs_checks: Casillas (Múltiple)
+inputs_checks_hint: Campo múltiple de casillas de verificación <br> Permite seleccionar múltiples opciones <br> Ocupa todo el ancho
+inputs_check: Casilla (Simple)
+inputs_check_hint: Campo simple de casilla de verificación
+inputs_file: Archivo
+inputs_file_hint: Campo de archivo adjunto (máximo 8 MB)
+inputs_hidden: Oculto
+inputs_hidden_hint: Campo simple oculto a los usuarios (puede servir para indicar algo internamente en la recepción de formularios)
+inputs_h2: Encabezado h2
+inputs_h3: Encabezado h3
+inputs_h4: Encabezado h4
+inputs_h5: Encabezado h5
+inputs_h6: Encabezado h6
+inputs_md: Contenido
+map: Plantilla de Mapa
+map_tile: Capa por defecto
+map_color: Color
+map_label: Nombre
+map_point: Punto
+map_circle: Círculo
+map_polygon: Polígono
+map_radius: Radio
+map_radius_hint: Radio en kilómetros
+geos: Mapa
+geos_singular: Elemento de Mapa
+geos_hint: Añade puntos y/o áreas para mostrar en el mapa
+zoom: Zoom
+box: Plantilla de Cajas
+boxes: Cajas
+boxes_singular: Caja
 modal: Plantilla de cada Modal
 modals: Ventanas Modales
 modals_singular: Ventana Modal
@@ -720,7 +763,7 @@ modals_hint: Son secciones representadas como ventanas modales ocultas, a las cu
 # patterns
 pattern: En minúsculas · Sin espacios (guiones medios en su lugar) · Sin tildes · Sin eñes (enes en su lugar) · Sin caracteres extraños ni barras bajas
 # options
-option-collections-related: Relacionados
+option-collections-rel: Relacionados
 option-collections-all: Todo
 option-collections-global: Global
 option-langs-es: 🇪🇸 Español
@@ -775,36 +818,36 @@ option-color-light: Claro
 option-color-gray: Gris
 option-color-dark: Oscuro
 option-color-black: Negro
-option-color-invert: Invertido (Claro u Oscuro según fondo)
-option-color-similar: Similar (Oscuro o Claro según fondo)
+option-color-turn: Invertido (Claro u Oscuro según fondo)
+option-color-such: Similar (Oscuro o Claro según fondo)
 option-color-whatsapp: WhatsApp
 option-color-none: Sin Color (tipo Enlace simple)
 option-color-hide: Ocultar
-option-parallax-none: Desactivado
-option-parallax-fix: Fijo en el Fondo
-option-parallax-soft: Suave en el Fondo
-option-parallax-box: Suave en la Caja
-option-fade-linear-b: Linear Abajo
-option-fade-linear-t: Linear Arriba
-option-fade-linear-r: Linear Derecha
-option-fade-linear-l: Linear Izquierda
-option-fade-linear-tr: Linear Arriba-Derecha
-option-fade-linear-br: Linear Abajo-Derecha
-option-fade-linear-tl: Linear Arriba-Izquierda
-option-fade-linear-bl: Linear Abajo-Izquierda
-option-fade-circle: Circular
-option-fade-circle-alt: Circular Invertido
-option-fade-radial: Radial
-option-fade-radial-alt: Radial Invertido
-option-icon_type-top: Arriba
-option-icon_type-side: Lateral
-option-icon_type-bottom: Abajo
+option-scroll-none: Desactivado
+option-scroll-fix: Fijo en el Fondo
+option-scroll-soft: Suave en el Fondo
+option-scroll-box: Suave en la Caja
+option-fade-b: Linear Abajo
+option-fade-t: Linear Arriba
+option-fade-r: Linear Derecha
+option-fade-l: Linear Izquierda
+option-fade-tr: Linear Arriba-Derecha
+option-fade-br: Linear Abajo-Derecha
+option-fade-tl: Linear Arriba-Izquierda
+option-fade-bl: Linear Abajo-Izquierda
+option-fade-disc: Circular
+option-fade-disc-alt: Circular Invertido
+option-fade-rad: Radial
+option-fade-rad-alt: Radial Invertido
+option-icon_pos-top: Arriba
+option-icon_pos-side: Lateral
+option-icon_pos-sub: Abajo
 option-icons_style-outlined: Contorneado
 option-icons_style-rounded: Redondeado
 option-icons_style-sharp: Afilado
-option-buttons_type-base: Base
-option-buttons_type-title: Título
-option-buttons_type-cursive: Cursiva
+option-btns_type-base: Base
+option-btns_type-title: Título
+option-btns_type-cursive: Cursiva
 option-menu_auto-same: Misma Página
 option-menu_auto-same-modals: Misma Página y Ventanas Modales
 option-menu_auto-home: Página de Inicio
@@ -832,6 +875,13 @@ option-sizes-md: Mediano
 option-sizes-lg: Grande
 option-sizes-xl: Muy Grande
 option-sizes-fluid: Fluido
+option-sticky-auto: Auto
+option-sticky-xs: Muy Pequeño
+option-sticky-sm: Pequeño
+option-sticky-md: Mediano
+option-sticky-lg: Grande
+option-sticky-xl: Muy Grande
+option-sticky-none: Sin Ajuste
 option-gallery_types-grid: Rejilla
 option-gallery_types-grid-contain: Rejilla Ajustada
 option-gallery_types-rows: Filas
@@ -841,13 +891,16 @@ option-tile-streets: Calles
 option-tile-terrain: Terreno
 option-tile-satellite: Satélite
 option-tile-hybrid: Híbrido
+option-labels-in: Dentro
+option-labels-out: Fuera
+option-labels-both: Ambas
 option-view-group: Grupo
 option-view-titles: Títulos
 option-view-md: Contenido
 option-view-menu: Menú
 option-view-icon: Icono
-option-view-image: Imágen
-option-view-button: Botón
+option-view-img: Imágen
+option-view-btn: Botón
 option-view-bg: Fondo
 option-view-container: Fondo de Contenedor Principal
 option-view-paddings: Márgenes Interiores
@@ -857,10 +910,10 @@ option-view-boxi: Caja
 option-view-other: Otros
 option-view-list: Lista
 option-view-steps: Pasos
-option-view-accordion: Acordeón
+option-view-faq: FAQ
 option-view-gallery: Galería
 option-view-reviews: Reseñas
-option-view-contact: Botones de Contacto
+option-view-links: Grupo de Enlaces
 option-view-form: Formulario
 option-view-map: Mapa
 option-view-gss: Hoja de Google Drive
@@ -868,25 +921,25 @@ option-view-boxes: SubCajas
 option-view-modals: Ventanas Modales
 option-tags-row: Fila
 option-tags-col: Columna
-option-sort-image: Imagen e Icono Arriba
+option-sort-img: Imagen e Icono Arriba
 option-sort-title: Título
-option-sort-icon_bottom: Icono Abajo
-option-sort-subtitle: Subtítulo
+option-sort-icon_sub: Icono Abajo
+option-sort-sub: Subtítulo
 option-sort-price: Precio
 option-sort-md: Contenido
 option-sort-steps: Pasos
 option-sort-gallery: Galería
 option-sort-list: Lista
-option-sort-accordion: Acordeón
+option-sort-faq: FAQ
 option-sort-reviews: Reseñas
 option-sort-dots: Botones de Puntos
-option-sort-contact: Botones de Contacto
+option-sort-links: Grupo de Enlaces
 option-sort-form: Formulario
 option-sort-map: Mapa
 option-sort-gss: Hoja de Google Drive
 option-sort-boxes: SubCajas
 option-sort-tags: Etiquetas
-option-sort-button: Botón / Enlace
+option-sort-btn: Botón / Enlace
 option-div-arrow-four: Flecha 4 Puntas
 option-div-arrow-op-alt: Flecha con Transparencia Alternativa
 option-div-arrow-op-fan: Flecha con Transparencia en Abanico
@@ -1299,4 +1352,18 @@ option-currency-ZAR: ZAR 🇿🇦 Rand Sudafricano
 option-currency-ZMW: ZMW 🇿🇲 Kwacha Zambiano
 option-currency-ZWG: ZWG 🇿🇼 Oro de Zimbabue
 option-currency-ZWL: ZWL 🇿🇼 Dólar Zimbabuense
+option-widget-bool: Booleano
+option-widget-int: Número Entero
+option-widget-float: Número con Decimales
+option-widget-str: Cadena de Texto
+option-widget-txt: Caja de Texto
+option-widget-md: Markdown (Texto Enriquecido)
+option-widget-time: Tiempo
+option-widget-img: Imagen
+option-widget-vid: Vídeo
+option-widget-vimg: Imagen y Vídeo
+option-widget-select: Selección
+option-widget-rel: Relación
+option-widget-slice: Lista
+option-widget-dict: Grupo
 option-font_bold-0: Desactivado

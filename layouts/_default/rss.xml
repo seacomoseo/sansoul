@@ -1,5 +1,5 @@
 {{- $title  := site.Title -}}
-{{- $email  := site.Params.legal.email -}}
+{{- $mail   := site.Params.mail -}}
 {{- $pctx   := . -}}
 {{- if .IsHome -}}{{ $pctx = site }}{{- end -}}
 {{- $pages  := slice -}}
@@ -20,8 +20,8 @@
     <description>{{ i18n "recent" }} {{ $title }}</description>
     <generator>Hugo -- gohugo.io</generator>
     {{ with site.Language }}<language>{{ . }}</language>{{ end }}
-    {{ with $email }}<managingEditor>{{ . }}{{ with $title }} ({{ . }}){{ end }}</managingEditor>{{ end }}
-    {{ with $email }}<webMaster>{{ . }}{{ with $title }} ({{ . }}){{ end }}</webMaster>{{ end }}
+    {{ with $mail }}<managingEditor>{{ . }}{{ with $title }} ({{ . }}){{ end }}</managingEditor>{{ end }}
+    {{ with $mail }}<webMaster>{{ . }}{{ with $title }} ({{ . }}){{ end }}</webMaster>{{ end }}
     {{ with site.Copyright }}<copyright>{{ . }}</copyright>{{ end }}
     {{ if not .Date.IsZero }}<lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
     {{ with .OutputFormats.Get "RSS" }}<atom:link href="{{ .Permalink }}" rel="self" type="{{ .MediaType }}" />{{ end }}
@@ -31,9 +31,9 @@
           <title>{{ .Title }}</title>
           <link>{{ .Permalink }}</link>
           <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
-          {{ with $email }}<author>{{ . }}{{ with $title }} ({{ . }}){{ end }}</author>{{ end }}
+          {{ with $mail }}<author>{{ . }}{{ with $title }} ({{ . }}){{ end }}</author>{{ end }}
           <guid>{{ .Permalink }}</guid>
-          <description>{{ .Summary | default .Description | html }}</description>
+          <description>{{ .Params.sum | default .Summary | default .Params.desc | html }}</description>
         </item>
       {{ end }}
     {{ end }}

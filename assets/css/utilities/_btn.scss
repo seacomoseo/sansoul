@@ -1,0 +1,306 @@
+// Buttons Group
+
+.btns {
+  display: flex;
+  justify-content: var(--align, center);
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-top: 2em;
+  > *:not(.btn) {
+    display: flex;
+    gap: .25em;
+  }
+}
+
+
+// Button
+
+.btn {
+  color: var(--base-in);
+  // background-color: transparent;
+  background-color: color-mix(in srgb, var(--base), transparent 100%);
+  position: relative;
+  @if $is-any-radius {
+    @extend %radius;
+  }
+  &::before {
+    content: '';
+    background-image: none;
+    z-index: -1;
+  }
+  &::before,
+  &::after {
+    transition: background-color .1s;
+    background-color: var(--base);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    @if not $chamfer {
+      z-index: -1;
+    }
+    // radius
+    @if $is-any-radius {
+      @if $chamfer {
+        clip-path: var(--chamfer);
+      } @else {
+        border-radius: var(--radius-end);
+      }
+    }
+  }
+  @if $is-btns-pill {
+    --radius: 1.25em;
+  }
+  transition: color;
+  background-image: none;
+  border: none;
+  // outline: none;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: .375em;
+  padding: .5em 1.5em;
+  min-height: 2.5em;
+  --pin-size: 1.5em;
+  --pin-color: var(--base-in);
+  --pin-opacity: .75;
+  > .icon {
+    font-size: var(--pin-size);
+    color: var(--pin-color);
+    opacity: var(--pin-opacity);
+    transition: color .1s;
+    @if not $btns-outline {
+      --bg-color: var(--base); // to SVG variable strokes
+    }
+  }
+  &:not(.btn--dot) {
+    > .icon {
+      margin-left: -.125em;
+    }
+  }
+  > b {
+    @include font-btn;
+    line-height: 1.25;
+    text-align: left;
+  }
+  @if $btns-3d {
+    transform: translateY(-.25em);
+    &::after {
+      content: '';
+      filter: brightness(.75);
+      transform: translateY(.25em);
+      transition: background-color .1s, transform .1s;
+      z-index: -2;
+    }
+    @if $chamfer {
+      transition: color, filter, transform;
+      filter: drop-shadow($shadow);
+    } @else {
+      transition: color, box-shadow, transform;
+      &::after {
+        box-shadow: $shadow;
+      }
+    }
+  }
+  transition-duration: .1s;
+  &[disabled] {
+    --base: var(--gray);
+    --base-in: var(--gray-in);
+    --hover: var(--gray);
+    --hover-in: var(--gray-in);
+    --active: var(--gray);
+    --active-in: var(--gray-in);
+    opacity: .5;
+    cursor: not-allowed;
+  }
+}
+
+
+// Hover, Focus and Active
+
+.btn {
+  &#{$hover-focus} {
+    @if $btns-outline {
+      color: var(--base);
+    } @else {
+      color: var(--base-in);
+    }
+    --base: var(--hover);
+    --base-in: var(--hover-in);
+    @if $btns-3d {
+      transform: translateY(-.125em);
+      &::after {
+        transform: translateY(.125em);
+      }
+      @if $chamfer {
+        filter: drop-shadow($shadow-half);
+      } @else {
+        &::after {
+          box-shadow: $shadow-half;
+        }
+      }
+    }
+  }
+  &#{$active},
+  &.menu__btn:where(.menu__item--active > *):not(:hover) {
+    @if $btns-outline {
+      color: var(--base);
+    } @else {
+      color: var(--base-in);
+    }
+    --base: var(--active);
+    --base-in: var(--active-in);
+    @if $btns-3d {
+      filter: none;
+      transform: none;
+      &::after {
+        transform: none;
+        box-shadow: 0 0 0 $shadow-color;
+      }
+    }
+  }
+}
+
+
+// Small
+
+.btn--sm {
+  gap: .25em;
+  padding: .25em 1em;
+  min-height: 2em;
+  --pin-size: 1.25em;
+  @if $radius > 1 or $is-btns-pill {
+    --radius: 1em;
+  }
+}
+
+
+// Icon
+
+.btn--dot {
+  padding: .5em;
+  width: 3em;
+  height: 3em;
+  line-height: 2;
+  --pin-size: 2em;
+  --pin-opacity: 1;
+  > .icon {
+    max-width: 1.25em;
+  }
+  > b:not(.aux) {
+    @include ofuscate;
+    z-index: -2;
+  }
+  @if $is-btns-disc {
+    &::before,
+    &::after {
+      @include disc;
+    }
+    @if $chamfer {
+      --pin-size: 1.5em;
+    }
+  }
+}
+
+
+// Font Alternative
+
+.btn--swap {
+  > b {
+    @include font-btn(alt);
+    line-height: 1.25;
+  }
+  &:not(.btn) {
+    > b {
+      @include font-btn;
+    }
+  }
+}
+
+
+// Pagination
+
+.sl-close,
+.sl-prev,
+.sl-next {
+  &::after,
+  &::before {
+    content: none;
+  }
+}
+
+
+// Outline
+
+@if $btns-outline {
+  .btn {
+    color: var(--text);
+    --pin-color: var(--base);
+    --pin-opacity: 1;
+    &::before,
+    &::after {
+      @if $chamfer and ($is-any-radius) {
+        clip-path: var(--chamfer-outline);
+      } @else {
+        border: var(--outline) var(--base) solid;
+        background-color: transparent;
+      }
+    }
+    @if $btns-3d {
+      &::after {
+        opacity: .25;
+      }
+      @if $chamfer {
+        filter: none;
+      } @else {
+        &::after {
+          box-shadow: none;
+          z-index: -2;
+        }
+      }
+    }
+  }
+  .btn--dot:not(:hover,:focus,:active) {
+    --pin-color: var(--text);
+  }
+  @if $chamfer and $is-btns-disc {
+    .btn--dot {
+      &::before,
+      &::after {
+        clip-path: var(--diamond-outline);
+      }
+    }
+  }
+  // Float icon
+  .menu__toggle,
+  .callnow .btn--dot,
+  .up .btn--dot,
+  .modal__back,
+  .modal__close--corner {
+    // --text: var(--base);
+    // .icon {
+    //   color: var(--base);
+    // }
+    @if $chamfer and $is-any-radius {
+      i {
+        @if $is-btns-disc {
+          clip-path: var(--diamond);
+          top: var(--outline-diamond);
+          left: var(--outline-diamond);
+          width: calc(100% - var(--outline-diamond) * 2);
+          height: calc(100% - var(--outline-diamond) * 2);
+        } @else {
+          clip-path: var(--chamfer-int-outline);
+        }
+        background-color: var(--bg-color);
+      }
+    } @else {
+      &::before {
+        background-color: var(--bg-color);
+      }
+    }
+  }
+}

@@ -1,3 +1,5 @@
+{{ $icon := site.Data.utilities.collections.icons }}
+
 {{ $colections := slice }}
 
 {{/*  CUSTOM TYPES (single last)  */}}
@@ -21,16 +23,16 @@
   {{ $permalinks     = print $permalinks "/" }}
 
   {{/*  Summary  */}}
-  {{ $summary  := "{{title}}" }}
+  {{ $sum  := "{{title}}" }}
   {{ if in (slice "article" "event") .Params.base }}
-    {{ $summary = "📅 {{date | date('YYYY-MM-DD')}} 🕒 {{date | date('HH:mm')}} ➡️ {{title}}" }}
+    {{ $sum = "📅 {{date | date('YYYY-MM-DD')}} 🕒 {{date | date('HH:mm')}} ➡️ {{title}}" }}
   {{ end }}
 
   {{/*  Sortable Fields  */}}
   {{ $sortable_fields    := slice "weight" "commit_date" "title" }}
   {{ $sortable_default   := dict "field" "weight" "direction" "ascending" }}
   {{ if eq .Params.base "article" }}
-    {{ $sortable_fields   = slice "date" "lastmod" | append $sortable_fields }}
+    {{ $sortable_fields   = slice "date" "mod" | append $sortable_fields }}
     {{ $sortable_default  = dict "field" "date" "direction" "descending" }}
   {{ end }}
   {{ if eq .Params.base "event" }}
@@ -58,7 +60,7 @@
     }}
   {{ end }}
   {{ $groups = $groups | append
-    (dict   "name" `noindex` "label" `NoIndex`        "field" `noindex`)
+    (dict   "name" `noindex` "label" `NoIndex`       "field" `noindex`)
     (dict   "name" `drafts`  "label" $.filter_drafts "field" `draft`)
   }}
   {{ with .Params.taxonomies }}
@@ -85,21 +87,29 @@
   {{ $fields  := slice
     `~page_slug`
     `~page_title`
-    `~page_summary`
-    `~page_image`
-    `~box_icon_id`
+    `~page_img`
+    `~icon`
+  }}
+  {{ if .Params.cms.body }}
+    {{ $fields = $fields | append
+      `~page_body`
+      `~page_toc`
+    }}
+  {{ end }}
+  {{ $fields = $fields | append
+    `~page_sum`
+    `~page_seo`
+    `~page_desc`
+    `~page_noindex`
     `~page_draft`
     `~page_hide`
-    `~page_noindex`
-    `~page_seo`
-    `~page_description`
   }}
   {{ if .Params.is_related }}
     {{ $fields = $fields | append
       (partial "cms/widget" (dict
-        "alt"        `page_related`
-        "name"       `related`
-        "widget"     `relation`
+        "alt"        `page_rel`
+        "name"       `rel`
+        "widget"     `rel`
         "collection" .Type
         "multiple"   true
       ))
@@ -113,21 +123,21 @@
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
       (partial "cms/widget" (dict
-        "name"      `tpl`
-        "widget"    `object`
-        "label"     $.types_template
-        "hint"      $.types_template_single_hint
-        "fields"    (slice
-          `~template_background`
-          `~template_menu`
-          `~template_callnow`
-          `~template_section`
-          `~template_sections`
+        "name"   `tpl`
+        "widget" `dict`
+        "label"  $.types_template
+        "hint"   $.types_tpl_single_hint
+        "fields" (slice
+          `~tpl_background`
+          `~tpl_menu`
+          `~tpl_callnow`
+          `~tpl_section`
+          `~tpl_sections`
         )
       ))
       `~page_base`
-      (partial "cms/widget" (dict "<<" `page_date` "required" false))
-      `~page_lastmod`
+      (partial "cms/widget" (dict "<<" `page_date` "req" false))
+      `~page_mod`
       `~page_end`
       `~page_cancelled`
       `~page_artists`
@@ -143,13 +153,11 @@
       `~page_service_types`
       `~page_price`
       `~page_org`
-      `~page_toc`
     }}
   {{ else if eq .Params.base "article" }}
     {{ $fields = $fields | append
       `~page_date`
-      `~page_lastmod`
-      `~page_toc`
+      `~page_mod`
     }}
   {{ else if eq .Params.base "product" }}
     {{ $fields = $fields | append
@@ -164,7 +172,6 @@
       `~page_artists`
       `~page_address`
       `~page_price`
-      `~page_toc`
     }}
   {{ else if eq .Params.base "author" }}
     {{ $fields = $fields | append
@@ -194,21 +201,18 @@
     {{ $opts  := merge . (dict "fields" $fields "t" $ "tax" true) }}
     {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
-  {{ $fields = $fields | append
-    `~page_body`
-  }}
 
   {{/*  Index  */}}
-  {{ $index_permalinks_hint  := print $.index_permalinks_hint " <br> **" $.default " →** " .Params.cms.defaults.permalinks  }}
-  {{ $index_slug_hint        := print $.index_slug_hint       " <br> **" $.default " →** " .Params.cms.defaults.slug        }}
-  {{ $index_singular_hint    := print                               "**" $.default " →** " .Params.cms.defaults.singular    }}
-  {{ $index_title_hint       := print                               "**" $.default " →** " .Params.cms.defaults.title       }}
-  {{ $index_description_hint := print $.page_description_hint " <br> **" $.default " →** " .Params.cms.defaults.description }}
-  {{ $index_permalinks  := partial "cms/widget" (dict "name" `permalinks`     "label" $.index_permalinks "hint" $index_permalinks_hint                  ) }}
-  {{ $index_slug        := partial "cms/widget" (dict "<<" `page_slug`                                   "hint" $index_slug_hint        "required" false) }}
-  {{ $index_singular    := partial "cms/widget" (dict "name" `singular`       "label" $.index_singular   "hint" $index_singular_hint                    ) }}
-  {{ $index_title       := partial "cms/widget" (dict "<<" `page_title`                                  "hint" $index_title_hint                       ) }}
-  {{ $index_description := partial "cms/widget" (dict "<<" `page_description`                            "hint" $index_description_hint                 ) }}
+  {{ $index_permalinks_hint := print $.index_permalinks_hint " <br> **" $.def " →** " .Params.cms.defaults.permalinks }}
+  {{ $index_slug_hint       := print $.index_slug_hint       " <br> **" $.def " →** " .Params.cms.defaults.slug       }}
+  {{ $index_singular_hint   := print                               "**" $.def " →** " .Params.cms.defaults.singular   }}
+  {{ $index_title_hint      := print                               "**" $.def " →** " .Params.cms.defaults.title      }}
+  {{ $index_desc_hint       := print $.page_desc_hint        " <br> **" $.def " →** " .Params.cms.defaults.desc       }}
+  {{ $index_permalinks      := partial "cms/widget" (dict "name" `permalinks` "label" $.index_permalinks "hint" $index_permalinks_hint            ) }}
+  {{ $index_slug            := partial "cms/widget" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "req" false) }}
+  {{ $index_singular        := partial "cms/widget" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint              ) }}
+  {{ $index_title           := partial "cms/widget" (dict "<<" `page_title`                              "hint" $index_title_hint                 ) }}
+  {{ $index_desc            := partial "cms/widget" (dict "<<" `page_desc`                               "hint" $index_desc_hint                  ) }}
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
@@ -223,8 +227,8 @@
     "i18n"             true
     "slug"             $slug
     "preview_path"     $permalinks
-    "summary"          $summary
-    "thumbnail"        (slice `img` `image` `vid` `video`)
+    "summary"          $sum
+    "thumbnail"        (slice `img` `vid` `bi`)
     "editor"           (dict "preview" false)
     "sortable_fields"  $sortable_fields
     "view_groups"      $view_groups
@@ -237,17 +241,17 @@
       "create"           true
       "i18n"             true
       "preview_path"     $permalinks
-      "thumbnail"        (slice `img` `image` `vid` `video`)
+      "thumbnail"        (slice `img` `vid` `bi`)
       "editor"           (dict "preview" false)
       "fields"           (slice
         $index_permalinks
         $index_slug
         $index_singular
         $index_title
-        `~page_image`
+        `~page_img`
         `~page_noindex`
         `~page_seo`
-        $index_description
+        $index_desc
         `~page_body`
       )
     )
@@ -260,11 +264,11 @@
 
 {{/*  TYPES  */}}
 {{ $colections = $colections | append (dict
-  "label"            $.collection_types
-  "label_singular"   $.collection_types_singular
+  "label"            .collection_types
+  "label_singular"   .collection_types_singular
   "name"             `types`
-  "icon"             site.Data.utilities.default.types.icon
-  "description"      $.collection_types_description
+  "icon"             $icon.types
+  "description"      .collection_types_desc
   "identifier_field" `title`
   "extension"        `yml`
   "folder"           `data/types`
@@ -272,7 +276,7 @@
   "slug"             "{{fields.title}}"
   "summary"          "{{title}}"
   "sortable_fields"  (dict
-    "fields" (slice "title" "weight")
+    "fields"  (slice "title" "weight")
     "default" (dict
       "field"     "weight"
       "direction" "ascending"
@@ -285,18 +289,18 @@
 
 {{/*  SECTIONS  */}}
 {{ $colections = $colections | append (dict
-  "label"            $.collection_sections
-  "label_singular"   $.collection_sections_singular
+  "label"            .collection_sections
+  "label_singular"   .collection_sections_singular
   "name"             `section`
-  "icon"             site.Data.utilities.default.section.icon
-  "description"      $.collection_sections_description
+  "icon"             $icon.section
+  "description"      .collection_sections_desc
   "identifier_field" `name`
   "extension"        `yml`
   "folder"           `data/section`
   "create"           true
   "slug"             "{{fields.name}}"
   "summary"          "{{name}}"
-  "thumbnail"        (slice `img` `image` `vid` `video`)
+  "thumbnail"        (slice `img` `vid` `bi`)
   "sortable_fields"  (dict
     "fields"  (slice "commit_date" "name" "id")
     "default" (dict

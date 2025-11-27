@@ -5,39 +5,39 @@
 {{- if .is_bg -}}
 
   {{- /*  3D  */ -}}
-  {{- if and .is_button_hide (not .hide_shadow) site.Data.styles.buttons.deep }}
+  {{- if and .is_btn_hide (not .hide_shadow) site.Data.styles.btns.deep }}
     <div class="bg-color bg-color--3d"></div>
   {{- end -}}
 
   {{- /*  CLASS  */ -}}
-  {{- $image := "" -}}
-  {{- $gray  := "" -}}
+  {{- $img  := "" -}}
+  {{- $gray := "" -}}
   {{- if .bi -}}
-    {{- $image = "bg-figure" -}}
-    {{- $gray  = cond (not .gray)  "" " image--gray" -}}
+    {{- $img  = "bg-fig" -}}
+    {{- $gray = cond (not .gray)  "" " img--gray" -}}
   {{- end -}}
-  {{- $class := slice "bg-color" $image -}}
+  {{- $class := slice "bg-color" $img -}}
 
   {{- /*  JOIN ATTRIBUTES  */ -}}
   {{- $attrs := dict "class" $class -}}
-  {{- $attrs = partial "functions/attrs" $attrs -}}
+  {{- $attrs = partial "func/attrs" $attrs -}}
 
   {{- /*  HTML  */}}
   {{- $alt  := .alt -}}
-  {{- if .image -}}
-    {{- $alt = .hanchor | default .anchor | default .title | default .subtitle -}}
+  {{- if .img -}}
+    {{- $alt = .hanchor | default .anchor | default .title | default .sub -}}
   {{- end -}}
-  {{- $is_iframe := partial "functions/is-iframe" .bi -}}
+  {{- $is_iframe := partial "func/is-iframe" .bi -}}
   <div {{- $attrs -}}>
     {{- if $is_iframe }}
-      <div class="bg-figure-video">
+      <div class="bg-fig-vid">
     {{- end -}}
       {{ partial "media/_" (dict
-        "class"     (print "bg-figure-image" $gray)
-        "src"       .bi
+        "class"     (print "bg-fig-img" $gray)
+        "img"       .bi
         "alt"       $alt
         "notlazy"   .is_header
-        "bi"        true
+        "mute"      true
         "container" .container
         "fit_vl"    .col_vl
         "fit_vs"    .col_vs

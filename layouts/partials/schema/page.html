@@ -1,21 +1,21 @@
 
-{{ $type                  := "WebPage" }}
-{{ $has_part              := slice }}
-{{ $thumbnail             := (partial "schema/image-main" .).url }}
-{{ $image                 := dict "@id" (print .Permalink "#schema-image") }}
-{{ $primary_image_of_page := dict "@id" (print .Permalink "#schema-image") }}
-{{ $is_part_of            := dict "@id" (print site.BaseURL "/#schema-website") }}
-{{ $potential_action      := slice (dict "@type" "ReadAction" "target" .Permalink) }}
-{{ $breadcrumbs           := "" }}
-{{ $authors               := slice }}
-{{ $main_entity           := dict }}
+{{ $type                := "WebPage" }}
+{{ $has_part            := slice }}
+{{ $thumbnail           := (partial "schema/img-main" .).url }}
+{{ $img                 := dict "@id" (print .Permalink "#schema-img") }}
+{{ $primary_img_of_page := dict "@id" (print .Permalink "#schema-img") }}
+{{ $is_part_of          := dict "@id" (print site.BaseURL "/#schema-website") }}
+{{ $potential_action    := slice (dict "@type" "ReadAction" "target" .Permalink) }}
+{{ $breadcrumbs         := "" }}
+{{ $authors             := slice }}
+{{ $main_entity         := dict }}
 
 
 {{/*  Self page  */}}
 {{ if eq page.Permalink .Permalink }}
 
   {{/*  Children  */}}
-  {{ $children := partial "functions/taxonomy-children" . }}
+  {{ $children := partial "func/taxonomy-children" . }}
 
   {{/*  Type and mainEntity  */}}
   {{ if eq .Params.base "author" }}
@@ -43,13 +43,13 @@
   {{ end }}
 
   {{/*  Images  */}}
-  {{ with .Params.images }}
-    {{ $image = slice $image | append (partial "schema/images" .) }}
+  {{ with .Params.imgs }}
+    {{ $img = slice $img | append (partial "schema/imgs" .) }}
   {{ end }}
 
   {{/*  Authors  */}}
   {{ if ne .Params.base "article" }}
-    {{ $taxonomies := partial "functions/taxonomy-parents" . }}
+    {{ $taxonomies := partial "func/taxonomy-parents" . }}
     {{ range $taxonomies }}
       {{ $page := . }}
       {{ range .Params.tax_of }}
@@ -66,10 +66,10 @@
 {{ else }}
 
   {{/*  Others  */}}
-  {{ $image                 = $thumbnail }}
-  {{ $primary_image_of_page = "" }}
-  {{ $is_part_of            = "" }}
-  {{ $potential_action      = "" }}
+  {{ $img                 = $thumbnail }}
+  {{ $primary_img_of_page = "" }}
+  {{ $is_part_of          = "" }}
+  {{ $potential_action    = "" }}
 
 {{ end }}
 
@@ -79,12 +79,12 @@
 {{ with .Params.seo }}
   {{ $title = . | markdownify }}
 {{ else }}
-  {{ $title = partial "functions/anchor-page" . }}
+  {{ $title = partial "func/anchor-page" . }}
 {{ end }}
 
 
 {{/*  Description  */}}
-{{ $description  := partial "functions/summary" . }}
+{{ $desc := partial "func/summary" . }}
 
 
 {{/*  Dates  */}}
@@ -104,13 +104,13 @@
   "@id"                .Permalink
   "url"                .Permalink
   "name"               $title
-  "description"        $description
+  "description"        $desc
   "dateCreated"        $date_created
   "dateModified"       $date_modified
   "thumbnailUrl"       $thumbnail
   "isPartOf"           $is_part_of
-  "image"              $image
-  "primaryImageOfPage" $primary_image_of_page
+  "image"              $img
+  "primaryImageOfPage" $primary_img_of_page
   "potentialAction"    $potential_action
   "hasPart"            $has_part
   "breadcrumb"         $breadcrumbs
@@ -118,6 +118,6 @@
   "mainEntity"         $main_entity
   "inLanguage"         (.Params.locale | default .Lang)
 }}
-{{ $schema = partial "functions/obj-truly" $schema }}
+{{ $schema = partial "func/obj-truly" $schema }}
 
 {{ return $schema }}

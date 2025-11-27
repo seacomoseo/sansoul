@@ -12,7 +12,7 @@ export function initOpenLinks () {
     if (urlIni === '#more') {
       scrollTo(document.querySelector('.section--1'))
     } else {
-      // const isExternal = urlIni.match(/^https?:/) && !urlIni.startsWith(location.origin)
+      // const isOut = urlIni.match(/^https?:/) && !urlIni.startsWith(location.origin)
       const url = urlIni.startsWith('/') ? location.origin + urlIni : urlIni
       const isHash = url.includes('#')
       if (isHash) {
@@ -63,7 +63,7 @@ export function initOpenLinks () {
       } else {
         // BOX LINKS
         const boxLink = e.target.closest('.box--go')
-        if (boxLink) boxLink.querySelector('.button, .link').click()
+        if (boxLink) boxLink.querySelector('.btn, .link').click()
       }
     }
   })

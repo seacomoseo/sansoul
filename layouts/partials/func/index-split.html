@@ -1,0 +1,20 @@
+{{ $path  := split .path "." }}
+{{ $value := .value }}
+{{ range $path }}
+  {{ if reflect.IsMap $value }}
+    {{ $value = index $value . }}
+  {{ else if reflect.IsSlice $value }}
+    {{ $index := int . }}
+    {{ if lt $index (len $value) }}
+      {{ $value = index $value $index }}
+    {{ else }}
+      {{ $value = "" }}
+    {{ end }}
+  {{ else }}
+    {{ $value = "" }}
+  {{ end }}
+  {{ if eq $value "" }}
+    {{ break }}
+  {{ end }}
+{{ end }}
+{{ return $value }}
