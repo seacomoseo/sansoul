@@ -1,12 +1,13 @@
-{{ $obj := dict }}
-
 {{ $s := newScratch }}
-{{ $s.Set "filtered" (dict) }}
+{{ $s.Set "filtered" dict }}
 {{ range $k, $v := . }}
   {{ if ne $v nil }}
-    {{ $s.SetInMap "filtered" $k $v }}
+    {{ if reflect.IsMap $v }}
+      {{ $sub := partial "func/obj-no-nil" $v }}
+      {{ $s.SetInMap "filtered" $k $sub }}
+    {{ else }}
+      {{ $s.SetInMap "filtered" $k $v }}
+    {{ end }}
   {{ end }}
 {{ end }}
-{{ $obj = $s.Get "filtered" }}
-
-{{ return $obj }}
+{{ return ($s.Get "filtered") }}

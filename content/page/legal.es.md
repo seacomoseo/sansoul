@@ -2,7 +2,6 @@
 title: Aviso Legal
 slug: legal
 icon: balance
-noindex: y
 type: system
 weight: 1
 ---

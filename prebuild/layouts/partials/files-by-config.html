@@ -234,10 +234,12 @@
               "path" (print "{/" $name ",/" $name "/*}")
             )
           }}
-          {{ $cascade = $cascade | append $parent $child }}
+          {{ $parent  = partial "func/obj-no-nil" $parent }}
+          {{ $child   = partial "func/obj-no-nil" $child  }}
+          {{ $cascade = $cascade | append $parent $child  }}
 
           {{/*  FILE  */}}
-          {{ $obj         := dict 
+          {{ $obj := dict 
             "slug"     $slug
             "singular" $singular
             "title"    $title
@@ -262,6 +264,7 @@
               "breadcrumbs" $breadcrumbs
             )
           }}
+          {{ $obj = partial "func/obj-no-nil" $obj }}
             {{/*  ) | merge .tpl)  */}}
             {{/*  | merge site.Data.types.all.tpl  */}}
           {{/*  file  */}}
@@ -455,16 +458,6 @@
     "path" "/"
   )
 }}
-{{ $global := dict
-  "params" (dict
-    "index"  true
-    "nav"    true
-    "toc"    true
-  )
-  "target" (dict
-    "path" "/**"
-  )
-}}
 {{ $cascade   = slice $home | append $cascade }}
 {{ $defaults := site.Data.defaults | default slice }}
 {{ range $defaults }}
@@ -479,7 +472,25 @@
   {{ $default := dict "params" $params "target" $target }}
   {{ $cascade = $cascade | append $default }}
 {{ end }}
-{{ $cascade = $cascade | append $global }}
+{{ $default_pages := dict
+  "params" (dict
+    "noindex"  true
+  )
+  "target" (dict
+    "path" "{/page/{legal,privacy,cookies,search,sitemap,cms}}"
+  )
+}}
+{{ $global := dict
+  "params" (dict
+    "index"  true
+    "nav"    true
+    "toc"    true
+  )
+  "target" (dict
+    "path" "/**"
+  )
+}}
+{{ $cascade = $cascade | append $default_pages $global }}
 {{ $obj = merge $obj (dict "cascade" $cascade) }}
 
 {{/*  file  */}}

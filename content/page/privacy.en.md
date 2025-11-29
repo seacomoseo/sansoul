@@ -2,7 +2,6 @@
 title: Privacy
 slug: privacy
 icon: encrypted
-noindex: y
 type: system
 weight: 2
 ---

@@ -2,7 +2,6 @@
 title: Datenschutz
 slug: datenschutz
 icon: encrypted
-noindex: y
 type: system
 weight: 2
 ---

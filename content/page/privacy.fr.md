@@ -2,7 +2,6 @@
 title: Vie privée
 slug: Vie privée
 icon: encrypted
-noindex: y
 type: system
 weight: 2
 ---
