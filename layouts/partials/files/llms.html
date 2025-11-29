@@ -1,0 +1,95 @@
+{{/*  DEFINES  */ -}}
+
+{{ define "partials/llms-pages" -}}
+  {{ $pages := where .RegularPages "Params.hide" "ne" true -}}
+  {{ if eq .Type "single" -}}
+    {{ $pages = slice site.Home | append .RegularPages -}}
+  {{ end -}}
+  {{ $pages = where $pages "Params.noindex" "ne" true }}
+  {{ return $pages }}
+{{ end -}}
+
+{{ define "partials/llms-link" -}}
+  [{{ .Title }}]({{ .Permalink }})
+  {{- partial "llms-langs" . -}}
+{{ end -}}
+
+{{ define "partials/llms-langs" }}
+  {{ $langs := slice }}
+  {{ with .Translations }}
+    {{ range . }}
+      {{ $lang := print "[" .Lang "](" .Permalink ")" }}
+      {{ $langs = $langs | append $lang }}
+    {{ end }}
+  {{ end }}
+  {{ with $langs }}
+    {{ $langs = delimit $langs ", " }}
+    {{ $langs = print " [" $langs "]" }}
+  {{ else }}
+    {{ $langs = "" }}
+  {{ end }}
+  {{ return $langs }}
+{{ end -}}
+
+{{ define "partials/llms-site-desc" -}}
+  {{ or
+    site.Params.desc
+    site.Home.Params.desc
+    site.Home.Params.sum
+    site.Home.Summary
+    | plainify
+    | replaceRE "\n" "\n> "
+    | replaceRE `::.+?::` ""
+  -}}
+{{ end -}}
+
+{{ define "partials/llms-parent-desc" -}}
+  {{ or
+    .Params.desc
+    .Params.sum
+    .Summary
+    | plainify
+    | replaceRE "\n" "\n> "
+    | replaceRE `::.+?::` ""
+  }}
+{{ end -}}
+
+{{ define "partials/llms-desc" -}}
+  {{ or
+    .Params.desc
+    .Params.sum
+    .Summary
+    | truncate 155
+    | plainify
+    | replaceRE "\n" " "
+    | replaceRE `::.+?::` ""
+  -}}
+{{ end -}}
+
+{{/*  PRINT  */ -}}
+
+# {{ site.Title }}
+
+> {{ partial "llms-site-desc" . -}}
+
+{{ range site.Sections }}
+
+
+## {{ partial "llms-link" . }}
+
+> {{ partial "llms-parent-desc" . -}}
+
+{{ range partial "llms-pages" . }}
+- {{ partial "llms-link" . }}: {{ partial "llms-desc" . -}}
+{{ end -}}
+
+{{ end -}}
+
+{{- /*  CUSTOM  */ -}}
+{{- $file := resources.Get "llms.txt" -}}
+{{- with $file.Content }}
+
+---
+
+{{ $file.Content -}}
+{{ end -}}

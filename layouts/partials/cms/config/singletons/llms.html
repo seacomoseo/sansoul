@@ -1,0 +1,10 @@
+{{ return dict
+  "&llms" (slice
+    (partial "cms/widget" (dict
+      "name"   `body`
+      "label"  `llms.txt`
+      "widget" `txt`
+      "hint"   .llms_hint
+    ))
+  )
+}}
