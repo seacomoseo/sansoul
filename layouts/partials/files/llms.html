@@ -9,6 +9,14 @@
   {{ return $pages }}
 {{ end -}}
 
+{{ define "partials/llms-parent-link" -}}
+  {{ if .Params.noindex -}}
+    {{ or .Params.llms.title .Title -}}
+  {{ else -}}
+    {{ partial "llms-link" . -}}
+  {{ end -}}
+{{ end -}}
+
 {{ define "partials/llms-link" -}}
   [{{ or .Params.llms.title .Title }}]({{ .Permalink }})
   {{- partial "llms-langs" . -}}
@@ -80,7 +88,7 @@
 {{ range site.Sections }}
 
 
-## {{ partial "llms-link" . }}
+## {{ partial "llms-parent-link" . }}
 
 > {{ partial "llms-parent-desc" . -}}
 

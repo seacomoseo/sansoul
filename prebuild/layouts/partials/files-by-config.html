@@ -18,6 +18,21 @@
 {{ $languages := dict }}
 {{ $cascade   := slice }}
 
+{{/*  DEFAULTS  */}}
+{{ $defaults := site.Data.defaults | default slice }}
+{{ range $defaults }}
+  {{ $options := dict "str" .value "kind" .type }}
+  {{ $value   := partial "func/str-to-kind" $options }}
+  {{ $params  := dict .name $value }}
+  {{ $target  := dict }}
+  {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .path }}{{ $target = merge $target (dict "path" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ if not $target }}{{ $target = dict "path" "**" }}{{ end }}
+  {{ $default := dict "params" $params "target" $target }}
+  {{ $cascade = $cascade | append $default }}
+{{ end }}
+
 {{ range site.Data.options.langs }}
   {{ $lang      := . }}
   {{ $language  := dict }}
@@ -239,37 +254,8 @@
           {{ $cascade = $cascade | append $parent $child  }}
 
           {{/*  FILE  */}}
-          {{ $obj := dict 
-            "slug"     $slug
-            "singular" $singular
-            "title"    $title
-            "seo"      .seo
-            "desc"     $desc
-            "icon"     $icon
-            "emoji"    $emoji
-            "img"      .img
-            "draft"    .hide
-            "noindex"  $ni_parent
-            "weight"   (add $k 1)
-            "cms"      $cms
-            "customs"  $customs
-            "cascade"  (dict
-              "noindex"     .noindex
-              "type"        $name
-              "base"        $base
-              "is_related"  .rel
-              "is_comments" .comments
-              "taxonomies"  $taxonomies
-              "tax_of"      .tax_of
-              "breadcrumbs" $breadcrumbs
-            )
-          }}
-          {{ $obj = partial "func/obj-no-nil" $obj }}
-            {{/*  ) | merge .tpl)  */}}
-            {{/*  | merge site.Data.types.all.tpl  */}}
-          {{/*  file  */}}
           {{ $path := print "content/" $name "/_index." $lang ".md" }}
-          {{ partial "file-by-obj" (dict "obj" $obj "content" (.content | default "") "path" $path) }}
+          {{ partial "file-by-obj" (dict "obj" dict "content" (.content | default "") "path" $path) }}
         {{ end }}
 
         {{/*  language  */}}
@@ -458,26 +444,12 @@
     "path" "/"
   )
 }}
-{{ $cascade   = slice $home | append $cascade }}
-{{ $defaults := site.Data.defaults | default slice }}
-{{ range $defaults }}
-  {{ $options := dict "str" .value "kind" .type }}
-  {{ $value   := partial "func/str-to-kind" $options }}
-  {{ $params  := dict .name $value }}
-  {{ $target  := dict }}
-  {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
-  {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}
-  {{ with .path }}{{ $target = merge $target (dict "path" (print "{" (delimit . ",") "}")) }}{{ end }}
-  {{ if not $target }}{{ $target = dict "path" "**" }}{{ end }}
-  {{ $default := dict "params" $params "target" $target }}
-  {{ $cascade = $cascade | append $default }}
-{{ end }}
 {{ $default_pages := dict
   "params" (dict
     "noindex"  true
   )
   "target" (dict
-    "path" "{/page/{legal,privacy,cookies,search,sitemap,cms}}"
+    "path" "/page/{legal,privacy,cookies,search,sitemap,cms}"
   )
 }}
 {{ $global := dict
@@ -490,7 +462,7 @@
     "path" "/**"
   )
 }}
-{{ $cascade = $cascade | append $default_pages $global }}
+{{ $cascade = $cascade | append $home $default_pages $global }}
 {{ $obj = merge $obj (dict "cascade" $cascade) }}
 
 {{/*  file  */}}
