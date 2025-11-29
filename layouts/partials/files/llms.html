@@ -10,7 +10,7 @@
 {{ end -}}
 
 {{ define "partials/llms-link" -}}
-  [{{ .Title }}]({{ .Permalink }})
+  [{{ or .Params.llms.title .Title }}]({{ .Permalink }})
   {{- partial "llms-langs" . -}}
 {{ end -}}
 
@@ -33,7 +33,9 @@
 
 {{ define "partials/llms-site-desc" -}}
   {{ or
+    site.Params.llms.desc
     site.Params.desc
+    site.Home.Params.llms.desc
     site.Home.Params.desc
     site.Home.Params.sum
     site.Home.Summary
@@ -45,6 +47,7 @@
 
 {{ define "partials/llms-parent-desc" -}}
   {{ or
+    .Params.llms.desc
     .Params.desc
     .Params.sum
     .Summary
@@ -56,10 +59,10 @@
 
 {{ define "partials/llms-desc" -}}
   {{ or
+    .Params.llms.desc
     .Params.desc
     .Params.sum
     .Summary
-    | truncate 155
     | plainify
     | replaceRE "\n" " "
     | replaceRE `::.+?::` ""
@@ -68,7 +71,7 @@
 
 {{/*  PRINT  */ -}}
 
-# {{ site.Title }}
+# {{ or site.Params.llms.title site.Title }}
 
 > {{ partial "llms-site-desc" . -}}
 
