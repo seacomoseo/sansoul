@@ -2,7 +2,7 @@
 slug: admin/info
 title: CMS
 icon: construction
-sum: Zugang zum Admin-Panel, Deploy-Status, Repository-Links und technische Projektdaten.
+sum: Acesso ao painel admin, status do deploy, links de repositórios e dados técnicos.
 weight: 6
 type: system
 ---

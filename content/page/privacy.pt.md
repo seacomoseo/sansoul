@@ -1,8 +1,8 @@
 ---
-slug: privacidad
-title: Privacidad
+slug: privacidade
+title: Privacidade
 icon: encrypted
-sum: Detalles sobre recopilación, protección, tratamiento de datos y tus derechos.
+sum: Detalhes sobre coleta, proteção, tratamento de dados pessoais e seus direitos.
 weight: 2
 type: system
 ---

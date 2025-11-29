@@ -1,9 +1,10 @@
 ---
-title: Privacy
 slug: privacy
+title: Privacy
 icon: encrypted
-type: system
+sum: Details on data collection, protection, processing, and how to exercise your rights.
 weight: 2
+type: system
 ---
 
 Privacy Policy

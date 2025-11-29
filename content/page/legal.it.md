@@ -1,8 +1,8 @@
 ---
-slug: legal
-title: Aviso Legal
+slug: legale
+title: Avviso legale
 icon: balance
-sum: Datos del titular, condiciones de uso, propiedad intelectual y responsabilidad.
+sum: Dati del titolare, condizioni d'uso, proprietà intellettuale e responsabilità.
 weight: 1
 type: system
 ---

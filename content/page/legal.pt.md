@@ -2,7 +2,7 @@
 slug: legal
 title: Aviso Legal
 icon: balance
-sum: Datos del titular, condiciones de uso, propiedad intelectual y responsabilidad.
+sum: Dados do titular, condições de uso, propriedade intelectual e responsabilidade.
 weight: 1
 type: system
 ---

@@ -1,8 +1,9 @@
 ---
-title: Plan du Site
 slug: plan-du-site
+title: Plan du Site
 icon: lan
-type: system
+sum: Vue d'ensemble hiérarchique de toutes les pages pour faciliter la navigation.
 weight: 5
+type: system
 ---
 {{< sitemap >}}

@@ -1,9 +1,10 @@
 ---
-title: Legal Notice
 slug: legal
+title: Legal Notice
 icon: balance
-type: system
+sum: Owner details, terms of use, intellectual property, and liability limitations.
 weight: 1
+type: system
 ---
 
 **IDENTIFYING INFORMATION OF THE INFORMATION SOCIETY SERVICE PROVIDER.**

@@ -1,8 +1,9 @@
 ---
-title: Sitemap
 slug: sitemap
+title: Sitemap
 icon: lan
-type: system
+sum: Hierarchical overview of all pages and sections to facilitate navigation.
 weight: 5
+type: system
 ---
 {{< sitemap >}}

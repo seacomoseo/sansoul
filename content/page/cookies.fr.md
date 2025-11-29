@@ -1,9 +1,10 @@
 ---
-title: Cookies
 slug: cookies
+title: Cookies
 icon: cookie
-type: system
+sum: Infos sur l'utilisation, les types et la gestion des cookies pour la navigation.
 weight: 3
+type: system
 ---
 
 Politique de Cookies

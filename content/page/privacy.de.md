@@ -1,9 +1,10 @@
 ---
-title: Datenschutz
 slug: datenschutz
+title: Datenschutz
 icon: encrypted
-type: system
+sum: Details zur Erhebung, dem Schutz und der Verarbeitung von Daten sowie Ihre Rechte.
 weight: 2
+type: system
 ---
 
 Datenschutzerklärung

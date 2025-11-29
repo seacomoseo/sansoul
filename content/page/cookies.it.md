@@ -2,7 +2,7 @@
 slug: cookies
 title: Cookies
 icon: cookie
-sum: Información sobre uso, tipos y gestión de cookies para mejorar la navegación.
+sum: Informazioni su uso, tipi e gestione dei cookie per migliorare la navigazione.
 weight: 3
 type: system
 ---

@@ -24,9 +24,9 @@
 
                 {{ $obj := dict }}
                 {{ range $map }}
-                  {{ $from    := .from | default .to }}
+                  {{ $from := .from | default .to }}
 
-                  {{ $pair    := index $data (split $from ".") }}
+                  {{ $pair := index $data (split $from ".") }}
                   {{ if $pair }}
                     {{ if eq .kind "slice" }}
                       {{ if not (reflect.IsSlice $pair) }}
@@ -36,9 +36,9 @@
                   {{ end }}
 
                   {{ if ne .def nil }}
-                    {{ $options  := dict "str" .def "kind" .kind "sep" .sep }}
-                    {{ $default  := partial "func/str-to-kind" $options }}
-                    {{ $pair      = $pair | default $default }}
+                    {{ $options := dict "str" .def "kind" .kind "sep" .sep }}
+                    {{ $default := partial "func/str-to-kind" $options }}
+                    {{ $pair     = $pair | default $default }}
                   {{ end }}
 
                   {{ if $pair }}

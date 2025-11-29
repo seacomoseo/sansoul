@@ -1,7 +1,8 @@
 ---
-title: Buscador
 slug: buscador
+title: Buscador
 icon: search
-type: system
+sum: Herramienta de búsqueda rápida para encontrar contenido específico en la web.
 weight: 4
+type: system
 ---

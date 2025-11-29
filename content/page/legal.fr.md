@@ -1,9 +1,10 @@
 ---
-title: Avis Léga
 slug: legal
+title: Avis Léga
 icon: balance
-type: system
+sum: Données du titulaire, conditions d'utilisation, propriété intellectuelle et responsabilité.
 weight: 1
+type: system
 ---
 
 **INFORMATIONS IDENTIFICATIVES DU FOURNISSEUR DE SERVICES DE LA SOCIÉTÉ DE L'INFORMATION.**

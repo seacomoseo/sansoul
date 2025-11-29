@@ -1,9 +1,10 @@
 ---
-title: Vie privée
 slug: Vie privée
+title: Vie privée
 icon: encrypted
-type: system
+sum: Détails sur la collecte, la protection, le traitement des données et vos droits.
 weight: 2
+type: system
 ---
 
 Politique de Confidentialité

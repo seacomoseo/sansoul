@@ -21,9 +21,8 @@
 {{/*  DEFAULTS  */}}
 {{ $defaults := site.Data.defaults | default slice }}
 {{ range $defaults }}
-  {{ $options := dict "str" .value "kind" .type }}
-  {{ $value   := partial "func/str-to-kind" $options }}
-  {{ $params  := dict .name $value }}
+  {{ $options := dict "name" .name "str" .value "kind" .type }}
+  {{ $params  := partial "func/str-to-kind" $options }}
   {{ $target  := dict }}
   {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
   {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}

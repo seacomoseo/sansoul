@@ -1,9 +1,10 @@
 ---
-title: Rechtshinweis
 slug: legal
+title: Rechtshinweis
 icon: balance
-type: system
+sum: Halterdaten, Nutzungsbedingungen, geistiges Eigentum und Haftungsbeschränkungen.
 weight: 1
+type: system
 ---
 
 **IDENTIFIKATIONSDATEN DES DIENSTLEISTERS DER INFORMATIONSGESELLSCHAFT.**

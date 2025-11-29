@@ -1,9 +1,10 @@
 ---
-title: Cookies
 slug: cookies
+title: Cookies
 icon: cookie
-type: system
+sum: Information on the use, types, and management of cookies to improve browsing.
 weight: 3
+type: system
 ---
 
 Cookie Policy

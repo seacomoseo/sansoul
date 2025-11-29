@@ -11,4 +11,16 @@
 {{ else if eq .kind "dict" }}
   {{ $value = unmarshal .str }}
 {{ end }}
+
+{{ if .name }}
+  {{ $parts := split .name "." }}
+  {{ $result := $value }}
+  {{ range (seq (sub (len $parts) 1) -1 0) }}
+    {{ $current := index $parts . }}
+    {{ $result   = dict $current $result }}
+  {{ end }}
+  {{ $value = $result }}
+{{ end }}
+
+
 {{ return $value }}
