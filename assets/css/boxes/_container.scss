@@ -16,7 +16,7 @@
   }
 }
 
-.container.bg:not([class*="box--pd-"]) {
+.container > .bg:not([class*="box--pd-"]) {
   --box-pd-vs: 1;
   --box-pd-vl: 2;
   &.container--lg,
@@ -26,6 +26,6 @@
 }
 
 .boxes > *,
-.container.bg {
+.container:has(> .bg) {
   --container-margin-side: calc(-1 * var(--box-pd));
 }

@@ -239,7 +239,7 @@
   ))
 
 
-  (partial "cms/widget" (dict "var" `full` "name" `full` "widget" `bool`  ))
+  (partial "cms/widget" (dict "var" `item_full` "name" `full` "widget" `bool`  ))
 
 
   (partial "cms/widget" (dict "var" `when_days`  "name" `days` ))
@@ -252,7 +252,7 @@
     "fields" (slice
       `~when_days`
       `~when_hours`
-      `~full`
+      `~item_full`
     )
   ))
 
@@ -263,10 +263,10 @@
   (partial "cms/widget" (dict "var" `links_address_anchor` "name" `anchor`                  ))
   (partial "cms/widget" (dict "var" `links_hidden`         "name" `hidden` "widget" `hidden`))
   (partial "cms/widget" (dict "var" `links_map`            "<<" `map_point`                 ))
-  (partial "cms/widget" (dict "var" `links_phone`    "name" `phone`    "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~full` `~btn` `~swap` `~icon`)))
-  (partial "cms/widget" (dict "var" `links_whatsapp` "name" `whatsapp` "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~full` `~btn` `~swap`)))
-  (partial "cms/widget" (dict "var" `links_mail`     "name" `mail`     "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~full` `~btn` `~swap`)))
-  (partial "cms/widget" (dict "var" `links_address`  "name" `address`  "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_address_label` `~links_address_anchor` `~full` `~btn` `~swap` `~links_map` `~zoom`)))
+  (partial "cms/widget" (dict "var" `links_phone`    "name" `phone`    "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~item_full` `~btn` `~swap` `~icon`)))
+  (partial "cms/widget" (dict "var" `links_whatsapp` "name" `whatsapp` "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~item_full` `~btn` `~swap`)))
+  (partial "cms/widget" (dict "var" `links_mail`     "name" `mail`     "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~item_full` `~btn` `~swap`)))
+  (partial "cms/widget" (dict "var" `links_address`  "name" `address`  "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_address_label` `~links_address_anchor` `~item_full` `~btn` `~swap` `~links_map` `~zoom`)))
   (partial "cms/widget" (dict "var" `links_h2`       "name" `h2`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
   (partial "cms/widget" (dict "var" `links_h3`       "name" `h3`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
   (partial "cms/widget" (dict "var" `links_h4`       "name" `h4`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
@@ -274,7 +274,7 @@
   (partial "cms/widget" (dict "var" `links_h6`       "name" `h6`       "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~links_label` `~links_hidden`)))
   (partial "cms/widget" (dict "var" `links_br`       "name" `br`       "widget" `dict` "sum" "{{fields.name}}"  "fields" (slice `~links_hidden`)))
   (partial "cms/widget" (dict "var" `links_hr`       "name" `hr`       "widget" `dict` "sum" "{{fields.name}}"  "fields" (slice `~links_hidden`)))
-  (partial "cms/widget" (dict "var" `links_custom`   "name" `custom`   "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~url` `~icon` `~links_label` `~full` `~anchor` `~lock` `~btn` `~swap` `~ga4`)))
+  (partial "cms/widget" (dict "var" `links_custom`   "name" `custom`   "widget" `dict` "sum" "{{fields.label}}" "fields" (slice `~url` `~icon` `~links_label` `~item_full` `~anchor` `~lock` `~btn` `~swap` `~ga4`)))
   (partial "cms/widget" (dict
     "var"    `links`
     "name"   `links`
@@ -330,7 +330,7 @@
       `~form_mail`
       `~form_labels`
       `~form_fill`
-      `~full`
+      `~item_full`
       `~icon`
       `~label`
       `~btn_simple`
@@ -364,18 +364,18 @@
     )
     "label_singular" .input_items_label
   ))
-  (partial "cms/widget" (dict "var" `inputs_text`   "name" `text`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
-  (partial "cms/widget" (dict "var" `inputs_mail`   "name" `mail`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
-  (partial "cms/widget" (dict "var" `inputs_phone`  "name" `phone`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
-  (partial "cms/widget" (dict "var" `inputs_number` "name" `number` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_min` `~input_max` `~input_regex`)))
-  (partial "cms/widget" (dict "var" `inputs_date`   "name" `date`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full`)))
-  (partial "cms/widget" (dict "var" `inputs_time`   "name" `time`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full`)))
+  (partial "cms/widget" (dict "var" `inputs_text`   "name" `text`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_mail`   "name" `mail`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_phone`  "name" `phone`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_number` "name" `number` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_date`   "name" `date`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full`)))
+  (partial "cms/widget" (dict "var" `inputs_time`   "name" `time`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full`)))
   (partial "cms/widget" (dict "var" `inputs_area`   "name" `area`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_min` `~input_max`)))
   (partial "cms/widget" (dict "var" `inputs_geo`    "name" `geo`    "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~zoom`     `~input_geo_view` `~map_color` `~map_tile` `~input_geo_area`)))
-  (partial "cms/widget" (dict "var" `inputs_select` "name" `select` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full` `~input_items`)))
+  (partial "cms/widget" (dict "var" `inputs_select` "name" `select` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_items`)))
   (partial "cms/widget" (dict "var" `inputs_radio`  "name" `radio`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_x` `~input_items`)))
   (partial "cms/widget" (dict "var" `inputs_checks` "name" `checks` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_x` `~input_items`)))
-  (partial "cms/widget" (dict "var" `inputs_check`  "name" `check`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~full`)))
+  (partial "cms/widget" (dict "var" `inputs_check`  "name" `check`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full`)))
   (partial "cms/widget" (dict "var" `inputs_file`   "name" `file`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_max` `~input_accept` `~input_base_name` `~btn_simple` `~swap`)))
   (partial "cms/widget" (dict "var" `inputs_hidden` "name" `hidden` "widget" `dict` "fields" (slice `~input_name`)))
   (partial "cms/widget" (dict "var" `inputs_h2`     "name" `h2`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
@@ -383,7 +383,7 @@
   (partial "cms/widget" (dict "var" `inputs_h4`     "name" `h4`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
   (partial "cms/widget" (dict "var" `inputs_h5`     "name" `h5`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
   (partial "cms/widget" (dict "var" `inputs_h6`     "name" `h6`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `label`               "label" .title                      ) `~input_hint`)))
-  (partial "cms/widget" (dict "var" `inputs_md`     "name" `md`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `md`    "widget" `md` "label" .links_label "show_raw" true) `~full`      )))
+  (partial "cms/widget" (dict "var" `inputs_md`     "name" `md`     "widget" `dict` "fields" (slice `~input_show_if` (dict "name" `md`    "widget" `md` "label" .links_label "show_raw" true) `~item_full`      )))
   (partial "cms/widget" (dict
     "var"    `inputs`
     "name"   `inputs`

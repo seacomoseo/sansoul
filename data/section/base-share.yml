@@ -1,19 +1,19 @@
 name: Base ➡️ Comparte
 node: aside
 id: share
-
-title: '{{% i18n share %}}'
-align: center
-dots:
-- url: https://www.facebook.com/sharer.php?u={{ permalink }}
-  icon: brand:facebook-f
-  label: '{{ i18n share }} Facebook'
-- url: https://twitter.com/share?url={{ permalink }}&text={{ get title }}
-  icon: brand:x-twitter
-  label: '{{ i18n share }} Twitter'
-- url: https://wa.me/?text={{ permalink }}
-  icon: brand:whatsapp
-  label: '{{ i18n share }} WhatsApp'
-- url: mailto:?body={{ permalink }}%0D%0A{{ get title }}
-  icon: mail
-  label: '{{ i18n share }} Email'
+boxes:
+- title: '{{% i18n share %}}'
+  align: center
+  dots:
+  - url: https://www.facebook.com/sharer.php?u={{ permalink }}
+    icon: brand:facebook-f
+    label: '{{ i18n share }} Facebook'
+  - url: https://twitter.com/share?url={{ permalink }}&text={{ get title }}
+    icon: brand:x-twitter
+    label: '{{ i18n share }} Twitter'
+  - url: https://wa.me/?text={{ permalink }}
+    icon: brand:whatsapp
+    label: '{{ i18n share }} WhatsApp'
+  - url: mailto:?body={{ permalink }}%0D%0A{{ get title }}
+    icon: mail
+    label: '{{ i18n share }} Email'

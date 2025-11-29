@@ -9,9 +9,9 @@
     "url"    (print $home "#" .id)
     "btn"    .menu_btn
     "swap"   .menu_swap
-    "icon"   .icon
-    "label"  (or .menu_label .title)
-    "anchor" .hanchor
+    "icon"   (or .icon (index .boxes 0 "icon"))
+    "label"  (or .menu_label .title (index .boxes 0 "title"))
+    "anchor" (or .anchor (index .boxes 0 "anchor"))
   ) }}
 {{ end }}
 
@@ -34,7 +34,15 @@
   {{ with $sections }}
     {{ with where . "menu_btn" "ne" "hide" }}
       {{ range . }}
-        {{ if .menu_label | or .hanchor | or .title | or (.icon | and .id) }}
+        {{ if or
+          .menu_label
+          .hanchor
+          .title
+          (and .icon .id)
+          (index .boxes 0 "hanchor")
+          (index .boxes 0 "title")
+          (and (index .boxes 0 "icon") .id)
+        }}
 
           {{ $item := partial "menu/item-by-section" (merge . (dict "menu_auto" $.menu.auto)) }}
 

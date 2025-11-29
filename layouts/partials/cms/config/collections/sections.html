@@ -56,15 +56,6 @@
   `~md_nav`
   `~md_border`
 }}
-{{ $menu := slice
-  `~menu_label`
-  `~menu_btn`
-  `~menu_swap`
-}}
-{{ $menu_style := slice
-  `~menu_btn`
-  `~menu_swap`
-}}
 {{ $icon := slice
   `~icon`
   `~icon_pos`
@@ -113,13 +104,6 @@
   `~bi`
   `~alpha`
   `~scroll_sections`
-  `~box_color`
-  `~box_fade`
-  `~box_fade_to`
-  `~box_color_alpha`
-  `~box_bi`
-  `~box_alpha`
-  `~box_scroll`
 }}
 {{ $padding := slice
   `~pt`
@@ -138,14 +122,21 @@
   `~flip_x`
   `~flip_y`
 }}
+{{ $menu := slice
+  `~menu_label`
+  `~menu_btn`
+  `~menu_swap`
+}}
+{{ $menu_style := slice
+  `~menu_btn`
+  `~menu_swap`
+}}
 {{ $boxi_boxes := slice
   `~order`
   `~fit`
   `~fit_vs`
   `~grow`
   `~align_y_self`
-}}
-{{ $boxi := slice
   `~align`
   `~align_vl`
   `~side`
@@ -157,6 +148,28 @@
   `~hide_radius`
   `~pill`
   `~card`
+}}
+{{ $boxi := slice
+  `~order`
+  `~fit`
+  `~fit_vs`
+  `~grow`
+  `~align`
+  `~align_vl`
+  `~side`
+  `~rate`
+  `~space`
+  `~pd`
+  `~pd_vs`
+  `~hide_shadow`
+  `~hide_radius`
+  `~pill`
+  `~card`
+}}
+{{ $other_section := slice
+  `~if`
+  `~node`
+  `~get`
 }}
 {{ $other := slice
   `~if`
@@ -202,7 +215,6 @@
   | append $btn
   | append $bg_boxes
   | append $boxi_boxes
-  | append $boxi
   | append $other
   | append `~box`
   | append $blocks
@@ -257,10 +269,9 @@
       | append $icon
       | append $img
       | append $btn
-      | append $bg_sections
-      | append $padding
+      | append $bg_boxes
+      | append `~ph`
       | append $size_modal
-      | append $boxi_boxes
       | append $boxi
       | append $other
     )
@@ -279,10 +290,9 @@
       | append $icon
       | append $img
       | append $btn
-      | append $bg_sections
-      | append $padding
+      | append $bg_boxes
+      | append `~ph`
       | append $size_modal
-      | append $boxi_boxes
       | append $boxi
       | append $other
       | append `~box`
@@ -294,39 +304,25 @@
 
   (dict "&section_fields" (slice
     `~view_section`
-    | append $titles_style
-    | append $md_style
-    | append $menu_style
-    | append $icon
-    | append $img
-    | append $btn
     | append $bg_sections
     | append $padding
     | append $size
     | append $divider
-    | append $boxi_boxes
-    | append $boxi
-    | append $other
+    | append $menu_style
+    | append $other_section
+    | append `~box`
   ))
   (dict "&sections_fields" (slice
     `~name`
     `~id`
     `~view_sections`
-    | append $titles
-    | append $md
-    | append $menu
-    | append $icon
-    | append $img
-    | append $btn
     | append $bg_sections
     | append $padding
     | append $size
     | append $divider
-    | append $boxi_boxes
-    | append $boxi
-    | append $other
+    | append $menu
+    | append $other_section
     | append `~box`
-    | append $blocks
     | append `~boxes`
     | append `~modal`
     | append `~modals`
@@ -334,21 +330,13 @@
   (dict "&sections_fields_params" (slice
     `~id`
     `~view_sections`
-    | append $titles
-    | append $md
-    | append $menu
-    | append $icon
-    | append $img
-    | append $btn
     | append $bg_sections
     | append $padding
     | append $size
     | append $divider
-    | append $boxi_boxes
-    | append $boxi
-    | append $other
+    | append $menu
+    | append $other_section
     | append `~box`
-    | append $blocks
     | append `~boxes`
     | append `~modal`
     | append `~modals`

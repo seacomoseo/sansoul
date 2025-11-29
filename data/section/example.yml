@@ -2,10 +2,6 @@
 
 name: Ejemplo
 id: seccion
-## menu
-menu_label: Texto del enlace del Menú
-menu_btn: cta # [ main, cta, alt, light, dark, turn, such, none, hide ]
-menu_swap: y
 # bg
 color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
@@ -25,82 +21,10 @@ size: sm # [ xs, sm, md, lg, xl, fluid ]
 div: wavy-op
 div_x: y
 div_y: y
-
-
-## CONTAINER (BOX_BASE)
-
-# titles
-title: Título de Sección
-hanchor: Título oculto para SEO
-sub: Subtítulo de Sección
-price: 22 €
-hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
-hs: null # [ 0.001 - 6.00 ]
-hs_vs: null # [ 0.001 - 6.00 ]
-caps: y
-line: y
-# md
-md: |
-  Contenido de [Sección](#seccion)
-
-  [[::link:: Botón con anchor ::link::]](#seccion "hola k ase [light]")
-  [[::link:: Botón sin anchor ::link::]](#seccion "[dark]")
-md_align: center # [ left, center, right ]
-md_align_vl: center # [ left, center, right ]
-md_sm: n
-md_caps: 3 # [ 1 - 6 ]
-md_line: 2 # [ 1 - 6 ]
-md_index: n
-md_nav: n
-md_border: hide # [ main, cta, alt, light, dark, turn, such, hide ]
-# icon
-# icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-icon_pos: sub # [ top, side, sub ]
-icon_size: 0 # [ 0 = auto, > 0.00 ]
-icon_color: '' # [ main, cta, alt, light, dark, turn, such ]
-# image
-img: /u/base/icon.png
-hover: /u/base/poster.png
-alt: Descripción de la imagen
-hover_alt: Descripción de la imagen hover
-vid: https://www.youtube.com/watch?v=Pql69BV9rAU
-mute: false
-ratio: 1/1 # [ int/int ]
-disc: y
-contain: n
-border: main # [ main, cta, alt, light, dark, turn, such, hide ]
-inset: y
-gray: n
-shade: n
-# button
-url: /legal/
-pin: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
-label: Legal
-anchor: Aviso Legal
-lock: n
-btn: none # [ main, cta, alt, light, dark, turn, such, none, hide ]
-swap: y
-ga4: n
-# container
-box_color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
-box_color_alpha: '' # [ 0.00 - 1.00 ]
-box_fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
-box_fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
-box_bi: /u/base/icon.png
-box_alpha: .8 # [ 0.00 - 1.00 ]
-box_scroll: '' # [ none, soft, box ]
-# boxi
-rate: 16/9 # [ int/int ]
-space: null # [ >= 0.00 ]
-pd: null # [ >= 0.00 ]
-pd_vs: null # [ >= 0.00 ]
-align: left # [ left, center, right ]
-align_vl: center # [ left, center, right ]
-side: right # [ left, center, right ]
-hide_shadow: y
-hide_radius: y
-pill: n
-card: n
+## menu
+menu_label: Texto del enlace del Menú
+menu_btn: cta # [ main, cta, alt, light, dark, turn, such, none, hide ]
+menu_swap: y
 # other
 if: '' # [ 'param name', body, rel ]
 node: aside # [ section, header, footer, nav, article, aside, div ]
@@ -112,47 +36,8 @@ remap: [] # [ { from, to } ]
 # - from: null # string like boxes.*.example, if only used it, the param will be removed
 #   to: null # string like boxes.*.hanchor
 #   copy: null # boolean
-tag: row # [ hide, col, row, space ]
-tags:
-- type: type
-- type: date
-- type: time
-- type: words
-- type: address
-- type: tax
-  tax: all
-- type: param
-  param: job
-  icon: business_center
-- type: param
-  param: author
-  icon: people
-- type: custom
-  icon: star
-  label: ¡Holi!
-sort: # default:
-- img
-- title
-- icon_sub
-- sub
-- price
-- md
-- steps
-- gallery
-- list
-- faq
-- reviews
-- dots
-- when
-- links
-- form
-- map
-- gss
-- boxes
-- tags
-- btn
 # view
-view: [] # [all, titles, md, menu, icon, img, btn, bg, container, paddings, size, divider, boxi, boxi-others, others, steps, faq, gallery, reviews, links, form, map, gss, boxes, modals ]
+view: [] # [all, menu, bg, paddings, size, divider, others, modals ]
 
 
 ## BOXES
@@ -174,22 +59,143 @@ box:
   arrows: '' # [ bottom, float, hide ]
   align_y: top # [ stretch, top, center, bottom ]
   align_x: flex-end # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
-  # add same to container
-  # + remove `box_` of bg keys
+  # add same to box_base
   # + view
   view: [] # [ all, group, titles, md, icon, img, btn, bg, boxi, others, list ]
 boxes:
+
+## BOX_BASE
+
 - id: id-ejemplo-caja-1
+  # titles
   title: Título de Caja 1
-  # add same to container
-  # + remove `box_` of bg keys
+  hanchor: Título oculto para SEO
+  sub: Subtítulo de Caja 1
+  price: 22 €
+  hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
+  hs: null # [ 0.001 - 6.00 ]
+  hs_vs: null # [ 0.001 - 6.00 ]
+  caps: y
+  line: y
+  # md
+  md: |
+    Contenido de [Caja 1](#seccion)
+
+    [[::link:: Botón con anchor ::link::]](#seccion "hola k ase [light]")
+    [[::link:: Botón sin anchor ::link::]](#seccion "[dark]")
+  md_align: center # [ left, center, right ]
+  md_align_vl: center # [ left, center, right ]
+  md_sm: n
+  md_caps: 3 # [ 1 - 6 ]
+  md_line: 2 # [ 1 - 6 ]
+  md_index: n
+  md_nav: n
+  md_border: hide # [ main, cta, alt, light, dark, turn, such, hide ]
+  # icon
+  icon: shield # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+  icon_pos: sub # [ top, side, sub ]
+  icon_size: 0 # [ 0 = auto, > 0.00 ]
+  icon_color: '' # [ main, cta, alt, light, dark, turn, such ]
+  # image
+  img: /u/base/icon.png
+  hover: /u/base/poster.png
+  alt: Descripción de la imagen
+  hover_alt: Descripción de la imagen hover
+  vid: https://www.youtube.com/watch?v=Pql69BV9rAU
+  mute: false
+  ratio: 1/1 # [ int/int ]
+  disc: y
+  contain: n
+  border: main # [ main, cta, alt, light, dark, turn, such, hide ]
+  inset: y
+  gray: n
+  shade: n
+  # button
+  url: /legal/
+  pin: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+  label: Legal
+  anchor: Aviso Legal
+  lock: n
+  btn: none # [ main, cta, alt, light, dark, turn, such, none, hide ]
+  swap: y
+  ga4: n
+  # bg
+  color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+  color_alpha: '' # [ 0.00 - 1.00 ]
+  fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+  fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
+  bi: /u/base/icon.png
+  alpha: .8 # [ 0.00 - 1.00 ]
+  scroll: '' # [ none, soft, box ]
   # boxi-boxes
   order: -1 # [ int ]
   fit: 2 # [ > 0.00 ]
   fit_vs: 1 # [ > 0.00 ]
   grow: n
   align_y: stretch # [ stretch, top, center, bottom ]
-  # + view
+  # boxi
+  rate: 16/9 # [ int/int ]
+  space: null # [ >= 0.00 ]
+  pd: null # [ >= 0.00 ]
+  pd_vs: null # [ >= 0.00 ]
+  align: left # [ left, center, right ]
+  align_vl: center # [ left, center, right ]
+  side: right # [ left, center, right ]
+  hide_shadow: y
+  hide_radius: y
+  pill: n
+  card: n
+  # other
+  if: '' # [ 'param name', body, rel ]
+  node: aside # [ section, header, footer, nav, article, aside, div ]
+  get: [] # [ { from, to, value } ]
+  # - from: null # string like example.path.to.param
+  #   to: null # string like box.cols
+  #   value: null # string like obj
+  remap: [] # [ { from, to } ]
+  # - from: null # string like boxes.*.example, if only used it, the param will be removed
+  #   to: null # string like boxes.*.hanchor
+  #   copy: null # boolean
+  tag: row # [ hide, col, row, space ]
+  tags:
+  - type: type
+  - type: date
+  - type: time
+  - type: words
+  - type: address
+  - type: tax
+    tax: all
+  - type: param
+    param: job
+    icon: business_center
+  - type: param
+    param: author
+    icon: people
+  - type: custom
+    icon: star
+    label: ¡Holi!
+  sort: # default:
+  - img
+  - title
+  - icon_sub
+  - sub
+  - price
+  - md
+  - steps
+  - gallery
+  - list
+  - faq
+  - reviews
+  - dots
+  - when
+  - links
+  - form
+  - map
+  - gss
+  - boxes
+  - tags
+  - btn
+  # view
   view: [] # [ all, titles, md, icon, img, btn, bg, boxi-boxes, boxi, others, list, steps, faq, gallery, reviews, links, form, map, gss, boxes ]
 - title: Título de Caja 2
 - title: Título de Caja 3
@@ -562,6 +568,8 @@ boxes:
 ## MODALS
 
 modal:
+# add menu, size and ph params
 # add same to box
 modals:
+# add menu, size and ph params
 # add same to boxes

@@ -3,11 +3,11 @@
   (partial "cms/widget" (dict "var" `name` "name" `name` "req" true                                       ))
   (partial "cms/widget" (dict "var" `id`   "name" `id`   "pattern" (slice "^$|^[a-z][a-z-0-9]*$" .pattern)))
 
-  (partial "cms/widget" (dict "var" `view_section`  "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_section`  "dropdown_threshold" 15))
-  (partial "cms/widget" (dict "var" `view_sections` "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_sections` "dropdown_threshold" 26))
+  (partial "cms/widget" (dict "var" `view_section`  "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_section`  "dropdown_threshold" 8 ))
+  (partial "cms/widget" (dict "var" `view_sections` "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_sections` "dropdown_threshold" 9 ))
   (partial "cms/widget" (dict "var" `view_modal`    "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_modal`    "dropdown_threshold" 13))
   (partial "cms/widget" (dict "var" `view_modals`   "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_modals`   "dropdown_threshold" 23))
-  (partial "cms/widget" (dict "var" `view_box`      "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_box`      "dropdown_threshold" 12))
+  (partial "cms/widget" (dict "var" `view_box`      "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_box`      "dropdown_threshold" 10))
   (partial "cms/widget" (dict "var" `view_boxes`    "name" `view` "widget" `select` "alt" `view` "multiple" true "options" `~options_view_boxes`    "dropdown_threshold" 20))
 
   (partial "cms/widget" (dict "var" `cols`          "name" `cols`         "widget" `int`    "min" 0 "max" 12 "req" true   ))
@@ -45,10 +45,6 @@
   (partial "cms/widget" (dict "var" `md_index`    "name" `md_index`    "widget" `bool`                                    ))
   (partial "cms/widget" (dict "var" `md_nav`      "name" `md_nav`      "widget" `bool`                                    ))
   (partial "cms/widget" (dict "var" `md_border`   "name" `md_border`   "widget" `select` "options" `~options_color_base_n`))
-
-  (partial "cms/widget" (dict "var" `menu_label` "name" `menu_label`                                                    ))
-  (partial "cms/widget" (dict "var" `menu_btn`   "name" `menu_btn`   "widget" `select` "options" `~options_color_base_h`))
-  (partial "cms/widget" (dict "var" `menu_swap`  "name" `menu_swap`  "widget" `bool`                                    ))
 
   (partial "cms/widget" (dict "var" `icon`       "name" `icon`                         "i18n" `duplicate`               ))
   (partial "cms/widget" (dict "var" `icon_pos`   "name" `icon_pos`   "widget" `select` "options" `~options_icon_pos`    ))
@@ -91,14 +87,6 @@
   (partial "cms/widget" (dict "var" `scroll`          "name" `scroll`      "widget" `select` "options" `~options_scroll_box` ))
   (partial "cms/widget" (dict "var" `scroll_sections` "<<" `scroll`                          "options" `~options_scroll_sect`))
 
-  (partial "cms/widget" (dict "var" `box_color`       "<<" `color`       "name" `box_color`      ))
-  (partial "cms/widget" (dict "var" `box_fade`        "<<" `fade`        "name" `box_fade_color` ))
-  (partial "cms/widget" (dict "var" `box_fade_to`     "<<" `fade_to`     "name" `box_fade_to`    ))
-  (partial "cms/widget" (dict "var" `box_color_alpha` "<<" `color_alpha` "name" `box_color_alpha`))
-  (partial "cms/widget" (dict "var" `box_bi`          "<<" `bi`          "name" `box_bi`         ))
-  (partial "cms/widget" (dict "var" `box_alpha`       "<<" `alpha`       "name" `box_alpha`      ))
-  (partial "cms/widget" (dict "var" `box_scroll`      "<<" `scroll`      "name" `box_scroll`     ))
-
   (partial "cms/widget" (dict "var" `pt` "name" `pt` "widget" `float` "step" 0.5 "max" 20))
   (partial "cms/widget" (dict "var" `pb` "name" `pb` "widget" `float` "step" 0.5 "max" 20))
   (partial "cms/widget" (dict "var" `ph` "name" `ph` "widget" `bool`                     ))
@@ -109,6 +97,10 @@
   (partial "cms/widget" (dict "var" `div`    "name" `div`   "widget" `select` "options" `~options_divider` "multiple" false "hint" (print .div_hint " → [sansoul.pages.dev/divisores/](https://sansoul.pages.dev/divisores/)")))
   (partial "cms/widget" (dict "var" `flip_x` "name" `div_x` "widget" `bool`))
   (partial "cms/widget" (dict "var" `flip_y` "name" `div_y` "widget" `bool`))
+
+  (partial "cms/widget" (dict "var" `menu_label` "name" `menu_label`                                                    ))
+  (partial "cms/widget" (dict "var" `menu_btn`   "name" `menu_btn`   "widget" `select` "options" `~options_color_base_h`))
+  (partial "cms/widget" (dict "var" `menu_swap`  "name" `menu_swap`  "widget" `bool`                                    ))
 
   (partial "cms/widget" (dict "var" `order`        "name" `order`       "widget" `int`    "min" -20 "max" 20                          ))
   (partial "cms/widget" (dict "var" `fit`          "name" `fit`         "widget" `float`            "max" 12                          ))

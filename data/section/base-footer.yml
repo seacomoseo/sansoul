@@ -1,6 +1,5 @@
 name: Base ➡️ Footer
 color: dark
-space: 2
 get:
 - from: footer.size
   to: size
@@ -22,23 +21,25 @@ get:
   to: div_x
 - from: footer.div_y
   to: div_y
-- from: footer.boxes
-  to: boxes
+box:
+  space: 2
 boxes:
 - if: footer.dots
   get:
   - from: footer.dots
     to: dots
-- get:
-  - from: footer.md
-    to: md
-  md: |
+- md: |
     - ::copyright::        {{< internal-link index >}}
     - ::balance::          {{< internal-link legal >}}
     - ::encrypted::        {{< internal-link privacy >}}
     - ::cookie::           {{< internal-link cookies >}}
     - ::brand:seacomoseo:: {{< i18n web_design >}} [seacomoseo.com](https://seacomoseo.com/ "[homefollow]")
     {.list-inline}
+  get:
+  - from: footer.md
+    to: md
+  - from: footer.boxes
+    to: boxes
 # - links:
 #   - type: custom
 #     icon: copyright

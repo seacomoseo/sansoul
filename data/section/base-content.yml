@@ -3,10 +3,10 @@ node: div
 if: content
 id: content
 pt: 0
-
-md: '{{% content %}}'
-get:
-- from: nav
-  to: md_nav
-- from: index
-  to: md_index
+boxes:
+- md: '{{% content %}}'
+  get:
+  - from: nav
+    to: md_nav
+  - from: index
+    to: md_index
