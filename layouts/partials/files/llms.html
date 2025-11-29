@@ -1,11 +1,23 @@
 {{/*  DEFINES  */ -}}
 
 {{ define "partials/llms-pages" -}}
-  {{ $pages := where .RegularPages "Params.hide" "ne" true -}}
-  {{ if eq .Type "single" -}}
-    {{ $pages = slice site.Home | append .RegularPages -}}
-  {{ end -}}
-  {{ $pages = where $pages "Params.noindex" "ne" true }}
+  {{ $pages := slice }}
+  {{ if not .Params.llms.hide -}}
+    {{ range .RegularPages }}
+      {{ $add_page := and
+        (ne .Params.hide true)
+        (ne .Params.noindex true)
+        (ne .Params.llms.hide true)
+        | or (eq .Params.llms.hide false)
+      }}
+      {{ if $add_page }}
+        {{ $pages = $pages | append . }}
+      {{ end }}
+    {{ end }}
+    {{ if eq .Type "single" }}
+      {{ $pages = slice site.Home | append $pages }}
+    {{ end }}
+  {{ end }}
   {{ return $pages }}
 {{ end -}}
 
@@ -85,17 +97,20 @@
 
 > {{ partial "llms-site-desc" . -}}
 
-{{ range site.Sections }}
+{{ range site.Sections -}}
+{{ $pages := partial "llms-pages" . }}
+{{ if $pages }}
 
 
 ## {{ partial "llms-parent-link" . }}
 
 > {{ partial "llms-parent-desc" . -}}
 
-{{ range partial "llms-pages" . }}
+{{ range $pages }}
 - {{ partial "llms-link" . }}: {{ partial "llms-desc" . -}}
 {{ end -}}
 
+{{ end -}}
 {{ end -}}
 
 {{- /*  CUSTOM  */ -}}
