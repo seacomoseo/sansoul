@@ -40,8 +40,9 @@
     site.Home.Params.sum
     site.Home.Summary
     | plainify
-    | replaceRE "\n" "\n> "
+    | replaceRE "\n\n" "\n\n> "
     | replaceRE `::.+?::` ""
+    | safeHTML
   -}}
 {{ end -}}
 
@@ -52,8 +53,9 @@
     .Params.sum
     .Summary
     | plainify
-    | replaceRE "\n" "\n> "
+    | replaceRE "\n\n" "\n\n> "
     | replaceRE `::.+?::` ""
+    | safeHTML
   }}
 {{ end -}}
 
