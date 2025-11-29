@@ -11,7 +11,8 @@ category:
 
 toc: n
 draft: n
-noindex: y
-seo: null # string
-desc: null # string
+seo:
+  title: null # string
+  desc: null # string
+  noindex: y
 ---

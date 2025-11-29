@@ -9,7 +9,7 @@
       "label"  .Title
       "anchor" "auto"
       "url"    .RelPermalink
-      "lock"   .Params.noindex
+      "lock"   .Params.seo.noindex
     ) }}
   </h2>
   {{- $pages := where .RegularPages "Params.hide" "ne" true -}}
@@ -29,7 +29,7 @@
             "label"  .Title
             "url"    .RelPermalink
             "anchor" "auto"
-            "lock"   .Params.noindex
+            "lock"   .Params.seo.noindex
           ) -}}
         </li>
       {{- end }}

@@ -27,7 +27,7 @@
         {{- else if eq $param "title" -}}
           {{ i18n "about" }} [{{ .Title }}]({{ .RelPermalink -}})
         {{- else if eq $param "sum" -}}
-          {{ .Params.sum | default .Summary | default .Params.desc }}
+          {{ .Params.sum | default .Summary | default .Params.seo.desc }}
           {{ if .ContentWithoutSummary }}
             {{- partial "link" (dict
               "label" (print (i18n "read_more") "…")

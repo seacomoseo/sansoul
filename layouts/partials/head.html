@@ -1,7 +1,7 @@
 {{- $config := site.Data.config -}}
 
 {{- $title    := "" -}}
-{{- with .Params.seo -}}
+{{- with .Params.seo.title -}}
   {{- $title   = . | markdownify -}}
 {{- else -}}
   {{- $title   = .Title | markdownify -}}
@@ -12,7 +12,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- $desc := .Params.desc
+{{- $desc := .Params.seo.desc
   | default .Params.sum
   | default .Summary
   | truncate 155
@@ -80,7 +80,7 @@
     <link rel="alternate" hreflang="{{ .Params.locale | default .Lang }}" href="{{ .Permalink }}">
   {{- end -}}
 {{- end -}}
-{{- if .Params.noindex }}
+{{- if .Params.seo.noindex }}
   <meta name="robots" content="noindex">
 {{- end -}}
 {{- with site.Params.g_site_verify }}

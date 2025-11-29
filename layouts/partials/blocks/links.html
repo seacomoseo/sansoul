@@ -9,16 +9,16 @@
         {{- if eq .type "address" | and .hide -}}
         {{- else if findRE `^(phone|whatsapp|mail|address|custom)$` .type -}}
 
-          {{- $class   := "" -}}
-          {{- $num     := "" -}}
-          {{- $url     := .url -}}
-          {{- $btn     := .btn | default "cta" -}}
-          {{- $swap    := .swap -}}
-          {{- $icon    := .icon -}}
-          {{- $def     := "" -}}
-          {{- $label   := .label -}}
-          {{- $anchor  := .anchor | default "auto" -}}
-          {{- $noindex := .lock -}}
+          {{- $class  := "" -}}
+          {{- $num    := "" -}}
+          {{- $url    := .url -}}
+          {{- $btn    := .btn | default "cta" -}}
+          {{- $swap   := .swap -}}
+          {{- $icon   := .icon -}}
+          {{- $def    := "" -}}
+          {{- $label  := .label -}}
+          {{- $anchor := .anchor | default "auto" -}}
+          {{- $lock   := .lock -}}
 
           {{- $is_phone_or_wa  := in (slice "phone" "whatsapp") .type -}}
           {{- $is_custom_phone := $label | findRE `^\+?[\d\s-()]+$` -}}
@@ -33,24 +33,24 @@
           {{- if eq .type "custom" -}}
             {{- $class   = "link__custom" -}}
           {{- else if eq .type "phone" -}}
-            {{- $class   = "link__phone" -}}
-            {{- $url     = print "tel:+" $num -}}
-            {{- $def     = "phone" -}}
-            {{- $noindex = true -}}
+            {{- $class = "link__phone" -}}
+            {{- $url   = print "tel:+" $num -}}
+            {{- $def   = "phone" -}}
+            {{- $lock  = true -}}
           {{- else if eq .type "whatsapp" -}}
-            {{- $class   = "link__whatsapp" -}}
-            {{- $url     = print "https://wa.me/" $num -}}
-            {{- $btn     = cond (not .btn) "whatsapp" $btn -}}
-            {{- $def     = "whatsapp" -}}
-            {{- $noindex = true -}}
+            {{- $class = "link__whatsapp" -}}
+            {{- $url   = print "https://wa.me/" $num -}}
+            {{- $btn   = cond (not .btn) "whatsapp" $btn -}}
+            {{- $def   = "whatsapp" -}}
+            {{- $lock  = true -}}
           {{- else if eq .type "mail" -}}
-            {{- $class   = "link__mail" -}}
-            {{- $url     = .label -}}
-            {{- $def     = "mail" -}}
-            {{- $noindex = true -}}
+            {{- $class = "link__mail" -}}
+            {{- $url   = .label -}}
+            {{- $def   = "mail" -}}
+            {{- $lock  = true -}}
           {{- else if eq .type "address" -}}
-            {{- $class   = "link__address" -}}
-            {{- $geo := dict -}}
+            {{- $class = "link__address" -}}
+            {{- $geo  := dict -}}
             {{- with .geo -}}
               {{- if reflect.IsMap . -}}
                 {{- $geo = . -}}
@@ -60,17 +60,17 @@
             {{- end -}}
             {{- if not $url -}}
               {{- if $geo -}}
-                {{- $y     := index $geo.coordinates 0 -}}
-                {{- $x     := index $geo.coordinates 1 -}}
-                {{- $zoom  := .zoom | default 15 -}}
-                {{- $url    = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
+                {{- $y    := index $geo.coordinates 0 -}}
+                {{- $x    := index $geo.coordinates 1 -}}
+                {{- $zoom := .zoom | default 15 -}}
+                {{- $url   = print "https://www.openstreetmap.org/?mlat=" $x "&mlon=" $y "#map=" $zoom "/" $x "/" $y -}}
               {{- else -}}
-                {{- $url    = partial "func/map-url" (.anchor | default .label) -}}
+                {{- $url   = partial "func/map-url" (.anchor | default .label) -}}
               {{- end -}}
             {{- end -}}
-            {{- $def     = "address" -}}
-            {{- $label   = .label | default .anchor -}}
-            {{- $noindex = true -}}
+            {{- $def   = "address" -}}
+            {{- $label = .label | default .anchor -}}
+            {{- $lock  = true -}}
           {{- end -}}
 
           {{- /*  PHONES TO STORE FOR AUTO CALLNOW  */}}
@@ -89,7 +89,7 @@
             "label"  $label
             "anchor" $anchor
             "url"    $url
-            "lock"   $noindex
+            "lock"   $lock
           ) -}}
 
         {{- else if findRE `^h\d$` .type -}}

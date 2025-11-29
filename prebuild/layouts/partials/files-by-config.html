@@ -198,7 +198,7 @@
         {{ with $type }}
           {{ $title       = or .lang_title  $default_values.title    .title .singular  $name }}
           {{ $singular   := or .singular    $default_values.singular .title $cms.title $name }}
-          {{ $desc       := or .desc        $default_values.desc     ""                      }}
+          {{ $desc       := or .seo.desc    $default_values.desc     ""                      }}
           {{ $slug        = or .slug        $default_values.slug     $title                  }}
           {{ $icon       := or .icon        (index $c.icons  $name)  "file"                  }}
           {{ $emoji      := or .emoji       (index $c.emojis $name)  "📄"                    }}
@@ -216,16 +216,18 @@
               "slug"     $slug
               "singular" $singular
               "title"    $title
-              "seo"      .seo
-              "desc"     $desc
               "icon"     $icon
               "emoji"    $emoji
               "img"      .img
               "draft"    .hide
-              "noindex"  $ni_parent
               "weight"   (add $k 1)
               "cms"      $cms
               "customs"  $customs
+              "seo"      (dict
+                "title"   .seo.title
+                "desc"    $desc
+                "noindex" $ni_parent
+              )
             )
             "target" (dict
               "lang" $lang
@@ -234,7 +236,6 @@
           }}
           {{ $child := dict
             "params" (dict
-              "noindex"     .noindex
               "type"        $name
               "base"        $base
               "is_related"  .rel
@@ -242,6 +243,9 @@
               "taxonomies"  $taxonomies
               "tax_of"      .tax_of
               "breadcrumbs" $breadcrumbs
+              "seo"         (dict
+                "noindex" .noindex
+              )
             )
             "target" (dict
               "lang" $lang
@@ -445,7 +449,9 @@
 }}
 {{ $default_pages := dict
   "params" (dict
-    "noindex"  true
+    "seo" (dict
+      "noindex" true
+    )
   )
   "target" (dict
     "path" "/page/{legal,privacy,cookies,search,sitemap,cms}"
@@ -453,9 +459,9 @@
 }}
 {{ $global := dict
   "params" (dict
-    "index"  true
-    "nav"    true
-    "toc"    true
+    "index" true
+    "nav"   true
+    "toc"   true
   )
   "target" (dict
     "path" "/**"

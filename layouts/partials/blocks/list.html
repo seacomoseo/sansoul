@@ -141,8 +141,8 @@
             "title"   .Title
             "price"   $price
             "dots"    ""
-            "alt"    (.Params.anchor | default .Params.seo | default .Title)
-            "anchor" (.Params.anchor | default .Params.seo | default .Title)
+            "alt"    (.Params.anchor | default .Params.seo.title | default .Title)
+            "anchor" (.Params.anchor | default .Params.seo.title | default .Title)
           -}}
           {{- /*  maybe hide or default values  */ -}}
           {{- $sum    := partial "func/summary" . -}}

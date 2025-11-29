@@ -6,7 +6,7 @@
     {{ range .RegularPages }}
       {{ $add_page := and
         (ne .Params.hide true)
-        (ne .Params.noindex true)
+        (ne .Params.seo.noindex true)
         (ne .Params.llms.hide true)
         | or (eq .Params.llms.hide false)
       }}
@@ -22,7 +22,7 @@
 {{ end -}}
 
 {{ define "partials/llms-parent-link" -}}
-  {{ if .Params.noindex -}}
+  {{ if .Params.seo.noindex -}}
     {{ or .Params.llms.title .Title -}}
   {{ else -}}
     {{ partial "llms-link" . -}}
@@ -54,9 +54,9 @@
 {{ define "partials/llms-site-desc" -}}
   {{ or
     site.Params.llms.desc
-    site.Params.desc
+    site.Params.seo.desc
     site.Home.Params.llms.desc
-    site.Home.Params.desc
+    site.Home.Params.seo.desc
     site.Home.Params.sum
     site.Home.Summary
     | plainify
@@ -69,7 +69,7 @@
 {{ define "partials/llms-parent-desc" -}}
   {{ or
     .Params.llms.desc
-    .Params.desc
+    .Params.seo.desc
     .Params.sum
     .Summary
     | plainify
@@ -82,7 +82,7 @@
 {{ define "partials/llms-desc" -}}
   {{ or
     .Params.llms.desc
-    .Params.desc
+    .Params.seo.desc
     .Params.sum
     .Summary
     | plainify

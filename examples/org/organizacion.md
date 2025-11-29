@@ -7,9 +7,10 @@ sum: Esto es el resumen de una organización de ejemplo.
 
 toc: y
 draft: n
-noindex: n
-seo: ▷ Título SEO Organización de ejemplo 【Con caracteres llamativos】
-desc: Esta es la descripción SEO de una organización de ejemplo.
+seo:
+  title: ▷ Título SEO Organización de ejemplo 【Con caracteres llamativos】
+  desc: Esta es la descripción SEO de una organización de ejemplo.
+  noindex: n
 
 org:
   types:

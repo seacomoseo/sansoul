@@ -15,8 +15,9 @@ manufacturer: fabricante
 
 toc: y
 draft: n
-noindex: n
-seo: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
-desc: Esta es la descripción SEO de un producto de ejemplo.
+seo:
+  title: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
+  desc: Esta es la descripción SEO de un producto de ejemplo.
+  noindex: n
 ---
 Contenido

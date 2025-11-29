@@ -15,8 +15,9 @@ provider: SanSoul
 
 toc: y
 draft: n
-noindex: n
-seo: ▷ Título SEO Servicio de ejemplo 【Con caracteres llamativos】
-desc: Esta es la descripción de un Servicio de ejemplo.
+seo:
+  title: ▷ Título SEO Servicio de ejemplo 【Con caracteres llamativos】
+  desc: Esta es la descripción de un Servicio de ejemplo.
+  noindex: n
 ---
 Contenido

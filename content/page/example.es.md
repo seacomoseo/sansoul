@@ -3,9 +3,10 @@ title: Página de Ejemplo
 slug: unica
 img: /u/base/poster.png
 draft: y
-noindex: y
-seo: null # string
-desc: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
+seo:
+  title: null # string
+  desc: llll➤ Ésto es una página de ejemplo que me servirá para copiar y pegar valores ✅ by lorensansol.
+  noindex: y
 tpl:
   bg:
     color: null # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such ]

@@ -5,9 +5,15 @@ sum: ''
 img: ''
 toc: n
 draft: y
-noindex: n
+hide: y
 date: {{ .Date }}
 mod: 
-seo: ''
-desc: ''
+seo:
+  title: ''
+  desc: ''
+  noindex: n
+llms:
+  title: ''
+  desc: ''
+  hide: n
 ---

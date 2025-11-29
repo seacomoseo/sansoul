@@ -7,9 +7,10 @@ sum: Este es el resumen de un fabricante de ejemplo.
 
 toc: y
 draft: n
-noindex: n
-seo: null
-desc: null
+seo:
+  title: null
+  desc: null
+  noindex: n
 
 org:
   types:

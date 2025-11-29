@@ -19,7 +19,7 @@
       {{- end }}
       <header class="logo {{ $color }}">
         <div class="box container container--{{ $container }} {{- $align }}">
-          {{- $alt := site.Home.Params.seo | default site.Home.Params.title | markdownify | plainify }}
+          {{- $alt := site.Home.Params.seo.title | default site.Home.Params.title | markdownify | plainify }}
           <div class="logo__link link" data-h="{{ site.Home.RelPermalink | base64Encode }}" tabindex="0" role="link" title="{{ $alt }}">
             {{- with $img }}
               {{ partial "media/_"

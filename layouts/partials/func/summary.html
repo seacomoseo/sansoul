@@ -1,6 +1,6 @@
 {{ $sum := .Params.sum
   | default .Summary
-  | default .Params.desc
+  | default .Params.seo.desc
   | truncate 155
   | plainify
   | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""

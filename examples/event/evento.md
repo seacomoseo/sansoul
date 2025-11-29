@@ -25,8 +25,9 @@ price: 30
 
 toc: y
 draft: n
-noindex: n
-seo: null # string
-desc: null # string
+seo:
+  title: null # string
+  desc: null # string
+  noindex: n
 ---
 Ejemplo de contenido de un evento.

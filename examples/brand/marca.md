@@ -6,8 +6,9 @@ img: /u/base/icon.png
 icon: github
 toc: y
 draft: n
-noindex: n
-seo: null
-desc: null
+seo:
+  title: null
+  desc: null
+  noindex: n
 ---
 Contenido

@@ -1,9 +1,10 @@
 ---
 slug: inicio
 title: Inicio
-noindex: n
 base: org
 weight: 1
+seo:
+  noindex: n
 
 org:
   types: [] # strings https://schema.org/docs/full.html > Organization...
@@ -12,7 +13,6 @@ org:
   legal: null # string
   nif: null # string
   mail: null # string
-  desc: null # string
   logo: null # string image path
   imgs: [] # strings image path
   as: [] # strings

@@ -60,7 +60,7 @@
     }}
   {{ end }}
   {{ $groups = $groups | append
-    (dict   "name" `noindex` "label" `NoIndex`       "field" `noindex`)
+    (dict   "name" `noindex` "label" `NoIndex`       "field" `seo.noindex`)
     (dict   "name" `drafts`  "label" $.filter_drafts "field" `draft`)
   }}
   {{ with .Params.taxonomies }}
@@ -76,10 +76,10 @@
   {{/*  View Filters  */}}
   {{ $view_filters := dict
     "filters" (slice
-      (dict "name" `published` "label" $.filter_published "field" `draft`   "pattern" "n")
-      (dict "name" `drafts`    "label" $.filter_drafts    "field" `draft`   "pattern" "y")
-      (dict "name" `index`     "label" `Index`            "field" `noindex` "pattern" "n")
-      (dict "name" `noindex`   "label" `NoIndex`          "field" `noindex` "pattern" "y")
+      (dict "name" `published` "label" $.filter_published "field" `draft`       "pattern" "n")
+      (dict "name" `drafts`    "label" $.filter_drafts    "field" `draft`       "pattern" "y")
+      (dict "name" `index`     "label" `Index`            "field" `seo.noindex` "pattern" "n")
+      (dict "name" `noindex`   "label" `NoIndex`          "field" `seo.noindex` "pattern" "y")
     )
   }}
 
@@ -97,12 +97,10 @@
     }}
   {{ end }}
   {{ $fields = $fields | append
-    `~page_sum`
-    `~page_seo`
-    `~page_desc`
-    `~page_noindex`
     `~page_draft`
     `~page_hide`
+    `~page_sum`
+    `~page_seo`
     `~page_llms`
   }}
   {{ if .Params.is_related }}
@@ -254,8 +252,6 @@
         `~page_toc`
         `~page_sum`
         `~page_seo`
-        $index_desc
-        `~page_noindex`
         `~page_llms`
       )
     )

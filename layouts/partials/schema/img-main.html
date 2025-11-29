@@ -34,7 +34,7 @@
 {{ end }}
 
 {{/*  Caption  */}}
-{{ $caption := or .Params.alt .Params.seo .Title }}
+{{ $caption := or .Params.alt .Params.seo.title .Title }}
 
 {{/*  Schema  */}}
 {{ $schema := dict

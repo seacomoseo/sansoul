@@ -55,7 +55,7 @@ object
         {{ end }}
 
         {{/*  Summary  */}}
-        {{ $sum := .Params.sum | default .Summary | default .Params.desc | truncate 155 }}
+        {{ $sum := .Params.sum | default .Summary | default .Params.seo.desc | truncate 155 }}
         {{ $sum  = partial "func/md" $sum }}
 
         {{/*  Content by   */}}

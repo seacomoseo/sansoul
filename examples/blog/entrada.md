@@ -12,9 +12,10 @@ author: admin
 
 toc: y
 draft: n
-noindex: n
-seo: ▷ Título SEO Entrada de ejemplo 【Con caracteres llamativos】
-desc: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
+seo:
+  title: ▷ Título SEO Entrada de ejemplo 【Con caracteres llamativos】
+  desc: Esto es una descripción SEO de entrada de ejemplo para mostrar la forma de usar el formato markdown y la forma de visualizarlo.
+  noindex: n
 ---
 Este es un ejemplo de párrafo:
 

@@ -76,7 +76,7 @@
 
 {{/*  Title  */}}
 {{ $title  := "" }}
-{{ with .Params.seo }}
+{{ with .Params.seo.title }}
   {{ $title = . | markdownify }}
 {{ else }}
   {{ $title = partial "func/anchor-page" . }}

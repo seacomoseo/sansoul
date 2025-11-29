@@ -126,7 +126,7 @@
       {{- $pages         := where site.Pages "RelPermalink" $url_cleaned -}}
       {{- $page_internal := index $pages 0 | default site.Home -}}
       {{- with $page_internal -}}
-        {{- if .Params.noindex -}}
+        {{- if .Params.seo.noindex -}}
           {{- $lock = true -}}
         {{- else if $is_auto_anchor -}}
           {{- $anchor = partial "func/anchor-page" . -}}

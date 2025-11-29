@@ -35,15 +35,15 @@
     <aside id="callnow" class="callnow {{ $callnow_plus }}">
       {{- range . -}}
 
-        {{- $class   := "" -}}
-        {{- $num     := "" -}}
-        {{- $url     := .url -}}
-        {{- $btn     := .btn | default "cta" -}}
-        {{- $icon    := .icon -}}
-        {{- $def     := "" -}}
-        {{- $label   := .label -}}
-        {{- $anchor  := .anchor | default "auto" -}}
-        {{- $noindex := .lock -}}
+        {{- $class  := "" -}}
+        {{- $num    := "" -}}
+        {{- $url    := .url -}}
+        {{- $btn    := .btn | default "cta" -}}
+        {{- $icon   := .icon -}}
+        {{- $def    := "" -}}
+        {{- $label  := .label -}}
+        {{- $anchor := .anchor | default "auto" -}}
+        {{- $lock   := .lock -}}
 
         {{- if in (slice "phone" "whatsapp") .type -}}
           {{- $num   = partial "func/phone-to-complete" .label | replaceRE `[^\d]` "" -}}
@@ -52,18 +52,18 @@
         {{- if eq .type "custom" -}}
           {{- $class   = "callnow__custom" -}}
         {{- else if eq .type "phone" -}}
-          {{- $class   = "callnow__phone" -}}
-          {{- $url     = print "tel:+" $num -}}
-          {{- $def     = "phone" -}}
-          {{- $label   = i18n "callnow_phone" -}}
-          {{- $noindex = true -}}
+          {{- $class = "callnow__phone" -}}
+          {{- $url   = print "tel:+" $num -}}
+          {{- $def   = "phone" -}}
+          {{- $label = i18n "callnow_phone" -}}
+          {{- $lock  = true -}}
         {{- else if eq .type "whatsapp" -}}
-          {{- $class   = "callnow__whatsapp" -}}
-          {{- $url     = print "https://wa.me/" $num -}}
-          {{- $btn     = cond (not .btn) "whatsapp" $btn -}}
-          {{- $def     = "whatsapp" -}}
-          {{- $label   = i18n "callnow_whatsapp" -}}
-          {{- $noindex = true -}}
+          {{- $class = "callnow__whatsapp" -}}
+          {{- $url   = print "https://wa.me/" $num -}}
+          {{- $btn   = cond (not .btn) "whatsapp" $btn -}}
+          {{- $def   = "whatsapp" -}}
+          {{- $label = i18n "callnow_whatsapp" -}}
+          {{- $lock  = true -}}
         {{- end -}}
 
         {{- if $callnow_plus -}}<i>{{- end -}}
@@ -83,7 +83,7 @@
           "label"  $label
           "anchor" $anchor
           "url"    $url
-          "lock"   $noindex
+          "lock"   $lock
         ) -}}
 
         {{- if $callnow_plus -}}</i>{{- end -}}

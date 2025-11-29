@@ -1,2 +1,2 @@
-{{ $anchor := .Params.anchor | default .Params.seo | default .Title }}
+{{ $anchor := .Params.anchor | default .Params.seo.title | default .Title }}
 {{ return $anchor }}
