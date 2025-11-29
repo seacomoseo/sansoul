@@ -103,6 +103,7 @@
     `~page_noindex`
     `~page_draft`
     `~page_hide`
+    `~page_llms`
   }}
   {{ if .Params.is_related }}
     {{ $fields = $fields | append
@@ -249,10 +250,13 @@
         $index_singular
         $index_title
         `~page_img`
-        `~page_noindex`
+        `~page_body`
+        `~page_toc`
+        `~page_sum`
         `~page_seo`
         $index_desc
-        `~page_body`
+        `~page_noindex`
+        `~page_llms`
       )
     )
   ) }}
