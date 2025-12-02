@@ -6,13 +6,13 @@
 
   {{- /*  BACKGROUND  */ -}}
   {{- if not .is_modal -}}
-    {{- $bg_opts := dict "card" nil "container" "fluid" -}}
-    {{- $bg_opts  = merge . $bg_opts -}}
-    {{- partial "bg" $bg_opts -}}
+    {{- $bg := dict "card" nil "container" "fluid" -}}
+    {{- $bg  = merge . $bg -}}
+    {{- partial "bg" $bg -}}
   {{- end -}}
 
   {{- /*  BOX  */ -}}
-  {{- $box_opts := dict
+  {{- $over := dict
     "full"        nil
     "pt"          nil
     "pb"          nil
@@ -39,8 +39,8 @@
     "fade"        .box_fade
     "fade_to"     .box_fade_to
   -}}
-  {{- $box_opts = merge . $box_opts -}}
-  {{- partial "boxes/item" $box_opts -}}
+  {{- $box := merge . $over -}}
+  {{- partial "boxes/item" $box -}}
 
   {{- /*  MODAL BUTTONS CORNER  */ -}}
   {{- if .is_modal  -}}

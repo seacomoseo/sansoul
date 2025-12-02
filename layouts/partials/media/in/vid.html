@@ -55,8 +55,7 @@
 </video>
 
 {{- /*  schema  */}}
-{{- $upload := .upload | default (os.Stat (print "assets" .vid)).ModTime }}
-{{- $upload  = $upload | time.Format "2006-01-02T15:04:05Z07:00" }}
+{{- $upload := .upload | default (os.Stat (replace .vid "/u/" "/uploads/")).ModTime }}
 {{ partial "schema/vid" (dict
   "name"         .alt
   "thumbnailUrl" $img

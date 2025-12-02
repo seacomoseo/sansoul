@@ -26,7 +26,7 @@
 {{ if eq .Kind "404" }}
   {{ $type = dict
     "menu"     (dict "hide" true)
-    "callnow"  (dict "hide" true)
+    "callnow"  "hide"
     "sections" (slice (dict "file" "base-404"))
   }}
 {{ else if not .IsSection }}

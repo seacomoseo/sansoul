@@ -21,6 +21,15 @@
       (partial "cms/widget" (dict "alt" `config_html_body` "name" `body` "widget" `code`))
     )
   ))
+  (partial "cms/widget" (dict
+    "var"    `config_llms`
+    "name"   `llms`
+    "widget" `dict`
+    "fields" (slice
+      (partial "cms/widget" (dict "alt" `page_llms_title` "name" `title`              ))
+      (partial "cms/widget" (dict "alt" `page_llms_desc`  "name" `desc`  "widget" `md`))
+    )
+  ))
 
   (dict "&config" (slice
     `~config_ga4`
@@ -34,6 +43,7 @@
     `~config_currency`
     `~config_main_org`
     `~config_html`
+    `~config_llms`
     (partial "cms/widget" (dict "alt" `config_cms_logo`           "name" `cms_logo`           "widget" `img`                                                     ))
     (partial "cms/widget" (dict "alt" `config_cms_lang`           "name" `cms_lang`           "widget" `select`  "hint" $lang_hint "options" `~options_langs_cms`))
     (partial "cms/widget" (dict "alt" `config_cms_editorial`      "name" `cms_editorial`      "widget" `bool`                                                    ))

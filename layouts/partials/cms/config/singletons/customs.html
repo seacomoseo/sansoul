@@ -16,6 +16,7 @@
   `~customs_widget`
   `~customs_options`
   `~customs_multi`
+  `~customs_i18n`
 }}
 {{ $sub_fields_last := slice
   `~customs_var`
@@ -25,6 +26,7 @@
   `~customs_widget_last`
   `~customs_options`
   `~customs_multi`
+  `~customs_i18n`
 }}
 
 {{ return slice
@@ -43,6 +45,7 @@
   (partial "cms/widget" (dict "var" `customs_widget` "name" `widget` "widget" `select` "options" `~options_widgets`))
   (partial "cms/widget" (dict "var" `customs_def`    "name" `def`                                                  ))
   (partial "cms/widget" (dict "var" `customs_multi`  "name" `multi`  "widget" `bool`                               ))
+  (partial "cms/widget" (dict "var" `customs_i18n`   "name" `i18n`   "widget" `select` "options" `~options_i18n`   ))
   (partial "cms/widget" (dict
     "var"    `customs_options`
     "name"   `options`

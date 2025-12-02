@@ -196,8 +196,7 @@
   {{ $poster := slice (resources.Get "u/default-poster.svg") }}
   {{ $kept   := $svgs | complement $brands $divs $poster }}
   {{ range $kept }}
-    {{ $img := .RelPermalink | replaceRE `^/u/` "" }}
-    {{ $imgs = $imgs | append $img }}
+    {{ $imgs = $imgs | append .Name }}
   {{ end }}
 
   {{/*  Get brands  */}}
@@ -208,7 +207,7 @@
 
   {{/*  Get divs  */}}
   {{ range $divs }}
-    {{ $icon := .RelPermalink | replaceRE `^/u/dividers/|\.svg$` "" }}
+    {{ $icon := .Name | replaceRE `^/u/dividers/|\.svg$` "" }}
     {{ $icon  = print "div:" $icon }}
     {{ $icons = $icons | append $icon }}
   {{ end }}
@@ -242,7 +241,7 @@
     {{ with $img | findRESubmatch `[#&?]poster=([^#&]+)` }}
       {{ $img = index . 0 1 }}
     {{ end }}
-    {{ $icon := $img | replaceRE `^/|^/?u/|^/?icons?/|\.svg$` "" | replaceRE `^(brand)s/` `$1-` }}
+    {{ $icon := $img | replaceRE `^/?u/|^/?icons?/|\.svg$` "" | replaceRE `^(brand)s/` `$1-` }}
     {{ $icon  = print "svg:" $icon }}
     {{ $icons = $icons | append $icon }}
   {{ end }}

@@ -78,6 +78,7 @@
       "currency"      $config.currency
       "main_org"      $config.main_org
       "html"          $config.html
+      "llms"          $config.llms
     }}
     {{ $config_mix := merge $config . .config (dict "config" nil) }}
 
@@ -227,6 +228,10 @@
                 "title"   .seo.title
                 "desc"    $desc
                 "noindex" $ni_parent
+              )
+              "llms"     (dict
+                "title"   .llms.title
+                "desc"    .llms.desc
               )
             )
             "target" (dict

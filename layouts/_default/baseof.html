@@ -1,7 +1,7 @@
 {{- block "none" . }}{{ end -}}
 {{- partial "func/once-stores" "init" -}}
 <!DOCTYPE html>
-<html lang="{{ .Params.locale | default .Lang }}" class="preload">
+<html lang="{{ .Params.locale | default .Lang }}" data-base-lang="{{ .Lang }}" class="preload">
 
   {{- /*  TPL  */ -}}
   {{- $tpl := partial "func/tpl-sections" . -}}

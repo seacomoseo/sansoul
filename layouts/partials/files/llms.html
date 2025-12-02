@@ -54,7 +54,6 @@
 {{ define "partials/llms-site-desc" -}}
   {{ or
     site.Params.llms.desc
-    site.Params.seo.desc
     site.Home.Params.llms.desc
     site.Home.Params.seo.desc
     site.Home.Params.sum
@@ -88,6 +87,7 @@
     | plainify
     | replaceRE "\n" " "
     | replaceRE `::.+?::` ""
+    | safeHTML
   -}}
 {{ end -}}
 
@@ -98,7 +98,7 @@
 > {{ partial "llms-site-desc" . -}}
 
 {{ range site.Sections -}}
-{{ $pages := partial "llms-pages" . }}
+{{ $pages := partial "llms-pages" . -}}
 {{ if $pages }}
 
 

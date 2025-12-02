@@ -1,7 +1,7 @@
 // Load iframe player when hover mouse
 import { loadScript } from './load-script'
 import params from './params'
-const { i18nVideo, lang } = params
+const { vid, lang } = params
 
 const players = {}
 
@@ -32,7 +32,7 @@ export function initIframePlayer () {
         const attrsLang = lang === 'es' ? '' : `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
         const iframe = document.createElement('iframe')
         iframe.className = className
-        iframe.title = i18nVideo
+        iframe.title = vid
         iframe.width = 560
         iframe.height = 320
         iframe.allowFullscreen = true
