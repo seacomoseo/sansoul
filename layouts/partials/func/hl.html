@@ -1,7 +1,7 @@
 {{ $hn := .hn }}
 {{ if not .hn }}
   {{ if .is_title }}
-    {{ if and .url (not .main) }}
+    {{ if and .url (not .zero) }}
       {{ $hn = "p" }}
     {{ else }}
       {{ $hn = print "h" .level }}

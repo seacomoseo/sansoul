@@ -10,11 +10,11 @@
 {{ end }}
 
 {{/*  Key (lightbox need it)  */}}
-{{ $key_class  := print "section--" .key }}
+{{ $key_class  := print "section--" .section_key }}
 {{ if .body_class }}
   {{ $key_class = "" }}
 {{ else if .is_modal }}
-  {{ $key_class = print "modal--" .key "-" (add .k 1) }}
+  {{ $key_class = print "modal--" .section_key "-" (add .modal_key 1) }}
 {{ end }}
 
 {{/*  Full  */}}

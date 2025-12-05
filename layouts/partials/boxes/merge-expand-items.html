@@ -1,0 +1,107 @@
+{{ $items := slice }}
+{{ $duo   := partial "func/duo" . }}
+{{ $box   := $duo.box }}
+{{ $boxes := $duo.boxes }}
+
+{{/*  COLUMNS  */}}
+{{ $columns := partial "func/columns" (dict
+  "each"   $box
+  "items"  $boxes
+  "col_vl" .col_vl
+  "col_vs" .col_vs
+) }}
+
+{{/* LEVEL  */}}
+{{ $level := .level }}
+{{ if or .title .hanchor }}
+  {{ $hm     := dict "h1" 1 "h2" 2 "h3" 3 "h4" 4 "h5" 5 "h6" 6 "def" 0 }}
+  {{ $hn     := index $hm (or .hn     "def") }}
+  {{ $box_hn := index $hm (or $box.hn "def") }}
+  {{ $level   = add (or $hn $box_hn $level | int) 1 }}
+{{ end }}
+
+{{/*  WRAP  */}}
+{{ $boxes_wrap := false }}
+{{ $wrap       := dict "boxes_wrap" false }}
+{{ $deep       := .deep }}
+
+{{ with $box }}
+  {{ $boxes_wrap = or
+    (and (ne .cols    nil) (ne .cols    1))
+    (and (ne .cols_vs nil) (ne .cols_vs 1))
+    .gap
+    .gap_vs
+    .gap_ny
+    .to
+    .group_radius
+    .slider
+    .align_y
+    .align_x
+  }}
+  {{ if $boxes_wrap }}
+    {{ $deep = add (int $deep) 1 }}
+    {{ $wrap = dict
+      "columns"    $columns
+      "boxes_wrap" true
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  PARENT  */}}
+{{ $parent := dict }}
+{{ $zero   := not $deep }}
+{{/*  if deep >= 1  */}}
+{{ if and (gt $deep 1) (not .list_pages) }}
+  {{ with $ }}
+    {{/*  inherit these parameters  */}}
+    {{ $parent = dict
+      "caps"        .caps
+      "line"        .line
+      "icon_pos"    .icon_pos
+      "icon_size"   .icon_size
+      "icon_color"  .icon_color
+      "ratio"       .ratio
+      "contain"     .contain
+      "border"      .border
+      "inset"       .inset
+      "gray"        .gray
+      "hide_shadow" .hide_shadow
+      "hide_radius" .hide_radius
+    }}
+  {{ end }}
+{{ end }}
+
+{{/*  EXPAND  */}}
+{{ $expand := dict
+  "level"      $level
+  "deep"       $deep
+  "zero"       $zero
+  "bgcp"       .bgcp
+  "container"  .container
+  "section"    .section
+  "is_header"  .is_header
+  "is_footer"  .is_footer
+  "cols"       $columns.vl
+  "cols_vs"    $columns.vs
+  "col_vl"     $columns.fit_vl
+  "col_vs"     $columns.fit_vs
+  "boxes_wrap" $boxes_wrap
+}}
+
+{{/*  hide string params  */}}
+{{ $box_hide := partial "func/hide" (dict "item" $box "simple" true) }}
+
+{{/*  BOXES  */}}
+{{ range $key, $this := $boxes }}
+  {{ $key  := dict "key" $key }}
+  {{ $item := merge $parent $box $this $expand $box_hide $key }}
+  {{ with partial "boxes/merge-expand-item" $item }}
+    {{ $items = $items | append . }}
+  {{ end }}
+{{ end }}
+
+{{/*  MERGE  */}}
+{{ $items = dict "boxes" $items "box" $box }}
+{{ $items = merge . $items $wrap }}
+
+{{ return $items }}

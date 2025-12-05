@@ -50,7 +50,7 @@
   {{ $div_can  := or .ph $is_bg }}
 
   {{/*  Attributes  */}}
-  {{ $section_params := dict
+  {{ $section_merge := dict
     "level"     $level
     "node"      $node
     "container" $container
@@ -59,23 +59,97 @@
     "color"     (cond .is_modal "black" $color)
     "div_can"   $div_can
   }}
-  {{ $box_params := dict }}
+  {{ $section := merge . $section_merge }}
   {{ if .is_modal }}
-    {{ $box_params = dict
-      "box_node"        .node
-      "box_bi"          $bi
-      "box_alpha"       .alpha
-      "box_scroll"      .scroll
-      "box_color"       $color
-      "box_color_alpha" .color_alpha
-      "box_fade"        $fade
-      "box_fade_to"     .fade_to
+    {{ $modal_nil := dict
+      "id"         nil
+      "pt"         nil
+      "pb"         nil
+      "ph"         nil
+      "size"       nil
+      "if"         nil
+      "node"       nil
+      "menu_label" nil
+      "menu_btn"   nil
+      "menu_swap"  nil
     }}
+    {{ $box_by_modal := merge . $modal_nil }}
+    {{ $box_by_modal  = partial "func/obj-no-nil" $box_by_modal }}
+    {{ with $section }}
+      {{ $section       = dict
+        "level"       .level
+        "container"   .container
+        "is_bg"       .is_bg
+        "bgcp"        .bgcp
+        "color"       .color
+        "div_can"     .div_can
+        "section_key" .section_key
+        "modal_key"   .modal_key
+        "is_modal"    .is_modal
+        "id"          .id
+        "ph"          .ph
+        "size"        .size
+        "if"          .if
+        "node"        .node
+        "menu_label"  .menu_label
+        "menu_btn"    .menu_btn
+        "menu_swap"   .menu_swap
+        "boxes"       (slice $box_by_modal)
+      }}
+    {{ end }}
+    {{ $section = partial "func/obj-no-nil" $section }}
   {{ end }}
-  {{ $section := merge . $section_params $box_params }}
 
   {{/*  Hide string params  */}}
   {{ $section = partial "func/hide" (dict "item" $section) }}
+
+  {{/*  Children  */}}
+  {{ if $section.boxes }}
+    {{ $boxes_nil := dict
+      "id"          nil
+      "bi"          nil
+      "alpha"       nil
+      "scroll"      nil
+      "color"       nil
+      "color_alpha" nil
+      "fade"        nil
+      "fade_to"     nil
+      "pt"          nil
+      "pb"          nil
+      "ph"          nil
+      "size"        nil
+      "full"        nil
+      "div"         nil
+      "div_x"       nil
+      "div_y"       nil
+      "if"          nil
+      "node"        nil
+      "get"         nil
+      "menu_label"  nil
+      "menu_btn"    nil
+      "menu_swap"   nil
+      "modal"       nil
+      "modals"      nil
+      "is_bg"       nil
+      "div_can"     nil
+    }}
+    {{ $boxes_merge := dict
+      "col_vl"     1.00
+      "col_vs"     1.00
+      "key"        0
+      "deep"       0
+      "zero"       true
+      "root"       true
+      "boxes_wrap" false
+      "section"    $section
+      "parent"     .box
+    }}
+    {{ $boxes  := merge $section $boxes_nil $boxes_merge }}
+    {{ $boxes   = partial "func/obj-no-nil" $boxes }}
+    {{ $boxes   = partial "boxes/merge-expand-item" $boxes }}
+    {{ $boxes   = dict "children" $boxes "boxes" nil }}
+    {{ $section = merge $section $boxes }}
+  {{ end }}
 
   {{ return $section }}
 {{ end }}

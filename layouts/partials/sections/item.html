@@ -1,4 +1,4 @@
-{{- /*  Attributes  */ -}}
+{{- /*  ATTRIBUTES  */ -}}
 {{- $attr := partial "sections/attr" . -}}
 
 {{- /*  SECTION  */}}
@@ -11,36 +11,9 @@
     {{- partial "bg" $bg -}}
   {{- end -}}
 
-  {{- /*  BOX  */ -}}
-  {{- $over := dict
-    "full"        nil
-    "pt"          nil
-    "pb"          nil
-    "div"         nil
-    "div_x"       nil
-    "div_y"       nil
-    "id"          nil
-    "if"          nil
-    "col_vl"      1.00
-    "col_vs"      1.00
-    "key"         0
-    "deep"        0
-    "zero"        true
-    "main"        true
-    "boxes_wrap"  true
-    "section"     .
-    "parent"      .box
-    "node"        .box_node
-    "bi"          .box_bi
-    "alpha"       .box_alpha
-    "scroll"      .box_scroll
-    "color"       .box_color
-    "color_alpha" .box_color_alpha
-    "fade"        .box_fade
-    "fade_to"     .box_fade_to
-  -}}
-  {{- $box := merge . $over -}}
-  {{- partial "boxes/item" $box -}}
+  {{- /*  BOXES  */ -}}
+  {{- page.Store.Set "is_container" true -}}
+  {{- partial "boxes/item" .children -}}
 
   {{- /*  MODAL BUTTONS CORNER  */ -}}
   {{- if .is_modal  -}}

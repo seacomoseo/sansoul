@@ -1,4 +1,4 @@
-{{ $box  := . }}
+{{ $item := . }}
 {{ $page := .Page | default page }}
 
 {{/*  color and bgcp  */}}
@@ -18,8 +18,8 @@
 {{ $bgc   := partial "func/color-background" (dict "child" $color "parent" .bgcp) }}
 
 {{/*  fit col  */}}
-{{ $col_vl := mul .col_vl (.fit    | default 1.00) }}
-{{ $col_vs := mul .col_vs (.fit_vs | default 1.00) }}
+{{ $col_vl := mul (.col_vl | default 1.00) (.fit    | default 1.00) }}
+{{ $col_vs := mul (.col_vs | default 1.00) (.fit_vs | default 1.00) }}
 
 {{/*  bg and image  */}}
 {{ $fade := cond (eq .fade "hide") "" .fade }}
@@ -57,6 +57,39 @@
   {{ $imgs = $imgs | append $img }}
 {{ end }}
 
+{{/*  gallery  */}}
+{{ if eq .gallery.type "boxes" }}
+  {{/* If eq type boxes  */}}
+  {{ $items := slice }}
+  {{ range $imgs }}
+    {{ $anchor := .alt | default (.img | replaceRE `^(.+)\..*$` "$1" | humanize) }}
+    {{ $anchor  = dict "anchor" $anchor }}
+    {{ $item   := merge . $anchor }}
+    {{ $items   = $items | append $item }}
+  {{ end }}
+  {{ $each := dict
+    "btn"     "hide"
+    "cols"    .cols
+    "color"   .color
+    "gap"     .gap
+    "ratio"   .ratio
+    "contain" .contain
+    "gray"    .gray
+  }}
+  {{ $each    = merge $each .box }}
+  {{ $gallery = dict "box" $each "boxes" $items }}
+  {{ $gallery = merge . .gallery $gallery }}
+  {{ $gallery = partial "boxes/merge-expand-items" $gallery }}
+{{ end }}
+
+{{/*  list  */}}
+{{ $list := dict }}
+{{ if .list }}
+  {{ with partial "blocks/list" . }}
+    {{ $list = partial "boxes/merge-expand-items" . }}
+  {{ end }}
+{{ end }}
+
 {{/*  shade  */}}
 {{ $ratio := .ratio }}
 {{ with $ratio }}
@@ -82,25 +115,16 @@
   {{ end }}
 {{ end }}
 
-{{/*  boxes  */}}
-{{ $boxes := slice }}
-{{ range .boxes }}
-  {{ $opts := dict "Page" $page "item" . }}
-  {{ with partial "func/get-params-merge" $opts }}
-    {{ $boxes = $boxes | append . }}
-  {{ end }}
-{{ end }}
-
 {{/*  others  */}}
-{{ $icon_pos       := .icon_pos | default (cond .main "sub" "top") }}
-{{ $group_radius   := .group_radius | and (not .slider) }}
-{{ $line           := and .line (not (and .icon (eq $icon_pos "sub"))) }}
-{{ $show           := site.Data.config.show }}
-{{ $is_title       := or .title .hanchor .menu_label }}
-{{ $is_title_url   := and $url (eq .btn "hide") $is_title }}
-{{ $is_btn_hide    := and $url (eq .btn "hide") (not $is_title) }}
-{{ $is_btn_show    := and $url (ne .btn "hide") }}
-{{ $is_btn_url     := or $is_btn_show $is_btn_hide }}
+{{ $icon_pos     := .icon_pos | default (cond .zero "sub" "top") }}
+{{ $group_radius := .group_radius | and (not .slider) }}
+{{ $line         := and .line (not (and .icon (eq $icon_pos "sub"))) }}
+{{ $show         := site.Data.config.show }}
+{{ $is_title     := or .title .hanchor .menu_label }}
+{{ $is_title_url := and $url (eq .btn "hide") $is_title }}
+{{ $is_btn_hide  := and $url (eq .btn "hide") (not $is_title) }}
+{{ $is_btn_show  := and $url (ne .btn "hide") }}
+{{ $is_btn_url   := or $is_btn_show $is_btn_hide }}
 
 {{/*  wrap  */}}
 {{ $box_wrap := or
@@ -160,9 +184,10 @@
   "bi"           $bi
   "img"          $img
   "imgs"         $imgs
+  "gallery"      $gallery
+  "list"         $list
   "ratio"        $ratio
   "url"          $url
-  "boxes"        $boxes
   "icon_pos"     $icon_pos
   "group_radius" $group_radius
   "line"         $line
@@ -172,13 +197,54 @@
   "is_btn_url"   $is_btn_url
   "box_wrap"     $box_wrap
   "sort"         $sort
-  "prev"         nil
-  "next"         nil
   "limgs"        nil
+  "get"          nil
 }}
-{{ $box = merge . $to_merge }}
+{{ $item = merge $item $to_merge }}
 
 {{/*  hide string params  */}}
-{{ $box = partial "func/hide" (dict "item" $box) }}
+{{ $item = partial "func/hide" (dict "item" $item) }}
+{{ $item = partial "func/obj-no-nil" $item }}
 
-{{ return $box }}
+{{/*  boxes  */}}
+{{ with .boxes }}
+  {{ $boxes := slice }}
+  {{/*  get params merge  */}}
+  {{ range . }}
+    {{ $opts := dict "Page" $page "item" . }}
+    {{ with partial "func/get-params-merge" $opts }}
+      {{ $boxes = $boxes | append . }}
+    {{ end }}
+  {{ end }}
+  {{/*  expand  */}}
+  {{ $boxes = dict "boxes" $boxes }}
+  {{ $opts := merge $item $boxes }}
+  {{ $item  = partial "boxes/merge-expand-items" $opts }}
+{{ end }}
+
+{{/*  box_wrap if there is only one box in root and child not box_wrap (or many boxes)  */}}
+{{ if and .root $item.boxes }}
+  {{ if not $box_wrap }}
+    {{ $len := len (or $item.boxes slice) }}
+    {{ if eq $len 1 }}
+      {{/*  only one  */}}
+      {{ $child := index $item.boxes 0 }}
+      {{ $child_wrap := $child.box_wrap }}
+      {{ if not $child_wrap }}
+        {{ $box_wrap = true }}
+      {{ else }}
+        {{/*  merge child into parent  */}}
+        {{ $item = merge $item $child (dict "boxes" $child.boxes) }}
+      {{ end }}
+    {{ else if gt $len 1 }}
+      {{/*  any  */}}
+      {{ $box_wrap = true }}
+    {{ end }}
+    {{ if $box_wrap }}
+      {{ $merge := dict "box_wrap" true }}
+      {{ $item   = merge $item $merge }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $item }}

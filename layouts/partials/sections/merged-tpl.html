@@ -49,10 +49,10 @@
   {{ end }}
 
   {{/*  END  */}}
-  {{ $bgcp      := $.bg.color | default "light" }}
-  {{ $expand    := dict "bgcp" $bgcp "modals" $modals }}
-  {{ $section    = merge $first $alternate $section $expand }}
-  {{ $sections   = $sections | append $section }}
+  {{ $bgcp    := $.bg.color | default "light" }}
+  {{ $expand  := dict "bgcp" $bgcp "modals" $modals }}
+  {{ $section  = merge $first $alternate $section $expand }}
+  {{ $sections = $sections | append $section }}
 
 {{ end }}
 

@@ -39,8 +39,8 @@
       {{ $item  = merge $item $obj }}
     {{ end }}
   {{ end }}
-  {{/*  Remove "params" field  */}}
-  {{ $item  = merge $item (dict "params" nil) }}
+  {{/*  Remove "get" field  */}}
+  {{ $item  = merge $item (dict "get" nil) }}
 {{ end }}
 
 {{/*  Remap fields  */}}

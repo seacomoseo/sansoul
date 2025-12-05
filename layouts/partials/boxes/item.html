@@ -1,5 +1,3 @@
-{{- $box := partial "boxes/merge-expand" . -}}
-
 {{- define "partials/inbox" -}}
 
   {{- range .sort -}}
@@ -65,8 +63,9 @@
     {{- else if eq . "list" -}}
 
       {{- /*  LIST  */ -}}
-      {{- if $.list -}}
-        {{- partial "blocks/list" $ -}}
+      {{- with $.list -}}
+        {{- .pagination -}}
+        {{- partial "boxes/items" . -}}
       {{- end -}}
 
     {{- else if eq . "faq" -}}
@@ -156,47 +155,52 @@
 
 
 {{- /*  FINAL  */ -}}
-{{- with $box -}}
+{{- $box := . -}}
+{{- /*  Container flag  */ -}}
+{{- if .box_wrap -}}
+  {{- if page.Store.Get "is_container" -}}
+    {{- page.Store.Set "is_container" false -}}
+    {{- $box = merge $box (dict "is_container" true) -}}
+  {{- end -}}
+{{- end -}}
+{{- $node  := .node | default "div" -}}
+{{- $inbox := partial "inbox" . -}}
 
-  {{- $node  := .node | default "div" -}}
-  {{- $inbox := partial "inbox" . -}}
+{{- if .box_wrap -}}
 
-  {{- if .box_wrap -}}
-
-    {{- /*  Only one link (box--go)  */ -}}
-    {{- if not .zero -}}
-      {{- $is_vid := $inbox | findRE `<video |<iframe ` -}}
-      {{- if not $is_vid -}}
-        {{- $links := $inbox | findRE `<a .*?href=|<button | data-(h|b)=| data-lightbox=| type="submit"` -}}
-        {{- $ool   := eq (len $links) 1 -}}
-        {{- if $ool -}}
-          {{- $ool  = dict "only_one_link" true -}}
-          {{- $box  = merge $box $ool -}}
-        {{- end -}}
+  {{- /*  Only one link (box--go)  */ -}}
+  {{- if not $box.is_container -}}
+    {{- $is_vid := $inbox | findRE `<video |<iframe ` -}}
+    {{- if not $is_vid -}}
+      {{- $links := $inbox | findRE `<a .*?href=|data-(h|b)=| data-lightbox=| type="submit"` -}}
+      {{- $ool   := eq (len $links) 1 -}}
+      {{- if $ool -}}
+        {{- $ool = dict "only_one_link" true -}}
+        {{- $box = merge $box $ool -}}
       {{- end -}}
     {{- end -}}
-
-    {{- /*  ATTRIBUTES  */ -}}
-    {{- $box_attr  := partial "boxes/attr" $box -}}
-
-    {{- /*  WRAP  */}}
-    {{ print "<" $node $box_attr ">" | safeHTML -}}
-
-      {{- /*  BACKGROUND  */ -}}
-      {{- partial "bg" . -}}
-
   {{- end -}}
 
-  {{- /*  INBOX  */ -}}
-  {{- $inbox -}}
+  {{- /*  ATTRIBUTES  */ -}}
+  {{- $box_attr  := partial "boxes/attr" $box -}}
 
-  {{- /*  MODAL NAV  */ -}}
-  {{- if and .zero .is_modal (not .ph) }}
-    {{- partial "boxes/modal-nav" $ -}}
-  {{- end -}}
+  {{- /*  WRAP  */}}
+  {{ print "<" $node $box_attr ">" | safeHTML -}}
 
-  {{- /*  END WRAP  */ -}}
-  {{- if .box_wrap }}
-    {{ print "</" $node ">" | safeHTML -}}
-  {{- end -}}
+    {{- /*  BACKGROUND  */ -}}
+    {{- partial "bg" . -}}
+
+{{- end -}}
+
+{{- /*  INBOX  */ -}}
+{{- $inbox -}}
+
+{{- /*  MODAL NAV  */ -}}
+{{- if and .root .is_modal (not .section.ph) }}
+  {{- partial "boxes/modal-nav" $ -}}
+{{- end -}}
+
+{{- /*  END WRAP  */ -}}
+{{- if .box_wrap }}
+  {{ print "</" $node ">" | safeHTML -}}
 {{- end -}}

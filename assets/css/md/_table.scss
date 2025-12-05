@@ -11,7 +11,7 @@
 // Table
 
 table {
-  &:not(.table-sm, .container > .bg *, .boxes *) {
+  &:not(.table-sm, .container.bg *, .container > .bg *, .boxes *) {
     @include fluid-size(max-width, 1px, $vs / 1px, $container-width-max-xl / 1px);
     @include fluid-size(--margin-table-lg, 1em, 1, 2);
     margin-inline: calc(var(--container-margin-side) + var(--margin-table-lg));

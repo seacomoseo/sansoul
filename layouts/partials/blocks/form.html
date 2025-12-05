@@ -32,11 +32,11 @@
     {{- $section_name  = .form.id
       | default .id
       | default .section.title
-      | default (index .section.boxes 0 "title")
+      | default (index .section.children 0 "title")
       | default .section.menu_label
       | default .section.id
       | default .section.hanchor
-      | default (index .section.boxes 0 "hanchor")
+      | default (index .section.children 0 "hanchor")
       | default .section.name
       | default .section.file
     -}}

@@ -6,11 +6,26 @@
   {{/*  if not first  */}}
   {{ if .key }}
     {{ $prev = index .items (sub .key 1) }}
+    {{ $prev = dict
+      "id"      $prev.id
+      "div"     $prev.div
+      "div_y"   $prev.div_y
+      "div_x"   $prev.div_x
+      "div_can" $prev.div_can
+    }}
   {{ end }}
 
   {{/*  if not last  */}}
   {{ if ne (add .key 1) (len .items) }}
     {{ $next = index .items (add .key 1) }}
+    {{ $next = dict
+      "id"        $next.id
+      "div"       $next.div
+      "div_y"     $next.div_y
+      "div_x"     $next.div_x
+      "div_can"   $next.div_can
+      "is_footer" $next.is_footer
+    }}
   {{ end }}
 
   {{ return merge .item (dict "prev" $prev "next" $next) }}

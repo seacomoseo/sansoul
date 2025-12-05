@@ -16,7 +16,7 @@
     {{- $hanchor = .anchor | default "auto" -}}
   {{- else -}}
     {{- $header_level := cond .is_modal 3 2 -}}
-    {{- if and .main (le .level $header_level) -}}
+    {{- if and .zero (le .level $header_level) -}}
       {{- $url = cond .is_header page.RelPermalink (print "#" .section.id) -}}
     {{- end -}}
   {{- end -}}

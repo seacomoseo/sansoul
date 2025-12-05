@@ -16,16 +16,22 @@
   }
 }
 
-.container > .bg:not([class*="box--pd-"]) {
-  --box-pd-vs: 1;
-  --box-pd-vl: 2;
-  &.container--lg,
-  &.container--xl {
-    --box-pd-vl: 3;
+.container {
+  &.bg,
+  > .bg {
+    &:not([class*="box--pd-"]) {
+      --box-pd-vs: 1;
+      --box-pd-vl: 2;
+      &.container--lg,
+      &.container--xl {
+        --box-pd-vl: 3;
+      }
+    }
   }
 }
 
 .boxes > *,
+.container.bg,
 .container:has(> .bg) {
   --container-margin-side: calc(-1 * var(--box-pd));
 }

@@ -63,7 +63,7 @@ export function initOpenLinks () {
       } else {
         // BOX LINKS
         const boxLink = e.target.closest('.box--go')
-        if (boxLink) boxLink.querySelector('.btn, .link').click()
+        if (boxLink) boxLink.querySelector('.btn, .link, button').click()
       }
     }
   })

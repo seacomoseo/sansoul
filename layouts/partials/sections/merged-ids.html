@@ -14,9 +14,9 @@
   {{ else }}
 
     {{/*  MODALS  */}}
-    {{ range $k, $modal := .modals }}
+    {{ range $modal_key, $modal := .modals }}
       {{ $id_m   := partial "func/id-by-title" . }}
-      {{ $expand := dict "key" $key "k" $k "id" $id_m "is_modal" true }}
+      {{ $expand := dict "section_key" $key "modal_key" $modal_key "id" $id_m "is_modal" true }}
       {{ $modal   = merge $modal $expand }}
       {{ $modals  = $modals | append $modal }}
       {{/*  Set id > hanchor/title in page store for anchor links to modal  */}}
@@ -40,7 +40,7 @@
 
   {{/*  END  */}}
   {{ $is_header := eq $key "header" }}
-  {{ $expand    := dict "key" $key "id" $id "is_header" $is_header "is_modal" false "modals" $modals }}
+  {{ $expand    := dict "section_key" $key "id" $id "is_header" $is_header "is_modal" false "modals" $modals }}
   {{ $section    = merge $section $expand }}
   {{ $sections   = $sections | append $section }}
 
