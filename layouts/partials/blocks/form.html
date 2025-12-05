@@ -151,7 +151,7 @@
 {{- end -}}
 
 {{- /*  GAS Headers  */ -}}
-{{- $headers := slice (dict "name" (i18n "form_timestamp")) (dict "name" "CC") (dict "name" "URL") -}}
+{{- $headers := slice (dict "name" "Timestamp") (dict "name" "CC") (dict "name" "URL") -}}
 {{- if $googleScript -}}
   {{- range $inputs -}}
     {{- $is_input := in $slices.keys .type -}}
@@ -228,7 +228,7 @@
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
-    <input type="hidden" name="{{ i18n `form_timestamp` }}" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
+    <input type="hidden" name="Timestamp" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
   {{- else if $formsubmit_co -}}
     {{- with $mail }}
       <input type="hidden" name="CC" value="{{ . | base64Encode }}">
