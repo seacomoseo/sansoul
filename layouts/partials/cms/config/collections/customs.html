@@ -3,7 +3,6 @@
 {{ $label   := .label | default .name }}
 {{ $hint    := .hint }}
 {{ $widget  := .widget | default (cond (not .var) "str" nil) }}
-{{ $options := .options }}
 
 {{ $def := .def }}
 {{ if ne .def nil }}
@@ -33,7 +32,7 @@
   "label"    $label
   "hint"     $hint
   "widget"   $widget
-  "options"  $options
+  "options"  .opts
   "def"      $def
   "multiple" .multi
   "i18n"     .i18n

@@ -14,7 +14,7 @@
   `~customs_label`
   `~customs_hint_`
   `~customs_widget`
-  `~customs_options`
+  `~customs_opts`
   `~customs_multi`
   `~customs_i18n`
 }}
@@ -24,7 +24,7 @@
   `~customs_label`
   `~customs_hint_`
   `~customs_widget_last`
-  `~customs_options`
+  `~customs_opts`
   `~customs_multi`
   `~customs_i18n`
 }}
@@ -47,12 +47,12 @@
   (partial "cms/widget" (dict "var" `customs_multi`  "name" `multi`  "widget" `bool`                               ))
   (partial "cms/widget" (dict "var" `customs_i18n`   "name" `i18n`   "widget" `select` "options" `~options_i18n`   ))
   (partial "cms/widget" (dict
-    "var"    `customs_options`
-    "name"   `options`
+    "var"    `customs_opts`
+    "name"   `opts`
     "widget" `slice`
     "fields" (slice
-      (partial "cms/widget" (dict "alt" `customs_options_label` "name" `label`))
-      (partial "cms/widget" (dict "alt" `customs_options_value` "name" `value`))
+      (partial "cms/widget" (dict "alt" `customs_opts_label` "name" `label`))
+      (partial "cms/widget" (dict "alt" `customs_opts_value` "name" `value`))
     )
   ))
 
