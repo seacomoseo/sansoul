@@ -16,11 +16,13 @@
   {{ $permalinks    := "{{fields.slug}}" }}
   {{ with .Params.cms.permalinks }} 
     {{ $permalinks   = replace . ":slug" "{{fields.slug}}" }}
-    {{ if in . ":" }}
+    {{ if in $permalinks ":" }}
       {{ $permalinks = $permalinks | replaceRE `:(year|month|day)` "{{$1}}" }}
     {{ end }}
   {{ end }}
-  {{ $permalinks     = print $permalinks "/" }}
+  {{ $base          := urls.Parse site.BaseURL }}
+  {{ $base           = $base.Path }}
+  {{ $permalinks     = print $base $permalinks "/" }}
 
   {{/*  Summary  */}}
   {{ $sum  := "{{title}}" }}

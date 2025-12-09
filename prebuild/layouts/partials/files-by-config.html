@@ -133,21 +133,14 @@
         {{ end }}
 
         {{/*  permalinks  */}}
-        {{ $permalinks      := "" }}
+        {{ $permalinks  := "" }}
         {{ with $type.permalinks }}
-          {{ if ne . "/" }}
-            {{ $permalinks   = print . "/:slug" }}
-          {{ end }}
-        {{ else }}
-          {{ if eq $type.permalinks nil }}
-            {{ with index $t (print "types_def_" $name "_permalinks") }}
-              {{ $permalinks = print . "/:slug" }}
-            {{ end }}
-          {{ end }}
+          {{ $permalinks = . }}
+        {{ else with index $t (print "types_def_" $name "_permalinks") }}
+          {{ $permalinks = . }}
         {{ end }}
-        {{ if not $permalinks }}
-          {{ $permalinks     = ":slug" }}
-        {{ end }}
+        {{ $permalinks = print $permalinks "/:slug" }}
+        {{ $permalinks   = $permalinks | replaceRE `^/+` "" }}
 
         {{/*  cms  */}}
         {{ $lang_cms := index site.Data.config "cms" "lang" | default "es" }}
