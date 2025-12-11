@@ -3,7 +3,7 @@
 [![sansoul](/uploads/base/icon.png)](https://github.com/seacomoseo/sansoul)
 
 
-## Scripts para actualizar proyectos nuevos
+## Scripts para actualizar proyectos a v3
 - `node ../_tools/updater/migrations-v2/modals.js`
 - `node ../_tools/updater/migrations-v2/sections.js`
 - `node ../_tools/updater/migrations-v2/langs.js`
@@ -14,10 +14,7 @@
 - `../_tools/updater/migrations-v2/cms.sh`
 - `../_tools/updater/migrations-v2/v3.sh`
 
-## Comprobar cambios en `example.yml`
-## Script para actualizar proyectos antiguos
 ### CAMBIOS Y COMPROBACIONES MANUALES
-
 - `: ''`
 - `*.yml`
   - `placeholder` > `label`
@@ -69,6 +66,7 @@
       - `tags`
       - `reading_time`
       - `hide_categories`
+    - `weight: (.+)`
 - `data/types/*.yml|content/single/*.${lang}.md`
   - `header_article` > `menu.logo` and `menu.logo_sticky: false` with background section and container options
   - `menu.items.more` > `menu.items + { label: Más, icon: plus, items: $1 }`
@@ -90,23 +88,6 @@
 - [ ] `search.html`
 - [ ] Check Google Translate ofuscate links and la propia traducción
 - [ ] ¿Remove `cols` and `cols_vs`? > Only `fit` and `fit_vs`?
-- cms
-  - condition for show or hide widgets: https://www.staticcms.org/docs/widgets#example
-  - listas plegadas cambian el nombre de la etiqueta por el de su hijo cuando solo hay uno
-  - editorial workflow previews get status deploy and links
-    - https://api.netlify.com/api/v1/badges/30021f24-3d47-42ac-8b61-fe843fed3414/deploy-status?branch=deploy-preview-4
-    - https://api.netlify.com/api/v1/badges/30021f24-3d47-42ac-8b61-fe843fed3414/deploy-status?branch=cms/sections-es/contacto
-    - https://decapcms.org/docs/deploy-preview-links/
-    - https://decapcms.org/docs/configuration-options/#preview_path_date_field
-    - https://deploy-preview-966.staticcms.org/docs/cms-events
-  - remove nulls
-  - widget
-    - color none
-    - list
-      - collapse only items, not all list
-    - image/file external url
-      - try custom widget with fusion
-- button in shpreadsheet (and CMS?) to build
 
 
 ## New language

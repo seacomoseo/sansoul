@@ -17,9 +17,9 @@ tpl:
     scroll: null # [ none, fix, soft ]
   menu:
     hide: n
-    logo: n
     sticky: null # [ auto, xs, sm, md, lg, xl, none ]
-    logo_sticky: false # color and fade is only active with this and when screen < sticky
+    logo: n
+    logo_sticky: n # color and fade is only active with this and when screen < sticky
     logo_align: null # [ left, center, right ]
     size: null # [ xs, sm, md, lg, xl, fluid ]
     clear: y
@@ -28,7 +28,7 @@ tpl:
     fade_to: null # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
     hide_icons: n
     hide_custom: n
-    auto: null # [ this, this-modals, home, home-modals, none ]
+    auto: null # [ same, same-modals, home, home-modals, none ]
   callnow: null # [ custom, auto, hide ]
   section: []
   modal: {}

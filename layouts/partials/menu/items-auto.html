@@ -9,9 +9,9 @@
     "url"    (print $home "#" .id)
     "btn"    .menu_btn
     "swap"   .menu_swap
-    "icon"   (or .icon (index .boxes 0 "icon"))
-    "label"  (or .menu_label .title (index .boxes 0 "title"))
-    "anchor" (or .anchor (index .boxes 0 "anchor"))
+    "icon"   (or .children.icon (index .children "boxes" 0 "icon"))
+    "label"  (or .menu_label .children.title (index .children "boxes" 0 "title"))
+    "anchor" (or .children.hanchor (index .children "boxes" 0 "hanchor"))
   ) }}
 {{ end }}
 
@@ -34,32 +34,34 @@
   {{ with $sections }}
     {{ with where . "menu_btn" "ne" "hide" }}
       {{ range . }}
-        {{ if or
-          .menu_label
-          .hanchor
-          .title
-          (and .icon .id)
-          (index .boxes 0 "hanchor")
-          (index .boxes 0 "title")
-          (and (index .boxes 0 "icon") .id)
-        }}
+        {{ if ne .id "header" }}
+          {{ if or
+            .menu_label
+            .children.hanchor
+            .children.title
+            (and .children "icon" .id)
+            (index .children "boxes" 0 "hanchor")
+            (index .children "boxes" 0 "title")
+            (and (index .children "boxes" 0 "icon") .id)
+          }}
 
-          {{ $item := partial "menu/item-by-section" (merge . (dict "menu_auto" $.menu.auto)) }}
+            {{ $item := partial "menu/item-by-section" (merge . (dict "menu_auto" $.menu.auto)) }}
 
-          {{/*  MODALS TO SUBITEMS  */}}
-          {{ if hasSuffix $.menu.auto "modals" }}
-            {{ $subitems := slice }}
-            {{ with .modals }}
-              {{ range . }}
-                {{ $child   := partial "menu/item-by-section" (merge . (dict "menu_auto" $.menu.auto)) }}
-                {{ $subitems = $subitems | append $child }}
+            {{/*  MODALS TO SUBITEMS  */}}
+            {{ if hasSuffix $.menu.auto "modals" }}
+              {{ $subitems := slice }}
+              {{ with .modals }}
+                {{ range . }}
+                  {{ $child   := partial "menu/item-by-section" (merge . (dict "menu_auto" $.menu.auto)) }}
+                  {{ $subitems = $subitems | append $child }}
+                {{ end }}
               {{ end }}
+              {{ $item = (merge $item (dict "items" $subitems)) }}
             {{ end }}
-            {{ $item = (merge $item (dict "items" $subitems)) }}
+
+            {{ $items = $items | append $item }}
+
           {{ end }}
-
-          {{ $items = $items | append $item }}
-
         {{ end }}
       {{ end }}
     {{ end }}
