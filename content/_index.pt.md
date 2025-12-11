@@ -1,6 +1,6 @@
 ---
 slug: /
-title: Accueil
+title: Início
 icon: ''
 base: page
 weight: 1

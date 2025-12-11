@@ -1,6 +1,6 @@
 ---
+slug: /
 title: Startseite
-slug: startseite
 icon: ''
 base: page
 weight: 1

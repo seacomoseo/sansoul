@@ -1,5 +1,5 @@
 ---
-slug: inicio
+slug: /
 title: Inicio
 base: org
 weight: 1

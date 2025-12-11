@@ -11,7 +11,7 @@
   {{ $names_more := after 1 $names }}
 
   {{/*  Description  */}}
-  {{ $desc := or .desc .seo.desc .sum $.Summary | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" }}
+  {{ $desc := or .desc .seo.desc .sum $.Summary | plainify | replaceRE `::.+?::` "" }}
 
   {{/*  URL  */}}
   {{ $url  := .url | default $.Page.Permalink }}

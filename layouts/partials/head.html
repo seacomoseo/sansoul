@@ -17,7 +17,7 @@
   | default .Summary
   | truncate 155
   | plainify
-  | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""
+  | replaceRE `::.+?::` ""
 -}}
 {{- $img_og       := partial "func/img-og" . -}}
 {{- $img          := $img_og.img -}}

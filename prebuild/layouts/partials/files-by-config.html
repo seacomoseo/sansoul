@@ -176,7 +176,7 @@
           "slug"       (index $t (print "types_def_" $name "_slug"       ))
           "singular"   (index $t (print "types_def_" $name "_singular"   ))
           "title"      (index $t (print "types_def_" $name "_title"      ))
-          "desc"       (index $t (print "types_def_" $name "_desc"       ))
+          "sum"        (index $t (print "types_def_" $name "_sum"        ))
         }}
         {{ $cms = dict
           "title"      (or $cms.title    $cms.singular $cms_defs.title    $type.title $name)
@@ -192,7 +192,7 @@
         {{ with $type }}
           {{ $title       = or .lang_title  $default_values.title    .title .singular  $name }}
           {{ $singular   := or .singular    $default_values.singular .title $cms.title $name }}
-          {{ $desc       := or .seo.desc    $default_values.desc     ""                      }}
+          {{ $sum        := or .sum         $default_values.sum      ""                      }}
           {{ $slug        = or .slug        $default_values.slug     $title                  }}
           {{ $icon       := or .icon        (index $c.icons  $name)  "file"                  }}
           {{ $emoji      := or .emoji       (index $c.emojis $name)  "📄"                    }}
@@ -210,6 +210,7 @@
               "slug"     $slug
               "singular" $singular
               "title"    $title
+              "sum"      $sum
               "icon"     $icon
               "emoji"    $emoji
               "img"      .img
@@ -219,7 +220,7 @@
               "customs"  $customs
               "seo"      (dict
                 "title"   .seo.title
-                "desc"    $desc
+                "desc"    .seo.desc
                 "noindex" $ni_parent
               )
               "llms"     (dict

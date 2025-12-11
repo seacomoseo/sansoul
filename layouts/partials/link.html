@@ -270,10 +270,10 @@
     {{- if $btn -}}
       {{- /*  if is a button, need one more child for prevent :before back problem  */ -}}
       {{- $label    = print "<b>" $label "</b>" | safeHTML -}}
-      {{- $sub_more = .label | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" -}}
+      {{- $sub_more = .label | plainify | replaceRE `::.+?::` "" -}}
     {{- else -}}
       {{- /*  else data-more in wrap  */ -}}
-      {{- $more_data = .label | plainify | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` "" -}}
+      {{- $more_data = .label | plainify | replaceRE `::.+?::` "" -}}
     {{- end -}}
     {{- $sub_tag = true -}}
   {{- else if $btn -}}

@@ -3,6 +3,6 @@
   | default .Params.seo.desc
   | truncate 155
   | plainify
-  | replaceRE `::|:([\w-]|[^\d:]{2}|[\w-]{3,}?):\s?` ""
+  | replaceRE `::.+?::` ""
 }}
 {{ return $sum }}

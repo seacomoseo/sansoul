@@ -12,17 +12,17 @@
     {{ $slug = "{{year}}-{{month}}-{{day}}-{{fields.slug}}" }}
   {{ end }}
 
-  {{/*  Permalinks  */}}
-  {{ $permalinks    := "{{fields.slug}}" }}
+  {{/*  Preview path  */}}
+  {{ $preview    := "{{fields.slug}}" }}
   {{ with .Params.cms.permalinks }} 
-    {{ $permalinks   = replace . ":slug" "{{fields.slug}}" }}
-    {{ if in $permalinks ":" }}
-      {{ $permalinks = $permalinks | replaceRE `:(year|month|day)` "{{$1}}" }}
+    {{ $preview   = replace . ":slug" "{{fields.slug}}" }}
+    {{ if in $preview ":" }}
+      {{ $preview = $preview | replaceRE `:(year|month|day)` "{{$1}}" }}
     {{ end }}
   {{ end }}
-  {{ $base          := urls.Parse site.BaseURL }}
-  {{ $base           = $base.Path }}
-  {{ $permalinks     = print $base $permalinks "/" }}
+  {{ $base       := urls.Parse site.BaseURL }}
+  {{ $base        = $base.Path }}
+  {{ $preview     = print $base $preview "/" }}
 
   {{/*  Summary  */}}
   {{ $sum  := "{{title}}" }}
@@ -208,12 +208,13 @@
   {{ $index_slug_hint       := print $.index_slug_hint       " <br> **" $.def " →** " .Params.cms.defaults.slug       }}
   {{ $index_singular_hint   := print                               "**" $.def " →** " .Params.cms.defaults.singular   }}
   {{ $index_title_hint      := print                               "**" $.def " →** " .Params.cms.defaults.title      }}
-  {{ $index_desc_hint       := print $.page_desc_hint        " <br> **" $.def " →** " .Params.cms.defaults.desc       }}
-  {{ $index_permalinks      := partial "cms/widget" (dict "name" `permalinks` "label" $.index_permalinks "hint" $index_permalinks_hint            ) }}
-  {{ $index_slug            := partial "cms/widget" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "req" false) }}
-  {{ $index_singular        := partial "cms/widget" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint              ) }}
-  {{ $index_title           := partial "cms/widget" (dict "<<" `page_title`                              "hint" $index_title_hint                 ) }}
-  {{ $index_desc            := partial "cms/widget" (dict "<<" `page_desc`                               "hint" $index_desc_hint                  ) }}
+  {{ $index_sum_hint        := print $.page_sum_hint         " <br> **" $.def " →** " .Params.cms.defaults.sum        }}
+  {{ $index_permalinks      := partial "cms/widget" (dict "name" `permalinks` "label" $.index_permalinks "hint" $index_permalinks_hint                 ) }}
+  {{ $index_slug            := partial "cms/widget" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "required" false) }}
+  {{ $index_singular        := partial "cms/widget" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint                   ) }}
+  {{ $index_title           := partial "cms/widget" (dict "<<" `page_title`                              "hint" $index_title_hint                      ) }}
+  {{ $index_sum             := partial "cms/widget" (dict "<<" `page_sum`                                "hint" $index_sum_hint                        ) }}
+  {{ $index_preview         := print $base "{{fields.slug | default('" .Params.cms.defaults.slug "')}}/" }}
 
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
@@ -227,7 +228,7 @@
     "create"           true
     "i18n"             true
     "slug"             $slug
-    "preview_path"     $permalinks
+    "preview_path"     $preview
     "summary"          $sum
     "thumbnail"        (slice `img` `vid` `bi`)
     "editor"           (dict "preview" false)
@@ -241,7 +242,7 @@
       "icon"             `lan`
       "create"           true
       "i18n"             true
-      "preview_path"     $permalinks
+      "preview_path"     $index_preview
       "thumbnail"        (slice `img` `vid` `bi`)
       "editor"           (dict "preview" false)
       "fields"           (slice
@@ -252,7 +253,7 @@
         `~page_img`
         `~page_body`
         `~page_toc`
-        `~page_sum`
+        $index_sum
         `~page_seo`
         `~page_llms`
       )

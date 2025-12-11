@@ -1,7 +1,8 @@
 {{/*  id by title, but remove custom id en markdown  */}}
 {{ $id1 := .title
+  | plainify
   | replaceRE `\.|_|/|\\` "-"
-  | replaceRE `(:([\w-]|[^\d:]{2}|[\w-]{3,}?):|::.*?::)\s?|<.+?>` ""
+  | replaceRE `::.*?::\s?` ""
   | urlize
 }}
 
