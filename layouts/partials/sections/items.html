@@ -1,5 +1,5 @@
 {{/*  Push tpl and pull merged and expanded sections */}}
 {{ $sections := partial "sections/merged-tpl"       .         }}
-{{ $sections  = partial "sections/merged-prev-next" $sections }}
 {{ $sections  = partial "sections/merged-expand"    $sections }}
+{{ $sections  = partial "sections/merged-prev-next" $sections }}
 {{ return $sections }}
