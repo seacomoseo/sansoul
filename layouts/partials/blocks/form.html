@@ -158,8 +158,11 @@
     {{- $isnt_    := not (hasPrefix (or .name .label) "_") -}}
     {{- if and $is_input $isnt_ -}}
       {{- if eq .type "checks" -}}
+        {{- $legend := or .label .name }}
         {{- range .items -}}
-          {{- $headers = $headers | append (dict "name" (or .key .label)) -}}
+          {{- $key    := or .key .label -}}
+          {{- $name   := or .key (print $legend " ➡️ " $key) -}}
+          {{- $headers = $headers | append (dict "name" $name) -}}
         {{- end -}}
       {{- else -}}
         {{- $header := (dict "name" (or .name .label)) -}}
