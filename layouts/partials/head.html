@@ -171,26 +171,31 @@
 {{- end -}}
 
 {{- with $favicon -}}
+  {{- $base     := urls.Parse site.BaseURL -}}
+  {{- $base      = print $base.Path "favicon." -}}
+  {{- $fav_ico  := print $base "ico" -}}
+  {{- $fav_svg  := print $base "svg" -}}
+  {{- $fav_png  := print $base "png" -}}
   {{- $favicons := slice -}}
   {{- with resources.Get "/u/base/favicon.ico" -}}
-    {{- (. | resources.Copy "/favicon.ico").Publish -}}
+    {{- (. | resources.Copy $fav_ico).Publish -}}
   {{- else -}}
     {{- $favicons = slice (dict "from" .RelPermalink "ext" "ico") -}}
   {{- end }}
-  <link rel="icon" sizes="any" href="/favicon.ico">
+  <link rel="icon" sizes="any" href="{{ $fav_ico }}">
 
   {{- if hasSuffix . "svg" -}}
-    {{- (. | resources.Copy "/favicon.svg").Publish }}
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    {{- (. | resources.Copy $fav_svg).Publish }}
+    <link rel="icon" type="image/svg+xml" href="{{ $fav_svg }}">
     {{- with resources.Get "/u/base/icon.png" -}}
-      {{- (.Resize "192x192 png q1" | resources.Copy "/favicon.png").Publish -}}
+      {{- (.Resize "192x192 png q1" | resources.Copy $fav_png).Publish -}}
     {{- else -}}
       {{- $favicons = $favicons | append (dict "from" .RelPermalink "ext" "png") -}}
     {{- end -}}
   {{- else -}}
-    {{- (.Resize "192x192 png q1" | resources.Copy "/favicon.png").Publish -}}
+    {{- (.Resize "192x192 png q1" | resources.Copy $fav_png).Publish -}}
   {{- end }}
-  <link rel="icon apple-touch-icon" type="image/png" sizes="192x192" href="/favicon.png">
+  <link rel="icon apple-touch-icon" type="image/png" sizes="192x192" href="{{ $fav_png }}">
 
   {{- with $favicons -}}
     {{- (resources.FromString "favicons.json" (. | jsonify)).Publish -}}
