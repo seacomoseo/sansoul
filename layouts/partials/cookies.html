@@ -1,77 +1,50 @@
 {{- with site.GetPage "page/cookies" -}}
 
   {{- /*  VARS  */ -}}
-  {{- $color    := $.menu.color | default "white" -}}
-  {{- $bgc      := partial "func/color-background" (dict "child" $color "parent" $.bg.color) -}}
-  {{- $color     = $bgc.child -}}
-  {{- $class    := print "cookies bg bg-" $color " md" -}}
-  {{- $icon     := partial "icon" (dict "def" "cookies") -}}
-  {{- $advanced := site.Data.config.cookies_advanced -}}
+  {{- $color := $.menu.color | default "white" -}}
+  {{- $bgc   := partial "func/color-background" (dict "child" $color "parent" $.bg.color) -}}
+  {{- $color  = $bgc.child -}}
+  {{- $class := print "cookies bg bg-" $color " md" -}}
+  {{- $icon  := partial "icon" (dict "def" "cookies") -}}
 
   {{- /*  KTML  */}}
   <aside class="{{ $class }}">
     <div class="bg-color"></div>
-    {{- if $advanced }}
-      <div class="cookies__messaje">
-        {{- $icon -}}
-        {{- i18n "cookies_message" | markdownify -}}
-      </div>
-      <div class="cookies__btns">
-        {{ partial "link" (dict
-          "btn"   "such"
-          "sm"    true
-          "swap"  true
-          "label" (i18n "cookies_read_more")
-          "url"   .RelPermalink
-          "lock"  true
-          "blank" true
-        ) }}
-        {{ partial "link" (dict
-          "btn"     "turn"
-          "sm"      true
-          "swap"    true
-          "label"   (i18n "cookies_config")
-          "cookies" $color
-        ) }}
-        {{ partial "link" (dict
-          "class" "cookies__btn cookies__btn--reject"
-          "btn"   "cta"
-          "sm"    true
-          "label" (i18n "cookies_reject")
-          "lock"  true
-        ) }}
-        {{ partial "link" (dict
-          "class" "cookies__btn cookies__btn--all"
-          "btn"   "cta"
-          "sm"    true
-          "label" (i18n "cookies_accept")
-          "lock"  true
-        ) }}
-      </div>
-    {{- else }}
-      {{ $icon }}
+    <div class="cookies__messaje">
+      {{- $icon -}}
+      {{- i18n "cookies_message" | markdownify -}}
+    </div>
+    <div class="cookies__btns">
       {{ partial "link" (dict
-        "label" (i18n "cookies_question")
+        "btn"   "such"
+        "sm"    true
+        "swap"  true
+        "label" (i18n "cookies_read_more")
         "url"   .RelPermalink
         "lock"  true
         "blank" true
       ) }}
-      <div class="cookies__btns">
-        {{ partial "link" (dict
-          "class" "cookies__btn cookies__btn--reject"
-          "btn"   "cta"
-          "sm"    true
-          "label" (i18n "cookies_no")
-          "lock"  true
-        ) }}
-        {{ partial "link" (dict
-          "class" "cookies__btn cookies__btn--all"
-          "btn"   "cta"
-          "sm"    true
-          "label" (i18n "cookies_ok")
-          "lock"  true
-        ) }}
-      </div>
-    {{- end }}
+      {{ partial "link" (dict
+        "btn"     "turn"
+        "sm"      true
+        "swap"    true
+        "label"   (i18n "cookies_config")
+        "cookies" $color
+      ) }}
+      {{ partial "link" (dict
+        "class" "cookies__btn cookies__btn--reject"
+        "btn"   "cta"
+        "sm"    true
+        "label" (i18n "cookies_reject")
+        "lock"  true
+      ) }}
+      {{ partial "link" (dict
+        "class" "cookies__btn cookies__btn--all"
+        "btn"   "cta"
+        "sm"    true
+        "label" (i18n "cookies_accept")
+        "lock"  true
+      ) }}
+    </div>
   </aside>
 {{- end -}}
