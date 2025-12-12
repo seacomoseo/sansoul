@@ -1,17 +1,17 @@
 {{ $u := site.Data.utilities }}
-{{ $lang_hint := print .def " → **" (index . "option-langs_cms-es") "**" }}
+{{ $lang_hint := print .def " → **" (index . "opt-langs_cms-es") "**" }}
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `config_ga4`           "name" `ga4`                                                                                                      ))
-  (partial "cms/widget" (dict "var" `config_g_site_verify` "name" `g_site_verify`                                                                                            ))
-  (partial "cms/widget" (dict "var" `config_g_file_verify` "name" `g_file_verify`                                                                                            ))
-  (partial "cms/widget" (dict "var" `config_g_translate`   "name" `g_translate`   "widget" `bool`                                                                            ))
-  (partial "cms/widget" (dict "var" `config_disqus`        "name" `disqus`                                                                                                   ))
-  (partial "cms/widget" (dict "var" `config_mail`          "name" `mail`                                                                                                     ))
-  (partial "cms/widget" (dict "var" `config_phone_code`    "name" `phone_code`    "widget" `select`  "hint" (print .def " → **+34 🇪🇸**")        "options" $u.phone_code      ))
-  (partial "cms/widget" (dict "var" `config_time_zone`     "name" `time_zone`     "widget" `select`  "hint" (print .def " → **Europe/Madrid**") "options" $u.time_zone       ))
-  (partial "cms/widget" (dict "var" `config_currency`      "name" `currency`      "widget" `select`  "hint" (print .def " → **EUR**")           "options" `~options_currency`))
-  (partial "cms/widget" (dict "var" `config_main_org`      "name" `main_org`                                                                                                 ))
+  (partial "cms/widget" (dict "var" `config_ga4`           "name" `ga4`                                                                                                ))
+  (partial "cms/widget" (dict "var" `config_g_site_verify` "name" `g_site_verify`                                                                                      ))
+  (partial "cms/widget" (dict "var" `config_g_file_verify` "name" `g_file_verify`                                                                                      ))
+  (partial "cms/widget" (dict "var" `config_g_translate`   "name" `g_translate`   "widget" `bool`                                                                      ))
+  (partial "cms/widget" (dict "var" `config_disqus`        "name" `disqus`                                                                                             ))
+  (partial "cms/widget" (dict "var" `config_mail`          "name" `mail`                                                                                               ))
+  (partial "cms/widget" (dict "var" `config_phone_code`    "name" `phone_code`    "widget" `select`  "hint" (print .def " → **+34 🇪🇸**")        "opts" $u.phone_code   ))
+  (partial "cms/widget" (dict "var" `config_time_zone`     "name" `time_zone`     "widget" `select`  "hint" (print .def " → **Europe/Madrid**") "opts" $u.time_zone    ))
+  (partial "cms/widget" (dict "var" `config_currency`      "name" `currency`      "widget" `select`  "hint" (print .def " → **EUR**")           "opts" `~opts_currency`))
+  (partial "cms/widget" (dict "var" `config_main_org`      "name" `main_org`                                                                                           ))
   (partial "cms/widget" (dict
     "var"    `config_html`
     "name"   `html`
@@ -44,18 +44,18 @@
     `~config_main_org`
     `~config_html`
     `~config_llms`
-    (partial "cms/widget" (dict "alt" `config_cms_logo`           "name" `cms_logo`           "widget" `img`                                                     ))
-    (partial "cms/widget" (dict "alt" `config_cms_lang`           "name" `cms_lang`           "widget" `select`  "hint" $lang_hint "options" `~options_langs_cms`))
-    (partial "cms/widget" (dict "alt" `config_cms_editorial`      "name" `cms_editorial`      "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict                                   "name" `cms_hide`           "widget" `hidden`  "label" `Off`                                   ))
-    (partial "cms/widget" (dict "alt" `config_favicon`            "name" `favicon`            "widget" `img`                                                     ))
-    (partial "cms/widget" (dict "alt" `config_lang_main_subdir`   "name" `lang_main_subdir`   "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_cookies_advanced`   "name" `cookies_advanced`   "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_cookies_legal`      "name" `cookies_legal`      "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_ga4_pagespeed_hide` "name" `ga4_pagespeed_hide` "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_development`        "name" `development`        "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_show`               "name" `show`               "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_webp`               "name" `webp`               "widget" `bool`                                                    ))
-    (partial "cms/widget" (dict "alt" `config_img_sizes`          "name" `img_sizes`          "widget" `float`   "min" 1 "max" 3                                 ))
+    (partial "cms/widget" (dict "alt" `config_cms_logo`           "name" `cms_logo`           "widget" `img`                                               ))
+    (partial "cms/widget" (dict "alt" `config_cms_lang`           "name" `cms_lang`           "widget" `select`  "hint" $lang_hint "opts" `~opts_langs_cms`))
+    (partial "cms/widget" (dict "alt" `config_cms_editorial`      "name" `cms_editorial`      "widget" `bool`                                              ))
+    (partial "cms/widget" (dict                                   "name" `cms_hide`           "widget" `hidden`  "label" `Off`                             ))
+    (partial "cms/widget" (dict "alt" `config_favicon`            "name" `favicon`            "widget" `img`                                               ))
+    (partial "cms/widget" (dict "alt" `config_lang_main_subdir`   "name" `lang_main_subdir`   "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_cookies_advanced`   "name" `cookies_advanced`   "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_cookies_legal`      "name" `cookies_legal`      "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_ga4_pagespeed_hide` "name" `ga4_pagespeed_hide` "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_development`        "name" `development`        "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_show`               "name" `show`               "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_webp`               "name" `webp`               "widget" `bool`                                              ))
+    (partial "cms/widget" (dict "alt" `config_img_sizes`          "name" `img_sizes`          "widget" `float`   "min" 1 "max" 3                           ))
   ))
 }}

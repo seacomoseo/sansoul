@@ -27,16 +27,16 @@
 {{ end }}
 
 {{ $field := dict
-  "<<"       .var
-  "name"     .name
-  "label"    $label
-  "hint"     $hint
-  "widget"   $widget
-  "options"  .opts
-  "def"      $def
-  "multiple" .multi
-  "i18n"     .i18n
-  "fields"   $sub
+  "<<"      .var
+  "name"    .name
+  "label"   $label
+  "hint"    $hint
+  "widget"  $widget
+  "opts"    .opts
+  "default" $def
+  "multi"   .multi
+  "i18n"    .i18n
+  "fields"  $sub
 }}
 {{ $field = partial "func/obj-truly" $field }}
 

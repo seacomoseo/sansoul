@@ -6,8 +6,8 @@ export function initMails () {
 
   document.addEventListener('click', e => {
     const mailCopyBtn = e.target.closest(
-      '.mail__option-copy,' +
-      '.mail__option-send'
+      '.mail__opt-copy,' +
+      '.mail__opt-send'
     )
     if (mailCopyBtn) {
       const mail = mailCopyBtn
@@ -17,7 +17,7 @@ export function initMails () {
       // If copy button then copy in clipbard; if not then send mail
       if (mailCopyBtn.classList.value.includes('copy')) {
         navigator.clipboard.writeText(mail)
-        const msg = 'mail__option-copy--active'
+        const msg = 'mail__opt-copy--active'
         mailCopyBtn.classList.add(msg)
         setTimeout(() => mailCopyBtn.classList.remove(msg), 1000)
       } else {

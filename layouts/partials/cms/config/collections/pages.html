@@ -9,7 +9,7 @@
   (partial "cms/widget" (dict "var" `page_draft`       "name" `draft`    "widget" `bool` "i18n" true                                              ))
   (partial "cms/widget" (dict "var" `page_hide`        "name" `hide`     "widget" `bool` "i18n" true                                              ))
   (partial "cms/widget" (dict "var" `page_weight`      "name" `weight`   "widget" `int`                                                           ))
-  (partial "cms/widget" (dict "var" `page_base`        "name" `base`     "widget" `select`   "options" `~options_base` "dropdown_threshold" 10    ))
+  (partial "cms/widget" (dict "var" `page_base`        "name" `base`     "widget" `select`   "opts" `~opts_base` "dropdown_threshold" 10          ))
 
   (partial "cms/widget" (dict "var" `page_seo_title`   "name" `title`                               ))
   (partial "cms/widget" (dict "var" `page_seo_desc`    "name" `desc`     "widget" `md`              ))
@@ -107,7 +107,7 @@
     "var"    `page_org_types`
     "name"   `types`
     "widget" `slice`
-    "field"  (partial "cms/widget" (dict "name" `type` "widget" `select` "options" `~options_location_type` "label" .page_org_types))
+    "field"  (partial "cms/widget" (dict "name" `type` "widget" `select` "opts" `~opts_location_type` "label" .page_org_types))
   ))
   (partial "cms/widget" (dict
     "var"    `page_org_names`
@@ -115,13 +115,13 @@
     "widget" `slice`
     "field"  (partial "cms/widget" (dict "name" `name` "label" .page_org_names_singular))
   ))
-  (partial "cms/widget" (dict "var" `page_org_desc`  "name" `desc`                                 ))
-  (partial "cms/widget" (dict "var" `page_org_legal` "name" `legal`                                ))
-  (partial "cms/widget" (dict "var" `page_org_nif`   "name" `nif`                                  ))
-  (partial "cms/widget" (dict "var" `page_org_mail`  "name" `mail`                                 ))
-  (partial "cms/widget" (dict "var" `page_org_url`   "name" `url`                   "label" `URL`  ))
-  (partial "cms/widget" (dict "var" `page_org_logo`  "name" `logo`  "widget" `img`                 ))
-  (partial "cms/widget" (dict "var" `page_imgs`      "name" `imgs`  "widget" `vimg` "multiple" true))
+  (partial "cms/widget" (dict "var" `page_org_desc`  "name" `desc`                               ))
+  (partial "cms/widget" (dict "var" `page_org_legal` "name" `legal`                              ))
+  (partial "cms/widget" (dict "var" `page_org_nif`   "name" `nif`                                ))
+  (partial "cms/widget" (dict "var" `page_org_mail`  "name" `mail`                               ))
+  (partial "cms/widget" (dict "var" `page_org_url`   "name" `url`                   "label" `URL`))
+  (partial "cms/widget" (dict "var" `page_org_logo`  "name" `logo`  "widget" `img`               ))
+  (partial "cms/widget" (dict "var" `page_imgs`      "name" `imgs`  "widget" `vimg` "multi" true ))
   (partial "cms/widget" (dict
     "var"    `page_as`
     "name"   `as`
@@ -202,7 +202,7 @@
       (partial "cms/widget" (dict "alt" `page_org_when_to`   "name" `to`   "widget" `time` "format" `YYYY-MM-DD` "date_format" `YYYY-MM-DD` "time_format" false))
     )
   ))
-  (partial "cms/widget" (dict "var" `page_org_prices` "name" `prices` "widget" `select`  "options" `~options_prices`))
+  (partial "cms/widget" (dict "var" `page_org_prices` "name" `prices` "widget" `select`  "opts" `~opts_prices`))
   (partial "cms/widget" (dict
     "var"    `page_org_services`
     "name"   `services`

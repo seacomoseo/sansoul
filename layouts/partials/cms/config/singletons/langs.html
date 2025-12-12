@@ -7,11 +7,11 @@
       "sum"    "{{fields.lang}}"
       "root"   true
       "fields" (slice
-        (partial "cms/widget" (dict "alt" `langs_lang`  "name" `lang`  "widget" `select`  "options" `~options_langs`))
-        (partial "cms/widget" (dict "alt" `langs_hide`  "name" `hide`  "widget" `bool`                              ))
-        (partial "cms/widget" (dict "alt" `langs_title` "name" `title`                                              ))
-        (partial "cms/widget" (dict "alt" `langs_desc`  "name" `desc`  "widget" `txt`                               ))
-        (partial "cms/widget" (dict "alt" `langs_pager` "name" `pager`                                              ))
+        (partial "cms/widget" (dict "alt" `langs_lang`  "name" `lang`  "widget" `select`  "opts" `~opts_langs`))
+        (partial "cms/widget" (dict "alt" `langs_hide`  "name" `hide`  "widget" `bool`                        ))
+        (partial "cms/widget" (dict "alt" `langs_title` "name" `title`                                        ))
+        (partial "cms/widget" (dict "alt" `langs_desc`  "name" `desc`  "widget" `txt`                         ))
+        (partial "cms/widget" (dict "alt" `langs_pager` "name" `pager`                                        ))
         (partial "cms/widget" (dict
           "alt"    `langs_config`
           "name"   `config`

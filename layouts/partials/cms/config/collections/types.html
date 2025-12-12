@@ -2,24 +2,24 @@
 
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `types_title`    "name" `title`                      "hint" $types_title_hint ))
-  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `int`    "min" 0                  ))
-  (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "options" `~options_base`))
-  (partial "cms/widget" (dict "var" `types_emoji`    "name" `emoji`                                               ))
-  (partial "cms/widget" (dict "var" `types_hide`     "name" `hide`     "widget" `bool`                            ))
-  (partial "cms/widget" (dict "var" `types_body`     "name" `body`     "widget" `bool`                            ))
-  (partial "cms/widget" (dict "var" `types_comments` "name" `comments` "widget" `bool`                            ))
-  (partial "cms/widget" (dict "var" `types_rel`      "name" `rel`      "widget" `bool`                            ))
-  (partial "cms/widget" (dict "var" `types_hint`     "name" `hint`                                                ))
+  (partial "cms/widget" (dict "var" `types_title`    "name" `title`                      "hint" $types_title_hint))
+  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `int`    "min" 0                 ))
+  (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "opts" `~opts_base`     ))
+  (partial "cms/widget" (dict "var" `types_emoji`    "name" `emoji`                                              ))
+  (partial "cms/widget" (dict "var" `types_hide`     "name" `hide`     "widget" `bool`                           ))
+  (partial "cms/widget" (dict "var" `types_body`     "name" `body`     "widget" `bool`                           ))
+  (partial "cms/widget" (dict "var" `types_comments` "name" `comments` "widget" `bool`                           ))
+  (partial "cms/widget" (dict "var" `types_rel`      "name" `rel`      "widget" `bool`                           ))
+  (partial "cms/widget" (dict "var" `types_hint`     "name" `hint`                                               ))
   (partial "cms/widget" (dict
     "var"    `types_tax_of`
     "name"   `tax_of`
     "widget" `slice`
     "fields" (slice
-      (partial "cms/widget" (dict "alt" `types_tax_of_name`   "name" `name`   "widget" `select`  "options" `~options_types` "req" true))
-      (partial "cms/widget" (dict "alt" `types_tax_of_multi`  "name" `multi`  "widget" `bool`                                         ))
-      (partial "cms/widget" (dict "alt" `types_tax_of_crumbs` "name" `crumbs` "widget" `bool`                                         ))
-      (partial "cms/widget" (dict "alt" `types_tax_of_schema` "name" `schema` "widget" `select`  "options" `~options_schema`          ))
+      (partial "cms/widget" (dict "alt" `types_tax_of_name`   "name" `name`   "widget" `select`  "opts" `~opts_types` "req" true))
+      (partial "cms/widget" (dict "alt" `types_tax_of_multi`  "name" `multi`  "widget" `bool`                                   ))
+      (partial "cms/widget" (dict "alt" `types_tax_of_crumbs` "name" `crumbs` "widget" `bool`                                   ))
+      (partial "cms/widget" (dict "alt" `types_tax_of_schema` "name" `schema` "widget" `select`  "opts" `~opts_schema`          ))
     )
   ))
   (partial "cms/widget" (dict

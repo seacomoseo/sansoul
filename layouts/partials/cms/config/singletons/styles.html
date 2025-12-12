@@ -1,12 +1,12 @@
 {{ return slice
   (partial "cms/widget" (dict "var" `font_keys` "widget" `dict` "sum" "{{fields.family}} 🔷 {{fields.weight}} 🔷 Italic: {{fields.italic}}" "req" true))
 
-  (partial "cms/widget" (dict "var" `font_family`      "alt" `styles_fonts_family`      "name" `family`                                                          "req" true))
-  (partial "cms/widget" (dict "var" `font_weight`      "alt" `styles_fonts_weight`      "name" `weight`      "widget" `select`  "options" `~options_font_weight` "req" true))
-  (partial "cms/widget" (dict "var" `font_bold`        "alt" `styles_fonts_bold`        "name" `bold`        "widget" `select`  "options" `~options_font_bold`   "req" true))
-  (partial "cms/widget" (dict "var" `font_italic`      "alt" `styles_fonts_italic`      "name" `italic`      "widget" `bool`                                     "req" true))
-  (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `float`   "min" 0.01 "max" 3               "req" true))
-  (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `float`   "min" 0.01 "max" 3               "req" true))
+  (partial "cms/widget" (dict "var" `font_family`      "alt" `styles_fonts_family`      "name" `family`                                                    "req" true))
+  (partial "cms/widget" (dict "var" `font_weight`      "alt" `styles_fonts_weight`      "name" `weight`      "widget" `select`  "opts" `~opts_font_weight` "req" true))
+  (partial "cms/widget" (dict "var" `font_bold`        "alt" `styles_fonts_bold`        "name" `bold`        "widget" `select`  "opts" `~opts_font_bold`   "req" true))
+  (partial "cms/widget" (dict "var" `font_italic`      "alt" `styles_fonts_italic`      "name" `italic`      "widget" `bool`                               "req" true))
+  (partial "cms/widget" (dict "var" `font_line_height` "alt" `styles_fonts_line_height` "name" `line_height` "widget" `float`   "min" 0.01 "max" 3         "req" true))
+  (partial "cms/widget" (dict "var" `font_size`        "alt" `styles_fonts_size`        "name" `size`        "widget" `float`   "min" 0.01 "max" 3         "req" true))
 
   (partial "cms/widget" (dict "var" `font` "<<" `font_keys` "fields" (slice
     `~font_family`
@@ -53,11 +53,11 @@
       "widget" `dict`
       "req"    true
       "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_icons_fill`    "name" `fill`    "widget" `bool`                                       "req" true))
-        (partial "cms/widget" (dict "alt" `styles_icons_weight`  "name" `weight`  "widget" `select`  "options" `~options_font_weight`   "req" true))
-        (partial "cms/widget" (dict "alt" `styles_icons_grade`   "name" `grade`   "widget" `select`  "options" `~options_icons_grade`   "req" true))
-        (partial "cms/widget" (dict "alt" `styles_icons_optical` "name" `optical` "widget" `select`  "options" `~options_icons_optical` "req" true))
-        (partial "cms/widget" (dict "alt" `styles_icons_style`   "name" `style`   "widget" `select`  "options" `~options_icons_style`   "req" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_fill`    "name" `fill`    "widget" `bool`                                 "req" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_weight`  "name" `weight`  "widget" `select`  "opts" `~opts_font_weight`   "req" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_grade`   "name" `grade`   "widget" `select`  "opts" `~opts_icons_grade`   "req" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_optical` "name" `optical` "widget" `select`  "opts" `~opts_icons_optical` "req" true))
+        (partial "cms/widget" (dict "alt" `styles_icons_style`   "name" `style`   "widget" `select`  "opts" `~opts_icons_style`   "req" true))
         (partial "cms/widget" (dict
           "alt"      `styles_icons_def`
           "name"     `def`
@@ -170,9 +170,9 @@
           "widget" `dict`
           "req"    true
           "fields" (slice
-            (partial "cms/widget" (dict "alt" `styles_btns_type` "name" `type` "widget" `select` "options" `~options_btns_type` "req" true))
-            (partial "cms/widget" (dict "alt" `styles_btns_bold` "name" `bold` "widget" `bool`                                  "req" true))
-            (partial "cms/widget" (dict "alt" `styles_btns_caps` "name" `caps` "widget" `bool`                                  "req" true))
+            (partial "cms/widget" (dict "alt" `styles_btns_type` "name" `type` "widget" `select` "opts" `~opts_btns_type` "req" true))
+            (partial "cms/widget" (dict "alt" `styles_btns_bold` "name" `bold` "widget" `bool`                            "req" true))
+            (partial "cms/widget" (dict "alt" `styles_btns_caps` "name" `caps` "widget" `bool`                            "req" true))
           )
         ))
         (partial "cms/widget" (dict
@@ -181,9 +181,9 @@
           "widget" `dict`
           "req"    true
           "fields" (slice
-            (partial "cms/widget" (dict "alt" `styles_btns_type` "name" `type` "widget" `select` "options" `~options_btns_type` "req" true))
-            (partial "cms/widget" (dict "alt" `styles_btns_bold` "name" `bold` "widget" `bool`                                  "req" true))
-            (partial "cms/widget" (dict "alt" `styles_btns_caps` "name" `caps` "widget" `bool`                                  "req" true))
+            (partial "cms/widget" (dict "alt" `styles_btns_type` "name" `type` "widget" `select` "opts" `~opts_btns_type` "req" true))
+            (partial "cms/widget" (dict "alt" `styles_btns_bold` "name" `bold` "widget" `bool`                            "req" true))
+            (partial "cms/widget" (dict "alt" `styles_btns_caps` "name" `caps` "widget" `bool`                            "req" true))
           )
         ))
       )
@@ -194,9 +194,9 @@
       "widget" `dict`
       "req"    true
       "fields" (slice
-        (partial "cms/widget" (dict "alt" `styles_inputs_fill`    "name" `fill`   "widget" `bool`                               "req" true))
-        (partial "cms/widget" (dict "alt" `styles_inputs_labels`  "name" `labels` "widget" `select` "options" `~options_labels` "req" true))
-        (partial "cms/widget" (dict "alt" `styles_inputs_consent` "name" `consent`                                                             ))
+        (partial "cms/widget" (dict "alt" `styles_inputs_fill`    "name" `fill`   "widget" `bool`                         "req" true))
+        (partial "cms/widget" (dict "alt" `styles_inputs_labels`  "name" `labels` "widget" `select` "opts" `~opts_labels` "req" true))
+        (partial "cms/widget" (dict "alt" `styles_inputs_consent` "name" `consent`                                                  ))
       )
     ))
     (partial "cms/widget" (dict
@@ -208,7 +208,7 @@
         (partial "cms/widget" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `float`  "step" 0.05 "min" -1 "max" 1  "req" true))
         (partial "cms/widget" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `float`  "step" 0.05 "min" -1 "max" 1  "req" true))
         (partial "cms/widget" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `float`  "step" 0.05          "max" 1  "req" true))
-        (partial "cms/widget" (dict "alt" `styles_shadow_color` "name" `color` "widget" `select` "options" `~options_color_bg` "req" true))
+        (partial "cms/widget" (dict "alt" `styles_shadow_color` "name" `color` "widget" `select` "opts" `~opts_color_bg`       "req" true))
         (partial "cms/widget" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `float`  "step" 0.05          "max" 1  "req" true))
       )
     ))

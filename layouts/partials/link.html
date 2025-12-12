@@ -40,7 +40,7 @@
       )
     -}}
       {{- partial "link" (dict
-        "class" (print "mail__option-" .class)
+        "class" (print "mail__opt-" .class)
         "btn"   "cta"
         "sm"    true
         "swap"  true
@@ -60,7 +60,7 @@
     {{- range $k, $v := $values -}}
       {{- $label := i18n (print "cookies_" .) -}}
       {{- $title := i18n (print "cookies_" . "_hint") }}
-      <label class="form__option" data-title="{{ $title }}">
+      <label class="form__opt" data-title="{{ $title }}">
         {{- "" -}}
         <input
           class="form__checks"

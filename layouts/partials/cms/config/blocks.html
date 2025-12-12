@@ -30,7 +30,6 @@
     "required"       false
     "label"          $label
     "hint"           (print "[" $.customs_relations_hint "](#/collections/" .name ")")
-    "options_length" 100
     "collection"     .name
     "value_field"    "{{slug}}"
     "search_fields"  (slice "{{title}}")
@@ -44,10 +43,10 @@
 
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `list_type`  "name" `type` "widget" `select` "options" `~options_lists`))
-  (partial "cms/widget" (dict "var" `list_start` "name" `date` "widget" `time`                             ))
-  (partial "cms/widget" (dict "var" `list_end`   "name" `end`  "widget" `time`                             ))
-  (partial "cms/widget" (dict "var" `list_max`   "name" `max`  "widget" `int`                              ))
+  (partial "cms/widget" (dict "var" `list_type`  "name" `type` "widget" `select` "opts" `~opts_lists`))
+  (partial "cms/widget" (dict "var" `list_start` "name" `date` "widget" `time`                       ))
+  (partial "cms/widget" (dict "var" `list_end`   "name" `end`  "widget" `time`                       ))
+  (partial "cms/widget" (dict "var" `list_max`   "name" `max`  "widget" `int`                        ))
   (partial "cms/widget" (dict
     "var"    `list`
     "name"   `list`
@@ -57,7 +56,7 @@
   ))
 
 
-  (partial "cms/widget" (dict "var" `steps_border` "name" `border` "widget" `select` "options" `~options_color_base_w`))
+  (partial "cms/widget" (dict "var" `steps_border` "name" `border` "widget" `select` "opts" `~opts_color_base_w`))
   (partial "cms/widget" (dict
     "var"    `step`
     "name"   `step`
@@ -87,7 +86,7 @@
   ))
 
 
-  (partial "cms/widget" (dict "var" `gallery_type` "name" `type` "widget" `select` "options" `~options_gallery_types`))
+  (partial "cms/widget" (dict "var" `gallery_type` "name" `type` "widget" `select` "opts" `~opts_gallery_types`))
   (partial "cms/widget" (dict
     "var"    `gallery`
     "name"   `gallery`
@@ -111,10 +110,10 @@
     )
   ))
   (partial "cms/widget" (dict
-    "var"      `imgs`
-    "name"     `imgs`
-    "widget"   `vimg`
-    "multiple" true
+    "var"    `imgs`
+    "name"   `imgs`
+    "widget" `vimg`
+    "multi"  true
   ))
   (partial "cms/widget" (dict
     "var"    `limgs`
@@ -206,8 +205,8 @@
   ))
 
   (partial "cms/widget" (dict "var" `zoom`        "name" `zoom`   "widget" `int`         "min" 1    "max" 20 "hint" `1 - 20` ))
-  (partial "cms/widget" (dict "var" `map_tile`    "name" `tile`   "widget" `select`      "options" `~options_tile`           ))
-  (partial "cms/widget" (dict "var" `map_color`   "name" `color`  "widget" `select`      "options" `~options_color_base_w`   ))
+  (partial "cms/widget" (dict "var" `map_tile`    "name" `tile`   "widget" `select`      "opts" `~opts_tile`                 ))
+  (partial "cms/widget" (dict "var" `map_color`   "name" `color`  "widget" `select`      "opts" `~opts_color_base_w`         ))
   (partial "cms/widget" (dict "var" `map_label`   "name" `label`                                                             ))
   (partial "cms/widget" (dict "var" `map_point`   "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Point`  ))
   (partial "cms/widget" (dict "var" `map_polygon` "name" `geo`    "widget" `map`    "i18n" true "decimals" 7 "type" `Polygon`))
@@ -309,14 +308,14 @@
   ))
 
 
-  (partial "cms/widget" (dict "var" `form_id`      "name" `id`                                                    "label" `ID`                 ))
-  (partial "cms/widget" (dict "var" `form_action`  "name" `action`                                                                             ))
-  (partial "cms/widget" (dict "var" `form_to`      "name" `to`                                                                                 ))
-  (partial "cms/widget" (dict "var" `form_subject` "name" `subject`                                                                            ))
-  (partial "cms/widget" (dict "var" `form_mail`    "name" `mail`                                                  "alt" `config_mail`          ))
-  (partial "cms/widget" (dict "var" `form_labels`  "name" `labels`  "widget" `select` "options" `~options_labels` "alt" `styles_inputs_labels` ))
-  (partial "cms/widget" (dict "var" `form_fill`    "name" `fill`    "widget" `bool`                               "alt" `styles_inputs_fill`   ))
-  (partial "cms/widget" (dict "var" `form_consent` "name" `consent`                                               "alt" `styles_inputs_consent`))
+  (partial "cms/widget" (dict "var" `form_id`      "name" `id`                                              "label" `ID`                 ))
+  (partial "cms/widget" (dict "var" `form_action`  "name" `action`                                                                       ))
+  (partial "cms/widget" (dict "var" `form_to`      "name" `to`                                                                           ))
+  (partial "cms/widget" (dict "var" `form_subject` "name" `subject`                                                                      ))
+  (partial "cms/widget" (dict "var" `form_mail`    "name" `mail`                                            "alt" `config_mail`          ))
+  (partial "cms/widget" (dict "var" `form_labels`  "name" `labels`  "widget" `select` "opts" `~opts_labels` "alt" `styles_inputs_labels` ))
+  (partial "cms/widget" (dict "var" `form_fill`    "name" `fill`    "widget" `bool`                         "alt" `styles_inputs_fill`   ))
+  (partial "cms/widget" (dict "var" `form_consent` "name" `consent`                                         "alt" `styles_inputs_consent`))
   (partial "cms/widget" (dict
     "var"    `form`
     "name"   `form`

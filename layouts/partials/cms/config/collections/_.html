@@ -73,7 +73,8 @@
       }}
     {{ end }}
   {{ end }}
-  {{ $view_groups := dict "groups" $groups "default" "drafts" }}
+  {{/*  {{ $view_groups := dict "groups" $groups "default" "drafts" }}  */}}
+  {{ $view_groups := dict "groups" $groups }}
 
   {{/*  View Filters  */}}
   {{ $view_filters := dict
@@ -112,7 +113,7 @@
         "name"       `rel`
         "widget"     `rel`
         "collection" .Type
-        "multiple"   true
+        "multi"      true
       ))
     }}
   {{ end }}
@@ -209,11 +210,11 @@
   {{ $index_singular_hint   := print                               "**" $.def " →** " .Params.cms.defaults.singular   }}
   {{ $index_title_hint      := print                               "**" $.def " →** " .Params.cms.defaults.title      }}
   {{ $index_sum_hint        := print $.page_sum_hint         " <br> **" $.def " →** " .Params.cms.defaults.sum        }}
-  {{ $index_permalinks      := partial "cms/widget" (dict "name" `permalinks` "label" $.index_permalinks "hint" $index_permalinks_hint                 ) }}
-  {{ $index_slug            := partial "cms/widget" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "required" false) }}
-  {{ $index_singular        := partial "cms/widget" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint                   ) }}
-  {{ $index_title           := partial "cms/widget" (dict "<<" `page_title`                              "hint" $index_title_hint                      ) }}
-  {{ $index_sum             := partial "cms/widget" (dict "<<" `page_sum`                                "hint" $index_sum_hint                        ) }}
+  {{ $index_permalinks      := partial "cms/widget" (dict "name" `permalinks` "label" $.index_permalinks "hint" $index_permalinks_hint            ) }}
+  {{ $index_slug            := partial "cms/widget" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "req" false) }}
+  {{ $index_singular        := partial "cms/widget" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint              ) }}
+  {{ $index_title           := partial "cms/widget" (dict "<<" `page_title`                              "hint" $index_title_hint                 ) }}
+  {{ $index_sum             := partial "cms/widget" (dict "<<" `page_sum`                                "hint" $index_sum_hint                   ) }}
   {{ $index_preview         := print $base "{{fields.slug | default('" .Params.cms.defaults.slug "')}}/" }}
 
   {{/*  Collection  */}}

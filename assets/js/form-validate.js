@@ -191,7 +191,7 @@ export function formValid (form) {
   }
 
   // Acept
-  const accept = form.querySelector('.form__option--consent [type="checkbox"]')
+  const accept = form.querySelector('.form__opt--consent [type="checkbox"]')
   if (!accept || !accept.checked) {
     addMessage(formErrorAcept)
     form.classList.add('form--error-consent')

@@ -13,25 +13,31 @@
 {{ end }}
 
 {{ $widget := .widget | default (cond (not $from) "str" nil) }}
-{{ $o       = merge . (dict "var" nil "alt" nil "req" nil "sum" nil "<<" nil) }}
+{{ $o       = merge . (dict "var" nil "alt" nil "req" nil "sum" nil "multi" nil "<<" nil) }}
 
-{{ if not $from }}
-  {{ $req  := .req | default false }}
-  {{ $i18n := .i18n }}
-  {{ if not .i18n }}
-    {{ $wi18n := slice "str" "txt" "md" "img" "vid" "vimg" "dict" "slice" }}
-    {{ $i18n   = cond (in $wi18n $widget) true "duplicate" }}
+{{ if $from }}
+  {{ if ne nil .req }}
+    {{ $o = merge $o (dict "required" .req) }}
   {{ end }}
-  {{ $f := dict
-    "widget"   $widget
-    "required" $req
-    "i18n"     $i18n
-  }}
-  {{ $o = merge $o $f }}
+{{ else }}
+  {{ if eq nil .req }}
+    {{ $o = merge $o (dict "required" false) }}
+  {{ end }}
+  {{ if eq nil .i18n }}
+    {{ $wi18n := slice "str" "txt" "md" "img" "vid" "vimg" "dict" "slice" }}
+    {{ $i18n  := cond (in $wi18n $widget) true "duplicate" }}
+    {{ $o      = merge $o (dict "i18n" $i18n) }}
+  {{ end }}
 {{ end }}
 
 {{ with .sum }}
   {{ $o = merge $o (dict "summary" .) }}
+{{ end }}
+{{ with .opts }}
+  {{ $o = merge $o (dict "options" .) }}
+{{ end }}
+{{ with .multi }}
+  {{ $o = merge $o (dict "multiple" .) }}
 {{ end }}
 
 {{ if eq "str" $widget }}
@@ -134,9 +140,6 @@
   {{ if eq nil .collection }}
     {{ $o = merge $o (dict "collection" .name) }}
   {{ end }}
-  {{ if eq nil .options_length }}
-    {{ $o = merge $o (dict "options_length" 100) }}
-  {{ end }}
   {{ if eq nil .value_field }}
     {{ $o = merge $o (dict "value_field" "{{slug}}") }}
   {{ end }}
@@ -147,8 +150,10 @@
     {{ $o = merge $o (dict "display_fields" (slice "{{title}}")) }}
   {{ end }}
 {{ else if eq "bool" $widget }}
-  {{ $opts := cond (not $o.req) `~options_boolean` `~options_boolean_req` }}
+  {{ $opts := cond (not $o.req) `~opts_boolean` `~opts_boolean_req` }}
   {{ $o  = merge $o (dict "widget" `select` "options" $opts) }}
+{{ else if eq "hide" $widget }}
+  {{ $o = merge $o (dict "widget" `hidden`) }}
 {{ end }}
 
 {{ with $loc }}

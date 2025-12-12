@@ -26,7 +26,7 @@
           {{- end -}}
         {{- end -}}
       {{- else -}}
-        {{- i18n (print "option-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
+        {{- i18n (print "opt-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
       {{- end -}}
     {{- else if eq $param "mail" -}}
       <i class="mail">

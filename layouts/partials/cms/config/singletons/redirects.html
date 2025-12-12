@@ -11,9 +11,9 @@
       "sum"    "{{fields.from}} → {{fields.to}} - ({{fields.type | default('301')}})"
       "root"    true
       "fields"  (slice
-        (partial "cms/widget" (dict "alt" `redirects_from` "name" `from`                                                                   ))
-        (partial "cms/widget" (dict "alt" `redirects_to`   "name" `to`                                                                     ))
-        (partial "cms/widget" (dict "alt" `redirects_type` "name" `type` "widget" `select` "options" `~options_redirects` "hint" $type_hint))
+        (partial "cms/widget" (dict "alt" `redirects_from` "name" `from`                                                             ))
+        (partial "cms/widget" (dict "alt" `redirects_to`   "name" `to`                                                               ))
+        (partial "cms/widget" (dict "alt" `redirects_type` "name" `type` "widget" `select` "opts" `~opts_redirects` "hint" $type_hint))
       )
     ))
   )

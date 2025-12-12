@@ -1,6 +1,6 @@
 {{ $u := site.Data.utilities }}
 
-{{ $option_global      := index . "option-collections-global" }}
+{{ $option_global      := index . "opt-collections-global" }}
 {{ $customs_types_def  := print $u.collections.emojis.values  " " $option_global }}
 {{ $customs_types_hint := print .def " → **" $customs_types_def "**" }}
 
@@ -31,21 +31,21 @@
 
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `customs_types`  "name" `types`  "widget" `select` "options" `~options_customs` "multiple" true "hint" $customs_types_hint))
+  (partial "cms/widget" (dict "var" `customs_types`  "name" `types`  "widget" `select` "opts" `~opts_customs` "multi" true "hint" $customs_types_hint))
   (partial "cms/widget" (dict
     "var"    `customs_pages`
     "name"   `pages`
     "widget" `slice`
     "field"  (partial "cms/widget" (dict "label" .customs_pages_singular "name" `page`))
   ))
-  (partial "cms/widget" (dict "var" `customs_var`    "name" `var`                                                  ))
-  (partial "cms/widget" (dict "var" `customs_name`   "name" `name`                                                 ))
-  (partial "cms/widget" (dict "var" `customs_label`  "name" `label`                                                ))
-  (partial "cms/widget" (dict "var" `customs_hint_`  "name" `hint`                                                 ))
-  (partial "cms/widget" (dict "var" `customs_widget` "name" `widget` "widget" `select` "options" `~options_widgets`))
-  (partial "cms/widget" (dict "var" `customs_def`    "name" `def`                                                  ))
-  (partial "cms/widget" (dict "var" `customs_multi`  "name" `multi`  "widget" `bool`                               ))
-  (partial "cms/widget" (dict "var" `customs_i18n`   "name" `i18n`   "widget" `select` "options" `~options_i18n`   ))
+  (partial "cms/widget" (dict "var" `customs_var`    "name" `var`                                            ))
+  (partial "cms/widget" (dict "var" `customs_name`   "name" `name`                                           ))
+  (partial "cms/widget" (dict "var" `customs_label`  "name" `label`                                          ))
+  (partial "cms/widget" (dict "var" `customs_hint_`  "name" `hint`                                           ))
+  (partial "cms/widget" (dict "var" `customs_widget` "name" `widget` "widget" `select` "opts" `~opts_widgets`))
+  (partial "cms/widget" (dict "var" `customs_def`    "name" `def`                                            ))
+  (partial "cms/widget" (dict "var" `customs_multi`  "name" `multi`  "widget" `bool`                         ))
+  (partial "cms/widget" (dict "var" `customs_i18n`   "name" `i18n`   "widget" `select` "opts" `~opts_i18n`   ))
   (partial "cms/widget" (dict
     "var"    `customs_opts`
     "name"   `opts`
@@ -56,7 +56,7 @@
     )
   ))
 
-  (partial "cms/widget" (dict "var" `customs_widget_last` "<<" `customs_widget` "options" $widgets_last))
+  (partial "cms/widget" (dict "var" `customs_widget_last` "<<" `customs_widget` "opts" $widgets_last))
   (partial "cms/widget" (dict
     "var"    `customs_last`
     "alt"    `customs_sub`

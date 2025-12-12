@@ -24,16 +24,16 @@
 
 {{/*  MENU  */}}
 {{ $colections = $colections | append
-  (partial "cms/widget" (dict "var" `tpl_menu_hide`        "name" `hide`        "widget" `bool`                                           ))
-  (partial "cms/widget" (dict "var" `tpl_menu_logo`        "name" `logo`        "widget" `bool`                                           ))
-  (partial "cms/widget" (dict "var" `tpl_menu_sticky`      "name" `sticky`      "widget" `select`  "options" `~options_sticky`            ))
-  (partial "cms/widget" (dict "var" `tpl_menu_logo_sticky` "name" `logo_sticky` "widget" `bool`                                           ))
-  (partial "cms/widget" (dict "var" `tpl_menu_logo_align`  "name" `logo_align`  "widget" `bool`                                           ))
-  (partial "cms/widget" (dict "var" `tpl_menu_size`        "name" `size`        "widget" `select`  "options" `~options_sizes` "alt" `size`))
-  (partial "cms/widget" (dict "var" `tpl_menu_clear`       "name" `clear`       "widget" `bool`                                           ))
-  (partial "cms/widget" (dict "var" `tpl_menu_hide_icons`  "name" `hide_icons`  "widget" `bool`                                           ))
-  (partial "cms/widget" (dict "var" `tpl_menu_hide_custom` "name" `hide_custom` "widget" `bool` "hint" $tpl_menu_hide_custom_hint         ))
-  (partial "cms/widget" (dict "var" `tpl_menu_auto`        "name" `auto`        "widget" `select`  "options" `~options_menu_auto`         ))
+  (partial "cms/widget" (dict "var" `tpl_menu_hide`        "name" `hide`        "widget" `bool`                                     ))
+  (partial "cms/widget" (dict "var" `tpl_menu_logo`        "name" `logo`        "widget" `bool`                                     ))
+  (partial "cms/widget" (dict "var" `tpl_menu_sticky`      "name" `sticky`      "widget" `select`  "opts" `~opts_sticky`            ))
+  (partial "cms/widget" (dict "var" `tpl_menu_logo_sticky` "name" `logo_sticky` "widget" `bool`                                     ))
+  (partial "cms/widget" (dict "var" `tpl_menu_logo_align`  "name" `logo_align`  "widget" `bool`                                     ))
+  (partial "cms/widget" (dict "var" `tpl_menu_size`        "name" `size`        "widget" `select`  "opts" `~opts_sizes` "alt" `size`))
+  (partial "cms/widget" (dict "var" `tpl_menu_clear`       "name" `clear`       "widget" `bool`                                     ))
+  (partial "cms/widget" (dict "var" `tpl_menu_hide_icons`  "name" `hide_icons`  "widget" `bool`                                     ))
+  (partial "cms/widget" (dict "var" `tpl_menu_hide_custom` "name" `hide_custom` "widget" `bool` "hint" $tpl_menu_hide_custom_hint   ))
+  (partial "cms/widget" (dict "var" `tpl_menu_auto`        "name" `auto`        "widget" `select`  "opts" `~opts_menu_auto`         ))
   (partial "cms/widget" (dict
     "var"    `tpl_menu`
     "name"   `menu`
@@ -59,7 +59,7 @@
 
 {{/*  CALLNOW  */}}
 {{ $colections = $colections | append
-  (partial "cms/widget" (dict "var" `tpl_callnow` "name" `callnow` "widget" `select` "options" `~options_callnow`))
+  (partial "cms/widget" (dict "var" `tpl_callnow` "name" `callnow` "widget" `select` "opts" `~opts_callnow`))
 }}
 
 
