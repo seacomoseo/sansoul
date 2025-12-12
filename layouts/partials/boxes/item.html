@@ -172,7 +172,7 @@
   {{- if not $box.is_container -}}
     {{- $is_vid := $inbox | findRE `<video |<iframe ` -}}
     {{- if not $is_vid -}}
-      {{- $links := $inbox | findRE `<a .*?href=|data-(h|b)=| data-lightbox=| type="submit"` -}}
+      {{- $links := $inbox | findRE `<a [^>]*href=|tabindex="0"| type="submit"| type="button"` -}}
       {{- $ool   := eq (len $links) 1 -}}
       {{- if $ool -}}
         {{- $ool = dict "only_one_link" true -}}
