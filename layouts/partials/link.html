@@ -56,17 +56,20 @@
 {{- define "partials/cookies-config" -}}
   <i class="tooltip bg bg-{{ . }}">
     <i class="bg-color"></i>
-    {{- $values := slice "technical" "preference" "analytics" "advertising" -}}
-    {{- range $k, $v := $values -}}
-      {{- $label := i18n (print "cookies_" .) -}}
-      {{- $title := i18n (print "cookies_" . "_hint") }}
-      <label class="form__opt" data-title="{{ $title }}">
+    {{- $opts := i18n "cookies_opts" -}}
+    {{- $opts  = split $opts "\n" -}}
+    {{- range $k, $v := $opts -}}
+      {{- $opt   := split . " | " -}}
+      {{- $value := index $opt 0 -}}
+      {{- $label := index $opt 1 -}}
+      {{- $hint  := index $opt 2  }}
+      <label class="form__opt" data-hint="{{ $hint }}">
         {{- "" -}}
         <input
           class="form__checks"
           type="checkbox"
           name="cookies"
-          value="{{ . }}"
+          value="{{ $value }}"
           {{- if not $k }} disabled checked{{ end -}}
         >
         {{- partial "icon" (dict "def" "send_info") -}}
