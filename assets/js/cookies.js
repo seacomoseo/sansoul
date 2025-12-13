@@ -1,10 +1,25 @@
 import { cookiesLegal } from '@params'
+import params from './params'
+const { cookiesVideo } = params
 
 export function initCookies () {
   const cookiesMessage = document.querySelector('.cookies')
 
+  // Inject CSS variables
+  if (cookiesLegal) {
+    if (document.querySelector('[data-iframe]')) {
+      document.body.style.setProperty('--cookie-video', `"${cookiesVideo}"`)
+    }
+  }
+
   if (cookiesMessage) {
     function cookiesOpen () {
+      const checkboxes = cookiesMessage.querySelectorAll('input[name="cookies"]')
+      checkboxes.forEach(e => {
+        if (localStorage[`controlcookie${e.value}`]) {
+          e.checked = true
+        }
+      })
       cookiesMessage.removeAttribute('hidden')
       cookiesMessage.querySelector('[data-b]').focus()
       setTimeout(() => cookiesMessage.classList.remove('cookies--hide'), 10)
@@ -27,16 +42,33 @@ export function initCookies () {
       localStorage.controlcookie++
       cookiesClose()
 
-      // If acept all or analytics ckecked
+      // Accept all or specific cookies
       const aceptAll = c.classList.contains('cookies__btn--all')
-      const analyticsCkecked = document.querySelector('.cookies [value="analytics"]')?.checked
-      if (aceptAll || analyticsCkecked) {
-        localStorage.controlcookieanalytics = localStorage.controlcookieanalytics || 0
-        localStorage.controlcookieanalytics++
-        if (typeof googleAnalytics === 'function' && cookiesLegal) {
-          googleAnalytics()
-        }
+      const rejectAll = c.classList.contains('cookies__btn--reject')
+      const checkboxes = cookiesMessage.querySelectorAll('input[name="cookies"]')
+
+      if (rejectAll) {
+        checkboxes.forEach(e => {
+          if (!e.disabled) e.checked = false
+        })
       }
+
+      checkboxes.forEach(e => {
+        const type = e.value
+        if (aceptAll || e.checked) {
+          localStorage[`controlcookie${type}`] = localStorage[`controlcookie${type}`] || 0
+          localStorage[`controlcookie${type}`]++
+          window.dispatchEvent(new CustomEvent(`cookies:${type}`))
+
+          if (type === 'analytics') {
+            if (typeof googleAnalytics === 'function' && cookiesLegal) {
+              googleAnalytics()
+            }
+          }
+        } else {
+          localStorage.removeItem(`controlcookie${type}`)
+        }
+      })
     }
 
     document.addEventListener('click', e => {

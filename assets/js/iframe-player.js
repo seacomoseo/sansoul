@@ -1,4 +1,4 @@
-// Load iframe player when hover mouse
+import { cookiesLegal } from '@params'
 import { loadScript } from './load-script'
 import params from './params'
 const { vid, lang } = params
@@ -19,11 +19,30 @@ function playerId (target, idVideo) {
 export function initIframePlayer () {
   const posterIframe = document.querySelectorAll('[data-iframe]')
 
-  if (posterIframe) {
+  if (posterIframe.length) {
+    const isCookie = cookiesLegal && !localStorage.controlcookiemedia
+
+    posterIframe.forEach(e => {
+      if (isCookie) {
+        e.setAttribute('not-cookie', '')
+      }
+    })
+
+    if (isCookie) {
+      window.addEventListener('cookies:media', () => {
+        posterIframe.forEach(e => e.removeAttribute('not-cookie'))
+      }, { once: true })
+    }
+
     document.addEventListener('click', e => {
       const imgWithIframe = e.target.closest('.img')
       if (imgWithIframe) {
         const dataIframe = imgWithIframe.querySelector('[data-iframe]')
+        if (dataIframe.hasAttribute('not-cookie')) {
+          const cookieToggle = document.querySelector('.cookies__toggle')
+          if (cookieToggle) cookieToggle.click()
+          return
+        }
         const className = dataIframe.className?.baseVal || dataIframe.className // baseVal to fix svg's
         const isYT = dataIframe.dataset.youtube
         const src = dataIframe.dataset.youtube || dataIframe.dataset.vimeo

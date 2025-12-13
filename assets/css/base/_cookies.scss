@@ -65,3 +65,16 @@
 .cookies__toggle {
   cursor: pointer;
 }
+:has(> [data-iframe][not-cookie])::after {
+  content: var(--cookie-video);
+  position: absolute;
+  top: calc(50% - 1em);
+  left: calc(50% - 1em);
+  translate: -50% -50%;
+  margin: 1em;
+  padding: 1em 2em;
+  text-align: center;
+  color: var(--such-in);
+  background-color: color-mix(in srgb, var(--such), transparent 15%);
+  @include radius;
+}

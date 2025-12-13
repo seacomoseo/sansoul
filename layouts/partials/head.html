@@ -135,7 +135,14 @@
 {{- else }}
   <script>
     function gtag(...e) {
-      console.log(...e)
+      const start = () => {
+        console.log(...e)
+      }
+      if (localStorage.controlcookieanalytics) {
+        start()
+      } else {
+        window.addEventListener('cookies:analytics', start, { once: true })
+      }
     }
   </script>
 {{- end -}}
