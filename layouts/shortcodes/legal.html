@@ -29,9 +29,8 @@
         {{- i18n (print "opt-phone_code-" (site.Params.phone_code | default 34)) | replaceRE `[\d+]\s?` "" -}}
       {{- end -}}
     {{- else if eq $param "mail" -}}
-      <i class="mail">
-        {{- .mail | default "mail@mail.com" | base64Encode -}}
-      </i>
+      {{- $mail := .mail | default "mail@mail.com" -}}
+      {{- partial "link" (dict "label" $mail "url" $mail) -}}
     {{- end -}}
   {{- end -}}
 
