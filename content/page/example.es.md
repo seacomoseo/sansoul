@@ -31,7 +31,6 @@ tpl:
     auto: null # [ same, same-modals, home, home-modals, none ]
   callnow: null # [ custom, auto, hide ]
   section: []
-  modal: {}
   sections:
   - file: example
     modals:
