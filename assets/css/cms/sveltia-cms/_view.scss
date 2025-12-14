@@ -1,14 +1,14 @@
 .field[data-key-path$="view"] ~ .field:not(
   /* No hidden if param is set */
-  [data-widget="object"]:has(.wrapper),
-  [data-widget="list"]:has(.item-list:not(:empty)),
-  [data-widget="image"]:has(.filled),
-  [data-widget="file"]:has(.filled),
-  [data-widget="markdown"]:has([data-lexical-text="true"]),
-  [data-widget="boolean"]:has(button[aria-checked="true"]),
-  [data-widget="select"]:has(button[aria-checked="true"]:not([value=""])), /* Checkbox and radio */
-  [data-widget="select"]:has(.selected), /* Simple */
-  [data-widget="select"]:has(.select-tags > span), /* Multiple */
+  [data-field-type="object"]:has(.wrapper),
+  [data-field-type="list"]:has(.item-list:not(:empty)),
+  [data-field-type="image"]:has(.filled),
+  [data-field-type="file"]:has(.filled),
+  [data-field-type="markdown"]:has([data-lexical-text="true"]),
+  [data-field-type="boolean"]:has(button[aria-checked="true"]),
+  [data-field-type="select"]:has(button[aria-checked="true"]:not([value=""])), /* Checkbox and radio */
+  [data-field-type="select"]:has(.selected), /* Simple */
+  [data-field-type="select"]:has(.select-tags > span), /* Multiple */
   :has(input:not(:placeholder-shown, [type="file"])),
   :has(textarea:not(:placeholder-shown)),
   /* No hidden if match view */
