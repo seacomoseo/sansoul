@@ -2,14 +2,14 @@
 
 > - **Role**: Core Logic & Design System
 > - **Location**: `themes/sansoul/`
-> - **Status**: SHARED SUBMODULE (Do not modify without explicit intent to update all projects)
+> - **Status**: SHARED SUBMODULE (Do not modify without intent to update all projects)
 
 ## system.summary
 This submodule drives the build pipeline, configuration, and rendering logic for SanSoul-based sites. It uses a "Prebuild + Build" strategy to overcome Hugo's static limitations, enabling dynamic configuration, module mounting, and complex data-driven layouts.
 
 ## guidelines.strict_rules
 1.  **Language**: All code, comments, and variable names must be in **English**.
-2.  **Style Guide**: Follow **StandardJS** (no semicolons, 2 space indent, single quotes).
+2.  **Style Guide**: Follow **StandardJS** (no semicolons, 2 space indent, single quotes, space between the function name and parentheses).
 3.  **Module System**: Use **Node.js with ESM** (`import`/`export`) for all JS.
 4.  **Naming**: Variable names must be elegant, legible, and scalable.
 
@@ -115,6 +115,7 @@ Standard project structure emphasizing the separation of content (project) and l
 ```
 .
 ├── assets/                 # Project overrides (_custom.scss, customs.js)
+├── uploads/                # Project overrides of assets/u/
 ├── content/                # Site Content (Flat structure: /type/page.md)
 ├── data/                   # The "Brain" (Config, Types, Langs)
 ├── themes/
