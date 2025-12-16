@@ -30,14 +30,18 @@ Las cookies son archivos que se pueden descargar en su equipo a través de las p
 
 Utilizamos los siguientes tipos de cookies:
 
-### Almacenamiento del Consentimiento (localStorage)
+### Almacenamiento del Consentimiento
 
 Sus preferencias de consentimiento de cookies se almacenan en el almacenamiento local (localStorage) de su navegador. Esto no es una cookie en sentido técnico, sino un método de almacenamiento local que no transmite datos a nuestro servidor.
 
-| Clave | Proveedor | Propósito | Duración |
-|-------|-----------|-----------|----------|
-| `controlcookie` | Este sitio web | Almacena si se han confirmado los ajustes de cookies | Persistente (hasta eliminación manual) |
-| `controlcookieanalytics` | Este sitio web | Almacena su consentimiento para cookies de análisis | Persistente (hasta eliminación manual) |
+- **Proveedor:** Este sitio web
+- **Consentimiento:** No requerido (Técnico)
+
+| Clave | Propósito | Duración |
+|-------|-----------|----------|
+| `controlcookie` | Almacena si se han confirmado los ajustes de cookies | Persistente (hasta eliminación manual) |
+| `controlcookieanalytics` | Almacena su consentimiento para cookies de análisis | Persistente (hasta eliminación manual) |
+| `controlcookiemedia` | Almacena su consentimiento para cookies de medios | Persistente (hasta eliminación manual) |
 
 ### Análisis (Google Analytics 4)
 
@@ -46,22 +50,23 @@ Utilizamos Google Analytics 4 para recopilar estadísticas anónimas sobre el us
 - **Proveedor:** Google Ireland Ltd.
 - **Consentimiento:** Requerido.
 
-| Cookie | Proveedor | Propósito | Duración |
-|--------|-----------|-----------|----------|
-| `_ga` | Google | Distingue usuarios para análisis estadístico | 2 años |
-| `_ga_*` | Google | Almacena el estado de la sesión | 2 años |
+| Cookie | Propósito | Duración |
+|--------|-----------|----------|
+| `_ga` | Distingue usuarios para análisis estadístico | 2 años |
+| `_ga_*` | Almacena el estado de la sesión | 2 años |
 
 ### Medios (YouTube)
 
 Incrustamos vídeos a través de YouTube. Requieren conexión con los servidores de YouTube, que pueden establecer cookies.
+
 - **Proveedor:** Google Ireland Ltd. / YouTube LLC.
 - **Consentimiento:** Requerido.
 
-| Cookie | Proveedor | Propósito | Duración |
-|--------|-----------|-----------|----------|
-| `VISITOR_INFO1_LIVE` | YouTube | Estima el ancho de banda del usuario | 6 meses |
-| `YSC` | YouTube | Registra una ID única para estadísticas | Sesión |
-| `PREF` | YouTube | Almacena preferencias del usuario | 8 meses |
+| Cookie | Propósito | Duración |
+|--------|-----------|----------|
+| `VISITOR_INFO1_LIVE` | Estima el ancho de banda del usuario | 6 meses |
+| `YSC` | Registra una ID única para estadísticas | Sesión |
+| `PREF` | Almacena preferencias del usuario | 8 meses |
 
 ## Gestión del Consentimiento
 

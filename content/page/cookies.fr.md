@@ -30,14 +30,18 @@ Les cookies sont des fichiers qui peuvent être téléchargés sur votre équipe
 
 Nous utilisons les types de cookies suivants :
 
-### Stockage du Consentement (localStorage)
+### Stockage du Consentement
 
 Vos préférences de consentement aux cookies sont stockées dans le stockage local (localStorage) de votre navigateur. Ce n'est pas un cookie au sens technique, mais une méthode de stockage local qui ne transmet aucune donnée à notre serveur.
 
-| Clé | Fournisseur | Finalité | Durée |
-|-----|-------------|----------|-------|
-| `controlcookie` | Ce site web | Stocke si les paramètres de cookies ont été confirmés | Persistant (jusqu'à suppression manuelle) |
-| `controlcookieanalytics` | Ce site web | Stocke votre consentement pour les cookies d'analyse | Persistant (jusqu'à suppression manuelle) |
+- **Fournisseur :** Ce site web
+- **Consentement :** Non requis (Technique)
+
+| Clé | Finalité | Durée |
+|-----|----------|-------|
+| `controlcookie` | Stocke si les paramètres de cookies ont été confirmés | Persistant (jusqu'à suppression manuelle) |
+| `controlcookieanalytics` | Stocke votre consentement pour les cookies d'analyse | Persistant (jusqu'à suppression manuelle) |
+| `controlcookiemedia` | Stocke votre consentement pour les cookies média | Persistant (jusqu'à suppression manuelle) |
 
 ### Analyse (Google Analytics 4)
 
@@ -46,22 +50,23 @@ Nous utilisons Google Analytics 4 pour collecter des statistiques anonymes sur l
 - **Fournisseur :** Google Ireland Ltd.
 - **Consentement :** Requis.
 
-| Cookie | Fournisseur | Finalité | Durée |
-|--------|-------------|----------|-------|
-| `_ga` | Google | Distingue les utilisateurs pour l'analyse statistique | 2 ans |
-| `_ga_*` | Google | Stocke l'état de la session | 2 ans |
+| Cookie | Finalité | Durée |
+|--------|----------|-------|
+| `_ga` | Distingue les utilisateurs pour l'analyse statistique | 2 ans |
+| `_ga_*` | Stocke l'état de la session | 2 ans |
 
 ### Médias (YouTube)
 
 Nous intégrons des vidéos via YouTube. Cela nécessite une connexion aux serveurs de YouTube, qui peuvent installer des cookies.
+
 - **Fournisseur :** Google Ireland Ltd. / YouTube LLC.
 - **Consentement :** Requis.
 
-| Cookie | Fournisseur | Finalité | Durée |
-|--------|-------------|----------|-------|
-| `VISITOR_INFO1_LIVE` | YouTube | Estime la bande passante de l'utilisateur | 6 mois |
-| `YSC` | YouTube | Enregistre un identifiant unique pour les statistiques | Session |
-| `PREF` | YouTube | Stocke les préférences de l'utilisateur | 8 mois |
+| Cookie | Finalité | Durée |
+|--------|----------|-------|
+| `VISITOR_INFO1_LIVE` | Estime la bande passante de l'utilisateur | 6 mois |
+| `YSC` | Enregistre un identifiant unique pour les statistiques | Session |
+| `PREF` | Stocke les préférences de l'utilisateur | 8 mois |
 
 ## Gestion du Consentement
 

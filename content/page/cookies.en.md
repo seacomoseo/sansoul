@@ -30,14 +30,18 @@ Cookies are files that can be downloaded to your computer via web pages. They pl
 
 We use the following types of cookies:
 
-### Consent Storage (localStorage)
+### Consent Storage
 
 Your cookie consent preferences are stored in your browser's local storage (localStorage). This is not a cookie in the technical sense, but a local storage method that does not transmit any data to our server.
 
-| Key | Provider | Purpose | Duration |
-|-----|----------|---------|----------|
-| `controlcookie` | This website | Stores whether cookie settings have been confirmed | Persistent (until manually deleted) |
-| `controlcookieanalytics` | This website | Stores your consent for analytics cookies | Persistent (until manually deleted) |
+- **Provider:** This website
+- **Consent:** Not required (Technical)
+
+| Key | Purpose | Duration |
+|-----|---------|----------|
+| `controlcookie` | Stores whether cookie settings have been confirmed | Persistent (until manually deleted) |
+| `controlcookieanalytics` | Stores your consent for analytics cookies | Persistent (until manually deleted) |
+| `controlcookiemedia` | Stores your consent for media cookies | Persistent (until manually deleted) |
 
 ### Analytics (Google Analytics 4)
 
@@ -46,22 +50,23 @@ We use Google Analytics 4 to collect anonymous statistics about website usage (e
 - **Provider:** Google Ireland Ltd.
 - **Consent:** Required.
 
-| Cookie | Provider | Purpose | Duration |
-|--------|----------|---------|----------|
-| `_ga` | Google | Distinguishes users for statistical analysis | 2 years |
-| `_ga_*` | Google | Stores session state | 2 years |
+| Cookie | Purpose | Duration |
+|--------|---------|----------|
+| `_ga` | Distinguishes users for statistical analysis | 2 years |
+| `_ga_*` | Stores session state | 2 years |
 
 ### Media (YouTube)
 
 We embed videos via YouTube. These enhance our content but require a connection to YouTube servers, which may set cookies.
+
 - **Provider:** Google Ireland Ltd. / YouTube LLC.
 - **Consent:** Required.
 
-| Cookie | Provider | Purpose | Duration |
-|--------|----------|---------|----------|
-| `VISITOR_INFO1_LIVE` | YouTube | Estimates user bandwidth | 6 months |
-| `YSC` | YouTube | Registers unique ID for statistics | Session |
-| `PREF` | YouTube | Stores user preferences | 8 months |
+| Cookie | Purpose | Duration |
+|--------|---------|----------|
+| `VISITOR_INFO1_LIVE` | Estimates user bandwidth | 6 months |
+| `YSC` | Registers unique ID for statistics | Session |
+| `PREF` | Stores user preferences | 8 months |
 
 ## Consent Management
 
