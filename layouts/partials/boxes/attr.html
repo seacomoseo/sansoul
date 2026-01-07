@@ -8,6 +8,9 @@
 {{ $show        := and .show (not .slider) (not .is_header) }}
 {{ $not_fit     := or (not .fit   ) (eq .fit    1) }}
 {{ $not_fit_vs  := or (not .fit_vs) (eq .fit_vs 1) }}
+{{ if not $not_fit_vs }}
+  {{ $not_fit    = eq .fit nil }}
+{{ end }}
 {{ $bi_alpha    := and .bi               .alpha       (ne .alpha       1) }}
 {{ $color_alpha := and (or .color .fade) .color_alpha (ne .color_alpha 1) }}
 
