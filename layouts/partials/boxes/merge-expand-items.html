@@ -93,8 +93,9 @@
 
 {{/*  BOXES  */}}
 {{ range $key, $this := $boxes }}
-  {{ $key  := dict "key" $key }}
-  {{ $item := merge $parent $box $this $expand $box_hide $key }}
+  {{ $align_y := dict "align_y" nil }}
+  {{ $key     := dict "key" $key }}
+  {{ $item    := merge $parent $box $align_y $this $expand $box_hide $key }}
   {{ with partial "boxes/merge-expand-item" $item }}
     {{ $items = $items | append . }}
   {{ end }}
