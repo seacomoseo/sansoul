@@ -25,7 +25,7 @@
       {{ $parent := false }}
       
       {{ if ne $parent_path "" }}
-        {{ $parent = partial "func/get" (dict "data" $data "path" $parent_path) }}
+        {{ $parent = partial "func/remap-get" (dict "data" $data "path" $parent_path) }}
       {{ end }}
 
       {{ if and (ne $parent $nil) (ne $parent false) (or (reflect.IsSlice $parent) (reflect.IsMap $parent)) }}
@@ -44,8 +44,8 @@
               {{ $new_parent = $new_parent | append $item }}
             {{ end }}
           {{ end }}
-          {{ $result = partial "func/remove" (dict "data" $result "path" $parent_path) }}
-          {{ $result = partial "func/set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+          {{ $result = partial "func/remap-remove" (dict "data" $result "path" $parent_path) }}
+          {{ $result = partial "func/remap-set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
         {{ else if reflect.IsMap $parent }}
           {{ $new_parent := dict }}
           {{ range $key, $value := $parent }}
@@ -53,8 +53,8 @@
               {{ $new_parent = merge $new_parent (dict $key $value) }}
             {{ end }}
           {{ end }}
-          {{ $result = partial "func/remove" (dict "data" $result "path" $parent_path) }}
-          {{ $result = partial "func/set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+          {{ $result = partial "func/remap-remove" (dict "data" $result "path" $parent_path) }}
+          {{ $result = partial "func/remap-set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
         {{ end }}
       {{ end }}
     {{ end }}

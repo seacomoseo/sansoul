@@ -32,7 +32,7 @@
 
           {{ range $idx, $item := $current }}
             {{ if ne $remaining_path "" }}
-              {{ $nested_value := partial "func/get" (dict "data" $item "path" $remaining_path) }}
+              {{ $nested_value := partial "func/remap-get" (dict "data" $item "path" $remaining_path) }}
               {{ if ne $nested_value $nil }}
                 {{ $results = $results | append $nested_value }}
               {{ end }}

@@ -22,7 +22,7 @@
           {{ $array_path := delimit (first $i $parts) "." }}
           {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
 
-          {{ $array_data := partial "func/get" (dict "data" $result "path" $array_path) }}
+          {{ $array_data := partial "func/remap-get" (dict "data" $result "path" $array_path) }}
           {{ if reflect.IsSlice $array_data }}
             {{ $new_array := slice }}
             {{ range $idx, $item := $array_data }}
@@ -33,7 +33,7 @@
                 {{ end }}
 
                 {{ if ne $item_value $nil }}
-                  {{ $updated_item := partial "func/set" (dict "data" $item "path" $remaining_path "value" $item_value) }}
+                  {{ $updated_item := partial "func/remap-set" (dict "data" $item "path" $remaining_path "value" $item_value) }}
                   {{ $new_array = $new_array | append $updated_item }}
                 {{ else }}
                   {{ $new_array = $new_array | append $item }}
@@ -47,7 +47,7 @@
               {{ end }}
             {{ end }}
 
-            {{ $result = partial "func/set" (dict "data" $result "path" $array_path "value" $new_array) }}
+            {{ $result = partial "func/remap-set" (dict "data" $result "path" $array_path "value" $new_array) }}
           {{ end }}
 
           {{ $handled = true }}
