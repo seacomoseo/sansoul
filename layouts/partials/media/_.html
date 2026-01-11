@@ -11,13 +11,16 @@
   {{- if and .img (not .vid) -}}
     {{- if partial "func/is-vid" .img -}}
       {{- $vid = .img -}}
-      {{- $img = partial "func/poster" .img -}}
-      {{- if not .mute -}}
-        {{- $mute = strings.Contains .img "#mute" -}}
-      {{- end -}}
+      {{- $img = "" -}}
     {{- end -}}
   {{- end -}}
+  {{- if and $vid (not $img) -}}
+    {{- $img = partial "func/poster" $vid -}}
+  {{- end -}}
   {{- if $vid -}}
+    {{- if not .mute -}}
+      {{- $mute = strings.Contains (or .vid .img) "#mute" -}}
+    {{- end -}}
     {{- $opts  := dict "url" $vid "mute" $mute "icon_color" .icon_color -}}
     {{- $iframe = partial "media/iframe" $opts -}}
     {{- if $iframe -}}
@@ -57,6 +60,12 @@
     "img_ext" $img_ext
   -}}
   {{- $media = merge $media $media_new -}}
+
+
+  {{- if eq page.RelPermalink "/todo-encaja/" -}}
+    {{- partial "warn" $media -}}
+  {{- end -}}
+
 
   {{- if $vid -}}
     {{- if hasPrefix $vid "http" -}}
