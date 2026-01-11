@@ -61,12 +61,6 @@
   -}}
   {{- $media = merge $media $media_new -}}
 
-
-  {{- if eq page.RelPermalink "/todo-encaja/" -}}
-    {{- partial "warn" $media -}}
-  {{- end -}}
-
-
   {{- if $vid -}}
     {{- if hasPrefix $vid "http" -}}
       {{- partial "media/out/vid" $media -}}
