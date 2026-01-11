@@ -1,205 +1,29 @@
-{{/* GET */}}
-
-{{ define "partials/get" }}
-  {{ $data := .data }}
-  {{ $path := .path }}
-  {{ $result := .result }}
-  {{ if not (strings.Contains $path ".") }}
-    {{ if strings.Contains $path "*" }}
-      {{ $result = nil }}
-    {{ else }}
-      {{ $result = index $data $path }}
-    {{ end }}
-  {{ else }}
-    {{ $parts := split $path "." }}
-    {{ $current := $data }}
-
-    {{ range $i, $part := $parts }}
-      {{ if eq $current nil }}
-        {{ $current = nil }}
-        {{ break }}
-      {{ end }}
-
-      {{ if eq $part "*" }}
-        {{ if not (reflect.IsSlice $current) }}
-          {{ $current = nil }}
-          {{ break }}
-        {{ end }}
-
-        {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
-        {{ $results := slice }}
-
-        {{ range $idx, $item := $current }}
-          {{ if ne $remaining_path "" }}
-            {{ $nested_value := partial "get" (dict "data" $item "path" $remaining_path) }}
-            {{ if ne $nested_value nil }}
-              {{ $results = $results | append $nested_value }}
-            {{ end }}
-          {{ else }}
-            {{ $results = $results | append $item }}
-          {{ end }}
-        {{ end }}
-
-        {{ $current = $results }}
-        {{ break }}
-      {{ else }}
-        {{ $current = index $current $part }}
-      {{ end }}
-    {{ end }}
-
-    {{ $result = $current }}
-  {{ end }}
-  {{ return $result }}
-{{ end }}
-
-
-{{/* SET */}}
-
-{{ define "partials/set" }}
-  {{ $data := .data }}
-  {{ $path := .path }}
-  {{ $value := .value }}
-  {{ $result := $data }}
-
-  {{ if not (strings.Contains $path ".") }}
-    {{ if not (strings.Contains $path "*") }}
-      {{ $result = merge $data (dict $path $value) }}
-    {{ end }}
-  {{ else }}
-    {{ $parts := split $path "." }}
-    {{ $handled := false }}
-
-    {{ range $i, $part := $parts }}
-      {{ if eq $part "*" }}
-        {{ $array_path := delimit (first $i $parts) "." }}
-        {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
-
-        {{ $array_data := partial "get" (dict "data" $result "path" $array_path) }}
-        {{ if reflect.IsSlice $array_data }}
-          {{ $new_array := slice }}
-          {{ range $idx, $item := $array_data }}
-            {{ if ne $remaining_path "" }}
-              {{ $item_value := index $value $idx }}
-              {{ if ne $item_value nil }}
-                {{ $updated_item := partial "set" (dict "data" $item "path" $remaining_path "value" $item_value) }}
-                {{ $new_array = $new_array | append $updated_item }}
-              {{ else }}
-                {{ $new_array = $new_array | append $item }}
-              {{ end }}
-            {{ else }}
-              {{ if ne $value nil }}
-                {{ $new_array = $new_array | append (index $value $idx) }}
-              {{ else }}
-                {{ $new_array = $new_array | append $item }}
-              {{ end }}
-            {{ end }}
-          {{ end }}
-
-          {{ $result = partial "set" (dict "data" $result "path" $array_path "value" $new_array) }}
-        {{ end }}
-
-        {{ $handled = true }}
-        {{ break }}
-      {{ end }}
-    {{ end }}
-
-    {{ if not $handled }}
-      {{/* Build nested dict bottom-up so it merges correctly */}}
-      {{ $n := len $parts }}
-      {{ $nested := $value }}
-      {{ range $i, $_ := seq $n }}
-        {{ $idx := sub (sub $n 1) $i }}
-        {{ $key := index $parts $idx }}
-        {{ $nested = dict $key $nested }}
-      {{ end }}
-      {{ $result = merge $result $nested }}
-    {{ end }}
-  {{ end }}
-  {{ return $result }}
-{{ end }}
-
-
-{{/* REMOVE (fixed: replace parent instead of deep-merge) */}}
-
-{{ define "partials/remove" }}
-  {{ $data := .data }}
-  {{ $path := .path }}
-  {{ $result := $data }}
-
-  {{ if not (strings.Contains $path ".") }}
-    {{ if not (strings.Contains $path "*") }}
-      {{ $new_result := dict }}
-      {{ range $key, $value := $data }}
-        {{ if ne $key $path }}
-          {{ $new_result = merge $new_result (dict $key $value) }}
-        {{ end }}
-      {{ end }}
-      {{ $result = $new_result }}
-    {{ end }}
-  {{ else }}
-    {{ $parts := split $path "." }}
-    {{ $last_key := index $parts (sub (len $parts) 1) }}
-    {{ $parent_path := delimit (first (sub (len $parts) 1) $parts) "." }}
-    {{ $parent := partial "get" (dict "data" $data "path" $parent_path) }}
-
-    {{ if ne $parent nil }}
-      {{ if reflect.IsSlice $parent }}
-        {{ $new_parent := slice }}
-        {{ range $idx, $item := $parent }}
-          {{ if reflect.IsMap $item }}
-            {{ $new_item := dict }}
-            {{ range $key, $value := $item }}
-              {{ if ne $key $last_key }}
-                {{ $new_item = merge $new_item (dict $key $value) }}
-              {{ end }}
-            {{ end }}
-            {{ $new_parent = $new_parent | append $new_item }}
-          {{ else }}
-            {{ $new_parent = $new_parent | append $item }}
-          {{ end }}
-        {{ end }}
-        {{/* Replace, do not deep-merge the parent */}}
-        {{ $result = partial "remove" (dict "data" $result "path" $parent_path) }}
-        {{ $result = partial "set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
-      {{ else if reflect.IsMap $parent }}
-        {{ $new_parent := dict }}
-        {{ range $key, $value := $parent }}
-          {{ if ne $key $last_key }}
-            {{ $new_parent = merge $new_parent (dict $key $value) }}
-          {{ end }}
-        {{ end }}
-        {{/* Replace, do not deep-merge the parent */}}
-        {{ $result = partial "remove" (dict "data" $result "path" $parent_path) }}
-        {{ $result = partial "set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-  {{ return $result }}
-{{ end }}
-
-
-{{/* APPLY */}}
+{{ $nil := (dict "n" nil).n }}
 
 {{ $data := . }}
-{{ range .remap }}
-  {{ $from_path := .from }}
-  {{ $to_path := .to }}
-  {{ $copy := .copy | default false }}
+{{ if and (ne . $nil) (ne .remap $nil) }}
+  {{ range .remap }}
+    {{ $from_path := .from }}
+    {{ $to_path := .to }}
+    {{ $copy := .copy | default false }}
 
-  {{ if not $to_path }}
-    {{ $data = partial "remove" (dict "data" $data "path" $from_path) }}
-  {{ else }}
-    {{ $source_value := partial "get" (dict "data" $data "path" $from_path) }}
-    {{ if ne $source_value nil }}
-      {{ $data = partial "set" (dict "data" $data "path" $to_path "value" $source_value) }}
-      {{ if not $copy }}
-        {{ $data = partial "remove" (dict "data" $data "path" $from_path) }}
+    {{ if not $to_path }}
+      {{ $data = partial "func/remap-remove" (dict "data" $data "path" $from_path) }}
+    {{ else }}
+      {{ $source_value := partial "func/remap-get" (dict "data" $data "path" $from_path) }}
+      {{ if ne $source_value $nil }}
+        {{ $data = partial "func/remap-set" (dict "data" $data "path" $to_path "value" $source_value) }}
+        {{ if not $copy }}
+          {{ $data = partial "func/remap-remove" (dict "data" $data "path" $from_path) }}
+        {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}
 
 {{/* Remove remap parameter */}}
-{{ $data = merge $data (dict "remap" nil) }}
+{{ if reflect.IsMap $data }}
+  {{ $data = merge $data (dict "remap" $nil) }}
+{{ end }}
 
 {{ return $data }}

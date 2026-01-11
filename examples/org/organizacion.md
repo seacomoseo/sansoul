@@ -33,7 +33,7 @@ org:
   - 123456789
   - +34 987 654 321
   address:
-    name: Sea Como SEO
+  - name: Sea Como SEO
     street: Ronda de Levante, 1
     pc: 30008
     locality: Murcia

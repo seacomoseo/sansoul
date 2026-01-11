@@ -1,0 +1,64 @@
+{{ $nil := (dict "n" nil).n }}
+{{ $result := .data }}
+{{ if reflect.IsMap . }}
+  {{ $data := .data }}
+  {{ $path := .path }}
+  {{ $result = $data }}
+
+  {{ if and (ne $data $nil) (ne $path $nil) (ne $path "") }}
+    {{ if not (strings.Contains $path ".") }}
+      {{ if not (strings.Contains $path "*") }}
+        {{ if reflect.IsMap $data }}
+          {{ $new_result := dict }}
+          {{ range $key, $value := $data }}
+            {{ if ne $key $path }}
+              {{ $new_result = merge $new_result (dict $key $value) }}
+            {{ end }}
+          {{ end }}
+          {{ $result = $new_result }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ $parts := split $path "." }}
+      {{ $last_key := index $parts (sub (len $parts) 1) }}
+      {{ $parent_path := delimit (first (sub (len $parts) 1) $parts) "." }}
+      {{ $parent := false }}
+      
+      {{ if ne $parent_path "" }}
+        {{ $parent = partial "func/get" (dict "data" $data "path" $parent_path) }}
+      {{ end }}
+
+      {{ if and (ne $parent $nil) (ne $parent false) (or (reflect.IsSlice $parent) (reflect.IsMap $parent)) }}
+        {{ if reflect.IsSlice $parent }}
+          {{ $new_parent := slice }}
+          {{ range $idx, $item := $parent }}
+            {{ if reflect.IsMap $item }}
+              {{ $new_item := dict }}
+              {{ range $key, $value := $item }}
+                {{ if ne $key $last_key }}
+                  {{ $new_item = merge $new_item (dict $key $value) }}
+                {{ end }}
+              {{ end }}
+              {{ $new_parent = $new_parent | append $new_item }}
+            {{ else }}
+              {{ $new_parent = $new_parent | append $item }}
+            {{ end }}
+          {{ end }}
+          {{ $result = partial "func/remove" (dict "data" $result "path" $parent_path) }}
+          {{ $result = partial "func/set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+        {{ else if reflect.IsMap $parent }}
+          {{ $new_parent := dict }}
+          {{ range $key, $value := $parent }}
+            {{ if ne $key $last_key }}
+              {{ $new_parent = merge $new_parent (dict $key $value) }}
+            {{ end }}
+          {{ end }}
+          {{ $result = partial "func/remove" (dict "data" $result "path" $parent_path) }}
+          {{ $result = partial "func/set" (dict "data" $result "path" $parent_path "value" $new_parent) }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $result }}

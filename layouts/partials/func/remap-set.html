@@ -1,0 +1,73 @@
+{{ $nil := (dict "n" nil).n }}
+{{ $result := .data }}
+{{ if reflect.IsMap . }}
+  {{ $data := .data }}
+  {{ $path := .path }}
+  {{ $value := .value }}
+  {{ $result = $data }}
+
+  {{ if and (ne $data $nil) (ne $path $nil) (ne $path "") }}
+    {{ if not (strings.Contains $path ".") }}
+      {{ if not (strings.Contains $path "*") }}
+        {{ if reflect.IsMap $data }}
+          {{ $result = merge $data (dict $path $value) }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ $parts := split $path "." }}
+      {{ $handled := false }}
+
+      {{ range $i, $part := $parts }}
+        {{ if eq $part "*" }}
+          {{ $array_path := delimit (first $i $parts) "." }}
+          {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
+
+          {{ $array_data := partial "func/get" (dict "data" $result "path" $array_path) }}
+          {{ if reflect.IsSlice $array_data }}
+            {{ $new_array := slice }}
+            {{ range $idx, $item := $array_data }}
+              {{ if ne $remaining_path "" }}
+                {{ $item_value := $nil }}
+                {{ if reflect.IsSlice $value }}
+                  {{ $item_value = index $value $idx }}
+                {{ end }}
+
+                {{ if ne $item_value $nil }}
+                  {{ $updated_item := partial "func/set" (dict "data" $item "path" $remaining_path "value" $item_value) }}
+                  {{ $new_array = $new_array | append $updated_item }}
+                {{ else }}
+                  {{ $new_array = $new_array | append $item }}
+                {{ end }}
+              {{ else }}
+                {{ if and (reflect.IsSlice $value) (lt $idx (len $value)) }}
+                  {{ $new_array = $new_array | append (index $value $idx) }}
+                {{ else }}
+                  {{ $new_array = $new_array | append $item }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+
+            {{ $result = partial "func/set" (dict "data" $result "path" $array_path "value" $new_array) }}
+          {{ end }}
+
+          {{ $handled = true }}
+          {{ break }}
+        {{ end }}
+      {{ end }}
+
+      {{ if not $handled }}
+        {{/* Build nested dict bottom-up */}}
+        {{ $n := len $parts }}
+        {{ $nested := $value }}
+        {{ range $i, $_ := seq $n }}
+          {{ $idx := sub (sub $n 1) $i }}
+          {{ $key := index $parts $idx }}
+          {{ $nested = dict $key $nested }}
+        {{ end }}
+        {{ $result = merge $result $nested }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $result }}

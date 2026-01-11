@@ -1,0 +1,59 @@
+{{ $nil := (dict "n" nil).n }}
+{{ $result := $nil }}
+{{ if reflect.IsMap . }}
+  {{ $data := .data }}
+  {{ $path := .path }}
+
+  {{ if and (ne $data $nil) (ne $path $nil) (ne $path "") }}
+    {{ if not (strings.Contains $path ".") }}
+      {{ if not (strings.Contains $path "*") }}
+        {{ if reflect.IsMap $data }}
+          {{ $result = index $data $path }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ $parts := split $path "." }}
+      {{ $current := $data }}
+
+      {{ range $i, $part := $parts }}
+        {{ if eq $current $nil }}
+          {{ $current = $nil }}
+          {{ break }}
+        {{ end }}
+
+        {{ if eq $part "*" }}
+          {{ if not (reflect.IsSlice $current) }}
+            {{ $current = $nil }}
+            {{ break }}
+          {{ end }}
+
+          {{ $remaining_path := delimit (after (add $i 1) $parts) "." }}
+          {{ $results := slice }}
+
+          {{ range $idx, $item := $current }}
+            {{ if ne $remaining_path "" }}
+              {{ $nested_value := partial "func/get" (dict "data" $item "path" $remaining_path) }}
+              {{ if ne $nested_value $nil }}
+                {{ $results = $results | append $nested_value }}
+              {{ end }}
+            {{ else }}
+              {{ $results = $results | append $item }}
+            {{ end }}
+          {{ end }}
+
+          {{ $current = $results }}
+          {{ break }}
+        {{ else if reflect.IsMap $current }}
+          {{ $current = index $current $part }}
+        {{ else }}
+          {{ $current = $nil }}
+          {{ break }}
+        {{ end }}
+      {{ end }}
+
+      {{ $result = $current }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $result }}
