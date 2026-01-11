@@ -21,43 +21,46 @@ get:
   to: div_x
 - from: footer.div_y
   to: div_y
-box:
-  space: 2
 boxes:
-- if: footer.dots
+- space: 2
   get:
-  - from: footer.dots
-    to: dots
-- md: |
-    - ::copyright::        {{< internal-link index >}}
-    - ::balance::          {{< internal-link legal >}}
-    - ::encrypted::        {{< internal-link privacy >}}
-    - ::cookie::           {{< internal-link cookies >}}
-    - ::brand:seacomoseo:: {{< i18n web_design >}} [seacomoseo.com](https://seacomoseo.com/ "[homefollow]")
-    {.list-inline}
-  get:
-  - from: footer.md
-    to: md
-  - from: footer.boxes
-    to: boxes
-# - links:
-#   - type: custom
-#     icon: copyright
-#     label: '{{% page-title index %}}'
-#     url: '{{% page-link index %}}'
-#   - type: custom
-#     icon: balance
-#     label: '{{% page-title legal %}}'
-#     url: '{{% page-link legal %}}'
-#   - type: custom
-#     icon: encrypted
-#     label: '{{% page-title privacy %}}'
-#     url: '{{% page-link privacy %}}'
-#   - type: custom
-#     icon: cookie
-#     label: '{{% page-title cookies %}}'
-#     url: '{{% page-link cookies %}}'
-#   - type: custom
-#     icon: brand:seacomoseo
-#     label: '{{% i18n web_design %}} seacomoseo.com'
-#     url: https://seacomoseo.com/
+  - from: footer.space
+    to: space
+  boxes:
+  - if: footer.dots
+    get:
+    - from: footer.dots
+      to: dots
+  - md: |
+      - ::copyright::        {{< internal-link index >}}
+      - ::balance::          {{< internal-link legal >}}
+      - ::encrypted::        {{< internal-link privacy >}}
+      - ::cookie::           {{< internal-link cookies >}}
+      - ::brand:seacomoseo:: {{< i18n web_design >}} [seacomoseo.com](https://seacomoseo.com/ "[homefollow]")
+      {.list-inline}
+    get:
+    - from: footer.md
+      to: md
+    - from: footer.boxes
+      to: boxes
+  # - links:
+  #   - type: custom
+  #     icon: copyright
+  #     label: '{{% page-title index %}}'
+  #     url: '{{% page-link index %}}'
+  #   - type: custom
+  #     icon: balance
+  #     label: '{{% page-title legal %}}'
+  #     url: '{{% page-link legal %}}'
+  #   - type: custom
+  #     icon: encrypted
+  #     label: '{{% page-title privacy %}}'
+  #     url: '{{% page-link privacy %}}'
+  #   - type: custom
+  #     icon: cookie
+  #     label: '{{% page-title cookies %}}'
+  #     url: '{{% page-link cookies %}}'
+  #   - type: custom
+  #     icon: brand:seacomoseo
+  #     label: '{{% i18n web_design %}} seacomoseo.com'
+  #     url: https://seacomoseo.com/
