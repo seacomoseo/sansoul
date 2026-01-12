@@ -28,7 +28,13 @@
     }}
   {{ end }}
 
-  {{ return merge .item (dict "prev" $prev "next" $next) }}
+  {{ $nav  := dict "prev" $prev "next" $next }}
+  {{ $item := merge .item $nav }}
+  {{ with $item.children }}
+    {{ $item = merge $item (dict "children" (merge . $nav)) }}
+  {{ end }}
+
+  {{ return $item }}
 {{ end }}
 
 
