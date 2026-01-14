@@ -3,7 +3,7 @@
 {{ return slice
 
   (partial "cms/widget" (dict "var" `types_title`    "name" `title`                      "hint" $types_title_hint))
-  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `int`    "min" 0                 ))
+  (partial "cms/widget" (dict "var" `types_weight`   "name" `weight`   "widget" `int`    "min" -10000            ))
   (partial "cms/widget" (dict "var" `types_base`     "name" `base`     "widget" `select` "opts" `~opts_base`     ))
   (partial "cms/widget" (dict "var" `types_emoji`    "name" `emoji`                                              ))
   (partial "cms/widget" (dict "var" `types_hide`     "name" `hide`     "widget" `bool`                           ))
