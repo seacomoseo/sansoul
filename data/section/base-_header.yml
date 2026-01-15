@@ -40,12 +40,14 @@ boxes:
 - if: img
   node: div
   get:
-  - from: img
-    to: img
+  - to: img
+  - to: vid
   - from: title
     to: alt
   - from: seo.title
     to: alt
+  - from: img
+    to: url
   - from: img
     to: url
   - to: ratio
