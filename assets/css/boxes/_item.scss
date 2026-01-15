@@ -202,7 +202,9 @@
 }
 .box__icon--side {
   order: var(--icon-side-order, -1);
-  translate: 0 .125em;
+  &:not(.icon--txt) {
+    translate: 0 .125em;
+  }
 }
 .box__icon--sub {
   display: flex;
