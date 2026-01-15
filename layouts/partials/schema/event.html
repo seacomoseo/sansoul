@@ -8,9 +8,9 @@
 {{ with .Params }}
   {{ if .address }}
     {{ $place   := partial "schema/address" . }}
-    {{ $address := $place.address | default dict }}
-    {{ $has_map := $place.has_map | default "" }}
-    {{ $geo     := $place.geo     | default dict }}
+    {{ $address := index $place.address 0 | default dict }}
+    {{ $has_map := index $place.has_map 0 | default "" }}
+    {{ $geo     := index $place.geo 0     | default dict }}
     {{ $location = dict
       "@type"   "Place"
       "name"    $address.name

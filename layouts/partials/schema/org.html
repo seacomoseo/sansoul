@@ -1,6 +1,11 @@
 {{ $schema := dict }}
 
-{{ with .Params.org | default . }}
+{{ $org := .Params.org | default . }}
+{{ if reflect.IsMap $org | not }}
+  {{ $org = $org.Params }}
+{{ end }}
+
+{{ with $org }}
 
   {{/*  Types  */}}
   {{ $types      := .types | default (slice "Organization") }}
