@@ -12,7 +12,7 @@
       {{ if $datas }}
         {{ range $types }}
           {{ $type := .type | default "pages" }}
-          {{ $map  := .map }}
+          {{ $maps := .maps }}
 
           {{ with .index }}
             {{ $datas = index $datas (split . ".") }}
@@ -23,7 +23,7 @@
               {{ with . }}
 
                 {{ $obj := dict }}
-                {{ range $map }}
+                {{ range $maps }}
                   {{ $from := .from | default .to }}
 
                   {{ $pair := index $data (split $from ".") }}

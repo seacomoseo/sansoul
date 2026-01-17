@@ -1,6 +1,8 @@
 
 {{ $value  := .str }}
-{{ if      eq .kind "int" }}
+{{ if      eq .kind "str" }}
+  {{ $value = string .str }}
+{{ else if eq .kind "int" }}
   {{ $value = int .str }}
 {{ else if eq .kind "float" }}
   {{ $value = float .str }}
