@@ -7,7 +7,7 @@ const players = {}
 
 // Video ID
 function videoId (src) {
-  return src.match(/(youtube-nocookie\.com\/embed|vimeo\.com\/video)\/([\w-]+)/)[2]
+  return src.match(/(youtube-nocookie\.com\/embed|vimeo\.com(?:\/video)?)\/([\w-]+)/)[2]
 }
 
 // Player ID
@@ -117,7 +117,7 @@ export function initPlayer () {
           }
 
           // Assigns the URL
-          iframe.src = isYT ? `${src}${attrsLang}&autoplay=1&origin=${location.origin}&showinfo=0` : src
+          iframe.src = isYT ? `${src}${attrsLang}&autoplay=1&origin=${location.origin}&showinfo=0` : `${src}&autoplay=1`
         }
       }
     })

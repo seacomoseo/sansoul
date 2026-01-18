@@ -42,7 +42,7 @@
     (cond (not $mute) "" "; autoplay; loop; mute")
   }}
 
-{{ else with .vid | findRESubmatch `vimeo\.com/(?:video/)?([^\w-]+)` }}
+{{ else with .vid | findRESubmatch `vimeo\.com/(?:video/)?([\w-]+)` }}
 
   {{ $ifr   = true }}
   {{ $name  = "Vimeo" }}
