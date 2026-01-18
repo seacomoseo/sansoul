@@ -61,16 +61,16 @@
 
 {{- /*  Slices  */ -}}
 {{- $slices := dict
-  "markers"        (slice                                                              "radio" "checks"                                      )
-  "keys"           (slice "text" "mail" "phone" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo" "hidden"                )
-  "full"           (slice                                              "area"          "radio" "checks" "file" "geo" "h2" "h3" "h4" "h5" "h6")
-  "label"          (slice "text" "mail" "phone" "number" "date" "time" "area" "select"                           "geo"                       )
-  "border_chamfer" (slice "text" "mail" "phone" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo"                         )
-  "tag_inputs"     (slice "text" "mail" "phone" "number" "date" "time"                                        "file"                         )
-  "icon"           (slice "text" "mail" "phone" "number" "date" "time" "area" "select"                                                       )
-  "min_max_length" (slice "text" "mail" "phone"                                                                                              )
-  "wrap"           (slice "hidden" "br" "hr"                                                                                                 )
-  "onfocus"        (slice "date" "time"                                                                                                      )
+  "markers"        (slice                                                            "radio" "checks"                                      )
+  "keys"           (slice "text" "mail" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo" "hidden"                )
+  "full"           (slice                                              "area"        "radio" "checks" "file" "geo" "h2" "h3" "h4" "h5" "h6")
+  "label"          (slice "text" "mail" "tel" "number" "date" "time" "area" "select"                         "geo"                         )
+  "border_chamfer" (slice "text" "mail" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo"                         )
+  "tag_inputs"     (slice "text" "mail" "tel" "number" "date" "time"                                  "file"                               )
+  "icon"           (slice "text" "mail" "tel" "number" "date" "time" "area" "select"                                                       )
+  "min_max_length" (slice "text" "mail" "tel"                                                                                              )
+  "wrap"           (slice "hidden" "br" "hr"                                                                                               )
+  "onfocus"        (slice "date" "time"                                                                                                    )
 -}}
 
 
@@ -85,7 +85,7 @@
   {{- $names       := slice -}}
   {{- if .type | in $slices.markers -}}
     {{- range .items -}}
-      {{- $names    = $names | append (.key | default .label) -}}
+      {{- $names    = $names | append (or .key .label) -}}
     {{- end -}}
   {{- else -}}
     {{- $names      = slice .name -}}
@@ -98,7 +98,7 @@
         {{- if .type | in $slices.markers -}}
           {{- with .items -}}
             {{- range . -}}
-              {{- $key := .key | default .label -}}
+              {{- $key := or .key .label -}}
               {{- range split $key "||" -}}
                 {{- range split . "&&" -}}
                   {{- if . | in $names -}}
@@ -248,7 +248,7 @@
   {{- range $inputs -}}
     {{- /*  vars  */ -}}
     {{- $name        := .name -}}
-    {{- $type        := .type -}}
+    {{- $type        := cond (eq .type "phone") "tel" .type -}}
     {{- $placeholder := print (.label | default .name) (cond (not .req) "" " *") -}}
     {{- $req         := .req -}}
     {{- $req_attr    := cond (not .req) "" " data-req" | safeHTMLAttr -}}
@@ -384,7 +384,7 @@
         </label>
         {{- end -}}
 
-        {{- if eq $type "phone" }}
+        {{- if eq $type "tel" }}
           <label class="form__pre">
             <i class="hide">Prefix</i>
             <select class="form__select">
@@ -435,11 +435,11 @@
       {{- /*  select  */ -}}
       {{- else if $type | eq "select" }}
         <label>
-          <i class="hide">Select</i>
+          <i class="hide">{{ or .label .name }}</i>
           <select class="form__select" name="{{ .name }}" {{- $req_attr }}>
             <option value="">{{ $placeholder }}</option>
             {{- range .items }}
-              <option value="{{ .key | default .label }}">{{ .label }}</option>
+              <option value="{{ or .key .label }}">{{ .label }}</option>
             {{- end }}
           </select>
         </label>
@@ -448,7 +448,7 @@
       {{- else if $type | in $slices.markers -}}
         {{- $axis      := cond (not .x) "" " form__fieldset--x" -}}
         {{- $is_checks := eq $type "checks" -}}
-        {{- $legend    := .label | default .name }}
+        {{- $legend    := or .label .name }}
         <fieldset class="form__fieldset {{- $axis }}" {{- $req_attr }}>
           {{- if $legend }}
             <legend>
@@ -461,9 +461,9 @@
           {{- with .items -}}
             {{- $only := eq (len .) 1 -}}
             {{- range . -}}
-              {{- $key := .key | default .label -}}
+              {{- $key := or .key .label -}}
               {{- if $is_checks -}}
-                {{- $name  = .key | default (print $legend " ➡️ " $key) -}}
+                {{- $name  = or .key (print $legend " ➡️ " $key) -}}
                 {{- $key  = "✅" -}}
                 {{- $type = "checkbox" -}}
               {{- end }}
