@@ -61,16 +61,16 @@
 
 {{- /*  Slices  */ -}}
 {{- $slices := dict
-  "markers"        (slice                                                            "radio" "checks"                                      )
-  "keys"           (slice "text" "mail" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo" "hidden"                )
-  "full"           (slice                                              "area"        "radio" "checks" "file" "geo" "h2" "h3" "h4" "h5" "h6")
-  "label"          (slice "text" "mail" "tel" "number" "date" "time" "area" "select"                         "geo"                         )
-  "border_chamfer" (slice "text" "mail" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo"                         )
-  "tag_inputs"     (slice "text" "mail" "tel" "number" "date" "time"                                  "file"                               )
-  "icon"           (slice "text" "mail" "tel" "number" "date" "time" "area" "select"                                                       )
-  "min_max_length" (slice "text" "mail" "tel"                                                                                              )
-  "wrap"           (slice "hidden" "br" "hr"                                                                                               )
-  "onfocus"        (slice "date" "time"                                                                                                    )
+  "markers"        (slice                                                             "radio" "checks"                                      )
+  "keys"           (slice "text" "email" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo" "hidden"                )
+  "full"           (slice                                             "area"          "radio" "checks" "file" "geo" "h2" "h3" "h4" "h5" "h6")
+  "label"          (slice "text" "email" "tel" "number" "date" "time" "area" "select"                         "geo"                         )
+  "border_chamfer" (slice "text" "email" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo"                         )
+  "tag_inputs"     (slice "text" "email" "tel" "number" "date" "time"                                  "file"                               )
+  "icon"           (slice "text" "email" "tel" "number" "date" "time" "area" "select"                                                       )
+  "min_max_length" (slice "text" "email" "tel"                                                                                              )
+  "wrap"           (slice "hidden" "br" "hr"                                                                                                )
+  "onfocus"        (slice "date" "time"                                                                                                     )
 -}}
 
 
@@ -248,7 +248,12 @@
   {{- range $inputs -}}
     {{- /*  vars  */ -}}
     {{- $name        := .name -}}
-    {{- $type        := cond (eq .type "phone") "tel" .type -}}
+    {{- $type        := .type -}}
+    {{- if eq $type "phone" -}}
+      {{- $type       = "tel" -}}
+    {{- else if eq $type "mail" -}}
+      {{- $type       = "email" -}}
+    {{- end -}}
     {{- $placeholder := print (.label | default .name) (cond (not .req) "" " *") -}}
     {{- $req         := .req -}}
     {{- $req_attr    := cond (not .req) "" " data-req" | safeHTMLAttr -}}
