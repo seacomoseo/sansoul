@@ -61,7 +61,7 @@ export function initPlayer () {
           // Remove play button
           video.nextElementSibling?.remove()
         } else {
-          const isYT = dataMedia.dataset.youtube
+          const isYT = dataMedia.dataset.youtube === ""
           const idVideo = videoId(src)
           const id = playerId(dataMedia, idVideo)
           const attrsLang = lang === 'es' ? '' : `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
