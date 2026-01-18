@@ -1,0 +1,80 @@
+{{ $data  := dict }}
+{{ $ifr   := false }}
+{{ $name  := "" }}
+{{ $src   := .vid }}
+{{ $url   := "" }}
+{{ $allow := "" }}
+{{ $id    := "" }}
+{{ $t     := "" }}
+{{ $mute  := .mute }}
+{{- if eq $mute nil -}}
+  {{- $mute = strings.Contains (or .vid .img) "#mute" -}}
+{{- end -}}
+
+{{ with .vid | findRESubmatch `(^.+\.(?:mp4|mov|avi|webm))(?:.*[#&?](t=[\d,]+))?` }}
+
+  {{ $name  = "file" }}
+  {{ $src   = index . 0 1 }}
+  {{ $url   = $src }}
+  {{ with index . 0 2 }}
+    {{ $t   = print "#" . }}
+  {{ end }}
+
+{{ else with .vid | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtu\.be/)([\w-]+)` }}
+
+  {{ $ifr   = true }}
+  {{ $name  = "YouTube" }}
+  {{ $base := "https://www.youtube-nocookie.com/embed/" }}
+  {{ $id    = index . 0 1 }}
+  {{ $opts := "?rel=0&modestbranding=1&color=white&enablejsapi=1" }}
+  {{ $t    := $.vid | findRESubmatch `[#&?]t\=(\d+)`       | default "" }}
+  {{ $end  := $.vid | findRESubmatch `[#&?]end\=(\d+)`     | default "" }}
+  {{ $list := $.vid | findRESubmatch `[#&?]list\=([\w-]+)` | default "" }}
+  {{ with $t    }}{{ $t    = print "&start=" (index $t    0 1) }}{{ end }}
+  {{ with $end  }}{{ $end  = print "&end="   (index $end  0 1) }}{{ end }}
+  {{ with $list }}{{ $list = print "&list="  (index $list 0 1) }}{{ end }}
+  {{ $loop := cond (not $list) (print "&playlist=" $id) "" }}
+  {{ $auto := cond (not $mute) "" (print "&autoplay=1&loop=1&mute=1&showinfo=0" $loop) }}
+  {{ $src   = print $base $id $opts $auto $t $end $list }}
+  {{ $url   = print "https://youtu.be/" $id }}
+  {{ $allow = print
+    "accelerometer clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    (cond (not $mute) "" "; autoplay; loop; mute")
+  }}
+
+{{ else with .vid | findRESubmatch `vimeo\.com/(?:video/)?([^\w-]+)` }}
+
+  {{ $ifr   = true }}
+  {{ $name  = "Vimeo" }}
+  {{ $base := "https://player.vimeo.com/video/" }}
+  {{ $id    = index . 0 1 }}
+  {{ $opts := "?byline=0&portrait=0&title=0" }}
+  {{ $auto := cond (not $mute) "" "&autoplay=1&loop=1&autopause=0&muted=1&controls=0" }}
+  {{ $src   = print $base $id $opts $auto }}
+  {{ $url   = print "https://player.vimeo.com/video/" $id }}
+  {{ $allow = print "fullscreen" (cond (not $mute) "" "; autoplay; loop; muted") }}
+
+{{ end }}
+
+{{ if $name }}
+  {{ $title := lower $name }}
+  {{ $name   = print "data-" (lower $name) }}
+  {{ $is    := and .icon_color (ne .icon_color "cta") }}
+  {{ $color := cond $is "" .icon_color }}
+  {{ $play  := partial "icon" (dict "class" $color "def" "play") }}
+
+  {{ $data = dict
+    "ifr"   $ifr
+    "title" $title
+    "name"  $name
+    "id"    $id
+    "src"   $src
+    "url"   $url
+    "allow" $allow
+    "play"  $play
+    "t"     $t
+    "mute"  $mute
+  }}
+{{ end }}
+
+{{ return $data }}

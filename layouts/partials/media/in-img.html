@@ -7,9 +7,9 @@
 
   {{- /*  PICTURE  */ -}}
 
-  {{- $iframe_data := .iframe | not | not -}}
-  {{- $iframe_name := or .iframe.name "aux" -}}
-  {{- $iframe_src  := cond $iframe_data .iframe.src false -}}
+  {{- $vid_data := .vid | not | not -}}
+  {{- $vid_name := index .vid "name" | default "aux" -}}
+  {{- $vid_src  := index .vid "src" -}}
 
   {{- $style := "" -}}
   {{- if $img | findRE `\.jpe?g$`  -}}
@@ -21,10 +21,10 @@
   {{- end -}}
 
   {{- $pic_attrs := dict
-    "class"       .class
-    "data-iframe" $iframe_data
-    $iframe_name  $iframe_src
-    "style"       $style
+    "class"    .class
+    $vid_name  $vid_data
+    "data-vid" $vid_src
+    "style"    $style
   -}}
   {{- $pic_attrs = partial "func/attrs" $pic_attrs -}}
 
@@ -255,14 +255,14 @@
 
 
   {{- /*  ICON PLAY  */ -}}
-  {{- with .iframe.play }}
+  {{- with index .vid "play" }}
     {{ . -}}
   {{- end -}}
 
 
   {{- /*  SCHEMA  */}}
   {{ if not .notschema -}}
-    {{- with .iframe -}}
+    {{- with .vid -}}
       {{- partial "schema/vid" (dict
         "name"         $.alt
         "thumbnailUrl" $img_base.Permalink

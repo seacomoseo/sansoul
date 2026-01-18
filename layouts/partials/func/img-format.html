@@ -7,7 +7,7 @@
   {{ $webp     = $webp | resources.Copy $path }}
   {{ $img_link = $webp.RelPermalink }}
 {{ else }}
-  {{ $height := div (mul .img.Height .size) .img.Width }}
+  {{ $height := div (mul .img.Height .size) .img.Width | int }}
   {{ $avif   := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $height ".avif") }}
   {{ $get    := resources.Get $avif }}
   {{ with $get }}

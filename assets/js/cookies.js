@@ -7,7 +7,7 @@ export function initCookies () {
 
   // Inject CSS variables
   if (cookiesLegal) {
-    if (document.querySelector('[data-iframe]')) {
+    if (document.querySelector('[data-vid]')) {
       document.body.style.setProperty('--cookie-video', `"${cookiesVideo}"`)
     }
   }

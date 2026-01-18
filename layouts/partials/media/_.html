@@ -3,10 +3,7 @@
   {{- $media  := . -}}
   {{- $img    := .img -}}
   {{- $vid    := .vid -}}
-  {{- $mute   := .mute -}}
-  {{- $iframe := dict -}}
   {{- $alt    := .alt -}}
-  {{- $t      := "" -}}
 
   {{- if and .img (not .vid) -}}
     {{- if partial "func/is-vid" .img -}}
@@ -18,31 +15,19 @@
     {{- $img = partial "func/poster" $vid -}}
   {{- end -}}
   {{- if $vid -}}
-    {{- if not .mute -}}
-      {{- $mute = strings.Contains (or .vid .img) "#mute" -}}
-    {{- end -}}
-    {{- $opts  := dict "url" $vid "mute" $mute "icon_color" .icon_color -}}
-    {{- $iframe = partial "media/iframe" $opts -}}
-    {{- if $iframe -}}
-      {{- $vid = "" -}}
-    {{- else -}}
-      {{- with $vid | findRESubmatch `[#&?](t=[\d,]+)` -}}
-        {{- $t = index . 0 1 -}}
-        {{- $t = print "#" $t -}}
-      {{- end -}}
-      {{- $vid = $vid | replaceRE `[#&?].*$` "" -}}
-      {{- $vid = partial "func/check-media" $vid -}}
-    {{- end -}}
+    {{- $opts := merge . (dict "vid" $vid) -}}
+    {{- $vid   = partial "media/vid-data" $opts -}}
   {{- end -}}
   {{- with $img -}}
     {{- $img = partial "func/check-media" . -}}
   {{- end -}}
 
   {{- if not .alt -}}
-    {{- with $iframe -}}
-      {{- $alt = print (i18n "vid") " · " .name " · " .id -}}
+    {{- if index $vid "ifr" -}}
+      {{- $alt = print (i18n "vid") " · " $vid.name " · " $vid.id -}}
     {{- else -}}
-      {{- $alt = (or $img $vid) | replaceRE `^(?:/u|http.+)/(.+)\..*$` "$1" | humanize -}}
+      {{- $src = or $img (index $vid "url") -}}
+      {{- $alt = $src | replaceRE `^(?:/u|http.+)/(.+)\..*$` "$1" | humanize -}}
     {{- end -}}
   {{- end -}}
 
@@ -52,32 +37,19 @@
   {{- $media_new := dict
     "img"     $img
     "vid"     $vid
-    "mute"    $mute
-    "iframe"  $iframe
     "alt"     $alt
-    "t"       $t
     "lazy"    $lazy
     "img_ext" $img_ext
   -}}
   {{- $media = merge $media $media_new -}}
 
-  {{- if $vid -}}
-    {{- if hasPrefix $vid "http" -}}
-      {{- partial "media/out/vid" $media -}}
-    {{- else -}}
-      {{- partial "media/in/vid" $media -}}
-    {{- end -}}
-  {{- else if and $iframe $mute -}}
-      {{- partial "media/out/iframe" $media -}}
+  {{- if index $vid "mute" -}}
+    {{- partial "media/vid" $media -}}
+  {{- else if $img_ext -}}
+    {{- partial "media/out-img" $media -}}
+  {{- else if hasSuffix $img ".svg" -}}
+    {{- partial "media/in-svg" $media -}}
   {{- else -}}
-    {{- if $img_ext -}}
-      {{- partial "media/out/img" $media -}}
-    {{- else -}}
-      {{- if hasSuffix $img ".svg" -}}
-        {{- partial "media/in/svg" $media -}}
-      {{- else -}}
-        {{- partial "media/in/img" $media -}}
-      {{- end -}}
-    {{- end -}}
+    {{- partial "media/in-img" $media -}}
   {{- end -}}
 {{- end -}}

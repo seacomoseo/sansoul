@@ -1,0 +1,114 @@
+{{- $img       := .img -}}
+{{- $vid_out   := hasPrefix .vid.src "http" -}}
+{{- $embed_url := "" -}}
+
+
+{{- if .vid.ifr -}}
+
+  {{/*  IFRAME  */}}
+
+  {{- $embed_url := .vid.src -}}
+
+  {{/*  Attributes  */}}
+  {{- $attrs := dict
+    "class"           .class
+    "width"           "640"
+    "height"          "360"
+    "src"             .vid.src
+    "title"           .alt
+    "allow"           .vid.allow
+    "allowfullscreen" true
+    "loading"         .lazy
+  -}}
+  {{- $attrs = partial "func/attrs" $attrs -}}
+
+  {{- /*  HTML  */}}
+  <iframe {{- $attrs }}></iframe>
+
+{{- else -}}
+
+  {{/*  FILE  */}}
+
+  {{/*  Sources  */}}
+  {{- $srcs := slice -}}
+  {{- if $vid_out -}}
+    {{- $type := .vid.src | replaceRE `^.+\.([^#?&]+)` `$1` -}}
+    {{- $src  := dict "RelPermalink" .vid.src "MediaType" (dict "Type" $type) -}}
+    {{- $srcs  = $srcs | append $src -}}
+  {{- else -}}
+    {{- with resources.Get .vid.src -}}
+      {{- $srcs = $srcs | append . -}}
+      {{- if ne .MediaType.SubType "webm" -}}
+        {{- $webm := $.vid.src | replaceRE `\.(mp4|mov|avi)$` ".webm" -}}
+        {{- with resources.Get $webm -}}
+          {{- $srcs = $srcs | append . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{/*  Process poster  */}}
+  {{- if .img -}}
+    {{- if not .img_ext -}}
+      {{- with resources.Get .img -}}
+        {{- if hugo.IsProduction -}}
+          {{- $img = partial "func/img-format" (dict "img" . "size" (math.Min .Width 280)) -}}
+        {{- else -}}
+          {{- $img = .RelPermalink -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and (not $img) .notlazy -}}
+    {{- with resources.Get "default-poster.svg" -}}
+      {{- $b64 := .Content | base64Encode -}}
+      {{- $img  = print "data:image/svg+xml;base64," $b64 -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{/*  Attributes  */}}
+  {{- $preload  := "" -}}
+  {{- if and (not .notlazy) $img -}}
+    {{- $preload = "none" -}}
+  {{- end -}}
+  {{- $attrs := dict
+    "class"       .class
+    "width"       "640"
+    "height"      "360"
+    "muted"       true
+    "loop"        .notlazy
+    "autoplay"    .notlazy
+    "playsinline" .notlazy
+    "preload"     $preload
+    "data-mute"   (not .notlazy)
+    "poster"      $img
+  -}}
+  {{- $attrs = partial "func/attrs" $attrs -}}
+
+  {{- /*  HTML  */}}
+  <video {{- $attrs }}>
+    {{ range $srcs }}
+      <source src="{{ .RelPermalink }}{{ $.vid.t }}" type="{{ .MediaType.Type }}">
+    {{- end }}
+  </video>
+
+{{- end -}}
+
+{{- /*  schema  */}}
+{{- $upload  := .upload }}
+{{- if not $upload }}
+  {{- if not $vid_out }}
+    {{- $path  := replace .vid.src "/u/" "/uploads/" }}
+    {{- with os.Stat $path }}
+      {{- $upload = .ModTime }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{ partial "schema/vid" (dict
+  "name"         .alt
+  "thumbnailUrl" $img
+  "uploadDate"   $upload
+  "duration"     .duration
+  "contentUrl"   .vid.url
+  "embedUrl"     nil
+) -}}

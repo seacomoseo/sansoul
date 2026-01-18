@@ -14,10 +14,10 @@
     {{- $height = 512 -}}
   {{- end -}}
   {{- if $head -}}
-    {{- $iframe_data := .iframe | not | not -}}
-    {{- $iframe_name := or .iframe.name "aux" -}}
-    {{- $iframe_src  := cond $iframe_data .iframe.src false -}}
-    {{- $attrs       := dict "data-iframe" $iframe_data $iframe_name $iframe_src -}}
+    {{- $vid_data    := .vid | not | not -}}
+    {{- $vid_name    := index .vid "name" | default "aux" -}}
+    {{- $vid_src     := index .vid "src" -}}
+    {{- $attrs       := dict $vid_name $vid_data "data-vid" $vid_src -}}
     {{- $min         := $src | minify -}}
     {{- $content     := $min.Content | replaceRE `\n` "" -}}
     {{- $src          = $content | resources.FromString $src.RelPermalink -}}
