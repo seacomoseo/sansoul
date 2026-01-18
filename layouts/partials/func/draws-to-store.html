@@ -261,7 +261,10 @@
         {{ $type = "svgs" }}
       {{ end }}
     {{ end }}
-    {{ page.Store.Add $type $icon }}
+    {{ $not_ascii := findRE `[^\x00-\x7F]` $icon }}
+    {{ if not (and (eq $type "glyphs") $not_ascii) }}
+      {{ page.Store.Add $type $icon }}
+    {{ end }}
   {{ end }}
 {{ end }}
 
