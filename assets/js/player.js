@@ -16,7 +16,7 @@ function playerId (target, idVideo) {
   return `${idSection}-${idVideo}`
 }
 
-export function initIframePlayer () {
+export function initPlayer () {
   const posterVideo = document.querySelectorAll('[data-vid]')
 
   if (posterVideo.length) {
@@ -128,7 +128,7 @@ export function initIframePlayer () {
 export function togglePlayer (target, openModal) {
   if (openModal) {
     // Click (load and play) data video
-    const dataMedia = target.querySelectorAll('.ph [data-video]')
+    const dataMedia = target.querySelectorAll('.ph [data-vid]')
     if (dataMedia.length === 1) {
       dataMedia[0].click()
       return
@@ -156,9 +156,9 @@ export function togglePlayer (target, openModal) {
     }
     return
   }
-  // Play/Pause only one video player
-  const videoPlayers = target.querySelectorAll('.modal.ph video')
-  if (videoPlayers.length === 1) {
-    openModal ? videoPlayers[0].play() : videoPlayers[0].pause()
+  // Play/Pause only one file player
+  const filePlayers = target.querySelectorAll('.modal.ph video')
+  if (filePlayers.length === 1) {
+    openModal ? filePlayers[0].play() : filePlayers[0].pause()
   }
 }
