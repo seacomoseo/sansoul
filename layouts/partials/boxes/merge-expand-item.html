@@ -76,7 +76,9 @@
     "contain" .contain
     "gray"    .gray
   }}
-  {{ $each    = merge $each .box }}
+  {{ if reflect.IsMap .box }}
+    {{ $each  = merge $each .box }}
+  {{ end }}
   {{ $gallery = dict "box" $each "boxes" $items }}
   {{ $gallery = merge . .gallery $gallery }}
   {{ $gallery = partial "boxes/merge-expand-items" $gallery }}
