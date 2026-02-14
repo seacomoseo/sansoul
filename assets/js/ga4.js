@@ -38,16 +38,18 @@ export function initGa4 () {
   }
 
   document.addEventListener('click', e => {
-    const b = e.target.closest(
-      '.callnow__phone,' +
-      '.callnow__whatsapp,' +
-      '.link__phone,' +
-      '.link__whatsapp,' +
-      '.link__address,' +
-      '.mail__opt-copy,' +
-      '.mail__opt-send,' +
-      '.ga4'
-    )
-    if (b) ga4(b)
+    if (typeof gtag === 'function') {
+      const b = e.target.closest(
+        '.callnow__phone,' +
+        '.callnow__whatsapp,' +
+        '.link__phone,' +
+        '.link__whatsapp,' +
+        '.link__address,' +
+        '.mail__opt-copy,' +
+        '.mail__opt-send,' +
+        '.ga4'
+      )
+      if (b) ga4(b)
+    }
   })
 }
