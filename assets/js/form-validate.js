@@ -25,6 +25,7 @@ export function formValid (form) {
   }
   const setItemStyle = (element, error) => {
     const item = element.closest('.form__item')
+    if (!item) return
     if (error) {
       item.classList.add('form__item--error')
     } else {

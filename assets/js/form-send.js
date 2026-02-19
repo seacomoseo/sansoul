@@ -38,6 +38,7 @@ export function initFormSend () {
     let formMessage
 
     forms.forEach(e => {
+      e.dataset.loadTime = Date.now()
       e.addEventListener('submit', async submit => {
         submit.preventDefault()
 
@@ -47,6 +48,10 @@ export function initFormSend () {
 
         // Fix repeat sending
         if (form.dataset.sending === 'true') return
+
+        // Anti-spam: minimum time check
+        const elapsed = Date.now() - parseInt(form.dataset.loadTime || '0')
+        if (elapsed < 3000) return
 
         // Delete any previous messages from the form itself
         form.querySelectorAll('.form__error, .form__submit').forEach(n => n.remove())
@@ -90,6 +95,13 @@ export function initFormSend () {
             formMessage.classList.add('form__submit')
             formMessage.innerHTML = `<i class="icon spin">sync</i> ${formSubmitSending}…`
             form.append(formMessage)
+
+            // Anti-spam: JS token
+            const tokenInput = document.createElement('input')
+            tokenInput.type = 'hidden'
+            tokenInput.name = '_token'
+            tokenInput.value = btoa(form.id + ':' + Math.floor(Date.now() / 60000))
+            form.appendChild(tokenInput)
 
             const formOptions = { method: 'POST' }
             if ((!googleScript && isFileType) || formSubmitCo) {
@@ -136,6 +148,8 @@ export function initFormSend () {
               .finally(() => {
                 submitBtn.disabled = false
                 form.dataset.sending = 'false'
+                // Remove anti-spam token
+                form.querySelector('[name="_token"]')?.remove()
               })
           }
         }

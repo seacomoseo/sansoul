@@ -232,6 +232,10 @@
     <input type="hidden" name="_subject" value="{{ $subject }}">
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
     <input type="hidden" name="Timestamp" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
+    {{- /*  HONEYPOT  */}}
+    <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+    </div>
   {{- else if $formsubmit_co -}}
     {{- with $mail }}
       <input type="hidden" name="CC" value="{{ . | base64Encode }}">
@@ -241,7 +245,6 @@
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_next" value="{{ with .form.to }}{{ . }}{{ else }}{{ .Page.Permalink }}#{{ $form_id }}{{ end }}">
   {{- end -}}
-
 
   {{- /*  PRINT CUSTOM INPUTS  */ -}}
 
