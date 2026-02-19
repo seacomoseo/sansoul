@@ -1,0 +1,117 @@
+{{ $variables := slice }}
+
+
+{{/*  MENU ITEMS  */}}
+{{ $menu_items_fields := slice
+  `~url`
+  `~icon`
+  `~label`
+  `~anchor`
+  `~lock`
+  `~btn`
+  `~swap`
+  `~ga4`
+}}
+{{ $variables = $variables | append
+  (partial "cms/widget" (dict
+    "var"    `values_menu_subitems_last`
+    "alt"    `values_menu_subitems`
+    "name"   `items`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "fields" $menu_items_fields
+  ))
+  (partial "cms/widget" (dict "var" `values_menu_subitems_2` "<<" `values_menu_subitems_last` "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
+  (partial "cms/widget" (dict "var" `values_menu_subitems`   "<<" `values_menu_subitems_2`    "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
+  (partial "cms/widget" (dict
+    "var"    `values_menu_items`
+    "name"   `items`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "fields" ($menu_items_fields | append `~values_menu_subitems`)
+  ))
+}}
+
+
+{{/*  MENU  */}}
+{{ $variables = $variables | append
+  (partial "cms/widget" (dict "var" `values_menu_img`   "name" `img`   "widget" `img`))
+  (partial "cms/widget" (dict "var" `values_menu_title` "name" `title`               ))
+  (partial "cms/widget" (dict "var" `values_menu_sub`   "name" `sub`                 ))
+  (partial "cms/widget" (dict
+    "var"     `values_menu`
+    "name"    `menu`
+    "widget"  `dict`
+    "fields"  (slice
+      `~values_menu_img`
+      `~values_menu_title`
+      `~values_menu_sub`
+      `~values_menu_items`
+    )
+  ))
+}}
+
+
+{{/*  CALLNOWS  */}}
+{{ $variables = $variables | append
+  (partial "cms/widget" (dict
+    "var"    `values_callnows`
+    "name"   `callnows`
+    "widget" `slice`
+    "sum"    "{{fields.label}}"
+    "types"  (slice
+      (partial "cms/widget" (dict "alt" `links_phone`    "name" `phone`    "widget" `dict` "fields" (slice `~links_label_phone` `~btn` `~icon`)))
+      (partial "cms/widget" (dict "alt" `links_whatsapp` "name" `whatsapp` "widget" `dict` "fields" (slice `~links_label_phone` `~btn`               )))
+      (partial "cms/widget" (dict "alt" `links_custom`   "name" `custom`   "widget" `dict` "fields" (slice `~url` `~icon` `~links_label` `~lock` `~btn` `~ga4`)))
+    )
+  ))
+}}
+
+
+{{/*  FIELDS  */}}
+{{ $fields  := slice }}
+{{ $mn_clls := slice
+  (dict "var" "values_menu")
+  (dict "var" "values_callnows")
+}}
+{{ $global_fields := slice }}
+{{ range site.Data.customs | default slice }}
+  {{ if or (not .types) (in .types "global") }}
+    {{ $global_fields = $global_fields | append . }}
+  {{ end }}
+{{ end }}
+{{ $is_footer    := where $global_fields "name" "footer" }}
+{{ $global_fields = $mn_clls | append $global_fields }}
+{{/* append footer if there isn't */}}
+{{ if not $is_footer }}
+  {{ $footer := dict
+    "name"   "footer"
+    "label"  "Footer"
+    "widget" "dict"
+    "sub"    (slice
+      (dict "var" "size")
+      (dict "var" "color")
+      (dict "var" "fade")
+      (dict "var" "fade_to")
+      (dict "var" "bi")
+      (dict "var" "alpha")
+      (dict "var" "div")
+      (dict "var" "flip_x")
+      (dict "var" "flip_y")
+      (dict "var" "dots")
+      (dict "var" "md")
+    )
+  }}
+  {{ $global_fields = $global_fields | append $footer }}
+{{ end }}
+{{ range $global_fields }}
+  {{ if or .var .name }}
+    {{ $opts  := merge . (dict "fields" $fields "t" $) }}
+    {{ $fields = partial "cms/config/collections/customs" $opts }}
+  {{ end }}
+{{ end }}
+{{ $variables = $variables | append
+  (dict "&values" $fields)
+}}
+
+{{ return $variables }}

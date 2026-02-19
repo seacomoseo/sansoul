@@ -217,6 +217,11 @@
   {{ $index_sum             := partial "cms/widget" (dict "<<" `page_sum`                                "hint" $index_sum_hint                   ) }}
   {{ $index_preview         := print $base "{{fields.slug | default('" .Params.cms.defaults.slug "')}}/" }}
 
+
+  {{ if eq .Type "single" }}
+    {{ $colections = $colections | append (dict "divider" true) }}
+  {{ end }}
+
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
     "label"            (.Params.cms.title    | default "")
@@ -314,6 +319,19 @@
   )
   "editor"           (dict "preview" false)
   "fields"           `~sections_fields`
+) }}
+
+
+{{ $colections = $colections | append (dict "divider" true) }}
+
+
+{{/*  FILES  */}}
+{{ $colections = $colections | append (dict
+  "label"       .collection_files
+  "name"        `settings`
+  "icon"        $icon.settings
+  "description" .collection_settings_desc
+  "files"       (partial "cms/config/collections/files/_" .)
 ) }}
 
 
