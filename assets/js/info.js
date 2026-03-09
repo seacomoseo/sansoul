@@ -122,10 +122,10 @@ if (deployStatus && rebuildBtn) {
           if (!response.ok) {
             throw new Error(`HTTP status ${response.status}`)
           }
-          return response.json()
+          return response.text()
         })
-        .then(data => {
-          console.log(`Rebuild start: ${data}`)
+        .then(() => {
+          console.log('Rebuild start')
           checkStatus()
         })
         .catch(error => {
