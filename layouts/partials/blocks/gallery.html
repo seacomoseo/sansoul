@@ -66,10 +66,10 @@
         {{- range .imgs -}}
           {{- partial "blocks/gallery-item" (dict
             "img"       .img
-            "url"      .url
+            "url"       .url
             "alt"       .alt
             "notlazy"   $.notlazy
-            "type"      $.type
+            "type"      $.gallery.type
             "cols"      $cols.vl
             "container" $.container
             "col_vl"    $cols.fit_vl
