@@ -248,6 +248,7 @@
 {{ end }}
 
 {{/*  Add to Store  */}}
+{{ $icons = partial "sections/merged-shortcodes" ($icons | uniq) | uniq }}
 {{ range $icons | uniq }}
   {{ if ne . "hide" }}
     {{ $icon := . }}
