@@ -29,7 +29,7 @@ tpl:
     hide_icons: n
     hide_custom: n
     auto: null # [ same, same-modals, home, home-modals, none ]
-  callnow: null # [ custom, auto, hide ]
+  callnow: null # [ custom, auto, none ]
   section: []
   sections:
   - file: example
