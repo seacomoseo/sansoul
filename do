@@ -140,13 +140,13 @@ elif [ $1 = rm-public ]; then
 elif [ $1 = css-purge ]; then
 
   hecho "CSS PURGE"
-  node ./themes/sansoul/assets/js/node/css-purge.js
+  node ./themes/sansoul/scripts/css-purge.js
 
 # Images ICO, PNG and AVIF
 elif [ $1 = imgs ]; then
 
   hecho "IMAGES ICO, PNG AND AVIF"
-  node ./themes/sansoul/assets/js/node/imgs.js
+  node ./themes/sansoul/scripts/imgs.js
 
 # Enter in to prebuild folder, build hugo and go back
 elif [ $1 = prebuild ]; then

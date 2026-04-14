@@ -1,0 +1,31 @@
+name: Backup to GitLab
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  mirror:
+    name: Mirror ${{ github.repository }} to GitLab
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      GL_PAT: ${{ secrets.GL_PAT }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GITLAB_NAMESPACE: seacomoseo
+    steps:
+      - name: Validate required secrets
+        run: |
+          test -n "${GL_PAT}" || {
+            echo "Missing required secret: GL_PAT"
+            exit 1
+          }
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Mirror repository to GitLab
+        run: sh scripts/mirror-to-gitlab.sh
