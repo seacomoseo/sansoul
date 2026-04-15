@@ -2,7 +2,7 @@
 {{- $icons   := site.Data.utilities.icons -}}
 
 - ::{{ $icons.cms   }}:: [{{ i18n "cms"     }}]({{ (index site.Sites 0).Home.RelPermalink }}admin/ "[nofollow blank]") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "[nofollow]")
-- ::brand:google-drive:: [{{ i18n "gdsheet" }}]({{ site.Params.drive_link }} "[nofollow]")
+- ::brand:google-drive:: [{{ i18n "gdsheet" }}]({{ site.Params.drive_url }} "[nofollow]")
 {{- with site.Params.drive_mails }}<br> {{ i18n "gdsheet_view" }}:
 {{- range split . "," }}
   - ::mail:: {{ . }}
