@@ -67,7 +67,7 @@
 {{ else if eq "img" $widget }}
   {{ $o = merge $o (dict "widget" `image`) }}
   {{ if eq nil .max_file_size }}
-    {{ $o = merge $o (dict "max_file_size" 512000000) }}
+    {{ $o = merge $o (dict "max_file_size" 25000000) }}
   {{ end }}
   {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
@@ -75,24 +75,24 @@
 {{ else if eq "vid" $widget }}
   {{ $o = merge $o (dict "widget" `file`) }}
   {{ if eq nil .max_file_size }}
-    {{ $o = merge $o (dict "max_file_size" 512000000) }}
+    {{ $o = merge $o (dict "max_file_size" 25000000) }}
   {{ end }}
   {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
   {{ if eq nil .accept }}
-    {{ $o = merge $o (dict "accept" ".mp4,.mov,.avi,.webm") }}
+    {{ $o = merge $o (dict "accept" ".mp4,.mov,.avi,.webm,.MP4,.MOV,.AVI,.WEBM") }}
   {{ end }}
 {{ else if eq "vimg" $widget }}
   {{ $o = merge $o (dict "widget" `file`) }}
   {{ if eq nil .max_file_size }}
-    {{ $o = merge $o (dict "max_file_size" 512000000) }}
+    {{ $o = merge $o (dict "max_file_size" 25000000) }}
   {{ end }}
   {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
   {{ if eq nil .accept }}
-    {{ $o = merge $o (dict "accept" ".jpeg,.jpg,.png,.gif,.webp,.svg,.mp4,.mov,.avi,.webm") }}
+    {{ $o = merge $o (dict "accept" ".jpeg,.jpg,.png,.gif,.webp,.svg,.mp4,.mov,.avi,.webm,.JPEG,.JPG,.PNG,.GIF,.WEBP,.SVG,.MP4,.MOV,.AVI,.WEBM") }}
   {{ end }}
 {{ else if eq "int" $widget }}
   {{ $o = merge $o (dict "widget" `number`) }}

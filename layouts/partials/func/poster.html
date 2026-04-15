@@ -1,6 +1,6 @@
 {{ $img := "" }}
 
-{{ with . | findRESubmatch `[#&?]poster=([^#&]+)` }}
+{{ with . | findRESubmatch `(?i)[#&?]poster=([^#&]+)` }}
   {{ $img = index . 0 1 }}
   {{ $img = partial "func/check-media" $img }}
 {{ end }}
@@ -17,7 +17,7 @@
         {{ $img = index . 0 "thumbnail_large" }}
       {{ end }}
     {{ end }}
-  {{ else with . | findRESubmatch `^(.+)\.(?:mp4|mov|avi|webm)` }}
+  {{ else with . | findRESubmatch `(?i)^(.+)\.(?:mp4|mov|avi|webm)` }}
     {{ $stem := index . 0 1 }}
     {{ $out  := hasPrefix $stem "http" }}
     {{ if not $out }}

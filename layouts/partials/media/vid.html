@@ -39,7 +39,7 @@
     {{- with resources.Get .vid.src -}}
       {{- $srcs = $srcs | append . -}}
       {{- if ne .MediaType.SubType "webm" -}}
-        {{- $webm := $.vid.src | replaceRE `\.(mp4|mov|avi)$` ".webm" -}}
+        {{- $webm := $.vid.src | replaceRE `(?i)\.(mp4|mov|avi)$` ".webm" -}}
         {{- with resources.Get $webm -}}
           {{- $srcs = $srcs | append . -}}
         {{- end -}}
