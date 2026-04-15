@@ -43,7 +43,9 @@
   -}}
   {{- $media = merge $media $media_new -}}
 
-  {{- if index $vid "mute" -}}
+  {{- $is_vid_file := and $vid (not (index $vid "ifr")) -}}
+
+  {{- if or (index $vid "mute") (and $is_vid_file (not $img)) -}}
     {{- partial "media/vid" $media -}}
   {{- else if $img_ext -}}
     {{- partial "media/out-img" $media -}}

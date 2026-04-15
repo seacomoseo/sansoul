@@ -103,9 +103,11 @@
 {{- $upload  := .upload }}
 {{- if not $upload }}
   {{- if not $vid_out }}
-    {{- $path  := replace .vid.src "/u/" "/uploads/" }}
-    {{- with os.Stat $path }}
-      {{- $upload = .ModTime }}
+    {{- $path  := replace .vid.src "/u/" "uploads/" }}
+    {{- if fileExists $path }}
+      {{- with os.Stat $path }}
+        {{- $upload = .ModTime }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
