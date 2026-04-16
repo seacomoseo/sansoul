@@ -63,7 +63,7 @@ elif [ $1 = normalize ]; then
 
 # Refactoring spaces in Hugo
 elif [ $1 = spaces ]; then
-  sh ../_tools/others/refactoring-spaces.sh $2
+  sh ../_tools/others/refactoring-spaces.sh "$2"
 
 # Create favicon.ico
 elif [ $1 = favicon ]; then
@@ -83,22 +83,22 @@ elif [ $1 = clean ]; then
 
 # Check yaml error of Static CMS
 elif [ $1 = yml ]; then
-  node ../_tools/others/check-yaml.js $PROYECT $2
+  node ../_tools/others/check-yaml.js $PROYECT "$2"
 
 # Get data of place by Google API
 elif [ $1 = places ]; then
   COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
-  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+  LANGS=$(grep 'lang:' data/langs.yml | awk -F': ' '{print $2}')
   for LANG in $LANGS; do
-    node ../_tools/others/fetch-place.js $PROYECT $COLOR $LANG $2
+    node ../_tools/others/fetch-place.js $PROYECT $COLOR $LANG "$2"
   done
 
 # Scrap reviews by Google Maps
 elif [ $1 = reviews ]; then
   # do reviews "Inspirits Bar"
-  LANGS=$(grep 'lang:' data/config.yml | awk -F': ' '{print $2}')
+  LANGS=$(grep 'lang:' data/langs.yml | awk -F': ' '{print $2}')
   for LANG in $LANGS; do
-    node ../_tools/others/scrape-reviews.js $PROYECT $LANG $2
+    node ../_tools/others/scrape-reviews.js $PROYECT $LANG "$2"
   done
 
 
