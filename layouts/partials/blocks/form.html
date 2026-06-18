@@ -78,6 +78,12 @@
 {{- $inputs := slice -}}
 {{- range .inputs -}}
   {{- $input := . -}}
+  {{- /*  phone and mail  */ -}}
+  {{- if eq .type "phone" -}}
+    {{- $input = merge . (dict "type" "tel") -}}
+  {{- else if eq .type "mail" -}}
+    {{- $input = merge . (dict "type" "email") -}}
+  {{- end -}}
   {{- /*  full  */ -}}
   {{- $full := .type | in $slices.full | or .full | default false -}}
   {{- /*  names for show_of  */ -}}
@@ -252,11 +258,6 @@
     {{- /*  vars  */ -}}
     {{- $name        := .name -}}
     {{- $type        := .type -}}
-    {{- if eq $type "phone" -}}
-      {{- $type       = "tel" -}}
-    {{- else if eq $type "mail" -}}
-      {{- $type       = "email" -}}
-    {{- end -}}
     {{- $placeholder := print (.label | default .name) (cond (not .req) "" " *") -}}
     {{- $req         := .req -}}
     {{- $req_attr    := cond (not .req) "" " data-req" | safeHTMLAttr -}}
