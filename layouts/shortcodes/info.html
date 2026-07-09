@@ -8,8 +8,8 @@
   - ::mail:: {{ . }}
 {{ end }}
 {{- end }}
-- ::brand:github-alt:: [{{ i18n "github_repo" }}](https://github.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
-- ::brand:gitlab::     [{{ i18n "gitlab_repo" }}](https://gitlab.com/seacomoseo/{{ site.Params.domain }} "[nofollow]")
+- ::brand:github-alt:: [{{ i18n "github_repo" }}](https://github.com/{{ or site.Params.owner "seacomoseo" }}/{{ site.Params.domain }} "[nofollow]")
+- ::brand:gitlab::     [{{ i18n "gitlab_repo" }}](https://gitlab.com/{{ or site.Params.owner "seacomoseo" }}/{{ site.Params.domain }} "[nofollow]")
 {{- if $netlify }}
 - ::brand:netlify:: [{{ i18n "netlify_deploys" }}]({{ print "https://app.netlify.com/sites/" site.Params.name "/deploys" }} "[nofollow]")
 {{- else }}
