@@ -1,0 +1,9 @@
+# Keep utility and reference pages out of search engines when the fixture is deployed.
+- name: seo.noindex # string with dot notation if they are child objects
+  value: 'true' # string
+  type: bool # [ bool, int, float, str, slice, dict ] *
+  # kind: [] # [ home, page, section, taxonomy, term ]
+  # lang: [] # [ es, en, fr, de, pt, it ]
+  path:
+  - /page/{legal,privacy,cookies,search,sitemap,cms,divisores}
+  - /single/componentes

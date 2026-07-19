@@ -12,13 +12,27 @@ filter_published: Published
 filter_drafts: Drafts
 filter_year: Year
 filter_month: Month
+# singletones > values
+values: Global Texts
+values_hint: Custom Menu, Corner Buttons, Footer and Global Texts/Values that are used in templates and/or as translations
+values_menu: Custom Menu
+values_menu_img: Logo Image
+values_menu_title: Logo Title
+values_menu_sub: Logo Subtitle
+values_menu_items: Items
+values_menu_items_singular: Item
+values_menu_subitems: Sub-items
+values_menu_subitems_singular: Sub-item
+values_callnows: Custom Corner Buttons
+values_callnows_singular: Button
 # collections
-collection_sections: Sections
-collection_sections_singular: Section
-collection_sections_desc: Sections assigned to each page. You need to create them here before you can assign them.
+collection_settings: Configuration
 collection_types: Collections
 collection_types_singular: Collection
-collection_types_desc: Page types. Here they are created, edited, and configured individually, except for "All," whose parameters apply by default to all collections.
+collection_types_desc: Page types; here they are created, edited, and configured individually, except for "All," whose parameters apply by default to all collections
+collection_sections: Sections
+collection_sections_singular: Section
+collection_sections_desc: Sections assigned to each page and collection; you need to create them here before you can assign them
 # collections > types
 types_title: Name
 types_title_hint: Some names autofill icon, emoji, and text fields in all languages
@@ -87,7 +101,6 @@ page_title: Title
 page_title_hint: '**Example →** "Day walking in the new neighborhood"'
 page_img: Main Image
 page_body: Content
-page_body_hint: Links with text wrapped in square brackets will be converted to buttons (optionally customizable by adding one or more of these words to the title in brackets → "**main**", "**alt**", "**light**", "**dark**", "**turn**", "**such**", "**swap**" or "**dot**", separate with any character if multiple words are added) <br> These words can also be added to the title in brackets → "**nofollow**" (obfuscated), "**homefollow**" (obfuscated except on homepage), "**blank**" (opens in new window) and "**ga4**" (registers key event in GA4) <br> Icons can be added using, wrapped in "**::**" characters, one of the following valid names → [Material Symbols](https://fonts.google.com/icons)
 page_toc: Index
 page_toc_hint: Automatically generated table of contents using content headers
 page_sum: Summary
@@ -201,7 +214,6 @@ page_org_food_type_hint: Examples → Italian, Mexican, Gaditan… (only for foo
 page_org_departs: Departments
 page_org_departs_singular: Department
 # collections > files
-settings: Configuration
 # collections > files > config
 config: General
 config_ga4: GA4 Code
@@ -258,12 +270,14 @@ langs_config_hint: Configuration by language that overrides the general configur
 # collections > files > styles
 styles: Styles
 styles_icons: Icons
+styles_icons_hint: These are the same parameters and values as those used in Google Material Symbols
 styles_icons_fill: Fill
 styles_icons_weight: Weight
 styles_icons_grade: Grade
 styles_icons_optical: Optical Size
 styles_icons_style: Style
 styles_icons_def: Default
+styles_icons_def_hint: Icons used by default in various parts of the website
 styles_icons_def_home: Home
 styles_icons_def_play: Play
 styles_icons_def_up: Up
@@ -310,7 +324,7 @@ styles_fonts_base: Base Font
 styles_fonts_cursive: Cursive
 styles_fonts_title: Titles
 styles_fonts_blockquote_cursive: Cursive Quotes
-styles_fonts_blockquote_cursive_hint: Quotes with Cursive Font; Disabled uses 'Times New Roman' italic
+styles_fonts_blockquote_cursive_hint: Quotes with Cursive Font \n Disabled uses 'Times New Roman' italic
 styles_fonts_family: Family
 styles_fonts_family_hint: Valid names → [Google Fonts](https://fonts.google.com/) <br> If not → there should be a file in [media](/admin/#/media) in *'/fonts/${family-name-urlize}-${weight}[-italic].woff2'*; example → *'/fonts/delorean-slab-400-italic.woff2'*
 styles_fonts_weight: Weight
@@ -372,12 +386,13 @@ styles_shadow_alpha: Transparency
 # collections > files > customs
 customs: Custom Fields
 customs_singular: Field
-customs_hint: Custom Global Fields
+customs_hint: Custom fields to be displayed on collection pages and in global text \n They can then be retrieved in template sections using the `Get Parameters` (`get`) field or in values using `{{ get example.param }}` (with dot notation if they are child objects)
 customs_types: Collections
 customs_types_singular: Collection
 customs_pages: Pages
 customs_pages_singular: Page
 customs_var: Existing Base Field
+customs_var_hint: If it is defined and exists as a well-formatted field variable, it will take all of its default parameters (which can be overridden)
 customs_name: Param Name
 customs_label: Visible Name
 customs_hint_: Legend
@@ -393,7 +408,7 @@ customs_sub_singular: Subfield
 customs_relations_hint: Create previously
 # collections > files > defaults
 defaults: Default Values
-defaults_hint: Default Params Values
+defaults_hint: Default parameter values that apply to pages based on types, languages, and paths
 defaults_singular: Value
 defaults_value: Value
 defaults_type: Type of Value
@@ -401,6 +416,7 @@ defaults_kind: Kinds of Page
 defaults_lang: Languages
 defaults_path: Glob Paths
 defaults_path_singular: Glob Path
+defaults_path_hint: From files, not URLs
 # collections > files > remote
 remote: Remote Content
 remote_singular: Remote Resource
@@ -427,19 +443,6 @@ redirects_type: Type
 robots_hint: Tutorial
 # collections > files > llms
 llms_hint: Custom file for AI-based search engines
-# singletones > values
-values: Global Texts
-values_hint: Custom Menu, Corner Buttons, and Global Values that are used in templates and/or as translations.
-values_menu: Custom Menu
-values_menu_img: Logo Image
-values_menu_title: Logo Title
-values_menu_sub: Logo Subtitle
-values_menu_items: Items
-values_menu_items_singular: Item
-values_menu_subitems: Sub-items
-values_menu_subitems_singular: Sub-item
-values_callnows: Custom Corner Buttons
-values_callnows_singular: Button
 # boxes and sections
 name: Name
 name_hint: File name
@@ -458,6 +461,94 @@ hs_vs: Minimum Title Size
 caps: Title in Uppercase
 line: Underlined Title
 md: Content
+md_hint: |
+  \n In addition to Markdown format, the following modifiers can be added and will be reflected:
+  \n
+  \n **Customize links**
+  \n - If the link is enclosed in square brackets, it will become a button.
+  \n - In the title field within square brackets, you can add one or more of the following words separated by spaces:
+  \n `  `- `main|alt|light|dark|turn|such|whatsapp`: color (if not specified, `cta` will be used)
+  \n `  `- `swap`: font change
+  \n `  `- `dot`: point button with icon and no text
+  \n `  `- `nofollow`: obfuscated
+  \n `  `- `homefollow`: obfuscated except on the homepage
+  \n `  `- `blank`: opens in a new window
+  \n `  `- `ga4`: logs event in GA4
+  \n - Example: `[[Link/button text]](/url/ "Title [main nofollow ga4]")`
+  \n - It is recommended to use the "raw" mode of this field (the button **`[M⬇]`** at the top right) to make these customizations.
+  \n
+  \n **Icons**
+  \n - Icons can be added using a valid name enclosed in `::` characters
+  \n - Valid names:
+  \n `  `- Directly a name from [Material Symbols](https://fonts.google.com/icons)
+  \n `  `- An emoji
+  \n `  `- `txt:` + Any text; it will have the same font as the headings
+  \n `  `- `brand:` + [Font Awesome Brands](https://fontawesome.com/search?ic=brands)
+  \n `  `- `brand:` + [Simple Icons](https://simpleicons.org/)
+  \n `  `- `svg:` + The path to an SVG file located in `uploads/{icons/,}<path>.svg`, without `uploads/{icons/,}` or the `.svg` extension
+  \n - Examples:
+  \n `  `- `::check::`
+  \n `  `- `::✅::`
+  \n `  `- `::txt:holi::`
+  \n `  `- `::brand:whatsapp::`
+  \n `  `- `::svg:base/logo::`
+  \n
+  \n **Links with icons**
+  \n - Example: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4]")`
+  \n - Example: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4 dot]")` (It's the same, but it's a bullet point button that only has one icon and hides "+34 666 777 888")
+  \n
+  \n **Lists with icons**
+  \n - If a list item starts with an icon, it will be treated as a bullet point
+  \n - Example: `- ::check:: Example of a list item`
+  \n
+  \n **Markers**
+  \n - You can highlight text by wrapping it in `==` characters
+  \n - Simply put, it would be like a yellow bookmark
+  \n - If you add the SVG icon `sign-simple` or `sign-circle` at the beginning, it will have an animated, curved, or circular underline
+  \n - Example: `==::svg:sign-simple:: highlighted phrase==`
+  \n
+  \n **Indented**: `++Text++`
+  \n **Subscript**: `H~2~O`
+  \n **Superscript**: `m^2^`
+  \n
+  \n **Shortcodes**
+  \n - You can use [shortcodes](https://gohugo.io/content-management/shortcodes/) in the format `{{ name parameter/s }}`.
+  \n - There are predefined shortcode names:
+  \n `  `- `date`: Date
+  \n `  `- `year`: Year
+  \n `  `- `page-title`: Page title
+  \n `  `- `content`: The page’s Markdown content
+  \n `  `- `breadcrumbs`: Creates a breadcrumb-style list of links
+  \n `  `- `bg`: Adds a background color; this is the only predefined shortcode that requires a closing tag like `{{% /bg %}}`
+  \n `  `- `get`: Retrieves a page parameter value `{{ get example.param }}` (using dot notation if they are child objects)
+  \n - Formatting options for how the content will be displayed:
+  \n `  `- `{{< ... >}}`: Literal.
+  \n `  `- `{{% ... %}}`: Is processed first.
+  \n `  `- `{{ ... }}`: Is processed first and can be used in any text field outside of this one.
+md_anchor: Link Text
+md_title: Hover Title
+md_btn: Button
+md_dot: Dot Button
+md_color: Color Button
+md_homefollow: Just Do Follow in Home
+md_blank: Open in other window
+md_mark: Marker
+md_mark_sign: Type
+md_mark_text: Text
+md_ins: Inserted
+md_sub: Subscript
+md_sup: Superscript
+md_shortcode: Shortcode
+md_shortcode_type: Tipe
+md_shortcode_type_hint: The way the content will be displayed
+md_shortcode_tag: '<>: literal'
+md_shortcode_percent: '%%: is processed first'
+md_shortcode_none: 'Clean: is processed first and can be used in any text field outside of this one'
+md_shortcode_params: Parameters
+md_shortcode_closing: Closing
+md_gallery: Gallery
+md_gallery_simple: Simple Gallery
+md_inline_image: Inline Image
 md_align: Content Alignment
 md_align_hint: Alignment of Content Only
 md_align_vl: Content Alignment on Desktop
@@ -473,7 +564,20 @@ md_nav: IDs in Content Headings
 md_nav_hint: Add IDs and links in content headings
 md_border: Content Image Border
 icon: Icon
-icon_hint: Valid names → Directly a name from [Material Symbols](https://fonts.google.com/icons) or emojis or “txt:” + any text or “brand:” + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) or “brand:” + [Simple Icons](https://simpleicons.org/) or “svg:” + the name of an svg file located in the “icons” folder of the media library
+icon_hint: |
+  **Valid names:**
+  \n - Directly a name from [Material Symbols](https://fonts.google.com/icons)
+  \n - An emoji
+  \n - `txt:` + Any text will have the same font as the headings
+  \n - `brand:` + [Font Awesome Brands](https://fontawesome.com/search?ic=brands)
+  \n - `brand:` + [Simple Icons](https://simpleicons.org/)
+  \n - `svg:` + The path to an SVG file located in `uploads/{icons/,}<path>.svg`, without `uploads/{icons/,}` or the `.svg` extension
+  \n **Examples:**
+  \n - `check`
+  \n - `✅`
+  \n - `txt:holi`
+  \n - `brand:whatsapp`
+  \n - `svg:base/logo`
 icon_pos: Icon Position
 icon_pos_hint: Top in large size, Side next to the title, Bottom as underlining
 icon_size: Icon Size
@@ -488,7 +592,7 @@ vid_hint: Supports YouTube and Vimeo URLs <br> **Thumbnail →** in the correspo
 mute: Autoplay Video
 mute_hint: Muted video that loop and auto-plays
 ratio: Image Ratio
-ratio_hint: Default is automatic <br> **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+ratio_hint: Default is automatic <br> **Examples →** 16/9, 9/16, 3/2, 4/3, 1/1, 2/1, 18/6…
 ratio_pattern: Only numbers (1-9) and slashes ("/")
 contain: Image Fit to Ratio
 contain_hint: Prevents cropping if a specific ratio is selected
@@ -545,7 +649,7 @@ align_hint: Align all elements in the Box
 align_vl: Alignment on Desktop
 align_vl_hint: Align all elements in the Box when the window width is ≥ 1280px
 rate: Box Proportion
-rate_hint: Minimum height based on the set proportion <br> Default is automatic <br> **Examples →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+rate_hint: Minimum height based on the set proportion <br> Default is automatic <br> **Examples →** 16/9, 9/16, 3/2, 4/3, 1/1, 2/1, 18/6…
 space: Margin Between Box Elements
 pd: Paddings
 pd_vs: Minimum Paddings
@@ -561,7 +665,7 @@ node: Node
 node_hint: HTML tag name for the Box
 get: Get Parameters
 get_singular: Parameter
-get_hint: Get Values of Parameters or Custom Fields from the page or global value to the box
+get_hint: Retrieve parameter values from the page (or global values if none are available) and populate this box
 get_from: From Parameter
 get_to: To Parameter
 get_value: JSON Value
@@ -584,7 +688,7 @@ tags_tax: Taxonomies
 tags_tax_key: Taxonomy
 tags_param: Parameter
 tags_param_key: Parameter Key
-tags_param_hint: Specify the name of the parameter or page field.
+tags_param_hint: Specify the name of the parameter or page field
 tags_custom: Custom
 sort: Order of Elements
 cols: Nº of Columns
@@ -653,7 +757,7 @@ when_days: Days
 when_hours: Hours
 links: Links Group
 links_singular: Links
-links_hint: By default, they will appear as buttons.
+links_hint: By default, they will appear as buttons
 links_label: Text
 links_label_phone: Phone Number
 links_address_label: Address to Show
@@ -788,8 +892,8 @@ opt-base-brand: 🏷 Brand
 opt-base-author: 👤 Author
 opt-base-org: 🚀 Organization
 opt-base-service: 🔧 Service
-opt-base-page: 📄 Page
-opt-base-single: 📑 Single
+opt-base-page: 📄 Simple Page
+opt-base-single: 📑 Single Page
 opt-hn-0: h0
 opt-hn-1: h1
 opt-hn-2: h2
@@ -1376,3 +1480,6 @@ opt-widget-slice: List
 opt-widget-dict: Group
 opt-widget-hide: Hidden
 opt-font_bold-0: Disabled
+opt-sign-none: Mark
+opt-sign-simple: Simple
+opt-sign-circle: Circle

@@ -1,3 +1,10 @@
+{{- /*
+Partial: media/in-img
+Purpose: Render a Hugo-managed image with responsive sources and optional video metadata.
+Context: Media map; `img` is a required resource path. Optional keys include alt, class, lazy, ratio, contain, disc, vid, and sizes.
+Renders: A picture/img element when the resource exists; otherwise nothing.
+Side effects: Production rendering writes image-derivative manifests consumed by scripts/imgs.js.
+*/ -}}
 {{- $img      := resources.Get .img -}}
 {{- $img_base := $img -}}
 {{- if $img -}}

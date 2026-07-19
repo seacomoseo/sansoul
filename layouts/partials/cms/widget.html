@@ -116,7 +116,35 @@
 {{ else if eq "md" $widget }}
   {{ $o = merge $o (dict "widget" `markdown`) }}
   {{ if eq nil .show_raw }}
-    {{ $o = merge $o (dict "show_raw" true) }}
+    {{ $buttons := slice
+      "heading-one"
+      "heading-two"
+      "heading-three"
+      "heading-four"
+      "heading-five"
+      "heading-six"
+      "bulleted-list"
+      "numbered-list"
+      "quote"
+      "bold"
+      "italic"
+      "strikethrough"
+      "code"
+    }}
+    {{ $editor_components := slice
+      "code-block"
+      "link"
+      "icon"
+      "mark"
+      "ins"
+      "sub"
+      "sup"
+      "gallery"
+      "gallery-simple"
+      "inline-image"
+      "shortcode"
+    }}
+    {{ $o = merge $o (dict "show_raw" true "buttons" $buttons "editor_components" $editor_components) }}
   {{ end }}
 {{ else if eq "dict" $widget }}
   {{ $o = merge $o (dict "widget" `object`) }}

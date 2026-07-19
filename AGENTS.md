@@ -1,126 +1,224 @@
-# SanSoul Theme Core Documentation
+# Agent instructions for the SanSoul theme
 
-> - **Role**: Core Logic & Design System
-> - **Location**: `themes/sansoul/`
-> - **Status**: SHARED SUBMODULE (Do not modify without intent to update all projects)
+## Scope
 
-## system.summary
-This submodule drives the build pipeline, configuration, and rendering logic for SanSoul-based sites. It uses a "Prebuild + Build" strategy to overcome Hugo's static limitations, enabling dynamic configuration, module mounting, and complex data-driven layouts.
+These instructions apply to `themes/sansoul/`. This directory is a shared Git submodule and a separate repository. A change here can affect every consumer that updates the submodule.
 
-## guidelines.strict_rules
-1.  **Language**: All code, comments, and variable names must be in **English**.
-2.  **Style Guide**: Follow **StandardJS** (no semicolons, 2 space indent, single quotes, space between the function name and parentheses).
-3.  **Module System**: Use **Node.js with ESM** (`import`/`export`) for all JS.
-4.  **Naming**: Variable names must be elegant, legible, and scalable.
+Read `templates/root/AGENTS.md` first: it is the canonical consumer contract copied to every project root. Theme behavior must preserve that contract. Check Git status in both repositories before editing and preserve all existing user changes.
 
-## guidelines.tech_stack
-- **Core**: Hugo (Extended), Node.js (ESM), Shell (`sh`).
-- **CMS**: Sveltia CMS.
-- **Styles**: SCSS, PostCSS.
-- **Libraries**: `material-symbols`, `@fortawesome/fontawesome-free`, `sharp`.
+## Hard rules
 
-## system.build_pipeline
-The build is controlled by `./do` which invokes `themes/sansoul/do`.
+- Do not commit, push, publish, update the parent submodule pointer, or deploy unless explicitly requested.
+- Write code, identifiers, and code comments in English.
+- JavaScript is ESM and follows StandardJS: two spaces, single quotes, no semicolons.
+- Keep shell commands POSIX-compatible because the root invokes them with `sh`.
+- Never hand-edit generated files in `prebuild/public/`, root `public/`, root `resources/`, or generated CMS output.
+- Do not remove public shortcodes, render hooks, types, sections, or partials solely because the reference site does not exercise them.
+- Do not expose credentials in theme defaults, examples, CMS configuration, logs, or documentation.
+- Preserve `_examples/content/page/divisores.es.md`; it is the shared divider regression fixture.
 
-### Basic Commands
-- **Dev Server**: `sh do server` (Regenerates prebuild config).
-- **Production**: `sh do hugo`.
+## Design intent
 
-### 1. Prebuild (`themes/sansoul/prebuild/`)
-A nested Hugo instance runs *before* the main build.
-- **Input**: `data/types/`, `data/langs.yml`, `data/remote.yml`.
-- **Logic**: `layouts/partials/files-by-config.html`.
-- **Output**: `themes/sansoul/prebuild/public/`.
-  - `hugo.prebuild.yml`: The compiled configuration file.
-  - `content/`: Generated index pages and content types.
+SanSoul is a data-driven Hugo page builder. Consumer projects should normally customize `content/`, `data/`, root assets, and uploads instead of copying theme layouts.
 
-**Critical Caveat**: Changes to `data/remote.yml`, `data/types/`, or global `config.yml` require a **restart** of the server (`sh do server`). Hot-reload *does not* catch these.
+The theme owns four coupled systems:
 
-### 2. Module Mounting
-The prebuild process determines where files live. Key mounts in `hugo.prebuild.yml`:
-- `content/single/_home.{lang}.md` -> `content/_index.{lang}.md`.
-- `content/values.{lang}.yml` -> `data/values.{lang}.yml`.
-- `uploads/` -> `static/u/` AND `assets/u/`.
-- Node modules -> `assets/fonts/` or `assets/u/icons/`.
+1. prebuild-time configuration and content generation;
+2. runtime template composition and rendering;
+3. generated Sveltia CMS schema;
+4. processed CSS, JavaScript, fonts, icons, and images.
 
-## system.tpl_logic (The "Page Builder")
-Pages are not standard Hugo templates. They are "assembled" using a recursive logic determined by the `tpl` object.
+A parameter change can affect all four. Trace the parameter from author-facing YAML through prebuild/CMS generation to the rendering partial and final asset behavior before renaming or removing it.
 
-### TPL Definition Source
-- **Standard Pages**: `tpl` is defined in `data/types/{type}.yml` (e.g., `data/types/page.yml`).
-- **Single Pages**: `tpl` is defined in the **Front Matter** of the page itself (e.g., `content/single/example.es.yml`).
-- **Defaults**: `data/types/all.yml` defines global defaults for all types.
+## Theme pipeline ownership
 
-### The Render Tree
-- **Tree**: `baseof` -> `tpl-sections` -> `merged-expand` -> `boxes/item.html`.
-- **Recursion**: `boxes/item.html` parses keys (`img`, `title`, `steps`, `gallery`) and calls block partials.
-- **State**: `page.Store` is used to pass flags (e.g., `is_container`) down the tree.
-- **Dynamic Imports**: `assets/scripts.js` imports JS modules only when specific blocks are present in the DOM.
+The consumer-facing lifecycle is defined in `templates/root/AGENTS.md`. Internally, the root `do` wrapper executes `themes/sansoul/do`:
 
-### Component Mapping (Keys -> Partials)
-The `boxes/item.html` parser maps keys to specific partials. This is strict. Examples:
-- **`boxes`** -> `boxes/items` (Recursive container)
-- **`steps`** -> `blocks/steps` -> `item` (step)
-- **`imgs` / `limgs`** -> `blocks/gallery`
-- **`faqs`** -> `blocks/faq` -> `item` (faq)
-- **`reviews`** -> `blocks/reviews` -> `item` (review)
-- **`inputs`** -> `blocks/form`
-- **`geos`** -> `blocks/map`
-- **`modals`**: Hidden sections triggered via URL anchor (ID match).
-- **Global Values**: `data/values.{lang}.yml` (source: `content/values.{lang}.yml`) supplies global params like `menu` or `callnow`.
-
-### Components & Boxes
-- **Hierarchy**: Sections > Boxes > Blocks and Sub-Boxes.
-- **Blocks**: Complex elements (lists, galleries, forms).
-- **Configuration Keys**:
-  - `boxes` -> `box`
-  - `list` -> `box`
-  - `steps` -> `step`
-  - `imgs` / `limgs` -> `gallery`
-  - `faqs` -> `faq`
-  - `inputs` -> `form`
-  - `geos` -> `map`
-  - `reviews` -> `review`
-  - *Blocks without specific item key*: `gss`, `dots`, `when`, `links`.
-- **Modals**: Sections can contain `modals` (hidden sections triggerable via URL anchor). **Configuration Keys**: `modal`.
-
-### Configuration & Data (`./data/`)
-- `config`: General config.
-- `styles`: General style variables.
-- `langs`: Language definitions and translation layers.
-- `defaults`: Parameter defaults by path.
-- `customs`: CMS custom fields/widgets.
-- `remote`: Remote data fetching configuration.
-
-### ⚠️ Cascade & Merge Logic (Deep Dive)
-The system uses a sophisticated deep-merge strategy to determine parameters (e.g., background color). It merges global defaults, type defaults, and page specifics.
-
-**Example: Determining the background color of the 2nd section in a "single" page:**
-*(Priority Order: 1 = Lowest, 7 = Highest/Win)*
-
-1.  `data/types/all.yml` -> `tpl.section[0].color` (Global Base)
-2.  `content/single/all.{lang}.yml` -> `tpl.section[0].color` (Language Base)
-3.  `data/types/single.yml` -> `tpl.section[0].color` (Type Base)
-4.  `data/types/single.yml` -> `tpl.section[1].color` (Type N-th Base)
-5.  `content/single/example.{lang}.yml` -> `tpl.section[0].color` (Page Base)
-6.  `content/single/example.{lang}.yml` -> `tpl.section[1].color` (Page N-th Base)
-7.  `content/single/example.{lang}.yml` -> `tpl.sections[1].color` (Specific Section - **WINNER**)
-
-**Note on `section` vs `sections`**:
-- `tpl.section`: Array of default values. Index `0` merges to ALL sections. Index `n` merges to every n-th section (modulo).
-- `tpl.sections`: The actual array of explicit sections for the page.
-
-## system.structure_map
-Standard project structure emphasizing the separation of content (project) and logic (theme):
+```text
+project data/content
+  -> prebuild Hugo site
+  -> prebuild/public/hugo.prebuild.yml + generated content
+  -> main Hugo build with theme and project mounts
+  -> generated public site and manifests
+  -> scripts/imgs.js post-processing
 ```
-.
-├── assets/                 # Project overrides (_custom.scss, customs.js)
-├── uploads/                # Project overrides of assets/u/
-├── content/                # Site Content (Flat structure: /type/page.md)
-├── data/                   # The "Brain" (Config, Types, Langs)
-├── themes/
-    └── sansoul/            # CORE SUBMODULE
-        ├── assets/         # Core JS/SCSS
-        ├── layouts/        # Logic Core (TPL System)
-        └── prebuild/       # Pre-generation logic
+
+Configuration precedence is theme default, optional environment config, generated prebuild config, then project `hugo.yml`.
+
+The prebuild owns decisions derived from languages, types, defaults, remote sources, and collection indexes. `sh do local` watches these inputs, serializes regeneration, and restarts its managed Hugo server after a successful prebuild. Plain `sh do server` still requires a manual restart.
+
+## Directory responsibilities
+
+- `prebuild/`: nested Hugo generator. Its `public/` directory is generated.
+- `layouts/`: public rendering API, CMS generator, shortcodes, render hooks, schemas, and generated-file templates.
+- `data/`: theme defaults and authoring metadata.
+- `content/`: translated fallback/system pages.
+- `i18n/`: UI translations and default semantic values.
+- `assets/css/`: site and CMS SCSS.
+- `assets/js/`: browser ESM modules.
+- `assets/scripts.js`: main browser module graph.
+- `scripts/`: Node build utilities and repository automation.
+- `_examples/`: copyable integration fixture plus human/agent parameter references.
+
+## Page builder implementation
+
+The public composition semantics are defined in `templates/root/AGENTS.md` and demonstrated by `_examples/`. Internally, effective templates are merged by `func/tpls.html` and expanded by `func/tpl-sections.html`.
+
+`tpl.section[0]` applies to every explicit section. Later `tpl.section` entries apply cyclic positional defaults. `tpl.sections` contains the concrete list and wins at the specific-section layer.
+
+Render flow:
+
+```text
+baseof -> tpl-sections -> sections/merged-* -> sections/item
+       -> boxes/items -> boxes/item -> blocks/* or nested boxes/items
 ```
+
+`boxes/item.html` is a dispatcher. Specialized data contracts include:
+
+- `list` -> `blocks/list`;
+- `step` + `steps` -> `blocks/steps`;
+- `gallery` + `imgs|limgs` -> `blocks/gallery`;
+- `faq` + `faqs` -> `blocks/faq`;
+- `review` + `reviews` -> `blocks/reviews`;
+- `form` + `inputs` -> `blocks/form`;
+- `map` + `geos` -> `blocks/map`;
+- `links`, `dots`, `when`, and `gss` -> direct block partials;
+- `boxes` -> recursive `boxes/items`.
+
+Preserve key ordering behavior in `sort`, conditional behavior in `if`, page/global lookup behavior in `get`, and move/copy/remove behavior in `remap`.
+
+## Hugo template practices
+
+- Pass a `dict` to partials with more than one input. Use stable, descriptive keys.
+- A value-returning partial must have exactly one `return`, at the end of the file. Hugo executes the first `return` regardless of logical nesting.
+- Distinguish absent, empty, and false values intentionally; do not replace nil-sensitive logic with `default` without checking boolean semantics.
+- Use `with` only when empty values should be treated as absent.
+- Keep dynamic partial names constrained to known directories and document the mapping.
+- Use `partialCached` only for pure partials and include every varying input in the cache key.
+- Treat `page.Store`, `hugo.Store`, `resources.GetRemote`, `resources.ExecuteAsTemplate`, and file generation as side effects requiring contract documentation.
+- Use `warnf` or `errorf` with actionable context for invalid author data. Do not silently convert a corrupt required value into unrelated output.
+- Avoid formatting-only rewrites of large templates; whitespace control changes rendered HTML.
+
+## Partial contract comments
+
+Add a contract comment to non-trivial or reusable partials, especially functions and dispatchers:
+
+```go-html-template
+{{/*
+Partial: func/example
+Purpose: Resolve one value without rendering markup.
+Context:
+  - Page (page.Page, required): Current page.
+  - name (string, required): Dot-delimited parameter path.
+Returns: Any value, or nil when no value exists.
+Side effects: None.
+Example: {{ $value := partial "func/example" (dict "Page" . "name" "org.mail") }}
+*/}}
+```
+
+For rendering partials use `Renders:` instead of `Returns:`. For scalar context, state `Context: string`, `page.Page`, or the actual type. Include defaults or accepted values only when they are not obvious from the code or examples.
+
+Do not add comments that merely narrate assignment, iteration, or condition syntax.
+
+## CMS generator practices
+
+`layouts/partials/cms/` generates public YAML for Sveltia CMS. Source labels and help text live in `data/cms/<lang>.yml`; reusable options live in `data/options.yml` and `data/utilities.yml`.
+
+When adding or changing an author-facing parameter:
+
+1. update rendering/default logic;
+2. update Spanish and English CMS labels/hints;
+3. update options and custom field generation if applicable;
+4. regenerate and parse `public/admin/config.<hash>.yml`;
+5. create or edit representative content in `/admin/`;
+6. update `_examples/` and documentation.
+
+Sveltia fields are required by default. Emit `required: false` only when an empty value is supported. Keep generated field and collection names stable, unique, and free of dots or spaces.
+
+## JavaScript practices
+
+- Modules export named initialization functions; importing a reusable module should not mutate the page.
+- Initialization must be a safe no-op when matching DOM does not exist.
+- Scope selectors to the component and preserve progressive enhancement.
+- Guard optional globals such as analytics, maps, players, MathJax, and CMS APIs.
+- Handle promise rejections with useful context. Do not leave debug logs in normal production paths.
+- Avoid rebuilding behavior already available through semantic HTML or CSS.
+- Keep DOM state classes synchronized with their SCSS definitions.
+- Do not use CommonJS in this ESM package.
+
+After JavaScript changes, run syntax checks for every module and exercise affected interactions in the browser, including absent-component and repeated-initialization cases.
+
+## SCSS practices
+
+- Keep two-space indentation and the existing component hierarchy.
+- Prefer shared tokens, functions, mixins, and utilities over duplicated literal values.
+- Preserve accessibility states: focus visibility, reduced motion where relevant, color contrast, and usable touch targets.
+- Coordinate responsive behavior with `*_vs` and layout parameters exposed to authors.
+- Avoid broad selectors in project/CMS styles that can leak into rendered content.
+- Validate both site and CMS bundles when shared tokens or widgets change.
+
+## Node and shell scripts
+
+- Build scripts must fail with a non-zero exit code when a required phase fails.
+- Await asynchronous work before process exit and aggregate failures clearly.
+- Limit destructive operations to explicit generated directories; never derive recursive deletion targets from unchecked input.
+- Quote shell variables and support a missing first argument without test errors.
+- Keep optional private tooling commands separate from the portable build path.
+- Root-relative assumptions must be stated at the top of each script.
+
+## SEO, schema, and generated files
+
+Changes under `head.html`, `schema/`, or `files/` require representative tests for home, list, single, translated, noindex, and 404 pages. Verify canonical URLs, alternates, dates, images, JSON-LD validity, redirects, search index, robots, and llms output as applicable.
+
+Generated files are outputs, not source. Fix their partials or data inputs.
+
+## Compatibility and public APIs
+
+Treat these as public theme APIs unless proven otherwise:
+
+- author-facing data keys and accepted values;
+- content/front matter conventions;
+- section/type names;
+- shortcodes and render hooks;
+- CSS hooks used by project customizations;
+- CMS field names and stored output;
+- root `sh do` commands.
+
+For a breaking change, increment the major theme version, add an actionable entry to `MIGRATIONS.md`, and update affected examples and documentation. Compatible features increment minor; compatible fixes increment patch. Do not perform broad renames as incidental cleanup.
+
+`--printUnusedTemplates` is advisory only: dynamic calls and consumers outside this fixture produce false positives.
+
+## Required validation
+
+Establish a baseline before theme edits. From the project root:
+
+```sh
+npm ci
+sh do hugo
+```
+
+For theme changes, also run:
+
+- `node --check` for all changed JavaScript modules;
+- `sh -n` for changed shell scripts;
+- a build using `_examples/data` and `_examples/content`;
+- browser checks for affected pages and `/admin/` when relevant;
+- the copied `_examples/` divider page and any divider reference identified by the consumer DNA.
+
+Use Hugo diagnostics such as `--printPathWarnings`, template metrics, and unused-template reports for investigation, not as deletion authority.
+
+Restricted networks may produce remote-font warnings. Report them separately. A missing package, template failure, invalid generated YAML, failed image conversion, or successful shell exit after an internal error is a build failure that must be fixed.
+
+## Documentation boundary
+
+READMEs are Spanish human guides; AGENTS files are concise English operational contracts, not translations. Update only the document whose audience or contract changed:
+
+- root README/AGENTS templates: generated consumer onboarding and operating contract;
+- `README-ROOT.md`: detailed human use of the theme from a project;
+- `README.md` / this file: theme implementation and maintenance.
+
+Avoid exhaustive parameter tables in instructions. Keep `_examples/` as the copyable fixture and executable parameter reference.
+
+Perform a documentation and migration impact check after every implementation change without waiting for an explicit request. When behavior, commands, public parameters, file structure, requirements, or agent rules change, update the relevant source of truth in the same task. Do not edit unrelated documents merely to keep artificial pairs synchronized.
+
+After changing either root template, run `sh do root-docs` in the reference project and include the regenerated root file in the same change.

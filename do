@@ -1,7 +1,10 @@
 #!/bin/sh
 
+set -eu
+
 # Variables
-PROYECT="${PWD##*/}"
+PROJECT="${PWD##*/}"
+COMMAND=${1:-}
 
 # Functions
 lecho() { echo "\033[7;34m $1 \033[0m"; } # 🟦 Header
@@ -17,34 +20,34 @@ vecho() { echo "\033[1;36m$1\033[0m"; }   # 🩵 Value
 ## GIT COMMANDS ##
 ##################
 
-if [ $1 = up ]; then
-  source ../_tools/git/up.sh
-elif [ $1 = sup ]; then
-  source ../_tools/git/sup.sh
-elif [ $1 = spush ]; then
-  source ../_tools/git/spush.sh
-elif [ $1 = down ]; then
-  source ../_tools/git/down.sh
-elif [ $1 = sdown ]; then
-  source ../_tools/git/sdown.sh
-elif [ $1 = spull ]; then
-  source ../_tools/git/spull.sh
-elif [ $1 = merge ]; then
-  source ../_tools/git/merge.sh
-elif [ $1 = smerge ]; then
-  source ../_tools/git/smerge.sh
-elif [ $1 = sreset ]; then
-  source ../_tools/git/sreset.sh
-elif [ $1 = sremote ]; then
-  source ../_tools/git/sremote.sh
-elif [ $1 = scheck ]; then
-  source ../_tools/git/scheck.sh
-elif [ $1 = sbranch ]; then
-  source ../_tools/git/sbranch.sh
-elif [ $1 = du ]; then
+if [ "$COMMAND" = up ]; then
+  . ../_tools/git/up.sh
+elif [ "$COMMAND" = sup ]; then
+  . ../_tools/git/sup.sh
+elif [ "$COMMAND" = spush ]; then
+  . ../_tools/git/spush.sh
+elif [ "$COMMAND" = down ]; then
+  . ../_tools/git/down.sh
+elif [ "$COMMAND" = sdown ]; then
+  . ../_tools/git/sdown.sh
+elif [ "$COMMAND" = spull ]; then
+  . ../_tools/git/spull.sh
+elif [ "$COMMAND" = merge ]; then
+  . ../_tools/git/merge.sh
+elif [ "$COMMAND" = smerge ]; then
+  . ../_tools/git/smerge.sh
+elif [ "$COMMAND" = sreset ]; then
+  . ../_tools/git/sreset.sh
+elif [ "$COMMAND" = sremote ]; then
+  . ../_tools/git/sremote.sh
+elif [ "$COMMAND" = scheck ]; then
+  . ../_tools/git/scheck.sh
+elif [ "$COMMAND" = sbranch ]; then
+  . ../_tools/git/sbranch.sh
+elif [ "$COMMAND" = du ]; then
   sh do down
   sh do up
-elif [ $1 = sdu ]; then
+elif [ "$COMMAND" = sdu ]; then
   sh do sdown
   sh do sup
 
@@ -53,52 +56,62 @@ elif [ $1 = sdu ]; then
 ## DEV COMMANDS ##
 ##################
 
-# Update version
-elif [ $1 = update ]; then
+# Show or record consumer migrations
+elif [ "$COMMAND" = migrations ]; then
+  shift
+  node ./themes/sansoul/scripts/migrations.js "$@"
+
+# Synchronize managed documentation blocks in the consumer project root
+elif [ "$COMMAND" = root-docs ]; then
+  shift
+  node ./themes/sansoul/scripts/root-docs.js "$@"
+
+# Legacy updater kept temporarily for projects migrating to the 5.0.0 baseline
+elif [ "$COMMAND" = update ]; then
   node ../_tools/updater/index.js
 
 # Normalize yaml and markdown files
-elif [ $1 = normalize ]; then
+elif [ "$COMMAND" = normalize ]; then
   python3 ../_tools/others/yaml-normalize.py
 
 # Refactoring spaces in Hugo
-elif [ $1 = spaces ]; then
+elif [ "$COMMAND" = spaces ]; then
   sh ../_tools/others/refactoring-spaces.sh "$2"
 
 # Create favicon.ico
-elif [ $1 = favicon ]; then
-  source ../_tools/others/favicon.sh
+elif [ "$COMMAND" = favicon ]; then
+  . ../_tools/others/favicon.sh
 
 # Create woff2 and scss by font files
-elif [ $1 = fonts ]; then
-  source ../_tools/others/fonts.sh
+elif [ "$COMMAND" = fonts ]; then
+  . ../_tools/others/fonts.sh
 
 # Download woff2 from Google Fonts by font styles
-elif [ $1 = gfonts ]; then
-  node ../_tools/others/gfonts.js $PROYECT
+elif [ "$COMMAND" = gfonts ]; then
+  node ../_tools/others/gfonts.js "$PROJECT"
 
 # Remove binary files from history
-elif [ $1 = clean ]; then
-  source ../_tools/others/remove-history-binary-files.sh
+elif [ "$COMMAND" = clean ]; then
+  . ../_tools/others/remove-history-binary-files.sh
 
 # Check yaml error of Static CMS
-elif [ $1 = yml ]; then
-  node ../_tools/others/check-yaml.js $PROYECT "$2"
+elif [ "$COMMAND" = yml ]; then
+  node ../_tools/others/check-yaml.js "$PROJECT" "${2:-}"
 
 # Get data of place by Google API
-elif [ $1 = places ]; then
+elif [ "$COMMAND" = places ]; then
   COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
   LANGS=$(grep 'lang:' data/langs.yml | awk -F': ' '{print $2}')
   for LANG in $LANGS; do
-    node ../_tools/others/fetch-place.js $PROYECT $COLOR $LANG "$2"
+    node ../_tools/others/fetch-place.js "$PROJECT" "$COLOR" "$LANG" "${2:-}"
   done
 
 # Scrap reviews by Google Maps
-elif [ $1 = reviews ]; then
+elif [ "$COMMAND" = reviews ]; then
   # do reviews "Inspirits Bar"
   LANGS=$(grep 'lang:' data/langs.yml | awk -F': ' '{print $2}')
   for LANG in $LANGS; do
-    node ../_tools/others/scrape-reviews.js $PROYECT $LANG "$2"
+    node ../_tools/others/scrape-reviews.js "$PROJECT" "$LANG" "${2:-}"
   done
 
 
@@ -106,8 +119,21 @@ elif [ $1 = reviews ]; then
 ## SERVER COMMANDS ##
 #####################
 
+# Run portable syntax checks and the complete build
+elif [ "$COMMAND" = check ]; then
+
+  hecho "CHECK JAVASCRIPT"
+  find ./themes/sansoul/assets/js ./themes/sansoul/scripts -type f -name '*.js' -exec node --check {} \;
+
+  hecho "CHECK SHELL"
+  sh -n ./do
+  sh -n ./themes/sansoul/do
+  sh -n ./themes/sansoul/scripts/mirror-to-gitlab.sh
+
+  sh do hugo
+
 # Hugo server with theme config
-elif [ $1 = server ]; then
+elif [ "$COMMAND" = server ]; then
 
   sh do rm-public
   sh do prebuild
@@ -116,13 +142,13 @@ elif [ $1 = server ]; then
   hugo server --disableFastRender --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # CMS + hugo local
-elif [ $1 = local ]; then
+elif [ "$COMMAND" = local ]; then
 
   sh do rm-public
-  sh do prebuild
 
-  hecho "HUGO SERVER WITHOUT CMS CACHE"
-  hugo server --noHTTPCache --ignoreCache --disableFastRender --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.local.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
+  hecho "HUGO SERVER WITH CMS CACHE INVALIDATION AND PREBUILD WATCHER"
+  shift
+  node ./themes/sansoul/scripts/local-server.js "$@"
 
 
 #####################
@@ -130,26 +156,25 @@ elif [ $1 = local ]; then
 #####################
 
 # Remove public directorie
-elif [ $1 = rm-public ]; then
+elif [ "$COMMAND" = rm-public ]; then
 
   hecho "REMOVE PUBLIC AND TMP RESOURCES DIRECTORIE"
-  rm -r public
-  rm -r resources
+  rm -rf public resources
 
 # Like purge CSS
-elif [ $1 = css-purge ]; then
+elif [ "$COMMAND" = css-purge ]; then
 
   hecho "CSS PURGE"
   node ./themes/sansoul/scripts/css-purge.js
 
 # Images ICO, PNG and AVIF
-elif [ $1 = imgs ]; then
+elif [ "$COMMAND" = imgs ]; then
 
   hecho "IMAGES ICO, PNG AND AVIF"
   node ./themes/sansoul/scripts/imgs.js
 
 # Enter in to prebuild folder, build hugo and go back
-elif [ $1 = prebuild ]; then
+elif [ "$COMMAND" = prebuild ]; then
 
   hugo version
 
@@ -157,7 +182,7 @@ elif [ $1 = prebuild ]; then
   cd themes/sansoul/prebuild
 
   hecho "REMOVE PUBLIC DIRECTORIE"
-  rm -r public
+  rm -rf public
 
   hecho "RUN HUGO PREBUILD"
   hugo --config ../../../hugo.yml,hugo.yml
@@ -178,7 +203,7 @@ elif [ $1 = prebuild ]; then
 #   fi
 
 # Hugo build as developement environement
-elif [ $1 = hugo-development ]; then
+elif [ "$COMMAND" = hugo-development ]; then
 
   sh do rm-public
   sh do prebuild
@@ -190,7 +215,7 @@ elif [ $1 = hugo-development ]; then
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
 # Hugo build as production environement
-elif [ $1 = hugo-production ]; then
+elif [ "$COMMAND" = hugo-production ]; then
 
   sh do rm-public
   sh do prebuild
@@ -206,9 +231,9 @@ elif [ $1 = hugo-production ]; then
   # sh do multilang
 
 # Hugo check environement and build
-elif [ $1 = hugo ]; then
+elif [ "$COMMAND" = hugo ]; then
 
-  start_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
+  start_ms=$(node -p "Date.now()")
 
   # Deploy with environement
   development=$(grep '^\s\sdevelopment:' ./data/config.yml | awk '{print $2}')
@@ -219,12 +244,13 @@ elif [ $1 = hugo ]; then
     sh do hugo-production
   fi
 
-  end_ms=$(node -p "Number(Date.now().toString().slice(-5)).toString()")
+  end_ms=$(node -p "Date.now()")
   elapsed=$((end_ms - start_ms))
   echo "\033[1;36m🕑 $elapsed ms\033[0m"
 
 else
 
-  echo "'$1' no es un parámetro válido"
+  echo "Unknown command: '$COMMAND'" >&2
+  exit 2
 
 fi

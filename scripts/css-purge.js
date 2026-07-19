@@ -1,67 +1,44 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-// Directorio donde se encuentran los archivos CSS
-const cssDir = path.join(__dirname, '../../public/css')
-// Patrón de archivo CSS
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+const projectDir = path.resolve(scriptDir, '../..')
+const cssDir = path.join(projectDir, 'public/css')
+const statsPath = path.join(projectDir, 'hugo_stats.json')
 const cssPattern = /^styles\..*\.css$/
-// Archivo JSON con las clases, ids y etiquetas HTML
-const jsonFilePath = path.join(__dirname, '../../hugo_stats.json')
 
-// Función para encontrar el archivo CSS que coincida con el patrón
-const findCssFile = (dir, pattern) => {
-  const files = fs.readdirSync(dir)
-  for (const file of files) {
-    if (pattern.test(file)) {
-      return path.join(dir, file)
-    }
+async function findCssFile (directory, pattern) {
+  const files = await fs.readdir(directory)
+  const file = files.find(file => pattern.test(file))
+  if (!file) {
+    throw new Error(`No CSS file matching ${pattern} found in ${directory}`)
   }
-  throw new Error(`No se encontró ningún archivo que coincida con el patrón: ${pattern}`)
+  return path.join(directory, file)
 }
 
-// Función para hacer split en las comas que no estén dentro de paréntesis
-const splitPorComas = (texto) => {
-  const resultado = []
-  let profundidad = 0
-  let segmento = ''
+function splitSelectors (text) {
+  const selectors = []
+  let depth = 0
+  let segment = ''
 
-  for (let i = 0; i < texto.length; i++) {
-    const char = texto[i]
+  for (const character of text) {
+    if (character === '(') depth++
+    if (character === ')') depth--
 
-    if (char === '(') {
-      profundidad++
-    } else if (char === ')') {
-      profundidad--
-    }
-
-    // Si encontramos una coma y no estamos dentro de paréntesis, hacemos un split
-    if (char === ',' && profundidad === 0) {
-      resultado.push(segmento.trim())
-      segmento = ''
+    if (character === ',' && depth === 0) {
+      selectors.push(segment.trim())
+      segment = ''
     } else {
-      segmento += char
+      segment += character
     }
   }
 
-  // Añadir el último segmento si existe
-  if (segmento) {
-    resultado.push(segmento.trim())
-  }
-
-  return resultado
+  if (segment) selectors.push(segment.trim())
+  return selectors
 }
 
-// Encontrar el archivo CSS
-const cssFilePath = findCssFile(cssDir, cssPattern)
-
-// Leer el archivo JSON
-fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
-  if (err) throw err
-
-  const elements = JSON.parse(jsonData).htmlElements
-  const tags = elements.tags.join('|')
-  const classes = elements.classes.join('|')
-  const ids = elements.ids.join('|')
+function createElementPattern ({ tags, classes, ids }) {
   const safelist = [
     'active',
     'hidden',
@@ -73,76 +50,63 @@ fs.readFile(jsonFilePath, 'utf8', (err, jsonData) => {
     '\\.cookies--hide'
   ].join('|')
 
-  const elementsRegex = new RegExp(`(^|\\.|\\])(\\*|\\[.+\\]|:[\\w:-]+|(${tags})|\\.(${classes})|#(${ids}))($|=|:|\\[|\\]|\\.)|${safelist}`)
+  return new RegExp(
+    `(^|\\.|\\])(\\*|\\[.+\\]|:[\\w:-]+|(${tags.join('|')})|\\.(${classes.join('|')})|#(${ids.join('|')}))($|=|:|\\[|\\]|\\.)|${safelist}`
+  )
+}
 
-  // Leer archivo CSS
-  fs.readFile(cssFilePath, 'utf8', (err, data) => {
-    if (err) throw err
+function normalizeCss (css) {
+  return css
+    .replace(/\n\s*/g, '')
+    .replace(/(\()\s/g, '$1')
+    .replace(/\s(\))/g, '$1')
+    .replace(/(\})/g, '$1\n')
+    .replace(/(@media[^{]*\{)/g, '$1\n')
+    .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1')
+    .replace(/\/\*.*?\*\//g, '')
+    .replace(/^([^@]+?)\{/gm, '$1\n{')
+}
 
-    // Sustituciones iniciales
-    let result = data
-      .replace(/\n\s*/g, '') // Quitar saltos de línea + posibles espacios
-      .replace(/(\()\s/g, '$1') // Quitar espacio que precede a (
-      .replace(/\s(\))/g, '$1') // Quitar espacio que antecede a )
-      .replace(/(\})/g, '$1\n') // Añadir salto de línea después de }
-      .replace(/(@media[^{]*\{)/g, '$1\n') // Añadir salto de línea después de @media...{
-      .replace(/^((@keyframes|\.?\d|from|to).+)\n/gm, '$1') // Quitar salto de línea que precede a @keyframes e hijos
-      .replace(/\/\*.*?\*\//g, '') // Quitar comentarios
-      .replace(/^([^@]+?)\{/gm, '$1\n{') // Añadir salto de línea antes del primer { en línea que NO empiece ni tenga @
+function purgeSelectors (css, elementPattern) {
+  const lines = normalizeCss(css).split('\n')
+  const keptLines = lines.map(line => {
+    if (/^[@{}]/.test(line)) return line
 
-    // Procesar línea por línea
-    const lines = result.split('\n')
-    const processedLines = []
-
-    for (const line of lines) {
-      // Omitir líneas que empiecen por @, { y }
-      if (/^[@{}]/.test(line)) {
-        processedLines.push(line)
-      } else {
-        // Separar por comas que no estén entre paréntesis
-        const selectors = splitPorComas(line)
-
-        // Procesar selector por selector
-        const processedSelectors = []
-        for (const selector of selectors) {
-          // Elimina todo lo que está dentro de los paréntesis más externos
-          let selectorCleaned = selector
-          while (/\([^()]*\)/.test(selectorCleaned)) {
-            selectorCleaned = selectorCleaned.replace(/\([^()]*\)/g, '')
-          }
-
-          selectorCleaned = selectorCleaned
-            .replace(/^.*[\s>+~]/g, '') // Quita todos los selectores excepto el último
-
-          // Si es un elemento genérico o está entre las clases, ids y etiquetas html
-          if (elementsRegex.test(selectorCleaned)) {
-            processedSelectors.push(selector)
-          }
-        }
-        processedSelectors.join(',')
-
-        processedLines.push(processedSelectors)
+    return splitSelectors(line).filter(selector => {
+      let candidate = selector
+      while (/\([^()]*\)/.test(candidate)) {
+        candidate = candidate.replace(/\([^()]*\)/g, '')
       }
-    }
-
-    // Unir las líneas procesadas
-    result = processedLines.join('\n')
-      .replace(/\n\n\{.+/gm, '') // Eliminar propiedades huérfanas
-      .replace(/^@media.+\{\n\}\n/gm, '') // Eliminar mediaqueries huérfanas
-
-    // Nombres de animaciones
-    const animations = [...result.matchAll(/animation(-name)?:([\w-]+)/g)].map(animation => animation[2]).join('|')
-    // Regex para @keyframes
-    const regexAnimations = new RegExp(`^@keyframes\\s(?!${animations})[\\w-]+\\{.+\n`, 'gm')
-    // Eliminar @keyframes no usados
-    result = result
-      .replace(regexAnimations, '')
-      .replace(/\n/g, '') // Eliminar saltos de linea
-
-    // Guardar resultado
-    fs.writeFile(cssFilePath, result, 'utf8', (err) => {
-      if (err) throw err
-      console.log('Processed and saved css file')
-    })
+      candidate = candidate.replace(/^.*[\s>+~]/g, '')
+      return elementPattern.test(candidate)
+    }).join(',')
   })
+
+  let result = keptLines.join('\n')
+    .replace(/\n\n\{.+/gm, '')
+    .replace(/^@media.+\{\n\}\n/gm, '')
+
+  const animations = [...result.matchAll(/animation(-name)?:([\w-]+)/g)]
+    .map(animation => animation[2])
+    .join('|')
+  const unusedAnimations = new RegExp(`^@keyframes\\s(?!${animations})[\\w-]+\\{.+\n`, 'gm')
+
+  result = result.replace(unusedAnimations, '').replace(/\n/g, '')
+  return result
+}
+
+async function main () {
+  const cssPath = await findCssFile(cssDir, cssPattern)
+  const stats = JSON.parse(await fs.readFile(statsPath, 'utf8'))
+  const elementPattern = createElementPattern(stats.htmlElements)
+  const css = await fs.readFile(cssPath, 'utf8')
+  const purgedCss = purgeSelectors(css, elementPattern)
+
+  await fs.writeFile(cssPath, purgedCss, 'utf8')
+  console.log(`Processed and saved ${cssPath}`)
+}
+
+main().catch(error => {
+  console.error('CSS purge failed:', error)
+  process.exitCode = 1
 })

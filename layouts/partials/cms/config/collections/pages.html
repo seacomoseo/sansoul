@@ -3,7 +3,7 @@
   (partial "cms/widget" (dict "var" `page_slug`        "name" `slug`                         "req" true "pattern" (slice "^[a-z0-9-/]*$" .pattern)))
   (partial "cms/widget" (dict "var" `page_title`       "name" `title`                        "req" true                                           ))
   (partial "cms/widget" (dict "var" `page_img`         "name" `img`      "widget" `vimg`                                                          ))
-  (partial "cms/widget" (dict "var" `page_body`        "name" `body`     "widget" `md`                                                            ))
+  (partial "cms/widget" (dict "var" `page_body`        "name" `body`     "widget" `md`       "hint" .md_hint                                      ))
   (partial "cms/widget" (dict "var" `page_toc`         "name" `toc`      "widget" `bool`                                                          ))
   (partial "cms/widget" (dict "var" `page_sum`         "name" `sum`      "widget" `txt`                                                           ))
   (partial "cms/widget" (dict "var" `page_draft`       "name" `draft`    "widget" `bool` "i18n" true                                              ))

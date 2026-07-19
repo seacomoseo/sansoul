@@ -1,6 +1,7 @@
 {{ $icon := site.Data.utilities.collections.icons }}
 
-{{ $colections := slice }}
+{{ $colections := slice (dict "divider" true) }}
+
 
 {{/*  CUSTOM TYPES (single last)  */}}
 {{ $parents := where site.Sections "Type" "ne" "single" | append (where site.Sections "Type" "eq" "single") }}
@@ -222,6 +223,7 @@
     {{ $colections = $colections | append (dict "divider" true) }}
   {{ end }}
 
+
   {{/*  Collection  */}}
   {{ $colections = $colections | append (dict
     "label"            (.Params.cms.title    | default "")
@@ -266,6 +268,18 @@
     )
   ) }}
 {{ end }}
+
+
+{{ $colections = $colections | append (dict "divider" true) }}
+
+
+{{/*  FILES  */}}
+{{ $colections = $colections | append (dict
+  "label"       .collection_settings
+  "name"        `settings`
+  "icon"        $icon.settings
+  "files"       (partial "cms/config/collections/files/_" .)
+) }}
 
 
 {{ $colections = $colections | append (dict "divider" true) }}
@@ -319,19 +333,6 @@
   )
   "editor"           (dict "preview" false)
   "fields"           `~sections_fields`
-) }}
-
-
-{{ $colections = $colections | append (dict "divider" true) }}
-
-
-{{/*  FILES  */}}
-{{ $colections = $colections | append (dict
-  "label"       .collection_files
-  "name"        `settings`
-  "icon"        $icon.settings
-  "description" .collection_settings_desc
-  "files"       (partial "cms/config/collections/files/_" .)
 ) }}
 
 

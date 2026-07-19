@@ -1,3 +1,10 @@
+{{- /*
+Partial: boxes/item
+Purpose: Dispatch an expanded box according to its `sort` list and render nested blocks.
+Context: Expanded box map produced by `boxes/merge-expand-item`.
+Renders: Box media, titles, Markdown, specialized blocks, tags, buttons, and recursive sub-boxes.
+Side effects: Called media and block partials may register assets in page.Store.
+*/ -}}
 {{- define "partials/inbox" -}}
 
   {{- range .sort -}}

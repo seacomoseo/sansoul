@@ -48,18 +48,19 @@
 <body style="--login: '{{ $t.login }}'">
 
   {{/*  SVELTIA CMS  */}}
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
 
   {{/*  CUSTOM SCRIPT  */}}
   {{ $opts := dict
     "minify"     hugo.IsProduction
     "targetPath" "js/cms.js"
+    "params"     (dict "t" $t)
   }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}
   {{ if hugo.IsProduction }}
     {{ $js = $js | minify }}
   {{ end }}
-  <script src="{{ $js.RelPermalink }}"></script>
+  <script src="{{ $js.RelPermalink }}" defer></script>
 
 </body>
 </html>

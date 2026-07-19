@@ -1,3 +1,10 @@
+{{/*
+Partial: func/tpl-sections
+Purpose: Merge page template layers and expand the effective section list.
+Context: page.Page.
+Returns: Effective tpl map with expanded `sections` and the current page under `Page`.
+Side effects: None directly; called partials may read site data.
+*/}}
 {{/*  Add first section and merge all  */}}
 {{ $tpl  := dict }}
 {{ $tpls := partial "func/tpls" . }}

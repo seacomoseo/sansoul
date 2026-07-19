@@ -1,6 +1,6 @@
 {
   "name": "sansoul",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "SanSoul is the Hugo theme website services soul by lorensansol",
   "type": "module",
   "dependencies": {
@@ -13,8 +13,12 @@
     "sharp-ico": "^0.1.5"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "sh do check",
+    "build": "sh do hugo",
     "server": "npx http-server public"
+  },
+  "engines": {
+    "node": "^22.22.0 || >=24.11.0"
   },
   "repository": {
     "type": "git",

@@ -1,3 +1,10 @@
+{{/*
+Partial: func/once-stores
+Purpose: Initialize and finalize build-wide stores once on the primary-language home page.
+Context: String `init` or `end`.
+Returns: Empty string.
+Side effects: Resets page stores; writes hugo.Store timestamp; collects fonts, drawings, glyphs, and generated static files.
+*/}}
 {{ page.Store.Set "phones" slice }}
 {{/*  Only in home page in the main language  */}}
 {{ if eq page (index site.Sites 0).Home }}

@@ -1,3 +1,10 @@
+{{- /*
+Partial: sections/item
+Purpose: Render one fully expanded section and recursively render its modals.
+Context: Expanded section map from `sections/merged-expand`.
+Renders: Section/header/footer/dialog node, background, child boxes, footer utilities, and nested modals.
+Side effects: Sets page.Store `is_container` while rendering child boxes.
+*/ -}}
 {{- /*  ATTRIBUTES  */ -}}
 {{- $attr := partial "sections/attr" . -}}
 

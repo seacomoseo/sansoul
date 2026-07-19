@@ -1,3 +1,13 @@
+{{/*
+Partial: func/get-param
+Purpose: Resolve a dot-delimited parameter from the current page, falling back to localized global values.
+Context:
+  - Page (page.Page, required): Page and language used for lookup.
+  - name (string, required): Parameter path such as "org.mail".
+Returns: Any resolved value, or nil when neither source contains the path.
+Side effects: None.
+Example: {{ $mail := partial "func/get-param" (dict "Page" . "name" "org.mail") }}
+*/}}
 {{ $options := dict "value" .Page.Params "path" .name }}
 {{ $return  := partial "func/index-split" $options }}
 {{ if not $return }}

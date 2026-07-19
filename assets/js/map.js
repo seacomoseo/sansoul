@@ -1,4 +1,3 @@
-import { cookiesLegal } from '@params'
 import { scrollShot } from './scroll-shot'
 import { loadLeaflet, myIcon, fill, tile } from './leaflet'
 

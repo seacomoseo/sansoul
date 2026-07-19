@@ -12,14 +12,27 @@ filter_published: Publicados
 filter_drafts: Borradores
 filter_year: Año
 filter_month: Mes
+# singletones > values
+values: Textos Globales
+values_hint: Menú Personalizado, Botones de Esquina, Footer y Textos/Valores Globales que se se utilizan en plantillas y/o como traducciones
+values_menu_: Menú Personalizado
+values_menu_img: Imagen del Logo
+values_menu_title: Título del Logo
+values_menu_sub: Subtítulo del Logo
+values_menu_items: Elementos
+values_menu_items_singular: Elemento
+values_menu_subitems: Sublementos
+values_menu_subitems_singular: Sublemento
+values_callnows: Botones de Esquina Personalizados
+values_callnows_singular: Botón
 # collections
-collection_sections: Secciones
-collection_sections_singular: Sección
-collection_sections_desc: Secciones asignadas a cada página. Es necesario crearlas aquí antes de poder asignarlas.
+collection_settings: Configuración
 collection_types: Colecciones
 collection_types_singular: Colección
-collection_types_desc: Tipos de Páginas. Aquí se crean, editan y configuran de forma individual, a excepción de "Todas", cuyos parámetros se aplican por defecto a todas las colecciones.
-collection_files: Configuración
+collection_types_desc: Tipos de Páginas; aquí se crean, editan y configuran de forma individual, a excepción de "Todas", cuyos parámetros se aplican por defecto a todas las colecciones
+collection_sections: Secciones
+collection_sections_singular: Sección
+collection_sections_desc: Secciones asignadas a cada plantilla de colección y página única; es necesario crearlas aquí antes de poder asignarlas
 # collections > types
 types_title: Nombre
 types_title_hint: Algunos nombres rellenan por defecto los campos de icono, emoji y textos en todos los idiomas
@@ -62,10 +75,10 @@ tpl_menu_hide_custom_hint: En parámetros globales
 tpl_menu_auto: Enlaces Automáticos
 tpl_menu_auto_hint: Muestra automáticamente enlaces que llevan a cada sección y ventana modal, éstas últimas como subelementos desplegables
 tpl_callnow: Botones de Esquina
-tpl_callnow_hint: '**Personalizados →** [en parámetros globales](#/collections/_singletons/entries/values) <br> **Automáticos →** si hay algún botón de WhatsApp o Teléfono en la página'
+tpl_callnow_hint: '**Personalizados →** [en parámetros globales](#/collections/_singletons/entries/values) \n **Automáticos →** si hay algún botón de WhatsApp o Teléfono en la página'
 tpl_section: Plantilla de cada Sección
 tpl_section_singular: Sección
-tpl_section_hint: El 1º se aplica a todas, el resto de forma alterna <br> **Ejemplo →** si hay 3 plantillas, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
+tpl_section_hint: El 1º se aplica a todas, el resto de forma alterna \n **Ejemplo →** si hay 3 plantillas, el 1º se aplica a todos; el 2º en la 2, 5, 8… y  el 3º en la 3, 6, 9…
 tpl_sections: Secciones
 tpl_sections_singular: Sección
 tpl_sections_file: Archivo
@@ -77,28 +90,27 @@ tpl_rel: Listas de Relacionados
 # collections > page
 # collections > page > index
 index_permalinks: Enlaces Permanentes
-index_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo <br> **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
-index_slug_hint: Es el final de la URL o enlace de esta la página de índice <br> **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
+index_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo \n **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
+index_slug_hint: Es el final de la URL o enlace de esta la página de índice \n **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
 index_singular: Título Singular
 # collections > page > common
 page_index: Índice
 page_slug: Slug
-page_slug_hint: Es el final de la URL o enlace de ésta página <br> Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) <br> **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
+page_slug_hint: Es el final de la URL o enlace de ésta página \n Debe ser único (no repetirse) entre todas las páginas, corto, descriptivo y sin palabras irrelevantes (de, por, para, el…) \n **Ejemplo →** para el título "*Paseo por el Nuevo Barrio por la Mañana*" puede quedar el slug "*paseo-nuevo-barrio-manana*"
 page_title: Título
 page_title_hint: '**Ejemplo →** "Día de paseo por el nuevo barrio"'
 page_img: Imagen Principal
 page_body: Contenido
-page_body_hint: Los enlaces cuyo texto esté envueltro entre corchetes se convertirán en botones (opcionalmente se pueden personalizar si en el title entre corchetes se añaden una o varias de estas palabras → "**main**", "**alt**", "**light**", "**dark**", "**turn**", "**such**", "**swap**" o "**dot**", separar con cualquier caracter si se añaden varias) <br> En el title entre corchetes también se pueden añadir estas palabras → "**nofollow**" (ofuscado), "**homefollow**" (ofuscado excepto en página de inicio), "**blank**" (se abre en ventana nueva) y "**ga4**" (registra evento clave en GA4) <br> Se pueden añadir iconos usando, envuelto entre caracteres "**::**", uno de los siguientes nombres válidos → [Material Symbols](https://fonts.google.com/icons)
 page_toc: Índice
 page_toc_hint: Tabla de contenidos generada automáticamente mediante los encabezados del contenido
 page_sum: Resumen
-page_sum_hint: Se utiliza para las miniaturas de las listas <br> Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido (si hay)
+page_sum_hint: Se utiliza para las miniaturas de las listas \n Si no se indica, se toman aproximadamente 15 primeras palabras o 155 caracteres del contenido (si hay)
 page_seo: SEO
 page_seo_hint: Se utiliza para los resultados de búsqueda en Google
 page_seo_title: Título SEO
-page_seo_title_hint: Recomendado entre 40 y 65 caracteres (~60) <br> Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
+page_seo_title_hint: Recomendado entre 40 y 65 caracteres (~60) \n Caracteres llamativos permitidos por Google → 【】 ® © ▷ ᐅ ◁ ✆ ⊛ « » ‹ › ✔
 page_seo_desc: Descripción SEO
-page_seo_desc_hint: Recomendado entre 70 y 155 caracteres (~135) <br> Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
+page_seo_desc_hint: Recomendado entre 70 y 155 caracteres (~135) \n Caracteres llamativos permitidos por Google → llll➤ ✅ ✓ ✔ ✚ ☝️ ⚡ ✆ ® © ❤ ⬤ ✚ ➥
 page_seo_noindex: No Index
 page_seo_noindex_hint: Evita que google indexe la página (recomendado marcar si todo el contenido está copiado de otra web)
 page_llms: LLMs
@@ -202,15 +214,14 @@ page_org_food_type_hint: Ejemplos → Italiana, Mexicana, Gaditana… (solo para
 page_org_departs: Departamentos
 page_org_departs_singular: Departamento
 # collections > files
-settings: Configuración
 # collections > files > config
 config: General
 config_ga4: Código GA4
-config_ga4_hint: 'Código de seguimiento de Google Analytics 4 <br> **Ejemplo →** G-XXXXXXXXXX'
+config_ga4_hint: 'Código de seguimiento de Google Analytics 4 \n **Ejemplo →** G-XXXXXXXXXX'
 config_g_site_verify: Código Search Console
 config_g_site_verify_hint: Código de Verificación de Google Search Console
 config_g_file_verify: Archivo Search Console
-config_g_file_verify_hint: Nombre de Archivo de Verificación de Google Search Console <br> **Ejemplo →** google7467d923cbb3eb4c.html
+config_g_file_verify_hint: Nombre de Archivo de Verificación de Google Search Console \n **Ejemplo →** google7467d923cbb3eb4c.html
 config_g_translate: Traductor de Google
 config_g_translate_hint: Añade un enlace en el menú que lleva directamente al sitio web desde el traductor de Google
 config_disqus: Disqus
@@ -221,7 +232,7 @@ config_phone_code: Prefijo Telefónico de País
 config_time_zone: Zona Horaria
 config_currency: Moneda
 config_main_org: Página de Organización Principal
-config_main_org_hint: Ruta interna hacia la página <br> **Ejemplo →** supplier/ejemplo
+config_main_org_hint: Ruta interna hacia la página \n **Ejemplo →** supplier/ejemplo
 config_html: HTML Personalizado
 config_html_head: Antes de </head>
 config_html_body: Antes de </body>
@@ -259,12 +270,14 @@ langs_config_hint: Configuración por idioma que sobreescribe a la configuració
 # collections > files > styles
 styles: Estilos
 styles_icons: Iconos
+styles_icons_hint: Son los mismos parámetros y valores de Google Material Symbols
 styles_icons_fill: Relleno
 styles_icons_weight: Peso
 styles_icons_grade: Grado
 styles_icons_optical: Tamaño Óptico
 styles_icons_style: Estilo
 styles_icons_def: Por defecto
+styles_icons_def_hint: Iconos usados por defecto en diferentes lugares del sitio web
 styles_icons_def_home: Inicio
 styles_icons_def_play: Reproducir
 styles_icons_def_up: Arriba
@@ -311,9 +324,9 @@ styles_fonts_base: Fuente Base
 styles_fonts_cursive: Manuscrita
 styles_fonts_title: Títulos
 styles_fonts_blockquote_cursive: Citas Manuscritas
-styles_fonts_blockquote_cursive_hint: Citas con Fuente Manuscrita; Desactivadas se usará 'Times New Roman' cursiva
+styles_fonts_blockquote_cursive_hint: Citas con Fuente Manuscrita \n Desactivada se usará 'Times New Roman' cursiva
 styles_fonts_family: Familia
-styles_fonts_family_hint: Nombres válidos → [Google Fonts](https://fonts.google.com/) <br> Si no → debe haber un archivo en [medios](/admin/#/media) en *'/fonts/${family-name-urlize}-${weight}[-italic].woff2'*; ejemplo → *'/fonts/delorean-slab-400-italic.woff2'*
+styles_fonts_family_hint: Nombres válidos → [Google Fonts](https://fonts.google.com/) \n Si no → debe haber un archivo en [medios](/admin/#/media) en *'/fonts/${family-name-urlize}-${weight}[-italic].woff2'*; ejemplo → *'/fonts/delorean-slab-400-italic.woff2'*
 styles_fonts_weight: Grosor
 styles_fonts_bold: Grosor Negrita
 styles_fonts_italic: Cursiva
@@ -324,7 +337,7 @@ styles_colors_main: Principal
 styles_colors_alt: Alternativo
 styles_colors_alt_hint: Usado para subtítulos, bordes y como seleccionable
 styles_colors_cta: Enlaces
-styles_colors_cta_hint: Color para los enlaces y botones por defecto <br> Si no se especifica, se considerará igual que el principal
+styles_colors_cta_hint: Color para los enlaces y botones por defecto \n Si no se especifica, se considerará igual que el principal
 styles_colors_color: Color
 styles_colors_light: Versión Clara
 styles_colors_dark: Versión Oscura
@@ -341,7 +354,7 @@ styles_base_dark: Oscuro
 styles_base_black: Negro
 styles_rounded: Esquinas Redondeadas
 styles_rounded_radius: Radio
-styles_rounded_radius_hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas <br> Si el valor es 0 no se redondea nada <br> Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas <br> Máximo 1.25
+styles_rounded_radius_hint: Éste radio se aplica a las esquinas en general, pero se le suma margen interno si a su vez envuelve a otro elemento con esquinas redondeadas \n Si el valor es 0 no se redondea nada \n Si el valor es 0.01 solamente se redondean los que envuelven otras esquinas \n Máximo 1.25
 styles_rounded_chamfer: Chaflán
 styles_rounded_chamfer_hint: Cambia las esquinas redondeadas por chaflanes (cortes rectos)
 styles_btns: Botones
@@ -373,12 +386,13 @@ styles_shadow_alpha: Transparencia
 # collections > files > customs
 customs: Campos Personalizados
 customs_singular: Campo
-customs_hint: Campos Globales Personalizados
+customs_hint: Campos personalizados para que aparezcan en páginas de colecciones y textos globales \n Tras definirlos se pueden obtener en las secciones de plantillas mediante el campo `Obtener Parámetros` (`get`) o en cualquier valor de texto en archivos de secciones mediante `{{ get example.param }}` (con notación de puntos si son hijos de objetos)
 customs_types: Colecciones
 customs_types_singular: Colección
 customs_pages: Páginas
 customs_pages_singular: Página
 customs_var: Campo Base Existente
+customs_var_hint: Si se define y existe como variable de campo bien formateado, tomará todos sus parámetros por defecto (que se pueden sobreescribir)
 customs_name: Nombre de Campo
 customs_label: Nombre Visible
 customs_hint_: Leyenda
@@ -394,7 +408,7 @@ customs_sub_singular: Subcampo
 customs_relations_hint: Crear previamente
 # collections > files > defaults
 defaults: Valores por Defecto
-defaults_hint: Valores de parámetros por defecto
+defaults_hint: Valores de parámetros por defecto que se aplican a páginas según tipos, idiomas y rutas
 defaults_singular: Valor
 defaults_value: Valor
 defaults_type: Tipo de Valor
@@ -402,6 +416,7 @@ defaults_kind: Tipos de Página
 defaults_lang: Idiomas
 defaults_path: Rutas Glob
 defaults_path_singular: Ruta Glob
+defaults_path_hint: De archivos, no de URLs
 # collections > files > remote
 remote: Contenido Remoto
 remote_singular: Recurso Remoto
@@ -410,7 +425,7 @@ remote_csv: ¿Es un CSV?
 remote_types: Tipos de Páginas
 remote_types_singular: Tipo de Página
 remote_index: Índice
-remote_index_hint: Ruta hacia el array deseado separado por puntos <br> **Ejemplo →** "shop.articles.products"
+remote_index_hint: Ruta hacia el array deseado separado por puntos \n **Ejemplo →** "shop.articles.products"
 remote_maps: Mapeos
 remote_maps_singular: Mapeo
 remote_maps_hint: Mapeo de parámetros
@@ -428,24 +443,11 @@ redirects_type: Tipo
 robots_hint: Tutorial
 # collections > files > llms
 llms_hint: Archivo personalizado para motores de búsqueda basados en IA
-# singletones > values
-values: Textos Globales
-values_hint: Menú Personalizado, Botones de Esquina y Valores Globales que se se utilizan en plantillas y/o como traducciones.
-values_menu_: Menú Personalizado
-values_menu_img: Imagen del Logo
-values_menu_title: Título del Logo
-values_menu_sub: Subtítulo del Logo
-values_menu_items: Elementos
-values_menu_items_singular: Elemento
-values_menu_subitems: Sublementos
-values_menu_subitems_singular: Sublemento
-values_callnows: Botones de Esquina Personalizados
-values_callnows_singular: Botón
 # boxes and sections
 name: Nombre
 name_hint: Nombre del archivo
 id: ID
-id_hint: Identificador para enlaces ancla <br> Debe ser único (no repetirse) entre todas las secciones y cajas <br> Corto <br> Descriptivo <br> Sin palabras irrelevantes (de, por, para, el…) <br> **Ejemplo →** preguntas-frecuentes
+id_hint: Identificador para enlaces ancla \n Debe ser único (no repetirse) entre todas las secciones y cajas \n Corto \n Descriptivo \n Sin palabras irrelevantes (de, por, para, el…) \n **Ejemplo →** preguntas-frecuentes
 view: Ver
 view_hint: Grupos de opciones a mostras
 title: Título
@@ -459,6 +461,94 @@ hs_vs: Tamaño de Título Mínimo
 caps: Título en Mayúsculas
 line: Título Subrayado
 md: Contenido
+md_hint: |
+  \n Además del [formato Markdown](https://es.wikipedia.org/wiki/Markdown), se pueden añadir los siguiente modificadores que se verán reflejados:
+  \n
+  \n **Personalizar enlaces**
+  \n - Si internamente el enlace está envuelto entre corchetes se convertirá en botón
+  \n - En el title entre corchetes se pueden añadir una o varias de estas palabras separadas por espacios:
+  \n `  `- `main|alt|light|dark|turn|such|whatsapp`: color (si no se indica, se toma `cta`)
+  \n `  `- `swap`: cambio de tipografía
+  \n `  `- `dot`: botón puntual con icono y sin texto
+  \n `  `- `nofollow`: ofuscado
+  \n `  `- `homefollow`: ofuscado excepto en página de inicio
+  \n `  `- `blank`: se abre en ventana nueva
+  \n `  `- `ga4`: registra evento en GA4
+  \n - Ejemplo: `[[Texto del enlace/botón]](/url/ "Title [main nofollow ga4]")`
+  \n - Se recomienda usar el modo "raw" de este campo (botón **`[M⬇]`** arriba a la derecha) para poder realizar estas personalizaciones
+  \n
+  \n **Iconos**
+  \n - Se pueden añadir iconos usando, envuelto entre caracteres `::`, un nombre válido
+  \n - Nombres válidos:
+  \n `  `- Directamente un nombre de [Material Symbols](https://fonts.google.com/icons)
+  \n `  `- Un emoji
+  \n `  `- `txt:` + cualquier texto, tendrá la misma tipografía que los encabezados
+  \n `  `- `brand:` + [Font Awesome Brands](https://fontawesome.com/search?ic=brands)
+  \n `  `- `brand:` + [Simple Icons](https://simpleicons.org/)
+  \n `  `- `svg:` + el path de un archivo svg que haya en `uploads/{icons/,}<path>.svg`, sin `uploads/{icons/,}` ni extensión `.svg`
+  \n - Ejemplos:
+  \n `  `- `::check::`
+  \n `  `- `::✅::`
+  \n `  `- `::txt:holi::`
+  \n `  `- `::brand:whatsapp::`
+  \n `  `- `::svg:base/logo::`
+  \n
+  \n **Enlaces con iconos**
+  \n - Ejemplo: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4]")`
+  \n - Ejemplo: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4 dot]")` (es igual, pero es un botón puntual que solamente tiene un icono y oculta "+34 666 777 888")
+  \n
+  \n **Listas con iconos**
+  \n - Si un elemento de lista comienza con un icono, se tomará como "bullet point"
+  \n - Ejemplo: `- ::check:: Ejemplo de elemento de lista`
+  \n
+  \n **Marcador**
+  \n - Se puede destacar un texto envolviéndolo entre caracteres `==`
+  \n - Sin más, sería como un marcador amarillo
+  \n - Si se le añade el icono svg `sign-simple` o `sign-circle` al inicio, tendrá un subrallado animado y curbado o circular
+  \n - Ejemplo: `==::svg:sign-simple:: frase destacada==`
+  \n
+  \n **Insertado**: `++Texto++`
+  \n **Subíndice**: `H~2~O`
+  \n **Superíndice**: `m^2^`
+  \n
+  \n **Shortcodes**
+  \n - Se pueden usar [códigos cortos](https://gohugo.io/content-management/shortcodes/) con el formato `{{ nombre parámetro/s }}`.
+  \n - Hay nombres de códigos cortos predefinidos:
+  \n `  `- `date`: Fecha
+  \n `  `- `year`: Año
+  \n `  `- `page-title`: Título de la página
+  \n `  `- `content`: El contenido markdown de la página
+  \n `  `- `breadcrumbs`: Coloca una lista de enlaces tipo migas de pan
+  \n `  `- `bg`: Añade un color de fondo y es el único predefinido que requiere cierre tipo `{{% /bg %}}`
+  \n `  `- `get`: Obtiene un valor de parámetro de página `{{ get example.param }}` (con notación de puntos si son hijos de objetos)
+  \n - Variantes de formato en la forma en la que se mostrará el contenido:
+  \n `  `- `{{< ... >}}`: Literal.
+  \n `  `- `{{% ... %}}`: Se procesa antes.
+  \n `  `- `{{ ... }}`: Se procesa antes y se puede usar en cualquier campo de texto fuera de éste.
+md_anchor: Texto del Enlace
+md_title: Título Hover
+md_btn: Botón
+md_dot: Botón tipo Punto
+md_color: Botón Color
+md_homefollow: Just Do Follow in Home
+md_blank: Abrir en otra ventana
+md_mark: Marcador
+md_mark_sign: Tipo
+md_mark_text: Texto
+md_ins: Insertado
+md_sub: Subíndice
+md_sup: Superíndice
+md_shortcode: Shortcode
+md_shortcode_type: Tipo
+md_shortcode_type_hint: La forma en la que se mostrará el contenido
+md_shortcode_tag: '<>: literal'
+md_shortcode_percent: '%%: se procesa antes'
+md_shortcode_none: 'Limpio: se procesa antes y se puede usar en cualquier campo de texto fuera de éste'
+md_shortcode_params: Parámetros
+md_shortcode_closing: Cierre
+md_gallery: Galería
+md_gallery_simple: Galería Simple
+md_inline_image: Imagen en Línea
 md_align: Alineación del Contenido
 md_align_hint: Alineación Sólo del Contenido
 md_align_vl: Alineación del Contenido en Escritorio
@@ -477,7 +567,20 @@ menu_label: Texto del Enlace del Menú
 menu_btn: Color del Botón del Enlace del Menú
 menu_swap: Fuente Alternativa del Enlace del Menú
 icon: Icono
-icon_hint: Nombres válidos → Directamente un nombre de [Material Symbols](https://fonts.google.com/icons) o emojis o "txt:" + cualquier texto o "brand:" + [Font Awesome Brands](https://fontawesome.com/search?ic=brands) o "brand:" + [Simple Icons](https://simpleicons.org/) o "svg:" + el nombre de un archivo svg que haya en la carpeta "icons" de la biblioteca de medios
+icon_hint: |
+  **Nombres válidos:**
+  \n - Directamente un nombre de [Material Symbols](https://fonts.google.com/icons)
+  \n - Un emoji
+  \n - `txt:` + cualquier texto, tendrá la misma tipografía que los encabezados
+  \n - `brand:` + [Font Awesome Brands](https://fontawesome.com/search?ic=brands)
+  \n - `brand:` + [Simple Icons](https://simpleicons.org/)
+  \n - `svg:` + el path de un archivo svg que haya en `uploads/{icons/,}<path>.svg`, sin `uploads/{icons/,}` ni extensión `.svg`
+  \n **Ejemplos:**
+  \n - `check`
+  \n - `✅`
+  \n - `txt:holi`
+  \n - `brand:whatsapp`
+  \n - `svg:base/logo`
 icon_pos: Posición de Icono
 icon_pos_hint: Arriba en grande, Lateral junto al título y Abajo a modo de subrayado
 icon_size: Tamaño de Icono
@@ -488,11 +591,11 @@ hover_hint: Aparecerá al pasar el cursor por encima
 alt: Texto Alternativo de Imagen
 hover_alt: Texto Alternativo de Imagen Alternativa
 vid: Vídeo
-vid_hint: Admite URL de YouTube y Vimeo <br> **Miniatura →** en el campo anterior correspondiente <br> **Marcas de inicio y final →** Se pueden establecer en segundos añadiendo al final de la URL '#t=2,7' o '#t=2'
+vid_hint: Admite URL de YouTube y Vimeo \n **Miniatura →** en el campo anterior correspondiente \n **Marcas de inicio y final →** Se pueden establecer en segundos añadiendo al final de la URL '#t=2,7' o '#t=2'
 mute: Auto-reproducir Vídeo
 mute_hint: Vídeo silenciado que se reproduce automáticamente en bucle
 ratio: Proporción de la Imagen
-ratio_hint: Automática por defecto <br> **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+ratio_hint: Automática por defecto \n **Ejemplos →** 16/9, 9/16, 3/2, 4/3, 1/1, 2/1, 18/6…
 ratio_pattern: Sólo números (1-9) y barras inclinadas ("/")
 contain: Imagen Ajustada a la Proporción
 contain_hint: Para que no se recorte si se selecciona alguna proporción
@@ -546,7 +649,7 @@ align_hint: Alineación de todos los elementos de la Caja
 align_vl: Alineación en Escritorio
 align_vl_hint: Alineación de todos los elementos de la Caja cuando el ancho de la ventana ≥ 1280px
 rate: Proporción de la Caja
-rate_hint: Altura mínima según la proporción establecida <br> Automática por defecto <br> **Ejemplos →** 16/9, 9/16, 3x2, 4x3, 1/1, 2x1, 18x6…
+rate_hint: Altura mínima según la proporción establecida \n Automática por defecto \n **Ejemplos →** 16/9, 9/16, 3/2, 4/3, 1/1, 2/1, 18/6…
 space: Margen entre Elementos de la Caja
 pd: Márgenes Interiores
 pd_vs: Márgenes Interiores Mínimos
@@ -562,7 +665,7 @@ node: Nodo
 node_hint: Nombre de la etiqueta HTML de la Caja
 get: Obtener Parámetros
 get_singular: Parámetro
-get_hint: Obtener Valores de Parámetros o Campos Personalizados desde la página o valor global hasta la caja
+get_hint: Obtener valores de parámetros desde la página (o valores globales en su defecto) hasta esta caja
 get_from: Parámetro de Origen
 get_to: Parámetro de Destino
 get_value: Valor JSON
@@ -638,9 +741,9 @@ faqs_hint: Botones con contenido desplegable, muy usado para preguntas frecuente
 faq_headers: Modo Encabezados
 faq_open: Primero Desplegado
 gss: Hoja G.Drive Archivo
-gss_hint: Identificador del archivo de tipo hoja de Google Drive <br> **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
+gss_hint: Identificador del archivo de tipo hoja de Google Drive \n **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
 gss_sheet: Hoja G.Drive Pestaña
-gss_sheet_hint: Identificador de la pestaña <br> **Ejemplo →** "1861644079"
+gss_sheet_hint: Identificador de la pestaña \n **Ejemplo →** "1861644079"
 review: Plantilla de Reseñas
 reviews: Reseñas
 reviews_singular: Reseña
@@ -687,7 +790,7 @@ form_subject_hint: Asunto que tendrá el email de recepción
 input_name: Nombre
 input_name_hint: Nombre que tendrá el campo
 input_label: Nombre Visible
-input_label_hint: Texto descriptivo del campo que aparece sobre éste <br> Si no se especifica, se aplicará el nombre anterior
+input_label_hint: Texto descriptivo del campo que aparece sobre éste \n Si no se especifica, se aplicará el nombre anterior
 input_hint: Leyenda
 input_hint_hint: Texto descriptivo del campo que aparece bajo éste
 input_req: Requerido
@@ -701,7 +804,7 @@ input_min: Mínimo
 input_max: Máximo
 input_x: Opciones en Horizontal
 input_accept: Archivos
-input_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas <br> **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
+input_accept_hint: Extensiones de archivos aceptados, añadiendo el punto delante y separados por comas \n **Ejemplo →** ".pdf,.png,.jpg,.jpeg"
 input_base_name: Nombre Base
 input_base_name_hint: Usa como nombre de archivo el valor del campo al que se le haga referencia aquí en el momento de la carga, y si no lo encuentra, usa este mismo nombre
 input_geo_area: Áreas
@@ -727,15 +830,15 @@ inputs_date_hint: Campo simple de fecha
 inputs_time: Tiempo (Simple)
 inputs_time_hint: Campo simple de tiempo
 inputs_area: Área de Texto (Simple)
-inputs_area_hint: Campo simple de área de texto <br> Ocupa todo el ancho
+inputs_area_hint: Campo simple de área de texto \n Ocupa todo el ancho
 inputs_geo: Coordenadas
-inputs_geo_hint: Mapa para establecer un punto <br> Ocupa todo el ancho
+inputs_geo_hint: Mapa para establecer un punto \n Ocupa todo el ancho
 inputs_select: Selección (Múltiple)
-inputs_select_hint: Campo múltiple de lista de selección desplegable <br> Solo permite seleccionar una opción <br> Ocupa todo el ancho
+inputs_select_hint: Campo múltiple de lista de selección desplegable \n Solo permite seleccionar una opción \n Ocupa todo el ancho
 inputs_radio: Radios (Múltiple)
-inputs_radio_hint: Campo múltiple de radios o círculos <br> Solo permite seleccionar una opción <br> Ocupa todo el ancho
+inputs_radio_hint: Campo múltiple de radios o círculos \n Solo permite seleccionar una opción \n Ocupa todo el ancho
 inputs_checks: Casillas (Múltiple)
-inputs_checks_hint: Campo múltiple de casillas de verificación <br> Permite seleccionar múltiples opciones <br> Ocupa todo el ancho
+inputs_checks_hint: Campo múltiple de casillas de verificación \n Permite seleccionar múltiples opciones \n Ocupa todo el ancho
 inputs_check: Casilla (Simple)
 inputs_check_hint: Campo simple de casilla de verificación
 inputs_file: Archivo
@@ -789,8 +892,8 @@ opt-base-brand: 🏷 Marca
 opt-base-author: 👤 Autor
 opt-base-org: 🚀 Organización
 opt-base-service: 🔧 Servicio
-opt-base-page: 📄 Página
-opt-base-single: 📑 Única
+opt-base-page: 📄 Página Simple
+opt-base-single: 📑 Página Única
 opt-hn-0: h0
 opt-hn-1: h1
 opt-hn-2: h2
@@ -998,7 +1101,7 @@ opt-div-snow: Nieve
 opt-div-squares: Cuadrados
 opt-div-staggered-pill-op: Escalonado Bala con Transparencia
 opt-div-staggered-pill-tilt: Escalonado Bala con Inclinación
-opt-div-staggered-pill: Escalonado Bala 
+opt-div-staggered-pill: Escalonado Bala
 opt-div-staggered-round: Escalonado Redondeado
 opt-div-staggered: Escalonado
 opt-div-sun-round: Sol Redondeado
@@ -1377,3 +1480,6 @@ opt-widget-slice: Lista
 opt-widget-dict: Grupo
 opt-widget-hide: Oculto
 opt-font_bold-0: Desactivado
+opt-sign-none: Marcador
+opt-sign-simple: Simple
+opt-sign-circle: Circle

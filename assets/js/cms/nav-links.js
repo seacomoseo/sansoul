@@ -1,4 +1,7 @@
 export function initNavLinks () {
+  const { CMS } = window
+  if (!CMS) return
+
   CMS.registerAdditionalLink({
     id: 'info',
     title: 'Info',

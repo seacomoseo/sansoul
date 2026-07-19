@@ -1,3 +1,10 @@
+{{- /*
+Partial: blocks/form
+Purpose: Render a configured form with stable IDs, validation metadata, consent, and submission controls.
+Context: Expanded box map containing `form`, `inputs`, `section`, and `Page`.
+Renders: One HTML form and all configured fields.
+Side effects: Registers icons/scripts indirectly through called partials; does not submit during build.
+*/ -}}
 {{- /*  ID  */ -}}
 {{- $form_id := .form.id -}}
 {{- $num     := 0 -}}

@@ -1,3 +1,10 @@
+{{/*
+Partial: func/draws-to-store
+Purpose: Discover icons and images referenced by pages, types, sections, and localized values.
+Context: Any value; discovery uses the global site and current page stores.
+Returns: Empty string.
+Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `divs`.
+*/}}
 {{ $icons := slice
   "brand:facebook-f"
   "brand:x-twitter"
@@ -250,7 +257,7 @@
 {{/*  Add to Store  */}}
 {{ $icons = partial "sections/merged-shortcodes" ($icons | uniq) | uniq }}
 {{ range $icons | uniq }}
-  {{ if ne . "hide" }}
+  {{ if and . (not (in (slice "hide" "none") .)) }}
     {{ $icon := . }}
     {{ $type := "glyphs" }}
     {{ range $icon | findRESubmatch `^(\w+):(.*)` }}

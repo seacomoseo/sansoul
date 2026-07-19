@@ -1,3 +1,12 @@
+{{/*
+Partial: func/get-params-merge
+Purpose: Expand an item's get/remap/if directives against a page before rendering.
+Context:
+  - Page (page.Page, required): Source page.
+  - item (map, required): Box or section data to expand.
+Returns: Expanded item, or an empty map when its `if` condition fails.
+Side effects: None.
+*/}}
 {{ $item := .item }}
 
 {{/*  Get params  */}}

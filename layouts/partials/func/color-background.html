@@ -1,4 +1,13 @@
-{{/* partial "func/color-background" (dict "child" "such" "parent" "dark") */}}
+{{/*
+Partial: func/color-background
+Purpose: Resolve `such` and `turn` colors relative to the inherited background.
+Context:
+  - child (string): Requested child color.
+  - parent (string): Inherited parent color.
+Returns: Map with resolved `child` and next inherited `parent` colors.
+Side effects: None.
+Example: {{ $color := partial "func/color-background" (dict "child" "such" "parent" "dark") }}
+*/}}
 {{ $return := dict "child" .child "parent" (.child | default .parent) }}
 
 {{ if eq "transparent" .child }}

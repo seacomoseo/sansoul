@@ -1,6 +1,5 @@
 {{ $config   := site.Data.config }}
 {{ $t        := partial "func/i18n-cms" . }}
-{{ $lang_cms := partial "func/lang-cms" . }}
 {{ $locales  := slice }}
 {{ with site.Data.langs }}
   {{ range . }}
@@ -100,7 +99,6 @@
     )
   )
   "logo_url"        $logo
-  "locale"          $lang_cms
   "i18n"            (dict
     "structure"       "multiple_files"
     "locales"         $locales
