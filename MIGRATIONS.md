@@ -33,7 +33,27 @@ Añade una sección `## x.y.z — fecha` por cada versión que requiera interven
 
 Si una transformación puede automatizarse con seguridad, colócala en `scripts/migrations/` y enlázala desde la sección. No ejecutes migraciones automáticamente durante `hugo`, `server`, `local` ni al actualizar el submódulo.
 
-Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen a `dna/`. En una primera adopción, revisa los archivos antiguos y traslada la información útil antes de permitir su reemplazo con `sh do root-docs --force`.
+Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
+
+## 5.1.1 — 2026-07-23
+
+**Impacto:** proyectos que todavía conservan README/AGENTS raíz no generados o un ADN sin completar.
+
+### Cambios relevantes
+
+- `sh do root-docs --force` reemplaza los documentos raíz antiguos sin copiar ni exigir que se traslade su contenido a `dna/`.
+- Si falta `dna/_index.md`, el comando crea únicamente el scaffold del tema.
+- Los agentes deben preguntar al usuario cuando el índice DNA falte, esté vacío o conserve solamente los textos orientativos.
+
+### Acciones obligatorias
+
+1. Ejecuta `sh do root-docs --force` si README/AGENTS todavía no son generados; su contenido anterior se descartará.
+2. Completa `dna/_index.md` de forma independiente. No deduzcas particularidades desde los documentos reemplazados.
+3. Ejecuta el build completo y las comprobaciones proporcionales al proyecto.
+
+### Validación
+
+Una segunda ejecución de `sh do root-docs` no debe producir cambios. El ADN no debe contener texto procedente de README/AGENTS antiguos. Tras validar y ejecutar `sh do migrations mark --yes`, raíz y tema deben indicar `5.1.1`.
 
 ## 5.1.0 — 2026-07-18
 
@@ -48,9 +68,9 @@ Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegram
 
 ### Acciones obligatorias
 
-1. Revisa README/AGENTS antiguos y traslada toda particularidad útil a `dna/_index.md` o a documentos enlazados desde él.
-2. Si los archivos raíz son antiguos, ejecuta `sh do root-docs --force`; si faltan o ya son generados, ejecuta `sh do root-docs` sin `--force`.
-3. Revisa el diff y confirma que README/AGENTS solo contienen información genérica y que el ADN conserva el contexto propio.
+1. Si los archivos raíz son antiguos, ejecuta `sh do root-docs --force`; si faltan o ya son generados, ejecuta `sh do root-docs` sin `--force`.
+2. Define `dna/_index.md` independientemente; no copies ni deduzcas contenido desde README/AGENTS antiguos.
+3. Revisa el diff y confirma que README/AGENTS solo contienen información genérica.
 4. Ejecuta el build completo y las comprobaciones proporcionales al proyecto.
 
 ### Validación

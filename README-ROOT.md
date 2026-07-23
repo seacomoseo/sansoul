@@ -83,11 +83,11 @@ Ejecuta todos los comandos desde la raíz:
 
 ### ADN del proyecto
 
-`dna/_index.md` es obligatorio y se lee antes de trabajar. Resume la identidad y las restricciones del sitio, enumera los demás documentos de `dna/` y explica cuándo consultar cada uno. Un agente no debe cargar todo el directorio por defecto: lee el índice y abre solo las referencias pertinentes para la tarea.
+`dna/_index.md` es obligatorio y se lee antes de trabajar. Resume la identidad y las restricciones del sitio, enumera los demás documentos de `dna/` y explica cuándo consultar cada uno. Un agente no debe cargar todo el directorio por defecto: lee el índice y abre solo las referencias pertinentes para la tarea. Si el índice falta, está vacío o conserva únicamente los textos orientativos de la plantilla, debe preguntar al usuario cómo definirlo antes de realizar trabajo específico del proyecto.
 
 Utiliza Markdown para las reglas y resúmenes que deban buscarse con facilidad. PDF, imágenes y otros originales pueden convivir como fuentes de apoyo, siempre enlazados desde el índice con una indicación clara de su autoridad. Copy, audiencia, identidad visual, negocio e integraciones son ejemplos, no una estructura obligatoria.
 
-Las particularidades nunca deben añadirse a README/AGENTS raíz porque son generados. `sh do root-docs` crea un índice orientativo en proyectos nuevos, pero después el ADN pertenece exclusivamente al proyecto y no se sobrescribe al sincronizar.
+Las particularidades nunca deben añadirse a README/AGENTS raíz porque son generados. `sh do root-docs` crea un índice orientativo cuando falta, pero no copia en él contenido de documentos antiguos. Después, el ADN pertenece exclusivamente al proyecto y no se sobrescribe al sincronizar.
 
 ### Operación del proyecto
 
@@ -272,7 +272,7 @@ El comando informa y verifica; no modifica contenido ni configuración automáti
 
 No se modifican como efecto secundario de Git. Después de actualizar el submódulo, una migración puede pedir `sh do root-docs`. README y AGENTS raíz son archivos genéricos generados íntegramente desde `themes/sansoul/templates/root/`; sus cabeceras advierten que no deben personalizarse.
 
-Si un proyecto antiguo tiene información propia en esos archivos, crea `dna/_index.md`, trasládala primero a `dna/` y ejecuta `sh do root-docs --force`. Sin `--force`, el comando se niega a sobrescribir un archivo no generado; también se niega si falta el índice DNA que debe recibir la información. En un proyecto nuevo, el comando crea un índice DNA orientativo cuando no existe. En actualizaciones posteriores puede reemplazar README/AGENTS de forma segura, pero nunca sobrescribe el ADN.
+Si README/AGENTS no fueron generados, `sh do root-docs` se niega a sobrescribirlos sin `--force`. Con `--force` los reemplaza íntegramente y descarta su contenido: no intenta interpretarlo ni trasladarlo al ADN. Si falta `dna/_index.md`, crea únicamente el scaffold orientativo. En actualizaciones posteriores puede reemplazar README/AGENTS de forma segura, pero nunca sobrescribe el ADN.
 
 El README raíz es una portada breve que enlaza este manual. El AGENTS raíz contiene el contrato operativo completo para que Codex lo descubra sin lecturas indirectas. Toda particularidad debe vivir en `dna/`, cuyo `_index.md` se lee siempre y dirige hacia los documentos relevantes.
 

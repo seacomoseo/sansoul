@@ -2,9 +2,10 @@
 
 /*
 Purpose: Synchronize generated root README.md and AGENTS.md from the theme,
-and scaffold dna/_index.md when a new project does not have one.
+and scaffold dna/_index.md when a project does not have one.
 Run from: Consumer project root through `sh do root-docs [--force]`.
 Writes: Root README.md and AGENTS.md; creates dna/_index.md only when absent.
+Legacy README/AGENTS content is never copied into DNA.
 */
 
 import fs from 'node:fs'
@@ -34,18 +35,14 @@ for (const target of targets) {
 }
 
 if (unmanaged.length > 0 && !force) {
-  fail(`${unmanaged.join(' and ')} must be migrated. Move project-specific information to dna/, then run \`sh do root-docs --force\`.`)
+  fail(`${unmanaged.join(' and ')} are not generated. Run \`sh do root-docs --force\` to replace them without copying their content into DNA.`)
 }
 
 const dnaFile = path.join(projectDir, 'dna', '_index.md')
-if (unmanaged.length > 0 && !fs.existsSync(dnaFile)) {
-  fail('Create dna/_index.md and preserve relevant information from the legacy root documents before using --force.')
-}
-
 if (!fs.existsSync(dnaFile)) {
   fs.mkdirSync(path.dirname(dnaFile), { recursive: true })
   fs.copyFileSync(path.join(themeDir, 'templates', 'dna', '_index.md'), dnaFile)
-  console.log('Created dna/_index.md; complete it with this project\'s particulars.')
+  console.log('Created the blank dna/_index.md scaffold; complete it separately with this project\'s particulars.')
 }
 
 for (const target of targets) syncFile(target)

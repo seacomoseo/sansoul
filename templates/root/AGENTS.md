@@ -5,7 +5,7 @@
 
 These instructions apply to a project that consumes SanSoul. Before editing:
 
-1. Read `dna/_index.md` for project identity, constraints, and document routing. Read only the additional DNA documents relevant to the task.
+1. Read `dna/_index.md` for project identity, constraints, and document routing. Read only the additional DNA documents relevant to the task. If the index is missing, empty, or still contains only scaffold prompts, do not infer particulars from README/AGENTS or other legacy documentation: ask the user how to define the project DNA before project-specific work.
 2. Read `themes/sansoul/AGENTS.md` before changing anything under `themes/sansoul/`.
 3. Follow any closer nested `AGENTS.md` for its subtree.
 
@@ -112,7 +112,7 @@ When asked to update the submodule:
 2. if a pre-5.0 project still needs the private legacy updater, run `sh do update` before replacing its old theme;
 3. update the configured SanSoul submodule branch within the requested scope;
 4. read `themes/sansoul/MIGRATIONS.md`, run `sh do migrations`, and apply every pending action in order;
-5. run `sh do root-docs` when the migration requires it, reviewing any legacy root content before `--force`;
+5. run `sh do root-docs` when the migration requires it; `--force` replaces unmanaged root README/AGENTS wholesale and never transfers their content into DNA;
 6. run the required project and theme validations;
 7. only then run `sh do migrations mark --yes`, which synchronizes root `package.json` and `package-lock.json`;
 8. report the changed parent gitlink without staging or committing it.
