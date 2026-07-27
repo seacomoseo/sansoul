@@ -136,6 +136,10 @@ Remote-font warnings can be environmental. Template errors, invalid YAML, missin
 
 ## Documentation and DNA
 
+Keep DNA project-specific and non-duplicative. Before adding or expanding a DNA document, check the generated root README/AGENTS and the relevant theme README/AGENTS. Do not restate generic architecture, workflows, validation, safety, or theme usage in DNA; record only project identity, audience, editorial/design/business/integration particulars, and local exceptions or constraints. Link to the canonical document when context is useful.
+
+Treat every request to change a root README or AGENTS file as a change to its canonical file under `themes/sansoul/templates/root/`, then regenerate the root documents with `sh do root-docs`. Never leave a reusable documentation or agent-contract change only in one consumer project. If the requested information is genuinely project-specific, route it to DNA instead of the shared templates.
+
 After every change, perform a documentation-impact check without waiting for the user to request it:
 
 - update `dna/_index.md` when project facts, constraints, or document routing change;
@@ -144,5 +148,3 @@ After every change, perform a documentation-impact check without waiting for the
 - update `themes/sansoul/templates/root/AGENTS.md` when this generated operating contract changes;
 - update `_examples/` for changed public parameters;
 - add a versioned entry to `MIGRATIONS.md` when a consumer may need action.
-
-Do not edit generated root README/AGENTS directly. Change their templates and run `sh do root-docs`.

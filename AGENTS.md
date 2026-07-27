@@ -217,8 +217,12 @@ READMEs are Spanish human guides; AGENTS files are concise English operational c
 - `README-ROOT.md`: detailed human use of the theme from a project;
 - `README.md` / this file: theme implementation and maintenance.
 
+Consumer DNA is project-specific context, not a second operating manual. Keep the root AGENTS template explicit that agents must check root and theme README/AGENTS before expanding DNA, must not duplicate their generic rules there, and should link to the canonical document when context is useful.
+
+Treat a request to change a consumer root README or AGENTS file as a shared template change unless the requested information is clearly project-specific. For shared changes, edit the corresponding file under `templates/root/` first and run `sh do root-docs` in the reference project; never patch only the generated consumer file. Route project-specific information to DNA instead.
+
 Avoid exhaustive parameter tables in instructions. Keep `_examples/` as the copyable fixture and executable parameter reference.
 
 Perform a documentation and migration impact check after every implementation change without waiting for an explicit request. When behavior, commands, public parameters, file structure, requirements, or agent rules change, update the relevant source of truth in the same task. Do not edit unrelated documents merely to keep artificial pairs synchronized.
 
-After changing either root template, run `sh do root-docs` in the reference project and include the regenerated root file in the same change.
+After changing either root template, include the regenerated root file in the same change.

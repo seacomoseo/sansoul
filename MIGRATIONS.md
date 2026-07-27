@@ -35,6 +35,26 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 5.1.3 — 2026-07-27
+
+**Impacto:** todos los proyectos que mantengan documentación en `dna/`.
+
+### Cambios relevantes
+
+- El contrato de agentes aclara que el ADN contiene solo identidad, audiencia, criterios editoriales, diseño, negocio, integraciones y excepciones propias del proyecto.
+- El ADN no debe repetir arquitectura, flujos de trabajo, validaciones, seguridad ni uso genérico ya documentados en los README/AGENTS de la raíz o del tema.
+- Toda petición de cambio reutilizable en README/AGENTS raíz debe aplicarse primero en `templates/root/` y regenerarse en el consumidor; las particularidades locales se redirigen al ADN.
+
+### Acciones obligatorias
+
+1. Ejecuta `sh do root-docs` para sincronizar el contrato raíz.
+2. Revisa los documentos de `dna/` y elimina o sustituye por enlaces cualquier repetición de instrucciones genéricas de README/AGENTS.
+3. Ejecuta el build completo y las comprobaciones proporcionales al proyecto.
+
+### Validación
+
+Una segunda ejecución de `sh do root-docs` no debe producir cambios. El ADN debe conservar únicamente contexto y restricciones propios del proyecto. Tras validar y ejecutar `sh do migrations mark --yes`, raíz y tema deben indicar `5.1.3`.
+
 ## 5.1.1 — 2026-07-23
 
 **Impacto:** proyectos que todavía conservan README/AGENTS raíz no generados o un ADN sin completar.
