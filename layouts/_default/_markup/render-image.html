@@ -44,8 +44,10 @@
   {{- if or $is_ratio $is_disc $is_vid -}}
     {{- if $is_disc -}}
       {{- $ratio     = "1/1" -}}
+    {{- else if $is_ratio -}}
+      {{- $ratio     = .Text -}}
     {{- else -}}
-      {{- $ratio     = or .Text "16/9" -}}
+      {{- $ratio     = "16/9" -}}
     {{- end -}}
     {{- $img_class = print $img_class " img--ratio" -}}
     {{- $img_style = print ` style="--img-ratio:` $ratio `"` -}}
