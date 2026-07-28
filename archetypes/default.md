@@ -3,17 +3,17 @@ slug:  '{{ .Name }}'
 title: '{{ replace .Name "-" " " | title }}'
 sum: ''
 img: ''
-toc: n
-draft: y
-hide: y
+toc: 0
+draft: 1
+hide: 1
 date: {{ .Date }}
 mod: 
 seo:
   title: ''
   desc: ''
-  noindex: n
+  noindex: 0
 llms:
   title: ''
   desc: ''
-  hide: n
+  hide: 0
 ---

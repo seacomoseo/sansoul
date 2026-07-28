@@ -83,6 +83,9 @@ Use `themes/sansoul/_examples/data/section/example.yml` as the parameter catalog
 
 ## Main data APIs
 
+- In Hugo and deployment configuration, write booleans as `true` or `false`.
+  In CMS-managed `content/` and `data/`, tri-state pseudobooleans use absent
+  for inheritance, `1` for enabled, and `0` for disabled. Never use `y`/`n`.
 - `data/config.yml`: behavior and integrations.
 - `data/langs.yml`: languages and per-language overrides.
 - `data/styles.yml`: design tokens and global UI options.
@@ -114,14 +117,15 @@ When asked to update the submodule:
 4. read `themes/sansoul/MIGRATIONS.md`, run `sh do migrations`, and apply every pending action in order;
 5. run `sh do root-docs` when the migration requires it; `--force` replaces unmanaged root README/AGENTS wholesale and never transfers their content into DNA;
 6. run the required project and theme validations;
-7. only then run `sh do migrations mark --yes`, which synchronizes root `package.json` and `package-lock.json`;
+7. only then run `sh do migrations mark --yes`, which synchronizes root `package.json` and, when present, `package-lock.json`;
 8. report the changed parent gitlink without staging or committing it.
 
 Never assume a successful build proves migration completeness, and never mark compatibility automatically during build or submodule update.
 
 ## Validation matrix
 
-Always start from the repository root with `npm ci` when dependencies are absent, then run `sh do hugo`.
+`sh do server` and `sh do local` may use a system Dart Sass without root
+`node_modules`. A full `sh do hugo` installs root npm dependencies when absent.
 
 | Change | Additional validation |
 | --- | --- |

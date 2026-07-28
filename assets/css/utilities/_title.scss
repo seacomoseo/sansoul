@@ -1,7 +1,10 @@
+@use "../mixins";
+@use "../variables";
+
 .sub {
-  @include font-cursive;
+  @include mixins.font-cursive;
   display: block;
-  font-size: $font-size-cursive * 1.2em;
+  font-size: variables.$font-size-cursive * 1.2em;
   // text-wrap: balance;
   color: var(--sub);
   &:last-child {

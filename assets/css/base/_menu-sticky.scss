@@ -1,3 +1,5 @@
+@use "../variables";
+
 .body-menu--sticky--active {
   .menu__toggle {
     display: none;
@@ -11,7 +13,7 @@
     transform: none;
     transition: background-color .3s, filter .3s;
     // Fix the left corner
-    filter: drop-shadow(0 $shadow-top $shadow-blur $shadow-color);
+    filter: drop-shadow(0 variables.$shadow-top variables.$shadow-blur variables.$shadow-color);
     .menu__title {
       display: none;
     }
@@ -68,7 +70,7 @@
     }
     .menu__btn {
       margin: .306em 0;
-      @if $btns-3d {
+      @if variables.$btns-3d {
         margin-bottom: .125em;
       }
     }
@@ -86,18 +88,18 @@
       transform-origin: top;
       transition: background-color .3s, transform .3s;
       background-color: var(--bg-hex);
-      @if $is-radius {
-        @if $chamfer {
+      @if variables.$is-radius {
+        @if variables.$chamfer {
           clip-path: var(--chamfer);
         } @else {
           border-radius: var(--radius-end);
         }
         --radius-top: 0em;
       }
-      @if ($radius > 1 or ($is-radius and $is-btns-pill)) {
+      @if (variables.$radius > 1 or (variables.$is-radius and variables.$is-btns-pill)) {
         --radius: 1em;
         --radius-pd: 1em;
-      } @else if $is-radius {
+      } @else if variables.$is-radius {
         --radius-pd: 1em;
       }
       .menu__item {

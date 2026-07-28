@@ -1,8 +1,13 @@
+@use "sass:color";
+@use "sass:list";
+@use "sass:math";
+@use "sass:string";
 
-@function text-turn($n, $lighter: $white, $darker: $dark) {
-  $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
-  $light-color: round((red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000);
-  @if abs($color-brightness) < ($light-color/2){
+
+@function text-turn($n, $lighter, $darker) {
+  $color-brightness: math.round((color.channel($n, 'red', $space: rgb) * 299) + (color.channel($n, 'green', $space: rgb) * 587) + (color.channel($n, 'blue', $space: rgb) * 114) * 0.001);
+  $light-color: math.round((color.channel(#ffffff, 'red', $space: rgb) * 299) + (color.channel(#ffffff, 'green', $space: rgb) * 587) + (color.channel(#ffffff, 'blue', $space: rgb) * 114) * 0.001);
+  @if math.abs($color-brightness) < ($light-color*0.5){
     @return $lighter;
   } @else {
     @return $darker;
@@ -13,20 +18,20 @@
   // empty array/list
   $split-arr: ();
   // first index of separator in string
-  $index : str-index($string, $separator);
+  $index : string.index($string, $separator);
   // loop through string
   @while $index != null {
       // get the substring from the first character to the separator
-      $item: str-slice($string, 1, $index - 1);
+      $item: string.slice($string, 1, $index - 1);
       // push item to array
-      $split-arr: append($split-arr, $item);
+      $split-arr: list.append($split-arr, $item);
       // remove item and separator from string
-      $string: str-slice($string, $index + 1);
+      $string: string.slice($string, $index + 1);
       // find new index of separator
-      $index : str-index($string, $separator);
+      $index : string.index($string, $separator);
   }
   // add the remaining string to list (the last item)
-  $split-arr: append($split-arr, $string);
+  $split-arr: list.append($split-arr, $string);
 
   @return $split-arr;
 }

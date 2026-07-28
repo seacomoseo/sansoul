@@ -55,7 +55,7 @@
 {{- with $divs -}}
   {{- range $k, $id := . -}}
     {{- if ne . "fade" -}}
-      {{- with index site.Data.utilities.divs $id -}}
+      {{- with index hugo.Data.utilities.divs $id -}}
         {{- $path := print "/u/dividers/" $id ".svg" -}}
         {{- $file := resources.Get $path -}}
         {{- if $file -}}

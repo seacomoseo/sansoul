@@ -3,7 +3,7 @@
 
 /index.php / 301
 # ---
-{{- with site.Data.redirects -}}
+{{- with hugo.Data.redirects -}}
   {{- range . }}
 {{ .from }} {{ .to }} {{ .type | default "301" }}{{ $a }}
   {{- end -}}

@@ -1,3 +1,8 @@
+@use "sass:list";
+@use "sass:string";
+@use "hugo:vars" as *;
+@use "../func";
+
 // TYPES
 
 [data-hash="#/collections/types/entries/all"],
@@ -40,7 +45,7 @@
     [data-key-path="service_types"],
     [data-key-path="price"],
     [data-key-path="org"],
-    [data-key-path="toc"],
+    [data-key-path="toc"]
   ) {
     display: none;
   }
@@ -78,16 +83,16 @@
 $d-nones: '';
 $d-blocks: '';
 @if $customs != '' {
-  $customs_roots: str-split($customs, '|');
+  $customs_roots: func.str-split($customs, '|');
   @each $root in $customs_roots {
     @each $param in $root {
-      $parts: str-split($param, ':');
-      $type: nth($parts, 1);
-      $name: nth($parts, 2);
-      $pages: nth($parts, 3);
+      $parts: func.str-split($param, ':');
+      $type: list.nth($parts, 1);
+      $name: list.nth($parts, 2);
+      $pages: list.nth($parts, 3);
       $d-nones: $d-nones + ',[data-hash^="#/collections/#{$type}/entries/"] .field[data-key-path="#{$name}"]';
       @if $pages != '' {
-        $pages_roots: str-split($pages, ',');
+        $pages_roots: func.str-split($pages, ',');
         @each $root in $pages_roots {
           @each $page in $root {
             $d-blocks: $d-blocks + ',[data-hash^="#/collections/#{$type}/entries/#{$page}"] .field[data-key-path="#{$name}"]';
@@ -98,10 +103,10 @@ $d-blocks: '';
   }
 }
 @if $d-nones != '' {
-  #{str-slice($d-nones, 2)} {
+  #{string.slice($d-nones, 2)} {
     display: none;
   }
-  #{str-slice($d-blocks, 2)} {
+  #{string.slice($d-blocks, 2)} {
     display: block;
   }
 }

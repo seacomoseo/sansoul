@@ -75,7 +75,7 @@
   (dict "var" "values_callnows")
 }}
 {{ $global_fields := slice }}
-{{ range site.Data.customs | default slice }}
+{{ range hugo.Data.customs | default slice }}
   {{ if or (not .types) (in .types "global") }}
     {{ $global_fields = $global_fields | append . }}
   {{ end }}

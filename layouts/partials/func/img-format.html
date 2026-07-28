@@ -1,7 +1,7 @@
 {{ $img_link := "" }}
 {{ $img_base := .img_base | default .img }}
 {{ $path     := $img_base.RelPermalink }}
-{{ if site.Data.config.webp }}
+{{ if hugo.Data.config.webp }}
   {{ $webp    := .img.Resize (print .size "x webp") }}
   {{ $path    := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
   {{ $webp     = $webp | resources.Copy $path }}

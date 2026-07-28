@@ -1,8 +1,13 @@
+@use "sass:math";
+
+@use "../mixins";
+@use "../variables";
+
 
 // MAIN
 
 .img {
-  @include radius-parent;
+  @include mixins.radius-parent;
   position: relative;
   width: fit-content;
   margin: 0 auto;
@@ -12,7 +17,7 @@
   --img-width: calc(100cqw - var(--img-margin, 0em) * 2);
   .box__icon--top {
     color: var(--turn);
-    filter: drop-shadow($shadow);
+    filter: drop-shadow(variables.$shadow);
     margin: 0;
     position: absolute;
     top: calc(50% - var(--icon-size) / 2);
@@ -21,7 +26,7 @@
   }
 }
 .img__in {
-  @include radius;
+  @include mixins.radius;
   position: relative;
   max-width: 100%;
   width: auto; // for svg that have width
@@ -56,8 +61,8 @@
 .img__in--shade {
   width: 100%;
   height: 100%;
-  min-height: calc(var(--img-width) / (var(--img-ratio, 16/9)));
-  background-image: linear-gradient($main, transparent);
+  min-height: calc(var(--img-width) / (var(--img-ratio, math.div(16, 9))));
+  background-image: linear-gradient(variables.$main, transparent);
   &:has(+ .img__in) {
     position: absolute;
   }
@@ -105,8 +110,8 @@
   padding: var(--img-border-width);
   &::before {
     content: '';
-    @include radius-child;
-    @include like-bg-cover;
+    @include mixins.radius-child;
+    @include mixins.like-bg-cover;
     background-color: var(--base);
   }
   .img__in {
@@ -135,7 +140,7 @@
   &:not(.img--inset:not(.img--border)) {
     .img__in {
       img {
-        @include radius-child;
+        @include mixins.radius-child;
       }
     }
   }
@@ -232,10 +237,10 @@ iframe.img__in {
     &:not(.aux.aux) { // only for priority
       --radius-top: 50%;
       --radius-bottom: 50%;
-      @include disc;
+      @include mixins.disc;
     }
   }
-  @if $chamfer {
+  @if variables.$chamfer {
     &.img--border {
       padding: calc(var(--img-border-width) / .7071);
     }
@@ -265,7 +270,7 @@ iframe.img__in {
     color: var(--base);
     fill: var(--base-in);
     transition: color .1s;
-    filter: drop-shadow($shadow);
+    filter: drop-shadow(variables.$shadow);
     animation: data-vid 5s 0s infinite;
     &:has([href$="#youtube-iframe"]) {
       width: 4.25em;
@@ -290,7 +295,7 @@ iframe.img__in {
 .box:not(.bg) // when not background
 > .img:not(.img--border):not(.md *) // without radius and not content
 > .img__in:where(svg, .icon, img[src*=".svg"]) { // svg image
-  @include hide-radius;
+  @include mixins.hide-radius;
   &:not(img, video) { // Fix 'Obsolete APIs' in PageSpeed
     overflow: unset;
   }
@@ -309,7 +314,7 @@ img[src*=".svg"].img__in {
 // SHADOW
 
 .img:not(.box.bg *, .box--hide-shadow *) {
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
 }
 
 
@@ -400,6 +405,6 @@ img[src*=".svg"].img__in {
 .box--hide-radius {
   .img,
   .img__in {
-    @include hide-radius;
+    @include mixins.hide-radius;
   }
 }

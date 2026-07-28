@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 .link {
   display: inline;
   color: var(--cta-text);
@@ -14,13 +17,13 @@
   background-size: 0 100%;
   transition: background-size, color;
   transition-duration: .3s;
-  &#{$hover-focus} {
-    @include link-hover;
+  &#{variables.$hover-focus} {
+    @include mixins.link-hover;
   }
-  &#{$active} {
-    @include link-active;
+  &#{variables.$active} {
+    @include mixins.link-active;
   }
 }
 .link--swap {
-  @include font-base;
+  @include mixins.font-base;
 }

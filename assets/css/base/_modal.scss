@@ -1,3 +1,5 @@
+@use "../variables";
+
 .modal__active {
   overflow-y: hidden;
 }
@@ -10,7 +12,7 @@
   max-height: 100%;
   padding: 3em 0;
   overscroll-behavior: contain;
-  background-color: rgba($black, .75);
+  background-color: rgba(variables.$black, .75);
   content-visibility: auto;
   &::backdrop {
     background: transparent;
@@ -21,8 +23,8 @@
   position: fixed;
   top: 0.75em;
   left: 1em;
-  @if not $btns-3d {
-    filter: drop-shadow($shadow);
+  @if not variables.$btns-3d {
+    filter: drop-shadow(variables.$shadow);
   }
 }
 .modal__close--corner {

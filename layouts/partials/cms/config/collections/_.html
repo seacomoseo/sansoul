@@ -1,4 +1,4 @@
-{{ $icon := site.Data.utilities.collections.icons }}
+{{ $icon := hugo.Data.utilities.collections.icons }}
 
 {{ $colections := slice (dict "divider" true) }}
 
@@ -80,10 +80,10 @@
   {{/*  View Filters  */}}
   {{ $view_filters := dict
     "filters" (slice
-      (dict "name" `published` "label" $.filter_published "field" `draft`       "pattern" "n")
-      (dict "name" `drafts`    "label" $.filter_drafts    "field" `draft`       "pattern" "y")
-      (dict "name" `index`     "label" `Index`            "field" `seo.noindex` "pattern" "n")
-      (dict "name" `noindex`   "label" `NoIndex`          "field" `seo.noindex` "pattern" "y")
+      (dict "name" `published` "label" $.filter_published "field" `draft`       "pattern" "0")
+      (dict "name" `drafts`    "label" $.filter_drafts    "field" `draft`       "pattern" "1")
+      (dict "name" `index`     "label" `Index`            "field" `seo.noindex` "pattern" "0")
+      (dict "name" `noindex`   "label" `NoIndex`          "field" `seo.noindex` "pattern" "1")
     )
   }}
 

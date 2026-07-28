@@ -4,7 +4,7 @@
 
 {{ with .section }}
   {{ if .div }}
-    {{ with index site.Data.utilities.divs .div }}
+    {{ with index hugo.Data.utilities.divs .div }}
       {{ if eq .size 2 }}
         {{ $class = print $class " div" $_next "--size" }}
       {{ end }}

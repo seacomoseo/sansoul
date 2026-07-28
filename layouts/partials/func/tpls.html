@@ -22,10 +22,10 @@ Side effects: None.
 }}
 
 {{/*  ALL  */}}
-{{ $all := site.Data.types.all.tpl }}
+{{ $all := hugo.Data.types.all.tpl }}
 
 {{/*  VALUES  */}}
-{{- $values := index site.Data (print "values." page.Lang) -}}
+{{- $values := index hugo.Data (print "values." page.Lang) -}}
 {{- $values  = dict "menu" $values.menu -}}
 
 {{/*  TYPE  */}}
@@ -38,7 +38,7 @@ Side effects: None.
   }}
 {{ else if not .IsSection }}
   {{ with .Type }}
-    {{ $type = index site.Data.types . }}
+    {{ $type = index hugo.Data.types . }}
     {{ $type = $type.tpl }}
   {{ end }}
 {{ end }}

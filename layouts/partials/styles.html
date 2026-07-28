@@ -1,23 +1,23 @@
 {{ $vars := dict }}
-{{ with site.Data.styles }}
+{{ with hugo.Data.styles }}
   {{ $icons_grade := cond (and .icons.fill (not .icons.grade)) -25 .icons.grade }}
   {{ $vars = dict
     "fonts-css"                        (hugo.Store.Get "fonts_css" | default "")
 
-    "utilities-viewport-min"           site.Data.utilities.viewports.min
-    "utilities-viewport-max"           site.Data.utilities.viewports.max
-    "utilities-viewport-xs"            site.Data.utilities.viewports.xs
-    "utilities-viewport-sm"            site.Data.utilities.viewports.sm
-    "utilities-viewport-md"            site.Data.utilities.viewports.md
-    "utilities-viewport-lg"            site.Data.utilities.viewports.lg
-    "utilities-viewport-xl"            site.Data.utilities.viewports.xl
+    "utilities-viewport-min"           hugo.Data.utilities.viewports.min
+    "utilities-viewport-max"           hugo.Data.utilities.viewports.max
+    "utilities-viewport-xs"            hugo.Data.utilities.viewports.xs
+    "utilities-viewport-sm"            hugo.Data.utilities.viewports.sm
+    "utilities-viewport-md"            hugo.Data.utilities.viewports.md
+    "utilities-viewport-lg"            hugo.Data.utilities.viewports.lg
+    "utilities-viewport-xl"            hugo.Data.utilities.viewports.xl
 
-    "utilities-containers-xs"          site.Data.utilities.containers.xs
-    "utilities-containers-sm"          site.Data.utilities.containers.sm
-    "utilities-containers-md"          site.Data.utilities.containers.md
-    "utilities-containers-lg"          site.Data.utilities.containers.lg
-    "utilities-containers-xl"          site.Data.utilities.containers.xl
-    "utilities-containers-fluid"       site.Data.utilities.containers.fluid
+    "utilities-containers-xs"          hugo.Data.utilities.containers.xs
+    "utilities-containers-sm"          hugo.Data.utilities.containers.sm
+    "utilities-containers-md"          hugo.Data.utilities.containers.md
+    "utilities-containers-lg"          hugo.Data.utilities.containers.lg
+    "utilities-containers-xl"          hugo.Data.utilities.containers.xl
+    "utilities-containers-fluid"       hugo.Data.utilities.containers.fluid
 
     "styles-colors-main-color"         (cond (eq .colors.main.color "#ffffff") "" .colors.main.color | default "#577399")
     "styles-colors-alt-color"          (cond (eq .colors.alt.color  "#ffffff") "" .colors.alt.color )
@@ -96,7 +96,7 @@
     "styles-shadow-color"              (.shadow.color                    | default "black")
     "styles-shadow-alpha"              (.shadow.alpha                    | default 0)
     "hugo-is-production"               (hugo.IsProduction                | not | not | string)
-    "config-others-show"               (site.Data.config.show            | not | not | string)
+    "config-others-show"               (hugo.Data.config.show            | not | not | string)
     "menu-g_translate"                 (site.Params.g_translate          | not | not | string)
     "draws-base"                       (partial "func/draws-base" .                  | string)
     "timestamp"                        (partial "func/timestamp"  .                  | string)
@@ -112,11 +112,11 @@
   "enableSourceMap" hugo.IsDevelopment
   "outputStyle"     (cond hugo.IsDevelopment "expanded" "compressed")
   "targetPath"      "css/styles.css"
+  "transpiler"      "dartsass"
 }}
 {{ with $css }}
   {{ if hugo.IsProduction }}
     {{ $css = . | toCSS $to_css | minify }}
-    {{/*  | postCSS | resources.PostProcess  */}}
   {{ else }}
     {{ $css = . | toCSS $to_css }}
   {{ end }}

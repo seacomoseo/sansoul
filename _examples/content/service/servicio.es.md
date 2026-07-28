@@ -13,11 +13,11 @@ service_areas:
 - Alicante
 provider: SanSoul
 
-toc: y
-draft: n
+toc: 1
+draft: 0
 seo:
   title: ▷ Título SEO Servicio de ejemplo 【Con caracteres llamativos】
   desc: Esta es la descripción de un Servicio de ejemplo.
-  noindex: n
+  noindex: 0
 ---
 Contenido

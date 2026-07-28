@@ -1,3 +1,7 @@
+@use "sass:math";
+
+@use "variables";
+
 :root {
   color-scheme: light dark;
   // scrollbar
@@ -19,36 +23,36 @@
   --map-filter-light: none;
   --map-filter-dark: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
   // outline
-  --outline: #{ $menu-bar-double };
+  --outline: #{ variables.$menu-bar-double };
   // To SVG variable strokes
-  --stroke-width: #{ $stroke-width };
-  --linejoin: #{ $linejoin };
-  --icons-fill: #{ $icons-fill };
+  --stroke-width: #{ variables.$stroke-width };
+  --linejoin: #{ variables.$linejoin };
+  --icons-fill: #{ variables.$icons-fill };
   // viewport width
-  --vs: #{ $vs / 1px };
-  --vl: #{ $vl / 1px };
-  --vw: #{ $vs / 1px };
-  @media (min-width: $viewport-xs) { --vw: #{ $viewport-xs / 1px }; }
-  @media (min-width: $viewport-sm) { --vw: #{ $viewport-sm / 1px }; }
-  @media (min-width: $viewport-md) { --vw: #{ $viewport-md / 1px }; }
-  @media (min-width: $viewport-lg) { --vw: #{ $viewport-lg / 1px }; }
-  @media (min-width: $viewport-xl) { --vw: #{ $viewport-xl / 1px }; }
+  --vs: #{ math.div(variables.$vs, 1px) };
+  --vl: #{ math.div(variables.$vl, 1px) };
+  --vw: #{ math.div(variables.$vs, 1px) };
+  @media (min-width: variables.$viewport-xs) { --vw: #{ math.div(variables.$viewport-xs, 1px) }; }
+  @media (min-width: variables.$viewport-sm) { --vw: #{ math.div(variables.$viewport-sm, 1px) }; }
+  @media (min-width: variables.$viewport-md) { --vw: #{ math.div(variables.$viewport-md, 1px) }; }
+  @media (min-width: variables.$viewport-lg) { --vw: #{ math.div(variables.$viewport-lg, 1px) }; }
+  @media (min-width: variables.$viewport-xl) { --vw: #{ math.div(variables.$viewport-xl, 1px) }; }
   --run: calc(var(--vl) - var(--vs));
 }
 
 // EXTENDS LIKE FUNCTIONS
-@if $is-any-radius {
+@if variables.$is-any-radius {
   %radius,
   .body-menu--sticky .menu__subitems {
     // radius
-    --radius: #{ $radius };
+    --radius: #{ variables.$radius };
     --radius-pd: 0em;
-    @if $chamfer {
+    @if variables.$chamfer {
       --diamond: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     }
     --radius-top: var(--radius-calc);
     --radius-bottom: var(--radius-calc);
-    @if $chamfer {
+    @if variables.$chamfer {
       --radius-calc: calc((((var(--radius) + var(--radius-pd)) / .7071) - var(--radius-pd)) * .7071);
       --chamfer: polygon(
         var(--radius-top) 0%,

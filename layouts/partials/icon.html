@@ -8,7 +8,7 @@
 {{ end }}
 
 {{ if ne $icon "hide" }}
-  {{ $config := site.Data.styles.icons.def }}
+  {{ $config := hugo.Data.styles.icons.def }}
   {{ $icon   := cond (eq $icon "none") "" $icon }}
   {{ $type   := "icon" }}
   {{ $trans  := false }}

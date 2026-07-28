@@ -1,8 +1,8 @@
-{{ $e := site.Data.utilities.collections.emojis }}
+{{ $e := hugo.Data.utilities.collections.emojis }}
 
 {{/*  OPTIONS WITH TRANSLATE  */}}
 {{ $o := dict }}
-{{ range $k, $v := site.Data.options }}
+{{ range $k, $v := hugo.Data.options }}
   {{ $values := slice }}
   {{ range . }}
     {{ $label := index $ (print "opt-" $k "-" .) | default . | string }}
@@ -37,6 +37,8 @@
 {{ $o_lists   := $o_types | append $all $rel }}
 {{ $o_tax     := $o_types | append $all      }}
 
+{{/* Sveltia infers a select's value type from its first option. Keep a
+     numeric option first and the nullable inheritance option last. */}}
 {{ $vars := dict
   "&opts_langs"         $o.langs
   "&opts_langs_cms"     $o.langs_cms
@@ -94,17 +96,17 @@
   "&opts_widgets"       $o.widgets
   "&opts_i18n"          (slice
     (dict "value" nil         "label" .def)
-    (dict "value" "y"         "label" .true)
+    (dict "value" "yes"       "label" .true)
     (dict "value" "duplicate" "label" .duplicate)
   )
   "&opts_boolean"       (slice
+    (dict "value" 1   "label" .true)
+    (dict "value" 0   "label" .false)
     (dict "value" nil "label" .def)
-    (dict "value" "y" "label" .true)
-    (dict "value" "n" "label" .false)
   )
   "&opts_boolean_req"   (slice
-    (dict "value" "y" "label" .true)
-    (dict "value" "n" "label" .false)
+    (dict "value" 1 "label" .true)
+    (dict "value" 0 "label" .false)
   )
 }}
 

@@ -1,7 +1,10 @@
+@use "../../mixins";
+@use "../../variables";
+
 // GALLERY ITEMS
 
 .gallery__items {
-  @include radius;
+  @include mixins.radius;
   overflow: hidden;
 }
 .gallery__item {
@@ -69,14 +72,14 @@
     &:hover::after {
       background-color: transparent;
       transform: none;
-      @if $chamfer {
+      @if variables.$chamfer {
         clip-path: none;
       } @else {
         border-radius: 0;
       }
     }
     &::before {
-      @if $chamfer {
+      @if variables.$chamfer {
         clip-path: none;
       } @else {
         border-top-right-radius: 0;
@@ -145,12 +148,12 @@
   &3, &6, &9 {
     --gallery-cols: 3;
   }
-  @media (min-width: $viewport-sm) {
+  @media (min-width: variables.$viewport-sm) {
     &7, &11, &12 {
       --gallery-cols: 3;
     }
   }
-  @media (min-width: $viewport-md) {
+  @media (min-width: variables.$viewport-md) {
     &4, &7, &8, &10, &11, &12 {
       --gallery-cols: 4;
     }
@@ -161,7 +164,7 @@
       --gallery-cols: 6;
     }
   }
-  @media (min-width: $viewport-lg) {
+  @media (min-width: variables.$viewport-lg) {
     &6, &11, &12 {
       --gallery-cols: 6;
     }
@@ -178,7 +181,7 @@
       --gallery-cols: 10;
     }
   }
-  @media (min-width: $viewport-xl) {
+  @media (min-width: variables.$viewport-xl) {
     &11 {
       --gallery-cols: 11;
     }

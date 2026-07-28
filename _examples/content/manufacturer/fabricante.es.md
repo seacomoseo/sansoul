@@ -5,12 +5,12 @@ img: /u/base/icon.png
 icon: star
 sum: Este es el resumen de un fabricante de ejemplo.
 
-toc: y
-draft: n
+toc: 1
+draft: 0
 seo:
   title: null
   desc: null
-  noindex: n
+  noindex: 0
 
 org:
   types:

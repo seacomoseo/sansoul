@@ -35,7 +35,7 @@
   "opts"    .opts
   "default" $def
   "multi"   .multi
-  "i18n"    .i18n
+  "i18n"    (cond (eq .i18n "yes") true .i18n)
   "fields"  $sub
 }}
 {{ $field = partial "func/obj-truly" $field }}

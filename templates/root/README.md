@@ -5,11 +5,14 @@ Proyecto creado con [Hugo](https://gohugo.io/) y el tema [SanSoul](https://githu
 
 ## Puesta en marcha
 
-Requisitos: Git, Node.js y Hugo Extended. Las versiones de despliegue se declaran en `netlify.toml` y `wrangler.toml`.
+Requisitos: Git y Hugo Extended. Para trabajar sin `node_modules` en local,
+instala Dart Sass una vez en el `PATH` (`brew install sass/sass/sass` en macOS).
+Node.js se requiere para preconstrucción y builds completos; `sh do hugo`
+instala las dependencias npm si faltan. Las versiones de despliegue se declaran
+en `netlify.toml` y `wrangler.toml`.
 
 ```sh
 git submodule update --init --recursive
-npm ci
 sh do server
 ```
 

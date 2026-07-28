@@ -1,8 +1,10 @@
+@use "../mixins";
+
 .scroll {
   --scroll-pos: 0;
 }
 .scroll--bg > .bg-color > * {
-  @include like-bg-cover;
+  @include mixins.like-bg-cover;
   object-fit: cover;
   background-position: center 0;
   height: 125%;
@@ -46,7 +48,7 @@
   }
   &.box {
     .bg-fig-img {
-      @include radius-child;
+      @include mixins.radius-child;
     }
   }
 }

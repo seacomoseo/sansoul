@@ -5,6 +5,8 @@ set -eu
 # Variables
 PROJECT="${PWD##*/}"
 COMMAND=${1:-}
+PATH="$PWD/themes/sansoul/scripts/bin:$PWD/node_modules/.bin:$PWD/../_tools/node_modules/.bin:$PATH"
+export PATH
 
 # Functions
 lecho() { echo "\033[7;34m $1 \033[0m"; } # 🟦 Header
@@ -128,6 +130,7 @@ elif [ "$COMMAND" = check ]; then
   hecho "CHECK SHELL"
   sh -n ./do
   sh -n ./themes/sansoul/do
+  sh -n ./themes/sansoul/scripts/bin/sass
   sh -n ./themes/sansoul/scripts/mirror-to-gitlab.sh
 
   sh do hugo
@@ -232,6 +235,11 @@ elif [ "$COMMAND" = hugo-production ]; then
 
 # Hugo check environement and build
 elif [ "$COMMAND" = hugo ]; then
+
+  if [ ! -d ./node_modules ]; then
+    hecho "INSTALL PRODUCTION DEPENDENCIES"
+    npm install
+  fi
 
   start_ms=$(node -p "Date.now()")
 

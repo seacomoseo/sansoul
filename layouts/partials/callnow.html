@@ -4,7 +4,7 @@
 
   {{- if eq . "custom" -}}
   
-    {{- $values := index site.Data (print "values." page.Lang) -}}
+    {{- $values := index hugo.Data (print "values." page.Lang) -}}
     {{- $items  := $values.callnows -}}
     {{- with $items -}}
       {{- range . -}}

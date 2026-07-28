@@ -20,11 +20,11 @@ creds:
   category: Máster
   org: Universidad de Murcia
 
-toc: n
-draft: n
+toc: 0
+draft: 0
 seo:
   title: null # string
   desc: null # string
-  noindex: y
+  noindex: 1
 ---
 Contenido de ejemplo

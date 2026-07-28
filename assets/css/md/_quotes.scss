@@ -1,3 +1,7 @@
+@use "hugo:vars" as *;
+@use "../mixins";
+@use "../variables";
+
 .md {
   .quote:first-child,
   .quote:last-child {
@@ -44,7 +48,7 @@
   }
   blockquote {
     &:not(h1, h2, h3, h4, h5, h6, .subtitle, .font-base) {
-      @include font-quotes;
+      @include mixins.font-quotes;
       font-size: larger;
     }
     position: relative;
@@ -56,13 +60,13 @@
     &.quotes {
       &::after,
       &::before {
-        height: $line-height-cursive * .9em;
+        height: variables.$line-height-cursive * .9em;
       }
     }
     &.aquotes {
       &::after,
       &::before {
-        height: $line-height-cursive * 1em;
+        height: variables.$line-height-cursive * 1em;
       }
     }
     &:not(.quotes, .aquotes) {
@@ -110,14 +114,14 @@
 
     // Cite
     cite {
-      @include font-base-bold;
+      @include mixins.font-base-bold;
       display: block;
       text-align: right;
       margin-top: .5em;
       color: var(--title);
       &::before {
         content: '— ';
-        color: $gray;
+        color: variables.$gray;
       }
     }
   }

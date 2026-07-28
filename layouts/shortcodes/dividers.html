@@ -17,7 +17,7 @@
 </style>
 
 {{- $t := partial "func/i18n-cms" . -}}
-{{- range site.Data.options.div -}}
+{{- range hugo.Data.options.div -}}
   {{- if ne . "hide" -}}
     {{- $attrs := "" -}}
     {{- with partial "sections/divider-attr" (dict

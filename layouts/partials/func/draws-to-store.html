@@ -86,14 +86,16 @@ Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `di
 {{ $all  := slice }}
 {{ $tpls := slice }}
 {{/*  Pages not draft  */}}
-{{ range site.AllPages }}
-  {{ $all = $all | append .RawContent .Params }}
-  {{ with .Params.tpl }}
-    {{ $tpls = $tpls | append . }}
+{{ range hugo.Sites }}
+  {{ range .Pages }}
+    {{ $all = $all | append .RawContent .Params }}
+    {{ with .Params.tpl }}
+      {{ $tpls = $tpls | append . }}
+    {{ end }}
   {{ end }}
 {{ end }}
 {{/*  Types not hidden  */}}
-{{ range site.Data.types }}
+{{ range hugo.Data.types }}
   {{ if not .hide }}
     {{ with .tpl }}
       {{ $tpls = $tpls | append . }}
@@ -107,7 +109,7 @@ Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `di
   {{ with .sections }}
     {{ range . }}
       {{ with .file }}
-        {{ with index site.Data.section . }}
+        {{ with index hugo.Data.section . }}
           {{ $sections = $sections | append . }}
         {{ end }}
       {{ end }}
@@ -118,14 +120,15 @@ Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `di
   {{ $all = $all | append . }}
 {{ end }}
 {{/*  Footer  */}}
-{{ with index site.Data.section "base-footer" }}
+{{ with index hugo.Data.section "base-footer" }}
   {{ $all = $all | append . }}
 {{ end }}
 {{/*  Global values  */}}
-{{ range site.Languages }}
-  {{ $values := index site.Data (print "values." .Lang) }}
+{{ range hugo.Sites }}
+  {{ $lang   := .Language.Lang }}
+  {{ $values := index hugo.Data (print "values." $lang) }}
   {{ $all     = $all | append $values }}
-  {{ $icon   := print "svg:flag-" .Lang }}
+  {{ $icon   := print "svg:flag-" $lang }}
   {{ $icons   = $icons | append $icon }}
 {{ end }}
 {{ $all = $all | uniq | jsonify }}
@@ -141,7 +144,7 @@ Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `di
   {{ $icon_vars      := slice "icon" "pin" "div" }}
   {{ $img_vars       := slice "img" "hover" "img_no_vid" "bi" "box_bi" }}
   {{ $gallery_vars   := slice "imgs" "limgs" }}
-  {{ range site.Data.customs }}
+  {{ range hugo.Data.customs }}
     {{ if in $icon_vars .var }}
       {{/*  Icons  */}}
       {{ with .name }}

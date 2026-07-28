@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 #toc {
   .toc {
     li {
@@ -13,7 +16,7 @@
       }
       &:has(> .icon) {
         gap: .25em;
-        @if $main == $cta {
+        @if variables.$main == variables.$cta {
           &::before {
             opacity: .5;
           }
@@ -21,7 +24,7 @@
       }
     }
     .link {
-      @include font-base;
+      @include mixins.font-base;
       color: inherit;
     }
     &, li > div > :is(ul, ol) {

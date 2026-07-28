@@ -15,7 +15,7 @@
         </button>
       */}}
     </div>
-    {{- $list  := site.Data.types.all.tpl.list -}}
+    {{- $list  := hugo.Data.types.all.tpl.list -}}
     {{- $class := print "boxes boxes--cols-" ($list.cols | default 3) -}}
     {{- with $list.cols_vs }}
       {{- $class = print $class " boxes--vs-" . -}}

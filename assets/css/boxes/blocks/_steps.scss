@@ -1,3 +1,6 @@
+@use "../../mixins";
+@use "../../variables";
+
 .steps {
   list-style: none;
   padding: 0;
@@ -9,12 +12,12 @@
 .steps--size-1 { --steps-size: 3em; }
 .steps--size-2 { --steps-size: 4em; }
 .steps--size-3 { --steps-size: 5em; }
-.steps--size-4 { @include fluid-size(--steps-size, 1em, 5, 6.67); }
-.steps--size-5 { @include fluid-size(--steps-size, 1em, 5, 8.33); }
-.steps--size-6 { @include fluid-size(--steps-size, 1em, 5, 10.0); }
+.steps--size-4 { @include mixins.fluid-size(--steps-size, 1em, 5, 6.67); }
+.steps--size-5 { @include mixins.fluid-size(--steps-size, 1em, 5, 8.33); }
+.steps--size-6 { @include mixins.fluid-size(--steps-size, 1em, 5, 10.0); }
 .step {
   display: flex;
-  @include fluid-size(gap, 1em, 1, 2);
+  @include mixins.fluid-size(gap, 1em, 1, 2);
 }
 .step__axis-wrap {
   display: flex;
@@ -27,7 +30,7 @@
     height: 100%;
     min-height: 2em;
     background-color: var(--base);
-    @if $chamfer and $is-btns-disc {
+    @if variables.$chamfer and variables.$is-btns-disc {
       transform: translateY(-.25em);
       box-shadow: 0 .5em 0 var(--base);
     }
@@ -50,14 +53,14 @@
   background-color: var(--base);
   overflow: hidden;
   z-index: 0;
-  @if $is-btns-disc {
-    @include disc;
-    @if $chamfer {
+  @if variables.$is-btns-disc {
+    @include mixins.disc;
+    @if variables.$chamfer {
       padding: calc(var(--outline) / .7071);
     }
-  } @else if $is-radius {
+  } @else if variables.$is-radius {
     // @include fluid-size(--step-axis-radius, 1em, .8, 2.055);
-    @include radius(.25em);
+    @include mixins.radius(.25em);
   }
 }
 .step__fig {
@@ -67,18 +70,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  @if $btns-outline {
+  @if variables.$btns-outline {
     background-color: var(--bg-color);
   } @else {
     background-color: var(--main);
   }
-  @if $is-btns-disc {
-    @include disc;
-  } @else if $is-radius {
+  @if variables.$is-btns-disc {
+    @include mixins.disc;
+  } @else if variables.$is-radius {
     // @include fluid-size(--step-fig-radius, 1em, .8, 2.055);
-    @include radius(0em);
+    @include mixins.radius(0em);
   }
-  @if not $chamfer and $is-radius {
+  @if not variables.$chamfer and variables.$is-radius {
     overflow: hidden;
   }
 }
@@ -94,8 +97,8 @@
     z-index: 1;
     ~ .step__icon,
     ~ .step__number {
-      filter: drop-shadow($shadow);
-      color: $white;
+      filter: drop-shadow(variables.$shadow);
+      color: variables.$white;
     }
   }
 }
@@ -104,17 +107,17 @@
   max-width: 100%;
   max-height: 100%;
   z-index: 3;
-  @if $btns-outline {
+  @if variables.$btns-outline {
     color: var(--main);
   } @else {
     color: var(--main-in);
   }
 }
 .step__number {
-  @include font-title;
+  @include mixins.font-title;
   line-height: 1;
   font-size: calc(var(--steps-size) * .5);
-  @if $btns-outline {
+  @if variables.$btns-outline {
     color: var(--text);
   } @else {
     color: var(--main-in);
@@ -153,7 +156,7 @@
 .step__title.line + * {
   margin-top: -.75rem;
 }
-@media (min-width: $viewport-md) {
+@media (min-width: variables.$viewport-md) {
   .steps:not(.boxes *) {
     width: 100%;
     .step {

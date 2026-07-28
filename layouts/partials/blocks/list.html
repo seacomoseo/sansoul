@@ -42,7 +42,7 @@
       {{ end }}
       */}}
       {{/* Filter by hide  */}}
-      {{ $pages = where $pages "Params.hide" "ne" true }}
+      {{ $pages = where (where $pages "Params.hide" "ne" true) "Params.hide" "ne" 1 }}
       {{ $after_pages  := $pages }}
 
       {{/* TEMPLATE  */}}
@@ -52,15 +52,15 @@
       {{ $type_rel   := $type }}
       {{ if eq $type "rel" }}
         {{ $type_rel  = page.Type }}
-        {{ with site.Data.types.all.tpl.rel }}
+        {{ with hugo.Data.types.all.tpl.rel }}
           {{ $tpl_rel = . }}
         {{ end }}
-        {{ with (index site.Data.types $type_rel).tpl.rel }}
+        {{ with (index hugo.Data.types $type_rel).tpl.rel }}
           {{ $tpl_rel = merge $tpl_rel . }}
         {{ end }}
       {{ end }}
-      {{ $tpl_type   := (index site.Data.types $type_rel).tpl.list }}
-      {{ $tpl_all    := site.Data.types.all.tpl.list }}
+      {{ $tpl_type   := (index hugo.Data.types $type_rel).tpl.list }}
+      {{ $tpl_all    := hugo.Data.types.all.tpl.list }}
       {{ $tpl        := merge
         $tpl_level
         $tpl_all

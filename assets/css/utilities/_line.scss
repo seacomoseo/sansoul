@@ -1,14 +1,17 @@
+@use "../mixins";
+@use "../variables";
+
 .line {
   &::after {
     content: '';
     display: block;
     width: 2em;
-    height: $menu-bar-double;
+    height: variables.$menu-bar-double;
     background-color: var(--main);
     --line-margin: calc(50% - 1em);
     margin: .125em var(--line-margin) .25em;
-    --radius: #{ $menu-bar };
-    @include radius;
+    --radius: #{ variables.$menu-bar };
+    @include mixins.radius;
     order: 10;
   }
   &.hide::after {
@@ -27,7 +30,7 @@
   margin-left: 0;
   --line-margin: calc(100% - 2em);
 }
-@media (min-width: $vl) {
+@media (min-width: variables.$vl) {
   .align--vl-right .line::after {
     margin-right: 0;
     margin-left: calc(100% - 2em);

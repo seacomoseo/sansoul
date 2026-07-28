@@ -1,0 +1,35 @@
+#!/bin/sh
+
+set -eu
+
+# Hugo requires Dart Sass' embedded protocol. Prefer a standalone installation
+# so local servers do not need project dependencies, then use npm fallbacks for
+# reproducible builds and shared tooling.
+user_sass=
+if [ -n "${HOME:-}" ]; then
+  user_sass="$HOME/.local/bin/sass"
+fi
+
+for candidate in \
+  "${DART_SASS_BIN:-}" \
+  "$user_sass" \
+  /opt/homebrew/bin/sass \
+  /usr/local/bin/sass \
+  /home/linuxbrew/.linuxbrew/bin/sass
+do
+  if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+    exec "$candidate" "$@"
+  fi
+done
+
+for script in \
+  "$PWD/node_modules/sass-embedded/dist/bin/sass.js" \
+  "$PWD/../_tools/node_modules/sass-embedded/dist/bin/sass.js"
+do
+  if [ -f "$script" ]; then
+    exec node "$script" "$@"
+  fi
+done
+
+echo "Dart Sass not found. Install it in PATH or install project/shared sass-embedded." >&2
+exit 127

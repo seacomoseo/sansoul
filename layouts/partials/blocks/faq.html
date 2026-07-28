@@ -1,4 +1,4 @@
-{{- $show     := cond (not site.Data.config.show) "" " show" -}}
+{{- $show     := cond (not hugo.Data.config.show) "" " show" -}}
 {{- $btn      := cond (ne .faq.btn "none") .faq.btn "" -}}
 {{- $fotn_alt := cond (not .faq.swap) "" "btn--swap" -}}
 {{- $headers  := .faq.headers }}

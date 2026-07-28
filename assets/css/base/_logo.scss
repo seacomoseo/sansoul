@@ -1,9 +1,12 @@
+@use "../mixins";
+@use "../variables";
+
 .body-menu--logo:not(.body-menu--sticky--active) {
   --menu-py: .75em;
   .menu__toggle {
     top: 0.375em;
     transition: top .3s, filter .3s;
-    @if not $btns-3d {
+    @if not variables.$btns-3d {
       filter: none;
     }
   }
@@ -21,7 +24,7 @@
       align-items: var(--align, flex-start);
     }
     &:has(~ .menu) {
-      @include fluid-size(--margin-toggle-right, 1em, 4, 0);
+      @include mixins.fluid-size(--margin-toggle-right, 1em, 4, 0);
       @media (min-width: 540px) {
         --margin-toggle-right: 0em;
       }
@@ -91,8 +94,8 @@
     }
     .menu__toggle {
       top: 1.875em;
-      @if not $btns-3d {
-        filter: drop-shadow($shadow);
+      @if not variables.$btns-3d {
+        filter: drop-shadow(variables.$shadow);
       }
     }
   }
@@ -103,7 +106,7 @@
       position: fixed;
       &.bg {
         // Fix the left corner
-        filter: drop-shadow(0 $shadow-top $shadow-blur $shadow-color);
+        filter: drop-shadow(0 variables.$shadow-top variables.$shadow-blur variables.$shadow-color);
       }
     }
     .logo__link {

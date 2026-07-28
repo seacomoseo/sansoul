@@ -1,3 +1,6 @@
+@use "hugo:vars" as *;
+@use "../func";
+
 // .field:is([data-key-path="div"], [data-key-path$=".div"])
 .listbox .option > .button[value]::before {
   content: "";
@@ -8,7 +11,7 @@
   filter: invert(.5);
 }
 @if $divs != '' {
-  $divs_roots: str-split($divs, '|');
+  $divs_roots: func.str-split($divs, '|');
   @each $root in $divs_roots {
     @each $div in $root {
       @if $div != 'hide' and $div != 'fade' {

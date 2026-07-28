@@ -14,12 +14,16 @@ Para la arquitectura interna del tema, consulta [`themes/sansoul/README.md`](REA
 
 ## Requisitos e instalación
 
-Necesitas Git, Node.js y Hugo Extended. Las versiones de despliegue se fijan en `netlify.toml` y `wrangler.toml`.
+Necesitas Git y Hugo Extended. Para desarrollar sin `node_modules` en cada
+proyecto, instala Dart Sass una sola vez en el `PATH`
+(`brew install sass/sass/sass` en macOS). Node.js y las dependencias npm se
+requieren para la preconstrucción y el build completo; `sh do hugo` las instala
+si faltan. Las versiones de despliegue se fijan en `netlify.toml` y
+`wrangler.toml`.
 
 ```sh
 git clone --recurse-submodules <url-del-repositorio>
 cd <carpeta-del-proyecto>
-npm ci
 sh do server
 ```
 
@@ -71,6 +75,12 @@ Ejecuta todos los comandos desde la raíz:
 - `dna/`: identidad, criterios y restricciones particulares del proyecto.
   - `dna/_index.md`: resumen obligatorio e índice que indica qué otros documentos consultar según la tarea.
 
+Desde Hugo 0.164, `y` y `n` son cadenas, no booleanos. En `hugo.yml` y otros
+archivos de configuración escribe `true` o `false`. En `content/` y `data/`,
+los campos pseudobooleanos que administra el CMS usan `1` para activar y `0`
+para desactivar; si la clave no existe, hereda el valor de la cadena de merges.
+Sveltia conserva expresamente el `0` aun con `omit_empty_optional_fields`.
+
 ### Personalización y archivos públicos
 
 - `assets/_custom.scss`: estilos adicionales incluidos en el CSS final.
@@ -119,7 +129,7 @@ El reinicio administrado evita que Hugo lea `prebuild/public/` mientras se está
 
 ## Idiomas y valores globales
 
-Cada entrada traducible usa el sufijo `.<lang>.md`, por ejemplo `servicio.es.md`. `data/langs.yml` declara los idiomas disponibles; `hide: y` desactiva uno en el proyecto sin borrar su configuración.
+Cada entrada traducible usa el sufijo `.<lang>.md`, por ejemplo `servicio.es.md`. `data/langs.yml` declara los idiomas disponibles; `hide: 1` desactiva uno en el proyecto sin borrar su configuración.
 
 `content/values.<lang>.yml` se monta internamente como `data/values.<lang>.yml`. Sus usos habituales son:
 
@@ -264,7 +274,7 @@ Después de actualizar el submódulo:
 1. ejecuta `sh do migrations`;
 2. aplica las migraciones pendientes en orden;
 3. construye y revisa el proyecto;
-4. ejecuta `sh do migrations mark --yes` únicamente cuando la compatibilidad esté comprobada; el comando sincronizará la versión de `package.json` y `package-lock.json` en la raíz.
+4. ejecuta `sh do migrations mark --yes` únicamente cuando la compatibilidad esté comprobada; el comando sincronizará la versión de `package.json` y, si existe, de `package-lock.json` en la raíz.
 
 El comando informa y verifica; no modifica contenido ni configuración automáticamente. Una migración concreta puede ofrecer un script idempotente, pero nunca se ejecutará como efecto secundario de un build o de la actualización del submódulo.
 

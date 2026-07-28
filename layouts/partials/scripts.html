@@ -2,11 +2,11 @@
 
 {{ $langs := dict }}
 {{ range .AllTranslations }}
-  {{ $t    := index site.Data.i18n .Lang }}
+  {{ $t    := index hugo.Data.i18n .Lang }}
   {{ $lang := dict
     "lang"                   .Lang
     "disqusId"               (or site.Params.disqus "")
-    "isGoogleTranslate"      (eq site.Params.google_translate true)
+    "isGoogleTranslate"      (site.Params.google_translate | not | not)
     "vid"                    $t.vid
     "loading"                $t.loading
     "mapTerrain"             $t.map_terrain
@@ -41,7 +41,7 @@
   "targetPath" "js/scripts.js"
   "params"     (dict
     "draws"        (partial "func/draws-base" .)
-    "cookiesLegal" (eq site.Data.config.cookies_legal true)
+    "cookiesLegal" (hugo.Data.config.cookies_legal | not | not)
     "name"         site.Params.name
     "netlify"      (getenv "NETLIFY")
     "netlifyId"    site.Params.netlify_id
@@ -55,7 +55,7 @@
 {{/*  MAYBE  */}}
 
 {{ $is_scroll_show := false }}
-{{ if site.Data.config.show }}
+{{ if hugo.Data.config.show }}
   {{ $is_scroll_show = true }}
 {{ end }}
 

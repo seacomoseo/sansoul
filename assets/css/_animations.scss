@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "variables";
+
 @keyframes menu-bar-1 {
   0% {
     transform: rotate(-45deg);
@@ -6,7 +9,7 @@
     transform: none;
   }
   100% {
-    transform: translateY(-$menu-bar-gap);
+    transform: translateY(-(variables.$menu-bar-gap));
   }
 }
 @keyframes menu-bar-2 {
@@ -22,12 +25,12 @@
     transform: none;
   }
   100% {
-    transform: translateY($menu-bar-gap);
+    transform: translateY(variables.$menu-bar-gap);
   }
 }
 @keyframes menu-bar-active-1 {
   0% {
-    transform: translateY(-$menu-bar-gap);
+    transform: translateY(-(variables.$menu-bar-gap));
   }
   50% {
     transform: none;
@@ -43,7 +46,7 @@
 }
 @keyframes menu-bar-active-3 {
   0% {
-    transform: translateY($menu-bar-gap);
+    transform: translateY(variables.$menu-bar-gap);
   }
   50% {
     transform: none;
@@ -127,7 +130,7 @@
 @keyframes data-vid {
   50% {
     filter:
-      drop-shadow($shadow-left $shadow-top 1.5em var(--base))
-      drop-shadow($shadow-left $shadow-top $shadow-blur map-get($options-colors, $styles-shadow-color));
+      drop-shadow(variables.$shadow-left variables.$shadow-top 1.5em var(--base))
+      drop-shadow(variables.$shadow-left variables.$shadow-top variables.$shadow-blur variables.$shadow-color);
   }
 }

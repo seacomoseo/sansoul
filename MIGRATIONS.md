@@ -20,7 +20,7 @@ sh do migrations
 sh do migrations mark --yes
 ```
 
-`sh do migrations check` termina con error mientras las versiones difieran, aunque una actualización compatible no tenga acciones documentadas. `mark --yes` actualiza la versión de `package.json` y `package-lock.json` en la raíz. Nunca lo ejecutes antes de realizar las acciones y validar el build.
+`sh do migrations check` termina con error mientras las versiones difieran, aunque una actualización compatible no tenga acciones documentadas. `mark --yes` actualiza la versión de `package.json` y, si existe, de `package-lock.json` en la raíz. Nunca lo ejecutes antes de realizar las acciones y validar el build.
 
 ## Cómo añadir una migración
 
@@ -34,6 +34,56 @@ Añade una sección `## x.y.z — fecha` por cada versión que requiera interven
 Si una transformación puede automatizarse con seguridad, colócala en `scripts/migrations/` y enlázala desde la sección. No ejecutes migraciones automáticamente durante `hugo`, `server`, `local` ni al actualizar el submódulo.
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
+
+## 6.0.0 — 2026-07-27
+
+**Impacto:** todos los proyectos que actualicen a Hugo 0.164.0 o posterior.
+
+### Cambios relevantes
+
+- SanSoul fija Hugo Extended 0.164.0 para desarrollo y despliegue.
+- Hugo 0.164 ya no interpreta `y`/`n` como booleanos. En la configuración de
+  Hugo se usan `true`/`false`; en datos y front matter administrables se usan
+  `1`/`0` para conservar el selector triestado del CMS: ausencia hereda,
+  `1` activa y `0` desactiva.
+- El pipeline SCSS usa Dart Sass en lugar del LibSass deprecado. En local puede
+  instalarse una vez en el `PATH` sin Node; la dependencia `sass-embedded` del
+  proyecto actúa como respaldo para los builds de producción.
+- Los estilos del tema y del CMS usan el sistema de módulos de Sass; los
+  parciales propios deben usar `@use` y declarar explícitamente sus
+  dependencias.
+- La configuración del tema exige Hugo 0.164.0 como versión mínima.
+- Los defaults, contenidos, arquetipos y ejemplos del tema usan
+  pseudobooleanos numéricos `1`/`0`, compatibles con YAML 1.2 y con la
+  evaluación booleana de Hugo.
+
+### Acciones obligatorias
+
+1. Ejecuta
+   `node themes/sansoul/scripts/migrations/6.0.0-explicit-booleans.js` desde la
+   raíz y revisa el diff.
+2. Añade `sass-embedded` con la versión declarada por el tema a las dependencias
+   de la raíz. Para desarrollo sin `node_modules`, instala Dart Sass standalone
+   una vez en el `PATH`; en macOS: `brew install sass/sass/sass`.
+3. Cambia a `0.164.0` cualquier `HUGO_VERSION` propio del proyecto.
+4. Ejecuta `sh do root-docs`.
+5. Compila con Hugo Extended 0.164.0 y ejecuta una auditoría con
+   `--logLevel info` para detectar deprecaciones.
+6. Valida el proyecto actual, el CMS generado y la copia de `_examples/`.
+
+### Automatización
+
+`scripts/migrations/6.0.0-explicit-booleans.js` convierte de forma idempotente
+los escalares `y`/`n` en YAML y front matter. En datos administrables usa
+`1`/`0`; en archivos de configuración usa `true`/`false`. No toca el tema,
+dependencias, uploads ni salidas generadas.
+
+### Validación
+
+El script debe indicar que no quedan booleanos heredados en una segunda
+ejecución. `sh do hugo` debe finalizar con Hugo Extended 0.164.0 y la auditoría
+no debe informar usos deprecados. Tras ejecutar
+`sh do migrations mark --yes`, raíz y tema deben indicar `6.0.0`.
 
 ## 5.1.3 — 2026-07-27
 

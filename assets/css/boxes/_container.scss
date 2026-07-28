@@ -1,3 +1,8 @@
+@use "sass:math";
+
+@use "../mixins";
+@use "../variables";
+
 .container {
   --container-width-base: calc(100% - 2em);
   --container-width: var(--container-width-base);
@@ -9,9 +14,9 @@
   margin-inline: auto;
 }
 
-@each $name, $size in $containers {
+@each $name, $size in variables.$containers {
   .container--#{$name} {
-    @include fluid-size(--container-#{$name}, 1px, $vs / 1px - 32, $size / 1px);
+    @include mixins.fluid-size(--container-#{$name}, 1px, math.div(variables.$vs, 1px) - 32, math.div($size, 1px));
     --container-width: var(--container-#{$name});
   }
 }

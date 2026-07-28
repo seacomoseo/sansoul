@@ -260,7 +260,7 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
         searchItems = searchItems +
           `
           {{- $list   := site.Params.list -}}
-          {{- $styles := site.Data.styles -}}
+          {{- $styles := hugo.Data.styles -}}
           <article
             class="
               search__result-item

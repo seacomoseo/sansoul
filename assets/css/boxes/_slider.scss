@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 .slider {
   position: relative;
   width: 100%;
@@ -70,7 +73,7 @@
   min-width: 2em;
   min-height: initial;
   padding: 1em 0;
-  --radius: min(#{ $radius / 2 }, #{ .1875em / 2 });
+  --radius: min(#{ variables.$radius * 0.5 }, #{ .1875em / 2 });
   &::before {
     height: .1875em;
     position: relative;
@@ -127,7 +130,7 @@
 .slider__arrows--float {
   margin: 0;
   .slider__arrow {
-    @include fluid-size(--slider-arrow-size, 1em, 2, 3);
+    @include mixins.fluid-size(--slider-arrow-size, 1em, 2, 3);
     width: var(--slider-arrow-size);
     height: 100%;
     &:where(.reviews ~ .slider__arrows > *) {
@@ -143,7 +146,7 @@
       content: none;
     }
     > .icon {
-      @include fluid-size(font-size, 1em, 1.5, 2);
+      @include mixins.fluid-size(font-size, 1em, 1.5, 2);
       color: var(--title);
     }
   }

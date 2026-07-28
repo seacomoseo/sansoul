@@ -2,7 +2,8 @@
   {{ $icons := page.Store.Get "glyphs" | uniq | sort }}
   {{ $icons  = delimit $icons "," | replaceRE `-` "_" }}
   {{ $icons  = trim $icons "," }}
-  {{ with site.Data.styles.icons }}
+  {{ $published := false }}
+  {{ with hugo.Data.styles.icons }}
     {{ $grade := cond (and .fill (not .grade)) -25 .grade }}
     {{/*  URL  */}}
     {{ $url := print
@@ -22,11 +23,21 @@
         {{ $name    := print "fonts/icons." $time ".woff2" }}
         {{ $rename  := . | resources.Copy $name }}
         {{ $publish := $rename.Publish }}
+        {{ $published = true }}
+      {{ end }}
+    {{ end }}
+    {{ if not $published }}
+      {{ $path := print "fonts/material-symbols-" .style ".woff2" }}
+      {{ with resources.Get $path }}
+        {{ $time    := partial "func/timestamp" . }}
+        {{ $name    := print "fonts/icons." $time ".woff2" }}
+        {{ $rename  := . | resources.Copy $name }}
+        {{ $publish := $rename.Publish }}
       {{ end }}
     {{ end }}
   {{ end }}
 {{ else }}
-  {{ $style := site.Data.styles.icons.style }}
+  {{ $style := hugo.Data.styles.icons.style }}
   {{ $path  := print "fonts/material-symbols-" $style ".woff2" }}
   {{ with resources.Get $path }}
     {{ $publish := .Publish }}

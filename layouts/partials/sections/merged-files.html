@@ -3,7 +3,7 @@
   {{ $section := .params | default dict }}
   {{ with .file }}
     {{/*  get file  */}}
-    {{ with index site.Data.section . }}
+    {{ with index hugo.Data.section . }}
       {{/*  merge section params and file  */}}
       {{ $section = merge $section . }}
     {{ end }}

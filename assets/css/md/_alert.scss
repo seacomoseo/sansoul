@@ -1,8 +1,10 @@
+@use "../mixins";
+
 .md:not(#aux) {
   .alert {
     position: relative;
     padding: 1em 1.5em 1.5em;
-    @include radius;
+    @include mixins.radius;
     // --color-alpha: .25;
     // filter: none;
     &:not(:first-child) {

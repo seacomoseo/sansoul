@@ -55,10 +55,10 @@ Example: {{ $color := partial "func/color-background" (dict "child" "such" "pare
     {{ else }}
 
       {{ $base     := dict
-        "gray" (site.Data.styles.colors.base.gray  | default "#767676")
-        "main" (site.Data.styles.colors.main.color | default "#577399")
-        "alt"  (site.Data.styles.colors.alt.color  | default "#eeeeee")
-        "cta"  (site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399")
+        "gray" (hugo.Data.styles.colors.base.gray  | default "#767676")
+        "main" (hugo.Data.styles.colors.main.color | default "#577399")
+        "alt"  (hugo.Data.styles.colors.alt.color  | default "#eeeeee")
+        "cta"  (hugo.Data.styles.colors.cta.color  | default hugo.Data.styles.colors.main.color | default "#577399")
       }}
       {{ $base      = index $base .parent }}
       {{ $contrast := partial "func/color-turn" $base }}

@@ -89,6 +89,8 @@ Preserve key ordering behavior in `sort`, conditional behavior in `if`, page/glo
 
 ## Hugo template practices
 
+- Write YAML booleans as `true` or `false`. Hugo 0.164 and later treat unquoted
+  `y` and `n` as strings and reject them for boolean configuration fields.
 - Pass a `dict` to partials with more than one input. Use stable, descriptive keys.
 - A value-returning partial must have exactly one `return`, at the end of the file. Hugo executes the first `return` regardless of logical nesting.
 - Distinguish absent, empty, and false values intentionally; do not replace nil-sensitive logic with `default` without checking boolean semantics.

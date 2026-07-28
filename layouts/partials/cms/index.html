@@ -1,6 +1,6 @@
 {{- $t        := partial "func/i18n-cms" . -}}
 {{- $lang_cms := partial "func/lang-cms" . -}}
-{{- $config   := index (where site.Data.langs "lang" $lang_cms) 0 -}}
+{{- $config   := index (where hugo.Data.langs "lang" $lang_cms) 0 -}}
 {{- $netlify  := getenv "NETLIFY" -}}
 
 <!doctype html>
@@ -32,11 +32,11 @@
   {{ end }}
   {{ $vars := dict
     "customs"   (delimit $customs "|")
-    "divs"      (delimit site.Data.options.div "|")
+    "divs"      (delimit hugo.Data.options.div "|")
     "timestamp" (partial "func/timestamp" .)
   }}
   {{ $styles := resources.Get "css/cms.scss"
-    | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment)
+    | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment "transpiler" "dartsass")
     | fingerprint
   }}
   {{ if hugo.IsProduction }}

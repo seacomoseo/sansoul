@@ -11,12 +11,12 @@ category:
 author: admin
 date: 2020-01-01 00:00:00
 mod: 2021-01-02 12:00:00
-toc: y
-draft: n
+toc: 1
+draft: 0
 seo:
   title: ▷ Título SEO de Página de ejemplo 【Con caracteres llamativos】
   desc: llll➤ Descripción SEO de página de ejemplo ✅ con caracteres llamativos ☎️ 679 823 145.
-  noindex: n
+  noindex: 0
 ---
 
 Contenido de página de ejemplo

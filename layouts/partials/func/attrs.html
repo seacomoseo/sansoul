@@ -13,7 +13,7 @@
   {{ end }}
   {{ if $value }}
     {{ $attr := $key }}
-    {{ if ne $value true }}
+    {{ if not (in (slice "true" "1") (string $value)) }}
       {{ if in $value "\"" }}{{/* " */}}
         {{ $attr = print $key "='" $value "'" }}
       {{ else }}

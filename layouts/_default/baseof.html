@@ -104,12 +104,12 @@
   {{- /*  LOADER  */}}
   {{- $loader_bg := "" -}}
   {{- if or (eq $bg_color "white") (in $bg_color "light") -}}
-    {{- $loader_bg = site.Data.styles.colors.base.light | default "#eee" -}}
+    {{- $loader_bg = hugo.Data.styles.colors.base.light | default "#eee" -}}
   {{- else -}}
-    {{- $loader_bg = site.Data.styles.colors.base.dark  | default "333" -}}
+    {{- $loader_bg = hugo.Data.styles.colors.base.dark  | default "333" -}}
   {{- end -}}
-  {{- $loader_main  := site.Data.styles.colors.main.color | default "#577399" -}}
-  {{- $loader_cta   := site.Data.styles.colors.cta.color  | default site.Data.styles.colors.main.color | default "#577399" -}}
+  {{- $loader_main  := hugo.Data.styles.colors.main.color | default "#577399" -}}
+  {{- $loader_cta   := hugo.Data.styles.colors.cta.color  | default hugo.Data.styles.colors.main.color | default "#577399" -}}
   {{- $loader_style := print `style="`
     "--loader-bg:" $loader_bg ";"
     "--loader-main: " $loader_main ";"

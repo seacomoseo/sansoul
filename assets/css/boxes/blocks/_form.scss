@@ -1,3 +1,8 @@
+@use "sass:math";
+
+@use "../../mixins";
+@use "../../variables";
+
 .form {
   display: flex;
   flex-wrap: wrap;
@@ -26,10 +31,10 @@
   display: none;
 }
 .form__geo-map {
-  @include radius(0em, $radius * 1rem / 1em);
+  @include mixins.radius(0em, math.div(variables.$radius * 1rem, 1em));
   width: 100%;
   aspect-ratio: 16/9;
-  @if not $chamfer {
+  @if not variables.$chamfer {
     border: 1.5px solid var(--border, transparent);
   }
   &:where(.form__item-border ~ *) {
@@ -82,9 +87,9 @@
 }
 .form__label {
   display: block;
-  @include font-base-bold;
+  @include mixins.font-base-bold;
   text-align: left;
-  margin-left: $radius;
+  margin-left: variables.$radius;
   margin-bottom: .25em;
 }
 .form__md {
@@ -114,8 +119,8 @@
 }
 .form__md,
 .form__hint {
-  margin-left: $radius + .5em;
-  width: calc(100% - #{ $radius + .5em } * 2);
+  margin-left: variables.$radius + .5em;
+  width: calc(100% - #{ variables.$radius + .5em } * 2);
 }
 /*! purgecss start ignore */
 .form__error,
@@ -128,7 +133,7 @@
   scroll-margin-top: 3em;
   width: 100%;
   text-align: left;
-  @include radius;
+  @include mixins.radius;
   .icon.close {
     float: right;
   }
@@ -164,19 +169,19 @@
   input:not([type="checkbox"], [type="radio"], [type="hidden"]),
   textarea,
   select {
-    @if $chamfer and $radius > .01 {
+    @if variables.$chamfer and variables.$radius > .01 {
       border: none;
-      @if not $is-btns-pill and $radius <= .01 {
+      @if not variables.$is-btns-pill and variables.$radius <= .01 {
         border: var(--outline) var(--border) solid;
-        box-shadow: $shadow inset;
+        box-shadow: variables.$shadow inset;
       } @else {
-        @include radius;
+        @include mixins.radius;
         clip-path: var(--chamfer-int-outline);
       }
     } @else {
       border: var(--outline) var(--border) solid;
-      box-shadow: $shadow inset;
-      border-radius: $radius;
+      box-shadow: variables.$shadow inset;
+      border-radius: variables.$radius;
     }
     background-color: var(--such);
     color: var(--such-in);
@@ -184,7 +189,7 @@
   .form__fieldset {
     background-color: var(--such);
   }
-  @if $chamfer and $radius > .01 {
+  @if variables.$chamfer and variables.$radius > .01 {
     fieldset {
       border: none;
     }
@@ -262,7 +267,7 @@
     pointer-events: none; // Fix click
     z-index: 1;
     b::after {
-      @include font-base;
+      @include mixins.font-base;
       text-transform: initial;
       font-size: 1rem;
       content: var(--form-file-label);
@@ -279,10 +284,10 @@
     color: transparent;
     text-indent: -200dvw;
     width: 100%;
-    @if not $chamfer and $radius > .01 {
+    @if not variables.$chamfer and variables.$radius > .01 {
       &:not(.form--fill-inputs) {
-        border-top-left-radius: $radius;
-        border-bottom-left-radius: $radius;
+        border-top-left-radius: variables.$radius;
+        border-bottom-left-radius: variables.$radius;
       }
     }
   }
@@ -299,13 +304,13 @@
   .form__input::before {
     content: attr(data-placeholder);
     // font-size: 1em;
-    @include font-btn;
+    @include mixins.font-btn;
     margin-inline: -1rem 1rem;
     padding-inline: 3.25rem 1.5rem;
     opacity: 0;
   }
   .btn--swap + .form__input::before {
-    @include font-btn(alt);
+    @include mixins.font-btn(alt);
   }
 }
 
@@ -329,7 +334,7 @@
   flex-shrink: 0;
 }
 .form__preview-media {
-  @include radius;
+  @include mixins.radius;
   overflow: hidden;
   background-color: var(--such);
   > * {
@@ -434,7 +439,7 @@ legend, .form__label {
   .form__br,
   hr {
     flex-grow: 0;
-    width: calc(100% - #{ $radius / 2 });
+    width: calc(100% - #{ variables.$radius * 0.5 });
     height: 0;
   }
   hr {

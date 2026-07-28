@@ -121,7 +121,7 @@
 {{ $icon_pos     := .icon_pos | default (cond .zero "sub" "top") }}
 {{ $group_radius := .group_radius | and (not .slider) }}
 {{ $line         := and .line (not (and .icon (eq $icon_pos "sub"))) }}
-{{ $show         := site.Data.config.show }}
+{{ $show         := hugo.Data.config.show }}
 {{ $is_title     := or .title .hanchor .menu_label }}
 {{ $is_title_url := and $url (eq .btn "hide") $is_title }}
 {{ $is_btn_hide  := and $url (eq .btn "hide") (not $is_title) }}

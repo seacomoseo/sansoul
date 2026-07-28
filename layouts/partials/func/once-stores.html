@@ -7,7 +7,7 @@ Side effects: Resets page stores; writes hugo.Store timestamp; collects fonts, d
 */}}
 {{ page.Store.Set "phones" slice }}
 {{/*  Only in home page in the main language  */}}
-{{ if eq page (index site.Sites 0).Home }}
+{{ if eq page (index hugo.Sites 0).Home }}
   {{ if eq . "init" }}
     {{/*  Initialize each store  */}}
     {{ $now := now.Format "20060102150405"  }}

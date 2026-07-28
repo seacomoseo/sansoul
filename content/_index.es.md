@@ -4,7 +4,7 @@ title: Inicio
 base: org
 weight: 1
 seo:
-  noindex: n
+  noindex: 0
 
 org:
   types: [] # strings https://schema.org/docs/full.html > Organization...
@@ -30,13 +30,13 @@ org:
   areas: [] # strings
   when: []
   # - days:
-  #     mon: y
-  #     tue: y
-  #     wed: y
-  #     thu: y
-  #     fri: y
-  #     sat: n
-  #     sun: n
+  #     mon: 1
+  #     tue: 1
+  #     wed: 1
+  #     thu: 1
+  #     fri: 1
+  #     sat: 0
+  #     sun: 0
   #   hours:
   #   - open: 8:00
   #     close: 14:00

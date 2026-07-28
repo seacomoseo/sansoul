@@ -9,7 +9,7 @@ Side effects: Production rendering writes image-derivative manifests consumed by
 {{- $img_base := $img -}}
 {{- if $img -}}
   {{/*  Image x size to srcset  */}}
-  {{- $s := site.Data.config.img_sizes | default 1.5 -}}
+  {{- $s := hugo.Data.config.img_sizes | default 1.5 -}}
 
 
   {{- /*  PICTURE  */ -}}
@@ -53,7 +53,7 @@ Side effects: Production rendering writes image-derivative manifests consumed by
 
   {{- $source_attrs := "" -}}
   {{- if hugo.IsProduction -}}
-    {{- $type := cond (not site.Data.config.webp) "avif" "webp" -}}
+    {{- $type := cond (not hugo.Data.config.webp) "avif" "webp" -}}
 
     {{- /* CONTAIN  */ -}}
     {{- if not .contain -}}
@@ -116,7 +116,7 @@ Side effects: Production rendering writes image-derivative manifests consumed by
 
       {{- $fit_vl            := .fit_vl | default 1 -}}
       {{- $fit_vs            := .fit_vs | default 1 -}}
-      {{- $containers        := site.Data.utilities.containers -}}
+      {{- $containers        := hugo.Data.utilities.containers -}}
       {{- $container         := .container | default "fluid" -}}
       {{- $container_vl      := index $containers $container -}}
       {{- $container_vs      := 393 -}}
@@ -128,8 +128,8 @@ Side effects: Production rendering writes image-derivative manifests consumed by
       {{- if eq $container "fluid" -}}
         {{- $viewports        = $viewports | append 1440 -}}
       {{- end -}}
-      {{- $vs                := site.Data.utilities.viewports.min -}}
-      {{- $vl                := site.Data.utilities.viewports.max -}}
+      {{- $vs                := hugo.Data.utilities.viewports.min -}}
+      {{- $vl                := hugo.Data.utilities.viewports.max -}}
       {{- $size_vl           := mul $container_vl $fit_vl | float -}}
       {{- $size_vs           := mul $container_vs $fit_vs | float -}}
 

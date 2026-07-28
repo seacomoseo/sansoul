@@ -12,7 +12,7 @@
       "lock"   .Params.seo.noindex
     ) }}
   </h2>
-  {{- $pages := where .RegularPages "Params.hide" "ne" true -}}
+  {{- $pages := where (where .RegularPages "Params.hide" "ne" true) "Params.hide" "ne" 1 -}}
   {{- if eq .Type "single" -}}
     {{- $pages = slice site.Home | append .RegularPages -}}
   {{- end -}}

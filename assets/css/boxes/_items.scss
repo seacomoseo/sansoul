@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 .container,
 .boxes {
   display: flex;
@@ -5,10 +8,10 @@
   --cols-vs: 1;
   --cols-vl: var(--cols-vs, 1);
 
-  @include fluid-size(--cols-gap-vl-default, 1, 1, 2);
+  @include mixins.fluid-size(--cols-gap-vl-default, 1, 1, 2);
   --cols-gap-vl: var(--cols-gap-vs, var(--cols-gap-vl-default, 1));
 
-  @include fluid-size(--gap-width, 1em, var(--cols-gap-vs, 1), var(--cols-gap-vl));
+  @include mixins.fluid-size(--gap-width, 1em, var(--cols-gap-vs, 1), var(--cols-gap-vl));
   column-gap: var(--gap-width);
   --cols-gap-ny: 1;
   --cols-gap-y: calc(var(--gap-width) * var(--cols-gap-ny));
@@ -34,7 +37,7 @@
 .boxes--bottom,
 .boxes--radius,
 .slider__items {
-  @include fluid-size(--cols, 1, var(--cols-vs), var(--cols-vl));
+  @include mixins.fluid-size(--cols, 1, var(--cols-vs), var(--cols-vl));
   --col-width: calc(100cqw / var(--cols));
 
   // gap per column (gc) = gap width * gap number / columns number
@@ -45,12 +48,12 @@
 
   --box-pd-vs: 1;
   --box-pd-vl: var(--box-pd-vs, 1);
-  @include fluid-size(--box-pd, 1rem, var(--box-pd-vs), var(--box-pd-vl));
+  @include mixins.fluid-size(--box-pd, 1rem, var(--box-pd-vs), var(--box-pd-vl));
 }
 .boxes > *,
 .box {
   width: var(--box-width, 100%);
-  @media (min-width: $vl) {
+  @media (min-width: variables.$vl) {
     order: var(--order, unset);
   }
   > .box {
@@ -87,5 +90,5 @@
 
 .boxes--radius {
   overflow: hidden;
-  @include radius(var(--box-pd));
+  @include mixins.radius(var(--box-pd));
 }

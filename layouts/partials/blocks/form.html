@@ -146,15 +146,15 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 
 {{- /*  More Vars  */ -}}
 {{- $mail          := or .form.mail site.Params.mail -}}
-{{- $form          := merge site.Data.styles.inputs (or .form dict) -}}
+{{- $form          := merge hugo.Data.styles.inputs (or .form dict) -}}
 {{- $action_gss    := "https://script.google.com/macros/s/AKfycbzEd6cjH5eTjzVxDVk6x-3Q9QwUHDMWpR8V1Ij1g6IG7MYwpPM_epAGpxJUR1__ljrWMQ/exec" -}}
 {{- $action        := or $form.action $action_gss -}}
 {{- $googleScript  := in $action "script.google.com" -}}
 {{- $formsubmit_co := in $action "formsubmit.co" -}}
-{{- $chamfer       := site.Data.styles.rounded.chamfer -}}
+{{- $chamfer       := hugo.Data.styles.rounded.chamfer -}}
 {{- $inputs_fill   := cond (not $form.fill) "" "form--fill-inputs" -}}
 {{- $labels_out    := cond (eq $form.labels "out") "form--labels-out" "" -}}
-{{- $show          := cond (not site.Data.config.show) "" "show" -}}
+{{- $show          := cond (not hugo.Data.config.show) "" "show" -}}
 {{- $class         := slice "form" $inputs_fill $labels_out "box__block" $show -}}
 {{- $provider      := "" -}}
 {{- if $googleScript -}}
@@ -407,7 +407,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
             <select class="form__select">
               {{- /*  <option value="">{{ i18n "links_pre" }}{{ if $req }} *{{ end }}</option>  */ -}}
               {{- site.Params.phone_code -}}
-              {{- range site.Data.utilities.phone_code -}}
+              {{- range hugo.Data.utilities.phone_code -}}
                 {{- $selected     := cond (eq .value site.Params.phone_code) "selected" "" -}}
                 {{- $option_attrs := dict "value" .value "selected" $selected -}}
                 {{- $option_attrs  = partial "func/attrs" $option_attrs }}

@@ -1,5 +1,5 @@
 {{- with .links -}}
-  {{- $show := cond (not site.Data.config.show) "" " show" }}
+  {{- $show := cond (not hugo.Data.config.show) "" " show" }}
   <div class="links box__block {{- $show }}">
     {{- range . -}}
       {{- with merge (dict "btn" $.btn "swap" $.swap) . -}}

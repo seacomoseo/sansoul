@@ -1,8 +1,8 @@
 pagination:
-  disableAliases: n
+  disableAliases: false
   pagerSize: 24
   path: page
-buildFuture: y
+buildFuture: true
 timeZone: Europe/Madrid
 params:
   currency: EUR
@@ -23,56 +23,62 @@ defaultContentLanguage: es
 languages:
   es:
     # baseURL: https://sansoul.netlify.com
-    disabled: y
+    disabled: true
     weight: 1
-    languageName: Español
+    label: Español
     pagination:
       path: pagina
   en:
     # baseURL: https://es.sansoul.netlify.com
-    disabled: y
+    disabled: true
     weight: 2
-    languageName: English
+    label: English
     pagination:
       path: page
   fr:
     # baseURL: https://fr.sansoul.netlify.com
-    disabled: y
+    disabled: true
     weight: 3
-    languageName: Français
+    label: Français
     pagination:
       path: page
   de:
     # baseURL: https://de.sansoul.netlify.com
-    disabled: y
+    disabled: true
     weight: 4
-    languageName: Deutsch
+    label: Deutsch
     pagination:
       path: seite
   pt:
     # baseURL: https://pt.sansoul.netlify.com
-    disabled: y
+    disabled: true
     weight: 5
-    languageName: Português
+    label: Português
     pagination:
       path: pagina
   it:
     # baseURL: https://it.sansoul.netlify.com
-    disabled: y
+    disabled: true
     weight: 6
-    languageName: Italiano
+    label: Italiano
     pagination:
       path: pagina
 
 module:
+  hugoVersion:
+    min: 0.164.0
   mounts:
 
   # static
   - source: static
     target: static
+  - source: node_modules/material-symbols
+    target: static/fonts
   # assets
   - source: assets
     target: assets
+  - source: node_modules/material-symbols
+    target: assets/fonts
   - source: ../_tools/node_modules/material-symbols
     target: assets/fonts
   - source: themes/sansoul/assets/u/icons/brands
@@ -88,28 +94,40 @@ module:
   ## content home by langs
   - source: content/single/_home.es.md
     target: content/_index.es.md
-    lang: es
+    sites:
+      matrix:
+        languages: [es]
   - source: content/single/_home.en.md
     target: content/_index.en.md
-    lang: en
+    sites:
+      matrix:
+        languages: [en]
   - source: content/single/_home.fr.md
     target: content/_index.fr.md
-    lang: fr
+    sites:
+      matrix:
+        languages: [fr]
   - source: content/single/_home.de.md
     target: content/_index.de.md
-    lang: de
+    sites:
+      matrix:
+        languages: [de]
   - source: content/single/_home.pt.md
     target: content/_index.pt.md
-    lang: pt
+    sites:
+      matrix:
+        languages: [pt]
   - source: content/single/_home.it.md
     target: content/_index.it.md
-    lang: it
+    sites:
+      matrix:
+        languages: [it]
   ## content
   - source: content
     target: content
-    excludeFiles:
-    - values.*.yml
-    - single/_home.*.md
+    files:
+    - '! values.*.yml'
+    - '! single/_home.*.md'
   ## content prebuild
   - source: themes/sansoul/prebuild/public/content
     target: content
@@ -119,7 +137,8 @@ module:
   # data
   - source: data
     target: data
-    excludeFiles: '**/example/*'
+    files:
+    - '! **/example/*'
   - source: i18n
     target: data/i18n
   - source: themes/sansoul/i18n
@@ -129,8 +148,8 @@ module:
 # default without option in cms
 
 summaryLength: 15
-enableRobotsTXT: y
-removePathAccents: y
+enableRobotsTXT: true
+removePathAccents: true
 
 taxonomies: {}
 
@@ -139,9 +158,9 @@ disableKinds:
 - term
 
 related:
-  includeNewer: y
+  includeNewer: true
   threshold: 80
-  toLower: y
+  toLower: true
   indices:
   - name: date
     weight: 10
@@ -167,34 +186,34 @@ outputFormats:
   RSS:
     mediaType: application/rss+xml
     baseName: feed
-    permalinkable: y
+    permalinkable: true
 
 markup:
   tableOfContents:
-    ordered: y
+    ordered: true
     endLevel: 6
   defaultMarkdownHandler: goldmark
   goldmark:
     renderer:
-      unsafe: y
+      unsafe: true
     parser:
       autoHeadingIDType: github-ascii
       wrapStandAloneImageWithinParagraph: false
       attribute:
-        block: y
+        block: true
     extensions:
-      strikethrough: n
+      strikethrough: false
       extras:
         delete:
-          enable: y
+          enable: true
         insert:
-          enable: y
+          enable: true
         mark:
-          enable: y
+          enable: true
         subscript:
-          enable: y
+          enable: true
         superscript:
-          enable: y
+          enable: true
       passthrough:
         delimiters:
           block:
@@ -205,7 +224,7 @@ markup:
           inline:
           - - \(
             - \)
-        enable: y
+        enable: true
 
 frontmatter:
   date:
@@ -225,6 +244,7 @@ security:
     - ^go$
     - ^npx$
     - ^postcss$
+    - ^sass$
   funcs:
     getenv:
     - ^HUGO_

@@ -1,27 +1,30 @@
+@use "../mixins";
+@use "../variables";
+
 .menu__toggle {
   display: block;
   position: fixed;
   right: 1em;
   top: .75em;
   z-index: 220;
-  @if not $btns-3d {
-    filter: drop-shadow($shadow);
+  @if not variables.$btns-3d {
+    filter: drop-shadow(variables.$shadow);
   }
 }
 .menu__toggle-bar {
   position: absolute;
   display: block;
-  height: $menu-bar-double;
-  @if $is-btns-disc and $chamfer {
+  height: variables.$menu-bar-double;
+  @if variables.$is-btns-disc and variables.$chamfer {
     width: calc(100% - 1.5em);
     margin-left: .25em;
   } @else {
     width: calc(100% - 1.25em);
     margin-left: .125em;
   }
-  margin-top: -$menu-bar;
+  margin-top: -(variables.$menu-bar);
   background-color: currentColor;
-  @include radius(0em, $menu-bar);
+  @include mixins.radius(0em, variables.$menu-bar);
   animation: menu-bar-2 .3s 0s both;
   &:nth-child(1) {
     animation-name: menu-bar-1;
@@ -34,9 +37,9 @@
   }
 }
 .menu__backover {
-  @include like-bg-cover;
+  @include mixins.like-bg-cover;
   position: fixed;
-  background: rgba($dark, .5);
+  background: rgba(variables.$dark, .5);
   opacity: 0;
   transform: scale(0);
   transition: transform 0s .4s, opacity .3s;
@@ -56,9 +59,9 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 3em 3.5em 4em;
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
   transform: translateX(100%);
-  font-weight: $font-weight-base;
+  font-weight: variables.$font-weight-base;
   background-color: var(--bg-color);
   .container {
     --cols-gap-ny: 1;
@@ -163,7 +166,7 @@
     background-size: 100% 100%;
   }
   > .menu__btn:not(:hover) {
-    @if $btns-outline {
+    @if variables.$btns-outline {
       color: var(--base);
     }
   }

@@ -8,7 +8,7 @@
 {{- $border := print " " (.step.border  | default "alt") -}}
 {{- $caps   := cond (not .step.caps)            "" "caps" -}}
 {{- $line   := cond (not .step.line)            "" "line" -}}
-{{- $show   := cond (not site.Data.config.show) "" " show" }}
+{{- $show   := cond (not hugo.Data.config.show) "" " show" }}
 <ul class="steps box__block">
   {{- range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">

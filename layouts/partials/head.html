@@ -1,4 +1,4 @@
-{{- $config := site.Data.config -}}
+{{- $config := hugo.Data.config -}}
 
 {{- $title    := "" -}}
 {{- with .Params.seo.title -}}
@@ -71,7 +71,7 @@
 <meta property="og:image" content="{{ $img }}">
 
 {{- /*  ANDROID THEME COLOR  */}}
-<meta name="theme-color" content="{{ site.Data.styles.colors.main.color }}">
+<meta name="theme-color" content="{{ hugo.Data.styles.colors.main.color }}">
 
 {{- /*  INDEXATION  */}}
 <link rel="canonical" href="{{ .Permalink }}">
@@ -153,7 +153,7 @@
   {{- $time := partial "func/timestamp" . -}}
   {{- $path  = print site.BaseURL "fonts/icons." $time ".woff2" -}}
 {{- else -}}
-  {{- $style := site.Data.styles.icons.style -}}
+  {{- $style := hugo.Data.styles.icons.style -}}
   {{- $path   = print site.BaseURL "fonts/material-symbols-" $style ".woff2" -}}
 {{- end }}
 <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>

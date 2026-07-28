@@ -1,7 +1,10 @@
+@use "../mixins";
+@use "../variables";
+
 // Float
 
 
-@media (min-width: $viewport-lg) {
+@media (min-width: variables.$viewport-lg) {
   .md__fig--float {
     margin: 0;
     .img {
@@ -58,7 +61,7 @@
 // Figcaption
 
 .md__figcaption {
-  @include font-quotes;
+  @include mixins.font-quotes;
   margin-top: 1em;
   color: var(--alt);
   text-align: center;

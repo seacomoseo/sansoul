@@ -4,11 +4,15 @@
   {{ $pages := slice }}
   {{ if not .Params.llms.hide -}}
     {{ range .RegularPages }}
+      {{ $llms_hide_explicit_false := false }}
+      {{ with .Params.llms }}
+        {{ $llms_hide_explicit_false = and (isset . "hide") (not .hide) }}
+      {{ end }}
       {{ $add_page := and
-        (ne .Params.hide true)
-        (ne .Params.seo.noindex true)
-        (ne .Params.llms.hide true)
-        | or (eq .Params.llms.hide false)
+        (not .Params.hide)
+        (not .Params.seo.noindex)
+        (not .Params.llms.hide)
+        | or $llms_hide_explicit_false
       }}
       {{ if $add_page }}
         {{ $pages = $pages | append . }}

@@ -1,7 +1,7 @@
-{{ $c := site.Data.utilities.collections }}
+{{ $c := hugo.Data.utilities.collections }}
 
 {{ $types_full  := slice }}
-{{ range $k, $v := site.Data.types }}
+{{ range $k, $v := hugo.Data.types }}
   {{ if ne "all" $k }}
     {{ $type_base := cond (eq $k "single") "single" (.base | default "page") }}
     {{ $type      := dict "name" $k "base" $type_base }}
@@ -12,27 +12,29 @@
 {{ $types_full   = sort $types_full "weight" }}
 {{ $types_full   = where $types_full     "name" "eq" "single" | append (where $types_full "name" "ne" "single") }}
 {{ $types       := where $types_full     "hide" "ne" true | default slice }}
-{{ $langs       := where site.Data.langs "hide" "ne" true }}
+{{ $langs       := where hugo.Data.langs "hide" "ne" true }}
 {{ $lang_first  := index $langs 0 }}
 
 {{ $languages := dict }}
 {{ $cascade   := slice }}
 
 {{/*  DEFAULTS  */}}
-{{ $defaults := site.Data.defaults | default slice }}
+{{ $defaults := hugo.Data.defaults | default slice }}
 {{ range $defaults }}
   {{ $options := dict "name" .name "str" .value "kind" .type }}
   {{ $params  := partial "func/str-to-kind" $options }}
   {{ $target  := dict }}
   {{ with .kind }}{{ $target = merge $target (dict "kind" (print "{" (delimit . ",") "}")) }}{{ end }}
-  {{ with .lang }}{{ $target = merge $target (dict "lang" (print "{" (delimit . ",") "}")) }}{{ end }}
+  {{ with .lang }}
+    {{ $target = merge $target (dict "sites" (dict "matrix" (dict "languages" .))) }}
+  {{ end }}
   {{ with .path }}{{ $target = merge $target (dict "path" (print "{" (delimit . ",") "}")) }}{{ end }}
   {{ if not $target }}{{ $target = dict "path" "**" }}{{ end }}
   {{ $default := dict "params" $params "target" $target }}
   {{ $cascade = $cascade | append $default }}
 {{ end }}
 
-{{ range site.Data.options.langs }}
+{{ range hugo.Data.options.langs }}
   {{ $lang      := . }}
   {{ $language  := dict }}
   {{ $base_url  := "" }}
@@ -50,7 +52,7 @@
   {{ end }}
   {{ with $config_lang }}
     {{/*  i18n  */}}
-    {{ $t := index site.Data.i18n $lang }}
+    {{ $t := index hugo.Data.i18n $lang }}
 
     {{/*  Home single singular  */}}
     {{ $home_singular := dict
@@ -58,14 +60,14 @@
         "singular" $t.types_def_single_singular
       )
       "target" (dict
-        "lang" $lang
-        "kind" "home"
+        "kind"  "home"
+        "sites" (dict "matrix" (dict "languages" (slice $lang)))
       )
     }}
     {{ $cascade = $cascade | append $home_singular }}
 
     {{/*  Mix first configuration language with the others  */}}
-    {{ $config := site.Data.config }}
+    {{ $config := hugo.Data.config }}
     {{ $config  = dict
       "ga4"           $config.ga4
       "g_site_verify" $config.g_site_verify
@@ -143,11 +145,11 @@
         {{ $permalinks   = $permalinks | replaceRE `^/+` "" }}
 
         {{/*  cms  */}}
-        {{ $lang_cms := index site.Data.config "cms" "lang" | default "es" }}
-        {{ $i18n_cms := index site.Data.i18n $lang_cms }}
+        {{ $lang_cms := index hugo.Data.config "cms" "lang" | default "es" }}
+        {{ $i18n_cms := index hugo.Data.i18n $lang_cms }}
         {{/*
         {{ if ne $lang_cms "es" }}
-          {{ $i18n_cms_es := index site.Data.i18n "es" }}
+          {{ $i18n_cms_es := index hugo.Data.i18n "es" }}
           {{ $i18n_cms     = merge $i18n_cms_es $i18n_cms }}
         {{ end }}
          */}}
@@ -198,54 +200,62 @@
           {{ $emoji      := or .emoji       (index $c.emojis $name)  "📄"                    }}
           {{ $ni_parent  := cond (eq .noindex_parent nil) true .noindex_parent }}
           {{ $customs    := slice }}
-          {{ range site.Data.customs | default slice }}
+          {{ range hugo.Data.customs | default slice }}
             {{ if in .types $name }}
               {{ $customs = $customs | append . }}
             {{ end }}
           {{ end }}
 
           {{/*  GLOBAL CASCADE  */}}
-          {{ $parent := dict
-            "params" (dict
-              "slug"     $slug
-              "singular" $singular
-              "title"    $title
-              "sum"      $sum
-              "icon"     $icon
-              "emoji"    $emoji
-              "img"      .img
-              "draft"    .hide
-              "weight"   (add $k 1)
-              "cms"      $cms
-              "customs"  $customs
-              "seo"      (dict
-                "title"   .seo.title
-                "desc"    .seo.desc
-                "noindex" $ni_parent
-              )
-              "llms"     (dict
-                "title"   .llms.title
-                "desc"    .llms.desc
-              )
+          {{ $parent_params := dict
+            "slug"     $slug
+            "singular" $singular
+            "title"    $title
+            "sum"      $sum
+            "icon"     $icon
+            "emoji"    $emoji
+            "img"      .img
+            "draft"    .hide
+            "weight"   (add $k 1)
+            "cms"      $cms
+            "seo"      (dict
+              "title"   .seo.title
+              "desc"    .seo.desc
+              "noindex" $ni_parent
             )
-            "target" (dict
-              "lang" $lang
-              "path" (print "/" $name)
+            "llms"     (dict
+              "title"   .llms.title
+              "desc"    .llms.desc
             )
           }}
-          {{ $child := dict
-            "params" (dict
-              "type"        $name
-              "base"        $base
-              "is_related"  .rel
-              "is_comments" .comments
-              "taxonomies"  $taxonomies
-              "tax_of"      .tax_of
-              "breadcrumbs" $breadcrumbs
-            )
+          {{ with $customs }}
+            {{ $parent_params = merge $parent_params (dict "customs" .) }}
+          {{ end }}
+          {{ $parent := dict
+            "params" $parent_params
             "target" (dict
-              "lang" $lang
-              "path" (print "{/" $name ",/" $name "/*}")
+              "path"  (print "/" $name)
+              "sites" (dict "matrix" (dict "languages" (slice $lang)))
+            )
+          }}
+          {{ $child_params := dict
+            "type"        $name
+            "base"        $base
+            "is_related"  .rel
+            "is_comments" .comments
+            "breadcrumbs" $breadcrumbs
+          }}
+          {{ with $taxonomies }}
+            {{ $child_params = merge $child_params (dict "taxonomies" .) }}
+          {{ end }}
+          {{ with .tax_of }}
+            {{ $child_params = merge $child_params (dict "tax_of" .) }}
+          {{ end }}
+          {{ $child := dict
+            "params" $child_params
+            "target" (dict
+              "path"  (print "{/" $name ",/" $name "/*}")
+              "sites" (dict "matrix" (dict "languages" (slice $lang)))
             )
           }}
           {{ if .noindex }}
@@ -286,7 +296,7 @@
   {{ with $pager     }}{{ $languages = merge $languages (dict $lang (dict "pagination" (dict "path" .))) }}{{ end }}
   {{ with $on        }}{{ $languages = merge $languages (dict $lang (dict "disabled"           (not .))) }}{{ end }}
   {{ with $weight    }}{{ $languages = merge $languages (dict $lang (dict "weight"                  .))  }}{{ end }}
-  {{ with $label     }}{{ $languages = merge $languages (dict $lang (dict "languageName"            .))  }}{{ end }}
+  {{ with $label     }}{{ $languages = merge $languages (dict $lang (dict "label"                   .))  }}{{ end }}
   {{ with $time_zone }}{{ $languages = merge $languages (dict $lang (dict "timeZone"                .))  }}{{ end }}
   {{ with $title     }}{{ $languages = merge $languages (dict $lang (dict "title"                   .))  }}{{ end }}
   {{ with $params }}
@@ -302,7 +312,7 @@
   "defaultContentLanguage" (index $langs 0 "lang" | default "es")
   "languages"              $languages
 }}
-{{ with site.Data.config.lang_main_subdir }}
+{{ with hugo.Data.config.lang_main_subdir }}
   {{ $obj = merge $obj (dict "defaultContentLanguageInSubdir" .) }}
 {{ end }}
 
@@ -314,17 +324,25 @@
     "target" "static"
   )
   (dict
+    "source" "node_modules/material-symbols"
+    "target" "static/fonts"
+  )
+  (dict
     "source" "assets"
     "target" "assets"
   )
   (dict
     "source" "uploads"
     "target" "static/u"
-    "excludeFiles" (slice "fonts")
+    "files"  (slice "! fonts/**")
   )
   (dict
     "source" "uploads"
     "target" "assets/u"
+  )
+  (dict
+    "source" "node_modules/material-symbols"
+    "target" "assets/fonts"
   )
   (dict
     "source" "../_tools/node_modules/material-symbols"
@@ -357,23 +375,22 @@
       (dict
         "source" (print "content/single/_home." . ".md")
         "target" (print "content/_index." . ".md")
-        "lang"   .
+        "sites"  (dict "matrix" (dict "languages" (slice .)))
       )
       (dict
         "source" (print "content/values." . ".yml")
         "target" (print "data/values." . ".yml")
-        "lang"   .
       )
     }}
   {{ end }}
 {{ end }}
 {{ $mounts = $mounts | append
   (dict
-    "source"       "content"
-    "target"       "content"
-    "excludeFiles" (slice
-      "values.*.yml"
-      "single/_home.*.md"
+    "source" "content"
+    "target" "content"
+    "files"  (slice
+      "! values.*.yml"
+      "! single/_home.*.md"
     )
   )
   (dict
@@ -381,9 +398,9 @@
     "target"       "content"
   )
   (dict
-    "source"       "data"
-    "target"       "data"
-    "excludeFiles" "**/example/*"
+    "source" "data"
+    "target" "data"
+    "files"  (slice "! **/example/*")
   )
   (dict
     "source"       "i18n"

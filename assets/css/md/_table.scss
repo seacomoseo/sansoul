@@ -1,10 +1,16 @@
+@use "sass:math";
+
+@use "hugo:vars" as *;
+@use "../mixins";
+@use "../variables";
+
 // Table inner
 
 .table-inner,
 .gss .ritz {
   display: flex;
   justify-content: center;
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
 }
 
 
@@ -12,8 +18,8 @@
 
 table {
   &:not(.table-sm, .container.bg *, .container > .bg *, .boxes *) {
-    @include fluid-size(max-width, 1px, $vs / 1px, $container-width-max-xl / 1px);
-    @include fluid-size(--margin-table-lg, 1em, 1, 2);
+    @include mixins.fluid-size(max-width, 1px, math.div(variables.$vs, 1px), math.div(variables.$container-width-max-xl, 1px));
+    @include mixins.fluid-size(--margin-table-lg, 1em, 1, 2);
     margin-inline: calc(var(--container-margin-side) + var(--margin-table-lg));
   }
   &:where(.md *) {
@@ -37,7 +43,7 @@ table {
           display: block;
           width: 1px;
           height: 100%;
-          background-color: rgba($gray, .125);
+          background-color: rgba(variables.$gray, .125);
         }
       }
     }
@@ -56,7 +62,7 @@ table.align-right {
   margin-left: auto;
   margin-right: 0;
 }
-@media (min-width: $vl) {
+@media (min-width: variables.$vl) {
   .align--vl-center {
     table {
       margin-left: auto;

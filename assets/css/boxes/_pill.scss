@@ -1,3 +1,5 @@
+@use "../variables";
+
 
 // PILL
 
@@ -8,7 +10,7 @@
     // PILL TOP BACKGROUND
     &.bg {
       --radius-top: calc(50cqw + var(--box-pd));
-      @if $chamfer {
+      @if variables.$chamfer {
         padding-top: calc(var(--box-pd) / .7071);
       }
       // Any first element
@@ -61,7 +63,7 @@
         }
       }
       &.img--border {
-        @if $chamfer {
+        @if variables.$chamfer {
           padding-top: calc(var(--img-border-width) / .7071);
         }
         .img__in {
@@ -82,7 +84,7 @@
     // PILL BOTTOM BACKGROUND
     &.bg {
       --radius-bottom: calc(50cqw + var(--box-pd));
-      @if $chamfer {
+      @if variables.$chamfer {
         padding-bottom: calc(var(--box-pd) / .7071);
       }
       // Any last element
@@ -128,7 +130,7 @@
         }
       }
       &.img--border {
-        @if $chamfer {
+        @if variables.$chamfer {
           padding-bottom: calc(var(--img-border-width) / .7071);
         }
         .img__in {

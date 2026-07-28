@@ -1,3 +1,5 @@
+@use "../variables";
+
 #search__form {
   margin-top: -2.75em;
 }
@@ -27,12 +29,12 @@
   outline-width: .125em;
   outline-style: dashed;
   outline-color: transparent;
-  border-radius: $radius;
+  border-radius: variables.$radius;
   transition: outline-offset .3s, outline-color .3s;
   z-index: 3;
   background-image: none;
   &:focus {
     outline-offset: .5em;
-    outline-color: $cta;
+    outline-color: variables.$cta;
   }
 }

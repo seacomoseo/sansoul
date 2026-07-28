@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 
 // bg-color
 
@@ -17,20 +20,20 @@
   --bg-color: color-mix(in srgb, var(--bg-hex), transparent calc(var(--color-alpha, 0) * 100%));
 }
 
-.bg-main       {  --bg-hex: #{ $main       }; @extend %bg-color; }
-.bg-main-light {  --bg-hex: #{ $main-light }; @extend %bg-color; }
-.bg-main-dark  {  --bg-hex: #{ $main-dark  }; @extend %bg-color; }
-.bg-alt        {  --bg-hex: #{ $alt        }; @extend %bg-color; }
-.bg-alt-light  {  --bg-hex: #{ $alt-light  }; @extend %bg-color; }
-.bg-alt-dark   {  --bg-hex: #{ $alt-dark   }; @extend %bg-color; }
-.bg-cta        {  --bg-hex: #{ $cta        }; @extend %bg-color; }
-.bg-cta-light  {  --bg-hex: #{ $cta-light  }; @extend %bg-color; }
-.bg-cta-dark   {  --bg-hex: #{ $cta-dark   }; @extend %bg-color; }
-.bg-white      {  --bg-hex: #{ $white      }; @extend %bg-color; }
-.bg-light      {  --bg-hex: #{ $light      }; @extend %bg-color; }
-.bg-gray       {  --bg-hex: #{ $gray       }; @extend %bg-color; }
-.bg-dark       {  --bg-hex: #{ $dark       }; @extend %bg-color; }
-.bg-black      {  --bg-hex: #{ $black      }; @extend %bg-color; }
+.bg-main       {  --bg-hex: #{ variables.$main       }; @extend %bg-color; }
+.bg-main-light {  --bg-hex: #{ variables.$main-light }; @extend %bg-color; }
+.bg-main-dark  {  --bg-hex: #{ variables.$main-dark  }; @extend %bg-color; }
+.bg-alt        {  --bg-hex: #{ variables.$alt        }; @extend %bg-color; }
+.bg-alt-light  {  --bg-hex: #{ variables.$alt-light  }; @extend %bg-color; }
+.bg-alt-dark   {  --bg-hex: #{ variables.$alt-dark   }; @extend %bg-color; }
+.bg-cta        {  --bg-hex: #{ variables.$cta        }; @extend %bg-color; }
+.bg-cta-light  {  --bg-hex: #{ variables.$cta-light  }; @extend %bg-color; }
+.bg-cta-dark   {  --bg-hex: #{ variables.$cta-dark   }; @extend %bg-color; }
+.bg-white      {  --bg-hex: #{ variables.$white      }; @extend %bg-color; }
+.bg-light      {  --bg-hex: #{ variables.$light      }; @extend %bg-color; }
+.bg-gray       {  --bg-hex: #{ variables.$gray       }; @extend %bg-color; }
+.bg-dark       {  --bg-hex: #{ variables.$dark       }; @extend %bg-color; }
+.bg-black      {  --bg-hex: #{ variables.$black      }; @extend %bg-color; }
 
 .bg.such { 
   --bg-color: var(--such);
@@ -39,24 +42,24 @@
 // bg-fade (gradient)
 
 %bg-fade {
-  --fade-hex: #{ $black };
+  --fade-hex: #{ variables.$black };
   --fade-color: color-mix(in srgb, var(--fade-hex), transparent calc(var(--color-alpha, 0) * 100%));
 }
 
-.bg-fade-main       { --fade-hex: #{ $main       }; }
-.bg-fade-main-light { --fade-hex: #{ $main-light }; }
-.bg-fade-main-dark  { --fade-hex: #{ $main-dark  }; }
-.bg-fade-alt        { --fade-hex: #{ $alt        }; }
-.bg-fade-alt-light  { --fade-hex: #{ $alt-light  }; }
-.bg-fade-alt-dark   { --fade-hex: #{ $alt-dark   }; }
-.bg-fade-cta        { --fade-hex: #{ $cta       }; }
-.bg-fade-cta-light  { --fade-hex: #{ $cta-light }; }
-.bg-fade-cta-dark   { --fade-hex: #{ $cta-dark  }; }
-.bg-fade-white      { --fade-hex: #{ $white      }; }
-.bg-fade-light      { --fade-hex: #{ $light      }; }
-.bg-fade-gray       { --fade-hex: #{ $gray       }; }
-.bg-fade-dark       { --fade-hex: #{ $dark       }; }
-.bg-fade-black      { --fade-hex: #{ $black      }; }
+.bg-fade-main       { --fade-hex: #{ variables.$main       }; }
+.bg-fade-main-light { --fade-hex: #{ variables.$main-light }; }
+.bg-fade-main-dark  { --fade-hex: #{ variables.$main-dark  }; }
+.bg-fade-alt        { --fade-hex: #{ variables.$alt        }; }
+.bg-fade-alt-light  { --fade-hex: #{ variables.$alt-light  }; }
+.bg-fade-alt-dark   { --fade-hex: #{ variables.$alt-dark   }; }
+.bg-fade-cta        { --fade-hex: #{ variables.$cta       }; }
+.bg-fade-cta-light  { --fade-hex: #{ variables.$cta-light }; }
+.bg-fade-cta-dark   { --fade-hex: #{ variables.$cta-dark  }; }
+.bg-fade-white      { --fade-hex: #{ variables.$white      }; }
+.bg-fade-light      { --fade-hex: #{ variables.$light      }; }
+.bg-fade-gray       { --fade-hex: #{ variables.$gray       }; }
+.bg-fade-dark       { --fade-hex: #{ variables.$dark       }; }
+.bg-fade-black      { --fade-hex: #{ variables.$black      }; }
 
 .bg-fade-b        { --fade: linear-gradient(        transparent, var(--fade-color)); @extend %bg-fade; }
 .bg-fade-t        { --fade: linear-gradient(0deg,   transparent, var(--fade-color)); @extend %bg-fade; }
@@ -75,10 +78,10 @@
 // Radius
 
 .bg {
-  @include radius-parent;
+  @include mixins.radius-parent;
   position: relative;
   &:where(:not(body)) {
-    filter: drop-shadow($shadow);
+    filter: drop-shadow(variables.$shadow);
   }
 }
 
@@ -87,8 +90,8 @@
 
 .bg-color {
   content: '';
-  @include radius-child;
-  @include like-bg-cover;
+  @include mixins.radius-child;
+  @include mixins.like-bg-cover;
   z-index: -5;
   background-color: var(--bg-color);
 }
@@ -96,7 +99,7 @@
   background-image: var(--fade);
 }
 body > .bg-color {
-  @include hide-radius;
+  @include mixins.hide-radius;
   &:not(.aux) {
     z-index: -10;
   }

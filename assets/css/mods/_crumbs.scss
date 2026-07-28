@@ -1,3 +1,7 @@
+@use "sass:math";
+
+@use "../variables";
+
 #crumbs {
   font-size: small;
   display: flex;
@@ -9,7 +13,7 @@
     gap: .5rem;
   }
   .link {
-    --link-undeline-width: #{ $menu-bar-double * 1em / 1rem };
+    --link-undeline-width: #{ math.div(variables.$menu-bar-double * 1em, 1rem) };
   }
   .icon {
     margin: 0;

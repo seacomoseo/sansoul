@@ -1,9 +1,11 @@
+@use "../../variables";
+
 .links {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
-  @if $btns-3d {
+  @if variables.$btns-3d {
     row-gap: 1.25em;
   }
   > * {
@@ -40,7 +42,7 @@
   .link__br,
   hr {
     flex-grow: 0;
-    width: calc(100% - #{ $radius / 2 });
+    width: calc(100% - #{ variables.$radius * 0.5 });
     height: 0;
   }
   hr {

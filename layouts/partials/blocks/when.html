@@ -1,5 +1,5 @@
 {{- with .when -}}
-  {{- $show := cond (not site.Data.config.show) "" " show" }}
+  {{- $show := cond (not hugo.Data.config.show) "" " show" }}
   <div class="whens box__block {{- $show }}">
     {{- range . -}}
       {{- $full := cond (not .full) "" " full" -}}

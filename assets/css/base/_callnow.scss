@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 .callnow {
   position: fixed;
   bottom: 0;
@@ -7,24 +10,24 @@
   display: flex;
   flex-direction: column;
   gap: 1em;
-  @if not $btns-3d {
+  @if not variables.$btns-3d {
     .btn--dot {
-      filter: drop-shadow($shadow);
+      filter: drop-shadow(variables.$shadow);
     }
   }
 }
 .callnow__caption {
   position: absolute;
-  @if $radius > .75 or $is-btns-pill {
-    @include radius(0em, .75em);
+  @if variables.$radius > .75 or variables.$is-btns-pill {
+    @include mixins.radius(0em, .75em);
   } @else {
-    @include radius;
+    @include mixins.radius;
   }
   margin-bottom: -3em;
   background-color: var(--such);
   color: var(--such-in);
   font-size: small;
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
   width: max-content;
   text-align: center;
   padding: .25em 1em;

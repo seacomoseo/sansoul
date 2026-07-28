@@ -10,14 +10,13 @@ stock: 50
 brand: marca
 category:
 - categoria-3
-brand: marca
 manufacturer: fabricante
 
-toc: y
-draft: n
+toc: 1
+draft: 0
 seo:
   title: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
   desc: Esta es la descripción SEO de un producto de ejemplo.
-  noindex: n
+  noindex: 0
 ---
 Contenido

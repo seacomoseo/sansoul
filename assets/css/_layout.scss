@@ -1,17 +1,21 @@
+@use "hugo:vars" as *;
+@use "mixins";
+@use "variables";
+
 *, ::before, ::after {
   box-sizing: border-box;
 }
 html {
-  @include font-base(true);
-  @include fluid-size(font-size, 1px, $font-size-vs, $font-size-vl);
+  @include mixins.font-base(true);
+  @include mixins.fluid-size(font-size, 1px, variables.$font-size-vs, variables.$font-size-vl);
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
 body {
   max-width: 100dvw;
   // font-size: var(--fsb);
-  color: var(--text, $text);
-  background-color: $light;
+  color: var(--text, variables.$text);
+  background-color: variables.$light;
   word-break: break-word;
   overflow-wrap: break-word;
   // hyphens: auto;
@@ -39,7 +43,7 @@ strong,
 .btn--swap:not(.btn) > b,
 dt,
 legend {
-  @include font-base-bold;
+  @include mixins.font-base-bold;
 }
 b {
   font-weight: inherit;
@@ -93,18 +97,18 @@ h4, .h4,
 h5, .h5,
 h6, .h6,
 .h {
-  @include font-title;
+  @include mixins.font-title;
   display: block;
   margin-top: 0;
   margin-bottom: 1rem;
-  color: var(--title, $dark);
-  @include fluid-size(--fhs-pre, 1cqw, -.7, .3);
-  @include fluid-size(--hn-pre, 1, var(--hn-vs, var(--hn, 6)), var(--hn, 6) );
+  color: var(--title, variables.$dark);
+  @include mixins.fluid-size(--fhs-pre, 1cqw, -.7, .3);
+  @include mixins.fluid-size(--hn-pre, 1, var(--hn-vs, var(--hn, 6)), var(--hn, 6) );
   --hn-safe: max(var(--hn-pre), 0.000001); // Fix 0 div
   --hs-linear: calc(2.2 - 0.2 * var(--hn-safe)); // Linear part: replica scale 2, 1.8, 1.6, 1.4, 1.2, 1 with hn = 1..6
   --hs-sing: calc(0.01 / var(--hn-safe)); // “Singular” part: hn → 0 triggers the size (for values 1..6 it is negligible)
   --hs: calc(var(--hs-linear) + var(--hs-sing));
-  --fhs: calc(var(--fhs-pre) * var(--hs) + var(--hs) * #{ $font-size-title } * 1em);
+  --fhs: calc(var(--fhs-pre) * var(--hs) + var(--hs) * #{ variables.$font-size-title } * 1em);
   font-size: var(--fhs);
   // text-wrap: balance;
   &:last-child {
@@ -129,7 +133,7 @@ fieldset {
   border-bottom: var(--outline) solid var(--border);
   outline: none;
   transition: border .1s;
-  font-weight: $font-weight-base;
+  font-weight: variables.$font-weight-base;
   color: inherit;
   &:focus {
     border-color: var(--main);
@@ -161,13 +165,13 @@ select {
   option {
     appearance: none;
     background-color: transparent;
-    @include radius;
+    @include mixins.radius;
   }
 }
 fieldset {
   border: 1px var(--border) solid;
   color: inherit;
-  border-radius: $radius;
+  border-radius: variables.$radius;
 }
 legend {
   color: var(--sub);
@@ -180,7 +184,7 @@ legend {
   appearance: none;
   // For iOS < 15
   // background-color: var(--form-background);
-  background-color: $white;
+  background-color: variables.$white;
   // Not removed via appearance
   margin: 0;
 
@@ -232,7 +236,7 @@ legend {
   border-radius: 50%;
 }
 table {
-  @include radius;
+  @include mixins.radius;
   border-collapse: collapse;
   word-break: normal;
   // white-space: nowrap;
@@ -265,7 +269,7 @@ thead tr {
 }
 /*! purgecss start ignore */
 iframe {
-  @include radius;
+  @include mixins.radius;
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
@@ -283,7 +287,7 @@ iframe {
   flex-shrink: 0;
   flex-grow: 0;
   font-family: 'Material Symbols';
-  font-weight: #{$icons-weight};
+  font-weight: #{variables.$icons-weight};
   font-style: normal;
   font-size: 1em;
   line-height: 1;
@@ -298,18 +302,18 @@ iframe {
   -webkit-font-smoothing: antialiased;
   -webkit-font-feature-settings: 'liga';
   font-feature-settings: 'liga';
-  @if not $is-production {
+  @if not variables.$is-production {
     font-variation-settings:
-      'FILL' #{$icons-fill},
-      'wght' #{$icons-weight},
-      'GRAD' #{$icons-grade},
-      'opsz' #{$icons-optical};
+      'FILL' #{variables.$icons-fill},
+      'wght' #{variables.$icons-weight},
+      'GRAD' #{variables.$icons-grade},
+      'opsz' #{variables.$icons-optical};
   }
   width: 1em;
-  scale: $icons-scale;
+  scale: variables.$icons-scale;
 }
 .icon--txt {
-  @include font-base-bold;
+  @include mixins.font-base-bold;
   line-height: 1;
   text-align: center;
   width: auto;
@@ -325,16 +329,16 @@ iframe {
 //   color: $main;
 // }
 pre {
-  @include radius;
+  @include mixins.radius;
 }
 :not(pre) > code  {
   background-color: var(--main);
   color: var(--main-in);
   padding: 0 0.3em;
-  @if $chamfer and $radius >= 0.1 {
+  @if variables.$chamfer and variables.$radius >= 0.1 {
     border-radius: 0.1em;
   } @else {
-    border-radius: $radius;
+    border-radius: variables.$radius;
   }
   > .icon {
     color: inherit;
@@ -352,7 +356,7 @@ pre {
   }
   > b,
   > b * {
-    @include ofuscate;
+    @include mixins.ofuscate;
   }
 }
 
@@ -364,8 +368,8 @@ pre {
   scroll-margin-top: calc(3em - var(--pt-div));
 }
 ::selection {
-  color: $main-turn-neutral;
-  background: $main;
+  color: variables.$main-turn-neutral;
+  background: variables.$main;
 }
 .icon:has(> use[href="#{$draws-base}#flag-es"]),
 .icon:has(> use[href="#{$draws-base}#flag-en"]),

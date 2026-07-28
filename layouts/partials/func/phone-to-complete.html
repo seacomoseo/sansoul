@@ -1,6 +1,6 @@
 {{ $phone := . | replaceRE `[^\d]` "" }}
 {{ $code  := site.Params.phone_code | default "34" }}
-{{ $codes := site.Data.utilities.phone_code }}
+{{ $codes := hugo.Data.utilities.phone_code }}
 {{ if in . "+" }}
   {{ range $codes }}
     {{ if findRE (print `^` .value) $phone }}

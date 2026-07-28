@@ -1,23 +1,26 @@
+@use "../mixins";
+@use "../variables";
+
 
 .md {
   .link {
     &:not(.box, .btn, .md__heading-link) {
-      @include font-base-bold;
-      line-height: $line-height-base;
+      @include mixins.font-base-bold;
+      line-height: variables.$line-height-base;
     }
     &:not(#toc *, .list-inline *, .md__heading-link) .icon {
       opacity: .5;
     }
   }
   em {
-    @include font-cursive;
+    @include mixins.font-cursive;
     color: var(--sub);
   }
   // strong {
   //   color: var(--sub);
   // }
   iframe:not(.md__fig *) {
-    filter: drop-shadow($shadow);
+    filter: drop-shadow(variables.$shadow);
   }
   :not(.btn, li, code) > .icon {
     color: var(--main);

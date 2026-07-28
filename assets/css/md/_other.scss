@@ -1,9 +1,12 @@
+@use "../mixins";
+@use "../variables";
+
 .highlight {
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
 }
 
 .font-base {
-  @include font-base;
+  @include mixins.font-base;
 }
 
 /*! purgecss start ignore */
@@ -65,16 +68,16 @@
 }
 
 .cancelled {
-  @include radius;
+  @include mixins.radius;
   background-color: red;
   width: fit-content;
   margin: 2rem auto 1em;
   padding: .5em 1em;
   rotate: 5deg;
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
   mark {
-    @include font-title;
-    @include fluid-size(font-size, 1em, 4, 8);
+    @include mixins.font-title;
+    @include mixins.fluid-size(font-size, 1em, 4, 8);
     background-color: transparent;
     color: white;
     display: inline-block;

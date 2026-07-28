@@ -1,6 +1,9 @@
+@use "../mixins";
+@use "../variables";
+
 .mail__opt-copy--active > b {
-  @if $chamfer {
-    @if $radius > 1 or $is-btns-pill {
+  @if variables.$chamfer {
+    @if variables.$radius > 1 or variables.$is-btns-pill {
       --radius: 1em;
     }
   }
@@ -17,9 +20,9 @@
     align-items: center;
     color: var(--turn-in);
     background-color: var(--turn);
-    @include radius;
-    @if not $chamfer {
-      filter: drop-shadow($shadow);
+    @include mixins.radius;
+    @if not variables.$chamfer {
+      filter: drop-shadow(variables.$shadow);
     }
     animation: copied 1s ease 0s forwards;
   }

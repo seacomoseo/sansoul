@@ -1,10 +1,13 @@
+@use "../../mixins";
+@use "../../variables";
+
 .map {
   width: 100%;
   height: 100%;
   min-height: 20em;
-  filter: drop-shadow($shadow);
+  filter: drop-shadow(variables.$shadow);
   &:not(.box--hide-radius > *) {
-    @include radius;
+    @include mixins.radius;
   }
 }
 
@@ -25,7 +28,7 @@
     color: var(--such-in);
   }
   .leaflet-popup {
-    filter: drop-shadow($shadow);
+    filter: drop-shadow(variables.$shadow);
   }
   .leaflet-popup-content {
     margin: 13px 24px;
@@ -34,10 +37,10 @@
   .leaflet-popup-content-wrapper {
     box-shadow: none;
     border-radius: 0;
-    @include radius();
+    @include mixins.radius();
   }
   .leaflet-popup-close-btn:not(a.aux) {
-    @include disc;
+    @include mixins.disc;
     top: Max(calc(var(--radius) / 2 - 6px), 0px);
     right: Max(calc(var(--radius) / 2 - 6px), 0px);
     color: var(--cta);
@@ -79,7 +82,7 @@
     color: color-mix(in srgb, var(--base), var(--base-in) 75%);
     font-size: 1.9em;
     translate: 0 var(--translate-x);
-    @include fluid-size(--translate-x, 1rem, -2.69, -2.525);
+    @include mixins.fluid-size(--translate-x, 1rem, -2.69, -2.525);
   }
   .leaflet-overlay-pane svg {
     width: unset;

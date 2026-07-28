@@ -1,3 +1,6 @@
+@use "../mixins";
+@use "../variables";
+
 // Buttons Group
 
 .btns {
@@ -21,7 +24,7 @@
   // background-color: transparent;
   background-color: color-mix(in srgb, var(--base), transparent 100%);
   position: relative;
-  @if $is-any-radius {
+  @if variables.$is-any-radius {
     @extend %radius;
   }
   &::before {
@@ -38,19 +41,19 @@
     left: 0;
     width: 100%;
     height: 100%;
-    @if not $chamfer {
+    @if not variables.$chamfer {
       z-index: -1;
     }
     // radius
-    @if $is-any-radius {
-      @if $chamfer {
+    @if variables.$is-any-radius {
+      @if variables.$chamfer {
         clip-path: var(--chamfer);
       } @else {
         border-radius: var(--radius-end);
       }
     }
   }
-  @if $is-btns-pill {
+  @if variables.$is-btns-pill {
     --radius: 1.25em;
   }
   transition: color;
@@ -72,7 +75,7 @@
     color: var(--pin-color);
     opacity: var(--pin-opacity);
     transition: color .1s;
-    @if not $btns-outline {
+    @if not variables.$btns-outline {
       --bg-color: var(--base); // to SVG variable strokes
     }
   }
@@ -82,11 +85,11 @@
     }
   }
   > b {
-    @include font-btn;
+    @include mixins.font-btn;
     line-height: 1.25;
     text-align: left;
   }
-  @if $btns-3d {
+  @if variables.$btns-3d {
     transform: translateY(-.25em);
     &::after {
       content: '';
@@ -95,13 +98,13 @@
       transition: background-color .1s, transform .1s;
       z-index: -2;
     }
-    @if $chamfer {
+    @if variables.$chamfer {
       transition: color, filter, transform;
-      filter: drop-shadow($shadow);
+      filter: drop-shadow(variables.$shadow);
     } @else {
       transition: color, box-shadow, transform;
       &::after {
-        box-shadow: $shadow;
+        box-shadow: variables.$shadow;
       }
     }
   }
@@ -122,43 +125,43 @@
 // Hover, Focus and Active
 
 .btn {
-  &#{$hover-focus} {
-    @if $btns-outline {
+  &#{variables.$hover-focus} {
+    @if variables.$btns-outline {
       color: var(--base);
     } @else {
       color: var(--base-in);
     }
     --base: var(--hover);
     --base-in: var(--hover-in);
-    @if $btns-3d {
+    @if variables.$btns-3d {
       transform: translateY(-.125em);
       &::after {
         transform: translateY(.125em);
       }
-      @if $chamfer {
-        filter: drop-shadow($shadow-half);
+      @if variables.$chamfer {
+        filter: drop-shadow(variables.$shadow-half);
       } @else {
         &::after {
-          box-shadow: $shadow-half;
+          box-shadow: variables.$shadow-half;
         }
       }
     }
   }
-  &#{$active},
+  &#{variables.$active},
   &.menu__btn:where(.menu__item--active > *):not(:hover) {
-    @if $btns-outline {
+    @if variables.$btns-outline {
       color: var(--base);
     } @else {
       color: var(--base-in);
     }
     --base: var(--active);
     --base-in: var(--active-in);
-    @if $btns-3d {
+    @if variables.$btns-3d {
       filter: none;
       transform: none;
       &::after {
         transform: none;
-        box-shadow: 0 0 0 $shadow-color;
+        box-shadow: 0 0 0 variables.$shadow-color;
       }
     }
   }
@@ -172,7 +175,7 @@
   padding: .25em 1em;
   min-height: 2em;
   --pin-size: 1.25em;
-  @if $radius > 1 or $is-btns-pill {
+  @if variables.$radius > 1 or variables.$is-btns-pill {
     --radius: 1em;
   }
 }
@@ -191,15 +194,15 @@
     max-width: 1.25em;
   }
   > b:not(.aux) {
-    @include ofuscate;
+    @include mixins.ofuscate;
     z-index: -2;
   }
-  @if $is-btns-disc {
+  @if variables.$is-btns-disc {
     &::before,
     &::after {
-      @include disc;
+      @include mixins.disc;
     }
-    @if $chamfer {
+    @if variables.$chamfer {
       --pin-size: 1.5em;
     }
   }
@@ -210,12 +213,12 @@
 
 .btn--swap {
   > b {
-    @include font-btn(alt);
+    @include mixins.font-btn(alt);
     line-height: 1.25;
   }
   &:not(.btn) {
     > b {
-      @include font-btn;
+      @include mixins.font-btn;
     }
   }
 }
@@ -235,25 +238,25 @@
 
 // Outline
 
-@if $btns-outline {
+@if variables.$btns-outline {
   .btn {
     color: var(--text);
     --pin-color: var(--base);
     --pin-opacity: 1;
     &::before,
     &::after {
-      @if $chamfer and ($is-any-radius) {
+      @if variables.$chamfer and (variables.$is-any-radius) {
         clip-path: var(--chamfer-outline);
       } @else {
         border: var(--outline) var(--base) solid;
         background-color: transparent;
       }
     }
-    @if $btns-3d {
+    @if variables.$btns-3d {
       &::after {
         opacity: .25;
       }
-      @if $chamfer {
+      @if variables.$chamfer {
         filter: none;
       } @else {
         &::after {
@@ -266,7 +269,7 @@
   .btn--dot:not(:hover,:focus,:active) {
     --pin-color: var(--text);
   }
-  @if $chamfer and $is-btns-disc {
+  @if variables.$chamfer and variables.$is-btns-disc {
     .btn--dot {
       &::before,
       &::after {
@@ -284,9 +287,9 @@
     // .icon {
     //   color: var(--base);
     // }
-    @if $chamfer and $is-any-radius {
+    @if variables.$chamfer and variables.$is-any-radius {
       i {
-        @if $is-btns-disc {
+        @if variables.$is-btns-disc {
           clip-path: var(--diamond);
           top: var(--outline-diamond);
           left: var(--outline-diamond);

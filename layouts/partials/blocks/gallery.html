@@ -39,7 +39,7 @@
       (cond (not .gray)                                 "" "gallery--gray")
       (cond (not $color)                                "" "bg")
       (cond (not $color | or (eq $color "transparent")) "" (print "bg-" $color))
-      (cond (not site.Data.config.show)                 "" "show")
+      (cond (not hugo.Data.config.show)                 "" "show")
     -}}
 
     {{- /* STYLE  */ -}}

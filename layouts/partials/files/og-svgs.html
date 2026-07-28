@@ -1,8 +1,10 @@
 {{ $svgs := slice }}
-{{ range site.AllPages }}
-  {{ with partial "func/img-og" . }}
-    {{ with .svg }}
-      {{ $svgs = $svgs | append . }}
+{{ range hugo.Sites }}
+  {{ range .Pages }}
+    {{ with partial "func/img-og" . }}
+      {{ with .svg }}
+        {{ $svgs = $svgs | append . }}
+      {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}

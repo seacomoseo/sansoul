@@ -1,20 +1,23 @@
+@use "custom-properties";
+@use "variables";
+
 // FONTS
 
 // Font Base
 @mixin font-base($root: false) {
-  font-family: $font-family-base;
-  font-style: $font-style-base;
-  font-weight: $font-weight-base;
-  line-height: $line-height-base;
+  font-family: variables.$font-family-base;
+  font-style: variables.$font-style-base;
+  font-weight: variables.$font-weight-base;
+  line-height: variables.$line-height-base;
   @if not $root {
     font-size: 1em;
   }
 }
 // Font Base Bold
 @mixin font-base-bold($hide-nested: false) {
-  @if $font-weight-bold-base > 0 {
+  @if variables.$font-weight-bold-base > 0 {
     @include font-base;
-    font-weight: $font-weight-bold-base;
+    font-weight: variables.$font-weight-bold-base;
   } @else {
     @include font-title($hide-nested);
     font-size: 1em;
@@ -22,16 +25,16 @@
 }
 // Font Title
 @mixin font-title($hide-nested: false) {
-  font-family: $font-family-title;
-  font-style: $font-style-title;
-  font-weight: $font-weight-title;
-  line-height: $line-height-title;
-  font-size: $font-size-title * 1em;
+  font-family: variables.$font-family-title;
+  font-style: variables.$font-style-title;
+  font-weight: variables.$font-weight-title;
+  line-height: variables.$line-height-title;
+  font-size: variables.$font-size-title * 1em;
   @if not $hide-nested {
-    @if $font-weight-bold-title > 0 {
+    @if variables.$font-weight-bold-title > 0 {
       strong,
       .strong {
-        font-weight: $font-weight-bold-title;
+        font-weight: variables.$font-weight-bold-title;
       }
     }
   }
@@ -39,22 +42,22 @@
 // Font Title Bold
 @mixin font-title-bold {
   @include font-title(true);
-  @if $font-weight-bold-title > 0 {
-    font-weight: $font-weight-bold-title;
+  @if variables.$font-weight-bold-title > 0 {
+    font-weight: variables.$font-weight-bold-title;
   }
 }
 // Font Cursive
 @mixin font-cursive($hide-nested: false) {
-  font-family: $font-family-cursive;
-  font-style: $font-style-cursive;
-  font-weight: $font-weight-cursive;
-  line-height: $line-height-cursive;
-  font-size: $font-size-cursive * 1em;
+  font-family: variables.$font-family-cursive;
+  font-style: variables.$font-style-cursive;
+  font-weight: variables.$font-weight-cursive;
+  line-height: variables.$line-height-cursive;
+  font-size: variables.$font-size-cursive * 1em;
   @if not $hide-nested {
-    @if $font-weight-bold-cursive > 0 {
+    @if variables.$font-weight-bold-cursive > 0 {
       strong,
       .strong {
-        font-weight: $font-weight-bold-cursive;
+        font-weight: variables.$font-weight-bold-cursive;
       }
     }
   }
@@ -62,19 +65,19 @@
 // Font Cursive Bold
 @mixin font-cursive-bold {
   @include font-cursive(true);
-  @if $font-weight-bold-cursive > 0 {
-    font-weight: $font-weight-bold-cursive;
+  @if variables.$font-weight-bold-cursive > 0 {
+    font-weight: variables.$font-weight-bold-cursive;
   }
 }
 // Font Button
 @mixin font-btn($font: main) {
-  $font-type: $btns-font-main;
-  $font-bold: $btns-font-main-bold;
-  $font-caps: $btns-font-main-caps;
+  $font-type: variables.$btns-font-main;
+  $font-bold: variables.$btns-font-main-bold;
+  $font-caps: variables.$btns-font-main-caps;
   @if $font == alt {
-    $font-type: $btns-font-swap;
-    $font-bold: $btns-font-swap-bold;
-    $font-caps: $btns-font-swap-caps;
+    $font-type: variables.$btns-font-swap;
+    $font-bold: variables.$btns-font-swap-bold;
+    $font-caps: variables.$btns-font-swap-caps;
   }
 
   @if $font-bold {
@@ -103,7 +106,7 @@
 }
 // Font Quotes
 @mixin font-quotes {
-  @if $blockquote-cursive {
+  @if variables.$blockquote-cursive {
     @include font-cursive;
   } @else {
     font-family: 'Times New Roman', Times, serif;
@@ -141,10 +144,10 @@
 
 // RADIUS
 
-@mixin radius-parent($padding: 0em, $r: $radius) {
-  @if $is-any-radius {
+@mixin radius-parent($padding: 0em, $r: variables.$radius) {
+  @if variables.$is-any-radius {
     @extend %radius;
-    @if $r != $radius {
+    @if $r != variables.$radius {
       --radius: #{ $r };
     }
     @if $padding != 0em {
@@ -153,28 +156,28 @@
   }
 }
 @mixin radius-child {
-  @if $is-radius {
-    @if $chamfer {
+  @if variables.$is-radius {
+    @if variables.$chamfer {
       clip-path: var(--chamfer);
     } @else {
       border-radius: var(--radius-end);
     }
   }
 }
-@mixin radius($padding: 0em, $r: $radius) {
+@mixin radius($padding: 0em, $r: variables.$radius) {
   @include radius-parent($padding, $r);
   @include radius-child;
 }
 @mixin disc {
-  @if $chamfer {
+  @if variables.$chamfer {
     clip-path: var(--diamond);
   } @else {
     border-radius: 50%;
   }
 }
 @mixin hide-radius {
-  @if $is-radius {
-    @if $chamfer {
+  @if variables.$is-radius {
+    @if variables.$chamfer {
       clip-path: none;
     } @else {
       border-radius: 0;

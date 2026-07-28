@@ -8,10 +8,10 @@ icon: null # string
 category:
 - categoria-0
 
-toc: n
-draft: n
+toc: 0
+draft: 0
 seo:
   title: null # string
   desc: null # string
-  noindex: y
+  noindex: 1
 ---

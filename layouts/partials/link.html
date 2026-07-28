@@ -148,7 +148,7 @@
   {{- end -}}
 
   {{- /*  change lock to false if explicit set false  */ -}}
-  {{- if and $lock (eq .lock false) -}}
+  {{- if and $lock (ne .lock nil) (not .lock) -}}
     {{- $lock = false -}}
   {{- end -}}
 

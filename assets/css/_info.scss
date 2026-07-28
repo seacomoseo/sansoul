@@ -1,9 +1,11 @@
+@use "variables";
+
 #status {
   font-size: 1.5em;
   margin-block: 1rem;
   .btn[style] {
     --base: var(--cta);
-    @if not $btns-outline {
+    @if not variables.$btns-outline {
       --base-in: color-mix(in srgb, var(--light) 25%, black);
     }
     &:hover {
@@ -12,7 +14,7 @@
   }
   .loader,
   .icon {
-    @if $btns-outline {
+    @if variables.$btns-outline {
       color: var(--base);
     } @else {
       color: var(--base-in);

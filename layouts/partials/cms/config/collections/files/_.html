@@ -1,4 +1,4 @@
-{{ $i := site.Data.utilities.collections.icons }}
+{{ $i := hugo.Data.utilities.collections.icons }}
 
 {{ return slice
   (dict "file" "data/config.yml"     "extension" `yml`  "name" `config`    "label" .config      "icon" $i.config    "editor" (dict "preview" false) "fields" `~config`    )

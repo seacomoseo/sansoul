@@ -1,103 +1,100 @@
-// HUGO VARS
-@import 'hugo:vars';
-
 // VENDORS BASE
-@import 'css/vendors/_normalice';
-@import 'css/vendors/_code';
+@use 'css/vendors/_normalice';
+@use 'css/vendors/_code';
 
 // BASE
-@import 'css/_func';
-@import '_custom-variables';
-@import 'css/_variables';
-@import 'css/_mixins';
-@import 'css/_extends';
-@import 'css/_preload';
-@import 'css/_fonts';
-@import 'css/_custom-properties';
-@import 'css/_layout';
-@import 'css/_animations';
-@import 'css/_info';
+@use 'css/_func';
+@use '_custom-variables';
+@use 'css/_variables';
+@use 'css/_mixins';
+@use 'css/_extends';
+@use 'css/_preload';
+@use 'css/_fonts';
+@use 'css/_custom-properties';
+@use 'css/_layout';
+@use 'css/_animations';
+@use 'css/_info';
 
 // VENDORS POST VARIABLES
-@import 'css/vendors/_simple-lightbox';
+@use 'css/vendors/_simple-lightbox';
 
 // UTILITIES
-@import 'css/utilities/_img';
-@import 'css/utilities/_link';
-@import 'css/utilities/_btn';
-@import 'css/utilities/_bg';
-@import 'css/utilities/_color';
-@import 'css/utilities/_pd';
-@import 'css/utilities/_div';
-@import 'css/utilities/_align';
-@import 'css/utilities/_title';
-@import 'css/utilities/_price';
-@import 'css/utilities/_caps';
-@import 'css/utilities/_line';
-@import 'css/utilities/_others';
-@import 'css/utilities/_scroll';
-@import 'css/utilities/_tooltip';
-@import 'css/utilities/_mail';
+@use 'css/utilities/_img';
+@use 'css/utilities/_link';
+@use 'css/utilities/_btn';
+@use 'css/utilities/_bg';
+@use 'css/utilities/_color';
+@use 'css/utilities/_pd';
+@use 'css/utilities/_div';
+@use 'css/utilities/_align';
+@use 'css/utilities/_title';
+@use 'css/utilities/_price';
+@use 'css/utilities/_caps';
+@use 'css/utilities/_line';
+@use 'css/utilities/_others';
+@use 'css/utilities/_scroll';
+@use 'css/utilities/_tooltip';
+@use 'css/utilities/_mail';
 
 // BOXES
-@import 'css/boxes/_items';
-@import 'css/boxes/_item';
-@import 'css/boxes/_container';
-@import 'css/boxes/_pill';
-@import 'css/boxes/_slider';
-@import 'css/boxes/_pagination';
-@import 'css/boxes/_tags';
+@use 'css/boxes/_items';
+@use 'css/boxes/_item';
+@use 'css/boxes/_container';
+@use 'css/boxes/_pill';
+@use 'css/boxes/_slider';
+@use 'css/boxes/_pagination';
+@use 'css/boxes/_tags';
 // BOX BLOCKS
-@import 'css/boxes/blocks/_gallery';
-@import 'css/boxes/blocks/_steps';
-@import 'css/boxes/blocks/_faq';
-@import 'css/boxes/blocks/_reviews';
-@import 'css/boxes/blocks/_when';
-@import 'css/boxes/blocks/_links';
-@import 'css/boxes/blocks/_form';
-@import 'css/boxes/blocks/_map';
-@import 'css/boxes/blocks/_gss';
+@use 'css/boxes/blocks/_gallery';
+@use 'css/boxes/blocks/_steps';
+@use 'css/boxes/blocks/_faq';
+@use 'css/boxes/blocks/_reviews';
+@use 'css/boxes/blocks/_when';
+@use 'css/boxes/blocks/_links';
+@use 'css/boxes/blocks/_form';
+@use 'css/boxes/blocks/_map';
+@use 'css/boxes/blocks/_gss';
 
 // MD
-@import 'css/md/_';
-@import 'css/md/_heading';
-@import 'css/md/_list';
-@import 'css/md/_fig';
-@import 'css/md/_table';
-@import 'css/md/_quotes';
-@import 'css/md/_hr';
-@import 'css/md/_btn';
-@import 'css/md/_alert';
-@import 'css/md/_sign';
-@import 'css/md/_footnote';
-@import 'css/md/_other';
+@use 'css/md/_' as md;
+@use 'css/md/_heading';
+@use 'css/md/_list';
+@use 'css/md/_fig';
+@use 'css/md/_table';
+@use 'css/md/_quotes';
+@use 'css/md/_hr';
+@use 'css/md/_btn' as btn2;
+@use 'css/md/_alert';
+@use 'css/md/_sign';
+@use 'css/md/_footnote';
+@use 'css/md/_other';
 
 // BASE
-@import 'css/base/_menu';
-@import 'css/base/_menu-sticky';
-@import 'css/base/_logo';
-@import 'css/base/_section';
-@import 'css/base/_modal';
-@import 'css/base/_footer';
-@import 'css/base/_cookies';
-@import 'css/base/_callnow';
-@import 'css/base/_up';
+@use 'css/base/_menu';
+@use 'css/base/_menu-sticky';
+@use 'css/base/_logo';
+@use 'css/base/_section';
+@use 'css/base/_modal';
+@use 'css/base/_footer';
+@use 'css/base/_cookies';
+@use 'css/base/_callnow';
+@use 'css/base/_up';
 
 // MODS
-@import 'css/mods/_404';
-@import 'css/mods/_crumbs';
-@import 'css/mods/_toc';
-@import 'css/mods/_comments';
+@use 'css/mods/_404' as error-page;
+@use 'css/mods/_crumbs';
+@use 'css/mods/_toc';
+@use 'css/mods/_comments';
 
 // OTHERS
-// @import 'css/others/_lazy-load';
-@import 'css/others/_scroll-show';
-@import 'css/others/_lightbox';
-@import 'css/others/_google-translate';
-@import 'css/others/_search';
+// Optional lazy-loading styles can be enabled here.
+@use 'css/others/_scroll-show';
+@use 'css/others/_lightbox';
+@use 'css/others/_google-translate';
+@use 'css/others/_search';
 
 // PRINT
-@import 'css/_print';
+@use 'css/_print';
 
 // CUSTOM FILE
-@import '_custom';
+@use '_custom';

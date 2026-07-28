@@ -1,3 +1,10 @@
+@use "sass:math";
+
+@use "sass:color";
+@use "sass:map";
+@use "hugo:vars" as *;
+@use "func";
+
 
 // Colors
 $text:   #282525                 !default;
@@ -7,16 +14,16 @@ $dark:   $styles-colors-base-dark  !default;
 $black:  $styles-colors-base-black !default;
 $gray:   $styles-colors-base-gray  !default;
 $main:   $styles-colors-main-color !default;
-$alt: if($styles-colors-alt-color  != '', $styles-colors-alt-color,  mix($white, $main, 50%)) !default;
+$alt: if(sass($styles-colors-alt-color  != ''): $styles-colors-alt-color;  else: color.mix($white, $main, 50%)) !default;
 $cta:    $styles-colors-cta-color  !default;
 
-$main-light: if($styles-colors-main-light != '', $styles-colors-main-light, mix($white, $main, 75%)) !default;
-$alt-light:  if($styles-colors-alt-light  != '', $styles-colors-alt-light,  mix($white, $alt,  75%)) !default;
-$cta-light:  if($styles-colors-cta-light  != '', $styles-colors-cta-light,  mix($white, $cta,  75%)) !default;
+$main-light: if(sass($styles-colors-main-light != ''): $styles-colors-main-light; else: color.mix($white, $main, 75%)) !default;
+$alt-light:  if(sass($styles-colors-alt-light  != ''): $styles-colors-alt-light;  else: color.mix($white, $alt,  75%)) !default;
+$cta-light:  if(sass($styles-colors-cta-light  != ''): $styles-colors-cta-light;  else: color.mix($white, $cta,  75%)) !default;
 
-$main-dark:  if($styles-colors-main-dark  != '', $styles-colors-main-dark,  mix($black, $main, 60%)) !default;
-$alt-dark:   if($styles-colors-alt-dark   != '', $styles-colors-alt-dark,   mix($black, $alt,  60%)) !default;
-$cta-dark:   if($styles-colors-cta-dark   != '', $styles-colors-cta-dark,   mix($black, $cta,  60%)) !default;
+$main-dark:  if(sass($styles-colors-main-dark  != ''): $styles-colors-main-dark;  else: color.mix($black, $main, 60%)) !default;
+$alt-dark:   if(sass($styles-colors-alt-dark   != ''): $styles-colors-alt-dark;   else: color.mix($black, $alt,  60%)) !default;
+$cta-dark:   if(sass($styles-colors-cta-dark   != ''): $styles-colors-cta-dark;   else: color.mix($black, $cta,  60%)) !default;
 
 $is-gray-turn-fill: true                                        !default;
 $is-main-turn-fill: $styles-colors-main-turn-fill == 'true' !default;
@@ -33,49 +40,49 @@ $is-main-turn-text: $styles-colors-main-turn-text == 'true' !default;
 $is-alt-turn-text:  $styles-colors-alt-turn-text  == 'true' !default;
 $is-cta-turn-text:  $styles-colors-cta-turn-text  == 'true' !default;
 
-$gray-turn-colored: text-turn($gray, $light,      $dark)      !default;
-$main-turn-colored: text-turn($main, $main-light, $main-dark) !default;
-$alt-turn-colored:  text-turn($alt,  $alt-light,  $alt-dark)  !default;
-$cta-turn-colored:  text-turn($cta,  $cta-light,  $cta-dark)  !default;
+$gray-turn-colored: func.text-turn($gray, $light,      $dark)      !default;
+$main-turn-colored: func.text-turn($main, $main-light, $main-dark) !default;
+$alt-turn-colored:  func.text-turn($alt,  $alt-light,  $alt-dark)  !default;
+$cta-turn-colored:  func.text-turn($cta,  $cta-light,  $cta-dark)  !default;
 
-$gray-turn-colored-flip: text-turn($gray, $dark,      $light)      !default;
-$main-turn-colored-flip: text-turn($main, $main-dark, $main-light) !default;
-$alt-turn-colored-flip:  text-turn($alt,  $alt-dark,  $alt-light)  !default;
-$cta-turn-colored-flip:  text-turn($cta,  $cta-dark,  $cta-light)  !default;
+$gray-turn-colored-flip: func.text-turn($gray, $dark,      $light)      !default;
+$main-turn-colored-flip: func.text-turn($main, $main-dark, $main-light) !default;
+$alt-turn-colored-flip:  func.text-turn($alt,  $alt-dark,  $alt-light)  !default;
+$cta-turn-colored-flip:  func.text-turn($cta,  $cta-dark,  $cta-light)  !default;
 
-$gray-turn-neutral: text-turn($gray) !default;
-$main-turn-neutral: text-turn($main) !default;
-$alt-turn-neutral:  text-turn($alt)  !default;
-$cta-turn-neutral:  text-turn($cta)  !default;
+$gray-turn-neutral: func.text-turn($gray, $white, $dark) !default;
+$main-turn-neutral: func.text-turn($main, $white, $dark) !default;
+$alt-turn-neutral:  func.text-turn($alt,  $white, $dark) !default;
+$cta-turn-neutral:  func.text-turn($cta,  $white, $dark) !default;
 
-$gray-turn-neutral-flip: text-turn($gray, $dark, $white) !default;
-$main-turn-neutral-flip: text-turn($main, $dark, $white) !default;
-$alt-turn-neutral-flip:  text-turn($alt,  $dark, $white)  !default;
-$cta-turn-neutral-flip:  text-turn($cta,  $dark, $white)  !default;
+$gray-turn-neutral-flip: func.text-turn($gray, $dark, $white) !default;
+$main-turn-neutral-flip: func.text-turn($main, $dark, $white) !default;
+$alt-turn-neutral-flip:  func.text-turn($alt,  $dark, $white)  !default;
+$cta-turn-neutral-flip:  func.text-turn($cta,  $dark, $white)  !default;
 
-$gray-turn-in: text-turn($gray)                                                          !default;
-$main-turn-in: if($is-main-turn-in, $main-turn-neutral, $main-turn-neutral-flip) !default;
-$alt-turn-in:  if($is-alt-turn-in,  $alt-turn-neutral,  $alt-turn-neutral-flip)  !default;
-$cta-turn-in:  if($is-cta-turn-in,  $cta-turn-neutral,  $cta-turn-neutral-flip)  !default;
+$gray-turn-in: func.text-turn($gray, $white, $dark)                             !default;
+$main-turn-in: if(sass($is-main-turn-in): $main-turn-neutral; else: $main-turn-neutral-flip) !default;
+$alt-turn-in:  if(sass($is-alt-turn-in): $alt-turn-neutral;  else: $alt-turn-neutral-flip)  !default;
+$cta-turn-in:  if(sass($is-cta-turn-in): $cta-turn-neutral;  else: $cta-turn-neutral-flip)  !default;
 
-$gray-turn-colored-in: text-turn($gray-turn-colored) !default;
-$main-turn-colored-in: text-turn($main-turn-colored) !default;
-$alt-turn-colored-in:  text-turn($alt-turn-colored)  !default;
-$cta-turn-colored-in:  text-turn($cta-turn-colored)  !default;
+$gray-turn-colored-in: func.text-turn($gray-turn-colored, $white, $dark) !default;
+$main-turn-colored-in: func.text-turn($main-turn-colored, $white, $dark) !default;
+$alt-turn-colored-in:  func.text-turn($alt-turn-colored,  $white, $dark) !default;
+$cta-turn-colored-in:  func.text-turn($cta-turn-colored,  $white, $dark) !default;
 
-$gray-turn-colored-in-flip: text-turn($gray-turn-colored-in) !default;
-$main-turn-colored-in-flip: text-turn($main-turn-colored-in) !default;
-$alt-turn-colored-in-flip:  text-turn($alt-turn-colored-in)  !default;
-$cta-turn-colored-in-flip:  text-turn($cta-turn-colored-in)  !default;
+$gray-turn-colored-in-flip: func.text-turn($gray-turn-colored-in, $white, $dark) !default;
+$main-turn-colored-in-flip: func.text-turn($main-turn-colored-in, $white, $dark) !default;
+$alt-turn-colored-in-flip:  func.text-turn($alt-turn-colored-in,  $white, $dark) !default;
+$cta-turn-colored-in-flip:  func.text-turn($cta-turn-colored-in,  $white, $dark) !default;
 
-$white-3d: mix($black, $white, 25%) !default;
-$light-3d: mix($black, $light, 25%) !default;
-$dark-3d:  mix($black, $dark,  25%) !default;
-$black-3d: mix($dark,  $black, 25%) !default;
-$gray-3d:  mix($black, $gray,  25%) !default;
-$main-3d:  mix($black, $main,  25%) !default;
-$alt-3d:   mix($black, $alt,   25%) !default;
-$cta-3d:   mix($black, $cta,   25%) !default;
+$white-3d: color.mix($black, $white, 25%) !default;
+$light-3d: color.mix($black, $light, 25%) !default;
+$dark-3d:  color.mix($black, $dark,  25%) !default;
+$black-3d: color.mix($dark,  $black, 25%) !default;
+$gray-3d:  color.mix($black, $gray,  25%) !default;
+$main-3d:  color.mix($black, $main,  25%) !default;
+$alt-3d:   color.mix($black, $alt,   25%) !default;
+$cta-3d:   color.mix($black, $cta,   25%) !default;
 
 
 // Screen
@@ -142,14 +149,14 @@ $icons-weight:  $styles-icons-weight    !default;
 $icons-grade:   $styles-icons-grade     !default;
 $icons-optical: $styles-icons-optical   !default;
 $icons-style:   $styles-icons-style     !default;
-$icons-scale:   1.4 + ($icons-weight - 100) * (1.125 - 1.4) / (700 - 100);
+$icons-scale:   1.4 + math.div(($icons-weight - 100) * (1.125 - 1.4), 700 - 100);
 
-$linejoin:     if($icons-style == 'rounded', 'round', 'miter')         !default;
-$stroke-width: (25 + ($icons-weight - 100) * (120 - 25) / (700 - 100)) !default;
+$linejoin:     if(sass($icons-style == 'rounded'): 'round'; else: 'miter')         !default;
+$stroke-width: (25 + math.div(($icons-weight - 100) * (120 - 25), 700 - 100)) !default;
 
 // menu-bar
-$menu-bar-double: (0.1 + ($icons-weight - 100) * (0.25 - 0.1) / (700 - 100)) * 1rem !default;
-$menu-bar:        $menu-bar-double / 2                                              !default;
+$menu-bar-double: (0.1 + math.div(($icons-weight - 100) * (0.25 - 0.1), 700 - 100)) * 1rem !default;
+$menu-bar:        $menu-bar-double * 0.5                                              !default;
 
 
 // Rounded
@@ -177,7 +184,7 @@ $btns-font-swap-caps: $styles-btns-swap_caps == 'true' !default;
 }
 $is-radius:           $radius > 0.01;
 $is-any-radius:       $is-radius or $is-btns-pill or $is-btns-disc;
-$menu-bar-gap:        if($is-btns-disc and $chamfer, .375em, .5em) !default;
+$menu-bar-gap:        if(sass($is-btns-disc and $chamfer): .375em; else: .5em) !default;
 
 
 // Shadow
@@ -204,9 +211,9 @@ $options-colors: (
 $shadow-left:    $styles-shadow-left * 1rem                                            !default;
 $shadow-top:     $styles-shadow-top  * 1rem                                            !default;
 $shadow-blur:    $styles-shadow-blur * 1rem                                            !default;
-$shadow-color:   map-get($options-colors, $styles-shadow-color)                        !default;
+$shadow-color:   map.get($options-colors, $styles-shadow-color)                        !default;
 $shadow:         $shadow-left $shadow-top $shadow-blur $shadow-color                   !default;
-$shadow-half:    ($shadow-left / 2) ($shadow-top / 2) ($shadow-blur / 2) $shadow-color !default;
+$shadow-half:    ($shadow-left * 0.5) ($shadow-top * 0.5) ($shadow-blur * 0.5) $shadow-color !default;
 
 
 // Simplelightbox

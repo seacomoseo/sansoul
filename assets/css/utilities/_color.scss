@@ -1,3 +1,6 @@
+@use "../func";
+@use "../variables";
+
 
 // Colors by backgrounds
 
@@ -19,18 +22,18 @@ body,
 .bg-dark,
 .bg-black {
   // Bases  
-  --cta: #{ $cta };
-  --cta-in: #{ $cta-turn-in };
-  --main: #{ $main };
-  --main-in: #{ $main-turn-in };
-  --alt: #{ $alt };
-  --alt-in: #{ $alt-turn-in };
-  --gray: #{ $gray };
-  --gray-in: #{ $gray-turn-in };
-  --light: #{ $light };
-  --light-in: #{ $text };
-  --dark: #{ $dark };
-  --dark-in: #{ $light };
+  --cta: #{ variables.$cta };
+  --cta-in: #{ variables.$cta-turn-in };
+  --main: #{ variables.$main };
+  --main-in: #{ variables.$main-turn-in };
+  --alt: #{ variables.$alt };
+  --alt-in: #{ variables.$alt-turn-in };
+  --gray: #{ variables.$gray };
+  --gray-in: #{ variables.$gray-turn-in };
+  --light: #{ variables.$light };
+  --light-in: #{ variables.$text };
+  --dark: #{ variables.$dark };
+  --dark-in: #{ variables.$light };
   --turn: var(--dark);
   --turn-in: var(--dark-in);
   --such: var(--light);
@@ -41,12 +44,12 @@ body,
   --active-in: var(--such-in);
   // Texts
   color: var(--text);
-  --text: #{ $text };
+  --text: #{ variables.$text };
   --title: var(--dark);
   --sub: var(--alt-text);
-  --main-text: #{ $main };
-  --alt-text: #{ $alt };
-  --cta-text: #{ $cta };
+  --main-text: #{ variables.$main };
+  --alt-text: #{ variables.$alt };
+  --cta-text: #{ variables.$cta };
   // Border
   --border: color-mix(in srgb, var(--such), var(--turn));
   // --map-filter: color-mix(in srgb, var(--map-filter-dark), transparent var(--bg-darkening));
@@ -93,8 +96,8 @@ body,
 .bg-main-dark,
 .bg-alt-dark,
 .bg-cta-dark {
-  --text: #{ $white };
-  --title: #{ $white };
+  --text: #{ variables.$white };
+  --title: #{ variables.$white };
   --turn: var(--light);
   --turn-in: var(--light-in);
   --such: var(--dark);
@@ -103,82 +106,82 @@ body,
   // --bg-dark: 1;
 }
 .bg-main {
-  @if $is-main-turn-text {
-    --text:  #{ $main-turn-neutral };
-    --title: #{ $main-turn-neutral };
-    --sub:   #{ $main-turn-colored };
+  @if variables.$is-main-turn-text {
+    --text:  #{ variables.$main-turn-neutral };
+    --title: #{ variables.$main-turn-neutral };
+    --sub:   #{ variables.$main-turn-colored };
   } @else {
-    --text:  #{ $main-turn-neutral-flip };
-    --title: #{ $main-turn-neutral-flip };
-    --sub:   #{ $main-turn-colored-flip };
+    --text:  #{ variables.$main-turn-neutral-flip };
+    --title: #{ variables.$main-turn-neutral-flip };
+    --sub:   #{ variables.$main-turn-colored-flip };
   }
 }
 .bg-alt {
-  @if $is-alt-turn-text {
-    --text:  #{ $alt-turn-neutral };
-    --title: #{ $alt-turn-neutral };
-    --sub:   #{ $alt-turn-colored };
+  @if variables.$is-alt-turn-text {
+    --text:  #{ variables.$alt-turn-neutral };
+    --title: #{ variables.$alt-turn-neutral };
+    --sub:   #{ variables.$alt-turn-colored };
   } @else {
-    --text:  #{ $alt-turn-neutral-flip };
-    --title: #{ $alt-turn-neutral-flip };
-    --sub:   #{ $alt-turn-colored-flip };
+    --text:  #{ variables.$alt-turn-neutral-flip };
+    --title: #{ variables.$alt-turn-neutral-flip };
+    --sub:   #{ variables.$alt-turn-colored-flip };
   }
 }
 .bg-cta {
-  @if $is-cta-turn-text {
-    --text:  #{ $cta-turn-neutral };
-    --title: #{ $cta-turn-neutral };
-    --sub:   #{ $cta-turn-colored };
+  @if variables.$is-cta-turn-text {
+    --text:  #{ variables.$cta-turn-neutral };
+    --title: #{ variables.$cta-turn-neutral };
+    --sub:   #{ variables.$cta-turn-colored };
   } @else {
-    --text:  #{ $cta-turn-neutral-flip };
-    --title: #{ $cta-turn-neutral-flip };
-    --sub:   #{ $cta-turn-colored-flip };
+    --text:  #{ variables.$cta-turn-neutral-flip };
+    --title: #{ variables.$cta-turn-neutral-flip };
+    --sub:   #{ variables.$cta-turn-colored-flip };
   }
 }
 
 // Contrast Background
 @mixin cta-turn($bg-wd) {
-  @if $cta-turn-neutral == text-turn($bg-wd) {
-    @if $is-cta-turn-fill {
-      --cta: #{ $cta-turn-colored };
-      @if $is-cta-turn-in {
-        --cta-in: #{ $cta-turn-colored-in };
+  @if variables.$cta-turn-neutral == func.text-turn($bg-wd, variables.$white, variables.$dark) {
+    @if variables.$is-cta-turn-fill {
+      --cta: #{ variables.$cta-turn-colored };
+      @if variables.$is-cta-turn-in {
+        --cta-in: #{ variables.$cta-turn-colored-in };
       } @else {
-        --cta-in: #{ $cta-turn-colored-in-flip };
+        --cta-in: #{ variables.$cta-turn-colored-in-flip };
       }
     }
-    @if $is-cta-turn-text {
-      --cta-text: #{ $cta-turn-colored };
+    @if variables.$is-cta-turn-text {
+      --cta-text: #{ variables.$cta-turn-colored };
     }
   }
 }
 @mixin main-turn($bg-wd) {
-  @if $main-turn-neutral == text-turn($bg-wd) {
-    @if $is-main-turn-fill {
-      --main: #{ $main-turn-colored };
-      @if $is-main-turn-in {
-        --main-in: #{ $main-turn-colored-in };
+  @if variables.$main-turn-neutral == func.text-turn($bg-wd, variables.$white, variables.$dark) {
+    @if variables.$is-main-turn-fill {
+      --main: #{ variables.$main-turn-colored };
+      @if variables.$is-main-turn-in {
+        --main-in: #{ variables.$main-turn-colored-in };
       } @else {
-        --main-in: #{ $main-turn-colored-in-flip };
+        --main-in: #{ variables.$main-turn-colored-in-flip };
       }
     }
-    @if $is-main-turn-text {
-      --main-text: #{ $main-turn-colored };
+    @if variables.$is-main-turn-text {
+      --main-text: #{ variables.$main-turn-colored };
     }
   }
 }
 @mixin alt-turn($bg-wd) {
-  @if $alt-turn-neutral == text-turn($bg-wd) {
-    @if $is-alt-turn-fill {
-      --alt: #{ $alt-turn-colored };
-      @if $is-alt-turn-in {
-        --alt-in: #{ $alt-turn-colored-in };
+  @if variables.$alt-turn-neutral == func.text-turn($bg-wd, variables.$white, variables.$dark) {
+    @if variables.$is-alt-turn-fill {
+      --alt: #{ variables.$alt-turn-colored };
+      @if variables.$is-alt-turn-in {
+        --alt-in: #{ variables.$alt-turn-colored-in };
       } @else {
-        --alt-in: #{ $alt-turn-colored-in-flip };
+        --alt-in: #{ variables.$alt-turn-colored-in-flip };
       }
     }
-    @if $is-alt-turn-text {
-      --alt-text: #{ $alt-turn-colored };
+    @if variables.$is-alt-turn-text {
+      --alt-text: #{ variables.$alt-turn-colored };
     }
   }
 }
@@ -198,20 +201,20 @@ body,
 // }
 
 // Background lights and darks if contrast active
-@if $is-main-turn-fill
-or $is-alt-turn-fill
-or $is-cta-turn-fill
-or $is-main-turn-text
-or $is-alt-turn-text
-or $is-cta-turn-text {
+@if variables.$is-main-turn-fill
+or variables.$is-alt-turn-fill
+or variables.$is-cta-turn-fill
+or variables.$is-main-turn-text
+or variables.$is-alt-turn-text
+or variables.$is-cta-turn-text {
   .bg-white,
   .bg-light,
   .bg-cta-light,
   .bg-main-light,
   .bg-alt-light {
-    @include cta-turn($white);
-    @include main-turn($white);
-    @include alt-turn($white);
+    @include cta-turn(variables.$white);
+    @include main-turn(variables.$white);
+    @include alt-turn(variables.$white);
   }
   .bg-black,
   .bg-dark,
@@ -219,26 +222,26 @@ or $is-cta-turn-text {
   .bg-cta-dark,
   .bg-main-dark,
   .bg-alt-dark {
-    @include cta-turn($dark);
-    @include main-turn($dark);
-    @include alt-turn($dark);
+    @include cta-turn(variables.$dark);
+    @include main-turn(variables.$dark);
+    @include alt-turn(variables.$dark);
   }
   .bg-cta {
-    @include main-turn($cta-turn-neutral-flip);
-    @include alt-turn($cta-turn-neutral-flip);
+    @include main-turn(variables.$cta-turn-neutral-flip);
+    @include alt-turn(variables.$cta-turn-neutral-flip);
   }
   .bg-main {
-    @include alt-turn($main-turn-neutral-flip);
-    @include cta-turn($main-turn-neutral-flip);
+    @include alt-turn(variables.$main-turn-neutral-flip);
+    @include cta-turn(variables.$main-turn-neutral-flip);
   }
   .bg-alt {
-    @include main-turn($alt-turn-neutral-flip);
-    @include cta-turn($alt-turn-neutral-flip);
+    @include main-turn(variables.$alt-turn-neutral-flip);
+    @include cta-turn(variables.$alt-turn-neutral-flip);
   }
 }
 
 // CTA and Main
-@if $cta == $main {
+@if variables.$cta == variables.$main {
   .bg-main,
   .bg-cta {
     --cta:       var(--alt);
@@ -279,17 +282,17 @@ or $is-cta-turn-text {
 .bg-cta-light,
 .bg-main-light,
 .bg-alt-light {
-  --light: #{ $white };
+  --light: #{ variables.$white };
 }
 
 // Dark
 .bg-dark {
-  --dark: #{ $black };
+  --dark: #{ variables.$black };
 }
 
 // Turn
 @mixin turn-light($color) {
-  @if text-turn($color) == $white {
+  @if func.text-turn($color, variables.$white, variables.$dark) == variables.$white {
     --turn:     var(--light);
     --turn-in:  var(--light-in);
     --such:    var(--dark);
@@ -298,10 +301,10 @@ or $is-cta-turn-text {
     // --bg-dark: 1;
   }
 }
-.bg-main { @include turn-light($main); }
-.bg-alt  { @include turn-light($alt);  }
-.bg-cta  { @include turn-light($cta);  }
-.bg-gray { @include turn-light($gray); }
+.bg-main { @include turn-light(variables.$main); }
+.bg-alt  { @include turn-light(variables.$alt);  }
+.bg-cta  { @include turn-light(variables.$cta);  }
+.bg-gray { @include turn-light(variables.$gray); }
 
 
 // Bases
