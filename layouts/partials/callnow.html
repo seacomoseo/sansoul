@@ -4,8 +4,8 @@
 
   {{- if eq . "custom" -}}
   
-    {{- $values := index hugo.Data (print "values." page.Lang) -}}
-    {{- $items  := $values.callnows -}}
+    {{- $global := index hugo.Data (print "global." page.Lang) -}}
+    {{- $items  := $global.callnows -}}
     {{- with $items -}}
       {{- range . -}}
         {{- $btns = $btns | append . -}}

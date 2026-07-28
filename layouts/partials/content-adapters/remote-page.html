@@ -1,0 +1,85 @@
+{{/*
+Partial: content-adapters/remote-page
+Purpose: Convert one mapped remote object into a content adapter page definition.
+Context:
+  - Data (map, required): Mapped front matter and custom parameters.
+  - Path (string, required): Logical page path.
+Returns: Map accepted by a content adapter's AddPage method.
+Side effects: None.
+*/}}
+{{ $data := .Data }}
+{{ $page := dict
+  "content" (dict
+    "mediaType" "text/markdown"
+    "value" ($data.content | default "")
+  )
+  "kind" ($data.kind | default "page")
+  "path" .Path
+}}
+
+{{ $directFields := slice
+  "aliases"
+  "build"
+  "cascade"
+  "description"
+  "draft"
+  "headless"
+  "isCJKLanguage"
+  "keywords"
+  "layout"
+  "linkTitle"
+  "menus"
+  "outputs"
+  "publishResources"
+  "resources"
+  "sitemap"
+  "slug"
+  "summary"
+  "title"
+  "translationKey"
+  "type"
+  "url"
+  "weight"
+}}
+{{ range $directFields }}
+  {{ $value := index $data . }}
+  {{ if ne $value nil }}
+    {{ $page = merge $page (dict . $value) }}
+  {{ end }}
+{{ end }}
+
+{{ $dates := dict }}
+{{ range slice "date" "expiryDate" "lastmod" "publishDate" }}
+  {{ $value := index $data . }}
+  {{ if ne $value nil }}
+    {{ $dates = merge $dates (dict . (time.AsTime $value)) }}
+  {{ end }}
+{{ end }}
+{{ if and (not (index $dates "lastmod")) (ne $data.mod nil) }}
+  {{ $dates = merge $dates (dict "lastmod" (time.AsTime $data.mod)) }}
+{{ end }}
+{{ with $dates }}
+  {{ $page = merge $page (dict "dates" .) }}
+{{ end }}
+
+{{ $reserved := $directFields | append
+  "content"
+  "date"
+  "expiryDate"
+  "kind"
+  "lastmod"
+  "mod"
+  "params"
+  "path"
+  "publishDate"
+}}
+{{ $params := partial "func/delete-params" (dict "dict" $data "params" $reserved) }}
+{{ with $data.params }}
+  {{ $params = merge . $params }}
+{{ end }}
+{{ with $params }}
+  {{ $page = merge $page (dict "params" .) }}
+{{ end }}
+
+{{ return $page }}
+

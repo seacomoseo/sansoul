@@ -14,39 +14,39 @@
 }}
 {{ $variables = $variables | append
   (partial "cms/widget" (dict
-    "var"    `values_menu_subitems_last`
-    "alt"    `values_menu_subitems`
+    "var"    `global_menu_subitems_last`
+    "alt"    `global_menu_subitems`
     "name"   `items`
     "widget" `slice`
     "sum"    "{{fields.label}}"
     "fields" $menu_items_fields
   ))
-  (partial "cms/widget" (dict "var" `values_menu_subitems_2` "<<" `values_menu_subitems_last` "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
-  (partial "cms/widget" (dict "var" `values_menu_subitems`   "<<" `values_menu_subitems_2`    "fields" ($menu_items_fields | append `~values_menu_subitems_last`)))
+  (partial "cms/widget" (dict "var" `global_menu_subitems_2` "<<" `global_menu_subitems_last` "fields" ($menu_items_fields | append `~global_menu_subitems_last`)))
+  (partial "cms/widget" (dict "var" `global_menu_subitems`   "<<" `global_menu_subitems_2`    "fields" ($menu_items_fields | append `~global_menu_subitems_last`)))
   (partial "cms/widget" (dict
-    "var"    `values_menu_items`
+    "var"    `global_menu_items`
     "name"   `items`
     "widget" `slice`
     "sum"    "{{fields.label}}"
-    "fields" ($menu_items_fields | append `~values_menu_subitems`)
+    "fields" ($menu_items_fields | append `~global_menu_subitems`)
   ))
 }}
 
 
 {{/*  MENU  */}}
 {{ $variables = $variables | append
-  (partial "cms/widget" (dict "var" `values_menu_img`   "name" `img`   "widget" `img`))
-  (partial "cms/widget" (dict "var" `values_menu_title` "name" `title`               ))
-  (partial "cms/widget" (dict "var" `values_menu_sub`   "name" `sub`                 ))
+  (partial "cms/widget" (dict "var" `global_menu_img`   "name" `img`   "widget" `img`))
+  (partial "cms/widget" (dict "var" `global_menu_title` "name" `title`               ))
+  (partial "cms/widget" (dict "var" `global_menu_sub`   "name" `sub`                 ))
   (partial "cms/widget" (dict
-    "var"     `values_menu`
+    "var"     `global_menu`
     "name"    `menu`
     "widget"  `dict`
     "fields"  (slice
-      `~values_menu_img`
-      `~values_menu_title`
-      `~values_menu_sub`
-      `~values_menu_items`
+      `~global_menu_img`
+      `~global_menu_title`
+      `~global_menu_sub`
+      `~global_menu_items`
     )
   ))
 }}
@@ -55,7 +55,7 @@
 {{/*  CALLNOWS  */}}
 {{ $variables = $variables | append
   (partial "cms/widget" (dict
-    "var"    `values_callnows`
+    "var"    `global_callnows`
     "name"   `callnows`
     "widget" `slice`
     "sum"    "{{fields.label}}"
@@ -71,8 +71,8 @@
 {{/*  FIELDS  */}}
 {{ $fields  := slice }}
 {{ $mn_clls := slice
-  (dict "var" "values_menu")
-  (dict "var" "values_callnows")
+  (dict "var" "global_menu")
+  (dict "var" "global_callnows")
 }}
 {{ $global_fields := slice }}
 {{ range hugo.Data.customs | default slice }}
@@ -111,7 +111,7 @@
   {{ end }}
 {{ end }}
 {{ $variables = $variables | append
-  (dict "&values" $fields)
+  (dict "&global" $fields)
 }}
 
 {{ return $variables }}

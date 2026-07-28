@@ -1,0 +1,33 @@
+{{/*
+Partial: content-adapters/update-nested
+Purpose: Set or append a value at a nested map path while building remote page parameters.
+Context:
+  - Dict (map, required): Map to update.
+  - Keys (slice, required): Nested key path.
+  - Value (any, required): Value to set.
+  - Kind (string, optional): Use "slice" to append instead of replacing.
+Returns: Updated map.
+Side effects: None.
+*/}}
+{{ $dict := .Dict }}
+{{ if eq (len .Keys) 1 }}
+  {{ $key := index .Keys 0 }}
+  {{ if eq .Kind "slice" }}
+    {{ $existing := index $dict $key | default slice }}
+    {{ $dict = merge $dict (dict $key ($existing | append .Value)) }}
+  {{ else if .Value }}
+    {{ $dict = merge $dict (dict $key .Value) }}
+  {{ end }}
+{{ else }}
+  {{ $key := index .Keys 0 }}
+  {{ $child := index $dict $key | default dict }}
+  {{ $child = partial "content-adapters/update-nested" (dict
+    "Dict" $child
+    "Keys" (after 1 .Keys)
+    "Value" .Value
+    "Kind" .Kind
+  ) }}
+  {{ $dict = merge $dict (dict $key $child) }}
+{{ end }}
+{{ return $dict }}
+

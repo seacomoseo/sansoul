@@ -30,7 +30,7 @@
     {{ $o_tax = $o_tax     | append $option }}
   {{ end }}
 {{ end }}
-{{ $global    := dict "value" "global" "label" (print $e.values " " (index . "opt-collections-global")) }}
+{{ $global    := dict "value" "global" "label" (print $e.global " " (index . "opt-collections-global")) }}
 {{ $all       := dict "value" "all"    "label" (print $e.all    " " (index . "opt-collections-all"   )) }}
 {{ $rel       := dict "value" "rel"    "label" (print $e.rel    " " (index . "opt-collections-rel"   )) }}
 {{ $o_customs := $o_types | append $global   }}

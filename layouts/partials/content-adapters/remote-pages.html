@@ -1,0 +1,88 @@
+{{/*
+Partial: content-adapters/remote-pages
+Purpose: Fetch configured remote sources and convert their entries into virtual pages for one language.
+Context:
+  - Lang (string, required): Language of the site currently executing the content adapter.
+Returns: Slice of maps accepted by a content adapter's AddPage method.
+Side effects: Fetches remote resources through resources.GetRemote.
+*/}}
+{{ $pages := slice }}
+
+{{ range where (hugo.Data.remote | default slice) "lang" .Lang }}
+  {{ $remote := . }}
+  {{ with .src }}
+    {{ $url := . }}
+    {{ $options := dict }}
+    {{ if reflect.IsMap . }}
+      {{ $url = .url }}
+      {{ $options = partial "func/delete-params" (dict "dict" . "params" "url") }}
+    {{ end }}
+
+    {{ with try (resources.GetRemote $url $options) }}
+      {{ with .Err }}
+        {{ warnf "%s" . }}
+      {{ else }}
+      {{ with .Value }}
+      {{ $data := transform.Unmarshal (.Content | string) }}
+      {{ $csv := lower (printf "%v" ($remote.csv | default false)) }}
+      {{ if in (slice "1" "true" "y" "yes") $csv }}
+        {{ $data = partial "content-adapters/csv" $data }}
+      {{ end }}
+
+      {{ range $remote.types }}
+        {{ $type := .type | default "pages" }}
+        {{ $maps := .maps }}
+        {{ $items := $data }}
+        {{ with .index }}
+          {{ $items = index $items (split . ".") }}
+        {{ end }}
+
+        {{ range $key, $source := $items }}
+          {{ with $source }}
+            {{ $mapped := dict }}
+            {{ range $maps }}
+              {{ $from := .from | default .to }}
+              {{ $value := index $source (split $from ".") }}
+
+              {{ if and $value (eq .kind "slice") }}
+                {{ if not (reflect.IsSlice $value) }}
+                  {{ $value = split $value (.sep | default ",") }}
+                {{ end }}
+              {{ end }}
+
+              {{ if ne .def nil }}
+                {{ $default := partial "func/str-to-kind" (dict
+                  "str" .def
+                  "kind" .kind
+                  "sep" .sep
+                ) }}
+                {{ $value = $value | default $default }}
+              {{ end }}
+
+              {{ if $value }}
+                {{ $mapped = partial "content-adapters/update-nested" (dict
+                  "Dict" $mapped
+                  "Keys" (split .to ".")
+                  "Value" $value
+                  "Kind" .kind
+                ) }}
+              {{ end }}
+            {{ end }}
+
+            {{ $slug := $mapped.slug | default $key }}
+            {{ $path := printf "%s/%s" $type (urlize $slug) }}
+            {{ $page := partial "content-adapters/remote-page" (dict
+              "Data" $mapped
+              "Path" $path
+            ) }}
+            {{ $pages = $pages | append $page }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $pages }}

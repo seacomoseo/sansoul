@@ -42,11 +42,11 @@ Ejecuta todos los comandos desde la raíz:
 | Comando | Función |
 | --- | --- |
 | `sh do server` | Preconstruye y levanta el servidor local. |
-| `sh do local` | Servidor del CMS con invalidación de caché y regeneración automática de la preconstrucción. |
+| `sh do local` | Servidor del CMS con invalidación de caché y regeneración atómica de la configuración previa. |
 | `sh do hugo` | Ejecuta la compilación completa y el posprocesado de imágenes. |
 | `sh do migrations` | Muestra las adaptaciones pendientes para la versión instalada del tema. |
 | `sh do root-docs` | Genera README/AGENTS raíz desde las plantillas canónicas del tema. |
-| `sh do prebuild` | Regenera únicamente la configuración y el contenido intermedio. |
+| `sh do prebuild` | Regenera únicamente la configuración previa requerida por Hugo. |
 | `sh do imgs` | Regenera favicon, PNG derivados y variantes AVIF a partir de los manifiestos del build. |
 
 `public/`, `resources/`, `.hugo_build.lock` y `themes/sansoul/prebuild/public/` son salidas generadas. No deben editarse a mano.
@@ -61,7 +61,7 @@ Ejecuta todos los comandos desde la raíz:
   - `content/single/_home.<lang>.md`: página de inicio de cada idioma.
   - `content/single/*.<lang>.md`: páginas únicas componibles.
   - `content/page/*.<lang>.md`: páginas simples; algunas tienen una implementación predeterminada en el tema.
-  - `content/values.<lang>.yml`: valores globales por idioma, como menú, botones flotantes y pie.
+  - `content/global.<lang>.yml`: valores globales por idioma, como menú, botones flotantes y pie.
 - `data/`: configuración que Hugo fusiona con los valores del tema.
   - `data/config.yml`: comportamiento general, integraciones y CMS.
   - `data/langs.yml`: idiomas y ajustes por idioma.
@@ -70,7 +70,7 @@ Ejecuta todos los comandos desde la raíz:
   - `data/section/*.yml`: secciones reutilizables del constructor de páginas.
   - `data/defaults.yml`: valores predeterminados aplicados por idioma, tipo o ruta.
   - `data/customs.yml`: campos de contenido personalizados que también se exponen en el CMS.
-  - `data/remote.yml`: fuentes remotas que la preconstrucción transforma en contenido local.
+  - `data/remote.yml`: fuentes remotas que el Content Adapter transforma en páginas virtuales.
   - `data/redirects.yml`: redirecciones generadas para el despliegue.
 - `dna/`: identidad, criterios y restricciones particulares del proyecto.
   - `dna/_index.md`: resumen obligatorio e índice que indica qué otros documentos consultar según la tarea.
@@ -113,25 +113,25 @@ SanSoul usa dos compilaciones de Hugo.
 
 1. El wrapper raíz `do` delega en `themes/sansoul/do`.
 2. La preconstrucción ejecuta el sitio Hugo de `themes/sansoul/prebuild/`.
-3. Ese sitio combina `hugo.yml`, idiomas, tipos, defaults y fuentes remotas.
-4. Escribe `themes/sansoul/prebuild/public/hugo.prebuild.yml` y contenido intermedio.
+3. Ese sitio combina `hugo.yml`, idiomas, tipos, defaults y metadatos de índices.
+4. Publica atómicamente `themes/sansoul/prebuild/public/hugo.prebuild.yml`.
 5. La compilación principal carga, en orden, la configuración base del tema, la configuración generada y `hugo.yml`.
-6. Hugo monta contenido, datos, uploads, iconos y dependencias en su sistema de archivos virtual.
+6. Los mounts estáticos exponen contenido, datos, uploads, iconos y dependencias; el Content Adapter crea índices de colección y páginas remotas.
 7. En producción, el script de imágenes procesa los manifiestos creados por Hugo.
 
-`sh do local` vigila las entradas de la preconstrucción, agrupa cambios rápidos, detiene el servidor principal, regenera la salida intermedia y lo inicia de nuevo. Con `sh do server`, reinicia manualmente cuando cambies:
+`sh do local` vigila las entradas de la preconstrucción, agrupa cambios rápidos y regenera la configuración de forma serial y atómica. Hugo detecta el archivo actualizado y se reconfigura sin reiniciar; si la preconstrucción falla, continúa sirviendo la última configuración válida. Con `sh do server`, reinicia manualmente cuando cambies:
 
-- `data/config.yml`, `data/langs.yml`, `data/defaults.yml`, `data/customs.yml` o `data/remote.yml`;
+- `data/config.yml`, `data/langs.yml`, `data/defaults.yml` o `data/customs.yml`;
 - `data/types/*.yml`, salvo cambios estrictamente internos a `tpl` que Hugo pueda recargar;
 - `content/<type>/_index.<lang>.md`, especialmente `permalinks`.
 
-El reinicio administrado evita que Hugo lea `prebuild/public/` mientras se está reescribiendo. Si el prebuild falla, el supervisor no inicia el servidor con una salida parcial: queda a la espera del siguiente cambio para volver a intentarlo.
+Los cambios en `data/remote.yml` y `content/global.<lang>.yml` se reconstruyen directamente dentro del proceso principal de Hugo.
 
 ## Idiomas y valores globales
 
 Cada entrada traducible usa el sufijo `.<lang>.md`, por ejemplo `servicio.es.md`. `data/langs.yml` declara los idiomas disponibles; `hide: 1` desactiva uno en el proyecto sin borrar su configuración.
 
-`content/values.<lang>.yml` se monta internamente como `data/values.<lang>.yml`. Sus usos habituales son:
+`content/global.<lang>.yml` se monta internamente como datos localizados. Sus usos habituales son:
 
 - `menu`: logo, título, subtítulo y navegación personalizada;
 - `callnows`: accesos flotantes;
@@ -222,7 +222,7 @@ Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, dis
 | `links`, `dots`, `when`, `gss` | Enlaces, redes, horarios y datos tabulares. |
 | `boxes` | Subcajas recursivas. |
 
-`get` obtiene valores de la página o de `content/values.<lang>.yml`. `remap` mueve, copia o elimina rutas de parámetros. `if` condiciona el renderizado. Son herramientas potentes: pruébalas con una página aislada antes de reutilizarlas globalmente.
+`get` obtiene valores de la página o de `content/global.<lang>.yml`. `remap` mueve, copia o elimina rutas de parámetros. `if` condiciona el renderizado. Son herramientas potentes: pruébalas con una página aislada antes de reutilizarlas globalmente.
 
 Consulta [`_examples/data/section/example.yml`](_examples/data/section/example.yml) como catálogo comentado y [`_examples/content/blog/2020-01-01-entrada.es.md`](_examples/content/blog/2020-01-01-entrada.es.md) como chuleta de Markdown.
 
@@ -247,7 +247,7 @@ Cuando cambies el modelo de contenido:
 
 ## Fuentes remotas
 
-`data/remote.yml` permite generar contenido antes del build desde JSON, YAML, Markdown, CSV u otros recursos. La preconstrucción es determinista solo si la fuente también lo es. Evita credenciales en URLs, define fallos aceptables de forma explícita y no dependas de una API remota para contenido crítico sin una estrategia de caché o respaldo.
+`data/remote.yml` permite generar páginas virtuales durante el build principal desde JSON, YAML, Markdown, CSV u otros recursos. El Content Adapter se vuelve a ejecutar al cambiar la configuración local. La salida es determinista solo si la fuente también lo es. Evita credenciales en URLs, define fallos aceptables de forma explícita y no dependas de una API remota para contenido crítico sin una estrategia de caché o respaldo.
 
 ## Overrides del tema
 

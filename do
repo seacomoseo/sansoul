@@ -178,11 +178,18 @@ elif [ "$COMMAND" = prebuild ]; then
   hecho "GO SANSOUL PREBUILD"
   cd themes/sansoul/prebuild
 
-  hecho "REMOVE PUBLIC DIRECTORIE"
-  rm -rf public
+  PREBUILD_TMP=$(mktemp -d "${TMPDIR:-/tmp}/sansoul-prebuild.XXXXXX")
+  trap 'rm -rf "$PREBUILD_TMP"' EXIT HUP INT TERM
 
   hecho "RUN HUGO PREBUILD"
-  hugo --config ../../../hugo.yml,hugo.yml
+  hugo --destination "$PREBUILD_TMP" --config ../../../hugo.yml,hugo.yml
+
+  hecho "PUBLISH PREBUILD CONFIG"
+  mkdir -p public
+  mv "$PREBUILD_TMP/hugo.prebuild.yml" public/hugo.prebuild.yml
+  rm -rf public/content
+  rm -rf "$PREBUILD_TMP"
+  trap - EXIT HUP INT TERM
 
   hecho "GO PROJECT"
   cd ../../..

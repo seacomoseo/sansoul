@@ -3,7 +3,8 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 
 // This script must run from a SanSoul consumer project root. It supervises the
-// generated prebuild instead of asking Hugo's cache busters to regenerate it.
+// generated configuration. Hugo watches the atomically published config file,
+// so successful prebuilds do not require restarting the development server.
 const projectDir = process.cwd()
 const themeDir = path.join(projectDir, 'themes', 'sansoul')
 const debounceMs = 200
@@ -157,9 +158,8 @@ async function refreshPrebuild () {
   changedPaths.clear()
   log(`Prebuild input changed: ${reasons.join(', ')}`)
 
-  await stopServer()
   const succeeded = await runPrebuild()
-  if (succeeded && !shuttingDown) startServer()
+  if (succeeded) log('Prebuild configuration refreshed.')
 
   rebuilding = false
   if (rebuildPending || changedPaths.size) {
@@ -188,7 +188,11 @@ function addDirectoryWatcher (directory, options = {}) {
 }
 
 function startWatchers () {
-  addDirectoryWatcher(path.join(projectDir, 'data'))
+  addDirectoryWatcher(path.join(projectDir, 'data'), {
+    filter: relativePath =>
+      /^(config|customs|defaults|langs)\.yml$/.test(relativePath) ||
+      /^types\/[^/]+\.yml$/.test(relativePath)
+  })
   addDirectoryWatcher(path.join(projectDir, 'content'), {
     filter: relativePath => /(^|\/)_index(?:\.[^/]+)?\.md$/.test(relativePath)
   })

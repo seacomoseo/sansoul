@@ -1,4 +1,4 @@
-{{- range site.Sections }}
+{{- range sort site.Sections "Weight" "asc" }}
   <h2 class="md__heading">
     {{- $parent_icon := .Params.icon -}}
     {{- if .Params.icon }}

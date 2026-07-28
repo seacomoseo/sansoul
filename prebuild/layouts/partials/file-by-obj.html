@@ -1,7 +1,0 @@
-{{ $file  := transform.Remarshal "yaml" .obj }}
-{{ if ne .content nil }}
-  {{ $file = print "---\n" $file "---\n" .content }}
-{{ end }}
-{{ $file   = $file | resources.FromString .path }}
-{{ $file.Publish }}
-{{ return "" }}

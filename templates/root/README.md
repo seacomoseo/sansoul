@@ -7,7 +7,7 @@ Proyecto creado con [Hugo](https://gohugo.io/) y el tema [SanSoul](https://githu
 
 Requisitos: Git y Hugo Extended. Para trabajar sin `node_modules` en local,
 instala Dart Sass una vez en el `PATH` (`brew install sass/sass/sass` en macOS).
-Node.js se requiere para preconstrucción y builds completos; `sh do hugo`
+Node.js se requiere para el servidor local administrado y los builds completos; `sh do hugo`
 instala las dependencias npm si faltan. Las versiones de despliegue se declaran
 en `netlify.toml` y `wrangler.toml`.
 
@@ -19,7 +19,7 @@ sh do server
 ## Comandos
 
 - `sh do server`: servidor local normal.
-- `sh do local`: servidor del CMS con regeneración automática de la preconstrucción.
+- `sh do local`: servidor del CMS con regeneración atómica de la configuración previa.
 - `sh do hugo`: compilación completa.
 - `sh do migrations`: migraciones pendientes después de actualizar el tema.
 - `sh do root-docs`: sincroniza este README y `AGENTS.md` con sus plantillas.

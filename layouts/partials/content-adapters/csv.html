@@ -1,0 +1,27 @@
+{{/*
+Partial: content-adapters/csv
+Purpose: Convert unmarshaled CSV rows into maps keyed by the first row.
+Context: Slice of CSV rows.
+Returns: Slice of maps, with uppercase TRUE/FALSE cells converted to booleans.
+Side effects: None.
+*/}}
+{{ $result := slice }}
+{{ $headers := index (first 1 .) 0 }}
+{{ with after 1 . }}
+  {{ range . }}
+    {{ $item := dict }}
+    {{ range $key, $value := . }}
+      {{ $headerKey := index $headers $key }}
+      {{ $cellValue := $value }}
+      {{ if eq $value "TRUE" }}
+        {{ $cellValue = true }}
+      {{ else if eq $value "FALSE" }}
+        {{ $cellValue = false }}
+      {{ end }}
+      {{ $item = merge $item (dict $headerKey $cellValue) }}
+    {{ end }}
+    {{ $result = $result | append $item }}
+  {{ end }}
+{{ end }}
+{{ return $result }}
+

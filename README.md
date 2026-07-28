@@ -36,7 +36,8 @@ La compilación completa se ejecuta con `sh do hugo`.
 SanSoul proporciona:
 
 - defaults de Hugo, contenido de sistema e internacionalización;
-- preconstrucción de configuración, tipos, permalinks y contenido remoto;
+- preconstrucción de configuración, tipos y permalinks;
+- Content Adapters para índices y contenido remoto;
 - layouts, render hooks, shortcodes y schema.org;
 - constructor de páginas basado en `tpl`;
 - SCSS, JavaScript y carga condicional de módulos;
@@ -52,11 +53,11 @@ El proyecto consumidor aporta el contenido y sobrescribe los datos del tema medi
 themes/sansoul/
 ├── archetypes/       # Front matter inicial de `hugo new`
 ├── assets/           # SCSS, módulos JavaScript y recursos procesables
-├── content/          # Páginas de sistema traducidas
+├── content/          # Content Adapter raíz y páginas de sistema traducidas
 ├── data/             # Defaults, CMS, tipos, secciones y opciones
 ├── i18n/             # Textos y defaults semánticos por idioma
 ├── layouts/          # Renderizado Hugo, shortcodes y generación de archivos
-├── prebuild/         # Sitio Hugo previo que genera configuración y contenido
+├── prebuild/         # Sitio Hugo previo que genera configuración
 ├── scripts/          # Posprocesado de imágenes y utilidades
 ├── static/           # Archivos publicados sin transformación
 ├── templates/        # README/AGENTS generados y scaffold inicial de DNA
@@ -71,27 +72,30 @@ El wrapper del proyecto llama a `themes/sansoul/do`.
 
 El sitio de `prebuild/` se ejecuta antes del sitio principal. Lee el proyecto consumidor y genera en `prebuild/public/`:
 
-- `hugo.prebuild.yml`: idiomas, permalinks, mounts y configuración calculada;
-- `content/`: índices y contenido derivado;
-- recursos remotos materializados cuando `data/remote.yml` lo solicita.
+- `hugo.prebuild.yml`: idiomas, permalinks, cascades, relaciones y configuración calculada.
 
 La preconstrucción permite resolver decisiones que Hugo no puede convertir dinámicamente en configuración durante el render principal.
 
-En desarrollo, `sh do local` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild; agrupa guardados consecutivos, regenera la salida de forma serial y reinicia el servidor Hugo únicamente después de una preconstrucción válida. Los cache busters de `hugo.local.yml` invalidan las claves internas de los recursos del CMS, pero no sustituyen esta regeneración.
+En desarrollo, `sh do local` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Hugo detecta el cambio y se reconfigura sin reiniciar. Si la preconstrucción falla, el servidor conserva la última configuración válida.
+
+La configuración desactiva el `assets/jsconfig.json` autogenerado por
+Hugo. En Hugo 0.164, su escritura puede coincidir con una recarga de
+configuración y disparar dos reconstrucciones incompatibles.
 
 ### 2. Sistema de archivos virtual
 
-La configuración generada monta, entre otros:
+La configuración estática del tema monta, entre otros:
 
 - `content/single/_home.<lang>.md` como `content/_index.<lang>.md`;
-- `content/values.<lang>.yml` como `data/values.<lang>.yml`;
+- `content/global.<lang>.yml` como datos localizados;
+- `content/<type>/_index.<lang>.md` como recursos que consume el Content Adapter;
 - `uploads/` como `static/u/` y `assets/u/`;
-- contenido generado y páginas de sistema del tema;
+- páginas de sistema y el Content Adapter del tema;
 - iconos y fuentes de `node_modules`.
 
 Definir mounts reemplaza los mounts predeterminados de ese componente, por lo que cualquier cambio debe conservar explícitamente todas las fuentes necesarias.
 
-### 3. Render principal
+### 3. Content Adapters y render principal
 
 La configuración se carga de menor a mayor prioridad:
 
@@ -99,6 +103,8 @@ La configuración se carga de menor a mayor prioridad:
 2. `hugo.local.yml` o `hugo.production.yml`, si corresponde;
 3. `prebuild/public/hugo.prebuild.yml`;
 4. `hugo.yml` del proyecto.
+
+El adapter raíz crea una sección virtual por cada tipo y transforma `data/remote.yml` en páginas virtuales. Los `_index.<lang>.md` físicos continúan siendo las fuentes editables del CMS, pero no entran directamente en el árbol de páginas, lo que evita colisiones.
 
 Los templates ensamblan cada página, recopilan recursos utilizados en `page.Store` y `hugo.Store`, y generan los archivos auxiliares.
 

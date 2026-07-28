@@ -1,6 +1,6 @@
 {{/*
 Partial: func/draws-to-store
-Purpose: Discover icons and images referenced by pages, types, sections, and localized values.
+Purpose: Discover icons and images referenced by pages, types, sections, and localized globals.
 Context: Any value; discovery uses the global site and current page stores.
 Returns: Empty string.
 Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `divs`.
@@ -123,11 +123,11 @@ Side effects: Adds discovered names to page.Store keys `glyphs`, `svgs`, and `di
 {{ with index hugo.Data.section "base-footer" }}
   {{ $all = $all | append . }}
 {{ end }}
-{{/*  Global values  */}}
+{{/*  Global localized data  */}}
 {{ range hugo.Sites }}
   {{ $lang   := .Language.Lang }}
-  {{ $values := index hugo.Data (print "values." $lang) }}
-  {{ $all     = $all | append $values }}
+  {{ $global := index hugo.Data (print "global." $lang) }}
+  {{ $all     = $all | append $global }}
   {{ $icon   := print "svg:flag-" $lang }}
   {{ $icons   = $icons | append $icon }}
 {{ end }}

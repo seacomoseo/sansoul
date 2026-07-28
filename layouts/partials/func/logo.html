@@ -2,7 +2,7 @@
 {{ $logos := slice
   (index site.Home.Params "org" "logo")
   (index site.Home.Params "menu" "logo")
-  (index hugo.Data (print "values." site.Home.Lang) "menu" "img")
+  (index hugo.Data (print "global." site.Home.Lang) "menu" "img")
   (index hugo.Data "config" "cms" "logo")
   (index hugo.Data "config" "others" "favicon")
   "base/icon.png"

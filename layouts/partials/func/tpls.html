@@ -2,7 +2,7 @@
 Partial: func/tpls
 Purpose: Collect the ordered template layers used to build a page.
 Context: page.Page.
-Returns: Slice of maps in low-to-high precedence order: localized values, internal defaults, all-type, current-type, page.
+Returns: Slice of maps in low-to-high precedence order: localized globals, internal defaults, all-type, current-type, page.
 Side effects: None.
 */}}
 {{/*  If change for store method
@@ -24,9 +24,9 @@ Side effects: None.
 {{/*  ALL  */}}
 {{ $all := hugo.Data.types.all.tpl }}
 
-{{/*  VALUES  */}}
-{{- $values := index hugo.Data (print "values." page.Lang) -}}
-{{- $values  = dict "menu" $values.menu -}}
+{{/*  GLOBALS  */}}
+{{- $global := index hugo.Data (print "global." page.Lang) -}}
+{{- $global  = dict "menu" $global.menu -}}
 
 {{/*  TYPE  */}}
 {{ $type := dict }}
@@ -52,6 +52,6 @@ Side effects: None.
 
 
 {{/*  ALL  */}}
-{{ $tpls := slice $values $default $all $type $self }}
+{{ $tpls := slice $global $default $all $type $self }}
 
 {{ return $tpls }}

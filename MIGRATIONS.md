@@ -35,6 +35,55 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 7.0.0 — 2026-07-28
+
+**Impacto:** todos los proyectos que usen valores globales localizados,
+índices de colección o contenido remoto.
+
+### Cambios relevantes
+
+- `content/values.<lang>.yml` pasa a llamarse
+  `content/global.<lang>.yml`.
+- Los índices `content/<type>/_index.<lang>.md` continúan siendo fuentes
+  editables por Sveltia, pero Hugo los monta como recursos y un Content
+  Adapter crea sus páginas de sección.
+- `data/remote.yml` genera páginas virtuales durante el build principal,
+  sin materializar Markdown bajo `prebuild/public/content`.
+- Los mounts son estáticos y viven en `hugo.default.yml`; la preconstrucción
+  solo genera la configuración que Hugo debe conocer antes de ensamblar el
+  sitio.
+- `sh do local` publica esa configuración de forma atómica. Hugo la recarga
+  dentro del mismo proceso y conserva la última versión válida si falla una
+  regeneración.
+- La configuración desactiva el `assets/jsconfig.json` autogenerado por Hugo
+  para evitar una carrera entre ese cambio de asset y la recarga de
+  configuración.
+
+### Acciones obligatorias
+
+1. Ejecuta
+   `node themes/sansoul/scripts/migrations/7.0.0-content-adapters.js` desde la
+   raíz para renombrar los archivos globales localizados.
+2. Ejecuta `sh do root-docs`.
+3. Ejecuta el build completo y comprueba una home, un índice de colección,
+   una entrada normal y el CMS.
+4. Si el proyecto usa `data/remote.yml`, valida una página remota y el
+   comportamiento previsto cuando la fuente no esté disponible.
+
+### Automatización
+
+`scripts/migrations/7.0.0-content-adapters.js` renombra de forma idempotente
+los archivos localizados. Se detiene sin sobrescribir cuando el destino ya
+existe.
+
+### Validación
+
+`themes/sansoul/prebuild/public/` debe contener únicamente
+`hugo.prebuild.yml`. El CMS debe guardar los textos globales en
+`content/global.<lang>.yml`, y `sh do hugo` debe finalizar sin colisiones entre
+índices físicos y virtuales. Tras validar y ejecutar
+`sh do migrations mark --yes`, raíz y tema deben indicar `7.0.0`.
+
 ## 6.0.2 — 2026-07-27
 
 **Impacto:** proyectos que conserven dependencias o archivos del antiguo

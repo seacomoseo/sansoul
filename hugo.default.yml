@@ -3,6 +3,8 @@ pagination:
   pagerSize: 24
   path: page
 buildFuture: true
+build:
+  noJSConfigInAssets: true
 timeZone: Europe/Madrid
 params:
   currency: EUR
@@ -74,9 +76,15 @@ module:
     target: static
   - source: node_modules/material-symbols
     target: static/fonts
+  - source: uploads
+    target: static/u
+    files:
+    - '! fonts/**'
   # assets
   - source: assets
     target: assets
+  - source: uploads
+    target: assets/u
   - source: node_modules/material-symbols
     target: assets/fonts
   - source: ../_tools/node_modules/material-symbols
@@ -91,6 +99,11 @@ module:
     target: assets/u/icons/brands
   - source: ../_tools/node_modules/simple-icons/icons
     target: assets/u/icons/brands
+  # collection index sources consumed by the root content adapter
+  - source: content
+    target: assets/content-indexes
+    files:
+    - '*/_index.*.md'
   ## content home by langs
   - source: content/single/_home.es.md
     target: content/_index.es.md
@@ -126,15 +139,17 @@ module:
   - source: content
     target: content
     files:
-    - '! values.*.yml'
+    - '! global.*.yml'
     - '! single/_home.*.md'
-  ## content prebuild
-  - source: themes/sansoul/prebuild/public/content
-    target: content
+    - '! */_index.*.md'
   ## content theme
   - source: themes/sansoul/content
     target: content
   # data
+  - source: content
+    target: data
+    files:
+    - 'global.*.yml'
   - source: data
     target: data
     files:

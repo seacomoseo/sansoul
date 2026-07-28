@@ -1,0 +1,57 @@
+{{/*
+Partial: content-adapters/section-pages
+Purpose: Build virtual collection index page definitions from project types and optional localized index sources.
+Context:
+  - Lang (string, required): Language of the site currently executing the content adapter.
+Returns: Slice of maps accepted by a content adapter's AddPage method.
+Side effects: Reads project data and localized index resources.
+*/}}
+{{ $pages := slice }}
+{{ $types := slice }}
+
+{{ range $name, $config := hugo.Data.types }}
+  {{ if ne $name "all" }}
+    {{ $type := merge $config (dict "name" $name) }}
+    {{ $types = $types | append $type }}
+  {{ end }}
+{{ end }}
+
+{{ $translations := index hugo.Data.i18n .Lang }}
+
+{{ range $types }}
+  {{ $type := . }}
+  {{ $name := .name }}
+  {{ $source := resources.Get (printf "content-indexes/%s/_index.%s.md" $name $.Lang) }}
+
+  {{ with $source }}
+    {{ $raw := .Content | string }}
+    {{ if $raw | findRE `(?s)^---.+---` }}
+      {{ $sourceData := transform.Unmarshal $raw }}
+      {{ $type = merge $type $sourceData (dict "lang_title" $sourceData.title) }}
+      {{ $body := replaceRE `(?s)^---\s*\n.*?\n---\s*\n?` "" $raw }}
+      {{ if strings.TrimSpace $body }}
+        {{ $type = merge $type (dict "content" $body) }}
+      {{ end }}
+    {{ else if strings.TrimSpace $raw }}
+      {{ $type = merge $type (dict "content" $raw) }}
+    {{ end }}
+  {{ end }}
+
+  {{ $defaultTitle := index $translations (printf "types_def_%s_title" $name) }}
+  {{ $defaultSingular := index $translations (printf "types_def_%s_singular" $name) }}
+  {{ $title := or $type.lang_title $defaultTitle $type.title $type.singular $defaultSingular $name }}
+  {{ $content := $type.content | default "" }}
+  {{ $page := dict
+    "content" (dict
+      "mediaType" "text/markdown"
+      "value" $content
+    )
+    "kind" "section"
+    "path" $name
+    "title" $title
+    "weight" ($type.weight | default 0)
+  }}
+  {{ $pages = $pages | append $page }}
+{{ end }}
+
+{{ return $pages }}

@@ -1,0 +1,9 @@
+{{ .EnableAllLanguages }}
+{{ $context := dict "Lang" .Site.Language.Lang }}
+{{ range partial "content-adapters/section-pages" $context }}
+  {{ $.AddPage . }}
+{{ end }}
+{{ range partial "content-adapters/remote-pages" $context }}
+  {{ $.AddPage . }}
+{{ end }}
+

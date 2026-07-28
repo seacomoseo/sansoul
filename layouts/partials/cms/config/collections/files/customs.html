@@ -1,7 +1,7 @@
 {{ $u := hugo.Data.utilities }}
 
 {{ $option_global      := index . "opt-collections-global" }}
-{{ $customs_types_def  := print $u.collections.emojis.values  " " $option_global }}
+{{ $customs_types_def  := print $u.collections.emojis.global  " " $option_global }}
 {{ $customs_types_hint := print .def " → **" $customs_types_def "**" }}
 
 {{ $widgets_last := apply $u.widgets "dict" "value" "." }}

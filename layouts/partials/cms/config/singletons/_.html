@@ -1,15 +1,15 @@
 {{ $i  := hugo.Data.utilities.collections.icons }}
-{{ $vf := "content/values.{{locale}}.yml" }}
+{{ $vf := "content/global.{{locale}}.yml" }}
 
 {{ return slice
   (dict
     "file"      $vf
     "extension" `yml`
-    "name"      `values`
-    "label"     .values
-    "icon"      $i.values
+    "name"      `global`
+    "label"     .global
+    "icon"      $i.global
     "editor"    (dict "preview" false)
-    "fields"    `~values`
+    "fields"    `~global`
     "i18n"      true
   )
 }}

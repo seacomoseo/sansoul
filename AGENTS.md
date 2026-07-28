@@ -23,7 +23,7 @@ SanSoul is a data-driven Hugo page builder. Consumer projects should normally cu
 
 The theme owns four coupled systems:
 
-1. prebuild-time configuration and content generation;
+1. prebuild-time configuration and main-build content adapters;
 2. runtime template composition and rendering;
 3. generated Sveltia CMS schema;
 4. processed CSS, JavaScript, fonts, icons, and images.
@@ -37,22 +37,22 @@ The consumer-facing lifecycle is defined in `templates/root/AGENTS.md`. Internal
 ```text
 project data/content
   -> prebuild Hugo site
-  -> prebuild/public/hugo.prebuild.yml + generated content
-  -> main Hugo build with theme and project mounts
+  -> prebuild/public/hugo.prebuild.yml
+  -> main Hugo build with static mounts and content adapters
   -> generated public site and manifests
   -> scripts/imgs.js post-processing
 ```
 
 Configuration precedence is theme default, optional environment config, generated prebuild config, then project `hugo.yml`.
 
-The prebuild owns decisions derived from languages, types, defaults, remote sources, and collection indexes. `sh do local` watches these inputs, serializes regeneration, and restarts its managed Hugo server after a successful prebuild. Plain `sh do server` still requires a manual restart.
+The prebuild owns configuration derived from languages, types, defaults, and collection-index metadata. The root content adapter creates section pages and pages from remote sources during the main build. `sh do local` serializes prebuild regeneration and publishes the config atomically; Hugo reloads it without restarting and keeps the last valid version after a failed prebuild. Plain `sh do server` still requires a manual restart for prebuild inputs.
 
 ## Directory responsibilities
 
 - `prebuild/`: nested Hugo generator. Its `public/` directory is generated.
 - `layouts/`: public rendering API, CMS generator, shortcodes, render hooks, schemas, and generated-file templates.
 - `data/`: theme defaults and authoring metadata.
-- `content/`: translated fallback/system pages.
+- `content/`: root content adapter and translated fallback/system pages.
 - `i18n/`: UI translations and default semantic values.
 - `assets/css/`: site and CMS SCSS.
 - `assets/js/`: browser ESM modules.
