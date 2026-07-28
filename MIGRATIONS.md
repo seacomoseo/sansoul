@@ -35,6 +35,70 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 6.0.2 — 2026-07-27
+
+**Impacto:** proyectos que conserven dependencias o archivos del antiguo
+posprocesado de CSS.
+
+### Cambios relevantes
+
+- Se eliminan PurgeCSS y PostCSS porque el pipeline compila SCSS directamente
+  con Hugo y Dart Sass.
+- Hugo deja de generar `hugo_stats.json`.
+- Desaparecen el comando `sh do css-purge`, el script de purgado y
+  `postcss.config.js`.
+
+### Acciones obligatorias
+
+1. Ejecuta
+   `node themes/sansoul/scripts/migrations/6.0.2-remove-legacy-css.js` desde la
+   raíz y revisa el diff y cualquier aviso.
+2. Si existe `package-lock.json`, ejecuta `npm install` para sincronizar el
+   árbol instalado.
+3. Revisa manualmente cualquier `postcss.config.js` personalizado que el script
+   haya conservado.
+4. Ejecuta el build completo.
+
+### Automatización
+
+`scripts/migrations/6.0.2-remove-legacy-css.js` elimina de `package.json` las
+dependencias antiguas, limpia sus entradas de `.gitignore` y borra
+`hugo_stats.json`. Solo elimina `postcss.config.js` cuando coincide exactamente
+con la antigua copia generada por SanSoul; una configuración personalizada se
+conserva y se avisa para revisión. El script es idempotente y no modifica
+`package-lock.json` ni instala paquetes.
+
+### Validación
+
+`sh do hugo` debe finalizar correctamente sin generar `postcss.config.js` ni
+`hugo_stats.json`. Tras validar y ejecutar `sh do migrations mark --yes`, raíz
+y tema deben indicar `6.0.2`.
+
+## 6.0.1 — 2026-07-27
+
+**Impacto:** proyectos que generan imágenes AVIF, Open Graph desde SVG o
+favicons durante el postprocesado de producción.
+
+### Cambios relevantes
+
+- Sharp se actualiza de `0.33.5` a `0.35.3`.
+- `sharp-ico` permanece en `0.1.5`, su versión vigente.
+- La calidad AVIF pasa de `50` a `60` para conservar la fidelidad visual con
+  el codificador actualizado.
+
+### Acciones obligatorias
+
+1. Actualiza `sharp` a `^0.35.3` en las dependencias de la raíz y reinstálalas.
+2. Ejecuta el build completo.
+3. Comprueba una variante AVIF, una imagen Open Graph procedente de SVG y el
+   favicon ICO generado.
+
+### Validación
+
+`sh do hugo` debe finalizar correctamente y los tres tipos de salida deben ser
+archivos de imagen válidos. Tras validar y ejecutar
+`sh do migrations mark --yes`, raíz y tema deben indicar `6.0.1`.
+
 ## 6.0.0 — 2026-07-27
 
 **Impacto:** todos los proyectos que actualicen a Hugo 0.164.0 o posterior.

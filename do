@@ -164,12 +164,6 @@ elif [ "$COMMAND" = rm-public ]; then
   hecho "REMOVE PUBLIC AND TMP RESOURCES DIRECTORIE"
   rm -rf public resources
 
-# Like purge CSS
-elif [ "$COMMAND" = css-purge ]; then
-
-  hecho "CSS PURGE"
-  node ./themes/sansoul/scripts/css-purge.js
-
 # Images ICO, PNG and AVIF
 elif [ "$COMMAND" = imgs ]; then
 
@@ -223,13 +217,9 @@ elif [ "$COMMAND" = hugo-production ]; then
   sh do rm-public
   sh do prebuild
 
-  hecho "COPY FILES FROM SANSOUL TO PROJECT"
-  cp ./themes/sansoul/postcss.config.js ./
-
   hecho "RUN HUGO PRODUCTION"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
 
-  # sh do css-purge
   sh do imgs
   # sh do multilang
 

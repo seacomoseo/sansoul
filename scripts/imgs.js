@@ -117,7 +117,7 @@ async function processAvifImages (publishDir) {
       image = image.resize(data.width, data.height)
     }
 
-    await image.avif({ quality: 50, effort: 0 }).toFile(outputPath)
+    await image.avif({ quality: 60, effort: 0 }).toFile(outputPath)
     console.log(`✅ AVIF: ${inputPath} ⏩️ ${outputPath}`)
   }))
 

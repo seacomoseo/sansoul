@@ -49,7 +49,7 @@ Ejecuta todos los comandos desde la raíz:
 | `sh do prebuild` | Regenera únicamente la configuración y el contenido intermedio. |
 | `sh do imgs` | Regenera favicon, PNG derivados y variantes AVIF a partir de los manifiestos del build. |
 
-`public/`, `resources/`, `.hugo_build.lock`, `postcss.config.js` y `themes/sansoul/prebuild/public/` son salidas generadas. No deben editarse a mano.
+`public/`, `resources/`, `.hugo_build.lock` y `themes/sansoul/prebuild/public/` son salidas generadas. No deben editarse a mano.
 
 ## Estructura del repositorio
 
