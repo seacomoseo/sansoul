@@ -1,189 +1,82 @@
-.field[data-key-path$="view"] ~ .field:not(
-  /* No hidden if param is set */
-  [data-field-type="object"]:has(.wrapper),
-  [data-field-type="list"]:has(.item-list:not(:empty)),
-  [data-field-type="image"]:has(.filled),
-  [data-field-type="file"]:has(.filled),
-  [data-field-type="markdown"]:has([data-lexical-text="true"]),
-  [data-field-type="boolean"]:has(button[aria-checked="true"]),
-  [data-field-type="select"]:has(button[aria-checked="true"]:not([value=""])), /* Checkbox and radio */
-  [data-field-type="select"]:has(.selected), /* Simple */
-  [data-field-type="select"]:has(.select-tags > span), /* Multiple */
-  :has(input:not(:placeholder-shown, [type="file"])),
-  :has(textarea:not(:placeholder-shown)),
-  /* No hidden if match view */
-  :is(
-    [data-key-path="cols"], [data-key-path$=".cols"],
-    [data-key-path="cols_vs"], [data-key-path$=".cols_vs"],
-    [data-key-path="gap"], [data-key-path$=".gap"],
-    [data-key-path="gap_ny"], [data-key-path$=".gap_ny"],
-    [data-key-path="to"], [data-key-path$=".to"],
-    [data-key-path="duo"], [data-key-path$=".duo"],
-    [data-key-path="sides"], [data-key-path$=".sides"],
-    [data-key-path="group_radius"], [data-key-path$=".group_radius"],
-    [data-key-path="slider"], [data-key-path$=".slider"],
-    [data-key-path="time"], [data-key-path$=".time"],
-    [data-key-path="pips"], [data-key-path$=".pips"],
-    [data-key-path="arrows"], [data-key-path$=".arrows"],
-    [data-key-path="align_x"], [data-key-path$=".align_x"],
-    [data-key-path="align_y"], [data-key-path$=".align_y"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="group"] ) ~ *),
-  :is(
-    [data-key-path="title"], [data-key-path$=".title"],
-    [data-key-path="hanchor"], [data-key-path$=".hanchor"],
-    [data-key-path="sub"], [data-key-path$=".sub"],
-    [data-key-path="price"], [data-key-path$=".price"],
-    [data-key-path="hs"], [data-key-path$=".hs"],
-    [data-key-path="hs_vs"], [data-key-path$=".hs_vs"],
-    [data-key-path="hn"], [data-key-path$=".hn"],
-    [data-key-path="caps"], [data-key-path$=".caps"],
-    [data-key-path="line"], [data-key-path$=".line"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="titles"] ) ~ *),
-  :is(
-    [data-key-path="md"], [data-key-path$=".md"],
-    [data-key-path="md_align"], [data-key-path$=".md_align"],
-    [data-key-path="md_align_vl"], [data-key-path$=".md_align_vl"],
-    [data-key-path="md_sm"], [data-key-path$=".md_sm"],
-    [data-key-path="md_caps"], [data-key-path$=".md_caps"],
-    [data-key-path="md_line"], [data-key-path$=".md_line"],
-    [data-key-path="md_index"], [data-key-path$=".md_index"],
-    [data-key-path="md_nav"], [data-key-path$=".md_nav"],
-    [data-key-path="md_border"], [data-key-path$=".md_border"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="md"] ) ~ *),
-  :is(
-    [data-key-path="icon"], [data-key-path$=".icon"],
-    [data-key-path="icon_pos"], [data-key-path$=".icon_pos"],
-    [data-key-path="icon_size"], [data-key-path$=".icon_size"],
-    [data-key-path="icon_color"], [data-key-path$=".icon_color"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="icon"] ) ~ *),
-  :is(
-    [data-key-path="img"], [data-key-path$=".img"],
-    [data-key-path="hover"], [data-key-path$=".hover"],
-    [data-key-path="alt"], [data-key-path$=".alt"],
-    [data-key-path="hover_alt"], [data-key-path$=".hover_alt"],
-    [data-key-path="vid"], [data-key-path$=".vid"],
-    [data-key-path="mute"], [data-key-path$=".mute"],
-    [data-key-path="ratio"], [data-key-path$=".ratio"],
-    [data-key-path="contain"], [data-key-path$=".contain"],
-    [data-key-path="border"], [data-key-path$=".border"],
-    [data-key-path="inset"], [data-key-path$=".inset"],
-    [data-key-path="disc"], [data-key-path$=".disc"],
-    [data-key-path="gray"], [data-key-path$=".gray"],
-    [data-key-path="shade"], [data-key-path$=".shade"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="img"] ) ~ *),
-  :is(
-    [data-key-path="pin"], [data-key-path$=".pin"],
-    [data-key-path="url"], [data-key-path$=".url"],
-    [data-key-path="label"], [data-key-path$=".label"],
-    [data-key-path="anchor"], [data-key-path$=".anchor"],
-    [data-key-path="lock"], [data-key-path$=".lock"],
-    [data-key-path="swap"], [data-key-path$=".swap"],
-    [data-key-path="ga4"], [data-key-path$=".ga4"],
-    [data-key-path="button"], [data-key-path$=".button"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="button"] ) ~ *),
-  :is(
-    [data-key-path="color"], [data-key-path$=".color"],
-    [data-key-path="fade"], [data-key-path$=".fade"],
-    [data-key-path="fade_to"], [data-key-path$=".fade_to"],
-    [data-key-path="color_alpha"], [data-key-path$=".color_alpha"],
-    [data-key-path="bi"], [data-key-path$=".bi"],
-    [data-key-path="alpha"], [data-key-path$=".alpha"],
-    [data-key-path="scroll"], [data-key-path$=".scroll"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="bg"] ) ~ *),
-  :is(
-    [data-key-path="pt"], [data-key-path$=".pt"],
-    [data-key-path="pb"], [data-key-path$=".pb"],
-    [data-key-path="ph"], [data-key-path$=".ph"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="paddings"] ) ~ *),
-  :is(
-    [data-key-path="size"], [data-key-path$=".size"],
-    [data-key-path="full"], [data-key-path$=".full"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="size"] ) ~ *),
-  :is(
-    [data-key-path="div"], [data-key-path$=".div"],
-    [data-key-path="div_x"], [data-key-path$=".div_x"],
-    [data-key-path="div_y"], [data-key-path$=".div_y"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="divider"] ) ~ *),
-  :is(
-    [data-key-path="menu_label"], [data-key-path$=".menu_label"],
-    [data-key-path="menu_btn"], [data-key-path$=".menu_btn"],
-    [data-key-path="menu_swap"], [data-key-path$=".menu_swap"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="menu"] ) ~ *),
-  :is(
-    [data-key-path="id"], [data-key-path$=".id"],
-    [data-key-path="order"], [data-key-path$=".order"],
-    [data-key-path="fit"], [data-key-path$=".fit"],
-    [data-key-path="fit_vs"], [data-key-path$=".fit_vs"],
-    [data-key-path="grow"], [data-key-path$=".grow"],
-    [data-key-path="align_y"], [data-key-path$=".align_y"],
-    [data-key-path="align"], [data-key-path$=".align"],
-    [data-key-path="align_vl"], [data-key-path$=".align_vl"],
-    [data-key-path="side"], [data-key-path$=".side"],
-    [data-key-path="rate"], [data-key-path$=".rate"],
-    [data-key-path="space"], [data-key-path$=".space"],
-    [data-key-path="pd"], [data-key-path$=".pd"],
-    [data-key-path="hide_shadow"], [data-key-path$=".hide_shadow"],
-    [data-key-path="hide_radius"], [data-key-path$=".hide_radius"],
-    [data-key-path="pill"], [data-key-path$=".pill"],
-    [data-key-path="card"], [data-key-path$=".card"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="boxi"] ) ~ *),
-  :is(
-    [data-key-path="if"], [data-key-path$=".if"],
-    [data-key-path="node"], [data-key-path$=".node"],
-    [data-key-path="get"], [data-key-path$=".get"],
-    [data-key-path="remap"], [data-key-path$=".remap"],
-    [data-key-path="tag"], [data-key-path$=".tag"],
-    [data-key-path="tags"], [data-key-path$=".tags"],
-    [data-key-path="sort"], [data-key-path$=".sort"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="other"] ) ~ *),
-  :is(
-    [data-key-path="list"], [data-key-path$=".list"],
-    [data-key-path="box"], [data-key-path$=".box"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="list"] ) ~ *),
-  :is(
-    [data-key-path="step"], [data-key-path$=".step"],
-    [data-key-path="steps"], [data-key-path$=".steps"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="steps"] ) ~ *),
-  :is(
-    [data-key-path="faq"], [data-key-path$=".faq"],
-    [data-key-path="faqs"], [data-key-path$=".faqs"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="faq"] ) ~ *),
-  :is(
-    [data-key-path="gallery"], [data-key-path$=".gallery"],
-    [data-key-path="imgs"], [data-key-path$=".imgs"],
-    [data-key-path="limgs"], [data-key-path$=".limgs"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="gallery"] ) ~ *),
-  :is(
-    [data-key-path="review"], [data-key-path$=".review"],
-    [data-key-path="reviews"], [data-key-path$=".reviews"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="reviews"] ) ~ *),
-  :is(
-    [data-key-path="when"], [data-key-path$=".when"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="when"] ) ~ *),
-  :is(
-    [data-key-path="links"], [data-key-path$=".links"],
-    [data-key-path="dots"], [data-key-path$=".dots"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="links"] ) ~ *),
-  :is(
-    [data-key-path="form"], [data-key-path$=".form"],
-    [data-key-path="inputs"], [data-key-path$=".inputs"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="form"] ) ~ *),
-  :is(
-    [data-key-path="map"], [data-key-path$=".map"],
-    [data-key-path="geos"], [data-key-path$=".geos"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="map"] ) ~ *),
-  :is(
-    [data-key-path="gss"], [data-key-path$=".gss"],
-    [data-key-path="gss_sheet"], [data-key-path$=".gss_sheet"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="gss"] ) ~ *),
-  :is(
-    [data-key-path="box"], [data-key-path$=".box"],
-    [data-key-path="boxes"], [data-key-path$=".boxes"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="boxes"] ) ~ *),
-  :is(
-    [data-key-path="modal"], [data-key-path$=".modal"],
-    [data-key-path="modals"], [data-key-path$=".modals"]
-  ):is(.field[data-key-path$="view"]:has( .button[aria-checked="true"][value="modals"] ) ~ *)
-) {
+@use 'sass:list';
+@use 'sass:string';
+
+$view-fields: (
+  group: (cols, cols_vs, gap, gap_ny, to, duo, sides, group_radius, slider, time, pips, arrows, align_x, align_y),
+  titles: (title, hanchor, sub, price, hs, hs_vs, hn, caps, line),
+  md: (md, md_align, md_align_vl, md_sm, md_caps, md_line, md_index, md_nav, md_border),
+  icon: (icon, icon_pos, icon_size, icon_color),
+  img: (img, hover, alt, hover_alt, vid, mute, ratio, contain, border, inset, disc, gray, shade),
+  button: (pin, url, label, anchor, lock, swap, ga4, button),
+  bg: (color, fade, fade_to, color_alpha, bi, alpha, scroll),
+  paddings: (pt, pb, ph),
+  size: (size, full),
+  divider: (div, div_x, div_y),
+  menu: (menu_label, menu_btn, menu_swap),
+  boxi: (id, order, fit, fit_vs, grow, align_y, align, align_vl, side, rate, space, pd, hide_shadow, hide_radius, pill, card),
+  other: (if, node, get, remap, tag, tags, sort),
+  list: (list, box),
+  steps: (step, steps),
+  faq: (faq, faqs),
+  gallery: (gallery, imgs, limgs),
+  reviews: (review, reviews),
+  when: (when),
+  links: (links, dots),
+  form: (form, inputs),
+  map: (map, geos),
+  gss: (gss, gss_sheet),
+  boxes: (box, boxes),
+  modals: (modal, modals)
+);
+
+@function key-path-selectors($fields) {
+  $selectors: ();
+
+  @each $field in $fields {
+    $selectors: list.append(
+      $selectors,
+      string.unquote('[data-key-path="#{$field}"]'),
+      comma
+    );
+    $selectors: list.append(
+      $selectors,
+      string.unquote('[data-key-path$=".#{$field}"]'),
+      comma
+    );
+  }
+
+  @return $selectors;
+}
+
+@function view-selector($view, $fields) {
+  @return string.unquote(
+    '.field[data-key-path$="view"]:has(.button[aria-checked="true"][value="#{$view}"]) ~ :is(#{key-path-selectors($fields)})'
+  );
+}
+
+$visible-fields: (
+  string.unquote('[data-field-type="object"]:has(.wrapper)'),
+  string.unquote('[data-field-type="list"]:has(.item-list:not(:empty))'),
+  string.unquote('[data-field-type="image"]:has(.filled)'),
+  string.unquote('[data-field-type="file"]:has(.filled)'),
+  string.unquote('[data-field-type="markdown"]:has([data-lexical-text="true"])'),
+  string.unquote('[data-field-type="boolean"]:has(button[aria-checked="true"])'),
+  string.unquote('[data-field-type="radio"]:has(input:not([title="null"]):checked)'), // "boolean" custom field
+  string.unquote('[data-field-type="select"]:has(button[aria-checked="true"]:not([value=""]))'), // Checkbox and radio
+  string.unquote('[data-field-type="select"]:has(.selected)'), // Simple
+  string.unquote('[data-field-type="select"]:has(.select-tags > span)'), // Multiple
+  string.unquote(':has(input:not([type="file"], [type="radio"], [type="checkbox"], [type="hidden"]):not(:placeholder-shown))'),
+  string.unquote(':has(textarea:not(:placeholder-shown))')
+);
+
+@each $view, $fields in $view-fields {
+  $visible-fields: list.append(
+    $visible-fields,
+    view-selector($view, $fields),
+    comma
+  );
+}
+
+.field[data-key-path$='view'] ~ .field:not(#{$visible-fields}) {
   display: none;
 }

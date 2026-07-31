@@ -1,25 +1,28 @@
 @use "hugo:vars" as *;
 @use "../func";
 
-// .field:is([data-key-path="div"], [data-key-path$=".div"])
-.listbox .option > .button[value]::before {
-  content: "";
-  background-image: var(--div);
-  width: 112px;
-  height: 14px;
-  flex-shrink: 0;
-  filter: invert(.5);
-}
-@if $divs != '' {
-  $divs_roots: func.str-split($divs, '|');
-  @each $root in $divs_roots {
-    @each $div in $root {
-      @if $div != 'hide' and $div != 'fade' {
-        // .field:is([data-key-path="div"], [data-key-path$=".div"])
-        .listbox .option > .button[value="#{$div}"] {
-          --div: url('#{$draws-base}#div-#{$div}-pr');
+.app-shell:has(.field:is([data-key-path="div"], [data-key-path$=".div"])) .listbox .option > .button {
+  &[value]::before {
+    content: "";
+    background-image: var(--div);
+    width: 112px;
+    height: 14px;
+    flex-shrink: 0;
+    filter: invert(.5);
+  }
+  @if $divs != '' {
+    $divs_roots: func.str-split($divs, '|');
+    @each $root in $divs_roots {
+      @each $div in $root {
+        @if $div != 'hide' and $div != 'fade' {
+          &[value="#{$div}"] {
+            --div: url('https://raw.githubusercontent.com/seacomoseo/sansoul/refs/heads/main/assets/u/dividers/#{$div}.svg');
+          }
         }
       }
     }
+  }
+  &[value="fade"] {
+    --div: linear-gradient(transparent, black);
   }
 }

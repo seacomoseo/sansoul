@@ -178,8 +178,7 @@
     {{ $o = merge $o (dict "display_fields" (slice "{{title}}")) }}
   {{ end }}
 {{ else if eq "bool" $widget }}
-  {{ $opts := cond (not $o.req) `~opts_boolean` `~opts_boolean_req` }}
-  {{ $o  = merge $o (dict "widget" `select` "options" $opts) }}
+  {{ $o  = merge $o (dict "widget" `radio`) }}
 {{ else if eq "hide" $widget }}
   {{ $o = merge $o (dict "widget" `hidden`) }}
 {{ end }}

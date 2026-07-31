@@ -7,10 +7,10 @@ img: null # string
 icon: null # string
 category: []
 
-toc: 0
-draft: 0
+toc: false
+draft: false
 seo:
   title: null # string
   desc: null # string
-  noindex: 1
+  noindex: true
 ---

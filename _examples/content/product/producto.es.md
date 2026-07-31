@@ -12,11 +12,11 @@ category:
 - categoria-3
 manufacturer: fabricante
 
-toc: 1
-draft: 0
+toc: true
+draft: false
 seo:
   title: ▷ Título SEO Producto de ejemplo 【Con caracteres llamativos】
   desc: Esta es la descripción SEO de un producto de ejemplo.
-  noindex: 0
+  noindex: false
 ---
 Contenido

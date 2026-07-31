@@ -156,9 +156,8 @@ archivos de imagen válidos. Tras validar y ejecutar
 
 - SanSoul fija Hugo Extended 0.164.0 para desarrollo y despliegue.
 - Hugo 0.164 ya no interpreta `y`/`n` como booleanos. En la configuración de
-  Hugo se usan `true`/`false`; en datos y front matter administrables se usan
-  `1`/`0` para conservar el selector triestado del CMS: ausencia hereda,
-  `1` activa y `0` desactiva.
+  Hugo, los datos y el front matter administrables se usan `true`/`false`.
+  La ausencia o el valor nulo conserva la herencia del selector triestado.
 - El pipeline SCSS usa Dart Sass en lugar del LibSass deprecado. En local puede
   instalarse una vez en el `PATH` sin Node; la dependencia `sass-embedded` del
   proyecto actúa como respaldo para los builds de producción.
@@ -166,9 +165,9 @@ archivos de imagen válidos. Tras validar y ejecutar
   parciales propios deben usar `@use` y declarar explícitamente sus
   dependencias.
 - La configuración del tema exige Hugo 0.164.0 como versión mínima.
-- Los defaults, contenidos, arquetipos y ejemplos del tema usan
-  pseudobooleanos numéricos `1`/`0`, compatibles con YAML 1.2 y con la
-  evaluación booleana de Hugo.
+- Los defaults, contenidos, arquetipos y ejemplos del tema usan booleanos YAML
+  reales `true`/`false`, compatibles con YAML 1.2 y con la evaluación booleana
+  de Hugo.
 
 ### Acciones obligatorias
 
@@ -187,8 +186,7 @@ archivos de imagen válidos. Tras validar y ejecutar
 ### Automatización
 
 `scripts/migrations/6.0.0-explicit-booleans.js` convierte de forma idempotente
-los escalares `y`/`n` en YAML y front matter. En datos administrables usa
-`1`/`0`; en archivos de configuración usa `true`/`false`. No toca el tema,
+los escalares `y`/`n` en YAML y front matter a `true`/`false`. No toca el tema,
 dependencias, uploads ni salidas generadas.
 
 ### Validación

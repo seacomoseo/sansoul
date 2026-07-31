@@ -5,5 +5,5 @@ icon: ''
 base: page
 weight: 1
 seo:
-  noindex: 0
+  noindex: false
 ---

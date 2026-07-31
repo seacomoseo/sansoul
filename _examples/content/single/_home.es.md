@@ -6,12 +6,12 @@ img: /u/base/poster.png
 base: org
 weight: 1
 seo:
-  noindex: 0
+  noindex: false
 
 tpl:
   sections:
   - color: main
-    full: 1
+    full: true
     boxes:
     - title: Ejemplos de SanSoul
       sub: Sitio copiable y referencia visual
@@ -46,13 +46,13 @@ org:
   areas: [] # strings
   when: []
   # - days:
-  #     mon: 1
-  #     tue: 1
-  #     wed: 1
-  #     thu: 1
-  #     fri: 1
-  #     sat: 0
-  #     sun: 0
+  #     mon: true
+  #     tue: true
+  #     wed: true
+  #     thu: true
+  #     fri: true
+  #     sat: false
+  #     sun: false
   #   hours:
   #   - open: 8:00
   #     close: 14:00

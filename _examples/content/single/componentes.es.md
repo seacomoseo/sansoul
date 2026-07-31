@@ -4,7 +4,7 @@ title: Componentes de SanSoul
 sum: Referencia visual de secciones, cajas y bloques disponibles en el tema.
 icon: construction
 seo:
-  noindex: 1
+  noindex: true
 tpl:
   sections:
   - file: example

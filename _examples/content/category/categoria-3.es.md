@@ -10,10 +10,10 @@ category:
 - categoria-1
 - categoria-0
 
-toc: 0
-draft: 0
+toc: false
+draft: false
 seo:
   title: null # string
   desc: null # string
-  noindex: 1
+  noindex: true
 ---

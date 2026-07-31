@@ -84,8 +84,9 @@ Use `themes/sansoul/_examples/data/section/example.yml` as the parameter catalog
 ## Main data APIs
 
 - In Hugo and deployment configuration, write booleans as `true` or `false`.
-  In CMS-managed `content/` and `data/`, tri-state pseudobooleans use absent
-  for inheritance, `1` for enabled, and `0` for disabled. Never use `y`/`n`.
+  In CMS-managed `content/` and `data/`, tri-state pseudobooleans use absent or
+  null for inheritance, `true` for enabled, and `false` for disabled. Never use
+  `y`/`n`.
 - `data/config.yml`: behavior and integrations.
 - `data/langs.yml`: languages and per-language overrides.
 - `data/styles.yml`: design tokens and global UI options.

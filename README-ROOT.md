@@ -75,11 +75,10 @@ Ejecuta todos los comandos desde la raíz:
 - `dna/`: identidad, criterios y restricciones particulares del proyecto.
   - `dna/_index.md`: resumen obligatorio e índice que indica qué otros documentos consultar según la tarea.
 
-Desde Hugo 0.164, `y` y `n` son cadenas, no booleanos. En `hugo.yml` y otros
-archivos de configuración escribe `true` o `false`. En `content/` y `data/`,
-los campos pseudobooleanos que administra el CMS usan `1` para activar y `0`
-para desactivar; si la clave no existe, hereda el valor de la cadena de merges.
-Sveltia conserva expresamente el `0` aun con `omit_empty_optional_fields`.
+Desde Hugo 0.164, `y` y `n` son cadenas, no booleanos. En `hugo.yml`,
+`content/` y `data/` escribe `true` o `false`; en los campos pseudobooleanos
+que administra el CMS, la ausencia o el valor nulo hereda el valor de la
+cadena de merges.
 
 ### Personalización y archivos públicos
 
@@ -129,7 +128,7 @@ Los cambios en `data/remote.yml` y `content/global.<lang>.yml` se reconstruyen d
 
 ## Idiomas y valores globales
 
-Cada entrada traducible usa el sufijo `.<lang>.md`, por ejemplo `servicio.es.md`. `data/langs.yml` declara los idiomas disponibles; `hide: 1` desactiva uno en el proyecto sin borrar su configuración.
+Cada entrada traducible usa el sufijo `.<lang>.md`, por ejemplo `servicio.es.md`. `data/langs.yml` declara los idiomas disponibles; `hide: true` desactiva uno en el proyecto sin borrar su configuración.
 
 `content/global.<lang>.yml` se monta internamente como datos localizados. Sus usos habituales son:
 

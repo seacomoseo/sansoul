@@ -28,12 +28,10 @@ for (const file of walk(projectDir)) {
   const extension = path.extname(file).toLowerCase()
   if (!yamlExtensions.has(extension) && extension !== markdownExtension) continue
 
-  const relativeFile = path.relative(projectDir, file)
-  const useTriStateNumbers = isAuthorData(relativeFile)
   const source = fs.readFileSync(file, 'utf8')
   const migrated = extension === markdownExtension
-    ? migrateMarkdownFrontMatter(source, useTriStateNumbers)
-    : migrateYaml(source, useTriStateNumbers)
+    ? migrateMarkdownFrontMatter(source)
+    : migrateYaml(source)
 
   if (migrated === source) continue
 
@@ -58,18 +56,7 @@ function * walk (directory) {
   }
 }
 
-function isAuthorData (file) {
-  const normalized = file.split(path.sep).join('/')
-  if (normalized === 'data/utilities.yml') return false
-
-  return normalized.startsWith('content/') ||
-    normalized.startsWith('data/') ||
-    normalized.startsWith('archetypes/') ||
-    normalized.startsWith('_examples/content/') ||
-    normalized.startsWith('_examples/data/')
-}
-
-function migrateMarkdownFrontMatter (source, useTriStateNumbers) {
+function migrateMarkdownFrontMatter (source) {
   const newline = source.includes('\r\n') ? '\r\n' : '\n'
   const boundary = `---${newline}`
   if (!source.startsWith(boundary)) return source
@@ -80,14 +67,14 @@ function migrateMarkdownFrontMatter (source, useTriStateNumbers) {
   const frontMatter = source.slice(boundary.length, end)
   return [
     boundary,
-    migrateYaml(frontMatter, useTriStateNumbers),
+    migrateYaml(frontMatter),
     source.slice(end)
   ].join('')
 }
 
-function migrateYaml (source, useTriStateNumbers) {
-  const enabled = useTriStateNumbers ? '1' : 'true'
-  const disabled = useTriStateNumbers ? '0' : 'false'
+function migrateYaml (source) {
+  const enabled = 'true'
+  const disabled = 'false'
 
   return source.replace(
     /^([ \t]*(?:#[ \t]*)?[^#:\r\n][^:\r\n]*:[ \t]*)(y|n|true|false)([ \t]*(?:#.*)?)$/gm,

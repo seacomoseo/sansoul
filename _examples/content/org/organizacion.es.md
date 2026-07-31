@@ -5,12 +5,12 @@ img: /u/base/poster.png
 icon: people-group
 sum: Esto es el resumen de una organización de ejemplo.
 
-toc: 1
-draft: 0
+toc: true
+draft: false
 seo:
   title: ▷ Título SEO Organización de ejemplo 【Con caracteres llamativos】
   desc: Esta es la descripción SEO de una organización de ejemplo.
-  noindex: 0
+  noindex: false
 
 org:
   types:
@@ -47,20 +47,20 @@ org:
   - Online
   when:
   - days:
-      mon: 1
-      tue: 1
-      wed: 1
-      thu: 1
-      fri: 1
-      sat: 0
-      sun: 0
+      mon: true
+      tue: true
+      wed: true
+      thu: true
+      fri: true
+      sat: false
+      sun: false
     hours:
     - open: 9:00
       close: 14:00
     - open: 17:00
       close: 20:00
   - days:
-      sat: 1
+      sat: true
     open: 9:00
     close: 13:00
   prices: €€
