@@ -113,15 +113,17 @@ Fields are required by default. Generate `required: false` only when empty value
 When asked to update the submodule:
 
 1. read DNA, record the root package version and old submodule commit, and inspect both working trees;
-2. if a pre-5.0 project still needs the private legacy updater, run `sh do update` before replacing its old theme;
-3. update the configured SanSoul submodule branch within the requested scope;
-4. read `themes/sansoul/MIGRATIONS.md`, run `sh do migrations`, and apply every pending action in order;
-5. run `sh do root-docs` when the migration requires it; `--force` replaces unmanaged root README/AGENTS wholesale and never transfers their content into DNA;
-6. run the required project and theme validations;
-7. only then run `sh do migrations mark --yes`, which synchronizes root `package.json` and, when present, `package-lock.json`;
-8. report the changed parent gitlink without staging or committing it.
+2. if a pre-5.0 project still needs the private legacy updater, verify before running it that its migration target is the 5.0.0 baseline; the current private updater pulls the configured theme branch first, so when that branch is newer than 5.0.0 it can fail after moving the submodule with `Migration chain incomplete`;
+3. when that legacy mismatch is present, preserve the original gitlink and current theme commit, and use a verified baseline procedure that includes every auxiliary pre-5 transformation, especially icon syntax/configuration and the final media/font moves; do not improvise by marking the package version or by treating a zero exit from a permissive legacy shell script as proof of success;
+4. validate the 5.0.0 baseline before updating the configured SanSoul submodule branch within the requested scope;
+5. read `themes/sansoul/MIGRATIONS.md`, run `sh do migrations`, and apply every pending action in order;
+6. run `sh do root-docs` when the migration requires it; `--force` replaces unmanaged root README/AGENTS wholesale and never transfers their content into DNA;
+7. run the required project and theme validations;
+8. only then run `sh do migrations mark --yes`, which synchronizes root `package.json` and, when present, `package-lock.json`;
+9. report the changed parent gitlink without staging or committing it.
 
 Never assume a successful build proves migration completeness, and never mark compatibility automatically during build or submodule update.
+When a legacy update exposes a reusable failure mode, fix or document it in the shared updater or this canonical template rather than in one consumer's DNA.
 
 ## Validation matrix
 
