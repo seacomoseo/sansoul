@@ -1,4 +1,4 @@
-{{ $url    := (urls.Parse site.BaseURL).String }}
+{{ $url    := (urls.Parse site.BaseURL).String | replaceRE "/$" "" }}
 
 {{ $schema := dict
   "@type"       "WebSite"

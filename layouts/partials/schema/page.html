@@ -4,7 +4,8 @@
 {{ $thumbnail           := (partial "schema/img-main" .).url }}
 {{ $img                 := dict "@id" (print .Permalink "#schema-img") }}
 {{ $primary_img_of_page := dict "@id" (print .Permalink "#schema-img") }}
-{{ $is_part_of          := dict "@id" (print site.BaseURL "/#schema-website") }}
+{{ $base_url             := (urls.Parse site.BaseURL).String | replaceRE "/$" "" }}
+{{ $is_part_of          := dict "@id" (print $base_url "#schema-website") }}
 {{ $potential_action    := slice (dict "@type" "ReadAction" "target" .Permalink) }}
 {{ $breadcrumbs         := "" }}
 {{ $authors             := slice }}

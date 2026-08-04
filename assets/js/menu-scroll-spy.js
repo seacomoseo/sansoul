@@ -1,7 +1,7 @@
 import { scrollShot } from './scroll-shot'
 
 export const initMenuScrollSpy = () => {
-  const sections = '.section[id]:not(footer),#header'
+  const sections = '.section[id]:not(footer),#hero'
   const sectionsElements = document.querySelectorAll(sections)
 
   // Check if there are sections AND anchor links in the menu that point to these sections.
@@ -25,8 +25,8 @@ export const initMenuScrollSpy = () => {
         const menuItemsActive = document.querySelectorAll('.menu__item--active')
         menuItemsActive?.forEach(item => item.classList.remove('menu__item--active'))
 
-        // Handle the #header section in a special way
-        if (element.id === 'header') {
+        // Handle the #hero section in a special way
+        if (element.id === 'hero') {
           // Find the menu link that points to the current page without anchors
           const currentPathLink = document.querySelector(`.menu__item > [href="${location.pathname}"]`)
 

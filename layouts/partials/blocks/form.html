@@ -20,7 +20,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
         {{- end -}}
       {{- end -}}
     {{- end -}}
-    {{- $id_name := cond (eq .section.id "header") .Page.Slug .section.id -}}
+    {{- $id_name := cond (eq .section.id "hero") .Page.Slug .section.id -}}
     {{- $id_num  := cond (le $num 1) "" (print "-" $num) -}}
     {{- $form_id  = print "form-" $id_name $id_num -}}
   {{- end -}}
@@ -32,10 +32,10 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- $page_emoji    := .Page.Params.emoji
     | default .Page.CurrentSection.Params.emoji
   -}}
-  {{- $section_name  := i18n "header" -}}
+  {{- $section_name  := i18n "hero" -}}
   {{- if .section.is_footer -}}
     {{- $section_name = i18n "footer" -}}
-  {{- else if not .section.is_header -}}
+  {{- else if not .section.is_hero -}}
     {{- $section_name  = .form.id
       | default .id
       | default .section.title

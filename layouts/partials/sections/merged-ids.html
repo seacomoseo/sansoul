@@ -28,8 +28,8 @@
     {{ if $key }}
       {{ $id  = partial "func/id-by-title" . }}
     {{ else }}
-      {{ $id  = "header" }}
-      {{ $key = "header" }}
+      {{ $id  = "hero" }}
+      {{ $key = "hero" }}
     {{ end }}
 
   {{ end }}
@@ -39,8 +39,8 @@
   {{ page.Store.Set $id $anchor }}
 
   {{/*  END  */}}
-  {{ $is_header := eq $key "header" }}
-  {{ $expand    := dict "section_key" $key "id" $id "is_header" $is_header "is_modal" false "modals" $modals }}
+  {{ $is_hero := eq $key "hero" }}
+  {{ $expand    := dict "section_key" $key "id" $id "is_hero" $is_hero "is_modal" false "modals" $modals }}
   {{ $section    = merge $section $expand }}
   {{ $sections   = $sections | append $section }}
 
