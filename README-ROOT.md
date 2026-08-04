@@ -183,7 +183,7 @@ Una base habitual es:
 ```yml
 tpl:
   sections:
-  - file: base-_header
+  - file: base-_hero
   - file: base-toc
   - file: base-content
   - file: base-address
