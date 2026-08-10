@@ -23,6 +23,18 @@ Side effects: None.
           {{/*  Get filename  */}}
           {{ with $.Page.File }}
             {{ $value = .TranslationBaseName }}
+            {{ if eq $value "_content" }}
+              {{ $value = $.Page.Slug }}
+              {{ if not $value }}
+                {{ $value = $.Page.RelPermalink | replaceRE `^.*/([^/]+)/$` `$1` }}
+              {{ end }}
+            {{ end }}
+          {{ else }}
+            {{/*  Remote virtual pages have no File; use their direct slug  */}}
+            {{ $value = $.Page.Slug }}
+            {{ if not $value }}
+              {{ $value = $.Page.RelPermalink | replaceRE `^.*/([^/]+)/$` `$1` }}
+            {{ end }}
           {{ end }}
         {{ else if eq . "content" }}
           {{/*  Get content  */}}

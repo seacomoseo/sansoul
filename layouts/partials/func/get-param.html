@@ -10,6 +10,9 @@ Example: {{ $mail := partial "func/get-param" (dict "Page" . "name" "org.mail") 
 */}}
 {{ $options := dict "value" .Page.Params "path" .name }}
 {{ $return  := partial "func/index-split" $options }}
+{{ if and (not $return) (eq .name "title") }}
+  {{ $return = .Page.Title }}
+{{ end }}
 {{ if not $return }}
   {{ $global := index hugo.Data (print "global." $.Page.Lang) }}
   {{ $options = dict "value" $global "path" .name }}
