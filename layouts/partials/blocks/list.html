@@ -42,7 +42,7 @@
       {{ end }}
       */}}
       {{/* Filter by hide  */}}
-      {{ $pages = where (where $pages "Params.hide" "ne" true) "Params.hide" "ne" 1 }}
+      {{ $pages = where $pages "Params.hide" "ne" true }}
       {{ $after_pages  := $pages }}
 
       {{/* TEMPLATE  */}}
