@@ -8,6 +8,7 @@ export function initEditorComponents () {
     id: 'link',
     label: t.url,
     icon: 'link',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{btn | ternary(\'🔳 \', \'\')}}{{anchor}}',
     fields: [
@@ -116,6 +117,7 @@ export function initEditorComponents () {
     id: 'icon',
     label: t.icon,
     icon: 'emoji_symbols',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{icon}}',
     fields: [
@@ -130,6 +132,7 @@ export function initEditorComponents () {
     id: 'mark',
     label: t.md_mark,
     icon: 'ink_marker',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{text}}',
     fields: [
@@ -159,6 +162,7 @@ export function initEditorComponents () {
     id: 'ins',
     label: t.md_ins,
     icon: 'add_box',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{text}}',
     fields: [
@@ -173,6 +177,7 @@ export function initEditorComponents () {
     id: 'sub',
     label: t.md_sub,
     icon: 'subscript',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{text}}',
     fields: [
@@ -187,6 +192,7 @@ export function initEditorComponents () {
     id: 'sup',
     label: t.md_sup,
     icon: 'superscript',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{text}}',
     fields: [
@@ -201,6 +207,7 @@ export function initEditorComponents () {
     id: 'gallery',
     label: t.md_gallery,
     icon: 'wallpaper_slideshow',
+    trigger: 'button',
     collapsed: true,
     fields: [
       {
@@ -257,6 +264,7 @@ export function initEditorComponents () {
     id: 'gallery-simple',
     label: t.md_gallery_simple,
     icon: 'collections',
+    trigger: 'button',
     collapsed: true,
     fields: [
       { name: 'images', label: t.imgs, widget: 'file', multiple: true, choose_url: true, max_file_size: 25000000, accept: '.mp4,.mov,.avi,.webm,.MP4,.MOV,.AVI,.WEBM' },
@@ -300,6 +308,7 @@ export function initEditorComponents () {
     id: 'inline-image',
     label: t.md_inline_image,
     icon: 'image',
+    trigger: 'button',
     mode: 'dialog',
     summary: '🖼️ {{src}}',
     fields: [
@@ -328,7 +337,8 @@ export function initEditorComponents () {
   CMS.registerEditorComponent({
     id: 'shortcode',
     label: t.md_shortcode,
-    icon: 'code',
+    icon: 'data_object',
+    trigger: 'button',
     mode: 'dialog',
     summary: '{{display}}',
     fields: [
