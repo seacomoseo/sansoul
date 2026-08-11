@@ -25,7 +25,7 @@
   {{- $custom_html_head  := "" -}}
   {{- with site.Params.html.head -}}
     {{- $path            := print "aux_html_head." $.Lang -}}
-    {{- $custom_html_head = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
+    {{- $custom_html_head = replace . "\\n" "\n" | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_head = $custom_html_head.Content | safeHTML -}}
   {{- end -}}
 
@@ -33,7 +33,7 @@
   {{- $custom_html_body  := "" -}}
   {{- with site.Params.html.body -}}
     {{- $path            := print "aux_html_body." $.Lang -}}
-    {{- $custom_html_body = . | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
+    {{- $custom_html_body = replace . "\\n" "\n" | resources.FromString $path | resources.ExecuteAsTemplate $path $.Page -}}
     {{- $custom_html_body = $custom_html_body.Content | safeHTML -}}
   {{- end -}}
 
