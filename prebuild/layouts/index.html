@@ -387,6 +387,8 @@
 {{ $obj = merge $obj (dict "cascade" $cascade) }}
 
 {{/*  file  */}}
+{{/* Detach shared Hugo map nodes before YAML serialization. */}}
+{{ $obj = transform.Unmarshal (transform.Remarshal "json" $obj) }}
 {{ $file  := transform.Remarshal "yaml" $obj }}
 {{ $file   = $file | resources.FromString "hugo.prebuild.yml" }}
 {{ $file.Publish }}
