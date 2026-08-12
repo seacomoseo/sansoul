@@ -32,8 +32,12 @@
   {{ end }}
 
   {{/*  Sortable Fields  */}}
-  {{ $sortable_fields    := slice "weight" "commit_date" "title" }}
-  {{ $sortable_default   := dict "field" "weight" "direction" "ascending" }}
+  {{ $sortable_fields    := slice "title" }}
+  {{ $sortable_default   := dict "field" "title" "direction" "ascending" }}
+  {{ if not (in (slice "article" "event") .Params.base) }}
+    {{ $sortable_fields  = slice "weight" "title" }}
+    {{ $sortable_default = dict "field" "weight" "direction" "ascending" }}
+  {{ end }}
   {{ if eq .Params.base "article" }}
     {{ $sortable_fields   = slice "date" "mod" | append $sortable_fields }}
     {{ $sortable_default  = dict "field" "date" "direction" "descending" }}
@@ -326,7 +330,7 @@
   "summary"          "{{name}}"
   "thumbnail"        (slice `img` `vid` `bi`)
   "sortable_fields"  (dict
-    "fields"  (slice "commit_date" "name" "id")
+    "fields"  (slice "name" "id")
     "default" (dict
       "field"     "name"
       "direction" "ascending"
