@@ -85,7 +85,20 @@
         {{- $id   := . | replaceRE `^icons?/` `` | replaceRE `^(brand)s/` `$1-` | replaceRE `/` `-` -}}
         {{- $head := $content | findRE `^<svg.*?>` -}}
         {{- $head  = index $head 0 -}}
-        {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" | replaceRE `^<svg ` (print `<svg id="` $id `" `) -}}
+        {{- $sizes := partial "func/svg-sizes" $content -}}
+        {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" -}}
+        {{- if and (not ($head | findRE ` viewBox=`)) $sizes.width $sizes.height -}}
+          {{- if eq $head "<svg>" -}}
+            {{- $head = print `<svg viewBox="0 0 ` $sizes.width ` ` $sizes.height `">` -}}
+          {{- else -}}
+            {{- $head = replaceRE `^<svg ` (print `<svg viewBox="0 0 ` $sizes.width ` ` $sizes.height `" `) $head -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if eq $head "<svg>" -}}
+          {{- $head = print `<svg id="` $id `">` -}}
+        {{- else -}}
+          {{- $head = replaceRE `^<svg ` (print `<svg id="` $id `" `) $head -}}
+        {{- end -}}
         {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | safeHTML -}}
         {{- /*  {{- $time := partial "func/timestamp" . -}}  */ -}}
         {{- /*  {{- $refs := print "$1/draws." $time ".svg#" -}}  */ -}}
