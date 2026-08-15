@@ -8,7 +8,7 @@ boxes:
   - url: https://www.facebook.com/sharer.php?u={{ permalink }}
     icon: brand:facebook-f
     label: '{{ i18n share }} Facebook'
-  - url: https://x.com/share?%%{{ dict "url" page.Permalink "text" (print page.Title "%0D%0A") | querify }}%%
+  - url: https://x.com/share?%%{{ dict "url" page.Permalink "text" page.Title | querify }}%%
     icon: brand:x-twitter
     label: '{{ i18n share }} Twitter'
   - url: https://wa.me/?text={{ permalink }}
