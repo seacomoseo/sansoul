@@ -17,9 +17,9 @@
   {{ $md    = replace $md $str $html }}
 {{ end }}
 
-{{ range $md | findRESubmatch `&laquo;(.+?)&raquo;` | uniq }}
+{{ range $md | findRESubmatch `«(.+?)»|&laquo;(.+?)&raquo;` | uniq }}
   {{ $str  := index . 0 }}
-  {{ $in   := index . 1 }}
+  {{ $in   := or (index . 1) (index . 2) }}
   {{ $html := print `<q class="aquotes">` $in `</q>` }}
   {{ $md    = replace $md $str $html }}
 {{ end }}
