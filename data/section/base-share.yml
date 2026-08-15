@@ -8,12 +8,12 @@ boxes:
   - url: https://www.facebook.com/sharer.php?u={{ permalink }}
     icon: brand:facebook-f
     label: '{{ i18n share }} Facebook'
-  - url: https://x.com/share?url={{ permalink }}&text={{ get title }}
+  - url: https://x.com/share?%%{{ dict "url" page.Permalink "text" (print page.Title "%0D%0A") | querify }}%%
     icon: brand:x-twitter
     label: '{{ i18n share }} Twitter'
   - url: https://wa.me/?text={{ permalink }}
     icon: brand:whatsapp
     label: '{{ i18n share }} WhatsApp'
-  - url: mailto:?body={{ permalink }}%0D%0A{{ get title }}
+  - url: mailto:?%%{{ dict "body" (print page.Permalink "%0D%0A" page.Title) | querify }}%%
     icon: mail
     label: '{{ i18n share }} Email'
