@@ -40,10 +40,16 @@
   q,
   .quotes,
   .aquotes {
-    display: inline-block;
+    // display: inline-block;
     &::before,
     &::after {
       color: var(--main);
+    }
+  }
+  q:not(.quotes, .aquotes) {
+    &:before,
+    &:after {
+      @include mixins.font-quotes;
     }
   }
   blockquote {

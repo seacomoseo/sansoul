@@ -139,6 +139,10 @@
     li > .icon + div > :where(ol, ul) {
       margin-left: calc(-.75em * var(--ol-level) - .5em);
     }
+    &, li > div > :is(ul, ol) {
+      grid-template-columns: auto auto 1fr;
+      column-gap: .25em;
+    }
   }
 
 
