@@ -1,3 +1,13 @@
+{{/*
+Partial: media/_
+Purpose: Render an image, local video, or embedded video from normalized media data.
+Context:
+  - img (string, optional): Image path or URL.
+  - vid (string, optional): Video path or supported provider URL.
+  - alt (string, optional): Alternative text; derived from the media source when empty.
+Renders: The matching image, video, or embedded-video markup.
+Side effects: May process local image resources.
+*/}}
 {{- $src := or .vid .img -}}
 {{- if $src  -}}
   {{- $media  := . -}}
@@ -17,6 +27,8 @@
   {{- if $vid -}}
     {{- $opts := merge . (dict "vid" $vid) -}}
     {{- $vid   = partial "media/vid-data" $opts -}}
+  {{- else -}}
+    {{- $vid = dict -}}
   {{- end -}}
   {{- with $img -}}
     {{- $img = partial "func/check-media" . -}}
