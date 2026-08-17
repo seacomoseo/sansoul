@@ -12,7 +12,7 @@ jobs:
       contents: read
     env:
       GL_PAT: ${{ secrets.GL_PAT }}
-      GH_PAT: ${{ secrets.GH_PAT }}
+      GH_PAT: ${{ github.token }}
       GITLAB_NAMESPACE: seacomoseo
     steps:
       - name: Validate required secrets

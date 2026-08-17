@@ -103,7 +103,7 @@ Las particularidades nunca deben añadirse a README/AGENTS raíz porque son gene
 - `hugo.yml`: URL base y parámetros privados del proyecto —privados en el sentido de específicos, no secretos—.
 - `package.json`: dependencias Node utilizadas por Hugo y los scripts de posprocesado.
 - `netlify.toml` y `wrangler.toml`: configuración de despliegue.
-- `.github/workflows/`: automatizaciones; `backup.yml` replica el repositorio en GitLab.
+- `.github/workflows/`: automatizaciones; `backup.yml` replica el repositorio en GitLab. Requiere el secreto `GL_PAT`; GitHub proporciona automáticamente el token temporal de lectura usado para clonar el origen.
 - `TODO.md`: lista humana de tareas y anotaciones; los agentes no deben leerla ni modificarla salvo petición expresa.
 
 ## El ciclo de construcción

@@ -65,6 +65,8 @@ git remote set-url --push origin "https://${gitlab_username}:${GL_PAT}@gitlab.co
 
 if ! git push --mirror; then
   echo "Mirror push failed for gitlab.com/${gitlab_repo}" >&2
+  echo "If GitLab reported a protected branch, allow force pushes for that branch." >&2
+  echo "A mirror must force-update a protected branch when its history differs from GitHub." >&2
   echo "Check that GL_PAT is valid, not expired, and has api + write_repository scopes." >&2
   echo "Also verify that the destination project exists and that the token owner can push to it." >&2
   exit 1
