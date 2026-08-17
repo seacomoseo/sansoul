@@ -160,6 +160,7 @@
       (not $is_out)
       (not $is_this_anchor_url)
       (not $is_other_anchor_url)
+      (not (findRE `^(mailto|tel):` .))
     -}}
       {{- $src := . | replaceRE `\#.*$` "" -}}
       {{- with resources.Get $src -}}
