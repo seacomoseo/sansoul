@@ -229,7 +229,7 @@
 
 
   {{/*  Collection  */}}
-  {{ $colections = $colections | append (dict
+  {{ $collection := dict
     "label"            (.Params.cms.title    | default "")
     "label_singular"   (.Params.cms.singular | default "")
     "name"             (.Type                | default "")
@@ -244,7 +244,6 @@
     "summary"          $sum
     "thumbnail"        (slice `img` `vid` `bi`)
     "editor"           (dict "preview" false)
-    "reorder"          (dict "key" `weight`)
     "sortable_fields"  $sortable_fields
     "view_groups"      $view_groups
     "view_filters"     $view_filters
@@ -271,7 +270,11 @@
         `~page_llms`
       )
     )
-  ) }}
+  }}
+  {{ if not (in (slice "article" "event") .Params.base) }}
+    {{ $collection = merge $collection (dict "reorder" (dict "key" `weight`)) }}
+  {{ end }}
+  {{ $colections = $colections | append $collection }}
 {{ end }}
 
 
