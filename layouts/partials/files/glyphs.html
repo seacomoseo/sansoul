@@ -4,12 +4,16 @@
   {{ $icons  = trim $icons "," }}
   {{ $published := false }}
   {{ with hugo.Data.styles.icons }}
-    {{ $grade := cond (and .fill (not .grade)) -25 .grade }}
+    {{ $style   := .style   | default "outlined" }}
+    {{ $weight  := .weight  | default 400 }}
+    {{ $optical := .optical | default 24 }}
+    {{ $fill    := .fill    | default false }}
+    {{ $grade   := cond (and $fill (not .grade)) -25 (.grade | default 0) }}
     {{/*  URL  */}}
     {{ $url := print
       "https://fonts.googleapis.com/css2"
-      "?family=Material+Symbols+" (strings.FirstUpper .style)
-      ":opsz,wght,FILL,GRAD@" .optical "," .weight "," (int .fill) "," (int $grade)
+      "?family=Material+Symbols+" (strings.FirstUpper $style)
+      ":opsz,wght,FILL,GRAD@" $optical "," $weight "," (int $fill) "," (int $grade)
       "&icon_names=" $icons
     }}
     {{/*  Get remote CSS  */}}
@@ -27,7 +31,7 @@
       {{ end }}
     {{ end }}
     {{ if not $published }}
-      {{ $path := print "fonts/material-symbols-" .style ".woff2" }}
+      {{ $path := print "fonts/material-symbols-" $style ".woff2" }}
       {{ with resources.Get $path }}
         {{ $time    := partial "func/timestamp" . }}
         {{ $name    := print "fonts/icons." $time ".woff2" }}
@@ -37,7 +41,7 @@
     {{ end }}
   {{ end }}
 {{ else }}
-  {{ $style := hugo.Data.styles.icons.style }}
+  {{ $style := hugo.Data.styles.icons.style | default "outlined" }}
   {{ $path  := print "fonts/material-symbols-" $style ".woff2" }}
   {{ with resources.Get $path }}
     {{ $publish := .Publish }}

@@ -11,6 +11,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 const projectDir = process.cwd()
+const themeHugoConfig = path.join(projectDir, 'themes', 'sansoul', 'hugo.default.yml')
 const excludedDirectories = new Set([
   '.git',
   '.codex',
@@ -44,6 +45,30 @@ if (changedFiles.length === 0) {
 } else {
   console.log(`Updated explicit booleans in ${changedFiles.length} files:`)
   for (const file of changedFiles) console.log(`- ${file}`)
+}
+
+if (fs.existsSync(themeHugoConfig)) {
+  const themeConfig = fs.readFileSync(themeHugoConfig, 'utf8')
+  const hugoVersion = themeConfig.match(/^\s*min:\s*([0-9]+\.[0-9]+\.[0-9]+)\s*$/m)?.[1]
+  if (!hugoVersion) throw new Error(`Could not determine Hugo minimum from ${path.relative(projectDir, themeHugoConfig)}`)
+
+  for (const fileName of ['netlify.toml', 'wrangler.toml']) {
+    const filePath = path.join(projectDir, fileName)
+    if (!fs.existsSync(filePath)) continue
+
+    const source = fs.readFileSync(filePath, 'utf8')
+    const migrated = source.replace(
+      /^(\s*HUGO_VERSION\s*=\s*["'])([^"']+)(["']\s*(?:#.*)?)$/gm,
+      `$1${hugoVersion}$3`
+    )
+    if (migrated === source) continue
+
+    fs.writeFileSync(filePath, migrated, 'utf8')
+    changedFiles.push(fileName)
+    console.log(`Synchronized ${fileName} HUGO_VERSION to ${hugoVersion}.`)
+  }
+} else {
+  console.log('No installed theme Hugo configuration found; deployment versions were not changed.')
 }
 
 function * walk (directory) {

@@ -177,7 +177,9 @@ archivos de imagen válidos. Tras validar y ejecutar
 2. Añade `sass-embedded` con la versión declarada por el tema a las dependencias
    de la raíz. Para desarrollo sin `node_modules`, instala Dart Sass standalone
    una vez en el `PATH`; en macOS: `brew install sass/sass/sass`.
-3. Cambia a `0.164.0` cualquier `HUGO_VERSION` propio del proyecto.
+3. Ejecuta el script de migración: además de convertir los booleanos,
+   sincroniza automáticamente cualquier `HUGO_VERSION` existente en
+   `netlify.toml` y `wrangler.toml` con el mínimo declarado por el tema.
 4. Ejecuta `sh do root-docs`.
 5. Compila con Hugo Extended 0.164.0 y ejecuta una auditoría con
    `--logLevel info` para detectar deprecaciones.
@@ -186,8 +188,10 @@ archivos de imagen válidos. Tras validar y ejecutar
 ### Automatización
 
 `scripts/migrations/6.0.0-explicit-booleans.js` convierte de forma idempotente
-los escalares `y`/`n` en YAML y front matter a `true`/`false`. No toca el tema,
-dependencias, uploads ni salidas generadas.
+los escalares `y`/`n` en YAML y front matter a `true`/`false`, y sincroniza los
+`HUGO_VERSION` que ya existan en `netlify.toml` y `wrangler.toml` con
+`module.hugoVersion.min` del tema. No crea configuraciones ausentes ni toca el
+tema, dependencias, uploads ni salidas generadas.
 
 ### Validación
 
