@@ -54,6 +54,11 @@
   {{ else if eq $icon "format_quote" }}
     {{ $class = $class | append "quote" }}
   {{ end }}
+  {{ if eq $icon "check" }}
+    {{ $class = $class | append "icon--check" }}
+  {{ else if eq $icon "close" }}
+    {{ $class = $class | append "icon--close" }}
+  {{ end }}
 
   {{ $aria_hidden := cond (not $is_txt) "true" false }}
   
