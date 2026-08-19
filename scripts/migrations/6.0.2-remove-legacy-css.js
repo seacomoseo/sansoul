@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 /*
-Purpose: Remove the legacy PurgeCSS/PostCSS consumer configuration.
+Purpose: Remove the legacy PurgeCSS/PostCSS consumer configuration and
+  ensure the shared image, Sass and icon dependencies are declared.
 Run from: Consumer project root after updating SanSoul to 6.0.2.
 Writes: Root package.json and .gitignore; removes known generated files.
 */
@@ -28,6 +29,13 @@ const dependencySections = [
   'optionalDependencies',
   'peerDependencies'
 ]
+const requiredProjectDependencies = {
+  '@fortawesome/fontawesome-free': '^7.0.1',
+  'simple-icons': '^15.12.0',
+  'sass-embedded': '^1.100.0',
+  sharp: '^0.35.3',
+  'sharp-ico': '^0.1.5'
+}
 const legacyPostcssHash =
   'ae359aa3d9fd8b870d8358f1083f3e93e37d3e363cc0535e212371d5c1970a0b'
 const changed = []
@@ -38,6 +46,7 @@ if (!fs.existsSync(packageFile)) {
 }
 
 removeDependencies()
+ensureProjectDependencies()
 removeGitignoreEntries()
 removeGeneratedFile(hugoStatsFile)
 removeLegacyPostcss()
@@ -73,6 +82,51 @@ function removeDependencies () {
 
   fs.writeFileSync(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
   changed.push(`Removed dependencies: ${removed.join(', ')}`)
+}
+
+function ensureProjectDependencies () {
+  const packageJson = readJson(packageFile)
+  const added = []
+  const moved = []
+  const upgraded = []
+
+  packageJson.dependencies ||= {}
+  packageJson.devDependencies ||= {}
+
+  for (const [dependency, version] of Object.entries(requiredProjectDependencies)) {
+    const fromDependencies = packageJson.dependencies[dependency]
+    const fromDevDependencies = packageJson.devDependencies[dependency]
+    const current = fromDependencies || fromDevDependencies
+
+    if (fromDevDependencies && !fromDependencies) {
+      delete packageJson.devDependencies[dependency]
+      moved.push(dependency)
+    }
+
+    if (!current) {
+      packageJson.dependencies[dependency] = version
+      added.push(`${dependency}@${version}`)
+      continue
+    }
+
+    if (dependency === 'sharp' && current === '^0.33.5') {
+      packageJson.dependencies[dependency] = version
+      upgraded.push(`${dependency} ${current} → ${version}`)
+    } else if (!fromDependencies) {
+      packageJson.dependencies[dependency] = current
+    }
+  }
+
+  if (added.length === 0 && moved.length === 0 && upgraded.length === 0) return
+
+  for (const section of ['dependencies', 'devDependencies']) {
+    if (Object.keys(packageJson[section]).length === 0) delete packageJson[section]
+  }
+
+  fs.writeFileSync(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
+  if (added.length > 0) changed.push(`Added project dependencies: ${added.join(', ')}`)
+  if (moved.length > 0) changed.push(`Moved project dependencies to dependencies: ${moved.join(', ')}`)
+  if (upgraded.length > 0) changed.push(`Updated project dependencies: ${upgraded.join(', ')}`)
 }
 
 function removeGitignoreEntries () {
@@ -133,11 +187,18 @@ function packageLockNeedsSync () {
   const packageLock = readJson(packageLockFile)
   const rootPackage = packageLock.packages?.[''] || packageLock
 
-  return dependencySections.some(section =>
+  const hasLegacyDependencies = dependencySections.some(section =>
     [...legacyDependencies].some(dependency =>
       dependency in (rootPackage[section] || {})
     )
   )
+
+  const hasUnsynchronizedRequiredDependencies = Object.entries(requiredProjectDependencies).some(
+    ([dependency, version]) => rootPackage.dependencies?.[dependency] !== version ||
+      !packageLock.packages?.[`node_modules/${dependency}`]
+  )
+
+  return hasLegacyDependencies || hasUnsynchronizedRequiredDependencies
 }
 
 function fail (message) {

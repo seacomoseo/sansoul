@@ -114,7 +114,10 @@ posprocesado de CSS.
 dependencias antiguas, limpia sus entradas de `.gitignore` y borra
 `hugo_stats.json`. Solo elimina `postcss.config.js` cuando coincide exactamente
 con la antigua copia generada por SanSoul; una configuración personalizada se
-conserva y se avisa para revisión. El script es idempotente y no modifica
+conserva y se avisa para revisión. También garantiza en `dependencies` de la
+raíz `@fortawesome/fontawesome-free`, `simple-icons`, `sass-embedded`, `sharp`
+y `sharp-ico`; conserva las versiones existentes salvo el Sharp histórico
+`^0.33.5`, que actualiza a `^0.35.3`. El script es idempotente y no modifica
 `package-lock.json` ni instala paquetes.
 
 ### Validación
