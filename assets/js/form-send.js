@@ -93,7 +93,7 @@ export function initFormSend () {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
-            formMessage.innerHTML = `<i class="icon spin">sync</i> ${formSubmitSending}…`
+            formMessage.innerHTML = `<i class="icon spin--reverse">sync</i> ${formSubmitSending}…`
             form.append(formMessage)
 
             // Anti-spam: JS token
