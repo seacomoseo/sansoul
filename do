@@ -249,6 +249,8 @@ elif [ "$COMMAND" = hugo ]; then
     sh do hugo-production
   fi
 
+  node ./themes/sansoul/scripts/check-cms-config.js
+
   end_ms=$(node -p "Date.now()")
   elapsed=$(node -p "Number(process.argv[1]) - Number(process.argv[2])" "$end_ms" "$start_ms")
   echo "\033[1;36m🕑 $elapsed ms\033[0m"

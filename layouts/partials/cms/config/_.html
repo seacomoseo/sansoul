@@ -6,6 +6,7 @@
     {{ $locales = $locales | append .lang }}
   {{ end }}
 {{ end }}
+{{ $default_locale := hugo.Sites.Default.Language.Name }}
 
 
 {{/*  YAML ANCHORS  */}}
@@ -103,7 +104,7 @@
     "structure"       "multiple_files"
     "locales"         $locales
     "initial_locales" $locales
-    "default_locale"  .Lang
+    "default_locale"  $default_locale
   )
   "slug"            (dict
     "encoding"             `ascii`
