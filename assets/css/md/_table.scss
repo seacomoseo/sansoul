@@ -26,25 +26,23 @@ table {
     margin-bottom: 1em;
   }
 }
-@container box (min-width: $viewport-md) {
-  .table-fix {
-    th, td {
-      &:first-child {
-        position: sticky;
-        left: 0;
-        background: inherit;
-        max-width: calc(var(--container-inner) / 2);
-        z-index: 1;
-        &::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          right: 0;
-          display: block;
-          width: 1px;
-          height: 100%;
-          background-color: rgba(variables.$gray, .125);
-        }
+.table-fix {
+  th, td {
+    &:first-child {
+      position: sticky;
+      left: 0;
+      background: inherit;
+      max-width: calc(var(--container-inner) / 2);
+      z-index: 1;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: block;
+        width: 1px;
+        height: 100%;
+        background-color: rgba(variables.$gray, .125);
       }
     }
   }

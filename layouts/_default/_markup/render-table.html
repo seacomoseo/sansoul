@@ -9,7 +9,7 @@
       {{- range .THead }}
         <tr>
           {{- range . }}
-            <th {{ print "class=align-" .Alignment | safeHTMLAttr }}>
+            <th {{- cond (not .Alignment) "" (print " class=align-" .Alignment) | safeHTMLAttr }}>
               {{- .Text -}}
             </th>
           {{- end }}
@@ -20,7 +20,7 @@
       {{- range .TBody }}
         <tr>
           {{- range . }}
-            <td {{ print "class=align-" .Alignment | safeHTMLAttr }}>
+            <td {{- cond (not .Alignment) "" (print " class=align-" .Alignment) | safeHTMLAttr }}>
               {{- .Text -}}
             </td>
           {{- end }}
