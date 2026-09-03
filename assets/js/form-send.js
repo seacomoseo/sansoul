@@ -9,11 +9,132 @@ const {
 } = params
 
 const closeIcon = '<i class="icon close" onclick="this.parentElement.remove()">close</i>'
+const pendingStorageKey = 'sansoul.form.pending'
+const submissionInputName = '_submission_id'
 
-function formSubmited (form) {
+function createSubmissionId () {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    const random = new Uint32Array(4)
+    crypto.getRandomValues(random)
+
+    return `${Date.now()}-${Array.from(random, value => value.toString(16)).join('')}`
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+function getPendingSubmissions () {
+  const pending = []
+
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index)
+      if (!key?.startsWith(`${pendingStorageKey}.`)) continue
+
+      try {
+        const submission = JSON.parse(localStorage.getItem(key))
+        if (submission?.submissionId && submission?.action && submission?.body) {
+          pending.push(submission)
+        }
+      } catch (_) {}
+    }
+  } catch (_) {
+    return []
+  }
+
+  return pending
+}
+
+function setPendingSubmission ({ submissionId, action, body }) {
+  try {
+    localStorage.setItem(`${pendingStorageKey}.${submissionId}`, JSON.stringify({
+      submissionId,
+      action,
+      body,
+      createdAt: new Date().toISOString()
+    }))
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+function removePendingSubmission (submissionId) {
+  try {
+    localStorage.removeItem(`${pendingStorageKey}.${submissionId}`)
+  } catch (_) {}
+}
+
+function getSubmissionInput (form) {
+  let input = form.querySelector(`[name="${submissionInputName}"]`)
+
+  if (!input) {
+    input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = submissionInputName
+    input.value = createSubmissionId()
+    form.appendChild(input)
+  }
+
+  return input
+}
+
+function isPersistedSubmission (data, submissionId) {
+  if (!data || data.result !== 'success') return false
+
+  // Keep compatibility with existing Apps Script handlers while upgraded
+  // handlers return a durable receipt that can be verified.
+  if (typeof data.persisted === 'undefined' && typeof data.submissionId === 'undefined') return true
+
+  return data.persisted === true && data.submissionId === submissionId
+}
+
+async function retryPendingSubmissions () {
+  const pending = getPendingSubmissions()
+  if (!pending.length) return
+
+  for (const submission of pending) {
+    let retryTimeout
+    const retryController = typeof AbortController === 'function'
+      ? new AbortController()
+      : null
+
+    try {
+      const response = await Promise.race([
+        fetch(submission.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: submission.body,
+          signal: retryController?.signal
+        }),
+        new Promise((resolve, reject) => {
+          retryTimeout = setTimeout(() => {
+            retryController?.abort()
+            reject(new Error('Submission retry timed out'))
+          }, 30000)
+        })
+      ])
+      if (!response.ok) continue
+
+      const data = await response.json()
+      if (isPersistedSubmission(data, submission.submissionId)) {
+        removePendingSubmission(submission.submissionId)
+      }
+    } catch (_) {
+    } finally {
+      clearTimeout(retryTimeout)
+    }
+  }
+}
+
+function formSubmited (form, data) {
   const customEventSubmit = new CustomEvent('submited-' + form.id)
   document.dispatchEvent(customEventSubmit)
-  if (typeof gtag === 'function') {
+  if ((!data?.status || data.status === 'accepted') && typeof gtag === 'function') {
     gtag('event', 'contact', {
       id: form.parentElement.closest('[id]').id,
       type: 'form',
@@ -33,12 +154,12 @@ function formSubmitError (formMessage, message) {
 }
 
 export function initFormSend () {
+  retryPendingSubmissions()
+
   waitCSS(() => {
     const forms = document.querySelectorAll('.form')
-    let formMessage
 
     forms.forEach(e => {
-      e.dataset.loadTime = Date.now()
       e.addEventListener('submit', async submit => {
         submit.preventDefault()
 
@@ -49,14 +170,10 @@ export function initFormSend () {
         // Fix repeat sending
         if (form.dataset.sending === 'true') return
 
-        // Anti-spam: minimum time check
-        const elapsed = Date.now() - parseInt(form.dataset.loadTime || '0')
-        if (elapsed < 3000) return
-
         // Delete any previous messages from the form itself
         form.querySelectorAll('.form__error, .form__submit').forEach(n => n.remove())
 
-        formMessage = document.createElement('div')
+        const formMessage = document.createElement('div')
         formMessage.innerHTML += closeIcon
 
         if (!valid) {
@@ -96,30 +213,91 @@ export function initFormSend () {
             formMessage.innerHTML = `<i class="icon spin--reverse">sync</i> ${formSubmitSending}…`
             form.append(formMessage)
 
-            // Anti-spam: JS token
-            const tokenInput = document.createElement('input')
-            tokenInput.type = 'hidden'
-            tokenInput.name = '_token'
-            tokenInput.value = btoa(form.id + ':' + Math.floor(Date.now() / 60000))
-            form.appendChild(tokenInput)
+            const submissionInput = googleScript ? getSubmissionInput(form) : null
+            const submissionId = submissionInput?.value
 
             const formOptions = { method: 'POST' }
+            const formData = new FormData(form)
+
+            if (googleScript) {
+              formData.set('User Agent', navigator.userAgent)
+              formData.set('IP', '')
+              const pendingStored = setPendingSubmission({
+                submissionId,
+                action,
+                body: new URLSearchParams(formData).toString()
+              })
+
+              if (!pendingStored) {
+                changeValues({ form, now, prev: false })
+                formSubmitError(formMessage, 'No se pudo proteger una copia local del envío. Libera espacio del navegador y vuelve a intentarlo.')
+                submitBtn.disabled = false
+                form.dataset.sending = 'false'
+                return
+              }
+
+              let ipTimeout
+              const ipController = typeof AbortController === 'function'
+                ? new AbortController()
+                : null
+              try {
+                const data = await Promise.race([
+                  fetch('https://api64.ipify.org?format=json', {
+                    signal: ipController?.signal,
+                    referrerPolicy: 'no-referrer'
+                  })
+                    .then(response => response.ok ? response.json() : {}),
+                  new Promise(resolve => {
+                    ipTimeout = setTimeout(() => {
+                      ipController?.abort()
+                      resolve({})
+                    }, 1500)
+                  })
+                ])
+                formData.set('IP', data.ip || '')
+              } catch (_) {
+                formData.set('IP', '')
+              } finally {
+                clearTimeout(ipTimeout)
+              }
+            }
+
             if ((!googleScript && isFileType) || formSubmitCo) {
               // Send with files
               formOptions.timeout = 30000
               // formOptions.headers = { Accept: 'application/json' }
-              formOptions.body = new FormData(form)
+              formOptions.body = formData
             } else {
               // Send withouth files (googleScript convert to base64)
-              const formData = new FormData(form)
               formOptions.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
               formOptions.body = new URLSearchParams(formData).toString()
+            }
+
+            if (googleScript) {
+              setPendingSubmission({
+                submissionId,
+                action,
+                body: formOptions.body
+              })
             }
 
             changeValues({ form, now, prev: false })
 
             // Send by AJAX
-            fetch(action, formOptions)
+            const formController = typeof AbortController === 'function'
+              ? new AbortController()
+              : null
+            let formTimeout
+            formOptions.signal = formController?.signal
+            Promise.race([
+              fetch(action, formOptions),
+              new Promise((_resolve, reject) => {
+                formTimeout = setTimeout(() => {
+                  formController?.abort()
+                  reject(new Error('Submission timed out'))
+                }, 30000)
+              })
+            ])
               .then(response => {
                 if (!response.ok) {
                   throw new Error('HTTP status ' + response.status)
@@ -127,12 +305,16 @@ export function initFormSend () {
                 return googleScript ? response.json() : response
               })
               .then(data => {
-                if (googleScript && data.result !== 'success') {
+                if (googleScript && !isPersistedSubmission(data, submissionId)) {
                   throw new Error(data.message || 'Unknown error, data: ' + JSON.stringify(data))
+                }
+                if (googleScript) {
+                  removePendingSubmission(submissionId)
+                  submissionInput.remove()
                 }
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<i class="icon">check_circle</i> ${closeIcon} ${formSubmitOk}`
-                formSubmited(form)
+                formSubmited(form, googleScript ? data : null)
                 // Reset
                 form.reset()
                 // Remove previews
@@ -146,10 +328,9 @@ export function initFormSend () {
                 formSubmitError(formMessage, error.message)
               })
               .finally(() => {
+                clearTimeout(formTimeout)
                 submitBtn.disabled = false
                 form.dataset.sending = 'false'
-                // Remove anti-spam token
-                form.querySelector('[name="_token"]')?.remove()
               })
           }
         }
