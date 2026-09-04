@@ -313,6 +313,7 @@
   (partial "cms/widget" (dict "var" `form_to`      "name" `to`                                                                           ))
   (partial "cms/widget" (dict "var" `form_subject` "name" `subject`                                                                      ))
   (partial "cms/widget" (dict "var" `form_mail`    "name" `mail`                                            "alt" `config_mail`          ))
+  (partial "cms/widget" (dict "var" `form_confirm` "name" `confirm` "widget" `bool`                                                      ))
   (partial "cms/widget" (dict "var" `form_labels`  "name" `labels`  "widget" `select` "opts" `~opts_labels` "alt" `styles_inputs_labels` ))
   (partial "cms/widget" (dict "var" `form_fill`    "name" `fill`    "widget" `bool`                         "alt" `styles_inputs_fill`   ))
   (partial "cms/widget" (dict "var" `form_consent` "name" `consent`                                         "alt" `styles_inputs_consent`))
@@ -327,6 +328,7 @@
       `~form_to`
       `~form_subject`
       `~form_mail`
+      `~form_confirm`
       `~form_labels`
       `~form_fill`
       `~item_full`

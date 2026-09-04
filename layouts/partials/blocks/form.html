@@ -243,6 +243,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     <input type="hidden" name="_domain" value="{{ site.Params.domain }}">
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
+    {{- if .form.confirm }}
+      <input type="hidden" name="_confirmation_email" value="true">
+    {{- end }}
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
     <input type="hidden" name="Timestamp" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
     {{- /*  HONEYPOT  */}}
