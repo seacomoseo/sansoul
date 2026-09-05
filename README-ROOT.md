@@ -225,14 +225,32 @@ Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, dis
 
 Los formularios enviados a Google Apps Script asignan un `_submission_id` estable y conservan temporalmente en `localStorage` los envíos sin recibo verificable para reintentarlos. También adjuntan `User Agent` y, cuando el servicio externo responde en 1,5 segundos, la IP pública consultada mediante ipify; un fallo de esa consulta nunca bloquea el formulario. El Apps Script receptor debe persistir el payload antes de responder y devolver el mismo identificador. Documenta este tratamiento y su finalidad en la política de privacidad del sitio.
 
-Para enviar una confirmación al correo facilitado por el usuario únicamente después de aceptar el envío, actívala en la configuración del formulario. SanSoul generará internamente el campo oculto `_confirmation_email`; los receptores antiguos lo ignorarán, por lo que su uso es retrocompatible:
+Para enviar una confirmación al correo facilitado por el usuario únicamente después de aceptar el envío, actívala en la configuración del formulario:
 
 ```yml
 form:
-  confirm: true
+  confirm:
+    enabled: true
 ```
 
-El receptor duradero recomendado reúne envíos y eventos operativos en la pestaña `logs`. Conserva el JSON completo en `Raw Parameters`; solo crea un archivo de Drive cuando el payload supera el límite seguro de una celda, en cuyo caso esa misma celda contiene el enlace de recuperación. La confirmación puede usar el remitente genérico `no-reply` únicamente cuando el script se ejecuta desde Google Workspace. En cuentas personales de Gmail incluye un aviso de correo automático, pero técnicamente no puede impedir que el destinatario pulse «Responder».
+SanSoul resuelve los textos en el idioma de la página y envía a GAS un único campo oculto `_confirmation` con la configuración ya traducida. El asunto completo, el texto anterior a la tabla y el aviso posterior se pueden personalizar; cualquier valor omitido usa la traducción predeterminada:
+
+```yml
+form:
+  confirm:
+    enabled: true
+    subject: Confirmación de inscripción
+    intro: Hemos recibido correctamente tu inscripción.
+    notice: Este es un mensaje automático. Por favor, no respondas a este correo.
+```
+
+El receptor duradero recomendado mantiene una sola fila por payload en `logs` y registra cada archivo adjunto por separado en `file_logs`. Al adoptar este esquema, conserva la pestaña anterior completa como `logs_archive`, oculta, y migra al nuevo `logs` solamente las filas identificadas como envíos; no borra el histórico. Conserva el JSON completo en `Raw Parameters`; solo crea un archivo de Drive cuando el payload supera el límite seguro de una celda, en cuyo caso esa misma celda contiene el enlace de recuperación. Los reintentos reutilizan el registro y los archivos ya creados; si un mismo `_submission_id` llega con contenido distinto, el receptor conserva ambos payloads y deriva el segundo a revisión. Los clientes antiguos sin identificador reciben uno determinista a partir del payload para que repetir exactamente la misma petición no genere otro registro.
+
+`file_logs` guarda el hash SHA-256 y el enlace del archivo binario. No duplica el base64 de un archivo válido porque ya está conservado dentro de `Raw Parameters`; cuando el archivo no puede procesarse, intenta añadir además un enlace `Recovery Data` al payload base64 independiente. La copia local del navegador protege los envíos modernos mientras no exista un recibo verificable, pero ningún receptor puede prometer persistencia si fallan simultáneamente el navegador, Google Sheets y Google Drive.
+
+Los envíos en `Review` o `Error`, los que permanecen en `Received` durante más de cinco minutos y los aceptados con errores de correo quedan pendientes de revisión administrativa. `retryFailedSubmissionEmails`, ejecutado por el activador periódico de cada spreadsheet, envía a partir de las 09:00 de `Europe/Madrid` un único resumen diario a `info@seacomoseo.com`. El resumen incluye el estado, enlaces, metadatos y una tabla equivalente a la del correo aceptado; los valores demasiado grandes se acortan en el email, pero permanecen completos en `logs`. Solo un error que impida crear el registro duradero se avisa inmediatamente, porque no podría recuperarse para el resumen.
+
+La confirmación puede usar el remitente genérico `no-reply` únicamente cuando el script se ejecuta desde Google Workspace. En cuentas personales de Gmail incluye un aviso de correo automático, pero técnicamente no puede impedir que el destinatario pulse «Responder».
 
 Consulta [`_examples/data/section/example.yml`](_examples/data/section/example.yml) como catálogo comentado y [`_examples/content/blog/2020-01-01-entrada.es.md`](_examples/content/blog/2020-01-01-entrada.es.md) como chuleta de Markdown.
 

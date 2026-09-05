@@ -157,6 +157,19 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- $show          := cond (not hugo.Data.config.show) "" "show" -}}
 {{- $class         := slice "form" $inputs_fill $labels_out "box__block" $show -}}
 {{- $provider      := "" -}}
+{{- $confirmation := $form.confirm -}}
+{{- $confirmation_payload := dict -}}
+{{- if and (reflect.IsMap $confirmation) $confirmation.enabled -}}
+  {{- $default_subject := print (i18n "form_confirm_subject") ": " $subject -}}
+  {{- $default_intro := i18n "form_confirm_intro" -}}
+  {{- $default_notice := i18n "form_confirm_notice" -}}
+  {{- $confirmation_payload = dict
+    "enabled" true
+    "subject" (or $confirmation.subject $default_subject)
+    "intro" (or $confirmation.intro $default_intro)
+    "notice" (or $confirmation.notice $default_notice)
+  -}}
+{{- end -}}
 {{- if $googleScript -}}
   {{- $provider     = "gas" -}}
 {{- else if $formsubmit_co -}}
@@ -243,8 +256,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     <input type="hidden" name="_domain" value="{{ site.Params.domain }}">
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
-    {{- if .form.confirm }}
-      <input type="hidden" name="_confirmation_email" value="true">
+    {{- if $confirmation_payload.enabled }}
+      <input type="hidden" name="_confirmation" value="{{ $confirmation_payload | jsonify }}">
     {{- end }}
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
     <input type="hidden" name="Timestamp" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">

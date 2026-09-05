@@ -308,15 +308,29 @@
   ))
 
 
-  (partial "cms/widget" (dict "var" `form_id`      "name" `id`                                              "label" `ID`                 ))
-  (partial "cms/widget" (dict "var" `form_action`  "name" `action`                                                                       ))
-  (partial "cms/widget" (dict "var" `form_to`      "name" `to`                                                                           ))
-  (partial "cms/widget" (dict "var" `form_subject` "name" `subject`                                                                      ))
-  (partial "cms/widget" (dict "var" `form_mail`    "name" `mail`                                            "alt" `config_mail`          ))
-  (partial "cms/widget" (dict "var" `form_confirm` "name" `confirm` "widget" `bool`                                                      ))
-  (partial "cms/widget" (dict "var" `form_labels`  "name" `labels`  "widget" `select` "opts" `~opts_labels` "alt" `styles_inputs_labels` ))
-  (partial "cms/widget" (dict "var" `form_fill`    "name" `fill`    "widget" `bool`                         "alt" `styles_inputs_fill`   ))
-  (partial "cms/widget" (dict "var" `form_consent` "name" `consent`                                         "alt" `styles_inputs_consent`))
+  (partial "cms/widget" (dict "var" `form_id`              "name" `id`                                              "label" `ID`                 ))
+  (partial "cms/widget" (dict "var" `form_action`          "name" `action`                                                                       ))
+  (partial "cms/widget" (dict "var" `form_to`              "name" `to`                                                                           ))
+  (partial "cms/widget" (dict "var" `form_subject`         "name" `subject`                                                                      ))
+  (partial "cms/widget" (dict "var" `form_mail`            "name" `mail`                                            "alt" `config_mail`          ))
+  (partial "cms/widget" (dict "var" `form_confirm_enabled` "name" `enabled` "widget" `bool`                                                      ))
+  (partial "cms/widget" (dict "var" `form_confirm_subject` "name" `subject`                                                                      ))
+  (partial "cms/widget" (dict "var" `form_confirm_intro`   "name" `intro`   "widget" `txt`                                                       ))
+  (partial "cms/widget" (dict "var" `form_confirm_notice`  "name" `notice`  "widget" `txt`                                                       ))
+  (partial "cms/widget" (dict
+    "var"    `form_confirm`
+    "name"   `confirm`
+    "widget" `dict`
+    "fields" (slice
+      `~form_confirm_enabled`
+      `~form_confirm_subject`
+      `~form_confirm_intro`
+      `~form_confirm_notice`
+    )
+  ))
+  (partial "cms/widget" (dict "var" `form_labels`          "name" `labels`  "widget" `select` "opts" `~opts_labels` "alt" `styles_inputs_labels` ))
+  (partial "cms/widget" (dict "var" `form_fill`            "name" `fill`    "widget" `bool`                         "alt" `styles_inputs_fill`   ))
+  (partial "cms/widget" (dict "var" `form_consent`         "name" `consent`                                         "alt" `styles_inputs_consent`))
   (partial "cms/widget" (dict
     "var"    `form`
     "name"   `form`
