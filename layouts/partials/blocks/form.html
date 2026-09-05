@@ -163,6 +163,14 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- $default_subject := print (i18n "form_confirm_subject") ": " $subject -}}
   {{- $default_intro := i18n "form_confirm_intro" -}}
   {{- $default_notice := i18n "form_confirm_notice" -}}
+  {{- $confirmation_intro := $default_intro -}}
+  {{- $confirmation_notice := $default_notice -}}
+  {{- if isset $confirmation "intro" -}}
+    {{- $confirmation_intro = $confirmation.intro -}}
+  {{- end -}}
+  {{- if isset $confirmation "notice" -}}
+    {{- $confirmation_notice = $confirmation.notice -}}
+  {{- end -}}
   {{- $confirmation_fields := true -}}
   {{- if isset $confirmation "fields" -}}
     {{- $confirmation_fields = $confirmation.fields -}}
@@ -171,8 +179,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     "enabled" true
     "fields" $confirmation_fields
     "subject" (or $confirmation.subject $default_subject)
-    "introHtml" ((or $confirmation.intro $default_intro) | markdownify)
-    "noticeHtml" ((or $confirmation.notice $default_notice) | markdownify)
+    "introHtml" ($confirmation_intro | markdownify)
+    "noticeHtml" ($confirmation_notice | markdownify)
   -}}
 {{- end -}}
 {{- if $googleScript -}}

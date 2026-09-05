@@ -235,6 +235,8 @@ form:
 
 SanSoul resuelve los textos en el idioma de la página y envía a GAS un único campo oculto `_confirmation` con la configuración ya traducida. `intro` y `notice` aceptan Markdown, que Hugo convierte a HTML y el receptor filtra antes de incluirlo en el correo. `fields` decide si se muestra la tabla con los datos enviados y vale `true` por defecto. Cualquier valor omitido usa la traducción predeterminada:
 
+Los textos también pueden insertar el primer valor de un campo mediante su nombre entre corchetes, por ejemplo `[Nombre]`. Un `notice` vacío elimina por completo el aviso final.
+
 ```yml
 form:
   confirm:
