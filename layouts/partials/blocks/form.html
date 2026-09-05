@@ -163,11 +163,16 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- $default_subject := print (i18n "form_confirm_subject") ": " $subject -}}
   {{- $default_intro := i18n "form_confirm_intro" -}}
   {{- $default_notice := i18n "form_confirm_notice" -}}
+  {{- $confirmation_fields := true -}}
+  {{- if isset $confirmation "fields" -}}
+    {{- $confirmation_fields = $confirmation.fields -}}
+  {{- end -}}
   {{- $confirmation_payload = dict
     "enabled" true
+    "fields" $confirmation_fields
     "subject" (or $confirmation.subject $default_subject)
-    "intro" (or $confirmation.intro $default_intro)
-    "notice" (or $confirmation.notice $default_notice)
+    "introHtml" ((or $confirmation.intro $default_intro) | markdownify)
+    "noticeHtml" ((or $confirmation.notice $default_notice) | markdownify)
   -}}
 {{- end -}}
 {{- if $googleScript -}}

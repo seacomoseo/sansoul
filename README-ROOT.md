@@ -233,15 +233,18 @@ form:
     enabled: true
 ```
 
-SanSoul resuelve los textos en el idioma de la página y envía a GAS un único campo oculto `_confirmation` con la configuración ya traducida. El asunto completo, el texto anterior a la tabla y el aviso posterior se pueden personalizar; cualquier valor omitido usa la traducción predeterminada:
+SanSoul resuelve los textos en el idioma de la página y envía a GAS un único campo oculto `_confirmation` con la configuración ya traducida. `intro` y `notice` aceptan Markdown, que Hugo convierte a HTML y el receptor filtra antes de incluirlo en el correo. `fields` decide si se muestra la tabla con los datos enviados y vale `true` por defecto. Cualquier valor omitido usa la traducción predeterminada:
 
 ```yml
 form:
   confirm:
     enabled: true
+    fields: false
     subject: Confirmación de inscripción
-    intro: Hemos recibido correctamente tu inscripción.
-    notice: Este es un mensaje automático. Por favor, no respondas a este correo.
+    intro: |
+      Hemos recibido **correctamente** tu inscripción.
+    notice: |
+      Este es un mensaje automático. Por favor, no respondas a este correo.
 ```
 
 El receptor duradero mantiene una sola fila por payload en `logs` y registra cada archivo adjunto por separado en `file_logs`. Conserva el JSON completo en `Raw Parameters`; solo crea un archivo de Drive cuando el payload supera el límite seguro de una celda, en cuyo caso esa misma celda contiene el enlace de recuperación. Los reintentos reutilizan el registro y los archivos ya creados; si un mismo `_submission_id` llega con contenido distinto, el receptor conserva ambos payloads y deriva el segundo a revisión. Los clientes antiguos sin identificador reciben uno determinista a partir del payload para que repetir exactamente la misma petición no genere otro registro.
