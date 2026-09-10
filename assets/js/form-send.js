@@ -11,6 +11,27 @@ const {
 const closeIcon = '<i class="icon close" onclick="this.parentElement.remove()">close</i>'
 const pendingStorageKey = 'sansoul.form.pending'
 const submissionInputName = '_submission_id'
+let clientIpPromise = Promise.resolve('')
+
+async function getClientIp () {
+  if (typeof AbortController !== 'function') return ''
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 1500)
+
+  try {
+    const response = await fetch('https://api64.ipify.org?format=json', {
+      signal: controller.signal,
+      referrerPolicy: 'no-referrer'
+    })
+    const data = response.ok ? await response.json() : {}
+    return data.ip || ''
+  } catch (_) {
+    return ''
+  } finally {
+    clearTimeout(timeout)
+  }
+}
 
 function createSubmissionId () {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -90,7 +111,9 @@ function isPersistedSubmission (data, submissionId) {
   // handlers return a durable receipt that can be verified.
   if (typeof data.persisted === 'undefined' && typeof data.submissionId === 'undefined') return true
 
-  return data.persisted === true && data.submissionId === submissionId
+  return data.persisted === true && Boolean(data.submissionId) && (
+    data.submissionId === submissionId || data.status === 'review'
+  )
 }
 
 async function retryPendingSubmissions () {
@@ -158,6 +181,9 @@ export function initFormSend () {
 
   waitCSS(() => {
     const forms = document.querySelectorAll('.form')
+    if ([...forms].some(form => form.dataset.prov === 'gas')) {
+      clientIpPromise = getClientIp()
+    }
 
     forms.forEach(e => {
       e.addEventListener('submit', async submit => {
@@ -236,30 +262,10 @@ export function initFormSend () {
                 return
               }
 
-              let ipTimeout
-              const ipController = typeof AbortController === 'function'
-                ? new AbortController()
-                : null
-              try {
-                const data = await Promise.race([
-                  fetch('https://api64.ipify.org?format=json', {
-                    signal: ipController?.signal,
-                    referrerPolicy: 'no-referrer'
-                  })
-                    .then(response => response.ok ? response.json() : {}),
-                  new Promise(resolve => {
-                    ipTimeout = setTimeout(() => {
-                      ipController?.abort()
-                      resolve({})
-                    }, 1500)
-                  })
-                ])
-                formData.set('IP', data.ip || '')
-              } catch (_) {
-                formData.set('IP', '')
-              } finally {
-                clearTimeout(ipTimeout)
-              }
+              formData.set('IP', await Promise.race([
+                clientIpPromise,
+                new Promise(resolve => setTimeout(() => resolve(''), 200))
+              ]))
             }
 
             if ((!googleScript && isFileType) || formSubmitCo) {
@@ -295,7 +301,7 @@ export function initFormSend () {
                 formTimeout = setTimeout(() => {
                   formController?.abort()
                   reject(new Error('Submission timed out'))
-                }, 30000)
+                }, 60000)
               })
             ])
               .then(response => {
