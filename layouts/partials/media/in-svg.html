@@ -18,11 +18,12 @@
     {{- $vid_name    := index .vid "name" | default "aux" -}}
     {{- $vid_src     := index .vid "src" -}}
     {{- $attrs       := dict $vid_name $vid_data "data-vid" $vid_src -}}
+    {{- $source      := $src.Content -}}
     {{- $min         := $src | minify -}}
     {{- $content     := $min.Content | replaceRE `\n` "" -}}
     {{- $src          = $content | resources.FromString $src.RelPermalink -}}
     {{/*  print  */}}
-    {{- if $content | findRE `svg-src` -}}
+    {{- if $source | findRE `svg-src` -}}
       {{/*  image tag  */}}
       {{- $img_attrs := dict
         "class"    .class
@@ -36,9 +37,10 @@
       {{- $img_attrs = merge $attrs $img_attrs -}}
       {{- $img_attrs = partial "func/attrs" $img_attrs }}
       <img {{- $img_attrs }}>
-    {{- else if $content | findRE `svg-html` -}}
+    {{- else if $source | findRE `svg-html` -}}
       {{/*  svg html  */}}
       {{- $attrs   = partial "func/attrs" $attrs -}}
+      {{- $content = $content | replaceRE ` class=["']svg-html["']` "" -}}
       {{- $content = replace $content "<svg" (print "<svg" $attrs) -}}
       {{- if not ($head | findRE ` width=`) -}}
         {{- $content = replace $content "<svg" (print "<svg width='" $width "'") -}}
