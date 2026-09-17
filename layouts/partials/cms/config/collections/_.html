@@ -242,7 +242,7 @@
     "slug"             $slug
     "preview_path"     $preview
     "summary"          $sum
-    "thumbnail"        (slice `img` `vid` `bi`)
+    "thumbnail"        `img`
     "editor"           (dict "preview" false)
     "sortable_fields"  $sortable_fields
     "view_groups"      $view_groups
@@ -255,7 +255,7 @@
       "create"           true
       "i18n"             true
       "preview_path"     $index_preview
-      "thumbnail"        (slice `img` `vid` `bi`)
+      "thumbnail"        `img`
       "editor"           (dict "preview" false)
       "fields"           (slice
         $index_permalinks
@@ -331,7 +331,7 @@
   "create"           true
   "slug"             "{{fields.name}}"
   "summary"          "{{name}}"
-  "thumbnail"        (slice `img` `vid` `bi`)
+  "thumbnail"        `bi`
   "sortable_fields"  (dict
     "fields"  (slice "name" "id")
     "default" (dict
