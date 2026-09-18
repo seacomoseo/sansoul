@@ -2,12 +2,12 @@
 {{ $lang_hint := print .def " → **" (index . "opt-langs_cms-es") "**" }}
 {{ return slice
 
+  (partial "cms/widget" (dict "var" `config_mail`          "name" `mail`                                                                                               ))
   (partial "cms/widget" (dict "var" `config_ga4`           "name" `ga4`                                                                                                ))
   (partial "cms/widget" (dict "var" `config_g_site_verify` "name" `g_site_verify`                                                                                      ))
   (partial "cms/widget" (dict "var" `config_g_file_verify` "name" `g_file_verify`                                                                                      ))
   (partial "cms/widget" (dict "var" `config_g_translate`   "name" `g_translate`   "widget" `bool`                                                                      ))
   (partial "cms/widget" (dict "var" `config_disqus`        "name" `disqus`                                                                                             ))
-  (partial "cms/widget" (dict "var" `config_mail`          "name" `mail`                                                                                               ))
   (partial "cms/widget" (dict "var" `config_phone_code`    "name" `phone_code`    "widget" `select`  "hint" (print .def " → **+34 🇪🇸**")        "opts" $u.phone_code   ))
   (partial "cms/widget" (dict "var" `config_time_zone`     "name" `time_zone`     "widget" `select`  "hint" (print .def " → **Europe/Madrid**") "opts" $u.time_zone    ))
   (partial "cms/widget" (dict "var" `config_currency`      "name" `currency`      "widget" `select`  "hint" (print .def " → **EUR**")           "opts" `~opts_currency`))
