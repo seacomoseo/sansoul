@@ -16,7 +16,7 @@
     {{ $org := dict
       "@type" "Organization"
       "name"  .name
-      "url"   .url
+      "url"   (absURL .url)
     }}
     {{ $works_for = $works_for | append $org }}
   {{ end }}

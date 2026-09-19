@@ -111,7 +111,7 @@
       {{ end }}
       {{ $service  := dict
         "@type"      "Service"
-        "url"         .url
+        "url"         (absURL .url)
         "name"        .title
         "description" .desc
         "areaServed"  .area

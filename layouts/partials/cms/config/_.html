@@ -35,15 +35,15 @@
 
 {{ $site_url      := "" }}
 {{ $publish_mode  := "" }}
-{{ $domain        := ".pages.dev/" }}
+{{ $deploy_app    := ".pages.dev/" }}
 {{- if getenv "NETLIFY" -}}
-  {{ $domain       = ".netlify.app/" }}
+  {{ $deploy_app   = ".netlify.app/" }}
 {{- end -}}
 {{ if $config.cms_editorial }}
-  {{ $site_url   = print "https://" site.Params.name $domain }}
+  {{ $site_url   = print "https://" site.Params.name $deploy_app }}
   {{ $publish_mode = "editorial_workflow" }}
 {{ else if $config.dev }}
-  {{ $site_url     = print "https://" site.Params.name $domain }}
+  {{ $site_url     = print "https://" site.Params.name $deploy_app }}
 {{ else }}
   {{ $site_url     = site.Home.Permalink }}
 {{ end }}
