@@ -126,10 +126,18 @@
         {{ with $type_lang }}
           {{ if .Content | findRE `(?s)^---.+---` }}
             {{ $type_lang_params := unmarshal .Content }}
+            {{ $ni_lang          := $type_lang_params.noindex }}
+            {{ with $type_lang_params.seo }}
+              {{ if ne .noindex nil }}
+                {{ $ni_lang = .noindex }}
+              {{ end }}
+            {{ end }}
             {{ $type_lang_title  := dict
-              "lang_title"     $type_lang_params.title
-              "noindex_parent" $type_lang_params.noindex
+              "lang_title" $type_lang_params.title
             }}
+            {{ if ne $ni_lang nil }}
+              {{ $type_lang_title = merge $type_lang_title (dict "noindex_parent" $ni_lang) }}
+            {{ end }}
             {{ $type = merge $type $type_lang_params $type_lang_title }}
           {{ end }}
         {{ end }}
@@ -198,7 +206,15 @@
           {{ $slug        = or .slug        $default_values.slug     $title                  }}
           {{ $icon       := or .icon        (index $c.icons  $name)  "file"                  }}
           {{ $emoji      := or .emoji       (index $c.emojis $name)  "📄"                    }}
-          {{ $ni_parent  := cond (eq .noindex_parent nil) true .noindex_parent }}
+          {{ $ni_parent  := .noindex_parent }}
+          {{ if eq $ni_parent nil }}
+            {{ with .seo }}
+              {{ if ne .noindex nil }}
+                {{ $ni_parent = .noindex }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+          {{ $ni_parent   = cond (eq $ni_parent nil) true $ni_parent }}
           {{ $customs    := slice }}
           {{ range hugo.Data.customs | default slice }}
             {{ if in .types $name }}
