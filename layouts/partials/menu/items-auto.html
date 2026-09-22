@@ -27,7 +27,8 @@
       {{ $sections = .sections }}
     {{ else }}
       {{ $tpl     := partial "func/tpl-sections" site.Home }}
-      {{ $sections = $tpl.sections }}
+      {{ $sections = partial "sections/items" $tpl }}
+      {{ $sections = where $sections "id" "ne" "footer" }}
     {{ end }}
   {{ end }}
 
