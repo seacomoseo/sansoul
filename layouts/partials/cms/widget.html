@@ -178,7 +178,10 @@
     {{ $o = merge $o (dict "display_fields" (slice "{{title}}")) }}
   {{ end }}
 {{ else if eq "bool" $widget }}
-  {{ $o  = merge $o (dict "widget" `radio`) }}
+  {{ $o  = merge $o (dict "widget" `select`) }}
+  {{ if eq nil .options }}
+    {{ $o = merge $o (dict "options" `~opts_bool`) }}
+  {{ end }}
 {{ else if eq "hide" $widget }}
   {{ $o = merge $o (dict "widget" `hidden`) }}
 {{ end }}
