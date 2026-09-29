@@ -1,5 +1,18 @@
-{{/*  Push tpl and pull merged and expanded sections */}}
+{{/*
+Partial: sections/items
+Purpose: Expand the effective sections for rendering.
+Context: Map containing the merged sections and an optional `Page` source.
+Returns: Expanded section slice.
+Side effects: May populate the current page store with section anchors.
+*/}}
 {{ $sections := partial "sections/merged-tpl"       .         }}
+{{ with .Page }}
+  {{ $sections_page := slice }}
+  {{ range $sections }}
+    {{ $sections_page = $sections_page | append (merge . (dict "Page" $.Page)) }}
+  {{ end }}
+  {{ $sections = $sections_page }}
+{{ end }}
 {{ $sections  = partial "sections/merged-expand"    $sections }}
 {{ $sections  = partial "sections/merged-prev-next" $sections }}
 {{ return $sections }}

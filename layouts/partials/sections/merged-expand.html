@@ -159,11 +159,16 @@
 {{/*  SECTIONS  */}}
 {{ $sections := slice }}
 {{ range . }}
+  {{ $section_page := .Page }}
 
   {{/*  MODALS  */}}
   {{ $modals := slice }}
   {{ range .modals }}
-    {{ with partial "expand" . }}
+    {{ $modal := . }}
+    {{ with $section_page }}
+      {{ $modal = merge $modal (dict "Page" .) }}
+    {{ end }}
+    {{ with partial "expand" $modal }}
       {{ $modals = $modals | append . }}
     {{ end }}
   {{ end }}

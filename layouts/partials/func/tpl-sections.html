@@ -25,4 +25,5 @@ Side effects: None directly; called partials may read site data.
 {{ $sections := partial "sections/items-tpl" $options }}
 {{ $sections  = dict "sections" $sections }}
 {{ $tpl       = merge $tpl $sections }}
+{{ $tpl       = merge $tpl (dict "Page" .) }}
 {{ return $tpl }}
