@@ -138,12 +138,13 @@
 
 {{- /*  SVG'S CODE  */ -}}
 {{ with $svg_ }}
+{{- /*
 <style>
   svg {
     overflow: unset;
   }
   .svg-variable {
-    fill: var(--bg-hex,white);
+    fill: var(--bg-color,white);
     stroke: currentColor;
     stroke-width: var(--stroke-width,120);
     stroke-linejoin: var(--linejoin,round);
@@ -158,6 +159,7 @@
     opacity: var(--icons-fill,1);
   }
 </style>
+*/}}
 <defs>
 {{ delimit . "\n" | safeHTML }}
 </defs>
