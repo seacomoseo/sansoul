@@ -20,7 +20,7 @@
     {{ $t   = print "#" . }}
   {{ end }}
 
-{{ else with .vid | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtu\.be/)([\w-]+)` }}
+{{ else with .vid | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtube.com/shorts/|youtu\.be/)([\w-]+)` }}
 
   {{ $ifr   = true }}
   {{ $name  = "YouTube" }}

@@ -6,7 +6,7 @@
 {{ end }}
 
 {{ if not $img }}
-  {{ with . | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtu\.be/)([\w-]+)` }}
+  {{ with . | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtube.com/shorts/|youtu\.be/)([\w-]+)` }}
     {{ $id := index . 0 1 }}
     {{ $img = print "https://i3.ytimg.com/vi_webp/" $id "/sddefault.webp" }}
   {{ else with . | findRESubmatch `vimeo\.com/(?:video/)?([^#&]+)` }}
