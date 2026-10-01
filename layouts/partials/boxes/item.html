@@ -71,8 +71,24 @@ Side effects: Called media and block partials may register assets in page.Store.
 
       {{- /*  LIST  */ -}}
       {{- with $.list -}}
-        {{- .pagination -}}
-        {{- partial "boxes/items" . -}}
+        {{- if and .list_groups (gt (len .list_groups) 1) -}}
+          {{- range .list_groups -}}
+            {{- $group_title := .title -}}
+            {{- $group := partial "boxes/merge-expand-items" . -}}
+            {{- with $group_title -}}
+              {{- partial "boxes/title" . -}}
+            {{- end -}}
+            {{- $group.pagination -}}
+            {{- partial "boxes/items" $group -}}
+          {{- end -}}
+        {{- else if .list_groups -}}
+          {{- $group := partial "boxes/merge-expand-items" (index .list_groups 0) -}}
+          {{- $group.pagination -}}
+          {{- partial "boxes/items" $group -}}
+        {{- else -}}
+          {{- .pagination -}}
+          {{- partial "boxes/items" . -}}
+        {{- end -}}
       {{- end -}}
 
     {{- else if eq . "faq" -}}

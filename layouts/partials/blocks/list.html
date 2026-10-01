@@ -18,6 +18,8 @@
     {{ end }}
 
     {{ $types_many := gt (len $types) 1 }}
+    {{/* type: all renders each matching collection as its own list. */}}
+    {{ $list_groups := slice }}
 
     {{ range $types }}
       {{ $type       := . }}
@@ -120,8 +122,9 @@
       {{ end }}
 
       {{ if len $pages }}
+        {{ $title := dict }}
         {{ if $types_many }}
-          {{ $opts := dict
+          {{ $title = dict
             "class" "box__title--list"
             "title" $parent.Title
             "hn"    $.hn
@@ -129,7 +132,6 @@
             "hs_vs" $.hs_vs
             "level" $.level
           }}
-          {{ partial "boxes/title" $opts }}
         {{ end }}
 
         {{/* PAGES TO BOXES  */}}
@@ -172,14 +174,28 @@
           {{ $boxes = $boxes | append $page }}
         {{ end }}
 
-        {{ $to_merge := dict
+        {{ $group := merge (dict) $e (dict
           "list"       dict
           "box"        $tpl
           "boxes"      $boxes
           "list_pages" true
           "pagination" $pagination
-        }}
-        {{ $result = merge $e $to_merge }}
+        ) }}
+        {{ if $types_many }}
+          {{ $group = merge $group (dict "title" $title) }}
+        {{ end }}
+        {{ $list_groups = $list_groups | append $group }}
+      {{ end }}
+    {{ end }}
+
+    {{ if $list_groups }}
+      {{ if $types_many }}
+        {{ $result = merge $e (dict
+          "list"        dict
+          "list_groups" $list_groups
+        ) }}
+      {{ else }}
+        {{ $result = merge $e (index $list_groups 0) }}
       {{ end }}
     {{ end }}
   {{ end }}
