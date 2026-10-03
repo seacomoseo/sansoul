@@ -1,11 +1,31 @@
+{{/*
+Partial: sections/merged-shortcodes
+Purpose: Resolve template shortcodes in section data using its source page.
+Context:
+  - items (any, optional): Value to process. When omitted, the partial processes
+    the context directly and uses the current page.
+  - Page (page.Page, optional): Page used to evaluate page-dependent shortcodes.
+Returns: The processed value.
+Side effects: Creates temporary resources while evaluating template strings.
+*/}}
+{{ $options := . }}
 {{ $obj := . | default dict }}
+{{ $source_page := page }}
+{{ if reflect.IsMap . }}
+  {{ with .items }}
+    {{ $obj = . }}
+    {{ with $options.Page }}
+      {{ $source_page = . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
 {{ with $obj | jsonify }}
   {{ if . | findRE `%%|\{\{ ` }}
     {{ $json := . }}
     {{ $tmp  := false }}
     {{ with $json | findRE `%%\{\{.+?\}\}%%` }}
       {{ range $k, $v := . | uniq }}
-        {{ $path  := print page.RelPermalink $k }}
+        {{ $path  := print $source_page.RelPermalink $k }}
         {{ $param := .
           | replaceRE `^%+|%+$` ""
           | replaceRE `\\` ""
@@ -22,7 +42,7 @@
         {{ $param := .
           | replaceRE `^\{\{ ` "{{< "
           | replaceRE ` \}\}$` " >}}"
-          | site.Home.RenderString
+          | $source_page.RenderString
           | plainify
           | replaceRE `&amp;#43;` `+`
           | replaceRE `\"` `\"`
