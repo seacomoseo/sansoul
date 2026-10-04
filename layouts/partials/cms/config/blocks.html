@@ -376,8 +376,9 @@
     "widget" `slice`
     "sum"    "{{fields.label}}"
     "fields" (slice
-      (partial "cms/widget" (dict "alt" `input_items_label` "name" `label`))
-      (partial "cms/widget" (dict "alt" `input_items_key`   "name" `key`  ))
+      (partial "cms/widget" (dict "alt" `input_items_label`    "name" `label`))
+      (partial "cms/widget" (dict "alt" `input_items_key`      "name" `key`  ))
+      (partial "cms/widget" (dict "alt" `input_items_disabled` "name" `disabled`  ))
     )
     "label_singular" .input_items_label
   ))

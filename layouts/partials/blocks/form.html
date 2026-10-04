@@ -485,7 +485,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
           <select class="form__select" name="{{ .name }}" {{- $req_attr }}>
             <option value="">{{ $placeholder }}</option>
             {{- range .items }}
-              <option value="{{ or .key .label }}">{{ .label }}</option>
+              {{- $option_attrs := dict "value" (or .key .label) "disabled" .disabled -}}
+              {{- $option_attrs  = partial "func/attrs" $option_attrs }}
+              <option {{- $option_attrs }}>{{ .label }}</option>
             {{- end }}
           </select>
         </label>
