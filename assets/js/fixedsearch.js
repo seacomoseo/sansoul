@@ -1,3 +1,4 @@
+/* global Fuse */
 // static/js/fixedsearch.js
 /* --------------------------------------------------------------
 fixedsearch — Super fast, client side search for Hugo.io with Fusejs.io
@@ -191,7 +192,6 @@ based on https://gist.github.com/cmod/5410eae147e4318164258742dd053993
             ]
           }
 
-          // eslint-disable-next-line
           fuse = new Fuse(data, options) // build the index from the json file
 
           searchInput.addEventListener('keyup', function (e) { // execute search as each character is typed

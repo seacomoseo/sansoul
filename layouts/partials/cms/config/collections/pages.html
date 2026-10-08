@@ -51,8 +51,11 @@
     )
   ))
 
-  (partial "cms/widget" (dict "var" `page_price` "<<" `price` "widget" `float`))
-  (partial "cms/widget" (dict "var" `page_sku`   "name" `sku` "label" `SKU` "i18n" `duplicate`))
+  (partial "cms/widget" (dict "var" `page_price` "widget" `float`))
+  (partial "cms/widget" (dict "var" `page_sku` "name" `sku` "label" `SKU` "hint" .page_sku_hint "i18n" `duplicate`))
+  (partial "cms/widget" (dict "var" `page_commerce_id` "name" `commerce_id` "i18n" `duplicate`))
+  (partial "cms/widget" (dict "var" `page_commerce_active` "name" `commerce_active` "widget" `bool` "default" false "i18n" `duplicate`))
+  (partial "cms/widget" (dict "var" `page_commerce_quote` "name" `commerce_quote` "widget" `bool` "default" false "i18n" `duplicate`))
   
   (partial "cms/widget" (dict "var" `page_prefix` "name" `prefix`))
   (partial "cms/widget" (dict

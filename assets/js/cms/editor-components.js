@@ -491,8 +491,8 @@ function getControlLabelText (control) {
   const labelledBy = control.getAttribute('aria-labelledby')
   const labelledText = labelledBy
     ? labelledBy.split(/\s+/).map(function (id) {
-        return document.getElementById(id)?.textContent || ''
-      }).join(' ')
+      return document.getElementById(id)?.textContent || ''
+    }).join(' ')
     : ''
 
   return normalizeLabelText([
@@ -1063,8 +1063,7 @@ export function initEditorComponents () {
       const closing = Boolean(match[2])
       const name = match[3] ?? ''
       const params = closing ? '' : match[4] ?? ''
-      const prefix = type === '<' ? '< ' : type === '%' ? '% ' : ' '
-      const suffix = type === '<' ? ' >' : type === '%' ? ' %' : ' '
+
       return {
         type,
         closing,

@@ -5,10 +5,10 @@ id: seccion
 # bg
 color: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
 color_alpha: 0 # [ 0.00 - 1.00 ]
-fade: gray # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
 fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
 bi: /u/base/poster.png
-alpha: 0 # [ 0.00 - 1.00 ]
+alpha: .95 # [ 0.00 - 1.00 ]
 scroll: soft # [ none, fix, soft ]
 # paddings
 pt: 5 # [ >= 0.00 ]
@@ -80,10 +80,10 @@ boxes:
   line: true
   # md
   md: |
-    Contenido de [Caja 1](#seccion)
+    Contenido de [Caja 1](#hero)
 
-    [[::link:: Botón con anchor ::link::]](#seccion "hola k ase [light]")
-    [[::link:: Botón sin anchor ::link::]](#seccion "[dark]")
+    [[::link:: Botón con anchor ::link::]](#hero "hola k ase [light]")
+    [[::link:: Botón sin anchor ::link::]](#hero "[dark]")
   md_align: center # [ left, center, right ]
   md_align_vl: center # [ left, center, right ]
   md_sm: false
@@ -123,7 +123,7 @@ boxes:
   # bg
   color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
   color_alpha: '' # [ 0.00 - 1.00 ]
-  fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
+  fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
   fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
   bi: /u/base/icon.png
   alpha: .8 # [ 0.00 - 1.00 ]
@@ -508,6 +508,7 @@ boxes:
       key: Selección Valor 1
     - label: Selección Opción 2
       key: Selección Valor 2
+      disabled: true
     - label: Selección Opción 3
       key: Selección Valor 3
   - type: radio
@@ -521,6 +522,7 @@ boxes:
       key: Radio Valor 1
     - label: Radio Opción 2
       key: Radio Valor 2
+      disabled: true
     - label: Radio Opción 3
       key: Radio Valor 3
   - type: checks
@@ -534,12 +536,14 @@ boxes:
       key: Checkbox Valor 1
     - label: Checkbox Opción 2
       key: Checkbox Valor 2
+      disabled: true
     - label: Checkbox Opción 3
       key: Checkbox Valor 3
   - type: check
     name: Check
     label: Checkbox alone
     req: true
+    disabled: true
   - type: file
     name: Factura
     hint: Adjunta tu factura eléctrica

@@ -214,6 +214,7 @@ elif [ "$COMMAND" = hugo-development ]; then
 
   # remove cache directories
   rm -rf public resources
+  node ./themes/sansoul/commerce/scripts/build-catalog.js
 
   hecho "RUN HUGO DEVELOPMENT"
   hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
@@ -223,6 +224,7 @@ elif [ "$COMMAND" = hugo-production ]; then
 
   sh do rm-public
   sh do prebuild
+  node ./themes/sansoul/commerce/scripts/build-catalog.js
 
   hecho "RUN HUGO PRODUCTION"
   hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
@@ -235,7 +237,11 @@ elif [ "$COMMAND" = hugo ]; then
 
   if [ ! -d ./node_modules ]; then
     hecho "INSTALL PRODUCTION DEPENDENCIES"
-    npm install
+    if [ -f ./package-lock.json ]; then
+      npm ci
+    else
+      npm install
+    fi
   fi
 
   start_ms=$(node -p "Date.now()")

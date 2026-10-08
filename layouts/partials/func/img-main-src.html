@@ -1,0 +1,32 @@
+{{/*
+Partial: func/img-main-src
+Purpose: Select the existing main image for schema and Open Graph, using the page's media or logo.
+Context: page.Page; accepts img, vid (poster), and imgs (first item).
+Returns: Image path or absolute remote URL; empty for a missing explicit local image.
+Side effects: Resolves resources and may request a supported video provider's poster.
+*/}}
+{{ $src := or .Params.img .Params.vid }}
+{{ if not $src }}
+  {{ with .Params.imgs }}
+    {{ $src = index . 0 }}
+  {{ end }}
+{{ end }}
+{{ with $src }}
+  {{ if partial "func/is-vid" . }}
+    {{ $src = partial "func/poster" . }}
+  {{ end }}
+{{ end }}
+{{ if not $src }}
+  {{ $src = partial "func/logo" . }}
+{{ end }}
+{{ with $src }}
+  {{ $src = partial "func/check-media" . }}
+  {{ if not (hasPrefix $src "http") }}
+    {{ with resources.Get $src }}
+      {{ $src = .RelPermalink }}
+    {{ else }}
+      {{ $src = "" }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $src }}

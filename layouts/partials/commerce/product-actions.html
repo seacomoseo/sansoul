@@ -1,0 +1,18 @@
+{{- $product := . -}}
+{{- with hugo.Data.commerce -}}
+  {{- if and (eq .enabled true) (eq $product.Params.commerce_active true) $product.Params.commerce_id -}}
+    {{- if eq $product.Params.commerce_quote true -}}
+      <p class="commerce__product-actions commerce__quote">
+        <a class="btn" href="{{ site.Home.RelPermalink }}#contacto">{{ i18n "commerce_request_quote" }}</a>
+      </p>
+    {{- else -}}
+      <div class="commerce__product-actions" data-commerce-product-actions data-product-id="{{ $product.Params.commerce_id }}" hidden>
+        <label class="commerce__quantity-label">
+          <span>{{ i18n "commerce_quantity" }}</span>
+          <input class="commerce__quantity" type="number" min="1" max="10" step="1" value="1" inputmode="numeric" data-commerce-quantity>
+        </label>
+        <button class="btn" type="button" data-commerce-add>{{ i18n "commerce_add" }}</button>
+      </div>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

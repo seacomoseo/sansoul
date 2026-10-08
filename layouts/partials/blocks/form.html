@@ -137,7 +137,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- $input      = merge $input (dict "full" $full "show_of" $show_of) -}}
   {{- /*  check to checs  */ -}}
   {{- if eq .type "check" -}}
-    {{- $items := slice (dict "label" .label "key" .name) -}}
+    {{- $items := slice (dict "label" .label "key" .name "disabled" .disabled) -}}
     {{- $input  = merge $input (dict "type" "checks" "name" nil "label" nil "items" $items) -}}
   {{- end -}}
   {{- /*  append  */ -}}
@@ -485,7 +485,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
           <select class="form__select" name="{{ .name }}" {{- $req_attr }}>
             <option value="">{{ $placeholder }}</option>
             {{- range .items }}
-              <option value="{{ or .key .label }}">{{ .label }}</option>
+              {{- $option_attrs := dict "value" (or .key .label) "disabled" .disabled -}}
+              {{- $option_attrs  = partial "func/attrs" $option_attrs }}
+              <option {{- $option_attrs }}>{{ .label }}</option>
             {{- end }}
           </select>
         </label>
@@ -515,7 +517,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
               {{- end }}
               <label class="form__opt">
                 {{- "" -}}
-                <input class="form__{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $key }}">
+                <input class="form__{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $key }}" {{- partial "func/attrs" (dict "disabled" .disabled) }}>
                 {{- .label }}{{ if $only }}{{ if $req }} *{{ end }}{{ end -}}
               </label>
             {{- end -}}

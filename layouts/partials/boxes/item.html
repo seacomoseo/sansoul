@@ -218,6 +218,10 @@ Side effects: Called media and block partials may register assets in page.Store.
 {{- /*  INBOX  */ -}}
 {{- $inbox -}}
 
+{{- if .commerce_product -}}
+  {{- partial "commerce/product-actions" (.Page | default page) -}}
+{{- end -}}
+
 {{- /*  MODAL NAV  */ -}}
 {{- if and .root .is_modal (not .section.ph) }}
   {{- partial "boxes/modal-nav" . -}}

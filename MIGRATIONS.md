@@ -35,6 +35,47 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 7.1.0 — 2026-10-05
+
+**Impacto:** extensión compatible y opt-in de catálogo, carrito, CMS ES/EN y
+Pages Functions. No activa compras ni migra automáticamente datos o bases.
+
+### Acciones y modos
+
+1. Conserva ambos `package-lock.json` en Git y ejecuta `npm ci` en el consumidor
+   y en `themes/sansoul/`. No se necesitan dependencias nuevas al adoptar esta versión.
+2. Sin comercio: no crees `data/commerce.yml`; los componentes y campos comerciales
+   siguen ausentes. Con `enabled: false`, no hay UI. Sin adaptadores no se generan
+   artefactos de Functions. Si hay adaptadores pero Functions está desactivado,
+   `_routes.json` incluye y excluye solo `/`.
+3. Para optar por catálogo/carrito, consulta `README-ROOT.md`: configura
+   `enabled: true`, `origin`, `currency` y `stock_mode`; asigna UUID/SKU únicos y
+   estables antes de compilar. Conserva un registro versionado de todas las
+   identidades, incluidas bajas, fuera de los mounts públicos. No rellenes huecos
+   ni renumeres productos supervivientes. Crea la página `single/carrito` con el
+   shortcode `commerce-cart`; no elimina ni sustituye formularios de contacto.
+4. API-only/apagado seguro: `enabled: false`, `functions_enabled: true` y
+   `checkout_approved: false` mantienen `/api/commerce/*`, webhooks, estado privado,
+   administración y pedidos existentes. Conserva D1 y bindings. No borres rutas,
+   base o credenciales mientras haya sesiones/pedidos pendientes. Esto no cancela
+   sesiones Stripe ya emitidas ni revierte dinero.
+5. Mantén checkout sin aprobar. `CHECKOUT_TOTALS_SUPPORTED=false` bloquea Stripe
+   incluso con configuración comercial completa: esta release no calcula todavía
+   impuestos/envío. El proveedor fake es exclusivamente una fixture test explícita.
+   Para adoptar backend, revisa y aplica los SQL `0001`–`0004` en orden solo en una
+   base/entorno aprobados y respaldados; ningún build los aplica remotamente.
+6. Ejecuta `sh do root-docs`; valida antes de `sh do migrations mark --yes`.
+
+### Validación y automatización
+
+No hay transformación automática ni activación comercial. Ejecuta `sh do hugo`,
+pruebas de identidad, `npm run test:commerce` desde el tema y las pruebas D1 locales
+cuando adoptes backend. Comprueba consumidor y ejemplo/divisores, CMS ES/EN completo
+(campos comerciales opcionales con `required: false`), contacto, URLs y catálogo.
+Comprueba modos ausente/false/enabled/API-only y que apagar compras no corta APIs
+de pedidos. Tras validar, `mark --yes` sincroniza paquete/lock del consumidor a
+`7.1.0`; `sh do migrations check` debe indicar que no quedan migraciones pendientes.
+
 ## 7.0.0 — 2026-07-28
 
 **Impacto:** todos los proyectos que usen valores globales localizados,

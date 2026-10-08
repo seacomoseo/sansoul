@@ -6,6 +6,9 @@ icon: construction
 seo:
   noindex: true
 tpl:
+  menu:
+    clear: false
+    color: light
   sections:
   - file: example
 ---

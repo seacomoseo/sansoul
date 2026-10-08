@@ -28,6 +28,48 @@
     "formSubmitSending"      $t.form_submit_sending
     "formSubmitOk"           $t.form_submit_ok
     "formSubmitWrong"        $t.form_submit_wrong
+    "commerce" (dict
+      "open_cart"                  $t.commerce_open_cart
+      "cart"                       $t.commerce_cart
+      "close"                      $t.commerce_close
+      "empty"                      $t.commerce_empty
+      "view_cart"                  $t.commerce_view_cart
+      "checkout"                   $t.commerce_checkout
+      "checkout_disabled"          $t.commerce_checkout_disabled
+      "checkout_note"              $t.commerce_checkout_note
+      "subtotal"                   $t.commerce_subtotal
+      "shipping"                   $t.commerce_shipping
+      "tax"                        $t.commerce_tax
+      "total"                      $t.commerce_total
+      "calculated_later"           $t.commerce_calculated_later
+      "provisional_note"           $t.commerce_provisional_note
+      "add"                        $t.commerce_add
+      "quantity"                   $t.commerce_quantity
+      "quantity_of"                $t.commerce_quantity_of
+      "remove"                     $t.commerce_remove
+      "unavailable_product"        $t.commerce_unavailable_product
+      "quote_only"                 $t.commerce_quote_only
+      "storage_recovered"          $t.commerce_storage_recovered
+      "storage_unavailable"        $t.commerce_storage_unavailable
+      "cancelled"                  $t.commerce_cancelled
+      "payment_unverified"         $t.commerce_payment_unverified
+      "payment_pending"            $t.commerce_payment_pending
+      "payment_paid"               $t.commerce_payment_paid
+      "payment_failed"             $t.commerce_payment_failed
+      "payment_expired"            $t.commerce_payment_expired
+      "payment_partially_refunded" $t.commerce_payment_partially_refunded
+      "payment_refunded"           $t.commerce_payment_refunded
+      "invalid_cart"               $t.commerce_invalid_cart
+      "invalid_quantity"           $t.commerce_invalid_quantity
+      "added"                      $t.commerce_added
+      "removed"                    $t.commerce_removed
+      "updated"                    $t.commerce_updated
+      "checkout_sending"           $t.commerce_checkout_sending
+      "checkout_unavailable"       $t.commerce_checkout_unavailable
+      "checkout_failed"            $t.commerce_checkout_failed
+      "out_of_stock"               $t.commerce_out_of_stock
+      "request_quote"              $t.commerce_request_quote
+    )
   }}
   {{ $lang  = dict .Lang $lang }}
   {{ $langs = merge $langs $lang  }}
@@ -64,6 +106,11 @@
   {{ $is_cookies = true }}
 {{ end }}
 
+{{ $is_commerce := false }}
+{{ with hugo.Data.commerce }}
+  {{ $is_commerce = eq .enabled true }}
+{{ end }}
+
 
 {{/*  RESOURCES  */}}
 
@@ -73,6 +120,7 @@
 {{ $maybe_srcs := slice
   (dict "path" "scroll-show" "if" $is_scroll_show "func" "ScrollShow")
   (dict "path" "cookies"     "if" $is_cookies     "func" "Cookies"   )
+  (dict "path" "commerce"    "if" $is_commerce    "func" "Commerce"  )
 }}
 {{ $conditional_srcs := slice }}
 {{ range $maybe_srcs }}

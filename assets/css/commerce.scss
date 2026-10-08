@@ -1,0 +1,253 @@
+@use "variables" as *;
+
+.commerce__cart-trigger {
+  position: fixed;
+  z-index: 220;
+  top: .75em;
+  right: 5.5em;
+  min-height: 3em;
+  max-width: calc(100vw - 8em);
+  white-space: nowrap;
+}
+
+.commerce__drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  box-sizing: border-box;
+  width: min(34rem, 100vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: clamp(1rem, 4vw, 2rem);
+  overflow-y: auto;
+  color: $black;
+  background: $white;
+  border: 0;
+  box-shadow: 0 0 2rem rgb(0 0 0 / .3);
+}
+
+.commerce__drawer::backdrop {
+  background: rgb(0 0 0 / .55);
+}
+
+.commerce__drawer .commerce__close {
+  --base: #{$white};
+  --base-in: #{$black};
+}
+
+.commerce__drawer-head,
+.commerce__line,
+.commerce__summary > div,
+.commerce__quantity-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.commerce__drawer-head h2 {
+  margin: 0;
+}
+
+:is(.commerce, .commerce__cart-page) .commerce__lines {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  width: 100%;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+
+  > .commerce__line {
+    display: flex;
+    grid-column: auto;
+    grid-template-columns: none;
+    align-items: flex-start;
+
+    &::before {
+      content: none;
+    }
+  }
+}
+
+.commerce__line {
+  align-items: flex-start;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1rem;
+}
+
+.commerce__line-main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: .5rem;
+}
+
+.commerce__line-main > a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.commerce__line-controls {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 100%;
+  gap: .5rem;
+}
+
+.commerce__quantity-label {
+  justify-content: flex-start;
+}
+
+.commerce__quantity,
+.commerce__line-quantity {
+  min-height: 2.75rem;
+  width: 5rem;
+  padding: .35rem;
+  font: inherit;
+}
+
+.commerce__line-quantity {
+  width: 4.5rem;
+}
+
+.commerce__summary {
+  margin: 1.5rem 0;
+}
+
+.commerce__summary > div {
+  padding: .4rem 0;
+  gap: 2rem;
+}
+
+.commerce__summary dt {
+  flex-shrink: 0;
+  max-width: 60%;
+  font-weight: 600;
+}
+
+.commerce__summary dd {
+  margin: 0;
+  text-align: right;
+}
+
+.commerce__total {
+  border-top: 1px solid currentColor;
+  margin-top: .4rem;
+  padding-top: .8rem !important;
+  font-size: 1.1em;
+}
+
+.commerce__checkout,
+.commerce__view-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  margin: .35rem .4rem .35rem 0;
+}
+
+.commerce__checkout:disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+.commerce__checkout-note,
+.commerce__summary-note,
+.commerce__status {
+  max-width: 65ch;
+  margin-block: .75rem;
+}
+
+.commerce__status {
+  padding: .75rem;
+  border-inline-start: .25rem solid $cta;
+}
+
+.commerce__product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: .75rem;
+  margin-block: .75rem;
+}
+
+.commerce__product-actions .btn {
+  min-height: 2.75rem;
+}
+
+.commerce__quote {
+  margin-block: .75rem;
+}
+
+.commerce [hidden],
+.commerce__cart-page [hidden] {
+  display: none !important;
+}
+
+// Keep expanded navigation below the logo, including its dimming backdrop.
+.body-menu--logo:has(.commerce__cart-trigger:not([hidden])) {
+  .menu,
+  .menu__backover {
+    top: calc(var(--menu-py) + 4em);
+    height: calc(100dvh - var(--menu-py) - 4em);
+  }
+}
+
+// Keep the fixed cart/menu actions in their own row above the full-size logo.
+// Absent, disabled and API-only consumers never match this opt-in layout.
+@media (max-width: 64rem) {
+  .body-menu--logo:has(.commerce__cart-trigger:not([hidden])) {
+    .logo.logo {
+      // Flow/sticky positioning keeps this reserved row anchored during cart-page scrolling.
+      position: sticky;
+      background-color: var(--bg-color);
+      padding-top: calc(var(--menu-py) + 4em);
+      // Reserve the row immediately when commerce initializes, without crossing the cart.
+      transition-property: background-color, filter;
+    }
+
+    // The expanded navigation starts below the reserved header, not over its logo.
+    .menu,
+    .menu__backover {
+      top: calc(var(--menu-py) + 8em);
+      height: calc(100dvh - var(--menu-py) - 8em);
+    }
+  }
+}
+
+@media (max-width: 30rem) {
+  // Keep product content and purchasing controls on separate rows at narrow widths.
+  .type-product .section--hero:has(> .commerce__product-actions) {
+    flex-direction: column;
+
+    > .container {
+      width: 100%;
+    }
+  }
+
+  .commerce__cart-trigger {
+    right: 4.5em;
+    max-width: calc(100vw - 7em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .commerce__line {
+    flex-direction: column;
+  }
+
+  .commerce__line-main {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commerce__drawer,
+  .commerce__cart-trigger {
+    scroll-behavior: auto;
+    transition: none;
+  }
+}

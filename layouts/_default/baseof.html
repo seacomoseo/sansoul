@@ -119,6 +119,24 @@
 
   {{- /*  HEAD  */}}
   <head>
+    {{- with hugo.Data.commerce -}}
+      {{- if eq .enabled true }}
+        <meta name="referrer" content="no-referrer">
+        <script>
+          (() => {
+            const url = new URL(window.location.href)
+            const mode = url.searchParams.get('commerce')
+            if (['success', 'cancel'].includes(mode)) {
+              window.__sansoulCommerceReturn = { mode, orderId: url.searchParams.get('order_id') }
+            }
+            if (!url.searchParams.has('commerce') && !url.searchParams.has('order_id')) return
+            url.searchParams.delete('commerce')
+            url.searchParams.delete('order_id')
+            window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
+          })()
+        </script>
+      {{- end }}
+    {{- end -}}
     {{- partial "head" . -}}
     {{- $custom_html_head }}
   </head>
@@ -145,6 +163,9 @@
 
     {{- /*  MENU  */ -}}
     {{- partial "menu/_" $tpl -}}
+
+    {{- /*  OPTIONAL COMMERCE  */ -}}
+    {{- partial "commerce/shell" . -}}
 
     {{- /*  MAIN  */}}
     <main>

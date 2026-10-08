@@ -22,6 +22,12 @@ Side effects: Sets page.Store `is_container` while rendering child boxes.
   {{- page.Store.Set "is_container" true -}}
   {{- partial "boxes/item" .children -}}
 
+  {{- with .Page -}}
+    {{- if and $.is_hero (eq .Type "product") -}}
+      {{- partial "commerce/product-actions" . -}}
+    {{- end -}}
+  {{- end -}}
+
   {{- /*  MODAL BUTTONS CORNER  */ -}}
   {{- if .is_modal  -}}
     {{- /*

@@ -90,7 +90,7 @@
 .box--side-right {
   --box-side-k: 1;
   --box-side-gap: calc(var(--gap-width) * (var(--box-side-k) - 1) / 2);
-  --box-side: calc((50cqw + var(--box-pd)) * var(--box-side-k) - 50dvw + var(--box-side-gap));
+  --box-side: min(0em, calc((50cqw + var(--box-pd)) * var(--box-side-k) - 50dvw + var(--box-side-gap)));
   --box-side-left: var(--box-side);
   --box-side-right: var(--box-side);
   --radius-left: 0em;
@@ -98,7 +98,7 @@
   > .bg-color,
   &:not(.bg-img) > .img {
     margin-inline: var(--box-side-left) var(--box-side-right);
-    width: calc(100dvw / var(--box-side-k) - var(--box-side-gap));
+    width: max(100cqw, calc(100dvw / var(--box-side-k) - var(--box-side-gap)));
     --radius-end: var(--radius-left) var(--radius-right) var(--radius-right) var(--radius-left);
   }
   &:not(.bg-img) > .img {

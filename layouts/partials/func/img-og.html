@@ -1,17 +1,5 @@
-{{ $img := "" }}
+{{ $img := partial "func/img-main-src" . }}
 {{ $svg := "" }}
-
-{{ with .Params.img }}
-  {{ if partial "func/is-vid" . }}
-    {{ $img = partial "func/poster" . }}
-  {{ else }}
-    {{ $img = . }}
-  {{ end }}
-{{ end }}
-
-{{ if not $img }}
-  {{ $img = partial "func/logo" . }}
-{{ end }}
 
 {{ with $img }}
   {{ if not (hasPrefix . "http") }}

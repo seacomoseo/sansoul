@@ -1,6 +1,6 @@
 {
   "name": "sansoul",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "description": "SanSoul is the Hugo theme website services soul by lorensansol",
   "type": "module",
   "dependencies": {
@@ -8,12 +8,18 @@
     "@fortawesome/fontawesome-free": "^7.0.1",
     "sass-embedded": "^1.100.0",
     "sharp": "^0.35.3",
-    "sharp-ico": "^0.1.5"
+    "sharp-ico": "^0.1.5",
+    "yaml": "2.9.1"
   },
   "scripts": {
     "test": "sh do check",
+    "test:commerce": "node --test commerce/test/unit/*.test.js commerce/test/routing.integration.test.js",
+    "test:commerce:d1": "node --test commerce/test/d1.integration.test.js",
     "build": "sh do hugo",
     "server": "npx http-server public"
+  },
+  "devDependencies": {
+    "wrangler": "4.147.0"
   },
   "engines": {
     "node": "^22.22.0 || >=24.11.0"

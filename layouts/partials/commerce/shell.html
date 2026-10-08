@@ -1,0 +1,37 @@
+{{- with hugo.Data.commerce -}}
+  {{- if eq .enabled true -}}
+    {{- $cartPage := site.GetPage "single/carrito" -}}
+    {{- $currency := .currency | default site.Params.currency | default "EUR" -}}
+    {{- $products := slice -}}
+    {{- range where site.RegularPages "Type" "product" -}}
+      {{- if and (eq .Lang page.Lang) (eq .Params.commerce_active true) (ne .Params.draft true) .Params.commerce_id -}}
+        {{- $products = $products | append (dict
+          "id" .Params.commerce_id
+          "name" .Title
+          "url" .RelPermalink
+          "price" .Params.price
+          "quote" (eq .Params.commerce_quote true)
+        ) -}}
+      {{- end -}}
+    {{- end -}}
+    <div class="commerce" data-commerce-root data-commerce-store="{{ site.BaseURL }}" data-commerce-currency="{{ $currency }}" data-commerce-checkout-approved="{{ if eq .checkout_approved true }}true{{ else }}false{{ end }}">
+      <button class="btn commerce__cart-trigger" type="button" data-commerce-open aria-haspopup="dialog" aria-expanded="false" aria-label="{{ i18n "commerce_open_cart" }}" hidden>
+        {{ i18n "commerce_cart" }} <span data-commerce-count>0</span>
+      </button>
+      <dialog class="commerce__drawer" data-commerce-drawer aria-labelledby="commerce-drawer-title">
+        <div class="commerce__drawer-head">
+          <h2 id="commerce-drawer-title">{{ i18n "commerce_cart" }}</h2>
+          <button class="btn commerce__close" type="button" data-commerce-close aria-label="{{ i18n "commerce_close" }}">{{ i18n "commerce_close" }}</button>
+        </div>
+        <p data-commerce-empty>{{ i18n "commerce_empty" }}</p>
+        <ul class="commerce__lines" data-commerce-lines></ul>
+        {{ partial "commerce/summary" . }}
+        {{ with $cartPage }}<a class="btn commerce__view-cart" href="{{ .RelPermalink }}">{{ i18n "commerce_view_cart" }}</a>{{ end }}
+        <button class="btn commerce__checkout" type="button" data-commerce-checkout disabled>{{ i18n "commerce_checkout" }}</button>
+        <p class="commerce__checkout-note" data-commerce-checkout-note>{{ i18n "commerce_checkout_disabled" }}</p>
+        <p class="commerce__status" data-commerce-status role="status" aria-live="polite" aria-atomic="true" hidden></p>
+      </dialog>
+      <script type="application/json" data-commerce-products>{{ $products | jsonify | safeJS }}</script>
+    </div>
+  {{- end -}}
+{{- end -}}

@@ -1,0 +1,5 @@
+import { handleWebhook } from '../../../themes/sansoul/commerce/webhook.js'
+
+export async function onRequest (context) {
+  return handleWebhook(context.request, context.env)
+}

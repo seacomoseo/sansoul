@@ -18,7 +18,9 @@ Necesitas Git y Hugo Extended. Para desarrollar sin `node_modules` en cada
 proyecto, instala Dart Sass una sola vez en el `PATH`
 (`brew install sass/sass/sass` en macOS). Node.js y las dependencias npm se
 requieren para la preconstrucción y el build completo; `sh do hugo` las instala
-si faltan. Las versiones de despliegue se fijan en `netlify.toml` y
+si faltan y usa `npm ci` cuando el repositorio incluye `package-lock.json`.
+Conserva el lockfile en Git para reproducir los paquetes. Las versiones de
+Node.js y Hugo Extended de despliegue se fijan en `netlify.toml` y
 `wrangler.toml`.
 
 ```sh
@@ -101,7 +103,7 @@ Las particularidades nunca deben añadirse a README/AGENTS raíz porque son gene
 ### Operación del proyecto
 
 - `hugo.yml`: URL base y parámetros privados del proyecto —privados en el sentido de específicos, no secretos—.
-- `package.json`: dependencias Node utilizadas por Hugo y los scripts de posprocesado.
+- `package.json` y `package-lock.json`: dependencias Node y versiones instaladas para Hugo y los scripts de posprocesado.
 - `netlify.toml` y `wrangler.toml`: configuración de despliegue.
 - `.github/workflows/`: automatizaciones; `backup.yml` replica el repositorio en GitLab. Requiere el secreto `GL_PAT`; GitHub proporciona automáticamente el token temporal de lectura usado para clonar el origen.
 - `TODO.md`: lista humana de tareas y anotaciones; los agentes no deben leerla ni modificarla salvo petición expresa.
@@ -318,6 +320,107 @@ No se modifican como efecto secundario de Git. Después de actualizar el submód
 Si README/AGENTS no fueron generados, `sh do root-docs` se niega a sobrescribirlos sin `--force`. Con `--force` los reemplaza íntegramente y descarta su contenido: no intenta interpretarlo ni trasladarlo al ADN. Si falta `dna/_index.md`, crea únicamente el scaffold orientativo. En actualizaciones posteriores puede reemplazar README/AGENTS de forma segura, pero nunca sobrescribe el ADN.
 
 El README raíz es una portada breve que enlaza este manual. El AGENTS raíz contiene el contrato operativo completo para que Codex lo descubra sin lecturas indirectas. Toda particularidad debe vivir en `dna/`, cuyo `_index.md` se lee siempre y dirige hacia los documentos relevantes.
+
+## Comercio con Pages Functions
+
+El comercio es opt-in. `enabled` activa el catálogo; `functions_enabled` controla por separado el enrutamiento de Pages Functions. Si este último se omite, sigue el valor de `enabled` para conservar la configuración de consumidores existentes. Sin `data/commerce.yml`, o con ambos valores desactivados, no se enrutan Functions de comercio. Ninguno de estos ajustes autoriza cobros: la autorización de checkout es independiente y falla cerrada.
+
+Con comercio activo, `data/commerce.yml` también requiere `origin`, `currency` y `stock_mode`. La parte de aprobación usa `checkout_approved` (booleano), `checkout_legal_version` (identificador de versión aprobada), `checkout_destination_countries` (lista de códigos ISO alfa-2 en mayúsculas), `checkout_tax_policy` (`included`, `calculated` o `not_applicable`) y `checkout_shipping_policy` (`included`, `flat_rate`, `calculated` o `not_applicable`). Sus valores iniciales son `false`, `null`, `[]`, `null` y `null`, respectivamente. El parser admite arrays YAML en línea y en bloque; por ejemplo:
+
+```yaml
+checkout_destination_countries:
+  - "ES"
+  - "PT"
+```
+
+El generador valida formato y coherencia, no verifica el contenido real del aviso legal, los destinos autorizados ni las reglas del negocio: debe aprobarlos la persona responsable. No guardes secretos ahí: el catálogo generado puede publicarse junto a Functions.
+
+La autorización de Stripe requiere además configuración de servidor Pages explícita: `COMMERCE_ENV` debe ser `test` o `live`, `COMMERCE_PROVIDER=stripe` y `COMMERCE_CHECKOUT_APPROVED=true`. Los parámetros de URL, `localStorage` y el payload del navegador no pueden habilitarla. En la implementación actual los totales de impuestos y envío no están calculados, por lo que Stripe queda bloqueado también con los demás valores completos; no se considera `subtotal` un total comercial válido para productos físicos.
+
+El proveedor `fake` solo admite fixtures sintéticos cuando `COMMERCE_ENV=test` y `COMMERCE_TEST_FIXTURE=synthetic-commerce-test`; se rechaza en `live`. Al apagar la autorización se bloquean también los replays de checkout para no volver a entregar URLs de pago. Esto no revoca sesiones Stripe emitidas previamente; esas sesiones caducan según su expiración o requieren cancelación por el proveedor. Webhooks, conciliación y consulta privada del estado de pedidos anteriores siguen activos.
+
+
+En `stock_mode: finite`, las reservas `held` descuentan disponibilidad hasta que se confirman (`committed`), se liberan o vencen (`expired`). Un checkout válido o `POST /api/commerce/admin/reconcile` marca como `expired` los pedidos `pending` vencidos y sus reservas `held`; no necesita que llegue un webhook. Stripe deja vencer sus Checkout Sessions a las 24 horas de su creación real por defecto. El backend omite `expires_at` para que Stripe aplique ese plazo desde la creación efectiva y el payload siga idéntico en reintentos con la misma clave. El backend permite reintentar durante 23 horas (margen previo a la retención mínima documentada de claves de idempotencia); conserva la reserva hasta el posible vencimiento de una sesión creada en el último reintento, con cinco minutos de margen, y limita el watchdog de recuperación a 47 h y 5 min (23 h + 24 h + 5 min). Al recibir la sesión, alinea el pedido y las reservas `held` con el `expires_at` devuelto por Stripe. Un timeout ambiguo no demuestra que el proveedor no creara la sesión ni autoriza ampliar una sesión existente. Aplica, en este orden, las migraciones `0001_commerce.sql`, `0002_buyer_status.sql`, `0003_provider_session_expiry.sql` y `0004_operations_and_delivery.sql` antes de actualizar el backend. `0001` crea las tablas de idempotencia, pedidos, inventario, reservas, límites, webhooks y outbox con sus restricciones; `0002` añade capabilities de estado privadas para comprador; `0003` permite alinear el vencimiento operativo del pedido con el vencimiento real de la sesión sin hacer mutable el snapshot; `0004` crea el almacenamiento privado de datos de entrega, el resumen durable de webhooks sin pedido y los cursores de operaciones. En D1, aplica cada SQL solo tras verificar la base, el entorno y una copia recuperable; `npm run test:commerce:d1` prueba D1 local y no aplica migraciones remotas.
+
+Desde la raíz del consumidor, estos comandos usan la versión de Wrangler fijada en `themes/sansoul/package-lock.json`. Tras aprobar y respaldar el entorno, ejecuta cada archivo una sola vez y en orden:
+
+```sh
+npm --prefix themes/sansoul exec -- wrangler d1 execute <NOMBRE_BASE> --remote --file themes/sansoul/commerce/migrations/0001_commerce.sql
+npm --prefix themes/sansoul exec -- wrangler d1 execute <NOMBRE_BASE> --remote --file themes/sansoul/commerce/migrations/0002_buyer_status.sql
+npm --prefix themes/sansoul exec -- wrangler d1 execute <NOMBRE_BASE> --remote --file themes/sansoul/commerce/migrations/0003_provider_session_expiry.sql
+npm --prefix themes/sansoul exec -- wrangler d1 execute <NOMBRE_BASE> --remote --file themes/sansoul/commerce/migrations/0004_operations_and_delivery.sql
+```
+
+Un pago tardío se registra, pero pasa a `inventory_exception`, no se prepara automáticamente y genera una notificación en el outbox durable para revisión. Un reembolso parcial antes o después de `paid`, mientras el pedido esté en `awaiting_payment` o `ready`, también lo lleva a `inventory_exception` sin cambiar `payment_status=partially_refunded` ni reducir `refund_amount_minor`. La conciliación mueve a esa misma excepción los pedidos heredados que aún estén esperando; nunca trata un reembolso parcial como un pago impagado, ni vence o libera automáticamente sus reservas `held`. La notificación durable de excepción/cancelación no contiene contacto ni dirección.
+
+Una persona autorizada puede resolver esa excepción con `POST /api/commerce/admin/orders/<orderId>/cancel-partial`, usando la misma autenticación administrativa. En un único batch condicionado al ganador, cancela solo el fulfillment y libera solo reservas `held`; conserva `committed`, el estado monetario y el importe reembolsado. Repetir una cancelación aplicada devuelve éxito sin repetir efectos. Esta acción no devuelve dinero ni confirma un reembolso: el saldo monetario restante requiere una gestión separada del titular de la cuenta/proveedor, fuera de este corte. Las rutas `manufacture` y `ship` rechazan pedidos en excepción. Un reembolso completo libera únicamente reservas aún `held`; las unidades `committed` no se reponen automáticamente y un reembolso no revierte fabricación o envío: los pedidos `manufacturing` o `shipped` conservan su fase y requieren resolución operativa explícita.
+
+El estado privado para comprador está disponible en `GET /api/commerce/status/<orderId>` solo con la cookie de capability que emitió checkout. No basta conocer el UUID del pedido. Las órdenes creadas antes de migrar `0002_buyer_status.sql` no reciben una capability retroactiva ni se vuelven accesibles por su ID. La capability aleatoria de 256 bits se guarda en D1 como hash y se vincula a la orden, la clave de idempotencia y la sesión; la cookie `__Secure-commerce-status-<orderId>` usa `HttpOnly`, `Secure`, `SameSite=Lax`, ruta `/api/commerce` y caduca como máximo a los 90 días o al vencimiento operativo de la orden. La respuesta contiene únicamente `order_id` y `payment_status`, no incluye dirección ni contacto y se entrega sin caché, con `Vary: Cookie` y `Referrer-Policy: no-referrer`. Si se pierde la respuesta inicial o la cookie, no hay recuperación de acceso por UUID o clave de idempotencia ni reasignación automática de la capability a una orden antigua; el endpoint falla cerrado con 404. No registres la URL ni la capability en analytics, referer o almacenamiento del navegador.
+
+Durante `sh do hugo`, el tema genera el catálogo antes de la compilación Hugo. Sin adaptadores de Pages Functions no genera artefactos de comercio. Con los adaptadores presentes, una configuración ausente o desactivada sin `functions_enabled: true` genera un catálogo desactivado y `_routes.json` incluye y excluye únicamente `/`; no exige SKU ni activa tráfico de Functions. `functions_enabled: true` conserva `/api/commerce/*` incluso cuando `enabled: false`: ese modo mantiene webhook, estado privado, administración y conciliación accesibles, mientras el checkout y sus replays quedan bloqueados por el catálogo desactivado. Para detener todo el tráfico de Functions, usa `functions_enabled: false` o elimina la configuración únicamente cuando no haya operaciones pendientes. Quitar configuración/rutas no cancela sesiones ya emitidas ni revierte pedidos o pagos en D1/Stripe; para pausar una tienda con pedidos, conserva binding, base y credenciales necesarias, y usa `enabled: false` junto a `functions_enabled: true`. La salida de catálogo queda en `functions/_commerce/catalog.generated.js`, fuera de `public/`; no la copies ni publiques como asset estático.
+
+### Operación privada, exportación y respaldo
+
+Todas las rutas `/api/commerce/admin/*` exigen `Authorization: Bearer <COMMERCE_ADMIN_TOKEN>` y el binding privado `COMMERCE_ADMIN_TOKEN`, de al menos 32 caracteres; las respuestas no se almacenan en caché. Falta de configuración válida devuelve 503 y credenciales incorrectas 401. Usa el token solo desde un cliente administrativo protegido: no lo incluyas en HTML, JavaScript del navegador, URL, CMS o `localStorage`. `GET /api/commerce/admin/orders?limit=50&cursor=…` admite 1–100 pedidos por página, en orden estable `(created_at DESC, id DESC)`, y devuelve `next_cursor`. Reutiliza el cursor con los mismos filtros `payment_status`/`fulfillment_status`; no es un snapshot transaccional: cambios de estado no reordenan filas y pedidos nuevos anteriores al cursor quedan para una consulta posterior.
+
+`GET /api/commerce/admin/export.csv?limit=100&cursor=…` exporta una página y devuelve la siguiente clave en `x-next-cursor`; solicita páginas sucesivas hasta que esa cabecera esté vacía para recorrer todo el historial. Incluye snapshot de artículos/precios, estados, referencias del proveedor, reembolsos y, si el proveedor los entregó, contacto/dirección privada. Guárdalo como dato sensible y compártelo solo con personal autorizado. Es un extracto operativo CSV, no copia de seguridad: no contiene el esquema completo, reservas, eventos, deduplicación, capacidades ni outbox.
+
+Para una copia SQL, desde un entorno autorizado ejecuta `npm --prefix themes/sansoul exec -- wrangler d1 export <nombre-base> --remote --output <ruta-segura>/commerce.sql`. El SQL incluye pedidos y datos personales: cifra/restringe la copia y no la añadas al repositorio. `npm run test:commerce:d1` ejercita el export SQL con Wrangler/D1 local, restaura en otra base local (`commerce-restored`) y otro `--persist-to`, y compara filas completas/estados de todas las tablas de comercio. Comprueba que el SQL exportado conserva tablas, índices y triggers; en la base restaurada verifica con escrituras rechazadas el trigger de snapshot, las restricciones `CHECK` y las claves foráneas. El ejecutor D1 local bloquea consultas directas a `sqlite_master` y `PRAGMA` (`SQLITE_AUTH`), por lo que este test no las usa. La prueba no ejecuta `--remote`, no verifica una copia alojada ni acredita recuperación ante desastre en Cloudflare. Restaura únicamente en una D1 desechable y vacía; una copia antigua sobre una base viva puede sobrescribir pedidos o pagos posteriores.
+
+`POST /api/commerce/admin/reconcile` limita cada pasada a 25 pedidos y rota un cursor D1 durable por `(created_at, id)` con actualización compare-and-swap. Una prueba D1 sincroniza dos lecturas concurrentes del mismo cursor y confirma un único ganador; 75 pedidos sintéticos recorren tres lotes y vuelven a avanzar por los grupos siguientes, sin que 25 pedidos abiertos monopolicen el proceso. Si falta `session_id`, la recuperación reutiliza el UUID de pedido como clave idempotente del proveedor y el snapshot/payload inmutable persistido; checkout debe estar autorizado. El gate Stripe actual sigue cerrado, por lo que estos casos se conservan y se informan como diferidos fuera de fixtures sintéticos. Los webhooks firmados sin pedido guardan un resumen mínimo sin nombre/dirección; después de aparecer el pedido, conciliación puede replayarlo idempotentemente tras validar identidad, importe y moneda. Esta cola solo recupera eventos ya persistidos: consultar sesiones Checkout no descubre un evento `charge.refunded` que nunca llegó. Si falta, una persona autorizada debe volver a enviar el evento original desde el panel autenticado del proveedor a la URL webhook configurada; se verifica su firma y, si sigue sin pedido, `reconcile` lo aplica cuando exista la orden. Si el proveedor ya no permite reenvío, no hay endpoint de importación/reparación manual en este corte: no edites D1 directamente y escala la conciliación a una operación aprobada. El replay de un reembolso no se probó con Stripe real.
+
+El outbox de D1 conserva fallos y programa reintentos con espera creciente; `POST /api/commerce/admin/outbox/dispatch` no demuestra entrega de email/factura. Solo se probó con notifier sintético que falla una vez y luego reintenta; la integración real sigue pendiente de acceso y validación en Ops.
+
+Stripe Checkout solicita dirección de entrega únicamente cuando la política y la lista de destinos aprobados la permiten; no se inventan destinos, tarifas ni IVA. El webhook valida y persiste en `order_delivery_details` solo el contacto y dirección devueltos por Stripe. Solo pedidos/exportación administrativos autenticados exponen esos datos; el status del comprador devuelve exclusivamente ID y estado. `ship` exige destinatario, calle, localidad, código postal y país; si faltan, devuelve `delivery_details_missing`. Los webhooks no encontrados guardan un resumen sin PII y el outbox/errores no incluye dirección o contacto. El carrito del frontend conserva únicamente IDs/cantidades: hasta que destinos y políticas estén aprobados, no añadas captura de dirección en UI ni la guardes en URL, analytics o `localStorage`; Stripe Checkout es el punto de captura previsto cuando se autorice. No hay plazo de retención aprobado ni borrado automático implementado para `order_delivery_details`; antes de habilitar pedidos físicos reales, aprobar plazo/propietario y una rutina de eliminación también para exportaciones protegidas. Hasta entonces el gate de checkout físico permanece cerrado.
+
+El generador usa un parser YAML completo para `data/commerce.yml` y el front matter de productos: errores, claves duplicadas y tipos incorrectos detienen el build. Con comercio activo, cada producto necesita `commerce_id` estable, `sku` único en mayúsculas y `commerce_active` booleano; no se inventan ni corrigen identificadores. Los precios se convierten a céntimos desde su texto decimal exacto.
+
+### Catálogo, carrito e identidades (7.1.0)
+
+`enabled: true` activa también la UI: acciones de cantidad/añadir en productos y
+un panel de carrito compartido. El CMS ES/EN añade `commerce_id`, `sku`,
+`commerce_active` y `commerce_quote` opcionales (`required: false`); el build exige
+los datos válidos cuando se activa comercio. `commerce_quote: true` sustituye la
+compra por un enlace a `#contacto`, sin inventar un precio. El carrito guarda solo
+UUID/cantidad, nunca datos de entrega; sus importes son informativos y el backend
+vuelve a validar el catálogo autorizado. Subtotal no equivale a total aprobado.
+
+Para una página completa de carrito, crea `content/single/carrito.<lang>.md` para
+cada idioma; el enlace del panel resuelve precisamente `single/carrito`:
+
+```markdown
+---
+title: Carrito
+slug: carrito
+seo:
+  noindex: true
+---
+
+{{< commerce-cart >}}
+```
+
+Mantén `checkout_approved: false` hasta aprobación comercial e implementación de
+totales completos. `CHECKOUT_TOTALS_SUPPORTED=false` sigue bloqueando Stripe;
+activar el catálogo, el CMS o el carrito no aprueba impuestos, envío ni contratos.
+Sin `enabled: true` no se insertan shell/acciones/JS/SCSS comerciales; el shortcode
+es un no-op. El ejemplo general sigue sin comercio y conserva los divisores.
+
+Para altas, usa el allocator/validator del consumidor si dispone de él. Conserva
+un registro versionado fuera de `content/`, `data/`, `static/` y mounts públicos,
+con el propietario de cada UUID/SKU, bajas permanentes y high-watermark. No asignes
+por orden/título ni rellenes huecos: un borrado o traducción no libera identidades.
+Reserva la identidad antes de guardar las traducciones, conserva la misma pareja
+en todas ellas y valida duplicados, propietario y tombstones antes del build.
+Un cambio de ruta requiere trasladar explícitamente el propietario, no asignar
+una identidad nueva. Nunca elimines bajas del registro al clonar o publicar.
+
+`themeVersion` del manifiesto se toma del paquete del tema; `release` es SHA256 de
+su contenido completo (incluida esa versión), no una aprobación comercial. UI y
+backend identifican productos por el mismo UUID; publicar un paquete/manifiesto
+nuevo requiere reconstruir y revalidar el snapshot, no reutilizar un gate de otro
+hash. Versiones y ambos locks deben ir juntos en la publicación autorizada.
+
+La carpeta [`_examples/commerce-backend/`](_examples/commerce-backend/README.md) es un ejemplo opt-in aislado de backend, sin productos, UI ni datos comerciales reales. No forma parte de las carpetas `data/` y `content/` que se copian como ejemplo general.
 
 ## Despliegue
 

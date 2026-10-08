@@ -22,7 +22,7 @@ export function initOpenLinks () {
         if (isCurrentPage) {
           const hash = url.split('#')[1]
           const target = document.getElementById(hash)
-          if (!target.classList.contains('modal')) {
+          if (target && !target.classList.contains('modal')) {
             scrollTo(target)
           }
           location.hash = hash
@@ -68,6 +68,16 @@ export function initOpenLinks () {
     }
   })
 
-  // BODY KEY ENTER LIKE CLICK
-  document.addEventListener('keydown', e => e.key === 'Enter' && document.activeElement.click())
+  // Native controls already implement keyboard activation.
+  document.addEventListener('keydown', e => {
+    if (e.defaultPrevented || e.isComposing || e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+    const control = e.target.closest('[tabindex="0"]')
+    if (!control || control !== document.activeElement || control.matches('a[href], button, input, select, textarea, [contenteditable], [disabled], [aria-disabled="true"]')) return
+    const isCustomLink = control.matches('[data-h], [data-b], [role="link"], .mail')
+    const isCustomButton = control.matches('[role="button"], .cookies__toggle, .cookies__btn, [data-lightbox]')
+    if ((e.key === 'Enter' && (isCustomLink || isCustomButton)) || (e.key === ' ' && isCustomButton)) {
+      e.preventDefault()
+      control.click()
+    }
+  })
 }

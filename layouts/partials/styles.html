@@ -120,6 +120,14 @@
   {{ else }}
     {{ $css = . | toCSS $to_css }}
   {{ end }}
+  {{ $is_commerce := false }}
+  {{ with hugo.Data.commerce }}
+    {{ $is_commerce = eq .enabled true }}
+  {{ end }}
+  {{ if $is_commerce }}
+    {{ $commerce_css := resources.Get "css/commerce.scss" | toCSS $to_css }}
+    {{ $css = slice $css $commerce_css | resources.Concat "css/styles.css" }}
+  {{ end }}
   {{ $css = $css | fingerprint }}
 {{ end }}
 

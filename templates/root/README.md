@@ -31,6 +31,7 @@ sh do server
 - [Manual interno del tema](themes/sansoul/README.md)
 - [Ejemplos y chuletas](themes/sansoul/_examples/README.md)
 - [Migraciones](themes/sansoul/MIGRATIONS.md)
+- [Comercio opt-in y carrito](themes/sansoul/README-ROOT.md#comercio-con-pages-functions)
 - [Instrucciones para agentes](AGENTS.md)
 
 Con Codex, «Actualiza el submódulo» activa el flujo completo de actualización, migraciones, validación y sincronización de versiones. No autoriza commit, push ni despliegue.

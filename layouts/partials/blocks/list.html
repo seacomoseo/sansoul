@@ -141,6 +141,7 @@
           {{ $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) }}
           {{ $page  := dict
             "Page"    .
+            "commerce_product" (eq $type "product")
             "url"     .RelPermalink
             "title"   .Title
             "price"   $price

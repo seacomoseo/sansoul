@@ -81,6 +81,21 @@
     color: var(--sub);
   }
 
+  // Keep copyable logo + title combinations readable with wide consumer assets.
+  .logo__link:has(.logo__titles) {
+    max-width: 100%;
+    .logo__img {
+      flex-shrink: 1;
+      min-width: 0;
+      height: auto;
+      max-height: 100%;
+    }
+    .logo__titles {
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+  }
+
   // BODY-TOP
   // CLEAR NO STICKY
   &.body-top,
@@ -124,7 +139,8 @@
   // NO CLEAR
   &:not(.body-menu--clear) {
     .logo {
-      transition: padding .3s;
+      // Keep in-flow header geometry atomic while body-top changes.
+      transition: background-color .3s, filter .3s;
     }
   }
 
