@@ -128,15 +128,25 @@
 
 {{ $pt     := "" }}
 {{ $pb     := "" }}
+{{ $pt_vs  := "" }}
+{{ $pb_vs  := "" }}
 {{ if .ph }}
   {{ $pt    = "" }}
   {{ $pb    = "" }}
+  {{ $pt_vs = "" }}
+  {{ $pb_vs = "" }}
 {{ else }}
   {{ if ne .pt nil }}
-    {{ $pt  = print "--pt:" .pt "em" }}
+    {{ $pt  = print "--pt-vl:" .pt }}
   {{ end }}
   {{ if ne .pb nil }}
-    {{ $pb  = print "--pb:" .pb "em" }}
+    {{ $pb  = print "--pb-vl:" .pb }}
+  {{ end }}
+  {{ if ne .pt_vs nil }}
+    {{ $pt_vs = print "--pt-vs:" .pt_vs }}
+  {{ end }}
+  {{ if ne .pb_vs nil }}
+    {{ $pb_vs = print "--pb-vs:" .pb_vs }}
   {{ end }}
 {{ end }}
 {{ if .is_modal }}
@@ -144,6 +154,8 @@
   {{ $color_alpha = "" }}
   {{ $pt          = "" }}
   {{ $pb          = "" }}
+  {{ $pt_vs       = "" }}
+  {{ $pb_vs       = "" }}
 {{ end }}
 
 {{ $style := slice
@@ -151,6 +163,8 @@
   $color_alpha
   $pt
   $pb
+  $pt_vs
+  $pb_vs
   $div_style
   $div_next_style
 }}

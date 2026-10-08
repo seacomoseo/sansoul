@@ -13,6 +13,19 @@
   --box-in: calc(100cqw - var(--box-pd) * 2);
   --box-gap: 1rem;
   gap: var(--box-gap);
+  --box-mt-vs: 0;
+  --box-mb-vs: 0;
+  --box-ml-vs: 0;
+  --box-mr-vs: 0;
+  --box-mt-vl: var(--box-mt-vs);
+  --box-mb-vl: var(--box-mb-vs);
+  --box-ml-vl: var(--box-ml-vs);
+  --box-mr-vl: var(--box-mr-vs);
+  @include mixins.fluid-size(--box-mt, 1em, var(--box-mt-vs), var(--box-mt-vl));
+  @include mixins.fluid-size(--box-mb, 1em, var(--box-mb-vs), var(--box-mb-vl));
+  @include mixins.fluid-size(--box-ml, 1em, var(--box-ml-vs), var(--box-ml-vl));
+  @include mixins.fluid-size(--box-mr, 1em, var(--box-mr-vs), var(--box-mr-vl));
+  margin: var(--box-mt) var(--box-mr) var(--box-mb) var(--box-ml);
   &.bg {
     @include mixins.radius-parent(var(--box-pd));
   }

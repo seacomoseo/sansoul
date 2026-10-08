@@ -205,9 +205,9 @@ La jerarquía de renderizado es:
 página → secciones → cajas → bloques o subcajas
 ```
 
-Una sección controla fondo, tamaño, espaciado, separadores, entrada de menú y modales. `boxes` contiene sus cajas y `box` define valores compartidos para ellas.
+Una sección controla fondo, tamaño, espaciado, separadores, entrada de menú y modales. `boxes` contiene sus cajas y `box` define valores compartidos para ellas. `pt` y `pb` ajustan el padding vertical en viewports grandes; `pt_vs` y `pb_vs` lo ajustan en viewports pequeños. Los valores se interpolan entre ambos tamaños. Si solo se define el valor pequeño, también se usa en viewports grandes; si se omite el pequeño, se conserva el valor predeterminado. Como CSS no admite padding negativo, los valores negativos se representan como márgenes exteriores que desplazan la sección o el contenido siguiente.
 
-Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, distribución y composición recursiva. Algunas claves activan bloques especializados:
+Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, distribución y composición recursiva. `class` añade clases CSS al contenedor de la caja; el título conserva sus propias clases. `mt`, `mb`, `ml` y `mr` ajustan sus márgenes en viewports grandes, y las variantes `_vs` los ajustan en viewports pequeños. Admiten valores negativos y se interpolan entre tamaños. Si solo se define una variante `_vs`, ese valor también se usa en viewports grandes; si se omite, el margen pequeño parte de su valor predeterminado (cero). Algunas claves activan bloques especializados:
 
 | Clave | Bloque |
 | --- | --- |

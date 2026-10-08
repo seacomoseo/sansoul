@@ -83,6 +83,9 @@
   (cond (not $show)                            "" "show")
   (cond (not .only_one_link)                   "" "box--go")
 }}
+{{ with .class }}
+  {{ $class = $class | append (htmlEscape .) }}
+{{ end }}
 
 
 {{/*  STYLE  */}}
@@ -94,6 +97,14 @@
   (cond (eq .space nil)    "" (print "--box-gap:" .space "rem"))
   (cond (eq .pd nil)       "" (print "--box-pd-vl:" .pd))
   (cond (eq .pd_vs nil)    "" (print "--box-pd-vs:" .pd_vs))
+  (cond (eq .mt nil)       "" (print "--box-mt-vl:" .mt))
+  (cond (eq .mt_vs nil)    "" (print "--box-mt-vs:" .mt_vs))
+  (cond (eq .mb nil)       "" (print "--box-mb-vl:" .mb))
+  (cond (eq .mb_vs nil)    "" (print "--box-mb-vs:" .mb_vs))
+  (cond (eq .ml nil)       "" (print "--box-ml-vl:" .ml))
+  (cond (eq .ml_vs nil)    "" (print "--box-ml-vs:" .ml_vs))
+  (cond (eq .mr nil)       "" (print "--box-mr-vl:" .mr))
+  (cond (eq .mr_vs nil)    "" (print "--box-mr-vs:" .mr_vs))
   (cond $not_fit           "" (print "--box-fit-vl:" .fit))
   (cond $not_fit_vs        "" (print "--box-fit-vs:" .fit_vs))
   (cond (not $rate)        "" (print "--box-ratio:" $rate))
