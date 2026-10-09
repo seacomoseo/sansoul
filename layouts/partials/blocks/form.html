@@ -135,9 +135,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- end -}}
   {{- /*  merge params in input  */ -}}
   {{- $input      = merge $input (dict "full" $full "show_of" $show_of) -}}
-  {{- /*  check to checs  */ -}}
+  {{- /*  check to checks  */ -}}
   {{- if eq .type "check" -}}
-    {{- $items := slice (dict "label" .label "key" .name) -}}
+    {{- $items := slice (dict "label" .label "key" .name "disabled" .disabled) -}}
     {{- $input  = merge $input (dict "type" "checks" "name" nil "label" nil "items" $items) -}}
   {{- end -}}
   {{- /*  append  */ -}}
@@ -466,14 +466,14 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       {{- /*  textarea  */ -}}
       {{- else if $type | eq "area" -}}
         {{- $area_attrs := dict
-          "class"           "form__area"
-          "name"            .name
-          "rows"            3
-          "placeholder"     $placeholder
-          "minlength"       .min
-          "maxlength"       .max
-          "data-req"        $req
-          "data-req-if"     $req_if
+          "class"       "form__area"
+          "name"        .name
+          "rows"        3
+          "placeholder" $placeholder
+          "minlength"   .min
+          "maxlength"   .max
+          "data-req"    $req
+          "data-req-if" $req_if
         -}}
         {{- $area_attrs = partial "func/attrs" $area_attrs }}
         <textarea {{- $area_attrs }}></textarea>
@@ -515,9 +515,23 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
                 {{- $key  = "✅" -}}
                 {{- $type = "checkbox" -}}
               {{- end }}
-              <label class="form__opt">
-                {{- "" -}}
-                <input class="form__{{ $type }}" type="{{ $type }}" name="{{ $name }}" value="{{ $key }}">
+              {{- $opt_class := "form__opt" -}}
+              {{- if .disabled -}}
+                {{- $opt_class = print $opt_class " form__opt--disabled" -}}
+              {{- end -}}
+              {{- $opt_attrs := dict "class" $opt_class -}}
+              {{- $opt_attrs = partial "func/attrs" $opt_attrs -}}
+              {{- $opt_input_class := print "form__" $type -}}
+              {{- $opt_input_attrs := dict
+                "class"    $opt_input_class
+                "type"     $type
+                "name"     $name
+                "value"    $key
+                "disabled" .disabled
+              -}}
+              {{- $opt_input_attrs = partial "func/attrs" $opt_input_attrs -}}
+              <label {{- $opt_attrs }}>
+                <input {{- $opt_input_attrs }}>
                 {{- .label }}{{ if $only }}{{ if $req }} *{{ end }}{{ end -}}
               </label>
             {{- end -}}
