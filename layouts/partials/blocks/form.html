@@ -497,6 +497,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
         {{- $axis      := cond (not .x) "" " form__fieldset--x" -}}
         {{- $is_checks := eq $type "checks" -}}
         {{- $legend    := or .label .name }}
+        {{- $item_req_if := or $req_if .show_if -}}
         <fieldset class="form__fieldset {{- $axis }}" {{- $req_attr }}>
           {{- if $legend }}
             <legend>
@@ -510,6 +511,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
             {{- $only := eq (len .) 1 -}}
             {{- range . -}}
               {{- $key := or .key .label -}}
+              {{- $item_req := and $is_checks .req -}}
               {{- if $is_checks -}}
                 {{- $name  = or .key (print $legend " ➡️ " $key) -}}
                 {{- $key  = "✅" -}}
@@ -528,11 +530,13 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
                 "name"     $name
                 "value"    $key
                 "disabled" .disabled
+                "data-req" (and $item_req (not $item_req_if))
+                "data-req-if" (cond $item_req $item_req_if "")
               -}}
               {{- $opt_input_attrs = partial "func/attrs" $opt_input_attrs -}}
               <label {{- $opt_attrs }}>
                 <input {{- $opt_input_attrs }}>
-                {{- .label }}{{ if $only }}{{ if $req }} *{{ end }}{{ end -}}
+                {{- .label }}{{ if or (and $only $req) $item_req }} *{{ end -}}
               </label>
             {{- end -}}
           {{- end }}
