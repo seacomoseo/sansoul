@@ -1,0 +1,60 @@
+{{/*
+Register one resource at its render point. The page and output-format scope is
+intentional: Hugo renders pages concurrently, so a global collection would be
+incomplete while an individual page is being emitted.
+*/}}
+{{ $kind := .kind }}
+{{ $value := .value | default "" | strings.TrimSpace }}
+{{ $declared := .declared | default false }}
+{{ $display := .display | default "use" }}
+{{ $format := page.Store.Get "sansoul.output-format" | default "html" }}
+
+{{ if and $kind $value }}
+  {{ if eq $kind "glyph" }}
+    {{ $value = $value | lower | replaceRE `[-\s]+` "_" }}
+    {{ $non_ascii := findRE `[^\x00-\x7F]` $value }}
+    {{ if not $non_ascii }}
+      {{ $kind = "glyphs" }}
+    {{ else }}
+      {{ $kind = "" }}
+    {{ end }}
+  {{ else if eq $kind "svg" }}
+    {{ if hasPrefix $value "brand:" }}
+      {{ $value = print "brands/" (strings.TrimPrefix "brand:" $value) }}
+    {{ else }}
+      {{ $value = strings.TrimPrefix "svg:" $value }}
+    {{ end }}
+    {{ $value = strings.TrimPrefix "/" $value }}
+    {{ $kind = "svgs" }}
+  {{ else if eq $kind "div" }}
+    {{ $kind = "divs" }}
+  {{ else }}
+    {{ errorf "Unknown SanSoul resource kind %q" $kind }}
+  {{ end }}
+
+  {{ if $kind }}
+    {{ $key := printf "sansoul.resources.%s.%s" $format $kind }}
+    {{ $items := page.Store.Get $key | default (slice) }}
+    {{ $items = $items | append $value | uniq | sort }}
+    {{ page.Store.Set $key $items }}
+    {{ if and (eq $kind "svgs") (ne $display "image") }}
+      {{ $use_key := printf "sansoul.resources.%s.svg-uses" $format }}
+      {{ $uses := page.Store.Get $use_key | default (slice) }}
+      {{ $uses = $uses | append $value | uniq | sort }}
+      {{ page.Store.Set $use_key $uses }}
+    {{ end }}
+    {{ if and $declared (eq $kind "svgs") }}
+      {{ $explicit_key := printf "sansoul.resources.%s.explicit.svgs" $format }}
+      {{ $explicit := page.Store.Get $explicit_key | default (slice) }}
+      {{ $explicit = $explicit | append $value | uniq | sort }}
+      {{ page.Store.Set $explicit_key $explicit }}
+    {{ end }}
+    {{ if and (eq $kind "svgs") (eq $display "image") }}
+      {{ $image_key := printf "sansoul.resources.%s.svg-images" $format }}
+      {{ $images := page.Store.Get $image_key | default (slice) }}
+      {{ $images = $images | append $value | uniq | sort }}
+      {{ page.Store.Set $image_key $images }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return "" }}

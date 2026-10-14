@@ -69,95 +69,6 @@ languages:
 module:
   hugoVersion:
     min: 0.164.0
-  mounts:
-
-  # static
-  - source: static
-    target: static
-  - source: node_modules/material-symbols
-    target: static/fonts
-  - source: uploads
-    target: static/u
-    files:
-    - '! fonts/**'
-  # assets
-  - source: assets
-    target: assets
-  - source: uploads
-    target: assets/u
-  - source: node_modules/material-symbols
-    target: assets/fonts
-  - source: ../_tools/node_modules/material-symbols
-    target: assets/fonts
-  - source: themes/sansoul/assets/u/icons/brands
-    target: assets/u/icons/brands
-  - source: node_modules/@fortawesome/fontawesome-free/svgs/brands
-    target: assets/u/icons/brands
-  - source: ../_tools/node_modules/@fortawesome/fontawesome-free/svgs/brands
-    target: assets/u/icons/brands
-  - source: node_modules/simple-icons/icons
-    target: assets/u/icons/brands
-  - source: ../_tools/node_modules/simple-icons/icons
-    target: assets/u/icons/brands
-  # collection index sources consumed by the root content adapter
-  - source: content
-    target: assets/content-indexes
-    files:
-    - '*/_index.*.md'
-  ## content home by langs
-  - source: content/single/_home.es.md
-    target: content/_index.es.md
-    sites:
-      matrix:
-        languages: [es]
-  - source: content/single/_home.en.md
-    target: content/_index.en.md
-    sites:
-      matrix:
-        languages: [en]
-  - source: content/single/_home.fr.md
-    target: content/_index.fr.md
-    sites:
-      matrix:
-        languages: [fr]
-  - source: content/single/_home.de.md
-    target: content/_index.de.md
-    sites:
-      matrix:
-        languages: [de]
-  - source: content/single/_home.pt.md
-    target: content/_index.pt.md
-    sites:
-      matrix:
-        languages: [pt]
-  - source: content/single/_home.it.md
-    target: content/_index.it.md
-    sites:
-      matrix:
-        languages: [it]
-  ## content
-  - source: content
-    target: content
-    files:
-    - '! global.*.yml'
-    - '! single/_home.*.md'
-    - '! */_index.*.md'
-  ## content theme
-  - source: themes/sansoul/content
-    target: content
-  # data
-  - source: content
-    target: data
-    files:
-    - 'global.*.yml'
-  - source: data
-    target: data
-    files:
-    - '! **/example/*'
-  - source: i18n
-    target: data/i18n
-  - source: themes/sansoul/i18n
-    target: data/i18n
 
 
 # default without option in cms
@@ -267,6 +178,6 @@ security:
 
 caches:
   getresource:
-    maxAge: 0
+    maxAge: 24h
 
 timeout: 240s

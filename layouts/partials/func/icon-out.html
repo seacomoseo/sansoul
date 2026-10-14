@@ -5,9 +5,7 @@
   {{ with index . 1 }}
     {{ $icon = . }}
   {{ end }}
-  {{ with index . 2 }}
-    {{ $text = . }}
-  {{ end }}
+  {{ $text = index . 2 }}
 {{ end }}
 
 {{ return dict "text" $text "icon" $icon }}

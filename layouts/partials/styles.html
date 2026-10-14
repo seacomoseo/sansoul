@@ -1,8 +1,13 @@
 {{ $vars := dict }}
+{{ $font_faces := slice }}
+{{ range page.Store.Get "sansoul.fonts" | default (slice) }}
+  {{ $font_style := cond .italic "italic" "normal" }}
+  {{ $font_faces = $font_faces | append (delimit (slice .family .weight $font_style .url) "|") }}
+{{ end }}
 {{ with hugo.Data.styles }}
   {{ $icons_grade := cond (and .icons.fill (not .icons.grade)) -25 .icons.grade }}
   {{ $vars = dict
-    "fonts-css"                        (hugo.Store.Get "fonts_css" | default "")
+    "fonts-css"                        (delimit ($font_faces | uniq) ",")
 
     "utilities-viewport-min"           hugo.Data.utilities.viewports.min
     "utilities-viewport-max"           hugo.Data.utilities.viewports.max
@@ -98,8 +103,6 @@
     "hugo-is-production"               (hugo.IsProduction                | not | not | string)
     "config-others-show"               (hugo.Data.config.show            | not | not | string)
     "menu-g_translate"                 (site.Params.g_translate          | not | not | string)
-    "draws-base"                       (partial "func/draws-base" .                  | string)
-    "timestamp"                        (partial "func/timestamp"  .                  | string)
     "quote"                            (partial "func/default-icon" "quote"          | string)
     "quote-left"                       (partial "func/default-icon" "quote_left"     | string)
     "quote-right"                      (partial "func/default-icon" "quote_right"    | string)
@@ -120,7 +123,7 @@
   {{ else }}
     {{ $css = . | toCSS $to_css }}
   {{ end }}
-  {{ $css = $css | fingerprint }}
+  {{ $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/styles.css") }}
 {{ end }}
 
 {{ return $css }}

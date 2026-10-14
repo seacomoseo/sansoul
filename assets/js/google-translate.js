@@ -1,5 +1,4 @@
 import { waitCSS } from './wait-css'
-import { draws } from '@params'
 import params from './params'
 const { isGoogleTranslate } = params
 
@@ -18,7 +17,7 @@ export function initGoogleTranslate () {
       const baseTag = document.querySelector('base')
       if (baseTag) baseTag.remove()
       // Reset href in svg uses
-      const uses = document.querySelectorAll(`use[href^="${draws}"]`)
+      const uses = document.querySelectorAll('use[href*=".svg#"]')
       uses.forEach((use) => use.setAttribute('href', use.getAttribute('href')))
     }
   })

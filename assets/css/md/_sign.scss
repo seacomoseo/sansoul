@@ -2,13 +2,13 @@
 @use "hugo:vars" as *;
 
 .md {
-  mark:has(.icon > use[href^="#{$draws-base}#sign-"]) {
+  mark:has(.icon[part^="svg:sign-"]) {
     position: relative;
     display: inline-block;
     background-color: transparent;
     color: inherit;
     padding: 0;
-    .icon:has(use[href^="#{$draws-base}#sign-"]) {
+    .icon[part^="svg:sign-"] {
       position: absolute;
       top: -0.125em;
       left: -0.25em;

@@ -1,29 +1,27 @@
 {{/*
 Partial: func/once-stores
-Purpose: Initialize and finalize build-wide stores once on the primary-language home page.
-Context: String `init` or `end`.
+Purpose: Initialize page-local resource registries and finalize build-wide static files.
+Context: Map with `action` (`init` or `end`) and the current output-format name.
 Returns: Empty string.
-Side effects: Resets page stores; writes hugo.Store timestamp; collects fonts, drawings, glyphs, and generated static files.
+Side effects: Resets page stores; publishes static files once from the primary-language home page.
 */}}
+{{ $action := .action }}
+{{ $format := .format | default "html" }}
 {{ page.Store.Set "phones" slice }}
+{{ if eq $action "init" }}
+  {{ page.Store.Set "sansoul.output-format" $format }}
+  {{ range slice "glyphs" "svgs" "divs" }}
+    {{ page.Store.Set (printf "sansoul.resources.%s.%s" $format .) slice }}
+  {{ end }}
+  {{ page.Store.Set (printf "sansoul.resources.%s.explicit.svgs" $format) slice }}
+  {{ page.Store.Set "sansoul.draws.url" "" }}
+  {{ page.Store.Set "sansoul.draws.requested" false }}
+  {{ page.Store.Set "sansoul.fonts" slice }}
+{{ end }}
 {{/*  Only in home page in the main language  */}}
 {{ if eq page (index hugo.Sites 0).Home }}
-  {{ if eq . "init" }}
-    {{/*  Initialize each store  */}}
-    {{ $now := now.Format "20060102150405"  }}
-    {{ hugo.Store.Set "timestamp"    $now   }}
-    {{ page.Store.Set "glyphs"       slice  }}
-    {{ page.Store.Set "svgs"         slice  }}
-    {{ page.Store.Set "divs"         slice  }}
-    {{ partial "func/fonts-to-store" . }}
-  {{ else if eq . "end" }}
-    {{/*  Draws and glyphs to store  */}}
-    {{ partial "func/draws-to-store" . }}
-    {{/*  Generate static files  */}}
+  {{ if eq $action "end" }}
     {{ partial "files/statics" . }}
-    {{ partial "files/fonts"   . }}
-    {{ partial "files/draws"   . }}
-    {{ partial "files/glyphs"  . }}
   {{ end }}
 {{ end }}
 {{ return "" }}

@@ -51,8 +51,9 @@
     "name"         site.Params.name
   )
 -}}
-{{- $js := resources.Get "js/info.js" | js.Build $opts | fingerprint -}}
+{{- $js := resources.Get "js/info.js" | js.Build $opts -}}
 {{- if hugo.IsProduction -}}
   {{- $js = $js | minify -}}
 {{- end -}}
+{{- $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/info.js") -}}
 <script src="{{ $js.RelPermalink }}"></script>

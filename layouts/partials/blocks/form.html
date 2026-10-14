@@ -273,7 +273,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       <input type="hidden" name="_confirmation" value="{{ $confirmation_payload | jsonify }}">
     {{- end }}
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
-    <input type="hidden" name="Timestamp" value="{{ now.Format `2006-01-02 15:04:05` }}" class="form-timestamp">
+    {{- /* form-send.js assigns the submission time; keep the generated page deterministic. */ -}}
+    <input type="hidden" name="Timestamp" value="" class="form-timestamp">
     {{- /*  HONEYPOT  */}}
     <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off">
@@ -449,6 +450,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       {{- /*  geo  */ -}}
       {{- else if $type | eq "geo" -}}
         {{- $icon := or .icon (partial "func/default-icon" "geo") -}}
+        {{- $aux  := partial "icon" (dict "icon" $icon) -}}{{- /*  Just to .Store and use it in JS  */ -}}
         {{- $geo_attrs := dict
           "id"         (print "geo-" $form_id)
           "class"      "form__geo-map"
@@ -638,4 +640,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     </i>
     {{- "" -}}
   </label>
+  {{- /*  Just to .Store and use them in JS  */ -}}
+  {{- $aux := partial "icon" (dict "icon" "close") -}}
+  {{- $aux  = partial "icon" (dict "icon" "info") -}}
+  {{- $aux  = partial "icon" (dict "icon" "sync") -}}
+  {{- $aux  = partial "icon" (dict "icon" "check_circle") -}}
 </form>

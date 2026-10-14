@@ -40,8 +40,8 @@
   "minify"     hugo.IsProduction
   "targetPath" "js/scripts.js"
   "params"     (dict
-    "draws"        (partial "func/draws-base" .)
     "cookiesLegal" (hugo.Data.config.cookies_legal | not | not)
+    "icons"        (page.Store.Get "sansoul.resources.svg-urls" | default dict)
     "name"         site.Params.name
     "netlify"      (getenv "NETLIFY")
     "netlifyId"    site.Params.netlify_id
@@ -90,6 +90,6 @@
 {{ if hugo.IsProduction }}
   {{ $js = $js | minify }}
 {{ end }}
-{{ $js = $js | fingerprint }}
+{{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/scripts.js") }}
 
 {{ return $js }}

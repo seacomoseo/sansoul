@@ -1,0 +1,11 @@
+{{ $declared := hugo.Data.resources | default dict }}
+{{ range $declared.glyphs | default (slice) }}
+  {{ partial "func/register-resource" (dict "kind" "glyph" "value" . "declared" true) }}
+{{ end }}
+{{ range $declared.svgs | default (slice) }}
+  {{ partial "func/register-resource" (dict "kind" "svg" "value" . "declared" true) }}
+{{ end }}
+{{ range $declared.divs | default (slice) }}
+  {{ partial "func/register-resource" (dict "kind" "div" "value" . "declared" true) }}
+{{ end }}
+{{ return "" }}

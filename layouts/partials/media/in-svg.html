@@ -1,5 +1,6 @@
 {{- $src := resources.Get .img -}}
 {{- if $src -}}
+  {{- $original_src := $src -}}
   {{/*  get head, width and height  */}}
   {{- $head   := "" -}}
   {{- $width  := "" -}}
@@ -14,20 +15,29 @@
     {{- $height = 512 -}}
   {{- end -}}
   {{- if $head -}}
+    {{- $source      := $src.Content -}}
+    {{- $name := .img | replaceRE `^/?u/(icons?/)?` "" | replaceRE `\.svg$` "" -}}
+    {{- $resource_name := cond (hasPrefix $name "brands/") (print "brand:" (strings.TrimPrefix "brands/" $name)) (print "svg:" $name) -}}
+    {{- $resource_id := partial "func/svg-resource-id" $name -}}
+    {{- $svg_mode := cond ($source | findRE `svg-src`) "image" (cond ($source | findRE `svg-html`) "inline" "use") -}}
+    {{- if ne $svg_mode "inline" -}}
+      {{- partial "func/register-resource" (dict "kind" "svg" "value" $resource_name "display" $svg_mode) -}}
+    {{- end -}}
+    {{- $svg_token := print "__SANSOUL_SVG_" ($resource_id | urlize) "__" -}}
+    {{- $svg_image_token := print "__SANSOUL_SVG_IMAGE_" ($resource_id | urlize) "__" -}}
     {{- $vid_data    := .vid | not | not -}}
     {{- $vid_name    := index .vid "name" | default "aux" -}}
     {{- $vid_src     := index .vid "src" -}}
     {{- $attrs       := dict $vid_name $vid_data "data-vid" $vid_src -}}
-    {{- $source      := $src.Content -}}
     {{- $min         := $src | minify -}}
     {{- $content     := $min.Content | replaceRE `\n` "" -}}
     {{- $src          = $content | resources.FromString $src.RelPermalink -}}
     {{/*  print  */}}
     {{- if $source | findRE `svg-src` -}}
       {{/*  image tag  */}}
-      {{- $img_attrs := dict
+        {{- $img_attrs := dict
         "class"    .class
-        "src"      $src.RelPermalink
+        "src"      $svg_image_token
         "alt"      .alt
         "width"    $width
         "height"   $height
@@ -57,9 +67,8 @@
       {{- $sprit := dict "class" .class "width" $width "height" $height "aria-label" .alt -}}
       {{- $attrs  = merge $attrs $sprit -}}
       {{- $attrs  = partial "func/attrs" $attrs -}}
-      {{- $draws := partial "func/draws-base" . -}}
-      {{- $id    := .img | replaceRE `^/u/(icons?/)?|.svg$` "" | replaceRE `^(brand)s/` `$1-` | replaceRE `/` "-" -}}
-      {{- $href  := print $draws "#" $id }}
+      {{- partial "func/register-resource" (dict "kind" "svg" "value" $resource_name) -}}
+      {{- $href := $svg_token }}
       <svg {{- $attrs }}><use href="{{ $href }}"></use></svg>
     {{- end -}}
 

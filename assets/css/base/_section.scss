@@ -14,7 +14,7 @@
   --pb-total: calc(var(--pb) + var(--pb-div, 0px));
   padding-top: max(0em, var(--pt-total));
   padding-bottom: max(0em, var(--pb-total));
-  margin-top: min(0em, var(--pt-total));
+  margin-top: min(0em, var(--pt-total), var(--pt-div) * -1);
   margin-bottom: min(0em, var(--pb-total));
   max-width: 100dvw;
   // contain-intrinsic-size: auto 100vh;

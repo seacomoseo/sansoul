@@ -1,50 +1,40 @@
-{{ if hugo.IsProduction }}
-  {{ $icons := page.Store.Get "glyphs" | uniq | sort }}
-  {{ $icons  = delimit $icons "," | replaceRE `-` "_" }}
-  {{ $icons  = trim $icons "," }}
-  {{ $published := false }}
-  {{ with hugo.Data.styles.icons }}
-    {{ $style   := .style   | default "outlined" }}
-    {{ $weight  := .weight  | default 400 }}
-    {{ $optical := .optical | default 24 }}
-    {{ $fill    := .fill    | default false }}
-    {{ $grade   := cond (and $fill (not .grade)) -25 (.grade | default 0) }}
-    {{/*  URL  */}}
-    {{ $url := print
-      "https://fonts.googleapis.com/css2"
-      "?family=Material+Symbols+" (strings.FirstUpper $style)
-      ":opsz,wght,FILL,GRAD@" $optical "," $weight "," (int $fill) "," (int $grade)
-      "&icon_names=" $icons
-    }}
-    {{/*  Get remote CSS  */}}
-    {{ $ua      := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" }}
-    {{ $headers := dict "User-Agent" $ua "Accept" "text/css,*/*;q=0.1" }}
-    {{ with partial "func/get-remote" (dict "url" $url "headers" $headers) }}
-      {{ $woff2   := .Content | replaceRE `\n` " " | replaceRE `.+?url\((.+?)\).+` "$1" }}
-      {{/*  Get remote WOFF2  */}}
-      {{ with partial "func/get-remote" (dict "url" $woff2 "headers" $headers) }}
-        {{ $time    := partial "func/timestamp" . }}
-        {{ $name    := print "fonts/icons." $time ".woff2" }}
-        {{ $rename  := . | resources.Copy $name }}
-        {{ $publish := $rename.Publish }}
-        {{ $published = true }}
-      {{ end }}
-    {{ end }}
-    {{ if not $published }}
-      {{ $path := print "fonts/material-symbols-" $style ".woff2" }}
-      {{ with resources.Get $path }}
-        {{ $time    := partial "func/timestamp" . }}
-        {{ $name    := print "fonts/icons." $time ".woff2" }}
-        {{ $rename  := . | resources.Copy $name }}
-        {{ $publish := $rename.Publish }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-{{ else }}
-  {{ $style := hugo.Data.styles.icons.style | default "outlined" }}
-  {{ $path  := print "fonts/material-symbols-" $style ".woff2" }}
-  {{ with resources.Get $path }}
-    {{ $publish := .Publish }}
-  {{ end }}
-{{ end }}
-{{ return "" }}
+{{- $format := .format | default "html" -}}
+{{- $preload := .preload | default false -}}
+{{- $glyphs := .glyphs | default (slice) -}}
+{{- $key := printf "sansoul.resources.%s.glyphs" $format -}}
+
+{{- if not .glyphs -}}
+  {{- /* Compatibility fallback for callers outside the site-wide resource planner. */ -}}
+  {{- range site.Pages -}}
+    {{- range .Store.Get $key | default (slice) -}}
+      {{- $glyphs = $glyphs | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $glyphs = $glyphs | uniq | sort -}}
+
+{{- if $glyphs -}}
+  {{- $config := hugo.Data.styles.icons -}}
+  {{- $style := $config.style | default "outlined" | lower -}}
+  {{- $weight := $config.weight | default 400 -}}
+  {{- $optical := $config.optical | default 24 -}}
+  {{- $fill := $config.fill | not | not | int -}}
+  {{- $grade := cond (and $config.fill (not $config.grade)) -25 ($config.grade | default 0) -}}
+  {{- /*
+    This partial runs from templates.Defer after every page store is complete.
+    The font partial fetches and publishes a content-fingerprinted resource, so
+    it must remain uncached even though the glyph union is deterministic.
+  */ -}}
+  {{- $font := partial "files/material-symbols-font" (dict
+    "glyphs" $glyphs
+    "style" $style
+    "weight" $weight
+    "fill" $fill
+    "grade" $grade
+    "optical" $optical
+  ) -}}
+  {{- if $preload -}}
+    <link rel="preload" href="{{ $font.url }}" as="font" type="font/woff2" crossorigin>
+  {{- end -}}
+  <style>@font-face{font-family:'Material Symbols';font-style:normal;font-weight:{{ $font.weight }};font-display:block;src:url('{{ $font.url }}') format('woff2')}</style>
+{{- end -}}

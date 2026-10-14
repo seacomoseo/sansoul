@@ -41,8 +41,8 @@ Ejecuta todos los comandos desde la raíz:
 
 | Comando | Función |
 | --- | --- |
-| `sh do server` | Preconstruye y levanta el servidor local. |
-| `sh do local` | Servidor del CMS con invalidación de caché y regeneración atómica de la configuración previa. |
+| `sh do server` | Preconstruye y levanta Hugo con la salida en disco. |
+| `sh do local` | Servidor del CMS con salida en disco, invalidación de rutas eliminadas y regeneración atómica del prebuild. |
 | `sh do hugo` | Ejecuta la compilación completa y el posprocesado de imágenes. |
 | `sh do migrations` | Muestra las adaptaciones pendientes para la versión instalada del tema. |
 | `sh do root-docs` | Genera README/AGENTS raíz desde las plantillas canónicas del tema. |
@@ -72,6 +72,7 @@ Ejecuta todos los comandos desde la raíz:
   - `data/customs.yml`: campos de contenido personalizados que también se exponen en el CMS.
   - `data/remote.yml`: fuentes remotas que el Content Adapter transforma en páginas virtuales.
   - `data/redirects.yml`: redirecciones generadas para el despliegue.
+  - `data/resources.yml`: recursos que CSS, JavaScript o datos dinámicos usan sin pasar por los layouts; los usos renderizados se agrupan automáticamente.
 - `dna/`: identidad, criterios y restricciones particulares del proyecto.
   - `dna/_index.md`: resumen obligatorio e índice que indica qué otros documentos consultar según la tarea.
 
@@ -89,6 +90,22 @@ cadena de merges.
 - `uploads/`: medios originales administrables por el CMS.
 
 `uploads/foo/bar.png` se monta como recurso y como archivo estático. En el contenido se referencia mediante `/u/foo/bar.png`, no mediante `/uploads/...`.
+
+### Recursos dinámicos
+
+Los iconos usados por layouts, shortcodes, render hooks y componentes se registran al renderizar la página. Solo los recursos consumidos indirectamente por CSS, JavaScript o contenido dinámico necesitan declararse en `data/resources.yml`:
+
+```yaml
+glyphs: [arrow_forward]
+svgs: [svg:base/logo, brand:github]
+divs: [waves]
+```
+
+Declara aquí solo los recursos que CSS, JavaScript o contenido dinámico usan sin pasar por los layouts. SanSoul detecta los SVG usados por layouts y contenido al renderizar, y agrupa los recursos seguros según el conjunto exacto de páginas que los usa. Los iconos seguros usados por una sola página se insertan allí; los compartidos usan sprites externos con raíces `<svg>` anidadas. Las animaciones se mantienen dentro del documento de cada página; SVG con IDs en colisión o reglas `<style>` quedan como archivos independientes y se siguen usando con `<use>`.
+
+Los SVG usados como imágenes conservan `<img>`, `alt` y la carga diferida. Se agrupan en sprites según las páginas que los usan y cada `<img>` apunta a su vista SVG. Los divisores también se agrupan automáticamente por conjunto de páginas de uso. Los sprites conservan raíces SVG anidadas, gradientes y referencias internas; no se convierten a `<symbol>`. No hace falta declarar grupos manuales.
+
+Las fuentes y los SVG publicados usan SHA-256 truncado a 12 caracteres hexadecimales. En JavaScript, el bundle de cada página expone el mapa `icons` mediante `@params`, con las claves SVG normalizadas existentes y las URLs finales. En CSS se publican propiedades `--sansoul-svg-<id>` con la URL del SVG. Los nombres `brand:` usan los mounts existentes de Font Awesome Brands y Simple Icons.
 
 ### ADN del proyecto
 

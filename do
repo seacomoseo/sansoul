@@ -186,7 +186,12 @@ elif [ "$COMMAND" = prebuild ]; then
 
   hecho "PUBLISH PREBUILD CONFIG"
   mkdir -p public
-  mv "$PREBUILD_TMP/hugo.prebuild.yml" public/hugo.prebuild.yml
+  if [ -f public/hugo.prebuild.yml ] && cmp -s "$PREBUILD_TMP/hugo.prebuild.yml" public/hugo.prebuild.yml
+  then
+    rm -f "$PREBUILD_TMP/hugo.prebuild.yml"
+  else
+    mv "$PREBUILD_TMP/hugo.prebuild.yml" public/hugo.prebuild.yml
+  fi
   rm -rf public/content
   rm -rf "$PREBUILD_TMP"
   trap - EXIT HUP INT TERM

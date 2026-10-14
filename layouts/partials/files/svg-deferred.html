@@ -1,0 +1,106 @@
+{{/*
+Resolve one rendered document from the site-wide SVG plan. The expensive
+discovery, collision audit, font subset, and sprite publication are cached in
+hugo.Store after all page-local Stores have been populated.
+*/}}
+{{- $html := .html -}}
+{{- $format := .format | default "html" -}}
+{{- $plan_key := print "sansoul.resources.svg-plan." $format -}}
+{{- $plan := hugo.Store.Get $plan_key -}}
+{{- if not $plan -}}
+  {{- $plan = partial "files/svg-plan" (dict "format" $format) -}}
+  {{- hugo.Store.Set $plan_key $plan -}}
+{{- end -}}
+
+{{- $references := $plan.references -}}
+{{- $items := $plan.items -}}
+{{- $colliding := $plan.colliding -}}
+{{- $use_records := index $plan "use-records" -}}
+{{- $current_uses := page.Store.Get (printf "sansoul.resources.%s.svg-uses" $format) | default (slice) -}}
+{{- $current_uses = $current_uses | uniq | sort -}}
+{{- $actual_uses := slice -}}
+{{- range $current_uses -}}
+  {{- $id := partial "func/svg-resource-id" . -}}
+  {{- $token := print "__SANSOUL_SVG_" ($id | urlize) "__" -}}
+  {{- if strings.Contains $html $token -}}{{- $actual_uses = $actual_uses | append . -}}{{- end -}}
+{{- end -}}
+{{- $actual_uses = $actual_uses | uniq | sort -}}
+{{- $inline_uses := slice -}}
+{{- range $actual_uses -}}
+  {{- $name := . -}}
+  {{- if not (in $colliding $name) -}}
+    {{- $asset_records := where $use_records "name" $name -}}
+    {{- $asset_pages := slice -}}
+    {{- range $asset_records -}}{{- $asset_pages = $asset_pages | append .page -}}{{- end -}}
+    {{- $asset_pages = $asset_pages | uniq | sort -}}
+    {{- $item := index (where $items "name" $name) 0 -}}
+    {{- if or (eq (len $asset_pages) 1) $item.animated -}}
+      {{- $inline_uses = $inline_uses | append $item -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $inline_uses -}}
+  {{- $sprite := partial "files/svg-sprite" (dict "group" "inline" "items" $inline_uses "publish" false) -}}
+  {{- $inline_content := print `<svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">` $sprite.content `</svg>` -}}
+  {{- range $inline_uses -}}
+    {{- $token := print "__SANSOUL_SVG_" (.resource_id | urlize) "__" -}}
+    {{- $references = merge $references (dict $token (print "#" .id)) -}}
+  {{- end -}}
+  {{- $html = replaceRE `(?s)(<body\b[^>]*>)` (print `$1` $inline_content) $html -}}
+{{- end -}}
+
+{{- /* JS exposes standalone files for page-local symbols, which may be used outside <use>. */ -}}
+{{- $page_icons := dict -}}
+{{- $page_resource_key := printf "sansoul.resources.%s.svgs" $format -}}
+{{- $explicit_key := printf "sansoul.resources.%s.explicit.svgs" $format -}}
+{{- $explicit_names := page.Store.Get $explicit_key | default (slice) -}}
+{{- range page.Store.Get $page_resource_key | default (slice) -}}
+  {{- $name := . -}}
+  {{- $id := partial "func/svg-resource-id" $name -}}
+  {{- $token := print "__SANSOUL_SVG_" ($id | urlize) "__" -}}
+  {{- $image_token := print "__SANSOUL_SVG_IMAGE_" ($id | urlize) "__" -}}
+  {{- if or (strings.Contains $html $token) (strings.Contains $html $image_token) (in $explicit_names $name) -}}
+  {{- $url := index $references $token -}}
+  {{- if and (not $url) (in $actual_uses $name) -}}
+    {{- $item := index (where $items "name" $name) 0 -}}
+    {{- $resource := partial "files/svg-resource" (dict "source" $item.source "name" $name "id" $item.id) -}}
+    {{- $url = $resource.url -}}
+  {{- else if not $url -}}
+    {{- $item := index (where $items "name" $name) 0 -}}
+    {{- if $item -}}
+      {{- $resource := partial "files/svg-resource" (dict "source" $item.source "name" $name "id" $item.id) -}}
+      {{- $url = $resource.url -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $legacy_id := $name | replaceRE `^icons?/` "" | replaceRE `^brands/` "brand-" | replaceRE `/` "-" -}}
+  {{- if $url -}}{{- $page_icons = merge $page_icons (dict $legacy_id $url) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- page.Store.Set "sansoul.resources.svg-urls" $page_icons -}}
+{{- $scripts := partial "scripts" page -}}
+{{- $html = replace $html "__SANSOUL_SCRIPTS__" $scripts.RelPermalink -}}
+{{- $html = replace $html "__SANSOUL_GLYPHS__" (index $plan "glyphs-html") -}}
+{{- $div_references := index $plan "div-references" -}}
+{{- $div_records := index $plan "div-records" -}}
+{{- $rendered_usage := hugo.Store.Get (print "sansoul.resources.rendered-usage." $format) | default dict -}}
+{{- $page_usage := index $rendered_usage page.RelPermalink | default dict -}}
+{{- range $page_usage.divs | default (slice) -}}
+  {{- $name := . -}}
+  {{- $token_id := lower $name -}}
+  {{- $token_id = replaceRE `[^a-z0-9]+` "-" $token_id -}}
+  {{- $token_id = strings.Trim $token_id "-" -}}
+  {{- $token := print "__SANSOUL_DRAWS_" $token_id "__" -}}
+  {{- $name_records := where $div_records "name" $name -}}
+  {{- $name_pages := slice -}}
+  {{- range $name_records -}}{{- $name_pages = $name_pages | append .page -}}{{- end -}}
+  {{- $signature := jsonify ($name_pages | uniq | sort) | string -}}
+  {{- $reference_key := print $signature "|" $name -}}
+  {{- $url := index $div_references $reference_key | default "" -}}
+  {{- $html = replace $html $token $url -}}
+{{- end -}}
+{{- $html = replace $html "__SANSOUL_DRAWS__" "" -}}
+{{- range $token, $reference := $references -}}
+  {{- $html = replace $html $token $reference -}}
+{{- end -}}
+{{- $html | safeHTML -}}

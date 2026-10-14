@@ -1,0 +1,50 @@
+{{/*
+Partial: files/svg-image-sprite
+Purpose: Build a fragment-addressable SVG image sheet while retaining native img semantics.
+Context:
+  - group (string, required): Stable usage-group signature.
+  - items (slice, required): Entries with name, id, and source values.
+Returns: The published image sprite resource.
+Side effects: Publishes a content-hashed SVG image sprite.
+*/}}
+{{- $entries := slice -}}
+{{- $views := slice -}}
+{{- $y := 0 -}}
+{{- $max_width := 0 -}}
+{{- range .items -}}
+  {{- $item := . -}}
+  {{- $source := .source -}}
+  {{- $content := ($source | minify).Content | replaceRE `^<\?xml[^>]*\?>` "" -}}
+  {{- $root := findRE `^<svg[^>]*>` $content -}}
+  {{- if not $root -}}
+    {{- errorf "SanSoul SVG image sprite cannot parse the root of %q" .name -}}
+  {{- else -}}
+    {{- $head := index $root 0 -}}
+    {{- $head = replaceRE `\s+xmlns=["'][^"']*["']` "" $head -}}
+    {{- $size := partial "func/svg-sizes" $content -}}
+    {{- $width := $size.width | default 512 -}}
+    {{- $height := $size.height | default 512 -}}
+    {{- $width = cond (gt $width 0) $width 512 -}}
+    {{- $height = cond (gt $height 0) $height 512 -}}
+    {{- $has_view_box := findRE `(?:^|\s)viewBox=["']` $head -}}
+    {{- $head = replaceRE `\s+(id|x|y|width|height)=["'][^"']*["']` "" $head -}}
+    {{- if not $has_view_box -}}
+      {{- $head = replaceRE `^<svg` (printf `<svg viewBox="0 0 %v %v"` $width $height) $head -}}
+    {{- end -}}
+    {{- $head = replaceRE `^<svg` (printf `<svg id="%s" x="0" y="%v" width="%v" height="%v"` $item.id $y $width $height) $head -}}
+    {{- $inner := $content | replaceRE `^<svg[^>]*>` "" | replaceRE `</svg>\s*$` "" -}}
+    {{- $entries = $entries | append (print $head $inner "</svg>") -}}
+    {{- $view_id := print "sansoul-image-view-" $item.id -}}
+    {{- $views = $views | append (printf `<view id="%s" viewBox="0 %v %v %v"/>` $view_id $y $width $height) -}}
+    {{- $y = add $y $height -}}
+    {{- if gt $width $max_width -}}
+      {{- $max_width = $width -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $content := printf `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %v %v">%s%s</svg>` $max_width $y (delimit $entries "") (delimit $views "") -}}
+{{- $group_id := substr (sha256 .group) 0 12 -}}
+{{- $source_target := printf "icons/images-%s.svg" $group_id -}}
+{{- $resource := $content | resources.FromString $source_target | minify -}}
+{{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "icons/images.svg") -}}
+{{- return $resource -}}

@@ -1,42 +1,42 @@
-{{- $btn := cond (eq .btn "hide") "" .btn | default "cta" -}}
-
 {{- /*  PIPS  */ -}}
-{{- $pips_class := "slider__pips" -}}
-{{- if in (slice "hide" "dot") .pips -}}
-  {{- $pips_class = print $pips_class " slider__pips--" .pips -}}
-{{- end }}
-<div class="{{ $pips_class }}">
-  {{- $pip_class := "slider__pip" -}}
-  {{- range seq .items -}}
-    {{- if eq . 1 -}}
-      {{- $pip_class = print $pip_class " slider__pip--active" -}}
-    {{- end }}
-    {{ partial "link" (dict
-      "class"  $pip_class
-      "btn"    (or $btn "cta")
-      "title"  (print (i18n "slide") " " .)
-    ) -}}
+{{- if ne .pips "hide" -}}
+  {{- $pips_class := "slider__pips" -}}
+  {{- if in (slice "hide" "dot") .pips -}}
+    {{- $pips_class = print $pips_class " slider__pips--" .pips -}}
   {{- end }}
-</div>
+  <div class="{{ $pips_class }}">
+    {{- $pip_class := "slider__pip" -}}
+    {{- range seq .items -}}
+      {{- if eq . 1 -}}
+        {{- $pip_class = print $pip_class " slider__pip--active" -}}
+      {{- end }}
+      {{ partial "link" (dict
+        "class"  $pip_class
+        "btn"    "cta"
+        "title"  (print (i18n "slide") " " .)
+      ) -}}
+    {{- end }}
+  </div>
+{{- end -}}
 
 {{- /*  ARROWS  */ -}}
-{{- $arrows_class := "slider__arrows" -}}
-{{- if in (slice "hide" "float") .arrows -}}
-  {{- $arrows_class = print $arrows_class " slider__arrows--" .arrows -}}
-{{- end }}
-<div class="{{ $arrows_class }}">
-  {{ partial "link" (dict
-    "class" "slider__arrow slider__arrow--left"
-    "btn"   (or $btn "cta")
-    "dot"   true
-    "def"   "left"
-    "title" (i18n "slide_left")
-  ) }}
-  {{ partial "link" (dict
-    "class" "slider__arrow slider__arrow--right"
-    "btn"   (or $btn "cta")
-    "dot"   true
-    "def"   "right"
-    "title" (i18n "slide_right")
-  ) -}}
-</div>
+{{- if ne .arrows "hide" -}}
+  {{- $btn := or .arrows "cta" -}}
+  {{- $arrows_class := "slider__arrows" -}}
+  {{- if eq "float" .arrows -}}
+    {{- $btn = "cta" -}}
+    {{- $arrows_class = "slider__arrows slider__arrows--float" -}}
+  {{- end }}
+  <div class="{{ $arrows_class }}">
+    {{- range slice "left" "right" -}}
+      {{- $arrow_link := cond (eq "none" $.arrows) " link" "" -}}
+      {{ partial "link" (dict
+        "class" (print "slider__arrow slider__arrow--" .  $arrow_link)
+        "btn"   $btn
+        "dot"   true
+        "def"   .
+        "title" (i18n (print "slide_" .))
+      ) }}
+    {{ end }}
+  </div>
+{{- end -}}

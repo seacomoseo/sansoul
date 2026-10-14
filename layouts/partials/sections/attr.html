@@ -60,7 +60,7 @@
 {{ $div       := "" }}
 {{ $div_style := "" }}
 {{ with .prev }}
-  {{ if .div }}
+  {{ if and .div (ne .div "hide") }}
     {{ if $.div_can }}
       {{/*  If prev have div and this can print div > pt-div and do it  */}}
       {{ $pt_div   = "pt-div" }}
@@ -78,19 +78,21 @@
 {{ $div_next       := "" }}
 {{ $div_next_style := "" }}
 {{ if not .is_footer }}
-  {{ if and .div .div_can }}
-    {{ if not .next.div_can }}
-      {{/*  If this have div (and can) and next can not print div > do it  */}}
-      {{ $options := dict "section" . "next" true }}
-      {{ with partial "sections/divider-attr" $options }}
-        {{ $div_next       = .class }}
-        {{ $div_next_style = .style }}
+  {{ if and .div (ne .div "hide") }}
+    {{ if .div_can }}
+      {{ if not .next.div_can }}
+        {{/*  If this have div (and can) and next can not print div > do it  */}}
+        {{ $options := dict "section" . "next" true }}
+        {{ with partial "sections/divider-attr" $options }}
+          {{ $div_next       = .class }}
+          {{ $div_next_style = .style }}
+        {{ end }}
       {{ end }}
     {{ end }}
-  {{ end }}
-  {{ if and .div (or .div_can .next.div_can) }}
-    {{/*  If this have div (maybe) and next can print div > pb-div  */}}
-    {{ $pb_div = "pb-div" }}
+    {{ if or .div_can .next.div_can }}
+      {{/*  If this have div (maybe) and next can print div > pb-div  */}}
+      {{ $pb_div = "pb-div" }}
+    {{ end }}
   {{ end }}
 {{ end }}
 

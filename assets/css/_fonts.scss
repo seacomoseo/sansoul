@@ -1,7 +1,6 @@
 @use "sass:list";
 @use "hugo:vars" as *;
 @use "func";
-@use "variables";
 
 @if $fonts-css != '' {
   $fonts: func.str-split($fonts-css, ',');
@@ -11,27 +10,15 @@
       $family: list.nth($split, 1);
       $weight: list.nth($split, 2);
       $style: list.nth($split, 3);
-      $filename: list.nth($split, 4);
+      $src: list.nth($split, 4);
 
       @font-face {
         font-family: '#{$family}';
         font-weight: #{$weight};
         font-style: #{$style};
         font-display: swap;
-        src: url('/fonts/#{$filename}.woff2') format('woff2');
+        src: url('#{$src}') format('woff2');
       }
     }
   }
-}
-
-$icon-font-url: '/fonts/material-symbols-#{variables.$icons-style}.woff2';
-@if variables.$is-production {
-  $icon-font-url: '/fonts/icons.#{$timestamp}.woff2';
-}
-@font-face {
-  font-family: 'Material Symbols';
-  font-weight: #{variables.$icons-weight};
-  font-style: normal;
-  font-display: block;
-  src: url($icon-font-url) format('woff2');
 }

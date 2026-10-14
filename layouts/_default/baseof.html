@@ -1,8 +1,7 @@
 {{- block "none" . }}{{ end -}}
-{{- partial "func/once-stores" "init" -}}
-<!DOCTYPE html>
-<html lang="{{ .Params.locale | default .Lang }}" data-base-lang="{{ .Lang }}" class="preload">
-
+{{- partial "func/once-stores" (dict "action" "init" "format" "html") -}}
+{{- partial "func/register-declared-resources" . -}}
+{{- partial "func/register-css-resources" . -}}
   {{- /*  TPL  */ -}}
   {{- $tpl := partial "func/tpl-sections" . -}}
 
@@ -117,52 +116,36 @@
     | safeHTMLAttr
   -}}
 
-  {{- /*  HEAD  */}}
-  <head>
-    {{- partial "head" . -}}
-    {{- $custom_html_head }}
-  </head>
+  {{- /* Render the body first so page-local resources are complete before head. */ -}}
+  {{- $body_parts := slice | append
+    `<div id="bg-loader" ` $loader_style `><div class="loader"></div></div>`
+    (partial "bg" $bg)
+    (partial "logo" $tpl)
+    (partial "menu/_" $tpl)
+  -}}
+  {{- $section_html := slice -}}
+  {{- range $sections -}}
+    {{- $section_html = $section_html | append (partial "sections/item" .) -}}
+  {{- end -}}
+  {{- $body_parts = $body_parts | append
+    `<main>` (delimit $section_html "") `</main>`
+    (partial "sections/item" $footer)
+    (partial "cookies" $tpl)
+    (partial "callnow" $tpl.callnow)
+    (partial "up" .)
+  -}}
+  {{- $body_html := delimit $body_parts "" -}}
 
-  {{- /*  BODY  */}}
-  <body {{- $body_attr }}>
+  {{- /* Complete page-local resources before references are written to head/body. */ -}}
+  {{- partial "files/svg-resources" . -}}
+  {{- partial "files/fonts" . -}}
+  {{- $body_html = print $body_html `<script src="__SANSOUL_SCRIPTS__" defer></script>` $custom_html_body -}}
 
-    {{- /*  IMAGE LCP  */}}
-    {{- /*
-    {{- $lcp := print "<svg xmlns='http://www.w3.org/2000/svg' width='2048' height='2048'><title>LCP</title><rect width='2048' height='2048' fill='" $loader_main "' opacity='0.01' /></svg>" | base64Encode }}
-    <img class="lcp" src="data:image/svg+xml;base64,{{ $lcp }}" alt="back" width="2048" height="2048" loading="eager" fetchpriority="high" decoding="async">
-    */ -}}
-
-    {{- /*  LOADER  */}}
-    <div id="bg-loader" {{ $loader_style }}>
-      <div class="loader"></div>
-    </div>
-
-    {{- /*  BACKGROUND  */ -}}
-    {{- partial "bg" $bg -}}
-
-    {{- /*  LOGO  */ -}}
-    {{- partial "logo" $tpl -}}
-
-    {{- /*  MENU  */ -}}
-    {{- partial "menu/_" $tpl -}}
-
-    {{- /*  MAIN  */}}
-    <main>
-      {{- range $sections -}}
-        {{- partial "sections/item" . -}}
-      {{- end }}
-    </main>
-
-    {{- /*  FOOTER  */ -}}
-    {{- partial "sections/item" $footer -}}
-
-    {{- /*  PRE BODY END  */ -}}
-    {{- partial "cookies" $tpl         -}}
-    {{- partial "callnow" $tpl.callnow -}}
-    {{- partial "up"      .            -}}
-    {{- $js := partial "scripts" . }}
-    <script src="{{ $js.RelPermalink }}" defer></script>
-    {{- $custom_html_body }}
-  </body>
-</html>
-{{- partial "func/once-stores" "end" -}}
+  {{- $head_html := print `<head>` (partial "head" .) $custom_html_head `</head>` -}}
+  {{- $document_html := print `<!DOCTYPE html><html lang="` (.Params.locale | default .Lang) `" data-base-lang="` .Lang `" class="preload">` $head_html `<body ` $body_attr `>` $body_html `</body></html>` -}}
+  {{- $resource_usage := partial "files/page-resource-usage" (dict "format" "html" "html" $document_html) -}}
+  {{- hugo.Store.SetInMap "sansoul.resources.rendered-usage.html" .RelPermalink $resource_usage -}}
+  {{- with (templates.Defer (dict "data" (dict "format" "html" "html" $document_html))) -}}
+    {{- partial "files/svg-deferred" . -}}
+  {{- end -}}
+{{- partial "func/once-stores" (dict "action" "end" "format" "html") -}}

@@ -1,0 +1,63 @@
+{{/*
+Partial: files/svg-sprite
+Purpose: Build a sprite whose entries keep their original nested SVG roots.
+Context:
+  - group (string, required): Stable unique build-resource name for this group.
+  - items (slice, required): Entries with name, id, and source values.
+  - publish (bool, optional): Publish a fingerprinted external sprite. Defaults true.
+Returns: A map with content and, when published, a content-fingerprinted url.
+Side effects: Publishes a fingerprinted resource when publish is true.
+*/}}
+{{- $group := .group | default "shared" -}}
+{{- $items := .items | default (slice) -}}
+{{- $publish := true -}}
+{{- if isset . "publish" -}}
+  {{- $publish = .publish -}}
+{{- end -}}
+{{- $entries := slice -}}
+{{- $max_width := 0 -}}
+{{- $max_height := 0 -}}
+{{- range $items -}}
+  {{- $name := .name -}}
+  {{- $id := .id -}}
+  {{- $source := .source -}}
+  {{- $content := ($source | minify).Content | replaceRE `^<\?xml[^>]*\?>` "" -}}
+  {{- $root := findRE `^<svg[^>]*>` $content -}}
+  {{- if not $root -}}
+    {{- errorf "SanSoul SVG sprite %q cannot parse the root of %q" $group $name -}}
+  {{- else -}}
+    {{- $head := index $root 0 -}}
+    {{- $sizes := partial "func/svg-sizes" $content -}}
+    {{- $width := $sizes.width | default 512 -}}
+    {{- $height := $sizes.height | default 512 -}}
+    {{- $width = cond (gt $width 0) $width 512 -}}
+    {{- $height = cond (gt $height 0) $height 512 -}}
+    {{- $has_viewbox := findRE `(?:^|\s)viewBox=["']` $head -}}
+    {{- $head = replaceRE `\s+(xmlns|data-name|role|id|width|height)=["'][^"']*["']` "" $head -}}
+    {{- if not $has_viewbox -}}
+      {{- $head = replaceRE `^<svg` (printf `<svg viewBox="0 0 %v %v"` $width $height) $head -}}
+    {{- end -}}
+    {{- $head = replaceRE `^<svg` (print `<svg id="` $id `"`) $head -}}
+    {{- $inner := $content | replaceRE `^<svg[^>]*>` "" | replaceRE `</svg>\s*$` "" -}}
+    {{- $entries = $entries | append (print $head $inner "</svg>") -}}
+    {{- if gt $width $max_width -}}
+      {{- $max_width = $width -}}
+    {{- end -}}
+    {{- if gt $height $max_height -}}
+      {{- $max_height = $height -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $root := `<svg xmlns="http://www.w3.org/2000/svg">` -}}
+{{- if and (gt $max_width 0) (gt $max_height 0) -}}
+  {{- $root = printf `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %v %v" preserveAspectRatio="none">` $max_width $max_height -}}
+{{- end -}}
+{{- $content := print $root (delimit $entries "") `</svg>` -}}
+{{- $result := dict "content" $content -}}
+{{- if and $publish $entries -}}
+  {{- $source_target := printf "icons/sprite-%s.svg" ($group | urlize) -}}
+  {{- $resource := $content | resources.FromString $source_target | minify -}}
+  {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "icons/sprite.svg") -}}
+  {{- $result = merge $result (dict "url" $resource.RelPermalink) -}}
+{{- end -}}
+{{- return $result -}}

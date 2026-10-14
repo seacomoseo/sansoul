@@ -277,21 +277,23 @@ iframe {
     object-fit: initial;
   }
 }
-.icon,
+.icon {
+  flex-shrink: 0;
+  flex-grow: 0;
+  line-height: 1;
+  display: inline-block;
+}
+.icon--mat,
 .quotes::after,
 .quotes::before,
 .aquotes::after,
 .aquotes::before {
-  flex-shrink: 0;
-  flex-grow: 0;
   font-family: 'Material Symbols';
   font-weight: #{variables.$icons-weight};
   font-style: normal;
   font-size: 1em;
-  line-height: 1;
   letter-spacing: normal;
   text-transform: none;
-  display: inline-block;
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
@@ -300,32 +302,27 @@ iframe {
   -webkit-font-smoothing: antialiased;
   -webkit-font-feature-settings: 'liga';
   font-feature-settings: 'liga';
-  @if not variables.$is-production {
-    font-variation-settings:
-      'FILL' #{variables.$icons-fill},
-      'wght' #{variables.$icons-weight},
-      'GRAD' #{variables.$icons-grade},
-      'opsz' #{variables.$icons-optical};
-  }
+  font-variation-settings:
+    'FILL' #{variables.$icons-fill},
+    'wght' #{variables.$icons-weight},
+    'GRAD' #{variables.$icons-grade},
+    'opsz' #{variables.$icons-optical};
   width: 1em;
   scale: variables.$icons-scale;
+}
+.icon--mat::before {
+  content: attr(part);
 }
 .icon--txt {
   @include mixins.font-base-bold;
   line-height: 1;
   text-align: center;
-  width: auto;
-  scale: 1;
 }
 .icon--svg {
   fill: currentColor;
   width: auto;
   height: 1em;
-  scale: 1;
 }
-// [href^="#{$draws-base}"] {
-//   color: $main;
-// }
 pre {
   @include mixins.radius;
 }
@@ -368,11 +365,11 @@ pre {
   color: variables.$main-turn-neutral;
   background: variables.$main;
 }
-.icon:has(> use[href="#{$draws-base}#flag-es"]),
-.icon:has(> use[href="#{$draws-base}#flag-en"]),
-.icon:has(> use[href="#{$draws-base}#flag-fr"]),
-.icon:has(> use[href="#{$draws-base}#flag-de"]),
-.icon:has(> use[href="#{$draws-base}#flag-pt"]),
-.icon:has(> use[href="#{$draws-base}#flag-it"]) {
+.icon[part="svg:flag-es"],
+.icon[part="svg:flag-en"],
+.icon[part="svg:flag-fr"],
+.icon[part="svg:flag-de"],
+.icon[part="svg:flag-pt"],
+.icon[part="svg:flag-it"] {
   border-radius: 50%;
 }

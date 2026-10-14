@@ -1,0 +1,53 @@
+{{- $glyphs := .glyphs -}}
+{{- $style := .style -}}
+{{- $weight := .weight -}}
+{{- $fill := .fill -}}
+{{- $grade := .grade -}}
+{{- $optical := .optical -}}
+{{- $resource := false -}}
+
+{{- if hugo.IsProduction -}}
+  {{- $icons := delimit $glyphs "," -}}
+  {{- $url := printf
+    "https://fonts.googleapis.com/css2?family=Material+Symbols+%s:opsz,wght,FILL,GRAD@%v,%v,%v,%v&icon_names=%s"
+    (strings.FirstUpper $style) $optical $weight $fill $grade $icons
+  -}}
+  {{- $ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" -}}
+  {{- $headers := dict "User-Agent" $ua "Accept" "text/css,*/*;q=0.1" -}}
+  {{- $css := partial "func/get-remote" (dict "url" $url "headers" $headers) -}}
+  {{- $font_url := "" -}}
+  {{- with $css -}}
+    {{- range findRESubmatch `url\(([^)]*)\)\s*format\(['"]?woff2['"]?\)` .Content -}}
+      {{- $candidate := index . 1 | replaceRE `^['"]|['"]$` "" -}}
+      {{- if not $font_url -}}
+        {{- $font_url = $candidate -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $font_url -}}
+    {{- $remote := partial "func/get-remote" (dict "url" $font_url "headers" (dict "User-Agent" $ua "Accept" "font/woff2,*/*;q=0.1")) -}}
+    {{- with $remote -}}
+      {{- if and (gt (len .Content) 4) (eq (substr .Content 0 4) "wOF2") -}}
+        {{- $resource = . -}}
+      {{- else -}}
+        {{- warnf "Google Fonts returned an invalid Material Symbols WOFF2; using the bundled full font" -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnf "Google Fonts returned no WOFF2 for the Material Symbols subset; using the bundled full font" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if not $resource -}}
+  {{- $fallback_path := printf "fonts/material-symbols-%s.woff2" $style -}}
+  {{- $resource = resources.Get $fallback_path -}}
+  {{- if not $resource -}}
+    {{- errorf "Material Symbols needs a valid subset or the bundled fallback at %s" $fallback_path -}}
+  {{- else if or (le (len $resource.Content) 4) (ne (substr $resource.Content 0 4) "wOF2") -}}
+    {{- errorf "Bundled Material Symbols fallback %s is not a valid WOFF2" $fallback_path -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $target := printf "fonts/material-symbols-%s.woff2" $style -}}
+{{- $font := partial "func/publish-content-resource" (dict "resource" $resource "target" $target) -}}
+{{- return (dict "url" $font.RelPermalink "style" $style "weight" $weight "fill" $fill "grade" $grade "optical" $optical) -}}

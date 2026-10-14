@@ -1,0 +1,11 @@
+{{/*
+Partial: func/svg-fragment-id
+Purpose: Create the readable public SVG fragment ID from a canonical resource name.
+Context: string, required: Resource name without the svg: or brand: prefix.
+Returns: A normalized fragment ID; duplicate IDs are isolated into standalone SVG files.
+Side effects: None.
+*/}}
+{{- $name := . -}}
+{{- $id := $name | replaceRE `^brands/` "brand-" | replaceRE `^icons?/` "" | replaceRE `/` "-" -}}
+{{- $id = $id | urlize | replaceRE `[^a-z0-9_-]+` "-" | replaceRE `-+` "-" | default "asset" -}}
+{{- return $id -}}

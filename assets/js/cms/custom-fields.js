@@ -1074,15 +1074,6 @@ export function initCustomFields () {
     document.head.appendChild(style)
   }
 
-  if (!document.getElementById('material-symbols-font')) {
-    const link = document.createElement('link')
-
-    link.id = 'material-symbols-font'
-    link.rel = 'stylesheet'
-    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=block'
-    document.head.appendChild(link)
-  }
-
   MaskIconControl = createClass({
     getInitialState: function () {
       return { index: 0, ready: false }

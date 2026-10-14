@@ -9,10 +9,10 @@ function activeClass (item, pips, remove = false) {
   const pip = pips[index]
   if (!remove) {
     item.classList.add('slider__item--active')
-    pip.classList.add('slider__pip--active')
+    pip && pip.classList.add('slider__pip--active')
   } else {
     item.classList.remove('slider__item--active')
-    pip.classList.remove('slider__pip--active')
+    pip && pip.classList.remove('slider__pip--active')
   }
 }
 

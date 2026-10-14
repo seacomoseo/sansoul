@@ -1,0 +1,19 @@
+{{ $format := page.Store.Get "sansoul.output-format" | default "html" }}
+{{ $key := printf "sansoul.resources.%s.explicit.svgs" $format }}
+{{ $names := page.Store.Get $key | default (slice) | uniq | sort }}
+{{ $references := dict }}
+{{ range $names }}
+  {{ $name := . }}
+  {{ $id := $name | replaceRE `^icons?/` "" | replaceRE `^brands/` "brand-" | replaceRE `/` "-" }}
+  {{ $resource_id := partial "func/svg-resource-id" $name }}
+  {{ $path := print "/u/{icons/,}" $name ".svg" }}
+  {{ $source := resources.GetMatch $path }}
+  {{ if not $source }}
+    {{ errorf "SanSoul SVG resource %q was declared but no matching file exists at %s" $name $path }}
+  {{ else }}
+    {{ $token := print "__SANSOUL_SVG_" ($resource_id | urlize) "__" }}
+    {{ $references = merge $references (dict $id $token) }}
+  {{ end }}
+{{ end }}
+{{ page.Store.Set "sansoul.resources.svg-urls" $references }}
+{{ return "" }}

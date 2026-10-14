@@ -355,14 +355,6 @@
   )
 ) }}
 
-{{/*  fingerprint / timestamp  */}}
-{{ $obj = merge $obj (dict
-  "params" (dict
-    "timestamp" (now.Format "20060102150405")
-  )
-) }}
-
-{{/*  fingerprint / timestamp  */}}
 {{ $publishdir := relURL site.BaseURL }}
 {{ $publishdir  = print "public" $publishdir }}
 {{ $obj = merge $obj (dict "publishdir" $publishdir) }}
@@ -401,6 +393,30 @@
 }}
 {{ $cascade = $cascade | append $home $default_pages $global }}
 {{ $obj = merge $obj (dict "cascade" $cascade) }}
+
+{{/*
+Mount content-derived resources by file, not by re-mounting the whole content
+tree. Hugo's server otherwise classifies a normal page edit as an asset/data
+change when the same source tree is mounted into content, assets, and data.
+*/}}
+{{ $content_mounts := site.Params.mainModuleMounts | default slice }}
+{{ range resources.Match "content/**/_index.*.md" }}
+  {{ $name := strings.TrimPrefix "/" .Name }}
+  {{ $content_mounts = $content_mounts | append (dict
+    "source" $name
+    "target" (print "assets/content-indexes/" (strings.TrimPrefix "content/" $name))
+  ) }}
+{{ end }}
+{{ range resources.Match "content/global.*.yml" }}
+  {{ $name := strings.TrimPrefix "/" .Name }}
+  {{ $content_mounts = $content_mounts | append (dict
+    "source" $name
+    "target" (print "data/" (strings.TrimPrefix "content/" $name))
+  ) }}
+{{ end }}
+{{ if $content_mounts }}
+  {{ $obj = merge $obj (dict "module" (dict "mounts" $content_mounts)) }}
+{{ end }}
 
 {{/*  file  */}}
 {{/* Detach shared Hugo map nodes before YAML serialization. */}}

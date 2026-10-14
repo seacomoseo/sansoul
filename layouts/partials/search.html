@@ -25,7 +25,7 @@
   <script src="{{ `/js/fuse.js` | relURL }}" defer></script>
   {{ $js := resources.Get "/js/fixedsearch.js"
     | resources.ExecuteAsTemplate "js/fixedsearch.js" .
-    | fingerprint
   }}
   {{ if hugo.IsProduction }}{{ $js = $js | minify }}{{ end }}
+  {{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/fixedsearch.js") }}
   <script src="{{ $js.RelPermalink }}" defer></script>

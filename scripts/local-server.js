@@ -12,9 +12,6 @@ const stopTimeoutMs = 3000
 
 const serverArgs = [
   'server',
-  '--noHTTPCache',
-  '--ignoreCache',
-  '--disableFastRender',
   '--config',
   [
     'themes/sansoul/hugo.default.yml',
@@ -28,11 +25,14 @@ const serverArgs = [
 let serverProcess
 let prebuildProcess
 let debounceTimer
+let removedPageTimer
 let rebuilding = false
 let rebuildPending = false
+let restartingServer = false
 let shuttingDown = false
 let expectedServerExit = false
 const changedPaths = new Set()
+const possiblePageRemovals = new Set()
 const watchers = []
 
 function log (message) {
@@ -131,6 +131,32 @@ async function stopServer () {
   })
 }
 
+async function restartServerAfterPageRemoval (removedPaths) {
+  if (shuttingDown || restartingServer) return
+
+  restartingServer = true
+  log(`Restarting Hugo after page removal: ${removedPaths.join(', ')}`)
+  await stopServer()
+  if (!shuttingDown) startServer()
+  restartingServer = false
+}
+
+function schedulePageRemovalCheck (absolutePath) {
+  if (shuttingDown) return
+  possiblePageRemovals.add(absolutePath)
+  clearTimeout(removedPageTimer)
+  removedPageTimer = setTimeout(() => {
+    const removedPaths = [...possiblePageRemovals]
+      .filter(filePath => !existsSync(filePath))
+      .map(filePath => path.relative(projectDir, filePath))
+    possiblePageRemovals.clear()
+
+    if (removedPaths.length) {
+      reportAsyncFailure(restartServerAfterPageRemoval(removedPaths))
+    }
+  }, debounceMs)
+}
+
 function schedulePrebuild (changedPath) {
   if (shuttingDown) return
   changedPaths.add(changedPath)
@@ -173,12 +199,15 @@ function addDirectoryWatcher (directory, options = {}) {
   if (!existsSync(directory)) return
 
   const filter = options.filter || (() => true)
+  const onChange = options.onChange || ((relativePath, event, absolutePath) => {
+    schedulePrebuild(path.relative(projectDir, absolutePath) || '.')
+  })
   const watcher = watch(directory, { recursive: options.recursive !== false }, (event, filename) => {
     const relativePath = filename ? filename.toString().replaceAll('\\', '/') : ''
     if (!filter(relativePath, event)) return
 
     const absolutePath = relativePath ? path.join(directory, relativePath) : directory
-    schedulePrebuild(path.relative(projectDir, absolutePath) || '.')
+    onChange(relativePath, event, absolutePath)
   })
 
   watcher.on('error', error => {
@@ -194,7 +223,16 @@ function startWatchers () {
       /^types\/[^/]+\.yml$/.test(relativePath)
   })
   addDirectoryWatcher(path.join(projectDir, 'content'), {
-    filter: relativePath => /(^|\/)_index(?:\.[^/]+)?\.md$/.test(relativePath)
+    filter: (relativePath, event) =>
+      /(^|\/)_index(?:\.[^/]+)?\.md$/.test(relativePath) ||
+      event === 'rename',
+    onChange: (relativePath, event, absolutePath) => {
+      if (/(^|\/)_index(?:\.[^/]+)?\.md$/.test(relativePath)) {
+        schedulePrebuild(path.relative(projectDir, absolutePath) || '.')
+      } else if (event === 'rename') {
+        schedulePageRemovalCheck(absolutePath)
+      }
+    }
   })
   addDirectoryWatcher(path.join(themeDir, 'data'))
   addDirectoryWatcher(path.join(themeDir, 'i18n'))
@@ -214,6 +252,8 @@ async function shutdown (exitCode = 0) {
   if (shuttingDown) return
   shuttingDown = true
   clearTimeout(debounceTimer)
+  clearTimeout(removedPageTimer)
+  possiblePageRemovals.clear()
   for (const watcher of watchers) watcher.close()
 
   if (prebuildProcess) prebuildProcess.kill('SIGTERM')
