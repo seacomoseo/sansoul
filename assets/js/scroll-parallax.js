@@ -1,5 +1,7 @@
 import { scrollShot } from './scroll-shot'
 
+let isInitialized = false
+
 function doParallax (e) {
   // if (e.classList.contains('scroll--box')) e = e.parentElement
   const container = e.getBoundingClientRect()
@@ -25,18 +27,32 @@ function doParallaxes () {
   }
 }
 
+function doAllParallaxes () {
+  document.querySelectorAll('.scroll:not(.scrolling *)').forEach(doParallax)
+}
+
 export function initScrollParallax () {
+  if (isInitialized) return
+
   const scrollElements = document.querySelectorAll('.scroll')
 
   if (scrollElements[0]) {
+    isInitialized = true
+
     // Toggle class scroll--on when element is in viewport
     scrollShot({
       rootMargin: '0%',
       query: '.scroll',
-      // doOnLoad: doParallaxes,
+      doOnLoad: doParallax,
       doStart: e => e.classList.add('scroll--on'),
       doEnd: e => e.classList.remove('scroll--on')
     })
     window.addEventListener('scroll', doParallaxes)
+
+    if (document.readyState === 'complete') {
+      doAllParallaxes()
+    } else {
+      window.addEventListener('load', doAllParallaxes, { once: true })
+    }
   }
 }
