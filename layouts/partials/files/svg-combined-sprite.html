@@ -1,0 +1,82 @@
+{{/*
+Partial: files/svg-combined-sprite
+Purpose: Publish one page-use-group sprite for nested SVG uses, native SVG images, and dividers.
+Context:
+  - group (string, required): Stable build-resource name.
+  - uses (slice, optional): SVGs referenced through <use>.
+  - images (slice, optional): SVGs rendered through native <img> elements.
+  - divs (slice, optional): Divider names used by the page group.
+Returns: A map containing the fingerprinted URL.
+Side effects: Publishes one content-fingerprinted SVG resource.
+*/}}
+{{- $group := .group | default "shared" -}}
+{{- $uses := .uses | default (slice) -}}
+{{- $images := .images | default (slice) -}}
+{{- $divs := .divs | default (slice) | uniq | sort -}}
+{{- $items := slice -}}
+{{- $seen := slice -}}
+{{- range $uses -}}
+  {{- if not (in $seen .name) -}}
+    {{- $items = $items | append . -}}
+    {{- $seen = $seen | append .name -}}
+  {{- end -}}
+{{- end -}}
+{{- range $images -}}
+  {{- if not (in $seen .name) -}}
+    {{- $items = $items | append . -}}
+    {{- $seen = $seen | append .name -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $definitions := "" -}}
+{{- $icon_width := 0 -}}
+{{- $icon_height := 0 -}}
+{{- if $items -}}
+  {{- $entry_sprite := partial "files/svg-sprite" (dict "group" (print "combined-" $group) "items" $items "publish" false) -}}
+  {{- $entry_sizes := partial "func/svg-sizes" $entry_sprite.content -}}
+  {{- $icon_width = $entry_sizes.width | default 0 -}}
+  {{- $icon_height = $entry_sizes.height | default 0 -}}
+  {{- $entries := $entry_sprite.content | replaceRE `^<svg[^>]*>` "" | replaceRE `</svg>\s*$` "" -}}
+  {{- $definitions = print `<defs>` $entries `</defs>` -}}
+{{- end -}}
+
+{{- $draw_content := "" -}}
+{{- $draw_width := 0 -}}
+{{- $draw_height := 0 -}}
+{{- if $divs -}}
+  {{- $draw_document := partial "files/draws-svg" (dict "divs" $divs) | string | replaceRE `^<\?xml[^>]*\?>` "" -}}
+  {{- $draw_sizes := partial "func/svg-sizes" $draw_document -}}
+  {{- $draw_width = $draw_sizes.width | default 0 -}}
+  {{- $draw_height = $draw_sizes.height | default 0 -}}
+  {{- $draw_content = $draw_document | replaceRE `^<svg[^>]*>` "" | replaceRE `</svg>\s*$` "" -}}
+{{- end -}}
+
+{{- $image_content := slice -}}
+{{- $views := slice -}}
+{{- $image_y := $draw_height -}}
+{{- $image_width := 0 -}}
+{{- range $images -}}
+  {{- $item := . -}}
+  {{- $sizes := partial "func/svg-sizes" $item.source.Content -}}
+  {{- $width := $sizes.width | default 512 -}}
+  {{- $height := $sizes.height | default 512 -}}
+  {{- $view_box := printf "0 0 %v %v" $width $height -}}
+  {{- $image_content = $image_content | append (printf `<svg x="0" y="%v" width="%v" height="%v" viewBox="%s"><use href="#%s" width="100%%" height="100%%"/></svg>` $image_y $width $height $view_box $item.id) -}}
+  {{- $views = $views | append (printf `<view id="%s" viewBox="0 %v %v %v"/>` $item.view_id $image_y $width $height) -}}
+  {{- $image_y = add $image_y $height -}}
+  {{- if gt $width $image_width -}}{{- $image_width = $width -}}{{- end -}}
+{{- end -}}
+
+{{- $root_width := $draw_width -}}
+{{- if gt $image_width $root_width -}}{{- $root_width = $image_width -}}{{- end -}}
+{{- if gt $icon_width $root_width -}}{{- $root_width = $icon_width -}}{{- end -}}
+{{- $root_width = $root_width | default 1 -}}
+{{- $root_height := $image_y -}}
+{{- if gt $icon_height $root_height -}}{{- $root_height = $icon_height -}}{{- end -}}
+{{- $root_height = $root_height | default 1 -}}
+{{- $root := printf `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %v %v" preserveAspectRatio="none">` $root_width $root_height -}}
+{{- $content := print $root $definitions $draw_content (delimit $image_content "") (delimit $views "") `</svg>` -}}
+{{- $source_target := printf "draws/map-%s.svg" ($group | urlize) -}}
+{{- $resource := $content | resources.FromString $source_target | minify -}}
+{{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "draws/map.svg") -}}
+{{- return (dict "url" $resource.RelPermalink) -}}

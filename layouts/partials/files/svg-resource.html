@@ -22,7 +22,7 @@
       {{- $head = replaceRE `^<svg\s` (print `<svg id="` $id `" `) $head -}}
     {{- end -}}
     {{- $content = replaceRE `^<svg.*?>` $head $content -}}
-    {{- $target := print "icons/" ($id | urlize) ".svg" -}}
+    {{- $target := print "draws/" ($id | urlize) ".svg" -}}
     {{- $resource := $content | resources.FromString $target -}}
     {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" $target) -}}
     {{- $result = dict "url" $resource.RelPermalink "id" $id -}}

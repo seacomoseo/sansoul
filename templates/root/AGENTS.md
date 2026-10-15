@@ -140,7 +140,7 @@ When a legacy update exposes a reusable failure mode, fix or document it in the 
 | Deployment configuration | Build with pinned Hugo Extended and Node versions; do not deploy unless asked. |
 | Theme code | Follow `themes/sansoul/AGENTS.md` and test the copyable example plus the current consumer project. |
 
-Remote-font warnings can be environmental. Template errors, invalid YAML, missing packages, failed images, or a false-success process exit are build failures.
+Remote-font warnings can be environmental. In particular, a local DNS or network failure for `fonts.googleapis.com` may prevent the Material Symbols subset request; SanSoul then uses its bundled full font as a local fallback. This explains the warning but does not validate the subset configuration or the production font payload. Run PageSpeed Insights only when the Google Fonts CSS and requested WOFF2 subset resolve successfully, and disregard measurements taken with the fallback. Template errors, invalid YAML, missing packages, failed images, or a false-success process exit are build failures.
 
 ## Documentation and DNA
 

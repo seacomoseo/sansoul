@@ -16,6 +16,7 @@ hugo.Store after all page-local Stores have been populated.
 {{- $items := $plan.items -}}
 {{- $colliding := $plan.colliding -}}
 {{- $use_records := index $plan "use-records" -}}
+{{- $sprite_uses := index $plan "sprite-uses" | default (slice) -}}
 {{- $current_uses := page.Store.Get (printf "sansoul.resources.%s.svg-uses" $format) | default (slice) -}}
 {{- $current_uses = $current_uses | uniq | sort -}}
 {{- $actual_uses := slice -}}
@@ -34,7 +35,7 @@ hugo.Store after all page-local Stores have been populated.
     {{- range $asset_records -}}{{- $asset_pages = $asset_pages | append .page -}}{{- end -}}
     {{- $asset_pages = $asset_pages | uniq | sort -}}
     {{- $item := index (where $items "name" $name) 0 -}}
-    {{- if or (eq (len $asset_pages) 1) $item.animated -}}
+    {{- if or (not (in $sprite_uses $name)) $item.animated -}}
       {{- $inline_uses = $inline_uses | append $item -}}
     {{- end -}}
   {{- end -}}
@@ -50,7 +51,7 @@ hugo.Store after all page-local Stores have been populated.
   {{- $html = replaceRE `(?s)(<body\b[^>]*>)` (print `$1` $inline_content) $html -}}
 {{- end -}}
 
-{{- /* JS exposes standalone files for page-local symbols, which may be used outside <use>. */ -}}
+{{- /* Expose each resolved resource URL through the page API. */ -}}
 {{- $page_icons := dict -}}
 {{- $page_resource_key := printf "sansoul.resources.%s.svgs" $format -}}
 {{- $explicit_key := printf "sansoul.resources.%s.explicit.svgs" $format -}}
@@ -64,8 +65,12 @@ hugo.Store after all page-local Stores have been populated.
   {{- $url := index $references $token -}}
   {{- if and (not $url) (in $actual_uses $name) -}}
     {{- $item := index (where $items "name" $name) 0 -}}
-    {{- $resource := partial "files/svg-resource" (dict "source" $item.source "name" $name "id" $item.id) -}}
-    {{- $url = $resource.url -}}
+    {{- if $item.animated -}}
+      {{- $url = print "#" $item.id -}}
+    {{- else -}}
+      {{- $resource := partial "files/svg-resource" (dict "source" $item.source "name" $name "id" $item.id) -}}
+      {{- $url = $resource.url -}}
+    {{- end -}}
   {{- else if not $url -}}
     {{- $item := index (where $items "name" $name) 0 -}}
     {{- if $item -}}
@@ -102,5 +107,10 @@ hugo.Store after all page-local Stores have been populated.
 {{- $html = replace $html "__SANSOUL_DRAWS__" "" -}}
 {{- range $token, $reference := $references -}}
   {{- $html = replace $html $token $reference -}}
+{{- end -}}
+{{- if hugo.IsProduction -}}
+  {{- $minify_path := print "sansoul/deferred/" (substr (sha256 (print $format "|" page.RelPermalink)) 0 12) ".html" -}}
+  {{- $minified := $html | resources.FromString $minify_path | minify -}}
+  {{- $html = $minified.Content -}}
 {{- end -}}
 {{- $html | safeHTML -}}

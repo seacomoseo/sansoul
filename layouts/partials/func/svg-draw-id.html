@@ -1,0 +1,11 @@
+{{/*
+Partial: func/svg-draw-id
+Purpose: Create a readable public SVG fragment prefix for one divider.
+Context: string, required: Divider name.
+Returns: A deterministic ID derived from the divider name.
+Side effects: None.
+*/}}
+{{- $name := lower . -}}
+{{- $name = replaceRE `[^a-z0-9]+` "-" $name -}}
+{{- $name = strings.Trim $name "-" -}}
+{{- return (print "div-" ($name | default "shape")) -}}

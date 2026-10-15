@@ -48,6 +48,38 @@ rendered. Group membership is derived from the output URLs that use each file.
 {{- $div_names = $div_names | uniq | sort | complement (slice "fade") -}}
 {{- $glyphs = $glyphs | uniq | sort -}}
 
+{{- $draw_ids := slice -}}
+{{- range $div_names -}}
+  {{- $name := . -}}
+  {{- $draw_id := partial "func/svg-draw-id" $name -}}
+  {{- range slice "sheet" "source" "d" "df" "b" "mask" -}}
+    {{- $generated_id := print $draw_id "-" . -}}
+    {{- if in $draw_ids $generated_id -}}
+      {{- errorf "SanSoul divider %q generates a duplicate SVG fragment ID %q" $name $generated_id -}}
+    {{- end -}}
+    {{- $draw_ids = $draw_ids | append $generated_id -}}
+  {{- end -}}
+  {{- range slice "pr" "prx" "ney" "nexy" "ne" "nex" "pry" "prxy" -}}
+    {{- $generated_id := print $draw_id "-" . -}}
+    {{- if in $draw_ids $generated_id -}}
+      {{- errorf "SanSoul divider %q generates a duplicate SVG fragment ID %q" $name $generated_id -}}
+    {{- end -}}
+    {{- $draw_ids = $draw_ids | append $generated_id -}}
+  {{- end -}}
+  {{- $path := print "/u/dividers/" $name ".svg" -}}
+  {{- with resources.Get $path -}}
+    {{- $content := .Content | replaceRE `<svg.+?>|</svg>` "" -}}
+    {{- $content = partial "func/svg-namespace-ids" (dict "content" $content "prefix" (print $draw_id "-source") "source" $path) -}}
+    {{- range findRESubmatch `\bid=["']([^"']+)["']` $content -}}
+      {{- $source_id := index . 1 -}}
+      {{- if in $draw_ids $source_id -}}
+        {{- errorf "SanSoul divider %q source creates a duplicate SVG fragment ID %q" $name $source_id -}}
+      {{- end -}}
+      {{- $draw_ids = $draw_ids | append $source_id -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- $items := slice -}}
 {{- $id_records := slice -}}
 {{- range $all_names -}}
@@ -95,6 +127,7 @@ rendered. Group membership is derived from the output URLs that use each file.
   {{- if .unsafe -}}{{- $colliding_names = $colliding_names | append $name -}}{{- end -}}
   {{- $seen := slice -}}
   {{- range .ids -}}
+    {{- if in $draw_ids . -}}{{- $colliding_names = $colliding_names | append $name -}}{{- end -}}
     {{- if in $seen . -}}
       {{- $colliding_names = $colliding_names | append $name -}}
     {{- else -}}
@@ -124,37 +157,7 @@ rendered. Group membership is derived from the output URLs that use each file.
   {{- $references = merge $references (dict $token $resource.url $image_token $resource.url) -}}
 {{- end -}}
 
-{{- /* Ordinary-use sprites only combine assets with the same rendered-page set. */ -}}
-{{- $use_groups := dict -}}
-{{- $use_signatures := slice -}}
-{{- range $use_names -}}
-  {{- $name := . -}}
-  {{- if not (in $colliding_names $name) -}}
-    {{- $asset_records := where $use_records "name" $name -}}
-    {{- $asset_pages := slice -}}
-    {{- range $asset_records -}}{{- $asset_pages = $asset_pages | append .page -}}{{- end -}}
-    {{- $asset_pages = $asset_pages | uniq | sort -}}
-    {{- $signature := jsonify $asset_pages | string -}}
-    {{- $item := index (where $items "name" $name) 0 -}}
-    {{- if and (gt (len $asset_pages) 1) (not $item.animated) -}}
-      {{- $group_items := index $use_groups $signature | default (slice) -}}
-      {{- $use_groups = merge $use_groups (dict $signature ($group_items | append $item)) -}}
-      {{- $use_signatures = $use_signatures | append $signature -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- $use_signatures = $use_signatures | uniq | sort -}}
-{{- range $signature := $use_signatures -}}
-  {{- $group_items := index $use_groups $signature -}}
-  {{- $group_id := substr (sha256 $signature) 0 12 -}}
-  {{- $sprite := partial "files/svg-sprite" (dict "group" (print "usage-" $group_id) "items" $group_items) -}}
-  {{- range $group_items -}}
-    {{- $token := print "__SANSOUL_SVG_" (.resource_id | urlize) "__" -}}
-    {{- $references = merge $references (dict $token (print $sprite.url "#" .id)) -}}
-  {{- end -}}
-{{- end -}}
-
-{{- /* Image sprites also follow exact page-use signatures and retain <img> semantics. */ -}}
+{{- /* Image resources keep native <img> semantics and share exact page-use signatures. */ -}}
 {{- $image_groups := dict -}}
 {{- $image_signatures := slice -}}
 {{- range $image_names -}}
@@ -171,21 +174,8 @@ rendered. Group membership is derived from the output URLs that use each file.
   {{- end -}}
 {{- end -}}
 {{- $image_signatures = $image_signatures | uniq | sort -}}
-{{- range $signature := $image_signatures -}}
-  {{- $group_items := index $image_groups $signature -}}
-  {{- $image_sprite := partial "files/svg-image-sprite" (dict "group" $signature "items" $group_items) -}}
-  {{- range $group_items -}}
-    {{- $token := print "__SANSOUL_SVG_IMAGE_" (.resource_id | urlize) "__" -}}
-    {{- $image_url := print $image_sprite.RelPermalink "#sansoul-image-view-" .id -}}
-    {{- $references = merge $references (dict $token $image_url) -}}
-    {{- $use_token := print "__SANSOUL_SVG_" (.resource_id | urlize) "__" -}}
-    {{- if not (index $references $use_token) -}}
-      {{- $references = merge $references (dict $use_token $image_url) -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
 
-{{- /* Divider sheet groups are based on the same output-page signatures. */ -}}
+{{- /* Divider sheets share the sprite whenever their rendered-page sets match. */ -}}
 {{- $div_groups := dict -}}
 {{- $div_signatures := slice -}}
 {{- range $div_names -}}
@@ -199,20 +189,63 @@ rendered. Group membership is derived from the output URLs that use each file.
   {{- $div_signatures = $div_signatures | append $signature -}}
 {{- end -}}
 {{- $div_signatures = $div_signatures | uniq | sort -}}
-{{- range $signature := $div_signatures -}}
-  {{- $group_divs := index $div_groups $signature | uniq | sort -}}
-  {{- $content := partial "files/draws-svg" (dict "divs" $group_divs) | string -}}
-  {{- $target_id := substr (sha256 $signature) 0 12 -}}
-  {{- $source_target := print "draws/group-" $target_id ".svg" -}}
-  {{- $resource := $content | resources.FromString $source_target -}}
-  {{- if hugo.IsProduction -}}{{- $resource = $resource | minify -}}{{- end -}}
-  {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "draws/group.svg") -}}
+
+{{- $external_signatures := slice -}}
+{{- range $image_signatures -}}{{- $external_signatures = $external_signatures | append . -}}{{- end -}}
+{{- range $div_signatures -}}{{- $external_signatures = $external_signatures | append . -}}{{- end -}}
+{{- $external_signatures = $external_signatures | uniq | sort -}}
+{{- $use_groups := dict -}}
+{{- $use_signatures := slice -}}
+{{- $sprite_use_names := slice -}}
+{{- range $use_names -}}
+  {{- $name := . -}}
+  {{- if not (in $colliding_names $name) -}}
+    {{- $asset_records := where $use_records "name" $name -}}
+    {{- $asset_pages := slice -}}
+    {{- range $asset_records -}}{{- $asset_pages = $asset_pages | append .page -}}{{- end -}}
+    {{- $asset_pages = $asset_pages | uniq | sort -}}
+    {{- $signature := jsonify $asset_pages | string -}}
+    {{- $item := index (where $items "name" $name) 0 -}}
+    {{- if and (not $item.animated) (or (gt (len $asset_pages) 1) (in $external_signatures $signature)) -}}
+      {{- $group_items := index $use_groups $signature | default (slice) -}}
+      {{- $use_groups = merge $use_groups (dict $signature ($group_items | append $item)) -}}
+      {{- $use_signatures = $use_signatures | append $signature -}}
+      {{- $sprite_use_names = $sprite_use_names | append $name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $use_signatures = $use_signatures | uniq | sort -}}
+
+{{- $sprite_signatures := slice -}}
+{{- range $use_signatures -}}{{- $sprite_signatures = $sprite_signatures | append . -}}{{- end -}}
+{{- range $image_signatures -}}{{- $sprite_signatures = $sprite_signatures | append . -}}{{- end -}}
+{{- range $div_signatures -}}{{- $sprite_signatures = $sprite_signatures | append . -}}{{- end -}}
+{{- $sprite_signatures = $sprite_signatures | uniq | sort -}}
+{{- range $signature := $sprite_signatures -}}
+  {{- $group_uses := index $use_groups $signature | default (slice) -}}
+  {{- $group_images := index $image_groups $signature | default (slice) -}}
+  {{- $group_divs := index $div_groups $signature | default (slice) | uniq | sort -}}
+  {{- $group_id := substr (sha256 $signature) 0 12 -}}
+  {{- $sprite := partial "files/svg-combined-sprite" (dict "group" (print $format "-" $group_id) "uses" $group_uses "images" $group_images "divs" $group_divs) -}}
+  {{- range $group_uses -}}
+    {{- $token := print "__SANSOUL_SVG_" (.resource_id | urlize) "__" -}}
+    {{- $references = merge $references (dict $token (print $sprite.url "#" .id)) -}}
+  {{- end -}}
+  {{- range $group_images -}}
+    {{- $image_token := print "__SANSOUL_SVG_IMAGE_" (.resource_id | urlize) "__" -}}
+    {{- $image_url := print $sprite.url "#" .view_id -}}
+    {{- $references = merge $references (dict $image_token $image_url) -}}
+    {{- $use_token := print "__SANSOUL_SVG_" (.resource_id | urlize) "__" -}}
+    {{- if not (index $references $use_token) -}}
+      {{- $references = merge $references (dict $use_token (print $sprite.url "#" .id)) -}}
+    {{- end -}}
+  {{- end -}}
   {{- range $group_divs -}}
     {{- $reference_key := print $signature "|" . -}}
-    {{- $div_references = merge $div_references (dict $reference_key $resource.RelPermalink) -}}
+    {{- $div_references = merge $div_references (dict $reference_key $sprite.url) -}}
   {{- end -}}
 {{- end -}}
 
 {{- /* Material Symbols uses the final union, after all page Stores are complete. */ -}}
 {{- $glyphs_html := partial "files/glyphs" (dict "format" $format "preload" true "glyphs" $glyphs) -}}
-{{- return (dict "format" $format "items" $items "references" $references "div-references" $div_references "div-records" $div_records "colliding" $colliding_names "use-records" $use_records "image-records" $image_records "glyphs-html" $glyphs_html) -}}
+{{- return (dict "format" $format "items" $items "references" $references "div-references" $div_references "div-records" $div_records "colliding" $colliding_names "use-records" $use_records "sprite-uses" ($sprite_use_names | uniq | sort) "glyphs-html" $glyphs_html) -}}

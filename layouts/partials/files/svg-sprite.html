@@ -55,9 +55,9 @@ Side effects: Publishes a fingerprinted resource when publish is true.
 {{- $content := print $root (delimit $entries "") `</svg>` -}}
 {{- $result := dict "content" $content -}}
 {{- if and $publish $entries -}}
-  {{- $source_target := printf "icons/sprite-%s.svg" ($group | urlize) -}}
+  {{- $source_target := printf "draws/map-%s.svg" ($group | urlize) -}}
   {{- $resource := $content | resources.FromString $source_target | minify -}}
-  {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "icons/sprite.svg") -}}
+  {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "draws/map.svg") -}}
   {{- $result = merge $result (dict "url" $resource.RelPermalink) -}}
 {{- end -}}
 {{- return $result -}}

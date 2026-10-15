@@ -44,7 +44,7 @@ Side effects: Publishes a content-hashed SVG image sprite.
 {{- end -}}
 {{- $content := printf `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %v %v">%s%s</svg>` $max_width $y (delimit $entries "") (delimit $views "") -}}
 {{- $group_id := substr (sha256 .group) 0 12 -}}
-{{- $source_target := printf "icons/images-%s.svg" $group_id -}}
+{{- $source_target := printf "draws/map-images-%s.svg" $group_id -}}
 {{- $resource := $content | resources.FromString $source_target | minify -}}
-{{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "icons/images.svg") -}}
+{{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "draws/map.svg") -}}
 {{- return $resource -}}

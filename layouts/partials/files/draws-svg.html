@@ -1,5 +1,4 @@
-{{- /*  DIVIDERS  */ -}}
-
+{{- /* Build divider geometry and views for the shared SVG sprite. */ -}}
 {{- $div_ := slice -}}
 {{- $divs := .divs -}}
 {{- if not (isset . "divs") -}}
@@ -8,64 +7,59 @@
 {{- end -}}
 {{- $divs = $divs | uniq | sort -}}
 {{- define "partials/div" -}}
-  {{- $n := add .k 1 -}}
   {{- $s := mul .size 1024 -}}
-  {{- $style := slice (print "--y:" .k) -}}
-  {{ if eq .size 2 }}
-    {{- $style = $style | append (print "--s:" .size) -}}
-  {{ end }}
-  {{- $attrs := dict "style" $style -}}
-  {{- $attrs  = partial "func/attrs" $attrs -}}
-  {{- "" -}} <g id="div-{{ .id }}" {{- $attrs -}}>
+  {{- $cell_width := mul .size 1024 -}}
+  {{- $row_y := mul .k 128 -}}
+  {{- $copy_transform := "translate(2048 0) scale(-1 1)" -}}
+  {{- $flip_transform := printf "translate(%d 0) scale(-1 1)" $cell_width -}}
+  {{- $mask_transform := printf "translate(8192 %d)" $row_y -}}
+  {{- "" -}} <g id="{{ .id }}-sheet" class="sansoul-divider">
   {{- "" -}}   <defs>
-  {{- "" -}}     <g class="d" id="d-{{ .id }}">
-  {{- "" -}}      {{ if eq .size 2 }}
-  {{- "" -}}         <g id="c-{{ .id }}">{{ .content | safeHTML }}</g>
-  {{- "" -}}         <use class="c" href="#c-{{ .id }}"/>
-  {{- "" -}}      {{ else }}
-  {{- "" -}}        {{ .content | safeHTML }}
-  {{- "" -}}      {{ end }}
+  {{- "" -}}     <g id="{{ .id }}-d">
+  {{ if eq .size 2 }}
+  {{- "" -}}         <g id="{{ .id }}-source">{{ .content | safeHTML }}</g>
+  {{- "" -}}         <use href="#{{ .id }}-source" transform="{{ $copy_transform }}"/>
+  {{ else }}
+  {{- "" -}}         <g id="{{ .id }}-source">{{ .content | safeHTML }}</g>
+  {{ end }}
   {{- "" -}}     </g>
-  {{- /* flip second draw */ -}}
-  {{- "" -}}    {{ $f   := "" }}
-  {{- "" -}}    {{ if eq .size 2 }}
-  {{- "" -}}       {{ $f = "f" }}
-  {{- "" -}}       <g class="d" id="df-{{ .id }}">
-  {{- "" -}}         <g class="f" id="cf-{{ .id }}">{{ .content | safeHTML }}</g>
-  {{- "" -}}         <use class="c" href="#cf-{{ .id }}"/>
-  {{- "" -}}       </g>
-  {{- "" -}}    {{ end }}
-  {{- /* end flip */ -}}
+  {{ if eq .size 2 }}
+  {{- "" -}}     <g id="{{ .id }}-df"><use href="#{{ .id }}-source" transform="translate(1024 0) scale(-1 1)"/><use href="#{{ .id }}-source" transform="translate(1024 0)"/></g>
+  {{ else }}
+  {{- "" -}}     <g id="{{ .id }}-df"><use href="#{{ .id }}-d" transform="{{ $flip_transform }}"/></g>
+  {{ end }}
   {{- "" -}}   </defs>
-  {{- "" -}}   <g class="b" id="b-{{ .id }}">
-  {{- "" -}}     <use href="#d-{{ .id }}"/>
-  {{- "" -}}     <use href="#d{{ $f }}-{{ .id }}"/>
-  {{- "" -}}     <use href="#d-{{ .id }}"/>
-  {{- "" -}}     <use href="#d{{ $f }}-{{ .id }}"/>
+  {{- "" -}}   <g id="{{ .id }}-b">
+  {{- "" -}}     <use href="#{{ .id }}-d"/>
+  {{- "" -}}     <use href="#{{ .id }}-df" transform="translate(2048 0)"/>
+  {{- "" -}}     <use href="#{{ .id }}-d" transform="translate(4096 128) scale(1 -1)"/>
+  {{- "" -}}     <use href="#{{ .id }}-df" transform="translate(6144 128) scale(1 -1)"/>
   {{- "" -}}   </g>
-  {{- "" -}}   <mask id="f-{{ .id }}"><rect/><use href="#b-{{ .id }}"/></mask>
-  {{- "" -}}   <rect mask="url(#f-{{ .id }})"/>
+  {{- "" -}}   <use href="#{{ .id }}-b" transform="translate(0 {{ $row_y }})"/>
+  {{- "" -}}   <mask id="{{ .id }}-mask" mask-type="luminance" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="8192" y="{{ $row_y }}" width="8192" height="128"><rect x="8192" y="{{ $row_y }}" width="8192" height="128" fill="#fff"/><use href="#{{ .id }}-b" transform="{{ $mask_transform }}" fill="#000"/></mask>
+  {{- "" -}}   <rect x="8192" y="{{ $row_y }}" width="8192" height="128" mask="url(#{{ .id }}-mask)"/>
   {{- "" -}} </g>
-  {{- "" -}} <view viewBox="{{ mul 2048 0 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-pr"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 1 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-prx"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 2 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-ney"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 3 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-nexy"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 4 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-ne"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 5 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-nex"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 6 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-pry"/>
-  {{- "" -}} <view viewBox="{{ mul 2048 7 }} {{ sub (mul $n 128) 128 }} {{ $s }} 128" id="div-{{ .id }}-prxy"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 0 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-pr"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 1 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-prx"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 2 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-ney"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 3 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-nexy"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 4 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-ne"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 5 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-nex"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 6 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-pry"/>
+  {{- "" -}} <view viewBox="{{ mul 2048 7 }} {{ $row_y }} {{ $s }} 128" id="{{ .id }}-prxy"/>
 {{- end -}}
 
 {{- with $divs -}}
-  {{- range $k, $id := . -}}
-    {{- if ne . "fade" -}}
-      {{- with index hugo.Data.utilities.divs $id -}}
-        {{- $path := print "/u/dividers/" $id ".svg" -}}
+  {{- range $k, $name := . -}}
+    {{- if ne $name "fade" -}}
+      {{- with index hugo.Data.utilities.divs $name -}}
+        {{- $path := print "/u/dividers/" $name ".svg" -}}
         {{- $file := resources.Get $path -}}
         {{- if $file -}}
           {{- $content := $file.Content | replaceRE `<svg.+?>|</svg>` "" -}}
-          {{- $content = partial "func/svg-namespace-ids" (dict "content" $content "prefix" (print "divider-" $id) "source" $path) -}}
-          {{- with partial "div" (dict "k" $k "id" $id "size" .size "content" $content) -}}
+          {{- $draw_id := partial "func/svg-draw-id" $name -}}
+          {{- $content = partial "func/svg-namespace-ids" (dict "content" $content "prefix" (print $draw_id "-source") "source" $path) -}}
+          {{- with partial "div" (dict "k" $k "id" $draw_id "size" .size "content" $content) -}}
             {{- $div_ = $div_ | append . -}}
           {{- end -}}
         {{- end -}}
@@ -79,19 +73,6 @@
 {{- `<?xml version="1.0" encoding="UTF-8"?>` | safeHTML -}}
 {{- print `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ` $x ` ` $y `" preserveAspectRatio="none">` | safeHTML -}}
 {{- with $div_ -}}
-<style>
-  .d{transform:translate(calc(var(--x, 0) * 2048px), calc(var(--y, 0) * 128px)) scale(var(--fx, 1), var(--fy, 1));transform-origin:center;transform-box:fill-box}
-  .c{transform:scale(-1,1);x:-2048}
-  .f{transform:scale(-1, 1)translateX(-1024px)}
-  .b use:nth-child(1){--x:0;--fx:1;--fy:1}
-  .b use:nth-child(2){--x:1;--fx:-1;--fy:1}
-  .b use:nth-child(3){--x:2;--fx:1;--fy:-1}
-  .b use:nth-child(4){--x:3;--fx:-1;--fy:-1}
-  mask use{--y:0}
-  mask rect{fill:#fff}
-  mask rect,mask+rect{width:8192px;height:128px}
-  mask+rect{transform:translate(8192px,calc(var(--y, 0) * 128px))}
-</style>
 {{- delimit . "\n" | safeHTML -}}
 {{- end -}}
 {{- "</svg>" | safeHTML -}}

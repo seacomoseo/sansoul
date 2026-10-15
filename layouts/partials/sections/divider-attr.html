@@ -27,10 +27,11 @@
         {{ $style = "--div: linear-gradient(transparent, black)" }}
       {{ end }}
     {{ else }}
+      {{ $draw_id := partial "func/svg-draw-id" .div }}
       {{ $style = print
         "--div" $_next ": url("
           (partial "func/draws-base" .div)
-          "#div-" .div "-" (cond $.next "ne" "pr") $flips
+          "#" $draw_id "-" (cond $.next "ne" "pr") $flips
         ")"
       }}
       {{ partial "func/register-resource" (dict "kind" "div" "value" .div) }}
