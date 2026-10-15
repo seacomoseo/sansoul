@@ -12,6 +12,8 @@ import process from 'node:process'
 
 const projectDir = process.cwd()
 const themeHugoConfig = path.join(projectDir, 'themes', 'sansoul', 'hugo.default.yml')
+const projectPackageFile = path.join(projectDir, 'package.json')
+const themePackageFile = path.join(projectDir, 'themes', 'sansoul', 'package.json')
 const excludedDirectories = new Set([
   '.git',
   '.codex',
@@ -24,6 +26,12 @@ const excludedDirectories = new Set([
 const yamlExtensions = new Set(['.yaml', '.yml'])
 const markdownExtension = '.md'
 const changedFiles = []
+const plannedWrites = new Map()
+const projectPackage = readJson(projectPackageFile, 'root package.json')
+const themePackage = readJson(themePackageFile, 'theme package.json')
+const sassVersion = themePackage.dependencies?.['sass-embedded']
+
+if (!sassVersion) throw new Error('The theme package does not declare sass-embedded.')
 
 for (const file of walk(projectDir)) {
   const extension = path.extname(file).toLowerCase()
@@ -36,7 +44,7 @@ for (const file of walk(projectDir)) {
 
   if (migrated === source) continue
 
-  fs.writeFileSync(file, migrated, 'utf8')
+  plannedWrites.set(file, migrated)
   changedFiles.push(path.relative(projectDir, file))
 }
 
@@ -45,6 +53,19 @@ if (changedFiles.length === 0) {
 } else {
   console.log(`Updated explicit booleans in ${changedFiles.length} files:`)
   for (const file of changedFiles) console.log(`- ${file}`)
+}
+
+const currentSassVersion = projectPackage.dependencies?.['sass-embedded']
+const developmentSassVersion = projectPackage.devDependencies?.['sass-embedded']
+if (currentSassVersion !== sassVersion || developmentSassVersion) {
+  projectPackage.dependencies ||= {}
+  projectPackage.dependencies['sass-embedded'] = sassVersion
+  if (developmentSassVersion) {
+    delete projectPackage.devDependencies['sass-embedded']
+    if (Object.keys(projectPackage.devDependencies).length === 0) delete projectPackage.devDependencies
+  }
+  plannedWrites.set(projectPackageFile, `${JSON.stringify(projectPackage, null, 2)}\n`)
+  console.log(`Synchronized sass-embedded to ${sassVersion} in root dependencies.`)
 }
 
 if (fs.existsSync(themeHugoConfig)) {
@@ -63,13 +84,15 @@ if (fs.existsSync(themeHugoConfig)) {
     )
     if (migrated === source) continue
 
-    fs.writeFileSync(filePath, migrated, 'utf8')
+    plannedWrites.set(filePath, migrated)
     changedFiles.push(fileName)
     console.log(`Synchronized ${fileName} HUGO_VERSION to ${hugoVersion}.`)
   }
 } else {
   console.log('No installed theme Hugo configuration found; deployment versions were not changed.')
 }
+
+for (const [file, content] of plannedWrites) fs.writeFileSync(file, content, 'utf8')
 
 function * walk (directory) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -106,4 +129,12 @@ function migrateYaml (source) {
     (_match, prefix, value, suffix) =>
       `${prefix}${value === 'y' || value === 'true' ? enabled : disabled}${suffix}`
   )
+}
+
+function readJson (file, label) {
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'))
+  } catch (error) {
+    throw new Error(`Cannot read ${label}: ${error.message}`)
+  }
 }

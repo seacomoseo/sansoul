@@ -21,6 +21,7 @@ sh do server
 - `sh do server`: servidor local normal.
 - `sh do local`: servidor del CMS con regeneración atómica de la configuración previa.
 - `sh do hugo`: compilación completa.
+- `sh do update`: actualiza SanSoul, aplica migraciones automáticas, sincroniza README/AGENTS y valida el proyecto; se detiene antes de modificar archivos si detecta conflictos.
 - `sh do migrations`: migraciones pendientes después de actualizar el tema.
 - `sh do root-docs`: sincroniza este README y `AGENTS.md` con sus plantillas.
 

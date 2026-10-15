@@ -111,20 +111,11 @@ Fields are required by default. Generate `required: false` only when empty value
 
 ## Theme update workflow
 
-When asked to update the submodule:
+Use `sh do update` from the project root. It checks both Git trees, verifies the configured branch can fast-forward, validates known migration conflicts, and confirms root README/AGENTS are managed before changing files. It also accepts a clean fast-forward already checked out in the submodule when that is the only root Git status entry, for bootstrapping projects pinned to an older release. A failure during preflight means no project files or submodule checkout were changed. `sh do update --check` fetches remote Git metadata and prints the same plan without updating the checkout.
 
-1. read DNA, record the root package version and old submodule commit, and inspect both working trees;
-2. if a pre-5.0 project still needs the private legacy updater, verify before running it that its migration target is the 5.0.0 baseline; the current private updater pulls the configured theme branch first, so when that branch is newer than 5.0.0 it can fail after moving the submodule with `Migration chain incomplete`;
-3. when that legacy mismatch is present, preserve the original gitlink and current theme commit, and use a verified baseline procedure that includes every auxiliary pre-5 transformation, especially icon syntax/configuration and the final media/font moves; do not improvise by marking the package version or by treating a zero exit from a permissive legacy shell script as proof of success;
-4. validate the 5.0.0 baseline before updating the configured SanSoul submodule branch within the requested scope;
-5. read `themes/sansoul/MIGRATIONS.md`, run `sh do migrations`, and apply every pending action in order;
-6. run `sh do root-docs` when the migration requires it; `--force` replaces unmanaged root README/AGENTS wholesale and never transfers their content into DNA;
-7. run the required project and theme validations;
-8. only then run `sh do migrations mark --yes`, which synchronizes root `package.json` and, when present, `package-lock.json`;
-9. report the changed parent gitlink without staging or committing it.
+After preflight, the command advances SanSoul, runs registered migration scripts, synchronizes both root README and AGENTS from the theme templates, installs dependencies when a migration requires it, and runs the full build. If migration-specific manual checks remain, it displays them and requires explicit confirmation before updating the root package compatibility version. Without an interactive terminal it leaves that version unchanged; after completing the checks, run `sh do migrations mark --yes`.
 
-Never assume a successful build proves migration completeness, and never mark compatibility automatically during build or submodule update.
-When a legacy update exposes a reusable failure mode, fix or document it in the shared updater or this canonical template rather than in one consumer's DNA.
+The updater refuses dirty worktrees, diverged submodule history, unmanaged root documents, unsupported migration versions, and known content rename collisions. It never uses `--force`, stages, commits, pushes, or deploys. Projects pinned to a theme release without this command need a one-time bootstrap with `git submodule update --remote themes/sansoul`, then can run `sh do update --check` and `sh do update`. Projects below the 5.0.0 baseline require a verified legacy migration and are not advanced by this updater.
 
 ## Validation matrix
 

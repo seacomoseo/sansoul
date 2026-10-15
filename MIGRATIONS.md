@@ -8,19 +8,25 @@ La versión publicada del tema vive en `package.json` y sigue [Semantic Versioni
 - **minor**: funcionalidad compatible; puede incluir una adaptación opcional;
 - **patch**: corrección compatible sin cambios esperados en el proyecto.
 
-El `package.json` del tema declara la versión instalada y el `package.json` de la raíz declara la última versión con la que el proyecto es compatible. Después de actualizar el submódulo, `sh do migrations` compara ambos valores y muestra las secciones pendientes.
+El `package.json` del tema declara la versión instalada y el `package.json` de la raíz declara la última versión con la que el proyecto es compatible. `sh do migrations` compara ambos valores y muestra las secciones pendientes; `sh do update` coordina el avance del submódulo con sus scripts automáticos, README/AGENTS raíz y validación.
 
 ## Flujo de actualización
 
 ```sh
-# Después de actualizar themes/sansoul
-sh do migrations
+# Desde la raíz del proyecto consumidor; primero solo inspecciona
+sh do update --check
 
-# Tras aplicar las acciones indicadas y validar el proyecto
-sh do migrations mark --yes
+# Ejecuta la actualización tras pasar las comprobaciones previas
+sh do update
 ```
 
-`sh do migrations check` termina con error mientras las versiones difieran, aunque una actualización compatible no tenga acciones documentadas. `mark --yes` actualiza la versión de `package.json` y, si existe, de `package-lock.json` en la raíz. Nunca lo ejecutes antes de realizar las acciones y validar el build.
+El actualizador exige árboles Git limpios, salvo que la única diferencia de la raíz sea un gitlink de SanSoul ya avanzado de forma limpia y directa durante el arranque inicial. Descarga la rama declarada en `.gitmodules`, acepta solo avances directos, comprueba las migraciones conocidas y sus conflictos, y nunca fuerza la sustitución de README/AGENTS raíz no generados. `--check` descarga referencias Git, pero no cambia archivos ni el commit de SanSoul seleccionado.
+
+Después del preflight, `sh do update` avanza el submódulo, ejecuta los scripts de migración registrados, sincroniza siempre README y AGENTS desde las plantillas de SanSoul, instala dependencias cuando una migración lo requiere y compila el proyecto. Si quedan validaciones específicas de una migración, las muestra y solicita confirmación antes de sincronizar la versión raíz. En una ejecución no interactiva deja la versión sin cambiar; tras completar las comprobaciones, ejecuta `sh do migrations mark --yes`.
+
+Para añadir una versión a `MIGRATIONS.md`, registra también su política en `scripts/update.js`. Si el actualizador no reconoce una migración pendiente, se detiene antes de cambiar archivos. Las acciones destructivas como `sh do root-docs --force` nunca se ejecutan automáticamente.
+
+El comando no confirma ni publica cambios. Revisa el diff de la raíz y del submódulo y confirma cada repositorio según el flujo del proyecto.
 
 ## Cómo añadir una migración
 
@@ -140,10 +146,19 @@ favicons durante el postprocesado de producción.
 
 ### Acciones obligatorias
 
-1. Actualiza `sharp` a `^0.35.3` en las dependencias de la raíz y reinstálalas.
-2. Ejecuta el build completo.
-3. Comprueba una variante AVIF, una imagen Open Graph procedente de SVG y el
+1. Ejecuta
+   `node themes/sansoul/scripts/migrations/6.0.1-sharp.js` desde la raíz.
+2. Ejecuta `npm install` para sincronizar `package-lock.json` si existe.
+3. Ejecuta el build completo.
+4. Comprueba una variante AVIF, una imagen Open Graph procedente de SVG y el
    favicon ICO generado.
+
+### Automatización
+
+`scripts/migrations/6.0.1-sharp.js` obtiene la versión de Sharp declarada por
+el tema, actualiza la antigua `^0.33.5` y mueve una dependencia existente de
+`devDependencies` a `dependencies`. Conserva versiones personalizadas más
+nuevas. La instalación y la comprobación de salidas siguen siendo necesarias.
 
 ### Validación
 
@@ -176,13 +191,12 @@ archivos de imagen válidos. Tras validar y ejecutar
 
 1. Ejecuta
    `node themes/sansoul/scripts/migrations/6.0.0-explicit-booleans.js` desde la
-   raíz y revisa el diff.
-2. Añade `sass-embedded` con la versión declarada por el tema a las dependencias
-   de la raíz. Para desarrollo sin `node_modules`, instala Dart Sass standalone
-   una vez en el `PATH`; en macOS: `brew install sass/sass/sass`.
-3. Ejecuta el script de migración: además de convertir los booleanos,
-   sincroniza automáticamente cualquier `HUGO_VERSION` existente en
-   `netlify.toml` y `wrangler.toml` con el mínimo declarado por el tema.
+   raíz para convertir los booleanos, declarar `sass-embedded` con la versión
+   del tema y sincronizar cualquier `HUGO_VERSION` existente en
+   `netlify.toml` y `wrangler.toml`.
+2. Si existe `package-lock.json`, ejecuta `npm install` para sincronizarlo.
+3. Para desarrollo sin `node_modules`, instala Dart Sass standalone una vez en
+   el `PATH`; en macOS: `brew install sass/sass/sass`.
 4. Ejecuta `sh do root-docs`.
 5. Compila con Hugo Extended 0.164.0 y ejecuta una auditoría con
    `--logLevel info` para detectar deprecaciones.
@@ -191,10 +205,11 @@ archivos de imagen válidos. Tras validar y ejecutar
 ### Automatización
 
 `scripts/migrations/6.0.0-explicit-booleans.js` convierte de forma idempotente
-los escalares `y`/`n` en YAML y front matter a `true`/`false`, y sincroniza los
-`HUGO_VERSION` que ya existan en `netlify.toml` y `wrangler.toml` con
-`module.hugoVersion.min` del tema. No crea configuraciones ausentes ni toca el
-tema, dependencias, uploads ni salidas generadas.
+los escalares `y`/`n` en YAML y front matter a `true`/`false`, declara en la
+raíz la versión de `sass-embedded` del tema y sincroniza los `HUGO_VERSION`
+que ya existan en `netlify.toml` y `wrangler.toml` con
+`module.hugoVersion.min`. No crea configuraciones ausentes ni toca uploads o
+salidas generadas.
 
 ### Validación
 
@@ -271,9 +286,9 @@ Una segunda ejecución de `sh do root-docs` no debe producir cambios. Tras valid
 
 ### Acciones obligatorias
 
-1. Si el proyecto todavía depende de las migraciones encadenadas del actualizador privado, ejecuta `sh do update` antes de sustituir su tema antiguo.
-2. Lleva el proyecto a la estructura funcional de la línea base `5.0.0` y confirma que compila correctamente antes de aplicar migraciones posteriores.
-3. Conserva el actualizador privado únicamente como puente hasta que todos los proyectos heredados alcancen esta línea base.
+1. No ejecutes el actualizador seguro en un proyecto anterior a `5.0.0`: se detendrá sin mover el submódulo.
+2. Completa una migración verificada a la estructura de `5.0.0`, incluidas las transformaciones auxiliares anteriores al tema público, en especial los iconos, la configuración de recursos y los movimientos finales de medios y fuentes.
+3. Compila y valida el proyecto en la línea base `5.0.0`. Solo después actualiza SanSoul y aplica las migraciones posteriores.
 
 ### Validación
 

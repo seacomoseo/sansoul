@@ -68,9 +68,10 @@ elif [ "$COMMAND" = root-docs ]; then
   shift
   node ./themes/sansoul/scripts/root-docs.js "$@"
 
-# Legacy updater kept temporarily for projects migrating to the 5.0.0 baseline
+# Preflight, update SanSoul, apply automated migrations, sync root docs, and build
 elif [ "$COMMAND" = update ]; then
-  node ../_tools/updater/index.js
+  shift
+  node ./themes/sansoul/scripts/update.js "$@"
 
 # Normalize yaml and markdown files
 elif [ "$COMMAND" = normalize ]; then

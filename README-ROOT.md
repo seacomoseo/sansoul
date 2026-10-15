@@ -44,6 +44,8 @@ Ejecuta todos los comandos desde la raíz:
 | `sh do server` | Preconstruye y levanta Hugo con la salida en disco. |
 | `sh do local` | Servidor del CMS con salida en disco, invalidación de rutas eliminadas y regeneración atómica del prebuild. |
 | `sh do hugo` | Ejecuta la compilación completa y el posprocesado de imágenes. |
+| `sh do update` | Actualiza SanSoul, ejecuta migraciones automáticas, regenera README/AGENTS y compila; hace preflight y se detiene ante cambios locales o conflictos. |
+| `sh do update --check` | Comprueba el plan y los conflictos sin cambiar archivos ni el commit activo del tema. |
 | `sh do migrations` | Muestra las adaptaciones pendientes para la versión instalada del tema. |
 | `sh do root-docs` | Genera README/AGENTS raíz desde las plantillas canónicas del tema. |
 | `sh do prebuild` | Regenera únicamente la configuración previa requerida por Hugo. |
@@ -313,24 +315,26 @@ Un override crea una bifurcación silenciosa: documenta el motivo, el archivo or
 
 El `package.json` del tema declara la versión instalada; el de la raíz declara la última versión con la que el proyecto ya es compatible. Las acciones necesarias para pasar de una a otra se publican en [`MIGRATIONS.md`](MIGRATIONS.md).
 
-Puedes delegar el flujo completo a Codex simplemente con:
+También puedes ejecutar el flujo desde la terminal:
 
-> Actualiza el submódulo.
+```sh
+sh do update --check
+sh do update
+```
 
-Las instrucciones del repositorio convierten esa petición en el flujo completo: el agente lee los contratos aplicables, conserva cambios existentes, actualiza el tema, ejecuta migraciones, valida y sincroniza las versiones. La petición no autoriza commit, push ni despliegue.
+`--check` descarga la referencia remota y presenta el plan, pero no cambia archivos ni el commit activo del tema. `sh do update` repite el preflight y, si es seguro, avanza SanSoul, ejecuta las migraciones automáticas conocidas, sincroniza `README.md` y `AGENTS.md` desde sus plantillas y compila el proyecto. Se detiene si detecta cambios locales, historial divergente, documentos raíz no generados, una migración desconocida o un destino de renombrado ocupado. No confirma ni publica cambios.
 
-Después de actualizar el submódulo:
+Si quedan validaciones manuales de alguna migración, el comando las muestra y pide confirmación antes de actualizar la versión compatible en `package.json`. Si se ejecuta sin terminal interactiva, conserva la versión anterior; completa esas comprobaciones y ejecuta:
 
-1. ejecuta `sh do migrations`;
-2. aplica las migraciones pendientes en orden;
-3. construye y revisa el proyecto;
-4. ejecuta `sh do migrations mark --yes` únicamente cuando la compatibilidad esté comprobada; el comando sincronizará la versión de `package.json` y, si existe, de `package-lock.json` en la raíz.
+```sh
+sh do migrations mark --yes
+```
 
-El comando informa y verifica; no modifica contenido ni configuración automáticamente. Una migración concreta puede ofrecer un script idempotente, pero nunca se ejecutará como efecto secundario de un build o de la actualización del submódulo.
+Si el submódulo instalado es demasiado antiguo para incluir `sh do update`, hay que incorporarlo una vez con `git submodule update --remote themes/sansoul`; después se puede ejecutar `sh do update --check` y `sh do update`.
 
 ### Archivos README y AGENTS de la raíz
 
-No se modifican como efecto secundario de Git. Después de actualizar el submódulo, una migración puede pedir `sh do root-docs`. README y AGENTS raíz son archivos genéricos generados íntegramente desde `themes/sansoul/templates/root/`; sus cabeceras advierten que no deben personalizarse.
+README y AGENTS raíz son archivos genéricos generados íntegramente desde `themes/sansoul/templates/root/`; `sh do update` siempre los sincroniza. Sus cabeceras advierten que no deben personalizarse.
 
 Si README/AGENTS no fueron generados, `sh do root-docs` se niega a sobrescribirlos sin `--force`. Con `--force` los reemplaza íntegramente y descarta su contenido: no intenta interpretarlo ni trasladarlo al ADN. Si falta `dna/_index.md`, crea únicamente el scaffold orientativo. En actualizaciones posteriores puede reemplazar README/AGENTS de forma segura, pero nunca sobrescribe el ADN.
 

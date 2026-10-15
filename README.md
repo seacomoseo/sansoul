@@ -294,7 +294,9 @@ Los comentarios internos deben explicar una invariante o una decisión sorprende
 
 La versión canónica está en `package.json` y sigue SemVer: major para incompatibilidades, minor para funcionalidad compatible y patch para correcciones compatibles. [`MIGRATIONS.md`](MIGRATIONS.md) registra exclusivamente acciones que debe realizar un proyecto consumidor; Git continúa siendo el historial completo del código.
 
-`sh do update` se conserva temporalmente como puente para proyectos anteriores a `5.0.0` que todavía dependen del actualizador privado `../_tools/updater/`. No forma parte del flujo portátil posterior a esa línea base y podrá retirarse cuando todos los proyectos heredados hayan migrado.
+`sh do update` ejecuta el actualizador seguro desde la raíz del proyecto consumidor. Requiere árboles Git limpios; también acepta que el único cambio de la raíz sea el gitlink de SanSoul, si corresponde a un avance directo y limpio hecho durante el arranque inicial. Descarga la rama configurada en `.gitmodules` y solo acepta avances directos. Antes de cambiar el submódulo comprueba la compatibilidad de versiones, la política de cada migración pendiente, los nombres que se renombrarán y que README/AGENTS sean documentos generados. Después ejecuta las migraciones automáticas, regenera siempre ambos documentos raíz, instala dependencias si hace falta y compila. Si una migración requiere comprobaciones manuales, solicita confirmación antes de actualizar la versión raíz; sin terminal interactiva la deja pendiente. `sh do update --check` realiza el preflight sin cambiar archivos ni el commit activo del tema.
+
+Un proyecto que todavía tenga una versión antigua de SanSoul no dispone del actualizador nuevo hasta que incorpore esa versión del submódulo. En ese primer arranque, usa una vez `git submodule update --remote themes/sansoul`; después ejecuta `sh do update --check` y `sh do update`. Los proyectos anteriores a la línea base 5.0.0 requieren una migración verificada específica y el actualizador seguro se detiene sin moverlos.
 
 El proyecto base es la matriz de compatibilidad inmediata. Antes de publicar una versión o subir Hugo o Node:
 
