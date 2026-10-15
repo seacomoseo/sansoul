@@ -381,7 +381,8 @@ function git (directory, args, { allowFailure = false } = {}) {
   if (result.error || (result.status !== 0 && !allowFailure)) {
     fail(result.error?.message || result.stderr.trim() || `git ${args.join(' ')} failed.`)
   }
-  return result.status === 0 ? result.stdout.trim() : ''
+  // Git porcelain uses leading spaces as status data; preserve them.
+  return result.status === 0 ? result.stdout.replace(/\r?\n$/, '') : ''
 }
 
 function run (command, args, cwd) {
