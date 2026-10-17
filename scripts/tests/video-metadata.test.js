@@ -369,26 +369,52 @@ test('existing YouTube cache upgrades once when a Data API key becomes available
   assert.equal(JSON.parse(await fs.readFile(file, 'utf8')).entries['youtube:abc'].metadata.ratio, 9 / 16)
 })
 
-test('YouTube cache refreshes before 30 days and drops expired facts even on failure or when unreferenced', async t => {
+test('YouTube cache persists by ID regardless of age or missing timestamp until explicitly refreshed', async t => {
   const root = await fixture(t)
-  const now = Date.now()
-  await fs.writeFile(path.join(root, 'content/a.md'), 'vid: https://youtu.be/abc')
-  let calls = 0
-  const fetchImpl = async () => { calls++; return { ok: true, text: async () => JSON.stringify({ title: 'Current title' }) } }
-  const run = options => refreshVideoMetadata({ projectRoot: root, now, fetchImpl, logger: null, ...options })
-  await run()
+  const now = Date.parse('2026-10-17T00:00:00Z')
+  await fs.writeFile(path.join(root, 'content/a.md'), 'vid: https://youtu.be/abc\nvid: https://youtu.be/undated')
   const file = path.join(root, 'data/video_metadata.json')
-  const cache = JSON.parse(await fs.readFile(file, 'utf8'))
-  cache.entries['youtube:abc'].overrides = { name: 'Authored title' }
-  cache.entries['youtube:unused'] = { fetchedAt: new Date(now - 31 * 86400000).toISOString(), metadata: { name: 'Expired' } }
-  await fs.writeFile(file, JSON.stringify(cache))
-  await run()
-  assert.equal(calls, 1)
-  assert.deepEqual(JSON.parse(await fs.readFile(file, 'utf8')).entries['youtube:unused'].metadata, {})
-  await run({ now: now + 29 * 86400000 })
-  assert.equal(calls, 2)
-  await run({ now: now + 60 * 86400000, fetchImpl: async () => { throw new Error('Offline') } })
-  const expired = JSON.parse(await fs.readFile(file, 'utf8')).entries['youtube:abc']
-  assert.deepEqual(expired.metadata, {})
-  assert.equal(expired.overrides.name, 'Authored title')
+  const cache = { version: 1, entries: {
+    'youtube:abc': { fingerprint: 'youtube:abc', fetchedAt: '2020-01-01T00:00:00Z', youtubeApiVersion: 1, metadata: { name: 'Original title', duration: 'PT10S', ratio: 9 / 16 }, overrides: { name: 'Authored title' } },
+    'youtube:undated': { fingerprint: 'youtube:undated', youtubeApiVersion: 1, metadata: { name: 'Undated title' } },
+    'youtube:unused': { fingerprint: 'youtube:unused', fetchedAt: '2020-01-01T00:00:00Z', metadata: { name: 'Unreferenced title' }, overrides: { ratio: 1 } }
+  } }
+  await fs.mkdir(path.dirname(file), { recursive: true })
+  const initial = JSON.stringify(cache)
+  await fs.writeFile(file, initial)
+  let calls = 0
+  const fetchImpl = async url => {
+    calls++
+    const info = url.includes('/youtube/v3/') ? { items: [{ snippet: { title: 'Updated title' }, contentDetails: { duration: 'PT8S' }, player: { embedWidth: 4608, embedHeight: 8192 } }] } : { title: 'oEmbed title' }
+    return { ok: true, text: async () => JSON.stringify(info) }
+  }
+  const run = options => refreshVideoMetadata({ projectRoot: root, now, apiKey: 'fixture-key', fetchImpl, logger: null, ...options })
+  assert.equal((await run()).changed, false)
+  assert.equal((await run({ now: now + 365 * 86400000 })).changed, false)
+  assert.equal(calls, 0)
+  assert.equal(await fs.readFile(file, 'utf8'), initial)
+
+  assert.equal((await run({ force: true })).changed, true)
+  assert.equal(calls, 4)
+  const refreshed = JSON.parse(await fs.readFile(file, 'utf8')).entries
+  assert.equal(refreshed['youtube:abc'].metadata.name, 'Updated title')
+  assert.equal(refreshed['youtube:abc'].metadata.duration, 'PT8S')
+  assert.equal(refreshed['youtube:abc'].metadata.ratio, 9 / 16)
+  assert.equal(refreshed['youtube:abc'].fetchedAt, new Date(now).toISOString())
+  assert.deepEqual(refreshed['youtube:abc'].overrides, cache.entries['youtube:abc'].overrides)
+  assert.equal(refreshed['youtube:undated'].fetchedAt, new Date(now).toISOString())
+  assert.deepEqual(refreshed['youtube:unused'], cache.entries['youtube:unused'])
+
+  let failures = 0
+  const offline = async () => { failures++; throw new Error('Offline') }
+  await run({ force: true, fetchImpl: offline })
+  assert.equal(failures, 2)
+  const failed = JSON.parse(await fs.readFile(file, 'utf8')).entries
+  assert.deepEqual(failed['youtube:abc'].metadata, refreshed['youtube:abc'].metadata)
+  assert.equal(failed['youtube:abc'].fetchedAt, refreshed['youtube:abc'].fetchedAt)
+  assert.deepEqual(failed['youtube:abc'].overrides, refreshed['youtube:abc'].overrides)
+  assert.equal((await run({ fetchImpl: offline })).changed, false)
+  assert.equal(failures, 2)
+  await run({ now: now + 86400001 })
+  assert.equal(calls, 8) // A failed explicit refresh is retried after the backoff.
 })

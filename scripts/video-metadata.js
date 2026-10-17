@@ -11,8 +11,6 @@ const execute = promisify(execFile)
 const localStats = new Map()
 const extensions = /\.(?:mp4|webm|mov|avi)(?:[?#].*)?$/i
 const youtubeApiVersion = 1
-const youtubeRefreshMs = 29 * 86400000
-const youtubeExpiryMs = 30 * 86400000
 
 export function videoSource (value) {
   const source = String(value).replace(/&amp;/g, '&')
@@ -188,14 +186,6 @@ export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force
     if (error.code !== 'ENOENT') throw new Error(`Cannot read ${filename}: ${error.message}`)
   }
   const before = JSON.stringify(cache)
-  // YouTube public API data must be refreshed or deleted within 30 days.
-  // This includes entries no longer referenced; authored overrides are retained.
-  for (const [key, entry] of Object.entries(cache.entries)) {
-    if (key.startsWith('youtube:') && !(Date.parse(entry.fetchedAt) > now - youtubeExpiryMs)) {
-      cache.entries[key] = { ...entry, metadata: {} }
-      delete cache.entries[key].youtubeApiVersion
-    }
-  }
   const sources = await discoverVideos(root)
   const warnings = []
   for (const source of sources) {
@@ -231,8 +221,7 @@ export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force
       } else {
         const retryPending = previous?.retryAfter && Date.parse(previous.retryAfter) > now
         const needsYoutubeApi = source.provider === 'youtube' && apiKey && previous?.youtubeApiVersion !== youtubeApiVersion
-        const needsYoutubeRefresh = source.provider === 'youtube' && !(Date.parse(previous?.fetchedAt) > now - youtubeRefreshMs)
-        if (!force && previous?.fingerprint === fingerprint && ((!needsYoutubeApi && !needsYoutubeRefresh) || retryPending) && (!previous.retryAfter || retryPending)) continue
+        if (!force && previous?.fingerprint === fingerprint && (!needsYoutubeApi || retryPending) && (!previous.retryAfter || retryPending)) continue
       }
       let metadata
       if (source.provider === 'local') {

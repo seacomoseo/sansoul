@@ -1,6 +1,6 @@
 # Metadatos de vídeo
 
-Los comandos de SanSoul actualizan `data/video_metadata.json` antes de iniciar Hugo. Es una caché pública: versionar los datos locales y las correcciones manuales permite construir en Cloudflare Pages sin instalar FFprobe. Los hechos temporales de YouTube requieren renovación y no deberían conservarse indefinidamente en Git; véase el límite de retención más abajo. Durante desarrollo, el supervisor detecta referencias nuevas en `content/` y `data/`, y cambios en los vídeos de `uploads/`.
+Los comandos de SanSoul completan `data/video_metadata.json` antes de iniciar Hugo. Es una caché pública persistente: conservarla permite reutilizar metadatos en otros entornos y construir sin volver a consultar los proveedores ni instalar FFprobe para los vídeos locales ya analizados. La persistencia técnica no determina el derecho a conservar datos de un proveedor; véase la política de YouTube más abajo. Durante desarrollo, el supervisor detecta referencias nuevas en `content/` y `data/`, y cambios en los vídeos de `uploads/`.
 
 El generador solo recorre texto de esas dos carpetas, no todos los vídeos del proyecto. Reconoce archivos `/u/…` y enlaces YouTube/Vimeo. No descarga vídeos externos ni ejecuta FFprobe contra URLs. Si un recurso se introduce exclusivamente mediante JavaScript, HTML externo o una fuente remota, no puede descubrirlo automáticamente.
 
@@ -10,12 +10,12 @@ El generador solo recorre texto de esas dos carpetas, no todos los vídeos del p
 - **Vimeo:** oEmbed proporciona dimensiones de visualización, duración, título y miniatura, según acceso y respuesta del proveedor.
 - **YouTube:** oEmbed proporciona título y miniatura. Sus dimensiones describen el reproductor solicitado; **no se guardan como resolución del vídeo**. Con `YOUTUBE_API_KEY` en el entorno se consultan además título, descripción, publicación, duración y `player.embedWidth/embedHeight` mediante Data API. Con los límites de reproductor solicitados, YouTube devuelve ambas medidas cuando conoce la proporción; se guarda únicamente su cociente como `ratio`, no como resolución original. Las entradas antiguas se enriquecen una vez al disponer de clave. La API pública con una clave no proporciona la resolución original; ese dato requiere acceso del propietario o una sobrescritura manual. No se instala ni configura ninguna API de pago.
 
-Los proveedores externos quedan cacheados por identificador. YouTube intenta
-renovar sus datos a los 29 días y elimina los hechos obtenidos al cumplir 30 días
-si no consigue renovarlos, también en entradas ya no referenciadas; los overrides
-manuales se conservan. Las entradas sin fecha de obtención se renuevan. Esto
-ocurre al ejecutar SanSoul: no se instala un servicio periódico. Un sitio que no
-se compila debe programar su mantenimiento por separado.
+Los proveedores externos quedan cacheados por identificador, sin caducidad
+automática. Los builds reutilizan los datos existentes aunque sean antiguos o no
+tengan `fetchedAt`; esa fecha informa de su procedencia, no activa consultas ni
+borrados. Las referencias nuevas se consultan y las entradas YouTube sin Data
+API se enriquecen una vez al disponer de clave. Los overrides manuales y las
+entradas ya no referenciadas se conservan. No se instala un servicio periódico.
 
 Con la cuota estándar de 10.000 unidades diarias, cada `videos.list` consume una
 unidad del mismo proyecto de Google Cloud, aunque la clave se use en varios
@@ -25,19 +25,30 @@ se comprueba en la consola; la implementación actual consulta cada ID por
 separado. Véanse [cuotas](https://developers.google.com/youtube/data/determine_quota_cost)
 y [retención de datos](https://developers.google.com/youtube/terms/developer-policies#refreshing-storing-and-displaying-api-data).
 
-La caducidad del archivo activo no borra versiones antiguas de Git ni actualiza
-un despliegue estático sin volver a compilarlo. Para extender este uso a una
-flota de sitios, conviene separar los datos temporales de YouTube del historial
-versionado de datos locales/manuales y coordinar su renovación. No se ha
-instalado ni desplegado ese servicio compartido.
+**Política del proveedor:** Google sigue exigiendo actualizar o eliminar los
+datos API no autorizados después de 30 días. No se ha encontrado una excepción
+para duración o proporción por considerarlas estables. La caché sin caducidad es
+la decisión técnica solicitada para SanSoul; no acredita conformidad con esa
+política ni elimina sus requisitos. Git conservaría versiones antiguas aunque
+se reemplazase el JSON actual. Antes de distribuir esta integración a otros
+proyectos, hay que resolver su conservación conforme a las condiciones
+aplicables. No se ha implementado sincronización de la caché con GitHub Actions,
+autocommits, un servicio compartido ni cambios de despliegue.
 
-Para refrescar información del mismo vídeo que haya cambiado en el proveedor:
+Para refrescar explícitamente los vídeos referenciados, incluso antes de que
+termine la espera tras un fallo:
 
 ```sh
 sh do videos --refresh
 ```
 
-El mismo comando funciona tanto con `core` como con `themes/sansoul`. `FFPROBE_BIN` y `FFMPEG_BIN` permiten elegir los ejecutables. FFprobe obtiene los metadatos locales; FFmpeg extrae el primer fotograma cuando hace falta un póster. Con la caché y los pósteres guardados, producción no necesita ninguno de los dos. Ante archivos, herramientas, permisos o red no disponibles se conservan los datos previos aún vigentes y el comportamiento manual; los hechos de YouTube caducados se descartan. Los fallos de proveedores tienen una espera de 24 horas antes de reintentar; `--refresh` permite hacerlo antes. Los errores no guardan ni imprimen claves de API.
+El mismo ID no garantiza que sus datos permanezcan iguales: el autor puede
+[recortar un vídeo conservando su URL](https://support.google.com/youtube/answer/9057455?hl=en-GB)
+y cambiar su duración, además de editar título o descripción.
+Cuando se conozca uno de estos cambios, `--refresh` permite reemplazar los datos
+obtenidos y conserva los overrides. No refresca entradas sin referencias.
+
+El mismo comando funciona tanto con `core` como con `themes/sansoul`. `FFPROBE_BIN` y `FFMPEG_BIN` permiten elegir los ejecutables. FFprobe obtiene los metadatos locales; FFmpeg extrae el primer fotograma cuando hace falta un póster. Con la caché y los pósteres guardados, producción no necesita ninguno de los dos. Ante archivos, herramientas, permisos o red no disponibles se conservan los datos previos y el comportamiento manual. Los fallos de proveedores tienen una espera de 24 horas antes de reintentar; `--refresh` permite hacerlo antes. Los errores no guardan ni imprimen claves de API.
 
 La escritura del JSON es atómica y solo ocurre si cambia su contenido. Al obtener metadatos de nuevo se reemplazan los datos obtenidos anteriormente, para no conservar hechos obsoletos; el objeto manual `overrides` se conserva. No se borran entradas al retirar una referencia: otras páginas o integraciones pueden seguir utilizándolas. El archivo generado de estadísticas no se versiona. El supervisor debe ignorarlo y evitar dispararse por su propia escritura de `video_metadata.json`; Hugo sí lee este último como datos normales.
 

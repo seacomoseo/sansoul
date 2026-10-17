@@ -222,3 +222,34 @@ no programa renovación ni purga el historial Git.
 Evidencia temporal: `/private/tmp/sansoul-audit-20261017/`, especialmente
 `check-final.log`, `consumer-final-build.log`, `example-hugo164.log`,
 `site-audit.json`, `vnu-typed.json` y `dependencies-audit.json`.
+
+## Comprobación autenticada de YouTube y caché persistente — 17 de octubre
+
+Se creó una clave estándar restringida a YouTube Data API en un proyecto sin
+cuenta de facturación vinculada. Se probó el generador real con dos IDs públicos
+en una copia temporal: ratios 16:9 y 3:4, duración y publicación obtenidas, sin
+avisos. Una segunda ejecución reutilizó el JSON sin acceder a la red. La clave
+se pasó por entorno, quedó fuera de Git y no apareció en el JSON. El fixture de
+metadatos se eliminó después de verificarlo. Esto sustituye el límite anterior
+de no haber probado una llamada autenticada; no verifica resolución original.
+
+Por petición posterior de Loren se retiraron la renovación y purga por edad.
+La caché ahora permanece por ID hasta un refresco explícito; los reintentos de
+fallos y el enriquecimiento inicial con Data API se mantienen. La prueba focal
+cubre datos de 2020, ausencia de fecha, entradas no referenciadas, un año sin
+consultas, refresco manual, overrides y fallo de red. La norma externa de Google
+sigue documentada; no se afirma conformidad por conservar datos indefinidamente.
+No se instaló un workflow de GitHub ni se contactó con Hermes.
+
+Se volvió a intentar abrir el mismo origen local después de recibir acceso
+completo de terminal. La herramienta mantuvo la denegación por permiso guardado.
+La documentación oficial localiza el control en ChatGPT > Ajustes > Uso del
+ordenador > Administrar junto al navegador > sitios bloqueados. No se intentó
+eludirlo mediante otra dirección, superficie o motor.
+
+El cambio de caché persistente pasó de nuevo `sh do check`: **146/146 pruebas**
+y build completo con Hugo 0.168 en el consumidor aislado. El ejemplo canónico
+compiló con Hugo 0.164. Evidencia adicional: `check-persistent-cache.log` y
+`example-persistent-cache-hugo164.log` en la carpeta temporal de auditoría.
+La revisión CSS independiente no confirmó errores adicionales entre 30 familias
+de diagnósticos CSS de Nu; mantiene pendiente su comprobación en navegadores.

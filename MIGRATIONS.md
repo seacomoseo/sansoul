@@ -80,10 +80,12 @@ pnpm sigue siendo una elección explícita mediante la herramienta documentada.
   antes de paginar. Las fuentes remotas conservan cero, false y cadena vacía;
   `def` sólo sustituye valores ausentes o null. Revisa mapeos que dependieran de
   usar el default para una celda vacía.
-- YouTube intenta renovar sus datos al cumplir 29 días y descarta los hechos
-  obtenidos a los 30 días si no puede renovarlos; conserva overrides manuales.
-  Esto se ejecuta durante comandos de SanSoul, no mediante un proceso mensual
-  instalado automáticamente. Revisa cómo mantienes actualizados sitios sin builds.
+- La caché YouTube se reutiliza por ID sin caducidad automática; `fetchedAt`
+  conserva la procedencia. `sh do videos --refresh` actualiza explícitamente los
+  vídeos referenciados y conserva overrides. No se borran entradas antiguas,
+  sin fecha o ya no referenciadas. La política externa de renovación de Google
+  sigue siendo aplicable: revisa [metadatos de vídeo](docs/video-metadata.md)
+  antes de extender su persistencia a otros proyectos.
 
 - La nueva dependencia requiere instalación: en consumidores npm, `npm install`;
   en pnpm, `pnpm install --no-frozen-lockfile` tras la migración para sincronizar
