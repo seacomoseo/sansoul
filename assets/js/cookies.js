@@ -1,5 +1,6 @@
 import { cookiesLegal } from '@params/config'
 import params from './params'
+import { hasConsent } from './consent'
 const { cookiesVideo } = params
 
 export function initCookies () {
@@ -16,9 +17,7 @@ export function initCookies () {
     function cookiesOpen () {
       const checkboxes = cookiesMessage.querySelectorAll('input[name="cookies"]')
       checkboxes.forEach(e => {
-        if (localStorage[`controlcookie${e.value}`]) {
-          e.checked = true
-        }
+        if (!e.disabled) e.checked = hasConsent(e.value, cookiesLegal)
       })
       cookiesMessage.removeAttribute('hidden')
       cookiesMessage.querySelector('[data-b]').focus()
@@ -37,9 +36,13 @@ export function initCookies () {
       }
     }
 
+    function nextCounter (value) {
+      const count = Number(value)
+      return Number.isSafeInteger(count) && count >= 0 && count < Number.MAX_SAFE_INTEGER ? count + 1 : 1
+    }
+
     function cookiesAccept (c) {
-      localStorage.controlcookie = localStorage.controlcookie || 0
-      localStorage.controlcookie++
+      localStorage.controlcookie = nextCounter(localStorage.controlcookie)
       cookiesClose()
 
       // Accept all or specific cookies
@@ -56,8 +59,7 @@ export function initCookies () {
       checkboxes.forEach(e => {
         const type = e.value
         if (aceptAll || e.checked) {
-          localStorage[`controlcookie${type}`] = localStorage[`controlcookie${type}`] || 0
-          localStorage[`controlcookie${type}`]++
+          localStorage[`controlcookie${type}`] = nextCounter(localStorage[`controlcookie${type}`])
           window.dispatchEvent(new CustomEvent(`cookies:${type}`))
 
           if (type === 'analytics') {
@@ -69,6 +71,9 @@ export function initCookies () {
           localStorage.removeItem(`controlcookie${type}`)
         }
       })
+      window.dispatchEvent(new CustomEvent('cookies:changed', {
+        detail: Object.fromEntries([...checkboxes].map(input => [input.value, hasConsent(input.value, cookiesLegal)]))
+      }))
     }
 
     document.addEventListener('click', e => {

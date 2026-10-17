@@ -3,7 +3,9 @@
 
 {{- /*  OUT  */ -}}
 {{- $out := hasPrefix .img "http" -}}
-{{- if not $out -}}
+{{- if $out -}}
+  {{- $src = .img -}}
+{{- else -}}
   {{- $clean := .img | replaceRE `([?#].*)$` "" -}}
   {{- with resources.Get $clean -}}
     {{- $src = .RelPermalink -}}
@@ -18,6 +20,8 @@
   {{- $title    := "" -}}
   {{- $target   := "" -}}
   {{- $rel      := "" -}}
+  {{- $role     := "" -}}
+  {{- $label    := "" -}}
 
   {{- /*  ROWS TYPE STYLE  */ -}}
   {{- $style := "" -}}
@@ -59,6 +63,8 @@
     {{- $tabindex  = "0" -}}
     {{- $tag       = "div" -}}
     {{- $url       = "" -}}
+    {{- $role      = "button" -}}
+    {{- $label     = or .alt "Image" -}}
   {{- else -}}
     {{- $title = .alt -}}
     {{- if not $title -}}
@@ -77,6 +83,8 @@
     "class"         "gallery__item"
     "data-lightbox" $lb_data
     "tabindex"      $tabindex
+    "role"          $role
+    "aria-label"    $label
     "href"          $url
     "title"         $title
     "target"        $target

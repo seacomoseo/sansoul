@@ -365,6 +365,10 @@
   (partial "cms/widget" (dict "var" `input_regex`          "name" `regex`                    ))
   (partial "cms/widget" (dict "var" `input_min`            "name" `min`       "widget" `int` ))
   (partial "cms/widget" (dict "var" `input_max`            "name" `max`       "widget" `int` ))
+  (partial "cms/widget" (dict "var" `input_step`           "name" `step`      "widget" `float` ))
+  (partial "cms/widget" (dict "var" `input_value`          "name" `value`     "widget" `float` ))
+  (partial "cms/widget" (dict "var" `input_range_min`      "name" `min`       "widget" `float` "alt" `input_min`))
+  (partial "cms/widget" (dict "var" `input_range_max`      "name" `max`       "widget" `float` "alt" `input_max`))
   (partial "cms/widget" (dict "var" `input_x`              "name" `x`         "widget" `bool`))
   (partial "cms/widget" (dict "var" `input_accept`         "name" `accept`                   ))
   (partial "cms/widget" (dict "var" `input_base_name`      "name" `base_name`                ))
@@ -401,6 +405,7 @@
   (partial "cms/widget" (dict "var" `inputs_mail`   "name" `mail`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
   (partial "cms/widget" (dict "var" `inputs_phone`  "name" `phone`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
   (partial "cms/widget" (dict "var" `inputs_number` "name" `number` "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full` `~input_min` `~input_max` `~input_regex`)))
+  (partial "cms/widget" (dict "var" `inputs_range`  "name" `range`  "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~item_full` `~input_range_min` `~input_range_max` `~input_step` `~input_value`)))
   (partial "cms/widget" (dict "var" `inputs_date`   "name" `date`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full`)))
   (partial "cms/widget" (dict "var" `inputs_time`   "name" `time`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~item_full`)))
   (partial "cms/widget" (dict "var" `inputs_area`   "name" `area`   "widget" `dict` "fields" (slice `~input_name` `~input_label` `~input_hint` `~input_req` `~input_req_if` `~input_show_if` `~icon` `~input_min` `~input_max`)))
@@ -427,6 +432,7 @@
       `~inputs_mail`
       `~inputs_phone`
       `~inputs_number`
+      `~inputs_range`
       `~inputs_date`
       `~inputs_time`
       `~inputs_area`

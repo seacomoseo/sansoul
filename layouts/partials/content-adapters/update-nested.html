@@ -15,7 +15,7 @@ Side effects: None.
   {{ if eq .Kind "slice" }}
     {{ $existing := index $dict $key | default slice }}
     {{ $dict = merge $dict (dict $key ($existing | append .Value)) }}
-  {{ else if .Value }}
+  {{ else if ne .Value nil }}
     {{ $dict = merge $dict (dict $key .Value) }}
   {{ end }}
 {{ else }}

@@ -1,14 +1,17 @@
 {{- $show     := cond (not hugo.Data.config.show) "" " show" -}}
 {{- $btn      := cond (ne .faq.btn "none") .faq.btn "" -}}
 {{- $fotn_alt := cond (not .faq.swap) "" "btn--swap" -}}
-{{- $headers  := .faq.headers }}
+{{- $headers  := .faq.headers -}}
+{{- $group := add (page.Store.Get "sansoul.faq.count" | default 0) 1 -}}
+{{- page.Store.Set "sansoul.faq.count" $group }}
 <div class="faqs {{- if $headers }} faqs--headers{{ end }} box__block align-left {{- $show }}">
   {{- range $k, $v := .faqs -}}
     {{- with merge ($.faq | default dict) . -}}
       {{- $hl   := partial "func/hl" (dict "hn" .hn "hs" .hs "hs_vs" .hs_vs "level" $.level) -}}
       {{- $hn   := $hl.node -}}
       {{- $hs   := $hl.class -}}
-      {{- $open := and (not $k) .open }}
+      {{- $open := and (not $k) .open -}}
+      {{- $answerID := printf "faq-%d-%d" $group $k }}
       <div class="faq {{- if $open }} faq--active{{ end }}">
 
         {{- /* TITLE  */}}
@@ -19,21 +22,21 @@
 
         {{ print "<" $hn $attrs ">" | safeHTML -}}
           {{- if not $headers -}}
-            <button type="button" class="faq__btn btn {{ $btn }} {{ $fotn_alt }}">
+            <button type="button" class="faq__btn btn {{ $btn }} {{ $fotn_alt }}" aria-expanded="{{ if $open }}true{{ else }}false{{ end }}" aria-controls="{{ $answerID }}">
               {{- partial "icon" (dict "class" "faq__icon" "icon" .icon "def" "question") }}
               <b>{{ .title }}</b>
               {{- partial "icon" (dict "class" "faq__btn-dot" "def" "plus") }}
             </button>
           {{- else }}
             <b>{{ .title }}</b>
-            <button type="button" class="faq__btn-dot btn btn--dot {{ $btn }}" title="{{ i18n `more` }}">
+            <button type="button" class="faq__btn-dot btn btn--dot {{ $btn }}" title="{{ i18n `more` }}" aria-label="{{ .title }}" aria-expanded="{{ if $open }}true{{ else }}false{{ end }}" aria-controls="{{ $answerID }}">
               {{- partial "icon" (dict "class" "faq__icon" "icon" .icon "def" "down") }}
             </button>
           {{- end }}
         {{ print "</" $hn ">" | safeHTML -}}
 
         {{- /* MD  */}}
-        <div class="faq__md md" {{- if not $open }} hidden="until-found"{{ end }}>
+        <div id="{{ $answerID }}" class="faq__md md" {{- if not $open }} hidden="until-found"{{ end }}>
           {{- with .md -}}
             {{- partial "func/md" . -}}
           {{- end }}
@@ -67,7 +70,7 @@
 {{- if hugo.IsProduction -}}
   {{- $schema = jsonify $schema -}}
 {{- else -}}
-  {{- $schema = debug.Dump $schema -}}
+  {{- $schema = jsonify (dict "indent" "  ") $schema -}}
 {{- end }}
 <script type="application/ld+json">
   {{- $schema | safeJS -}}

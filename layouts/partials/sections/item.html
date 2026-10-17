@@ -45,12 +45,9 @@ Side effects: Sets page.Store `is_container` while rendering child boxes.
   {{- /*  COOKIES AND SITEMAP LINK  */ -}}
   {{- if .is_footer }}
     <div class="footer__float">
-      {{ partial "link" (dict
-        "class" "cookies__toggle"
-        "def"   "cookies"
-        "title" (i18n "cookies_notice")
-        "lock"  true
-      ) }}
+      <button type="button" class="link cookies__toggle" aria-label="{{ i18n "cookies_notice" }}" title="{{ i18n "cookies_notice" }}">
+        {{- partial "icon" (dict "def" "cookies") -}}
+      </button>
       {{ with site.GetPage "page/sitemap" -}}
         {{- partial "link" (dict
           "class" "footer__sitemap"

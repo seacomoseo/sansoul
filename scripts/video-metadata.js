@@ -11,6 +11,8 @@ const execute = promisify(execFile)
 const localStats = new Map()
 const extensions = /\.(?:mp4|webm|mov|avi)(?:[?#].*)?$/i
 const youtubeApiVersion = 1
+const youtubeRefreshMs = 29 * 86400000
+const youtubeExpiryMs = 30 * 86400000
 
 export function videoSource (value) {
   const source = String(value).replace(/&amp;/g, '&')
@@ -171,7 +173,7 @@ async function localPoster ({ root, localFile, fingerprint, ffmpeg, signal, logg
   }
 }
 
-export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force = false, fetchImpl = globalThis.fetch, ffprobe = process.env.FFPROBE_BIN || 'ffprobe', ffmpeg = process.env.FFMPEG_BIN || 'ffmpeg', apiKey = process.env.YOUTUBE_API_KEY, probe = undefined, logger = console.warn, signal } = {}) {
+export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force = false, fetchImpl = globalThis.fetch, ffprobe = process.env.FFPROBE_BIN || 'ffprobe', ffmpeg = process.env.FFMPEG_BIN || 'ffmpeg', apiKey = process.env.YOUTUBE_API_KEY, probe = undefined, logger = console.warn, signal, now = Date.now() } = {}) {
   signal?.throwIfAborted()
   const root = path.resolve(projectRoot)
   const filename = path.join(root, 'data/video_metadata.json')
@@ -186,6 +188,14 @@ export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force
     if (error.code !== 'ENOENT') throw new Error(`Cannot read ${filename}: ${error.message}`)
   }
   const before = JSON.stringify(cache)
+  // YouTube public API data must be refreshed or deleted within 30 days.
+  // This includes entries no longer referenced; authored overrides are retained.
+  for (const [key, entry] of Object.entries(cache.entries)) {
+    if (key.startsWith('youtube:') && !(Date.parse(entry.fetchedAt) > now - youtubeExpiryMs)) {
+      cache.entries[key] = { ...entry, metadata: {} }
+      delete cache.entries[key].youtubeApiVersion
+    }
+  }
   const sources = await discoverVideos(root)
   const warnings = []
   for (const source of sources) {
@@ -219,9 +229,10 @@ export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force
           continue
         }
       } else {
-        const retryPending = previous?.retryAfter && Date.parse(previous.retryAfter) > Date.now()
+        const retryPending = previous?.retryAfter && Date.parse(previous.retryAfter) > now
         const needsYoutubeApi = source.provider === 'youtube' && apiKey && previous?.youtubeApiVersion !== youtubeApiVersion
-        if (!force && previous?.fingerprint === fingerprint && (!needsYoutubeApi || retryPending) && (!previous.retryAfter || retryPending)) continue
+        const needsYoutubeRefresh = source.provider === 'youtube' && !(Date.parse(previous?.fetchedAt) > now - youtubeRefreshMs)
+        if (!force && previous?.fingerprint === fingerprint && ((!needsYoutubeApi && !needsYoutubeRefresh) || retryPending) && (!previous.retryAfter || retryPending)) continue
       }
       let metadata
       if (source.provider === 'local') {
@@ -229,6 +240,7 @@ export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force
         metadata = compact({ ...probeMetadata(result), name: localVideoName(source.url), thumbnailUrl: source.poster })
       } else metadata = await externalMetadata(source, fetchImpl, apiKey, signal)
       cache.entries[source.key] = { ...previous, fingerprint, metadata }
+      if (source.provider === 'youtube') cache.entries[source.key].fetchedAt = new Date(now).toISOString()
       if (source.provider === 'youtube' && apiKey) cache.entries[source.key].youtubeApiVersion = youtubeApiVersion
       delete cache.entries[source.key].retryAfter
     } catch (error) {
@@ -239,7 +251,7 @@ export async function refreshVideoMetadata ({ projectRoot = process.cwd(), force
       warnings.push(warning)
       logger?.(warning)
       if (source.provider === 'local' && source.poster) cache.entries[source.key] = { ...previous, metadata: { ...previous?.metadata, name: localVideoName(source.url), thumbnailUrl: source.poster } }
-      if (source.provider !== 'local') cache.entries[source.key] = { ...previous, fingerprint, metadata: previous?.metadata || {}, retryAfter: new Date(Date.now() + 86400000).toISOString() }
+      if (source.provider !== 'local') cache.entries[source.key] = { ...previous, fingerprint, metadata: previous?.metadata || {}, retryAfter: new Date(now + 86400000).toISOString() }
     }
   }
   const changed = JSON.stringify(cache) !== before

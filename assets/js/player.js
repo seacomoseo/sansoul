@@ -2,9 +2,11 @@ import { cookiesLegal } from '@params/config'
 import { loadScript } from './load-script'
 import params from './params'
 import { initVideoDimensions, observeVideoDimensions } from './video-dimensions'
+import { hasConsent } from './consent'
 const { vid, lang } = params
 
 const players = {}
+const activeMedia = new Map()
 
 // Video ID
 function videoId (src) {
@@ -26,33 +28,38 @@ export function initPlayer () {
 
   if (posterVideo.length) {
     initialized = true
-    const isCookie = cookiesLegal && !localStorage.controlcookiemedia
-
-    posterVideo.forEach(e => {
-      if (isCookie) {
-        e.setAttribute('not-cookie', '')
+    const refreshConsent = () => {
+      const allowed = hasConsent('media', cookiesLegal)
+      if (!allowed) {
+        for (const [wrapper, { children, id }] of activeMedia) {
+          try { Promise.resolve(players[id]?.destroy?.()).catch(() => {}) } catch {}
+          delete players[id]
+          if (wrapper.isConnected) wrapper.replaceChildren(...children)
+          activeMedia.delete(wrapper)
+        }
       }
-    })
-
-    if (isCookie) {
-      window.addEventListener('cookies:media', () => {
-        posterVideo.forEach(e => e.removeAttribute('not-cookie'))
-      }, { once: true })
+      document.querySelectorAll('[data-vid]').forEach(poster => {
+        poster.toggleAttribute('not-cookie', !poster.hasAttribute('data-file') && !allowed)
+      })
     }
+    refreshConsent()
+    window.addEventListener('cookies:media', refreshConsent)
+    window.addEventListener('cookies:changed', refreshConsent)
 
     document.addEventListener('click', e => {
       const imgWithIframe = e.target.closest('.img')
       if (imgWithIframe) {
         const dataMedia = imgWithIframe.querySelector('[data-vid]')
         if (!dataMedia) return
-        if (dataMedia.hasAttribute('not-cookie')) {
+        const isVideoFile = dataMedia.hasAttribute('data-file')
+        if (!isVideoFile && !hasConsent('media', cookiesLegal)) {
+          dataMedia.setAttribute('not-cookie', '')
           const cookieToggle = document.querySelector('.cookies__toggle')
           if (cookieToggle) cookieToggle.click()
           return
         }
         const src = dataMedia.dataset.vid
         const className = dataMedia.className?.baseVal || dataMedia.className // baseVal to fix svg's
-        const isVideoFile = dataMedia.hasAttribute('data-file')
         const copyDimensions = target => {
           for (const name of ['width', 'height']) {
             const value = Number(dataMedia.dataset[name])
@@ -77,6 +84,10 @@ export function initPlayer () {
           const isYT = dataMedia.dataset.youtube === ''
           const idVideo = videoId(src)
           const id = playerId(dataMedia, idVideo)
+          activeMedia.set(imgWithIframe, {
+            children: [...imgWithIframe.childNodes].map(node => node.cloneNode(true)),
+            id
+          })
           const attrsLang = lang === 'es' ? '' : `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           const iframe = document.createElement('iframe')
           iframe.className = className
@@ -99,24 +110,19 @@ export function initPlayer () {
               : 'https://player.vimeo.com/api/player.js'
             loadScript(api)
               .then(() => {
+                if (!iframe.isConnected || !hasConsent('media', cookiesLegal)) return
                 if (isYT) {
                   // It is executed when ALL iframe API is ready
                   window.YT.ready(() => {
+                    if (!iframe.isConnected || !hasConsent('media', cookiesLegal)) return
                     players[id] = new window.YT.Player(iframe, {
                       host: 'https://www.youtube-nocookie.com',
-                      playerVars: { origin: location.origin },
-                      events: {
-                        onReady: () => console.log('Player ready:', id)
-                      }
+                      playerVars: { origin: location.origin }
                     })
                   })
                 } else {
                   // Vimeo: the constructor is ready immediately after loading the script
-                  players[id] = new window.Vimeo.Player(iframe, {
-                    events: {
-                      loaded: () => console.log('Player ready:', id)
-                    }
-                  })
+                  players[id] = new window.Vimeo.Player(iframe)
                 }
               })
               .catch(console.error)

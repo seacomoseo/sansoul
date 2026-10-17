@@ -1,45 +1,54 @@
 import { closeModal } from './modals'
-import { scrollShot } from './scroll-shot'
 import { loadScript } from './load-script'
 
-export function initSimpleLightbox () {
-  // All ligtbox items
-  const lbItems = document.querySelectorAll('[data-lightbox]')
-  if (lbItems) {
-    function lightbox () {
-      // Unique groups of ligtbox items
-      let lbGroups = []
-      lbItems.forEach(lbItem => {
-        const lbGroup = lbItem.closest('.gallery, .container, .boxes, .md, .menu__items')
-        lbGroups.push(lbGroup)
-      })
-      lbGroups = [...new Set(lbGroups)]
-      // Each group
-      lbGroups.forEach(lbGroup => {
-        const lbSection = lbGroup.closest('.menu, .section, .modal')
-        const lbGroupSection = lbSection ? '.' + lbSection.classList.value.replace(/^.*?((section|modal)--[\w-]+|menu).*$/, '$1') : ''
-        const lbBox = lbGroup.closest('.box')
-        const lbGroupBox = lbBox ? '.' + lbBox.classList.value.replace(/^.*?(box(--\d+)?).*$/, '$1').replace(' ', '.') : ''
-        const localImgs = new SimpleLightbox(`${lbGroupSection} ${lbGroupBox} [data-lightbox]`, { sourceAttr: 'data-lightbox' })
-        // Gallery expand button open first child
-        document.addEventListener('click', e => {
-          const galleryExpand = e.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
-          if (galleryExpand) localImgs.open(e.target.closest('.gallery').firstChild)
-        })
-        // Fix combine lightbox with modal
-        localImgs.on('show.simplelightbox', e => {
-          closeModal(true)
-        })
-      })
-    }
+const observedGroups = new WeakSet()
 
-    scrollShot({
-      rootMargin: '0%',
-      query: ':is(.menu, .section, .modal):has([data-lightbox])',
-      doStart: gallery => loadScript('/js/simple-lightbox.min.js')
-        .then(lightbox)
-        .catch(console.error),
-      end: true
+export function initSimpleLightbox () {
+  const groups = new Map()
+  document.querySelectorAll('[data-lightbox]').forEach(item => {
+    const group = item.closest('.gallery, .container, .boxes, .md, .menu__items') || item.parentElement
+    if (!groups.has(group)) groups.set(group, [])
+    groups.get(group).push(item)
+  })
+  groups.forEach((items, group) => {
+    if (observedGroups.has(group)) return
+    observedGroups.add(group)
+    let instance
+    let pending
+    const prepare = () => {
+      if (instance) return Promise.resolve(instance)
+      if (pending) return pending
+      pending = loadScript('/js/simple-lightbox.min.js').then(() => {
+        instance = new SimpleLightbox(items, { sourceAttr: 'data-lightbox' })
+        instance.on('show.simplelightbox', () => closeModal(true))
+        return instance
+      }).catch(error => {
+        pending = null
+        throw error
+      })
+      return pending
+    }
+    // Click also permits retry after a failed lazy network request.
+    group.addEventListener('click', event => {
+      const item = event.target.closest('[data-lightbox]')
+      const expand = event.target.closest('.gallery__expand:not([href],[data-h],[data-b])')
+      if ((!items.includes(item) && !expand) || (expand && expand.closest('.gallery') !== group)) return
+      if (instance && !expand) return
+      event.preventDefault()
+      prepare().then(lightbox => lightbox.open(item || items[0])).catch(console.error)
     })
-  }
+    group.addEventListener('keydown', event => {
+      if (!['Enter', ' '].includes(event.key) || !items.includes(event.target)) return
+      event.preventDefault()
+      prepare().then(lightbox => lightbox.open(event.target)).catch(console.error)
+    })
+    if (typeof IntersectionObserver === 'function') {
+      const observer = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return
+        observer.disconnect()
+        prepare().catch(console.error)
+      })
+      observer.observe(group)
+    }
+  })
 }

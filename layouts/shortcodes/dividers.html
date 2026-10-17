@@ -1,20 +1,4 @@
-<style>
-  .div--example {
-    position: relative;
-    --div-height: min(12.5dvw, 5.5em);
-    container: example / inline-size;
-    height: calc(var(--div-height) + 5em);
-    --margin-side: min(var(--container-margin-side, -.5em), -.5em);
-    margin: 0 var(--margin-side);
-    --div-fade: linear-gradient(black, transparent);
-    --div-mask-size: var(--div-width) var(--div-height), var(--div-width) 5em;
-  }
-  .div--example .bg-color {
-    background-color: var(--main);
-    border-radius: 0;
-    clip-path: none;
-  }
-</style>
+{{- .Page.Store.Set "sansoul.divider-demo" true -}}
 
 {{- $t := partial "func/i18n-cms" . -}}
 {{- range hugo.Data.options.div -}}
@@ -28,14 +12,14 @@
       {{- $attrs  = dict "class" $class "style" .style -}}
       {{- $attrs  = partial "func/attrs" $attrs -}}
     {{- end }}
-    <h3 id="div-{{ . }}">
+    <h2 class="h3" id="div-{{ . }}">
       {{- partial "link" (dict
         "label" .
         "url"   (print "#div-" .)
       ) -}}
       <br>
       {{- index $t (print "opt-div-" .) -}}
-    </h3>
+    </h2>
     <div {{- $attrs }}>
       <div class="bg-color"></div>
     </div>

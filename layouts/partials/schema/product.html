@@ -37,6 +37,23 @@
   {{ $img = slice $img | append (partial "schema/imgs" .) }}
 {{ end }}
 
+{{/* Availability is a fact only when inventory is explicitly configured. */}}
+{{ $offers := dict
+  "@type" "Offer"
+  "url" .Permalink
+  "price" .Params.price
+  "priceCurrency" site.Params.currency
+}}
+{{ if isset .Params "stock" }}
+  {{ $available := false }}
+  {{ if eq (printf "%T" .Params.stock) "bool" }}
+    {{ $available = .Params.stock }}
+  {{ else if findRE `^-?[0-9]+(?:\.[0-9]+)?$` (string .Params.stock) }}
+    {{ $available = gt (float .Params.stock) 0 }}
+  {{ end }}
+  {{ $offers = merge $offers (dict "availability" (print "https://schema.org/" (cond $available "InStock" "OutOfStock"))) }}
+{{ end }}
+
 {{/*  Schema  */}}
 {{ $schema := dict
 
@@ -52,13 +69,7 @@
   "image"            $img
   "mainEntityOfPage" (dict "@id" .Permalink)
   "potentialAction"  (dict "@type" "BuyAction" "target" .Permalink)
-  "offers"           (dict
-    "@type"           "Offer"
-    "url"             .Permalink
-    "price"           .Params.price
-    "priceCurrency"   site.Params.currency
-    "availability"    (print "https://schema.org/" (cond (not .Params.stock) "InStock" "OutOfStock"))
-  )
+  "offers"           $offers
 }}
 {{ $schema = partial "func/obj-truly" $schema }}
 

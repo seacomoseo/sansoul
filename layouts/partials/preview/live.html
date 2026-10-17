@@ -1,8 +1,8 @@
 {{- /*
 Partial: preview/live
-Purpose: Publish a public binding manifest and inert CMS draft receiver for real pages.
+Purpose: Publish public bindings and load the CMS draft receiver only inside a tokenized iframe.
 Context: page.Page.
-Renders: JSON data and a receiver script. Normal visits never activate the receiver.
+Renders: JSON data and a small bootstrap. Normal visits do not download the receiver.
 Side effects: Publishes receiver and full preview CSS; registers no hidden if branches.
 */ -}}
 {{- if or .File .IsSection .IsHome -}}
@@ -35,5 +35,7 @@ Side effects: Publishes receiver and full preview CSS; registers no hidden if br
   -}}
   <script type="application/json" id="sansoul-preview-manifest">{{ $manifest | jsonify | safeJS }}</script>
   {{- $script := resources.Get "js/preview-receiver.js" | js.Build (dict "targetPath" "js/preview-receiver.js" "minify" hugo.IsProduction) -}}
-  <script src="{{ $script.RelPermalink }}" defer></script>
+  {{- $script = partial "func/publish-content-resource" (dict "resource" $script "target" "js/preview-receiver.js") -}}
+  {{- $bootstrap := resources.Get "js/preview-bootstrap.js" | js.Build (dict "minify" hugo.IsProduction) -}}
+  <script data-sansoul-preview-receiver="{{ $script.RelPermalink }}">{{ $bootstrap.Content | safeJS }}</script>
 {{- end -}}

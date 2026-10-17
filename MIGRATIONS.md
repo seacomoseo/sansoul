@@ -70,6 +70,21 @@ pnpm sigue siendo una elección explícita mediante la herramienta documentada.
 
 ### Comprobaciones
 
+- Los segmentos CSS pequeños pueden insertarse en HTML. Para una CSP que no
+  permita esos bloques, configura `params.assets_inline_css: false`; no añadas
+  `unsafe-inline` para resolverlo. Revisa el preview del CMS con su nuevo bootstrap.
+- Los formularios admiten `type: range` (`min`, `max`, `step`, `value`). Los radios
+  antiguos con `type: bool` siguen funcionando. Comprueba condiciones mixtas
+  `||`/`&&` si antes dependían del comportamiento incorrecto.
+- Los límites `list.date`/`list.end` son inicio y fin inclusivos y se aplican
+  antes de paginar. Las fuentes remotas conservan cero, false y cadena vacía;
+  `def` sólo sustituye valores ausentes o null. Revisa mapeos que dependieran de
+  usar el default para una celda vacía.
+- YouTube intenta renovar sus datos al cumplir 29 días y descarta los hechos
+  obtenidos a los 30 días si no puede renovarlos; conserva overrides manuales.
+  Esto se ejecuta durante comandos de SanSoul, no mediante un proceso mensual
+  instalado automáticamente. Revisa cómo mantienes actualizados sitios sin builds.
+
 - La nueva dependencia requiere instalación: en consumidores npm, `npm install`;
   en pnpm, `pnpm install --no-frozen-lockfile` tras la migración para sincronizar
   el lockfile. El actualizador lo coordina; CI continúa usando lockfile congelado.

@@ -111,6 +111,10 @@ antes de convertir otros proyectos.
 
 ### Recursos de producción
 
+Los segmentos CSS autocontenidos de hasta 1 KiB se insertan en su posición
+original, sin cambiar la especificidad ni la cascada. Para mantener todos como
+archivos externos, usa `params.assets_inline_css: false` en `hugo.yml`.
+
 Producción selecciona módulos completos de JavaScript y SCSS según los
 componentes renderizados, incluidos los modales ocultos. No elimina estados
 dinámicos por no aparecer activos en el HTML. JavaScript comparte módulos ESM
@@ -346,6 +350,11 @@ Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, dis
 | `geos` | Mapa; `map` configura vista y capas. |
 | `links`, `dots`, `when`, `gss` | Enlaces, redes, horarios y datos tabulares. |
 | `boxes` | Subcajas recursivas. |
+
+Los formularios admiten `type: range` con `min`, `max`, `step` y `value`,
+incluido el cero. El control tiene etiqueta, valor visible y teclado nativo;
+también está disponible en el CMS. `show_if` y `req_if` interpretan `&&` antes
+que `||` y tienen en cuenta la opción marcada de los grupos de radio.
 
 `get` obtiene valores de la página o de `content/global.<lang>.yml`. `remap` mueve, copia o elimina rutas de parámetros. `if` condiciona el renderizado. Son herramientas potentes: pruébalas con una página aislada antes de reutilizarlas globalmente.
 

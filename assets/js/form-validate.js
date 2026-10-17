@@ -1,4 +1,5 @@
 import params from './params'
+import { matchesFormCondition, formFieldHasValue } from './form-conditions'
 const {
   formErrorSingleQuotes,
   formErrorReqFields,
@@ -96,17 +97,7 @@ export function formValid (form) {
     if (input.dataset.req !== undefined) {
       req = true // Data-req fields are always mandatory
     } else if (input.dataset.reqIf) {
-      // Split by || to handle OR conditions
-      const orGroups = input.dataset.reqIf.split(/\s*\|\|\s*/)
-      req = orGroups.some(orGroup => {
-        // Divide each OR group by && to handle AND conditions
-        const andConditions = orGroup.split(/\s*&&\s*/)
-        // All AND conditions must be true
-        return andConditions.every(cond => {
-          const inputIf = form.querySelector(`[name="${cond}"]`)
-          return inputIf && isInput(inputIf)
-        })
-      })
+      req = matchesFormCondition(input.dataset.reqIf, name => formFieldHasValue(form, name))
     }
     if (req && !isInput(input)) {
       let errorMessage, errorName

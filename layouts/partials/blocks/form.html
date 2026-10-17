@@ -69,11 +69,11 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- /*  Slices  */ -}}
 {{- $slices := dict
   "markers"        (slice                                                             "radio" "checks"                                      )
-  "keys"           (slice "text" "email" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo" "hidden"                )
+  "keys"           (slice "range" "text" "email" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo" "hidden"                )
   "full"           (slice                                             "area"          "radio" "checks" "file" "geo" "h2" "h3" "h4" "h5" "h6")
   "label"          (slice "text" "email" "tel" "number" "date" "time" "area" "select"                         "geo"                         )
   "border_chamfer" (slice "text" "email" "tel" "number" "date" "time" "area" "select" "radio" "checks" "file" "geo"                         )
-  "tag_inputs"     (slice "text" "email" "tel" "number" "date" "time"                                  "file"                               )
+  "tag_inputs"     (slice "range" "text" "email" "tel" "number" "date" "time"                                  "file"                               )
   "icon"           (slice "text" "email" "tel" "number" "date" "time" "area" "select"                                                       )
   "min_max_length" (slice "text" "email" "tel"                                                                                              )
   "wrap"           (slice "hidden" "br" "hr"                                                                                                )
@@ -90,6 +90,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     {{- $input = merge . (dict "type" "tel") -}}
   {{- else if eq .type "mail" -}}
     {{- $input = merge . (dict "type" "email") -}}
+  {{- else if eq .type "bool" -}}
+    {{- $input = merge . (dict "type" "radio") -}}
   {{- end -}}
   {{- /*  full  */ -}}
   {{- $full := .type | in $slices.full | or .full | default false -}}
@@ -291,9 +293,10 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 
   {{- /*  PRINT CUSTOM INPUTS  */ -}}
 
-  {{- range $inputs -}}
+  {{- range $input_index, $_ := $inputs -}}
     {{- /*  vars  */ -}}
     {{- $name        := .name -}}
+    {{- $input_id    := print $form_id "-field-" $input_index -}}
     {{- $type        := .type -}}
     {{- $placeholder := print (.label | default .name) (cond (not .req) "" " *") -}}
     {{- $req         := .req -}}
@@ -324,7 +327,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       {{- /*  label  */ -}}
       {{- if or $labels_out (eq $type "geo") -}}
         {{- if $type | in $slices.label }}
-          <label class="form__label">
+          <label class="form__label" for="{{ $input_id }}">
             {{- with .icon -}}
               {{- partial "icon" (dict "class" "form__icon" "icon" .) -}}
             {{- end -}}
@@ -348,6 +351,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
         <div {{- $border_attrs }}></div>
       {{- end -}}
 
+      {{- if eq $type "range" }}
+        <label class="form__label" for="{{ $input_id }}">{{ or .label .name }}</label>
+      {{- end -}}
       {{- /*  tag_inputs  */ -}}
       {{- if $type | in $slices.tag_inputs -}}
         {{- $onfocus  := false -}}
@@ -404,7 +410,18 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
             ) -}}
         {{- end -}}
 
+        {{- $step := "" -}}
+        {{- $value := "" -}}
+        {{- if eq $type "range" -}}
+          {{- if ne .min nil }}{{ $min = string .min }}{{ end -}}
+          {{- if ne .max nil }}{{ $max = string .max }}{{ end -}}
+          {{- if ne .step nil }}{{ $step = string .step }}{{ end -}}
+          {{- if ne .value nil }}{{ $value = string .value }}{{ end -}}
+        {{- end -}}
         {{- $input_attrs := dict
+          "id"               $input_id
+          "step"             $step
+          "value"            $value
           "class"            "form__input"
           "type"             (cond $onfocus "text" $type)
           "name"             $name
@@ -426,6 +443,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
         -}}
         {{- $input_attrs  = partial "func/attrs" $input_attrs }}
         <input {{- $input_attrs }}>
+        {{- if eq $type "range" }}
+          <output class="form__range-value" for="{{ $input_id }}">{{ $value }}</output>
+        {{- end }}
 
         {{- if eq $type "file" }}
         </label>
@@ -468,6 +488,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       {{- /*  textarea  */ -}}
       {{- else if $type | eq "area" -}}
         {{- $area_attrs := dict
+          "id"          $input_id
           "class"       "form__area"
           "name"        .name
           "rows"        3
@@ -484,7 +505,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       {{- else if $type | eq "select" }}
         <label>
           <i class="hide">{{ or .label .name }}</i>
-          <select class="form__select" name="{{ .name }}" {{- $req_attr }}>
+          <select id="{{ $input_id }}" class="form__select" name="{{ .name }}" {{- $req_attr }}>
             <option value="">{{ $placeholder }}</option>
             {{- range .items }}
               {{- $option_attrs := dict "value" (or .key .label) "disabled" .disabled -}}

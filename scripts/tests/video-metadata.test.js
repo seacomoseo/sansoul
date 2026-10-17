@@ -368,3 +368,27 @@ test('existing YouTube cache upgrades once when a Data API key becomes available
   assert.equal(calls, 3)
   assert.equal(JSON.parse(await fs.readFile(file, 'utf8')).entries['youtube:abc'].metadata.ratio, 9 / 16)
 })
+
+test('YouTube cache refreshes before 30 days and drops expired facts even on failure or when unreferenced', async t => {
+  const root = await fixture(t)
+  const now = Date.now()
+  await fs.writeFile(path.join(root, 'content/a.md'), 'vid: https://youtu.be/abc')
+  let calls = 0
+  const fetchImpl = async () => { calls++; return { ok: true, text: async () => JSON.stringify({ title: 'Current title' }) } }
+  const run = options => refreshVideoMetadata({ projectRoot: root, now, fetchImpl, logger: null, ...options })
+  await run()
+  const file = path.join(root, 'data/video_metadata.json')
+  const cache = JSON.parse(await fs.readFile(file, 'utf8'))
+  cache.entries['youtube:abc'].overrides = { name: 'Authored title' }
+  cache.entries['youtube:unused'] = { fetchedAt: new Date(now - 31 * 86400000).toISOString(), metadata: { name: 'Expired' } }
+  await fs.writeFile(file, JSON.stringify(cache))
+  await run()
+  assert.equal(calls, 1)
+  assert.deepEqual(JSON.parse(await fs.readFile(file, 'utf8')).entries['youtube:unused'].metadata, {})
+  await run({ now: now + 29 * 86400000 })
+  assert.equal(calls, 2)
+  await run({ now: now + 60 * 86400000, fetchImpl: async () => { throw new Error('Offline') } })
+  const expired = JSON.parse(await fs.readFile(file, 'utf8')).entries['youtube:abc']
+  assert.deepEqual(expired.metadata, {})
+  assert.equal(expired.overrides.name, 'Authored title')
+})

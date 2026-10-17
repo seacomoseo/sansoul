@@ -192,3 +192,33 @@ Evidencia temporal: `/private/tmp/sansoul-video-cms-20261017/`, incluidos
 `browser-date-seconds-save.json`, `cms-date-saved.png` y `cms-icons-media.png`.
 Las pruebas usaron copias aisladas y el servidor de desarrollo de Loren siguió
 activo; no se modificaron sus datos con los guardados del navegador.
+
+## Auditoría general y entrega de recursos — 17 de octubre
+
+La segunda tanda añadió inserción de CSS autocontenido de hasta 1 KiB en su
+posición de cascada, carga diferida del receptor de preview y cabeceras para
+recursos con hash. Se corrigieron listas por fechas, búsqueda, cargadores,
+consentimiento de vídeo/GA4, formularios condicionales, rango, accesibilidad de
+menú/FAQ, datos remotos falsy y datos estructurados. Véase el
+[informe completo](audit-2026-10-17.md) para cambios, propuestas y límites.
+
+`sh do check` completó **146/146 pruebas** y build con Hugo 0.168 en copia
+aislada. El ejemplo canónico compiló con Hugo 0.164. Se comprobaron 112 archivos
+JavaScript y 92 dependencias sin vulnerabilidades conocidas según `pnpm audit`.
+El corpus público de 42 HTML, 2 XML y 9 SVG pasó los controles propios de parseo,
+referencias locales, IDs, imágenes y JSON-LD. Nu se ejecutó también sobre CSS y
+SVG: detectó un selector de archivo incorrecto que se corrigió, pero conserva
+diagnósticos de sintaxis moderna; no se declara conformidad W3C completa.
+
+La matriz visual de esta tanda sigue pendiente. El navegador denegó el origen
+local por permiso persistente incluso después de que Loren autorizara las
+pruebas. No se usaron otras superficies para eludirlo. No hay PageSpeed, prueba
+real de Rich Results, despliegue ni verificación de indexación de esta versión.
+Las pruebas anteriores del CMS no sustituyen esa revisión visual. Tampoco se
+ha obtenido el ratio mediante una llamada autenticada a YouTube: falta una
+clave disponible en el entorno. El TTL se verificó con respuestas simuladas y
+no programa renovación ni purga el historial Git.
+
+Evidencia temporal: `/private/tmp/sansoul-audit-20261017/`, especialmente
+`check-final.log`, `consumer-final-build.log`, `example-hugo164.log`,
+`site-audit.json`, `vnu-typed.json` y `dependencies-audit.json`.

@@ -1,52 +1,45 @@
-{{/*  URL  */}}
-{{ $img := "" }}
-
-{{ $src := .Params.img }}
+{{/*
+Partial: schema/img-main
+Purpose: Describe the page image or logo using a real URL and known dimensions.
+Context: Page-like map with Params and Permalink; optional Title and Lang.
+Returns: ImageObject; unknown dimensions are omitted.
+Side effects: Publishes a referenced local image; never fetches remote images.
+*/}}
+{{ $src := .Params.img | default "" }}
 {{ if not $src }}
-  {{ with .Params.imgs }}
-    {{ $src := index . 0 }}
-  {{ end }}
+  {{ with .Params.imgs }}{{ $src = index . 0 }}{{ end }}
 {{ end }}
-
-{{ $out := hasPrefix $src "http" }}
+{{ if not $src }}{{ $src = partial "func/logo" . }}{{ end }}
 {{ if $src }}
-  {{ $src := partial "func/check-media" $src }}
-{{ else }}
-  {{ $src = partial "func/logo" . }}
+  {{ $src = partial "func/check-media" $src }}
+  {{ if partial "func/is-vid" $src }}{{ $src = partial "func/poster" $src }}{{ end }}
 {{ end }}
 
-{{ if $src }}
-  {{ if partial "func/is-vid" $src }}
-    {{ $src = partial "func/poster" $src }}
-  {{ end }}
-{{ end }}
-
-{{/*  Width and Height  */}}
-{{ $width  := 1280 }}
-{{ $height := 960 }}
-{{ if $img }}
-  {{ if or (hasSuffix $src ".svg") $out | not }}
-    {{ with resources.Get $src }}
-      {{ $width  = .Width }}
-      {{ $height = .Height }}
+{{ $img := "" }}
+{{ $width := 0 }}
+{{ $height := 0 }}
+{{ with $src }}
+  {{ $img = absURL . }}
+  {{ if not (hasPrefix . "http") }}
+    {{ with resources.Get (urls.Parse .).Path }}
+      {{ $img = .Permalink }}
+      {{ if eq .ResourceType "image" }}
+        {{ if ne .MediaType.SubType "svg" }}
+          {{ $width = .Width }}{{ $height = .Height }}
+        {{ end }}
+      {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}
 
-{{/*  Caption  */}}
-{{ $caption := or .Params.alt .Params.seo.title .Title }}
-
-{{/*  Schema  */}}
 {{ $schema := dict
-  "@type"      "ImageObject"
-  "@id"        (print .Permalink "#schema-img")
-  "url"        $img
+  "@type" "ImageObject"
+  "@id" (print .Permalink "#schema-img")
+  "url" $img
   "contentUrl" $img
-  "width"      $width
-  "height"     $height
-  "caption"    $caption
+  "width" $width
+  "height" $height
+  "caption" (or .Params.alt .Params.seo.title .Title)
   "inLanguage" (or .Params.locale .Lang)
 }}
-{{ $schema = partial "func/obj-truly" $schema }}
-
-{{ return $schema }}
+{{ return (partial "func/obj-truly" $schema) }}

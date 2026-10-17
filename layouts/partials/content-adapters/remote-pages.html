@@ -50,16 +50,16 @@ Side effects: Fetches remote resources through resources.GetRemote.
                 {{ end }}
               {{ end }}
 
-              {{ if ne .def nil }}
+              {{ if and (eq $value nil) (ne .def nil) }}
                 {{ $default := partial "func/str-to-kind" (dict
                   "str" .def
                   "kind" .kind
                   "sep" .sep
                 ) }}
-                {{ $value = $value | default $default }}
+                {{ $value = $default }}
               {{ end }}
 
-              {{ if $value }}
+              {{ if ne $value nil }}
                 {{ $mapped = partial "content-adapters/update-nested" (dict
                   "Dict" $mapped
                   "Keys" (split .to ".")

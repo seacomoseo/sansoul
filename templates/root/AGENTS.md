@@ -33,6 +33,10 @@ rendered page, including hidden modals. Keep dynamic states and shared selectors
 when adjusting detection. Custom/injected integrations may require full assets;
 `params.assets_full: true` in `hugo.yml` disables selection. Development retains
 the full pipeline. Text font faces remain available even when not preloaded.
+Small self-contained CSS segments can be inlined in their original order;
+`params.assets_inline_css: false` keeps external links for CSP compatibility.
+Shared JavaScript remains external. The CMS receiver loads only in a tokenized
+preview iframe; test that path when changing its bootstrap.
 
 ## Sources, outputs, and safety
 

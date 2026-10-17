@@ -51,7 +51,7 @@
                     {{- $end_hour  := $page.Params.end | time.Format "15:04" -}}
                     {{- $end_hour   = print `<time datetime="` $end_full `">` $end_hour `</time>` -}}
                     {{- $hours      = print "<i>" $date_hour "</i>" " / " $end_hour -}}
-                    {{- $date       = $date | replaceRE " - .+" "" -}}
+                    {{- $date       = partial "func/date-tag" (dict "date" $page.Date "hide_hour" true) -}}
                     {{- $ico        = .ico -}}
                     {{- $def        = "calendar" -}}
                   {{- end -}}

@@ -1,31 +1,24 @@
-</div>
 <div class="box container container--md">
-  <form
-    id="search__form"
-    class="noscript"
-    method="GET"
-    onsubmit="event.preventDefault()"
-    action="https://duckduckgo.com/?q=site:{{ site.BaseURL | urlize }}"
-  >
+  <form id="search__form" class="noscript" role="search" method="GET"
+    data-index="{{ `index.json` | relLangURL }}"
+    data-empty="{{ i18n `search_no_results` }}"
+    data-error="{{ i18n `form_submit_wrong` }}">
     <div class="search__bar box container container--sm">
-      <input id="search__input" name="q" tabindex="0" autocomplete="off" placeholder="{{ i18n `search_write` }}">
-      {{/*
-        <button id="search__submit" class="btn btn--dot" type="submit">
-          {{- partial "icon" (dict "def" "search") -}}
-        </button>
-      */}}
+      <label class="hide" for="search__input">{{ i18n `search_write` }}</label>
+      <input id="search__input" type="search" name="q" autocomplete="off" placeholder="{{ i18n `search_write` }}" aria-controls="search__results">
+      <button id="search__submit" class="btn btn--dot" type="submit" aria-label="{{ i18n `search_write` }}">
+        {{- partial "icon" (dict "def" "search") -}}
+      </button>
     </div>
-    {{- $list  := hugo.Data.types.all.tpl.list -}}
+    {{- $list := hugo.Data.types.all.tpl.list -}}
     {{- $class := print "boxes boxes--cols-" ($list.cols | default 3) -}}
-    {{- with $list.cols_vs }}
-      {{- $class = print $class " boxes--vs-" . -}}
-    {{- end -}}
+    {{- with $list.cols_vs }}{{ $class = print $class " boxes--vs-" . }}{{ end -}}
+    <p id="search__status" role="status" aria-live="polite"></p>
     <div id="search__results" class="{{ $class }}"></div>
   </form>
   <script src="{{ `/js/fuse.js` | relURL }}" defer></script>
-  {{ $js := resources.Get "/js/fixedsearch.js"
-    | resources.ExecuteAsTemplate "js/fixedsearch.js" .
-  }}
+  {{ $js := resources.Get "/js/fixedsearch.js" }}
   {{ if hugo.IsProduction }}{{ $js = $js | minify }}{{ end }}
   {{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/fixedsearch.js") }}
   <script src="{{ $js.RelPermalink }}" defer></script>
+</div>

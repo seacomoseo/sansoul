@@ -1,11 +1,20 @@
 {{/*
 Partial: files/style-links
-Purpose: Render ordered stylesheet links; the preload state ends only after every sheet loads.
+Purpose: Render ordered CSS, inlining small self-contained segments without changing the cascade.
 Context: Slice of CSS resources.
-Renders: Blocking stylesheet links. All cascade segments must be ready before first paint.
+Renders: Style blocks up to 1024 bytes, or blocking links. params.assets_inline_css=false keeps all links.
 Side effects: None.
 */}}
+{{- $inline := true -}}
+{{- if isset site.Params "assets_inline_css" -}}{{- $inline = site.Params.assets_inline_css -}}{{- end -}}
 {{- range . -}}
+{{- $content := .Content -}}
+{{- /* Relative CSS references change meaning inside HTML. Keep every URL-bearing or escaped segment external instead of guessing its syntax or base. */ -}}
+{{- $external := findRE `(?i)url\s*\(|(?:-webkit-)?image-set\s*\(|src\s*\(|@import|\\|</style` $content -}}
+{{- if and $inline (le (len $content) 1024) (not $external) -}}
+<style data-sansoul-css="{{ .RelPermalink }}">{{ $content | safeCSS }}</style>
+{{- else -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}">
+{{- end -}}
 {{- end -}}
 <script>document.documentElement.classList.remove('preload')</script>

@@ -109,6 +109,7 @@ object
         {{ $sum := dict
           "url"          .RelPermalink
           "title"        .Title
+          "lock"         (.Params.seo.noindex | default false)
           "img"          $img
           "sum"          $sum
           "content"      $contents

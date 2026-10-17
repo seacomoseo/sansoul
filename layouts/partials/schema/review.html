@@ -18,25 +18,28 @@
       "ratingValue" $rating
       "bestRating"  5
   }}
+  {{ $published := "" }}
   {{ with .date }}
     {{ $date := dateFormat "2006-01-02T15:04:05Z07:00" . | replaceRE `T00.00.00[-+]\d\d.00` "" }}
-    {{ $rr    = merge $rr (dict "datePublished" $date) }}
+    {{ $published = $date }}
   {{ end }}
-  {{ $schemas = $schemas | append (dict
+  {{ $review := dict
     "@type"        "Review"
     "author"       (dict
       "@type" "Person"
       "name"  .title
     )
     "reviewBody"   (.md | markdownify | plainify)
+    "datePublished" $published
     "itemReviewed" $item_reviewed
     "reviewRating" $rr
-  ) }}
+  }}
+  {{ $schemas = $schemas | append (partial "func/obj-truly" $review) }}
 {{ end }}
 
 {{ $rating_avg  := 0 }}
 {{ with $ratings }}
-  {{ $rating_avg = div $sum (len .) | mul 100 | math.Round }}
+  {{ $rating_avg = div (float $sum) (len .) | mul 100 | math.Round }}
   {{ $rating_avg = div $rating_avg 100 }}
 {{ end }}
 

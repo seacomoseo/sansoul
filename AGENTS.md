@@ -174,6 +174,9 @@ preserve the compiled cascade exactly and must not duplicate Sass side effects. 
 initializer sharing an optional module before pruning it. Use distinct resource
 paths derived from complete source/options; shared temporary names can mix pages.
 Keep development complete and preserve conservative custom-integration fallback.
+Small CSS segments may be inlined only in their original cascade position;
+retain the central opt-out and keep relative-resource segments external.
+The full CMS receiver is loaded by a same-origin, token-gated bootstrap.
 
 ## SCSS practices
 

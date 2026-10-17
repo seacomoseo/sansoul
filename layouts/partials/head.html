@@ -38,12 +38,12 @@
 
 {{- /*  OPEN GRAPH  */}}
 <meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ $title }}">
 <meta property="og:logo" content="{{ $logo }}">
 {{- if .IsHome }}
   <meta property="og:type" content="website">
 {{- else }}
   <meta property="og:type" content="article">
-  <meta property="og:title" content="{{ $title }}">
   {{- if eq .Params.base "article" }}
     {{ with .Date }}<meta property="article:published_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}">{{ end }}
     {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}">{{ end }}
@@ -102,10 +102,7 @@
     {{- if $config.ga4_pagespeed_hide -}}
       {{- $isPs = "${navigator.userAgent.includes('Chrome-Lighthouse')}" -}}
     {{- end -}}
-    {{- $isCk := "true" -}}
-    {{- if $config.cookies_legal -}}
-      {{- $isCk = "${localStorage.controlcookieanalytics}" -}}
-    {{- end }}
+
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
     <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
     <script>
@@ -114,6 +111,7 @@
       function gtag(){dataLayer.push(arguments);}
       // GA4 function
       function googleAnalytics() {
+        window['ga-disable-{{ . }}'] = false;
         if (!document.querySelector(`script[src*="gtag/js?id={{ . }}"]`)) {
           // Load GA4 script
           var ga = document.createElement('script');
@@ -128,7 +126,11 @@
       // If is not bot and if cookies law
       const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(navigator.userAgent)
       const isPs = `{{ $isPs }}` === 'true'
-      const isCk = `{{ $isCk }}` === 'true'
+      const isCk = {{ if $config.cookies_legal }}/^(?:true|[1-9][0-9]*)$/.test(localStorage.getItem('controlcookieanalytics') || ''){{ else }}true{{ end }}
+      window['ga-disable-{{ . }}'] = !isCk
+      window.addEventListener('cookies:changed', event => {
+        if (typeof event.detail?.analytics === 'boolean') window['ga-disable-{{ . }}'] = !event.detail.analytics
+      })
       if (!isBot && !isPs && isCk) googleAnalytics()
     </script>
   {{- end -}}

@@ -76,6 +76,21 @@
         {{ end }}
       {{ end }}
 
+      {{/* Author filters apply before pagination on collection indexes too. */}}
+      {{ $taxonomies := slice }}
+      {{ range site.Sections }}
+        {{ range .Params.taxonomies }}{{ $taxonomies = $taxonomies | append . }}{{ end }}
+      {{ end }}
+      {{ range uniq $taxonomies }}
+        {{ $taxonomy := . }}
+        {{ with index $list .name }}
+          {{ $filenames := slice | append . }}
+          {{ $pages = where $pages (print "Params." $taxonomy.name) (cond (not $taxonomy.multi) "in" "intersect") $filenames }}
+        {{ end }}
+      {{ end }}
+      {{ with $list.date }}{{ $pages = where $pages "Date" "ge" (time .) }}{{ end }}
+      {{ with $list.end }}{{ $pages = where $pages "Date" "le" (time .) }}{{ end }}
+
       {{ if and page.IsSection (eq (len $types) 1) (ne $type "rel") }}
         {{/* PAGE PARENT  */}}
         {{ $after_pages = (page.Paginate $pages $max).Pages }}
@@ -89,29 +104,6 @@
         }}
       {{ else }}
         {{/* PAGE RESTS  */}}
-        {{/* All taxonomies  */}}
-        {{ $taxonomies  := slice }}
-        {{ range site.Sections }}
-          {{ range .Params.taxonomies }}
-            {{ $taxonomies = $taxonomies | append . }}
-          {{ end }}
-        {{ end }}
-        {{/* Filter by taxonomies  */}}
-        {{/* {{ range $parent.Params.taxonomies }}  */}}
-        {{ range uniq $taxonomies }}
-          {{ $filenames := index $list .name }}
-          {{ if $filenames }}
-            {{ $filenames = slice | append $filenames }}
-            {{ $pages = where $pages (print "Params." .name) (cond (not .multi) "in" "intersect") $filenames }}
-          {{ end }}
-        {{ end }}
-        {{/* Filter by date  */}}
-        {{ with $list.date }}
-          {{ $pages = where $pages "Date" "le" (time .) }}
-        {{ end }}
-        {{ with $list.end }}
-          {{ $pages = where $pages "Date" "ge" (time .) }}
-        {{ end }}
         {{/* Maximum number of pages  */}}
         {{/* If $max < 0 use last with |$max|; if not, use first */}}
         {{ $_max_ := int (math.Abs $max) }}

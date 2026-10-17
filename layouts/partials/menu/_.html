@@ -51,11 +51,11 @@
     {{- if $items -}}
 
       {{- /*  MENU TOGGLE  */}}
-      <button type="button" class="menu__toggle btn btn--dot">
+      <button type="button" class="menu__toggle btn btn--dot" aria-controls="menu" aria-expanded="false" aria-label="{{ i18n `menu` }}">
         {{- "" }}<i class="menu__toggle-bar"></i>
         {{- "" }}<i class="menu__toggle-bar"></i>
         {{- "" }}<i class="menu__toggle-bar"></i>
-        {{- "" }}<b>{{ i18n "scroll_up" }}</b>
+        {{- "" }}<b>{{ i18n "menu" }}</b>
         {{- "" -}}
       </button>
 
@@ -76,7 +76,7 @@
       {{- end -}}
 
       {{- /*  NAV  */}}
-      <nav id="menu" class="{{ $menu_class }}" hidden="until-found">
+      <nav id="menu" class="{{ $menu_class }}" tabindex="-1" aria-label="{{ i18n `menu` }}" hidden="until-found">
         <div class="{{ $box_class }}">
 
           {{- /*  HEADER  */}}

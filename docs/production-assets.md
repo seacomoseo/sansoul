@@ -29,6 +29,31 @@ impide instalar dos veces los inicializadores de la entrada.
 
 ## CSS y cascada
 
+Los segmentos autocontenidos de hasta **1.024 bytes** se insertan en `<style>`
+en la misma posición que su enlace. Se conservan selectores, origen y orden;
+no son atributos `style=` y no aumentan la especificidad. Cualquier segmento
+con referencias `url()`, imports o escapes se mantiene externo para conservar
+la base de sus recursos. `params.assets_inline_css: false` mantiene todos los
+enlaces, por ejemplo para una CSP que no permita nuevos bloques inline.
+La exclusividad de una página no justifica insertar una hoja grande.
+
+El receptor de preview usa un bootstrap pequeño: sólo se descarga su módulo
+con hash dentro de un iframe con token. Una visita normal no lo pide.
+Los chunks de producción y el receptor con hash tienen reglas `immutable` en
+`_headers`; la cabecera efectiva queda pendiente de comprobar tras un despliegue.
+
+En la misma fixture de inicio, el cambio elimina cinco peticiones CSS y una
+del receptor. HTML + CSS externo + receptor pasan de **40.786 a 34.964 B gzip**
+(−5.822 B); esta suma excluye el JS común y las fuentes. El HTML crece de 8.144
+a 9.132 B gzip. Es una comparación de bytes, no una puntuación de PageSpeed.
+En visitas repetidas, los segmentos inline vuelven a viajar con el documento;
+los grandes siguen aprovechando la caché compartida.
+
+Los módulos JS siguen externos. Insertar una entrada con imports relativos
+cambiaría su base a la del documento y también puede cambiar la ejecución de
+scripts clásicos. Una futura optimización debe resolver esas rutas y comprobar
+subrutas, CSP, caché y orden; no se decide sólo por tamaño.
+
 El grafo Sass selectivo se compila **una sola vez por configuración**. Antes se
 marcan los límites entre grupos contiguos de `@use` utilizados por las mismas
 páginas; después se separa el CSS compilado en esos límites. El HTML enlaza los
@@ -109,6 +134,10 @@ presentes en cada sitio. El CSS y JS completos del preview no se descargan en la
 visita pública normal.
 
 ## Verificación
+
+`scripts/tests/asset-delivery.test.js` comprueba el orden CSS exacto entre
+segmentos inline y externos, referencias relativas, subrutas, el flag de
+desactivación, las reglas de caché y la descarga condicional del receptor.
 
 `node --test scripts/tests/production-assets.test.js`, desde el motor, usa Hugo
 real en un consumidor temporal, con fuentes locales para evitar depender de la

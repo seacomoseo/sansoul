@@ -16,6 +16,7 @@ Este es el manual humano para mantener ese código compartido. Para crear o edit
 - [Instrucciones para agentes del tema](AGENTS.md)
 - [Plantillas de los archivos raíz](templates/root/)
 - [Migraciones para proyectos consumidores](MIGRATIONS.md)
+- [Auditoría del 17 de octubre de 2026: resultados y propuestas](docs/audit-2026-10-17.md)
 - [Ejemplos y chuletas](./_examples/README.md)
 - [Proyecto base](https://github.com/seacomoseo/sansoul.es)
 

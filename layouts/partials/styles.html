@@ -136,4 +136,17 @@ Side effects: Publishes CSS; stores the ordered resource list in sansoul.assets.
   {{ $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/styles.css") }}
   {{ page.Store.Set "sansoul.assets.styles" (slice $css) }}
 {{ end }}
+{{ if page.Store.Get "sansoul.divider-demo" }}
+  {{ $demo := resources.Get "css/divider-demo.css" | minify }}
+  {{ if and hugo.IsProduction (not $usage.full) }}
+    {{ $demo = partial "func/publish-content-resource" (dict "resource" $demo "target" "css/styles-dividers.css") }}
+    {{ $sheets := page.Store.Get "sansoul.assets.styles" }}
+    {{ page.Store.Set "sansoul.assets.styles" ($sheets | append $demo) }}
+  {{ else }}
+    {{ $target := print "css/styles-dividers-" (substr (sha256 $css.Content) 0 12) ".css" }}
+    {{ $css = slice $css $demo | resources.Concat $target }}
+    {{ $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/styles.css") }}
+    {{ page.Store.Set "sansoul.assets.styles" (slice $css) }}
+  {{ end }}
+{{ end }}
 {{ return $css }}

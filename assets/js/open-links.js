@@ -22,7 +22,7 @@ export function initOpenLinks () {
         if (isCurrentPage) {
           const hash = url.split('#')[1]
           const target = document.getElementById(hash)
-          if (!target.classList.contains('modal')) {
+          if (target && !target.classList.contains('modal')) {
             scrollTo(target)
           }
           location.hash = hash
@@ -69,5 +69,11 @@ export function initOpenLinks () {
   })
 
   // BODY KEY ENTER LIKE CLICK
-  document.addEventListener('keydown', e => e.key === 'Enter' && document.activeElement.click())
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || e.repeat) return
+    const link = e.target.closest('[role="link"][data-h], [role="link"][data-b]')
+    if (!link || e.target !== link || link.matches('a, button, input, select, textarea')) return
+    e.preventDefault()
+    link.click()
+  })
 }

@@ -4,6 +4,13 @@ import { waitCSS } from './wait-css'
 const menu = document.querySelector('.menu')
 const menuSticky = document.querySelector('.body-menu--sticky')
 const menuStickyAuto = document.querySelector('.body-menu--sticky--auto')
+let initialized = false
+let closeTimer
+
+function setExpanded (expanded) {
+  document.querySelector('.menu__toggle')?.setAttribute('aria-expanded', String(expanded))
+}
+
 const menuNoStickyVisibility = () => !menuSticky || screenSticky()
 
 function screenSticky () {
@@ -39,6 +46,8 @@ function screenSticky () {
 }
 
 function menuOpen () {
+  clearTimeout(closeTimer)
+  setExpanded(true)
   menu.removeAttribute('hidden')
   menu.focus()
   document.documentElement.classList.add('menu__active')
@@ -47,23 +56,29 @@ function menuOpen () {
 function menuClose () {
   const menuSticky = document.querySelector('.body-menu--sticky--active')
   if (!menuSticky) {
+    setExpanded(false)
+    if (menu.contains(document.activeElement)) document.querySelector('.menu__toggle')?.focus()
     document.documentElement.classList.remove('menu__active')
-    setTimeout(() => { menu.setAttribute('hidden', 'until-found') }, 300)
+    clearTimeout(closeTimer)
+    closeTimer = setTimeout(() => { menu.setAttribute('hidden', 'until-found') }, 300)
   }
 }
 
 function menuToggle () {
-  const isMenuClose = menu.getAttribute('hidden') === 'until-found'
+  const isMenuClose = !document.documentElement.classList.contains('menu__active')
   isMenuClose ? menuOpen() : menuClose()
 }
 
 function menuSetVisibility () {
+  clearTimeout(closeTimer)
   document.documentElement.classList.remove('menu__active') // Close without hidden
   if (menuNoStickyVisibility()) {
     menu.setAttribute('hidden', 'until-found')
+    setExpanded(false)
     document.body.classList.remove('body-menu--sticky--active')
   } else {
     menu.removeAttribute('hidden')
+    setExpanded(true)
     document.body.classList.add('body-menu--sticky--active')
   }
 }
@@ -79,7 +94,8 @@ function setupListeners () {
 }
 
 export function initMenuToggle () {
-  if (!menu) return
+  if (!menu || initialized) return
+  initialized = true
 
   document.addEventListener('click', e => {
     const menuToggleBtn = e.target.closest('.menu__toggle')

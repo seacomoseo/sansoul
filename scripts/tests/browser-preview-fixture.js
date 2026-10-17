@@ -9,7 +9,7 @@ const destination = path.resolve(process.argv[2] || '')
 if (!destination.startsWith('/private/tmp/sansoul-preview-') || existsSync(destination)) throw new Error('Choose a new /private/tmp/sansoul-preview-* snapshot directory.')
 const source = path.join(root, 'public')
 const cms = readFileSync(path.join(source, 'admin/index.html'), 'utf8')
-if (!existsSync(path.join(source, 'js/preview-receiver.js'))) throw new Error('Compile the consumer with the current CMS preview integration first.')
+if (!readdirSync(path.join(source, 'js')).some(name => /^preview-receiver\.[a-f0-9]{12}\.js$/.test(name))) throw new Error('Compile the consumer with the current CMS preview integration first.')
 const configHref = cms.match(/<link[^>]+href="([^"]+)"[^>]+rel="cms-config-url"/)?.[1] || cms.match(/<link[^>]+rel="cms-config-url"[^>]+href="([^"]+)"/)?.[1]
 if (!configHref) throw new Error('Cannot find the generated CMS configuration URL.')
 const configPath = path.join(source, new URL(configHref, 'http://localhost').pathname)
