@@ -417,6 +417,10 @@ change when the same source tree is mounted into content, assets, and data.
 {{ if $content_mounts }}
   {{ $obj = merge $obj (dict "module" (dict "mounts" $content_mounts)) }}
 {{ end }}
+{{/* The wrapper selects the generator before Hugo needs the main theme. */}}
+{{ with site.Params.mainTheme }}
+  {{ $obj = merge $obj (dict "themesDir" .themesdir "theme" .theme) }}
+{{ end }}
 
 {{/*  file  */}}
 {{/* Detach shared Hugo map nodes before YAML serialization. */}}

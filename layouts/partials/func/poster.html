@@ -1,33 +1,26 @@
-{{ $img := "" }}
-
-{{ with . | findRESubmatch `(?i)[#&?]poster=([^#&]+)` }}
-  {{ $img = index . 0 1 }}
-  {{ $img = partial "func/check-media" $img }}
-{{ end }}
-
-{{ if not $img }}
-  {{ with . | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtube.com/shorts/|youtu\.be/)([\w-]+)` }}
-    {{ $id := index . 0 1 }}
-    {{ $img = print "https://i3.ytimg.com/vi_webp/" $id "/sddefault.webp" }}
-  {{ else with . | findRESubmatch `vimeo\.com/(?:video/)?([^#&]+)` }}
-    {{ $id  := index . 0 1 }}
-    {{ $url := print "http://vimeo.com/api/v2/video/" $id ".json" }}
-    {{ with partial "func/get-remote" $url }}
-      {{ with unmarshal . }}
-        {{ $img = index . 0 "thumbnail_large" }}
-      {{ end }}
-    {{ end }}
-  {{ else with . | findRESubmatch `(?i)^(.+)\.(?:mp4|mov|avi|webm)` }}
-    {{ $stem := index . 0 1 }}
-    {{ $out  := hasPrefix $stem "http" }}
-    {{ if not $out }}
-      {{ $path := print $stem ".{jpg,jpeg,png,gif,webp,svg}" }}
-      {{ $src  := resources.GetMatch $path }}
-      {{ with $src }}
-        {{ $img = $src.RelPermalink }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-{{ end }}
-
-{{ return $img }}
+{{/*
+Partial: func/poster
+Purpose: Resolve an explicit poster, sibling image, cached first frame/provider
+thumbnail, or public YouTube thumbnail. No video or remote image is downloaded.
+Context: string; video URL.
+Returns: Poster URL or empty string.
+Side effects: None.
+*/}}
+{{- $img := "" -}}
+{{- with . | findRESubmatch `(?i)[#&?]poster=([^#&]+)` -}}
+  {{- $img = index . 0 1 -}}
+  {{- if and (not (hasPrefix $img "http")) (not (strings.Contains (replaceRE `%[0-9a-fA-F]{2}` "" $img) "%")) -}}{{- $img = (urls.Parse $img).Path -}}{{- end -}}
+{{- end -}}
+{{- if not $img -}}
+  {{- with . | findRESubmatch `(?i)^(/u/.+)\.(?:mp4|mov|avi|webm)(?:[?#]|$)` -}}
+    {{- $stem := (urls.Parse (index . 0 1)).Path -}}
+    {{- with resources.GetMatch (print $stem ".{jpg,jpeg,png,gif,webp,svg}") -}}{{- $img = .RelPermalink -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $img -}}{{- $img = (partial "func/video-metadata" .).thumbnailUrl | default "" -}}{{- end -}}
+{{- if not $img -}}
+  {{- with . | findRESubmatch `(?i)^https?://(?:(?:www\.|m\.)?youtube(?:-nocookie)?\.com/(?:watch[^#]*?[?&]v=|shorts/|embed/)|youtu\.be/)([\w-]+)` -}}
+    {{- $img = print "https://i3.ytimg.com/vi_webp/" (index . 0 1) "/sddefault.webp" -}}
+  {{- end -}}
+{{- end -}}
+{{- return $img -}}

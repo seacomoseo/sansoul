@@ -1,0 +1,81 @@
+{{/*
+Partial: files/style-groups
+Purpose: Compile the complete Sass graph once, then share contiguous cascade segments by page usage.
+Context: Map with resource (SCSS), options (toCSS options), usage (current page's component flags).
+Returns: Ordered CSS resources used by this page. Dependencies and shared custom properties emit only once.
+Side effects: Publishes content-addressed segments; caches the plan by source, variables and rendered usage.
+Contract: Called after all HTML pages register sansoul.assets.pages, inside templates.Defer.
+*/}}
+{{ $source := .resource.Content }}
+{{ $options := .options }}
+{{ $pages := hugo.Store.Get "sansoul.assets.pages" | default dict }}
+{{ $key := sha256 (print $source "|" (jsonify $options) "|" (jsonify $pages)) }}
+{{ $plans := hugo.Store.Get "sansoul.assets.style-plan" | default dict }}
+{{ $segments := index $plans $key | default (slice) }}
+{{ if not $segments }}
+  {{ $optional := dict
+    "css/vendors/_simple-lightbox" "lightbox"
+    "css/boxes/_slider" "slider"
+    "css/boxes/blocks/_gallery" "gallery"
+    "css/boxes/blocks/_steps" "steps"
+    "css/boxes/blocks/_faq" "faq"
+    "css/boxes/blocks/_reviews" "review"
+    "css/boxes/blocks/_links" "links"
+    "css/boxes/blocks/_form" "form"
+    "css/boxes/blocks/_map" "map"
+    "css/boxes/blocks/_gss" "gss"
+    "css/mods/_404" "error"
+    "css/mods/_crumbs" "crumbs"
+    "css/mods/_toc" "toc"
+    "css/mods/_comments" "comments"
+    "css/others/_lightbox" "lightbox"
+    "css/others/_google-translate" "translate"
+    "css/others/_search" "search"
+  }}
+  {{ $groups := slice }}
+  {{ $last_signature := "" }}
+  {{ $group := dict }}
+  {{ range findRE `(?m)^@use '[^']+'[^;]*;` $source }}
+    {{ $statement := . }}
+    {{ $module := replaceRE `^@use '([^']+)'.*$` "$1" $statement }}
+    {{ $flag := index $optional $module | default "" }}
+    {{ $members := slice }}
+    {{ range $url, $page_usage := $pages }}
+      {{ if or (not $flag) $page_usage.full (index $page_usage.flags $flag) }}{{ $members = $members | append $url }}{{ end }}
+    {{ end }}
+    {{ $signature := jsonify ($members | sort) }}
+    {{ if ne $signature $last_signature }}
+      {{ if $group }}{{ $groups = $groups | append $group }}{{ end }}
+      {{ $group = dict "members" $members "statements" (slice $statement) }}
+    {{ else }}
+      {{ $group = merge $group (dict "statements" ($group.statements | append $statement)) }}
+    {{ end }}
+    {{ $last_signature = $signature }}
+  {{ end }}
+  {{ if $group }}{{ $groups = $groups | append $group }}{{ end }}
+  {{/* Preserved comments are Sass-safe between @use statements and survive compression. */}}
+  {{ $marked := slice }}
+  {{ range $i, $item := $groups }}
+    {{ $marked = $marked | append (printf "/*!SANSOUL_SEGMENT_%d*/\n%s" $i (delimit $item.statements "\n")) }}
+  {{ end }}
+  {{ $compile_key := substr (sha256 (print (delimit $marked "\n") "|" (jsonify $options))) 0 12 }}
+  {{ $options = merge $options (dict "targetPath" (print "css/grouped-build-" $compile_key ".css")) }}
+  {{ $compiled := resources.FromString (print "sansoul-grouped-" $compile_key ".scss") (delimit $marked "\n") | toCSS $options }}
+  {{ $parts := split $compiled.Content "/*!SANSOUL_SEGMENT_" }}
+  {{ range after 1 $parts }}
+    {{ $number := index (split . "*/") 0 | int }}
+    {{ $content := replaceRE `^\d+\*/` "" . | strings.TrimSpace }}
+    {{ $item := index $groups $number }}
+    {{ if and $content $item.members }}
+      {{ $resource := resources.FromString (print "css/segment-build-" $compile_key "-" $number ".css") $content | minify }}
+      {{ $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" "css/styles.css") }}
+      {{ $segments = $segments | append (dict "members" $item.members "resource" $resource) }}
+    {{ end }}
+  {{ end }}
+  {{ hugo.Store.SetInMap "sansoul.assets.style-plan" $key $segments }}
+{{ end }}
+{{ $styles := slice }}
+{{ range $segments }}
+  {{ if in .members page.RelPermalink }}{{ $styles = $styles | append .resource }}{{ end }}
+{{ end }}
+{{ return $styles }}

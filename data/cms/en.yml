@@ -497,8 +497,6 @@ name: Name
 name_hint: File name
 id: ID
 id_hint: Identifier for anchor links <br> Must be unique (not repeated) among all sections and boxes <br> Short <br> Descriptive <br> Without irrelevant words (of, by, for, the…) <br> **Example →** frequently-asked-questions
-view: View
-view_hint: Groups of options to display
 title: Title
 hanchor: Hidden Title
 hanchor_hint: Header and Hidden Anchor/Anchor to have the title (and menu if linked) for SEO
@@ -638,6 +636,19 @@ alt: Image Alternative Text
 hover_alt: Alternative Image Alternative Text
 vid: Video
 vid_hint: Supports YouTube and Vimeo URLs <br> **Thumbnail →** in the corresponding field above <br> **Start and end marks →** Can be set in seconds by adding ‘#t=2,7’ or ‘#t=2’ to the end of the URL
+vid_width: Video Width
+vid_width_hint: Known dimension in pixels; cached metadata is used when omitted.
+vid_height: Video Height
+vid_height_hint: Known dimension in pixels; cached metadata is used when omitted.
+vid_duration: Video Duration
+vid_duration_hint: ISO 8601 duration, such as PT12S or PT1M30S; cached metadata is used when omitted.
+vid_upload: Video Publication
+vid_upload_hint: Actual publication time in UTC. Stored as YYYY-MM-DD HH:mm:ss; cached metadata is used when omitted.
+vid_title: Video Title
+vid_title_hint: Overrides the video title used in metadata.
+vid_desc: Video Description
+vid_desc_hint: Overrides the video description used in metadata.
+
 mute: Autoplay Video
 mute_hint: Muted video that loop and auto-plays
 ratio: Image Ratio
@@ -672,10 +683,14 @@ bi: Background Image
 alpha: Background Image Transparency
 scroll: Parallax
 scroll_hint: Applies a scrolling effect
-pt: Top Padding Max
-pt_vs: Top Padding Min
-pb: Bottom Padding Max
-pb_vs: Bottom Padding Min
+pt: Top Padding
+pt_hint: Base value. If omitted, uses the large viewport value; if both are absent, uses the default.
+pt_vl: Top Padding in Large Viewports
+pt_vl_hint: Interpolates from the base value. If omitted, uses the base value.
+pb: Bottom Padding
+pb_hint: Base value. If omitted, uses the large viewport value; if both are absent, uses the default.
+pb_vl: Bottom Padding in Large Viewports
+pb_vl_hint: Interpolates from the base value. If omitted, uses the base value.
 ph: Hide Padding
 size: Container Size
 size_hint: Default → **Large** for Sections and Menu, **Small** for Modals
@@ -1010,6 +1025,7 @@ opt-color-such: Similar (Dark or Light depending on background)
 opt-color-whatsapp: WhatsApp
 opt-color-none: No Color (simple link type)
 opt-color-hide: Hide
+opt-color-float: Floating
 opt-scroll-none: Disabled
 opt-scroll-fix: Fixed in Background
 opt-scroll-soft: Soft in Background
@@ -1053,9 +1069,6 @@ opt-duo-2: text → photo → photo → text (T-F-F-T)
 opt-pips-line: Lines
 opt-pips-dot: Dots
 opt-pips-hide: Hide
-opt-arrows-bottom: Bottom
-opt-arrows-float: Floating
-opt-arrows-hide: Hide
 opt-sizes-xs: Extra Small
 opt-sizes-sm: Small
 opt-sizes-md: Medium
@@ -1081,31 +1094,31 @@ opt-tile-hybrid: Hybrid
 opt-labels-in: In
 opt-labels-out: Out
 opt-labels-both: Both
-opt-view-group: Group
-opt-view-titles: Titles
-opt-view-md: Contents
-opt-view-menu: Menu
-opt-view-icon: Icon
-opt-view-img: Image
-opt-view-btn: Button
-opt-view-bg: Background
-opt-view-paddings: Internal Margins
-opt-view-size: Size
-opt-view-divider: Divider
-opt-view-boxi: Box
-opt-view-other: Others
-opt-view-list: List
-opt-view-steps: Steps
-opt-view-faq: FAQ
-opt-view-gallery: Gallery
-opt-view-reviews: Reviews
-opt-view-when: Schedules
-opt-view-links: Links Group
-opt-view-form: Form
-opt-view-map: Map
-opt-view-gss: Google Drive Sheet
-opt-view-boxes: SubBoxes
-opt-view-modals: Modal Windows
+cms_group_layout: Group
+cms_group_titles: Titles
+cms_group_md: Contents
+cms_group_menu: Menu
+cms_group_icon: Icon
+cms_group_img: Image
+cms_group_btn: Button
+cms_group_bg: Background
+cms_group_paddings: Internal Margins
+cms_group_size: Size
+cms_group_divider: Divider
+cms_group_boxi: Box
+cms_group_other: Others
+cms_group_list: List
+cms_group_steps: Steps
+cms_group_faq: FAQ
+cms_group_gallery: Gallery
+cms_group_reviews: Reviews
+cms_group_when: Schedules
+cms_group_links: Links Group
+cms_group_form: Form
+cms_group_map: Map
+cms_group_gss: Google Drive Sheet
+cms_group_boxes: SubBoxes
+cms_group_modals: Modal Windows
 opt-tags-row: Row
 opt-tags-col: Column
 opt-sort-img: Image and Top Icon

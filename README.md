@@ -4,7 +4,11 @@
 
 SanSoul es un tema de [Hugo](https://gohugo.io/) orientado a sitios de servicios, construido alrededor de datos: tipos de contenido, secciones componibles, cajas recursivas, bloques especializados y una configuración de Sveltia CMS generada automáticamente.
 
-Este repositorio se consume normalmente como submódulo Git en `themes/sansoul/`. Es código compartido: un cambio publicado aquí puede afectar a todos los proyectos que actualicen el submódulo.
+Este repositorio se consume normalmente como submódulo Git en `core/`. Es código compartido: un cambio publicado aquí puede afectar a todos los proyectos que actualicen el submódulo.
+
+Los consumidores existentes pueden mantener `themes/sansoul/`; los comandos y
+la generación de documentos resuelven la ubicación instalada. La referencia
+copiable usa `core/`. Consulta la [migración de ruta](docs/core-migration.md).
 
 Este es el manual humano para mantener ese código compartido. Para crear o editar un sitio consumidor, empieza por [`README-ROOT.md`](README-ROOT.md); el contrato operativo raíz se genera desde `templates/root/AGENTS.md`.
 
@@ -25,11 +29,17 @@ Desde la raíz del proyecto:
 
 ```sh
 git submodule update --init --recursive
-npm ci
-sh do server
+# En consumidores con pnpm; para npm usa npm ci.
+pnpm install --frozen-lockfile
+sh do dev
 ```
 
 La compilación completa se ejecuta con `sh do hugo`.
+La versión de pnpm debe coincidir con `packageManager` del consumidor. La
+referencia usa un almacén compartido de contenido y virtual store por proyecto;
+el tema sigue admitiendo consumidores con npm. Consulta
+[`docs/development-dependencies.md`](docs/development-dependencies.md) para las
+mediciones, los límites y la migración gradual.
 
 ## Responsabilidades del tema
 
@@ -50,7 +60,7 @@ El proyecto consumidor aporta el contenido y sobrescribe los datos del tema medi
 ## Mapa del repositorio
 
 ```text
-themes/sansoul/
+core/
 ├── archetypes/       # Front matter inicial de `hugo new`
 ├── assets/           # SCSS, módulos JavaScript y recursos procesables
 ├── content/          # Content Adapter raíz y páginas de sistema traducidas
@@ -66,7 +76,7 @@ themes/sansoul/
 
 ## Pipeline de construcción
 
-El wrapper del proyecto llama a `themes/sansoul/do`.
+El wrapper del proyecto llama a `core/do`.
 
 ### 1. Preconstrucción
 
@@ -76,9 +86,9 @@ El sitio de `prebuild/` se ejecuta antes del sitio principal. Lee el proyecto co
 
 La preconstrucción permite resolver decisiones que Hugo no puede convertir dinámicamente en configuración durante el render principal.
 
-En desarrollo, `sh do local` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Hugo detecta los cambios sin reiniciar; si se elimina un archivo o directorio de contenido, el supervisor reinicia Hugo para retirar rutas que Fast Render puede conservar en memoria. Si la preconstrucción falla, el servidor conserva la última configuración válida.
+En desarrollo, `sh do live` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Tras una regeneración válida reinicia Hugo para reconstruir desde cero y evitar estados parciales de los Content Adapters. Si se elimina contenido, también reinicia para retirar rutas antiguas. Una preconstrucción fallida conserva la última configuración válida; si Hugo cae durante esa actualización, el supervisor lo recupera cuando vuelve a disponer de entradas válidas.
 
-`sh do server` y `sh do local` escriben la salida en disco. Ambos limpian `public/` y `resources/` al iniciar; también lo hacen las compilaciones completas. En pruebas de este repositorio con Hugo 0.164, `--renderToMemory` no dio una mejora de velocidad apreciable. Solo cambia dónde Hugo expone los archivos generados: los hashes antiguos pueden seguir disponibles durante la sesión en ambos modos. Escribir en disco deja `public/` inspeccionable, y la limpieza al iniciar evita arrastrar esos archivos entre sesiones.
+`sh do dev` y `sh do live` escriben la salida en disco. Ambos limpian `public/` y `resources/` al iniciar; también lo hacen las compilaciones completas. En pruebas de este repositorio con Hugo 0.164, `--renderToMemory` no dio una mejora de velocidad apreciable. Solo cambia dónde Hugo expone los archivos generados: los hashes antiguos pueden seguir disponibles durante la sesión en ambos modos. Escribir en disco deja `public/` inspeccionable, y la limpieza al iniciar evita arrastrar esos archivos entre sesiones.
 
 La configuración desactiva el `assets/jsconfig.json` autogenerado por
 Hugo. En Hugo 0.164, su escritura puede coincidir con una recarga de
@@ -196,7 +206,7 @@ Los layouts registran iconos, SVG de imagen y divisores en `page.Store`, por pá
 
 Los divisores comparten sprite con imágenes e iconos cuando tienen el mismo conjunto exacto de páginas de uso; sus referencias conservan los IDs de vista. Los sprites externos se publican en `/draws/map.<hash>.svg`; los fragmentos de divisores usan IDs legibles como `#div-clouds-prx`, y el hash del archivo sigue cambiando con su contenido para invalidar la caché. El pipeline usa `<svg>` anidados, no `<symbol>`, para conservar gradientes, animaciones y referencias SVG. No se requiere `svg_sprites` ni otro catálogo manual. `data/resources.yml` declara glifos, SVG y divisores usados exclusivamente por CSS, JavaScript o datos dinámicos. El bundle de cada página expone URLs SVG finales como `icons` a través de `@params`; el `<head>` ofrece además propiedades CSS `--sansoul-svg-<id>`.
 
-Los recursos publicados usan los primeros 12 caracteres hexadecimales de SHA-256. Para CSS/JS, el hash se calcula sobre el contenido final minificado; si cambia, cambia la URL. Hugo limpia `public/` y `resources/` al iniciar los comandos locales y los builds de despliegue.
+Los recursos publicados usan los primeros 12 caracteres hexadecimales de SHA-256. Los segmentos CSS usan el hash del contenido final; JavaScript selectivo usa los chunks compartidos y nombres con hash de `js.Batch`. Se conserva el orden de la cascada CSS y las dependencias ESM del lote. El modo completo y desarrollo mantienen `js.Build`. Hugo limpia `public/` y `resources/` al iniciar los comandos locales y los builds de despliegue.
 
 Material Symbols se solicita durante el build mediante `icon_names`; Hugo valida la cabecera WOFF2 y publica el binario bajo un nombre con hash de contenido. Si falla la descarga, producción usa el WOFF2 completo del paquete local declarado como dependencia. El paquete npm disponible no incorpora un subsetter local oficial: contiene las fuentes completas y su publicación no está mantenida ni validada por Google. El CMS también autoalojará la fuente Outlined completa para que su selector dinámico previsualice cualquier icono.
 
@@ -296,7 +306,7 @@ La versión canónica está en `package.json` y sigue SemVer: major para incompa
 
 `sh do update` ejecuta el actualizador seguro desde la raíz del proyecto consumidor. Requiere árboles Git limpios; también acepta que el único cambio de la raíz sea el gitlink de SanSoul, si corresponde a un avance directo y limpio hecho durante el arranque inicial. Descarga la rama configurada en `.gitmodules` y solo acepta avances directos. Antes de cambiar el submódulo comprueba la compatibilidad de versiones, la política de cada migración pendiente, los nombres que se renombrarán y que README/AGENTS sean documentos generados. Después ejecuta las migraciones automáticas, regenera siempre ambos documentos raíz, instala dependencias si hace falta y compila. Si una migración requiere comprobaciones manuales, solicita confirmación antes de actualizar la versión raíz; sin terminal interactiva la deja pendiente. `sh do update --check` realiza el preflight sin cambiar archivos ni el commit activo del tema.
 
-Un proyecto que todavía tenga una versión antigua de SanSoul no dispone del actualizador nuevo hasta que incorpore esa versión del submódulo. En ese primer arranque, usa una vez `git submodule update --remote themes/sansoul`; después ejecuta `sh do update --check` y `sh do update`. Los proyectos anteriores a la línea base 5.0.0 requieren una migración verificada específica y el actualizador seguro se detiene sin moverlos.
+Un proyecto que todavía tenga una versión antigua de SanSoul no dispone del actualizador nuevo hasta que incorpore esa versión del submódulo. En ese primer arranque, usa una vez `git submodule update --remote core`; después ejecuta `sh do update --check` y `sh do update`. Los proyectos anteriores a la línea base 5.0.0 requieren una migración verificada específica y el actualizador seguro se detiene sin moverlos.
 
 El proyecto base es la matriz de compatibilidad inmediata. Antes de publicar una versión o subir Hugo o Node:
 

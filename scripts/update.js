@@ -13,9 +13,13 @@ import path from 'node:path'
 import process from 'node:process'
 import { spawnSync } from 'node:child_process'
 import { createInterface } from 'node:readline/promises'
+import { dependencyManager, checkDependencyManager, installDependencies } from './dependencies.js'
+import { validateToken } from './lifecycle.js'
+import { engineDir as themeDir, relativeEnginePath } from './engine-paths.js'
 
 const projectDir = process.cwd()
-const themeDir = path.join(projectDir, 'themes', 'sansoul')
+const corePath = relativeEnginePath(projectDir)
+let submoduleKey
 const args = process.argv.slice(2)
 const checkOnly = args.includes('--check')
 const knownArgs = new Set(['--check', '--help'])
@@ -24,13 +28,17 @@ const migrationScripts = {
   '6.0.0': ['6.0.0-explicit-booleans.js'],
   '6.0.1': ['6.0.1-sharp.js'],
   '6.0.2': ['6.0.2-remove-legacy-css.js'],
-  '7.0.0': ['7.0.0-content-adapters.js']
+  '7.0.0': ['7.0.0-content-adapters.js'],
+  '8.0.0': ['8.0.0-project-config.js', '8.0.0-markdown-metadata.js', '8.0.0-cms-groups.js']
 }
 const registeredMigrationVersions = new Set([
   ...Object.keys(migrationScripts),
   '5.1.0',
   '5.1.1',
-  '5.1.3'
+  '5.1.3',
+  '7.6.0',
+  '7.7.0',
+  '8.0.0'
 ])
 const supportedManualMigrations = new Set([
   '5.1.0',
@@ -39,7 +47,10 @@ const supportedManualMigrations = new Set([
   '6.0.0',
   '6.0.1',
   '6.0.2',
-  '7.0.0'
+  '7.0.0',
+  '7.6.0',
+  '7.7.0',
+  '8.0.0'
 ])
 
 await main()
@@ -65,7 +76,7 @@ async function main () {
   validateManagedRootDocs()
 
   const oldThemeCommit = git(themeDir, ['rev-parse', 'HEAD'])
-  const rootThemeCommit = git(projectDir, ['rev-parse', 'HEAD:themes/sansoul'])
+  const rootThemeCommit = git(projectDir, ['rev-parse', `HEAD:${corePath}`])
   if (oldThemeCommit !== rootThemeCommit && (!preupdatedSubmodule || !isAncestor(rootThemeCommit, oldThemeCommit))) {
     fail('The SanSoul checkout does not match the project gitlink by a clean fast-forward. Restore the recorded submodule first, then retry.')
   }
@@ -102,7 +113,7 @@ async function main () {
   validateMigrationSupport(pending, targetCommit, rootVersion)
   validateMigrationConflicts(pending)
   validateTargetTemplates(targetCommit)
-  validateNpmAvailability(pending, rootLockPath)
+  validateInstallAvailability(pending)
 
   printPlan({
     branch,
@@ -134,8 +145,8 @@ async function main () {
 
   run('sh', ['do', 'root-docs'], projectDir)
 
-  if (migrationRequiresNpmInstall(pending) && fs.existsSync(rootLockPath)) {
-    run('npm', ['install'], projectDir)
+  if (migrationRequiresInstall(pending) && dependencyManager(projectDir).hasLock) {
+    installDependencies({ directory: projectDir, updateLockfile: true })
   }
 
   console.log('\nBuilding the updated consumer project…')
@@ -169,13 +180,22 @@ function validateRepositoryLayout () {
     fail('Run `sh do update` from the project root.')
   }
   if (!fs.existsSync(path.join(projectDir, '.gitmodules')) || !fs.existsSync(themeDir)) {
-    fail('SanSoul is not initialized at themes/sansoul. Initialize the declared submodule, then retry.')
+    fail(`SanSoul is not initialized at ${corePath}. Initialize the declared submodule, then retry.`)
   }
   if (!fs.existsSync(path.join(projectDir, 'do'))) fail('Missing root `do` wrapper.')
-  const submodulePath = git(projectDir, ['config', '-f', '.gitmodules', '--get', 'submodule.themes/sansoul.path'], { allowFailure: true })
-  if (submodulePath !== 'themes/sansoul') {
-    fail('.gitmodules does not declare themes/sansoul; refusing to update an unexpected path.')
+  // NUL separates records; Git separates each complete key from its value with
+  // a newline, so legal whitespace in a subsection name stays part of the key.
+  const declarations = git(projectDir, ['config', '-z', '-f', '.gitmodules', '--get-regexp', '^submodule\\..*\\.path$'], { allowFailure: true })
+    .split('\0').filter(Boolean)
+    .map(record => {
+      const separator = record.indexOf('\n')
+      return separator < 0 ? [] : [record.slice(0, separator), record.slice(separator + 1)]
+    })
+    .filter(([, value]) => value === corePath)
+  if (declarations.length !== 1) {
+    fail(`.gitmodules must declare ${corePath} exactly once; refusing an unexpected or ambiguous path.`)
   }
+  submoduleKey = declarations[0][0].replace(/\.path$/, '')
 }
 
 function assertCleanTree (label, directory) {
@@ -187,8 +207,10 @@ function assertCleanTree (label, directory) {
 
 function assertCleanProjectTree () {
   const status = git(projectDir, ['status', '--porcelain=v1', '--untracked-files=all'])
-  const lines = status ? status.split('\n') : []
-  const submoduleAdvance = lines.filter(line => line.slice(0, 2) === ' M' && line.slice(3) === 'themes/sansoul')
+  const lines = (status ? status.split('\n') : []).filter(line => !(
+    line === '?? .sansoul-dev.lock/owner' && validateToken(projectDir, process.env.SANSOUL_LIFECYCLE_TOKEN)
+  ))
+  const submoduleAdvance = lines.filter(line => line.slice(0, 2) === ' M' && line.slice(3) === corePath)
   const otherChanges = lines.filter(line => !submoduleAdvance.includes(line))
   if (otherChanges.length > 0) {
     fail(`The project working tree has local changes. No project files were changed. Commit or stash them, then retry:\n${otherChanges.join('\n')}`)
@@ -206,9 +228,9 @@ function assertNoGitOperation (directory) {
 }
 
 function configuredBranch () {
-  const branch = git(projectDir, ['config', '-f', '.gitmodules', '--get', 'submodule.themes/sansoul.branch'], { allowFailure: true })
+  const branch = git(projectDir, ['config', '-f', '.gitmodules', '--get', `${submoduleKey}.branch`], { allowFailure: true })
   if (!branch) {
-    fail('No branch is configured for themes/sansoul in .gitmodules. Set its branch explicitly before updating.')
+    fail(`No branch is configured for ${corePath} in .gitmodules. Set its branch explicitly before updating.`)
   }
   if (git(themeDir, ['check-ref-format', '--branch', branch], { allowFailure: true }) !== branch) {
     fail(`Invalid SanSoul branch in .gitmodules: ${branch}`)
@@ -244,7 +266,7 @@ function validateMigrationSupport (pending, targetCommit, rootVersion) {
       fail(`Migration ${version} has no updater policy. No files were changed; add an explicit automation or manual-review entry before this version can be applied.`)
     }
     const registeredScripts = migrationScripts[version] || []
-    const documentedScripts = [...migration.content.matchAll(/themes\/sansoul\/scripts\/migrations\/([A-Za-z0-9._-]+\.js)/g)]
+    const documentedScripts = [...migration.content.matchAll(/(?:core|themes\/sansoul)\/scripts\/migrations\/([A-Za-z0-9._-]+\.js)/g)]
       .map(match => match[1])
       .filter((script, index, all) => all.indexOf(script) === index)
     const unregisteredScripts = documentedScripts.filter(script => !registeredScripts.includes(script))
@@ -281,16 +303,16 @@ function validateTargetTemplates (targetCommit) {
   }
 }
 
-function validateNpmAvailability (pending, lockPath) {
-  if (!fs.existsSync(lockPath) || !migrationRequiresNpmInstall(pending)) return
-  const result = spawnSync('npm', ['--version'], { cwd: projectDir, encoding: 'utf8' })
-  if (result.error || result.status !== 0) {
-    const versions = pending.filter(migration => /`npm install`/.test(migration.content)).map(migration => migration.version.raw)
-    fail(`Migration ${versions.join(', ')} needs npm to synchronize the existing package-lock.json. Install Node.js/npm before updating.`)
+function validateInstallAvailability (pending) {
+  if (!migrationRequiresInstall(pending)) return
+  try {
+    if (dependencyManager(projectDir).hasLock) checkDependencyManager(projectDir)
+  } catch (error) {
+    fail(error.message)
   }
 }
 
-function migrationRequiresNpmInstall (pending) {
+function migrationRequiresInstall (pending) {
   return pending.some(migration => /`npm install`/.test(migration.content))
 }
 

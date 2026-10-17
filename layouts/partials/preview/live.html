@@ -1,0 +1,39 @@
+{{- /*
+Partial: preview/live
+Purpose: Publish a public binding manifest and inert CMS draft receiver for real pages.
+Context: page.Page.
+Renders: JSON data and a receiver script. Normal visits never activate the receiver.
+Side effects: Publishes receiver and full preview CSS; registers no hidden if branches.
+*/ -}}
+{{- if or .File .IsSection .IsHome -}}
+  {{- $globals := index hugo.Data (print "global." .Lang) | default dict -}}
+  {{- $data := merge .Params (dict "title" .Title "body" .RawContent) -}}
+  {{- $usage := page.Store.Get "sansoul.assets.usage" -}}
+  {{- $styles_store := page.Store.Get "sansoul.assets.styles" -}}
+  {{- page.Store.Set "sansoul.assets.usage" (dict "full" true) -}}
+  {{- $css := partial "styles" . -}}
+  {{- page.Store.Set "sansoul.assets.usage" $usage -}}
+  {{- page.Store.Set "sansoul.assets.styles" $styles_store -}}
+  {{- $icon_font := "" -}}
+  {{- $icon_style := hugo.Data.styles.icons.style | default "outlined" -}}
+  {{- with resources.Get (print "fonts/material-symbols-" $icon_style ".woff2") -}}
+    {{- $resource := partial "func/publish-content-resource" (dict "resource" . "target" (print "fonts/preview-material-symbols-" $icon_style ".woff2")) -}}
+    {{- $icon_font = $resource.RelPermalink -}}
+  {{- end -}}
+  {{- $entry := "" -}}
+  {{- with .File }}{{ $entry = print "content/" .Path }}{{ end -}}
+  {{- if .IsHome }}{{ $entry = print "content/single/_home." .Lang ".md" }}{{ else if .IsSection }}{{ $entry = print "content/" .Type "/_index." .Lang ".md" }}{{ end -}}
+  {{- $manifest := dict
+    "entry" $entry
+    "type" .Type
+    "lang" .Lang
+    "data" $data
+    "globals" $globals
+    "bindings" (page.Store.Get "sansoul.preview.bindings" | default slice)
+    "css" $css.RelPermalink
+    "iconFont" $icon_font
+  -}}
+  <script type="application/json" id="sansoul-preview-manifest">{{ $manifest | jsonify | safeJS }}</script>
+  {{- $script := resources.Get "js/preview-receiver.js" | js.Build (dict "targetPath" "js/preview-receiver.js" "minify" hugo.IsProduction) -}}
+  <script src="{{ $script.RelPermalink }}" defer></script>
+{{- end -}}

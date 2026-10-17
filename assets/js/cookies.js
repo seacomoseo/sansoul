@@ -1,4 +1,4 @@
-import { cookiesLegal } from '@params'
+import { cookiesLegal } from '@params/config'
 import params from './params'
 const { cookiesVideo } = params
 

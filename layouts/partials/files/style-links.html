@@ -1,0 +1,11 @@
+{{/*
+Partial: files/style-links
+Purpose: Render ordered stylesheet links; the preload state ends only after every sheet loads.
+Context: Slice of CSS resources.
+Renders: Blocking stylesheet links. All cascade segments must be ready before first paint.
+Side effects: None.
+*/}}
+{{- range . -}}
+<link rel="stylesheet" href="{{ .RelPermalink }}">
+{{- end -}}
+<script>document.documentElement.classList.remove('preload')</script>

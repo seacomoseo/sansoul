@@ -1,0 +1,25 @@
+{{/*
+Partial: files/font-preloads
+Purpose: Preload critical body/title faces in production and all configured faces in full/development mode.
+Context: page.Page. Reads sansoul.fonts and sansoul.assets.usage from its Store.
+Renders: Deduplicated font preload links. All configured faces remain in the stylesheet.
+Side effects: None.
+*/}}
+{{- $preloaded_fonts := slice -}}
+{{- $font_usage := page.Store.Get "sansoul.assets.usage" | default (dict "full" true) -}}
+{{- range page.Store.Get "sansoul.fonts" | default (slice) -}}
+  {{- $font := . -}}
+  {{- $critical := $font_usage.full -}}
+  {{- if not $critical -}}
+    {{- range $role := slice "base" "title" -}}
+      {{- $spec := index hugo.Data.styles.fonts $role -}}
+      {{- if and (or (eq $role "base") $font_usage.flags.title) (eq $font.family $spec.family) (eq $font.weight $spec.weight) (eq (not $font.italic) (not $spec.italic)) -}}
+        {{- $critical = true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and $critical (not (in $preloaded_fonts .url)) -}}
+    <link rel="preload" href="{{ .url }}" as="font" type="font/woff2" crossorigin>
+    {{- $preloaded_fonts = $preloaded_fonts | append .url -}}
+  {{- end -}}
+{{- end -}}

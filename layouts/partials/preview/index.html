@@ -1,0 +1,24 @@
+{{/*
+Partial: preview/index
+Purpose: Map actual content file paths to Hugo URLs, including translations and custom permalinks.
+Context: page.Page.
+Returns: Public dictionary with entries and per-type/language prototype URLs.
+Side effects: None. Only already published pages are used as new-entry prototypes.
+*/}}
+{{ $entries := dict }}
+{{ $prototypes := dict }}
+{{ range hugo.Sites }}
+  {{ range .Pages }}
+    {{ if and (or .File .IsSection .IsHome) (in (slice "page" "home" "section") .Kind) }}
+      {{ $entry := "" }}
+      {{ with .File }}{{ $entry = print "content/" .Path }}{{ end }}
+      {{ if .IsHome }}{{ $entry = print "content/single/_home." .Lang ".md" }}{{ else if .IsSection }}{{ $entry = print "content/" .Type "/_index." .Lang ".md" }}{{ end }}
+      {{ $entries = merge $entries (dict $entry (dict "url" .RelPermalink "type" .Type "lang" .Lang)) }}
+      {{ if not .IsSection }}
+        {{ $key := print .Type ":" .Lang }}
+        {{ if not (index $prototypes $key) }}{{ $prototypes = merge $prototypes (dict $key .RelPermalink) }}{{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return (dict "entries" $entries "prototypes" $prototypes "defaultLang" site.Language.Lang) }}

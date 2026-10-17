@@ -11,10 +11,10 @@ bi: /u/base/poster.png
 alpha: 0 # [ 0.00 - 1.00 ]
 scroll: soft # [ none, fix, soft ]
 # paddings
-pt: 5 # [ >= 0.00 ]
-pb: 5 # [ >= 0.00 ]
-pt_vs: null # [ -20.00 - 20.00 ] Small viewport value; if pt is unset, it also applies to large viewports.
-pb_vs: null # [ -20.00 - 20.00 ] Small viewport value; if pb is unset, it also applies to large viewports.
+pt: 5 # [ -20.00 - 20.00 ] Base/small viewport value; falls back to pt_vl when omitted.
+pt_vl: null # [ -20.00 - 20.00 ] Large viewport value; falls back to pt when omitted.
+pb: 5 # [ -20.00 - 20.00 ] Base/small viewport value; falls back to pb_vl when omitted.
+pb_vl: null # [ -20.00 - 20.00 ] Large viewport value; falls back to pb when omitted.
 ph: false
 # size
 full: true
@@ -38,8 +38,6 @@ remap: [] # [ { from, to } ]
 # - from: null # string like boxes.*.example, if only used it, the param will be removed
 #   to: null # string like boxes.*.hanchor
 #   copy: null # boolean
-# view
-view: [] # [all, menu, bg, paddings, size, divider, others, modals ]
 
 
 ## BOXES
@@ -59,12 +57,10 @@ box:
   slider: true
   time: 5
   pips: '' # [ line, dot, hide ]
-  arrows: '' # [ float, main, cta, alt, light, dark, turn, such, none, hide ]
+  arrows: '' # [ main, cta, alt, light, dark, turn, such, none, hide, float ]
   align_y: top # [ stretch, top, center, bottom ]
   align_x: flex-end # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
   # add same to box_base
-  # + view
-  view: [] # [ all, group, titles, md, icon, img, btn, bg, boxi, others, list ]
 boxes:
 
 ## BOX_BASE
@@ -105,6 +101,13 @@ boxes:
   alt: Descripción de la imagen
   hover_alt: Descripción de la imagen hover
   vid: https://www.youtube.com/watch?v=Pql69BV9rAU
+  # Optional video metadata overrides; cached values are used when omitted.
+  # vid_width: 1080
+  # vid_height: 1920
+  # vid_duration: PT12S
+  # vid_upload: '2025-01-01 00:00:00' # UTC
+  # vid_title: Título del vídeo
+  # vid_desc: Descripción del vídeo
   mute: false
   ratio: 1/1 # [ int/int ]
   disc: true
@@ -207,8 +210,6 @@ boxes:
   - boxes
   - tags
   - btn
-  # view
-  view: [] # [ all, titles, md, icon, img, btn, bg, boxi-boxes, boxi, others, list, steps, faq, gallery, reviews, links, form, map, gss, boxes ]
 - title: Título de Caja 2
 - title: Título de Caja 3
 - boxes:
@@ -330,7 +331,7 @@ boxes:
     slider: true
     time: 2
     pips: '' # [ line, dot, hide ]
-    arrows: '' # [ main, cta, alt, light, dark, turn, such, none, hide, float ]
+    arrows: '' # [ main, cta, alt, light, dark, turn, such, none, hide ]
     btn: '' # [ main, cta, alt, light, dark, turn, such ]
   reviews:
   - title: Título Reseña 1

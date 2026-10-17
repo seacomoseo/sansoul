@@ -7,13 +7,13 @@
 
   {{/*  IFRAME  */}}
 
-  {{- $embed_url := .vid.src -}}
+  {{- $embed_url = .vid.src -}}
 
   {{/*  Attributes  */}}
   {{- $attrs := dict
     "class"           .class
-    "width"           "640"
-    "height"          "360"
+    "width"           .vid.presentation.width
+    "height"          .vid.presentation.height
     "src"             .vid.src
     "title"           .alt
     "allow"           .vid.allow
@@ -36,7 +36,7 @@
     {{- $src  := dict "RelPermalink" .vid.src "MediaType" (dict "Type" $type) -}}
     {{- $srcs  = $srcs | append $src -}}
   {{- else -}}
-    {{- with resources.Get .vid.src -}}
+    {{- with resources.Get ((urls.Parse .vid.src).Path) -}}
       {{- $srcs = $srcs | append . -}}
       {{- if ne .MediaType.SubType "webm" -}}
         {{- $webm := $.vid.src | replaceRE `(?i)\.(mp4|mov|avi)$` ".webm" -}}
@@ -77,14 +77,14 @@
   {{- end -}}
   {{- $attrs := dict
     "class"       .class
-    "width"       "640"
-    "height"      "360"
-    "muted"       true
-    "loop"        .notlazy
-    "autoplay"    .notlazy
+    "width"       .vid.presentation.width
+    "height"      .vid.presentation.height
+    "muted"       .vid.mute
+    "loop"        (and .vid.mute .notlazy)
+    "autoplay"    (and .vid.mute .notlazy)
     "playsinline" .notlazy
     "preload"     $preload
-    "data-mute"   (not .notlazy)
+    "data-mute"   (and .vid.mute (not .notlazy))
     "poster"      $img
     "controls"    $controls
   -}}
@@ -100,22 +100,12 @@
 {{- end -}}
 
 {{- /*  schema  */}}
-{{- $upload  := .upload }}
-{{- if not $upload }}
-  {{- if not $vid_out }}
-    {{- $path  := replace .vid.src "/u/" "uploads/" }}
-    {{- if fileExists $path }}
-      {{- with os.Stat $path }}
-        {{- $upload = .ModTime }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-{{- end }}
 {{ partial "schema/vid" (dict
-  "name"         .alt
+  "name"         (or .vid_title .video_title .alt)
   "thumbnailUrl" $img
-  "uploadDate"   $upload
-  "duration"     .duration
-  "contentUrl"   .vid.url
-  "embedUrl"     nil
+  "uploadDate"   .vid_upload
+  "duration"     .vid_duration
+  "contentUrl"   (cond .vid.ifr "" .vid.url)
+  "embedUrl"     $embed_url
+  "metadata"     .vid.meta
 ) -}}

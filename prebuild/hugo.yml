@@ -14,6 +14,11 @@ caches:
 theme: []
 
 params:
+  mainTheme:
+    themesDir: __SANSOUL_THEMES_DIR__
+    theme: [__SANSOUL_THEME_NAME__]
+  # sh do prebuild materializes these path tokens in a temporary config.
+  # Main mounts stay project-relative; nested prebuild inputs are absolute.
   # These become the complete project mount table in the generated main config.
   # Content indexes and global values are appended as per-file mounts during
   # prebuild so ordinary content files have only one Hugo watch target.
@@ -32,7 +37,7 @@ params:
     target: assets/fonts
   - source: ../_tools/node_modules/material-symbols
     target: assets/fonts
-  - source: themes/sansoul/assets/u/icons/brands
+  - source: __SANSOUL_CORE__/assets/u/icons/brands
     target: assets/u/icons/brands
   - source: node_modules/@fortawesome/fontawesome-free/svgs/brands
     target: assets/u/icons/brands
@@ -78,7 +83,7 @@ params:
     - '! global.*.yml'
     - '! single/_home.*.md'
     - '! */_index.*.md'
-  - source: themes/sansoul/content
+  - source: __SANSOUL_CORE__/content
     target: content
   - source: data
     target: data
@@ -86,18 +91,18 @@ params:
     - '! **/example/*'
   - source: i18n
     target: data/i18n
-  - source: themes/sansoul/i18n
+  - source: __SANSOUL_CORE__/i18n
     target: data/i18n
 
 module:
   mounts:
-  - source: ../../../
+  - source: __SANSOUL_PROJECT__
     target: assets
     files:
     - content/**/_index.*.md
     - content/global.*.yml
 
-  - source: ../../../data
+  - source: __SANSOUL_PROJECT__/data
     target: data
   - source: ../data
     target: data

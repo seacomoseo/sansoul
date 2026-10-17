@@ -12,12 +12,13 @@ Se mantiene todo bajo `_examples/` para que `data/` y `content/` puedan copiarse
 Haz primero una copia de seguridad o revisa las colisiones: estos comandos fusionan carpetas y pueden reemplazar archivos con el mismo nombre.
 
 ```sh
-cp -R themes/sansoul/_examples/data/. data/
-cp -R themes/sansoul/_examples/content/. content/
+cp -R core/_examples/data/. data/
+cp -R core/_examples/content/. content/
 sh do hugo
 ```
 
 No es necesario copiar `README.md` ni `AGENTS.md`.
+Si mantienes la ubicación antigua, sustituye `core` por `themes/sansoul`.
 
 El ejemplo presupone que el proyecto dispone de los recursos habituales de la plantilla en `uploads/base/`, especialmente `icon.png`, `logo.svg` y `poster.png`. Las URLs externas sirven para mostrar el comportamiento con recursos remotos y pueden fallar sin red.
 
@@ -39,7 +40,7 @@ Los comentarios `# [ ... ]` enumeran valores habituales, pero el generador del C
 - Un valor de ejemplo debe demostrar comportamiento, no incluir credenciales ni datos personales reales.
 - Los ejemplos deben compilar sin depender de servicios privados.
 - Las fechas históricas son deliberadas; evitan que el contenido cambie solo con el paso del tiempo.
-- Las páginas de referencia usan `seo.noindex: y` cuando no aportan contenido público real.
+- Las páginas de referencia usan `seo.noindex: true` cuando no aportan contenido público real.
 - Si se renombra un parámetro, actualiza a la vez renderizado, CMS, i18n, defaults, ejemplos y documentación; añade también una entrada a `MIGRATIONS.md` con la adaptación del proyecto consumidor.
 
 ## Validación
@@ -51,3 +52,6 @@ La carpeta debe probarse como un proyecto consumidor, no construirse directament
 - `/divisores/`;
 - `/admin/`;
 - consola del navegador y responsive.
+
+La agrupación visual del CMS no añade objetos al YAML de los ejemplos. El antiguo
+selector `view` se ha retirado; consulta [los grupos plegables](../docs/cms-field-groups.md).

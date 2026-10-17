@@ -1,11 +1,15 @@
+{{- /* Link metadata is a recognized token block at the end of the title.
+Legacy square blocks and nofollow remain readable; CMS writes braces and lock. */ -}}
 {{- $label  := .Text -}}
-{{- $anchor := .Title | replaceRE `(?s)\s?\[.+?\]\s?` "" -}}
+{{- $anchor := .Title -}}
 {{- $title  := "" -}}
-{{- $meta   := "" -}}
-{{- with .Title -}}
-  {{- with findRE `(?s).*\[.+?\].*` . 1 -}}
-    {{- $meta = index . 0 -}}
-  {{- end -}}
+{{- $meta   := slice -}}
+{{- $token := `(main|alt|cta|light|dark|turn|such|whatsapp|dot|sm|swap|lock|nofollow|homefollow|blank|ga4)` -}}
+{{- $pattern := printf `\s*(\{\s*%s(\s+%s)*\s*\}|\[\s*%s(\s+%s)*\s*\])$` $token $token $token $token -}}
+{{- with findRE $pattern .Title 1 -}}
+  {{- $block := index . 0 -}}
+  {{- $anchor = strings.TrimSpace (strings.TrimSuffix $block $.Title) -}}
+  {{- $meta = findRE `\S+` (replaceRE `[\[\]{}]` "" $block) -}}
 {{- end -}}
 
 {{- /*  button  */ -}}
@@ -15,8 +19,10 @@
 {{- $swap := "" -}}
 {{- if and (hasPrefix .Text "[") (hasSuffix .Text "]") -}}
   {{- $label  = .Text | strings.TrimPrefix "[" | strings.TrimSuffix "]" -}}
-  {{- $btn  = findRE `(main|alt|cta|light|dark|turn|such|whatsapp)` $meta 1 -}}
-  {{- $btn  = index $btn 0 | default "cta" -}}
+  {{- $btn = "cta" -}}
+  {{- range $color := slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" -}}
+    {{- if in $meta $color -}}{{- $btn = $color -}}{{- end -}}
+  {{- end -}}
   {{- $dot  = in $meta "dot" -}}
   {{- $sm   = in $meta "sm" -}}
   {{- $swap = in $meta "swap" -}}
@@ -34,7 +40,7 @@
 {{- $icon    := $outside.icon -}}
 
 {{- /*  lock  */ -}}
-{{- $lock := cond (in $meta "nofollow") true nil -}}
+{{- $lock := cond (or (in $meta "lock") (in $meta "nofollow")) true nil -}}
 {{- if in $meta "homefollow" -}}
   {{- if not page.IsHome -}}
     {{- $lock = true -}}

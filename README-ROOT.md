@@ -1,13 +1,13 @@
 # Manual de un proyecto SanSoul
 
-Este es el manual humano compartido para el repositorio que consume SanSoul. Vive dentro de `themes/sansoul/` para distribuirse con el tema, pero todas sus rutas son relativas a la raíz del proyecto, dos niveles por encima.
+Este es el manual humano compartido para el repositorio que consume SanSoul. Vive dentro de `core/` para distribuirse con el motor, pero los comandos y rutas parten de la raíz del proyecto. Los consumidores existentes también pueden conservar `themes/sansoul/`.
 
-Para la arquitectura interna del tema, consulta [`themes/sansoul/README.md`](README.md). Las instrucciones operativas se generan directamente en el `AGENTS.md` raíz desde `themes/sansoul/templates/root/AGENTS.md`; no son una traducción de este manual.
+Para la arquitectura interna del tema, consulta [`core/README.md`](README.md). Las instrucciones operativas se generan directamente en el `AGENTS.md` raíz desde `core/templates/root/AGENTS.md`; no son una traducción de este manual.
 
 ## Principios del proyecto
 
 - La raíz contiene la configuración, el contenido y las personalizaciones de un sitio concreto.
-- `themes/sansoul/` contiene el motor compartido y es un submódulo Git.
+- `core/` contiene el motor compartido y es un submódulo Git.
 - Se priorizan los datos y la composición de secciones frente a los overrides de layouts.
 - Los README se dirigen a personas y están escritos en español; los AGENTS se dirigen a agentes y están escritos en inglés. Se actualiza solo el documento cuya audiencia o contrato haya cambiado.
 - No se deben incluir credenciales ni secretos en archivos rastreados: el contenido del sitio, la configuración generada del CMS y los parámetros de Hugo pueden terminar publicados.
@@ -16,15 +16,15 @@ Para la arquitectura interna del tema, consulta [`themes/sansoul/README.md`](REA
 
 Necesitas Git y Hugo Extended. Para desarrollar sin `node_modules` en cada
 proyecto, instala Dart Sass una sola vez en el `PATH`
-(`brew install sass/sass/sass` en macOS). Node.js y las dependencias npm se
-requieren para la preconstrucción y el build completo; `sh do hugo` las instala
-si faltan. Las versiones de despliegue se fijan en `netlify.toml` y
-`wrangler.toml`.
+(`brew install sass/sass/sass` en macOS). Node.js se requiere para los servidores
+administrados y el build completo; `sh do hugo` instala las dependencias ausentes
+con el gestor del proyecto. Las versiones de despliegue se fijan en
+`.node-version`, `netlify.toml` y `wrangler.toml`.
 
 ```sh
 git clone --recurse-submodules <url-del-repositorio>
 cd <carpeta-del-proyecto>
-sh do server
+sh do dev
 ```
 
 Si el repositorio ya estaba clonado:
@@ -33,7 +33,7 @@ Si el repositorio ya estaba clonado:
 git submodule update --init --recursive
 ```
 
-Solo debes usar `git submodule add https://github.com/seacomoseo/sansoul.git themes/sansoul` al crear un repositorio nuevo que aún no tenga la entrada de SanSoul en `.gitmodules`.
+Solo debes usar `git submodule add https://github.com/seacomoseo/sansoul.git core` al crear un repositorio nuevo que aún no tenga la entrada de SanSoul en `.gitmodules`.
 
 ## Comandos principales
 
@@ -41,8 +41,8 @@ Ejecuta todos los comandos desde la raíz:
 
 | Comando | Función |
 | --- | --- |
-| `sh do server` | Preconstruye y levanta Hugo con la salida en disco. |
-| `sh do local` | Servidor del CMS con salida en disco, invalidación de rutas eliminadas y regeneración atómica del prebuild. |
+| `sh do dev` | Preconstruye y levanta Hugo con la salida en disco. |
+| `sh do live` | Servidor del CMS con salida en disco, invalidación de rutas eliminadas y regeneración atómica del prebuild. |
 | `sh do hugo` | Ejecuta la compilación completa y el posprocesado de imágenes. |
 | `sh do update` | Actualiza SanSoul, ejecuta migraciones automáticas, regenera README/AGENTS y compila; hace preflight y se detiene ante cambios locales o conflictos. |
 | `sh do update --check` | Comprueba el plan y los conflictos sin cambiar archivos ni el commit activo del tema. |
@@ -51,7 +51,78 @@ Ejecuta todos los comandos desde la raíz:
 | `sh do prebuild` | Regenera únicamente la configuración previa requerida por Hugo. |
 | `sh do imgs` | Regenera favicon, PNG derivados y variantes AVIF a partir de los manifiestos del build. |
 
-`public/`, `resources/`, `.hugo_build.lock` y `themes/sansoul/prebuild/public/` son salidas generadas. No deben editarse a mano.
+`public/`, `resources/`, `.hugo_build.lock` y `core/prebuild/public/` son salidas generadas. No deben editarse a mano.
+
+`dev` y `live` eliminan esas salidas al cerrar con Ctrl-C, SIGTERM, SIGHUP o una
+salida normal. `server` y `local` siguen siendo alias compatibles. Hay un bloqueo por
+proyecto: no ejecutes dos servidores administrados ni un build simultáneo en
+la misma carpeta; usa copias independientes. SIGKILL, un apagado o un fallo del
+sistema no permiten ejecutar la limpieza. El siguiente arranque detecta el
+bloqueo abandonado.
+
+### Dependencias compartidas con pnpm
+
+Hugo recomendado: **0.168.0** (mínimo del motor: 0.164.0). La
+[comparación y validación de la actualización](docs/hugo-0.168.0.md) recoge los
+cambios de seguridad y compatibilidad. Netlify usa `netlify.toml`; el flujo de
+esta referencia mantiene sus versiones de Cloudflare Pages en `wrangler.toml`.
+Se conservan `HUGO_VERSION=0.168.0` y `PNPM_VERSION=10.28.2` en el consumidor.
+
+Cada repositorio mantiene su propio `package.json` y `pnpm-lock.yaml`. No se
+necesita un monorepo ni un workspace compartido. El almacén de contenido de pnpm
+reutiliza paquetes entre proyectos, incluidas versiones distintas; el virtual
+store estable sigue dentro de `node_modules/.pnpm` de cada proyecto.
+
+En los proyectos convertidos, usa Node y pnpm en las versiones fijadas. Instala
+dependencias al clonar o cuando cambie el lockfile; no en cada arranque:
+
+```sh
+# Activa previamente Node según .node-version y pnpm según packageManager.
+# Diagnóstico opcional: pnpm --version; pnpm store path
+pnpm install --frozen-lockfile
+sh do dev
+sh do live
+sh do hugo
+```
+
+La configuración de referencia fija pnpm 10.28.2 y el virtual store de proyecto.
+No cambia configuración global. El almacén debe estar en el mismo sistema de
+archivos que los proyectos para aprovechar enlaces o copias CoW. En un entorno
+normal, pnpm lo ubica en `~/Library/pnpm/store` en macOS o
+`~/.local/share/pnpm/store` en Linux; compruébalo con `pnpm store path`. No borres
+ese almacén ni los `node_modules` ajenos para migrar un proyecto.
+
+El modo experimental se prueba por comando con
+`pnpm install --frozen-lockfile --config.enable-global-virtual-store=true`.
+No es el modo recomendado por defecto y no debe activarse en CI. Hugo 0.166+
+restringe symlinks e imports fuera de sus rutas permitidas; el modo global
+requiere una validación adicional y no se habilita ampliando permisos generales.
+En pnpm 10 la
+opción se llama `enableGlobalVirtualStore`; `virtualStoreType` pertenece a
+versiones posteriores. Cambiar de modo puede requerir reinstalar el
+`node_modules` propio; no compartas una carpeta mutable de dependencias mediante
+un enlace a `../_tools/node_modules` entre proyectos con versiones distintas.
+
+El build utiliza el gestor declarado y exige el lockfile de pnpm. Las
+migraciones que modifican dependencias actualizan el lockfile de ese gestor
+antes de compilar; npm continúa disponible para consumidores sin convertir.
+Consulta el [informe de pruebas y migración](docs/development-dependencies.md)
+antes de convertir otros proyectos.
+
+### Recursos de producción
+
+Producción selecciona módulos completos de JavaScript y SCSS según los
+componentes renderizados, incluidos los modales ocultos. No elimina estados
+dinámicos por no aparecer activos en el HTML. JavaScript comparte módulos ESM
+y CSS comparte segmentos contiguos, manteniendo el orden de la cascada. Hay más
+peticiones y algo más de transferencia en la primera carga; navegar reutiliza
+el código común. Desarrollo mantiene los bundles completos. Las fuentes de texto conservan todos sus pesos y solo precargan los
+roles críticos; los binarios idénticos de una familia comparten URL en producción.
+
+Las integraciones personalizadas que no se pueden inferir conservan el modo
+completo. Para desactivarlo explícitamente, configura `params.assets_full: true`
+en `hugo.yml`. Es un ajuste técnico de integración; no un campo editorial nuevo
+del CMS. Consulta el [contrato y mediciones](docs/production-assets.md).
 
 ## Estructura del repositorio
 
@@ -129,21 +200,57 @@ Las particularidades nunca deben añadirse a README/AGENTS raíz porque son gene
 
 SanSoul usa dos compilaciones de Hugo.
 
-1. El wrapper raíz `do` delega en `themes/sansoul/do`.
-2. La preconstrucción ejecuta el sitio Hugo de `themes/sansoul/prebuild/`.
+1. El wrapper raíz `do` delega en `core/do`.
+2. La preconstrucción ejecuta el sitio Hugo de `core/prebuild/`.
 3. Ese sitio combina `hugo.yml`, idiomas, tipos, defaults y metadatos de índices.
-4. Publica atómicamente `themes/sansoul/prebuild/public/hugo.prebuild.yml`.
+4. Publica atómicamente `core/prebuild/public/hugo.prebuild.yml`.
 5. La compilación principal carga, en orden, la configuración base del tema, la configuración generada y `hugo.yml`.
 6. Los mounts estáticos exponen contenido, datos, uploads, iconos y dependencias; el Content Adapter crea índices de colección y páginas remotas.
 7. En producción, el script de imágenes procesa los manifiestos creados por Hugo.
 
-`sh do local` vigila las entradas de la preconstrucción, agrupa cambios rápidos y regenera la configuración de forma serial y atómica. Hugo detecta el archivo actualizado y se reconfigura sin reiniciar; si la preconstrucción falla, continúa sirviendo la última configuración válida. Con `sh do server`, reinicia manualmente cuando cambies:
+`sh do live` vigila las entradas de la preconstrucción, agrupa cambios rápidos y regenera la configuración de forma serial y atómica. Después de una regeneración válida reinicia Hugo y rehace el build completo. Una preconstrucción fallida conserva la última configuración válida; si Hugo cae durante una actualización, el supervisor lo recupera al corregir las entradas. Con `sh do dev`, reinicia manualmente cuando cambies:
 
 - `data/config.yml`, `data/langs.yml`, `data/defaults.yml` o `data/customs.yml`;
 - `data/types/*.yml`, salvo cambios estrictamente internos a `tpl` que Hugo pueda recargar;
 - `content/<type>/_index.<lang>.md`, especialmente `permalinks`.
 
 Los cambios en `data/remote.yml` y `content/global.<lang>.yml` se reconstruyen directamente dentro del proceso principal de Hugo.
+
+## Markdown, vídeos y vista previa del CMS
+
+Los títulos Markdown usan llaves para los parámetros: `[Texto](/ruta/ "{lock blank}")`
+y `![Descripción](/u/imagen.jpg "Leyenda {3/2}")`. El ratio ya no ocupa el texto
+alternativo de la imagen. El CMS escribe esta sintaxis y el renderizador sigue
+leyendo la anterior; la [migración](docs/markdown-metadata.md) convierte las formas
+reconocidas sin reescribir código ni contenido ambiguo.
+
+El [sistema de vídeos](docs/video-metadata.md) completa una caché versionable con
+FFprobe para archivos locales y las APIs disponibles de YouTube/Vimeo. Puede
+extraer el primer fotograma local como poster; no descarga vídeos externos.
+`sh do videos` actualiza la caché; los builds lo hacen automáticamente y los
+servidores vigilan cambios. El HTML siempre dispone de dimensiones de
+presentación, que se mantienen separadas de los metadatos reales. Solo un ratio
+escrito por el autor activa `.img--ratio`. El poster usa los tamaños del vídeo.
+El schema omite vídeos que carezcan de los datos obligatorios de Google, con
+un aviso; no inventa fechas de publicación.
+Los ajustes opcionales de cada vídeo son `vid_width`, `vid_height`,
+`vid_duration`, `vid_upload`, `vid_title` y `vid_desc`; también se editan desde
+el CMS. `vid_upload: '2025-01-01 00:00:00'` se interpreta como UTC.
+
+La [vista previa visual experimental](docs/cms-live-preview.md) se activa en las
+colecciones de contenido, también en producción, sin parámetros manuales en la
+URL. Usa la página real compilada por Hugo y actualiza sus campos enlazados sin
+guardar, con Markdown aproximado y medios remotos. Hacer clic en un componente
+enlazado localiza su campo en Sveltia. Los cambios estructurales y las condiciones
+requieren recompilar; no se generan ramas ocultas.
+
+Guardar no significa que el despliegue haya terminado. Sveltia muestra el estado
+del cambio junto al enlace a la entrada publicada cuando Git y CI están
+conectados. El indicador general de `/admin/info/` no demuestra qué versión de
+una entrada está publicada.
+
+La [validación de SanSoul 8](docs/sansoul-8-validation.md) recoge las pruebas
+integradas, el clon limpio y las comprobaciones reales del editor y reproductor.
 
 ## Idiomas y valores globales
 
@@ -224,7 +331,7 @@ La jerarquía de renderizado es:
 página → secciones → cajas → bloques o subcajas
 ```
 
-Una sección controla fondo, tamaño, espaciado, separadores, entrada de menú y modales. `boxes` contiene sus cajas y `box` define valores compartidos para ellas. `pt` y `pb` ajustan el padding vertical en viewports grandes; `pt_vs` y `pb_vs` lo ajustan en viewports pequeños. Los valores se interpolan entre ambos tamaños. Si solo se define el valor pequeño, también se usa en viewports grandes; si se omite el pequeño, se conserva el valor predeterminado. Como CSS no admite padding negativo, los valores negativos se representan como márgenes exteriores que desplazan la sección o el contenido siguiente.
+Una sección controla fondo, tamaño, espaciado, separadores, entrada de menú y modales. `boxes` contiene sus cajas y `box` define valores compartidos para ellas. `pt` y `pb` ajustan el padding vertical base; `pt_vl` y `pb_vl` permiten otro valor en viewports grandes. Si solo se define uno de los dos valores de cada lado, se usa en todos los tamaños; si se definen ambos, se interpolan entre pantallas pequeñas y grandes. El cero es un valor explícito. Si faltan ambos, se conservan los valores predeterminados (5 em; el padding superior del footer es 3 em). Como CSS no admite padding negativo, los valores negativos se representan como márgenes exteriores que desplazan la sección o el contenido siguiente.
 
 Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, distribución y composición recursiva. `class` añade clases CSS al contenedor de la caja; el título conserva sus propias clases. `mt`, `mb`, `ml` y `mr` ajustan sus márgenes en viewports grandes, y las variantes `_vs` los ajustan en viewports pequeños. Admiten valores negativos y se interpolan entre tamaños. Si solo se define una variante `_vs`, ese valor también se usa en viewports grandes; si se omite, el margen pequeño parte de su valor predeterminado (cero). Algunas claves activan bloques especializados:
 
@@ -282,11 +389,16 @@ Consulta [`_examples/data/section/example.yml`](_examples/data/section/example.y
 
 SanSoul genera la configuración de Sveltia CMS a partir de los idiomas, tipos, secciones, defaults y campos personalizados. Tras construir, la configuración final se encuentra en `public/admin/config.<hash>.yml` y se enlaza desde `public/admin/index.html`.
 
+Las secciones, modales y cajas usan [grupos plegables](docs/cms-field-groups.md)
+con widgets nativos. Los campos siguen siendo hermanos en el YAML; no requieren
+migrar contenido. `params.cms_groups: false` permite desactivar el adaptador y
+usar campos planos. El antiguo selector `view` ya no se utiliza.
+
 Esa salida es la referencia más precisa para comprobar qué campos ve el editor, pero nunca debe modificarse a mano. En Sveltia CMS los campos son obligatorios de forma predeterminada; usa `required: false` cuando corresponda.
 
 Cuando cambies el modelo de contenido:
 
-1. usa `sh do local` y espera a que termine la regeneración automática;
+1. usa `sh do live` y espera a que termine la regeneración automática;
 2. comprueba que se genera el YAML del CMS;
 3. abre `/admin/` y prueba crear o editar una entrada representativa;
 4. compila el contenido guardado por el CMS.
@@ -309,7 +421,7 @@ Un override crea una bifurcación silenciosa: documenta el motivo, el archivo or
 
 ## Ejemplos reutilizables
 
-`themes/sansoul/_examples/` es a la vez un sitio de demostración copiable y un conjunto de chuletas. Para poblar un proyecto vacío, copia sus carpetas `data/` y `content/` sobre la raíz después de revisar posibles colisiones. Lee primero su [`README.md`](_examples/README.md).
+`core/_examples/` es a la vez un sitio de demostración copiable y un conjunto de chuletas. Para poblar un proyecto vacío, copia sus carpetas `data/` y `content/` sobre la raíz después de revisar posibles colisiones. Lee primero su [`README.md`](_examples/README.md).
 
 ## Actualizar el tema
 
@@ -330,11 +442,11 @@ Si quedan validaciones manuales de alguna migración, el comando las muestra y p
 sh do migrations mark --yes
 ```
 
-Si el submódulo instalado es demasiado antiguo para incluir `sh do update`, hay que incorporarlo una vez con `git submodule update --remote themes/sansoul`; después se puede ejecutar `sh do update --check` y `sh do update`.
+Si el submódulo instalado es demasiado antiguo para incluir `sh do update`, hay que incorporarlo una vez con `git submodule update --remote core`; después se puede ejecutar `sh do update --check` y `sh do update`.
 
 ### Archivos README y AGENTS de la raíz
 
-README y AGENTS raíz son archivos genéricos generados íntegramente desde `themes/sansoul/templates/root/`; `sh do update` siempre los sincroniza. Sus cabeceras advierten que no deben personalizarse.
+README y AGENTS raíz son archivos genéricos generados íntegramente desde `core/templates/root/`; `sh do update` siempre los sincroniza. Sus cabeceras advierten que no deben personalizarse.
 
 Si README/AGENTS no fueron generados, `sh do root-docs` se niega a sobrescribirlos sin `--force`. Con `--force` los reemplaza íntegramente y descarta su contenido: no intenta interpretarlo ni trasladarlo al ADN. Si falta `dna/_index.md`, crea únicamente el scaffold orientativo. En actualizaciones posteriores puede reemplazar README/AGENTS de forma segura, pero nunca sobrescribe el ADN.
 

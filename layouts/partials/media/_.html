@@ -25,7 +25,7 @@ Side effects: May process local image resources.
     {{- $img = partial "func/poster" $vid -}}
   {{- end -}}
   {{- if $vid -}}
-    {{- $opts := merge . (dict "vid" $vid) -}}
+    {{- $opts := merge . (dict "vid" $vid "poster" $img) -}}
     {{- $vid   = partial "media/vid-data" $opts -}}
   {{- else -}}
     {{- $vid = dict -}}
@@ -34,12 +34,18 @@ Side effects: May process local image resources.
     {{- $img = partial "func/check-media" . -}}
   {{- end -}}
 
-  {{- if not .alt -}}
-    {{- if index $vid "ifr" -}}
+  {{- if .alt -}}
+    {{- $alt = string .alt -}}
+  {{- else if or .vid_title .video_title -}}
+    {{- $alt = or .vid_title .video_title -}}
+  {{- else if not .alt -}}
+    {{- if and (index $vid "ifr") (index $vid "meta" "name") -}}
+      {{- $alt = $vid.meta.name -}}
+    {{- else if index $vid "ifr" -}}
       {{- $alt = print (i18n "vid") " · " $vid.name " · " $vid.id -}}
     {{- else -}}
-      {{- $src = or $img (index $vid "url") -}}
-      {{- $alt = $src | replaceRE `^(?:/u|http.+)/(.+)\..*$` "$1" | humanize -}}
+      {{- $src = or (index $vid "url") $img -}}
+      {{- $alt = path.Base ((urls.Parse $src).Path) | replaceRE `\.[^.]+$` "" | humanize -}}
     {{- end -}}
   {{- end -}}
 
@@ -54,10 +60,7 @@ Side effects: May process local image resources.
     "img_ext" $img_ext
   -}}
   {{- $media = merge $media $media_new -}}
-
-  {{- $is_vid_file := and $vid (not (index $vid "ifr")) -}}
-
-  {{- if or (index $vid "mute") (and $is_vid_file (not $img)) -}}
+  {{- if or (index $vid "mute") (and $vid (not $img)) -}}
     {{- partial "media/vid" $media -}}
   {{- else if $img_ext -}}
     {{- partial "media/out-img" $media -}}

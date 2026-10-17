@@ -1,0 +1,305 @@
+{
+  "date": "2026-10-14",
+  "platform": "macOS 25.5 ARM64, APFS",
+  "versions": {
+    "node": "v22.22.3",
+    "npm": "10.9.8",
+    "pnpm": "10.28.2",
+    "hugo": "hugo v0.164.0+extended+withdeploy darwin/arm64 BuildDate=2026-07-06T16:39:30Z VendorInfo=Homebrew"
+  },
+  "units": "bytes except timings in seconds",
+  "allocationMethod": "sum st_blocks * 512 once per (device,inode), no symlink following; CoW physical extents and filesystem metadata not reliably measured",
+  "timings": {
+    "npm": {
+      "coldInstall": {
+        "current": 10.04,
+        "afree": 6.5
+      },
+      "warmReinstall": {
+        "current": 1.94,
+        "afree": 1.96
+      }
+    },
+    "pnpmProject": {
+      "coldInstall": {
+        "current": 9.4,
+        "afree": 3.05
+      },
+      "warmReinstall": {
+        "current": 1.1,
+        "afree": 1.29
+      },
+      "build": {
+        "current": 2.85,
+        "afree": 5.22
+      }
+    },
+    "pnpmGlobal": {
+      "coldInstall": {
+        "current": 8.25,
+        "afree": 2.77
+      },
+      "warmReinstall": {
+        "current": 1.48,
+        "afree": 1.51
+      },
+      "build": {
+        "current": 2.9,
+        "afree": 5.29
+      }
+    },
+    "npmBuild": {
+      "current": 3.88,
+      "afree": 5.55
+    },
+    "tests": {
+      "npmCurrent": 3.51,
+      "pnpmProjectCurrent": 3.69,
+      "pnpmGlobalCurrent": 3.76
+    }
+  },
+  "validation": {
+    "hugoBuildAll": true,
+    "currentTestsAll": true,
+    "afreeExistingTest": false,
+    "freshGlobalCloneInstallOffline": true,
+    "freshGlobalCloneBuild": true,
+    "astroFixture": false,
+    "simultaneousCurrentGlobal": true,
+    "devCleanupCurrent": true,
+    "legacyAfreeDevAlias": false
+  },
+  "allocation": {
+    "npm": {
+      "roots": [
+        {
+          "role": "project-current",
+          "metrics": {
+            "files": 12839,
+            "dirs": 241,
+            "symlinks": 2,
+            "apparent": 125455211,
+            "allocatedEntries": 163987456,
+            "allocatedUnique": 163987456,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 13082
+          }
+        },
+        {
+          "role": "project-second",
+          "metrics": {
+            "files": 12819,
+            "dirs": 243,
+            "symlinks": 2,
+            "apparent": 125150611,
+            "allocatedEntries": 163622912,
+            "allocatedUnique": 163622912,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 13064
+          }
+        },
+        {
+          "role": "store",
+          "metrics": {
+            "files": 101,
+            "dirs": 190,
+            "symlinks": 0,
+            "apparent": 66762725,
+            "allocatedEntries": 67014656,
+            "allocatedUnique": 67014656,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 291
+          }
+        }
+      ],
+      "combined": {
+        "files": 25759,
+        "dirs": 674,
+        "symlinks": 4,
+        "apparent": 317368547,
+        "allocatedEntries": 394625024,
+        "allocatedUnique": 394625024,
+        "hardlinkEntries": 0,
+        "uniqueInodes": 26437
+      }
+    },
+    "project-auto": {
+      "roots": [
+        {
+          "role": "store",
+          "metrics": {
+            "files": 11172,
+            "dirs": 517,
+            "symlinks": 2,
+            "apparent": 139849995,
+            "allocatedEntries": 173076480,
+            "allocatedUnique": 173076480,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 11691
+          }
+        },
+        {
+          "role": "project-current",
+          "metrics": {
+            "files": 12667,
+            "dirs": 276,
+            "symlinks": 52,
+            "apparent": 108502665,
+            "allocatedEntries": 146591744,
+            "allocatedUnique": 146591744,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 12995
+          }
+        },
+        {
+          "role": "project-second",
+          "metrics": {
+            "files": 12647,
+            "dirs": 278,
+            "symlinks": 52,
+            "apparent": 108360998,
+            "allocatedEntries": 146386944,
+            "allocatedUnique": 146386944,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 12977
+          }
+        }
+      ],
+      "combined": {
+        "files": 36486,
+        "dirs": 1071,
+        "symlinks": 106,
+        "apparent": 356713658,
+        "allocatedEntries": 466055168,
+        "allocatedUnique": 466055168,
+        "hardlinkEntries": 0,
+        "uniqueInodes": 37663
+      }
+    },
+    "project-hardlink": {
+      "roots": [
+        {
+          "role": "store",
+          "metrics": {
+            "files": 11172,
+            "dirs": 517,
+            "symlinks": 2,
+            "apparent": 139850013,
+            "allocatedEntries": 173076480,
+            "allocatedUnique": 173076480,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 11691
+          }
+        },
+        {
+          "role": "project-current",
+          "metrics": {
+            "files": 12667,
+            "dirs": 276,
+            "symlinks": 52,
+            "apparent": 108502908,
+            "allocatedEntries": 146591744,
+            "allocatedUnique": 139374592,
+            "hardlinkEntries": 1653,
+            "uniqueInodes": 11342
+          }
+        },
+        {
+          "role": "project-second",
+          "metrics": {
+            "files": 12647,
+            "dirs": 278,
+            "symlinks": 52,
+            "apparent": 108361241,
+            "allocatedEntries": 146386944,
+            "allocatedUnique": 139198464,
+            "hardlinkEntries": 1648,
+            "uniqueInodes": 11329
+          }
+        }
+      ],
+      "combined": {
+        "files": 36486,
+        "dirs": 1071,
+        "symlinks": 106,
+        "apparent": 356714162,
+        "allocatedEntries": 466055168,
+        "allocatedUnique": 173174784,
+        "hardlinkEntries": 25302,
+        "uniqueInodes": 12361
+      }
+    },
+    "global": {
+      "roots": [
+        {
+          "role": "store",
+          "metrics": {
+            "files": 11172,
+            "dirs": 517,
+            "symlinks": 2,
+            "apparent": 139850011,
+            "allocatedEntries": 173076480,
+            "allocatedUnique": 173076480,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 11691
+          }
+        },
+        {
+          "role": "store",
+          "metrics": {
+            "files": 13235,
+            "dirs": 410,
+            "symlinks": 42,
+            "apparent": 141362662,
+            "allocatedEntries": 180817920,
+            "allocatedUnique": 180817920,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 13687
+          }
+        },
+        {
+          "role": "project-current",
+          "metrics": {
+            "files": 5,
+            "dirs": 9,
+            "symlinks": 27,
+            "apparent": 44867,
+            "allocatedEntries": 45056,
+            "allocatedUnique": 45056,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 41
+          }
+        },
+        {
+          "role": "project-second",
+          "metrics": {
+            "files": 5,
+            "dirs": 9,
+            "symlinks": 27,
+            "apparent": 44859,
+            "allocatedEntries": 45056,
+            "allocatedUnique": 45056,
+            "hardlinkEntries": 0,
+            "uniqueInodes": 41
+          }
+        }
+      ],
+      "combined": {
+        "files": 24417,
+        "dirs": 945,
+        "symlinks": 98,
+        "apparent": 281302399,
+        "allocatedEntries": 353984512,
+        "allocatedUnique": 353984512,
+        "hardlinkEntries": 0,
+        "uniqueInodes": 25460
+      }
+    }
+  },
+  "notes": [
+    "Second project installs reuse the first project cache/store, not independent cold installs.",
+    "Apparent sizes in original inventory regular files only; focused allocation inventory includes directories/symlinks.",
+    "npm timings afree existing test script intentionally fails under all managers.",
+    "No Linux, Astro, Tailwind, TypeScript or remote deployment execution."
+  ]
+}

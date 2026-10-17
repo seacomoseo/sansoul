@@ -48,13 +48,20 @@
 <body style="--login: '{{ $t.login }}'">
 
   {{/*  SVELTIA CMS  */}}
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  <script>
+    if (!window.CMS_MANUAL_INIT) {
+      window.CMS_MANUAL_INIT = true
+      window.__sansoulPreviewManualInit = true
+    }
+  </script>
+  <script type="application/json" id="sansoul-preview-index">{{ partial "preview/index" . | jsonify | safeJS }}</script>
+  <script src="https://unpkg.com/@sveltia/cms@0.245.1/dist/sveltia-cms.js"></script>
 
   {{/*  CUSTOM SCRIPT  */}}
   {{ $opts := dict
     "minify"     hugo.IsProduction
     "targetPath" "js/cms.js"
-    "params"     (dict "t" $t)
+    "params"     (dict "t" $t "livePreview" true "fieldGroups" (ne site.Params.cms_groups false))
   }}
   {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts }}
   {{ if hugo.IsProduction }}

@@ -1,0 +1,18 @@
+{{/*
+Partial: preview/attrs
+Purpose: Register the source field of an existing rendered component.
+Context: Map with item (expanded box), field (string), and kind (text/inline/markdown/image).
+Returns: A data-sansoul-binding HTML attribute, or an empty attribute string.
+Side effects: Adds public binding descriptors to page.Store; never renders hidden content.
+*/}}
+{{ $attribute := "" }}
+{{ with index (.item._preview | default dict) .field }}
+  {{ $bindings := page.Store.Get "sansoul.preview.bindings" | default slice }}
+  {{ $id := print "p" (len $bindings) }}
+  {{ $descriptor := merge . (dict "id" $id "kind" $.kind "field" $.field) }}
+  {{ with .template64 }}{{ $descriptor = merge $descriptor (dict "template" (. | base64Decode) "template64" nil) }}{{ end }}
+  {{ with index ($.item._preview | default dict) "alt" }}{{ $descriptor = merge $descriptor (dict "alt" .) }}{{ end }}
+  {{ page.Store.Set "sansoul.preview.bindings" ($bindings | append $descriptor) }}
+  {{ $attribute = printf ` data-sansoul-binding="%s"` $id }}
+{{ end }}
+{{ return ($attribute | safeHTMLAttr) }}

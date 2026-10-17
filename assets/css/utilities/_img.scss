@@ -10,6 +10,7 @@
   @include mixins.radius-parent;
   position: relative;
   width: fit-content;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -75,19 +76,17 @@
 // RATIO
 
 .img--disc,
-.img--ratio,
-.img:has(> iframe) {
+.img--ratio {
   --img-ratio: 1/1;
   --img-ratio-height: calc(var(--img-width) / (var(--img-ratio)) - var(--img-border-width, 0em) * 2);
   width: 100%;
+  aspect-ratio: var(--img-ratio);
   &:not(:has(.img__in)) {
-    aspect-ratio: var(--img-ratio);
     height: var(--img-ratio-height);
   }
   iframe,
   .img__in {
     width: 100%;
-    aspect-ratio: var(--img-ratio);
     height: var(--img-ratio-height);
     img {
       width: 100%;
@@ -98,11 +97,16 @@
   }
 }
 .img--ratio > .img__in:is(video, iframe) {
-  height: auto;
+  height: var(--img-ratio-height);
+  object-fit: cover;
 }
-.img:has(> iframe) {
-  --img-ratio: 16/9;
+.img--contain > .img__in:where(video, iframe) {
+  object-fit: contain;
 }
+.img__in:where(video, iframe) {
+  max-width: 100%;
+}
+
 
 
 // BORDER
@@ -186,50 +190,6 @@
 }
 
 
-// FOR IFRAME
-
-iframe.img__in {
-  width: var(--box-in);
-}
-.img--inset {
-  iframe.img__in {
-    width: calc(100cqw + var(--box-pd) * 2);
-  }
-}
-.md {
-  iframe.img__in {
-    width: calc(100cqw + var(--box-pd) * 2);
-  }
-}
-// .img {
-//   &:not(
-//     .img--ratio,
-//     .img--disc
-//   ) {
-//     &.img--border {
-//       iframe.img__in {
-//         width: var(--box-in);
-//         height: calc(var(--box-in) * .5625);
-//         max-width: calc((var(--box-in) - 1em));
-//         max-height: calc((var(--box-in) - 1em) * .5625); // 16x9
-//       }
-//     }
-//     &.img--inset {
-//       iframe.img__in {
-//         width: calc(100cqw + var(--box-pd) * 2);
-//         height: calc((100cqw + var(--box-pd) * 2) * .5625); // 16x9
-//       }
-//       &.img--border {
-//         iframe.img__in {
-//           max-width: calc(100cqw - 1em + var(--box-pd) * 2);
-//           max-height: calc((100cqw - 1em + var(--box-pd) * 2) * .5625); // 16x9
-//         }
-//       }
-//     }
-//   }
-// }
-
-
 // move here for priority
 
 
@@ -259,6 +219,11 @@ iframe.img__in {
 
 
 // VIDEO POSTER
+
+[data-vid] > img {
+  object-fit: cover;
+  object-position: center;
+}
 
 [data-vid]:not(.aux.aux) {
   cursor: pointer;

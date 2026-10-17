@@ -13,12 +13,8 @@
   {{ end }}
   {{ if $value }}
     {{ $attr := $key }}
-    {{ if not (in (slice "true" "1") (string $value)) }}
-      {{ if in $value "\"" }}{{/* " */}}
-        {{ $attr = print $key "='" $value "'" }}
-      {{ else }}
-        {{ $attr = print $key "=\"" $value "\"" }}
-      {{ end }}
+    {{ if ne (printf "%T" $value) "bool" }}
+      {{ $attr = print $key "=\"" (htmlEscape (string $value)) "\"" }}
     {{ end }}
     {{ $attributes = $attributes | append $attr }}
   {{ end }}

@@ -1,6 +1,7 @@
-import { cookiesLegal } from '@params'
+import { cookiesLegal } from '@params/config'
 import { loadScript } from './load-script'
 import params from './params'
+import { initVideoDimensions, observeVideoDimensions } from './video-dimensions'
 const { vid, lang } = params
 
 const players = {}
@@ -12,14 +13,19 @@ function videoId (src) {
 
 // Player ID
 function playerId (target, idVideo) {
-  const idSection = target.closest('[id]').id
+  const idSection = target.closest('[id]')?.id || 'video'
   return `${idSection}-${idVideo}`
 }
 
+let initialized = false
+
 export function initPlayer () {
+  initVideoDimensions()
+  if (initialized) return
   const posterVideo = document.querySelectorAll('[data-vid]')
 
   if (posterVideo.length) {
+    initialized = true
     const isCookie = cookiesLegal && !localStorage.controlcookiemedia
 
     posterVideo.forEach(e => {
@@ -47,6 +53,12 @@ export function initPlayer () {
         const src = dataMedia.dataset.vid
         const className = dataMedia.className?.baseVal || dataMedia.className // baseVal to fix svg's
         const isVideoFile = dataMedia.hasAttribute('data-file')
+        const copyDimensions = target => {
+          for (const name of ['width', 'height']) {
+            const value = Number(dataMedia.dataset[name])
+            if (Number.isFinite(value) && value > 0) target.setAttribute(name, value)
+          }
+        }
 
         if (isVideoFile) {
           const video = document.createElement('video')
@@ -56,6 +68,7 @@ export function initPlayer () {
           video.autoplay = true
           video.controls = true
           video.playsInline = true
+          copyDimensions(video)
           imgWithIframe.replaceChildren(video)
 
           // Remove play button
@@ -68,13 +81,13 @@ export function initPlayer () {
           const iframe = document.createElement('iframe')
           iframe.className = className
           iframe.title = vid
-          iframe.width = 560
-          iframe.height = 320
+          copyDimensions(iframe)
           iframe.allowFullscreen = true
           iframe.allow = isYT
             ? 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay'
             : 'fullscreen; autoplay'
           imgWithIframe.replaceChildren(iframe)
+          observeVideoDimensions(iframe)
 
           // Remove play button
           iframe.nextElementSibling?.remove()

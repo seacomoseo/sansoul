@@ -130,25 +130,33 @@
 
 {{ $pt     := "" }}
 {{ $pb     := "" }}
-{{ $pt_vs  := "" }}
-{{ $pb_vs  := "" }}
+{{ $pt_vl  := "" }}
+{{ $pb_vl  := "" }}
+{{ $pt_value := .pt }}
+{{ $pb_value := .pb }}
+{{ $pt_vl_value := .pt_vl }}
+{{ $pb_vl_value := .pb_vl }}
+{{ if eq $pt_value nil }}{{ $pt_value = $pt_vl_value }}{{ end }}
+{{ if eq $pb_value nil }}{{ $pb_value = $pb_vl_value }}{{ end }}
+{{ if eq $pt_vl_value nil }}{{ $pt_vl_value = $pt_value }}{{ end }}
+{{ if eq $pb_vl_value nil }}{{ $pb_vl_value = $pb_value }}{{ end }}
 {{ if .ph }}
   {{ $pt    = "" }}
   {{ $pb    = "" }}
-  {{ $pt_vs = "" }}
-  {{ $pb_vs = "" }}
+  {{ $pt_vl = "" }}
+  {{ $pb_vl = "" }}
 {{ else }}
-  {{ if ne .pt nil }}
-    {{ $pt  = print "--pt-vl:" .pt }}
+  {{ if ne $pt_value nil }}
+    {{ $pt  = print "--pt:" $pt_value }}
   {{ end }}
-  {{ if ne .pb nil }}
-    {{ $pb  = print "--pb-vl:" .pb }}
+  {{ if ne $pb_value nil }}
+    {{ $pb  = print "--pb:" $pb_value }}
   {{ end }}
-  {{ if ne .pt_vs nil }}
-    {{ $pt_vs = print "--pt-vs:" .pt_vs }}
+  {{ if ne $pt_vl_value nil }}
+    {{ $pt_vl = print "--pt-vl:" $pt_vl_value }}
   {{ end }}
-  {{ if ne .pb_vs nil }}
-    {{ $pb_vs = print "--pb-vs:" .pb_vs }}
+  {{ if ne $pb_vl_value nil }}
+    {{ $pb_vl = print "--pb-vl:" $pb_vl_value }}
   {{ end }}
 {{ end }}
 {{ if .is_modal }}
@@ -156,8 +164,8 @@
   {{ $color_alpha = "" }}
   {{ $pt          = "" }}
   {{ $pb          = "" }}
-  {{ $pt_vs       = "" }}
-  {{ $pb_vs       = "" }}
+  {{ $pt_vl       = "" }}
+  {{ $pb_vl       = "" }}
 {{ end }}
 
 {{ $style := slice
@@ -165,8 +173,8 @@
   $color_alpha
   $pt
   $pb
-  $pt_vs
-  $pb_vs
+  $pt_vl
+  $pb_vl
   $div_style
   $div_next_style
 }}

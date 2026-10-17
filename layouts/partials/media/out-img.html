@@ -6,9 +6,13 @@
   "class"    .class
   $vid_name  $vid_data
   "data-vid" $vid_src
+  "data-width" (index .vid "presentation" "width")
+  "data-height" (index .vid "presentation" "height")
 -}}
 {{- $img_attrs := dict
   "src"      .img
+  "width"    (index .vid "presentation" "width")
+  "height"   (index .vid "presentation" "height")
   "alt"      .alt
   "decoding" "async"
   "loading"  .lazy
@@ -28,12 +32,13 @@
 {{ if not .notschema -}}
   {{- with .vid -}}
     {{- partial "schema/vid" (dict
-      "name"         $.alt
+      "name"         (or $.vid_title $.video_title $.alt)
       "thumbnailUrl" $.img
-      "uploadDate"   $.upload
-      "duration"     $.duration
-      "contentUrl"   .url
-      "embedUrl"     .src
+      "uploadDate"   $.vid_upload
+      "duration"     $.vid_duration
+      "contentUrl"   (cond .ifr "" .url)
+      "embedUrl"     (cond .ifr .src "")
+      "metadata"     .meta
     ) -}}
   {{- else -}}
     {{- partial "schema/img" (dict

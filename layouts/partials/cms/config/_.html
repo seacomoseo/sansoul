@@ -73,6 +73,8 @@
 -}}
 
 
+{{ $collections := partial "cms/config/collections/_" $t }}
+
 {{ $cms_config := dict
   "_anchors"        $anchors
   "backend"         $backend
@@ -120,7 +122,7 @@
       "indent_sequences" false
     )
   )
-  "collections"     (partial "cms/config/collections/_" $t)
+  "collections"     $collections
   "singletons"      (partial "cms/config/singletons/_"  $t)
 }}
 {{ with $publish_mode }}

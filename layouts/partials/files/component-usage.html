@@ -1,0 +1,93 @@
+{{/*
+Partial: files/component-usage
+Purpose: Select complete component modules from the final rendered body, including hidden content.
+Context: Map with `html` (rendered body), `attributes` (body attributes), and `custom` (custom HTML).
+Returns: Component flags, their stable signature, and conservative full-bundle mode.
+Side effects: None. Unknown script-driven content requires full mode via assets_full.
+*/}}
+{{ $html := print .attributes " " .html }}
+{{ $classes := " " }}
+{{ range findRE `(?i)\bclass\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)` $html }}
+  {{ $value := replaceRE `(?i)^class\s*=\s*["']?|["']$` "" . }}
+  {{ $classes = print $classes " " $value " " }}
+{{ end }}
+{{ $project_entry := false }}
+{{/* ReadDir lists the project directory; FileExists also searches theme overlays. */}}
+{{ range os.ReadDir "." }}
+  {{ if and .IsDir (eq .Name "assets") }}
+    {{ range os.ReadDir "assets" }}
+      {{ if in (slice "scripts.js" "styles.scss") .Name }}{{ $project_entry = true }}{{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $full := or $project_entry (not hugo.IsProduction) page.Params.assets_full site.Params.assets_full (ne (.custom | default "") "") }}
+{{ with resources.Get "custom.js" }}
+  {{ if strings.TrimSpace .Content }}{{ $full = true }}{{ end }}
+{{ end }}
+{{/* JSON data blocks, including generated schema, cannot create dynamic components. */}}
+{{ range findRE `(?i)<script\b[^>]*>` $html }}
+  {{ $attributes := replaceRE `(?i)^<script\b|>$` "" . }}
+  {{ $type := "" }}
+  {{ $has_type := false }}
+  {{/* Tokenize attributes so text inside another quoted value is never a type. */}}
+  {{ range findRE `[^\s"'<>/=]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>]+))?` $attributes }}
+    {{ if and (not $has_type) (findRE `(?i)^type(?:\s*=|$)` .) }}
+      {{ $has_type = true }}
+      {{ $type = replaceRE `(?i)^type\s*=?\s*` "" . | replaceRE `^["']|["']$` "" | lower | strings.TrimSpace }}
+      {{ $type = index (split $type ";") 0 | strings.TrimSpace }}
+    {{ end }}
+  {{ end }}
+  {{/* Executable, missing, and unknown types preserve the conservative fallback. */}}
+  {{ if not (in (slice "application/ld+json" "application/json") $type) }}{{ $full = true }}{{ end }}
+{{ end }}
+{{ with resources.Get "_custom.scss" }}
+  {{ if findRE `@extend|@use|@forward|@import|#\{` .Content }}{{ $full = true }}{{ end }}
+{{ end }}
+{{ $patterns := dict
+  "menu"       `(?:^|\s)menu(?:\s|__|--)`
+  "mail"       `(?:^|\s)mail(?:\s|__|--)`
+  "scroll"     `(?:^|\s)scroll(?:\s|--)`
+  "show"       `(?:^|\s)show(?:\s|--)`
+  "modal"      `(?:^|\s)modal(?:\s|__|--)`
+  "faq"        `(?:^|\s)faqs?(?:\s|__|--)`
+  "slider"     `(?:^|\s)slider(?:\s|__|--)`
+  "gallery"    `(?:^|\s)gallery(?:\s|__|--)`
+  "steps"      `(?:^|\s)steps?(?:\s|__|--)`
+  "review"     `(?:^|\s)reviews?(?:\s|__|--)`
+  "when"       `(?:^|\s)whens?(?:\s|__|--)`
+  "links"      `(?:^|\s)(?:links|dots|link__custom|link__br)(?:\s|__|--)`
+  "form"       `(?:^|\s)(?:form|spin|icon--submit-close)(?:\s|__|--)`
+  "gss"        `(?:^|\s)gss(?:\s|__|--)`
+  "title"      `(?:^|\s)h[1-6]?(?:\s|__|--)`
+  "search"     `(?:^|\s)search(?:\s|__|--)`
+  "geo"        `(?:^|\s)form__geo(?:\s|-)`
+  "map"        `(?:^|\s)(?:map|form__geo|leaflet)(?:\s|__|-)`
+  "latex"      `(?:^|\s)latex(?:\s|--)`
+  "cookies"    `(?:^|\s)cookies(?:\s|__|--)`
+  "translate"  `(?:^|\s)(?:google-translate|menu__link--translate)(?:\s|__|--)`
+  "counter"    `(?:^|\s)counter(?:\s|__|--)`
+}}
+{{ $flags := dict }}
+{{ $enabled := slice }}
+{{ range $name, $pattern := $patterns }}
+  {{ $flags = merge $flags (dict $name (or $full (gt (len (findRE $pattern $classes 1)) 0))) }}
+{{ end }}
+{{ range $name, $pattern := dict
+  "player"   `(?i)(?:\bdata-vid(?:\s|=|>)|<iframe\b[^>]*\bclass="[^"]*\bimg__in\b)`
+  "video"    `(?i)<video\b`
+  "gss"      `(?i)\bdata-gss(?:\s|=|>)`
+  "lightbox" `(?i)\bdata-lightbox(?:\s|=|>)`
+  "comments" `(?i)\bid\s*=\s*(?:"disqus_thread"|'disqus_thread'|disqus_thread(?:\s|/?>))`
+  "search"   `(?i)\bid\s*=\s*(?:"search__(?:form|input|submit|results)"|'search__(?:form|input|submit|results)'|search__(?:form|input|submit|results)(?:\s|/?>))`
+  "crumbs"   `(?i)\bid\s*=\s*(?:"crumbs"|'crumbs'|crumbs(?:\s|/?>))`
+  "toc"      `(?i)\bid\s*=\s*(?:"toc"|'toc'|toc(?:\s|/?>))`
+  "title"    `(?i)<h[1-6]\b`
+  "form"     `(?i)<legend\b`
+}}
+  {{ $flags = merge $flags (dict $name (or $full (index $flags $name) (gt (len (findRE $pattern $html 1)) 0))) }}
+{{ end }}
+{{/* Configuration also covers translated mirrors and UI created after page load. */}}
+{{ if site.Params.g_translate }}{{ $flags = merge $flags (dict "translate" true) }}{{ end }}
+{{ $flags = merge $flags (dict "error" (or $full (eq page.Kind "404"))) }}
+{{ range $name, $value := $flags }}{{ if $value }}{{ $enabled = $enabled | append $name }}{{ end }}{{ end }}
+{{ return (dict "full" $full "flags" $flags "key" (substr (sha256 (delimit ($enabled | sort) ",")) 0 12)) }}

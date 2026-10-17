@@ -1,23 +1,55 @@
-{{- $thumb  := .thumbnailUrl -}}
+{{/* Cached facts are optional; author values override them. Never infer upload
+dates from the page date or file modification time. */}}
+{{- $metadata := .metadata | default dict -}}
+{{- $thumb  := .thumbnailUrl | default $metadata.thumbnailUrl | default "" -}}
 {{- if hasPrefix $thumb "/" -}}
-  {{- $thumb = print site.BaseURL $thumb -}}
+  {{- $thumb = $thumb | absURL -}}
+{{- end -}}
+{{- if not (findRE `^https?://` $thumb) -}}{{- $thumb = "" -}}{{- end -}}
+{{- $content := .contentUrl -}}
+{{- $embed := .embedUrl -}}
+{{- if hasPrefix ($content | default "") "/" -}}
+  {{- $content = $content | absURL -}}
+  {{- $embed = "" -}}
 {{- end -}}
 {{- $schema := dict
-  "@type"          "VideoObject"
   "@context"       "https://schema.org"
   "@type"          "VideoObject"
-  "name"           .name
-  "description"    (.desc | default .name | markdownify | plainify)
+  "name"           (.name | default $metadata.name)
+  "description"    (.desc | default $metadata.description | default "" | markdownify | plainify)
   "thumbnailUrl"   $thumb
-  "uploadDate"     (.uploadDate | default page.Lastmod | time.Format "2006-01-02T15:04:05Z07:00")
-  "duration"       .duration
-  "contentUrl"     .contentUrl
-  "embedUrl"       .embedUrl
+  "uploadDate"     (.uploadDate | default $metadata.uploadDate)
+  "dateCreated"    $metadata.dateCreated
+  "duration"       (.duration | default $metadata.duration)
+  "width"          $metadata.width
+  "height"         $metadata.height
+  "contentUrl"     $content
+  "embedUrl"       $embed
   "inLanguage"     (page.Params.locale | default page.Lang)
   "isPartOf"       (dict "@id" page.Permalink)
 -}}
-{{- $schema = partial "func/obj-truly" $schema -}}
-
-<script type="application/ld+json">
-  {{- $schema | jsonify | safeJS -}}
-</script>
+{{- range $field := slice "uploadDate" "dateCreated" -}}
+  {{- with index $schema $field -}}
+    {{- $parsed := try (time.AsTime . "UTC") -}}
+    {{- if $parsed.Err -}}{{- $schema = merge $schema (dict $field "") -}}
+    {{- else -}}{{- $schema = merge $schema (dict $field ($parsed.Value.UTC.Format "2006-01-02T15:04:05Z07:00")) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $schema.duration -}}
+  {{- if not (findRE `^P(?:[0-9]+D)?T(?:[0-9]+H)?(?:[0-9]+M)?(?:[0-9]+(?:\.[0-9]+)?S)?$` (string .)) -}}{{- $schema = merge $schema (dict "duration" "") -}}{{- end -}}
+{{- end -}}
+{{- $missing := slice -}}
+{{- range $field := slice "name" "thumbnailUrl" "uploadDate" -}}
+  {{- if not (index $schema $field) -}}{{- $missing = $missing | append $field -}}{{- end -}}
+{{- end -}}
+{{- if $missing -}}
+  {{- $source := or $content $embed $thumb -}}
+  {{- $diagnostic := print "video-schema-" ($source | crypto.SHA256) -}}
+  {{- if not (hugo.Store.Get $diagnostic) -}}
+    {{- hugo.Store.Set $diagnostic true -}}
+    {{- warnf "VideoObject omitted for %s: missing %s. Add factual upload/metadata or a poster; see docs/video-metadata.md." $source (delimit $missing ", ") -}}
+  {{- end -}}
+{{- else -}}
+  {{- $schema = partial "func/obj-truly" $schema -}}
+  <script type="application/ld+json">{{- $schema | jsonify | safeJS -}}</script>
+{{- end -}}

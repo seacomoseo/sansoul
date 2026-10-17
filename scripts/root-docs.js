@@ -12,6 +12,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { relativeEnginePath } from './engine-paths.js'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const themeDir = path.resolve(scriptDir, '..')
@@ -50,6 +51,7 @@ for (const target of targets) syncFile(target)
 function syncFile ({ file, replacements }) {
   const target = path.join(projectDir, file)
   let next = fs.readFileSync(path.join(themeDir, 'templates', 'root', file), 'utf8')
+  next = next.replaceAll('{{CORE_PATH}}', relativeEnginePath(projectDir))
   for (const [search, replacement] of Object.entries(replacements)) {
     next = next.replaceAll(search, replacement)
   }

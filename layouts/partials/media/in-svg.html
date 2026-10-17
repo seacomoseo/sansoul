@@ -14,6 +14,7 @@
     {{- $width  = 512 -}}
     {{- $height = 512 -}}
   {{- end -}}
+  {{- with .vid -}}{{- $width = .presentation.width -}}{{- $height = .presentation.height -}}{{- end -}}
   {{- if $head -}}
     {{- $source      := $src.Content -}}
     {{- $name := .img | replaceRE `^/?u/(icons?/)?` "" | replaceRE `\.svg$` "" -}}
@@ -28,7 +29,10 @@
     {{- $vid_data    := .vid | not | not -}}
     {{- $vid_name    := index .vid "name" | default "aux" -}}
     {{- $vid_src     := index .vid "src" -}}
-    {{- $attrs       := dict $vid_name $vid_data "data-vid" $vid_src -}}
+    {{- $attrs       := dict $vid_name $vid_data "data-vid" $vid_src
+      "data-width" (index .vid "presentation" "width")
+      "data-height" (index .vid "presentation" "height")
+      -}}
     {{- $min         := $src | minify -}}
     {{- $content     := $min.Content | replaceRE `\n` "" -}}
     {{- $src          = $content | resources.FromString $src.RelPermalink -}}
@@ -51,13 +55,11 @@
       {{/*  svg html  */}}
       {{- $attrs   = partial "func/attrs" $attrs -}}
       {{- $content = $content | replaceRE ` class=["']svg-html["']` "" -}}
+      {{- $inline_head := index (findRE `<svg\b[^>]*>` $content 1) 0 -}}
+      {{- $sized_head := $inline_head | replaceRE ` (?:width|height)=["'][^"']*["']` "" -}}
+      {{- $sized_head = replace $sized_head "<svg" (print "<svg width='" $width "' height='" $height "'") -}}
+      {{- $content = replace $content $inline_head $sized_head 1 -}}
       {{- $content = replace $content "<svg" (print "<svg" $attrs) -}}
-      {{- if not ($head | findRE ` width=`) -}}
-        {{- $content = replace $content "<svg" (print "<svg width='" $width "'") -}}
-      {{- end -}}
-      {{- if not ($head | findRE ` height=`) -}}
-        {{- $content = replace $content "<svg" (print "<svg height='" $height "'") -}}
-      {{- end -}}
       {{- if .class -}}
         {{- $content = replace $content "<svg" (print "<svg class='" .class "'") -}}
       {{- end -}}
@@ -73,19 +75,23 @@
     {{- end -}}
 
     {{- /*  ICON PLAY  */ -}}
-    {{- with .iframe.play }}
+    {{- with index .vid "play" }}
       {{ . -}}
     {{- end -}}
 
 
     {{- /*  schema  */}}
     {{ if not .notschema -}}
+      {{- if .vid -}}
+        {{- partial "schema/vid" (dict "name" (or .vid_title .video_title .alt) "thumbnailUrl" $original_src.Permalink "uploadDate" .vid_upload "duration" .vid_duration "contentUrl" (cond .vid.ifr "" .vid.url) "embedUrl" (cond .vid.ifr .vid.src "") "metadata" .vid.meta) -}}
+      {{- else -}}
       {{- partial "schema/img" (dict
         "url"     $src.Permalink
         "width"   $width
         "height"  $height
         "caption" .alt
       ) -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

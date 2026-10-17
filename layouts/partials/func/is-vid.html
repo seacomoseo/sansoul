@@ -1,1 +1,1 @@
-{{ return (. | findRE `(?i)^http.+(youtu\.be|youtube\.com|vimeo\.com)/|\.(mp4|mov|avi|webm)`) }}
+{{ return (. | findRE `(?i)^https?://(?:(?:(?:www\.|m\.)?youtube(?:-nocookie)?\.com|youtu\.be|(?:www\.|player\.)?vimeo\.com)/)|\.(mp4|mov|avi|webm)(?:[?#]|$)`) }}

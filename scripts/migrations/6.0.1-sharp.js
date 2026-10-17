@@ -9,10 +9,11 @@ Writes: Root package.json; package-lock.json is synchronized by `npm install`.
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { engineDir } from '../engine-paths.js'
 
 const projectDir = process.cwd()
 const packageFile = path.join(projectDir, 'package.json')
-const themePackageFile = path.join(projectDir, 'themes', 'sansoul', 'package.json')
+const themePackageFile = path.join(engineDir, 'package.json')
 const projectPackage = readJson(packageFile, 'project package.json')
 const themePackage = readJson(themePackageFile, 'theme package.json')
 const requiredVersion = themePackage.dependencies?.sharp

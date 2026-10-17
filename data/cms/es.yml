@@ -497,8 +497,6 @@ name: Nombre
 name_hint: Nombre del archivo
 id: ID
 id_hint: Identificador para enlaces ancla \n Debe ser único (no repetirse) entre todas las secciones y cajas \n Corto \n Descriptivo \n Sin palabras irrelevantes (de, por, para, el…) \n **Ejemplo →** preguntas-frecuentes
-view: Ver
-view_hint: Grupos de opciones a mostras
 title: Título
 hanchor: Título Oculto
 hanchor_hint: Encabezado y Ancla/Anchor Oculto que tendrá el título (y el menú si está vinculado) para SEO
@@ -641,6 +639,19 @@ alt: Texto Alternativo de Imagen
 hover_alt: Texto Alternativo de Imagen Alternativa
 vid: Vídeo
 vid_hint: Admite URL de YouTube y Vimeo \n **Miniatura →** en el campo anterior correspondiente \n **Marcas de inicio y final →** Se pueden establecer en segundos añadiendo al final de la URL '#t=2,7' o '#t=2'
+vid_width: Ancho del Vídeo
+vid_width_hint: Dimensión conocida en píxeles; si se omite se usa la caché.
+vid_height: Alto del Vídeo
+vid_height_hint: Dimensión conocida en píxeles; si se omite se usa la caché.
+vid_duration: Duración del Vídeo
+vid_duration_hint: Duración ISO 8601, por ejemplo PT12S o PT1M30S; si se omite se usa la caché.
+vid_upload: Publicación del Vídeo
+vid_upload_hint: Fecha real de publicación en UTC. Se guarda como YYYY-MM-DD HH:mm:ss; si se omite se usa la caché.
+vid_title: Título del Vídeo
+vid_title_hint: Sobrescribe el título del vídeo para los metadatos.
+vid_desc: Descripción del Vídeo
+vid_desc_hint: Sobrescribe la descripción del vídeo para los metadatos.
+
 mute: Auto-reproducir Vídeo
 mute_hint: Vídeo silenciado que se reproduce automáticamente en bucle
 ratio: Proporción de la Imagen
@@ -675,10 +686,14 @@ bi: Imagen de Fondo
 alpha: Transparencia de imagen de Fondo
 scroll: Paralaje
 scroll_hint: Aplica un efecto de desplazamiento al hacer scroll
-pt: Margen Interior Superior Máximo
-pt_vs: Margen Interior Superior Mínimo
-pb: Margen Interior Inferior Máximo
-pb_vs: Margen Interior Inferior Mínimo
+pt: Margen Interior Superior
+pt_hint: Valor base. Si se omite, toma el valor para pantallas grandes; si faltan ambos, usa el predeterminado.
+pt_vl: Margen Interior Superior en Pantallas Grandes
+pt_vl_hint: Se interpola desde el valor base. Si se omite, toma el valor base.
+pb: Margen Interior Inferior
+pb_hint: Valor base. Si se omite, toma el valor para pantallas grandes; si faltan ambos, usa el predeterminado.
+pb_vl: Margen Interior Inferior en Pantallas Grandes
+pb_vl_hint: Se interpola desde el valor base. Si se omite, toma el valor base.
 ph: Ocultar Márgenes Interiores
 size: Tamaño del Contenedor
 size_hint: Por defecto → **Grande** en Secciones y Menú, **Pequeño** en Modales
@@ -1011,6 +1026,7 @@ opt-color-such: Similar (Oscuro o Claro según fondo)
 opt-color-whatsapp: WhatsApp
 opt-color-none: Sin Color (tipo Enlace simple)
 opt-color-hide: Ocultar
+opt-color-float: Flotantes
 opt-scroll-none: Desactivado
 opt-scroll-fix: Fijo en el Fondo
 opt-scroll-soft: Suave en el Fondo
@@ -1054,9 +1070,6 @@ opt-duo-2: texto → foto → foto → texto (T-F-F-T)
 opt-pips-line: Líneas
 opt-pips-dot: Puntos
 opt-pips-hide: Ocultar
-opt-arrows-bottom: Abajo
-opt-arrows-float: Flotantes
-opt-arrows-hide: Ocultar
 opt-sizes-xs: Muy Pequeño
 opt-sizes-sm: Pequeño
 opt-sizes-md: Mediano
@@ -1082,31 +1095,31 @@ opt-tile-hybrid: Híbrido
 opt-labels-in: Dentro
 opt-labels-out: Fuera
 opt-labels-both: Ambas
-opt-view-group: Grupo
-opt-view-titles: Títulos
-opt-view-md: Contenido
-opt-view-menu: Menú
-opt-view-icon: Icono
-opt-view-img: Imágen
-opt-view-btn: Botón
-opt-view-bg: Fondo
-opt-view-paddings: Márgenes Interiores
-opt-view-size: Tamaño
-opt-view-divider: Divisor
-opt-view-boxi: Caja
-opt-view-other: Otros
-opt-view-list: Lista
-opt-view-steps: Pasos
-opt-view-faq: FAQ
-opt-view-gallery: Galería
-opt-view-reviews: Reseñas
-opt-view-when: Horarios
-opt-view-links: Grupo de Enlaces
-opt-view-form: Formulario
-opt-view-map: Mapa
-opt-view-gss: Hoja de Google Drive
-opt-view-boxes: SubCajas
-opt-view-modals: Ventanas Modales
+cms_group_layout: Grupo
+cms_group_titles: Títulos
+cms_group_md: Contenido
+cms_group_menu: Menú
+cms_group_icon: Icono
+cms_group_img: Imagen
+cms_group_btn: Botón
+cms_group_bg: Fondo
+cms_group_paddings: Márgenes Interiores
+cms_group_size: Tamaño
+cms_group_divider: Divisor
+cms_group_boxi: Caja
+cms_group_other: Otros
+cms_group_list: Lista
+cms_group_steps: Pasos
+cms_group_faq: FAQ
+cms_group_gallery: Galería
+cms_group_reviews: Reseñas
+cms_group_when: Horarios
+cms_group_links: Grupo de Enlaces
+cms_group_form: Formulario
+cms_group_map: Mapa
+cms_group_gss: Hoja de Google Drive
+cms_group_boxes: SubCajas
+cms_group_modals: Ventanas Modales
 opt-tags-row: Fila
 opt-tags-col: Columna
 opt-sort-img: Imagen e Icono Arriba

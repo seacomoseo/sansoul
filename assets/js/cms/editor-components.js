@@ -1,7 +1,9 @@
 import { t } from '@params'
 import { createIconPreviewElement } from './custom-fields'
+import { linkPattern, inlineImagePattern, imagePattern, parseLinkMatch, formatLink, parseImage, formatImage } from './markdown-metadata'
 
 const SUMMARY_SEPARATOR = '\u2063'
+const IMAGE_VIDEO_ACCEPT = 'image/*,video/*,.mp4,.mov,.avi,.webm'
 const INLINE_COMPONENT_SELECTOR = '[data-component-name="x-icon"], [data-component-name="x-link"], [data-component-name="x-shortcode"]'
 const INLINE_CARET_COMPONENTS = new Set([
   'x-icon',
@@ -162,16 +164,17 @@ function initEditorComponentStyles () {
 }
 
 function getSummaryText (element) {
-  const summary = Array.from(element.childNodes)
-    .filter(function (node) {
-      return node.nodeType === 3
-    })
-    .map(function (node) {
-      return node.nodeValue || ''
-    })
-    .join('')
+  // A summary can contain framework-owned wrappers. Read their text without
+  // assuming a particular tag/structure, and exclude our decorative preview.
+  function readText (node) {
+    if (node.nodeType === 3) return node.nodeValue || ''
+    if (node.nodeType === 1 && node.classList.contains('sansoul-editor-preview')) return ''
+    return Array.from(node.childNodes || []).map(readText).join('')
+  }
 
-  if (summary) {
+  const summary = readText(element)
+
+  if (summary.trim()) {
     element.dataset.sansoulSummary = summary
     return summary
   }
@@ -717,6 +720,7 @@ export function initEditorComponents () {
       { name: 'icon', label: t.icon, widget: 'icon', hint: t.icon_hint, required: false },
       { name: 'btn', label: t.md_btn, widget: 'boolean', required: false },
       { name: 'dot', label: t.md_dot, widget: 'boolean', required: false },
+      { name: 'sm', label: 'Small', widget: 'boolean', required: false },
       { name: 'swap', label: t.swap, widget: 'boolean', required: false },
       {
         name: 'color',
@@ -742,73 +746,16 @@ export function initEditorComponents () {
         required: false,
         options: [
           { value: '', label: t['opt-scroll-none'] },
-          { value: 'nofollow', label: t.lock },
+          { value: 'lock', label: t.lock },
           { value: 'homefollow', label: t.md_homefollow }
         ]
       },
       { name: 'blank', label: t.md_blank, widget: 'boolean', required: false },
       { name: 'ga4', label: t.ga4, hint: t.ga4_hint, widget: 'boolean', required: false }
     ],
-    pattern: /(?<!!)\[(?![!])(\[)?(?:::(.+?)::\s*)?([^\]]+?)(\])?\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/,
-    fromBlock: match => {
-      const metadata = match[6] ?? ''
-      const customMatch = metadata.match(/\[([^\]]+)\]$/)
-      const custom = customMatch ? customMatch[1].trim().split(/\s+/) : []
-      const colors = [
-        'main',
-        'alt',
-        'light',
-        'dark',
-        'turn',
-        'such',
-        'whatsapp'
-      ]
-      return {
-        url: decodeURI(match[5]),
-        icon: match[2] ?? '',
-        anchor: match[3],
-        title: metadata.replace(/\s*\[[^\]]+\]$/, ''),
-        btn: Boolean(match[1] && match[4]),
-        color: custom.find(value => colors.includes(value)) ?? '',
-        dot: custom.includes('dot'),
-        swap: custom.includes('swap'),
-        follow: custom.includes('homefollow')
-          ? 'homefollow'
-          : custom.includes('nofollow')
-            ? 'nofollow'
-            : '',
-        blank: custom.includes('blank'),
-        ga4: custom.includes('ga4')
-      }
-    },
-    toBlock: ({
-      url,
-      icon = '',
-      anchor = '',
-      title = '',
-      btn = false,
-      color = '',
-      dot = false,
-      swap = false,
-      follow = '',
-      blank = false,
-      ga4 = false
-    }) => {
-      const customValues = [
-        btn && color,
-        btn && dot && 'dot',
-        btn && swap && 'swap',
-        follow,
-        blank && 'blank',
-        ga4 && 'ga4'
-      ].filter(Boolean)
-      const customText = customValues.join(' ')
-      const metadata = `${title}${customText ? `${title ? ' ' : ''}[${customText}]` : ''}`
-      const content = `${icon ? `::${icon}:: ` : ''}${anchor}`
-      return `[${btn ? '[' : ''}${content}${btn ? ']' : ''}](${url}${
-        metadata ? ` "${metadata}"` : ''
-      })`
-    },
+    pattern: linkPattern,
+    fromBlock: parseLinkMatch,
+    toBlock: formatLink,
     toPreview: renderLinkPreview
   })
 
@@ -917,7 +864,8 @@ export function initEditorComponents () {
         summary: '{{src}}',
         thumbnail: 'src',
         fields: [
-          { name: 'src', label: t['opt-widget-vimg'], widget: 'file', choose_url: true, max_file_size: 25000000, accept: '.mp4,.mov,.avi,.webm,.MP4,.MOV,.AVI,.WEBM' },
+          { name: 'src', label: t['opt-widget-vimg'], widget: 'file', choose_url: true, max_file_size: 25000000, accept: IMAGE_VIDEO_ACCEPT },
+          { name: 'alt', label: 'Alt', required: false },
           { name: 'ratio', label: t.ratio, hint: t.ratio_hint, pattern: [/^[\d/]*$/, t.ratio_pattern], required: false },
           { name: 'title', label: t.md_title, required: false },
           { name: 'url', label: t.url, required: false }
@@ -929,33 +877,14 @@ export function initEditorComponents () {
       const gallery = match.groups?.gallery ?? match[1] ?? ''
       return {
         images: gallery.split('\n').map(line => {
-          const linkedMatch = line.match(/^\[!\[(.*?)\]\((\S+?)(?:\s+"(.*?)")?\)\]\((.*?)\)$/)
-          if (linkedMatch) {
-            return {
-              ratio: linkedMatch[1],
-              src: decodeURI(linkedMatch[2]),
-              title: linkedMatch[3] ?? '',
-              url: decodeURI(linkedMatch[4])
-            }
-          }
-          const imageMatch = line.match(/^!\[(.*?)\]\((\S+?)(?:\s+"(.*?)")?\)$/)
-          return {
-            ratio: imageMatch?.[1] ?? '',
-            src: imageMatch?.[2] ? decodeURI(imageMatch[2]) : '',
-            title: imageMatch?.[3] ?? '',
-            url: ''
-          }
+          const linked = line.startsWith('[![') ? line.match(inlineImagePattern) : null
+          if (linked?.[1] !== undefined) return parseImage(linked[1], linked[2], linked[3], linked[4])
+          const image = line.match(imagePattern)
+          return image ? parseImage(image[1], image[2], image[3]) : { src: '' }
         })
       }
     },
-    toBlock: ({ images = [] }) =>
-      images
-        .filter(({ src }) => src)
-        .map(({ src, ratio = '', title = '', url = '' }) => {
-          const image = `![${ratio}](${src}${title ? ` "${title}"` : ''})`
-          return url ? `[${image}](${url})` : image
-        })
-        .join('\n'),
+    toBlock: ({ images = [] }) => images.filter(({ src }) => src).map(formatImage).join('\n'),
     toPreview: () => ''
   })
 
@@ -966,7 +895,8 @@ export function initEditorComponents () {
     trigger: 'button',
     collapsed: true,
     fields: [
-      { name: 'images', label: t.imgs, widget: 'file', multiple: true, choose_url: true, max_file_size: 25000000, accept: '.mp4,.mov,.avi,.webm,.MP4,.MOV,.AVI,.WEBM' },
+      { name: 'images', label: t.imgs, widget: 'file', multiple: true, choose_url: true, max_file_size: 25000000, accept: IMAGE_VIDEO_ACCEPT },
+      { name: 'alt', label: 'Alt', required: false },
       { name: 'ratio', label: t.ratio, hint: t.ratio_hint, required: false },
       { name: 'title', label: t.md_title, required: false }
     ],
@@ -976,28 +906,23 @@ export function initEditorComponents () {
       const images = []
       let ratio = ''
       let title = ''
-      gallery
-        .trim()
-        .split('\n')
-        .forEach((line, index) => {
-          const imageMatch = line.match(/^!\[(.*?)\]\((\S+?)(?:\s+"(.*?)")?\)$/)
-          if (!imageMatch) return
-          images.push(decodeURI(imageMatch[2]))
-          if (index === 0) {
-            ratio = imageMatch[1]
-            title = (imageMatch[3] ?? '').replace(/\s+\d+$/, '')
-          }
-        })
-      return { images, ratio, title }
-    },
-    toBlock: ({ images = [], ratio = '', title = '' }) => {
-      const imageValues = Array.isArray(images) ? images : [images].filter(Boolean)
-      const lines = imageValues.map((src, index) => {
-        const number = index === 0 ? '' : ` ${index + 1}`
-        const imageRatio = ratio
-        const imageTitle = title ? `${title}${number}` : ''
-        return `![${imageRatio}](${src}${imageTitle ? ` "${imageTitle}"` : ''})`
+      let alt = ''
+      gallery.trim().split('\n').forEach((line, index) => {
+        const imageMatch = line.match(imagePattern)
+        if (!imageMatch) return
+        const image = parseImage(imageMatch[1], imageMatch[2], imageMatch[3])
+        images.push(image.src)
+        if (index === 0) {
+          ratio = image.ratio
+          title = image.title
+          alt = image.alt
+        }
       })
+      return { images, ratio, title, alt }
+    },
+    toBlock: ({ images = [], ratio = '', title = '', alt = '' }) => {
+      const imageValues = Array.isArray(images) ? images : [images].filter(Boolean)
+      const lines = imageValues.map((src, index) => formatImage({ src, ratio, alt, title: title && index ? `${title} ${index + 1}` : title }))
       return `<!-- gallery-simple -->\n${lines.join('\n')}`
     },
     toPreview: () => ''
@@ -1011,25 +936,17 @@ export function initEditorComponents () {
     mode: 'dialog',
     summary: '🖼️ {{src}}',
     fields: [
-      { name: 'src', label: t.imgs, widget: 'file', choose_url: true, max_file_size: 25000000, accept: '.mp4,.mov,.avi,.webm,.MP4,.MOV,.AVI,.WEBM' },
+      { name: 'src', label: t.imgs, widget: 'file', choose_url: true, max_file_size: 25000000, accept: IMAGE_VIDEO_ACCEPT },
+      { name: 'alt', label: 'Alt', required: false },
       { name: 'ratio', label: t.ratio, hint: t.ratio_hint, required: false },
       { name: 'title', label: t.md_title, required: false },
       { name: 'url', label: t.url, required: false }
     ],
-    pattern: /(?:^|(?<=[^\n]))(?:\[!\[(.*?)\]\((\S+?)(?:\s+"(.*?)")?\)\]\(([^)\s]+)\)|(?<!\[)!\[(.*?)\]\((\S+?)(?:\s+"(.*?)")?\))/,
-    fromBlock: match => {
-      const linked = Boolean(match[1] !== undefined)
-      return {
-        ratio: linked ? match[1] ?? '' : match[5] ?? '',
-        src: decodeURI(linked ? match[2] ?? '' : match[6] ?? ''),
-        title: linked ? match[3] ?? '' : match[7] ?? '',
-        url: linked ? decodeURI(match[4] ?? '') : ''
-      }
-    },
-    toBlock: ({ src = '', ratio = '', title = '', url = '' }) => {
-      const image = `![${ratio}](${src}${title ? ` "${title}"` : ''})`
-      return url ? `[${image}](${url})` : image
-    },
+    pattern: inlineImagePattern,
+    fromBlock: match => match[1] !== undefined
+      ? parseImage(match[1], match[2], match[3], match[4])
+      : parseImage(match[5], match[6], match[7]),
+    toBlock: formatImage,
     toPreview: () => ''
   })
 

@@ -1,4 +1,4 @@
-import { name, netlify, netlifyHook, netlifyId, cloudflareId } from '@params'
+import { name, netlify, netlifyHook, netlifyId, cloudflareId } from '@params/config'
 
 const deployStatus = document.getElementById('status')
 const deployTime = document.getElementById('deploy-time')

@@ -83,6 +83,11 @@ hugo.Store after all page-local Stores have been populated.
   {{- end -}}
 {{- end -}}
 {{- page.Store.Set "sansoul.resources.svg-urls" $page_icons -}}
+{{- if strings.Contains $html "__SANSOUL_STYLES__" -}}
+  {{- $css := partial "styles" page -}}
+  {{- $styles := page.Store.Get "sansoul.assets.styles" | default (slice $css) -}}
+  {{- $html = replace $html "__SANSOUL_STYLES__" (partial "files/style-links" $styles) -}}
+{{- end -}}
 {{- $scripts := partial "scripts" page -}}
 {{- $html = replace $html "__SANSOUL_SCRIPTS__" $scripts.RelPermalink -}}
 {{- $html = replace $html "__SANSOUL_GLYPHS__" (index $plan "glyphs-html") -}}

@@ -30,7 +30,7 @@ Side effects: Called media and block partials may register assets in page.Store.
 
       {{- /*  SUB  */ -}}
       {{- with $.sub }}
-        <p class="box__sub sub">
+        <p class="box__sub sub"{{ partial "preview/attrs" (dict "item" $ "field" "sub" "kind" "inline") }}>
           {{- . | markdownify -}}
         </p>
       {{- end -}}
@@ -39,7 +39,7 @@ Side effects: Called media and block partials may register assets in page.Store.
 
       {{- /*  PRICE  */ -}}
       {{- with $.price }}
-        <div class="price">
+        <div class="price"{{ partial "preview/attrs" (dict "item" $ "field" "price" "kind" "inline") }}>
           {{- . | markdownify -}}
         </div>
       {{- end -}}

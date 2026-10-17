@@ -1,0 +1,16 @@
+{{/*
+Partial: cms/fields
+Purpose: Concatenate field segments explicitly, independent of Go slice types.
+Context: Slice of field aliases, field maps, or flat slices of either.
+Returns: A flat list of fields, preserving segment and field order.
+Side effects: None.
+*/}}
+{{ $fields := slice }}
+{{ range . }}
+  {{ if reflect.IsSlice . }}
+    {{ range . }}{{ $fields = $fields | append . }}{{ end }}
+  {{ else }}
+    {{ $fields = $fields | append . }}
+  {{ end }}
+{{ end }}
+{{ return $fields }}

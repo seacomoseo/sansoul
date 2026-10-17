@@ -1,30 +1,58 @@
-/* eslint-disable */
-import('./netlify-identity') .then(m => m.initNetlifyIdentity()      )
-// import('./resize-window')    .then(m => m.initResizeWindow()         )
-import('./menu-toggle')      .then(m => m.initMenuToggle()           )
-import('./menu-scroll-spy')  .then(m => m.initMenuScrollSpy()        )
-import('./scroll-top')       .then(m => m.initScrollTop()            )
-import('./scroll-to')        .then(m => m.initScrollToHashWhenLoad() )
-// import('./lazy-load')        .then(m => m.initLazyLoad()             )
-import('./open-links')       .then(m => m.initOpenLinks()            )
-import('./mails')            .then(m => m.initMails()                )
-import('./scroll-parallax')  .then(m => m.initScrollParallax()       )
-import('./modals')           .then(m => m.initModals()               )
-import('./player')           .then(m => m.initPlayer()               )
-import('./video-mute')       .then(m => m.initVideoMute()            )
-import('./video-fullscreen') .then(m => m.initVideoFullscreen()      )
-import('./gss')              .then(m => m.initGss()                  )
-import('./latex')            .then(m => m.initLatex()                )
-import('./faq')              .then(m => m.initFaq()                  )
-import('./sliders')          .then(m => m.initSliders()              )
-import('./map')              .then(m => m.initMap()                  )
-import('./form-geo')         .then(m => m.initFormGeo()              )
-import('./form-send')        .then(m => m.initFormSend()             )
-import('./form-files')       .then(m => m.initFormFiles()            )
-import('./form-show')        .then(m => m.initFormShow()             )
-import('./google-translate') .then(m => m.initGoogleTranslate()      )
-import('./ga4')              .then(m => m.initGa4()                  )
-import('./simple-lightbox')  .then(m => m.initSimpleLightbox()       )
-import('./prerender')        .then(m => m.initPrerender()            )
-import('./comments')         .then(m => m.initComments()             )
-import('./counter')          .then(m => m.initCounter()              )
+import { initNetlifyIdentity } from './netlify-identity'
+import { initMenuToggle } from './menu-toggle'
+import { initMenuScrollSpy } from './menu-scroll-spy'
+import { initScrollTop } from './scroll-top'
+import { initScrollToHashWhenLoad } from './scroll-to'
+import { initOpenLinks } from './open-links'
+import { initMails } from './mails'
+import { initScrollParallax } from './scroll-parallax'
+import { initModals } from './modals'
+import { initPlayer } from './player'
+import { initVideoMute } from './video-mute'
+import { initVideoFullscreen } from './video-fullscreen'
+import { initGss } from './gss'
+import { initLatex } from './latex'
+import { initFaq } from './faq'
+import { initSliders } from './sliders'
+import { initMap } from './map'
+import { initFormGeo } from './form-geo'
+import { initFormSend } from './form-send'
+import { initFormFiles } from './form-files'
+import { initFormShow } from './form-show'
+import { initGoogleTranslate } from './google-translate'
+import { initGa4 } from './ga4'
+import { initSimpleLightbox } from './simple-lightbox'
+import { initPrerender } from './prerender'
+import { initComments } from './comments'
+import { initCounter } from './counter'
+
+if (!window.__sansoulInitialized) {
+  window.__sansoulInitialized = true
+  initNetlifyIdentity()
+  initMenuToggle()
+  initMenuScrollSpy()
+  initScrollTop()
+  initScrollToHashWhenLoad()
+  initOpenLinks()
+  initMails()
+  initScrollParallax()
+  initModals()
+  initPlayer()
+  initVideoMute()
+  initVideoFullscreen()
+  initGss()
+  initLatex()
+  initFaq()
+  initSliders()
+  initMap()
+  initFormGeo()
+  initFormSend()
+  initFormFiles()
+  initFormShow()
+  initGoogleTranslate()
+  initGa4()
+  initSimpleLightbox()
+  initPrerender()
+  initComments()
+  initCounter()
+}

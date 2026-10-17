@@ -41,6 +41,138 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 8.0.0 — 2026-10-15
+
+**Impacto:** nueva sintaxis canónica de metadatos Markdown, selección del motor
+derivada del prebuild, metadatos de vídeo persistentes, recursos compartidos y una vista previa
+experimental para colecciones de contenido y grupos plegables del CMS. Se mantiene la lectura de Markdown legado y la ubicación
+`themes/sansoul`; no se mueve ningún submódulo automáticamente.
+
+### Migraciones automáticas
+
+`sh do update` ejecuta:
+
+1. `core/scripts/migrations/8.0.0-project-config.js`: retira selectores de tema
+   redundantes reconocidos, ordena `domain`, `owner`, `name` y actualiza los
+   wrappers históricos conocidos. Conserva configuraciones personalizadas con
+   un aviso para revisarlas.
+2. `core/scripts/migrations/8.0.0-markdown-metadata.js`: convierte los parámetros
+   de títulos de enlaces a `{…}`, `nofollow` a `lock` y el ratio de imágenes del
+   alt al título. Preserva código y las formas que no puede convertir con
+   seguridad; el renderizador mantiene compatibilidad con ellas.
+
+3. `core/scripts/migrations/8.0.0-cms-groups.js`: añade `yaml` a las dependencias
+   de ejecución si falta (o la mueve desde desarrollo); conserva versiones
+   personalizadas. El actualizador sincroniza el lockfile con el gestor declarado.
+
+Los tres scripts admiten `--check`. La migración no cambia el gestor de paquetes:
+pnpm sigue siendo una elección explícita mediante la herramienta documentada.
+
+### Comprobaciones
+
+- La nueva dependencia requiere instalación: en consumidores npm, `npm install`;
+  en pnpm, `pnpm install --no-frozen-lockfile` tras la migración para sincronizar
+  el lockfile. El actualizador lo coordina; CI continúa usando lockfile congelado.
+- Los [grupos plegables](docs/cms-field-groups.md) sustituyen el selector `view`
+  sin anidar el YAML guardado. No elimines datos `view` existentes en masa:
+  algunos campos geográficos usan ese nombre. Verifica editar/guardar/reabrir
+  cajas y modales. `params.cms_groups: false` ofrece el editor plano. Los
+  serializadores preservan valores, pero pueden normalizar formato y comentarios.
+- Revisa imágenes, enlaces especiales y los avisos de migración; compila el
+  contenido y abre entradas representativas en el CMS.
+- El prebuild genera `theme` y `themesDir` para la ubicación instalada. No edites
+  `prebuild/public/hugo.prebuild.yml`. Si quieres mover el submódulo, actualiza
+  primero el motor y sigue [el procedimiento](docs/core-migration.md).
+- Versiona `data/video_metadata.json` después de revisar los metadatos generados.
+  FFprobe solo se necesita para inspeccionar vídeos locales nuevos o cambiados;
+  las dimensiones de YouTube no se inventan. Véase [vídeos](docs/video-metadata.md).
+- La [vista previa experimental](docs/cms-live-preview.md) queda activada en las
+  colecciones de contenido. Revisa su aviso, el Markdown, medios y clic hacia
+  campos anidados en `/admin/`. No evalúa `if` ni reconstruye la estructura.
+- Los metadatos de medios usan `vid_width`, `vid_height`, `vid_duration`,
+  `vid_upload`, `vid_title` y `vid_desc`. Los nombres anteriores siguen como
+  alias; no requieren una migración de archivos. El CMS guarda `vid_upload`
+  como fecha UTC `YYYY-MM-DD HH:mm:ss` y el JSON-LD la normaliza a ISO 8601.
+  Revisa también un enlace `/shorts/` sin ratio conocido: su fallback es vertical.
+- Los posters locales generados se guardan en `uploads/video-posters/`; revisa y
+  versiona los usados junto con la caché. Los `VideoObject` sin nombre, poster o
+  fecha real de publicación se omiten con un aviso.
+- Producción comparte segmentos CSS y módulos JS. Revisa la navegación, los
+  componentes y cualquier CSP personalizada; desarrollo conserva el bundle
+  completo. Los nombres con hash son salidas generadas.
+
+No todas las decisiones anteriores son migraciones automáticas: el cambio de
+ruta y la conversión de gestor permanecen explícitos. El actualizador rechaza
+árboles con cambios y no hace staging, commits, push ni despliegues.
+
+## 7.7.0 — 2026-10-15
+
+**Impacto:** el motor admite `core/` y la ubicación anterior `themes/sansoul/`.
+La referencia copiable usa `core/`; actualizar un consumidor existente no mueve
+automáticamente su submódulo.
+
+### Acciones
+
+1. Conserva la ubicación actual o sigue la [migración de ruta](docs/core-migration.md).
+   El wrapper, el prebuild, los scripts y los documentos generados resuelven la
+   ruta instalada. El nombre interno de Git puede seguir siendo `themes/sansoul`.
+2. Regenera README/AGENTS con `sh do root-docs` y ejecuta `sh do check`.
+3. Revisa las páginas sencillas y las que contienen componentes interactivos
+   con el build de producción antes de sincronizar la versión compatible.
+   Desarrollo conserva el pipeline completo.
+4. La referencia incluye contenido ficticio para probar colecciones y bloques.
+   Ese contenido pertenece al consumidor: actualizar solo el motor no lo copia
+   a los sitios existentes. No habilites un proveedor real de formularios en
+   las pruebas.
+
+El proceso no cambia el repositorio remoto ni crea commits, staging, push o
+despliegues. `sh do update` sigue rechazando cambios pendientes, incluido un
+cambio de ruta todavía sin registrar en el índice de Git.
+
+## 7.6.0 — 2026-10-14
+
+**Impacto:** desarrollo local y proyectos que opten por usar pnpm. La conversión
+de gestor es opcional; actualizar el tema no convierte otros proyectos.
+
+### Cambios relevantes
+
+- `sh do dev` y `sh do live` son los nombres preferidos de `server` y `local`;
+  los nombres anteriores siguen funcionando como alias.
+- `live` reinicia Hugo tras un prebuild válido para reconstruir desde cero;
+  conserva la última configuración válida cuando el prebuild falla y recupera
+  fallos de Hugo asociados a la actualización cuando se corrigen las entradas.
+- Los servidores administrados bloquean el proyecto y limpian sus salidas
+  generadas al terminar. No ejecutes un build u otro Hugo simultáneo en la misma
+  carpeta. Ctrl-C, SIGTERM y SIGHUP permiten limpiar; SIGKILL y apagados no.
+- El build y el actualizador respetan el gestor declarado. pnpm requiere una
+  versión exacta y un `pnpm-lock.yaml` versionado; npm sigue admitido.
+- El pipeline de SVG, fuentes, CSS y JavaScript en producción no cambia.
+- La versión recomendada de Hugo pasa de 0.164.0 a 0.168.0 por sus correcciones
+  de seguridad. El mínimo del motor sigue siendo 0.164.0; no se usan APIs nuevas.
+
+### Acciones
+
+1. Ejecuta `sh do root-docs` y actualiza tus accesos directos a `dev`/`live`.
+2. Comprueba inicio, edición y cierre de ambos servidores; confirma que no quedan
+   procesos Hugo ni salidas generadas de esa sesión.
+3. Si conviertes a pnpm, sigue el [informe y procedimiento](docs/development-dependencies.md).
+   Importa el lockfile sin actualizar versiones, conserva una copia de reversión,
+   fija Node/pnpm y valida una instalación congelada y el build completo. No
+   actives el virtual store experimental en CI.
+4. Compila el proyecto y revisa `/admin/`, la home y los divisores antes de
+   sincronizar la versión compatible.
+5. Actualiza Hugo local y los `HUGO_VERSION` de despliegue a 0.168.0, manteniendo
+   `netlify.toml` y `wrangler.toml` según el flujo de la referencia.
+   Revisa los cambios de seguridad, globs y URLs descritos en la
+   [comparación de versiones](docs/hugo-0.168.0.md).
+
+### Validación
+
+`sh do check` debe finalizar correctamente. Los proyectos npm continúan
+instalando con npm; los convertidos deben compilar con una instalación limpia
+`pnpm install --frozen-lockfile`, sin depender de un almacén de otra máquina.
+La ruta del submódulo sigue siendo `themes/sansoul`.
+
 ## 7.0.0 — 2026-07-28
 
 **Impacto:** todos los proyectos que usen valores globales localizados,

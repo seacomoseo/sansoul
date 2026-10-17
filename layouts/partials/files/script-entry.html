@@ -1,0 +1,54 @@
+{{/*
+Partial: files/script-entry
+Purpose: Create a deterministic whole-module entry for the production batch or complete build.
+Context: Map with opts, usage, show and cookies.
+Returns: Resource, build options and content/options signature.
+Side effects: Creates a virtual entry. Selective entries share global params; page SVG URLs stay in full integrations only.
+*/}}
+{{ $opts := .opts }}
+{{ $usage := .usage }}
+{{ $selective := and hugo.IsProduction (not $usage.full) }}
+{{ $source := (resources.Get "scripts.js").Content }}
+{{ if $selective }}
+  {{ $components := dict
+    "menu-toggle" "menu" "menu-scroll-spy" "menu" "mails" "mail"
+    "scroll-parallax" "scroll" "modals" "modal" "player" "player"
+    "video-mute" "video" "video-fullscreen" "video" "gss" "gss"
+    "latex" "latex" "faq" "faq" "sliders" "slider" "map" "map"
+    "form-geo" "geo" "form-send" "form" "form-files" "form" "form-show" "form"
+    "google-translate" "translate" "simple-lightbox" "lightbox"
+    "comments" "comments" "counter" "counter"
+  }}
+  {{ range $module, $component := $components }}
+    {{ if not (index $usage.flags $component) }}
+      {{ $pattern := printf `(?m)^import \{ (\w+) \} from '\./%s'\n?` $module }}
+      {{ range findRE $pattern $source }}
+        {{ $function := replaceRE $pattern "$1" . | strings.TrimSpace }}
+        {{ $source = replaceRE (printf `(?m)^  %s\(\)\n?` $function) "" $source }}
+      {{ end }}
+      {{ $source = replaceRE $pattern "" $source }}
+    {{ end }}
+  {{ end }}
+  {{ $params := dict }}
+  {{/* Selective modules do not consume icons. Excluding this page-local map lets the graph share chunks. */}}
+
+  {{ range $name, $value := $opts.params }}{{ if ne $name "icons" }}{{ $params = merge $params (dict $name $value) }}{{ end }}{{ end }}
+  {{ $opts = dict "params" $params "format" "esm" "minify" true }}
+{{ end }}
+{{ range slice
+  (dict "path" "scroll-show" "enabled" (and .show (or $usage.full $usage.flags.show)) "function" "initScrollShow")
+  (dict "path" "cookies" "enabled" (and .cookies (or $usage.full $usage.flags.cookies)) "function" "initCookies")
+}}
+  {{ if .enabled }}
+    {{ if strings.Contains $source "  window.__sansoulInitialized = true" }}
+      {{ $source = print "import { " .function " } from './" .path "'\n" (replace $source "  window.__sansoulInitialized = true" (print "  window.__sansoulInitialized = true\n  " .function "()")) }}
+    {{ else }}
+      {{ $source = print $source "\nimport('./" .path "').then(m => m." .function "())" }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ with resources.Get "custom.js" }}{{ $source = print $source "\n" .Content }}{{ end }}
+{{ $key := substr (sha256 (print $source "|" (jsonify $opts))) 0 12 }}
+{{ $resource := resources.FromString (print "js/sansoul-entry-" $key ".js") $source }}
+{{ if not $selective }}{{ $opts = merge $opts (dict "targetPath" (print "js/scripts-build-" $key ".js")) }}{{ end }}
+{{ return (dict "resource" $resource "opts" $opts "key" $key "configKey" (substr (sha256 (jsonify $opts)) 0 12)) }}

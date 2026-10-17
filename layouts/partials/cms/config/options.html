@@ -9,7 +9,7 @@
     {{ $value := dict "value" . "label" $label }}
     {{ $values = $values | append $value }}
   {{ end }}
-  {{ if not (in (slice "icons_style" "btns_type" "tile" "view" "sort" "location_type" "labels") $k) }}
+  {{ if not (in (slice "icons_style" "btns_type" "tile" "sort" "location_type" "labels") $k) }}
     {{ $first := index . 0 }}
     {{ $type  := printf "%T" $first }}
     {{ if eq $type "string" }}
@@ -57,7 +57,7 @@
   "&opts_direction"     $o.direction
   "&opts_duo"           $o.duo
   "&opts_pips"          $o.pips
-  "&opts_arrows"        $o.arrows
+  "&opts_arrows"        (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" "none" "hide" "float"))
   "&opts_color_base"    (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" "none"))
   "&opts_color_base_w"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such"))
   "&opts_color_base_n"  (where $o.color "value" "in" (slice "main" "alt" "cta" "light" "dark" "turn" "such" "whatsapp" "hide"))
@@ -73,12 +73,6 @@
   "&opts_gallery_types" $o.gallery_types
   "&opts_tile"          $o.tile
   "&opts_labels"        $o.labels
-  "&opts_view_section"  (where $o.view "value" "in" (slice "all" "bg" "paddings" "size" "divider" "menu" "other" "boxes"))
-  "&opts_view_sections" (where $o.view "value" "in" (slice "all" "bg" "paddings" "size" "divider" "menu" "other" "boxes" "modals"))
-  "&opts_view_modal"    (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "img" "btn" "bg" "paddings" "size" "boxi" "other"))
-  "&opts_view_modals"   (where $o.view "value" "in" (slice "all" "titles" "md" "menu" "icon" "img" "btn" "bg" "paddings" "size" "boxi" "other" "list" "steps" "faqs" "gallery" "reviews" "when" "links" "form" "map" "gss" "boxes"))
-  "&opts_view_box"      (where $o.view "value" "in" (slice "all" "group" "titles" "md" "icon" "img" "btn" "bg" "boxi" "other"))
-  "&opts_view_boxes"    (where $o.view "value" "in" (slice "all" "titles" "md" "icon" "img" "btn" "bg" "boxi" "other" "list" "steps" "faqs" "gallery" "reviews" "when" "links" "form" "map" "gss" "boxes"))
   "&opts_tags"          $o.tags
   "&opts_divider"       $o.div
   "&opts_location_type" $o.location_type

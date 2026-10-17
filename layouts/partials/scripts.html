@@ -1,12 +1,19 @@
+{{/*
+Partial: scripts
+Purpose: Register or publish a page's JavaScript graph; keep development and custom integrations complete.
+Context: page.Page. sansoul.assets.registering selects registration before templates.Defer.
+Returns: Published script resource, or false while registering a selective entry.
+Side effects: Registers batch entries or publishes JavaScript; batch configuration is shared only for identical global options.
+*/}}
 {{/*  LANGS  */}}
 
 {{ $langs := dict }}
-{{ range .AllTranslations }}
-  {{ $t    := index hugo.Data.i18n .Lang }}
+{{ range hugo.Sites }}
+  {{ $t    := index hugo.Data.i18n .Language.Lang }}
   {{ $lang := dict
-    "lang"                   .Lang
-    "disqusId"               (or site.Params.disqus "")
-    "isGoogleTranslate"      (site.Params.google_translate | not | not)
+    "lang"                   .Language.Lang
+    "disqusId"               (or .Params.disqus "")
+    "isGoogleTranslate"      (.Params.g_translate | not | not)
     "vid"                    $t.vid
     "loading"                $t.loading
     "mapTerrain"             $t.map_terrain
@@ -29,7 +36,7 @@
     "formSubmitOk"           $t.form_submit_ok
     "formSubmitWrong"        $t.form_submit_wrong
   }}
-  {{ $lang  = dict .Lang $lang }}
+  {{ $lang  = dict .Language.Lang $lang }}
   {{ $langs = merge $langs $lang  }}
 {{ end }}
 
@@ -65,31 +72,27 @@
 {{ end }}
 
 
-{{/*  RESOURCES  */}}
-
-{{ $_index := resources.Get "scripts.js" }}
-{{ $custom := resources.Get "custom.js" }}
-
-{{ $maybe_srcs := slice
-  (dict "path" "scroll-show" "if" $is_scroll_show "func" "ScrollShow")
-  (dict "path" "cookies"     "if" $is_cookies     "func" "Cookies"   )
-}}
-{{ $conditional_srcs := slice }}
-{{ range $maybe_srcs }}
-  {{ $src  := "" }}
-  {{ if .if }}
-    {{ $src = print "import('./" .path "').then(m => m.init" .func "())" }}
+{{/* Shared source/options are also used to register entries before deferred rendering. */}}
+{{ $entry := partial "files/script-entry" (dict "opts" $opts "usage" (page.Store.Get "sansoul.assets.usage" | default (dict "full" true)) "show" $is_scroll_show "cookies" $is_cookies) }}
+{{ $usage := page.Store.Get "sansoul.assets.usage" | default (dict "full" true) }}
+{{ $js := false }}
+{{ if and hugo.IsProduction (not $usage.full) }}
+  {{ $batch := js.Batch (print "js/sansoul-" $entry.configKey) }}
+  {{ if page.Store.Get "sansoul.assets.registering" }}
+    {{ with $batch.Config }}{{ .SetOptions $entry.opts }}{{ end }}
+    {{ $group := $batch.Group $entry.key }}
+    {{ with $group.Script "scripts" }}{{ .SetOptions (dict "resource" $entry.resource "params" $entry.opts.params) }}{{ end }}
+  {{ else }}
+    {{ with $batch.Build }}
+      {{ $resources := index .Groups $entry.key }}
+      {{ $js = index $resources 0 }}
+      {{/* Batch entry names identify their group, not transitive module content. Fingerprint the entry in the same directory so relative chunk imports remain valid. */}}
+      {{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" $js.Name) }}
+    {{ end }}
   {{ end }}
-  {{ $src   = $src | resources.FromString (print "aux_" .path ".js") }}
-  {{ $conditional_srcs = $conditional_srcs | append $src }}
+{{ else }}
+  {{ $js = $entry.resource | js.Build $entry.opts }}
+  {{ if hugo.IsProduction }}{{ $js = $js | minify }}{{ end }}
+  {{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/scripts.js") }}
 {{ end }}
-
-{{ $js := slice $_index | append $conditional_srcs | append $custom | resources.Concat "js/scripts.js" }}
-{{ $js  = $js | js.Build $opts }}
-
-{{ if hugo.IsProduction }}
-  {{ $js = $js | minify }}
-{{ end }}
-{{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/scripts.js") }}
-
 {{ return $js }}

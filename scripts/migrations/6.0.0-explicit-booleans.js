@@ -9,11 +9,12 @@ Writes: Project YAML files and YAML front matter outside generated/vendor paths.
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { engineDir } from '../engine-paths.js'
 
 const projectDir = process.cwd()
-const themeHugoConfig = path.join(projectDir, 'themes', 'sansoul', 'hugo.default.yml')
+const themeHugoConfig = path.join(engineDir, 'hugo.default.yml')
 const projectPackageFile = path.join(projectDir, 'package.json')
-const themePackageFile = path.join(projectDir, 'themes', 'sansoul', 'package.json')
+const themePackageFile = path.join(engineDir, 'package.json')
 const excludedDirectories = new Set([
   '.git',
   '.codex',
@@ -21,6 +22,7 @@ const excludedDirectories = new Set([
   'public',
   'resources',
   'themes',
+  'core',
   'uploads'
 ])
 const yamlExtensions = new Set(['.yaml', '.yml'])

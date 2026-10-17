@@ -91,6 +91,24 @@
     )
   }}
 
+  {{/*  Table Columns  */}}
+  {{ $columns  := slice "title" }}
+  {{ if not (in (slice "article" "event") .Params.base) }}
+    {{ $columns = $columns | append "weight" }}
+  {{ end }}
+  {{ if eq .Params.base "article" }}
+    {{ $columns = $columns | append "date" "mod" }}
+  {{ end }}
+  {{ if eq .Params.base "event" }}
+    {{ $columns = $columns | append "date" "end" }}
+  {{ end }}
+  {{ $columns = $columns | append "seo.noindex" "draft" }}
+  {{ with .Params.taxonomies }}
+    {{ range . }}
+      {{ $columns = $columns | append .name }}
+    {{ end }}
+  {{ end }}
+
   {{/*  Fields  */}}
   {{ $fields  := slice
     `~page_slug`
@@ -243,10 +261,12 @@
     "preview_path"     $preview
     "summary"          $sum
     "thumbnail"        `img`
-    "editor"           (dict "preview" false)
+    "editor"           (dict "preview" true)
     "sortable_fields"  $sortable_fields
     "view_groups"      $view_groups
     "view_filters"     $view_filters
+    "table_columns"    $columns
+    "bulk_edit"        true
     "fields"           $fields
     "index_file"       (dict
       "name"             `_index`
@@ -256,7 +276,7 @@
       "i18n"             true
       "preview_path"     $index_preview
       "thumbnail"        `img`
-      "editor"           (dict "preview" false)
+      "editor"           (dict "preview" true)
       "fields"           (slice
         $index_permalinks
         $index_slug

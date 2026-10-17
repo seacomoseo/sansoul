@@ -158,18 +158,17 @@ __SANSOUL_GLYPHS__
 {{- end -}}
 
 {{- /*  SELF-HOSTED FONTS  */ -}}
-{{- $preloaded_fonts := slice -}}
-{{- range page.Store.Get "sansoul.fonts" | default (slice) -}}
-  {{- if not (in $preloaded_fonts .url) -}}
-    <link rel="preload" href="{{ .url }}" as="font" type="font/woff2" crossorigin>
-    {{- $preloaded_fonts = $preloaded_fonts | append .url -}}
-  {{- end -}}
-{{- end -}}
+{{- partial "files/font-preloads" . -}}
 
 {{- /*  CSS STYLES  */ -}}
-{{- $css := partial "styles" . }}
-<link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.remove('preload')">
+{{- $usage := page.Store.Get "sansoul.assets.usage" | default (dict "full" true) -}}
+{{- if and hugo.IsProduction (not $usage.full) -}}
+__SANSOUL_STYLES__
+{{- else -}}
+  {{- $css := partial "styles" . -}}
+  <link rel="preload" href="{{ $css.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet';document.documentElement.classList.remove('preload')">
 <noscript><link rel="stylesheet" href="{{ $css.RelPermalink }}"></noscript>
+{{- end -}}
 
 {{- /*  FAVICON  */ -}}
 {{- $favicon := resources.Get ($config.favicon | default "/u/base/icon.svg") -}}

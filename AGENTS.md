@@ -2,7 +2,10 @@
 
 ## Scope
 
-These instructions apply to `themes/sansoul/`. This directory is a shared Git submodule and a separate repository. A change here can affect every consumer that updates the submodule.
+These instructions apply to `core/`. This directory is a shared Git submodule and a separate repository. A change here can affect every consumer that updates the submodule.
+
+The same engine supports existing consumers installed at `themes/sansoul/`.
+Resolve the executing engine path; do not assume its directory depth.
 
 Read `templates/root/AGENTS.md` first: it is the canonical consumer contract copied to every project root. Theme behavior must preserve that contract. Check Git status in both repositories before editing and preserve all existing user changes.
 
@@ -32,7 +35,7 @@ A parameter change can affect all four. Trace the parameter from author-facing Y
 
 ## Theme pipeline ownership
 
-The consumer-facing lifecycle is defined in `templates/root/AGENTS.md`. Internally, the root `do` wrapper executes `themes/sansoul/do`:
+The consumer-facing lifecycle is defined in `templates/root/AGENTS.md`. Internally, the root `do` wrapper executes `core/do`:
 
 ```text
 project data/content
@@ -45,7 +48,13 @@ project data/content
 
 Configuration precedence is theme default, optional environment config, generated prebuild config, then project `hugo.yml`.
 
-The prebuild owns configuration derived from languages, types, defaults, and collection-index metadata. The root content adapter creates section pages and pages from remote sources during the main build. `sh do local` serializes prebuild regeneration and publishes the config atomically; Hugo reloads it without restarting and keeps the last valid version after a failed prebuild. Plain `sh do server` still requires a manual restart for prebuild inputs.
+The prebuild owns configuration derived from languages, types, defaults, and collection-index metadata. The root content adapter creates section pages and pages from remote sources during the main build. `sh do live` serializes prebuild regeneration, publishes valid config atomically, and restarts Hugo for a full build after a successful refresh. Failed prebuilds preserve the last valid config; known refresh-time server failures recover on the next valid refresh. Plain `sh do dev` still requires a manual restart for prebuild inputs.
+
+Video metadata refreshes before the prebuild. Both development supervisors also
+watch referenced local videos and content/data references without restarting
+Hugo. `data/video_metadata.json` is public, versioned source; preserve its manual
+`overrides`. The generated statistics under `resources/` are disposable. Keep
+provider credentials in the environment and never infer unavailable video facts.
 
 ## Directory responsibilities
 
@@ -92,7 +101,7 @@ Preserve key ordering behavior in `sort`, conditional behavior in `if`, page/glo
 - Write YAML booleans as `true` or `false`. Hugo 0.164 and later treat unquoted
   `y` and `n` as strings and reject them for boolean configuration fields.
 - Pass a `dict` to partials with more than one input. Use stable, descriptive keys.
-- A value-returning partial must have exactly one `return`, at the end of the file. Hugo executes the first `return` regardless of logical nesting.
+- Keep one final `return` in value-returning partials for compatibility with the supported Hugo 0.164 baseline. Hugo 0.166 and later support conditional and multiple returns; do not assume the older unconditional-return behavior when running newer Hugo.
 - Distinguish absent, empty, and false values intentionally; do not replace nil-sensitive logic with `default` without checking boolean semantics.
 - Use `with` only when empty values should be treated as absent.
 - Keep dynamic partial names constrained to known directories and document the mapping.
@@ -137,6 +146,12 @@ When adding or changing an author-facing parameter:
 
 Sveltia fields are required by default. Emit `required: false` only when an empty value is supported. Keep generated field and collection names stable, unique, and free of dots or spaces.
 
+CMS visual groups are declared as metadata on flat fields using `cms/group`.
+Use `cms/fields` to combine mixed segments; Go slice types can make `append`
+nest arrays. The runtime adapter owns native objects, format registration and
+preview path mapping. Never persist virtual group keys or depend on Sveltia's
+internal HTML/CSS. See `docs/cms-field-groups.md` for limits and the central flag.
+
 ## JavaScript practices
 
 - Modules export named initialization functions; importing a reusable module should not mutate the page.
@@ -149,6 +164,16 @@ Sveltia fields are required by default. Emit `required: false` only when an empt
 - Do not use CommonJS in this ESM package.
 
 After JavaScript changes, run syntax checks for every module and exercise affected interactions in the browser, including absent-component and repeated-initialization cases.
+
+Production component selection is defined by `files/component-usage.html` and
+the whole-module maps in `files/script-entry.html`/`files/style-groups.html`. Selective production uses
+`js.Batch` shared chunks and ordered CSS segments from one Sass compilation.
+Reusable Batch modules import shared configuration from `@params/config`; keep
+full/development `js.Build` configuration compatible. CSS segmentation must
+preserve the compiled cascade exactly and must not duplicate Sass side effects. Inspect every selector and
+initializer sharing an optional module before pruning it. Use distinct resource
+paths derived from complete source/options; shared temporary names can mix pages.
+Keep development complete and preserve conservative custom-integration fallback.
 
 ## SCSS practices
 
@@ -192,10 +217,11 @@ For a breaking change, increment the major theme version, add an actionable entr
 
 ## Required validation
 
-Establish a baseline before theme edits. From the project root:
+Establish a baseline before theme edits. From the project root, use the declared
+manager (`npm ci` for an npm consumer or the following for a pnpm consumer):
 
 ```sh
-npm ci
+pnpm install --frozen-lockfile
 sh do hugo
 ```
 

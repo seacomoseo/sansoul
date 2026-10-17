@@ -1,6 +1,6 @@
 {{/*  BOXES FIELDS BY GROUPS  */}}
 
-{{ $group := slice
+{{ $group := partial "cms/group" (dict "name" "layout" "label" (index . "cms_group_layout") "fields" (slice
   `~cols`
   `~cols_vs`
   `~gap`
@@ -16,8 +16,8 @@
   `~slider_arrows`
   `~align_x`
   `~align_y`
-}}
-{{ $titles := slice
+)) }}
+{{ $titles := partial "cms/group" (dict "name" "titles" "label" (index . "cms_group_titles") "fields" (slice
   `~title`
   `~hanchor`
   `~sub`
@@ -27,8 +27,8 @@
   `~hs_vs`
   `~caps`
   `~line`
-}}
-{{ $md := slice
+)) }}
+{{ $md := partial "cms/group" (dict "name" "md" "label" (index . "cms_group_md") "fields" (slice
   `~md`
   `~md_align`
   `~md_align_vl`
@@ -38,15 +38,15 @@
   `~md_index`
   `~md_nav`
   `~md_border`
-}}
-{{ $titles_style := slice
+)) }}
+{{ $titles_style := partial "cms/group" (dict "name" "titles" "label" (index . "cms_group_titles") "fields" (slice
   `~hn`
   `~hs`
   `~hs_vs`
   `~caps`
   `~line`
-}}
-{{ $md_style := slice
+)) }}
+{{ $md_style := partial "cms/group" (dict "name" "md" "label" (index . "cms_group_md") "fields" (slice
   `~md_align`
   `~md_align_vl`
   `~md_sm`
@@ -55,19 +55,25 @@
   `~md_index`
   `~md_nav`
   `~md_border`
-}}
-{{ $icon := slice
+)) }}
+{{ $icon := partial "cms/group" (dict "name" "icon" "label" (index . "cms_group_icon") "fields" (slice
   `~icon`
   `~icon_pos`
   `~icon_size`
   `~icon_color`
-}}
-{{ $img := slice
+)) }}
+{{ $img := partial "cms/group" (dict "name" "img" "label" (index . "cms_group_img") "fields" (slice
   `~img_no_vid`
   `~hover`
   `~alt`
   `~hover_alt`
   `~vid`
+  `~vid_width`
+  `~vid_height`
+  `~vid_duration`
+  `~vid_upload`
+  `~vid_title`
+  `~vid_desc`
   `~mute`
   `~ratio`
   `~contain`
@@ -76,8 +82,8 @@
   `~disc`
   `~gray`
   `~shade`
-}}
-{{ $btn := slice
+)) }}
+{{ $btn := partial "cms/group" (dict "name" "btn" "label" (index . "cms_group_btn") "fields" (slice
   `~pin`
   `~url`
   `~label`
@@ -86,8 +92,8 @@
   `~swap`
   `~ga4`
   `~btn_with_hide`
-}}
-{{ $bg_boxes := slice
+)) }}
+{{ $bg_boxes := partial "cms/group" (dict "name" "bg" "label" (index . "cms_group_bg") "fields" (slice
   `~color`
   `~fade`
   `~fade_to`
@@ -95,8 +101,8 @@
   `~bi`
   `~alpha`
   `~scroll`
-}}
-{{ $bg_sections := slice
+)) }}
+{{ $bg_sections := partial "cms/group" (dict "name" "bg" "label" (index . "cms_group_bg") "fields" (slice
   `~color`
   `~fade`
   `~fade_to`
@@ -104,36 +110,36 @@
   `~bi`
   `~alpha`
   `~scroll_sections`
-}}
-{{ $padding := slice
+)) }}
+{{ $padding := partial "cms/group" (dict "name" "paddings" "label" (index . "cms_group_paddings") "fields" (slice
   `~pt`
-  `~pt_vs`
+  `~pt_vl`
   `~pb`
-  `~pb_vs`
+  `~pb_vl`
   `~ph`
-}}
-{{ $size := slice
+)) }}
+{{ $size := partial "cms/group" (dict "name" "size" "label" (index . "cms_group_size") "fields" (slice
   `~size`
   `~full`
-}}
-{{ $size_modal := slice
+)) }}
+{{ $size_modal := partial "cms/group" (dict "name" "size" "label" (index . "cms_group_size") "fields" (slice
   `~size`
-}}
-{{ $divider := slice
+)) }}
+{{ $divider := partial "cms/group" (dict "name" "divider" "label" (index . "cms_group_divider") "fields" (slice
   `~div`
   `~flip_x`
   `~flip_y`
-}}
-{{ $menu := slice
+)) }}
+{{ $menu := partial "cms/group" (dict "name" "menu" "label" (index . "cms_group_menu") "fields" (slice
   `~menu_label`
   `~menu_btn`
   `~menu_swap`
-}}
-{{ $menu_style := slice
+)) }}
+{{ $menu_style := partial "cms/group" (dict "name" "menu" "label" (index . "cms_group_menu") "fields" (slice
   `~menu_btn`
   `~menu_swap`
-}}
-{{ $boxi_boxes := slice
+)) }}
+{{ $boxi_boxes := partial "cms/group" (dict "name" "boxi" "label" (index . "cms_group_boxi") "fields" (slice
   `~order`
   `~fit`
   `~fit_vs`
@@ -159,8 +165,8 @@
   `~hide_radius`
   `~pill`
   `~card`
-}}
-{{ $boxi := slice
+)) }}
+{{ $boxi := partial "cms/group" (dict "name" "boxi" "label" (index . "cms_group_boxi") "fields" (slice
   `~order`
   `~fit`
   `~fit_vs`
@@ -185,77 +191,66 @@
   `~hide_radius`
   `~pill`
   `~card`
-}}
-{{ $other_section := slice
+)) }}
+{{ $other_section := partial "cms/group" (dict "name" "other" "label" (index . "cms_group_other") "fields" (slice
   `~if`
   `~node`
   `~get`
-}}
-{{ $other := slice
+)) }}
+{{ $other := partial "cms/group" (dict "name" "other" "label" (index . "cms_group_other") "fields" (slice
   `~if`
   `~node`
   `~get`
   `~tag`
   `~tags`
   `~sort`
-}}
-{{ $blocks := slice
-  `~list`
-  `~step`
-  `~steps`
-  `~gallery`
-  `~imgs`
-  `~limgs`
-  `~faq`
-  `~faqs`
-  `~gss`
-  `~gss_sheet`
-  `~review`
-  `~reviews`
-  `~when`
-  `~links`
-  `~dots`
-  `~form`
-  `~inputs`
-  `~map`
-  `~geos`
-  `~zoom`
-}}
+)) }}
+{{ $blocks := partial "cms/fields" (slice
+  (partial "cms/group" (dict "name" "list" "label" (index . "cms_group_list") "fields" (slice `~list`)))
+  (partial "cms/group" (dict "name" "steps" "label" (index . "cms_group_steps") "fields" (slice `~step` `~steps`)))
+  (partial "cms/group" (dict "name" "gallery" "label" (index . "cms_group_gallery") "fields" (slice `~gallery` `~imgs` `~limgs`)))
+  (partial "cms/group" (dict "name" "faq" "label" (index . "cms_group_faq") "fields" (slice `~faq` `~faqs`)))
+  (partial "cms/group" (dict "name" "gss" "label" (index . "cms_group_gss") "fields" (slice `~gss` `~gss_sheet`)))
+  (partial "cms/group" (dict "name" "reviews" "label" (index . "cms_group_reviews") "fields" (slice `~review` `~reviews`)))
+  (partial "cms/group" (dict "name" "when" "label" (index . "cms_group_when") "fields" (slice `~when`)))
+  (partial "cms/group" (dict "name" "links" "label" (index . "cms_group_links") "fields" (slice `~links` `~dots`)))
+  (partial "cms/group" (dict "name" "form" "label" (index . "cms_group_form") "fields" (slice `~form` `~inputs`)))
+  (partial "cms/group" (dict "name" "map" "label" (index . "cms_group_map") "fields" (slice `~map` `~geos` `~zoom`)))
+) }}
 
 
 {{/*  BOXES FIELDS  */}}
 
-{{ $boxes_fields := slice
-  `~view_boxes`
+{{ $boxes_fields := partial "cms/fields" (slice
+
   `~id`
-  | append $titles
-  | append $md
-  | append $icon
-  | append $img
-  | append $btn
-  | append $bg_boxes
-  | append $boxi_boxes
-  | append $other
-  | append `~box`
-  | append $blocks
-}}
+  $titles
+  $md
+  $icon
+  $img
+  $btn
+  $bg_boxes
+  $boxi_boxes
+  $other
+  `~box`
+  $blocks
+) }}
 
 
 {{/*  FINISH  */}}
 
 {{ return slice
-  (dict "&box_fields" (slice
-    `~view_box`
-    | append $group
-    | append $titles
-    | append $md
-    | append $icon
-    | append $img
-    | append $btn
-    | append $bg_boxes
-    | append $boxi
-    | append $other
-  ))
+  (dict "&box_fields" (partial "cms/fields" (slice
+    $group
+    $titles
+    $md
+    $icon
+    $img
+    $btn
+    $bg_boxes
+    $boxi
+    $other
+  )))
   (partial "cms/widget" (dict
     "var"    `box`
     "alt"    `box`
@@ -281,85 +276,83 @@
     "var"    `modal`
     "name"   `modal`
     "widget" `dict`
-    "fields" (slice
-      `~view_modal`
-      | append $titles_style
-      | append $md_style
-      | append $menu_style
-      | append $icon
-      | append $img
-      | append $btn
-      | append $bg_boxes
-      | append `~ph`
-      | append $size_modal
-      | append $boxi
-      | append $other
-    )
+    "fields" (partial "cms/fields" (slice
+      $titles_style
+      $md_style
+      $menu_style
+      $icon
+      $img
+      $btn
+      $bg_boxes
+      (partial "cms/group" (dict "name" "paddings" "label" (index . "cms_group_paddings") "fields" (slice `~ph`)))
+      $size_modal
+      $boxi
+      $other
+    ))
   ))
 
   (partial "cms/widget" (dict
     "var"    `modals`
     "name"   `modals`
     "widget" `slice`
-    "fields" (slice
+    "fields" (partial "cms/fields" (slice
       `~id`
-      `~view_modals`
-      | append $titles
-      | append $md
-      | append $menu
-      | append $icon
-      | append $img
-      | append $btn
-      | append $bg_boxes
-      | append `~ph`
-      | append $size_modal
-      | append $boxi
-      | append $other
-      | append `~box`
-      | append $blocks
-      | append `~boxes`
-    )
+
+      $titles
+      $md
+      $menu
+      $icon
+      $img
+      $btn
+      $bg_boxes
+      (partial "cms/group" (dict "name" "paddings" "label" (index . "cms_group_paddings") "fields" (slice `~ph`)))
+      $size_modal
+      $boxi
+      $other
+      `~box`
+      $blocks
+      `~boxes`
+    ))
   ))
 
 
-  (dict "&section_fields" (slice
-    `~view_section`
-    | append $bg_sections
-    | append $padding
-    | append $size
-    | append $divider
-    | append $menu_style
-    | append $other_section
-    | append `~box`
-  ))
-  (dict "&sections_fields" (slice
+  (dict "&section_fields" (partial "cms/fields" (slice
+    $bg_sections
+    $padding
+    $size
+    $divider
+    $menu_style
+    $other_section
+    `~box`
+  )))
+  (dict "&sections_fields" (partial "cms/fields" (slice
     `~name`
     `~id`
-    `~view_sections`
-    | append $bg_sections
-    | append $padding
-    | append $size
-    | append $divider
-    | append $menu
-    | append $other_section
-    | append `~box`
-    | append `~boxes`
-    | append `~modal`
-    | append `~modals`
-  ))
-  (dict "&sections_fields_params" (slice
+
+    $bg_sections
+    $padding
+    $size
+    $divider
+    $menu
+    $other_section
+    `~box`
+    `~boxes`
+    `~modal`
+    `~modals`
+  )))
+  (dict "&sections_fields_params" (partial "cms/fields" (slice
     `~id`
-    `~view_sections`
-    | append $bg_sections
-    | append $padding
-    | append $size
-    | append $divider
-    | append $menu
-    | append $other_section
-    | append `~box`
-    | append `~boxes`
-    | append `~modal`
-    | append `~modals`
-  ))
+
+    $bg_sections
+    $padding
+    $size
+    $divider
+    $menu
+    $other_section
+    `~box`
+    `~boxes`
+    `~modal`
+    `~modals`
+  )))
 
 }}

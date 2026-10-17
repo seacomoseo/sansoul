@@ -2,10 +2,19 @@
 
 set -eu
 
+# Run from the consumer root; locate the executing engine without assuming its depth.
+PROJECT_DIR=$PWD
+CORE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+CORE_PATH=${CORE_DIR#"$PROJECT_DIR"/}
+case "$CORE_PATH" in
+  core|themes/sansoul) ;;
+  *) printf '%s\n' 'Run the SanSoul wrapper from its consumer project root.' >&2; exit 2 ;;
+esac
+
 # Variables
 PROJECT="${PWD##*/}"
 COMMAND=${1:-}
-PATH="$PWD/themes/sansoul/scripts/bin:$PWD/node_modules/.bin:$PWD/../_tools/node_modules/.bin:$PATH"
+PATH="$CORE_DIR/scripts/bin:$PWD/node_modules/.bin:$PWD/../_tools/node_modules/.bin:$PATH"
 export PATH
 
 # Functions
@@ -16,6 +25,22 @@ wecho() { echo "\033[1;33m$1\033[0m"; }   # 🟡 Warning
 eecho() { echo "\033[1;31m$1\033[0m"; }   # ❌ Error
 iecho() { echo "\033[1;34m$1\033[0m"; }   # 💙 Info
 vecho() { echo "\033[1;36m$1\033[0m"; }   # 🩵 Value
+
+# Keep generated outputs and development servers mutually exclusive. Nested
+# commands inherit the owner token and are validated without taking a second
+# lock, while direct build commands acquire the same per-project lock.
+case "$COMMAND" in
+  update|check|rm-public|imgs|videos|prebuild|hugo-development|hugo-production|hugo)
+    if [ -n "${SANSOUL_LIFECYCLE_TOKEN:-}" ]; then
+      node "$CORE_DIR/scripts/lifecycle.js" validate "$SANSOUL_LIFECYCLE_TOKEN" || {
+        eecho "Invalid SanSoul lifecycle owner token"
+        exit 1
+      }
+    else
+      exec node "$CORE_DIR/scripts/lifecycle.js" guard -- sh "$CORE_DIR/do" "$@"
+    fi
+    ;;
+esac
 
 
 ##################
@@ -61,17 +86,17 @@ elif [ "$COMMAND" = sdu ]; then
 # Show or record consumer migrations
 elif [ "$COMMAND" = migrations ]; then
   shift
-  node ./themes/sansoul/scripts/migrations.js "$@"
+  node "$CORE_DIR/scripts/migrations.js" "$@"
 
 # Synchronize managed documentation blocks in the consumer project root
 elif [ "$COMMAND" = root-docs ]; then
   shift
-  node ./themes/sansoul/scripts/root-docs.js "$@"
+  node "$CORE_DIR/scripts/root-docs.js" "$@"
 
 # Preflight, update SanSoul, apply automated migrations, sync root docs, and build
 elif [ "$COMMAND" = update ]; then
   shift
-  node ./themes/sansoul/scripts/update.js "$@"
+  node "$CORE_DIR/scripts/update.js" "$@"
 
 # Normalize yaml and markdown files
 elif [ "$COMMAND" = normalize ]; then
@@ -126,33 +151,34 @@ elif [ "$COMMAND" = reviews ]; then
 elif [ "$COMMAND" = check ]; then
 
   hecho "CHECK JAVASCRIPT"
-  find ./themes/sansoul/assets/js ./themes/sansoul/scripts -type f -name '*.js' -exec node --check {} \;
+  find "$CORE_DIR/assets/js" "$CORE_DIR/scripts" -type f -name '*.js' -exec sh -c 'for file do node --check "$file" || exit; done' sh {} +
 
   hecho "CHECK SHELL"
   sh -n ./do
-  sh -n ./themes/sansoul/do
-  sh -n ./themes/sansoul/scripts/bin/sass
-  sh -n ./themes/sansoul/scripts/mirror-to-gitlab.sh
+  sh -n "$CORE_DIR/do"
+  sh -n "$CORE_DIR/scripts/bin/sass"
+  sh -n "$CORE_DIR/scripts/mirror-to-gitlab.sh"
+
+  hecho "CHECK TOOLING REGRESSIONS"
+  node --test "$CORE_DIR"/scripts/tests/*.test.js
 
   sh do hugo
 
-# Hugo server with theme config
-elif [ "$COMMAND" = server ]; then
+# Hugo development server with a one-time prebuild. `server` remains a
+# compatible alias for consumers that have not adopted the shorter command.
+elif [ "$COMMAND" = dev ] || [ "$COMMAND" = server ]; then
 
-  sh do rm-public
-  sh do prebuild
+  hecho "HUGO DEVELOPMENT SERVER"
+  shift
+  node "$CORE_DIR/scripts/server-lifecycle.js" dev "$@"
 
-  hecho "HUGO SERVER"
-  hugo server --disableFastRender --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
-
-# CMS + hugo local
-elif [ "$COMMAND" = local ]; then
-
-  sh do rm-public
+# CMS + Hugo server with prebuild and source watchers. `local` remains a
+# compatible alias for consumers that use the older command name.
+elif [ "$COMMAND" = live ] || [ "$COMMAND" = local ]; then
 
   hecho "HUGO SERVER WITH CMS CACHE INVALIDATION AND PREBUILD WATCHER"
   shift
-  node ./themes/sansoul/scripts/local-server.js "$@"
+  node "$CORE_DIR/scripts/local-server.js" "$@"
 
 
 #####################
@@ -169,21 +195,33 @@ elif [ "$COMMAND" = rm-public ]; then
 elif [ "$COMMAND" = imgs ]; then
 
   hecho "IMAGES ICO, PNG AND AVIF"
-  node ./themes/sansoul/scripts/imgs.js
+  node "$CORE_DIR/scripts/imgs.js"
+
+# Refresh referenced video metadata; --refresh bypasses the persisted cache.
+elif [ "$COMMAND" = videos ]; then
+
+  shift
+  node "$CORE_DIR/scripts/video-metadata.js" "$@"
 
 # Enter in to prebuild folder, build hugo and go back
 elif [ "$COMMAND" = prebuild ]; then
 
+  if [ "${SANSOUL_VIDEO_METADATA_WATCH:-}" != 1 ]; then
+    hecho "REFRESH REFERENCED VIDEO METADATA"
+    node "$CORE_DIR/scripts/video-metadata.js"
+  fi
+
   hugo version
 
   hecho "GO SANSOUL PREBUILD"
-  cd themes/sansoul/prebuild
 
   PREBUILD_TMP=$(mktemp -d "${TMPDIR:-/tmp}/sansoul-prebuild.XXXXXX")
   trap 'rm -rf "$PREBUILD_TMP"' EXIT HUP INT TERM
 
   hecho "RUN HUGO PREBUILD"
-  hugo --destination "$PREBUILD_TMP" --config ../../../hugo.yml,hugo.yml
+  node "$CORE_DIR/scripts/prebuild-config.js" "$PREBUILD_TMP/config.yml"
+  cd "$CORE_DIR/prebuild"
+  hugo --destination "$PREBUILD_TMP" --config "$PROJECT_DIR/hugo.yml,$PREBUILD_TMP/config.yml"
 
   hecho "PUBLISH PREBUILD CONFIG"
   mkdir -p public
@@ -198,7 +236,7 @@ elif [ "$COMMAND" = prebuild ]; then
   trap - EXIT HUP INT TERM
 
   hecho "GO PROJECT"
-  cd ../../..
+  cd "$PROJECT_DIR"
 
 # # If multilang, copy 404 file in root
 # elif [ $1 = multilang ]
@@ -222,7 +260,7 @@ elif [ "$COMMAND" = hugo-development ]; then
   rm -rf public resources
 
   hecho "RUN HUGO DEVELOPMENT"
-  hugo --gc --buildFuture --environment development --config themes/sansoul/hugo.default.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
+  hugo --gc --buildFuture --environment development --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
 
 # Hugo build as production environement
 elif [ "$COMMAND" = hugo-production ]; then
@@ -231,7 +269,7 @@ elif [ "$COMMAND" = hugo-production ]; then
   sh do prebuild
 
   hecho "RUN HUGO PRODUCTION"
-  hugo --config themes/sansoul/hugo.default.yml,themes/sansoul/hugo.production.yml,themes/sansoul/prebuild/public/hugo.prebuild.yml,hugo.yml
+  hugo --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/hugo.production.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
 
   sh do imgs
   # sh do multilang
@@ -241,7 +279,7 @@ elif [ "$COMMAND" = hugo ]; then
 
   if [ ! -d ./node_modules ]; then
     hecho "INSTALL PRODUCTION DEPENDENCIES"
-    npm install
+    node "$CORE_DIR/scripts/dependencies.js"
   fi
 
   start_ms=$(node -p "Date.now()")
@@ -255,7 +293,7 @@ elif [ "$COMMAND" = hugo ]; then
     sh do hugo-production
   fi
 
-  node ./themes/sansoul/scripts/check-cms-config.js
+  node "$CORE_DIR/scripts/check-cms-config.js"
 
   end_ms=$(node -p "Date.now()")
   elapsed=$(node -p "Number(process.argv[1]) - Number(process.argv[2])" "$end_ms" "$start_ms")

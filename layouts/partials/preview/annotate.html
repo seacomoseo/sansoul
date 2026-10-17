@@ -1,0 +1,70 @@
+{{/*
+Partial: preview/annotate
+Purpose: Attach draft field origins before template expansion removes get directives.
+Context: Map with value (any) and path (string; empty for inherited theme/data values).
+Returns: The same composition data with private _preview descriptors on maps.
+Side effects: None. Does not evaluate conditions or create alternate branches.
+*/}}
+{{ $value := .value }}
+{{ $path := .path }}
+{{ $get_pattern := `{{\s*(get\s+("[\w.]+"|'[\w.]+'|[\w.]+)|%\s*get\s+("[\w.]+"|'[\w.]+'|[\w.]+)\s*%|<\s*get\s+("[\w.]+"|'[\w.]+'|[\w.]+)\s*>)\s*}}` }}
+{{ if reflect.IsMap $value }}
+  {{ $result := dict }}
+  {{ $bindings := $value._preview | default dict }}
+  {{ range $key, $child := $value }}
+    {{ if ne $key "_preview" }}
+      {{ $child_path := "" }}
+      {{ if $path }}{{ $child_path = print $path "." $key }}{{ end }}
+      {{ $result = merge $result (dict $key (partial "preview/annotate" (dict "value" $child "path" $child_path))) }}
+      {{ if in (slice "title" "hanchor" "sub" "price" "md" "img" "alt" "url" "anchor") $key }}
+        {{ if and (eq $key "md") (eq (strings.TrimSpace (printf "%v" $child)) "{{% content %}}") }}
+          {{ $bindings = merge $bindings (dict $key (dict "path" "body")) }}
+        {{ else if $child_path }}
+          {{ $bindings = merge $bindings (dict $key (dict "path" $child_path)) }}
+        {{ else if eq (printf "%T" $child) "string" }}
+          {{ if and (findRE $get_pattern $child) (not (in (replaceRE $get_pattern "" $child) "{{")) }}
+            {{ $bindings = merge $bindings (dict $key (dict "template64" ($child | base64Encode))) }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ range $value.get }}
+    {{ if .to }}
+      {{ $from := .from | default .to }}
+      {{ if ne $from "filename" }}
+        {{ $source := dict }}
+        {{ if .value }}
+          {{ $source = dict "value" (unmarshal .value) }}
+        {{ else if eq $from "content" }}
+          {{ $source = dict "path" "body" }}
+        {{ else }}
+          {{ $source = dict "path" $from "global" true }}
+        {{ end }}
+        {{ $binding := index $bindings .to }}
+        {{ if not $binding }}
+          {{ $fallback := index $value .to }}
+          {{ if and (eq (printf "%T" $fallback) "string") (in $fallback "{{") }}
+            {{ $binding = dict "preserve" true }}
+          {{ else }}
+            {{ $binding = dict "value" $fallback }}
+          {{ end }}
+        {{ end }}
+        {{ $sources := $binding.sources | default slice }}
+        {{ $binding = merge $binding (dict "sources" ($sources | append $source)) }}
+        {{ $bindings = merge $bindings (dict .to $binding) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ $value = $result }}
+  {{ if $bindings }}{{ $value = merge $result (dict "_preview" $bindings) }}{{ end }}
+{{ else if reflect.IsSlice $value }}
+  {{ $result := slice }}
+  {{ range $index, $child := $value }}
+    {{ $child_path := "" }}
+    {{ if $path }}{{ $child_path = print $path "." $index }}{{ end }}
+    {{ $result = $result | append (partial "preview/annotate" (dict "value" $child "path" $child_path)) }}
+  {{ end }}
+  {{ $value = $result }}
+{{ end }}
+{{ return $value }}

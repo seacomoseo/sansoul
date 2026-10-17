@@ -1,3 +1,11 @@
+{{/*
+Partial: files/fonts
+Purpose: Publish configured text-font faces with their actual weight/style metadata.
+Context: page.Page; font roles come from hugo.Data.styles.fonts.
+Returns: Empty string.
+Side effects: Downloads missing local faces, publishes font resources, and sets sansoul.fonts.
+Production reuses a URL when the same family resolves to identical font bytes.
+*/}}
 {{ $specs := slice }}
 {{ with hugo.Data.styles.fonts }}
   {{ range slice .base .title .cursive }}
@@ -11,6 +19,7 @@
 {{ end }}
 {{ $specs = $specs | uniq }}
 {{ $fonts := slice }}
+{{ $published := dict }}
 {{ $remote_specs := slice }}
 
 {{ range $specs }}
@@ -21,7 +30,12 @@
   {{ $local := resources.Get (printf "/u/fonts/%s" $filename) }}
   {{ if $local }}
     {{ $target := printf "fonts/%s-%v%s.woff2" $family $spec.weight $italic_suffix }}
-    {{ $resource := partial "func/publish-content-resource" (dict "resource" $local "target" $target) }}
+    {{ $binary_key := print $family "|" (sha256 $local.Content) }}
+    {{ $resource := index $published $binary_key }}
+    {{ if or (not hugo.IsProduction) (not $resource) }}
+      {{ $resource = partial "func/publish-content-resource" (dict "resource" $local "target" $target) }}
+      {{ $published = merge $published (dict $binary_key $resource) }}
+    {{ end }}
     {{ $fonts = $fonts | append (dict "family" $spec.family "weight" $spec.weight "italic" $spec.italic "url" $resource.RelPermalink) }}
   {{ else }}
     {{ $remote_specs = $remote_specs | append $spec }}
@@ -48,14 +62,20 @@
       {{ $italic := eq $style "italic" }}
       {{ $matches := where $remote_specs "family" $family }}
       {{ range $matches }}
+        {{ $matched_spec := . }}
         {{ if and (eq (printf "%v" .weight) $weight) (eq (not .italic) (not $italic)) }}
           {{ $woff2 := $face | replaceRE `.+url\((.+?)\).+` "$1" | strings.TrimPrefix "'" | strings.TrimSuffix "'" }}
           {{ $binary := partial "func/get-remote" (dict "url" $woff2 "headers" (dict "User-Agent" $ua "Accept" "font/woff2,*/*;q=0.1")) }}
           {{ with $binary }}
             {{ if and (gt (len .Content) 4) (eq (substr .Content 0 4) "wOF2") }}
               {{ $target := printf "fonts/%s-%s%s.woff2" (urlize $family) $weight (cond $italic "-italic" "") }}
-              {{ $resource := partial "func/publish-content-resource" (dict "resource" . "target" $target) }}
-              {{ $fonts = $fonts | append (dict "family" (index $matches 0).family "weight" (index $matches 0).weight "italic" $italic "url" $resource.RelPermalink) }}
+              {{ $binary_key := print (urlize $family) "|" (sha256 .Content) }}
+              {{ $resource := index $published $binary_key }}
+              {{ if or (not hugo.IsProduction) (not $resource) }}
+                {{ $resource = partial "func/publish-content-resource" (dict "resource" . "target" $target) }}
+                {{ $published = merge $published (dict $binary_key $resource) }}
+              {{ end }}
+              {{ $fonts = $fonts | append (dict "family" $matched_spec.family "weight" $matched_spec.weight "italic" $italic "url" $resource.RelPermalink) }}
             {{ else }}
               {{ warnf "Google Fonts returned an invalid WOFF2 for %s (%s)" $family $weight }}
             {{ end }}

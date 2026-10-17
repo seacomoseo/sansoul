@@ -8,8 +8,11 @@ Side effects: None directly; called partials may read site data.
 {{/*  Add first section and merge all  */}}
 {{ $tpl  := dict }}
 {{ $tpls := partial "func/tpls" . }}
-{{ range $tpls }}
-  {{ with . }}
+{{ range $index, $layer := $tpls }}
+  {{ $origin := "" }}
+  {{ if eq $index (sub (len $tpls) 1) }}{{ $origin = "tpl" }}{{ end }}
+  {{ $layer = partial "preview/annotate" (dict "value" $layer "path" $origin) }}
+  {{ with $layer }}
     {{/*  Create first section and merge all  */}}
     {{ $first := dict }}
     {{ with .section }}

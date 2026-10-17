@@ -2,7 +2,7 @@
 
 /*
 Purpose: Report consumer migrations between the project package version and
-the theme package version currently installed in themes/sansoul.
+the currently executing engine package version.
 Run from: Consumer project root through `sh do migrations`.
 Writes: Root package.json and an existing package-lock.json only for `mark --yes`.
 */

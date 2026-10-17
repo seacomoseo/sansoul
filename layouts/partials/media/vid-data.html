@@ -20,14 +20,14 @@
     {{ $t   = print "#" . }}
   {{ end }}
 
-{{ else with .vid | findRESubmatch `(?:youtube\.com/watch.*?[&?]v=|youtube.com/shorts/|youtu\.be/)([\w-]+)` }}
+{{ else with .vid | findRESubmatch `(?i)^https?://(?:(?:www\.|m\.)?youtube(?:-nocookie)?\.com/(?:watch[^#]*?[?&]v=|shorts/|embed/)|youtu\.be/)([\w-]+)` }}
 
   {{ $ifr   = true }}
   {{ $name  = "YouTube" }}
   {{ $base := "https://www.youtube-nocookie.com/embed/" }}
   {{ $id    = index . 0 1 }}
   {{ $opts := "?rel=0&modestbranding=1&color=white&enablejsapi=1" }}
-  {{ $t    := $.vid | findRESubmatch `[#&?]t\=(\d+)`       | default "" }}
+  {{ $t    := $.vid | findRESubmatch `[#&?](?:t|start)\=(\d+)` | default "" }}
   {{ $end  := $.vid | findRESubmatch `[#&?]end\=(\d+)`     | default "" }}
   {{ $list := $.vid | findRESubmatch `[#&?]list\=([\w-]+)` | default "" }}
   {{ with $t    }}{{ $t    = print "&start=" (index $t    0 1) }}{{ end }}
@@ -42,21 +42,33 @@
     (cond (not $mute) "" "; autoplay; loop; mute")
   }}
 
-{{ else with .vid | findRESubmatch `vimeo\.com/(?:video/)?([\w-]+)` }}
+{{ else with .vid | findRESubmatch `(?i)^https?://(?:www\.|player\.)?vimeo\.com/(?:video/)?(\d+)(?:/([\w-]+))?(?:[?#]|$)` }}
 
   {{ $ifr   = true }}
   {{ $name  = "Vimeo" }}
   {{ $base := "https://player.vimeo.com/video/" }}
   {{ $id    = index . 0 1 }}
+  {{ $hash := index . 0 2 }}
+  {{ with $.vid | findRESubmatch `[?&]h=([\w-]+)` }}{{ $hash = index . 0 1 }}{{ end }}
   {{ $opts := "?byline=0&portrait=0&title=0" }}
+  {{ with $hash }}{{ $opts = print $opts "&h=" . }}{{ end }}
   {{ $auto := cond (not $mute) "" "&autoplay=1&loop=1&autopause=0&muted=1&controls=0" }}
   {{ $src   = print $base $id $opts $auto }}
-  {{ $url   = print "https://player.vimeo.com/video/" $id }}
+  {{ $url   = print "https://vimeo.com/" $id (cond (not $hash) "" (print "/" $hash)) }}
   {{ $allow = print "fullscreen" (cond (not $mute) "" "; autoplay; loop; muted") }}
 
 {{ end }}
 
 {{ if $name }}
+  {{ $metadata := partial "func/video-metadata" .vid }}
+  {{ $manual := dict }}
+  {{ with .vid_width | default .width }}{{ $manual = merge $manual (dict "width" .) }}{{ end }}
+  {{ with .vid_height | default .height }}{{ $manual = merge $manual (dict "height" .) }}{{ end }}
+  {{ with .vid_duration | default .duration }}{{ $manual = merge $manual (dict "duration" .) }}{{ end }}
+  {{ with .vid_upload | default .upload }}{{ $manual = merge $manual (dict "uploadDate" .) }}{{ end }}
+  {{ with .vid_title | default .video_title }}{{ $manual = merge $manual (dict "name" .) }}{{ end }}
+  {{ with .vid_desc | default .video_desc }}{{ $manual = merge $manual (dict "description" .) }}{{ end }}
+  {{ $metadata = merge $metadata $manual }}
   {{ $title := lower $name }}
   {{ $name   = print "data-" (lower $name) }}
   {{ $is    := and .icon_color (ne .icon_color "cta") }}
@@ -74,6 +86,8 @@
     "play"  $play
     "t"     $t
     "mute"  $mute
+    "presentation" (partial "media/video-presentation" (dict "metadata" $metadata "poster" .poster "source" .vid "authoredPoster" (or (and .img (ne .img .vid)) (findRE `[#&?]poster=` .vid))))
+    "meta"  $metadata
   }}
 {{ end }}
 

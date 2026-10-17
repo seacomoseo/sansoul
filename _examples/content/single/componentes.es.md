@@ -3,6 +3,8 @@ slug: componentes
 title: Componentes de SanSoul
 sum: Referencia visual de secciones, cajas y bloques disponibles en el tema.
 icon: construction
+# Advanced integration escape hatch, normally omitted:
+# assets_full: true
 seo:
   noindex: true
 tpl:

@@ -7,6 +7,8 @@
 {{- end -}}
 
 {{- $print_img := or $img_src .shade .vid -}}
+{{- $media := . -}}
+{{- with $media -}}
 
 {{- /* IMAGE INI  */ -}}
 {{- if $print_img -}}
@@ -47,7 +49,7 @@
   {{- $attrs = partial "func/attrs" $attrs -}}
 
   {{- /* HTML  */}}
-  <div {{- $attrs }}>
+  <div {{- $attrs }}{{ partial "preview/attrs" (dict "item" . "field" "img" "kind" "image") }}>
 
     {{- /* SHADE (GRADIENT)  */ -}}
     {{- if and .shade (not .card) }}
@@ -71,6 +73,12 @@
       "notlazy"    .is_hero
       "is_modal"   .is_modal
       "icon_color" .icon_color
+      "vid_width" (.vid_width | default .width)
+      "vid_height" (.vid_height | default .height)
+      "vid_duration" (.vid_duration | default .duration)
+      "vid_upload" (.vid_upload | default .upload)
+      "vid_title" (.vid_title | default .video_title)
+      "vid_desc" (.vid_desc | default .video_desc)
     ) -}}
 
     {{- /* IMAGE INNER HOVER  */ -}}
@@ -98,4 +106,5 @@
 {{- /* IMAGE END  */ -}}
 {{- if $print_img }}
   </div>
+{{- end -}}
 {{- end -}}

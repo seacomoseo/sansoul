@@ -1,0 +1,46 @@
+{{/*
+Partial: media/video-presentation
+Purpose: Resolve integer HTML dimensions without adding inferred facts to metadata.
+Context: metadata map, poster string, source string, authoredPoster bool.
+Returns: width/height map; known dimensions, known ratio scaled to 1080, authored
+poster dimensions, a /shorts/ URL fallback, then 1080x608. Provider thumbnail sizes are never video facts.
+Side effects: May read a local poster or fetch an explicitly authored remote image.
+*/}}
+{{- $meta := .metadata | default dict -}}
+{{- $width := 0.0 -}}{{- $height := 0.0 -}}{{- $ratio := 0.0 -}}
+{{- with $meta.width -}}{{- if findRE `^[0-9]+(?:\.[0-9]+)?$` (string .) -}}{{- $width = float . -}}{{- end -}}{{- end -}}
+{{- with $meta.height -}}{{- if findRE `^[0-9]+(?:\.[0-9]+)?$` (string .) -}}{{- $height = float . -}}{{- end -}}{{- end -}}
+{{- with $meta.ratio -}}
+  {{- if findRE `^[0-9]+(?:\.[0-9]+)?(?:/[0-9]+(?:\.[0-9]+)?)?$` (string .) -}}
+    {{- $parts := split (string .) "/" -}}{{- $ratio = float (index $parts 0) -}}
+    {{- if eq (len $parts) 2 -}}{{- $denominator := float (index $parts 1) -}}{{- if gt $denominator 0 -}}{{- $ratio = div $ratio $denominator -}}{{- else -}}{{- $ratio = 0.0 -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (and (gt $width 0) (gt $height 0)) -}}
+  {{- if gt $ratio 0 -}}
+    {{- $width = 1080.0 -}}{{- $height = 1080.0 -}}
+    {{- if ge $ratio 1 -}}{{- $height = div 1080.0 $ratio -}}{{- else -}}{{- $width = mul 1080.0 $ratio -}}{{- end -}}
+  {{- else -}}
+    {{- $width = 0.0 -}}{{- $height = 0.0 -}}
+    {{- if and .poster (or .authoredPoster (not (hasPrefix .source "http"))) -}}
+      {{- $poster := (urls.Parse .poster).Path -}}
+      {{- $resource := false -}}
+      {{- if hasPrefix .poster "http" -}}
+        {{- $remote := try (resources.GetRemote .poster) -}}
+        {{- if not $remote.Err -}}{{- $resource = $remote.Value -}}{{- end -}}
+      {{- else -}}{{- $resource = resources.Get $poster -}}{{- end -}}
+      {{- with $resource -}}
+        {{- if eq .MediaType.SubType "svg" -}}
+          {{- $size := partial "func/svg-sizes" .Content -}}{{- $width = $size.width | default 0 | float -}}{{- $height = $size.height | default 0 | float -}}
+        {{- else if eq .ResourceType "image" -}}{{- $width = float .Width -}}{{- $height = float .Height -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not (and (gt $width 0) (gt $height 0)) -}}
+      {{- $width = 1080.0 -}}{{- $height = 607.5 -}}
+      {{- if findRE `(?i)^https?://(?:www\.|m\.)?youtube\.com/shorts/[\w-]+(?:[/?&#]|$)` .source -}}
+        {{- $width = 607.5 -}}{{- $height = 1080.0 -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "width" (math.Max 1 (math.Round $width) | int) "height" (math.Max 1 (math.Round $height) | int)) -}}

@@ -54,7 +54,7 @@
 
 
   {{- /* HTML  */}}
-  {{ print "<" $hn $attrs ">" | safeHTML -}}
+  {{ print "<" $hn $attrs (partial "preview/attrs" (dict "item" . "field" (cond (not .title) "hanchor" "title") "kind" "inline")) ">" | safeHTML -}}
 
     {{- /* ICON SIDE  */ -}}
     {{- if eq .icon_pos "side" -}}

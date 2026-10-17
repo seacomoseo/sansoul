@@ -136,10 +136,21 @@
   -}}
   {{- $body_html := delimit $body_parts "" -}}
 
+  {{- $component_usage := partial "files/component-usage" (dict "html" $body_html "attributes" $body_attr "custom" (print $custom_html_head $custom_html_body)) -}}
+  {{- page.Store.Set "sansoul.assets.usage" $component_usage -}}
+  {{- hugo.Store.SetInMap "sansoul.assets.pages" .RelPermalink $component_usage -}}
+  {{- hugo.Store.Delete "sansoul.assets.style-plan" -}}
+  {{- if and hugo.IsProduction (not $component_usage.full) -}}
+    {{- page.Store.Set "sansoul.assets.registering" true -}}
+    {{- $registered := partial "scripts" . -}}
+    {{- page.Store.Set "sansoul.assets.registering" false -}}
+  {{- end -}}
+
   {{- /* Complete page-local resources before references are written to head/body. */ -}}
   {{- partial "files/svg-resources" . -}}
   {{- partial "files/fonts" . -}}
-  {{- $body_html = print $body_html `<script src="__SANSOUL_SCRIPTS__" defer></script>` $custom_html_body -}}
+  {{- $script_type := cond (and hugo.IsProduction (not $component_usage.full)) ` type="module"` "" -}}
+  {{- $body_html = print $body_html `<script src="__SANSOUL_SCRIPTS__"` $script_type ` defer></script>` $custom_html_body (partial "preview/live" .) -}}
 
   {{- $head_html := print `<head>` (partial "head" .) $custom_html_head `</head>` -}}
   {{- $document_html := print `<!DOCTYPE html><html lang="` (.Params.locale | default .Lang) `" data-base-lang="` .Lang `" class="preload">` $head_html `<body ` $body_attr `>` $body_html `</body></html>` -}}

@@ -1,3 +1,10 @@
+{{/*
+Partial: styles
+Purpose: Compile complete CSS, or publish ordered shared segments after page discovery.
+Context: page.Page with fonts and component usage in page.Store.
+Returns: CSS resource. Full mode returns the complete sheet for CMS preview and integrations.
+Side effects: Publishes CSS; stores the ordered resource list in sansoul.assets.styles.
+*/}}
 {{ $vars := dict }}
 {{ $font_faces := slice }}
 {{ range page.Store.Get "sansoul.fonts" | default (slice) }}
@@ -109,21 +116,24 @@
     }}
 {{ end }}
 
-{{ $css    := resources.Get (print "styles.scss") }}
+{{ $css := resources.Get "styles.scss" }}
+{{ $usage := page.Store.Get "sansoul.assets.usage" | default (dict "full" true) }}
+{{ $css_build_key := substr (sha256 (print $css.Content "|" (jsonify $vars))) 0 12 }}
 {{ $to_css := dict
   "vars"            $vars
   "enableSourceMap" hugo.IsDevelopment
   "outputStyle"     (cond hugo.IsDevelopment "expanded" "compressed")
-  "targetPath"      "css/styles.css"
+  "targetPath"      (print "css/styles-build-" $css_build_key ".css")
   "transpiler"      "dartsass"
 }}
-{{ with $css }}
-  {{ if hugo.IsProduction }}
-    {{ $css = . | toCSS $to_css | minify }}
-  {{ else }}
-    {{ $css = . | toCSS $to_css }}
-  {{ end }}
+{{ if and hugo.IsProduction (not $usage.full) }}
+  {{ $styles := partial "files/style-groups" (dict "resource" $css "options" $to_css "usage" $usage) }}
+  {{ page.Store.Set "sansoul.assets.styles" $styles }}
+  {{ $css = index $styles 0 }}
+{{ else }}
+  {{ $css = $css | toCSS $to_css }}
+  {{ if hugo.IsProduction }}{{ $css = $css | minify }}{{ end }}
   {{ $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/styles.css") }}
+  {{ page.Store.Set "sansoul.assets.styles" (slice $css) }}
 {{ end }}
-
 {{ return $css }}

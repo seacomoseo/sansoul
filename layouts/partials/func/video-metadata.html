@@ -1,0 +1,33 @@
+{{/*
+Partial: func/video-metadata
+Purpose: Resolve public cached metadata without network or filesystem probing.
+Context: string; local /u/ path, YouTube URL, or Vimeo URL.
+Returns: Metadata map, empty when unavailable.
+Side effects: None.
+*/}}
+{{- $key := . | replaceRE `[#?].*$` "" -}}
+{{- if hasPrefix $key "/u/" -}}
+  {{/* Cache keys use decoded paths. Preserve literal plus signs: they are not
+       form-encoded spaces in a URL path. Reject malformed percent escapes. */}}
+  {{- if strings.Contains (replaceRE `%[0-9a-fA-F]{2}` "" $key) "%" -}}
+    {{- $key = "" -}}
+  {{- else -}}
+    {{- $key = (urls.Parse $key).Path -}}
+    {{- if findRE `(?:^|/)\.{1,2}(?:/|$)` $key -}}{{- $key = "" -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with . | findRESubmatch `(?i)^https?://(?:(?:www\.|m\.)?youtube(?:-nocookie)?\.com/(?:watch[^#]*?[?&]v=|shorts/|embed/)|youtu\.be/)([\w-]+)` -}}
+  {{- $key = print "youtube:" (index . 0 1) -}}
+{{- else -}}
+  {{- with . | findRESubmatch `(?i)^https?://(?:www\.|player\.)?vimeo\.com/(?:video/)?(\d+)(?:/([\w-]+))?(?:[?#]|$)` -}}
+    {{- $key = print "vimeo:" (index . 0 1) -}}
+    {{- $hash := index . 0 2 -}}
+    {{- with $ | findRESubmatch `[?&]h=([\w-]+)` -}}{{- $hash = index . 0 1 -}}{{- end -}}
+    {{- with $hash -}}{{- $key = print $key ":" . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $metadata := dict -}}
+{{- with hugo.Data.video_metadata -}}
+  {{- with index .entries $key -}}{{- $metadata = merge (.metadata | default dict) (.overrides | default dict) -}}{{- end -}}
+{{- end -}}
+{{- return $metadata -}}

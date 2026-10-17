@@ -49,7 +49,7 @@
 {{- $md_attrs  = partial "func/attrs" $md_attrs -}}
 
 {{- /* HTML */}}
-<div {{- $md_attrs }}>
+<div {{- $md_attrs }}{{ partial "preview/attrs" (dict "item" . "field" "md" "kind" "markdown") }}>
   {{- /* <div class="float"></div><div class="float float--r"></div> */}}
   {{ $md }}
 </div>

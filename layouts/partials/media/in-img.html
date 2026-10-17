@@ -32,6 +32,8 @@ Side effects: Production rendering writes image-derivative manifests consumed by
     $vid_name  $vid_data
     "data-vid" $vid_src
     "style"    $style
+    "data-width" (index .vid "presentation" "width")
+    "data-height" (index .vid "presentation" "height")
   -}}
   {{- $pic_attrs = partial "func/attrs" $pic_attrs -}}
 
@@ -41,8 +43,8 @@ Side effects: Production rendering writes image-derivative manifests consumed by
   {{- $img_attrs := dict
     "src"      ($img_base.RelPermalink | safeURL)
     "alt"      .alt
-    "width"    $img_base.Width
-    "height"   $img_base.Height
+    "width"    (cond (not (not .vid)) (index .vid "presentation" "width") $img_base.Width)
+    "height"   (cond (not (not .vid)) (index .vid "presentation" "height") $img_base.Height)
     "decoding" "async"
     "loading"  .lazy
   -}}
@@ -243,8 +245,8 @@ Side effects: Production rendering writes image-derivative manifests consumed by
       "type"   (print "image/" $type)
       "sizes"  $srcsizes
       "srcset" $srcset
-      "width"  $img.Width
-      "height" $img.Height
+      "width"  (cond (not (not .vid)) (index .vid "presentation" "width") $img.Width)
+      "height" (cond (not (not .vid)) (index .vid "presentation" "height") $img.Height)
     -}}
     {{- $source_attrs = partial "func/attrs" $source_attrs -}}
 
@@ -271,12 +273,13 @@ Side effects: Production rendering writes image-derivative manifests consumed by
   {{ if not .notschema -}}
     {{- with .vid -}}
       {{- partial "schema/vid" (dict
-        "name"         $.alt
+        "name"         (or $.vid_title $.video_title $.alt)
         "thumbnailUrl" $img_base.Permalink
-        "uploadDate"   $.upload
-        "duration"     $.duration
-        "contentUrl"   .url
-        "embedUrl"     .src
+        "uploadDate"   $.vid_upload
+        "duration"     $.vid_duration
+        "contentUrl"   (cond .ifr "" .url)
+        "embedUrl"     (cond .ifr .src "")
+        "metadata"     .meta
       ) -}}
     {{- else -}}
       {{- partial "schema/img" (dict

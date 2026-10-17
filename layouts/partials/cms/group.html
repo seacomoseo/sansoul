@@ -1,0 +1,15 @@
+{{/*
+Partial: cms/group
+Purpose: Declare visual field ownership without changing the persisted schema.
+Context: Map with name, label, and fields (flat field aliases/maps).
+Returns: Flat fields carrying metadata consumed by the CMS format adapter.
+Side effects: None. Without the adapter, the fields remain ordinary siblings.
+*/}}
+{{ $fields := slice }}
+{{ $group := dict "name" .name "label" .label }}
+{{ range .fields }}
+  {{ $field := . }}
+  {{ if eq (printf "%T" .) "string" }}{{ $field = dict "<<" . }}{{ end }}
+  {{ $fields = $fields | append (merge $field (dict "_sansoul_group" $group)) }}
+{{ end }}
+{{ return $fields }}
