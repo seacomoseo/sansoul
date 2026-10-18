@@ -95,6 +95,9 @@ pnpm sigue siendo una elección explícita mediante la herramienta documentada.
   algunos campos geográficos usan ese nombre. Verifica editar/guardar/reabrir
   cajas y modales. `params.cms_groups: false` ofrece el editor plano. Los
   serializadores preservan valores, pero pueden normalizar formato y comentarios.
+  Con cuerpo Markdown separado, no uses también su clave (`body` por defecto)
+  en la cabecera: el formato agrupado rechaza esa colisión para evitar pérdida.
+  Revisa `body_field.key`/`body_field.inline` o usa el editor plano si ocurre.
 - Revisa imágenes, enlaces especiales y los avisos de migración; compila el
   contenido y abre entradas representativas en el CMS.
 - El prebuild genera `theme` y `themesDir` para la ubicación instalada. No edites

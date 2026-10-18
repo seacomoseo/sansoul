@@ -80,6 +80,13 @@ archivo: la API de formatos entrega objetos y normaliza saltos de línea. Al
 guardar pueden cambiar comillas, orden, formato y comentarios. No se reescriben
 archivos al compilar o abrir el editor.
 
+Los saltos y espacios dentro de los valores sí son datos: se conservan los
+escalares YAML `|+` y los espacios finales del cuerpo Markdown. En Markdown
+con cuerpo separado, su clave (`body` por defecto) queda reservada. Si también
+aparece en la cabecera, el formato rechaza la apertura para evitar perder una
+de las dos representaciones. Usa otra `body_field.key`, `body_field.inline`
+si el cuerpo vive en la cabecera, o el editor plano según el contrato del sitio.
+
 ## Verificación
 
 ```sh

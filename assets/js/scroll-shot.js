@@ -10,11 +10,20 @@ export const scrollShot = ({
 
   if (!nodeList?.length) return
 
+  const pending = new WeakSet()
+
   const callbackScroll = (entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        doStart(entry.target)
-        if (end) {
+        if (pending.has(entry.target)) return
+        const started = doStart(entry.target)
+        if (started && typeof started.then === 'function') {
+          pending.add(entry.target)
+          Promise.resolve(started)
+            .then(() => { if (end) observer.unobserve(entry.target) })
+            .catch(console.error)
+            .finally(() => { pending.delete(entry.target) })
+        } else if (end) {
           observer.unobserve(entry.target)
         }
       } else if (!end) {

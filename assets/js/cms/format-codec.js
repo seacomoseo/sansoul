@@ -49,16 +49,21 @@ export function createGroupCodec ({ format = 'yaml', output, bodyField = {}, del
   const key = bodyField.key || 'body'
   return {
     fromFile (text) {
-      const source = text.trim().replace(/\r\n?/g, '\n')
+      // Whitespace at EOF can belong to a YAML |+ scalar or Markdown hard
+      // break. Normalize line endings without trimming authored content.
+      const source = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n')
       if (!markdown) return parseGroupYAML(source)
       if (format === 'frontmatter' && (source.startsWith('+++\n') || source.startsWith('{'))) throw new Error('CMS field groups support YAML front matter only. Disable cms_groups to edit this format.')
       const lines = source.split('\n')
       if (lines[0] !== open) return { [key]: source }
       const end = lines.indexOf(close, 1)
       if (end < 0) throw new Error('Unclosed YAML front matter in CMS entry.')
-      const head = parseGroupYAML(lines.slice(1, end).join('\n')) ?? {}
+      // The line break immediately before the closing fence is part of the
+      // YAML document, including when its final value uses keep chomping.
+      const head = parseGroupYAML(lines.slice(1, end).join('\n') + '\n') ?? {}
       if (!head || typeof head !== 'object' || Array.isArray(head)) throw new Error('CMS front matter must be a YAML mapping.')
       const body = lines.slice(end + 1).join('\n').replace(/^\n/, '')
+      if (Object.hasOwn(head, key) && (!bodyField.inline || body.trim())) throw new Error(`CMS Markdown body conflicts with the front matter field "${key}". Configure a different body_field.key or disable cms_groups before editing this entry.`)
       return { ...head, ...(!Object.hasOwn(head, key) && (!bodyField.inline || body.trim()) ? { [key]: body } : {}) }
     },
     toFile (data) {
@@ -71,7 +76,7 @@ export function createGroupCodec ({ format = 'yaml', output, bodyField = {}, del
         delete head[key]
       }
       if (!Object.keys(head).length) return body
-      return `${open}\n${stringifyGroupYAML(head, output).trimEnd()}\n${close}\n${body ? `\n${body}` : ''}`
+      return `${open}\n${stringifyGroupYAML(head, output)}${close}\n${body ? `\n${body}` : ''}`
     }
   }
 }

@@ -253,3 +253,35 @@ compiló con Hugo 0.164. Evidencia adicional: `check-persistent-cache.log` y
 `example-persistent-cache-hugo164.log` en la carpeta temporal de auditoría.
 La revisión CSS independiente no confirmó errores adicionales entre 30 familias
 de diagnósticos CSS de Nu; mantiene pendiente su comprobación en navegadores.
+
+
+## Revisión de recuperación y valores del CMS — 18 de octubre
+
+Se corrigieron pérdidas de saltos YAML `|+` al recortar la fuente y la cabecera
+serializada, y se conservaron espacios significativos del cuerpo Markdown.
+La colisión entre la clave del cuerpo y la cabecera se rechaza explícitamente;
+se probaron claves personalizadas y `body_field.inline`. Tres regresiones
+contrastan también con el parser YAML independiente de la ida/vuelta del codec.
+
+Leaflet y Draw liberan promesas rechazadas y recuperan CSS/JS fallidos, incluso
+con carga parcial. Mapas y campos geográficos comparten inicio por elemento;
+el observador espera el éxito y conserva el elemento tras un fallo para otra
+intersección, sin programar bucles. Diez regresiones cubren esos caminos,
+concurrencia, ausencia, reinicialización y comportamiento síncrono previo. No
+se afirma rollback ante errores de datos posteriores a crear un mapa.
+
+La revisión cruzada no encontró nuevas regresiones. `sh do check` completó
+**159/159 pruebas** y producción con Hugo 0.168; el ejemplo canónico compiló
+con Hugo 0.164. El control estático de salida conservó 42 HTML, 2 XML y 9 SVG
+sin referencias locales rotas, IDs duplicados ni errores de parseo.
+
+Ambos builds avisaron de una descarga del subset de Google Fonts cuyo tipo de
+medio no se pudo resolver y usaron respaldo local; la demo también omite
+VideoObject sin publicación conocida. No se usa ese resultado para PageSpeed.
+Los dos intentos nuevos en Chrome al origen local fueron denegados por permiso
+guardado después de que Loren comunicara retirar el bloqueo. No se probaron
+otros navegadores ni métodos para eludirlo. La matriz UX, Lighthouse y Rich
+Results de esta tanda siguen pendientes. Las pruebas Node no los sustituyen.
+
+Evidencia: `/private/tmp/sansoul-audit-20261017/check-followup-20261018.log`,
+`example-followup-hugo164-20261018.log` y `site-audit-followup-20261018.log`.

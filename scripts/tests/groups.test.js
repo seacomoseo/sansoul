@@ -188,6 +188,49 @@ test('Markdown body, body_field options and custom delimiters roundtrip', () => 
   assert.throws(() => codec.fromFile('---\ntitle: A'), /Unclosed/)
 })
 
+test('YAML keep scalars retain their trailing newlines through read and save', () => {
+  const source = 'title: Example\nmd: |+\n  hello\n\n\n'
+  const expected = parseGroupYAML(source)
+  assert.equal(expected.md, 'hello\n\n\n')
+  const codec = createGroupCodec()
+  assert.deepEqual(codec.fromFile(source), expected)
+  // Parse the emitted YAML independently: a self-roundtrip could hide a
+  // matching loss in both directions of the custom codec.
+  assert.deepEqual(parseGroupYAML(codec.toFile(expected)), expected)
+  assert.deepEqual(parseGroupYAML(codec.toFile(codec.fromFile(source))), expected)
+})
+
+test('front matter keep scalars and Markdown whitespace survive independently', () => {
+  const yaml = 'title: Example\nmd: |+\n  hello\n\n\n'
+  const body = '    indented code\n\nHard break  \nnext line  \n\n'
+  const source = `---\n${yaml}---\n\n${body}`
+  const expected = { ...parseGroupYAML(yaml), body }
+  const codec = createGroupCodec({ format: 'frontmatter' })
+  assert.deepEqual(codec.fromFile(source), expected)
+  const saved = codec.toFile(expected)
+  const header = saved.match(/^---\n([\s\S]*?)^---\n/m)[1]
+  assert.deepEqual(parseGroupYAML(header), parseGroupYAML(yaml))
+  assert.equal(saved.slice(saved.indexOf('---\n', 4) + 4), `\n${body}`)
+  assert.deepEqual(codec.fromFile(saved), expected)
+  assert.deepEqual(codec.fromFile('\uFEFF' + source.replace(/\n/g, '\r\n')), expected)
+  assert.deepEqual(codec.fromFile(body), { body })
+  assert.equal(codec.toFile({ body }), body)
+})
+
+test('front matter body-key collisions fail closed without discarding either value', () => {
+  for (const key of ['body', 'content']) {
+    const codec = createGroupCodec({ format: 'frontmatter', bodyField: { key } })
+    for (const body of ['', '\nActual Markdown body\n']) {
+      assert.throws(() => codec.fromFile(`---\ntitle: Example\n${key}: Front matter value\n---\n${body}`), /body conflicts.*body_field\.key/)
+    }
+    const inline = createGroupCodec({ format: 'frontmatter', bodyField: { key, inline: true } })
+    const value = { title: 'Example', [key]: 'Front matter value' }
+    assert.deepEqual(inline.fromFile(inline.toFile(value)), value)
+    assert.throws(() => inline.fromFile(`---\n${key}: Front matter value\n---\n\nActual Markdown body\n`), /body conflicts/)
+    assert.deepEqual(codec.fromFile(`---\ntitle: Example\n---\n\nActual Markdown body\n`), { title: 'Example', [key]: 'Actual Markdown body\n' })
+  }
+})
+
 test('config loading resolves YAML aliases and merge metadata without global parser state', async () => {
   const document = { querySelector: () => ({ href: 'https://example.test/config.yml' }) }
   const source = 'base: &a { name: title, widget: string }\ncollections:\n- name: pages\n  fields:\n  - <<: *a\n    _sansoul_group: { name: text, label: Text }'

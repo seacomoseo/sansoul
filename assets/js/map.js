@@ -1,6 +1,8 @@
 import { scrollShot } from './scroll-shot'
 import { loadLeaflet, myIcon, fill, tile } from './leaflet'
 
+const mapStarts = new WeakMap()
+
 function mapStart (mapDiv) {
   const map = L.map(mapDiv.id, {
     setView: true,
@@ -53,9 +55,12 @@ export function initMap () {
     rootMargin: '20%',
     query: '.map',
     doStart: (mapDiv) => {
-      loadLeaflet()
-        .then(() => { mapStart(mapDiv) })
-        .catch(console.error)
+      if (!mapStarts.has(mapDiv)) {
+        const started = loadLeaflet().then(() => { mapStart(mapDiv) })
+        mapStarts.set(mapDiv, started)
+        started.catch(() => { mapStarts.delete(mapDiv) })
+      }
+      return mapStarts.get(mapDiv)
     },
     end: true
   })

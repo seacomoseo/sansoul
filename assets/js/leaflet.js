@@ -10,42 +10,40 @@ const {
 } = params
 
 let leafletPromise = null
+let leafletDrawPromise = null
+let leafletResourcesRequested = false
+let drawResourcesRequested = false
 
 export function loadLeaflet () {
   if (!leafletPromise) {
-    leafletPromise = new Promise((resolve, reject) => {
-      // Verificamos si Leaflet ya está cargado
-      if (window.L) {
-        resolve()
-        return
-      }
-      // Cargamos CSS y JS de Leaflet
-      Promise.all([
+    if (window.L && !leafletResourcesRequested) {
+      leafletPromise = Promise.resolve()
+    } else {
+      // A partially loaded SDK still needs its failed stylesheet/script on retry.
+      leafletResourcesRequested = true
+      leafletPromise = Promise.all([
         loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),
         loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
-      ]).then(() => {
-        resolve()
-      }).catch(reject)
-    })
+      ]).then(() => {})
+    }
+    leafletPromise.catch(() => { leafletPromise = null })
   }
   return leafletPromise
 }
 
 export function loadLeafletDraw () {
-  return new Promise((resolve, reject) => {
-    // Verificamos si Leaflet.Draw ya está cargado
-    if (L && L.Control && L.Control.Draw) {
-      resolve()
-      return
-    }
-    // Cargamos CSS y JS de Leaflet.Draw
-    Promise.all([
-      loadStyle('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css'),
-      loadScript('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js')
-    ]).then(() => {
-      resolve()
-    }).catch(reject)
-  })
+  if (!leafletDrawPromise) {
+    leafletDrawPromise = loadLeaflet().then(() => {
+      if (window.L?.Control?.Draw && !drawResourcesRequested) return
+      drawResourcesRequested = true
+      return Promise.all([
+        loadStyle('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js')
+      ]).then(() => {})
+    })
+    leafletDrawPromise.catch(() => { leafletDrawPromise = null })
+  }
+  return leafletDrawPromise
 }
 
 export function myIcon (i) {
