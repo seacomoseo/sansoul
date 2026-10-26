@@ -11,21 +11,24 @@
   {{ $config := hugo.Data.styles.icons.def }}
   {{ $icon   := cond (eq $icon "none") "" $icon }}
   {{ $type   := "icon" }}
-  {{ $trans  := false }}
-  {{ $lang   := false }}
+  {{ $svg_name := "" }}
+  {{ $svg_resource_id := "" }}
+  {{ $svg_path := "" }}
+  {{ $svg_source := false }}
+  {{ $part := "" }}
 
   {{/*  SVG  */}}
   {{ $is_svg := $icon | findRE `^(svg|brand):` }}
 
-  {{/*  TXT  */}}
-  {{ $is_txt   := hasPrefix $icon "txt:" | or (not $icon) }}
-  {{ if or $is_txt $is_svg | not }}
-    {{/*  is emoji  */}}
+  {{/*  TEXT, EMOJI AND MATERIAL SYMBOLS  */}}
+  {{ $is_txt := hasPrefix $icon "txt:" | or (not $icon) }}
+  {{ $is_emoji := false }}
+  {{ if and (not $is_svg) (not $is_txt) }}
     {{ $icon_code := $icon | urlquery }}
-    {{ $is_txt     = in $icon_code "%" }}
-    {{ $trans      = "no" }}
-    {{ $lang       = "zxx" }}
+    {{ $is_emoji = in $icon_code "%" }}
   {{ end }}
+  {{ $is_txt = or $is_txt $is_emoji }}
+  {{ $is_mat := and (not $is_svg) (not $is_txt) }}
 
   {{/*  CLASS  */}}
   {{ $class  := slice "icon" }}
@@ -38,10 +41,13 @@
     {{ $class = $class | append "icon--txt" }}
   {{ else if $is_svg }}
     {{ $class = $class | append "icon--svg" }}
-    {{ $name := $icon | replaceRE `^svg:` "" | replaceRE `^brand:` "brands/" }}
-    {{ $path := print "/u/{icons/,}" $name ".svg" }}
-    {{ $src  := resources.GetMatch $path }}
-    {{ with $src }}
+    {{ $svg_name = $icon | replaceRE `^svg:` "" | replaceRE `^brand:` "brands/" }}
+    {{ $svg_resource_id = partial "func/svg-resource-id" $svg_name }}
+    {{ $part = $icon }}
+    {{ partial "func/register-resource" (dict "kind" "svg" "value" $icon) }}
+    {{ $svg_path = print "/u/{icons/,}" $svg_name ".svg" }}
+    {{ $svg_source = resources.GetMatch $svg_path }}
+    {{ with $svg_source }}
       {{ with partial "func/svg-sizes" .Content }}
         {{ $width  = .width  }}
         {{ $height = .height }}
@@ -51,16 +57,15 @@
       {{ $width  = 24 }}
       {{ $height = 24 }}
     {{ end }}
-  {{ else if eq $icon "format_quote" }}
+  {{ else if $is_mat }}
+    {{ $class = $class | append "icon--mat" }}
+    {{ $part = $icon }}
+  {{ end }}
+  {{ if eq $icon "format_quote" }}
     {{ $class = $class | append "quote" }}
   {{ end }}
-  {{ if eq $icon "check" }}
-    {{ $class = $class | append "icon--check" }}
-  {{ else if eq $icon "close" }}
-    {{ $class = $class | append "icon--close" }}
-  {{ end }}
 
-  {{ $aria_hidden := cond (not $is_txt) "true" false }}
+  {{ $aria_hidden := cond $is_svg "true" false }}
   
   {{/*  ATTRIBUTES  */}}
   {{ $attrs := dict
@@ -69,17 +74,27 @@
     "width"       $width
     "height"      $height
     "aria-hidden" $aria_hidden
-    "translate"   $trans
-    "lang"        $lang
+    "part"        $part
   }}
   {{ $attrs = partial "func/attrs" $attrs }}
 
   {{/*  HTML  */}}
-  {{ $icon    = $icon | replaceRE `^(svg|txt):` "" | replaceRE `:|/` "-" }}
   {{ if $is_svg }}
-    {{ $base := partial "func/draws-base" . }}
-    {{ $html  = print `<svg` $attrs `><use href="` $base `#` $icon `"></use></svg>` | safeHTML }}
+    {{ if not $svg_source }}
+      {{ errorf "SanSoul SVG icon has no matching source: %s" $svg_path }}
+    {{ else }}
+      {{/* The final URL is selected after all pages have registered their SVGs. */}}
+      {{ $svg_token := print "__SANSOUL_SVG_" ($svg_resource_id | urlize) "__" }}
+      {{ $html = print `<svg` $attrs `><use href="` $svg_token `"></use></svg>` | safeHTML }}
+    {{ end }}
+  {{ else if $is_mat }}
+    {{ partial "func/register-resource" (dict "kind" "glyph" "value" $icon) }}
+    {{ $html = print `<i` $attrs `></i>` | safeHTML }}
   {{ else }}
+    {{ $icon = $icon | replaceRE `^(svg|txt):` "" | replaceRE `:|/` "-" }}
+    {{ if not $is_txt }}
+      {{ partial "func/register-resource" (dict "kind" "glyph" "value" $icon) }}
+    {{ end }}
     {{ $html  = print `<i` $attrs `>` $icon `</i>` | safeHTML }}
   {{ end }}
 {{ end }}

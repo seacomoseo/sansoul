@@ -44,6 +44,7 @@
     `~config_main_org`
     `~config_html`
     `~config_llms`
+    (partial "cms/widget" (dict "alt" `config_cms_repo` "name" `cms_repo` "required" false))
     (partial "cms/widget" (dict "alt" `config_cms_logo`           "name" `cms_logo`           "widget" `img`                                               ))
     (partial "cms/widget" (dict "alt" `config_cms_lang`           "name" `cms_lang`           "widget" `select`  "hint" $lang_hint "opts" `~opts_langs_cms`))
     (partial "cms/widget" (dict "alt" `config_cms_editorial`      "name" `cms_editorial`      "widget" `bool`                                              ))

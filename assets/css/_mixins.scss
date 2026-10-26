@@ -120,11 +120,13 @@
 // LINKS HOVER, FOCUS AND ACTIVE
 
 @mixin link-hover {
-  color: var(--hover);
-  background-size: 100% 100%;
+  background-size: 100% 100%; // Underline
+  --cta-text: var(--hover); // Text
+  --main: var(--hover); // Icon
 }
 @mixin link-active {
-  color: var(--active);
+  --cta-text: var(--active); // Text
+  --main: var(--hover); // Icon
 }
 
 

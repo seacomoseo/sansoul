@@ -1,5 +1,6 @@
 // The claim marker is visible only inside the atomic D1 batch before finalization.
 import { CommerceError } from './http.js'
+import { rotateCandidates } from './maintenance.js'
 
 export const WEBHOOK_CLAIMED_AT = -1
 const SESSION_ID = /^cs_(?:(?:test|live)_)?[A-Za-z0-9]+$/
@@ -171,47 +172,40 @@ export async function persistCheckoutSession (db, key, snapshot, session, env, n
   return expired
 }
 
+// One order per invocation; cursor fairness includes partial-refund repair.
+export const EXPIRATION_BATCH_SIZE = 1
+
 export async function expirePendingCheckouts (db, now = Math.floor(Date.now() / 1000)) {
-  const partial = await db.prepare(`
-    SELECT 1 FROM orders
-    WHERE payment_status = 'partially_refunded' AND fulfillment_status IN ('awaiting_payment', 'ready')
-    LIMIT 1
-  `).first()
-  if (partial) {
-    await db.batch([
-      db.prepare(`
-        UPDATE orders SET fulfillment_status = 'inventory_exception', updated_at = ?
-        WHERE payment_status = 'partially_refunded' AND fulfillment_status IN ('awaiting_payment', 'ready')
-      `).bind(now),
-      inventoryExceptionOutbox(db, now)
-    ])
-  }
-
-  const due = await db.prepare(`
-    SELECT 1 FROM orders WHERE payment_status = 'pending' AND expires_at <= ?
-    UNION ALL
-    SELECT 1 FROM stock_reservations WHERE status = 'held' AND expires_at <= ?
-    LIMIT 1
-  `).bind(now, now).first()
-  if (!due) return
-
+  const dueCondition = `(expires_at <= ? OR EXISTS (
+    SELECT 1 FROM stock_reservations
+    WHERE order_id = orders.id AND (status = 'expired' OR (status = 'held' AND expires_at <= ?))
+  ))`
+  const page = await rotateCandidates(db, 'expiration',
+    'SELECT id, created_at AS cursor_created_at, id AS cursor_id FROM orders INDEXED BY orders_maintenance_rotation',
+    `WHERE payment_status IN ('pending', 'failed', 'partially_refunded') AND (
+      (payment_status = 'partially_refunded' AND fulfillment_status IN ('awaiting_payment', 'ready'))
+      OR (payment_status = 'pending' AND ${dueCondition})
+    )`, 'created_at', 'id', now, [now, now])
+  const selected = page.rows[0]
+  if (!selected) return page
   await db.batch([
     db.prepare(`
-      UPDATE stock_reservations SET status = 'expired', updated_at = ?
-      WHERE status = 'held' AND EXISTS (
-        SELECT 1 FROM orders
-        WHERE id = stock_reservations.order_id AND payment_status = 'pending'
-          AND (orders.expires_at <= ? OR stock_reservations.expires_at <= ?)
+      UPDATE orders SET
+        fulfillment_status = CASE WHEN payment_status = 'partially_refunded' THEN 'inventory_exception' ELSE fulfillment_status END,
+        payment_status = CASE WHEN payment_status = 'pending' THEN 'expired' ELSE payment_status END,
+        updated_at = ?
+      WHERE id = ? AND (
+        (payment_status = 'partially_refunded' AND fulfillment_status IN ('awaiting_payment', 'ready'))
+        OR (payment_status = 'pending' AND ${dueCondition})
       )
-    `).bind(now, now, now),
+    `).bind(now, selected.id, now, now),
     db.prepare(`
-      UPDATE orders SET payment_status = 'expired', updated_at = ?
-      WHERE payment_status = 'pending' AND (
-        expires_at <= ? OR EXISTS (
-          SELECT 1 FROM stock_reservations
-          WHERE order_id = orders.id AND status = 'expired'
-        )
+      UPDATE stock_reservations SET status = 'expired', updated_at = ?
+      WHERE order_id = ? AND status = 'held' AND EXISTS (
+        SELECT 1 FROM orders WHERE id = stock_reservations.order_id AND payment_status = 'expired'
       )
-    `).bind(now, now)
+    `).bind(now, selected.id),
+    inventoryExceptionOutbox(db, now, selected.id)
   ])
+  return page
 }

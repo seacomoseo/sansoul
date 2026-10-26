@@ -76,7 +76,9 @@ El sitio de `prebuild/` se ejecuta antes del sitio principal. Lee el proyecto co
 
 La preconstrucción permite resolver decisiones que Hugo no puede convertir dinámicamente en configuración durante el render principal.
 
-En desarrollo, `sh do local` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Hugo detecta el cambio y se reconfigura sin reiniciar. Si la preconstrucción falla, el servidor conserva la última configuración válida.
+En desarrollo, `sh do local` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Hugo detecta los cambios sin reiniciar; si se elimina un archivo o directorio de contenido, el supervisor reinicia Hugo para retirar rutas que Fast Render puede conservar en memoria. Si la preconstrucción falla, el servidor conserva la última configuración válida.
+
+`sh do server` y `sh do local` escriben la salida en disco. Ambos limpian `public/` y `resources/` al iniciar; también lo hacen las compilaciones completas. En pruebas de este repositorio con Hugo 0.164, `--renderToMemory` no dio una mejora de velocidad apreciable. Solo cambia dónde Hugo expone los archivos generados: los hashes antiguos pueden seguir disponibles durante la sesión en ambos modos. Escribir en disco deja `public/` inspeccionable, y la limpieza al iniciar evita arrastrar esos archivos entre sesiones.
 
 La configuración desactiva el `assets/jsconfig.json` autogenerado por
 Hugo. En Hugo 0.164, su escritura puede coincidir con una recarga de
@@ -84,11 +86,12 @@ configuración y disparar dos reconstrucciones incompatibles.
 
 ### 2. Sistema de archivos virtual
 
-La configuración estática del tema monta, entre otros:
+La configuración común del tema conserva estos montajes, entre otros:
 
 - `content/single/_home.<lang>.md` como `content/_index.<lang>.md`;
 - `content/global.<lang>.yml` como datos localizados;
-- `content/<type>/_index.<lang>.md` como recursos que consume el Content Adapter;
+- cada `content/<type>/_index.<lang>.md` como montaje de archivo individual para el Content Adapter;
+- cada `content/global.<lang>.yml` como montaje de archivo individual en datos localizados;
 - `uploads/` como `static/u/` y `assets/u/`;
 - páginas de sistema y el Content Adapter del tema;
 - iconos y fuentes de `node_modules`.
@@ -106,7 +109,7 @@ La configuración se carga de menor a mayor prioridad:
 
 El adapter raíz crea una sección virtual por cada tipo y transforma `data/remote.yml` en páginas virtuales. Los `_index.<lang>.md` físicos continúan siendo las fuentes editables del CMS, pero no entran directamente en el árbol de páginas, lo que evita colisiones.
 
-Los templates ensamblan cada página, recopilan recursos utilizados en `page.Store` y `hugo.Store`, y generan los archivos auxiliares.
+Los templates ensamblan cada página y registran sus iconos y divisores usados en `page.Store`. Los recursos se procesan con Hugo Pipes después de renderizar el cuerpo y antes de emitir el `<head>`.
 
 ### 4. Posprocesado
 
@@ -188,6 +191,14 @@ No elimines un shortcode o render hook porque no aparezca en la demo actual: pue
 ## Medios, iconos y recursos
 
 Los partials `media/*` resuelven imágenes internas, externas, SVG y vídeo. `icon.html` admite Material Symbols, Font Awesome/Simple Icons y recursos SVG propios. Los stores recopilan solo los glifos y dibujos utilizados para reducir la salida.
+
+Los layouts registran iconos, SVG de imagen y divisores en `page.Store`, por página y formato. `templates.Defer` reúne los registros cuando terminan los renders, deduplica las páginas de salida y resuelve las URLs finales sin un catálogo de sprites. Los SVG seguros compartidos entre páginas se publican en sprites agrupados por el conjunto exacto de páginas que los usa; cada entrada conserva una raíz `<svg>` anidada. Un icono seguro usado en una sola página se inserta en esa página. Los SVG animados se mantienen dentro de cada página y no se separan por la animación. Los recursos con IDs en colisión o reglas `<style>` quedan en archivos independientes y se siguen consumiendo con `<use>` sin fragmento cuando basta la raíz completa. Los SVG de imagen se agrupan por uso, con vistas SVG, y conservan `<img>`, `alt` y carga diferida.
+
+Los divisores se agrupan en hojas externas por conjunto exacto de páginas de uso; las referencias conservan sus IDs de vista. El pipeline usa `<svg>` anidados, no `<symbol>`, para conservar gradientes, animaciones y referencias SVG. No se requiere `svg_sprites` ni otro catálogo manual. `data/resources.yml` declara glifos, SVG y divisores usados exclusivamente por CSS, JavaScript o datos dinámicos. El bundle de cada página expone URLs SVG finales como `icons` a través de `@params`; el `<head>` ofrece además propiedades CSS `--sansoul-svg-<id>`.
+
+Los recursos publicados usan los primeros 12 caracteres hexadecimales de SHA-256. Para CSS/JS, el hash se calcula sobre el contenido final minificado; si cambia, cambia la URL. Hugo limpia `public/` y `resources/` al iniciar los comandos locales y los builds de despliegue.
+
+Material Symbols se solicita durante el build mediante `icon_names`; Hugo valida la cabecera WOFF2 y publica el binario bajo un nombre con hash de contenido. Si falla la descarga, producción usa el WOFF2 completo del paquete local declarado como dependencia. El paquete npm disponible no incorpora un subsetter local oficial: contiene las fuentes completas y su publicación no está mantenida ni validada por Google. El CMS también autoalojará la fuente Outlined completa para que su selector dinámico previsualice cualquier icono.
 
 `uploads/` pertenece al proyecto, pero Hugo lo monta bajo `/u/`. El tema también utiliza manifiestos temporales para generar variantes de imágenes fuera de Hugo Pipes.
 

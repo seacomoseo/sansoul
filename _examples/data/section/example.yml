@@ -13,6 +13,8 @@ scroll: soft # [ none, fix, soft ]
 # paddings
 pt: 5 # [ >= 0.00 ]
 pb: 5 # [ >= 0.00 ]
+pt_vs: null # [ -20.00 - 20.00 ] Small viewport value; if pt is unset, it also applies to large viewports.
+pb_vs: null # [ -20.00 - 20.00 ] Small viewport value; if pb is unset, it also applies to large viewports.
 ph: false
 # size
 full: true
@@ -57,7 +59,7 @@ box:
   slider: true
   time: 5
   pips: '' # [ line, dot, hide ]
-  arrows: '' # [ bottom, float, hide ]
+  arrows: '' # [ float, main, cta, alt, light, dark, turn, such, none, hide ]
   align_y: top # [ stretch, top, center, bottom ]
   align_x: flex-end # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
   # add same to box_base
@@ -137,6 +139,15 @@ boxes:
   # boxi
   rate: 16/9 # [ int/int ]
   space: null # [ >= 0.00 ]
+  class: '' # Custom classes added to the box wrapper, not its title
+  mt: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  mb: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  ml: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  mr: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  mt_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if mt is unset, it also applies to large viewports
+  mb_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if mb is unset, it also applies to large viewports
+  ml_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if ml is unset, it also applies to large viewports
+  mr_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if mr is unset, it also applies to large viewports
   pd: null # [ >= 0.00 ]
   pd_vs: null # [ >= 0.00 ]
   align: left # [ left, center, right ]
@@ -319,7 +330,7 @@ boxes:
     slider: true
     time: 2
     pips: '' # [ line, dot, hide ]
-    arrows: '' # [ bottom, float, hide ]
+    arrows: '' # [ main, cta, alt, light, dark, turn, such, none, hide, float ]
     btn: '' # [ main, cta, alt, light, dark, turn, such ]
   reviews:
   - title: Título Reseña 1
@@ -534,11 +545,13 @@ boxes:
     items:
     - label: Checkbox Opción 1
       key: Checkbox Valor 1
+      req: true
     - label: Checkbox Opción 2
       key: Checkbox Valor 2
       disabled: true
     - label: Checkbox Opción 3
       key: Checkbox Valor 3
+      req: true
   - type: check
     name: Check
     label: Checkbox alone

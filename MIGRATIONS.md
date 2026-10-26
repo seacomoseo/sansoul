@@ -35,6 +35,48 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 8.0.0 — integración local sin publicar: mantenimiento Workers Free
+
+**Impacto:** cambio incompatible de la API administrativa compartida (también
+Pages). Los paquetes/locks locales declaran 8.0.0; no hay release publicada ni
+gitlink nuevo. Esta rama parte de 7.1.0 y reconcilia localmente las mejoras de
+main 7.3.1 (`01ebdf07dcca916ed500b9ca7306e1ce95c5b557`) mediante patches
+contextuales: espaciado responsive, opciones/validación de formularios y pipeline
+SVG/fuentes/recursos con refresh local. Conserva el comercio opt-in y Workers;
+esta reconciliación no equivale a merge, publicación ni aprobación Free.
+Opt-in CMS: `data/config.yml` admite `cms_repo: organization/site`, sin cambiar
+domain/URLs. Ausente conserva owner/domain. `backend.skip_ci: true` se conserva;
+guardar sin publicar añade [skip ci]. Un commit publicado sin marcador puede
+activar push; el botón global Sveltia 0.239.0 usa repository_dispatch
+sveltia-cms-publish, conectado solo al template INERTE con allowlist de IDs
+de usuario, payload vacío y environment protegido; no habilitado. Guardar no es privado
+ni garantiza que el contenido no aparezca en un build posterior.
+
+**Acciones obligatorias:**
+1. Respaldar/verificar la base aprobada. Aplicar una vez y en orden `0005` y
+   `0006_bounded_maintenance.sql`; `0006` conserva los cursores existentes al
+   reconstruir su tabla con `expiration` y revisión CAS. No borra datos comerciales.
+   Rollback: conservar base/bindings y restaurar código anterior, que tolera la
+   columna/cursor adicional; no restaurar una copia vieja sobre pedidos nuevos.
+2. Cambiar cada caller de reconcile combinado a tres llamadas independientes:
+   `?operation=expiration`, `?operation=orders`, `?operation=unmatched_webhooks`.
+   Cada llamada procesa como máximo un pedido/evento; sin parámetro solo `orders`.
+   Programar todas las clases con fairness, espera y presupuesto finito de calls.
+3. Cambiar consumidores de dispatch: se elimina **`pending` numérico** y se
+   añade **`has_more` booleano**. No convertirlo en un contador ni drenar con
+   busy-loop: incluye elementos retrasados/leases que no se pueden tomar aún.
+   Un caller que necesita inventario exacto debe usar una auditoría paginada
+   aprobada fuera de la llamada de dispatch, no reinstalar COUNT en el hot path.
+4. `has_more` de reconcile es lookahead de otros candidatos, no una promesa de
+   completar el elemento actual. Repetir ciclos programados ante deferred/failed
+   o skipped_concurrent; las revisiones CAS impiden dos ganadores del mismo turno.
+   Mantener idempotency de proveedor/stock y deduplicar notificaciones por eventKey.
+
+**Validación:** suite completa `npm run test:commerce:workers`, pruebas de retries,
+ack perdido, leases renovadas, CAS concurrente y singleton, rotación y SQL rollback.
+CPU Free 10 ms requiere varias muestras cloud nativas de perfiles estables
+worst-case; el pass local no levanta este gate ni demuestra fresh isolate.
+
 ## 7.1.0 — 2026-10-05
 
 **Impacto:** extensión compatible y opt-in de catálogo, carrito, CMS ES/EN y

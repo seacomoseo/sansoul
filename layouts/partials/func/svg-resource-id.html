@@ -1,0 +1,11 @@
+{{/*
+Partial: func/svg-resource-id
+Purpose: Create a unique internal SVG registration token from a canonical resource name.
+Context: string, required: Resource name without the svg: or brand: prefix.
+Returns: A readable slug with a 12-character SHA-256 suffix, used to prevent placeholder collisions.
+Side effects: None.
+*/}}
+{{- $name := . -}}
+{{- $slug := $name | urlize | replaceRE `[^a-z0-9_-]+` "-" | replaceRE `-+` "-" | default "asset" -}}
+{{- $suffix := substr (sha256 $name) 0 12 -}}
+{{- return (printf "svg-%s-%s" $slug $suffix) -}}

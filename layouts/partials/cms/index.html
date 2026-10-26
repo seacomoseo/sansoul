@@ -14,7 +14,8 @@
   {{/*  CONFIG FILE  */}}
   {{ $path := "../admin/config.yml" }}
   {{ $str  := partial "cms/config/_" . | string }}
-  {{ $src  := resources.FromString $path $str | fingerprint }}
+  {{ $src  := resources.FromString $path $str }}
+  {{ $src  = partial "func/publish-content-resource" (dict "resource" $src "target" $path) }}
   <link href="{{ $src.RelPermalink }}" type="application/yaml" rel="cms-config-url">
 
   {{/*  STYLES  */}}
@@ -33,15 +34,14 @@
   {{ $vars := dict
     "customs"   (delimit $customs "|")
     "divs"      (delimit hugo.Data.options.div "|")
-    "timestamp" (partial "func/timestamp" .)
   }}
   {{ $styles := resources.Get "css/cms.scss"
     | toCSS (dict "vars" $vars "enableSourceMap" hugo.IsDevelopment "transpiler" "dartsass")
-    | fingerprint
   }}
   {{ if hugo.IsProduction }}
     {{ $styles = $styles | minify }}
   {{ end }}
+  {{ $styles = partial "func/publish-content-resource" (dict "resource" $styles "target" "css/cms.css") }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
 
 </head>
@@ -56,10 +56,11 @@
     "targetPath" "js/cms.js"
     "params"     (dict "t" $t)
   }}
-  {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts | fingerprint }}
+  {{ $js := resources.Get "js/cms/_index.js" | js.Build $opts }}
   {{ if hugo.IsProduction }}
     {{ $js = $js | minify }}
   {{ end }}
+  {{ $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/cms.js") }}
   <script src="{{ $js.RelPermalink }}" defer></script>
 
 </body>

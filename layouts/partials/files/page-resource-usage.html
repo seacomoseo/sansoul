@@ -1,0 +1,23 @@
+{{- $html := .html -}}
+{{- $format := .format | default "html" -}}
+{{- $uses := slice -}}
+{{- $images := slice -}}
+{{- $divs := slice -}}
+{{- range page.Store.Get (printf "sansoul.resources.%s.svg-uses" $format) | default (slice) -}}
+  {{- $id := partial "func/svg-resource-id" . -}}
+  {{- $token := print "__SANSOUL_SVG_" ($id | urlize) "__" -}}
+  {{- if strings.Contains $html $token -}}{{- $uses = $uses | append . -}}{{- end -}}
+{{- end -}}
+{{- range page.Store.Get (printf "sansoul.resources.%s.svg-images" $format) | default (slice) -}}
+  {{- $id := partial "func/svg-resource-id" . -}}
+  {{- $token := print "__SANSOUL_SVG_IMAGE_" ($id | urlize) "__" -}}
+  {{- if strings.Contains $html $token -}}{{- $images = $images | append . -}}{{- end -}}
+{{- end -}}
+{{- range page.Store.Get (printf "sansoul.resources.%s.divs" $format) | default (slice) -}}
+  {{- $id := lower . -}}
+  {{- $id = replaceRE `[^a-z0-9]+` "-" $id -}}
+  {{- $id = strings.Trim $id "-" -}}
+  {{- $token := print "__SANSOUL_DRAWS_" $id "__" -}}
+  {{- if strings.Contains $html $token -}}{{- $divs = $divs | append . -}}{{- end -}}
+{{- end -}}
+{{- return (dict "uses" ($uses | uniq | sort) "images" ($images | uniq | sort) "divs" ($divs | uniq | sort)) -}}

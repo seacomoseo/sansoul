@@ -14,6 +14,7 @@ const TEST_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(TEST_DIR, '../../../../')
 const THEME = resolve(ROOT, 'themes/sansoul')
 const FUNCTION_FIXTURE = resolve(THEME, '_examples/commerce-backend/functions')
+const WORKERS = process.env.COMMERCE_RUNTIME === 'workers'
 const WRANGLER = resolve(THEME, 'node_modules/wrangler/bin/wrangler.js')
 const ORDER_ID = '33333333-3333-4333-8333-333333333333'
 const IDEMPOTENCY_KEY = 'routing-order-replay'
@@ -59,7 +60,7 @@ async function unusedPort () {
 function startPages (cwd, publicDir, port, origin, bindings = []) {
   const args = [
     WRANGLER,
-    'pages', 'dev', publicDir,
+    ...(WORKERS ? ['dev', '--local'] : ['pages', 'dev', publicDir]),
     '--port', String(port),
     '--ip', '127.0.0.1',
     '--show-interactive-dev-session=false',
@@ -72,7 +73,7 @@ function startPages (cwd, publicDir, port, origin, bindings = []) {
     '--binding', 'COMMERCE_RATE_LIMIT_SALT=local-test-rate-limit-salt-32-bytes',
     ...bindings
   ]
-  const child = spawn(process.execPath, args, {
+  const child = spawn(process.execPath, WORKERS ? args.map((arg, index) => arg === '--binding' ? '--var' : args[index - 1] === '--binding' ? arg.replace('=', ':') : arg) : args, {
     cwd,
     env: { ...process.env, CI: '1', CLOUDFLARE_SEND_METRICS: 'false' },
     stdio: ['ignore', 'pipe', 'pipe']
@@ -122,12 +123,18 @@ test('generated Pages routes disable never-commerce but preserve signed order AP
     const port = await unusedPort()
     const origin = `http://127.0.0.1:${port}`
     cpSync(FUNCTION_FIXTURE, functionsDir, { recursive: true })
+    if (WORKERS) {
+      const entry = readFileSync(resolve(THEME, '_examples/commerce-backend/worker.js'), 'utf8').replace('export default createCommerceWorker', 'const worker = createCommerceWorker')
+      writeFileSync(resolve(workspace, 'worker.js'), `${entry}
+export default { async fetch (...args) { const response = await worker.fetch(...args); const headers = new Headers(response.headers); headers.set('x-test-worker-invoked', 'true'); headers.set('x-test-worker-path', new URL(args[0].url).pathname); return new Response(response.body, { status: response.status, headers }) } }
+`)
+    }
     mkdirSync(resolve(workspace, 'themes'), { recursive: true })
     symlinkSync(THEME, resolve(workspace, 'themes/sansoul'), 'dir')
     writeFileSync(resolve(workspace, 'wrangler.toml'), [
       'name = "commerce-routing"',
       'compatibility_date = "2025-12-10"',
-      `pages_build_output_dir = "${publicDir}"`,
+      ...(WORKERS ? ['main = "worker.js"', '[assets]', `directory = "${publicDir}"`, 'binding = "ASSETS"', 'run_worker_first = ["/api/commerce/*"]', 'not_found_handling = "404-page"'] : [`pages_build_output_dir = "${publicDir}"`]),
       '',
       '[[d1_databases]]',
       'binding = "COMMERCE_DB"',
@@ -149,6 +156,8 @@ test('generated Pages routes disable never-commerce but preserve signed order AP
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0002_buyer_status.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0003_provider_session_expiry.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0004_operations_and_delivery.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0005_outbox_indexes.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0006_bounded_maintenance.sql')], workspace)
 
     const now = Math.floor(Date.now() / 1000)
     const requestHash = createHash('sha256').update(JSON.stringify([{ id: '11111111-1111-4111-8111-111111111111', quantity: 1 }])).digest('hex')
@@ -172,9 +181,42 @@ test('generated Pages routes disable never-commerce but preserve signed order AP
     ].join('\n'))
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', seedPath], workspace)
 
+    if (WORKERS) {
+      writeFileSync(resolve(publicDir, 'index.html'), '<h1>Static fixture</h1>')
+      writeFileSync(resolve(publicDir, '404.html'), '<h1>Not found fixture</h1>')
+      writeFileSync(resolve(publicDir, 'fixture.css'), 'body { color: black }')
+      writeFileSync(resolve(publicDir, '_redirects'), '/old / 301\n')
+      writeFileSync(resolve(publicDir, '_headers'), '/fixture.css\n  X-Static-Fixture: yes\n')
+    }
     server = startPages(workspace, publicDir, port, origin)
     const inactiveRoute = await waitForRoute(server, `${origin}/api/commerce/status/${ORDER_ID}`, 404)
-    assert.notEqual(inactiveRoute.headers.get('content-type')?.split(';')[0], 'application/json')
+    if (WORKERS) assert.deepEqual(await inactiveRoute.json(), { error: 'commerce_unavailable' })
+    else assert.notEqual(inactiveRoute.headers.get('content-type')?.split(';')[0], 'application/json')
+    if (WORKERS) {
+      assert.equal(inactiveRoute.headers.get('x-test-worker-invoked'), 'true')
+      for (const [path, status] of [['/', 200], ['/fixture.css', 200], ['/missing-page', 404], ['/missing.css', 404], ['/api/commerce', 404], ['/api/commerceevil/checkout', 404], ['/api/commerce-admin/orders', 404], ['/API/commerce/checkout', 404]]) {
+        const response = await fetch(`${origin}${path}`)
+        assert.equal(response.status, status)
+        assert.equal(response.headers.get('x-test-worker-invoked'), null, `static path entered Worker: ${path}`)
+      }
+      // Known runtime normalization: both asset selection and the Request path
+      // decode %2F. Guards apply to the normalized prefix, NOT to the raw wire URL;
+      // this is NOT proof of zero invocations outside raw API URLs.
+      const encodedSeparator = await fetch(`${origin}/api/commerce%2Fcheckout`)
+      assert.equal(encodedSeparator.status, 404)
+      assert.equal(encodedSeparator.headers.get('x-test-worker-invoked'), 'true')
+      const encodedBody = await encodedSeparator.text()
+      console.error('[encoded-prefix]', encodedSeparator.headers.get('x-test-worker-path'), encodedBody)
+      assert.equal(encodedSeparator.headers.get('x-test-worker-path'), '/api/commerce/checkout')
+      assert.deepEqual(JSON.parse(encodedBody), { error: 'commerce_unavailable' })
+      assert.equal((await fetch(`${origin}/fixture.css`)).headers.get('x-static-fixture'), 'yes')
+      const redirect = await fetch(`${origin}/old`, { redirect: 'manual' })
+      assert.equal(redirect.status, 301)
+      assert.equal(redirect.headers.get('x-test-worker-invoked'), null)
+      const head = await fetch(`${origin}/`, { method: 'HEAD' })
+      assert.equal(head.status, 200)
+      assert.equal(head.headers.get('x-test-worker-invoked'), null)
+    }
     await stopPages(server)
     server = null
 
@@ -273,6 +315,8 @@ test('generated Pages routes disable never-commerce but preserve signed order AP
     const reconciled = await fetch(`${origin}/api/commerce/admin/reconcile`, { method: 'POST', headers: authorization })
     assert.equal(reconciled.status, 200)
     assert.deepEqual(await reconciled.json(), {
+      operation: 'orders',
+      has_more: false,
       checked: 0,
       updated: 0,
       recovered_sessions: 0,

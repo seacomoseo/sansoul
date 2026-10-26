@@ -1,0 +1,8 @@
+{{/* CSS pseudo-elements use icon ligatures without passing through icon.html. */}}
+{{ range slice "quote" "quote_left" "quote_right" }}
+  {{ $icon := partial "func/default-icon" . }}
+  {{ if findRE `^[A-Za-z][A-Za-z0-9_-]*$` $icon }}
+    {{ partial "func/register-resource" (dict "kind" "glyph" "value" $icon) }}
+  {{ end }}
+{{ end }}
+{{ return "" }}

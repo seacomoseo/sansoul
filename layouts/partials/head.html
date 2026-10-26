@@ -148,22 +148,22 @@
 {{- end -}}
 
 {{- /*  SELF-HOSTED MATERIAL SYMBOLS  */ -}}
-{{- $path := print "" -}}
-{{- if hugo.IsProduction -}}
-  {{- $time := partial "func/timestamp" . -}}
-  {{- $path  = print site.BaseURL "fonts/icons." $time ".woff2" -}}
-{{- else -}}
-  {{- $style := hugo.Data.styles.icons.style | default "outlined" -}}
-  {{- $path   = print site.BaseURL "fonts/material-symbols-" $style ".woff2" -}}
-{{- end }}
-<link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
+__SANSOUL_GLYPHS__
+{{- with page.Store.Get "sansoul.resources.svg-urls" -}}
+  {{- if . -}}
+    <style>:root {
+      {{- range $id, $url := . }}--sansoul-svg-{{ $id | urlize | safeCSS }}: url('{{ $url }}');{{ end }}
+    }</style>
+  {{- end -}}
+{{- end -}}
 
 {{- /*  SELF-HOSTED FONTS  */ -}}
-{{- range hugo.Store.Get "fonts" }}
-  {{ $family := urlize .family }}
-  {{ $italic := cond (not .italic) "" "-italic" }}
-  {{ $path    = print site.BaseURL "fonts/" $family "-" .weight $italic ".woff2" }}
-  <link rel="preload" href="{{ $path }}" as="font" type="font/woff2" crossorigin>
+{{- $preloaded_fonts := slice -}}
+{{- range page.Store.Get "sansoul.fonts" | default (slice) -}}
+  {{- if not (in $preloaded_fonts .url) -}}
+    <link rel="preload" href="{{ .url }}" as="font" type="font/woff2" crossorigin>
+    {{- $preloaded_fonts = $preloaded_fonts | append .url -}}
+  {{- end -}}
 {{- end -}}
 
 {{- /*  CSS STYLES  */ -}}

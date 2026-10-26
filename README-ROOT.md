@@ -43,8 +43,8 @@ Ejecuta todos los comandos desde la raíz:
 
 | Comando | Función |
 | --- | --- |
-| `sh do server` | Preconstruye y levanta el servidor local. |
-| `sh do local` | Servidor del CMS con invalidación de caché y regeneración atómica de la configuración previa. |
+| `sh do server` | Preconstruye y levanta Hugo con la salida en disco. |
+| `sh do local` | Servidor del CMS con salida en disco, invalidación de rutas eliminadas y regeneración atómica del prebuild. |
 | `sh do hugo` | Ejecuta la compilación completa y el posprocesado de imágenes. |
 | `sh do migrations` | Muestra las adaptaciones pendientes para la versión instalada del tema. |
 | `sh do root-docs` | Genera README/AGENTS raíz desde las plantillas canónicas del tema. |
@@ -74,6 +74,7 @@ Ejecuta todos los comandos desde la raíz:
   - `data/customs.yml`: campos de contenido personalizados que también se exponen en el CMS.
   - `data/remote.yml`: fuentes remotas que el Content Adapter transforma en páginas virtuales.
   - `data/redirects.yml`: redirecciones generadas para el despliegue.
+  - `data/resources.yml`: recursos que CSS, JavaScript o datos dinámicos usan sin pasar por los layouts; los usos renderizados se agrupan automáticamente.
 - `dna/`: identidad, criterios y restricciones particulares del proyecto.
   - `dna/_index.md`: resumen obligatorio e índice que indica qué otros documentos consultar según la tarea.
 
@@ -91,6 +92,22 @@ cadena de merges.
 - `uploads/`: medios originales administrables por el CMS.
 
 `uploads/foo/bar.png` se monta como recurso y como archivo estático. En el contenido se referencia mediante `/u/foo/bar.png`, no mediante `/uploads/...`.
+
+### Recursos dinámicos
+
+Los iconos usados por layouts, shortcodes, render hooks y componentes se registran al renderizar la página. Solo los recursos consumidos indirectamente por CSS, JavaScript o contenido dinámico necesitan declararse en `data/resources.yml`:
+
+```yaml
+glyphs: [arrow_forward]
+svgs: [svg:base/logo, brand:github]
+divs: [waves]
+```
+
+Declara aquí solo los recursos que CSS, JavaScript o contenido dinámico usan sin pasar por los layouts. SanSoul detecta los SVG usados por layouts y contenido al renderizar, y agrupa los recursos seguros según el conjunto exacto de páginas que los usa. Los iconos seguros usados por una sola página se insertan allí; los compartidos usan sprites externos con raíces `<svg>` anidadas. Las animaciones se mantienen dentro del documento de cada página; SVG con IDs en colisión o reglas `<style>` quedan como archivos independientes y se siguen usando con `<use>`.
+
+Los SVG usados como imágenes conservan `<img>`, `alt` y la carga diferida. Se agrupan en sprites según las páginas que los usan y cada `<img>` apunta a su vista SVG. Los divisores también se agrupan automáticamente por conjunto de páginas de uso. Los sprites conservan raíces SVG anidadas, gradientes y referencias internas; no se convierten a `<symbol>`. No hace falta declarar grupos manuales.
+
+Las fuentes y los SVG publicados usan SHA-256 truncado a 12 caracteres hexadecimales. En JavaScript, el bundle de cada página expone el mapa `icons` mediante `@params`, con las claves SVG normalizadas existentes y las URLs finales. En CSS se publican propiedades `--sansoul-svg-<id>` con la URL del SVG. Los nombres `brand:` usan los mounts existentes de Font Awesome Brands y Simple Icons.
 
 ### ADN del proyecto
 
@@ -207,9 +224,9 @@ La jerarquía de renderizado es:
 página → secciones → cajas → bloques o subcajas
 ```
 
-Una sección controla fondo, tamaño, espaciado, separadores, entrada de menú y modales. `boxes` contiene sus cajas y `box` define valores compartidos para ellas.
+Una sección controla fondo, tamaño, espaciado, separadores, entrada de menú y modales. `boxes` contiene sus cajas y `box` define valores compartidos para ellas. `pt` y `pb` ajustan el padding vertical en viewports grandes; `pt_vs` y `pb_vs` lo ajustan en viewports pequeños. Los valores se interpolan entre ambos tamaños. Si solo se define el valor pequeño, también se usa en viewports grandes; si se omite el pequeño, se conserva el valor predeterminado. Como CSS no admite padding negativo, los valores negativos se representan como márgenes exteriores que desplazan la sección o el contenido siguiente.
 
-Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, distribución y composición recursiva. Algunas claves activan bloques especializados:
+Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, distribución y composición recursiva. `class` añade clases CSS al contenedor de la caja; el título conserva sus propias clases. `mt`, `mb`, `ml` y `mr` ajustan sus márgenes en viewports grandes, y las variantes `_vs` los ajustan en viewports pequeños. Admiten valores negativos y se interpolan entre tamaños. Si solo se define una variante `_vs`, ese valor también se usa en viewports grandes; si se omite, el margen pequeño parte de su valor predeterminado (cero). Algunas claves activan bloques especializados:
 
 | Clave | Bloque |
 | --- | --- |
@@ -340,7 +357,7 @@ La autorización de Stripe requiere además configuración de servidor Pages exp
 El proveedor `fake` solo admite fixtures sintéticos cuando `COMMERCE_ENV=test` y `COMMERCE_TEST_FIXTURE=synthetic-commerce-test`; se rechaza en `live`. Al apagar la autorización se bloquean también los replays de checkout para no volver a entregar URLs de pago. Esto no revoca sesiones Stripe emitidas previamente; esas sesiones caducan según su expiración o requieren cancelación por el proveedor. Webhooks, conciliación y consulta privada del estado de pedidos anteriores siguen activos.
 
 
-En `stock_mode: finite`, las reservas `held` descuentan disponibilidad hasta que se confirman (`committed`), se liberan o vencen (`expired`). Un checkout válido o `POST /api/commerce/admin/reconcile` marca como `expired` los pedidos `pending` vencidos y sus reservas `held`; no necesita que llegue un webhook. Stripe deja vencer sus Checkout Sessions a las 24 horas de su creación real por defecto. El backend omite `expires_at` para que Stripe aplique ese plazo desde la creación efectiva y el payload siga idéntico en reintentos con la misma clave. El backend permite reintentar durante 23 horas (margen previo a la retención mínima documentada de claves de idempotencia); conserva la reserva hasta el posible vencimiento de una sesión creada en el último reintento, con cinco minutos de margen, y limita el watchdog de recuperación a 47 h y 5 min (23 h + 24 h + 5 min). Al recibir la sesión, alinea el pedido y las reservas `held` con el `expires_at` devuelto por Stripe. Un timeout ambiguo no demuestra que el proveedor no creara la sesión ni autoriza ampliar una sesión existente. Aplica, en este orden, las migraciones `0001_commerce.sql`, `0002_buyer_status.sql`, `0003_provider_session_expiry.sql` y `0004_operations_and_delivery.sql` antes de actualizar el backend. `0001` crea las tablas de idempotencia, pedidos, inventario, reservas, límites, webhooks y outbox con sus restricciones; `0002` añade capabilities de estado privadas para comprador; `0003` permite alinear el vencimiento operativo del pedido con el vencimiento real de la sesión sin hacer mutable el snapshot; `0004` crea el almacenamiento privado de datos de entrega, el resumen durable de webhooks sin pedido y los cursores de operaciones. En D1, aplica cada SQL solo tras verificar la base, el entorno y una copia recuperable; `npm run test:commerce:d1` prueba D1 local y no aplica migraciones remotas.
+En `stock_mode: finite`, las reservas `held` descuentan disponibilidad hasta que se confirman (`committed`), se liberan o vencen (`expired`). Un checkout válido o `POST /api/commerce/admin/reconcile?operation=expiration` repara como máximo un pedido vencido por llamada y sus reservas `held`; no necesita que llegue un webhook. Stripe deja vencer sus Checkout Sessions a las 24 horas de su creación real por defecto. El backend omite `expires_at` para que Stripe aplique ese plazo desde la creación efectiva y el payload siga idéntico en reintentos con la misma clave. El backend permite reintentar durante 23 horas (margen previo a la retención mínima documentada de claves de idempotencia); conserva la reserva hasta el posible vencimiento de una sesión creada en el último reintento, con cinco minutos de margen, y limita el watchdog de recuperación a 47 h y 5 min (23 h + 24 h + 5 min). Al recibir la sesión, alinea el pedido y las reservas `held` con el `expires_at` devuelto por Stripe. Un timeout ambiguo no demuestra que el proveedor no creara la sesión ni autoriza ampliar una sesión existente. Aplica, en este orden, las migraciones `0001_commerce.sql`, `0002_buyer_status.sql`, `0003_provider_session_expiry.sql` y `0004_operations_and_delivery.sql` antes de actualizar el backend. `0001` crea las tablas de idempotencia, pedidos, inventario, reservas, límites, webhooks y outbox con sus restricciones; `0002` añade capabilities de estado privadas para comprador; `0003` permite alinear el vencimiento operativo del pedido con el vencimiento real de la sesión sin hacer mutable el snapshot; `0004` crea el almacenamiento privado de datos de entrega, el resumen durable de webhooks sin pedido y los cursores de operaciones. En D1, aplica cada SQL solo tras verificar la base, el entorno y una copia recuperable; `npm run test:commerce:d1` prueba D1 local y no aplica migraciones remotas.
 
 Desde la raíz del consumidor, estos comandos usan la versión de Wrangler fijada en `themes/sansoul/package-lock.json`. Tras aprobar y respaldar el entorno, ejecuta cada archivo una sola vez y en orden:
 
@@ -367,9 +384,24 @@ Todas las rutas `/api/commerce/admin/*` exigen `Authorization: Bearer <COMMERCE_
 
 Para una copia SQL, desde un entorno autorizado ejecuta `npm --prefix themes/sansoul exec -- wrangler d1 export <nombre-base> --remote --output <ruta-segura>/commerce.sql`. El SQL incluye pedidos y datos personales: cifra/restringe la copia y no la añadas al repositorio. `npm run test:commerce:d1` ejercita el export SQL con Wrangler/D1 local, restaura en otra base local (`commerce-restored`) y otro `--persist-to`, y compara filas completas/estados de todas las tablas de comercio. Comprueba que el SQL exportado conserva tablas, índices y triggers; en la base restaurada verifica con escrituras rechazadas el trigger de snapshot, las restricciones `CHECK` y las claves foráneas. El ejecutor D1 local bloquea consultas directas a `sqlite_master` y `PRAGMA` (`SQLITE_AUTH`), por lo que este test no las usa. La prueba no ejecuta `--remote`, no verifica una copia alojada ni acredita recuperación ante desastre en Cloudflare. Restaura únicamente en una D1 desechable y vacía; una copia antigua sobre una base viva puede sobrescribir pedidos o pagos posteriores.
 
-`POST /api/commerce/admin/reconcile` limita cada pasada a 25 pedidos y rota un cursor D1 durable por `(created_at, id)` con actualización compare-and-swap. Una prueba D1 sincroniza dos lecturas concurrentes del mismo cursor y confirma un único ganador; 75 pedidos sintéticos recorren tres lotes y vuelven a avanzar por los grupos siguientes, sin que 25 pedidos abiertos monopolicen el proceso. Si falta `session_id`, la recuperación reutiliza el UUID de pedido como clave idempotente del proveedor y el snapshot/payload inmutable persistido; checkout debe estar autorizado. El gate Stripe actual sigue cerrado, por lo que estos casos se conservan y se informan como diferidos fuera de fixtures sintéticos. Los webhooks firmados sin pedido guardan un resumen mínimo sin nombre/dirección; después de aparecer el pedido, conciliación puede replayarlo idempotentemente tras validar identidad, importe y moneda. Esta cola solo recupera eventos ya persistidos: consultar sesiones Checkout no descubre un evento `charge.refunded` que nunca llegó. Si falta, una persona autorizada debe volver a enviar el evento original desde el panel autenticado del proveedor a la URL webhook configurada; se verifica su firma y, si sigue sin pedido, `reconcile` lo aplica cuando exista la orden. Si el proveedor ya no permite reenvío, no hay endpoint de importación/reparación manual en este corte: no edites D1 directamente y escala la conciliación a una operación aprobada. El replay de un reembolso no se probó con Stripe real.
+**Contrato incompatible 8.0.0 integrado localmente; no publicado.**
+`POST /api/commerce/admin/reconcile?operation=orders` concilia un solo pedido;
+`operation=expiration` repara un solo pedido vencido o parcialmente reembolsado;
+`operation=unmatched_webhooks` replaya un solo evento. Omitir `operation` selecciona
+`orders`, ya no ejecuta las otras clases. Cursores D1 independientes por
+`(created_at, id)` con revisión CAS rotan los pendientes, incluso una cola de un
+solo elemento. La respuesta añade `operation` y `has_more`: un lookahead acotado
+indica otros candidatos, no garantiza agotamiento ni éxito (el elemento actual
+puede fallar/diferirse y reaparecer en otra pasada). El caller debe programar las
+tres clases con turnos independientes y límite de llamadas, sin bucles de drenaje
+ilimitados ni esperar `has_more=false` antes de dar turno a otra clase. Aplicar
+`0005_outbox_indexes.sql` y `0006_bounded_maintenance.sql` en orden, una vez y solo
+sobre la base aprobada/respaldada; `0006` conserva posiciones, añade revisión y
+cursor de expiración e índices. No borra pedidos/eventos/capabilities/idempotencia.
 
-El outbox de D1 conserva fallos y programa reintentos con espera creciente; `POST /api/commerce/admin/outbox/dispatch` no demuestra entrega de email/factura. Solo se probó con notifier sintético que falla una vez y luego reintenta; la integración real sigue pendiente de acceso y validación en Ops.
+Si falta `session_id`, la recuperación reutiliza el UUID de pedido como clave idempotente del proveedor y el snapshot/payload inmutable persistido; checkout debe estar autorizado. El gate Stripe actual sigue cerrado, por lo que estos casos se conservan y se informan como diferidos fuera de fixtures sintéticos. Los webhooks firmados sin pedido guardan un resumen mínimo sin nombre/dirección; después de aparecer el pedido, conciliación puede replayarlo idempotentemente tras validar identidad, importe y moneda. Esta cola solo recupera eventos ya persistidos: consultar sesiones Checkout no descubre un evento `charge.refunded` que nunca llegó. Si falta, una persona autorizada debe volver a enviar el evento original desde el panel autenticado del proveedor a la URL webhook configurada; se verifica su firma y, si sigue sin pedido, `reconcile` lo aplica cuando exista la orden. Si el proveedor ya no permite reenvío, no hay endpoint de importación/reparación manual en este corte: no edites D1 directamente y escala la conciliación a una operación aprobada. El replay de un reembolso no se probó con Stripe real.
+
+El outbox de D1 conserva fallos y programa reintentos con espera creciente. Dispatch intenta una notificación y recupera como máximo una lease caducada por llamada. La respuesta es `{ attempted, delivered, failed, has_more }`: se elimina el campo numérico `pending` en este contrato incompatible documentado. `has_more` comprueba presencia con `LIMIT 1`, incluye fallos diferidos y leases frescas, y no invita a hacer busy-loop; reprograma con espera/límite. Usa `eventKey` como clave de deduplicación del notifier: una entrega seguida de un ack perdido puede repetirse (at-least-once). `POST /api/commerce/admin/outbox/dispatch` no demuestra entrega de email/factura. Solo se probó con notifier sintético que falla una vez y luego reintenta; la integración real sigue pendiente de acceso y validación en Ops.
 
 Stripe Checkout solicita dirección de entrega únicamente cuando la política y la lista de destinos aprobados la permiten; no se inventan destinos, tarifas ni IVA. El webhook valida y persiste en `order_delivery_details` solo el contacto y dirección devueltos por Stripe. Solo pedidos/exportación administrativos autenticados exponen esos datos; el status del comprador devuelve exclusivamente ID y estado. `ship` exige destinatario, calle, localidad, código postal y país; si faltan, devuelve `delivery_details_missing`. Los webhooks no encontrados guardan un resumen sin PII y el outbox/errores no incluye dirección o contacto. El carrito del frontend conserva únicamente IDs/cantidades: hasta que destinos y políticas estén aprobados, no añadas captura de dirección en UI ni la guardes en URL, analytics o `localStorage`; Stripe Checkout es el punto de captura previsto cuando se autorice. No hay plazo de retención aprobado ni borrado automático implementado para `order_delivery_details`; antes de habilitar pedidos físicos reales, aprobar plazo/propietario y una rutina de eliminación también para exportaciones protegidas. Hasta entonces el gate de checkout físico permanece cerrado.
 
@@ -439,3 +471,38 @@ Antes de dar por terminado un cambio:
 5. revisa la página de referencia de separadores indicada en el ADN, si existe, cuando cambies secciones o estilos;
 6. verifica enlaces, responsive, accesibilidad básica y consola del navegador;
 7. sincroniza la documentación afectada.
+
+
+### CMS y Actions: guardar no equivale a privado
+
+`data/config.yml` admite `cms_repo: organization/site`; ausente mantiene
+owner/domain. No cambia el dominio, URLs ni sitio público. El campo CMS es
+opcional. Se conserva `backend.skip_ci: true`: guardar sin publicar usa
+[skip ci] y no debe iniciar push builds. Un commit de publicación sin marcador
+puede iniciar el push workflow; no asumir que todo botón Publicar crea un commit. Un commit guardado sigue en Git y puede salir en un build posterior:
+esto no es privacidad ni un branch de borrador aislado. Sveltia delete/deleteMedia
+no omite despliegues por seguridad de retención.
+
+El template `.yml.disabled` del consumidor sigue INERTE. Push en ramas
+explícitas solo verifica/construye, nunca despliega. Deploy requiere main,
+repositorio exacto y environment `workers-free-reviewed` protegido: manual
+workflow_dispatch con deploy=true, o el botón global Publicar cambios de Sveltia
+0.239.0 (`repository_dispatch`, tipo exacto `sveltia-cms-publish`). Sveltia envía
+solo `{ "event_type": "sveltia-cms-publish" }` usando el token del usuario CMS;
+no envía branch/SHA/client_payload. El gate rechaza payload no vacío, bots y
+usuarios cuyo ID numérico no esté aprobado en `WORKERS_PUBLISH_ACTOR_IDS`
+(variable del repositorio, lista separada por comas sin espacios). Ausente falla
+cerrado. No identifica a Sveltia criptográficamente: otro cliente con el mismo
+token autorizado puede emitir el mismo evento; el environment es la segunda
+barrera de aprobación.
+
+Ambos jobs hacen checkout del SHA fijo del evento sin persistir credenciales;
+CI completo debe pasar antes de deploy. Inmediatamente antes de publicar se
+comprueban HEAD, main remoto, versiones/locks 8.0.0 y checkout=false. Si main
+avanza se aborta: repetir Publicar para verificar el nuevo SHA, nunca seguir una
+rama mutable sin tests. La comprobación no bloquea commits concurrentes durante
+el upload; la publicación siempre identifica el SHA realmente verificado.
+Los saves conservan skip_ci=true/[skip ci], sin build ni deploy por push; dispatch
+explícito no depende del marker. Antes de habilitar: proteger branch/environment,
+configurar allowlist, revisar Free/token/D1/backup y probar CMS autenticado contra
+la versión instalada (unpkg sigue sin pin). No usar pull_request_target.

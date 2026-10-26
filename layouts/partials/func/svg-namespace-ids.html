@@ -1,0 +1,31 @@
+{{- $content := .content -}}
+{{- $prefix := .prefix | default "sansoul" -}}
+{{- $source := .source | default "SVG" -}}
+{{- $ids := slice -}}
+{{- range findRESubmatch `\bid=["']([^"']+)["']` $content -}}
+  {{- $id := index . 1 -}}
+  {{- if in $ids $id -}}
+    {{- errorf "%s contains duplicate SVG id %q; references cannot be mapped unambiguously" $source $id -}}
+  {{- else -}}
+    {{- $ids = $ids | append $id -}}
+  {{- end -}}
+{{- end -}}
+{{- range $ids -}}
+  {{- $id := . -}}
+  {{- $new_id := print $prefix "-" $id -}}
+  {{- $content = replace $content (print `id="` $id `"`) (print `id="` $new_id `"`) -}}
+  {{- $content = replace $content (print `id='` $id `'`) (print `id='` $new_id `'`) -}}
+  {{- range slice "href" "xlink:href" -}}
+    {{- $attr := . -}}
+    {{- $content = replace $content (print $attr `="#` $id `"`) (print $attr `="#` $new_id `"`) -}}
+    {{- $content = replace $content (print $attr `='#` $id `'`) (print $attr `='#` $new_id `'`) -}}
+  {{- end -}}
+  {{- $content = replace $content (print `url(#` $id `)`) (print `url(#` $new_id `)`) -}}
+  {{- $content = replace $content (print `url("#` $id `")`) (print `url("#` $new_id `")`) -}}
+  {{- $content = replace $content (print `url('#` $id `')`) (print `url('#` $new_id `')`) -}}
+  {{- $content = replace $content (print `aria-labelledby="` $id `"`) (print `aria-labelledby="` $new_id `"`) -}}
+  {{- $content = replace $content (print `aria-labelledby='` $id `'`) (print `aria-labelledby='` $new_id `'`) -}}
+  {{- $content = replace $content (print `aria-describedby="` $id `"`) (print `aria-describedby="` $new_id `"`) -}}
+  {{- $content = replace $content (print `aria-describedby='` $id `'`) (print `aria-describedby='` $new_id `'`) -}}
+{{- end -}}
+{{- return $content -}}

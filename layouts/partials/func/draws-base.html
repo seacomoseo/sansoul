@@ -1,4 +1,5 @@
-{{ $time := partial "func/timestamp" . }}
-{{ $base := site.BaseURL | replaceRE `^https?://.+?(/.*)` "$1" }}
-{{ $draw := print $base "draws." $time ".svg" }}
-{{ return $draw }}
+{{- $name := lower . -}}
+{{- $name = replaceRE `[^a-z0-9]+` "-" $name -}}
+{{- $name = strings.Trim $name "-" -}}
+{{- page.Store.Set "sansoul.draws.requested" true -}}
+{{- return (print "__SANSOUL_DRAWS_" $name "__") -}}

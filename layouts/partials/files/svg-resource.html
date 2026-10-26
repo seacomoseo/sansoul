@@ -1,0 +1,31 @@
+{{- $name := .name -}}
+{{- $src := .source -}}
+{{- $path := print "/u/{icons/,}" $name ".svg" -}}
+{{- $result := dict -}}
+{{- if not $src -}}
+  {{- errorf "SanSoul SVG icon %q was registered but no matching file exists at %s" $name $path -}}
+{{- else -}}
+  {{- $minified := $src | minify -}}
+  {{- $content := $minified.Content | replaceRE `^<\?xml[^>]*\?>` "" -}}
+  {{- $root := findRE `^<svg.*?>` $content -}}
+  {{- if not $root -}}
+    {{- errorf "SanSoul SVG icon %q does not have an SVG root element" $name -}}
+  {{- else -}}
+    {{- $head := index $root 0 -}}
+    {{- $root_id := findRESubmatch `(?:^|\s)id=["']([^"']+)["']` $head -}}
+    {{- $id := .id | default "icon" -}}
+    {{- if $root_id -}}
+      {{- $id = index (index $root_id 0) 1 -}}
+    {{- else if eq $head "<svg>" -}}
+      {{- $head = print `<svg id="` $id `">` -}}
+    {{- else -}}
+      {{- $head = replaceRE `^<svg\s` (print `<svg id="` $id `" `) $head -}}
+    {{- end -}}
+    {{- $content = replaceRE `^<svg.*?>` $head $content -}}
+    {{- $target := print "icons/" ($id | urlize) ".svg" -}}
+    {{- $resource := $content | resources.FromString $target -}}
+    {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" $target) -}}
+    {{- $result = dict "url" $resource.RelPermalink "id" $id -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

@@ -12,6 +12,7 @@ import { CHECKOUT_RECOVERY_TTL_SECONDS, STRIPE_IDEMPOTENCY_RETRY_TTL_SECONDS } f
 const TEST_DIR = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(TEST_DIR, '../../../../')
 const THEME = resolve(ROOT, 'themes/sansoul')
+const WORKERS = process.env.COMMERCE_RUNTIME === 'workers'
 const WRANGLER = resolve(THEME, 'node_modules/wrangler/bin/wrangler.js')
 const ADMIN_TOKEN = 'local-commerce-admin-token-not-a-secret'
 const WEBHOOK_SECRET = 'whsec_local_test_only'
@@ -33,17 +34,19 @@ function runWrangler (args, cwd, timeout = 60000) {
       stdio: ['ignore', 'pipe', 'pipe']
     })
     let output = ''
-    const timer = setTimeout(() => child.kill('SIGKILL'), timeout)
+    let timedOut = false
+    const started = Date.now()
+    const timer = setTimeout(() => { timedOut = true; child.kill('SIGKILL') }, timeout)
     child.stdout.on('data', chunk => { output += chunk })
     child.stderr.on('data', chunk => { output += chunk })
     child.on('error', error => {
       clearTimeout(timer)
       reject(error)
     })
-    child.on('close', code => {
+    child.on('close', (code, signal) => {
       clearTimeout(timer)
       if (code === 0) resolve(output)
-      else reject(new Error(`wrangler exited ${code}: ${output.slice(-8000)}`))
+      else reject(new Error(`wrangler exited ${code}, signal=${signal}, timed_out=${timedOut}, timeout_ms=${timeout}, elapsed_ms=${Date.now() - started}, pid=${child.pid}, command=${args.slice(0, 3).join(' ')}: ${output.slice(-8000)}`))
     })
   })
 }
@@ -78,7 +81,7 @@ async function waitForRoute (server, url, expectedStatus = 405) {
 }
 
 function startPages (args, cwd, publicDir = resolve(ROOT, 'public')) {
-  const child = spawn(process.execPath, [WRANGLER, 'pages', 'dev', publicDir, ...args], {
+  const child = spawn(process.execPath, [WRANGLER, ...(WORKERS ? ['dev', '--local'] : ['pages', 'dev', publicDir]), ...(WORKERS ? args.map((arg, index) => arg === '--binding' ? '--var' : args[index - 1] === '--binding' ? arg.replace('=', ':') : arg) : args)], {
     cwd,
     env: { ...process.env, CI: '1', CLOUDFLARE_SEND_METRICS: 'false' },
     stdio: ['ignore', 'pipe', 'pipe']
@@ -119,7 +122,10 @@ test('Pages Functions + local D1 checkout, webhook, operations, recovery and res
   let previousStage = started
   const stage = name => {
     const now = performance.now()
-    t.diagnostic(`${name}: stage_ms=${Math.round(now - previousStage)} total_ms=${Math.round(now - started)}`)
+    const diagnostic = `${name}: stage_ms=${Math.round(now - previousStage)} total_ms=${Math.round(now - started)}`
+    t.diagnostic(diagnostic)
+    // TAP diagnostics may be buffered until this long test finishes.
+    console.error(`[commerce-d1] ${diagnostic}`)
     previousStage = now
   }
   const workspace = mkdtempSync(resolve(process.env.TMPDIR || tmpdir(), 'commerce-d1-'))
@@ -131,6 +137,7 @@ test('Pages Functions + local D1 checkout, webhook, operations, recovery and res
     const catalogPath = resolve(functionsDir, '_commerce/catalog.generated.js')
     const routesPath = resolve(publicDir, '_routes.json')
     cpSync(resolve(ROOT, 'functions'), functionsDir, { recursive: true })
+    if (WORKERS) cpSync(resolve(THEME, '_examples/commerce-backend/worker.js'), resolve(workspace, 'worker.js'))
     mkdirSync(resolve(workspace, 'themes'), { recursive: true })
     symlinkSync(THEME, resolve(workspace, 'themes/sansoul'), 'dir')
     writeFileSync(resolve(functionsDir, 'api/commerce/webhook.js'), `import { handleWebhook } from '../../../themes/sansoul/commerce/webhook.js'
@@ -220,7 +227,15 @@ async function synchronizeCursorRead () {
 }
 
 export async function onRequest (context) {
-  if (context.request.headers.get('x-test-synchronize-cursor-read') !== 'true') return handleAdmin(context.request, context.env, catalog)
+  if (context.request.headers.get('x-test-synchronize-cursor-read') !== 'true') {
+    const response = await handleAdmin(context.request, context.env, catalog)
+    if (context.request.headers.get('x-test-reconcile-cursor') !== 'true') return response
+    // Fixture-only durable readback avoids starting Wrangler once per cursor.
+    const cursor = await context.env.COMMERCE_DB.prepare("SELECT cursor_id FROM commerce_operation_cursors WHERE operation = 'orders'").first()
+    const headers = new Headers(response.headers)
+    headers.set('x-test-order-cursor', cursor.cursor_id)
+    return new Response(response.body, { status: response.status, headers })
+  }
   const database = context.env.COMMERCE_DB
   let firstCursorRead = true
   const synchronizedDatabase = {
@@ -258,7 +273,7 @@ export async function onRequest (context) {
     const config = [
       'name = "commerce-integration"',
       'compatibility_date = "2025-12-10"',
-      `pages_build_output_dir = "${publicDir}"`,
+      ...(WORKERS ? ['main = "worker.js"', '[assets]', `directory = "${publicDir}"`, 'binding = "ASSETS"', 'run_worker_first = ["/api/commerce/*"]'] : [`pages_build_output_dir = "${publicDir}"`]),
       '',
       '[[d1_databases]]',
       'binding = "COMMERCE_DB"',
@@ -288,6 +303,7 @@ export async function onRequest (context) {
     server = null
 
     const catalog = {
+      functionsEnabled: true,
       schemaVersion: 2,
       enabled: true,
       checkout: { approved: false, legalVersion: null, destinationCountries: [], taxPolicy: null, shippingPolicy: null },
@@ -318,6 +334,16 @@ export async function onRequest (context) {
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0002_buyer_status.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0003_provider_session_expiry.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0004_operations_and_delivery.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0005_outbox_indexes.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--command', "UPDATE commerce_operation_cursors SET cursor_created_at = 1700000000, cursor_id = 'legacy-cursor', updated_at = 1700000001"], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0006_bounded_maintenance.sql')], workspace)
+    const migratedCursors = await queryD1(databaseName, 'SELECT * FROM commerce_operation_cursors ORDER BY operation', workspace)
+    assert.deepEqual(migratedCursors, [
+      { operation: 'expiration', cursor_created_at: 0, cursor_id: '', updated_at: 0, revision: 0 },
+      { operation: 'orders', cursor_created_at: 1700000000, cursor_id: 'legacy-cursor', updated_at: 1700000001, revision: 0 },
+      { operation: 'unmatched_webhooks', cursor_created_at: 1700000000, cursor_id: 'legacy-cursor', updated_at: 1700000001, revision: 0 }
+    ], '0006 preserves pre-existing cursor positions and initializes revision/expiration')
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--command', "UPDATE commerce_operation_cursors SET cursor_created_at = 0, cursor_id = '', updated_at = 0"], workspace)
     assert.equal((await queryD1(databaseName, `SELECT id FROM orders WHERE id = '${legacyOrderId}'`, workspace)).length, 1)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--command', `UPDATE orders SET payment_status = 'expired' WHERE id = '${legacyOrderId}'`], workspace)
 
@@ -370,7 +396,16 @@ export async function onRequest (context) {
         },
         body: raw
       })
-      return { response, body: await response.json() }
+      const text = await response.text()
+      let body
+      try {
+        body = JSON.parse(text)
+      } catch {
+        // Keep infrastructure failures distinguishable from commerce assertions.
+        const networkDiagnostics = server.output.split('\n').filter(line => /network|connection|socket|ECONN|fetch failed/i.test(line)).slice(-10).join('\n')
+        throw new Error(`Webhook returned non-JSON: status=${response.status} content-type=${response.headers.get('content-type')} body=${text.slice(0, 1000)} network=${networkDiagnostics}`)
+      }
+      return { response, body }
     }
     const event = (type, object) => ({
       id: `evt_${crypto.randomUUID().replaceAll('-', '')}`,
@@ -611,7 +646,7 @@ export async function onRequest (context) {
       `INSERT INTO orders (id, session_id, idempotency_key, catalog_release, currency, amount_total_minor, snapshot_json, payment_status, fulfillment_status, reservation_state, created_at, updated_at, expires_at) VALUES ('${unmatchedOrderId}', '${unmatchedSessionId}', 'unmatched-replay-fixture', '${'a'.repeat(64)}', 'eur', 1000, '${unmatchedSnapshot}', 'expired', 'awaiting_payment', 'unreserved', 1790000000, 1790000000, 1790001800);`
     ].join('\n'))
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', unmatchedOrderPath], workspace)
-    const unmatchedRecovery = await admin('reconcile', 'POST')
+    const unmatchedRecovery = await admin('reconcile?operation=unmatched_webhooks', 'POST')
     assert.equal(unmatchedRecovery.response.status, 200)
     assert.equal(unmatchedRecovery.body.unmatched_recovered, 1)
     assert.equal((await orderById(unmatchedOrderId)).payment_status, 'paid')
@@ -635,7 +670,7 @@ export async function onRequest (context) {
       `INSERT INTO orders (id, payment_intent_id, idempotency_key, catalog_release, currency, amount_total_minor, snapshot_json, payment_status, fulfillment_status, reservation_state, created_at, updated_at, expires_at) VALUES ('${unmatchedRefundOrderId}', 'pi_unmatchedrefund123', 'refund-recovery-fixture', '${'a'.repeat(64)}', 'eur', 1000, '${unmatchedRefundSnapshot}', 'paid', 'ready', 'unreserved', 1790000000, 1790000000, 1799999999);`
     ].join('\n'))
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', unmatchedRefundPath], workspace)
-    const refundRecovery = await admin('reconcile', 'POST')
+    const refundRecovery = await admin('reconcile?operation=unmatched_webhooks', 'POST')
     assert.equal(refundRecovery.response.status, 200)
     assert.equal(refundRecovery.body.unmatched_recovered, 1)
     const recoveredRefundOrder = (await queryD1(databaseName, `SELECT payment_status, refund_amount_minor FROM orders WHERE id = '${unmatchedRefundOrderId}'`, workspace))[0]
@@ -677,11 +712,14 @@ export async function onRequest (context) {
     for (const order of orphanOrders) {
       await runWrangler(['d1', 'execute', databaseName, '--local', '--command', `UPDATE stock_reservations SET expires_at = 0 WHERE order_id = '${order.id}'`], workspace)
     }
-    const orphanRecovery = await admin('reconcile', 'POST')
-    assert.equal(orphanRecovery.response.status, 200)
-    assert.equal(orphanRecovery.body.checked, 0)
-    assert.equal(orphanRecovery.body.updated, 0)
-    assert.equal(orphanRecovery.body.recovered_sessions, 0)
+    // Explicit maintenance caller drains one expiration per request.
+    let orphanRecovery
+    for (let i = 0; i < 10; i++) {
+      orphanRecovery = await admin('reconcile?operation=expiration', 'POST')
+      assert.equal(orphanRecovery.response.status, 200)
+      assert.ok(orphanRecovery.body.checked <= 1)
+      if (!orphanRecovery.body.has_more) break
+    }
     const recoveredOrphans = await queryD1(databaseName, `SELECT * FROM orders WHERE idempotency_key IN ('${orphanKeys.join("','")}')`, workspace)
     assert.ok(recoveredOrphans.every(order => order.payment_status === 'expired'))
     const recoveredSessionNulls = await queryD1(databaseName, `SELECT session_id IS NULL AS is_null FROM orders WHERE idempotency_key IN ('${orphanKeys.join("','")}')`, workspace)
@@ -1325,15 +1363,19 @@ export async function onRequest (context) {
     let outboxDrain = await admin('outbox/dispatch', 'POST')
     assert.equal(outboxDrain.response.status, 200)
     assert.ok(outboxDrain.body.failed >= 1)
-    assert.ok(outboxDrain.body.pending >= 1)
+    assert.equal(outboxDrain.body.has_more, true)
     const failedNotice = await queryD1(databaseName, "SELECT payload_json, last_error FROM outbox WHERE status = 'pending' AND last_error = 'notifier_unavailable' LIMIT 1", workspace)
     assert.equal(failedNotice.length, 1)
     assert.doesNotMatch(JSON.stringify(failedNotice), /buyer@example\.invalid|Synthetic Recipient|Synthetic Way|address_line1/)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--command', "UPDATE outbox SET next_attempt_at = 0 WHERE status = 'pending'"], workspace)
-    outboxDrain = await admin('outbox/dispatch', 'POST')
-    assert.equal(outboxDrain.response.status, 200)
+    // Retry exactly the failed event, not an arbitrary new first-attempt event.
+    for (let i = 0; i < 100; i++) {
+      outboxDrain = await admin('outbox/dispatch', 'POST')
+      assert.equal(outboxDrain.response.status, 200)
+      if (outboxDrain.body.delivered === 1) break
+    }
     assert.equal(outboxDrain.body.failed, 0)
-    assert.ok(outboxDrain.body.pending > 0)
+    assert.equal(outboxDrain.body.has_more, true)
 
     stage('held refund, failed payment and outbox retry')
     const unauthorizedOrders = await fetch(`${origin}/api/commerce/admin/orders`)
@@ -1453,23 +1495,24 @@ export async function onRequest (context) {
     writeFileSync(rotatingSeedPath, rotatingOrders.map((order, index) => operationsOrderSql(order.id, `rotation-fixture-${index + 1}`, rotationCreatedAt, 'pending', order.sessionId)).join('\n'))
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', rotatingSeedPath], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--command', "UPDATE commerce_operation_cursors SET cursor_created_at = 0, cursor_id = '' WHERE operation = 'orders'"], workspace)
-    for (let page = 0; page < 3; page++) {
-      const result = await admin('reconcile', 'POST')
+    stage('operations pagination and CSV export before reconcile rotation')
+    for (let page = 0; page < rotatingOrders.length; page++) {
+      const result = await admin('reconcile', 'POST', undefined, { 'x-test-reconcile-cursor': 'true' })
       assert.equal(result.response.status, 503)
-      assert.equal(result.body.checked, 25)
-      assert.equal(result.body.failed, 25)
-      const cursor = (await queryD1(databaseName, "SELECT cursor_id FROM commerce_operation_cursors WHERE operation = 'orders'", workspace))[0].cursor_id
-      assert.equal(cursor, rotatingOrders[(page + 1) * 25 - 1].id)
+      assert.equal(result.body.checked, 1)
+      assert.equal(result.body.failed, 1)
+      assert.equal(result.response.headers.get('x-test-order-cursor'), rotatingOrders[page].id)
+      if ((page + 1) % 25 === 0) stage(`reconcile rotation ${page + 1}/75`)
     }
     const concurrentReconciles = await Promise.all([1, 2].map(() => admin('reconcile', 'POST', undefined, { 'x-test-synchronize-cursor-read': 'true' })))
-    assert.equal(concurrentReconciles.reduce((total, result) => total + result.body.checked, 0), 25)
+    assert.equal(concurrentReconciles.reduce((total, result) => total + result.body.checked, 0), 1)
     assert.equal(concurrentReconciles.reduce((total, result) => total + result.body.skipped_concurrent, 0), 1)
     assert.ok(concurrentReconciles.every(result => result.response.headers.get('x-test-synchronized-cursor-reads') === '2'))
     const wrappedCursor = (await queryD1(databaseName, "SELECT cursor_id FROM commerce_operation_cursors WHERE operation = 'orders'", workspace))[0].cursor_id
-    assert.equal(wrappedCursor, rotatingOrders[24].id)
-    for (const cursorIndex of [49, 74]) {
+    assert.equal(wrappedCursor, rotatingOrders[0].id)
+    for (const cursorIndex of [1, 2]) {
       const result = await admin('reconcile', 'POST')
-      assert.equal(result.body.checked, 25)
+      assert.equal(result.body.checked, 1)
       const cursor = (await queryD1(databaseName, "SELECT cursor_id FROM commerce_operation_cursors WHERE operation = 'orders'", workspace))[0].cursor_id
       assert.equal(cursor, rotatingOrders[cursorIndex].id)
     }
@@ -1482,7 +1525,8 @@ export async function onRequest (context) {
     assert.match(dump, new RegExp(orderA.id))
     assert.match(dump, /CREATE TABLE stock_reservations/i)
     assert.match(dump, /CREATE TABLE order_delivery_details/i)
-    assert.match(dump, /CREATE TABLE commerce_operation_cursors/i)
+    // SQLite's ALTER TABLE rename exports quoted CREATE TABLE IF NOT EXISTS.
+    // Verify the restored cursor schema and live state below, not SQL spelling.
     assert.match(dump, /CREATE TRIGGER orders_snapshot_immutable/i)
     assert.match(dump, /CREATE INDEX/i)
     const restoreConfigPath = resolve(workspace, 'wrangler.restore.toml')
@@ -1511,7 +1555,19 @@ export async function onRequest (context) {
     const sourceRows = JSON.parse(sourceRowsOutput).flatMap(result => result.results || [])
     const restoredRows = JSON.parse(restoredRowsOutput).flatMap(result => result.results || [])
     assert.deepEqual(restoredRows, sourceRows, 'restored table rows and states')
+    const sourceCursors = await queryD1(databaseName, 'SELECT * FROM commerce_operation_cursors ORDER BY operation', workspace)
+    assert.deepEqual(sourceCursors.map(cursor => cursor.operation), ['expiration', 'orders', 'unmatched_webhooks'])
+    assert.ok(sourceCursors.every(cursor => cursor.cursor_id !== '' && cursor.cursor_created_at > 0 && cursor.updated_at > 0 && cursor.revision > 0), 'export contains advanced live cursors, not empty defaults')
     const restoreCommand = ['--config', restoreConfigPath, 'd1', 'execute', 'commerce-restored', '--local', '--persist-to', restoreStatePath]
+    const cursorSchemaSql = "PRAGMA table_info(commerce_operation_cursors); SELECT name, sql FROM sqlite_master WHERE type = 'index' AND name IN ('outbox_due_notifications', 'orders_maintenance_rotation', 'webhook_unmatched_rotation') ORDER BY name"
+    const sourceSchema = await queryD1(databaseName, cursorSchemaSql, workspace)
+    const restoredSchemaOutput = await runWrangler([...restoreCommand, '--json', '--command', cursorSchemaSql], workspace)
+    const restoredSchema = JSON.parse(restoredSchemaOutput).flatMap(result => result.results || [])
+    assert.deepEqual(restoredSchema, sourceSchema, 'restored cursor column types/defaults/PK and all 0006 indexes')
+    assert.equal(sourceSchema.filter(row => row.name === 'revision').length, 1)
+    assert.equal(sourceSchema.filter(row => row.sql).length, 3)
+    await assert.rejects(runWrangler([...restoreCommand, '--command', "INSERT INTO commerce_operation_cursors (operation) VALUES ('invalid_operation')"], workspace), /CHECK constraint/)
+    await assert.rejects(runWrangler([...restoreCommand, '--command', "UPDATE commerce_operation_cursors SET revision = NULL WHERE operation = 'orders'"], workspace), /NOT NULL constraint/)
     await assert.rejects(runWrangler([...restoreCommand, '--command', `UPDATE orders SET snapshot_json = '{}' WHERE id = '${orderA.id}'`], workspace), /order_snapshot_immutable/)
     await assert.rejects(runWrangler([...restoreCommand, '--command', `INSERT INTO order_delivery_details (order_id, source, updated_at) VALUES ('${operationOrders[1].id}', 'invalid_source', 1)`], workspace), /CHECK constraint/)
     await assert.rejects(runWrangler([...restoreCommand, '--command', 'INSERT INTO order_delivery_details (order_id, source, updated_at) VALUES (\'ffffffff-ffff-4fff-8fff-ffffffffffff\', \'stripe_checkout\', 1)'], workspace), /FOREIGN KEY constraint/)

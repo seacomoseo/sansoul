@@ -20,18 +20,20 @@
       {{ $flips = print $flip_x $flip_y }}
     {{ end }}
 
-    {{ $style = print
-      "--div" $_next ": url("
-        (partial "func/draws-base" .)
-        "#div-" .div "-" (cond $.next "ne" "pr") $flips
-      ")"
-    }}
     {{ if eq .div "fade" }}
       {{ if $.next }}
         {{ $style = "--div-next: linear-gradient(black, transparent)" }}
       {{ else }}
         {{ $style = "--div: linear-gradient(transparent, black)" }}
       {{ end }}
+    {{ else }}
+      {{ $style = print
+        "--div" $_next ": url("
+          (partial "func/draws-base" .div)
+          "#div-" .div "-" (cond $.next "ne" "pr") $flips
+        ")"
+      }}
+      {{ partial "func/register-resource" (dict "kind" "div" "value" .div) }}
     {{ end }}
   {{ end }}
 {{ end }}

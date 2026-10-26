@@ -8,7 +8,7 @@ const {
   formSubmitWrong
 } = params
 
-const closeIcon = '<i class="icon close" onclick="this.parentElement.remove()">close</i>'
+const closeIcon = '<i class="icon icon--mat icon--submit-close" part="close" onclick="this.parentElement.remove()"></i>'
 const pendingStorageKey = 'sansoul.form.pending'
 const submissionInputName = '_submission_id'
 let clientIpPromise = Promise.resolve('')
@@ -172,8 +172,8 @@ function formSubmited (form, data) {
 function formSubmitError (formMessage, message) {
   formMessage.classList.add('form__submit--error')
   formMessage.innerHTML =
-    `<i class="icon">close</i> ${closeIcon} ${formSubmitWrong}<br>` +
-    `<i class="icon">info</i> ${message}`
+    `<i class="icon icon--mat" part="close"></i> ${closeIcon} ${formSubmitWrong}<br>` +
+    `<i class="icon icon--mat" part="info"></i> ${message}`
 }
 
 export function initFormSend () {
@@ -236,7 +236,7 @@ export function initFormSend () {
             if (formSubmitCo && !action.includes('/ajax')) action = action.replace('formsubmit.co', 'formsubmit.co/ajax')
 
             formMessage.classList.add('form__submit')
-            formMessage.innerHTML = `<i class="icon spin--reverse">sync</i> ${formSubmitSending}…`
+            formMessage.innerHTML = `<i class="icon icon--mat spin--reverse" part="sync"></i> ${formSubmitSending}…`
             form.append(formMessage)
 
             const submissionInput = googleScript ? getSubmissionInput(form) : null
@@ -319,7 +319,7 @@ export function initFormSend () {
                   submissionInput.remove()
                 }
                 formMessage.classList.add('form__submit--success')
-                formMessage.innerHTML = `<i class="icon">check_circle</i> ${closeIcon} ${formSubmitOk}`
+                formMessage.innerHTML = `<i class="icon icon--mat" part="check_circle"></i> ${closeIcon} ${formSubmitOk}`
                 formSubmited(form, googleScript ? data : null)
                 // Reset
                 form.reset()

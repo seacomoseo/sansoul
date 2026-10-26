@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { DatabaseSync } from 'node:sqlite'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -456,59 +457,48 @@ test('Stripe idempotent replay can recover an already-expired session without ex
 })
 
 function reconciliationEnvironment () {
-  const cursor = { orders: { cursor_created_at: 0, cursor_id: '' }, unmatched_webhooks: { cursor_created_at: 0, cursor_id: '' } }
-  const order = {
-    id: stripeOrderId,
-    cursor_created_at: 1,
-    cursor_id: stripeOrderId,
-    session_id: stripeSessionId,
-    payment_intent_id: 'pi_expected123',
-    amount_total_minor: 1000,
-    currency: 'eur',
-    payment_status: 'pending',
-    fulfillment_status: 'awaiting_payment',
-    snapshot_json: JSON.stringify({ stockMode: 'made_to_order' })
+  // Execute actual SQL, including index hints, keyset wrap and revision CAS.
+  const sqlite = new DatabaseSync(':memory:')
+  sqlite.exec('PRAGMA foreign_keys = ON')
+  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql']) {
+    sqlite.exec(readFileSync(new URL(`../../migrations/${name}`, import.meta.url), 'utf8'))
   }
+  const snapshot = JSON.stringify({ stockMode: 'made_to_order' })
+  sqlite.prepare(`INSERT INTO commerce_idempotency
+    (idempotency_key, request_hash, order_id, snapshot_json, status, created_at, updated_at, expires_at)
+    VALUES (?, 'fixture-hash', ?, ?, 'creating', 1, 1, 2000000000)`)
+    .run(stripeOrderId, stripeOrderId, snapshot)
+  sqlite.prepare(`INSERT INTO orders
+    (id, idempotency_key, session_id, payment_intent_id, catalog_release, currency, amount_total_minor,
+      snapshot_json, payment_status, fulfillment_status, created_at, updated_at, expires_at)
+    VALUES (?, ?, ?, 'pi_expected123', 'fixture-release', 'eur', 1000, ?, 'pending', 'awaiting_payment', 1, 1, 2000000000)`)
+    .run(stripeOrderId, stripeOrderId, stripeSessionId, snapshot)
   let batches = 0
   const db = {
     prepare (sql) {
+      const statement = sqlite.prepare(sql)
       let values = []
       return {
         sql,
         bind (...args) { values = args; return this },
-        async all () {
-          if (sql.includes('FROM orders o LEFT JOIN') && sql.includes('o.created_at > ?')) return { results: [order] }
-          return { results: [] }
-        },
-        async first () {
-          if (sql.includes('FROM commerce_operation_cursors')) return cursor[values[0]]
-          if (sql.includes('SELECT 1 FROM orders') || sql.includes('SELECT 1 FROM stock_reservations')) return null
-          if (sql.includes('SELECT * FROM orders WHERE id = ? AND payment_status')) return order
-          return null
-        },
-        async run () {
-          if (sql.includes('UPDATE commerce_operation_cursors')) {
-            if (sql.includes('cursor_created_at = 0')) {
-              const state = cursor[values[1]]
-              if (state.cursor_created_at !== values[2] || state.cursor_id !== values[3]) return { meta: { changes: 0 } }
-              state.cursor_created_at = 0
-              state.cursor_id = ''
-            } else {
-              const state = cursor[values[3]]
-              if (state.cursor_created_at !== values[4] || state.cursor_id !== values[5]) return { meta: { changes: 0 } }
-              state.cursor_created_at = values[0]
-              state.cursor_id = values[1]
-            }
-          }
-          return { meta: { changes: 1 } }
-        }
+        async all () { return { results: statement.all(...values) } },
+        async first () { return statement.get(...values) || null },
+        async run () { return { meta: statement.run(...values) } }
       }
     },
     async batch (statements) {
-      if (statements.some(statement => statement.sql.includes('payment_intent_id = COALESCE'))) batches++
+      sqlite.exec('BEGIN')
+      try {
+        const results = []
+        for (const statement of statements) results.push(await statement.run())
+        sqlite.exec('COMMIT')
+        if (statements.some(statement => statement.sql.includes('payment_intent_id = COALESCE'))) batches++
+        return results
+      } catch (error) { sqlite.exec('ROLLBACK'); throw error }
     }
   }
   return {
+    sqlite,
     get batches () { return batches },
     env: { ...stripeEnv, COMMERCE_ADMIN_TOKEN: 'unit-test-admin-token-0123456789ABCDEF', COMMERCE_DB: db }
   }
@@ -516,11 +506,14 @@ function reconciliationEnvironment () {
 
 async function reconcileStripeSession (payload) {
   const fixture = reconciliationEnvironment()
-  const response = await withStripeResponse(payload, () => handleAdmin(new Request('https://shop.example/api/commerce/admin/reconcile', {
-    method: 'POST',
-    headers: { authorization: `Bearer ${fixture.env.COMMERCE_ADMIN_TOKEN}` }
-  }), fixture.env, {}))
-  return { response, batches: fixture.batches }
+  try {
+    const response = await withStripeResponse(payload, () => handleAdmin(new Request('https://shop.example/api/commerce/admin/reconcile', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${fixture.env.COMMERCE_ADMIN_TOKEN}` }
+    }), fixture.env, {}))
+    const order = fixture.sqlite.prepare('SELECT payment_status FROM orders WHERE id = ?').get(stripeOrderId)
+    return { response, batches: fixture.batches, paymentStatus: order.payment_status }
+  } finally { fixture.sqlite.close() }
 }
 
 for (const [status, paymentStatus] of [['complete', 'paid'], ['expired', 'unpaid']]) {
@@ -528,6 +521,7 @@ for (const [status, paymentStatus] of [['complete', 'paid'], ['expired', 'unpaid
     const result = await reconcileStripeSession(stripePayload({ status, payment_status: paymentStatus, url: null }))
     assert.equal(result.response.status, 200)
     assert.equal(result.batches, 1)
+    assert.equal(result.paymentStatus, status === 'complete' ? 'paid' : 'expired')
   })
 }
 
@@ -546,6 +540,7 @@ test('reconciliation rejects missing or mismatched Stripe order, amount, currenc
     const result = await reconcileStripeSession(stripePayload(override))
     assert.ok(result.response.status >= 500, `${name} mismatch should fail reconciliation`)
     assert.equal(result.batches, 0, `${name} mismatch must not persist state`)
+    assert.equal(result.paymentStatus, 'pending', `${name} mismatch must leave payment unchanged`)
   }
 })
 

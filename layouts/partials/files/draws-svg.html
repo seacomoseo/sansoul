@@ -1,10 +1,14 @@
 {{- /*  DIVIDERS  */ -}}
 
 {{- $div_ := slice -}}
-{{- $divs := page.Store.Get "divs" | uniq | sort -}}
+{{- $divs := .divs -}}
+{{- if not (isset . "divs") -}}
+  {{- $key := printf "sansoul.resources.%s.divs" (page.Store.Get "sansoul.output-format" | default "html") -}}
+  {{- $divs = page.Store.Get $key | default (slice) -}}
+{{- end -}}
+{{- $divs = $divs | uniq | sort -}}
 {{- define "partials/div" -}}
   {{- $n := add .k 1 -}}
-  {{- $s := mul .size 1024 -}}
   {{- $s := mul .size 1024 -}}
   {{- $style := slice (print "--y:" .k) -}}
   {{ if eq .size 2 }}
@@ -60,6 +64,7 @@
         {{- $file := resources.Get $path -}}
         {{- if $file -}}
           {{- $content := $file.Content | replaceRE `<svg.+?>|</svg>` "" -}}
+          {{- $content = partial "func/svg-namespace-ids" (dict "content" $content "prefix" (print "divider-" $id) "source" $path) -}}
           {{- with partial "div" (dict "k" $k "id" $id "size" .size "content" $content) -}}
             {{- $div_ = $div_ | append . -}}
           {{- end -}}
@@ -69,57 +74,11 @@
   {{- end -}}
 {{- end -}}
 
-
-{{- /*  SVG FILES  */ -}}
-
-{{- $svg_ := slice -}}
-{{- $svgs := page.Store.Get "svgs" | uniq | sort -}}
-{{- range $svgs -}}
-  {{- $path := print "/u/{,icons/}" . ".svg" -}}
-  {{- $src  := resources.GetMatch $path -}}
-  {{- if $src -}}
-    {{- if $src.Content -}}
-      {{- $minify  := minify $src -}}
-      {{- $content := $minify.Content -}}
-      {{- if not ($src.Content | findRE `svg-src|svg-html`) -}}
-        {{- $id   := . | replaceRE `^icons?/` `` | replaceRE `^(brand)s/` `$1-` | replaceRE `/` `-` -}}
-        {{- $head := $content | findRE `^<svg.*?>` -}}
-        {{- $head  = index $head 0 -}}
-        {{- $sizes := partial "func/svg-sizes" $content -}}
-        {{- $head  = $head | replaceRE ` (xmlns|data-name|role|id|width|height)=".+?"` "" -}}
-        {{- if and (not ($head | findRE ` viewBox=`)) $sizes.width $sizes.height -}}
-          {{- if eq $head "<svg>" -}}
-            {{- $head = print `<svg viewBox="0 0 ` $sizes.width ` ` $sizes.height `">` -}}
-          {{- else -}}
-            {{- $head = replaceRE `^<svg ` (print `<svg viewBox="0 0 ` $sizes.width ` ` $sizes.height `" `) $head -}}
-          {{- end -}}
-        {{- end -}}
-        {{- if eq $head "<svg>" -}}
-          {{- $head = print `<svg id="` $id `">` -}}
-        {{- else -}}
-          {{- $head = replaceRE `^<svg ` (print `<svg id="` $id `" `) $head -}}
-        {{- end -}}
-        {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | safeHTML -}}
-        {{- /*  {{- $time := partial "func/timestamp" . -}}  */ -}}
-        {{- /*  {{- $refs := print "$1/draws." $time ".svg#" -}}  */ -}}
-        {{- /*  {{- $svg  := $content | replaceRE `^<svg(.*?)>` $head | replaceRE `<svg (.+?)</svg>` `<symbol $1</symbol>` | replaceRE `(url\(|href=")#` $refs | safeHTML -}}  */ -}}
-        {{- $svg_  = $svg_ | append $svg -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-
-{{- /*  XML  */ -}}
-
 {{- $x := mul 8 2048 -}}
 {{- $y := mul (add (len $div_) 1) 128 -}}
-{{ `<?xml version="1.0" encoding="UTF-8"?>` | safeHTML }}
-{{ "<svg" | safeHTML }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{ $x }} {{ $y }}" preserveAspectRatio="none">
-
-
-{{- /*  DIVIDERS CODE  */ -}}
-{{ with $div_ }}
+{{- `<?xml version="1.0" encoding="UTF-8"?>` | safeHTML -}}
+{{- print `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ` $x ` ` $y `" preserveAspectRatio="none">` | safeHTML -}}
+{{- with $div_ -}}
 <style>
   .d{transform:translate(calc(var(--x, 0) * 2048px), calc(var(--y, 0) * 128px)) scale(var(--fx, 1), var(--fy, 1));transform-origin:center;transform-box:fill-box}
   .c{transform:scale(-1,1);x:-2048}
@@ -133,37 +92,6 @@
   mask rect,mask+rect{width:8192px;height:128px}
   mask+rect{transform:translate(8192px,calc(var(--y, 0) * 128px))}
 </style>
-{{ delimit . "\n" | safeHTML }}
+{{- delimit . "\n" | safeHTML -}}
 {{- end -}}
-
-{{- /*  SVG'S CODE  */ -}}
-{{ with $svg_ }}
-{{- /*
-<style>
-  svg {
-    overflow: unset;
-  }
-  .svg-variable {
-    fill: var(--bg-color,white);
-    stroke: currentColor;
-    stroke-width: var(--stroke-width,120);
-    stroke-linejoin: var(--linejoin,round);
-    paint-order: stroke;
-    scale: calc(var(--sm-side,512) / (var(--sm-side,512) + var(--stroke-width,120)));
-    transform-origin: center;
-  }
-  .svg-no-fill {
-    opacity: calc(1 + -1 * var(--icons-fill,1));
-  }
-  .svg-fill {
-    opacity: var(--icons-fill,1);
-  }
-</style>
-*/}}
-<defs>
-{{ delimit . "\n" | safeHTML }}
-</defs>
-{{ end }}
-
-
 {{- "</svg>" | safeHTML -}}

@@ -1,5 +1,7 @@
 # Ejemplo opcional: backend de comercio
 
+La adaptación opcional a Workers Free se documenta en [WORKERS.md](WORKERS.md).
+
 Este ejemplo separado activa únicamente las Pages Functions de comercio. No añade interfaz, datos de producto, valores comerciales reales, binding D1 ni configuración de Stripe. No se copia con el ejemplo general de `_examples/data/` y `_examples/content/`.
 
 Úsalo en un consumidor aislado o vacío, desde la raíz del proyecto:
@@ -17,3 +19,11 @@ El build debe incluir únicamente `/api/commerce/*` en `public/_routes.json`. `f
 Si una tienda ya tiene pedidos, no uses la eliminación de `data/commerce.yml` como rollback: eso quita las rutas y no cancela sesiones existentes ni revierte D1 o Stripe. Para pausar nuevas ventas sin perder webhooks, consulta de estado ni operaciones administrativas, conserva la configuración y usa `enabled: false` con `functions_enabled: true`. El catálogo desactivado bloquea también el checkout repetido con una clave de idempotencia previa. Mantén D1 y los bindings privados operativos; las sesiones externas ya creadas requieren expiración o cancelación en Stripe.
 
 Para pruebas de Pages Functions + D1 locales, consulta `commerce/test/d1.integration.test.js`; no se usan pagos reales.
+
+**Contrato de mantenimiento incompatible 8.0.0 integrado localmente, no publicado:** también
+aplica a estos handlers Pages compartidos. Antes de adoptar el código, aplica
+las migraciones 0001–0006 en orden sobre la base aprobada/respaldada y actualiza
+callers según `MIGRATIONS.md`: reconcile exige turnos separados para expiration,
+orders y unmatched_webhooks, uno por llamada; dispatch intenta una notificación
+y devuelve `has_more`, no `pending` numérico. No activa checkout ni modifica
+por sí solo una base remota.

@@ -1,13 +1,2 @@
-{{ $timestamp   := partial "func/timestamp" . }}
-{{ $draws_path  := print "/draws." $timestamp ".svg" }}
-{{ if and hugo.IsMultihost hugo.IsProduction }}
-  {{ $draws_path = print ".." $draws_path }}
-{{ end }}
-{{ $str   := partial "files/draws-svg" page | string }}
-{{ $src   := resources.FromString $draws_path $str }}
-{{ if hugo.IsProduction }}
-  {{ $min := $src | minify }}
-  {{ $src  = resources.FromString $draws_path $min.Content }}
-{{ end }}
-{{ $src.Publish }}
+{{- page.Store.Set "sansoul.draws.url" "__SANSOUL_DRAWS__" -}}
 {{ return "" }}

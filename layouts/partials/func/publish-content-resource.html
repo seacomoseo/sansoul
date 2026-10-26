@@ -1,0 +1,19 @@
+{{- /*
+Partial: func/publish-content-resource
+Purpose: Publish one resource under a deterministic SHA-256 content-addressed path.
+Context:
+  - resource (resource.Resource, required): Final processed resource content.
+  - target (string, required): Stable path and extension before the hash suffix.
+Returns: The published resource. The hash is the first 12 lowercase hexadecimal characters of SHA-256.
+Side effects: Publishes a copy of the resource.
+Example: {{ $css := partial "func/publish-content-resource" (dict "resource" $css "target" "css/site.css") }}
+*/ -}}
+{{- $resource := .resource -}}
+{{- $target := .target -}}
+{{- $extension := path.Ext $target -}}
+{{- $base := strings.TrimSuffix $extension $target -}}
+{{- $hash := substr (sha256 $resource.Content) 0 12 -}}
+{{- $path := printf "%s.%s%s" $base $hash $extension -}}
+{{- $published := $resource | resources.Copy $path -}}
+{{- $published.Publish -}}
+{{- return $published -}}

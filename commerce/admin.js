@@ -1,7 +1,10 @@
 import { applyPaymentState, expirePendingCheckouts, persistCheckoutSession } from './orders.js'
 import { CommerceError, errorResponse, jsonResponse, methodNotAllowed, readJsonBody, requireDatabase } from './http.js'
 import { createPaymentProvider } from './provider.js'
-import { hmacSha256Hex } from './signature.js'
+import { rotateCandidates } from './maintenance.js'
+// Admin tokens are compared as fixed-size SHA-256 digests; no HMAC key import
+// or token-dependent early exit, and no credentials retained in module caches.
+const tokenEncoder = new TextEncoder()
 import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
 
@@ -12,10 +15,10 @@ async function authorized (request, env) {
   const supplied = request.headers.get('authorization')?.match(/^Bearer ([\x21-\x7e]{1,256})$/)?.[1]
   if (typeof expected !== 'string' || expected.length < 32) throw new CommerceError('admin_configuration_missing', 503)
   if (!supplied) throw new CommerceError('unauthorized', 401)
-  const left = await hmacSha256Hex(expected, 'commerce-admin-token-check')
-  const right = await hmacSha256Hex(supplied, 'commerce-admin-token-check')
+  const left = new Uint8Array(await crypto.subtle.digest('SHA-256', tokenEncoder.encode(expected)))
+  const right = new Uint8Array(await crypto.subtle.digest('SHA-256', tokenEncoder.encode(supplied)))
   let mismatch = 0
-  for (let index = 0; index < left.length; index++) mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index)
+  for (let index = 0; index < left.length; index++) mismatch |= left[index] ^ right[index]
   return mismatch === 0
 }
 
@@ -184,51 +187,26 @@ async function updateInventory (request, db, catalog, now) {
   return jsonResponse({ product_id: value.product_id, on_hand: value.on_hand })
 }
 
-async function rotateCandidates (db, operation, selectSql, whereSql, timeColumn, idColumn, now) {
-  const cursor = await db.prepare(`
-    SELECT cursor_created_at, cursor_id FROM commerce_operation_cursors WHERE operation = ?
-  `).bind(operation).first()
-  if (!cursor) throw new CommerceError('operation_cursor_missing', 503)
-  const select = async (direction, limit) => {
-    const operator = direction === 'after' ? '>' : '<'
-    const rows = await db.prepare(`
-      ${selectSql} ${whereSql}
-        AND (${timeColumn} ${operator} ? OR (${timeColumn} = ? AND ${idColumn} ${operator} ?))
-      ORDER BY ${timeColumn} ASC, ${idColumn} ASC LIMIT ?
-    `).bind(cursor.cursor_created_at, cursor.cursor_created_at, cursor.cursor_id, limit).all()
-    return rows.results || []
-  }
-  const rows = await select('after', 25)
-  if (rows.length < 25) rows.push(...await select('before', 25 - rows.length))
-  if (rows.length === 0) {
-    const reset = await db.prepare(`
-      UPDATE commerce_operation_cursors SET cursor_created_at = 0, cursor_id = '', updated_at = ?
-      WHERE operation = ? AND cursor_created_at = ? AND cursor_id = ?
-    `).bind(now, operation, cursor.cursor_created_at, cursor.cursor_id).run()
-    return { rows: [], contended: !reset.meta?.changes }
-  }
-  const last = rows.at(-1)
-  const advanced = await db.prepare(`
-    UPDATE commerce_operation_cursors SET cursor_created_at = ?, cursor_id = ?, updated_at = ?
-    WHERE operation = ? AND cursor_created_at = ? AND cursor_id = ?
-  `).bind(last.cursor_created_at, last.cursor_id, now, operation, cursor.cursor_created_at, cursor.cursor_id).run()
-  return { rows: advanced.meta?.changes ? rows : [], contended: !advanced.meta?.changes }
-}
+export const RECONCILE_BATCH_SIZE = 1
 
-async function reconcile (db, env, catalog, now) {
-  await expirePendingCheckouts(db, now)
-  const orderPage = await rotateCandidates(
+async function reconcile (db, env, catalog, now, operation) {
+  if (operation === 'expiration') {
+    const page = await expirePendingCheckouts(db, now)
+    return jsonResponse({ operation, checked: page.rows.length, has_more: page.hasMore, skipped_concurrent: Number(page.contended) })
+  }
+  const emptyPage = { rows: [], contended: false, hasMore: false }
+  const orderPage = operation === 'orders' ? await rotateCandidates(
     db,
     'orders',
     `SELECT o.*, i.idempotency_key AS recovery_key, i.status AS recovery_status,
       i.snapshot_json AS recovery_snapshot_json, i.expires_at AS recovery_expires_at,
       o.created_at AS cursor_created_at, o.id AS cursor_id
-      FROM orders o LEFT JOIN commerce_idempotency i ON i.order_id = o.id`,
-    'WHERE o.payment_status IN (\'pending\', \'failed\') AND (o.session_id IS NOT NULL OR i.status = \'creating\')',
+      FROM orders o INDEXED BY orders_maintenance_rotation LEFT JOIN commerce_idempotency i ON i.order_id = o.id`,
+    'WHERE o.payment_status IN (\'pending\', \'failed\', \'partially_refunded\') AND o.payment_status IN (\'pending\', \'failed\') AND (o.session_id IS NOT NULL OR i.status = \'creating\')',
     'o.created_at',
     'o.id',
     now
-  )
+  ) : emptyPage
   let provider
   const getProvider = () => (provider ||= createPaymentProvider(env))
   let updated = 0
@@ -275,15 +253,15 @@ async function reconcile (db, env, catalog, now) {
     }
   }
 
-  const unmatchedPage = await rotateCandidates(
+  const unmatchedPage = operation === 'unmatched_webhooks' ? await rotateCandidates(
     db,
     'unmatched_webhooks',
-    'SELECT e.*, e.received_at AS cursor_created_at, e.event_id AS cursor_id FROM webhook_events e',
+    'SELECT e.*, e.received_at AS cursor_created_at, e.event_id AS cursor_id FROM webhook_events e INDEXED BY webhook_unmatched_rotation',
     'WHERE e.status = \'unmatched\' AND e.recovery_json IS NOT NULL',
     'e.received_at',
     'e.event_id',
     now
-  )
+  ) : emptyPage
   let unmatchedRecovered = 0
   for (const event of unmatchedPage.rows) {
     try {
@@ -294,6 +272,8 @@ async function reconcile (db, env, catalog, now) {
     }
   }
   return jsonResponse({
+    operation,
+    has_more: orderPage.hasMore || unmatchedPage.hasMore,
     checked: orderPage.rows.length,
     updated,
     recovered_sessions: recoveredSessions,
@@ -320,43 +300,55 @@ async function notifierSend (env, item, attempts) {
   if (!response.ok) throw new Error('notifier_unavailable')
 }
 
+// One notification per call. Stale recovery selects one lease and CAS resets it.
+const OUTBOX_DISPATCH_LIMIT = 1
+
 async function dispatchOutbox (db, env, now) {
-  await db.prepare(`
-    UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?
+  const stale = await db.prepare(`
+    SELECT event_key, claimed_at FROM outbox INDEXED BY outbox_expired_claims
     WHERE status = 'processing' AND claimed_at < ?
-  `).bind(now, now - 300).run()
+    ORDER BY claimed_at, event_key LIMIT 1
+  `).bind(now - 300).first()
+  if (stale) {
+    await db.prepare(`
+      UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?, updated_at = ?
+      WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND claimed_at < ?
+    `).bind(now, now, stale.event_key, stale.claimed_at, now - 300).run()
+  }
   const rows = await db.prepare(`
     SELECT event_key, order_id, event_type, payload_json, attempts
-    FROM outbox WHERE status = 'pending' AND next_attempt_at <= ?
-    ORDER BY created_at LIMIT 20
+    FROM outbox INDEXED BY outbox_due_notifications WHERE status = 'pending' AND next_attempt_at <= ?
+    ORDER BY next_attempt_at, event_key LIMIT 2
   `).bind(now).all()
   let delivered = 0
   let failed = 0
-  for (const item of rows.results || []) {
+  for (const item of (rows.results || []).slice(0, OUTBOX_DISPATCH_LIMIT)) {
     const claim = await db.prepare(`
       UPDATE outbox SET status = 'processing', attempts = attempts + 1, claimed_at = ?, updated_at = ?
-      WHERE event_key = ? AND status = 'pending' AND next_attempt_at <= ?
-    `).bind(now, now, item.event_key, now).run()
+      WHERE event_key = ? AND status = 'pending' AND attempts = ? AND next_attempt_at <= ?
+    `).bind(now, now, item.event_key, item.attempts, now).run()
     if (!claim.meta?.changes) continue
     const attempts = item.attempts + 1
     try {
       await notifierSend(env, item, attempts)
-      await db.prepare(`
+      const ack = await db.prepare(`
         UPDATE outbox SET status = 'delivered', claimed_at = NULL, last_error = NULL, updated_at = ?
-        WHERE event_key = ? AND status = 'processing'
-      `).bind(now, item.event_key).run()
+        WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND attempts = ?
+      `).bind(now, item.event_key, now, attempts).run()
+      if (!ack.meta?.changes) throw new Error('outbox_claim_lost')
       delivered++
     } catch {
       const delay = Math.min(30 * (2 ** Math.min(attempts - 1, 7)), 3600)
       await db.prepare(`
         UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?, last_error = 'notifier_unavailable', updated_at = ?
-        WHERE event_key = ? AND status = 'processing'
-      `).bind(now + delay, now, item.event_key).run()
+        WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND attempts = ?
+      `).bind(now + delay, now, item.event_key, now, attempts).run()
       failed++
     }
   }
-  const pending = await db.prepare("SELECT COUNT(*) AS count FROM outbox WHERE status != 'delivered'").first()
-  return jsonResponse({ attempted: delivered + failed, delivered, failed, pending: pending?.count || 0 })
+  // Bounded presence probe, not an exact count; includes delayed/fresh leases.
+  const remaining = await db.prepare("SELECT event_key FROM outbox INDEXED BY outbox_undelivered WHERE status != 'delivered' LIMIT 1").first()
+  return jsonResponse({ attempted: delivered + failed, delivered, failed, has_more: !!remaining })
 }
 
 export async function handleAdmin (request, env, catalog) {
@@ -377,7 +369,11 @@ export async function handleAdmin (request, env, catalog) {
       return csvResponse(page.orders, page.nextCursor)
     }
     if (path === '/api/commerce/admin/inventory' && request.method === 'POST') return await updateInventory(request, db, catalog, now)
-    if (path === '/api/commerce/admin/reconcile' && request.method === 'POST') return await reconcile(db, env, catalog, now)
+    if (path === '/api/commerce/admin/reconcile' && request.method === 'POST') {
+      const operation = url.searchParams.get('operation') || 'orders'
+      if (!['orders', 'expiration', 'unmatched_webhooks'].includes(operation)) throw new CommerceError('invalid_operation', 400)
+      return await reconcile(db, env, catalog, now, operation)
+    }
     if (path === '/api/commerce/admin/outbox/dispatch' && request.method === 'POST') return await dispatchOutbox(db, env, now)
 
     const match = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/(manufacture|ship|cancel-partial)$/i)

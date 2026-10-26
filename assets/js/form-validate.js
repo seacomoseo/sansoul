@@ -15,6 +15,10 @@ export function formValid (form) {
   // Vars
   let valid = true
   const message = document.createElement('ul')
+  const itemErrors = new Set()
+  const optionErrors = new Set()
+  form.querySelectorAll('.form__item--error').forEach(item => item.classList.remove('form__item--error'))
+  form.querySelectorAll('.form__opt--error').forEach(option => option.classList.remove('form__opt--error'))
 
   // Functions
   const addMessage = (error, name) => {
@@ -24,17 +28,40 @@ export function formValid (form) {
     valid = false
   }
   const setItemStyle = (element, error) => {
+    const option = element.type === 'checkbox' && element.closest('.form__opt')
+    if (option && option.closest('.form__fieldset')) {
+      if (error) optionErrors.add(option)
+      return
+    }
     const item = element.closest('.form__item')
     if (!item) return
-    if (error) {
-      item.classList.add('form__item--error')
-    } else {
-      item.classList.remove('form__item--error')
+    if (error) itemErrors.add(item)
+  }
+  const getInputName = input => {
+    const label = input.labels?.[0]
+    return input.placeholder ||
+      input.dataset.placeholder ||
+      label?.querySelector('.hide')?.textContent.trim() ||
+      label?.textContent.trim() ||
+      input.name
+  }
+  const getFieldsetName = fieldset => {
+    const legend = fieldset.querySelector(':scope > legend')
+    if (legend) return legend.textContent.trim()
+
+    const labels = [...fieldset.querySelectorAll(':scope > label')]
+      .map(label => label.textContent.trim().replace(/\s*\*$/, ''))
+      .filter(Boolean)
+    if (labels.length > 1) {
+      const locale = document.documentElement.lang || 'es'
+      return new Intl.ListFormat(locale, { style: 'long', type: 'disjunction' }).format(labels)
     }
+    return labels[0] || fieldset.name
   }
   const isInput = (input) => {
+    if (input.disabled) return false
     if (input.tagName === 'FIELDSET') {
-      return input.querySelector('input:checked')
+      return input.querySelector('input:checked:not(:disabled)')
     } else if (input.type === 'checkbox') {
       return input.checked
     } else if (input.type === 'file') {
@@ -63,6 +90,8 @@ export function formValid (form) {
 
   // Required Check and Fields
   form.querySelectorAll('[data-req], [data-req-if]').forEach(input => {
+    if (input.disabled) return
+
     let req
     if (input.dataset.req !== undefined) {
       req = true // Data-req fields are always mandatory
@@ -79,18 +108,17 @@ export function formValid (form) {
         })
       })
     }
-    // If this is req or references is filled; and this is empty
     if (req && !isInput(input)) {
       let errorMessage, errorName
       if (input.tagName === 'FIELDSET') {
         errorMessage = formErrorReqCheck
-        errorName = input.children[0].textContent
+        errorName = getFieldsetName(input)
       } else if (input.classList.contains('form__geo')) {
         errorMessage = formErrorReqFields
         errorName = input.name
       } else {
         errorMessage = formErrorReqFields
-        errorName = (input.placeholder || input.dataset.placeholder || input.children[0].textContent)
+        errorName = getInputName(input)
       }
       setItemStyle(input, true)
       addMessage(errorMessage, errorName)
@@ -199,6 +227,9 @@ export function formValid (form) {
   } else {
     form.classList.remove('form--error-consent')
   }
+
+  itemErrors.forEach(item => item.classList.add('form__item--error'))
+  optionErrors.forEach(option => option.classList.add('form__opt--error'))
 
   return { valid, message }
 }
