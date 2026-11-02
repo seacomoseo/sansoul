@@ -44,9 +44,38 @@
   }
 }
 
-// Horizontal menu: the toggle is hidden, so the cart takes its corner.
-.body-menu--sticky--active .commerce__cart-trigger {
+// No menu toggle (menu hidden or empty): the cart takes the corner.
+body:not(:has(.menu__toggle)) .commerce__cart-trigger {
   right: 1em;
+}
+
+// Horizontal menu: commerce.js moves the button into this slot, at the end of the row.
+// The slot also reserves its width while the theme measures whether the menu fits.
+.menu__item--cart {
+  display: none;
+}
+.body-menu--sticky--active .menu .menu__item--cart,
+.body-menu--sticky--calculate .menu .menu__item--cart {
+  display: flex;
+  align-items: center;
+  min-width: 2.5em;
+}
+.commerce__cart-trigger--inline {
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: auto;
+  // Match the height of menu buttons so the compact (scrolled) bar keeps its size.
+  width: 2.5em;
+  height: 2.5em;
+  margin: .306em 0;
+  padding: .375em;
+  --pin-size: 1.25em;
+  // The compact bar sits flush with the viewport top: keep the badge below the button edge.
+  .commerce__badge {
+    top: auto;
+    bottom: -.35rem;
+  }
 }
 
 .commerce__badge {

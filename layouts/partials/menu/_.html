@@ -107,6 +107,13 @@
             {{- range $items -}}
               {{- partial "menu/item" (merge . (dict "hide_icons" $.menu.hide_icons)) -}}
             {{- end }}
+
+            {{- /*  COMMERCE CART SLOT: horizontal menus host the cart button here  */ -}}
+            {{- with hugo.Data.commerce -}}
+              {{- if eq .enabled true }}
+              <li class="menu__item menu__item--cart" data-commerce-menu-slot></li>
+              {{- end -}}
+            {{- end }}
           </ul>
         </div>
       </nav>

@@ -177,7 +177,7 @@ export function initCommerce () {
     const focusedQuantity = document.activeElement?.dataset.commerceLineQuantity
     const focusedSurface = document.activeElement?.closest('[data-commerce-drawer], [data-commerce-cart-page]')
     const count = items.reduce((total, item) => total + item.quantity, 0)
-    root.querySelectorAll('[data-commerce-count]').forEach(node => {
+    trigger?.querySelectorAll('[data-commerce-count]').forEach(node => {
       node.textContent = count > 99 ? '99+' : String(count)
       node.hidden = count === 0
     })
@@ -612,6 +612,19 @@ export function initCommerce () {
       render()
     }
   })
+
+  // Horizontal (sticky) menus host the cart button inside their row, so it flows with
+  // the other items instead of floating over them; otherwise it floats beside the toggle.
+  const menuSlot = document.querySelector('[data-commerce-menu-slot]')
+  const placeTrigger = () => {
+    if (!trigger) return
+    const inline = Boolean(menuSlot) && document.body.classList.contains('body-menu--sticky--active')
+    const parent = inline ? menuSlot : root
+    if (trigger.parentElement !== parent) parent.prepend(trigger)
+    trigger.classList.toggle('commerce__cart-trigger--inline', inline)
+  }
+  placeTrigger()
+  if (menuSlot) new MutationObserver(placeTrigger).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
   // Templates print ISO codes; show localized country names when the browser supports it.
   try {
