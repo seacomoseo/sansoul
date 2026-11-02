@@ -275,8 +275,8 @@ test('paid order collected outside the quoted zone is held for review, not fulfi
     const result = await sendWebhook(env, sessionEvent(order, options))
     assert.equal(result.status, 200, name)
     assert.deepEqual(orderRow(db, order.id), { payment_status: 'paid', fulfillment_status: 'inventory_exception' }, name)
-    assert.ok(outboxTypes(db, order.id).includes('payment.destination_review'), name)
-    assert.ok(!outboxTypes(db, order.id).includes('payment.paid'), name)
+    // One specific event per hold: no generic payment.inventory_exception duplicate, no payment.paid.
+    assert.deepEqual(outboxTypes(db, order.id), ['payment.destination_review'], name)
   }
 })
 

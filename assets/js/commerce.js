@@ -402,7 +402,9 @@ export function initCommerce () {
       partially_refunded: 'commerce_payment_partially_refunded',
       refunded: 'commerce_payment_refunded'
     }
-    notifyReturn(statusKeys[paymentStatus])
+    // Back from the payment page without paying: the server confirms nothing was charged.
+    const cancelled = mode === 'cancel' && ['pending', 'failed', 'expired'].includes(paymentStatus)
+    notifyReturn(cancelled ? 'commerce_cancelled' : statusKeys[paymentStatus])
     if (paymentStatus !== 'paid') return
 
     const snapshot = sessionSnapshot()
@@ -508,13 +510,14 @@ export function initCommerce () {
       const quantity = Number(quantityInput?.value)
       if (!product || product.quote || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
         announce('commerce_invalid_quantity')
-        quantityInput?.focus()
+        openCart(addButton)
         return
       }
       const existing = items.find(item => item.id === id)?.quantity || 0
       if (existing + quantity > MAX_QUANTITY) {
+        // Cards hide the stepper: show the error in the drawer, where the cart can be edited.
         announce('commerce_invalid_quantity')
-        quantityInput?.focus()
+        openCart(addButton)
         return
       }
       const next = items.filter(item => item.id !== id)

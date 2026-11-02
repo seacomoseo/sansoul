@@ -17,6 +17,8 @@ function inventoryExceptionOutbox (db, now, orderId = null, eventGuard = '', eve
       ), 'pending', 0, ?, ?, ?
     FROM orders
     WHERE payment_status IN ('paid', 'partially_refunded') AND fulfillment_status = 'inventory_exception'
+      -- An out-of-zone hold already emitted the specific payment.destination_review event.
+      AND NOT EXISTS (SELECT 1 FROM outbox AS review WHERE review.order_id = orders.id AND review.event_type = 'payment.destination_review')
       ${orderId ? 'AND orders.id = ?' : ''}${eventGuard}
   `).bind(now, now, now, ...(orderId ? [orderId] : []), ...eventArgs)
 }
