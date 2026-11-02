@@ -26,7 +26,25 @@ const fifthId = '77777777-7777-4777-8777-777777777777'
 const sixthId = '88888888-8888-4888-8888-888888888888'
 const cancelProductId = '99999999-9999-4999-8999-999999999998'
 
-function runWrangler (args, cwd, timeout = 60000) {
+// `wrangler d1 execute --local` opens the same SQLite file the running Pages dev server
+// holds; under host load the lock can be refused with SQLITE_BUSY before anything runs.
+// Retry only that transient, pre-execution error (bounded and reported), never others.
+const SQLITE_BUSY_RETRIES = 3
+
+async function runWrangler (args, cwd, timeout = 60000) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await runWranglerOnce(args, cwd, timeout)
+    } catch (error) {
+      const busy = args[0] === 'd1' && args[1] === 'execute' && /SQLITE_BUSY/.test(error.message)
+      if (!busy || attempt > SQLITE_BUSY_RETRIES) throw error
+      console.error(`# [commerce-d1] SQLITE_BUSY on ${args.slice(0, 3).join(' ')}; retry ${attempt}/${SQLITE_BUSY_RETRIES}`)
+      await new Promise(resolve => setTimeout(resolve, 500 * attempt))
+    }
+  }
+}
+
+function runWranglerOnce (args, cwd, timeout) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [WRANGLER, ...args], {
       cwd,
@@ -117,7 +135,10 @@ function sqlString (value) {
 }
 
 // The measured full D1 run took 298585 ms; allow 2x headroom for local Wrangler startup/queries.
-test('Pages Functions + local D1 checkout, webhook, operations, recovery and restore', { timeout: 600000 }, async t => {
+// Full run takes ~420-690 s on the 4-core VPS depending on host load; slow hosts can raise it.
+const D1_TEST_TIMEOUT_MS = Number(process.env.COMMERCE_D1_TEST_TIMEOUT_MS) || 600000
+
+test('Pages Functions + local D1 checkout, webhook, operations, recovery and restore', { timeout: D1_TEST_TIMEOUT_MS }, async t => {
   const started = performance.now()
   let previousStage = started
   const stage = name => {

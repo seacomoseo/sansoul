@@ -402,9 +402,12 @@ export function initCommerce () {
       partially_refunded: 'commerce_payment_partially_refunded',
       refunded: 'commerce_payment_refunded'
     }
-    // Back from the payment page without paying: the server confirms nothing was charged.
-    const cancelled = mode === 'cancel' && ['pending', 'failed', 'expired'].includes(paymentStatus)
-    notifyReturn(cancelled ? 'commerce_cancelled' : statusKeys[paymentStatus])
+    // Back from the payment page: only a server-confirmed failed/expired payment is called
+    // "not completed"; pending may still be paid (late webhook), so describe the buyer's action.
+    let returnKey = statusKeys[paymentStatus]
+    if (mode === 'cancel' && ['failed', 'expired'].includes(paymentStatus)) returnKey = 'commerce_cancelled'
+    if (mode === 'cancel' && paymentStatus === 'pending') returnKey = 'commerce_checkout_left'
+    notifyReturn(returnKey)
     if (paymentStatus !== 'paid') return
 
     const snapshot = sessionSnapshot()
