@@ -351,6 +351,74 @@ async function dispatchOutbox (db, env, now) {
   return jsonResponse({ attempted: delivered + failed, delivered, failed, has_more: !!remaining })
 }
 
+// Pull consumer protocol for notifiers that cannot be a Worker service binding (e.g. the
+// operator's mail relay on a host without open ports). Same at-least-once semantics as
+// dispatchOutbox: claim one due item with a lease, deliver, then ack (delivered) or nack
+// (rescheduled with backoff). A lost ack leaves the lease to expire and the item is resent;
+// receivers deduplicate by event_key.
+const OUTBOX_LEASE_SECONDS = 300
+
+async function claimOutbox (db, now) {
+  const stale = await db.prepare(`
+    SELECT event_key, claimed_at FROM outbox INDEXED BY outbox_expired_claims
+    WHERE status = 'processing' AND claimed_at < ?
+    ORDER BY claimed_at, event_key LIMIT 1
+  `).bind(now - OUTBOX_LEASE_SECONDS).first()
+  if (stale) {
+    await db.prepare(`
+      UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?, updated_at = ?
+      WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND claimed_at < ?
+    `).bind(now, now, stale.event_key, stale.claimed_at, now - OUTBOX_LEASE_SECONDS).run()
+  }
+  const item = await db.prepare(`
+    SELECT event_key, order_id, event_type, payload_json, attempts
+    FROM outbox INDEXED BY outbox_due_notifications WHERE status = 'pending' AND next_attempt_at <= ?
+    ORDER BY next_attempt_at, event_key LIMIT 1
+  `).bind(now).first()
+  if (!item) return jsonResponse({ item: null })
+  const claim = await db.prepare(`
+    UPDATE outbox SET status = 'processing', attempts = attempts + 1, claimed_at = ?, updated_at = ?
+    WHERE event_key = ? AND status = 'pending' AND attempts = ? AND next_attempt_at <= ?
+  `).bind(now, now, item.event_key, item.attempts, now).run()
+  if (!claim.meta?.changes) return jsonResponse({ item: null, contended: true })
+  const order = await db.prepare(`
+    SELECT o.id, o.session_id, o.payment_intent_id, o.catalog_release, o.currency, o.amount_total_minor,
+      o.snapshot_json, o.payment_status, o.fulfillment_status, o.refund_amount_minor, o.created_at, o.updated_at, o.expires_at,
+      d.source AS delivery_source, d.buyer_name, d.buyer_email, d.buyer_phone, d.recipient_name,
+      d.address_line1, d.address_line2, d.locality, d.administrative_area, d.postal_code, d.country_code
+    FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id WHERE o.id = ?
+  `).bind(item.order_id).first()
+  return jsonResponse({
+    item: {
+      event_key: item.event_key,
+      event_type: item.event_type,
+      attempts: item.attempts + 1,
+      claimed_at: now,
+      payload: JSON.parse(item.payload_json),
+      order: order ? adminOrder(order) : null
+    }
+  })
+}
+
+async function ackOutbox (request, db, now) {
+  const { value } = await readJsonBody(request, 1024)
+  const valid = value && typeof value === 'object' && typeof value.event_key === 'string' && value.event_key.length <= 200 &&
+    Number.isSafeInteger(value.claimed_at) && Number.isSafeInteger(value.attempts) && value.attempts >= 1 &&
+    typeof value.delivered === 'boolean'
+  if (!valid) throw new CommerceError('invalid_ack', 400)
+  const result = value.delivered
+    ? await db.prepare(`
+        UPDATE outbox SET status = 'delivered', claimed_at = NULL, last_error = NULL, updated_at = ?
+        WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND attempts = ?
+      `).bind(now, value.event_key, value.claimed_at, value.attempts).run()
+    : await db.prepare(`
+        UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?, last_error = 'notifier_unavailable', updated_at = ?
+        WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND attempts = ?
+      `).bind(now + Math.min(30 * (2 ** Math.min(value.attempts - 1, 7)), 3600), now, value.event_key, value.claimed_at, value.attempts).run()
+  // acked=false: the lease was lost (expired and re-claimed); the receiver must rely on event_key dedupe.
+  return jsonResponse({ acked: Boolean(result.meta?.changes) })
+}
+
 export async function handleAdmin (request, env, catalog) {
   try {
     const allowed = await authorized(request, env)
@@ -375,6 +443,8 @@ export async function handleAdmin (request, env, catalog) {
       return await reconcile(db, env, catalog, now, operation)
     }
     if (path === '/api/commerce/admin/outbox/dispatch' && request.method === 'POST') return await dispatchOutbox(db, env, now)
+    if (path === '/api/commerce/admin/outbox/claim' && request.method === 'POST') return await claimOutbox(db, now)
+    if (path === '/api/commerce/admin/outbox/ack' && request.method === 'POST') return await ackOutbox(request, db, now)
 
     const match = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/(manufacture|ship|cancel-partial)$/i)
     if (match && request.method === 'POST' && ORDER_ID.test(match[1])) {
