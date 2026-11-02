@@ -130,7 +130,9 @@
       // If is not bot and if cookies law
       const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(navigator.userAgent)
       const isPs = `{{ $isPs }}` === 'true'
-      const isCk = `{{ $isCk }}` === 'true'
+      // Without cookies_legal this is 'true'; with it, the consent counter ('1', '2'…) once accepted.
+      const ck = `{{ $isCk }}`
+      const isCk = ck === 'true' || /^[1-9][0-9]*$/.test(ck)
       if (!isBot && !isPs && isCk) googleAnalytics()
     </script>
   {{- end -}}
