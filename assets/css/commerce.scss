@@ -49,6 +49,17 @@ body:not(:has(.menu__toggle)) .commerce__cart-trigger {
   right: 1em;
 }
 
+// Floating logo: the theme reserves the toggle's 4em on the right (--margin-toggle-right,
+// fluid down to 0 on wide screens). The floating cart adds 3.5em more on the same curve,
+// so a centred logo stays centred in the space left by both buttons. Conditioned on the
+// button's existence (not its JS-revealed state) to avoid a layout shift on load.
+.body-menu--logo:not(.body-menu--sticky--active):has(.menu__toggle):has(.commerce__cart-trigger) .logo:has(~ .menu) {
+  padding-right: calc(var(--margin-toggle-right, 4em) * 1.875);
+  &:has(> .align-right) {
+    padding-right: 7.5em;
+  }
+}
+
 // Horizontal menu: commerce.js moves the button into this slot, at the end of the row.
 // The slot also reserves its width while the theme measures whether the menu fits.
 .menu__item--cart {
