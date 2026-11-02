@@ -3,6 +3,7 @@ import { CommerceError, errorResponse, jsonResponse, methodNotAllowed, readJsonB
 import { getWebhookSecret } from './provider.js'
 import { paymentStatements, WEBHOOK_CLAIMED_AT } from './orders.js'
 import { verifyStripeSignature } from './signature.js'
+import { normalizePostalCode } from './totals.js'
 
 const EVENT_ID = /^evt_[A-Za-z0-9]+$/
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -24,6 +25,11 @@ function deliveryDetails (object) {
   const shipping = collected && typeof collected === 'object' ? collected : legacy && typeof legacy === 'object' ? legacy : {}
   const address = shipping.address && typeof shipping.address === 'object' ? shipping.address : {}
   const email = boundedText(customer.email, 254)
+  const countryCode = typeof address.country === 'string' && /^[A-Z]{2}$/.test(address.country) ? address.country : null
+  const rawPostalCode = boundedText(address.postal_code, 32)
+  // Store the canonical form when it is valid for the country, so zone checks in SQL
+  // cannot be fooled by spacing variants; anything else is kept and fails the check.
+  const postalCode = rawPostalCode && countryCode ? normalizePostalCode(countryCode, rawPostalCode) ?? rawPostalCode : rawPostalCode
   const details = {
     buyerName: boundedText(customer.name, 120),
     buyerEmail: email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null,
@@ -33,8 +39,8 @@ function deliveryDetails (object) {
     line2: boundedText(address.line2, 200),
     city: boundedText(address.city, 100),
     state: boundedText(address.state, 100),
-    postalCode: boundedText(address.postal_code, 32),
-    countryCode: typeof address.country === 'string' && /^[A-Z]{2}$/.test(address.country) ? address.country : null
+    postalCode,
+    countryCode
   }
   return Object.values(details).some(value => value !== null) ? details : null
 }
@@ -43,16 +49,8 @@ function eventTarget (event) {
   const object = event.data.object
   const paymentIntentId = typeof object.payment_intent === 'string' ? object.payment_intent : object.payment_intent?.id || null
   switch (event.type) {
-    case 'checkout.session.completed': {
-      const details = deliveryDetails(object)
-      return {
-        state: object.payment_status === 'paid' ? 'paid' : 'pending',
-        sessionId: object.id,
-        paymentIntentId,
-        deliveryDetails: details,
-        shippingAddressMissing: !details?.countryCode || !details?.postalCode
-      }
-    }
+    case 'checkout.session.completed':
+      return { state: object.payment_status === 'paid' ? 'paid' : 'pending', sessionId: object.id, paymentIntentId, deliveryDetails: deliveryDetails(object) }
     case 'checkout.session.async_payment_succeeded':
     case 'payment_intent.succeeded':
       return {

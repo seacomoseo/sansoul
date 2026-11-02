@@ -109,7 +109,7 @@ export function createPaymentProvider (env) {
       form.set('success_url', `${catalog.origin}/?commerce=success&order_id=${encodeURIComponent(snapshot.orderId)}`)
       form.set('cancel_url', `${catalog.origin}/?commerce=cancel`)
       // Only the quoted country can be entered; postal zones are re-checked by the webhook.
-      form.set('shipping_address_collection[allowed_countries][0]', totals.destination.country)
+      if (catalog.checkout?.shippingPolicy !== 'not_applicable') form.set('shipping_address_collection[allowed_countries][0]', totals.destination.country)
       // Let Stripe's 24-hour default start at real session creation; retries keep identical parameters.
       snapshot.items.forEach((item, index) => {
         const prefix = `line_items[${index}]`

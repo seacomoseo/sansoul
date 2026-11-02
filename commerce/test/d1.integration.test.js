@@ -302,11 +302,20 @@ export async function onRequest (context) {
     await stopPages(server)
     server = null
 
+    // Synthetic totals policy: VAT included and free shipping keep totals equal to the
+    // line subtotal, so the amount assertions below exercise checkout with real quotes.
+    const totalsPolicy = {
+      schemaVersion: 2,
+      version: 'd1-fixture-v1',
+      currency: 'eur',
+      minorUnit: 2,
+      destinations: { ES: { tax: { mode: 'inclusive', rateBps: 2100 }, shipping: { amountMinor: 0, tax: { mode: 'exempt', rateBps: 0 } }, excludedPostalPrefixes: [] } }
+    }
     const catalog = {
       functionsEnabled: true,
       schemaVersion: 2,
       enabled: true,
-      checkout: { approved: false, legalVersion: null, destinationCountries: [], taxPolicy: null, shippingPolicy: null },
+      checkout: { approved: false, legalVersion: null, destinationCountries: ['ES'], taxPolicy: null, shippingPolicy: null, totalsPolicy },
       release: 'a'.repeat(64),
       origin,
       currency: 'eur',
@@ -364,11 +373,16 @@ export async function onRequest (context) {
     const statusUnavailableMethod = await fetch(`${origin}/api/commerce/status/${firstId}`, { method: 'POST' })
     assert.equal(statusUnavailableMethod.status, 405)
 
+    const prices = new Map(catalog.products.map(product => [product.id, product.priceMinor]))
+    const displayedQuote = items => ({
+      policy_version: totalsPolicy.version,
+      total_minor: items.reduce((total, item) => total + (prices.get(item.id) || 0) * (Number.isSafeInteger(item.quantity) ? item.quantity : 0), 0)
+    })
     const checkout = async (items, key, cookie, clientIp) => {
       const response = await fetch(`${origin}/api/commerce/checkout`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', origin, 'idempotency-key': key, ...(cookie ? { cookie } : {}), ...(clientIp ? { 'cf-connecting-ip': clientIp } : {}) },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({ items, destination: { country: 'ES', postalCode: '28001' }, quote: displayedQuote(items) })
       })
       return { response, body: await response.json(), setCookie: response.headers.get('set-cookie') }
     }
@@ -426,9 +440,10 @@ export async function onRequest (context) {
       customer_details: { name: 'Synthetic Buyer', email: 'buyer@example.invalid', phone: '+0000000000' },
       shipping_details: {
         name: 'Synthetic Recipient',
-        address: { line1: '1 Synthetic Way', line2: null, city: 'Test City', state: null, postal_code: '00000', country: 'ES' }
+        address: { line1: '1 Synthetic Way', line2: null, city: 'Test City', state: null, postal_code: '28001', country: 'ES' }
       }
     })
+    // Stripe Checkout always returns the collected address for physical orders.
     const paidSessionEvent = (order, paymentIntent) => event('checkout.session.completed', {
       object: 'checkout.session',
       id: order.session_id,
@@ -437,7 +452,11 @@ export async function onRequest (context) {
       payment_intent: paymentIntent,
       payment_status: 'paid',
       amount_total: order.amount_total_minor,
-      currency: 'eur'
+      currency: 'eur',
+      shipping_details: {
+        name: 'Synthetic Recipient',
+        address: { line1: '1 Synthetic Way', line2: null, city: 'Test City', state: null, postal_code: '28001', country: 'ES' }
+      }
     })
     const partialRefundEvent = (order, paymentIntent, refundAmount = 300) => event('charge.refunded', {
       object: 'charge',
@@ -994,7 +1013,22 @@ export async function onRequest (context) {
     delete noDeliveryEvent.data.object.customer_details
     delete noDeliveryEvent.data.object.shipping_details
     assert.equal((await webhook(noDeliveryEvent)).response.status, 200)
+    // Server-quoted orders without an address record the payment but are not fulfillable.
+    const awaitingAddress = await orderById(noDeliveryOrder.id)
+    assert.equal(awaitingAddress.payment_status, 'paid')
+    assert.equal(awaitingAddress.fulfillment_status, 'awaiting_payment')
+    assert.deepEqual((await queryD1(databaseName, `SELECT event_type FROM outbox WHERE order_id = '${noDeliveryOrder.id}'`, workspace)).map(row => row.event_type), ['payment.awaiting_address'])
+    assert.equal((await admin(`orders/${noDeliveryOrder.id}/manufacture`, 'POST')).response.status, 409)
+    const addressEvent = sessionEvent('checkout.session.completed', {
+      id: noDeliveryOrder.id,
+      checkoutSession: noDeliveryOrder.session_id,
+      amount: noDeliveryOrder.amount_total_minor
+    }, 'paid', 'pi_nodelivery001')
+    assert.equal((await webhook(addressEvent)).response.status, 200)
+    assert.equal((await orderById(noDeliveryOrder.id)).fulfillment_status, 'ready')
     assert.equal((await admin(`orders/${noDeliveryOrder.id}/manufacture`, 'POST')).response.status, 200)
+    // Shipping still refuses orders whose delivery details are missing (e.g. legacy rows).
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--command', `DELETE FROM order_delivery_details WHERE order_id = '${noDeliveryOrder.id}'`], workspace)
     assert.equal((await webhook(partialRefundEvent(noDeliveryOrder, 'pi_nodelivery001'))).response.status, 200)
     assert.equal((await orderById(noDeliveryOrder.id)).payment_status, 'partially_refunded')
     assert.equal((await orderById(noDeliveryOrder.id)).fulfillment_status, 'manufacturing')

@@ -1,6 +1,7 @@
 // The claim marker is visible only inside the atomic D1 batch before finalization.
 import { CommerceError } from './http.js'
 import { rotateCandidates } from './maintenance.js'
+import { postalCodeSql } from './totals.js'
 
 export const WEBHOOK_CLAIMED_AT = -1
 const SESSION_ID = /^cs_(?:(?:test|live)_)?[A-Za-z0-9]+$/
@@ -20,37 +21,53 @@ function inventoryExceptionOutbox (db, now, orderId = null, eventGuard = '', eve
   `).bind(now, now, now, ...(orderId ? [orderId] : []), ...eventArgs)
 }
 
-// A paid order whose collected address falls outside the quoted zone (or arrives
-// without one) is held for manual review before stock commitment or payment.paid.
-// Evaluated in SQL against the stored address, so event order cannot bypass it.
-function destinationReviewStatements (db, order, snapshot, target, now, eventGuard, eventArgs) {
+// Orders with server-quoted totals become fulfillable only with an eligible stored
+// address: same country as quoted, valid postal format, not in an excluded zone.
+// Evaluated in SQL inside the payment batch (after the address upsert), so webhook
+// order cannot bypass it:
+// - no address yet: payment is recorded but fulfillment stays awaiting_payment
+//   (payment.awaiting_address); a later checkout.session.completed promotes it;
+// - address outside the zone: inventory_exception (payment.destination_review).
+function destinationGateStatements (db, order, snapshot, now, eventGuard, eventArgs) {
   const destination = snapshot?.totals?.destination
   if (!destination || !/^[A-Z]{2}$/.test(destination.country || '') || !Array.isArray(destination.excludedPostalPrefixes)) return []
   const prefixes = destination.excludedPostalPrefixes.filter(prefix => typeof prefix === 'string' && /^[0-9]{1,5}$/.test(prefix))
-  const normalized = "replace(replace(upper(details.postal_code), ' ', ''), '-', '')"
-  const excluded = prefixes.map(() => `substr(${normalized}, 1, ?) = ?`)
-  const mismatch = `
-    (? = 1 OR EXISTS (
-      SELECT 1 FROM order_delivery_details AS details
-      WHERE details.order_id = orders.id AND (
-        details.country_code IS NULL OR details.country_code <> ? OR details.postal_code IS NULL
-        ${excluded.length ? `OR ${excluded.join(' OR ')}` : ''}
-      )
-    ))`
-  const mismatchArgs = [target.state === 'paid' && target.shippingAddressMissing === true ? 1 : 0, destination.country, ...prefixes.flatMap(prefix => [prefix.length, prefix])]
-  const eventKey = `${order.id}:payment.destination_review`
+  const hasAddress = 'EXISTS (SELECT 1 FROM order_delivery_details AS details WHERE details.order_id = orders.id AND details.country_code IS NOT NULL)'
+  const eligible = `EXISTS (
+    SELECT 1 FROM order_delivery_details AS details
+    WHERE details.order_id = orders.id AND details.country_code = ? AND details.postal_code IS NOT NULL
+      AND ${postalCodeSql(destination.country, 'details.postal_code')}
+      ${prefixes.map(() => 'AND substr(details.postal_code, 1, ?) <> ?').join(' ')}
+  )`
+  const eligibleArgs = [destination.country, ...prefixes.flatMap(prefix => [prefix.length, prefix])]
+  const outOfZone = `${hasAddress} AND NOT ${eligible}`
+  const event = type => {
+    const eventKey = `${order.id}:${type}`
+    return [eventKey, JSON.stringify({ eventKey, orderId: order.id, eventType: type })]
+  }
   return [
     db.prepare(`
       UPDATE orders SET fulfillment_status = 'inventory_exception', updated_at = ?
       WHERE id = ? AND payment_status = 'paid' AND fulfillment_status IN ('awaiting_payment', 'ready')
-        AND ${mismatch}${eventGuard}
-    `).bind(now, order.id, ...mismatchArgs, ...eventArgs),
+        AND ${outOfZone}${eventGuard}
+    `).bind(now, order.id, ...eligibleArgs, ...eventArgs),
+    db.prepare(`
+      UPDATE orders SET fulfillment_status = 'awaiting_payment', updated_at = ?
+      WHERE id = ? AND payment_status = 'paid' AND fulfillment_status = 'ready'
+        AND NOT ${hasAddress}${eventGuard}
+    `).bind(now, order.id, ...eventArgs),
     db.prepare(`
       INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
       SELECT ?, id, 'payment.destination_review', ?, 'pending', 0, ?, ?, ?
       FROM orders WHERE id = ? AND payment_status IN ('paid', 'partially_refunded') AND fulfillment_status = 'inventory_exception'
-        AND ${mismatch}${eventGuard}
-    `).bind(eventKey, JSON.stringify({ eventKey, orderId: order.id, eventType: 'payment.destination_review' }), now, now, now, order.id, ...mismatchArgs, ...eventArgs)
+        AND ${outOfZone}${eventGuard}
+    `).bind(...event('payment.destination_review'), now, now, now, order.id, ...eligibleArgs, ...eventArgs),
+    db.prepare(`
+      INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
+      SELECT ?, id, 'payment.awaiting_address', ?, 'pending', 0, ?, ?, ?
+      FROM orders WHERE id = ? AND payment_status = 'paid' AND fulfillment_status = 'awaiting_payment'
+        AND NOT ${hasAddress}${eventGuard}
+    `).bind(...event('payment.awaiting_address'), now, now, now, order.id, ...eventArgs)
   ]
 }
 
@@ -93,7 +110,8 @@ export function paymentStatements (db, order, target, now, eventId = null) {
 
   if (target.deliveryDetails) {
     const details = target.deliveryDetails
-    statements.push(db.prepare(`
+    // Before the payment transition, so the destination gate sees this address.
+    statements.unshift(db.prepare(`
       INSERT INTO order_delivery_details (
         order_id, source, buyer_name, buyer_email, buyer_phone, recipient_name,
         address_line1, address_line2, locality, administrative_area, postal_code, country_code, updated_at
@@ -115,7 +133,7 @@ export function paymentStatements (db, order, target, now, eventId = null) {
     `).bind(order.id, details.buyerName, details.buyerEmail, details.buyerPhone, details.recipientName, details.line1, details.line2, details.city, details.state, details.postalCode, details.countryCode, now, order.id, ...eventArgs))
   }
 
-  statements.push(...destinationReviewStatements(db, order, snapshot, target, now, eventGuard, eventArgs))
+  statements.push(...destinationGateStatements(db, order, snapshot, now, eventGuard, eventArgs))
 
   if (sessionId) {
     statements.push(db.prepare(`

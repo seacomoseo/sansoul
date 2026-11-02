@@ -211,9 +211,14 @@ test('checkout charges exactly the displayed server quote and persists the break
   const replay = await checkout(env, cat, 'totals-key-0001', body)
   assert.equal(replay.status, 200)
   assert.equal(replay.body.order_id, created.body.order_id)
+  // Another eligible postal code yields the same quote: the retry replays the same order
+  // (the collected address is re-checked by the webhook gate), never a second charge.
   const moved = await checkout(env, cat, 'totals-key-0001', { ...body, destination: { country: 'ES', postalCode: '08001' } })
-  assert.equal(moved.status, 409)
-  assert.equal(moved.body.error, 'idempotency_conflict')
+  assert.equal(moved.status, 200)
+  assert.equal(moved.body.order_id, created.body.order_id)
+  const requoted = await checkout(env, cat, 'totals-key-0001', { ...body, quote: { ...body.quote, total_minor: 2254 } })
+  assert.equal(requoted.status, 409)
+  assert.equal(requoted.body.error, 'idempotency_conflict')
   assert.equal(db.sqlite.prepare('SELECT COUNT(*) AS n FROM orders').get().n, 1)
 })
 
@@ -257,12 +262,11 @@ test('paid order with an eligible address in either Stripe API shape becomes rea
   }
 })
 
-test('paid order collected outside the quoted zone or without address is held for review, not fulfilled', async () => {
+test('paid order collected outside the quoted zone is held for review, not fulfilled', async () => {
   const cases = [
     ['canarias', { address: { country: 'ES', postalCode: '35001' } }],
     ['ceuta-spaced', { address: { country: 'ES', postalCode: '51 001' } }],
-    ['other-country', { address: { country: 'PT', postalCode: '1000-001' } }],
-    ['missing-address', {}]
+    ['other-country', { address: { country: 'PT', postalCode: '1000-001' } }]
   ]
   for (const [name, options] of cases) {
     const db = database()
@@ -276,27 +280,77 @@ test('paid order collected outside the quoted zone or without address is held fo
   }
 })
 
-test('destination hold is independent of webhook order: late bad address demotes ready, late good address does not', async () => {
+test('a paid completion without address records payment but is not fulfillable until an address arrives', async () => {
   const db = database()
   const env = environment(db)
-  const late = await paidOrder(env, catalog(), 'order-key-late-bad')
-  await sendWebhook(env, intentSucceeded(late))
-  assert.deepEqual(orderRow(db, late.id), { payment_status: 'paid', fulfillment_status: 'ready' })
-  await sendWebhook(env, sessionEvent(late, { address: { country: 'ES', postalCode: '38400' } }))
-  assert.deepEqual(orderRow(db, late.id), { payment_status: 'paid', fulfillment_status: 'inventory_exception' })
-  assert.ok(outboxTypes(db, late.id).includes('payment.destination_review'))
+  const order = await paidOrder(env, catalog(), 'hold-key-missing-address')
+  assert.equal((await sendWebhook(env, sessionEvent(order, {}))).status, 200)
+  assert.deepEqual(orderRow(db, order.id), { payment_status: 'paid', fulfillment_status: 'awaiting_payment' })
+  assert.deepEqual(outboxTypes(db, order.id), ['payment.awaiting_address'])
+})
+
+test('postal variants and invalid formats cannot slip past the zone check', async () => {
+  for (const [name, postalCode, expected] of [
+    ['nbsp-canarias', '3 5001', 'inventory_exception'],
+    ['hyphen-melilla', '52-001', 'inventory_exception'],
+    ['invalid-province', '00000', 'inventory_exception'],
+    ['letters', 'ABCDE', 'inventory_exception'],
+    ['spaced-madrid', ' 28 001 ', 'ready']
+  ]) {
+    const db = database()
+    const env = environment(db)
+    const order = await paidOrder(env, catalog(), `postal-key-${name}`)
+    await sendWebhook(env, sessionEvent(order, { address: { country: 'ES', postalCode } }))
+    assert.equal(orderRow(db, order.id).fulfillment_status, expected, name)
+  }
+})
+
+test('payment before address never makes an order fulfillable early (review regression)', async () => {
+  const db = database()
+  const env = environment(db)
+
+  // payment_intent.succeeded first: paid, but not ready and no payment.paid yet.
+  const bad = await paidOrder(env, catalog(), 'order-key-late-bad')
+  await sendWebhook(env, intentSucceeded(bad))
+  assert.deepEqual(orderRow(db, bad.id), { payment_status: 'paid', fulfillment_status: 'awaiting_payment' })
+  assert.deepEqual(outboxTypes(db, bad.id), ['payment.awaiting_address'])
+  await sendWebhook(env, sessionEvent(bad, { address: { country: 'ES', postalCode: '38400' } }))
+  assert.deepEqual(orderRow(db, bad.id), { payment_status: 'paid', fulfillment_status: 'inventory_exception' })
+  assert.ok(outboxTypes(db, bad.id).includes('payment.destination_review'))
+  assert.ok(!outboxTypes(db, bad.id).includes('payment.paid'))
 
   const good = await paidOrder(env, catalog(), 'order-key-late-good')
   await sendWebhook(env, intentSucceeded(good))
+  assert.equal(orderRow(db, good.id).fulfillment_status, 'awaiting_payment')
   await sendWebhook(env, sessionEvent(good, { address: { country: 'ES', postalCode: '28001' } }))
   assert.deepEqual(orderRow(db, good.id), { payment_status: 'paid', fulfillment_status: 'ready' })
-  assert.deepEqual(outboxTypes(db, good.id), ['payment.paid'])
+  assert.deepEqual(outboxTypes(db, good.id), ['payment.awaiting_address', 'payment.paid'])
 
   // Async payment: address arrives with an unpaid completion, payment later without address.
-  const asyncOrder = await paidOrder(env, catalog(), 'order-key-async-bad')
-  await sendWebhook(env, sessionEvent(asyncOrder, { paymentStatus: 'unpaid', address: { country: 'ES', postalCode: '52001' } }))
-  assert.deepEqual(orderRow(db, asyncOrder.id), { payment_status: 'pending', fulfillment_status: 'awaiting_payment' })
-  await sendWebhook(env, intentSucceeded(asyncOrder))
-  assert.deepEqual(orderRow(db, asyncOrder.id), { payment_status: 'paid', fulfillment_status: 'inventory_exception' })
-  assert.ok(!outboxTypes(db, asyncOrder.id).includes('payment.paid'))
+  const asyncBad = await paidOrder(env, catalog(), 'order-key-async-bad')
+  await sendWebhook(env, sessionEvent(asyncBad, { paymentStatus: 'unpaid', address: { country: 'ES', postalCode: '52001' } }))
+  assert.deepEqual(orderRow(db, asyncBad.id), { payment_status: 'pending', fulfillment_status: 'awaiting_payment' })
+  await sendWebhook(env, intentSucceeded(asyncBad))
+  assert.deepEqual(orderRow(db, asyncBad.id), { payment_status: 'paid', fulfillment_status: 'inventory_exception' })
+  assert.ok(!outboxTypes(db, asyncBad.id).includes('payment.paid'))
+
+  const asyncGood = await paidOrder(env, catalog(), 'order-key-async-good')
+  await sendWebhook(env, sessionEvent(asyncGood, { paymentStatus: 'unpaid', address: { country: 'ES', postalCode: '07001' } }))
+  await sendWebhook(env, intentSucceeded(asyncGood))
+  assert.deepEqual(orderRow(db, asyncGood.id), { payment_status: 'paid', fulfillment_status: 'ready' })
+  assert.deepEqual(outboxTypes(db, asyncGood.id), ['payment.paid'])
+})
+
+test('request identity does not contain the postal code', async () => {
+  const db = database()
+  const env = environment(db)
+  await paidOrder(env, catalog(), 'privacy-key-0001')
+  const record = db.sqlite.prepare('SELECT request_hash, snapshot_json FROM commerce_idempotency').get()
+  const { createHash } = await import('node:crypto')
+  const quoteBody = { policy_version: 'fixture-2026-11', total_minor: 2255 }
+  const withPostal = createHash('sha256').update(JSON.stringify({ items, destination: MADRID, quote: quoteBody })).digest('hex')
+  const expected = createHash('sha256').update(JSON.stringify({ items, country: 'ES', quote: quoteBody })).digest('hex')
+  assert.equal(record.request_hash, expected)
+  assert.notEqual(record.request_hash, withPostal)
+  assert.doesNotMatch(record.snapshot_json, /28001/)
 })

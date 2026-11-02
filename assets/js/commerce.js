@@ -144,6 +144,7 @@ export function initCommerce () {
   // Destination and quote live only in memory: the postal code is never stored.
   let destination = null
   let currentQuote = null
+  let quoteRequired = false
 
   const storageKey = `sansoul-commerce-cart:v1:${new URL(root.dataset.commerceStore || location.origin, location.href).origin}`
   const sessionSnapshot = () => {
@@ -210,6 +211,7 @@ export function initCommerce () {
     commerceNodes('[data-commerce-tax]').forEach(node => { node.textContent = quote ? money(quote.tax_minor, currency) : message('commerce_calculated_later') })
     commerceNodes('[data-commerce-total]').forEach(node => { node.textContent = quote ? money(quote.total_minor, currency) : '—' })
     commerceNodes('[data-commerce-quote]').forEach(button => { button.disabled = !complete || quoteBusy || checkoutBusy })
+    commerceNodes('[data-commerce-quote-request]').forEach(node => { node.hidden = !(quoteRequired && items.length > 0) })
     commerceNodes('[data-commerce-checkout]').forEach(button => {
       button.disabled = !quote || root.dataset.commerceCheckoutApproved !== 'true' || checkoutBusy || quoteBusy
     })
@@ -228,6 +230,7 @@ export function initCommerce () {
   }
 
   function updateItems (next) {
+    quoteRequired = false
     const normalized = normalizeStoredCart({ items: next })
     items = normalized.items.sort((a, b) => a.id.localeCompare(b.id))
     if (!sameItems(items, checkoutAttempt?.items || [])) checkoutAttempt = null
@@ -268,6 +271,7 @@ export function initCommerce () {
     }
     destination = next
     currentQuote = null
+    quoteRequired = false
     checkoutAttempt = null
     syncDestinationInputs(form)
     quoteBusy = true
@@ -293,6 +297,7 @@ export function initCommerce () {
           product_unavailable: 'commerce_unavailable_product',
           checkout_not_approved: 'commerce_checkout_disabled'
         }
+        quoteRequired = errorKeys[result.error] === 'commerce_quote_required'
         throw new Error(errorKeys[result.error] || 'commerce_checkout_unavailable')
       }
       if (!validQuote(result.quote) || scope !== quoteScope()) throw new Error('commerce_checkout_unavailable')
@@ -410,6 +415,7 @@ export function initCommerce () {
     checkoutBusy = true
     statusMessage = message('commerce_checkout_sending')
     render()
+    const scope = currentQuote.scope
     try {
       const response = await fetch('/api/commerce/checkout', {
         method: 'POST',
@@ -424,7 +430,7 @@ export function initCommerce () {
       })
       const result = await response.json().catch(() => ({}))
       if (response.status === 409 && result.error === 'quote_changed' && validQuote(result.quote)) {
-        currentQuote = { scope: quoteScope(), quote: result.quote }
+        if (scope === quoteScope()) currentQuote = { scope, quote: result.quote }
         checkoutAttempt = null
         throw new Error('commerce_quote_changed')
       }
@@ -500,6 +506,20 @@ export function initCommerce () {
     }
     if (target?.closest('[data-commerce-checkout]')) beginCheckout()
   })
+
+  // Editing the destination invalidates the displayed quote until it is recalculated,
+  // so checkout can never send a destination the buyer no longer sees.
+  const invalidateDestination = event => {
+    if (!(event.target instanceof Element) || !event.target.closest('[data-commerce-destination]')) return
+    if (!currentQuote && !quoteRequired) return
+    currentQuote = null
+    quoteRequired = false
+    checkoutAttempt = null
+    statusMessage = ''
+    render()
+  }
+  document.addEventListener('input', invalidateDestination)
+  document.addEventListener('change', invalidateDestination)
 
   document.addEventListener('submit', event => {
     const form = event.target instanceof HTMLFormElement && event.target.matches('[data-commerce-destination]') ? event.target : null

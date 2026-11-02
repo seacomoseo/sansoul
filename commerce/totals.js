@@ -18,6 +18,19 @@ export const POSTAL_CODE_FORMATS = Object.freeze({
   PT: /^[1-9][0-9]{6}$/
 })
 
+// SQL predicates over an already-normalized postal code column; keep in sync with
+// POSTAL_CODE_FORMATS. Used to evaluate stored delivery addresses atomically.
+const POSTAL_CODE_SQL = Object.freeze({
+  ES: column => `(length(${column}) = 5 AND ${column} GLOB '[0-9][0-9][0-9][0-9][0-9]' AND substr(${column}, 1, 2) BETWEEN '01' AND '52')`,
+  FR: column => `(length(${column}) = 5 AND ${column} GLOB '[0-9][0-9][0-9][0-9][0-9]')`,
+  PT: column => `(length(${column}) = 7 AND ${column} GLOB '[1-9][0-9][0-9][0-9][0-9][0-9][0-9]')`
+})
+
+export function postalCodeSql (country, column) {
+  const format = POSTAL_CODE_SQL[country]
+  return format ? format(column) : '0'
+}
+
 function object (value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
 }

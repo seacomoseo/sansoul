@@ -113,9 +113,10 @@ export async function handleCheckout (request, env, catalog) {
     const { value } = await readJsonBody(request)
     const { items: cart, destination, quote } = normalizeCommerceRequest(value, { withQuote: true })
     const key = readIdempotencyKey(request)
-    // Destination and displayed quote are part of the request identity: changing
-    // either requires a new key, while identical retries replay the stored order.
-    const requestHash = await sha256Hex(JSON.stringify({ items: cart, destination, quote }))
+    // Country and displayed quote are part of the request identity: changing either
+    // requires a new key, while identical retries replay the stored order. The postal
+    // code is left out so this pre-payment hash cannot be brute-forced back to it.
+    const requestHash = await sha256Hex(JSON.stringify({ items: cart, country: destination.country, quote }))
     const now = Math.floor(Date.now() / 1000)
     await consumeRateLimit(db, request, env, now)
     await expirePendingCheckouts(db, now)
