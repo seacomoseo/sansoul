@@ -20,7 +20,9 @@ export function initPlayer () {
   const posterVideo = document.querySelectorAll('[data-vid]')
 
   if (posterVideo.length) {
-    const isCookie = cookiesLegal && !localStorage.controlcookiemedia
+    let mediaConsent
+    try { mediaConsent = localStorage.controlcookiemedia } catch {} // blocked storage: no consent
+    const isCookie = cookiesLegal && !mediaConsent
 
     posterVideo.forEach(e => {
       if (isCookie) {

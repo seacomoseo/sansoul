@@ -104,11 +104,13 @@
     {{- end -}}
     {{- $isCk := "true" -}}
     {{- if $config.cookies_legal -}}
-      {{- $isCk = "${localStorage.controlcookieanalytics}" -}}
+      {{- $isCk = "${sansoulConsentAnalytics()}" -}}
     {{- end }}
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
     <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
     <script>
+      // Blocked storage (privacy modes) throws on access: treat it as no consent.
+      function sansoulConsentAnalytics () { try { return localStorage.controlcookieanalytics } catch (e) {} }
       // GA4 base
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -138,7 +140,9 @@
       const start = () => {
         console.log(...e)
       }
-      if (localStorage.controlcookieanalytics) {
+      let consent
+      try { consent = localStorage.controlcookieanalytics } catch (e) {}
+      if (consent) {
         start()
       } else {
         window.addEventListener('cookies:analytics', start, { once: true })
