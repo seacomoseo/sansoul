@@ -10,8 +10,9 @@ function requireStripeEnvironment (env) {
   const environment = env.COMMERCE_ENV
   const secret = env.STRIPE_SECRET_KEY
   if (!['test', 'live'].includes(environment) || typeof secret !== 'string') throw new CommerceError('payment_configuration_missing', 503)
-  if (environment === 'test' && !secret.startsWith('sk_test_')) throw new CommerceError('payment_configuration_invalid', 503)
-  if (environment === 'live' && !secret.startsWith('sk_live_')) throw new CommerceError('payment_configuration_invalid', 503)
+  // Restricted keys (rk_) are preferred: they carry only the permissions checkout needs.
+  if (environment === 'test' && !/^(?:sk|rk)_test_/.test(secret)) throw new CommerceError('payment_configuration_invalid', 503)
+  if (environment === 'live' && !/^(?:sk|rk)_live_/.test(secret)) throw new CommerceError('payment_configuration_invalid', 503)
   if (!env.STRIPE_WEBHOOK_SECRET?.startsWith('whsec_')) throw new CommerceError('webhook_configuration_missing', 503)
   return secret
 }
@@ -98,6 +99,8 @@ export function createPaymentProvider (env) {
   return {
     name: 'stripe',
     async createCheckoutSession ({ snapshot, providerIdempotencyKey, catalog }) {
+      const totals = snapshot.totals
+      if (!totals || totals.totalMinor !== snapshot.totalMinor || totals.currency !== snapshot.currency || !/^[A-Z]{2}$/.test(totals.destination?.country || '')) throw new CommerceError('order_totals_unavailable', 503)
       const form = new URLSearchParams()
       form.set('mode', 'payment')
       form.set('client_reference_id', snapshot.orderId)
@@ -105,10 +108,8 @@ export function createPaymentProvider (env) {
       form.set('payment_intent_data[metadata][commerce_order_id]', snapshot.orderId)
       form.set('success_url', `${catalog.origin}/?commerce=success&order_id=${encodeURIComponent(snapshot.orderId)}`)
       form.set('cancel_url', `${catalog.origin}/?commerce=cancel`)
-      const countries = catalog.checkout?.destinationCountries
-      if (catalog.checkout?.shippingPolicy !== 'not_applicable' && Array.isArray(countries)) {
-        countries.forEach((country, index) => form.set(`shipping_address_collection[allowed_countries][${index}]`, country))
-      }
+      // Only the quoted country can be entered; postal zones are re-checked by the webhook.
+      form.set('shipping_address_collection[allowed_countries][0]', totals.destination.country)
       // Let Stripe's 24-hour default start at real session creation; retries keep identical parameters.
       snapshot.items.forEach((item, index) => {
         const prefix = `line_items[${index}]`
@@ -118,6 +119,20 @@ export function createPaymentProvider (env) {
         form.set(`${prefix}[price_data][product_data][metadata][sku]`, item.sku)
         form.set(`${prefix}[quantity]`, String(item.quantity))
       })
+      // Line prices + shipping base + tax added on exclusive prices = totals.totalMinor.
+      if (totals.addedTaxMinor > 0) {
+        const prefix = `line_items[${snapshot.items.length}]`
+        form.set(`${prefix}[price_data][currency]`, snapshot.currency)
+        form.set(`${prefix}[price_data][unit_amount]`, String(totals.addedTaxMinor))
+        form.set(`${prefix}[price_data][product_data][name]`, 'IVA')
+        form.set(`${prefix}[quantity]`, '1')
+      }
+      if (totals.shippingBaseMinor > 0) {
+        form.set('shipping_options[0][shipping_rate_data][type]', 'fixed_amount')
+        form.set('shipping_options[0][shipping_rate_data][display_name]', 'Envío')
+        form.set('shipping_options[0][shipping_rate_data][fixed_amount][amount]', String(totals.shippingBaseMinor))
+        form.set('shipping_options[0][shipping_rate_data][fixed_amount][currency]', snapshot.currency)
+      }
       const payload = await stripeRequest(env, '/checkout/sessions', {
         method: 'POST',
         headers: {

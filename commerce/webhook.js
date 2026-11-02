@@ -17,7 +17,11 @@ function boundedText (value, maxLength) {
 
 function deliveryDetails (object) {
   const customer = object.customer_details && typeof object.customer_details === 'object' ? object.customer_details : {}
-  const shipping = object.shipping_details && typeof object.shipping_details === 'object' ? object.shipping_details : {}
+  // Stripe API 2025-03-31 moved Checkout's shipping details under collected_information;
+  // accept both shapes so the account or webhook API version cannot drop the address.
+  const collected = object.collected_information && typeof object.collected_information === 'object' ? object.collected_information.shipping_details : null
+  const legacy = object.shipping_details
+  const shipping = collected && typeof collected === 'object' ? collected : legacy && typeof legacy === 'object' ? legacy : {}
   const address = shipping.address && typeof shipping.address === 'object' ? shipping.address : {}
   const email = boundedText(customer.email, 254)
   const details = {
@@ -39,8 +43,16 @@ function eventTarget (event) {
   const object = event.data.object
   const paymentIntentId = typeof object.payment_intent === 'string' ? object.payment_intent : object.payment_intent?.id || null
   switch (event.type) {
-    case 'checkout.session.completed':
-      return { state: object.payment_status === 'paid' ? 'paid' : 'pending', sessionId: object.id, paymentIntentId, deliveryDetails: deliveryDetails(object) }
+    case 'checkout.session.completed': {
+      const details = deliveryDetails(object)
+      return {
+        state: object.payment_status === 'paid' ? 'paid' : 'pending',
+        sessionId: object.id,
+        paymentIntentId,
+        deliveryDetails: details,
+        shippingAddressMissing: !details?.countryCode || !details?.postalCode
+      }
+    }
     case 'checkout.session.async_payment_succeeded':
     case 'payment_intent.succeeded':
       return {

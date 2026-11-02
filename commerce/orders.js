@@ -20,11 +20,46 @@ function inventoryExceptionOutbox (db, now, orderId = null, eventGuard = '', eve
   `).bind(now, now, now, ...(orderId ? [orderId] : []), ...eventArgs)
 }
 
+// A paid order whose collected address falls outside the quoted zone (or arrives
+// without one) is held for manual review before stock commitment or payment.paid.
+// Evaluated in SQL against the stored address, so event order cannot bypass it.
+function destinationReviewStatements (db, order, snapshot, target, now, eventGuard, eventArgs) {
+  const destination = snapshot?.totals?.destination
+  if (!destination || !/^[A-Z]{2}$/.test(destination.country || '') || !Array.isArray(destination.excludedPostalPrefixes)) return []
+  const prefixes = destination.excludedPostalPrefixes.filter(prefix => typeof prefix === 'string' && /^[0-9]{1,5}$/.test(prefix))
+  const normalized = "replace(replace(upper(details.postal_code), ' ', ''), '-', '')"
+  const excluded = prefixes.map(() => `substr(${normalized}, 1, ?) = ?`)
+  const mismatch = `
+    (? = 1 OR EXISTS (
+      SELECT 1 FROM order_delivery_details AS details
+      WHERE details.order_id = orders.id AND (
+        details.country_code IS NULL OR details.country_code <> ? OR details.postal_code IS NULL
+        ${excluded.length ? `OR ${excluded.join(' OR ')}` : ''}
+      )
+    ))`
+  const mismatchArgs = [target.state === 'paid' && target.shippingAddressMissing === true ? 1 : 0, destination.country, ...prefixes.flatMap(prefix => [prefix.length, prefix])]
+  const eventKey = `${order.id}:payment.destination_review`
+  return [
+    db.prepare(`
+      UPDATE orders SET fulfillment_status = 'inventory_exception', updated_at = ?
+      WHERE id = ? AND payment_status = 'paid' AND fulfillment_status IN ('awaiting_payment', 'ready')
+        AND ${mismatch}${eventGuard}
+    `).bind(now, order.id, ...mismatchArgs, ...eventArgs),
+    db.prepare(`
+      INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
+      SELECT ?, id, 'payment.destination_review', ?, 'pending', 0, ?, ?, ?
+      FROM orders WHERE id = ? AND payment_status IN ('paid', 'partially_refunded') AND fulfillment_status = 'inventory_exception'
+        AND ${mismatch}${eventGuard}
+    `).bind(eventKey, JSON.stringify({ eventKey, orderId: order.id, eventType: 'payment.destination_review' }), now, now, now, order.id, ...mismatchArgs, ...eventArgs)
+  ]
+}
+
 export function paymentStatements (db, order, target, now, eventId = null) {
   const refundAmount = target.state === 'refund' ? target.refundAmount : null
   const paymentIntentId = typeof target.paymentIntentId === 'string' && /^pi_[A-Za-z0-9]+$/.test(target.paymentIntentId) ? target.paymentIntentId : null
   const sessionId = typeof target.sessionId === 'string' && /^cs_(?:(?:test|live)_)?[A-Za-z0-9]+$/.test(target.sessionId) ? target.sessionId : null
-  const stockMode = JSON.parse(order.snapshot_json).stockMode
+  const snapshot = JSON.parse(order.snapshot_json)
+  const stockMode = snapshot.stockMode
   const eventGuard = eventId
     ? ` AND EXISTS (SELECT 1 FROM webhook_events WHERE event_id = ? AND status = 'processed' AND processed_at = ${WEBHOOK_CLAIMED_AT})`
     : ''
@@ -79,6 +114,8 @@ export function paymentStatements (db, order, target, now, eventId = null) {
         updated_at = excluded.updated_at
     `).bind(order.id, details.buyerName, details.buyerEmail, details.buyerPhone, details.recipientName, details.line1, details.line2, details.city, details.state, details.postalCode, details.countryCode, now, order.id, ...eventArgs))
   }
+
+  statements.push(...destinationReviewStatements(db, order, snapshot, target, now, eventGuard, eventArgs))
 
   if (sessionId) {
     statements.push(db.prepare(`

@@ -172,10 +172,21 @@ test('catalog, Functions routing and checkout approval are independent and fail 
   assert.deepEqual(backendExample.catalog.products, [])
   assert.deepEqual(backendExample.routes, { version: 1, include: ['/api/commerce/*'], exclude: [] })
 
-  const completeApproval = buildCatalogFixture('enabled: true\norigin: "https://shop.example"\ncurrency: eur\nstock_mode: made_to_order\ncheckout_approved: true\ncheckout_legal_version: terms-v1\ncheckout_destination_countries:\n  - ES\ncheckout_tax_policy: calculated\ncheckout_shipping_policy: flat_rate\n')
+  const approvalBase = 'enabled: true\norigin: "https://shop.example"\ncurrency: eur\nstock_mode: made_to_order\ncheckout_approved: true\ncheckout_legal_version: terms-v1\ncheckout_destination_countries:\n  - ES\ncheckout_tax_policy: calculated\ncheckout_shipping_policy: flat_rate\n'
+  assert.throws(() => buildCatalogFixture(approvalBase), /checkout_approval_details_required/)
+  const completeApproval = buildCatalogFixture(approvalBase + 'totals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n')
   assert.equal(completeApproval.catalog.checkout.approved, true)
   assert.deepEqual(completeApproval.catalog.checkout.destinationCountries, ['ES'])
-  assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
+  assert.deepEqual(completeApproval.catalog.checkout.totalsPolicy.destinations.ES.shipping, { amountMinor: 1205, tax: { mode: 'inclusive', rateBps: 2100 } })
+  assert.deepEqual(completeApproval.catalog.checkout.totalsPolicy.destinations.ES.tax, { mode: 'inclusive', rateBps: 2100 })
+  // Server-verified totals open Stripe TEST only; live stays closed in code with every flag set.
+  assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), true)
+  assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_ENV: 'live', STRIPE_SECRET_KEY: 'sk_live_unit_fixture', COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
+  assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'false' }), false)
+  assert.equal(isCheckoutAuthorized({ ...completeApproval.catalog, checkout: { ...completeApproval.catalog.checkout, totalsPolicy: undefined } }, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
+  assert.equal(isCheckoutAuthorized({ ...completeApproval.catalog, checkout: { ...completeApproval.catalog.checkout, destinationCountries: ['ES', 'FR'] } }, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
+  assert.throws(() => buildCatalogFixture(approvalBase.replace('  - ES\n', '  - FR\n') + 'totals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n'), /destination_countries_must_match_totals_policy/)
+  assert.throws(() => buildCatalogFixture(approvalBase + 'totals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n'.replace('rate_percent: 21 } }', 'rate_percent: 21 }, max_weight: 2 }')), /invalid_totals_policy/)
 
   const multilineProduct = buildCatalogFixture('enabled: true\norigin: "https://shop.example"\ncurrency: eur\nstock_mode: made_to_order\n', '---\ntitle: >-\n  Fixture\n  product\ncommerce_id: 11111111-1111-4111-8111-111111111111\nsku: TEST-001\ncommerce_active: true\ncommerce_quote: false\nprice: 10.00\n---\n')
   assert.equal(multilineProduct.catalog.products[0].names.es, 'Fixture product')
@@ -307,8 +318,15 @@ async function withStripeResponse (payload, run, inspect) {
   }
 }
 
-function checkoutSnapshot () {
-  return { orderId: stripeOrderId, createdAt: Math.floor(Date.now() / 1000) - 3600, currency: 'eur', totalMinor: 1000, items: [] }
+function checkoutSnapshot (totals = {}) {
+  return {
+    orderId: stripeOrderId,
+    createdAt: Math.floor(Date.now() / 1000) - 3600,
+    currency: 'eur',
+    totalMinor: 1000,
+    items: [],
+    totals: { totalMinor: 1000, currency: 'eur', destination: { country: 'ES', excludedPostalPrefixes: [] }, addedTaxMinor: 0, shippingBaseMinor: 0, ...totals }
+  }
 }
 
 async function createStripeSession (payload, inspect) {
@@ -367,7 +385,7 @@ test('Stripe checkout creation requires a safe Stripe URL and matching order ide
   }
 })
 
-test('Stripe Checkout requests delivery details only for configured destinations', async () => {
+test('Stripe Checkout collects delivery only for the quoted country and itemizes tax and shipping', async () => {
   const payload = stripePayload({
     status: 'open',
     payment_status: 'unpaid',
@@ -381,16 +399,29 @@ test('Stripe Checkout requests delivery details only for configured destinations
     catalog: { origin: 'https://shop.example', checkout: { shippingPolicy: 'calculated', destinationCountries: ['ES', 'FR'] } }
   }), options => { form = new URLSearchParams(options.body) })
   assert.equal(form.get('shipping_address_collection[allowed_countries][0]'), 'ES')
-  assert.equal(form.get('shipping_address_collection[allowed_countries][1]'), 'FR')
+  assert.equal(form.has('shipping_address_collection[allowed_countries][1]'), false)
+  assert.equal(form.has('shipping_options[0][shipping_rate_data][type]'), false)
+  assert.equal(form.has('line_items[0][price_data][unit_amount]'), false)
 
+  const itemized = checkoutSnapshot({ totalMinor: 1000, addedTaxMinor: 105, shippingBaseMinor: 395 })
+  itemized.items = [{ productId: firstId, sku: 'SKU-001', name: 'Modelo A', quantity: 1, unitAmountMinor: 500, lineTotalMinor: 500 }]
   await withStripeResponse(payload, () => createPaymentProvider(stripeEnv).createCheckoutSession({
-    snapshot: checkoutSnapshot(),
+    snapshot: itemized,
     providerIdempotencyKey: stripeOrderId,
-    catalog: { origin: 'https://shop.example', checkout: { shippingPolicy: 'not_applicable', destinationCountries: ['ES'] } }
+    catalog: { origin: 'https://shop.example' }
   }), options => {
-    const noShipping = new URLSearchParams(options.body)
-    assert.equal(noShipping.has('shipping_address_collection[allowed_countries][0]'), false)
+    const body = new URLSearchParams(options.body)
+    assert.equal(body.get('line_items[0][price_data][unit_amount]'), '500')
+    assert.equal(body.get('line_items[1][price_data][unit_amount]'), '105')
+    assert.equal(body.get('line_items[1][price_data][product_data][name]'), 'IVA')
+    assert.equal(body.get('shipping_options[0][shipping_rate_data][type]'), 'fixed_amount')
+    assert.equal(body.get('shipping_options[0][shipping_rate_data][fixed_amount][amount]'), '395')
+    assert.equal(body.get('shipping_options[0][shipping_rate_data][fixed_amount][currency]'), 'eur')
   })
+
+  for (const broken of [{ ...checkoutSnapshot(), totals: undefined }, checkoutSnapshot({ totalMinor: 999 }), checkoutSnapshot({ destination: { country: 'es' } })]) {
+    await assert.rejects(() => createPaymentProvider(stripeEnv).createCheckoutSession({ snapshot: broken, providerIdempotencyKey: stripeOrderId, catalog: { origin: 'https://shop.example' } }), /order_totals_unavailable/)
+  }
 })
 
 test('Stripe default expiry is valid from real creation and retries keep the exact request after delay', async () => {

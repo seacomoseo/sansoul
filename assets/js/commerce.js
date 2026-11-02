@@ -139,7 +139,11 @@ export function initCommerce () {
   let opener = null
   let checkoutAttempt = null
   let checkoutBusy = false
+  let quoteBusy = false
   let items = []
+  // Destination and quote live only in memory: the postal code is never stored.
+  let destination = null
+  let currentQuote = null
 
   const storageKey = `sansoul-commerce-cart:v1:${new URL(root.dataset.commerceStore || location.origin, location.href).origin}`
   const sessionSnapshot = () => {
@@ -199,11 +203,15 @@ export function initCommerce () {
     const subtotalMinor = complete
       ? items.reduce((total, item) => total + products.get(item.id).priceMinor * item.quantity, 0)
       : null
-    commerceNodes('[data-commerce-subtotal]').forEach(node => { node.textContent = subtotalMinor === null ? '—' : money(subtotalMinor, currency) })
-    commerceNodes('[data-commerce-shipping], [data-commerce-tax]').forEach(node => { node.textContent = message('commerce_calculated_later') })
-    commerceNodes('[data-commerce-total]').forEach(node => { node.textContent = '—' })
+    const quote = complete && quoteIsCurrent() ? currentQuote.quote : null
+    commerceNodes('[data-commerce-subtotal]').forEach(node => { node.textContent = quote ? money(quote.subtotal_minor, currency) : subtotalMinor === null ? '—' : money(subtotalMinor, currency) })
+    commerceNodes('[data-commerce-shipping]').forEach(node => { node.textContent = quote ? money(quote.shipping_minor, currency) : message('commerce_calculated_later') })
+    commerceNodes('[data-commerce-tax-label]').forEach(node => { node.textContent = message(quote && quote.added_tax_minor === 0 ? 'commerce_tax_included' : 'commerce_tax') })
+    commerceNodes('[data-commerce-tax]').forEach(node => { node.textContent = quote ? money(quote.tax_minor, currency) : message('commerce_calculated_later') })
+    commerceNodes('[data-commerce-total]').forEach(node => { node.textContent = quote ? money(quote.total_minor, currency) : '—' })
+    commerceNodes('[data-commerce-quote]').forEach(button => { button.disabled = !complete || quoteBusy || checkoutBusy })
     commerceNodes('[data-commerce-checkout]').forEach(button => {
-      button.disabled = !complete || root.dataset.commerceCheckoutApproved !== 'true' || checkoutBusy
+      button.disabled = !quote || root.dataset.commerceCheckoutApproved !== 'true' || checkoutBusy || quoteBusy
     })
     commerceNodes('[data-commerce-checkout-note]').forEach(node => {
       node.textContent = root.dataset.commerceCheckoutApproved === 'true'
@@ -225,6 +233,82 @@ export function initCommerce () {
     if (!sameItems(items, checkoutAttempt?.items || [])) checkoutAttempt = null
     save()
     render()
+  }
+
+  const quoteScope = () => JSON.stringify({ items, destination })
+
+  function quoteIsCurrent () {
+    return Boolean(currentQuote && destination && currentQuote.scope === quoteScope())
+  }
+
+  function readDestination (form) {
+    const country = form?.querySelector('[data-commerce-country]')?.value || ''
+    const postalCode = (form?.querySelector('[data-commerce-postal]')?.value || '').trim()
+    return /^[A-Z]{2}$/.test(country) && postalCode ? { country, postalCode } : null
+  }
+
+  function syncDestinationInputs (source) {
+    commerceNodes('[data-commerce-destination]').forEach(form => {
+      if (form === source || !destination) return
+      const country = form.querySelector('[data-commerce-country]')
+      const postal = form.querySelector('[data-commerce-postal]')
+      if (country) country.value = destination.country
+      if (postal) postal.value = destination.postalCode
+    })
+  }
+
+  // The server is the only source of shipping, tax and total; the browser displays them.
+  async function requestQuote (form) {
+    if (quoteBusy || checkoutBusy) return
+    const next = readDestination(form)
+    if (!next) {
+      announce('commerce_invalid_postal_code')
+      form?.querySelector('[data-commerce-postal]')?.focus()
+      return
+    }
+    destination = next
+    currentQuote = null
+    checkoutAttempt = null
+    syncDestinationInputs(form)
+    quoteBusy = true
+    statusMessage = message('commerce_quoting')
+    render()
+    const scope = quoteScope()
+    try {
+      const response = await fetch('/api/commerce/quote', {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ items, destination })
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        const errorKeys = {
+          destination_quote_required: 'commerce_quote_required',
+          shipping_quote_required: 'commerce_quote_required',
+          invalid_postal_code: 'commerce_invalid_postal_code',
+          destination_not_supported: 'commerce_quote_required',
+          quote_only: 'commerce_quote_only',
+          product_unavailable: 'commerce_unavailable_product',
+          checkout_not_approved: 'commerce_checkout_disabled'
+        }
+        throw new Error(errorKeys[result.error] || 'commerce_checkout_unavailable')
+      }
+      if (!validQuote(result.quote) || scope !== quoteScope()) throw new Error('commerce_checkout_unavailable')
+      currentQuote = { scope, quote: result.quote }
+      statusMessage = ''
+    } catch (error) {
+      statusMessage = message(error.message.startsWith('commerce_') ? error.message : 'commerce_checkout_unavailable')
+    } finally {
+      quoteBusy = false
+      render()
+    }
+  }
+
+  function validQuote (quote) {
+    return quote && typeof quote.policy_version === 'string' && quote.currency === currency.toLowerCase() &&
+      ['subtotal_minor', 'shipping_minor', 'tax_minor', 'added_tax_minor', 'total_minor'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
   }
 
   function openCart (button) {
@@ -310,8 +394,15 @@ export function initCommerce () {
       return
     }
 
+    if (!quoteIsCurrent()) {
+      announce('commerce_quote_needed')
+      return
+    }
+    const quote = currentQuote.quote
     try {
-      checkoutAttempt ||= { key: `browser-${crypto.randomUUID()}`, items: items.map(item => ({ ...item })) }
+      // A new destination or quote needs a new idempotency key; identical retries reuse it.
+      if (checkoutAttempt && checkoutAttempt.scope !== currentQuote.scope + quote.total_minor + quote.policy_version) checkoutAttempt = null
+      checkoutAttempt ||= { key: `browser-${crypto.randomUUID()}`, items: items.map(item => ({ ...item })), scope: currentQuote.scope + quote.total_minor + quote.policy_version }
     } catch {
       announce('commerce_checkout_unavailable')
       return
@@ -329,11 +420,18 @@ export function initCommerce () {
           accept: 'application/json',
           'idempotency-key': checkoutAttempt.key
         },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({ items, destination, quote: { policy_version: quote.policy_version, total_minor: quote.total_minor } })
       })
       const result = await response.json().catch(() => ({}))
+      if (response.status === 409 && result.error === 'quote_changed' && validQuote(result.quote)) {
+        currentQuote = { scope: quoteScope(), quote: result.quote }
+        checkoutAttempt = null
+        throw new Error('commerce_quote_changed')
+      }
       if (!response.ok) {
         const errorKeys = {
+          destination_quote_required: 'commerce_quote_required',
+          shipping_quote_required: 'commerce_quote_required',
           out_of_stock: 'commerce_out_of_stock',
           quote_only: 'commerce_quote_only',
           product_unavailable: 'commerce_unavailable_product',
@@ -403,6 +501,13 @@ export function initCommerce () {
     if (target?.closest('[data-commerce-checkout]')) beginCheckout()
   })
 
+  document.addEventListener('submit', event => {
+    const form = event.target instanceof HTMLFormElement && event.target.matches('[data-commerce-destination]') ? event.target : null
+    if (!form) return
+    event.preventDefault()
+    requestQuote(form)
+  })
+
   document.addEventListener('change', event => {
     const target = event.target instanceof HTMLInputElement ? event.target : null
     if (!target?.dataset.commerceLineQuantity) return
@@ -434,6 +539,12 @@ export function initCommerce () {
       render()
     }
   })
+
+  // Templates print ISO codes; show localized country names when the browser supports it.
+  try {
+    const names = new Intl.DisplayNames([i18n.lang || document.documentElement.lang || 'es'], { type: 'region' })
+    commerceNodes('[data-commerce-country] option').forEach(option => { option.textContent = names.of(option.value) || option.value })
+  } catch {}
 
   render()
   verifyPaymentReturn()

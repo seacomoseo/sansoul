@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url'
 import { parseDocument } from 'yaml'
 import { priceToMinor } from '../catalog.js'
 import { CHECKOUT_SHIPPING_POLICIES, CHECKOUT_TAX_POLICIES, hasCompleteCommercialApproval, isValidCheckoutLegalVersion, isValidDestinationCountries } from '../approval.js'
+import { assertTotalsPolicy } from '../totals.js'
 
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const SKU = /^[A-Z0-9][A-Z0-9_-]{2,63}$/
@@ -72,10 +73,20 @@ function buildProducts (root, currency, minorUnit) {
     const price = typeof front.price === 'number' ? priceNode?.source ?? front.price : front.price
     const priceMinor = quote ? null : front.price === undefined ? null : priceToMinor(price, minorUnit)
     if (active && !quote && priceMinor === null) throw new Error(`${filename}: active_product_price_required`)
+    const weightNode = parsed.nodes.get('commerce_weight_kg')
+    let weightGrams = null
+    if (front.commerce_weight_kg !== undefined && front.commerce_weight_kg !== null && front.commerce_weight_kg !== '') {
+      try {
+        weightGrams = priceToMinor(typeof front.commerce_weight_kg === 'number' ? weightNode?.source ?? front.commerce_weight_kg : front.commerce_weight_kg, 3)
+      } catch {
+        throw new Error(`${filename}: invalid_commerce_weight_kg`)
+      }
+      if (weightGrams < 1 || weightGrams > 1000000) throw new Error(`${filename}: invalid_commerce_weight_kg`)
+    }
 
     const idKey = id.toLowerCase()
-    const product = byId.get(idKey) || { id, sku, active, quote, priceMinor, names: Object.create(null) }
-    if (product.id !== id || product.sku !== sku || product.active !== active || product.quote !== quote || product.priceMinor !== priceMinor) throw new Error(`${filename}: translated_commerce_fields_mismatch`)
+    const product = byId.get(idKey) || { id, sku, active, quote, priceMinor, weightGrams, names: Object.create(null) }
+    if (product.id !== id || product.sku !== sku || product.active !== active || product.quote !== quote || product.priceMinor !== priceMinor || product.weightGrams !== weightGrams) throw new Error(`${filename}: translated_commerce_fields_mismatch`)
     const language = languageOf(filename)
     if (product.names[language]) throw new Error(`${filename}: duplicate_product_language`)
     product.names[language] = title.trim()
@@ -97,7 +108,60 @@ function readCommerceConfig (root) {
   }
 }
 
-function buildCheckoutApproval (config) {
+const POLICY_KEYS = ['version', 'destinations']
+const DESTINATION_KEYS = ['tax', 'shipping', 'excluded_postal_prefixes', 'tax_by_sku']
+const SHIPPING_KEYS = ['amount', 'tax', 'max_weight_kg', 'max_units']
+
+function plainObject (value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+function decimal (value, scale, error) {
+  if (typeof value !== 'string' && typeof value !== 'number') throw new Error(error)
+  try {
+    return priceToMinor(value, scale)
+  } catch {
+    throw new Error(error)
+  }
+}
+
+// CMS-friendly YAML (percentages, decimal amounts and kilograms) compiled to the
+// exact integer policy that totals.js validates. Unknown keys are rejected.
+function compileTax (tax) {
+  const error = 'data/commerce.yml: invalid_totals_policy_tax'
+  if (!plainObject(tax) || Object.keys(tax).some(key => !['mode', 'rate_percent'].includes(key))) throw new Error(error)
+  if (!['inclusive', 'exclusive', 'exempt'].includes(tax.mode)) throw new Error(error)
+  return { mode: tax.mode, rateBps: tax.mode === 'exempt' ? 0 : decimal(tax.rate_percent, 2, error) }
+}
+
+function compileTotalsPolicy (config, currency, minorUnit) {
+  const source = config.totals_policy
+  if (source === undefined || source === null) return null
+  const error = 'data/commerce.yml: invalid_totals_policy'
+  if (!plainObject(source) || Object.keys(source).some(key => !POLICY_KEYS.includes(key)) || !plainObject(source.destinations)) throw new Error(error)
+  const destinations = {}
+  for (const [country, rule] of Object.entries(source.destinations)) {
+    if (!plainObject(rule) || Object.keys(rule).some(key => !DESTINATION_KEYS.includes(key)) || !plainObject(rule.shipping)) throw new Error(error)
+    if (Object.keys(rule.shipping).some(key => !SHIPPING_KEYS.includes(key))) throw new Error(error)
+    const shipping = { amountMinor: decimal(rule.shipping.amount, minorUnit, error), tax: compileTax(rule.shipping.tax) }
+    if (rule.shipping.max_weight_kg !== undefined) shipping.maxWeightGrams = decimal(rule.shipping.max_weight_kg, 3, error)
+    if (rule.shipping.max_units !== undefined) shipping.maxUnits = rule.shipping.max_units
+    const compiled = { tax: compileTax(rule.tax), shipping, excludedPostalPrefixes: rule.excluded_postal_prefixes ?? [] }
+    if (rule.tax_by_sku !== undefined) {
+      if (!plainObject(rule.tax_by_sku)) throw new Error(error)
+      compiled.taxBySku = Object.fromEntries(Object.entries(rule.tax_by_sku).map(([sku, tax]) => [sku, compileTax(tax)]))
+    }
+    destinations[country] = compiled
+  }
+  const policy = { schemaVersion: 2, version: source.version, currency, minorUnit, destinations }
+  try {
+    return assertTotalsPolicy(policy)
+  } catch {
+    throw new Error(error)
+  }
+}
+
+function buildCheckoutApproval (config, totalsPolicy = null) {
   if (config.checkout_approved !== undefined && typeof config.checkout_approved !== 'boolean') throw new Error('data/commerce.yml: checkout_approved_must_be_boolean')
   const checkout = {
     approved: config.checkout_approved === true,
@@ -105,6 +169,16 @@ function buildCheckoutApproval (config) {
     destinationCountries: config.checkout_destination_countries ?? [],
     taxPolicy: config.checkout_tax_policy ?? null,
     shippingPolicy: config.checkout_shipping_policy ?? null
+  }
+  if (totalsPolicy) {
+    // Sellable countries come from the totals policy; an explicit list must match it.
+    const policyCountries = Object.keys(totalsPolicy.destinations).sort()
+    if (config.checkout_destination_countries !== undefined) {
+      const declared = Array.isArray(config.checkout_destination_countries) ? [...config.checkout_destination_countries].sort() : null
+      if (!declared || declared.length !== policyCountries.length || declared.some((country, index) => country !== policyCountries[index])) throw new Error('data/commerce.yml: destination_countries_must_match_totals_policy')
+    }
+    checkout.destinationCountries = policyCountries
+    checkout.totalsPolicy = totalsPolicy
   }
   if (checkout.legalVersion !== null && !isValidCheckoutLegalVersion(checkout.legalVersion)) throw new Error('data/commerce.yml: invalid_checkout_legal_version')
   if (!isValidDestinationCountries(checkout.destinationCountries)) throw new Error('data/commerce.yml: invalid_checkout_destination_countries')
@@ -117,12 +191,12 @@ function buildCheckoutApproval (config) {
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(resolve(root, 'themes/sansoul/package.json'), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   const functionsEnabled = config.functions_enabled ?? (config.enabled === true)
-  const checkout = buildCheckoutApproval(config)
   if (config.enabled !== true) {
+    const checkout = buildCheckoutApproval(config)
     if (config.enabled !== undefined && config.enabled !== false) throw new Error('data/commerce.yml: enabled_must_be_boolean')
     if (checkout.approved) throw new Error('data/commerce.yml: checkout_requires_commerce_enabled')
     const disabled = {
@@ -157,6 +231,7 @@ function makeCatalog (root) {
   } catch {
     throw new Error('data/commerce.yml: invalid_currency')
   }
+  const checkout = buildCheckoutApproval(config, compileTotalsPolicy(config, currency, minorUnit))
   const products = buildProducts(root, currency, minorUnit)
   const base = {
     schemaVersion: 2,

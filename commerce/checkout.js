@@ -1,4 +1,4 @@
-import { buildOrderSnapshot, normalizeCart, sha256Hex } from './catalog.js'
+import { sha256Hex } from './catalog.js'
 import { applyPaymentState, expirePendingCheckouts, persistCheckoutSession } from './orders.js'
 import { CommerceError, errorResponse, isSameOrigin, jsonResponse, methodNotAllowed, readJsonBody, requireDatabase, requireEnabledCatalog } from './http.js'
 import { hmacSha256Hex } from './signature.js'
@@ -6,6 +6,8 @@ import { createPaymentProvider } from './provider.js'
 import { buyerStatusCookie, resolveBuyerStatusCapability } from './status.js'
 import { requireCheckoutAuthorization } from './approval.js'
 import { CHECKOUT_RECOVERY_TTL_SECONDS, STRIPE_IDEMPOTENCY_RETRY_TTL_SECONDS } from './expiry.js'
+import { normalizeCommerceRequest, quoteMatches, quoteOrder } from './quote.js'
+import { publicQuote } from './totals.js'
 
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9._:-]{8,128}$/
 const RATE_LIMIT = 20
@@ -44,6 +46,7 @@ function storedSnapshot (record) {
   try {
     const snapshot = JSON.parse(record.snapshot_json)
     if (!snapshot || !snapshot.orderId || !Array.isArray(snapshot.items) || !Number.isSafeInteger(snapshot.totalMinor)) throw new Error('bad snapshot')
+    if (!snapshot.totals || snapshot.totals.totalMinor !== snapshot.totalMinor || !snapshot.totals.destination?.country) throw new Error('bad totals')
     return snapshot
   } catch {
     throw new CommerceError('order_snapshot_unavailable', 503)
@@ -108,9 +111,11 @@ export async function handleCheckout (request, env, catalog) {
     const db = requireDatabase(env)
     const provider = createPaymentProvider(env)
     const { value } = await readJsonBody(request)
-    const cart = normalizeCart(value)
+    const { items: cart, destination, quote } = normalizeCommerceRequest(value, { withQuote: true })
     const key = readIdempotencyKey(request)
-    const requestHash = await sha256Hex(JSON.stringify(cart))
+    // Destination and displayed quote are part of the request identity: changing
+    // either requires a new key, while identical retries replay the stored order.
+    const requestHash = await sha256Hex(JSON.stringify({ items: cart, destination, quote }))
     const now = Math.floor(Date.now() / 1000)
     await consumeRateLimit(db, request, env, now)
     await expirePendingCheckouts(db, now)
@@ -135,7 +140,11 @@ export async function handleCheckout (request, env, catalog) {
       snapshot = storedSnapshot(record)
     } else {
       allowBuyerCapabilityCreation = true
-      snapshot = buildOrderSnapshot(catalog, cart, crypto.randomUUID(), 'es', now)
+      const quoted = quoteOrder(catalog, cart, destination, crypto.randomUUID(), now)
+      if (!quoteMatches(quoted.totals, quote)) return jsonResponse({ error: 'quote_changed', quote: publicQuote(quoted.totals) }, 409)
+      snapshot = quoted.snapshot
+      snapshot.totals = quoted.totals
+      snapshot.totalMinor = quoted.totals.totalMinor
       snapshot.idempotencyKey = key
       record = await createRecord(db, key, requestHash, snapshot, now)
       snapshot = storedSnapshot(record)

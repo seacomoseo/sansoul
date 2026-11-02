@@ -14,6 +14,7 @@ export function createCommerceWorker (catalog, routes) {
       let handler
       let params = {}
       if (routePath === '/api/commerce/checkout') handler = routes.checkout
+      else if (routePath === '/api/commerce/quote') handler = routes.quote
       else if (routePath === '/api/commerce/webhook') handler = routes.webhook
       else {
         const status = routePath.match(/^\/api\/commerce\/status\/([^/]+)$/)

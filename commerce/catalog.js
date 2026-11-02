@@ -38,6 +38,7 @@ export function assertCatalog (catalog) {
     if (typeof product.active !== 'boolean' || typeof product.quote !== 'boolean') throw new Error('invalid_catalog_product')
     if (!object(product.names) || !Object.values(product.names).every(name => typeof name === 'string' && name.length > 0 && name.length <= 200)) throw new Error('invalid_catalog_product')
     if (product.quote ? product.priceMinor !== null : !Number.isSafeInteger(product.priceMinor) || product.priceMinor < 0) throw new Error('invalid_catalog_product')
+    if (product.weightGrams !== undefined && product.weightGrams !== null && (!Number.isSafeInteger(product.weightGrams) || product.weightGrams < 1 || product.weightGrams > 1000000)) throw new Error('invalid_catalog_product')
   }
   return catalog
 }
@@ -89,7 +90,8 @@ export function buildOrderSnapshot (catalog, cart, orderId, locale = 'es', creat
       name,
       quantity,
       unitAmountMinor: product.priceMinor,
-      lineTotalMinor
+      lineTotalMinor,
+      weightGrams: Number.isSafeInteger(product.weightGrams) ? product.weightGrams : null
     }
   })
   return {

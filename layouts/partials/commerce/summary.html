@@ -1,7 +1,25 @@
+{{- $countries := slice -}}
+{{- with hugo.Data.commerce -}}{{- with .totals_policy -}}{{- range $code, $_ := .destinations -}}{{- $countries = $countries | append $code -}}{{- end -}}{{- end -}}{{- end -}}
+{{- if $countries -}}
+<form class="commerce__destination" data-commerce-destination novalidate>
+  <fieldset>
+    <legend>{{ i18n "commerce_destination" }}</legend>
+    <label>{{ i18n "commerce_country" }}
+      <select data-commerce-country autocomplete="shipping country">
+        {{- range $countries }}<option value="{{ . }}">{{ . }}</option>{{ end -}}
+      </select>
+    </label>
+    <label>{{ i18n "commerce_postal_code" }}
+      <input type="text" data-commerce-postal inputmode="numeric" autocomplete="shipping postal-code" maxlength="16" required>
+    </label>
+    <button class="btn" type="submit" data-commerce-quote>{{ i18n "commerce_calculate" }}</button>
+  </fieldset>
+</form>
+{{- end -}}
 <dl class="commerce__summary">
   <div><dt>{{ i18n "commerce_subtotal" }}</dt><dd data-commerce-subtotal>—</dd></div>
   <div><dt>{{ i18n "commerce_shipping" }}</dt><dd data-commerce-shipping>{{ i18n "commerce_calculated_later" }}</dd></div>
-  <div><dt>{{ i18n "commerce_tax" }}</dt><dd data-commerce-tax>{{ i18n "commerce_calculated_later" }}</dd></div>
+  <div><dt data-commerce-tax-label>{{ i18n "commerce_tax" }}</dt><dd data-commerce-tax>{{ i18n "commerce_calculated_later" }}</dd></div>
   <div class="commerce__total"><dt>{{ i18n "commerce_total" }}</dt><dd data-commerce-total>—</dd></div>
 </dl>
 <p class="commerce__summary-note">{{ i18n "commerce_provisional_note" }}</p>
