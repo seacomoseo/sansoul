@@ -2,25 +2,26 @@
 {{- with hugo.Data.commerce -}}{{- with .totals_policy -}}{{- range $code, $_ := .destinations -}}{{- $countries = $countries | append $code -}}{{- end -}}{{- end -}}{{- end -}}
 {{- if $countries -}}
 <form class="commerce__destination" data-commerce-destination novalidate>
-  <fieldset>
-    <legend>{{ i18n "commerce_destination" }}</legend>
-    <label>{{ i18n "commerce_country" }}
+  <p class="commerce__label">{{ partial "icon" (dict "icon" "local_shipping") }}<span>{{ i18n "commerce_destination" }}{{ if eq (len $countries) 1 }} · <span data-commerce-country-name="{{ index $countries 0 }}">{{ index $countries 0 }}</span>{{ end }}</span></p>
+  <div class="commerce__destination-row">
+    {{- if eq (len $countries) 1 }}
+    <input type="hidden" data-commerce-country value="{{ index $countries 0 }}">
+    {{- else }}
+    <label class="commerce__field commerce__field--country"><span>{{ i18n "commerce_country" }}</span>
       <select data-commerce-country autocomplete="shipping country">
         {{- range $countries }}<option value="{{ . }}">{{ . }}</option>{{ end -}}
       </select>
     </label>
-    <label>{{ i18n "commerce_postal_code" }}
-      <input type="text" data-commerce-postal inputmode="numeric" autocomplete="shipping postal-code" maxlength="16" required>
+    {{- end }}
+    <label class="commerce__field commerce__field--postal"><span>{{ i18n "commerce_postal_code" }}</span>
+      <input type="text" data-commerce-postal inputmode="numeric" autocomplete="shipping postal-code" maxlength="16" placeholder="28001" required>
     </label>
-    <button class="btn" type="submit" data-commerce-quote>{{ i18n "commerce_calculate" }}</button>
-  </fieldset>
+    <button class="btn btn--sm commerce__quote-btn" type="submit" data-commerce-quote>{{ i18n "commerce_calculate" }}</button>
+  </div>
 </form>
 {{- end -}}
 <dl class="commerce__summary">
   <div><dt>{{ i18n "commerce_subtotal" }}</dt><dd data-commerce-subtotal>—</dd></div>
-  <div><dt>{{ i18n "commerce_shipping" }}</dt><dd data-commerce-shipping>{{ i18n "commerce_calculated_later" }}</dd></div>
-  <div><dt data-commerce-tax-label>{{ i18n "commerce_tax" }}</dt><dd data-commerce-tax>{{ i18n "commerce_calculated_later" }}</dd></div>
-  <div class="commerce__total"><dt>{{ i18n "commerce_total" }}</dt><dd data-commerce-total>—</dd></div>
+  <div><dt>{{ i18n "commerce_shipping" }}</dt><dd data-commerce-shipping data-pending>{{ i18n "commerce_calculated_later" }}</dd></div>
+  <div><dt data-commerce-tax-label>{{ i18n "commerce_tax" }}</dt><dd data-commerce-tax data-pending>{{ i18n "commerce_calculated_later" }}</dd></div>
 </dl>
-<p class="commerce__summary-note">{{ i18n "commerce_provisional_note" }}</p>
-<p class="commerce__quote" data-commerce-quote-request hidden><a class="btn" href="{{ site.Home.RelPermalink }}#contacto">{{ i18n "commerce_request_quote" }}</a></p>

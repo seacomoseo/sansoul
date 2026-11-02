@@ -42,6 +42,11 @@ Side effects: Called media and block partials may register assets in page.Store.
         <div class="price">
           {{- . | markdownify -}}
         </div>
+        {{- /*  Product hero: purchase controls sit right under the price.  */ -}}
+        {{- if and $.section.is_hero (eq page.Type "product") (not (page.Store.Get "commerce_actions_rendered")) -}}
+          {{- partial "commerce/product-actions" page -}}
+          {{- page.Store.Set "commerce_actions_rendered" true -}}
+        {{- end -}}
       {{- end -}}
 
     {{- else if eq . "md" -}}

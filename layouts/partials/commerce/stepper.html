@@ -1,0 +1,6 @@
+{{- /* Quantity stepper. Line steppers are bound to a cart item by commerce.js. */ -}}
+<div class="commerce__stepper">
+  <button class="commerce__step" type="button" data-commerce-step="-1" aria-label="{{ i18n "commerce_decrease" }}">{{ partial "icon" (dict "icon" "remove") }}</button>
+  <input class="commerce__stepper-input" type="number" min="1" max="10" step="1" value="1" inputmode="numeric" {{ if .line }}data-line-quantity{{ else }}data-commerce-quantity aria-label="{{ i18n "commerce_quantity" }}"{{ end }}>
+  <button class="commerce__step" type="button" data-commerce-step="1" aria-label="{{ i18n "commerce_increase" }}">{{ partial "icon" (dict "icon" "add") }}</button>
+</div>

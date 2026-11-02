@@ -7,11 +7,8 @@
       </p>
     {{- else -}}
       <div class="commerce__product-actions" data-commerce-product-actions data-product-id="{{ $product.Params.commerce_id }}" hidden>
-        <label class="commerce__quantity-label">
-          <span>{{ i18n "commerce_quantity" }}</span>
-          <input class="commerce__quantity" type="number" min="1" max="10" step="1" value="1" inputmode="numeric" data-commerce-quantity>
-        </label>
-        <button class="btn" type="button" data-commerce-add>{{ i18n "commerce_add" }}</button>
+        {{ partial "commerce/stepper" (dict "line" false) }}
+        <button class="btn commerce__add" type="button" data-commerce-add>{{ partial "icon" (dict "icon" "add_shopping_cart") }}<span>{{ i18n "commerce_add" }}</span></button>
       </div>
     {{- end -}}
   {{- end -}}

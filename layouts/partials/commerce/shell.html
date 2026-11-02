@@ -1,36 +1,72 @@
 {{- with hugo.Data.commerce -}}
   {{- if eq .enabled true -}}
     {{- $cartPage := site.GetPage "single/carrito" -}}
+    {{- $catalogPage := site.GetPage "category/catalogo" | default (site.GetPage "product") | default site.Home -}}
     {{- $currency := .currency | default site.Params.currency | default "EUR" -}}
     {{- $products := slice -}}
     {{- range where site.RegularPages "Type" "product" -}}
       {{- if and (eq .Lang page.Lang) (eq .Params.commerce_active true) (ne .Params.draft true) .Params.commerce_id -}}
+        {{- $thumb := "" -}}
+        {{- $src := .Params.img | default (index (.Params.imgs | default (slice "")) 0) -}}
+        {{- if and $src (not (hasPrefix $src "http")) -}}
+          {{- with resources.Get $src -}}
+            {{- if in (slice "jpeg" "png" "webp") .MediaType.SubType -}}
+              {{- $thumb = (.Fill "160x160 Center webp q75").RelPermalink -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
         {{- $products = $products | append (dict
           "id" .Params.commerce_id
           "name" .Title
           "url" .RelPermalink
           "price" .Params.price
           "quote" (eq .Params.commerce_quote true)
+          "image" $thumb
         ) -}}
       {{- end -}}
     {{- end -}}
     <div class="commerce" data-commerce-root data-commerce-store="{{ site.BaseURL }}" data-commerce-currency="{{ $currency }}" data-commerce-checkout-approved="{{ if eq .checkout_approved true }}true{{ else }}false{{ end }}">
-      <button class="btn commerce__cart-trigger" type="button" data-commerce-open aria-haspopup="dialog" aria-expanded="false" aria-label="{{ i18n "commerce_open_cart" }}" hidden>
-        {{ i18n "commerce_cart" }} <span data-commerce-count>0</span>
+      <button class="btn btn--dot commerce__cart-trigger" type="button" data-commerce-open aria-haspopup="dialog" aria-expanded="false" aria-controls="commerce-drawer" aria-label="{{ i18n "commerce_open_cart" }}" hidden>
+        {{- partial "icon" (dict "icon" "shopping_cart") -}}
+        <b>{{ i18n "commerce_open_cart" }}</b>
+        <span class="commerce__badge" data-commerce-count aria-hidden="true" hidden>0</span>
       </button>
-      <dialog class="commerce__drawer" data-commerce-drawer aria-labelledby="commerce-drawer-title">
-        <div class="commerce__drawer-head">
-          <h2 id="commerce-drawer-title">{{ i18n "commerce_cart" }}</h2>
-          <button class="btn commerce__close" type="button" data-commerce-close aria-label="{{ i18n "commerce_close" }}">{{ i18n "commerce_close" }}</button>
+      <dialog class="commerce__drawer" id="commerce-drawer" data-commerce-drawer aria-labelledby="commerce-drawer-title">
+        <div class="commerce__panel">
+          <header class="commerce__head">
+            <h2 class="commerce__title" id="commerce-drawer-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label></span></h2>
+            <button class="commerce__icon-btn" type="button" data-commerce-close aria-label="{{ i18n "commerce_close" }}">{{ partial "icon" (dict "icon" "close") }}</button>
+          </header>
+          <div class="commerce__body">
+            <p class="commerce__status" data-commerce-status role="status" aria-live="polite" aria-atomic="true" hidden></p>
+            <div class="commerce__empty" data-commerce-empty>
+              {{ partial "icon" (dict "icon" "shopping_cart" "class" "commerce__empty-icon") }}
+              <p>{{ i18n "commerce_empty" }}</p>
+              <a class="btn" data-commerce-empty-link href="{{ $catalogPage.RelPermalink }}">{{ i18n "commerce_back_to_catalog" }}</a>
+            </div>
+            <ul class="commerce__lines" data-commerce-lines></ul>
+            <div data-commerce-filled hidden>{{ partial "commerce/summary" . }}</div>
+          </div>
+          <footer class="commerce__foot" data-commerce-filled hidden>
+            {{ partial "commerce/checkout" . }}
+            {{ with $cartPage }}<a class="commerce__text-link" href="{{ .RelPermalink }}">{{ i18n "commerce_view_cart" }}</a>{{ end }}
+          </footer>
         </div>
-        <p data-commerce-empty>{{ i18n "commerce_empty" }}</p>
-        <ul class="commerce__lines" data-commerce-lines></ul>
-        {{ partial "commerce/summary" . }}
-        {{ with $cartPage }}<a class="btn commerce__view-cart" href="{{ .RelPermalink }}">{{ i18n "commerce_view_cart" }}</a>{{ end }}
-        <button class="btn commerce__checkout" type="button" data-commerce-checkout disabled>{{ i18n "commerce_checkout" }}</button>
-        <p class="commerce__checkout-note" data-commerce-checkout-note>{{ i18n "commerce_checkout_disabled" }}</p>
-        <p class="commerce__status" data-commerce-status role="status" aria-live="polite" aria-atomic="true" hidden></p>
       </dialog>
+      <template data-commerce-line-template>
+        <li class="commerce__line">
+          <a class="commerce__thumb" data-line-link tabindex="-1" aria-hidden="true"><img data-line-img alt="" width="80" height="80" loading="lazy" decoding="async"></a>
+          <div class="commerce__line-info">
+            <a class="commerce__line-name" data-line-name></a>
+            <span class="commerce__line-unit" data-line-unit></span>
+            <div class="commerce__line-actions" data-line-actions>
+              {{ partial "commerce/stepper" (dict "line" true) }}
+              <button class="commerce__remove" type="button" data-commerce-remove>{{ partial "icon" (dict "icon" "delete") }}<span>{{ i18n "commerce_remove" }}</span></button>
+            </div>
+          </div>
+          <strong class="commerce__line-total" data-line-total></strong>
+        </li>
+      </template>
       <script type="application/json" data-commerce-products>{{ $products | jsonify | safeJS }}</script>
     </div>
   {{- end -}}

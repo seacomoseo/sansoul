@@ -64,61 +64,50 @@ function money (minor, currency) {
   }).format(minor / (10 ** digits))
 }
 
-function makeLine (item, products, currency) {
+function makeLine (item, products, currency, template) {
   const product = products.get(item.id)
   const name = product?.name || message('commerce_unavailable_product')
-  const line = document.createElement('li')
-  line.className = 'commerce__line'
+  const line = template.content.firstElementChild.cloneNode(true)
+  const part = selector => line.querySelector(selector)
 
-  const main = document.createElement('div')
-  main.className = 'commerce__line-main'
+  const thumb = part('[data-line-link]')
+  const image = part('[data-line-img]')
+  if (product?.image) image.src = product.image
+  else image.remove()
+  const nameNode = part('[data-line-name]')
+  nameNode.textContent = name
   if (product?.url) {
-    const link = document.createElement('a')
-    link.href = product.url
-    link.textContent = name
-    main.append(link)
+    thumb.href = product.url
+    nameNode.href = product.url
   } else {
-    const title = document.createElement('strong')
-    title.textContent = name
-    main.append(title)
+    thumb.removeAttribute('href')
+    nameNode.removeAttribute('href')
   }
 
-  const unit = document.createElement('span')
+  const unit = part('[data-line-unit]')
   if (product?.quote) unit.textContent = message('commerce_quote_only')
   else if (Number.isSafeInteger(product?.priceMinor)) unit.textContent = money(product.priceMinor, currency)
   else unit.textContent = message('commerce_unavailable_product')
-  main.append(unit)
 
-  const controls = document.createElement('div')
-  controls.className = 'commerce__line-controls'
+  const stepper = part('.commerce__stepper')
+  const total = part('[data-line-total]')
   if (product && !product.quote) {
-    const quantity = document.createElement('input')
-    quantity.className = 'commerce__line-quantity'
-    quantity.type = 'number'
-    quantity.min = '1'
-    quantity.max = String(MAX_QUANTITY)
-    quantity.step = '1'
+    const quantity = part('[data-line-quantity]')
     quantity.value = String(item.quantity)
-    quantity.inputMode = 'numeric'
     quantity.dataset.commerceLineQuantity = item.id
     quantity.setAttribute('aria-label', `${message('commerce_quantity_of')} ${name}`)
-    controls.append(quantity)
-
-    if (Number.isSafeInteger(product.priceMinor)) {
-      const total = document.createElement('span')
-      total.textContent = money(product.priceMinor * item.quantity, currency)
-      controls.append(total)
-    }
+    stepper.querySelector('[data-commerce-step="-1"]').disabled = item.quantity <= 1
+    stepper.querySelector('[data-commerce-step="1"]').disabled = item.quantity >= MAX_QUANTITY
+    if (Number.isSafeInteger(product.priceMinor)) total.textContent = money(product.priceMinor * item.quantity, currency)
+    else total.remove()
+  } else {
+    stepper.remove()
+    total.remove()
   }
 
-  const remove = document.createElement('button')
-  remove.className = 'btn'
-  remove.type = 'button'
+  const remove = part('[data-commerce-remove]')
   remove.dataset.commerceRemove = item.id
-  remove.textContent = message('commerce_remove')
   remove.setAttribute('aria-label', `${message('commerce_remove')} ${name}`)
-  controls.append(remove)
-  line.append(main, controls)
   return line
 }
 
@@ -134,6 +123,7 @@ export function initCommerce () {
   const dialog = root.querySelector('[data-commerce-drawer]')
   const trigger = root.querySelector('[data-commerce-open]')
   const closeButton = root.querySelector('[data-commerce-close]')
+  const lineTemplate = root.querySelector('[data-commerce-line-template]')
   let persistent = true
   let statusMessage = ''
   let opener = null
@@ -145,6 +135,7 @@ export function initCommerce () {
   let destination = null
   let currentQuote = null
   let quoteRequired = false
+  let renderedCount = null
 
   const storageKey = `sansoul-commerce-cart:v1:${new URL(root.dataset.commerceStore || location.origin, location.href).origin}`
   const sessionSnapshot = () => {
@@ -186,12 +177,26 @@ export function initCommerce () {
     const focusedQuantity = document.activeElement?.dataset.commerceLineQuantity
     const focusedSurface = document.activeElement?.closest('[data-commerce-drawer], [data-commerce-cart-page]')
     const count = items.reduce((total, item) => total + item.quantity, 0)
-    root.querySelectorAll('[data-commerce-count]').forEach(node => { node.textContent = String(count) })
-    if (trigger) trigger.hidden = false
+    root.querySelectorAll('[data-commerce-count]').forEach(node => {
+      node.textContent = count > 99 ? '99+' : String(count)
+      node.hidden = count === 0
+    })
+    commerceNodes('[data-commerce-count-label]').forEach(node => { node.textContent = count ? `(${count})` : '' })
+    if (trigger) {
+      trigger.hidden = false
+      trigger.setAttribute('aria-label', count ? `${message('commerce_open_cart')} (${count})` : message('commerce_open_cart'))
+      if (count > renderedCount && renderedCount !== null) {
+        trigger.classList.remove('commerce__cart-trigger--bump')
+        void trigger.offsetWidth
+        trigger.classList.add('commerce__cart-trigger--bump')
+      }
+    }
+    renderedCount = count
     commerceNodes('[data-commerce-empty]').forEach(node => { node.hidden = items.length > 0 })
+    commerceNodes('[data-commerce-filled]').forEach(node => { node.hidden = items.length === 0 })
     commerceNodes('[data-commerce-catalog-link]').forEach(node => { node.hidden = items.length > 0 })
     commerceNodes('[data-commerce-lines]').forEach(list => {
-      list.replaceChildren(...items.map(item => makeLine(item, products, currency)))
+      list.replaceChildren(...(lineTemplate ? items.map(item => makeLine(item, products, currency, lineTemplate)) : []))
     })
     if (focusedQuantity) {
       focusedSurface?.querySelector(`[data-commerce-line-quantity="${focusedQuantity}"]`)?.focus()
@@ -206,16 +211,32 @@ export function initCommerce () {
       : null
     const quote = complete && quoteIsCurrent() ? currentQuote.quote : null
     commerceNodes('[data-commerce-subtotal]').forEach(node => { node.textContent = quote ? money(quote.subtotal_minor, currency) : subtotalMinor === null ? '—' : money(subtotalMinor, currency) })
-    commerceNodes('[data-commerce-shipping]').forEach(node => { node.textContent = quote ? money(quote.shipping_minor, currency) : message('commerce_calculated_later') })
+    commerceNodes('[data-commerce-shipping]').forEach(node => {
+      node.textContent = quote ? (quote.shipping_minor ? money(quote.shipping_minor, currency) : message('commerce_free')) : message('commerce_calculated_later')
+      node.toggleAttribute('data-pending', !quote)
+    })
     commerceNodes('[data-commerce-tax-label]').forEach(node => { node.textContent = message(quote && quote.added_tax_minor === 0 ? 'commerce_tax_included' : 'commerce_tax') })
-    commerceNodes('[data-commerce-tax]').forEach(node => { node.textContent = quote ? money(quote.tax_minor, currency) : message('commerce_calculated_later') })
-    commerceNodes('[data-commerce-total]').forEach(node => { node.textContent = quote ? money(quote.total_minor, currency) : '—' })
-    commerceNodes('[data-commerce-quote]').forEach(button => { button.disabled = !complete || quoteBusy || checkoutBusy })
+    commerceNodes('[data-commerce-tax]').forEach(node => {
+      node.textContent = quote ? money(quote.tax_minor, currency) : message('commerce_calculated_later')
+      node.toggleAttribute('data-pending', !quote)
+    })
+    commerceNodes('[data-commerce-quote-hint]').forEach(node => { node.hidden = Boolean(quote) || quoteRequired || !complete })
+    commerceNodes('[data-commerce-total]').forEach(node => {
+      node.textContent = quote ? money(quote.total_minor, currency) : '—'
+      node.toggleAttribute('data-pending', !quote)
+    })
+    commerceNodes('[data-commerce-quote]').forEach(button => {
+      button.disabled = !complete || quoteBusy || checkoutBusy
+      button.toggleAttribute('aria-busy', quoteBusy)
+    })
     commerceNodes('[data-commerce-quote-request]').forEach(node => { node.hidden = !(quoteRequired && items.length > 0) })
     commerceNodes('[data-commerce-checkout]').forEach(button => {
       button.disabled = !quote || root.dataset.commerceCheckoutApproved !== 'true' || checkoutBusy || quoteBusy
+      button.toggleAttribute('aria-busy', checkoutBusy)
+      button.hidden = quoteRequired && items.length > 0
     })
     commerceNodes('[data-commerce-checkout-note]').forEach(node => {
+      node.hidden = quoteRequired && items.length > 0
       node.textContent = root.dataset.commerceCheckoutApproved === 'true'
         ? message('commerce_checkout_note')
         : message('commerce_checkout_disabled')
@@ -319,8 +340,8 @@ export function initCommerce () {
   function openCart (button) {
     if (!dialog?.showModal) return
     opener = button || trigger
-    opener?.setAttribute('aria-expanded', 'true')
-    dialog.showModal()
+    trigger?.setAttribute('aria-expanded', 'true')
+    if (!dialog.open) dialog.showModal()
     closeButton?.focus()
   }
 
@@ -333,6 +354,12 @@ export function initCommerce () {
     render()
   }
 
+  // Returning from the hosted payment page: show the verified outcome in the open drawer.
+  function notifyReturn (key) {
+    announce(key)
+    openCart()
+  }
+
   async function verifyPaymentReturn () {
     const returnState = window.__sansoulCommerceReturn || {}
     try { delete window.__sansoulCommerceReturn } catch {}
@@ -341,7 +368,7 @@ export function initCommerce () {
 
     const orderId = returnState.orderId || ''
     if (!PRODUCT_ID.test(orderId)) {
-      announce('commerce_payment_unverified')
+      notifyReturn('commerce_payment_unverified')
       return
     }
 
@@ -363,7 +390,7 @@ export function initCommerce () {
         await new Promise(resolve => setTimeout(resolve, 1200 * (attempt + 1)))
       }
     } catch {
-      announce('commerce_payment_unverified')
+      notifyReturn('commerce_payment_unverified')
       return
     }
 
@@ -375,7 +402,7 @@ export function initCommerce () {
       partially_refunded: 'commerce_payment_partially_refunded',
       refunded: 'commerce_payment_refunded'
     }
-    announce(statusKeys[paymentStatus])
+    notifyReturn(statusKeys[paymentStatus])
     if (paymentStatus !== 'paid') return
 
     const snapshot = sessionSnapshot()
@@ -494,6 +521,27 @@ export function initCommerce () {
       next.push({ id, quantity: existing + quantity })
       updateItems(next)
       announce('commerce_added')
+      if (quantityInput) quantityInput.value = '1'
+      openCart(addButton)
+      return
+    }
+    const stepButton = target?.closest('[data-commerce-step]')
+    if (stepButton) {
+      const input = stepButton.closest('.commerce__stepper')?.querySelector('input')
+      if (!input) return
+      const next = Math.min(MAX_QUANTITY, Math.max(1, (Number.parseInt(input.value, 10) || 1) + Number(stepButton.dataset.commerceStep)))
+      if (String(next) === input.value) return
+      input.value = String(next)
+      if (input.dataset.commerceLineQuantity) {
+        const id = input.dataset.commerceLineQuantity
+        const step = stepButton.dataset.commerceStep
+        const surface = stepButton.closest('[data-commerce-drawer], [data-commerce-cart-page]')
+        updateItems(items.map(item => item.id === id ? { ...item, quantity: next } : item))
+        announce('commerce_updated')
+        const again = surface?.querySelector(`[data-commerce-line-quantity="${id}"]`)?.closest('.commerce__stepper')?.querySelector(`[data-commerce-step="${step}"]`)
+        if (again && !again.disabled) again.focus()
+        else surface?.querySelector(`[data-commerce-line-quantity="${id}"]`)?.focus()
+      }
       return
     }
     const removeButton = target?.closest('[data-commerce-remove]')
@@ -501,7 +549,7 @@ export function initCommerce () {
       const surface = removeButton.closest('[data-commerce-drawer], [data-commerce-cart-page]')
       updateItems(items.filter(item => item.id !== removeButton.dataset.commerceRemove))
       announce('commerce_removed')
-      surface?.querySelector('[data-commerce-remove], [data-commerce-catalog-link], [data-commerce-close]')?.focus()
+      surface?.querySelector('[data-commerce-remove], [data-commerce-empty-link], [data-commerce-close]')?.focus()
       return
     }
     if (target?.closest('[data-commerce-checkout]')) beginCheckout()
@@ -520,6 +568,11 @@ export function initCommerce () {
   }
   document.addEventListener('input', invalidateDestination)
   document.addEventListener('change', invalidateDestination)
+
+  document.addEventListener('change', event => {
+    const postal = event.target instanceof HTMLInputElement && event.target.matches('[data-commerce-postal]') ? event.target : null
+    if (postal?.value.trim()) requestQuote(postal.form)
+  })
 
   document.addEventListener('submit', event => {
     const form = event.target instanceof HTMLFormElement && event.target.matches('[data-commerce-destination]') ? event.target : null
@@ -564,6 +617,7 @@ export function initCommerce () {
   try {
     const names = new Intl.DisplayNames([i18n.lang || document.documentElement.lang || 'es'], { type: 'region' })
     commerceNodes('[data-commerce-country] option').forEach(option => { option.textContent = names.of(option.value) || option.value })
+    commerceNodes('[data-commerce-country-name]').forEach(node => { node.textContent = names.of(node.dataset.commerceCountryName) || node.textContent })
   } catch {}
 
   render()
