@@ -1,4 +1,5 @@
 @use "variables" as *;
+@use "mixins";
 
 // Commerce UI: header cart button, cart drawer, cart page and product purchase box.
 // Local tokens keep the component consistent and easy to retheme.
@@ -44,9 +45,20 @@
   }
 }
 
-// No menu toggle (menu hidden or empty): the cart takes the corner.
+// No menu toggle (menu hidden or empty): the cart takes the corner, and the logo
+// reserves the cart's width with the same fluid curve the theme uses for the toggle.
 body:not(:has(.menu__toggle)) .commerce__cart-trigger {
   right: 1em;
+}
+.body-menu--logo:not(:has(.menu__toggle)):has(.commerce__cart-trigger) .logo {
+  @include mixins.fluid-size(--margin-cart-right, 1em, 4, 0);
+  @media (min-width: 540px) {
+    --margin-cart-right: 0em;
+  }
+  padding-right: var(--margin-cart-right, 4em);
+  &:has(> .align-right) {
+    padding-right: 4em;
+  }
 }
 
 // Floating logo: the theme reserves the toggle's 4em on the right (--margin-toggle-right,
@@ -71,6 +83,10 @@ body:not(:has(.menu__toggle)) .commerce__cart-trigger {
   align-items: center;
   // Item padding (.5em each side) + 2.5em button: same width empty (measuring) and filled.
   min-width: 3.5em;
+}
+// The slot is now the last item: keep the previous last dropdown aligned to the right edge.
+.body-menu--sticky--active .menu .menu__item--subitems:has(+ .menu__item--cart) .menu__subitems {
+  right: 0;
 }
 .commerce__cart-trigger--inline {
   position: relative;
@@ -659,6 +675,14 @@ html:has(.commerce__drawer[open]) {
 }
 
 @media (max-width: 30rem) {
+  // Fallback buy box (hero without a price block) renders beside the container:
+  // stack it under the hero content on phones.
+  .type-product .section--hero:has(> .commerce__product-actions) {
+    flex-direction: column;
+    > .container {
+      width: 100%;
+    }
+  }
   .section--hero .commerce__product-actions .commerce__add {
     flex: 1;
   }
