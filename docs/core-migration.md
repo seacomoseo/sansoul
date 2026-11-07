@@ -4,6 +4,20 @@ La referencia copiable utiliza `core/` desde SanSoul 7.7.0. El motor continúa
 admitiendo consumidores con `themes/sansoul/`: actualizar no obliga a moverlos.
 El repositorio remoto y el commit instalado no cambian al renombrar la carpeta.
 
+## Actualizar en un paso
+
+Desde la raíz de un consumidor limpio, con el servidor local detenido:
+
+```sh
+sansoul_update=$(curl -fsSL https://raw.githubusercontent.com/seacomoseo/sansoul/main/scripts/update-project.sh) && sh -c "$sansoul_update"
+```
+
+El comando prepara el actualizador y ejecuta las migraciones y el build.
+Conserva la ubicación del motor y el gestor de dependencias. Si quedan
+revisiones propias del proyecto, el actualizador indica qué revisar antes de
+marcar la compatibilidad. Un checkout divergente, un origen personalizado,
+documentación sin gestionar o una versión anterior a 5.0 requieren revisión.
+
 ## Configuración derivada desde 8.0.0
 
 El proyecto ya no necesita repetir `themesDir` y `theme` en su `hugo.yml`.

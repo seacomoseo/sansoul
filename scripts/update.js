@@ -158,7 +158,8 @@ async function main () {
 
   run('sh', ['do', 'root-docs'], projectDir)
 
-  if (migrationRequiresInstall(pending) && dependencyManager(projectDir).hasLock) {
+  if (pending.some(migration => migration.version.raw === '8.0.0') ||
+      (migrationRequiresInstall(pending) && dependencyManager(projectDir).hasLock)) {
     installDependencies({ directory: projectDir, updateLockfile: true })
   }
 
@@ -241,10 +242,7 @@ function assertNoGitOperation (directory) {
 }
 
 function configuredBranch () {
-  const branch = git(projectDir, ['config', '-f', '.gitmodules', '--get', `${submoduleKey}.branch`], { allowFailure: true })
-  if (!branch) {
-    fail(`No branch is configured for ${corePath} in .gitmodules. Set its branch explicitly before updating.`)
-  }
+  const branch = git(projectDir, ['config', '-f', '.gitmodules', '--get', `${submoduleKey}.branch`], { allowFailure: true }) || 'main'
   if (git(themeDir, ['check-ref-format', '--branch', branch], { allowFailure: true }) !== branch) {
     fail(`Invalid SanSoul branch in .gitmodules: ${branch}`)
   }
