@@ -1,16 +1,22 @@
+import { sendGa4Events } from './ga4-event'
+
+let initialized = false
+
 export function initGa4 () {
+  if (initialized) return
+  initialized = true
   function ga4 (b) {
-    const id = b.closest('[id]').id
+    const id = b.closest('[id]')?.id || ''
     let type, label
 
     if (b.href) {
       label = b.href
     } else if (b.dataset.b) {
-      label = atob(b.dataset.b)
+      try { label = atob(b.dataset.b) } catch { return }
     } else if (b.dataset.h) {
-      label = atob(b.dataset.h)
+      try { label = atob(b.dataset.h) } catch { return }
     } else { // email
-      label = b.parentElement.previousElementSibling.textContent
+      label = b.parentElement?.previousElementSibling?.textContent || ''
     }
 
     if (label.match(/tel:\+/)) {
@@ -34,7 +40,8 @@ export function initGa4 () {
       }
     }
 
-    gtag('event', 'contact', { id, type, label })
+    const automatic = type && type !== 'custom'
+    sendGa4Events(automatic, b.dataset.ga4 || (b.classList.contains('ga4') ? 'contact' : ''), { id, type: type || 'custom', label })
   }
 
   document.addEventListener('click', e => {
@@ -47,7 +54,7 @@ export function initGa4 () {
         '.link__address,' +
         '.mail__opt-copy,' +
         '.mail__opt-send,' +
-        '.ga4'
+        '.ga4,[data-ga4]'
       )
       if (b) ga4(b)
     }

@@ -76,6 +76,46 @@ test('real Hugo preserves inventory facts, review averages, image facts and acce
   for (const [value, expected] of [[null, false], ['false', false], ['0', false], ['1', true], ['2', true], ['true', true]]) {
     assert.equal(vm.runInNewContext(consent, { localStorage: { getItem: () => value } }), expected, String(value))
   }
+  // Execute the emitted production script, rather than duplicating its consent logic.
+  for (const legal of [undefined, false, true]) {
+    await fs.writeFile(path.join(root, 'data/config.yml'), legal === undefined ? '{}\n' : `cookies_legal: ${legal}\n`)
+    const rendered = spawnSync('hugo', ['--source', root, '--environment', 'production'], { encoding: 'utf8' })
+    assert.equal(rendered.status, 0, rendered.stdout + rendered.stderr)
+    const output = await fs.readFile(path.join(root, 'public/index.html'), 'utf8')
+    const script = [...output.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(match => match[1].includes('function googleAnalytics()'))?.[1]
+    assert.ok(script, `GA4 script present for cookies_legal=${legal}`)
+    for (const stored of [null, 'false', '0', 'true', '1', '3', 'blocked']) {
+      const appended = []
+      const listeners = {}
+      let reads = 0
+      const context = {
+        navigator: { userAgent: 'Fixture browser' },
+        localStorage: { getItem () { reads++; if (stored === 'blocked') throw new Error('Storage unavailable'); return stored } },
+        document: {
+          querySelector: () => appended[0],
+          createElement: () => ({}),
+          head: { appendChild: element => appended.push(element) }
+        },
+        addEventListener: (name, callback) => { listeners[name] = callback }
+      }
+      context.window = context
+      assert.doesNotThrow(() => vm.runInNewContext(script, context), `${legal}/${stored}`)
+      const allowed = legal !== true || ['true', '1', '3'].includes(stored)
+      assert.equal(appended.length, allowed ? 1 : 0, `${legal}/${stored} loads`)
+      assert.equal(context['ga-disable-G-FIXTURE'], !allowed, `${legal}/${stored} initial disable`)
+      if (legal !== true) {
+        assert.equal(reads, 0, 'disabled enforcement never accesses storage')
+        assert.equal(listeners['cookies:changed'], undefined, 'disabled enforcement ignores revocation')
+      } else {
+        assert.equal(reads, 1)
+        assert.equal(typeof listeners['cookies:changed'], 'function')
+        listeners['cookies:changed']({ detail: { analytics: false } })
+        assert.equal(context['ga-disable-G-FIXTURE'], true, 'revocation disables GA4')
+        assert.equal(appended.length, allowed ? 1 : 0, 'revocation never injects GA4')
+      }
+      if (allowed) assert.match(appended[0].src, /googletagmanager\.com\/gtag\/js\?id=G-FIXTURE/)
+    }
+  }
   const controls = [...html.matchAll(/aria-controls="(faq-[^"]+)"/g)].map(match => match[1])
   assert.equal(new Set(controls).size, 2)
   for (const id of controls) assert.match(html, new RegExp('id="' + id + '" class="faq__md md"'))

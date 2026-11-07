@@ -102,3 +102,49 @@ test('real Hugo preserves CSS order, URL bases and opt-out while publishing a fi
     fs.rmSync(fixture, { recursive: true, force: true })
   }
 })
+
+// Inspect real generated entry resources, not a duplicate of the detector regex.
+test('calendar field styling selects form CSS without form runtime, while hidden forms and full mode retain it', { skip: !hasHugo }, () => {
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-form-assets-'))
+  const write = (name, text) => {
+    fs.mkdirSync(path.dirname(path.join(fixture, name)), { recursive: true })
+    fs.writeFileSync(path.join(fixture, name), text)
+  }
+  try {
+    for (const name of ['files/component-usage.html', 'files/script-entry.html']) write(`layouts/partials/${name}`, fs.readFileSync(path.join(engine, 'layouts/partials', name)))
+    write('fixture-assets/scripts.js', fs.readFileSync(path.join(engine, 'assets/scripts.js')))
+    write('hugo.yml', 'baseURL: https://fixture.example/\ndisableKinds: [taxonomy, term, RSS, sitemap]\nmodule:\n  mounts:\n  - source: fixture-assets\n    target: assets\n')
+    write('layouts/index.html', `{{ $results := dict }}
+{{ range slice
+  (dict "name" "calendar" "html" "<div class='calendar form--fill-inputs'><span class='form__item-border'></span><select></select></div>" "custom" "")
+  (dict "name" "calendar-unfilled" "html" "<div class=calendar><span class=form__item-border></span><select></select></div>" "custom" "")
+  (dict "name" "hidden" "html" "<dialog hidden><form class='form form--fill-inputs'><input type='file'></form></dialog>" "custom" "")
+  (dict "name" "class-only" "html" "<div class=form>Custom form container</div>" "custom" "")
+  (dict "name" "full" "html" "<div class='calendar form--fill-inputs'></div>" "custom" "external integration")
+}}
+  {{ $usage := partial "files/component-usage" (dict "html" .html "attributes" "" "custom" .custom) }}
+  {{ $entry := partial "files/script-entry" (dict "opts" (dict "params" dict) "usage" $usage "show" false "cookies" false) }}
+  {{ $results = merge $results (dict .name (dict "usage" $usage "source" $entry.resource.Content)) }}
+{{ end }}{{ $results | jsonify | safeHTML }}`)
+    const result = spawnSync('hugo', ['--environment', 'production'], { cwd: fixture, encoding: 'utf8', timeout: 30000 })
+    assert.equal(result.status, 0, result.stdout + result.stderr)
+    const output = JSON.parse(fs.readFileSync(path.join(fixture, 'public/index.html'), 'utf8'))
+    for (const name of ['calendar', 'calendar-unfilled']) {
+      assert.equal(output[name].usage.flags.form, true, 'shared field CSS remains selected with either input appearance')
+      assert.equal(output[name].usage.flags.form_runtime, false)
+      assert.match(output[name].source, /from '\.\/calendar'/)
+      for (const module of ['form-send', 'form-files', 'form-show']) {
+        assert.doesNotMatch(output[name].source, new RegExp(`from '\\./${module}'`))
+      }
+    }
+    for (const module of ['form-send', 'form-files', 'form-show']) {
+      for (const name of ['hidden', 'class-only', 'full']) assert.match(output[name].source, new RegExp(`from '\\./${module}'`))
+    }
+    assert.equal(output.hidden.usage.flags.form_runtime, true)
+    assert.equal(output.full.usage.full, true)
+    assert.equal(output.full.usage.flags.form_runtime, true)
+    assert.notEqual(output.calendar.usage.key, output.hidden.usage.key, 'CSS-only and runtime consumers have distinct asset signatures')
+  } finally {
+    fs.rmSync(fixture, { recursive: true, force: true })
+  }
+})

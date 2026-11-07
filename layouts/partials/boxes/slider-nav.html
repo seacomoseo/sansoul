@@ -1,12 +1,12 @@
 {{- /*  PIPS  */ -}}
 {{- if ne .pips "hide" -}}
   {{- $pips_class := "slider__pips" -}}
-  {{- if in (slice "hide" "dot") .pips -}}
+  {{- if in (slice "dot" "pill") .pips -}}
     {{- $pips_class = print $pips_class " slider__pips--" .pips -}}
   {{- end }}
   <div class="{{ $pips_class }}">
-    {{- $pip_class := "slider__pip" -}}
     {{- range seq .items -}}
+      {{- $pip_class := "slider__pip" -}}
       {{- if eq . 1 -}}
         {{- $pip_class = print $pip_class " slider__pip--active" -}}
       {{- end }}

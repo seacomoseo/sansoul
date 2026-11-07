@@ -27,15 +27,15 @@
 
     {{- with $item -}}
       {{- $hide_icons := $.hide_icons -}}
-      {{- if .lang | or ((or .icon .def) | and (not .label)) -}}
+      {{- if .lang | or ((or .il .ir .def) | and (not .label)) -}}
         {{- $hide_icons = false -}}
       {{- end -}}
-      {{- $icon   := cond (not $hide_icons) .icon    "" -}}
+      {{- $icon   := cond (not $hide_icons) .il    "" -}}
       {{- $def    := cond (not $hide_icons) .def "" -}}
       {{- $label  := .menu_label | default .label | markdownify -}}
       {{- $anchor := .anchor | default "auto" -}}
 
-      {{- if or $label $icon $def -}}
+      {{- if or $label $icon .ir $def -}}
 
         {{- $btn_class := slice
           (cond (not .btn)       "menu__link" "menu__btn")
@@ -66,7 +66,8 @@
             "sm"     true
             "swap"   .swap
             "ga4"    .ga4
-            "icon"   $icon
+            "il"     $icon
+            "ir"     (cond $hide_icons "" .ir)
             "def"    $def
             "label"  $label
             "anchor" $anchor

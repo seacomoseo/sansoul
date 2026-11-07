@@ -1,12 +1,17 @@
+{{- $items := slice -}}
+{{- range $index, $entry := .faqs -}}
+  {{- $entry = partial "func/set" (dict "value" (merge ($.faq | default dict) $entry) "path" (printf "faqs[%d]" $index) "composed" true) -}}
+  {{- $items = $items | append $entry -}}
+{{- end -}}
 {{- $show     := cond (not hugo.Data.config.show) "" " show" -}}
 {{- $btn      := cond (ne .faq.btn "none") .faq.btn "" -}}
 {{- $fotn_alt := cond (not .faq.swap) "" "btn--swap" -}}
 {{- $headers  := .faq.headers -}}
 {{- $group := add (page.Store.Get "sansoul.faq.count" | default 0) 1 -}}
 {{- page.Store.Set "sansoul.faq.count" $group }}
-<div class="faqs {{- if $headers }} faqs--headers{{ end }} box__block align-left {{- $show }}">
-  {{- range $k, $v := .faqs -}}
-    {{- with merge ($.faq | default dict) . -}}
+<div class="faqs {{- if $headers }} faqs--headers{{ end }} box__block align-left {{- $show }}"{{ partial "func/attrs" (dict "style" (partial "blocks/margin-style" .faq)) }}>
+  {{- range $k, $v := $items -}}
+    {{- with . -}}
       {{- $hl   := partial "func/hl" (dict "hn" .hn "hs" .hs "hs_vs" .hs_vs "level" $.level) -}}
       {{- $hn   := $hl.node -}}
       {{- $hs   := $hl.class -}}
@@ -50,7 +55,7 @@
 {{- /* SCHEMA  */ -}}
 
 {{- $schema_questions := slice -}}
-{{- range .faqs -}}
+{{- range $items -}}
   {{- $schema_questions = $schema_questions | append (dict
     "@type" `Question`
     "name"  .title

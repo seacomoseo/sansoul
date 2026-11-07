@@ -1,9 +1,28 @@
+{{- $margins := slice -}}
+{{- with .group_margins -}}
+  {{- $margins = partial "blocks/margin-style" . -}}
+  {{- $group := . -}}
+  {{- range slice "mb" "ml" "mr" -}}
+    {{- $small := index $group . -}}
+    {{- $large := index $group (print . "_vl") -}}
+    {{- if or (ne $small nil) (ne $large nil) -}}
+      {{- if eq $small nil -}}{{- $small = 0 -}}{{- end -}}
+      {{- if eq $large nil -}}{{- $large = $small -}}{{- end -}}
+      {{- $margins = $margins | append (print "--boxes-" . "-vs:" $small) (print "--boxes-" . "-vl:" $large) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $spacing := partial "blocks/margin-style" .block_spacing -}}
+{{- if or (ne .group_margins.mt nil) (ne .group_margins.mt_vl nil) -}}
+  {{- $spacing = slice -}}
+{{- end -}}
+{{- $spacing = $spacing | append $margins -}}
 {{- if .boxes_wrap -}}
   {{- with .box }}
 
     {{- /* SLIDER  */ -}}
     {{- if .slider }}
-      <div class="slider box__block" {{ with .time }}data-time="{{ . }}"{{ end }}>
+      <div class="slider box__block"{{ partial "func/attrs" (dict "style" $spacing) }}{{ if .infinite }} data-infinite="true"{{ end }} {{ with .time }}data-time="{{ . }}"{{ end }}>
         <div class="slider__track">
     {{- end -}}
 
@@ -26,6 +45,9 @@
       (cond (eq .gap_vs   nil) "" (print "--cols-gap-vs:" .gap_vs    ))
       (cond (eq .gap_ny   nil) "" (print "--cols-gap-ny:" .gap_ny    ))
     -}}
+    {{- if not .slider -}}
+      {{- $style = $style | append $spacing -}}
+    {{- end -}}
 
     {{- /* JOIN  */ -}}
     {{- $attrs := dict

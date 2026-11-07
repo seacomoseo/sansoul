@@ -38,6 +38,23 @@ test('Enter enhancement only activates a focused synthetic link once', async () 
   assert.equal(clicks, 1)
 })
 
+test('clicks on a box link are not replayed by the clickable box', async () => {
+  const listeners = {}
+  const api = await runModule('open-links', { document: { addEventListener: (type, fn) => { listeners[type] = fn } } }, ['initOpenLinks'])
+  api.initOpenLinks()
+  let clicks = 0
+  const link = { click: () => clicks++ }
+  const box = { querySelector: () => link }
+  const click = interactive => listeners.click({
+    button: 0,
+    target: { closest: selector => selector === '.box--go' ? box : interactive && selector.startsWith('a,') ? link : null }
+  })
+  click(true)
+  assert.equal(clicks, 0)
+  click(false)
+  assert.equal(clicks, 1)
+})
+
 test('mobile menu keeps disclosure state and restores focus, including rapid reopen', async () => {
   const listeners = {}
   const clock = timers()
@@ -100,4 +117,94 @@ test('FAQ controls preserve aria, scope their accordion and ignore links in answ
   assert.equal(groups[0].items[1].attrs.has('hidden'), false)
   groups[0].items[0].events.beforematch()
   assert.equal(groups[0].items[0].attrs.get('aria-expanded'), 'true')
+})
+
+test('modal native Escape restores the opener and stale close timers cannot hide a reopened dialog', async () => {
+  const listeners = {}
+  const clock = timers()
+  let focused = ''
+  let closes = 0
+  const trigger = { isConnected: true, getClientRects: () => [1], closest: () => null, focus: () => { focused = 'trigger' } }
+  const body = {}
+  const modal = {
+    classList: classes('modal'),
+    contains: element => element === modal,
+    removeAttribute () {},
+    setAttribute () {},
+    showModal () { this.open = true },
+    close () { this.open = false; closes++ },
+    focus () { focused = 'modal'; document.activeElement = modal },
+    scrollTo () {}
+  }
+  const document = {
+    body,
+    activeElement: trigger,
+    documentElement: { classList: classes() },
+    querySelector: selector => selector === 'dialog[open].modal' ? (modal.open ? modal : null) : null,
+    querySelectorAll: () => [],
+    addEventListener: (type, fn) => { (listeners[type] ||= []).push(fn) }
+  }
+  const api = await runModule('modals', {
+    document,
+    window: { addEventListener () {} },
+    location: { hash: '', pathname: '/', search: '' },
+    history: { replaceState () {} },
+    togglePlayer () {},
+    ...clock
+  }, ['initModals', 'openModal', 'closeModal'])
+  api.initModals()
+  api.openModal(modal)
+  let prevented = false
+  listeners.cancel[0]({ target: modal, preventDefault: () => { prevented = true } })
+  assert.equal(prevented, true)
+  api.closeModal()
+  clock.flush()
+  assert.equal(closes, 1, 'native cancel and keyup schedule only one close')
+  assert.equal(focused, 'trigger')
+  document.activeElement = trigger
+  api.openModal(modal)
+  api.closeModal()
+  api.openModal(modal)
+  clock.flush()
+  assert.equal(closes, 1)
+  assert.equal(modal.open, true)
+  assert.equal(modal.classList.contains('modal--hide'), false)
+  api.closeModal()
+  trigger.isConnected = false
+  clock.flush()
+  assert.equal(focused, 'modal', 'removed openers are not focused')
+})
+
+test('fragment IDs with punctuation or invalid percent escapes never become CSS selectors', async () => {
+  const found = []
+  const target = {}
+  const api = await runModule('hash-target', { document: { getElementById: id => { found.push(id); return target } }, location: { hash: '#pid=2' } }, ['hashTarget'])
+  assert.equal(api.hashTarget(), target)
+  assert.equal(api.hashTarget('#detalle%20demo'), target)
+  assert.equal(api.hashTarget('#%invalid'), target)
+  assert.equal(api.hashTarget('#a:b[0]'), target)
+  assert.equal(api.hashTarget(''), null)
+  assert.deepEqual(found, ['pid=2', 'detalle demo', '%invalid', 'a:b[0]'])
+})
+
+test('FAQ commits a measured starting height before its first collapse', async () => {
+  const clock = timers()
+  const order = []
+  let click
+  const content = {
+    scrollHeight: 144,
+    get offsetHeight () { order.push('layout'); return 144 },
+    style: { setProperty: (name, value) => order.push([name, value]) },
+    setAttribute () {}, addEventListener () {}
+  }
+  const group = { contains: () => true, addEventListener: (_, fn) => { click = fn }, querySelectorAll: () => [item] }
+  const button = { setAttribute () {}, closest: () => item }
+  const item = {
+    querySelector: selector => selector === '.faq__md' ? content : button,
+    classList: { contains: () => true, toggle: (_, open) => order.push(['active', open]) }
+  }
+  const api = await runModule('faq', { document: { querySelectorAll: () => [group] }, ...clock }, ['initFaq'])
+  api.initFaq()
+  click({ target: { closest: () => button } })
+  assert.deepEqual(order, [['--max-height', '144px'], 'layout', ['active', false]])
 })

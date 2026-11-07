@@ -9,7 +9,7 @@ Requisitos: Git y Hugo Extended. Para trabajar sin `node_modules` en local,
 instala Dart Sass una vez en el `PATH` (`brew install sass/sass/sass` en macOS).
 Node.js se requiere para los servidores administrados y los builds completos.
 En proyectos con pnpm, activa la versión exacta de `packageManager` e instala
-con `pnpm install --frozen-lockfile`. `sh do hugo` instala las dependencias
+con `pnpm install --frozen-lockfile`. `sh do build` instala las dependencias
 ausentes con el gestor del proyecto. Las versiones de despliegue se declaran
 en `.node-version`, `netlify.toml` y `wrangler.toml`.
 
@@ -20,22 +20,25 @@ sh do dev
 
 ## Comandos
 
-- `sh do dev`: servidor local normal.
-- `sh do live`: servidor del CMS con prebuild supervisado y reconstrucción completa tras cambios de configuración.
-- `sh do hugo`: compilación completa.
+- `sh do dev`: servidor con prebuild supervisado, sin generar CMS ni preview.
+- `sh do cms`: el mismo servidor con el CMS y la vista previa.
+- `sh do preview`: prototipo local de preview estructural con Hugo persistente en una copia aislada; consulta [sus límites]({{CORE_PATH}}/docs/cms-live-preview.md).
+- `sh do local`: build completo y servidor de producción local que reconstruye al cambiar las fuentes; alias `live`.
+- `sh do build`: compilación completa.
 - `sh do videos`: completa los metadatos de los vídeos referenciados; `--refresh` fuerza su renovación.
 - `sh do update`: actualiza SanSoul, aplica migraciones automáticas, sincroniza README/AGENTS y valida el proyecto; se detiene antes de modificar archivos si detecta conflictos.
 - `sh do migrations`: migraciones pendientes después de actualizar el tema.
 - `sh do root-docs`: sincroniza este README y `AGENTS.md` con sus plantillas.
 
-`dev` y `live` limpian `public/`, `resources/` y la salida del prebuild al
+`dev`, `cms` y `local` limpian `public/`, `resources/` y la salida del prebuild al
 terminar normalmente o recibir Ctrl-C, SIGTERM o SIGHUP. Solo se admite un servidor
-administrado por proyecto. `server` y `local` siguen disponibles como alias.
+administrado por proyecto. Alias: `server` = `dev`, `live` = `local`, `hugo` = `build`.
+`sh do` sin argumentos muestra ayuda; no compila.
 
 El prebuild deriva `theme` y `themesDir` de la ubicación del motor; no hace falta
 repetirlos en `hugo.yml`. Conserva en Git `data/video_metadata.json` cuando uses
 vídeos. FFprobe solo se necesita para inspeccionar archivos locales nuevos o
-modificados; `dev` y `live` los detectan durante la sesión sin reiniciar Hugo.
+modificados; `dev` y `cms` los detectan durante la sesión sin reiniciar Hugo.
 
 ## Documentación
 

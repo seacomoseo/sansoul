@@ -1,7 +1,5 @@
-import { scrollShot } from './scroll-shot'
+import { initMediaConsent } from './media-consent'
 import { loadLeaflet, myIcon, fill, tile } from './leaflet'
-
-const mapStarts = new WeakMap()
 
 function mapStart (mapDiv) {
   const map = L.map(mapDiv.id, {
@@ -10,58 +8,61 @@ function mapStart (mapDiv) {
     scrollWheelZoom: false
   })
 
-  tile(map, mapDiv.dataset.tile)
+  try {
+    tile(map, mapDiv.dataset.tile)
 
-  const bounds = L.latLngBounds() // Crea límites manualmente
+    const bounds = L.latLngBounds() // Crea límites manualmente
 
-  Array.from(mapDiv.nextElementSibling.children).forEach(e => {
-    const geo = JSON.parse(e.dataset.geo)
-    const icon = myIcon(e.dataset)
-    let marker
-    if (geo.type === 'Point') {
-      const latlng = [geo.coordinates[1], geo.coordinates[0]]
-      if (e.dataset.radius) {
-        const radius = parseFloat(e.dataset.radius) * 1000 // Radio en metros
-        marker = L.circle(latlng, { radius, ...fill(e.dataset.color).style })
+    Array.from(mapDiv.nextElementSibling.children).forEach(e => {
+      const geo = JSON.parse(e.dataset.geo)
+      const icon = myIcon(e.dataset)
+      let marker
+      if (geo.type === 'Point') {
+        const latlng = [geo.coordinates[1], geo.coordinates[0]]
+        if (e.dataset.radius) {
+          const radius = parseFloat(e.dataset.radius) * 1000 // Radio en metros
+          marker = L.circle(latlng, { radius, ...fill(e.dataset.color).style })
 
-        // Conversión del radio a grados
-        const deltaLat = radius / 111320 // Cambio en latitud en grados
-        const metersPerDegreeLongitude = 111320 * Math.cos(latlng[0] * Math.PI / 180)
-        const deltaLng = radius / metersPerDegreeLongitude // Cambio en longitud en grados
+          // Conversión del radio a grados
+          const deltaLat = radius / 111320 // Cambio en latitud en grados
+          const metersPerDegreeLongitude = 111320 * Math.cos(latlng[0] * Math.PI / 180)
+          const deltaLng = radius / metersPerDegreeLongitude // Cambio en longitud en grados
 
-        // Calcula las esquinas del rectángulo que engloba el círculo
-        const corner1 = [latlng[0] - deltaLat, latlng[1] - deltaLng]
-        const corner2 = [latlng[0] + deltaLat, latlng[1] + deltaLng]
-        bounds.extend(corner1)
-        bounds.extend(corner2)
-      } else {
-        marker = L.marker(latlng, { icon })
-        bounds.extend(marker.getLatLng())
+          // Calcula las esquinas del rectángulo que engloba el círculo
+          const corner1 = [latlng[0] - deltaLat, latlng[1] - deltaLng]
+          const corner2 = [latlng[0] + deltaLat, latlng[1] + deltaLng]
+          bounds.extend(corner1)
+          bounds.extend(corner2)
+        } else {
+          marker = L.marker(latlng, { icon })
+          bounds.extend(marker.getLatLng())
+        }
+      } else if (geo.type === 'Polygon') {
+        marker = L.geoJSON(geo, fill(e.dataset.color))
+        bounds.extend(marker.getBounds())
       }
-    } else if (geo.type === 'Polygon') {
-      marker = L.geoJSON(geo, fill(e.dataset.color))
-      bounds.extend(marker.getBounds())
-    }
-    if (e.textContent) marker.bindPopup(e.textContent)
-    map.addLayer(marker)
-  })
+      if (e.textContent) marker.bindPopup(e.textContent)
+      map.addLayer(marker)
+    })
 
-  const maxZoom = parseInt(mapDiv.dataset.zoom) || 15
-  map.fitBounds(bounds, { maxZoom, padding: [50, 50] })
+    const maxZoom = parseInt(mapDiv.dataset.zoom) || 15
+    map.fitBounds(bounds, { maxZoom, padding: [50, 50] })
+  } catch (error) {
+    map.remove()
+    throw error
+  }
+  return () => map.remove()
 }
 
 export function initMap () {
-  scrollShot({
-    rootMargin: '20%',
+  initMediaConsent({
+    requiresConsent: false,
     query: '.map',
-    doStart: (mapDiv) => {
-      if (!mapStarts.has(mapDiv)) {
-        const started = loadLeaflet().then(() => { mapStart(mapDiv) })
-        mapStarts.set(mapDiv, started)
-        started.catch(() => { mapStarts.delete(mapDiv) })
-      }
-      return mapStarts.get(mapDiv)
+    rootMargin: '20%',
+    start: async (mapDiv, isCurrent) => {
+      await loadLeaflet()
+      if (isCurrent()) return mapStart(mapDiv)
     },
-    end: true
+    fallback: (mapDiv, visible) => mapDiv.classList.toggle('map--ready', !visible)
   })
 }

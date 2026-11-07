@@ -10,6 +10,10 @@
     {{ $list  := . }}
     {{ $types := slice .type }}
     {{ $max   := .max | default 999 }}
+    {{ $view  := .view | default "list" }}
+    {{ if not (in (slice "list" "calendar") $view) }}
+      {{ errorf "SanSoul list.view must be list or calendar, got %q" $view }}
+    {{ end }}
     {{ if eq .type "all" }}
       {{ $types   = slice }}
       {{ range site.Sections }}
@@ -37,6 +41,10 @@
         {{ end }}
       {{ else if eq $type "single" }}
         {{ $pages = slice site.Home | append $pages }}
+      {{ end }}
+      {{ $calendar := and (eq $view "calendar") (in (slice "article" "event") $parent.Params.base) }}
+      {{ if and (eq $view "calendar") (not $calendar) }}
+        {{ warnf "SanSoul list.view calendar requires article/event base; %q uses its normal list" $type }}
       {{ end }}
       {{/*
       {{ if eq $parent.Params.base "event" }}
@@ -91,7 +99,7 @@
       {{ with $list.date }}{{ $pages = where $pages "Date" "ge" (time .) }}{{ end }}
       {{ with $list.end }}{{ $pages = where $pages "Date" "le" (time .) }}{{ end }}
 
-      {{ if and page.IsSection (eq (len $types) 1) (ne $type "rel") }}
+      {{ if and (not $calendar) page.IsSection (eq (len $types) 1) (ne $type "rel") }}
         {{/* PAGE PARENT  */}}
         {{ $after_pages = (page.Paginate $pages $max).Pages }}
         {{ $pagination  = partial "pagination" page
@@ -128,6 +136,7 @@
 
         {{/* PAGES TO BOXES  */}}
         {{ $boxes   := slice }}
+        {{ if not $calendar }}
         {{ range $after_pages }}
           {{/*  {{ $price := cond (or (eq .Params.price nil) (eq $tpl.price "hide")) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) }}  */}}
           {{ $price := cond (eq .Params.price nil) "" (.Params.price | lang.FormatCurrency 2 site.Params.currency) }}
@@ -165,6 +174,7 @@
           {{/*  append box  */}}
           {{ $boxes = $boxes | append $page }}
         {{ end }}
+        {{ end }}
 
         {{ $group := merge (dict) $e (dict
           "list"       dict
@@ -172,9 +182,13 @@
           "boxes"      $boxes
           "list_pages" true
           "pagination" $pagination
+          "block_spacing" $list
         ) }}
         {{ if $types_many }}
           {{ $group = merge $group (dict "title" $title) }}
+        {{ end }}
+        {{ if $calendar }}
+          {{ $group = merge $group (dict "calendar" ($after_pages.ByDate) "boxes" (slice)) }}
         {{ end }}
         {{ $list_groups = $list_groups | append $group }}
       {{ end }}

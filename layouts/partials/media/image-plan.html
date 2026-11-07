@@ -1,0 +1,99 @@
+{{/*
+Partial: media/image-plan
+Purpose: Separate responsive layout estimates from a shared geometric derivative ladder.
+Context: Media map plus image resource and validated options. fit_vs/fit_vl retain
+  recursive column products. Unknown content height uses a viewport-height cover
+  estimate and retains the original-width ceiling; it is not a measured height.
+  box_rate optionally adds the box minimum-height floor; it never caps content height.
+Returns: widths (unique ascending integers), sizes (explicit CSS fallback).
+Side effects: None.
+*/}}
+{{- $image := .image -}}
+{{- $width := $image.Width | int -}}
+{{- $fitVS := .fit_vs | default 1.0 | float -}}
+{{- $fitVL := .fit_vl | default 1.0 | float -}}
+{{- $container := .container | default "fluid" -}}
+{{- $containers := hugo.Data.utilities.containers | default (dict "xs" 512 "sm" 720 "md" 960 "lg" 1200 "xl" 1440 "fluid" 2000) -}}
+{{- $containerMax := index $containers $container | default 2000 | float -}}
+{{- $vs := hugo.Data.utilities.viewports.min | default 375 | float -}}
+{{- $vl := hugo.Data.utilities.viewports.max | default 1232 | float -}}
+{{- $small := mul (sub $vs 32) $fitVS -}}
+{{- $large := mul $containerMax $fitVL -}}
+{{- $slope := div (sub $large $small) (sub $vl $vs) -}}
+{{- $intercept := sub $small (mul $slope $vs) -}}
+{{- $layout := printf "min(calc(100vw - 2rem), clamp(%.2fpx, calc(%.6fvw + %.2fpx), %.2fpx))" (math.Min $small $large) (mul $slope 100) $intercept (math.Max $small $large) -}}
+{{- if eq $container "fluid" -}}
+  {{- $layout = printf "calc(%.6fvw - 2rem)" (mul 100 (math.Max $fitVS $fitVL)) -}}
+{{- end -}}
+{{- $maximum := math.Max $small $large -}}
+{{- with .max -}}
+  {{- $maximum = math.Min $maximum (float .) -}}
+  {{- $layout = printf "min(%s, %dpx)" $layout (int .) -}}
+{{- end -}}
+{{- if and .dimensions.authored (not .is_bg) -}}
+  {{- with .dimensions.width -}}
+    {{- $maximum = math.Min $maximum (float .) -}}
+    {{- $layout = printf "min(%s, %dpx)" $layout (int .) -}}
+  {{- end -}}
+{{- end -}}
+{{- $maximum = math.Min (float $width) (mul $maximum .options.dpr) | math.Ceil | int -}}
+{{- $coverMinimum := "" -}}
+{{- if .is_bg -}}
+  {{- /* No reliable crop can be inferred from arbitrary authored content height. */ -}}
+  {{- $aspect := div (float $image.Width) (float $image.Height) -}}
+  {{- with .box_rate -}}
+    {{- if findRE `^[0-9]+(?:\.[0-9]+)?(?:/[0-9]+(?:\.[0-9]+)?)?$` (string .) -}}
+      {{- $parts := split (string .) "/" -}}
+      {{- $rate := float (index $parts 0) -}}
+      {{- if eq (len $parts) 2 -}}
+        {{- $denominator := float (index $parts 1) -}}
+        {{- if gt $denominator 0 -}}{{- $rate = div $rate $denominator -}}{{- else -}}{{- $rate = 0.0 -}}{{- end -}}
+      {{- end -}}
+      {{- if gt $rate 0 -}}
+        {{- /* min-height = box width / rate; cover needs height * image aspect. */ -}}
+        {{- $coverMinimum = printf "calc((%s) * %.6f)" $layout (math.Max 1 (div $aspect $rate)) -}}
+        {{- $layout = $coverMinimum -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $layout = printf "min(%dpx, max(%s, %.6fvh))" $width $layout (mul 100 $aspect) -}}
+  {{- $maximum = $width -}}
+{{- end -}}
+{{- $layout = printf "min(%dpx, max(1px, %s))" $width $layout -}}
+{{- if in (slice "left" "right" "center") (.side | default "") -}}
+  {{- /* Side media bleeds to viewport edges; container/recursive fits no longer bound it.
+    Ignore the non-negative column gap conservatively rather than underestimate width. */ -}}
+  {{- $breakpoint := hugo.Data.utilities.viewports.xl | default 1280 | int -}}
+  {{- $wide := cond (eq .side "center") "100vw" "50vw" -}}
+  {{- $narrow := "100vw" -}}
+  {{- $sideMaximum := index $containers "fluid" | default 2000 | float -}}
+  {{- if ne .side "center" -}}
+    {{- $sideMaximum = math.Max (float $breakpoint) (div $sideMaximum 2) -}}
+  {{- end -}}
+  {{- if .is_bg -}}
+    {{- $height := mul 100 (div (float $image.Width) (float $image.Height)) -}}
+    {{- $wide = printf "max(%s, %.6fvh)" $wide $height -}}
+    {{- $narrow = printf "max(%s, %.6fvh)" $narrow $height -}}
+    {{- with $coverMinimum -}}
+      {{- $wide = printf "max(%s, %s)" $wide . -}}
+      {{- $narrow = printf "max(%s, %s)" $narrow . -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $maximum = math.Min (float $width) (mul $sideMaximum .options.dpr) | math.Ceil | int -}}
+  {{- end -}}
+  {{- $wide = printf "min(%dpx, max(1px, %s))" $width $wide -}}
+  {{- $narrow = printf "min(%dpx, max(1px, %s))" $width $narrow -}}
+  {{- $layout = $narrow -}}
+  {{- if ne .side "center" -}}
+    {{- $layout = printf "(min-width: %dpx) %s, %s" $breakpoint $wide $narrow -}}
+  {{- end -}}
+{{- end -}}
+{{- $widths := slice -}}
+{{- $step := 150.0 -}}
+{{- range seq 30 -}}
+  {{- $candidate := math.Round $step | int -}}
+  {{- if lt $candidate $maximum -}}{{- $widths = $widths | append $candidate -}}{{- end -}}
+  {{- $step = mul $step 1.5 -}}
+{{- end -}}
+{{- $widths = $widths | append (math.Max 1 $maximum | int) | uniq -}}
+{{- return dict "widths" $widths "sizes" $layout -}}

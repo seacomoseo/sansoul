@@ -25,6 +25,7 @@ import { initSimpleLightbox } from './simple-lightbox'
 import { initPrerender } from './prerender'
 import { initComments } from './comments'
 import { initCounter } from './counter'
+import { initCalendars } from './calendar'
 
 if (!window.__sansoulInitialized) {
   window.__sansoulInitialized = true
@@ -55,4 +56,5 @@ if (!window.__sansoulInitialized) {
   initPrerender()
   initComments()
   initCounter()
+  initCalendars()
 }

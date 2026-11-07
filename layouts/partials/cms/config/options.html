@@ -48,6 +48,7 @@
   "&opts_h"             $o.h
   "&opts_align"         $o.align
   "&opts_align_x"       $o.align_x
+  "&opts_align_x_base"  (where $o.align_x "value" "in" (slice "center"  "space-evenly"  "space-between"  "space-around"  "flex-start"  "flex-end"))
   "&opts_align_y"       $o.align_y
   "&opts_side"          $o.side
   "&opts_sort"          $o.sort
@@ -90,8 +91,10 @@
   "&opts_widgets"       $o.widgets
   "&opts_i18n"          (slice
     (dict "value" nil         "label" .def)
+    (dict "value" false       "label" .false)
     (dict "value" true        "label" .true)
     (dict "value" "duplicate" "label" .duplicate)
+    (dict "value" "duplicate_if_empty" "label" .duplicate_if_empty)
   )
   "&opts_bool"          (slice
     (dict "value" nil   "label" .def)

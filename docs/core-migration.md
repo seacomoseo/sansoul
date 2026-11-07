@@ -81,6 +81,14 @@ sh themes/sansoul/do update --check
 sh themes/sansoul/do update
 ```
 
+El mismo bootstrap se necesita si un actualizador antiguo rechaza una versión
+con «no updater policy»: por ejemplo, el código de 8.0.0 no conoce la política
+de 8.1.0. Ese rechazo ocurre antes de modificar archivos. Tras verificar árboles
+limpios y avance directo, actualiza el checkout del motor con el bloque anterior
+y vuelve a ejecutar su actualizador nuevo; éste admite el gitlink ya avanzado
+cuando es la única diferencia de la raíz. No edites manualmente la versión del
+paquete para saltarte esa revisión.
+
 El bootstrap solo se admite cuando el avance es limpio y no ha divergido. Para
 proyectos anteriores a 5.0, ejecuta primero su `sh do update` privado legado y
 verifica la migración; los comandos anteriores no la sustituyen. No cambies
@@ -103,16 +111,26 @@ Para cambiar también la estructura de un consumidor:
 5. Ejecuta `sh do root-docs`, `sh do hugo` y las comprobaciones pertinentes de
    CMS, desarrollo, cierre y clon nuevo con submódulos.
 
-El actualizador busca la subsección de `.gitmodules` por su valor `path`; su
-nombre interno puede seguir siendo `themes/sansoul` aunque la ruta sea `core`.
-El almacén `.git/modules/themes/sansoul` también puede conservar su nombre.
+Después de validar el traslado, ejecuta `sh do migrations mark --yes`. Ese
+paso normaliza automáticamente `[submodule "themes/sansoul"]` a
+`[submodule "core"]` cuando `path = core`. También se ejecuta al cerrar
+`sh do update`. Mientras un consumidor conserve la ruta anterior puede
+actualizar con normalidad. Si otra declaración ya usa el nombre `core`,
+se conserva la configuración y se avisa para revisión.
+
+Un clon existente puede seguir usando `.git/modules/themes/sansoul` a través
+de `core/.git`. Un clon nuevo con `--recurse-submodules` crea
+`.git/modules/core`. La normalización no cambia el índice ni mueve el
+almacén local de Git.
+
 No publiques el padre antes de que los commits del motor estén disponibles en
 su remoto. Ninguno de los comandos de migración hace commit, push o despliegue.
 
 ## Estado de esta referencia y reversión
 
 El checkout de esta referencia se movió preservando los cambios pendientes; se
-ajustaron `core/.git`, `core.worktree` y la ruta de `.gitmodules`. El índice raíz
+ajustaron `core/.git`, `core.worktree`, la ruta y el nombre lógico en
+`.gitmodules`. El índice raíz
 no se modificó: Git puede mostrar la ruta anterior eliminada y `core/` como nueva
 hasta que el usuario registre la migración. `git -C core status` permite revisar
 el motor por separado.

@@ -57,14 +57,14 @@ The root `do` wrapper delegates to `{{CORE_PATH}}/do`:
 3. Static module mounts expose project, theme, upload, and Node sources. A root content adapter creates collection indexes and remote pages.
 4. Production post-processing creates image derivatives from build manifests.
 
-Use `sh do live` when editing prebuild inputs such as languages, defaults, customs, type definitions, or collection-index permalinks. Its supervisor atomically publishes valid configuration and restarts Hugo for a full build after a successful refresh. Failed prebuilds keep the last valid config; refresh-time server failures recover after a valid refresh. Remote data and localized global values rebuild directly in the main Hugo process. Plain `sh do dev` requires a manual restart for prebuild inputs.
+Both `sh do dev` and `sh do cms` watch prebuild inputs such as languages, defaults, customs, type definitions, and collection-index prefixes. Their shared supervisor atomically publishes valid configuration and restarts Hugo for a full build after a successful refresh. Failed prebuilds keep the last valid config; refresh-time server failures recover after a valid refresh. Remote data and localized global values rebuild directly in the main Hugo process. `dev` omits the CMS, preview bindings, manifests and receiver; use `cms` for editor work. Production builds retain the CMS unless configured otherwise. `server` aliases `dev`; `local` watches and serves full production builds, and `live` aliases `local`.
 
 ## Content model
 
 Localized files use `.<lang>.md`:
 
 - `content/<type>/<name>.<lang>.md`: collection entry;
-- `content/<type>/_index.<lang>.md`: collection metadata and permalinks;
+- `content/<type>/_index.<lang>.md`: collection metadata and `prefix` for entry URLs;
 - `content/single/_home.<lang>.md`: language home page;
 - `content/single/<name>.<lang>.md`: unique composable page;
 - `content/global.<lang>.yml`: menu, footer, call-now controls, and global values.
@@ -82,11 +82,12 @@ page -> sections -> boxes -> specialized blocks or nested boxes
 Core composition keys:
 
 - `tpl.section`: defaults; index `0` applies globally and later entries cycle by position;
-- `tpl.sections`: explicit page sections;
+- `tpl.sections`: explicit flat section maps; `file` loads reusable defaults and sibling values override them. The CMS Content group is visual only;
 - `file`: reusable `data/section/<file>.yml` definition;
 - `box` / `boxes` and `modal` / `modals`: shared defaults and concrete items;
 - `get`: page or localized-global lookup;
 - `remap`: nested copy, move, or removal;
+- `{{ set sibling }}`: bounded scalar sibling interpolation after effective composition; missing keys and cycles fail the build;
 - `if`: conditional inclusion.
 
 Use `{{CORE_PATH}}/_examples/data/section/example.yml` as the parameter catalog and generated `public/admin/config.<hash>.yml` as the effective CMS schema reference.
@@ -97,11 +98,11 @@ Use `{{CORE_PATH}}/_examples/data/section/example.yml` as the parameter catalog 
   In CMS-managed `content/` and `data/`, tri-state pseudobooleans use absent or
   null for inheritance, `true` for enabled, and `false` for disabled. Never use
   `y`/`n`.
-- `data/config.yml`: behavior and integrations.
+- `data/config.yml`: behavior and integrations. Preserve `cookies_legal`: false or absent bypasses consent waiting; true gates GA4 under analytics and external videos and Disqus under media. Cover withdrawal, reactivation, load failure and unavailable storage. Maps use locally served Leaflet and anonymous cross-origin tiles. Maps and local videos load independently of media consent.
 - `data/langs.yml`: languages and per-language overrides.
 - `data/styles.yml`: design tokens and global UI options.
-- `data/resources.yml`: resources used indirectly by CSS, JavaScript, or dynamic data. SVG uses from rendered templates are grouped automatically; do not add manual sprite-group configuration.
-- `data/video_metadata.json`: versioned public video facts and optional overrides. Builds refresh missing/changed references; `dev`/`live` watch them without restarting Hugo. Keep API credentials in environment variables, never this cache. Missing FFprobe or provider access degrades to available/manual facts.
+- `data/resources.yml`: resources used indirectly by CSS, JavaScript, or dynamic data. Production SVG uses from rendered templates are grouped automatically; development resolves page-local individual SVG files and divider sheets without global grouping. Do not add manual sprite-group configuration.
+- `data/video_metadata.json`: versioned public video facts and optional overrides. Builds refresh missing/changed references; `dev`/`cms` watch them without restarting Hugo. Keep API credentials in environment variables, never this cache. Missing FFprobe or provider access degrades to available/manual facts.
 - `data/types/*.yml`: collections and templates.
 - `data/section/*.yml`: reusable section definitions.
 - `data/defaults.yml`: language/type/path defaults; keep selectors narrow.
@@ -135,16 +136,30 @@ Use Sveltia’s native per-commit deployment status when Git/CI provide it.
 
 Use `sh do update` from the project root. It checks both Git trees, verifies the configured branch can fast-forward, validates known migration conflicts, and confirms root README/AGENTS are managed before changing files. It also accepts a clean fast-forward already checked out in the submodule when that is the only root Git status entry, for bootstrapping projects pinned to an older release. A failure during preflight means no project files or submodule checkout were changed. `sh do update --check` fetches remote Git metadata and prints the same plan without updating the checkout.
 
-After preflight, the command advances SanSoul, runs registered migration scripts, synchronizes both root README and AGENTS from the theme templates, installs dependencies when a migration requires it, and runs the full build. If migration-specific manual checks remain, it displays them and requires explicit confirmation before updating the root package compatibility version. Without an interactive terminal it leaves that version unchanged; after completing the checks, run `sh do migrations mark --yes`.
+After preflight, the command advances SanSoul, runs registered migration scripts, synchronizes both root README and AGENTS from the theme templates, installs dependencies when a migration requires it, and runs the full build. If migration-specific manual checks remain, it displays them and requires explicit confirmation before updating the root package compatibility version. Without an interactive terminal it leaves that version unchanged; after completing the checks, run `sh do migrations mark --yes`. Marking also normalizes the legacy SanSoul subsection name when its path is already `core`. It preserves the checkout, local Git storage, and index.
 
 The updater refuses dirty worktrees, diverged submodule history, unmanaged root documents, unsupported migration versions, and known content rename collisions. It never uses `--force`, stages, commits, pushes, or deploys. Projects pinned to a theme release without this command need a one-time bootstrap with `git submodule update --remote {{CORE_PATH}}`, then can run `sh do update --check` and `sh do update`. Projects below the 5.0.0 baseline require a verified legacy migration and are not advanced by this updater.
 
+`sh do` without arguments shows command help and does not build.
+
+`sh do preview` is an opt-in experimental structural CMS preview. It copies
+trusted public project inputs into a temporary workspace, keeps Hugo running
+there and compiles unsaved Markdown through a loopback-only authenticated API.
+It never saves drafts into the source project or changes hosted CMS behavior.
+New entries get their own temporary filename per editor and active language;
+never borrow another page as their structural template. Local media comes from
+the startup copy. Cancelled startup and SIGINT/SIGTERM/SIGHUP must clean the
+workspace and owned processes.
+Restart it to pick up source changes outside the draft; close it to clean the
+workspace. Validate real conditional/get/remap composition and stale-response
+handling when changing this path.
+
 ## Validation matrix
 
-`sh do dev` and `sh do live` may use a system Dart Sass without root
+`sh do dev` and `sh do cms` may use a system Dart Sass without root
 `node_modules`. They share a project lock and remove generated outputs on exit;
 do not run a build or another Hugo process in the same project while serving.
-`server` and `local` remain compatibility aliases. A full `sh do hugo` installs
+`sh do build` (alias `sh do hugo`) installs
 missing dependencies with the declared manager. For pnpm projects, use the exact
 `packageManager` version and `pnpm install --frozen-lockfile`; preserve the tracked
 `pnpm-lock.yaml`. Never replace it with an npm lockfile or require a global
@@ -175,3 +190,7 @@ After every change, perform a documentation-impact check without waiting for the
 - update `{{CORE_PATH}}/templates/root/AGENTS.md` when this generated operating contract changes;
 - update `_examples/` for changed public parameters;
 - add a versioned entry to `MIGRATIONS.md` when a consumer may need action.
+
+## Production-local validation
+
+`sh do local` runs the complete production build, including prebuild and image post-processing, then serves its output on localhost:1313. It rebuilds serially when sources change; generated outputs do not trigger rebuild loops. During a build or after failure it returns HTTP 503 until a valid build completes. It does not inject live reload. It shares the project lifecycle lock and cleans public/resources on exit. Use a separate copy for parallel validation.

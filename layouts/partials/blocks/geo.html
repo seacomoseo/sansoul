@@ -1,0 +1,32 @@
+{{/* Render geos using author-facing geo defaults; map DOM hooks retain Leaflet lifecycle compatibility. */}}
+{{- $geo := .geo | default dict -}}
+{{- with .geos -}}
+  {{- $icons := slice -}}
+  {{- /*  MAP  */}}
+  {{- $geo_attrs := dict
+    "id"        (print "map-" ($.id | default $.section.id))
+    "class"     "map box__block"
+    "style"     (partial "blocks/margin-style" $geo)
+    "data-zoom" $geo.zoom
+    "data-tile" $geo.tile
+  -}}
+  {{- $geo_attrs = partial "func/attrs" $geo_attrs }}
+  <div {{- $geo_attrs }}></div>
+  <div class="map__next">
+    {{- /*  EACH  */ -}}
+    {{- range . -}}
+      {{- $radius    := or .radius "" -}}
+      {{- $color     := or .color $geo.color $.icon_color "main" -}}
+      {{- $icon      := or .icon $geo.icon $.il (partial "func/default-icon" "geo") -}}
+      {{- $icon       = cond (ne .type "point") "" $icon -}}
+      {{- $geo_attrs := dict
+        "data-geo"    .geo
+        "data-radius" $radius
+        "data-color"  $color
+        "data-icon"   $icon
+      -}}
+      {{- $geo_attrs = partial "func/attrs" $geo_attrs }}
+      <div {{- $geo_attrs }}>{{ .label }}</div>
+    {{- end }}
+  </div>
+{{- end -}}

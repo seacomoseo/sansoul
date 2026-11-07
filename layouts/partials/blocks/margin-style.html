@@ -1,0 +1,19 @@
+{{- /*
+Partial: blocks/margin-style
+Purpose: Produce an optional, local responsive top-margin override for a block.
+Context: Block defaults map with optional numeric mt and mt_vl values, or nil.
+Returns: CSS declaration slice. Omitted margins preserve the normal block gap;
+  mt_vl alone starts at zero, and mt alone also supplies the large-screen value.
+Side effects: None. The caller applies the declarations to the box__block wrapper.
+*/ -}}
+{{- $style := slice -}}
+{{- if reflect.IsMap . -}}
+  {{- if or (ne .mt nil) (ne .mt_vl nil) -}}
+    {{- $small := 0 -}}
+    {{- if ne .mt nil -}}{{- $small = .mt -}}{{- end -}}
+    {{- $large := $small -}}
+    {{- if ne .mt_vl nil -}}{{- $large = .mt_vl -}}{{- end -}}
+    {{- $style = slice (print "--block-mt-vs:" $small) (print "--block-mt-vl:" $large) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $style -}}

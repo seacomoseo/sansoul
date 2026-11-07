@@ -43,6 +43,7 @@ Side effects: None. Unknown script-driven content requires full mode via assets_
 {{ with resources.Get "_custom.scss" }}
   {{ if findRE `@extend|@use|@forward|@import|#\{` .Content }}{{ $full = true }}{{ end }}
 {{ end }}
+{{/* Shared field styling does not imply a form runtime; initializers target standalone .form. */}}
 {{ $patterns := dict
   "menu"       `(?:^|\s)menu(?:\s|__|--)`
   "mail"       `(?:^|\s)mail(?:\s|__|--)`
@@ -56,6 +57,7 @@ Side effects: None. Unknown script-driven content requires full mode via assets_
   "review"     `(?:^|\s)reviews?(?:\s|__|--)`
   "when"       `(?:^|\s)whens?(?:\s|__|--)`
   "links"      `(?:^|\s)(?:links|dots|link__custom|link__br)(?:\s|__|--)`
+  "form_runtime" `(?:^|\s)form(?:\s|$)`
   "form"       `(?:^|\s)(?:form|spin|icon--submit-close)(?:\s|__|--)`
   "gss"        `(?:^|\s)gss(?:\s|__|--)`
   "title"      `(?:^|\s)h[1-6]?(?:\s|__|--)`
@@ -66,6 +68,7 @@ Side effects: None. Unknown script-driven content requires full mode via assets_
   "cookies"    `(?:^|\s)cookies(?:\s|__|--)`
   "translate"  `(?:^|\s)(?:google-translate|menu__link--translate)(?:\s|__|--)`
   "counter"    `(?:^|\s)counter(?:\s|__|--)`
+  "calendar"   `(?:^|\s)calendar(?:\s|__|--)`
 }}
 {{ $flags := dict }}
 {{ $enabled := slice }}

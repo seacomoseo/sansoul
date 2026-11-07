@@ -1,0 +1,39 @@
+@media (prefers-reduced-motion: reduce) {
+  // Keep final keyframe states and transition events used by controls. Removing
+  // transforms globally would break menus, tooltips and modal positioning.
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+  }
+  .show--will {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto;
+  }
+  .scroll--box:not(#aux) {
+    transform: none;
+  }
+  .scroll--bg > .bg-color > * {
+    height: 100%;
+    transform: none;
+  }
+  .bg--fix {
+    > .bg-color {
+      background-attachment: scroll;
+    }
+    > .bg-fig .bg-fig-img {
+      position: absolute;
+      height: 100%;
+    }
+  }
+  // Preserve a static drawn highlight rather than its invisible final frame.
+  .md mark .icon[part^="svg:sign-"] {
+    animation: none;
+    stroke-dasharray: none;
+    opacity: 1;
+  }
+}

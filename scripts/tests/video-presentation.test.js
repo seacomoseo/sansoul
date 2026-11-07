@@ -37,11 +37,12 @@ test('real Hugo handles Markdown video alt/caption and separates display fallbac
     { key: 'short', vid: 'https://www.youtube.com/shorts/vertical' },
     { key: 'shortSquare', vid: 'https://www.youtube.com/shorts/square' },
     { key: 'shortPoster', vid: 'https://www.youtube.com/shorts/author-poster', img: '/u/poster.svg', poster: '/u/poster.svg' },
-    { key: 'manual', vid: 'https://www.youtube.com/shorts/manual', vid_width: 540, vid_height: 960 }
+    { key: 'manual', vid: 'https://www.youtube.com/shorts/manual', vid_w: 540, vid_h: 960 }
 
   ]
   await fs.writeFile(path.join(root, 'layouts/index.html'), `<script id="dimensions" type="application/json">{{ $r := dict }}{{ range ${JSON.stringify(JSON.stringify(cases))} | transform.Unmarshal }}{{ $r = merge $r (dict .key (partial "media/vid-data" .).presentation) }}{{ end }}{{ $r | jsonify | safeJS }}</script>
 {{ with site.GetPage "/demo" }}{{ .Content }}{{ end }}
+<div id="gallery-svg">{{ partial "media/_" (dict "img" "/u/poster.svg" "class" "gallery__img" "notschema" true) }}</div>
 <div id="no-poster">{{ partial "media/_" (dict "vid" "/u/unknown.mp4" "class" "img__in" "notlazy" true) }}</div>
 <div id="inline-poster">{{ partial "media/_" (dict "vid" "/u/video%20demo.mp4" "img" "/u/inline-poster.svg" "notschema" true) }}</div>
 <div id="manual-metadata">{{ partial "media/_" (dict "vid" "/u/video%20demo.mp4" "img" "/u/poster.svg" "alt" "Accessible label" "vid_width" 540 "vid_height" 960 "vid_duration" "PT12S" "vid_upload" "2025-01-01 00:00:00" "vid_title" "Manual video title" "vid_desc" "Manual description") }}</div>
@@ -56,6 +57,9 @@ test('real Hugo handles Markdown video alt/caption and separates display fallbac
   assert.equal((html.match(/class="img img--ratio"/g) || []).length, 1)
   assert.equal((html.match(/--img-ratio:3\/2/g) || []).length, 1)
   assert.doesNotMatch(html, /<(?:img|picture|video|iframe|svg)[^>]*style="[^"]*aspect-ratio/)
+  const gallery = html.match(/<div id="gallery-svg">(.*?)<\/div>/s)[1]
+  assert.match(gallery, /<svg[^>]*class="gallery__img"[^>]*viewBox="0 0 300 200"/)
+  assert.match(gallery, /<use[^>]*width="100%"[^>]*height="100%"/)
   const video = html.match(/<div id="no-poster">\s*(<video[^>]*>)/)[1]
   assert.match(video, /width="1080"/)
   assert.match(video, /height="608"/)

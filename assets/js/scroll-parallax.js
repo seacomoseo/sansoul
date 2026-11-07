@@ -1,8 +1,10 @@
+import { reducedMotion, onMotionChange } from './motion'
 import { scrollShot } from './scroll-shot'
 
 let isInitialized = false
 
 function doParallax (e) {
+  if (reducedMotion()) return
   // if (e.classList.contains('scroll--box')) e = e.parentElement
   const container = e.getBoundingClientRect()
   const imgHeight = container.height * 1.25
@@ -39,19 +41,29 @@ export function initScrollParallax () {
   if (scrollElements[0]) {
     isInitialized = true
 
-    // Toggle class scroll--on when element is in viewport
-    scrollShot({
-      rootMargin: '0%',
-      query: '.scroll',
-      doOnLoad: doParallax,
-      doStart: e => e.classList.add('scroll--on'),
-      doEnd: e => e.classList.remove('scroll--on')
+    let stopObserving
+    onMotionChange(reduce => {
+      if (stopObserving) stopObserving()
+      stopObserving = undefined
+      window.removeEventListener('scroll', doParallaxes)
+      if (reduce) {
+        scrollElements.forEach(element => {
+          element.style.removeProperty('--scroll-pos')
+          element.classList.remove('scroll--on')
+        })
+      } else {
+        stopObserving = scrollShot({
+          rootMargin: '0%',
+          query: '.scroll',
+          doOnLoad: doParallax,
+          doStart: e => { if (!reducedMotion()) e.classList.add('scroll--on') },
+          doEnd: e => e.classList.remove('scroll--on')
+        })
+        window.addEventListener('scroll', doParallaxes)
+        doAllParallaxes()
+      }
     })
-    window.addEventListener('scroll', doParallaxes)
-
-    if (document.readyState === 'complete') {
-      doAllParallaxes()
-    } else {
+    if (document.readyState !== 'complete') {
       window.addEventListener('load', doAllParallaxes, { once: true })
     }
   }

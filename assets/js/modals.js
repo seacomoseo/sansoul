@@ -1,13 +1,23 @@
 import { togglePlayer } from './player'
 import { scrollTo } from './scroll-to'
+import { hashTarget } from './hash-target'
 
 // MODAL
 
 // Last seccion hash
 let hasLastSection = ''
+const modalStates = new WeakMap()
+let clickedTrigger = null
 
 // Open
 function openModal (target) {
+  const previous = modalStates.get(target)
+  if (previous?.timer) clearTimeout(previous.timer)
+  const active = clickedTrigger || document.activeElement
+  const trigger = active && !target.contains(active) && active !== document.body ? active : previous?.trigger
+  clickedTrigger = null
+  modalStates.set(target, { trigger })
+  target.classList.remove('modal--hide')
   target.removeAttribute('hidden')
   // setTimeout(() => {
   target.showModal()
@@ -32,13 +42,21 @@ export function closeModal (changeHash) {
   }
   const modalOpen = document.querySelector('dialog[open].modal')
   if (modalOpen) {
+    const state = modalStates.get(modalOpen) || {}
+    if (state.timer) return
     togglePlayer(modalOpen, false)
     modalOpen.classList.add('modal--hide')
-    setTimeout(() => {
+    state.timer = setTimeout(() => {
       modalOpen.close()
       modalOpen.classList.remove('modal--hide')
       modalOpen.setAttribute('hidden', 'until-found')
+      state.timer = null
+      const trigger = state.trigger
+      if (!changeHash && !document.querySelector('dialog[open].modal') && trigger?.isConnected && trigger.getClientRects().length && !trigger.closest('[hidden], dialog:not([open])')) {
+        trigger.focus({ preventScroll: true })
+      }
     }, 300)
+    modalStates.set(modalOpen, state)
   }
 }
 
@@ -65,8 +83,8 @@ function prevNextModal (prev) {
 export function initModals () {
   // When load if modal is active
   if (location.hash) {
-    const hasModal = document.querySelector((location.hash.replace(/=+/, '-').substring(0, 155) || 'none') + '.modal')
-    if (hasModal) {
+    const hasModal = hashTarget()
+    if (hasModal?.classList.contains('modal')) {
       // Get parent section
       let sectionSibling = hasModal.previousElementSibling
       while (sectionSibling) {
@@ -86,12 +104,12 @@ export function initModals () {
     const windowPosition = window.scrollY
     const hashOld = e.oldURL.split('#')[1]
     const hashNew = e.newURL.split('#')[1]
-    const target = document.getElementById(hashNew)
+    const target = hashTarget(hashNew || '')
     closeModal(true)
     if (target && target.classList.contains('modal')) {
       // Save the last seccion hash
       if (hashOld) {
-        const isHasOld = document.querySelector('#' + hashOld.replace('=', ''))
+        const isHasOld = hashTarget(hashOld)
         if (isHasOld) {
           if (isHasOld.classList.contains('section')) {
             hasLastSection = '#' + hashOld
@@ -117,6 +135,8 @@ export function initModals () {
 
   // When click
   document.addEventListener('click', e => {
+    const link = e.target.closest('a[href]')
+    if (link?.hash && document.getElementById(link.hash.slice(1))?.classList.contains('modal')) clickedTrigger = link
     const btnClose = e.target.closest('.modal__close, .modal__close--corner')
     const backover = e.target.classList.contains('modal')
     if (btnClose || backover) closeModal()
@@ -124,6 +144,15 @@ export function initModals () {
     // const back = e.target.closest('.modal__back')
     // if (back) history.back()
   })
+
+  // Handle the native dialog cancel before it closes, preserving the animation
+  // and the element that opened the dialog for keyboard focus restoration.
+  document.addEventListener('cancel', e => {
+    if (e.target.classList.contains('modal')) {
+      e.preventDefault()
+      closeModal()
+    }
+  }, true)
 
   // When keyup escape
   document.addEventListener('keyup', e => e.keyCode === 27 && closeModal())

@@ -1,3 +1,4 @@
+import { fixture as mediaFixture } from './helpers/media-consent-fixture.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
@@ -41,7 +42,7 @@ function loaders () {
     })
   })
   const api = vm.runInNewContext(source('leaflet') + '\n;({ loadLeaflet, loadLeafletDraw })', {
-    window, params: {}, loadStyle: load('style'), loadScript: load('script')
+    window, params: { leafletBase: '/example/vendor/leaflet/' }, loadStyle: load('style'), loadScript: load('script')
   })
   return { api, requests, window, leaflet }
 }
@@ -147,65 +148,29 @@ test('scrollShot waits for async success, handles rejection and waits for reinte
   assert.equal(observer.observed.size, 0)
 })
 
-for (const [module, init, area] of [['map', 'initMap', false], ['form-geo', 'initFormGeo', false], ['form-geo', 'initFormGeo', true]]) {
+for (const [module, area] of [['map', false], ['form-geo', false], ['form-geo', true]]) {
   test(`${module}${area ? ' area' : ''} retries failed SDK loading, shares concurrent starts and initializes once`, async () => {
-    const nodes = [0, 1].map(id => ({
-      id: `map-${id}`,
-      dataset: { view: '{"coordinates":[0,0]}', area: String(area) },
-      nextElementSibling: { children: [] },
-      parentElement: { querySelector: () => ({ value: '' }) }
-    }))
-    const fixture = observers(nodes)
-    fixture.document.documentElement = { clientWidth: 1024 }
-    fixture.document.querySelector = () => ({ style: {} })
-    const created = []
-    const errors = []
-    let sdkAttempts = 0
-    let drawAttempts = 0
-    const map = { setView () { return this }, addLayer () {}, fitBounds () {}, on () {}, addControl () {} }
-    const marker = { addTo () { return this }, bindPopup () { return this }, openPopup () {} }
-    const context = {
-      ...fixture,
-      params: {},
-      console: { error: error => errors.push(error) },
-      loadLeaflet: () => { sdkAttempts++; return !area && sdkAttempts === 1 ? Promise.reject(new Error('offline')) : Promise.resolve() },
-      loadLeafletDraw: () => { drawAttempts++; return drawAttempts === 1 ? Promise.reject(new Error('draw offline')) : Promise.resolve() },
-      myIcon () {},
-      fill: () => ({ style: {} }),
-      tile () {},
-      L: {
-        map: node => { created.push(node); return map },
-        marker: () => marker,
-        latLngBounds: () => ({}),
-        FeatureGroup: class {},
-        Control: { Draw: class {} },
-        Draw: { Event: { CREATED: 'draw:created' } }
-      }
-    }
-    const api = vm.runInNewContext(source('scroll-shot') + '\n' + source(module) + `\n;({ ${init} })`, context)
-    // Repeated initialization while loading must not start the same map twice.
-    api[init]()
-    api[init]()
-    fixture.instances.forEach(observer => observer.emit())
+    const fixture = mediaFixture(module, { area })
+    fixture.grant(true)
+    fixture.failSDK()
+    fixture.init()
+    fixture.init()
+    fixture.intersect()
+    fixture.intersect()
     await flush()
-    assert.equal(sdkAttempts, 2)
-    assert.equal(created.length, 1)
-    const before = sdkAttempts + drawAttempts
+    assert.equal(fixture.loaded.filter(name => name === 'leaflet').length, 1)
+    assert.equal(fixture.maps.length, 0)
+    assert.equal(fixture.errors.length, 1)
+    assert.equal(fixture.notice.hidden, false)
+    fixture.notice.children[0].click()
+    fixture.notice.children[0].click()
     await flush()
-    assert.equal(sdkAttempts + drawAttempts, before)
-    assert.ok(errors.length > 0)
-    fixture.instances.forEach(observer => { observer.emit(false); observer.emit() })
+    assert.equal(fixture.maps.length, 1)
+    assert.equal(fixture.loaded.filter(name => name === 'leaflet').length, 2)
+    if (area) assert.equal(fixture.drawRequests, 1)
+    fixture.init()
+    fixture.intersect()
     await flush()
-    assert.equal(created.length, 2)
-    assert.equal(new Set(created).size, 2)
-    assert.ok(fixture.instances.every(observer => observer.observed.size === 0))
-    api[init]()
-    fixture.instances.at(-1).emit()
-    await flush()
-    assert.equal(created.length, 2)
-    fixture.document.querySelectorAll = () => []
-    const count = fixture.instances.length
-    api[init]()
-    assert.equal(fixture.instances.length, count)
+    assert.equal(fixture.maps.length, 1)
   })
 }

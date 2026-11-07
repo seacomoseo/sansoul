@@ -236,30 +236,14 @@ function decorateLinkPlaceholder (element) {
   // not present yet, Sveltia is still showing its temporary component label.
   if (!source.includes(SUMMARY_SEPARATOR)) return
 
-  const [icon = '', anchor = '', btn = '0', swap = '0'] = source.split(SUMMARY_SEPARATOR)
+  const [il = '', anchor = '', btn = '0', ir = ''] = source.split(SUMMARY_SEPARATOR)
   const preview = getPreviewHost(element, 'link')
 
   if (preview.dataset.source === source && preview.childNodes.length) return
 
   preview.dataset.source = source
   preview.classList.toggle('is-button', btn === '1')
-  preview.replaceChildren()
-
-  const iconPreview = icon
-    ? createIconPreviewElement(icon, { size: '1.15em' })
-    : null
-  const text = document.createElement('span')
-
-  text.className = 'sansoul-editor-link-text'
-  text.textContent = anchor
-
-  if (swap === '1') {
-    preview.appendChild(text)
-    if (iconPreview) preview.appendChild(iconPreview)
-  } else {
-    if (iconPreview) preview.appendChild(iconPreview)
-    preview.appendChild(text)
-  }
+  fillLinkPreview(preview, { il, ir, anchor })
 }
 
 function formatShortcode ({ type = '', name = '', params = '', closing = false } = {}) {
@@ -417,27 +401,23 @@ function initInlineComponentPreviews () {
   })
 }
 
-function renderLinkPreview ({ icon = '', anchor = '', btn = false, swap = false } = {}) {
-  const preview = document.createElement('span')
+function fillLinkPreview (preview, { il = '', ir = '', anchor = '' }) {
   const text = document.createElement('span')
-  const iconPreview = icon
-    ? createIconPreviewElement(icon, { size: '1.15em' })
-    : null
-
-  preview.className = 'sansoul-editor-preview sansoul-editor-preview--link'
-  preview.classList.toggle('is-button', Boolean(btn))
-
   text.className = 'sansoul-editor-link-text'
   text.textContent = anchor
 
-  if (swap) {
-    preview.appendChild(text)
-    if (iconPreview) preview.appendChild(iconPreview)
-  } else {
-    if (iconPreview) preview.appendChild(iconPreview)
-    preview.appendChild(text)
-  }
+  preview.replaceChildren(
+    ...(il ? [createIconPreviewElement(il, { size: '1.15em' })] : []),
+    text,
+    ...(ir ? [createIconPreviewElement(ir, { size: '1.15em' })] : [])
+  )
+}
 
+function renderLinkPreview (value = {}) {
+  const preview = document.createElement('span')
+  preview.className = 'sansoul-editor-preview sansoul-editor-preview--link'
+  preview.classList.toggle('is-button', Boolean(value.btn))
+  fillLinkPreview(preview, value)
   return preview
 }
 
@@ -712,12 +692,13 @@ export function initEditorComponents () {
     icon: 'link',
     trigger: 'button',
     mode: 'dialog',
-    summary: `{{icon}}${SUMMARY_SEPARATOR}{{anchor}}${SUMMARY_SEPARATOR}{{btn | ternary('1', '0')}}${SUMMARY_SEPARATOR}{{swap | ternary('1', '0')}}`,
+    summary: `{{il}}${SUMMARY_SEPARATOR}{{anchor}}${SUMMARY_SEPARATOR}{{btn | ternary('1', '0')}}${SUMMARY_SEPARATOR}{{ir}}`,
     fields: [
       { name: 'url', label: t.url },
       { name: 'anchor', label: t.md_anchor, required: false },
       { name: 'title', label: t.md_title, required: false },
-      { name: 'icon', label: t.icon, widget: 'icon', hint: t.icon_hint, required: false },
+      { name: 'il', label: t.il, widget: 'icon', hint: t.icon_hint, required: false },
+      { name: 'ir', label: t.ir, widget: 'icon', hint: t.icon_hint, required: false },
       { name: 'btn', label: t.md_btn, widget: 'boolean', required: false },
       { name: 'dot', label: t.md_dot, widget: 'boolean', required: false },
       { name: 'sm', label: 'Small', widget: 'boolean', required: false },
@@ -747,11 +728,11 @@ export function initEditorComponents () {
         options: [
           { value: '', label: t['opt-scroll-none'] },
           { value: 'lock', label: t.lock },
-          { value: 'homefollow', label: t.md_homefollow }
+          { value: 'sublock', label: t.md_sublock }
         ]
       },
       { name: 'blank', label: t.md_blank, widget: 'boolean', required: false },
-      { name: 'ga4', label: t.ga4, hint: t.ga4_hint, widget: 'boolean', required: false }
+      { name: 'ga4', label: t.ga4, hint: t.ga4_hint, widget: 'string', required: false }
     ],
     pattern: linkPattern,
     fromBlock: parseLinkMatch,
@@ -867,6 +848,8 @@ export function initEditorComponents () {
           { name: 'src', label: t['opt-widget-vimg'], widget: 'file', choose_url: true, max_file_size: 25000000, accept: IMAGE_VIDEO_ACCEPT },
           { name: 'alt', label: 'Alt', required: false },
           { name: 'ratio', label: t.ratio, hint: t.ratio_hint, pattern: [/^[\d/]*$/, t.ratio_pattern], required: false },
+          { name: 'img_w', label: t.img_w, hint: t.img_w_hint, widget: 'number', value_type: 'int', min: 1, required: false },
+          { name: 'img_h', label: t.img_h, hint: t.img_h_hint, widget: 'number', value_type: 'int', min: 1, required: false },
           { name: 'title', label: t.md_title, required: false },
           { name: 'url', label: t.url, required: false }
         ]
@@ -898,6 +881,8 @@ export function initEditorComponents () {
       { name: 'images', label: t.imgs, widget: 'file', multiple: true, choose_url: true, max_file_size: 25000000, accept: IMAGE_VIDEO_ACCEPT },
       { name: 'alt', label: 'Alt', required: false },
       { name: 'ratio', label: t.ratio, hint: t.ratio_hint, required: false },
+      { name: 'img_w', label: t.img_w, hint: t.img_w_hint, widget: 'number', value_type: 'int', min: 1, required: false },
+      { name: 'img_h', label: t.img_h, hint: t.img_h_hint, widget: 'number', value_type: 'int', min: 1, required: false },
       { name: 'title', label: t.md_title, required: false }
     ],
     pattern: /^<!-- gallery-simple -->\n(?<gallery>(?:!\[[^\n]*\]\([^\n]+\)(?:\n|$))+)/m,
@@ -905,6 +890,8 @@ export function initEditorComponents () {
       const gallery = match.groups?.gallery ?? match[1] ?? ''
       const images = []
       let ratio = ''
+      let img_w = ''
+      let img_h = ''
       let title = ''
       let alt = ''
       gallery.trim().split('\n').forEach((line, index) => {
@@ -914,15 +901,17 @@ export function initEditorComponents () {
         images.push(image.src)
         if (index === 0) {
           ratio = image.ratio
+          img_w = image.img_w ?? ''
+          img_h = image.img_h ?? ''
           title = image.title
           alt = image.alt
         }
       })
-      return { images, ratio, title, alt }
+      return { images, ratio, img_w, img_h, title, alt }
     },
-    toBlock: ({ images = [], ratio = '', title = '', alt = '' }) => {
+    toBlock: ({ images = [], ratio = '', img_w = '', img_h = '', title = '', alt = '' }) => {
       const imageValues = Array.isArray(images) ? images : [images].filter(Boolean)
-      const lines = imageValues.map((src, index) => formatImage({ src, ratio, alt, title: title && index ? `${title} ${index + 1}` : title }))
+      const lines = imageValues.map((src, index) => formatImage({ src, ratio, img_w, img_h, alt, title: title && index ? `${title} ${index + 1}` : title }))
       return `<!-- gallery-simple -->\n${lines.join('\n')}`
     },
     toPreview: () => ''
@@ -939,6 +928,8 @@ export function initEditorComponents () {
       { name: 'src', label: t.imgs, widget: 'file', choose_url: true, max_file_size: 25000000, accept: IMAGE_VIDEO_ACCEPT },
       { name: 'alt', label: 'Alt', required: false },
       { name: 'ratio', label: t.ratio, hint: t.ratio_hint, required: false },
+      { name: 'img_w', label: t.img_w, hint: t.img_w_hint, widget: 'number', value_type: 'int', min: 1, required: false },
+      { name: 'img_h', label: t.img_h, hint: t.img_h_hint, widget: 'number', value_type: 'int', min: 1, required: false },
       { name: 'title', label: t.md_title, required: false },
       { name: 'url', label: t.url, required: false }
     ],

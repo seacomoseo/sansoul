@@ -1,0 +1,44 @@
+{{/*
+Partial: func/set
+Purpose: Resolve bounded `{{ set sibling }}` interpolation without executing templates.
+Context:
+  - value (any, required): Authored map, slice, or scalar.
+  - path (string, optional): Diagnostic path.
+  - depth (int, optional): Current nesting depth; at most 64 levels.
+  - budget (Scratch, optional): Local reference/output-byte counters shared across recursive calls.
+  - deferred (slice, optional): Map keys owned by a later composition/merge phase.
+  - composed (bool, optional): Defer SanSoul defaults/collections until their effective merge.
+Returns: A new value; references resolve only scalar siblings in their current map.
+Side effects: Reports invalid explicit references with errorf, failing the build.
+*/}}
+{{ $value := .value }}
+{{ $budget := .budget | default (newScratch) }}
+{{ $path := .path | default "item" }}
+{{ $depth := int (.depth | default 0) }}
+{{ $deferred := .deferred | default slice }}
+{{ if .composed }}
+  {{ $deferred = slice "box" "boxes" "modal" "modals" "section" "sections" "dot" "dots" "when" "whens" "link" "links" "review" "reviews" "faq" "faqs" "get" "remap" "_preview" "parent" "prev" "next" }}
+{{ end }}
+{{ if gt $depth 64 }}
+  {{ errorf "SanSoul set: nesting exceeds 64 levels at %s" $path }}
+{{ else if reflect.IsMap $value }}
+  {{ $resolved := dict }}
+  {{ range $key, $entry := $value }}
+    {{ $next := print $path "." $key }}
+    {{ if in $deferred $key }}
+      {{ $resolved = merge $resolved (dict $key $entry) }}
+    {{ else }}
+      {{ $entry = partial "func/set-value" (dict "value" $entry "scope" $value "stack" (slice $key) "path" $next "depth" $depth "deferred" $deferred "budget" $budget) }}
+      {{ $resolved = merge $resolved (dict $key $entry) }}
+    {{ end }}
+  {{ end }}
+  {{ $value = $resolved }}
+{{ else if reflect.IsSlice $value }}
+  {{ $resolved := slice }}
+  {{ range $index, $entry := $value }}
+    {{ $entry = partial "func/set" (dict "value" $entry "path" (printf "%s[%d]" $path $index) "depth" (add $depth 1) "deferred" $deferred "budget" $budget) }}
+    {{ $resolved = $resolved | append (slice $entry) }}
+  {{ end }}
+  {{ $value = $resolved }}
+{{ end }}
+{{ return $value }}

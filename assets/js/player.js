@@ -31,10 +31,15 @@ export function initPlayer () {
     const refreshConsent = () => {
       const allowed = hasConsent('media', cookiesLegal)
       if (!allowed) {
-        for (const [wrapper, { children, id }] of activeMedia) {
+        for (const [wrapper, { children, id, local }] of activeMedia) {
+          if (local) continue
           try { Promise.resolve(players[id]?.destroy?.()).catch(() => {}) } catch {}
           delete players[id]
-          if (wrapper.isConnected) wrapper.replaceChildren(...children)
+          if (wrapper.isConnected) {
+            wrapper.replaceChildren(...children)
+            wrapper.classList.remove('img--loading')
+            wrapper.removeAttribute('aria-busy')
+          }
           activeMedia.delete(wrapper)
         }
       }
@@ -50,7 +55,7 @@ export function initPlayer () {
       const imgWithIframe = e.target.closest('.img')
       if (imgWithIframe) {
         const dataMedia = imgWithIframe.querySelector('[data-vid]')
-        if (!dataMedia) return
+        if (!dataMedia || activeMedia.has(imgWithIframe)) return
         const isVideoFile = dataMedia.hasAttribute('data-file')
         if (!isVideoFile && !hasConsent('media', cookiesLegal)) {
           dataMedia.setAttribute('not-cookie', '')
@@ -67,6 +72,31 @@ export function initPlayer () {
           }
         }
 
+        // Keep the poster in its original layout until a decoded frame or iframe
+        // document is ready. This also keeps failures retryable without a blank box.
+        const record = { children: [...imgWithIframe.childNodes], local: isVideoFile }
+        activeMedia.set(imgWithIframe, record)
+        imgWithIframe.classList.add('img--loading')
+        imgWithIframe.setAttribute('aria-busy', 'true')
+        const prepare = (media, eventName) => {
+          const current = () => activeMedia.get(imgWithIframe) === record
+          media.addEventListener(eventName, () => {
+            if (!current() || !media.isConnected) return
+            imgWithIframe.replaceChildren(media)
+            imgWithIframe.classList.remove('img--loading')
+            imgWithIframe.removeAttribute('aria-busy')
+          }, { once: true })
+          media.addEventListener('error', () => {
+            if (!current()) return
+            try { Promise.resolve(players[record.id]?.destroy?.()).catch(() => {}) } catch {}
+            delete players[record.id]
+            imgWithIframe.replaceChildren(...record.children)
+            imgWithIframe.classList.remove('img--loading')
+            imgWithIframe.removeAttribute('aria-busy')
+            activeMedia.delete(imgWithIframe)
+          }, { once: true })
+        }
+
         if (isVideoFile) {
           const video = document.createElement('video')
           video.className = className
@@ -76,18 +106,13 @@ export function initPlayer () {
           video.controls = true
           video.playsInline = true
           copyDimensions(video)
-          imgWithIframe.replaceChildren(video)
-
-          // Remove play button
-          video.nextElementSibling?.remove()
+          prepare(video, 'loadeddata')
+          imgWithIframe.append(video)
         } else {
           const isYT = dataMedia.dataset.youtube === ''
           const idVideo = videoId(src)
           const id = playerId(dataMedia, idVideo)
-          activeMedia.set(imgWithIframe, {
-            children: [...imgWithIframe.childNodes].map(node => node.cloneNode(true)),
-            id
-          })
+          record.id = id
           const attrsLang = lang === 'es' ? '' : `&cc_load_policy=1&hl=${lang}&cc_lang_pref=${lang}`
           const iframe = document.createElement('iframe')
           iframe.className = className
@@ -97,11 +122,11 @@ export function initPlayer () {
           iframe.allow = isYT
             ? 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay'
             : 'fullscreen; autoplay'
-          imgWithIframe.replaceChildren(iframe)
-          observeVideoDimensions(iframe)
+          prepare(iframe, 'load')
 
-          // Remove play button
-          iframe.nextElementSibling?.remove()
+          iframe.src = isYT ? `${src}${attrsLang}&autoplay=1&origin=${location.origin}&showinfo=0` : `${src}&autoplay=1`
+          imgWithIframe.append(iframe)
+          observeVideoDimensions(iframe)
 
           // Init Player
           function initPlayer () {
@@ -135,8 +160,6 @@ export function initPlayer () {
             iframe.addEventListener('load', initPlayer, { once: true })
           }
 
-          // Assigns the URL
-          iframe.src = isYT ? `${src}${attrsLang}&autoplay=1&origin=${location.origin}&showinfo=0` : `${src}&autoplay=1`
         }
       }
     })

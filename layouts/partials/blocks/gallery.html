@@ -43,7 +43,7 @@
     -}}
 
     {{- /* STYLE  */ -}}
-    {{- $style := slice
+    {{- $style := (partial "blocks/margin-style" .) | append
       (cond (or (eq .gap 0.5) (eq .gap nil)) "" (print "--gallery-gap:" .gap "em"))
       (cond (not .ratio)                     "" (print "--gallery-ratio:" .ratio))
     -}}
@@ -83,7 +83,8 @@
             "class"  "gallery__expand"
             "btn"    (or .btn "light")
             "ga4"    .ga4
-            "icon"   (cond (eq .pin "none") "" .pin)
+            "il"     .il
+            "ir"     .ir
             "anchor" (or .anchor "auto")
             "url"    .url
             "lock"   .lock
@@ -100,7 +101,8 @@
           "btn"    (or .btn "cta")
           "swap"   .swap
           "ga4"    .ga4
-          "icon"   .icon
+          "il"     .il
+          "ir"     .ir
           "label"  .label
           "anchor" (or .anchor "auto")
           "lock"   .lock

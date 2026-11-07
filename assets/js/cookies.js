@@ -14,18 +14,25 @@ export function initCookies () {
   }
 
   if (cookiesMessage) {
+    let visibilityGeneration = 0
     function cookiesOpen () {
+      const generation = ++visibilityGeneration
       const checkboxes = cookiesMessage.querySelectorAll('input[name="cookies"]')
       checkboxes.forEach(e => {
         if (!e.disabled) e.checked = hasConsent(e.value, cookiesLegal)
       })
       cookiesMessage.removeAttribute('hidden')
       cookiesMessage.querySelector('[data-b]').focus()
-      setTimeout(() => cookiesMessage.classList.remove('cookies--hide'), 10)
+      setTimeout(() => {
+        if (generation === visibilityGeneration) cookiesMessage.classList.remove('cookies--hide')
+      }, 10)
     }
     function cookiesClose () {
+      const generation = ++visibilityGeneration
       cookiesMessage.classList.add('cookies--hide')
-      setTimeout(() => cookiesMessage.setAttribute('hidden', 'until-found'), 300)
+      setTimeout(() => {
+        if (generation === visibilityGeneration) cookiesMessage.setAttribute('hidden', 'until-found')
+      }, 300)
     }
     function cookiesToggle () {
       const isCookiesOpen = document.querySelector('.cookies[hidden="until-found"]')
@@ -42,35 +49,49 @@ export function initCookies () {
     }
 
     function cookiesAccept (c) {
-      localStorage.controlcookie = nextCounter(localStorage.controlcookie)
-      cookiesClose()
-
-      // Accept all or specific cookies
       const aceptAll = c.classList.contains('cookies__btn--all')
       const rejectAll = c.classList.contains('cookies__btn--reject')
       const checkboxes = cookiesMessage.querySelectorAll('input[name="cookies"]')
-
-      if (rejectAll) {
-        checkboxes.forEach(e => {
-          if (!e.disabled) e.checked = false
-        })
+      const accepted = [...checkboxes].map(input => [input.value, aceptAll || (input.checked && (!rejectAll || input.disabled))])
+      const previous = new Map()
+      let storage
+      try {
+        storage = window.localStorage
+        for (const key of ['controlcookie', ...accepted.map(([type]) => `controlcookie${type}`)]) {
+          previous.set(key, storage.getItem(key))
+        }
+        for (const [type, enabled] of accepted) {
+          const key = `controlcookie${type}`
+          if (enabled) storage[key] = nextCounter(previous.get(key))
+          else storage.removeItem(key)
+        }
+        // Record completion only after all category changes have persisted.
+        storage.controlcookie = nextCounter(previous.get('controlcookie'))
+      } catch {
+        // Storage may reject rollback too; retain the banner and emit no grants.
+        for (const [key, value] of previous) {
+          try {
+            if (value === null) storage.removeItem(key)
+            else storage[key] = value
+          } catch {}
+        }
+        cookiesOpen()
+        return
       }
 
-      checkboxes.forEach(e => {
-        const type = e.value
-        if (aceptAll || e.checked) {
-          localStorage[`controlcookie${type}`] = nextCounter(localStorage[`controlcookie${type}`])
-          window.dispatchEvent(new CustomEvent(`cookies:${type}`))
-
-          if (type === 'analytics') {
-            if (typeof googleAnalytics === 'function' && cookiesLegal) {
-              googleAnalytics()
-            }
-          }
-        } else {
-          localStorage.removeItem(`controlcookie${type}`)
+      cookiesClose()
+      if (rejectAll) {
+        checkboxes.forEach(input => {
+          if (!input.disabled) input.checked = false
+        })
+      }
+      for (const [type, enabled] of accepted) {
+        if (!enabled) continue
+        window.dispatchEvent(new CustomEvent(`cookies:${type}`))
+        if (type === 'analytics' && typeof googleAnalytics === 'function' && cookiesLegal) {
+          googleAnalytics()
         }
-      })
+      }
       window.dispatchEvent(new CustomEvent('cookies:changed', {
         detail: Object.fromEntries([...checkboxes].map(input => [input.value, hasConsent(input.value, cookiesLegal)]))
       }))
@@ -89,6 +110,10 @@ export function initCookies () {
     })
 
     // Add class active from cookies message if cookies don't acept
-    if (localStorage.controlcookie) cookiesClose()
+    try {
+      if (window.localStorage.getItem('controlcookie')) cookiesClose()
+    } catch {
+      // Unavailable storage must leave the consent prompt available.
+    }
   }
 }

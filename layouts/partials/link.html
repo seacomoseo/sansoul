@@ -5,7 +5,7 @@
     "dot"    boolean
     "sm"     boolean
     "swap"   boolean
-    "ga4"    boolean
+    "ga4"    string
 
     "icon"   string
     "def"    string
@@ -24,6 +24,7 @@
 
 {{- /*  SUB MAIL  */ -}}
 {{- define "partials/sub-mail" -}}
+  {{- $ga4 := .ga4 -}}
   <i class="tooltip bg such" style="--copied: '{{ i18n `copied` }}'">
     {{- "" -}}
     <i class="bg-color"></i>
@@ -41,6 +42,7 @@
     -}}
       {{- partial "link" (dict
         "class" (print "mail__opt-" .class)
+        "ga4"   $ga4
         "btn"   "cta"
         "sm"    true
         "swap"  true
@@ -182,9 +184,9 @@
   {{- else -}}
     {{- $class_type = slice
       "btn"
-      (cond (not .dot)      "" "btn--dot")
-      (cond (not .sm)       "" "btn--sm")
-      (cond (not .swap)     "" "btn--swap")
+      (cond (not .dot)  "" "btn--dot")
+      (cond (not .sm)   "" "btn--sm")
+      (cond (not .swap) "" "btn--swap")
       (cond (eq $btn "cta") "" $btn)
     -}}
   {{- end -}}
@@ -198,7 +200,8 @@
   {{- $class = . | append $class -}}
 {{- end -}}
 {{- /*  GA4  */ -}}
-{{- if .ga4 -}}
+{{- $ga4 := partial "func/ga4-event" .ga4 -}}
+{{- if $ga4 -}}
   {{- $class = $class | append "ga4" -}}
 {{- end -}}
 
@@ -295,6 +298,8 @@
 {{- $attrs := dict
   "type"          $type
   "class"         $class
+  "style"         .style
+  "data-ga4"      $ga4
   "data-more"     $more_data
   "data-lightbox" $lb_data
   "data-b"        $b_data
@@ -311,10 +316,13 @@
 
 {{- /*  HTML  */}}
 {{- print "<" $tag $attrs ">" | safeHTML -}}
-  {{- if or .icon .def -}}
-    {{- if ne .icon "hide" -}}
-      {{- partial "icon" (dict "icon" .icon "def" .def) -}}
-    {{- end -}}
+  {{- $il := .il -}}
+  {{- if eq $il nil -}}{{- $il = .icon -}}{{- end -}}
+  {{- if and (or $il .def) (not (in (slice "hide" "none") $il)) -}}
+    {{- partial "icon" (dict "icon" $il "def" .def "class" "icon--left") -}}
   {{- end -}}
   {{- $label -}}
+  {{- if and .ir (not (in (slice "hide" "none") .ir)) -}}
+    {{- partial "icon" (dict "icon" .ir "class" "icon--right") -}}
+  {{- end -}}
 {{- print "</" $tag ">" | safeHTML -}}

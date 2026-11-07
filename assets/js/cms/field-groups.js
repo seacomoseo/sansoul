@@ -10,7 +10,12 @@ function cleanField (field) {
   delete result[metadataKey]
   if (Array.isArray(result.fields)) result.fields = result.fields.map(cleanField)
   if (result.field) result.field = cleanField(result.field)
-  if (Array.isArray(result.types)) result.types = result.types.map(type => ({ ...type, fields: (type.fields || []).map(cleanField) }))
+  if (Array.isArray(result.types)) result.types = result.types.map(type => {
+    // Variable-list variants are type definitions, not ordinary object fields.
+    const variant = { ...type, fields: (type.fields || []).map(cleanField) }
+    for (const key of ['required', 'i18n', 'collapsed']) delete variant[key]
+    return variant
+  })
   return result
 }
 
@@ -51,7 +56,7 @@ function compileFields (fields = []) {
   }
   const rootList = output.length === 1 && output[0].root && output[0].widget === 'list'
   const plan = { output, groups, children, owners, rootList }
-  if (!rootList) output.push({ name: SOURCE_TOKEN, widget: 'hidden', required: false, i18n: true })
+  if (!rootList) output.push({ name: SOURCE_TOKEN, widget: 'hidden', i18n: true })
   for (const child of children.values()) {
     if (Object.hasOwn(child.field, 'default')) child.field.default = transformChild(child.field.default, child, true)
     if (record(child.field.default_localized)) child.field.default_localized = Object.fromEntries(Object.entries(child.field.default_localized).map(([locale, value]) => [locale, transformChild(value, child, true)]))

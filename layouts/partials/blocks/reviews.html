@@ -1,8 +1,13 @@
+{{- $items := slice -}}
+{{- range $index, $entry := .reviews -}}
+  {{- $entry = partial "func/set" (dict "value" (merge ($.review | default dict) $entry) "path" (printf "reviews[%d]" $index) "composed" true) -}}
+  {{- $items = $items | append $entry -}}
+{{- end -}}
 {{- if .review.slider }}
-  <div class="slider box__block" {{ with .review.time }}data-time="{{ . }}"{{ end }}>
+  <div class="slider box__block"{{ partial "func/attrs" (dict "style" (partial "blocks/margin-style" .review)) }}{{ if .review.infinite }} data-infinite="true"{{ end }} {{ with .review.time }}data-time="{{ . }}"{{ end }}>
 {{- end }}
 
-<div class="reviews {{- if .review.slider }} slider__track{{- else }} box__block{{ end }}">
+<div class="reviews {{- if .review.slider }} slider__track{{- else }} box__block{{ end }}"{{ if not .review.slider }}{{ partial "func/attrs" (dict "style" (partial "blocks/margin-style" .review)) }}{{ end }}>
 
   {{- /* REVIEWS CLASS  */ -}}
   {{- $slider     := cond (not .review.slider) "" " slider__items" -}}
@@ -33,8 +38,8 @@
   
   {{- /*  HTML  */}}
   <div {{- $attrs }}>
-    {{- range .reviews -}}
-      {{- with merge $.review . -}}
+    {{- range $items -}}
+      {{- with . -}}
 
         {{- /* REVIEW ITEM CLASS  */ -}}
         {{- $bgc      := partial "func/color-background" (dict "child" .color "parent" $.bgcp) -}}
@@ -80,7 +85,7 @@
             <div class="bg-color"></div>
             {{ partial "icon" (dict
               "class" "review__icon review__icon--left"
-              "icon"  .icon
+              "icon"  .il
               "def"   "quote"
               ) }}
             <blockquote class="review__text">
@@ -90,7 +95,7 @@
             </blockquote>
             {{ partial "icon" (dict
               "class" "review__icon review__icon--right"
-              "icon"  (.icon_right | default .icon)
+              "icon"  (.ir | default .il)
               "def"   "quote"
               ) }}
           </div>
@@ -155,7 +160,7 @@
 </div>
 {{- /* SCHEMA  */}}
 <script type="application/ld+json">
-  {{- partial "schema/review" . | safeJS }}
+  {{- partial "schema/review" (merge . (dict "reviews" $items)) | safeJS }}
 </script>
 
 {{- if .review.slider }}

@@ -1,3 +1,11 @@
+{{/*
+Partial: cms/field
+Purpose: Normalize one authoring field into a native Sveltia field definition.
+Context: Field map with name/widget and optional var/alt aliases, options,
+  inheritance, localization and nested fields.
+Returns: Field map with translated labels, schema defaults and public widget keys.
+Side effects: None.
+*/}}
 {{ $var := print "&" .var }}
 {{ $o   := . }}
 {{ $loc := .alt | default .var }}
@@ -13,7 +21,7 @@
 {{ end }}
 
 {{ $widget := .widget | default (cond (not $from) "str" nil) }}
-{{ $o       = merge . (dict "var" nil "alt" nil "req" nil "sum" nil "multi" nil "<<" nil) }}
+{{ $o       = merge . (dict "var" nil "alt" nil "req" nil "sum" nil "multi" nil "opts" nil "allow_input" nil "show_raw" nil "max_file_size" nil "<<" nil) }}
 
 {{ if $from }}
   {{ if ne nil .req }}
@@ -24,8 +32,12 @@
     {{ $o = merge $o (dict "required" false) }}
   {{ end }}
   {{ if eq nil .i18n }}
-    {{ $wi18n := slice "str" "txt" "md" "img" "vid" "vimg" "dict" "slice" }}
+    {{ $wi18n := slice "str" "txt" "md" "dict" "slice" }}
     {{ $i18n  := cond (in $wi18n $widget) true "duplicate" }}
+    {{ if in (slice "img" "vid" "vimg" "file") $widget }}
+      {{/* Sveltia only supports duplicate_if_empty for scalar media values. */}}
+      {{ $i18n = cond (or .multi .multiple) true "duplicate_if_empty" }}
+    {{ end }}
     {{ $o      = merge $o (dict "i18n" $i18n) }}
   {{ end }}
 {{ end }}
@@ -33,8 +45,8 @@
 {{ with .sum }}
   {{ $o = merge $o (dict "summary" .) }}
 {{ end }}
-{{ with .opts }}
-  {{ $o = merge $o (dict "options" .) }}
+{{ if ne .opts nil }}
+  {{ $o = merge $o (dict "options" .opts) }}
 {{ end }}
 {{ with .multi }}
   {{ $o = merge $o (dict "multiple" .) }}
@@ -56,8 +68,10 @@
     {{ $o = merge $o (dict "time_format" `HH:mm`) }}
   {{ end }}
 {{ else if eq "color" $widget }}
-  {{ if eq nil .allow_input }}
-    {{ $o = merge $o (dict "allow_input" true) }}
+  {{ if eq nil .allowInput }}
+    {{ $allowInput := true }}
+    {{ if ne .allow_input nil }}{{ $allowInput = .allow_input }}{{ end }}
+    {{ $o = merge $o (dict "allowInput" $allowInput) }}
   {{ end }}
 {{ else if eq "code" $widget }}
   {{ $o = merge $o (dict "output_code_only" true) }}
@@ -66,17 +80,11 @@
   {{ end }}
 {{ else if eq "img" $widget }}
   {{ $o = merge $o (dict "widget" `image`) }}
-  {{ if eq nil .max_file_size }}
-    {{ $o = merge $o (dict "max_file_size" 25000000) }}
-  {{ end }}
   {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
 {{ else if eq "vid" $widget }}
   {{ $o = merge $o (dict "widget" `file`) }}
-  {{ if eq nil .max_file_size }}
-    {{ $o = merge $o (dict "max_file_size" 25000000) }}
-  {{ end }}
   {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
@@ -85,9 +93,6 @@
   {{ end }}
 {{ else if eq "vimg" $widget }}
   {{ $o = merge $o (dict "widget" `file`) }}
-  {{ if eq nil .max_file_size }}
-    {{ $o = merge $o (dict "max_file_size" 25000000) }}
-  {{ end }}
   {{ if eq nil .choose_url }}
     {{ $o = merge $o (dict "choose_url" true) }}
   {{ end }}
@@ -144,7 +149,7 @@
       "inline-image"
       "shortcode"
     }}
-    {{ $o = merge $o (dict "show_raw" true "buttons" $buttons "editor_components" $editor_components) }}
+    {{ $o = merge $o (dict "buttons" $buttons "editor_components" $editor_components) }}
   {{ end }}
 {{ else if eq "dict" $widget }}
   {{ $o = merge $o (dict "widget" `object`) }}
@@ -192,7 +197,7 @@
       {{ $o = merge $o (dict "label" .) }}
     {{ end }}
   {{ end }}
-  {{ if eq nil $.label_singular }}
+  {{ if and (eq $o.widget "list") (eq nil $.label_singular) }}
     {{ $sing := $.label_singular | default (index $t (print . "_singular")) }}
     {{ with $sing }}{{ $o = merge $o (dict "label_singular" .) }}{{ end }}
   {{ end }}
@@ -203,6 +208,22 @@
   {{ end }}
 {{ end }}
 
+{{ if and (eq $o.widget "markdown") (eq nil .modes) }}
+  {{ $modes := slice "rich_text" "raw" }}
+  {{ if eq .show_raw false }}{{ $modes = slice "rich_text" }}{{ end }}
+  {{ $o = merge $o (dict "modes" $modes) }}
+{{ end }}
+{{ if ne .max_file_size nil }}
+  {{ $libraries := $o.media_libraries | default dict }}
+  {{ $all := $libraries.all | default dict }}
+  {{ if eq $all.max_file_size nil }}
+    {{ $all = merge $all (dict "max_file_size" .max_file_size) }}
+  {{ end }}
+  {{ $o = merge $o (dict "media_libraries" (merge $libraries (dict "all" $all))) }}
+{{ end }}
+{{ if eq $o.widget "hidden" }}
+  {{ $o = merge $o (dict "required" nil) }}
+{{ end }}
 {{ $o = partial "func/obj-no-nil" $o }}
 
 {{ if $from }}

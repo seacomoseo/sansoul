@@ -62,8 +62,10 @@
 {{ if $name }}
   {{ $metadata := partial "func/video-metadata" .vid }}
   {{ $manual := dict }}
-  {{ with .vid_width | default .width }}{{ $manual = merge $manual (dict "width" .) }}{{ end }}
-  {{ with .vid_height | default .height }}{{ $manual = merge $manual (dict "height" .) }}{{ end }}
+  {{ $manualWidth := .vid_w }}{{ if eq $manualWidth nil }}{{ $manualWidth = .vid_width | default .width }}{{ end }}
+  {{ with $manualWidth }}{{ $manual = merge $manual (dict "width" .) }}{{ end }}
+  {{ $manualHeight := .vid_h }}{{ if eq $manualHeight nil }}{{ $manualHeight = .vid_height | default .height }}{{ end }}
+  {{ with $manualHeight }}{{ $manual = merge $manual (dict "height" .) }}{{ end }}
   {{ with .vid_duration | default .duration }}{{ $manual = merge $manual (dict "duration" .) }}{{ end }}
   {{ with .vid_upload | default .upload }}{{ $manual = merge $manual (dict "uploadDate" .) }}{{ end }}
   {{ with .vid_title | default .video_title }}{{ $manual = merge $manual (dict "name" .) }}{{ end }}

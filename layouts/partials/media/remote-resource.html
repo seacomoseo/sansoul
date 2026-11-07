@@ -1,0 +1,61 @@
+{{/*
+Partial: media/remote-resource
+Purpose: Fetch an opted-in external image and publish a content-addressed local resource.
+Context: string; absolute HTTP(S) image URL. Call only when config.imgs_remote is enabled.
+Returns: Map with resource and intrinsic dimensions; svg is true for external SVG.
+  An empty map preserves the caller's external-URL fallback after download/MIME failure.
+Side effects: Hugo's remote-resource cache/network; publishes the downloaded original
+  under u/remote/. Remote SVG stays an image document, never an inline SVG or sprite.
+*/}}
+{{- $url := . -}}
+{{- $result := dict -}}
+{{- $parsed := urls.Parse $url -}}
+{{- if and (in (slice "http" "https") $parsed.Scheme) $parsed.Host -}}
+  {{- $attempt := try (resources.GetRemote $url) -}}
+  {{- if $attempt.Err -}}
+    {{- warnf "SanSoul imgs_remote: cannot download %s; keeping the external image URL (%s)" $url $attempt.Err -}}
+  {{- else -}}
+  {{- with $attempt.Value -}}
+    {{- $remote := . -}}
+    {{- $type := lower .MediaType.Type -}}
+    {{- $extensions := dict "image/jpeg" "jpg" "image/png" "png" "image/gif" "gif" "image/webp" "webp" "image/tiff" "tif" "image/bmp" "bmp" "image/svg+xml" "svg" -}}
+    {{- $extension := index $extensions $type -}}
+    {{- if not $extension -}}
+      {{- warnf "SanSoul imgs_remote: unsupported image MIME %q at %s; keeping the external image URL" $type $url -}}
+    {{- else -}}
+      {{- $url_hash := substr (crypto.SHA256 $url) 0 16 -}}
+      {{- $fingerprint := $remote | fingerprint "sha256" -}}
+      {{- $content_hash := substr (crypto.SHA256 $fingerprint.Data.Integrity) 0 16 -}}
+      {{- $target := printf "u/remote/%s-%s.%s" $url_hash $content_hash $extension -}}
+      {{- $resource := $remote | resources.Copy $target -}}
+      {{- $svg := eq $extension "svg" -}}
+      {{- $dimensions := dict -}}
+      {{- $valid := true -}}
+      {{- if $svg -}}
+        {{- $size := try (partial "func/svg-sizes" $resource.Content) -}}
+        {{- if or $size.Err (not $size.Value.head) -}}
+          {{- $valid = false -}}
+        {{- else if and $size.Value.width $size.Value.height -}}
+          {{- $dimensions = dict "width" $size.Value.width "height" $size.Value.height -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $size := try (dict "width" $resource.Width "height" $resource.Height) -}}
+        {{- if $size.Err -}}
+          {{- $valid = false -}}
+        {{- else -}}
+          {{- $dimensions = $size.Value -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if $valid -}}
+        {{- $resource.Publish -}}
+        {{- $result = dict "resource" $resource "svg" $svg "dimensions" $dimensions -}}
+      {{- else -}}
+        {{- warnf "SanSoul imgs_remote: cannot decode image at %s; keeping the external image URL" $url -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnf "SanSoul imgs_remote: no image returned by %s; keeping the external image URL" $url -}}
+  {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

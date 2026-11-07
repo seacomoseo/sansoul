@@ -12,24 +12,23 @@ unknown:
   mapping: {}
 tpl:
   sections:
-  - params:
-      id: grouped-section
-      pt: 0
-      pb: null
-      view: [bg, titles]
-      boxes:
+  - id: grouped-section
+    pt: 0
+    pb: null
+    view: [ bg, titles ]
+    boxes:
       - title: Primera caja
         sub: ''
         pd: null
         lock: false
         tags: []
-        unknown: {empty: '', nil: null, enabled: false, amount: 0, items: [], mapping: {}}
+        unknown: { empty: '', nil: null, enabled: false, amount: 0, items: [], mapping: {} }
         boxes:
-        - title: Caja anidada
-          md: Contenido anidado
+          - title: Caja anidada
+            md: Contenido anidado
       - title: Segunda caja
         md: Segundo contenido
-      modals:
+    modals:
       - id: prueba-modal
         title: Modal de prueba
         md: Contenido del modal

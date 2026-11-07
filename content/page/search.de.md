@@ -6,3 +6,4 @@ sum: Schnellsuchfunktion zum Auffinden spezifischer Inhalte auf unserer Website.
 weight: 4
 type: system
 ---
+{{< search >}}

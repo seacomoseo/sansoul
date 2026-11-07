@@ -6,7 +6,7 @@ Context:
   - vid (string, optional): Video path or supported provider URL.
   - alt (string, optional): Alternative text; derived from the media source when empty.
 Renders: The matching image, video, or embedded-video markup.
-Side effects: May process local image resources.
+Side effects: May process local image resources; config.imgs_remote opts into cached external-image downloads.
 */}}
 {{- $src := or .vid .img -}}
 {{- if $src  -}}
@@ -52,17 +52,53 @@ Side effects: May process local image resources.
   {{- $lazy    := cond (not .notlazy) "lazy" "" -}}
   {{- $img_ext := hasPrefix $img "http" -}}
 
+  {{- $remote := dict -}}
+  {{- if and $img_ext hugo.Data.config.imgs_remote -}}
+    {{- $remote = partialCached "media/remote-resource" $img $img -}}
+    {{- with $remote.resource -}}
+      {{- $img = .RelPermalink -}}
+      {{- $img_ext = false -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $intrinsic := index $vid "presentation" | default dict -}}
+  {{- if not $vid -}}
+    {{- $resource := false -}}
+    {{- if $remote.resource -}}
+      {{- $resource = $remote.resource -}}
+    {{- else if not $img_ext -}}
+      {{- $resource = resources.Get $img -}}
+    {{- end -}}
+    {{- if $remote.resource -}}
+      {{- $intrinsic = $remote.dimensions -}}
+    {{- else -}}
+    {{- with $resource -}}
+      {{- if eq .MediaType.SubType "svg" -}}
+        {{- $size := partial "func/svg-sizes" .Content -}}
+        {{- $intrinsic = dict "width" $size.width "height" $size.height -}}
+      {{- else if eq .ResourceType "image" -}}
+        {{- $intrinsic = dict "width" .Width "height" .Height -}}
+      {{- end -}}
+    {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $dimensions := partial "media/dimensions" (merge . (dict "intrinsic" $intrinsic)) -}}
+  {{- if $vid -}}{{- $vid = merge $vid (dict "presentation" $dimensions) -}}{{- end -}}
+
   {{- $media_new := dict
-    "img"     $img
-    "vid"     $vid
-    "alt"     $alt
-    "lazy"    $lazy
-    "img_ext" $img_ext
+    "img"        $img
+    "vid"        $vid
+    "alt"        $alt
+    "lazy"       $lazy
+    "img_ext"    $img_ext
+    "dimensions" $dimensions
+    "resource"   $remote.resource
+    "remote_svg" $remote.svg
   -}}
   {{- $media = merge $media $media_new -}}
   {{- if or (index $vid "mute") (and $vid (not $img)) -}}
     {{- partial "media/vid" $media -}}
-  {{- else if $img_ext -}}
+  {{- else if or $img_ext $remote.svg -}}
     {{- partial "media/out-img" $media -}}
   {{- else if hasSuffix $img ".svg" -}}
     {{- partial "media/in-svg" $media -}}

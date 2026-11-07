@@ -1,16 +1,31 @@
-{{ $result := dict }}
-{{ $head   := . | findRE `<svg.*?>` }}
-{{ with index $head 0 }}
-  {{ $width  := 0 }}
-  {{ $height := 0 }}
-  {{ range . | findRESubmatch ` width="(.+?)"`  }}{{ $width  = index . 1 | float }}{{ end }}
-  {{ range . | findRESubmatch ` height="(.+?)"` }}{{ $height = index . 1 | float }}{{ end }}
-  {{ if and $width $height | not }}
-    {{ range . | findRESubmatch ` viewBox="([0-9eE\.\-]+) ([0-9eE\.\-]+) ([0-9eE\.\-]+) ([0-9eE\.\-]+)"` }}
-      {{ $width  = sub (float (index . 3)) (float (index . 1)) }}
-      {{ $height = sub (float (index . 4)) (float (index . 2)) }}
-    {{ end }}
-  {{ end }}
-  {{ $result = dict "head" . "width" $width "height" $height }}
-{{ end }}
-{{ return $result }}
+{{/*
+Partial: func/svg-sizes
+Purpose: Read an SVG root's intrinsic dimensions without treating its viewBox origin as size.
+Context: string; SVG source.
+Returns: Map with head, width and height when an SVG root exists. Unknown dimensions are zero.
+Side effects: None.
+*/}}
+{{- $result := dict -}}
+{{- $heads := findRE `(?s)<svg\b[^>]*>` . 1 -}}
+{{- with $heads -}}
+  {{- $head := index . 0 -}}
+  {{- $width := 0.0 -}}
+  {{- $height := 0.0 -}}
+  {{- range findRESubmatch `\swidth=["']([0-9]+(?:\.[0-9]+)?)(?:px)?["']` $head -}}{{- $width = float (index . 1) -}}{{- end -}}
+  {{- range findRESubmatch `\sheight=["']([0-9]+(?:\.[0-9]+)?)(?:px)?["']` $head -}}{{- $height = float (index . 1) -}}{{- end -}}
+  {{- range findRESubmatch `\sviewBox=["']\s*([+0-9eE.\-]+)[\s,]+([+0-9eE.\-]+)[\s,]+([+0-9eE.\-]+)[\s,]+([+0-9eE.\-]+)\s*["']` $head -}}
+    {{- $box_width := float (index . 3) -}}
+    {{- $box_height := float (index . 4) -}}
+    {{- if and (gt $box_width 0) (gt $box_height 0) -}}
+      {{- if and (gt $width 0) (le $height 0) -}}
+        {{- $height = mul $width (div $box_height $box_width) -}}
+      {{- else if and (gt $height 0) (le $width 0) -}}
+        {{- $width = mul $height (div $box_width $box_height) -}}
+      {{- else if and (le $width 0) (le $height 0) -}}
+        {{- $width = $box_width -}}{{- $height = $box_height -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $result = dict "head" $head "width" $width "height" $height -}}
+{{- end -}}
+{{- return $result -}}

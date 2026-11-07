@@ -85,7 +85,8 @@
     {{ else }}
       {{/* The final URL is selected after all pages have registered their SVGs. */}}
       {{ $svg_token := print "__SANSOUL_SVG_" ($svg_resource_id | urlize) "__" }}
-      {{ $html = print `<svg` $attrs `><use href="` $svg_token `"></use></svg>` | safeHTML }}
+      {{/* Standalone SVGs can retain intrinsic dimensions larger than the icon viewport. */}}
+      {{ $html = print `<svg` $attrs `><use href="` $svg_token `" width="100%" height="100%"></use></svg>` | safeHTML }}
     {{ end }}
   {{ else if $is_mat }}
     {{ partial "func/register-resource" (dict "kind" "glyph" "value" $icon) }}

@@ -7,7 +7,7 @@
       <li>
         {{- /*  if not icon, for mix of links with and without icons (fix escalar)  */ -}}
         {{- $outside := partial "func/icon-out" .Title -}}
-        {{- if and (not $outside.icon) (not $outside.pin) -}}
+        {{- if and (not $outside.icon) (not $outside.il) -}}
           <i class="icon--none"></i>
         {{- end -}}
         {{- /*  link  */ -}}

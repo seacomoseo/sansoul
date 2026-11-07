@@ -1,3 +1,10 @@
+{{/*
+Partial: func/img-og
+Purpose: Resolve the page's social image, with optional same-origin remote publication.
+Context: Page.
+Returns: Map with img (absolute URL) and svg (local SVG input when PNG conversion is needed).
+Side effects: Processes local social images; config.imgs_remote can download and publish external images.
+*/}}
 {{ $img := "" }}
 {{ $svg := "" }}
 
@@ -14,7 +21,10 @@
 {{ end }}
 
 {{ with $img }}
-  {{ if not (hasPrefix . "http") }}
+  {{ if and (hasPrefix . "http") hugo.Data.config.imgs_remote }}
+    {{ $remote := partialCached "media/remote-resource" . . }}
+    {{ with $remote.resource }}{{ $img = .Permalink }}{{ end }}
+  {{ else if not (hasPrefix . "http") }}
     {{ with resources.Get . }}
 
       {{ $img = .Permalink }}

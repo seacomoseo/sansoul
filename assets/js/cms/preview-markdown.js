@@ -141,6 +141,16 @@ export function renderPreviewMarkdown (document, markdown, options = {}) {
     const hasRatio = validRatio && validRatio.slice(1).every(part => Number.isFinite(Number(part)) && Number(part) > 0)
     const wrapper = make('div', `img${hasRatio ? ' img--ratio' : ''}${metadata.alt === 'disc' ? ' img--disc' : ''}`)
     if (hasRatio) wrapper.style.setProperty('--img-ratio', ratio)
+    const applyDimensions = (element, intrinsicWidth = 0, intrinsicHeight = 0) => {
+      if (!metadata.img_w && !metadata.img_h) return
+      let width = metadata.img_w || 0
+      let height = metadata.img_h || 0
+      const quotient = hasRatio ? Number(validRatio[1]) / Number(validRatio[2]) : intrinsicWidth > 0 && intrinsicHeight > 0 ? intrinsicWidth / intrinsicHeight : 0
+      if (quotient > 0 && width && !height) height = Math.max(1, Math.round(width / quotient))
+      if (quotient > 0 && height && !width) width = Math.max(1, Math.round(height * quotient))
+      if (width) element.width = width
+      if (height) element.height = height
+    }
     const original = safePreviewURL(metadata.src, origin)
     const resolved = options.resolveImage?.(metadata.src) ?? original
     const src = safePreviewURL(resolved, origin)
@@ -164,6 +174,8 @@ export function renderPreviewMarkdown (document, markdown, options = {}) {
           element.preload = 'metadata'
           if (metadata.alt) element.setAttribute('aria-label', metadata.alt)
         }
+        applyDimensions(element, element.width, element.height)
+        if (video.type === 'video') element.addEventListener?.('loadedmetadata', () => applyDimensions(element, element.videoWidth, element.videoHeight))
         wrapper.append(element)
       } else {
         const picture = make('picture', 'img__in')
@@ -171,6 +183,8 @@ export function renderPreviewMarkdown (document, markdown, options = {}) {
         image.src = src
         image.alt = metadata.alt === 'disc' ? '' : metadata.alt
         image.loading = 'lazy'
+        applyDimensions(image)
+        image.addEventListener?.('load', () => applyDimensions(image, image.naturalWidth, image.naturalHeight))
         picture.append(image)
         wrapper.append(picture)
       }

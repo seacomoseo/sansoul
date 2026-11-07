@@ -16,11 +16,13 @@ Side effects: None. Does not evaluate conditions or create alternate branches.
       {{ $child_path := "" }}
       {{ if $path }}{{ $child_path = print $path "." $key }}{{ end }}
       {{ $result = merge $result (dict $key (partial "preview/annotate" (dict "value" $child "path" $child_path))) }}
-      {{ if in (slice "title" "hanchor" "sub" "price" "md" "img" "alt" "url" "anchor") $key }}
+      {{ if in (slice "title" "hanchor" "sub" "price" "md" "img" "alt" "img_w" "img_h" "ratio" "url" "anchor") $key }}
         {{ if and (eq $key "md") (eq (strings.TrimSpace (printf "%v" $child)) "{{% content %}}") }}
           {{ $bindings = merge $bindings (dict $key (dict "path" "body")) }}
         {{ else if $child_path }}
           {{ $bindings = merge $bindings (dict $key (dict "path" $child_path)) }}
+        {{ else if in (slice "img_w" "img_h" "ratio") $key }}
+          {{ $bindings = merge $bindings (dict $key (dict "value" $child)) }}
         {{ else if eq (printf "%T" $child) "string" }}
           {{ if and (findRE $get_pattern $child) (not (in (replaceRE $get_pattern "" $child) "{{")) }}
             {{ $bindings = merge $bindings (dict $key (dict "template64" ($child | base64Encode))) }}

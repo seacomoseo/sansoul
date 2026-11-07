@@ -60,28 +60,52 @@ FFmpeg genera un JPEG de hasta 1080 píxeles por lado en `uploads/video-posters/
 
 ## Proporciones, dimensiones y datos manuales
 
-El vídeo y su póster usan los mismos atributos HTML `width` y `height`. Se priorizan las dimensiones conocidas; si solo se conoce el ratio, se calculan con el lado mayor de 1080 píxeles. Después se usan las dimensiones del póster elegido explícitamente o del póster local. La miniatura del proveedor no permite deducir la forma del vídeo. Si tampoco hay esas dimensiones y la URL original usa `youtube.com/shorts/`, el respaldo de presentación es vertical 608 × 1080 (9/16 redondeado); no se registra como un hecho ni como un indicador de Short. Una proporción conocida, incluso cuadrada, tiene prioridad. El respaldo restante es 1080 × 608: los atributos HTML requieren enteros, por lo que 607,5 se redondea. Estos respaldos son dimensiones de presentación y nunca se guardan como hechos del vídeo ni pasan al schema.
+Sin sobrescrituras de presentación, el vídeo y su póster usan los mismos atributos HTML `width` y `height`. Se priorizan las dimensiones conocidas; si solo se conoce el ratio, se calculan con el lado mayor de 1080 píxeles. Después se usan las dimensiones del póster elegido explícitamente o del póster local. La miniatura del proveedor no permite deducir la forma del vídeo. Si tampoco hay esas dimensiones y la URL original usa `youtube.com/shorts/`, el respaldo de presentación es vertical 608 × 1080 (9/16 redondeado); no se registra como un hecho ni como un indicador de Short. Una proporción conocida, incluso cuadrada, tiene prioridad. El respaldo restante es 1080 × 608: los atributos HTML requieren enteros, por lo que 607,5 se redondea. Estos respaldos son dimensiones de presentación y nunca se guardan como hechos del vídeo ni pasan al schema.
 
 Solo el `ratio` del autor activa `.img--ratio` y `--img-ratio` en el envoltorio. Ningún medio recibe `aspect-ratio` CSS. Sin ratio explícito, los medios conservan su tamaño natural con `max-width: 100%`. Un observador ajusta la altura del póster y del iframe al ancho disponible, sin estirar su ancho por encima del declarado; también respeta la proporción al sustituir el póster por el reproductor.
 
-En Markdown, el texto alternativo es el nombre accesible y la proporción se indica al final del título:
+`img_w` y `img_h`, disponibles en `box`, cada elemento de `boxes` y modales,
+sobrescriben las dimensiones de presentación de imágenes y vídeos. Aceptan
+enteros positivos en píxeles; los valores inválidos o cero se ignoran. Si se
+indican ambas medidas, se usan ambas. Si solo se indica una, se calcula la otra
+según `ratio` cuando es válido o, en su defecto, según la proporción intrínseca
+de la imagen o las dimensiones de presentación del vídeo resueltas arriba.
+Si una imagen remota no tiene dimensiones conocidas y tampoco se indica ratio,
+se conserva solo la medida proporcionada: no se descarga para averiguar su
+proporción. Estos ajustes no cambian los hechos de la caché ni el `VideoObject`.
+
+En Markdown, el texto alternativo es el nombre accesible. Al final del título se
+pueden indicar el ratio y dimensiones mediante tokens explícitos `w` y `h`:
 
 ```md
-![Ejemplo de alt](/u/base/video-demo.mp4 "Ejemplo de caption {3/2}")
+![Ejemplo de alt](/u/base/video-demo.mp4 "Ejemplo de caption {16/9 w360 h220}")
+![Solo ancho](/u/base/poster.png "Leyenda {w360}")
+![Solo alto](/u/base/poster.png "Leyenda {h220}")
+![Ratio y ancho](/u/base/poster.png "Leyenda {16/9 w360}")
+![Ratio y alto](/u/base/poster.png "Leyenda {16/9 h220}")
+![Ratio sin medidas](/u/base/poster.png "Leyenda {16/9}")
 ```
+
+Los tokens `w360 h220` sin ratio también son válidos. El ratio debe contener
+`/`; no se interpretan formas ambiguas como `{360}` o `{360x220}`. Se conserva la
+sintaxis anterior `{16/9}`. Un sufijo con tokens inválidos se mantiene como texto
+del título, sin aplicar parcialmente sus opciones.
 
 El nombre local automático se humaniza del archivo (`video-demo.mp4` → `Video demo`), sin usar títulos internos ni nombres ficticios. El `alt` de la instancia tiene prioridad; para proveedores se conserva el título obtenido cuando no hay uno explícito.
 
-Los parámetros públicos de metadatos opcionales son `vid_width`, `vid_height`,
+Los parámetros públicos de metadatos opcionales son `vid_w`, `vid_h`,
 `vid_duration`, `vid_upload`, `vid_title` y `vid_desc`. Están disponibles en el
 CMS dentro del grupo Imagen de cajas y modales. Sus valores sobrescriben la
 caché en esa instancia; omitirlos conserva los datos obtenidos. Los nombres
-anteriores se siguen leyendo como alias para no romper contenido existente.
+anteriores `vid_width` y `vid_height` (y los alias históricos `width` y `height`)
+se siguen leyendo para no romper contenido existente. Si la clave nueva tiene un valor no nulo, tiene prioridad sobre su alias. Se recomienda usar `vid_w` y `vid_h` en
+contenido nuevo y revisar manualmente los valores antiguos al editar en el CMS;
+no se reescriben automáticamente los archivos.
 `ratio`, `disc`, `contain`, `mute` y `#poster=…` mantienen su función.
 
 ```yaml
-vid_width: 1080
-vid_height: 1920
+vid_w: 1080
+vid_h: 1920
 vid_duration: PT12S
 vid_upload: '2025-01-01 00:00:00'
 vid_title: Título del vídeo

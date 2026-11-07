@@ -3,7 +3,7 @@
 
 {{ return dict
   "&redirects" (slice
-    (partial "cms/widget" (dict
+    (partial "cms/field" (dict
       "alt"     `redirects`
       "name"    `redirects`
       "widget"  `slice`
@@ -11,9 +11,9 @@
       "sum"    "{{fields.from}} → {{fields.to}} - ({{fields.type | default('301')}})"
       "root"    true
       "fields"  (slice
-        (partial "cms/widget" (dict "alt" `redirects_from` "name" `from`                                                             ))
-        (partial "cms/widget" (dict "alt" `redirects_to`   "name" `to`                                                               ))
-        (partial "cms/widget" (dict "alt" `redirects_type` "name" `type` "widget" `select` "opts" `~opts_redirects` "hint" $type_hint))
+        (partial "cms/field" (dict "alt" `redirects_from` "name" `from`                                                             ))
+        (partial "cms/field" (dict "alt" `redirects_to`   "name" `to`                                                               ))
+        (partial "cms/field" (dict "alt" `redirects_type` "name" `type` "widget" `select` "opts" `~opts_redirects` "hint" $type_hint))
       )
     ))
   )

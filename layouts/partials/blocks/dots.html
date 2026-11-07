@@ -1,56 +1,49 @@
-<div class="dots box__block btns">
-  {{- range .dots -}}
-    {{- $url   := . -}}
-    {{- $ga4   := "" -}}
-    {{- $icon  := "" -}}
-    {{- $label := "" -}}
-    {{- if reflect.IsMap . -}}
-      {{- $url   = .url -}}
-      {{- $ga4   = .ga4 -}}
-      {{- $icon  = .icon -}}
-      {{- $label = .label -}}
-    {{- end -}}
-    {{- with $url -}}
-      {{- if not $icon -}}
-        {{- $icons := dict
-          "facebook"  "brand:facebook-f"
-          "x.com"     "brand:x-twitter"
-          "twitter"   "brand:x-twitter"
-          "tiktok"    "brand:tiktok"
-          "instagram" "brand:instagram"
-          "youtube"   "brand:youtube"
-          "linkedin"  "brand:linkedin-in"
-          "github"    "brand:github-alt"
-          "gitlab"    "brand:gitlab"
-          "g.page"    "brand:google"
-          "mailto"    (partial "func/default-icon" "mail")
-        -}}
-        {{- range $k, $v := $icons -}}
-          {{- with in $url $k -}}
-            {{- $icon = $v -}}
-            {{- break -}}
-          {{- end -}}
-        {{- end -}}
-        {{- if not $icon -}}
-          {{- $icon = partial "func/default-icon" "share" -}}
+{{- /* Shared circular-link defaults retain legacy box-level fallback values. */ -}}
+{{- $defaults := merge (dict "btn" (or .btn "cta") "anchor" (or .anchor "auto") "lock" (or (eq nil .lock) .lock) "align_x" "center") (.dot | default dict) -}}
+{{- $items := slice -}}
+{{- range .dots -}}
+  {{- $item := dict "url" . -}}
+  {{- if reflect.IsMap . -}}{{- $item = . -}}{{- end -}}
+  {{- $item = partial "func/set" (dict "value" (merge $defaults $item) "path" "dots[]" "composed" true) -}}
+  {{- $url   := $item.url -}}
+  {{- $ga4   := "" -}}
+  {{- $icon  := "" -}}
+  {{- $label := "" -}}
+  {{- $ga4    = $item.ga4 -}}
+  {{- $icon   = $item.icon -}}
+  {{- $label  = $item.label -}}
+  {{- with $url -}}
+    {{- if not $icon -}}
+      {{- $icons := dict
+        "facebook"  "brand:facebook-f"
+        "x.com"     "brand:x-twitter"
+        "twitter"   "brand:x-twitter"
+        "tiktok"    "brand:tiktok"
+        "instagram" "brand:instagram"
+        "youtube"   "brand:youtube"
+        "linkedin"  "brand:linkedin-in"
+        "github"    "brand:github-alt"
+        "gitlab"    "brand:gitlab"
+        "g.page"    "brand:google"
+        "mailto"    (partial "func/default-icon" "mail")
+      -}}
+      {{- range $k, $v := $icons -}}
+        {{- with in $url $k -}}
+          {{- $icon = $v -}}
+          {{- break -}}
         {{- end -}}
       {{- end -}}
-      {{- if not $label -}}
-        {{- $label   = print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` "$2") | title -}}
-        {{- if hasPrefix . "mailto" -}}
-          {{- $label = print (i18n "follow_us") " Email" -}}
-        {{- end }}
-      {{- end }}
-      {{ partial "link" (dict
-        "url"    .
-        "btn"    (or $.btn "cta")
-        "dot"    true
-        "ga4"    $ga4
-        "icon"   $icon
-        "label"  $label
-        "anchor" (or $.anchor "auto")
-        "lock"   (or (eq nil $.lock) $.lock)
-      ) -}}
+      {{- if not $icon -}}
+        {{- $icon = partial "func/default-icon" "share" -}}
+      {{- end -}}
     {{- end -}}
-  {{- end }}
-</div>
+    {{- if not $label -}}
+      {{- $label   = print (i18n "follow_us") " " (. | replaceRE `https?://(.+?\.)?(.+?)\..+` "$2") | title -}}
+      {{- if hasPrefix . "mailto" -}}
+        {{- $label = print (i18n "follow_us") " Email" -}}
+      {{- end }}
+    {{- end }}
+    {{- $items = $items | append (merge $item (dict "url" . "il" $icon "label" $label "ga4" $ga4 "btn_dot" true "type" "custom")) -}}
+  {{- end -}}
+{{- end }}
+{{- partial "blocks/links" (dict "link" $defaults "links" $items "dots_mode" true) -}}

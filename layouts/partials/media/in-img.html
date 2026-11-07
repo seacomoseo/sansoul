@@ -5,11 +5,11 @@ Context: Media map; `img` is a required resource path. Optional keys include alt
 Renders: A picture/img element when the resource exists; otherwise nothing.
 Side effects: Production rendering writes image-derivative manifests consumed by scripts/imgs.js.
 */ -}}
-{{- $img      := resources.Get .img -}}
+{{- $img := .resource -}}
+{{- if not $img -}}{{- $img = resources.Get .img -}}{{- end -}}
 {{- $img_base := $img -}}
 {{- if $img -}}
-  {{/*  Image x size to srcset  */}}
-  {{- $s := hugo.Data.config.img_sizes | default 1.5 -}}
+  {{- $options := partial "media/image-options" . -}}
 
 
   {{- /*  PICTURE  */ -}}
@@ -43,11 +43,15 @@ Side effects: Production rendering writes image-derivative manifests consumed by
   {{- $img_attrs := dict
     "src"      ($img_base.RelPermalink | safeURL)
     "alt"      .alt
-    "width"    (cond (not (not .vid)) (index .vid "presentation" "width") $img_base.Width)
-    "height"   (cond (not (not .vid)) (index .vid "presentation" "height") $img_base.Height)
+    "width"    (index .dimensions "width")
+    "height"   (index .dimensions "height")
     "decoding" "async"
     "loading"  .lazy
   -}}
+  {{- if and .notlazy (not .is_modal) (not (in (.class | default "") "hover")) (not (page.Store.Get "sansoul.image.priority")) -}}
+    {{- page.Store.Set "sansoul.image.priority" true -}}
+    {{- $img_attrs = merge $img_attrs (dict "fetchpriority" "high") -}}
+  {{- end -}}
   {{- $img_attrs = partial "func/attrs" $img_attrs -}}
 
 
@@ -55,8 +59,9 @@ Side effects: Production rendering writes image-derivative manifests consumed by
 
   {{- $source_attrs := "" -}}
   {{- if hugo.IsProduction -}}
-    {{- $type := cond (not hugo.Data.config.webp) "avif" "webp" -}}
+    {{- $type := cond (not hugo.Data.config.imgs_webp) "avif" "webp" -}}
 
+    {{- $crop := dict -}}
     {{- /* CONTAIN  */ -}}
     {{- if not .contain -}}
       {{- $ratio := .ratio -}}
@@ -86,167 +91,42 @@ Side effects: Production rendering writes image-derivative manifests consumed by
               {{- $w = div $height_img $ratio_aim | int -}}
               {{- $h = $height_img -}}
             {{- end -}}
-            {{- $fill := print $w "x" $h " Center" -}}
-            {{- $img   = $img.Fill $fill -}}
-            {{- $path := $img | replaceRE `(.+)\.(.+)$` (print "$1-" $w "x" $h ".$2") -}}
-            {{- $img   = $img | resources.Copy $path -}}
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-
-    {{- $sizes       := slice -}}
-    {{- $srcsizes    := slice -}}
-    {{- $srcset      := slice -}}
-    {{- $src_reverse := false -}}
-
-    {{- /* SIZES  */ -}}
-    {{- if .max -}}
-
-      {{- if gt $img.Width .max -}}
-        {{- $sizes = slice .max -}}
-      {{- else -}}
-        {{- $sizes = slice $img.Width -}}
-      {{- end -}}
-
-    {{- else if gt $img.Width 320 -}}
-
-      {{- /*          problems
-          background images (sections and columns items)
-          fit with grow (columns items image)
-      */ -}}
-
-      {{- $fit_vl            := .fit_vl | default 1 -}}
-      {{- $fit_vs            := .fit_vs | default 1 -}}
-      {{- $containers        := hugo.Data.utilities.containers -}}
-      {{- $container         := .container | default "fluid" -}}
-      {{- $container_vl      := index $containers $container -}}
-      {{- $container_vs      := 393 -}}
-      {{- /* {{ $viewports := slice 375 425 768 1024 1280 }}  */ -}}
-      {{- $viewports         := slice 425 768 1280 -}}
-      {{- if lt $fit_vs 0.50 -}}
-        {{- $viewports        = slice 375 768 1280 -}}
-      {{- end -}}
-      {{- if eq $container "fluid" -}}
-        {{- $viewports        = $viewports | append 1440 -}}
-      {{- end -}}
-      {{- $vs                := hugo.Data.utilities.viewports.min -}}
-      {{- $vl                := hugo.Data.utilities.viewports.max -}}
-      {{- $size_vl           := mul $container_vl $fit_vl | float -}}
-      {{- $size_vs           := mul $container_vs $fit_vs | float -}}
-
-      {{- $sizes_base        := slice -}}
-      {{- range $viewports -}}
-        {{- $size            := 0 -}}
-        {{- if eq $container "fluid" -}}
-          {{- $size           = mul . $fit_vl -}}
-        {{- else -}}
-          {{- /* y = y1 + ( ((y2 - y1) * (x - x1)) / (x2 - x1) )  */ -}}
-          {{- $size           = add $size_vs (div (mul (sub $size_vl $size_vs) (sub . $vs)) (sub $vl $vs)) -}}
-        {{- end -}}
-        {{- $sizes_base       = $sizes_base | append (dict "size" $size "viewport" .) -}}
-      {{- end -}}
-
-      {{- /* if first > last  */ -}}
-      {{- if gt (index $sizes_base 0).size (index (last 1 $sizes_base) 0).size -}}
-        {{- $src_reverse      = true -}}
-        {{- $sizes_base       = $sizes_base | append (dict "size" 320 "viewport" 320) -}}
-      {{- end -}}
-
-      {{- $size_prev         := 10000 -}}
-      {{- $img_next          := 0 -}}
-      {{- $sizes_base_sort   := (sort $sizes_base "size" "desc") -}}
-      {{- range $key, $value := $sizes_base_sort -}}
-
-        {{- $size            := .size -}}
-        {{- $img_size        := div $img.Width $s -}}
-
-        {{- /* size = image_size only if size > image_size > next_size  */ -}}
-        {{- /* hide because remove --vw fluid / set visual breackpoints
-        {{- if le $img_size .size -}}
-          {{- $size_next     := (index $sizes_base_sort (add $key 1)).size | default 0 -}}
-          {{- if ge $img_size $size_next -}}
-            {{- $img_next     = add $img_next 1 -}}
-            {{- if eq $img_next 1 -}}
-              {{- $size       = $img_size -}}
+            {{- $w = math.Max 1 ($w | int) -}}
+            {{- $h = math.Max 1 ($h | int) -}}
+            {{- $crop = dict "Width" $w "Height" $h -}}
+            {{- if hugo.Data.config.imgs_webp -}}
+              {{- $fill := print $w "x" $h " Center" -}}
+              {{- $img = $img.Fill $fill -}}
+              {{- $path := $img | replaceRE `(.+)\.(.+)$` (print "$1-" $w "x" $h ".$2") -}}
+              {{- $img = $img | resources.Copy $path -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
-        */ -}}
-        {{/*  size = breakpoint **anterior** más cercano  */}}
-        {{- $size_prev_obj := (index $sizes_base_sort (sub $key 1)) -}}
-        {{- if $size_prev_obj -}}
-          {{- $size_prev_val := $size_prev_obj.size -}}
-          {{- /* si la imagen ya cubre el breakpoint anterior, úsalo */ -}}
-          {{- if ge $img_size $size_prev_val -}}
-            {{- $size = $size_prev_val -}}
-          {{- end -}}
-        {{- end -}}
-
-        {{- /* set size only if diference between size and size_prev is bigest that 100px  */ -}}
-        {{- $is_size_far_prev := lt (sub $size $size_prev) (div -100 $s) -}}
-
-        {{- if ge $img_size $size | and $is_size_far_prev -}}
-          {{- /* each size here is a object  */ -}}
-          {{- $sizes     = $sizes | append (dict "size" (mul $size $s | int) "viewport" .viewport) -}}
-          {{- $size_prev = $size -}}
-        {{- end -}}
-
       {{- end -}}
-
-    {{- else -}}
-
-      {{- $sizes = slice $img.Width -}}
-
     {{- end -}}
 
-    {{- /* SOURCE BY SIZES  */ -}}
-    {{- if gt (len $sizes) 1 -}}
-
-      {{- /* SRCSIZES AND SRCSET  */ -}}
-      {{ $last          := sub (len $sizes) 1 }}
-      {{- range $i, $v  := sort $sizes "size" "desc" -}}
-        {{- $viewport   := "(all)" -}}
-        {{ if ne $i $last }}
-          {{- $viewport  = print "(min-width:" (sub .viewport 1) "px)" -}}
-        {{ end }}
-        {{- $size       := div .size $s -}}
-        {{- $size        = div (math.Round (mul $size 100)) 100 -}}
-        {{- $srcsizes    = $srcsizes | append (print $viewport " " $size "px") -}}
-        {{- $img_link   := partial "func/img-format" (dict "img" $img "img_base" $img_base "size" .size) -}}
-        {{- $srcset      = $srcset | append (print $img_link " " .size "w") -}}
-      {{- end -}}
-
-      {{- $srcsizes      = delimit $srcsizes "," -}}
-      {{- if $src_reverse -}}
-        {{- $srcsizes    = $srcsizes | replaceRE "min" "max" -}}
-      {{- end -}}
-      {{- $srcset        = delimit $srcset "," -}}
-
-    {{- else -}}
-
-      {{- /* SRC  */ -}}
-      {{- $img_width    := $img.Width -}}
-      {{- if $sizes -}}
-        {{- $img_width   = index $sizes 0 -}}
-        {{- /* if is not a int > is a object  */ -}}
-        {{- if ne (printf "%T" $img_width) "int" -}}
-          {{- $img_width = $img_width.size -}}
-        {{- end -}}
-      {{- end -}}
-      {{- $img_link     := partial "func/img-format" (dict "img" $img "img_base" $img_base "size" $img_width) -}}
-      {{- $srcset        = print $img_link " " $img_width "w" -}}
-      {{- $srcsizes      = "100dvw" -}}
-
-    {{- end  -}}
+    {{- $layoutImage := $img -}}
+    {{- with $crop -}}{{- $layoutImage = . -}}{{- end -}}
+    {{- $plan := partial "media/image-plan" (merge . (dict "image" $layoutImage "options" $options)) -}}
+    {{- $srcset := slice -}}
+    {{- range $plan.widths -}}
+      {{- $url := partial "func/img-format" (dict "img" $img "img_base" $img_base "size" . "quality" $options.quality "crop" $crop) -}}
+      {{- $srcset = $srcset | append (printf "%s %dw" $url .) -}}
+    {{- end -}}
+    {{- $srcset = delimit $srcset ", " -}}
+    {{- $srcsizes := $plan.sizes -}}
+    {{- $cover := or .is_bg (and (not .contain) (or (and .ratio (ne .ratio "auto")) .disc)) -}}
+    {{- if and (eq .lazy "lazy") (not $cover) -}}
+      {{- $srcsizes = print "auto, " $srcsizes -}}
+    {{- end -}}
 
     {{- /*  SOURCE ATTRS  */ -}}
     {{- $source_attrs = dict
       "type"   (print "image/" $type)
       "sizes"  $srcsizes
       "srcset" $srcset
-      "width"  (cond (not (not .vid)) (index .vid "presentation" "width") $img.Width)
-      "height" (cond (not (not .vid)) (index .vid "presentation" "height") $img.Height)
+      "width"  (cond (or .vid .dimensions.authored) (index .dimensions "width") $layoutImage.Width)
+      "height" (cond (or .vid .dimensions.authored) (index .dimensions "height") $layoutImage.Height)
     -}}
     {{- $source_attrs = partial "func/attrs" $source_attrs -}}
 

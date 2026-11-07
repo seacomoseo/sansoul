@@ -8,3 +8,14 @@ test('CMS schema rejects nested field arrays and duplicate siblings before openi
   assert.throws(() => validateCMSConfig(base([{ name: 'title' }, { name: 'title' }])), /Duplicate CMS field/)
   assert.equal(validateCMSConfig(base([{ name: 'tpl', fields: [{ name: 'title' }, { name: 'box', fields: [{ name: 'title' }] }] }])), 'es')
 })
+
+test('CMS object fields require a child schema before opening Sveltia', () => {
+  assert.throws(() => validateCMSConfig(base([{ name: 'footer', widget: 'object' }])), /requires fields or types/)
+  assert.equal(validateCMSConfig({ ...base([]), _anchors: [{ fragment: { widget: 'object' } }] }), 'es')
+  assert.equal(validateCMSConfig(base([{ name: 'footer', widget: 'object', fields: [{ name: 'md', widget: 'string' }] }])), 'es')
+})
+
+test('CMS select fields require effective non-empty options', () => {
+  for (const options of [undefined, []]) assert.throws(() => validateCMSConfig(base([{ name: 'choice', widget: 'select', options }])), /requires non-empty options/)
+  assert.equal(validateCMSConfig(base([{ name: 'choice', widget: 'select', options: ['text'] }])), 'es')
+})

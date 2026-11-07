@@ -3,6 +3,9 @@ Resolve one rendered document from the site-wide SVG plan. The expensive
 discovery, collision audit, font subset, and sprite publication are cached in
 hugo.Store after all page-local Stores have been populated.
 */}}
+{{- if not hugo.IsProduction -}}
+  {{- partial "files/svg-development" . -}}
+{{- else -}}
 {{- $html := .html -}}
 {{- $format := .format | default "html" -}}
 {{- $plan_key := print "sansoul.resources.svg-plan." $format -}}
@@ -119,3 +122,4 @@ hugo.Store after all page-local Stores have been populated.
   {{- $html = $minified.Content -}}
 {{- end -}}
 {{- $html | safeHTML -}}
+{{- end -}}

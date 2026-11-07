@@ -3,7 +3,7 @@ Partial: schema/img-main
 Purpose: Describe the page image or logo using a real URL and known dimensions.
 Context: Page-like map with Params and Permalink; optional Title and Lang.
 Returns: ImageObject; unknown dimensions are omitted.
-Side effects: Publishes a referenced local image; never fetches remote images.
+Side effects: Publishes a referenced local image; optionally downloads through config.imgs_remote.
 */}}
 {{ $src := .Params.img | default "" }}
 {{ if not $src }}
@@ -20,7 +20,11 @@ Side effects: Publishes a referenced local image; never fetches remote images.
 {{ $height := 0 }}
 {{ with $src }}
   {{ $img = absURL . }}
-  {{ if not (hasPrefix . "http") }}
+  {{ if and (hasPrefix . "http") hugo.Data.config.imgs_remote }}
+    {{ $remote := partialCached "media/remote-resource" . . }}
+    {{ with $remote.resource }}{{ $img = .Permalink }}{{ end }}
+    {{ with $remote.dimensions }}{{ $width = .width }}{{ $height = .height }}{{ end }}
+  {{ else if not (hasPrefix . "http") }}
     {{ with resources.Get (urls.Parse .).Path }}
       {{ $img = .Permalink }}
       {{ if eq .ResourceType "image" }}

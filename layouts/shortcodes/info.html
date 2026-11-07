@@ -1,19 +1,19 @@
 {{- $netlify := or (getenv "NETLIFY") hugo.IsDevelopment -}}
 {{- $icons   := hugo.Data.utilities.icons -}}
 
-- ::{{ $icons.cms   }}:: [{{ i18n "cms"     }}]({{ (index hugo.Sites 0).Home.RelPermalink }}admin/ "[nofollow blank]") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "[nofollow]")
-- ::brand:google-drive:: [{{ i18n "gdsheet" }}]({{ site.Params.drive_url }} "[nofollow]")
+- ::{{ $icons.cms   }}:: [{{ i18n "cms"     }}]({{ (index hugo.Sites 0).Home.RelPermalink }}admin/ "{lock blank}") (CMS) [{{ i18n "tutorial" }}](https://seacomoseo.com/cms/ "{lock}")
+- ::brand:google-drive:: [{{ i18n "gdsheet" }}]({{ site.Params.drive_url }} "{lock}")
 {{- with site.Params.drive_mails }}<br> {{ i18n "gdsheet_view" }}:
 {{- range split . "," }}
   - ::mail:: {{ . }}
 {{ end }}
 {{- end }}
-- ::brand:github-alt:: [{{ i18n "github_repo" }}](https://github.com/{{ or site.Params.owner "seacomoseo" }}/{{ site.Params.domain }} "[nofollow]")
-- ::brand:gitlab::     [{{ i18n "gitlab_repo" }}](https://gitlab.com/{{ or site.Params.owner "seacomoseo" }}/{{ site.Params.domain }} "[nofollow]")
+- ::brand:github-alt:: [{{ i18n "github_repo" }}](https://github.com/{{ or site.Params.owner "seacomoseo" }}/{{ site.Params.domain }} "{lock}")
+- ::brand:gitlab::     [{{ i18n "gitlab_repo" }}](https://gitlab.com/{{ or site.Params.owner "seacomoseo" }}/{{ site.Params.domain }} "{lock}")
 {{- if $netlify }}
-- ::brand:netlify:: [{{ i18n "netlify_deploys" }}]({{ print "https://app.netlify.com/sites/" site.Params.name "/deploys" }} "[nofollow]")
+- ::brand:netlify:: [{{ i18n "netlify_deploys" }}]({{ print "https://app.netlify.com/sites/" site.Params.name "/deploys" }} "{lock}")
 {{- else }}
-- ::brand:cloudflarepages:: [{{ i18n "cloudflare_pages_deploys" }}]({{ print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name }} "[nofollow]")
+- ::brand:cloudflarepages:: [{{ i18n "cloudflare_pages_deploys" }}]({{ print "https://dash.cloudflare.com/?to=/:account/pages/view//" site.Params.name }} "{lock}")
 {{- end }}
 
 {{ i18n "cms_publishing_info" }}
@@ -31,7 +31,7 @@
   <i class="status__label status__label--check">::{{ $icons.build_check }}:: {{ i18n "deploy_status_check" }}</i>
   <i class="status__label status__label--end">::{{ $icons.build_end }}:: {{ i18n "deploy_status_end" }}</i>
   <strong id="deploy-time"></strong>
-]](none "[nofollow]")
+]](none "{lock}")
 {#status .btns}
 
 [[::{{ $icons.rebuild     }}:: {{ i18n "rebuild" }}]](none "[turn]")

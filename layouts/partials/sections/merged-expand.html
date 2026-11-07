@@ -172,13 +172,15 @@
     {{ with $section_page }}
       {{ $modal = merge $modal (dict "Page" .) }}
     {{ end }}
+    {{ $modal = partial "func/set" (dict "value" $modal "path" "modal" "composed" true) }}
     {{ with partial "expand" $modal }}
       {{ $modals = $modals | append . }}
     {{ end }}
   {{ end }}
 
   {{/*  SECTION  */}}
-  {{ $section := partial "expand" . }}
+  {{ $section := partial "func/set" (dict "value" . "path" "section" "composed" true) }}
+  {{ $section  = partial "expand" $section }}
   {{ $section  = merge $section (dict "modals" $modals) }}
 
   {{/*  END  */}}

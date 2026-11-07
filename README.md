@@ -35,7 +35,9 @@ pnpm install --frozen-lockfile
 sh do dev
 ```
 
-La compilación completa se ejecuta con `sh do hugo`.
+La compilación completa se ejecuta con `sh do build` (`hugo` sigue como alias).
+`sh do` muestra ayuda. `dev` vigila también el prebuild y omite el CMS; `cms` añade
+el editor. `local` sirve builds completos de producción con watcher; `live` es su alias y `server` sigue siendo alias de `dev`.
 La versión de pnpm debe coincidir con `packageManager` del consumidor. La
 referencia usa un almacén compartido de contenido y virtual store por proyecto;
 el tema sigue admitiendo consumidores con npm. Consulta
@@ -87,9 +89,9 @@ El sitio de `prebuild/` se ejecuta antes del sitio principal. Lee el proyecto co
 
 La preconstrucción permite resolver decisiones que Hugo no puede convertir dinámicamente en configuración durante el render principal.
 
-En desarrollo, `sh do live` ejecuta `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Tras una regeneración válida reinicia Hugo para reconstruir desde cero y evitar estados parciales de los Content Adapters. Si se elimina contenido, también reinicia para retirar rutas antiguas. Una preconstrucción fallida conserva la última configuración válida; si Hugo cae durante esa actualización, el supervisor lo recupera cuando vuelve a disponer de entradas válidas.
+En desarrollo, `sh do dev` y `sh do cms` ejecutan `scripts/local-server.js`. El supervisor vigila datos, índices de colección y fuentes del prebuild, agrupa guardados consecutivos y publica la configuración válida de forma serial y atómica. Tras una regeneración válida reinicia Hugo para reconstruir desde cero y evitar estados parciales de los Content Adapters. Si se elimina contenido, también reinicia para retirar rutas antiguas. Una preconstrucción fallida conserva la última configuración válida; si Hugo cae durante esa actualización, el supervisor lo recupera cuando vuelve a disponer de entradas válidas.
 
-`sh do dev` y `sh do live` escriben la salida en disco. Ambos limpian `public/` y `resources/` al iniciar; también lo hacen las compilaciones completas. En pruebas de este repositorio con Hugo 0.164, `--renderToMemory` no dio una mejora de velocidad apreciable. Solo cambia dónde Hugo expone los archivos generados: los hashes antiguos pueden seguir disponibles durante la sesión en ambos modos. Escribir en disco deja `public/` inspeccionable, y la limpieza al iniciar evita arrastrar esos archivos entre sesiones.
+`sh do dev` y `sh do cms` escriben la salida en disco. Ambos limpian `public/` y `resources/` al iniciar; también lo hacen las compilaciones completas. En pruebas de este repositorio con Hugo 0.164, `--renderToMemory` no dio una mejora de velocidad apreciable. Solo cambia dónde Hugo expone los archivos generados: los hashes antiguos pueden seguir disponibles durante la sesión en ambos modos. Escribir en disco deja `public/` inspeccionable, y la limpieza al iniciar evita arrastrar esos archivos entre sesiones.
 
 La configuración desactiva el `assets/jsconfig.json` autogenerado por
 Hugo. En Hugo 0.164, su escritura puede coincidir con una recarga de
@@ -116,7 +118,8 @@ La configuración se carga de menor a mayor prioridad:
 1. `hugo.default.yml`;
 2. `hugo.local.yml` o `hugo.production.yml`, si corresponde;
 3. `prebuild/public/hugo.prebuild.yml`;
-4. `hugo.yml` del proyecto.
+4. `hugo.yml` del proyecto;
+5. `hugo.dev.yml` al usar `dev`, para omitir CMS y preview.
 
 El adapter raíz crea una sección virtual por cada tipo y transforma `data/remote.yml` en páginas virtuales. Los `_index.<lang>.md` físicos continúan siendo las fuentes editables del CMS, pero no entran directamente en el árbol de páginas, lo que evita colisiones.
 
@@ -203,7 +206,9 @@ No elimines un shortcode o render hook porque no aparezca en la demo actual: pue
 
 Los partials `media/*` resuelven imágenes internas, externas, SVG y vídeo. `icon.html` admite Material Symbols, Font Awesome/Simple Icons y recursos SVG propios. Los stores recopilan solo los glifos y dibujos utilizados para reducir la salida.
 
-Los layouts registran iconos, SVG de imagen y divisores en `page.Store`, por página y formato. `templates.Defer` reúne los registros cuando terminan los renders, deduplica las páginas de salida y resuelve las URLs finales sin un catálogo de sprites. Los SVG seguros se agrupan por el conjunto exacto de páginas que los usa; iconos, imágenes y divisores que comparten ese conjunto pueden viajar en el mismo archivo. Cada entrada conserva una raíz `<svg>` anidada, y los iconos viven dentro de `<defs>` para que no aparezcan en las vistas de imagen. Un icono seguro usado en una sola página se inserta en esa página, salvo cuando ya hay un sprite externo de imágenes o divisores para ella. Los SVG animados se mantienen dentro de cada página y no se separan por la animación. Los recursos con IDs en colisión o reglas `<style>` quedan en archivos independientes y se siguen consumiendo con `<use>` sin fragmento cuando basta la raíz completa. Las imágenes conservan `<img>`, `alt`, carga diferida y vistas SVG.
+En desarrollo, `files/svg-development` resuelve los registros de cada página sin calcular firmas globales. Publica archivos SVG individuales con IDs aislados, una hoja por conjunto local de divisores y la fuente local completa de símbolos. La caché de archivos individuales incluye nombre y contenido; un cambio recibe otra URL.
+
+En producción, los layouts registran iconos, SVG de imagen y divisores en `page.Store`, por página y formato. `templates.Defer` reúne los registros cuando terminan los renders, deduplica las páginas de salida y resuelve las URLs finales sin un catálogo de sprites. Los SVG seguros se agrupan por el conjunto exacto de páginas que los usa; iconos, imágenes y divisores que comparten ese conjunto pueden viajar en el mismo archivo. Cada entrada conserva una raíz `<svg>` anidada, y los iconos viven dentro de `<defs>` para que no aparezcan en las vistas de imagen. Un icono seguro usado en una sola página se inserta en esa página, salvo cuando ya hay un sprite externo de imágenes o divisores para ella. Los SVG animados se mantienen dentro de cada página y no se separan por la animación. Los recursos con IDs en colisión o reglas `<style>` quedan en archivos independientes y se siguen consumiendo con `<use>` sin fragmento cuando basta la raíz completa. Las imágenes conservan `<img>`, `alt`, carga diferida y vistas SVG.
 
 Los divisores comparten sprite con imágenes e iconos cuando tienen el mismo conjunto exacto de páginas de uso; sus referencias conservan los IDs de vista. Los sprites externos se publican en `/draws/map.<hash>.svg`; los fragmentos de divisores usan IDs legibles como `#div-clouds-prx`, y el hash del archivo sigue cambiando con su contenido para invalidar la caché. El pipeline usa `<svg>` anidados, no `<symbol>`, para conservar gradientes, animaciones y referencias SVG. No se requiere `svg_sprites` ni otro catálogo manual. `data/resources.yml` declara glifos, SVG y divisores usados exclusivamente por CSS, JavaScript o datos dinámicos. El bundle de cada página expone URLs SVG finales como `icons` a través de `@params`; el `<head>` ofrece además propiedades CSS `--sansoul-svg-<id>`.
 
@@ -270,7 +275,7 @@ Los cambios SEO deben probar páginas home, sección, entrada, traducción, noin
 Antes de modificar el tema:
 
 1. revisa `git status` en el proyecto y en el submódulo;
-2. crea una línea base con `sh do hugo`;
+2. crea una línea base con `sh do build`;
 3. identifica todos los call sites del partial o módulo;
 4. conserva contratos de contexto y salida;
 5. aplica un cambio pequeño;

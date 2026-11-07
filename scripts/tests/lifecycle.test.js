@@ -43,7 +43,7 @@ function createFixture () {
     'bin'
   ]) mkdirSync(path.join(fixture, directory), { recursive: true })
 
-  for (const file of ['hugo.yml', 'hugo.default.yml', 'hugo.local.yml']) {
+  for (const file of ['hugo.yml', 'hugo.default.yml', 'hugo.local.yml', 'hugo.dev.yml']) {
     writeFileSync(path.join(themeRoot, file), 'baseURL: http://localhost/\n')
   }
   writeFileSync(path.join(fixture, 'hugo.yml'), 'baseURL: http://localhost/\n')
@@ -150,10 +150,10 @@ function waitForExit (child) {
   })
 }
 
-function spawnLifecycle (fixture, mode, args = [], extra = {}) {
-  const script = mode === 'live' ? 'local-server.js' : 'server-lifecycle.js'
-  const scriptArgs = mode === 'live' ? args : [mode, ...args]
-  const child = spawn(process.execPath, [path.join(fixture, `${fixtureEnginePath}/scripts`, script), ...scriptArgs], {
+function spawnLifecycle (fixture, mode, args = [], extra = {}, throughCLI = false) {
+  const script = mode === 'cms' ? 'local-server.js' : 'server-lifecycle.js'
+  const scriptArgs = mode === 'cms' ? args : [mode, ...args]
+  const child = spawn(throughCLI ? 'sh' : process.execPath, throughCLI ? ['do', mode, ...args] : [path.join(fixture, `${fixtureEnginePath}/scripts`, script), ...scriptArgs], {
     cwd: fixture,
     env: environment(fixture, extra),
     stdio: ['ignore', 'pipe', 'pipe']
@@ -202,13 +202,21 @@ async function testSignalCleanup (mode, signal = 'SIGTERM') {
   const fixture = createFixture()
   let child
   try {
-    child = spawnLifecycle(fixture, mode, ['--port', mode === 'dev' ? '1313' : '1414'])
-    const serverStart = mode === 'dev' ? 'server --disableFastRender --config' : 'server --config'
+    child = spawnLifecycle(fixture, mode, ['--port', mode === 'dev' ? '1313' : '1414'], {}, true)
+    const serverStart = 'server --config'
     await waitFor(() => output(fixture).includes(serverStart), `${mode} Hugo start`).catch(error => { throw new Error(`${error.message}\n${child.testOutput}`) })
     assert.equal(existsSync(path.join(fixture, '.sansoul-dev.lock')), true)
     const result = await stop(child, signal)
-    assert.equal(result.code, mode === 'dev' ? (signal === 'SIGHUP' ? 129 : 143) : 0)
+    assert.equal(result.code, 0)
     assert.match(output(fixture), mode === 'dev' ? /1313/ : /1414/)
+    const serverLine = output(fixture).split('\n').find(line => line.startsWith('server --config'))
+    if (mode === 'dev') {
+      assert.ok(serverLine.includes('hugo.dev.yml'))
+      assert.ok(!serverLine.includes('hugo.local.yml'))
+    } else {
+      assert.ok(serverLine.includes('hugo.local.yml'))
+      assert.ok(!serverLine.includes('hugo.dev.yml'))
+    }
     await waitFor(() => isClean(fixture), `${mode} generated output cleanup`)
     assertClean(fixture)
   } finally {
@@ -223,10 +231,10 @@ async function testGrandchildCleanup (mode) {
   let child
   try {
     child = spawnLifecycle(fixture, mode, [], { HUGO_GRANDCHILD_FILE: grandchildFile })
-    const serverStart = mode === 'dev' ? 'server --disableFastRender' : 'server --config'
+    const serverStart = 'server --config'
     await waitFor(() => output(fixture).includes(serverStart) && existsSync(grandchildFile), `${mode} server with grandchild`)
     const result = await stop(child)
-    assert.equal(result.code, mode === 'dev' ? 143 : 0)
+    assert.equal(result.code, 0)
     await waitFor(() => isClean(fixture), 'grandchild generated output cleanup')
     const sizeAfterStop = readFileSync(grandchildFile, 'utf8').length
     await new Promise(resolve => setTimeout(resolve, 100))
@@ -242,7 +250,7 @@ async function testInitialFailure () {
   try {
     const result = await runAlias(fixture, 'dev', ['--port', '1515'], { HUGO_PREBUILD_EXIT: '23' })
     assert.equal(result.code, 23)
-    assert.equal(output(fixture).includes('server --disableFastRender'), false)
+    assert.equal(output(fixture).includes('server --config'), false)
     assertClean(fixture)
   } finally {
     rmSync(fixture, { recursive: true, force: true })
@@ -252,7 +260,7 @@ async function testInitialFailure () {
 async function testLiveInitialFailure () {
   const fixture = createFixture()
   try {
-    const result = await runAlias(fixture, 'live', [], { HUGO_PREBUILD_EXIT: '19' })
+    const result = await runAlias(fixture, 'cms', [], { HUGO_PREBUILD_EXIT: '19' })
     assert.equal(result.code, 19)
     assertClean(fixture)
   } finally {
@@ -272,11 +280,11 @@ async function testChildFailure (alias) {
   }
 }
 
-async function testSuccessfulRefreshRestart () {
+async function testSuccessfulRefreshRestart (mode) {
   const fixture = createFixture()
   let child
   try {
-    child = spawnLifecycle(fixture, 'live')
+    child = spawnLifecycle(fixture, mode)
     await waitFor(() => countLines(fixture, /^server --config/) === 1, 'initial live server')
     writeFileSync(path.join(fixture, 'data', 'langs.yml'), 'langs: [updated]\n')
     try {
@@ -300,7 +308,7 @@ async function testRecoveryAfterRefreshFailure () {
   let child
   try {
     writeFileSync(delayFile, '')
-    child = spawnLifecycle(fixture, 'live', [], {
+    child = spawnLifecycle(fixture, 'cms', [], {
       HUGO_PREBUILD_STARTED_FILE: startedFile,
       HUGO_PREBUILD_DELAY_FILE: delayFile,
       HUGO_SERVER_EXIT_FILE: serverExitFile
@@ -330,19 +338,21 @@ async function testConcurrentRefusal () {
   let first
   try {
     first = spawnLifecycle(fixture, 'dev')
-    await waitFor(() => output(fixture).includes('server --disableFastRender'), 'first dev server')
-    const build = spawn('sh', ['do', 'prebuild'], {
-      cwd: fixture,
-      env: environment(fixture),
-      stdio: 'ignore'
-    })
-    const buildResult = await waitForExit(build)
-    assert.equal(buildResult.code, 1)
-    const second = spawnLifecycle(fixture, 'live')
+    await waitFor(() => output(fixture).includes('server --config'), 'first dev server')
+    for (const command of ['prebuild', 'build', 'hugo']) {
+      const build = spawn('sh', ['do', command], {
+        cwd: fixture,
+        env: environment(fixture),
+        stdio: 'ignore'
+      })
+      const buildResult = await waitForExit(build)
+      assert.equal(buildResult.code, 1, command)
+    }
+    const second = spawnLifecycle(fixture, 'cms')
     const secondResult = await waitForExit(second)
     assert.equal(secondResult.code, 1)
     const firstResult = await stop(first)
-    assert.equal(firstResult.code, 143)
+    assert.equal(firstResult.code, 0)
     await waitFor(() => isClean(fixture), 'concurrent dev generated output cleanup')
     assertClean(fixture)
   } finally {
@@ -378,7 +388,7 @@ printf '{"streams":[{"codec_type":"video","width":%s,"height":100}]}\\n' "$width
     assert.equal(countLines(fixture, /^--destination/), 1)
     assert.equal(child.exitCode, null)
     const result = await stop(child)
-    assert.equal(result.code, mode === 'dev' ? 143 : 0)
+    assert.equal(result.code, 0)
     assertClean(fixture)
     assert.equal(width(), 300)
   } finally {
@@ -446,20 +456,21 @@ async function main () {
   for (const layout of ['core', 'themes/sansoul']) {
     fixtureEnginePath = layout
     await testSignalCleanup('dev')
-    await testSignalCleanup('live')
+    await testSignalCleanup('cms')
     await testSignalCleanup('dev', 'SIGHUP')
-    await testSignalCleanup('live', 'SIGHUP')
+    await testSignalCleanup('cms', 'SIGHUP')
     await testGrandchildCleanup('dev')
-    await testGrandchildCleanup('live')
+    await testGrandchildCleanup('cms')
     await testInitialFailure()
     await testLiveInitialFailure()
     await testChildFailure('server')
-    await testChildFailure('local')
-    await testSuccessfulRefreshRestart()
+    await testChildFailure('cms')
+    await testSuccessfulRefreshRestart('dev')
+    await testSuccessfulRefreshRestart('cms')
     await testRecoveryAfterRefreshFailure()
     await testConcurrentRefusal()
     await testVideoRefreshWithoutRestart('dev')
-    await testVideoRefreshWithoutRestart('live')
+    await testVideoRefreshWithoutRestart('cms')
     testSymlinkSafety()
     testStaleLockRefusal()
     console.log(`Lifecycle tests passed (${layout})`)

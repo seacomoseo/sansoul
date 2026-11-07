@@ -1,0 +1,28 @@
+{{/*
+Partial: media/image-options
+Purpose: Validate shared image quality and density controls before processing.
+Context: Unused; reads hugo.Data.config.
+Returns: quality (integer 1–100) and dpr (positive number), defaulting to 60/2.
+Side effects: Fails the build for invalid authored configuration.
+*/}}
+{{- $quality := 60 -}}
+{{- $dpr := 2.0 -}}
+{{- with hugo.Data.config -}}
+  {{- if ne .imgs_quality nil -}}
+    {{- if not (findRE `^[0-9]+$` (string .imgs_quality)) -}}
+      {{- errorf "imgs_quality must be an integer from 1 to 100" -}}
+    {{- else -}}
+      {{- $quality = int .imgs_quality -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if ne .imgs_dpr nil -}}
+    {{- if not (findRE `^[0-9]+(\.[0-9]+)?$` (string .imgs_dpr)) -}}
+      {{- errorf "imgs_dpr must be a positive number" -}}
+    {{- else -}}
+      {{- $dpr = float .imgs_dpr -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if or (lt $quality 1) (gt $quality 100) -}}{{- errorf "imgs_quality must be an integer from 1 to 100" -}}{{- end -}}
+{{- if le $dpr 0 -}}{{- errorf "imgs_dpr must be a positive number" -}}{{- end -}}
+{{- return dict "quality" $quality "dpr" $dpr -}}

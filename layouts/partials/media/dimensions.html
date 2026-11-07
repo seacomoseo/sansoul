@@ -1,0 +1,30 @@
+{{/*
+Partial: media/dimensions
+Purpose: Resolve authored presentation dimensions without changing intrinsic metadata.
+Context: img_w/img_h optional positive integers, ratio optional positive ratio,
+  intrinsic optional map with known width/height. Invalid dimensions are ignored.
+Returns: width/height map with an internal authored flag for valid overrides. An unknown missing dimension remains zero and is omitted
+  by func/attrs. Two explicit dimensions take precedence over ratio.
+Side effects: None.
+*/}}
+{{- $width := 0 -}}{{- $height := 0 -}}{{- $ratio := 0.0 -}}
+{{- with .img_w -}}{{- if findRE `^[1-9][0-9]*$` (string .) -}}{{- $width = int . -}}{{- end -}}{{- end -}}
+{{- with .img_h -}}{{- if findRE `^[1-9][0-9]*$` (string .) -}}{{- $height = int . -}}{{- end -}}{{- end -}}
+{{- with .ratio -}}
+  {{- if findRE `^[0-9]+(?:\.[0-9]+)?(?:/[0-9]+(?:\.[0-9]+)?)?$` (string .) -}}
+    {{- $parts := split (string .) "/" -}}{{- $ratio = float (index $parts 0) -}}
+    {{- if eq (len $parts) 2 -}}
+      {{- $denominator := float (index $parts 1) -}}
+      {{- if gt $denominator 0 -}}{{- $ratio = div $ratio $denominator -}}{{- else -}}{{- $ratio = 0.0 -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $original := .intrinsic | default dict -}}
+{{- if and (le $ratio 0) $original.width $original.height -}}
+  {{- if and (gt (float $original.width) 0) (gt (float $original.height) 0) -}}{{- $ratio = div (float $original.width) (float $original.height) -}}{{- end -}}
+{{- end -}}
+{{- if and $width (not $height) (gt $ratio 0) -}}{{- $height = math.Max 1 (math.Round (div (float $width) $ratio)) | int -}}{{- end -}}
+{{- if and $height (not $width) (gt $ratio 0) -}}{{- $width = math.Max 1 (math.Round (mul (float $height) $ratio)) | int -}}{{- end -}}
+{{- $result := $original -}}
+{{- if or $width $height -}}{{- $result = dict "width" $width "height" $height "authored" true -}}{{- end -}}
+{{- return $result -}}

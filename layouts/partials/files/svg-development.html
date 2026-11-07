@@ -1,0 +1,54 @@
+{{/* Development resolves page-local files without building site-wide usage groups.
+Each icon has its own external document, so source IDs and animations stay isolated.
+Production continues to use svg-plan and its shared sprites. */}}
+{{- $html := .html -}}
+{{- $format := .format | default "html" -}}
+{{- $references := dict -}}
+{{- $page_icons := dict -}}
+{{- range page.Store.Get (printf "sansoul.resources.%s.svgs" $format) | default (slice) -}}
+  {{- $name := . -}}
+  {{- $id := partial "func/svg-fragment-id" $name -}}
+  {{- $resource_id := partial "func/svg-resource-id" $name -}}
+  {{- $source := resources.GetMatch (print "/u/{icons/,}" $name ".svg") -}}
+  {{- $resource := partialCached "files/svg-resource" (dict "source" $source "name" $name "id" $id "target" (print "draws/dev/" ($resource_id | urlize) ".svg")) "development" $name (sha256 $source.Content) -}}
+  {{- $url := print $resource.url "#" $resource.id -}}
+  {{- $references = merge $references (dict
+    (print "__SANSOUL_SVG_" ($resource_id | urlize) "__") $url
+    (print "__SANSOUL_SVG_IMAGE_" ($resource_id | urlize) "__") $resource.url
+  ) -}}
+  {{- $legacy_id := $name | replaceRE `^icons?/` "" | replaceRE `^brands/` "brand-" | replaceRE `/` "-" -}}
+  {{- $page_icons = merge $page_icons (dict $legacy_id $url) -}}
+{{- end -}}
+{{- page.Store.Set "sansoul.resources.svg-urls" $page_icons -}}
+
+{{- $divs := page.Store.Get (printf "sansoul.resources.%s.divs" $format) | default (slice) | uniq | sort | complement (slice "fade") -}}
+{{- with $divs -}}
+  {{- $content := partialCached "files/draws-svg" (dict "divs" .) "development" (jsonify .) -}}
+  {{- $target := print "draws/dev/dividers-" (substr (sha256 (jsonify .)) 0 12) ".svg" -}}
+  {{- $resource := $content | resources.FromString $target | minify -}}
+  {{- $resource = partial "func/publish-content-resource" (dict "resource" $resource "target" $target) -}}
+  {{- range . -}}
+    {{- $token_id := lower . | replaceRE `[^a-z0-9]+` "-" -}}
+    {{- $token_id = strings.Trim $token_id "-" -}}
+    {{- $html = replace $html (print "__SANSOUL_DRAWS_" $token_id "__") $resource.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- $html = replace $html "__SANSOUL_DRAWS__" "" -}}
+{{- if strings.Contains $html "__SANSOUL_STYLES__" -}}
+  {{- $css := partial "styles" page -}}
+  {{- $styles := page.Store.Get "sansoul.assets.styles" | default (slice $css) -}}
+  {{- $html = replace $html "__SANSOUL_STYLES__" (partial "files/style-links" $styles) -}}
+{{- end -}}
+{{- $scripts := partial "scripts" page -}}
+{{- $html = replace $html "__SANSOUL_SCRIPTS__" $scripts.RelPermalink -}}
+{{- $glyphs := page.Store.Get (printf "sansoul.resources.%s.glyphs" $format) | default (slice) -}}
+{{- $font := "" -}}
+{{- if $glyphs -}}
+  {{- /* Development always uses the same full local font, regardless of glyphs. */ -}}
+  {{- $font = partialCached "files/glyphs" (dict "format" $format "preload" true "glyphs" $glyphs) "development" (jsonify hugo.Data.styles.icons) -}}
+{{- end -}}
+{{- $html = replace $html "__SANSOUL_GLYPHS__" $font -}}
+{{- range $token, $reference := $references -}}
+  {{- $html = replace $html $token $reference -}}
+{{- end -}}
+{{- $html | safeHTML -}}

@@ -2,7 +2,7 @@
 
 {{ if page.IsTranslated }}
   {{ $class  := "langs__parent" }}
-  {{ $icon   := $.icon }}
+  {{ $icon   := $.il }}
   {{ if not $icon }}
     {{ $class = print $class " langs__parent--flag" }}
     {{ $icon  = print "svg:flag-" page.Lang }}
@@ -13,7 +13,7 @@
   {{ range page.AllTranslations }}
     {{ $langs = $langs | append (dict
       "url"   .RelPermalink
-      "icon"  (print "svg:flag-" .Lang)
+      "il"    (print "svg:flag-" .Lang)
       "emoji" (i18n "flag")
       "label" .Language.Label
       "title" (print .Language.Label ": " .Title)
@@ -23,7 +23,7 @@
   {{ end }}
   {{ $items = $items | append (dict
     "class" $class
-    "icon"  $icon
+    "il"    $icon
     "def"   "langs"
     "label" $label
     "items" $langs

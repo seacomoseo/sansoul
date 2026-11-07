@@ -1,0 +1,128 @@
+{{- /*
+Partial: blocks/calendar
+Purpose: Render opt-in dated lists as complete, progressively enhanced month grids.
+Context: Expanded list group with calendar (date-sorted Pages) and block_spacing.
+Renders: Week-spanning event bars with independent overlap lanes, dates, and month navigation.
+Side effects: Allocates a page-local ID. All months and links remain available without JavaScript.
+Contract: Hugo's parsed dates keep their declared timezone; the browser never reparses event dates.
+  End dates are inclusive calendar days. Continuations are linked in every affected week.
+*/ -}}
+{{- $counter := add 1 (page.Store.Get "sansoul.calendar.count" | default 0) -}}
+{{- page.Store.Set "sansoul.calendar.count" $counter -}}
+{{- $id := printf "calendar-%d" $counter -}}
+{{- $entries := .calendar -}}
+{{- $month_keys := slice -}}
+{{- range $entries -}}
+  {{- $first := time.AsTime (.Date.Format "2006-01-02") -}}
+  {{- $last := $first -}}
+  {{- with .Params.end }}{{ $parsed := time.AsTime . }}{{ $last = time.AsTime ($parsed.Format "2006-01-02") }}{{ end -}}
+  {{- if lt $last $first }}{{ $last = $first }}{{ end -}}
+  {{- $cursor := time.AsTime ($first.Format "2006-01-01") -}}
+  {{- range seq 0 (add (mul (sub $last.Year $cursor.Year) 12) (sub (int $last.Month) (int $cursor.Month))) -}}
+    {{- $month_keys = $month_keys | append (($cursor.AddDate 0 . 0).Format "2006-01") -}}
+  {{- end -}}
+{{- end -}}
+{{- $months := sort (uniq $month_keys) -}}
+{{- $years := slice -}}
+{{- range $months }}{{ $years = $years | append (substr . 0 4) }}{{ end -}}
+{{- $years = uniq $years -}}
+<div{{ partial "func/attrs" (dict "class" (slice "calendar" "box__block") "style" (partial "blocks/margin-style" .block_spacing)) }} data-calendar data-calendar-timezone="{{ site.Params.time_zone | default "UTC" }}">
+  <div class="calendar__nav{{ if hugo.Data.styles.inputs.fill }} form--fill-inputs{{ end }}" hidden>
+    <label class="calendar__select">{{ i18n "calendar_view" }}
+      <span class="calendar__field"><span class="form__item-border" aria-hidden="true"></span><select data-calendar-mode>
+        <option value="month">{{ i18n "calendar_month" }}</option>
+        <option value="year">{{ i18n "calendar_year" }}</option>
+        <option value="agenda">{{ i18n "calendar_agenda" }}</option>
+      </select></span>
+    </label>
+    <div class="calendar__period">
+      <button type="button" class="calendar__arrow btn btn--dot btn--sm cta" data-calendar-prev data-calendar-year-label="{{ i18n "calendar_year_prev" }}" aria-label="{{ i18n "calendar_prev" }}">{{ partial "icon" (dict "def" "left") }}</button>
+      <label class="calendar__select" data-calendar-year-control hidden><span class="calendar__sr-only">{{ i18n "calendar_year" }}</span>
+        <span class="calendar__field"><span class="form__item-border" aria-hidden="true"></span><select data-calendar-year-select>
+          {{- range $years }}<option value="{{ . }}">{{ . }}</option>{{ end -}}
+        </select></span>
+      </label>
+      <label class="calendar__select" data-calendar-month-control><span class="calendar__sr-only">{{ i18n "calendar_month" }}</span>
+        <span class="calendar__field"><span class="form__item-border" aria-hidden="true"></span><select data-calendar-select aria-controls="{{ $id }}">
+          {{- range $i, $month := $months }}
+            {{- $start := time.AsTime (print . "-01") }}
+            <option value="{{ $i }}">{{ time.Format "January 2006" $start }}</option>
+          {{- end }}
+        </select></span>
+      </label>
+      <button type="button" class="calendar__arrow btn btn--dot btn--sm cta" data-calendar-next data-calendar-year-label="{{ i18n "calendar_year_next" }}" aria-label="{{ i18n "calendar_next" }}">{{ partial "icon" (dict "def" "right") }}</button>
+    </div>
+    <span class="calendar__status" aria-live="polite" aria-atomic="true" data-calendar-status></span>
+  </div>
+  {{ partial "blocks/calendar-compact" (dict "entries" $entries "years" $years "id" $id "parent_color" (.bgcp | default .color | default "light")) }}
+  <div id="{{ $id }}" data-calendar-months>
+    {{- range $index, $month := $months -}}
+      {{- $start := time.AsTime (print . "-01") -}}
+      {{- $days := ($start.AddDate 0 1 -1).Day -}}
+      {{- $offset := mod (add (int $start.Weekday) 6) 7 -}}
+      {{- $label := printf "%s-month-%d" $id $index -}}
+      <section class="calendar__month" data-calendar-month="{{ $month }}" aria-labelledby="{{ $label }}">
+        <h3 id="{{ $label }}" class="calendar__heading">{{ time.Format "January 2006" $start }}</h3>
+        <div class="calendar__weekdays" aria-hidden="true">
+          {{- range seq 0 6 }}<span>{{ time.Format "Mon" ((time.AsTime "2024-01-01").AddDate 0 0 .) }}</span>{{ end -}}
+        </div>
+        <div class="calendar__weeks">
+          {{- $grid_start := $start.AddDate 0 0 (mul $offset -1) -}}
+          {{- $weeks := int (math.Ceil (div (float (add $days $offset)) 7)) -}}
+          {{- range $week := seq 0 (sub $weeks 1) -}}
+            {{- $week_start := $grid_start.AddDate 0 0 (mul $week 7) -}}
+            {{- $week_end := $week_start.AddDate 0 0 6 -}}
+            {{- $occupied := dict -}}
+            <div class="calendar__week">
+              {{- range $column := seq 0 6 -}}
+                {{- $date := $week_start.AddDate 0 0 $column -}}
+                <div class="calendar__day{{ if ne $date.Month $start.Month }} calendar__day--outside{{ end }}" style="grid-column:{{ add $column 1 }}" aria-hidden="true">
+                  <time class="calendar__date" datetime="{{ $date.Format "2006-01-02" }}">{{ $date.Day }}</time>
+                </div>
+              {{- end -}}
+              {{- range $entries -}}
+                {{- $first := time.AsTime (.Date.Format "2006-01-02") -}}
+                {{- $last := $first -}}
+                {{- with .Params.end }}{{ $parsed := time.AsTime . }}{{ $last = time.AsTime ($parsed.Format "2006-01-02") }}{{ end -}}
+                {{- if lt $last $first }}{{ $last = $first }}{{ end -}}
+                {{- $visible_start := $week_start -}}
+                {{- if gt $first $visible_start }}{{ $visible_start = $first }}{{ end -}}
+                {{- $visible_end := $week_end -}}
+                {{- if lt $last $visible_end }}{{ $visible_end = $last }}{{ end -}}
+                {{- $month_end := $start.AddDate 0 1 -1 -}}
+                {{- if le $visible_start $visible_end -}}
+                  {{- $column := add 1 (int (div (sub $visible_start.Unix $week_start.Unix) 86400)) -}}
+                  {{- $span := add 1 (int (div (sub $visible_end.Unix $visible_start.Unix) 86400)) -}}
+                  {{- $lane := 0 -}}
+                  {{- range seq 0 (len $entries) -}}
+                    {{- $candidate := . -}}
+                    {{- $free := true -}}
+                    {{- range seq $column (sub (add $column $span) 1) -}}
+                      {{- if index $occupied (printf "%d-%d" $candidate .) }}{{ $free = false }}{{ end -}}
+                    {{- end -}}
+                    {{- if $free }}{{ $lane = $candidate }}{{ break }}{{ end -}}
+                  {{- end -}}
+                  {{- range seq $column (sub (add $column $span) 1) -}}
+                    {{- $occupied = merge $occupied (dict (printf "%d-%d" $lane .) true) -}}
+                  {{- end -}}
+                  <a class="calendar__entry btn main{{ if or (lt $last $start) (gt $first $month_end) }} calendar__entry--outside-month{{ end }}{{ if and (gt $visible_start $first) (gt $visible_start $start) }} calendar__entry--repeat{{ end }}{{ if lt $first $visible_start }} calendar__entry--continues-before{{ end }}{{ if gt $last $visible_end }} calendar__entry--continues-after{{ end }}" href="{{ .RelPermalink }}" style="grid-column:{{ $column }} / span {{ $span }};grid-row:{{ add $lane 2 }}">
+                    <strong>{{ .Title }}</strong>
+                    <span class="calendar__time">
+                      {{- range partial "func/event-dates" (dict "Page" .) -}}
+                        <span class="calendar__tag">
+                          {{- partial "icon" (dict "class" "calendar__tag-icon" "icon" .icon "def" .def) -}}
+                          {{ .label | safeHTML }}
+                        </span>
+                      {{- end -}}
+                    </span>
+                    {{- if .Params.cancelled }}<span class="calendar__cancelled">{{ i18n "cancelled" }}</span>{{ end }}
+                  </a>
+                {{- end -}}
+              {{- end }}
+            </div>
+          {{- end }}
+        </div>
+      </section>
+    {{- end }}
+  </div>
+</div>

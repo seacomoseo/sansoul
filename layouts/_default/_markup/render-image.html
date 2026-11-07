@@ -1,10 +1,27 @@
 {{- $alt       := string .Text -}}
 {{- $ratio     := "" -}}
 {{- $caption   := .Title -}}
-{{- with findRE `\s*\{[0-9]+(\.[0-9]+)?/[0-9]+(\.[0-9]+)?\}$` .Title 1 -}}
-  {{- $metadata := index . 0 -}}
-  {{- $ratio = strings.TrimSpace (replaceRE `[{}]` "" $metadata) -}}
-  {{- $caption = strings.TrimSpace (strings.TrimSuffix $metadata $.Title) -}}
+{{- $img_w := 0 -}}{{- $img_h := 0 -}}
+{{- with findRE `\s*\{[^{}]+\}$` .Title 1 -}}
+  {{- $suffix := index . 0 -}}
+  {{- $tokens := split (strings.TrimSpace (replaceRE `[{}]` "" $suffix)) " " -}}
+  {{- $valid := true -}}{{- $seen := dict -}}
+  {{- range $tokens -}}
+    {{- $token := . -}}
+    {{- if $token -}}
+      {{- $key := "" -}}
+      {{- if findRE `^[1-9][0-9]*/[1-9][0-9]*$|^[0-9]+(?:\.[0-9]+)?/[0-9]+(?:\.[0-9]+)?$` $token -}}
+        {{- $parts := split $token "/" -}}
+        {{- if and (gt (float (index $parts 0)) 0) (gt (float (index $parts 1)) 0) -}}{{- $key = "ratio" -}}{{- $ratio = $token -}}{{- end -}}
+      {{- else if findRE `^w[1-9][0-9]*$` $token -}}{{- $key = "width" -}}{{- $img_w = int (strings.TrimPrefix "w" $token) -}}
+      {{- else if findRE `^h[1-9][0-9]*$` $token -}}{{- $key = "height" -}}{{- $img_h = int (strings.TrimPrefix "h" $token) -}}{{- end -}}
+      {{- if or (not $key) (index $seen $key) -}}{{- $valid = false -}}{{- end -}}
+      {{- $seen = merge $seen (dict $key true) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $valid -}}
+    {{- $caption = strings.TrimSpace (strings.TrimSuffix $suffix $.Title) -}}
+  {{- else -}}{{- $ratio = "" -}}{{- $img_w = 0 -}}{{- $img_h = 0 -}}{{- end -}}
 {{- end -}}
 {{- $col_vl    := 1.0 -}}
 {{- $fig_class := "md__fig" -}}
@@ -66,6 +83,8 @@
         "class"     "img__in"
         "img"       .Destination
         "ratio"     $ratio
+        "img_w"     $img_w
+        "img_h"     $img_h
         "alt"       $alt
         "container" "sm"
         "fit_vl"    $col_vl

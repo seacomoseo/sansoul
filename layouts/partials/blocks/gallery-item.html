@@ -1,3 +1,10 @@
+{{/*
+Partial: blocks/gallery-item
+Purpose: Render a gallery item with its lightbox link and proportional layout.
+Context: Expanded gallery item and parent layout options.
+Renders: Linked media or the authored link.
+Side effects: Delegates media publishing; config.imgs_remote can download the image for its lightbox and dimensions.
+*/}}
 {{- $img := .img -}}
 {{- $src := "" -}}
 
@@ -10,6 +17,12 @@
   {{- with resources.Get $clean -}}
     {{- $src = .RelPermalink -}}
   {{- end -}}
+{{- end -}}
+
+{{- $remote := dict -}}
+{{- if and $out hugo.Data.config.imgs_remote (not (partial "func/is-vid" .img)) -}}
+  {{- $remote = partialCached "media/remote-resource" .img .img -}}
+  {{- with $remote.resource -}}{{- $src = .RelPermalink -}}{{- end -}}
 {{- end -}}
 
 {{- if or $out $src -}}
@@ -30,6 +43,10 @@
     {{- $width  := 300 -}}
     {{- $height := 200 -}}
     {{- $poster := "" -}}
+    {{- if $remote.resource -}}
+      {{- $width = $remote.dimensions.width | default $width -}}
+      {{- $height = $remote.dimensions.height | default $height -}}
+    {{- else -}}
     {{- with $src -}}
       {{- with partial "func/is-vid" . -}}
         {{- $poster = partial "func/poster" $img -}}
@@ -50,6 +67,7 @@
           {{- end -}}
         {{- end -}}
       {{- end -}}
+    {{- end -}}
     {{- end -}}
     {{- $style_width  := lang.FormatNumberCustom 2 (div (mul (div (float $width) (float $height)) (div 600 $cols)) 16) -}}{{- /*  (width / height) * (600 / cols) / 16  */ -}}
     {{- $style_height := lang.FormatNumberCustom 2 (mul (div (float $height) (float $width)) 100) -}}{{- /*  (height / width) * 100  */ -}}

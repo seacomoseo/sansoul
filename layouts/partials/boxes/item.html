@@ -79,15 +79,27 @@ Side effects: Called media and block partials may register assets in page.Store.
               {{- partial "boxes/title" . -}}
             {{- end -}}
             {{- $group.pagination -}}
-            {{- partial "boxes/items" $group -}}
+            {{- if $group.calendar -}}
+              {{- partial "blocks/calendar" $group -}}
+            {{- else -}}
+              {{- partial "boxes/items" $group -}}
+            {{- end -}}
           {{- end -}}
         {{- else if .list_groups -}}
           {{- $group := partial "boxes/merge-expand-items" (index .list_groups 0) -}}
           {{- $group.pagination -}}
-          {{- partial "boxes/items" $group -}}
+          {{- if $group.calendar -}}
+            {{- partial "blocks/calendar" $group -}}
+          {{- else -}}
+            {{- partial "boxes/items" $group -}}
+          {{- end -}}
         {{- else -}}
           {{- .pagination -}}
-          {{- partial "boxes/items" . -}}
+          {{- if .calendar -}}
+            {{- partial "blocks/calendar" . -}}
+          {{- else -}}
+            {{- partial "boxes/items" . -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
 
@@ -115,7 +127,7 @@ Side effects: Called media and block partials may register assets in page.Store.
     {{- else if eq . "when" -}}
 
       {{- /*  WHEN  */ -}}
-      {{- if $.when -}}
+      {{- if $.whens -}}
         {{- partial "blocks/when" $ -}}
       {{- end -}}
 
@@ -133,11 +145,11 @@ Side effects: Called media and block partials may register assets in page.Store.
         {{- partial "blocks/form" $ -}}
       {{- end -}}
 
-    {{- else if eq . "map" -}}
+    {{- else if eq . "geo" -}}
 
       {{- /*  MAP  */ -}}
       {{- if $.geos -}}
-        {{- partial "blocks/map" $ -}}
+        {{- partial "blocks/geo" $ -}}
       {{- end -}}
 
     {{- else if eq . "gss" -}}
@@ -211,7 +223,7 @@ Side effects: Called media and block partials may register assets in page.Store.
   {{ print "<" $node $box_attr ">" | safeHTML -}}
 
     {{- /*  BACKGROUND  */ -}}
-    {{- partial "bg" . -}}
+    {{- partial "bg" (merge (dict "box_rate" (partial "boxes/rate" .)) .) -}}
 
 {{- end -}}
 

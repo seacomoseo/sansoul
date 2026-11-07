@@ -1,3 +1,5 @@
+@use "../../variables";
+
 .whens {
   display: flex;
   flex-wrap: wrap;
@@ -5,7 +7,7 @@
   gap: 1em;
 }
 .dots + .whens {
-  margin-top: var(--box-gap);
+  margin-top: var(--block-mt, var(--box-gap));
 }
 .when,
 .when__data {
@@ -31,4 +33,11 @@
 }
 .full {
   width: 100%;
+}
+
+@each $align in center, space-evenly, space-between, space-around, flex-start, flex-end {
+  .whens--#{$align} {
+    justify-content: $align;
+    > .when { flex-grow: 0; }
+  }
 }

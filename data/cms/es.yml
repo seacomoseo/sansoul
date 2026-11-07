@@ -132,14 +132,14 @@ tpl_sections: Secciones
 tpl_sections_singular: Sección
 tpl_sections_file: Archivo
 tpl_sections_file_hint: Sección previamente creada
-tpl_sections_params: Parámetros
-tpl_sections_params_hint: Sobreescriben a los del archivo
+tpl_sections_params: Contenido
+tpl_sections_params_hint: Valores de esta sección; tienen prioridad sobre el archivo
 tpl_list: Listas
 tpl_rel: Listas de Relacionados
 # collections > page
 # collections > page > index
-index_permalinks: Enlaces Permanentes
-index_permalinks_hint: Es la base de las URLs o enlaces de las páginas de este tipo \n **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
+index_prefix: Prefijo de URL
+index_prefix_hint: Es la base de las URLs o enlaces de las páginas de este tipo \n **Ejemplo →** "categorias" mostrará "https://ejemplo.com/categorias/[slug]/"
 index_slug_hint: Es el final de la URL o enlace de esta la página de índice \n **Ejemplo →** "categoria" mostrará "https://ejemplo.com/categoria/"
 index_singular: Título Singular
 # collections > page > common
@@ -292,19 +292,16 @@ config_cms_editorial_hint: Permite trabajar con vistas previas en modo desarroll
 config_favicon: Favicono
 config_favicon_hint: Icono en miniatura representativo del sitio web (recomendable en formato SVG)
 config_lang_main_subdir: Idioma Principal en Subcarpeta
-config_cookies_advanced: Cookies Avanzadas
-config_cookies_advanced_hint: El mensaje de Cookies le permite al usuario elegir opciones
-config_cookies_legal: Cookies Legales
-config_cookies_legal_hint: Hace efectiva la política de cookies
+config_cookies_legal: Esperar Consentimiento de Cookies
+config_cookies_legal_hint: Con false o sin valor, GA4 y los vídeos externos se cargan sin esperar consentimiento. Con true, esperan la selección del usuario y respetan su retirada.
 config_ga4_pagespeed_hide: Ocultar GA4 a PageSpeed
 config_ga4_pagespeed_hide_hint: Ocultar Google Analytics 4 solo para [PageSpeed Insights](https://pagespeed.web.dev/)
 config_development: Modo Desarrollo
 config_development_hint: Acelera las implementaciones para desarrollo y empeora la velocidad de carga para los usuarios
 config_show: Efecto Aparecer
 config_show_hint: Activar efecto de aparecer al hacer scroll en todos los elementos (empeora el rendimiento en dispositivos poco potentes)
-config_webp: Imágenes en formato WEBP
-config_webp_hint: Comprimir Imágenes en formato WEBP en vez de AVIF (desmarcada, mejora la velocidad de carga a costa de aumentar el tiempo de compilación)
-config_img_sizes: Escalado de Imágenes en srcset sizes
+config_imgs_webp: Imágenes en formato WEBP
+config_imgs_webp_hint: Comprimir Imágenes en formato WEBP en vez de AVIF (desmarcada, mejora la velocidad de carga a costa de aumentar el tiempo de compilación)
 # collections > files > langs
 langs: Idiomas
 langs_singular: Idioma
@@ -424,6 +421,7 @@ styles_inputs: Campos de Formularios
 styles_inputs_fill: Rellenos
 styles_inputs_fill_hint: Aplica un fondo de color blanco con esquinas redondeadas en cada campo simple
 styles_inputs_labels: Posición de Etiquetas
+styles_inputs_labels_hint: 'in: dentro; out: encima; both: etiqueta flotante que sube al enfocar o tener valor. Los campos especiales conservan sus etiquetas propias.'
 styles_inputs_consent: Consentimiento
 styles_inputs_consent_hint: Texto junto a la casilla de verificación del consentimiento
 styles_shadow: Sombras
@@ -445,15 +443,15 @@ customs_var_hint: Si se define y existe como variable de campo bien formateado, 
 customs_name: Nombre de Campo
 customs_label: Nombre Visible
 customs_hint_: Leyenda
-customs_widget: Widget
+customs_widget: Tipo de campo
 customs_opts: Opciones
 customs_opts_singular: Opción
 customs_opts_label: Título
 customs_opts_value: Valor
 customs_multi: Múltiple
 customs_i18n: Traducción
-customs_sub: Subcampos
-customs_sub_singular: Subcampo
+customs_fields: Subcampos
+customs_fields_singular: Subcampo
 customs_relations_hint: Crear previamente
 # collections > files > defaults
 defaults: Valores por Defecto
@@ -517,11 +515,11 @@ md_hint: |
   \n `  `- `main|alt|light|dark|turn|such|whatsapp`: color (si no se indica, se toma `cta`)
   \n `  `- `swap`: cambio de tipografía
   \n `  `- `dot`: botón puntual con icono y sin texto
-  \n `  `- `nofollow`: ofuscado
-  \n `  `- `homefollow`: ofuscado excepto en página de inicio
+  \n `  `- `lock`: ofuscado
+  \n `  `- `sublock`: ofuscado excepto en página de inicio
   \n `  `- `blank`: se abre en ventana nueva
-  \n `  `- `ga4`: registra evento en GA4
-  \n - Ejemplo: `[[Texto del enlace/botón]](/url/ "Title [main nofollow ga4]")`
+  \n `  `- `ga4:nombre_evento`: registra ese evento en GA4
+  \n - Ejemplo: `[[Texto del enlace/botón]](/url/ "Title {main lock ga4:contact}")`
   \n - Se recomienda usar el modo "raw" de este campo (botón **`[M⬇]`** arriba a la derecha) para poder realizar estas personalizaciones
   \n
   \n **Iconos**
@@ -541,8 +539,8 @@ md_hint: |
   \n `  `- `::svg:base/logo::`
   \n
   \n **Enlaces con iconos**
-  \n - Ejemplo: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4]")`
-  \n - Ejemplo: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4 dot]")` (es igual, pero es un botón puntual que solamente tiene un icono y oculta "+34 666 777 888")
+  \n - Ejemplo: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "{lock ga4:contact}")`
+  \n - Ejemplo: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "{lock ga4:contact dot}")` (es igual, pero es un botón puntual que solamente tiene un icono y oculta "+34 666 777 888")
   \n
   \n **Listas con iconos**
   \n - Si un elemento de lista comienza con un icono, se tomará como "bullet point"
@@ -577,7 +575,7 @@ md_title: Título Hover
 md_btn: Botón
 md_dot: Botón tipo Punto
 md_color: Botón Color
-md_homefollow: Just Do Follow in Home
+md_sublock: Just Do Follow in Home
 md_blank: Abrir en otra ventana
 md_mark: Marcador
 md_mark_sign: Tipo
@@ -633,16 +631,20 @@ icon_pos_hint: Arriba en grande, Lateral junto al título y Abajo a modo de subr
 icon_size: Tamaño de Icono
 icon_color: Color de Icono
 img: Imagen
+img_w: Ancho de Presentación
+img_w_hint: Píxeles; si falta el alto se calcula con el ratio indicado o la proporción real. No modifica los metadatos del vídeo.
+img_h: Alto de Presentación
+img_h_hint: Píxeles; si falta el ancho se calcula con el ratio indicado o la proporción real. No modifica los metadatos del vídeo.
 hover: Imagen Alternativa
 hover_hint: Aparecerá al pasar el cursor por encima
 alt: Texto Alternativo de Imagen
 hover_alt: Texto Alternativo de Imagen Alternativa
 vid: Vídeo
 vid_hint: Admite URL de YouTube y Vimeo \n **Miniatura →** en el campo anterior correspondiente \n **Marcas de inicio y final →** Se pueden establecer en segundos añadiendo al final de la URL '#t=2,7' o '#t=2'
-vid_width: Ancho del Vídeo
-vid_width_hint: Dimensión conocida en píxeles; si se omite se usa la caché.
-vid_height: Alto del Vídeo
-vid_height_hint: Dimensión conocida en píxeles; si se omite se usa la caché.
+vid_w: Ancho del Vídeo
+vid_w_hint: Dimensión conocida en píxeles; si se omite se usa la caché.
+vid_h: Alto del Vídeo
+vid_h_hint: Dimensión conocida en píxeles; si se omite se usa la caché.
 vid_duration: Duración del Vídeo
 vid_duration_hint: Duración ISO 8601, por ejemplo PT12S o PT1M30S; si se omite se usa la caché.
 vid_upload: Publicación del Vídeo
@@ -668,16 +670,25 @@ gray_hint: Recuperan el color al pasar el cursor por encima
 shade: Imagen con Gradiente
 shade_hint: Gradiente de fondo hacia abajo
 url: Enlace
-pin: Icono del Enlace
+il: Icono Izquierdo del Enlace
+ir: Icono Derecho del Enlace
 label: Texto del Enlace
 anchor: Ancla del Enlace
 anchor_hint: Texto/Anchor oculto que tendrá el enlace (para SEO)
 lock: Enlace Ofuscado
 lock_hint: Ésto hace que Google no considere el enlace como tal (para SEO)
 btn: Color del Botón del Enlace
+btn_dot: Botón Circular
+btn_sm: Botón Pequeño
+btn_full: Botón a Ancho Completo
+btn_full_hint: Sin valor hereda; si no hay valor heredado, se activa cuando la propia caja tiene fondo. false fuerza ancho automático y true fuerza ancho completo.
+btn_mt: Margen Superior del Botón Mínimo
+btn_mt_hint: En em. 0 elimina el margen automático; sin valor conserva la separación habitual. También se aplica a pantallas grandes si btn_mt_vl está vacío.
+btn_mt_vl: Margen Superior del Botón Máximo
+btn_mt_vl_hint: En em. Si sólo se define este valor, el margen mínimo es 0.
 swap: Fuente Alternativa del Enlace
-ga4: Evento Clave en GA4
-ga4_hint: Marcarlo como evento clave en Google Analytics 4 (para posterior conversión)
+ga4: Evento Adicional en GA4
+ga4_hint: Nombres de eventos personalizados separados por comas, p. ej. lead_contact,special_click. Los contactos y formularios también envían contact una sola vez. Usa none para anular los eventos personalizados heredados.
 color: Color del Fondo
 fade: Color de Gradiente del Fondo
 fade_to: Dirección de Gradiente del Fondo
@@ -719,14 +730,14 @@ rate_hint: Altura mínima según la proporción establecida \n Automática por d
 space: Margen entre Elementos de la Caja
 class: Clases CSS Personalizadas
 class_hint: Se añaden al contenedor de la caja
-mt: Margen Superior Máximo
-mt_vs: Margen Superior Mínimo
-mb: Margen Inferior Máximo
-mb_vs: Margen Inferior Mínimo
-ml: Margen Izquierdo Máximo
-ml_vs: Margen Izquierdo Mínimo
-mr: Margen Derecho Máximo
-mr_vs: Margen Derecho Mínimo
+mt_vl: Margen Superior Máximo
+mt: Margen Superior Mínimo
+mb_vl: Margen Inferior Máximo
+mb: Margen Inferior Mínimo
+ml_vl: Margen Izquierdo Máximo
+ml: Margen Izquierdo Mínimo
+mr_vl: Margen Derecho Máximo
+mr: Margen Derecho Mínimo
 pd: Márgenes Interiores
 pd_vs: Márgenes Interiores Mínimos
 hide_shadow: Quitar Sombra
@@ -787,7 +798,7 @@ group_radius_hint: Esquinas redondeadas en el conjunto de elementos
 slider: Activar Carrusel
 slider_hint: Al activar se cambia el salto de línea de elementos por controles deslizantes (en caso de requerirlos)
 time: Intervalo del Carrusel
-time_hint: Al indicar algo se desplazará automáticamente en ese intervalo en milisegundos (no recomendado)
+time_hint: Intervalo en segundos; 0 desactiva el avance automático. Se respeta Reducir movimiento.
 pips: Guías del Carrusel
 arrows: Flechas del Carrusel
 align_x: Alineación Horizontal de Cajas
@@ -816,18 +827,18 @@ faqs_singular: FAQ
 faqs_hint: Botones con contenido desplegable, muy usado para preguntas frecuentes
 faq_headers: Modo Encabezados
 faq_open: Primero Desplegado
-gss: Hoja G.Drive Archivo
-gss_hint: Identificador del archivo de tipo hoja de Google Drive \n **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
+gss: Hoja de Google Drive
+gss_id_hint: Identificador del archivo de tipo hoja de Google Drive \n **Ejemplo →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
 gss_sheet: Hoja G.Drive Pestaña
 gss_sheet_hint: Identificador de la pestaña \n **Ejemplo →** "1861644079"
 review: Plantilla de Reseñas
 reviews: Reseñas
 reviews_singular: Reseña
-review_icon_left: Icono Izquierda
-review_icon_right: Icono Derecha
+review_il: Icono Izquierda
+review_ir: Icono Derecha
 review_rating: Valoración
 item_full: Ancho Completo
-when: Horarios
+when: Plantilla de Horarios
 when_singular: Horario
 when_days: Días
 when_hours: Horas
@@ -943,7 +954,7 @@ inputs_h4: Encabezado h4
 inputs_h5: Encabezado h5
 inputs_h6: Encabezado h6
 inputs_md: Contenido
-map: Plantilla de Mapa
+geo: Plantilla de Geografía
 map_tile: Capa por defecto
 map_color: Color
 map_label: Nombre
@@ -1069,6 +1080,7 @@ opt-duo-1: foto → texto → texto → foto (F-T-T-F)
 opt-duo-2: texto → foto → foto → texto (T-F-F-T)
 opt-pips-line: Líneas
 opt-pips-dot: Puntos
+opt-pips-pill: Puntos extensibles
 opt-pips-hide: Ocultar
 opt-sizes-xs: Muy Pequeño
 opt-sizes-sm: Pequeño
@@ -1116,7 +1128,7 @@ cms_group_reviews: Reseñas
 cms_group_when: Horarios
 cms_group_links: Grupo de Enlaces
 cms_group_form: Formulario
-cms_group_map: Mapa
+cms_group_geo: Mapa
 cms_group_gss: Hoja de Google Drive
 cms_group_boxes: SubCajas
 cms_group_modals: Ventanas Modales
@@ -1579,3 +1591,36 @@ inputs_range: Rango
 inputs_range_hint: Control deslizante con valor visible y manejo por teclado
 input_step: Paso
 input_value: Valor inicial
+
+link: Plantilla de Enlaces
+link_hint: Valores compartidos por los enlaces; cada elemento puede sobrescribirlos. Sin columnas, fit usa una base del 100 %. align_x omiso equivale a grow.
+align_x_hint: grow rellena el ancho disponible. Es el valor por defecto en link, no en box.
+links_blank: Abrir en Nueva Pestaña
+
+duplicate_if_empty: Duplicar si está vacío
+config_imgs_quality: Calidad de Imágenes
+config_imgs_quality_hint: Compresión AVIF y WebP, de 1 a 100. Por defecto 60.
+config_imgs_dpr: Densidad de Píxeles de Imágenes
+config_imgs_dpr_hint: Multiplicador máximo de resolución. Por defecto 2.
+config_group_google: Google
+config_group_locale: Región
+config_group_cms: CMS
+config_group_site: Sitio
+config_group_images: Imágenes
+
+dot: Plantilla de Botones Circulares
+whens: Horarios
+whens_singular: Horario
+gss_id: Identificador del Archivo
+
+list_view: Vista
+list_view_hint: Calendario opcional para artículos y eventos; en móvil se muestra como agenda. Los filtros y max se aplican antes de agrupar por mes.
+slider_infinite: Carrusel infinito
+slider_infinite_hint: Reordena los elementos originales para continuar al arrastrar; requiere espacio suficiente fuera de la vista.
+
+form_ajax: Enviar sin salir de la página
+form_ajax_hint: >-
+  Vacío conserva el comportamiento del proveedor. Sí usa fetch y considera correcto un HTTP 2xx; la acción debe admitir CORS y el formato enviado. No: usa navegación normal del formulario.
+
+config_imgs_remote: Servir imágenes externas desde este dominio
+config_imgs_remote_hint: Descarga durante la compilación las imágenes HTTP(S) usadas por el sistema de medios. Procesa los formatos raster compatibles como locales y publica SVG como imagen externa segura. Si falla la descarga, conserva la URL original y muestra un aviso. Desactivado por defecto.

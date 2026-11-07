@@ -12,8 +12,8 @@ import { migrateMarkdown, migrateProject } from '../migrations/8.0.0-markdown-me
 const themeDir = fileURLToPath(new URL('../../', import.meta.url))
 
 test('link metadata round trips buttons, icons, flags and quoted titles', () => {
-  for (const follow of ['lock', 'homefollow', '']) {
-    const value = { url: '/target/', icon: 'svg:bolt', anchor: 'Open', title: 'A "quoted" \\ title', btn: true, color: 'alt', dot: true, sm: true, swap: true, follow, blank: true, ga4: true }
+  for (const follow of ['lock', 'sublock', '']) {
+    const value = { url: '/target/', il: 'svg:bolt', ir: 'brand:github', anchor: 'Open', title: 'A "quoted" \\ title', btn: true, color: 'alt', dot: true, sm: true, swap: true, follow, blank: true, ga4: 'contact' }
     const block = syntax.formatLink(value)
     assert.match(block, /\{alt dot sm swap/)
     assert.deepEqual(syntax.parseLinkMatch(block.match(syntax.linkPattern)), value)
@@ -75,16 +75,17 @@ test('real Hugo hooks render token flags, clean captions and preserve genuine al
   try {
     write('hugo.yml', 'baseURL: https://example.org/\n')
     write('layouts/home.html', '{{ .Content }}')
-    write('layouts/partials/link.html', '<a data-lock="{{ .lock }}" data-btn="{{ .btn }}" data-sm="{{ .sm }}" data-dot="{{ .dot }}" data-blank="{{ .blank }}" data-anchor="{{ .anchor }}">{{ .label }}</a>')
-    write('layouts/partials/func/icon-out.html', '{{ return (dict "text" . "icon" "") }}')
+    write('layouts/partials/link.html', '<a data-lock="{{ .lock }}" data-btn="{{ .btn }}" data-sm="{{ .sm }}" data-dot="{{ .dot }}" data-blank="{{ .blank }}" data-ga4="{{ .ga4 }}" data-anchor="{{ .anchor }}">{{ .label }}</a>')
+    write('layouts/partials/func/link-icons.html', fs.readFileSync(path.join(themeDir, 'layouts/partials/func/link-icons.html'), 'utf8'))
+    write('layouts/partials/icon.html', '<i>{{ .icon }}</i>')
     write('layouts/partials/func/is-vid.html', '{{ return false }}')
     write('layouts/partials/func/video-metadata.html', '{{ return dict }}')
     write('layouts/partials/media/_.html', '<img src="{{ .img }}" alt="{{ .alt }}">')
     for (const name of ['render-link.html', 'render-image.html']) write(`layouts/_default/_markup/${name}`, fs.readFileSync(path.join(themeDir, 'layouts/_default/_markup', name), 'utf8'))
-    write('content/_index.md', `---\ntitle: Test\n---\n[[Button]](/x "Label {alt dot sm blank}")\n\n[Legacy](/x "Label [nofollow]")\n\n[Ordinary](/x "A [normal title]")\n\n![Real alt](/u/a.jpg "Caption {3/2}")\n\n![3/2](/u/a.jpg "Legacy caption")\n${syntax.formatImage({ src: '/u/bracket.jpg', alt: 'A [ detail' })}\n`)
+    write('content/_index.md', `---\ntitle: Test\n---\n[[Button]](/x "Label {alt dot sm blank ga4:lead_contact,special_click}")\n\n[Legacy](/x "Label [nofollow]")\n\n[Ordinary](/x "A [normal title]")\n\n![Real alt](/u/a.jpg "Caption {3/2}")\n\n![3/2](/u/a.jpg "Legacy caption")\n${syntax.formatImage({ src: '/u/bracket.jpg', alt: 'A [ detail' })}\n`)
     execFileSync('hugo', ['--source', root], { stdio: 'pipe' })
     const html = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8')
-    assert.match(html, /data-btn="alt" data-sm="true" data-dot="true" data-blank="true" data-anchor="Label"/)
+    assert.match(html, /data-btn="alt" data-sm="true" data-dot="true" data-blank="true" data-ga4="lead_contact,special_click" data-anchor="Label"/)
     assert.match(html, /data-lock="true"/)
     assert.match(html, /data-anchor="A \[normal title\]"/)
     assert.match(html, /alt="Real alt"/)
@@ -109,7 +110,7 @@ test('registered CMS components serialize new metadata and retain image alt in d
   const oldLink = '[[::svg:bolt:: Open]](/target "Title [nofollow sm dot]")'
   const updatedLink = link.toBlock(link.fromBlock(oldLink.match(link.pattern)))
   assert.equal(updatedLink, '[[::svg:bolt:: Open]](/target "Title {dot sm lock}")')
-  assert(link.fields.find(field => field.name === 'sm'))
+  for (const name of ['il', 'ir', 'sm']) assert(link.fields.find(field => field.name === name))
   for (const id of ['gallery', 'inline-image']) {
     const editor = component(id)
     const old = '![3/2](/u/image.jpg "Caption")'
@@ -251,5 +252,21 @@ test('anchored or tagged block scalars are preserved conservatively', () => {
     assert.equal(migrateMarkdown(source, { yaml: true, onWarning: warning => warnings.push(warning) }), source)
     assert.equal(warnings.length, 1)
     assert.equal(migrateMarkdown(source, { yaml: true }), source)
+  }
+})
+
+test('media size metadata round trips without merging dimensions into ratio or caption', () => {
+  for (const suffix of ['16/9 w360 h220', 'w360 h220', 'w360', 'h220', '16/9 w360', '16/9 h220', '16/9']) {
+    const markdown = `![Real alt](/u/movie.mp4 "Caption {${suffix}}")`
+    const match = markdown.match(syntax.imagePattern)
+    const parsed = syntax.parseImage(match[1], match[2], match[3])
+    assert.equal(parsed.title, 'Caption')
+    assert.equal(parsed.ratio, suffix.includes('/') ? '16/9' : '')
+    assert.equal(syntax.formatImage(parsed), markdown)
+  }
+  for (const suffix of ['w0', '16/0 w360', 'w360 w220', 'w360 unknown']) {
+    const markdown = `![Real alt](/u/image.jpg "Caption {${suffix}}")`
+    const match = markdown.match(syntax.imagePattern)
+    assert.equal(syntax.formatImage(syntax.parseImage(match[1], match[2], match[3])), markdown)
   }
 })

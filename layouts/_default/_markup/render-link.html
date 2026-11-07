@@ -4,7 +4,7 @@ Legacy square blocks and nofollow remain readable; CMS writes braces and lock. *
 {{- $anchor := .Title -}}
 {{- $title  := "" -}}
 {{- $meta   := slice -}}
-{{- $token := `(main|alt|cta|light|dark|turn|such|whatsapp|dot|sm|swap|lock|nofollow|homefollow|blank|ga4)` -}}
+{{- $token := `(main|alt|cta|light|dark|turn|such|whatsapp|dot|sm|swap|lock|nofollow|sublock|blank|ga4(:[A-Za-z][A-Za-z0-9_]{0,39}(,[A-Za-z][A-Za-z0-9_]{0,39})*)?)` -}}
 {{- $pattern := printf `\s*(\{\s*%s(\s+%s)*\s*\}|\[\s*%s(\s+%s)*\s*\])$` $token $token $token $token -}}
 {{- with findRE $pattern .Title 1 -}}
   {{- $block := index . 0 -}}
@@ -29,19 +29,24 @@ Legacy square blocks and nofollow remain readable; CMS writes braces and lock. *
 {{- end -}}
 
 {{- /*  ga4  */ -}}
-{{- $ga4 := in $meta "ga4" -}}
+{{- $ga4 := "" -}}
+{{- range $meta -}}
+  {{- if eq . "ga4" -}}{{- $ga4 = "contact" -}}
+  {{- else if hasPrefix . "ga4:" -}}{{- $ga4 = strings.TrimPrefix "ga4:" . -}}{{- end -}}
+{{- end -}}
 
 {{- /*  blank  */ -}}
 {{- $blank := in $meta "blank" -}}
 
 {{- /*  icon outside  */ -}}
-{{- $outside := partial "func/icon-out" $label -}}
+{{- $outside := partial "func/link-icons" $label -}}
 {{- $label   := $outside.text -}}
-{{- $icon    := $outside.icon -}}
+{{- $il      := $outside.il -}}
+{{- $ir      := $outside.ir -}}
 
 {{- /*  lock  */ -}}
 {{- $lock := cond (or (in $meta "lock") (in $meta "nofollow")) true nil -}}
-{{- if in $meta "homefollow" -}}
+{{- if in $meta "sublock" -}}
   {{- if not page.IsHome -}}
     {{- $lock = true -}}
   {{- end -}}
@@ -59,7 +64,8 @@ Legacy square blocks and nofollow remain readable; CMS writes braces and lock. *
   "sm"     $sm
   "swap"   $swap
   "ga4"    $ga4
-  "icon"   $icon
+  "il"     $il
+  "ir"     $ir
   "label"  $label
   "anchor" $anchor
   "title"  $title

@@ -1,4 +1,5 @@
 import { scrollShot } from './scroll-shot'
+import { hashTarget } from './hash-target'
 
 export const initMenuScrollSpy = () => {
   const sections = '.section[id]:not(footer),#hero'
@@ -17,7 +18,8 @@ export const initMenuScrollSpy = () => {
     query: sections,
     doStart: element => {
       // Check if the hash is not a modal
-      const hashIsNotModal = document.querySelector((location.hash || 'none') + ':not(.modal)')
+      const target = hashTarget()
+      const hashIsNotModal = target && !target.classList.contains('modal')
       const bodyTop = document.querySelector('body.body-top')
 
       if ((hashIsNotModal || !location.hash) && !bodyTop) {

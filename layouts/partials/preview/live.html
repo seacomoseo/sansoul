@@ -5,7 +5,7 @@ Context: page.Page.
 Renders: JSON data and a small bootstrap. Normal visits do not download the receiver.
 Side effects: Publishes receiver and full preview CSS; registers no hidden if branches.
 */ -}}
-{{- if or .File .IsSection .IsHome -}}
+{{- if and (ne site.Params.cms_enabled false) (or .File .IsSection .IsHome) -}}
   {{- $globals := index hugo.Data (print "global." .Lang) | default dict -}}
   {{- $data := merge .Params (dict "title" .Title "body" .RawContent) -}}
   {{- $usage := page.Store.Get "sansoul.assets.usage" -}}

@@ -11,6 +11,7 @@ class Node {
     this.value = value
     this.childNodes = []
     this.attributes = {}
+    this.listeners = {}
     this.style = { setProperty: (name, value) => { this.style[name] = value } }
     this.classList = {
       contains: value => this.className.split(/\s+/).includes(value),
@@ -35,6 +36,7 @@ class Node {
   get firstChild () { return this.childNodes[0] }
   get firstElementChild () { return this.childNodes.find(node => node.nodeType === 1) }
   setAttribute (key, value) { this.attributes[key] = value }
+  addEventListener (name, callback) { this.listeners[name] = callback }
 }
 
 const document = {
@@ -178,4 +180,29 @@ test('tables preserve head/body and aligned cells; inline titles omit block wrap
   const inline = render([paragraph(word('Hi '), { type: 'strong', tokens: [word('bold')] })], { inline: true })
   assert.equal(tags(inline, 'p').length, 0)
   assert.equal(tags(inline, 'strong')[0].textContent, 'bold')
+})
+
+
+test('media preview respects size metadata and derives missing sizes after intrinsic media loads', () => {
+  const fragment = render([paragraph(image('/u/photo.jpg', 'Caption {16/9 w360}')), paragraph(image('/u/clip.mp4', 'Video {w360 h220}'))])
+  const picture = tags(fragment, 'img')[0]
+  assert.equal(picture.width, 360)
+  assert.equal(picture.height, 203)
+  const video = tags(fragment, 'video')[0]
+  assert.equal(video.width, 360)
+  assert.equal(video.height, 220)
+  assert.equal(tags(fragment, 'figcaption')[0].textContent, 'Caption')
+  const natural = tags(render([paragraph(image('/u/photo.jpg', '{h220}'))]), 'img')[0]
+  assert.equal(natural.height, 220)
+  assert.equal(natural.width, undefined)
+  natural.naturalWidth = 300
+  natural.naturalHeight = 200
+  natural.listeners.load()
+  assert.equal(natural.width, 330)
+  const native = tags(render([paragraph(image('/u/clip.mp4', '{w360}'))]), 'video')[0]
+  native.videoWidth = 540
+  native.videoHeight = 960
+  native.listeners.loadedmetadata()
+  assert.equal(native.width, 360)
+  assert.equal(native.height, 640)
 })

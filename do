@@ -17,6 +17,24 @@ COMMAND=${1:-}
 PATH="$CORE_DIR/scripts/bin:$PWD/node_modules/.bin:$PWD/../_tools/node_modules/.bin:$PATH"
 export PATH
 
+case "$COMMAND" in
+  ''|help|-h|--help)
+    cat <<'HELP'
+SanSoul commands (run from the project root):
+  sh do dev       Watch site and prebuild inputs without CMS assets.
+  sh do cms       Watch site and prebuild inputs with the CMS.
+  sh do preview   Experimental local structural CMS preview in an isolated copy.
+  sh do build     Compile and validate the site.
+  sh do local     Rebuild production on changes and serve localhost:1313.
+  sh do check     Run regression checks and build the site.
+  sh do update    Update the engine, migrate and validate the project.
+  sh do update --check  Inspect the update plan without changing the checkout.
+Aliases: server = dev; live = local; hugo = build.
+HELP
+    exit 0
+    ;;
+esac
+
 # Functions
 lecho() { echo "\033[7;34m $1 \033[0m"; } # 🟦 Header
 hecho() { echo "\033[7;37m $1 \033[0m"; } # ⬜️ Header
@@ -30,7 +48,7 @@ vecho() { echo "\033[1;36m$1\033[0m"; }   # 🩵 Value
 # commands inherit the owner token and are validated without taking a second
 # lock, while direct build commands acquire the same per-project lock.
 case "$COMMAND" in
-  update|check|rm-public|imgs|videos|prebuild|hugo-development|hugo-production|hugo)
+  update|check|rm-public|imgs|videos|prebuild|hugo-development|hugo-production|build|hugo)
     if [ -n "${SANSOUL_LIFECYCLE_TOKEN:-}" ]; then
       node "$CORE_DIR/scripts/lifecycle.js" validate "$SANSOUL_LIFECYCLE_TOKEN" || {
         eecho "Invalid SanSoul lifecycle owner token"
@@ -162,23 +180,34 @@ elif [ "$COMMAND" = check ]; then
   hecho "CHECK TOOLING REGRESSIONS"
   node --test "$CORE_DIR"/scripts/tests/*.test.js
 
-  sh do hugo
+  sh do build
 
-# Hugo development server with a one-time prebuild. `server` remains a
-# compatible alias for consumers that have not adopted the shorter command.
+# Site development with the same prebuild supervisor as CMS mode.
 elif [ "$COMMAND" = dev ] || [ "$COMMAND" = server ]; then
 
   hecho "HUGO DEVELOPMENT SERVER"
   shift
-  node "$CORE_DIR/scripts/server-lifecycle.js" dev "$@"
+  exec node "$CORE_DIR/scripts/local-server.js" dev "$@"
 
-# CMS + Hugo server with prebuild and source watchers. `local` remains a
-# compatible alias for consumers that use the older command name.
-elif [ "$COMMAND" = live ] || [ "$COMMAND" = local ]; then
+# CMS development.
+elif [ "$COMMAND" = cms ]; then
 
   hecho "HUGO SERVER WITH CMS CACHE INVALIDATION AND PREBUILD WATCHER"
   shift
-  node "$CORE_DIR/scripts/local-server.js" "$@"
+  exec node "$CORE_DIR/scripts/local-server.js" cms "$@"
+
+# Experimental structural preview uses its own isolated workspace.
+elif [ "$COMMAND" = preview ]; then
+
+  shift
+  exec node "$CORE_DIR/scripts/structural-preview-server.js" "$@"
+
+# Production fidelity with full rebuilds and post-processing.
+elif [ "$COMMAND" = local ] || [ "$COMMAND" = live ]; then
+
+  hecho "LOCAL PRODUCTION SERVER"
+  shift
+  exec node "$CORE_DIR/scripts/production-server.js" "$@"
 
 
 #####################
@@ -275,7 +304,7 @@ elif [ "$COMMAND" = hugo-production ]; then
   # sh do multilang
 
 # Hugo check environement and build
-elif [ "$COMMAND" = hugo ]; then
+elif [ "$COMMAND" = build ] || [ "$COMMAND" = hugo ]; then
 
   if [ ! -d ./node_modules ]; then
     hecho "INSTALL PRODUCTION DEPENDENCIES"
@@ -286,7 +315,7 @@ elif [ "$COMMAND" = hugo ]; then
 
   # Deploy with environement
   development=$(grep '^\s\sdevelopment:' ./data/config.yml | awk '{print $2}')
-  if test "$development" = "true"
+  if test "$development" = "true" && [ "${SANSOUL_BUILD_PRODUCTION:-}" != 1 ]
   then
     sh do hugo-development
   else

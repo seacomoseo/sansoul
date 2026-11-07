@@ -9,7 +9,7 @@
 {{- $caps   := cond (not .step.caps)            "" "caps" -}}
 {{- $line   := cond (not .step.line)            "" "line" -}}
 {{- $show   := cond (not hugo.Data.config.show) "" " show" }}
-<ul class="steps box__block">
+<ul class="steps box__block"{{ partial "func/attrs" (dict "style" (partial "blocks/margin-style" .step)) }}>
   {{- range $key, $value := .steps }}
     <li class="step {{- $icon_size }}">
       <div class="step__axis-wrap {{- $border }}">

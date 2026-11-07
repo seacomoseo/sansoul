@@ -1,11 +1,20 @@
+import { reducedMotion, onMotionChange } from './motion'
 import { waitCSS } from './wait-css'
+import { createInfiniteSlider } from './slider-infinite'
+
+const initializedSliders = new WeakSet()
+let controlsInitialized = false
+const infiniteSliders = new WeakMap()
+const destinations = new WeakMap()
+const interactionUntil = new WeakMap()
 
 function indexOfItem (item) {
   return [...item.parentElement.children].indexOf(item)
 }
 
 function activeClass (item, pips, remove = false) {
-  const index = indexOfItem(item)
+  const infinite = infiniteSliders.get(item.closest('.slider'))
+  const index = infinite ? infinite.indexOf(item) : indexOfItem(item)
   const pip = pips[index]
   if (!remove) {
     item.classList.add('slider__item--active')
@@ -17,75 +26,26 @@ function activeClass (item, pips, remove = false) {
 }
 
 function scrollToItem (item, slider, track) {
-  const itemLeft = item.offsetLeft
-  const itemWidth = item.offsetWidth
-  const sliderWidth = slider.offsetWidth // - parseFloat(getComputedStyle(document.body)['font-size'].replace('px', ''))
-  const scrollLeft = itemLeft - (sliderWidth - itemWidth) / 2
-  track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
-}
-
-// function scrollToNear (item, side, track) {
-//   const trackLeft = track.scrollLeft
-//   const itemWidth = item.offsetWidth
-//   let scrollLeft
-//   if (side === 'left') {
-//     scrollLeft = trackLeft - itemWidth
-//   } else {
-//     scrollLeft = trackLeft + itemWidth
-//   }
-//   track.scrollTo({ top: 0, left: scrollLeft, behavior: 'smooth' })
-// }
-
-function scrollToLeft (track, width) {
-  track.scrollTo({
-    left: width,
-    behavior: 'smooth'
-  })
+  if (infiniteSliders.get(slider)?.goTo(item, reducedMotion() ? 'instant' : 'smooth')) return
+  destinations.set(track, item)
+  const bounds = track.getBoundingClientRect()
+  const target = item.getBoundingClientRect()
+  track.scrollTo({ left: track.scrollLeft + (target.left + target.right - bounds.left - bounds.right) / 2, behavior: reducedMotion() ? 'instant' : 'smooth' })
 }
 
 function sideScroll (side, track, children) {
-  // Bit by bit
-  const trackChild = track.firstElementChild
-  const trackStyle = window.getComputedStyle(trackChild)
-  const trackWidth = trackChild.scrollWidth
-  const padding = parseFloat(trackStyle.getPropertyValue('padding-left')) * 2
-  const gap = parseFloat(trackStyle.getPropertyValue('gap'))
-  const elementWidth = children[0].scrollWidth
-  const scrollWidth = elementWidth + gap
-  if (side === 'left') {
-    if (track.scrollLeft > 0) {
-      scrollToLeft(track, track.scrollLeft - scrollWidth)
-    } else {
-      scrollToLeft(track, trackWidth - scrollWidth)
-    }
-  } else {
-    if (track.scrollLeft < (trackWidth - scrollWidth - padding)) {
-      scrollToLeft(track, track.scrollLeft + scrollWidth)
-    } else {
-      scrollToLeft(track, 0)
-    }
-  }
-  // Next no observer in center
-  // const activeItems = slider.querySelectorAll('.slider__item--active')
-  // const lastIndex = children.length - 1
-  // let keyItem, keyIndex
-  // if (side === 'left') {
-  //   keyItem = activeItems[0]
-  //   keyIndex = indexOfItem(keyItem)
-  //   if (keyIndex === 0) {
-  //     scrollToItem(children[lastIndex], slider, track)
-  //   } else {
-  //     scrollToNear(keyItem, 'left', track)
-  //   }
-  // } else {
-  //   keyItem = activeItems[activeItems.length - 1]
-  //   keyIndex = indexOfItem(keyItem)
-  //   if (keyIndex === lastIndex) {
-  //     scrollToItem(children[0], slider, track)
-  //   } else {
-  //     scrollToNear(keyItem, 'right', track)
-  //   }
-  // }
+  const slider = track.closest('.slider')
+  const infinite = infiniteSliders.get(slider)
+  if (infinite?.step(side, reducedMotion() ? 'instant' : 'smooth')) return
+  const bounds = track.getBoundingClientRect()
+  const center = (bounds.left + bounds.right) / 2
+  const nearest = destinations.get(track) || children.reduce((best, item) => {
+    const a = item.getBoundingClientRect()
+    const b = best.getBoundingClientRect()
+    return Math.abs((a.left + a.right) / 2 - center) < Math.abs((b.left + b.right) / 2 - center) ? item : best
+  })
+  const next = (children.indexOf(nearest) + (side === 'left' ? -1 : 1) + children.length) % children.length
+  scrollToItem(children[next], slider, track)
 }
 
 function slidersControlsView (slider, items) {
@@ -102,14 +62,32 @@ function slidersControlsView (slider, items) {
 export function initSliders () {
   waitCSS(() => {
     const sliders = document.querySelectorAll('.slider')
-    if (!sliders) return
+    if (!sliders.length) return
 
     // SCROLL-SHOT AND INTERVALS
     sliders.forEach(slider => {
+      if (initializedSliders.has(slider)) return
+      initializedSliders.add(slider)
       const track = slider.querySelector('.slider__track')
       const items = slider.querySelector('.slider__items')
       const children = [...items.children]
       const pips = slider.querySelectorAll('.slider__pip')
+
+      // Finite controls accumulate destinations rather than sampling an animation
+      // halfway through. Direct gestures cancel that destination immediately.
+      for (const event of ['scrollend', 'pointerdown', 'touchstart', 'wheel']) {
+        track.addEventListener(event, () => destinations.delete(track), { passive: true })
+      }
+
+      for (const event of ['pointerdown', 'touchstart']) {
+        track.addEventListener(event, () => interactionUntil.set(track, Infinity), { passive: true })
+      }
+      for (const event of ['pointerup', 'pointercancel', 'pointerleave', 'touchend', 'touchcancel', 'wheel']) {
+        track.addEventListener(event, () => interactionUntil.set(track, Date.now() + 500), { passive: true })
+      }
+      track.addEventListener('scroll', () => {
+        if (interactionUntil.get(track) !== Infinity) interactionUntil.set(track, Date.now() + 500)
+      }, { passive: true })
 
       // CONTROLS VIEW
       const ro = new ResizeObserver(() => {
@@ -143,44 +121,55 @@ export function initSliders () {
       const trackStyle = window.getComputedStyle(trackChild)
       const padding = parseFloat(trackStyle.getPropertyValue('padding-left'))
       track.scrollTo(padding, 0)
+      if (slider.dataset.infinite === 'true') {
+        infiniteSliders.set(slider, createInfiniteSlider(slider, track, items, children))
+      }
+      onMotionChange(reduce => {
+        if (reduce) track.scrollTo({ left: track.scrollLeft, top: track.scrollTop, behavior: 'instant' })
+      })
 
       // INTERVALS
       const interval = slider.dataset.time * 1000
       if (interval) {
         let scrollInterval
-        // Set intervall if not static
-        function setSideScrollInterval () {
-          return setInterval(() => {
+        let visible = false
+        let hovered = false
+        function updateInterval () {
+          clearInterval(scrollInterval)
+          scrollInterval = undefined
+          if (!visible || hovered || slider.contains(document.activeElement) || reducedMotion()) return
+          scrollInterval = setInterval(() => {
             const isStatic = slider.classList.contains('slider--static')
             const disableParallax = document.body.classList.contains('scrolling')
-            if (!isStatic && !disableParallax) {
+            if (!isStatic && !disableParallax && !(Date.now() < (interactionUntil.get(track) || 0)) && !infiniteSliders.get(slider)?.isBusy() && !reducedMotion()) {
               sideScroll('right', track, children)
             }
           }, interval)
         }
-        // Observer
-        function callbackScrollParent (entries, observer) {
+        const observerScrollParent = new IntersectionObserver(entries => {
           entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              scrollInterval = setSideScrollInterval()
-            } else {
-              clearInterval(scrollInterval)
-            }
+            visible = entry.isIntersecting
+            updateInterval()
           })
-        }
-        const observerScrollParent = new IntersectionObserver(callbackScrollParent, { rootMargin: '0% 0%' })
+        }, { rootMargin: '0% 0%' })
         observerScrollParent.observe(slider)
-        // Mouse hover
         slider.addEventListener('mouseenter', () => {
-          clearInterval(scrollInterval)
+          hovered = true
+          updateInterval()
         })
         slider.addEventListener('mouseleave', () => {
-          scrollInterval = setSideScrollInterval()
+          hovered = false
+          updateInterval()
         })
+        slider.addEventListener('focusin', updateInterval)
+        slider.addEventListener('focusout', () => requestAnimationFrame(updateInterval))
+        onMotionChange(updateInterval)
       }
     })
 
     // ONCLICK
+    if (controlsInitialized) return
+    controlsInitialized = true
     document.addEventListener('click', e => {
       // pips AND ARROWS
       const pip = e.target.closest('.slider__pip')
@@ -191,7 +180,7 @@ export function initSliders () {
         const track = slider.querySelector('.slider__track')
         const items = slider.querySelector('.slider__items')
         const children = [...items.children]
-        if (pip) scrollToItem(children[indexOfItem(pip)], slider, track)
+        if (pip) scrollToItem(infiniteSliders.get(slider)?.itemAt(indexOfItem(pip)) || children[indexOfItem(pip)], slider, track)
         if (arrowLeft) sideScroll('left', track, children)
         if (arrowRight) sideScroll('right', track, children)
       }

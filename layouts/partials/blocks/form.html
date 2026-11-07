@@ -94,7 +94,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     {{- $input = merge . (dict "type" "radio") -}}
   {{- end -}}
   {{- /*  full  */ -}}
-  {{- $full := .type | in $slices.full | or .full | default false -}}
+  {{- $full := and (in $slices.full .type) (eq .fit nil) (eq .fit_vs nil) -}}
   {{- /*  names for show_of  */ -}}
   {{- $name        := .name -}}
   {{- $names       := slice -}}
@@ -136,7 +136,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     {{- end -}}
   {{- end -}}
   {{- /*  merge params in input  */ -}}
-  {{- $input      = merge $input (dict "full" $full "show_of" $show_of) -}}
+  {{- $input      = merge $input (dict "layout_full" $full "show_of" $show_of) -}}
   {{- /*  check to checks  */ -}}
   {{- if eq .type "check" -}}
     {{- $items := slice (dict "label" .label "key" .name "disabled" .disabled) -}}
@@ -156,8 +156,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- $chamfer       := hugo.Data.styles.rounded.chamfer -}}
 {{- $inputs_fill   := cond (not $form.fill) "" "form--fill-inputs" -}}
 {{- $labels_out    := cond (eq $form.labels "out") "form--labels-out" "" -}}
+{{- $labels_both   := cond (eq $form.labels "both") "form--labels-both" "" -}}
 {{- $show          := cond (not hugo.Data.config.show) "" "show" -}}
-{{- $class         := slice "form" $inputs_fill $labels_out "box__block" $show -}}
+{{- $class         := slice "form" $inputs_fill $labels_out $labels_both "box__block" $show -}}
 {{- $provider      := "" -}}
 {{- $confirmation := $form.confirm -}}
 {{- $confirmation_payload := dict -}}
@@ -245,13 +246,22 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- end -}}
 
 
+{{- $columns := partial "func/columns" (dict "each" $form "items" $inputs "col_vl" 1.0 "col_vs" 1.0) -}}
+{{- $layout_style := partial "blocks/margin-style" $form -}}
+{{- if or (ne $form.cols nil) (ne $form.cols_vs nil) -}}
+  {{- $class = $class | append "form--columns" -}}
+  {{- $layout_style = $layout_style | append (print "--form-cols-vs:" $columns.vs) (print "--form-cols-vl:" $columns.vl) -}}
+{{- end -}}
 {{- $form_attrs := dict
+  "style"     $layout_style
   "id"        $form_id
   "class"     $class
   "method"    "POST"
   "action"    $form_action
   "enctype"   $enctype
+  "data-ga4"  (partial "func/ga4-event" $form.ga4)
   "data-prov" $data_prov
+  "data-ajax" (cond (eq $form.ajax nil) "" (printf "%t" $form.ajax))
   "target"    $target
   "data-to"   $data_to
 -}}
@@ -298,6 +308,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     {{- $name        := .name -}}
     {{- $input_id    := print $form_id "-field-" $input_index -}}
     {{- $type        := .type -}}
+    {{- $floating := and $labels_both (in $slices.label $type) (ne $type "geo") -}}
     {{- $placeholder := print (.label | default .name) (cond (not .req) "" " *") -}}
     {{- $req         := .req -}}
     {{- $req_attr    := cond (not .req) "" " data-req" | safeHTMLAttr -}}
@@ -313,10 +324,19 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     {{- /*  wrap  */ -}}
     {{- $form_wrap := not ($type | in $slices.wrap) -}}
     {{- if $form_wrap -}}
-      {{- $wrap_class := slice "form__item" (cond .full "full" "") -}}
+      {{- $wrap_class := slice "form__item" (cond .layout_full "form__item--full" "") -}}
+      {{- if $floating }}{{ $wrap_class = $wrap_class | append "form__item--floating" }}{{ end -}}
       {{- $show_if    := "" -}}{{- with .show_if -}}{{- $show_if = print "{" (. | replaceRE `(\|\||\&\&)` "}$1{") "}" -}}{{- end -}}
       {{- $show_of    := "" -}}{{- with .show_of -}}{{- $show_of = print "{" (delimit (uniq .) "}|{")             "}" -}}{{- end -}}
+      {{- $item_style := slice -}}
+      {{- if or (ne .fit nil) (ne .fit_vs nil) -}}
+        {{- $wrap_class = $wrap_class | append "form__item--fit" -}}
+        {{- $fit_vs := .fit_vs | default 1 -}}
+        {{- $fit_vl := .fit | default $fit_vs -}}
+        {{- $item_style = slice (print "--form-fit-vs:" $fit_vs) (print "--form-fit-vl:" $fit_vl) -}}
+      {{- end -}}
       {{- $wrap_attrs := dict
+        "style"        $item_style
         "class"        $wrap_class
         "data-show-if" $show_if
         "data-show-of" $show_of
@@ -325,12 +345,12 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       <div {{- $wrap_attrs }}>
 
       {{- /*  label  */ -}}
-      {{- if or $labels_out (eq $type "geo") -}}
+      {{- if or $labels_out $labels_both (eq $type "geo") -}}
         {{- if $type | in $slices.label }}
-          <label class="form__label" for="{{ $input_id }}">
-            {{- with .icon -}}
+          <label class="form__label{{ if $floating }} form__label--floating{{ end }}" for="{{ $input_id }}">
+            {{- if not $floating }}{{ with .icon -}}
               {{- partial "icon" (dict "class" "form__icon" "icon" .) -}}
-            {{- end -}}
+            {{- end }}{{ end -}}
             {{- .label | default .name -}}
             {{- with .req }} <b>*</b>{{ end -}}
           </label>
@@ -404,7 +424,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
               "class" "form__file--btn"
               "btn"   (or .btn "cta")
               "swap"  .swap
-              "icon"  .icon
+              "il"    .il
+              "ir"    .ir
               "def"   "upload"
               "label" $placeholder
             ) -}}
@@ -474,7 +495,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
         {{- $geo_attrs := dict
           "id"         (print "geo-" $form_id)
           "class"      "form__geo-map"
-          "data-area"  .area
+          "data-area"  (cond (eq .area true) "true" "false")
           "data-color" (.color | default "main")
           "data-icon"  $icon
           "data-zoom"  .zoom
@@ -503,8 +524,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 
       {{- /*  select  */ -}}
       {{- else if $type | eq "select" }}
-        <label>
-          <i class="hide">{{ or .label .name }}</i>
+        {{- $select_wrap := or $floating $labels_out -}}
+        {{ if $select_wrap }}<div class="form__select-wrap">{{ else }}<label>
+          <i class="hide">{{ or .label .name }}</i>{{ end }}
           <select id="{{ $input_id }}" class="form__select" name="{{ .name }}" {{- $req_attr }}>
             <option value="">{{ $placeholder }}</option>
             {{- range .items }}
@@ -513,7 +535,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
               <option {{- $option_attrs }}>{{ .label }}</option>
             {{- end }}
           </select>
-        </label>
+        {{ if $select_wrap }}</div>{{ else }}</label>{{ end }}
 
       {{- /*  markers  */ -}}
       {{- else if $type | in $slices.markers -}}
@@ -601,7 +623,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
       {{- end -}}
 
       {{- /*  icon  */ -}}
-      {{- if $type | in $slices.icon -}}
+      {{- if and (not $labels_out) (in $slices.icon $type) -}}
         {{- with .icon }}
           {{ partial "icon" (dict "class" "form__icon" "icon" .) }}
         {{- end -}}
@@ -622,19 +644,25 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- /*  FOOTER  */ -}}
 
   {{- /* Submit */ -}}
-  {{- $submit_class  := "form__btn full btn" -}}
-  {{- with $form.swap -}}
-    {{- $submit_class = print $submit_class " btn--swap" -}}
+  {{- $submit_class  := slice "form__btn" "btn" -}}
+  {{- range slice "dot" "sm" "swap" -}}
+    {{- if index $form . -}}
+      {{- $submit_class = $submit_class | append (print "btn--" .) -}}
+    {{- end -}}
   {{- end -}}
   {{- with $form.btn -}}
     {{- if ne . "cta" -}}
-      {{- $submit_class = print $submit_class " " . -}}
+      {{- $submit_class = $submit_class | append . -}}
     {{- end -}}
-  {{- end }}
+  {{- end -}}
+  {{- if ne $form.btn_full false -}}
+    {{- $submit_class = $submit_class | append "full" -}}
+  {{- end -}}
+  {{- $submit_class = delimit $submit_class " " -}}
   <button class="{{ $submit_class }}" type="submit" name="submit">
-    {{- partial "icon" (dict "icon" $form.icon "def" "send") -}}
+    {{- partial "icon" (dict "icon" $form.il "def" "send") -}}
     <b>{{ $form.label | default (i18n "send") }}</b>
-    {{- "" -}}
+    {{- partial "icon" (dict "icon" $form.ir) -}}
   </button>
 
   {{- /* Consent */}}

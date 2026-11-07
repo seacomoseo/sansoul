@@ -112,13 +112,38 @@
   &:not(.bg-img) > .img {
     margin-inline: var(--box-side-left) var(--box-side-right);
     width: calc(100dvw / var(--box-side-k) - var(--box-side-gap));
-    --radius-end: var(--radius-left) var(--radius-right) var(--radius-right) var(--radius-left);
+    max-width: none; // Side media intentionally extends beyond the containing box.
+  }
+  > .bg-color,
+  &:not(.bg-img) > .img,
+  &:not(.bg-img) > .img .img__in,
+  &:not(.bg-img) > .img--contain .img__in img {
+    // Only the viewport-facing corners are square; inset top/bottom rules still apply.
+    --side-top-left: min(var(--radius-top), var(--radius-left));
+    --side-top-right: min(var(--radius-top), var(--radius-right));
+    --side-bottom-right: min(var(--radius-bottom), var(--radius-right));
+    --side-bottom-left: min(var(--radius-bottom), var(--radius-left));
+    --radius-end: var(--side-top-left) var(--side-top-right) var(--side-bottom-right) var(--side-bottom-left);
+    @if variables.$chamfer {
+      --chamfer: polygon(
+        var(--side-top-left) 0%,
+        calc(100% - var(--side-top-right)) 0%,
+        100% var(--side-top-right),
+        100% calc(100% - var(--side-bottom-right)),
+        calc(100% - var(--side-bottom-right)) 100%,
+        var(--side-bottom-left) 100%,
+        0% calc(100% - var(--side-bottom-left)),
+        0% var(--side-top-left)
+      );
+    }
   }
   &:not(.bg-img) > .img {
     align-self: flex-start;
     translate: calc(var(--box-pd) * -1) 0;
     > .img__in {
+      width: 100%;
       height: auto; // Fix image ratio
+      > img { width: 100%; }
     }
   }
 }
@@ -196,7 +221,11 @@
 
 // Type
 .box__block {
-  margin-top: 0;
+  // Reset local inputs so a nested block cannot inherit its parent's override.
+  --block-mt-vs: initial;
+  --block-mt-vl: initial;
+  @include mixins.fluid-size(--block-mt, 1em, var(--block-mt-vs), var(--block-mt-vl));
+  margin-top: var(--block-mt, 0em);
   width: 100%;
 }
 .box__block:where(:not(
@@ -205,7 +234,7 @@
   .box__title.hide:first-child + *,
   .box__title--list + *
 )) {
-  margin-top: Max(calc(var(--box-gap) * 2), 2em);
+  margin-top: var(--block-mt, Max(calc(var(--box-gap) * 2), 2em));
 }
 .box__title:where(:not(
   :first-child,
@@ -213,7 +242,7 @@
   .box__title.hide:first-child + *,
   .hide
 )) + .box__block {
-  margin-top: 0;
+  margin-top: var(--block-mt, 0em);
 }
 
 // Icon
@@ -366,13 +395,19 @@
   &:where(:last-child):not(.box__tags + *) {
     margin-top: auto;
   }
-  // With background
-  &:where(.bg > *) {
-    width: 100%;
+  width: var(--box-btn-width, auto);
+  &--full {
+    --box-btn-width: 100%;
   }
-  // Not background
-  &:not(.bg > *) {
+  &--auto {
+    --box-btn-width: auto;
+  }
+  &:not(.box__btn--full) {
     margin-inline: var(--align-margin, auto);
+  }
+  &.box__btn--mt {
+    @include mixins.fluid-size(--block-mt, 1em, var(--block-mt-vs), var(--block-mt-vl));
+    margin-top: var(--block-mt);
   }
   // Text link style
   &:not(.btn) {

@@ -126,11 +126,13 @@
       // If is not bot and if cookies law
       const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(navigator.userAgent)
       const isPs = `{{ $isPs }}` === 'true'
-      const isCk = {{ if $config.cookies_legal }}/^(?:true|[1-9][0-9]*)$/.test(localStorage.getItem('controlcookieanalytics') || ''){{ else }}true{{ end }}
+      const isCk = {{ if $config.cookies_legal }}(() => { try { return /^(?:true|[1-9][0-9]*)$/.test(localStorage.getItem('controlcookieanalytics') || '') } catch { return false } })(){{ else }}true{{ end }}
       window['ga-disable-{{ . }}'] = !isCk
+      {{ if $config.cookies_legal }}
       window.addEventListener('cookies:changed', event => {
         if (typeof event.detail?.analytics === 'boolean') window['ga-disable-{{ . }}'] = !event.detail.analytics
       })
+      {{ end }}
       if (!isBot && !isPs && isCk) googleAnalytics()
     </script>
   {{- end -}}

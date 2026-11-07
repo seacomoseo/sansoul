@@ -6,13 +6,27 @@ Returns: A data-sansoul-binding HTML attribute, or an empty attribute string.
 Side effects: Adds public binding descriptors to page.Store; never renders hidden content.
 */}}
 {{ $attribute := "" }}
+{{ if ne site.Params.cms_enabled false }}
 {{ with index (.item._preview | default dict) .field }}
   {{ $bindings := page.Store.Get "sansoul.preview.bindings" | default slice }}
   {{ $id := print "p" (len $bindings) }}
   {{ $descriptor := merge . (dict "id" $id "kind" $.kind "field" $.field) }}
   {{ with .template64 }}{{ $descriptor = merge $descriptor (dict "template" (. | base64Decode) "template64" nil) }}{{ end }}
   {{ with index ($.item._preview | default dict) "alt" }}{{ $descriptor = merge $descriptor (dict "alt" .) }}{{ end }}
+  {{ if eq $.kind "image" }}
+    {{ range $field := slice "img_w" "img_h" "ratio" }}
+      {{ $source := index ($.item._preview | default dict) $field }}
+      {{ if not $source }}
+        {{ $source = dict "value" (index $.item $field) }}
+        {{ with $descriptor.path }}
+          {{ if hasSuffix . ".img" }}{{ $source = dict "path" (print (strings.TrimSuffix ".img" .) "." $field) }}{{ end }}
+        {{ end }}
+      {{ end }}
+      {{ $descriptor = merge $descriptor (dict $field $source) }}
+    {{ end }}
+  {{ end }}
   {{ page.Store.Set "sansoul.preview.bindings" ($bindings | append $descriptor) }}
   {{ $attribute = printf ` data-sansoul-binding="%s"` $id }}
+{{ end }}
 {{ end }}
 {{ return ($attribute | safeHTMLAttr) }}

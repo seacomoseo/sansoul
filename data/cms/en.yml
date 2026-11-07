@@ -132,14 +132,14 @@ tpl_sections: Sections
 tpl_sections_singular: Section
 tpl_sections_file: File
 tpl_sections_file_hint: Previously created section
-tpl_sections_params: Parameters
-tpl_sections_params_hint: Rewrite of the file
+tpl_sections_params: Content
+tpl_sections_params_hint: Section values override the reusable file
 tpl_list: Lists
 tpl_rel: Related Lists
 # collections > page
 # collections > page > index
-index_permalinks: Permalinks
-index_permalinks_hint: This is the base of the URLs or links for pages of this type <br> **Example →** "categories" will show "https://example.com/categories/[slug]/"
+index_prefix: URL Prefix
+index_prefix_hint: This is the base of the URLs or links for pages of this type <br> **Example →** "categories" will show "https://example.com/categories/[slug]/"
 index_slug_hint: It is the end of the URL or link of this index page <br> **Example →** "category" will show "https://example.com/category/"
 index_singular: Singular Title
 # collections > page > common
@@ -292,19 +292,16 @@ config_cms_editorial_hint: Allows working with preview modes during development 
 config_favicon: Favicon
 config_favicon_hint: Thumbnail icon representative of the website (recommended in SVG format)
 config_lang_main_subdir: Main Language in Subfolder
-config_cookies_advanced: Advanced Cookies
-config_cookies_advanced_hint: The Cookies message allows the user to choose options
-config_cookies_legal: Legal Cookies
-config_cookies_legal_hint: Enforces the cookie policy
+config_cookies_legal: Wait for Cookie Consent
+config_cookies_legal_hint: With false or no value, GA4 and external videos load without waiting for consent. With true, they wait for the user selection and respect withdrawal.
 config_ga4_pagespeed_hide: Hide GA4 to PageSpeed
 config_ga4_pagespeed_hide_hint: Hide Google Analytics 4 only for [PageSpeed Insights](https://pagespeed.web.dev/)
 config_development: Development Mode
 config_development_hint: Speeds up development deployments and worsens loading speed for users
 config_show: Show Effect
 config_show_hint: Enable the pop-up effect when scrolling all elements (slows down performance on less powerful devices)
-config_webp: Images in WEBP format
-config_webp_hint: Compress images in WEBP format instead of AVIF (unchecked, improves loading speed at the expense of increasing compilation time)
-config_img_sizes: Image Scaling in srcset sizes
+config_imgs_webp: Images in WEBP format
+config_imgs_webp_hint: Compress images in WEBP format instead of AVIF (unchecked, improves loading speed at the expense of increasing compilation time)
 # collections > files > langs
 langs: Languages
 langs_singular: Language
@@ -424,6 +421,7 @@ styles_inputs: Form Fields
 styles_inputs_fill: Filled
 styles_inputs_fill_hint: Applies a white background with rounded corners to each simple field
 styles_inputs_labels: Label Position
+styles_inputs_labels_hint: 'in: inside; out: above; both: floating label raised on focus or when populated. Special fields keep their own labels.'
 styles_inputs_consent: Consent
 styles_inputs_consent_hint: Text next to the consent checkbox
 styles_shadow: Shadows
@@ -445,15 +443,15 @@ customs_var_hint: If it is defined and exists as a well-formatted field variable
 customs_name: Param Name
 customs_label: Visible Name
 customs_hint_: Legend
-customs_widget: Widget
+customs_widget: Field type
 customs_opts: Options
 customs_opts_singular: Option
 customs_opts_label: Title
 customs_opts_value: Value
 customs_multi: Multiple
 customs_i18n: Translate
-customs_sub: Subfields
-customs_sub_singular: Subfield
+customs_fields: Subfields
+customs_fields_singular: Subfield
 customs_relations_hint: Create previously
 # collections > files > defaults
 defaults: Default Values
@@ -517,11 +515,11 @@ md_hint: |
   \n `  `- `main|alt|light|dark|turn|such|whatsapp`: color (if not specified, `cta` will be used)
   \n `  `- `swap`: font change
   \n `  `- `dot`: point button with icon and no text
-  \n `  `- `nofollow`: obfuscated
-  \n `  `- `homefollow`: obfuscated except on the homepage
+  \n `  `- `lock`: obfuscated
+  \n `  `- `sublock`: obfuscated except on the homepage
   \n `  `- `blank`: opens in a new window
-  \n `  `- `ga4`: logs event in GA4
-  \n - Example: `[[Link/button text]](/url/ "Title [main nofollow ga4]")`
+  \n `  `- `ga4:event_name`: logs that event in GA4
+  \n - Example: `[[Link/button text]](/url/ "Title {main lock ga4:contact}")`
   \n - It is recommended to use the "raw" mode of this field (the button **`[M⬇]`** at the top right) to make these customizations.
   \n
   \n **Icons**
@@ -541,8 +539,8 @@ md_hint: |
   \n `  `- `::svg:base/logo::`
   \n
   \n **Links with icons**
-  \n - Example: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4]")`
-  \n - Example: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "[nofollow ga4 dot]")` (It's the same, but it's a bullet point button that only has one icon and hides "+34 666 777 888")
+  \n - Example: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "{lock ga4:contact}")`
+  \n - Example: `[[::brand:whatsapp:: +34 666 777 888]](https://wa.me/34666777888 "{lock ga4:contact dot}")` (It's the same, but it's a bullet point button that only has one icon and hides "+34 666 777 888")
   \n
   \n **Lists with icons**
   \n - If a list item starts with an icon, it will be treated as a bullet point
@@ -577,7 +575,7 @@ md_title: Hover Title
 md_btn: Button
 md_dot: Dot Button
 md_color: Color Button
-md_homefollow: Just Do Follow in Home
+md_sublock: Just Do Follow in Home
 md_blank: Open in other window
 md_mark: Marker
 md_mark_sign: Type
@@ -630,16 +628,20 @@ icon_pos_hint: Top in large size, Side next to the title, Bottom as underlining
 icon_size: Icon Size
 icon_color: Icon Color
 img: Image
+img_w: Display Width
+img_w_hint: Pixels; an omitted height is calculated from the explicit ratio or intrinsic proportions. Does not change video metadata.
+img_h: Display Height
+img_h_hint: Pixels; an omitted width is calculated from the explicit ratio or intrinsic proportions. Does not change video metadata.
 hover: Alternative Image
 hover_hint: Appears when hovering the cursor
 alt: Image Alternative Text
 hover_alt: Alternative Image Alternative Text
 vid: Video
 vid_hint: Supports YouTube and Vimeo URLs <br> **Thumbnail →** in the corresponding field above <br> **Start and end marks →** Can be set in seconds by adding ‘#t=2,7’ or ‘#t=2’ to the end of the URL
-vid_width: Video Width
-vid_width_hint: Known dimension in pixels; cached metadata is used when omitted.
-vid_height: Video Height
-vid_height_hint: Known dimension in pixels; cached metadata is used when omitted.
+vid_w: Video Width
+vid_w_hint: Known dimension in pixels; cached metadata is used when omitted.
+vid_h: Video Height
+vid_h_hint: Known dimension in pixels; cached metadata is used when omitted.
 vid_duration: Video Duration
 vid_duration_hint: ISO 8601 duration, such as PT12S or PT1M30S; cached metadata is used when omitted.
 vid_upload: Video Publication
@@ -665,16 +667,25 @@ gray_hint: Regains color when hovering over it
 shade: Gradient Image
 shade_hint: Background gradient downwards
 url: Link
-pin: Link Icon
+il: Left Link Icon
+ir: Right Link Icon
 label: Link Text
 anchor: Link Anchor
 anchor_hint: Hidden text/anchor for the link (for SEO)
 lock: Obfuscated Link
 lock_hint: Prevents Google from considering the link as such (for SEO)
 btn: Link Button Color
+btn_dot: Round Button
+btn_sm: Small Button
+btn_full: Full Width Button
+btn_full_hint: An empty value inherits; without an inherited value, enabled when the box itself has a background. false forces automatic width and true forces full width.
+btn_mt: Button Top Margin Min
+btn_mt_hint: In em. 0 removes automatic spacing; empty preserves normal spacing. Also applies to large screens when btn_mt_vl is empty.
+btn_mt_vl: Button Top Margin Max
+btn_mt_vl_hint: In em. When only this value is set, the minimum margin is 0.
 swap: Link Alternative Font
-ga4: GA4 Key Event
-ga4_hint: Marks it as an key event in Google Analytics 4 (for later conversion)
+ga4: Additional GA4 Event
+ga4_hint: Custom event names separated by commas, e.g. lead_contact,special_click. Contacts and successful forms also send contact once. Use none to clear inherited custom events.
 color: Background Color
 fade: Background Gradient Color
 fade_to: Background Gradient Direction
@@ -718,14 +729,14 @@ rate: Box Proportion
 rate_hint: Minimum height based on the set proportion <br> Default is automatic <br> **Examples →** 16/9, 9/16, 3/2, 4/3, 1/1, 2/1, 18/6…
 space: Margin Between Box Elements
 class: Custom CSS Classes
-mt: Top Margin Max
-mt_vs: Top Margin Min
-mb: Bottom Margin Max
-mb_vs: Bottom Margin Min
-ml: Left Margin Max
-ml_vs: Left Margin Min
-mr: Right Margin Max
-mr_vs: Right Margin Min
+mt_vl: Top Margin Max
+mt: Top Margin Min
+mb_vl: Bottom Margin Max
+mb: Bottom Margin Min
+ml_vl: Left Margin Max
+ml: Left Margin Min
+mr_vl: Right Margin Max
+mr: Right Margin Min
 pd: Paddings
 pd_vs: Minimum Paddings
 hide_shadow: Remove Shadow
@@ -786,7 +797,7 @@ group_radius_hint: Rounded corners for the group of elements
 slider: Enable Carousel
 slider_hint: When enabled, line breaks between elements are replaced by sliders (if required)
 time: Carousel Interval
-time_hint: If specified, it will automatically scroll at that interval in milliseconds (not recommended)
+time_hint: Interval in seconds; 0 disables automatic advancement. Respects reduced motion.
 pips: Carousel Guides
 arrows: Carousel Arrows
 align_x: Box Horizontal Alignment
@@ -815,18 +826,18 @@ faqs_singular: FAQ
 faqs_hint: Buttons with FAQ content, often used for FAQ's
 faq_headers: Header Mode
 faq_open: First Open
-gss: G.Drive Sheet File
-gss_hint: Identifier for Google Drive sheet-type file <br> **Example →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
+gss: Google Drive Sheet
+gss_id_hint: Identifier for Google Drive sheet-type file <br> **Example →** "2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C"
 gss_sheet: G.Drive Sheet Tab
 gss_sheet_hint: Tab Identifier <br> **Example →** "1861644079"
 review: Review Template
 reviews: Reviews
 reviews_singular: Review
-review_icon_left: Left Icon
-review_icon_right: Right Icon
+review_il: Left Icon
+review_ir: Right Icon
 review_rating: Rating
 item_full: Full Width
-when: Schedules
+when: Schedule Defaults
 when_singular: Schedule
 when_days: Days
 when_hours: Hours
@@ -942,7 +953,7 @@ inputs_h4: H4 Header
 inputs_h5: H5 Header
 inputs_h6: H6 Header
 inputs_md: Content
-map: Map Template
+geo: Geography Template
 map_tile: Default Tile
 map_color: Color
 map_label: Name
@@ -1068,6 +1079,7 @@ opt-duo-1: photo → text → text → photo (F-T-T-F)
 opt-duo-2: text → photo → photo → text (T-F-F-T)
 opt-pips-line: Lines
 opt-pips-dot: Dots
+opt-pips-pill: Expanding Dots
 opt-pips-hide: Hide
 opt-sizes-xs: Extra Small
 opt-sizes-sm: Small
@@ -1115,7 +1127,7 @@ cms_group_reviews: Reviews
 cms_group_when: Schedules
 cms_group_links: Links Group
 cms_group_form: Form
-cms_group_map: Map
+cms_group_geo: Map
 cms_group_gss: Google Drive Sheet
 cms_group_boxes: SubBoxes
 cms_group_modals: Modal Windows
@@ -1578,3 +1590,36 @@ inputs_range: Range
 inputs_range_hint: Slider with visible value and keyboard controls
 input_step: Step
 input_value: Initial value
+
+link: Link Defaults
+link_hint: Shared defaults; each link may override them. Without columns, fit uses a 100% basis. Omitted align_x means grow.
+align_x_hint: grow fills available width. It is the default for link, not box.
+links_blank: Open in New Tab
+
+duplicate_if_empty: Duplicate if empty
+config_imgs_quality: Image Quality
+config_imgs_quality_hint: AVIF and WebP compression, from 1 to 100. Default 60.
+config_imgs_dpr: Image Pixel Density
+config_imgs_dpr_hint: Maximum resolution multiplier. Default 2.
+config_group_google: Google
+config_group_locale: Region
+config_group_cms: CMS
+config_group_site: Site
+config_group_images: Images
+
+dot: Circular Link Defaults
+whens: Schedules
+whens_singular: Schedule
+gss_id: File Identifier
+
+list_view: View
+list_view_hint: Optional calendar for articles and events; mobile uses an agenda. Filters and max apply before grouping by month.
+slider_infinite: Infinite carousel
+slider_infinite_hint: Reorders the original items for continuous dragging; requires enough off-screen content.
+
+form_ajax: Submit without leaving the page
+form_ajax_hint: >-
+  Empty preserves provider behavior. Yes uses fetch and accepts HTTP 2xx; the action must support CORS and the submitted format. No: uses normal form navigation.
+
+config_imgs_remote: Serve external images from this domain
+config_imgs_remote_hint: Download HTTP(S) images used by the media system during builds. Process supported raster formats like local images and publish SVG as external image files. Failed downloads retain the original URL and log a warning. Disabled by default.

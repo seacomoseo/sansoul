@@ -1,20 +1,31 @@
+{{/*
+Partial: func/img-format
+Purpose: Resolve one responsive derivative URL with quality-aware naming.
+Context: img/img_base resources, size/quality integers, optional crop dimensions.
+Returns: Published WebP URL or AVIF post-processing target URL.
+Side effects: Processes/publishes WebP or publishes a deduplicated AVIF manifest.
+*/}}
 {{ $img_link := "" }}
 {{ $img_base := .img_base | default .img }}
 {{ $path     := $img_base.RelPermalink }}
-{{ if hugo.Data.config.webp }}
-  {{ $webp    := .img.Resize (print .size "x webp") }}
-  {{ $path    := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $webp.Height ".webp") }}
+{{ $fingerprint := $img_base | fingerprint "sha256" }}
+{{ $identity := substr (crypto.SHA256 $fingerprint.Data.Integrity) 0 12 }}
+{{ $quality := .quality | default 60 }}
+{{ if hugo.Data.config.imgs_webp }}
+  {{ $webp    := .img.Resize (print .size "x webp q" $quality) }}
+  {{ $path    := $path | replaceRE `(.+)\..+$` (print "$1-" $identity "-" .size "x" $webp.Height "-q" $quality ".webp") }}
   {{ $webp     = $webp | resources.Copy $path }}
   {{ $img_link = $webp.RelPermalink }}
 {{ else }}
-  {{ $height := div (mul .img.Height .size) .img.Width | int }}
-  {{ $avif   := $path | replaceRE `(.+)\..+$` (print "$1-" .size "x" $height ".avif") }}
+  {{ $geometry := .crop | default .img }}
+  {{ $height := div (mul $geometry.Height .size) $geometry.Width | int | math.Max 1 }}
+  {{ $avif   := $path | replaceRE `(.+)\..+$` (print "$1-" $identity "-" .size "x" $height "-q" $quality ".avif") }}
   {{ $get    := resources.Get $avif }}
   {{ with $get }}
     {{ $get.Publish }}
   {{ else }}
     {{ $file := print "img_list/" (replace $avif "/" "~") ".json" }}
-    {{ $json := dict "path" $path "width" .size "height" $height | jsonify }}
+    {{ $json := dict "path" $path "width" .size "height" $height "quality" $quality "output" $avif | jsonify }}
     {{ $rsc  := resources.FromString $file $json }}
     {{ $rsc.Publish }}
   {{ end }}

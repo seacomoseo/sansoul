@@ -2,6 +2,16 @@
 {{ $duo   := partial "func/duo" . }}
 {{ $box   := $duo.box }}
 {{ $boxes := $duo.boxes }}
+{{ $group_margins := dict }}
+{{ $box_defaults := $box }}
+{{ range slice "mt" "mt_vl" "mb" "mb_vl" "ml" "ml_vl" "mr" "mr_vl" }}
+  {{ $box_defaults = merge $box_defaults (dict . nil) }}
+  {{ if ne (index $box .) nil }}
+    {{ $group_margins = merge $group_margins (dict . (index $box .)) }}
+  {{ end }}
+{{ end }}
+{{ $box_defaults = partial "func/obj-no-nil" $box_defaults }}
+
 
 {{/*  COLUMNS  */}}
 {{ $columns := partial "func/columns" (dict
@@ -27,6 +37,8 @@
 
 {{ with $box }}
   {{ $boxes_wrap = or
+    $group_margins
+    $.block_spacing
     (and (ne .cols    nil) (ne .cols    1))
     (and (ne .cols_vs nil) (ne .cols_vs 1))
     .gap
@@ -95,14 +107,14 @@
 {{ range $key, $this := $boxes }}
   {{ $align_y := dict "align_y" nil }}
   {{ $key     := dict "key" $key }}
-  {{ $item    := merge $parent $box $align_y $this $expand $box_hide $key }}
+  {{ $item    := merge $parent $box_defaults $align_y $this $expand $box_hide $key }}
   {{ with partial "boxes/merge-expand-item" $item }}
     {{ $items = $items | append . }}
   {{ end }}
 {{ end }}
 
 {{/*  MERGE  */}}
-{{ $items = dict "boxes" $items "box" $box }}
+{{ $items = dict "boxes" $items "box" $box "group_margins" $group_margins }}
 {{ $items = merge . $items $wrap }}
 
 {{ return $items }}

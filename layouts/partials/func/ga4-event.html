@@ -1,0 +1,21 @@
+{{/*
+Partial: func/ga4-event
+Purpose: Validate optional comma-separated analytics events.
+Context: string, empty, or legacy boolean.
+Returns: Comma-separated valid event names; legacy true resolves to contact.
+Side effects: Warns for invalid author values.
+*/}}
+{{- $names := slice -}}
+{{- if eq . true -}}
+  {{- $names = slice "contact" -}}
+{{- else if and (eq (printf "%T" .) "string") . (ne . "none") -}}
+  {{- range split (printf "%v" .) "," -}}
+    {{- $name := strings.TrimSpace . -}}
+    {{- if and (findRE `^[A-Za-z][A-Za-z0-9_]{0,39}$` $name) (not (findRE `(?i)^(google_|ga_|firebase_)` $name)) -}}
+      {{- $names = $names | append $name -}}
+    {{- else -}}
+      {{- warnf "Invalid ga4 event name %q: use 1-40 letters, digits or underscores, starting with a letter, without google_, ga_ or firebase_ prefixes" $name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (delimit (uniq $names) ",") -}}

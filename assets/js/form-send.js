@@ -1,6 +1,8 @@
+import { sendGa4Events } from './ga4-event'
 import { formValid } from './form-validate'
 import { changeValues } from './form-change-values'
 import { waitCSS } from './wait-css'
+import { formUsesAjax } from './form-transport'
 import params from './params'
 const {
   formSubmitSending,
@@ -12,6 +14,9 @@ const closeIcon = '<i class="icon icon--mat icon--submit-close" part="close" onc
 const pendingStorageKey = 'sansoul.form.pending'
 const submissionInputName = '_submission_id'
 let clientIpPromise = Promise.resolve('')
+let clientIpRequested = false
+let pendingRetry
+const initialized = new WeakSet()
 
 async function getClientIp () {
   if (typeof AbortController !== 'function') return ''
@@ -158,8 +163,8 @@ function formSubmited (form, data) {
   const customEventSubmit = new CustomEvent('submited-' + form.id)
   document.dispatchEvent(customEventSubmit)
   if ((!data?.status || data.status === 'accepted') && typeof gtag === 'function') {
-    gtag('event', 'contact', {
-      id: form.parentElement.closest('[id]').id,
+    sendGa4Events(true, form.dataset.ga4, {
+      id: form.parentElement.closest('[id]')?.id || '',
       type: 'form',
       label: form.id
     })
@@ -177,15 +182,20 @@ function formSubmitError (formMessage, message) {
 }
 
 export function initFormSend () {
-  retryPendingSubmissions()
+  if (!pendingRetry) {
+    pendingRetry = retryPendingSubmissions().finally(() => { pendingRetry = null })
+  }
 
   waitCSS(() => {
     const forms = document.querySelectorAll('.form')
-    if ([...forms].some(form => form.dataset.prov === 'gas')) {
+    if (!clientIpRequested && [...forms].some(form => form.dataset.prov === 'gas' && formUsesAjax(form))) {
+      clientIpRequested = true
       clientIpPromise = getClientIp()
     }
 
     forms.forEach(e => {
+      if (initialized.has(e)) return
+      initialized.add(e)
       e.addEventListener('submit', async submit => {
         submit.preventDefault()
 
@@ -216,8 +226,7 @@ export function initFormSend () {
           const isFileType = form.querySelector('[type="file"]')
           const googleScript = form.dataset.prov === 'gas'
           const formSubmitCo = form.dataset.prov === 'fsc'
-          const formSubmitCoAjax = formSubmitCo && !isFileType
-          if (!googleScript && !formSubmitCoAjax) {
+          if (!formUsesAjax(form)) {
             if (formSubmitCo) action = action.replace('/ajax', '')
             form.action = action
             // like form.submit()

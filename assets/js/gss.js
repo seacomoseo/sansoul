@@ -1,12 +1,19 @@
 // google spreadsheets
 import { scrollShot } from './scroll-shot'
+import { createGssTable } from './gss-table'
+
+const loads = new WeakMap()
 
 export function initGss () {
-  scrollShot({
+  return scrollShot({
     rootMargin: '600px 0%',
     query: '[data-gss]',
     doStart: e => {
-      fetch(e.dataset.gss)
+      const url = e.dataset.gss
+      const previous = loads.get(e)
+      if (previous?.url === url) return previous.promise
+      const load = { url }
+      load.promise = fetch(url)
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
@@ -14,13 +21,16 @@ export function initGss () {
           return response.text()
         })
         .then(data => {
-          // display response
-          e.innerHTML = data
-            .replace(/\n/ig, '')
-            .replace(/<!DOCTYPE .*<link .*?>|style> .*?<body .*?>|<script .*?<\/script>|<style>.*?<\/style>|html \{.*?\.dash \{.*?\}|(font-family|padding):.*?;|display:none;|<thead>.*?<\/thead>|<\/body><\/html>/ig, '')
-          document.querySelectorAll('.row-header-shim').forEach(e => e.remove())
+          // A newer initialization may have selected another sheet on this node.
+          if (loads.get(e) !== load) return
+          e.replaceChildren(createGssTable(data))
         })
-        .catch(console.error)
+        .catch(error => {
+          if (loads.get(e) === load) loads.delete(e)
+          throw error
+        })
+      loads.set(e, load)
+      return load.promise
     },
     end: true
   })

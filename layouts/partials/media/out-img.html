@@ -11,12 +11,16 @@
 -}}
 {{- $img_attrs := dict
   "src"      .img
-  "width"    (index .vid "presentation" "width")
-  "height"   (index .vid "presentation" "height")
+  "width"    (index .dimensions "width")
+  "height"   (index .dimensions "height")
   "alt"      .alt
   "decoding" "async"
   "loading"  .lazy
 -}}
+{{- if and .notlazy (not .is_modal) (not (in (.class | default "") "hover")) (not (page.Store.Get "sansoul.image.priority")) -}}
+  {{- page.Store.Set "sansoul.image.priority" true -}}
+  {{- $img_attrs = merge $img_attrs (dict "fetchpriority" "high") -}}
+{{- end -}}
 {{- $pic_attrs = partial "func/attrs" $pic_attrs -}}
 {{- $img_attrs = partial "func/attrs" $img_attrs -}}
 
@@ -43,8 +47,6 @@
   {{- else -}}
     {{- partial "schema/img" (dict
       "url"     .img
-      "width"   512
-      "height"  512
       "caption" .alt
     ) -}}
   {{- end -}}

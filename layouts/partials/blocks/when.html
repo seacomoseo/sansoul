@@ -1,7 +1,14 @@
-{{- with .when -}}
+{{- $defaults := .when | default dict -}}
+{{- if not (reflect.IsMap $defaults) -}}
+  {{- errorf "SanSoul when is now a defaults object; migrate the schedule list to whens" -}}
+  {{- $defaults = dict -}}
+{{- end -}}
+{{- $align := $defaults.align_x | default "grow" -}}
+{{- with .whens -}}
   {{- $show := cond (not hugo.Data.config.show) "" " show" }}
-  <div class="whens box__block {{- $show }}">
+  <div{{ partial "func/attrs" (dict "class" (slice "whens" "box__block" (print "whens--" $align) $show) "style" (partial "blocks/margin-style" $defaults)) }}>
     {{- range . -}}
+      {{- with partial "func/set" (dict "value" (merge $defaults .) "path" "whens[]" "composed" true) -}}
       {{- $full := cond (not .full) "" " full" -}}
       <div class="when {{- $full }}">
         {{- with .days }}
@@ -17,6 +24,7 @@
           </div>
         {{- end }}
       </div>
+      {{- end -}}
     {{- end }}
   </div>
 {{- end -}}

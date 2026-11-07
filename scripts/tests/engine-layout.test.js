@@ -121,6 +121,44 @@ printf 'built\\n' > public/built.txt
   return { temporary, source, project, initial, target, env, engine: path.join(project, layout) }
 }
 
+test('updating or completing a core move normalizes only the legacy subsection', () => {
+  for (const layout of ['core', 'themes/sansoul']) {
+    const fixture = createUpdaterFixture(layout, 'themes/sansoul')
+    const { project, target, env } = fixture
+    try {
+      const config = key => git(project, 'config', '-f', '.gitmodules', '--get', key)
+      run(project, 'sh', ['do', 'update', '--check'], { env })
+      assert.equal(config('submodule.themes/sansoul.path'), layout)
+      assert.equal(git(project, 'status', '--porcelain'), '')
+      run(project, 'sh', ['do', 'update'], { env })
+      assert.equal(git(fixture.engine, 'rev-parse', 'HEAD'), target)
+      if (layout === 'themes/sansoul') {
+        assert.equal(config('submodule.themes/sansoul.path'), layout)
+        git(project, 'mv', 'themes/sansoul', 'core')
+        write(project, 'do', fixtureWrapper('core'))
+        run(project, 'sh', ['do', 'migrations', 'mark', '--yes'], { env })
+      } else {
+        assert.equal(git(project, 'diff', '--cached', '--name-only'), '')
+      }
+      assert.equal(config('submodule.core.path'), 'core')
+      assert.equal(config('submodule.core.branch'), 'main')
+      assert.equal(config('submodule.core.url'), fixture.source)
+      assert.match(git(path.join(project, 'core'), 'rev-parse', '--git-dir'), /modules\/themes\/sansoul$/)
+      git(project, 'add', '.gitmodules', 'do', 'core', 'package.json')
+      git(project, 'commit', '-qm', 'Fixture normalized consumer')
+      git(project, '-c', 'protocol.file.allow=always', 'submodule', 'update', '--init', '--recursive')
+      run(project, 'sh', ['do', 'migrations', 'mark', '--yes'], { env })
+      assert.equal(git(project, 'status', '--porcelain'), '')
+      const clone = path.join(fixture.temporary, 'normalized clone')
+      git(fixture.temporary, '-c', 'protocol.file.allow=always', 'clone', '-q', '--recurse-submodules', project, clone)
+      assert.equal(git(path.join(clone, 'core'), 'rev-parse', 'HEAD'), target)
+      assert.match(git(path.join(clone, 'core'), 'rev-parse', '--git-dir'), /modules\/core$/)
+    } finally {
+      fs.rmSync(fixture.temporary, { recursive: true, force: true })
+    }
+  }
+})
+
 for (const layout of ['core', 'themes/sansoul']) {
   test(`updater resolves subsection by path and validates a clean fast-forward (${layout})`, () => {
     const fixture = createUpdaterFixture(layout)
@@ -177,6 +215,7 @@ for (const layout of ['core', 'themes/sansoul']) {
         write(fixture.source, `scripts/migrations/${script}`, fs.readFileSync(path.join(sourceEngine, 'scripts/migrations', script)))
       }
       write(fixture.source, 'assets/js/cms/markdown-metadata.js', fs.readFileSync(path.join(sourceEngine, 'assets/js/cms/markdown-metadata.js')))
+      write(fixture.source, 'assets/js/ga4-event.js', fs.readFileSync(path.join(sourceEngine, 'assets/js/ga4-event.js')))
       git(fixture.source, 'add', '.')
       git(fixture.source, 'commit', '-qm', 'Fixture 8.0 automatic migrations')
       const before = fs.readFileSync(path.join(fixture.project, 'hugo.yml'), 'utf8')

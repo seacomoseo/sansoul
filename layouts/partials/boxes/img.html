@@ -59,26 +59,31 @@
 
     {{- /* IMAGE INNER  */ -}}
     {{- partial "media/_" (dict
-      "class"      "img__in"
-      "img"        $img_src
-      "vid"        .vid
-      "mute"       .mute
-      "alt"        (.alt | default .hanchor | default .anchor | default .title)
-      "ratio"      .ratio
-      "disc"       .disc
-      "contain"    .contain
-      "container"  .container
-      "fit_vl"     .col_vl
-      "fit_vs"     .col_vs
-      "notlazy"    .is_hero
-      "is_modal"   .is_modal
-      "icon_color" .icon_color
-      "vid_width" (.vid_width | default .width)
-      "vid_height" (.vid_height | default .height)
+      "class"        "img__in"
+      "img"          $img_src
+      "vid"          .vid
+      "mute"         .mute
+      "alt"          (.alt | default .hanchor | default .anchor | default .title)
+      "ratio"        .ratio
+      "disc"         .disc
+      "contain"      .contain
+      "side"         .side
+      "container"    .container
+      "fit_vl"       .col_vl
+      "fit_vs"       .col_vs
+      "notlazy"      .is_hero
+      "is_modal"     .is_modal
+      "icon_color"   .icon_color
+      "img_w"        .img_w
+      "img_h"        .img_h
+      "vid_w"        .vid_w
+      "vid_h"        .vid_h
+      "vid_width"    (.vid_width | default .width)
+      "vid_height"   (.vid_height | default .height)
       "vid_duration" (.vid_duration | default .duration)
-      "vid_upload" (.vid_upload | default .upload)
-      "vid_title" (.vid_title | default .video_title)
-      "vid_desc" (.vid_desc | default .video_desc)
+      "vid_upload"   (.vid_upload | default .upload)
+      "vid_title"    (.vid_title | default .video_title)
+      "vid_desc"     (.vid_desc | default .video_desc)
     ) -}}
 
     {{- /* IMAGE INNER HOVER  */ -}}
@@ -87,8 +92,11 @@
         "class"     "img__in img__in--hover"
         "img"       (.hover | plainify)
         "alt"       .hover_alt
+        "img_w"     .img_w
+        "img_h"     .img_h
         "ratio"     .ratio
         "contain"   .contain
+        "side"      .side
         "container" .container
         "fit_vl"    .col_vl
         "fit_vs"    .col_vs

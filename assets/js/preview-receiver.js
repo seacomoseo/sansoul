@@ -1,5 +1,6 @@
 import { PREVIEW_CHANNEL, PREVIEW_TOKEN_PARAM, isPreviewUpdate, validPreviewData, safeImageURL, previewFieldPath } from './cms/live-preview-protocol'
 import { renderPreviewMarkdown } from './cms/preview-markdown'
+import { formatImage } from './cms/markdown-metadata'
 
 const lookup = (data, path) => path.split('.').reduce((value, key) => value?.[key], data)
 const nonempty = value => Boolean(value) && (!Array.isArray(value) || value.length > 0) && (typeof value !== 'object' || Object.keys(value).length > 0)
@@ -21,6 +22,18 @@ export function resolvePreviewBinding (binding, draft, globals = {}) {
   return result
 }
 
+// Media presentation belongs to the bound box, independent of the image URL.
+export function resolvePreviewMedia (binding, draft, globals = {}) {
+  return Object.fromEntries(['img_w', 'img_h', 'ratio'].map(key => {
+    const source = binding[key]
+    if (!source) return [key, '']
+    // A page path overrides an inherited value; clearing it restores inheritance.
+    const direct = source.path ? { ...source, value: undefined } : source
+    const resolved = resolvePreviewBinding(direct, draft, globals).value
+    return [key, resolved == null && source.value != null ? source.value : resolved]
+  }))
+}
+
 export function initPreviewReceiver (targetWindow = window) {
   if (targetWindow.parent === targetWindow || targetWindow.__sansoulPreviewReceiver) return
   const token = new URLSearchParams(targetWindow.location.search).get(PREVIEW_TOKEN_PARAM)
@@ -29,7 +42,8 @@ export function initPreviewReceiver (targetWindow = window) {
   let manifest
   try { manifest = JSON.parse(document.getElementById('sansoul-preview-manifest').textContent) } catch { return }
   targetWindow.__sansoulPreviewReceiver = true
-  const report = (type, extra = {}) => targetWindow.parent.postMessage({ channel: PREVIEW_CHANNEL, type, token, ...extra }, targetWindow.location.origin)
+  const generation = new URLSearchParams(targetWindow.location.search).get('sansoul-preview-generation')
+  const report = (type, extra = {}) => targetWindow.parent.postMessage({ channel: PREVIEW_CHANNEL, type, token, ...(generation ? { generation: Number(generation) } : {}), ...extra }, targetWindow.location.origin)
   const authorized = () => {
     try { return targetWindow.parent.parent.__sansoulPreviewSessions?.get(token)?.current?.contentWindow === targetWindow } catch { return false }
   }
@@ -48,7 +62,17 @@ export function initPreviewReceiver (targetWindow = window) {
     resolveImage: path => assets[path] || path
   })
   targetWindow.addEventListener('message', event => {
-    if (!isPreviewUpdate(event, targetWindow, token) || !authorized()) return
+    const structural = event.data?.type === 'activate-structural'
+    const message = structural ? { ...event, origin: event.origin, source: event.source, data: { ...event.data, type: 'update' } } : event
+    if (!isPreviewUpdate(message, targetWindow, token) || !authorized()) return
+    if (structural) {
+      if (!validPreviewData({ draft: event.data.draft, assets: {} }, targetWindow.location.origin)) return report('error')
+      // Hugo owns this DOM. Activate focus/navigation guards without applying
+      // the lightweight renderer over resolved conditionals or remapped values.
+      active = true
+      for (const binding of bindings.values()) activePaths.set(binding.id, resolvePreviewBinding(binding, event.data.draft, manifest.globals).path)
+      return report('structural-active')
+    }
     if (!validPreviewData(event.data.data, targetWindow.location.origin)) return report('error')
     const { draft, assets } = event.data.data
     if (!active) {
@@ -90,9 +114,15 @@ export function initPreviewReceiver (targetWindow = window) {
           node.hidden = false
           const alt = binding.alt ? resolvePreviewBinding(binding.alt, draft, manifest.globals).value : (node.querySelector('img')?.alt || '')
           // The DOM Markdown renderer owns the same safe image/video vocabulary.
-          const fragment = render(`![${String(alt ?? '').replace(/[\[\]\\]/g, '')}](${url.replace(/\)/g, '%29')})`, draft, assets)
+          const fragment = render(formatImage({ src: url, alt: String(alt ?? ''), ...resolvePreviewMedia(binding, draft, manifest.globals) }), draft, assets)
           const media = fragment.querySelector('.img')
-          if (media) node.replaceChildren(...media.childNodes)
+          if (media) {
+            node.classList.toggle('img--ratio', media.classList.contains('img--ratio'))
+            const ratio = media.style.getPropertyValue('--img-ratio')
+            if (ratio) node.style.setProperty('--img-ratio', ratio)
+            else node.style.removeProperty('--img-ratio')
+            node.replaceChildren(...media.childNodes)
+          }
         } else {
           if (source && typeof source === 'object') source = ''
           node.querySelectorAll('.icon').forEach(icon => icon.dispatchEvent(new targetWindow.Event('Unmount')))
@@ -105,15 +135,24 @@ export function initPreviewReceiver (targetWindow = window) {
       report('error')
     }
   })
-  document.addEventListener('click', event => {
+  const focusBinding = event => {
     if (!active) return
-    if (event.target.closest('a')) event.preventDefault()
     const node = event.target.closest('[data-sansoul-binding]')
     const binding = node && bindings.get(node.dataset.sansoulBinding)
     const path = binding && activePaths.get(binding.id)
     if (path) report('focus', { path })
-  })
-  document.addEventListener('submit', event => { if (active) event.preventDefault() })
+    if (event.target.closest('a,[data-h],[data-b],.box--go')) {
+      event.preventDefault()
+      event.stopImmediatePropagation()
+    }
+  }
+  document.addEventListener('click', focusBinding, true)
+  document.addEventListener('auxclick', focusBinding, true)
+  document.addEventListener('submit', event => {
+    if (!active) return
+    event.preventDefault()
+    event.stopImmediatePropagation()
+  }, true)
   if (authorized()) report('ready')
 }
 

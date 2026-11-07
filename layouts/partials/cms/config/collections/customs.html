@@ -1,4 +1,12 @@
-{{ $fields  := .fields | default slice }}
+{{/*
+Partial: cms/config/collections/customs
+Purpose: Compile one custom authoring field and its nested fields.
+Context: Authoring field map plus accumulated (prior sibling schema fields) and t (labels).
+Returns: Prior siblings with this compiled field appended. Authoring fields and the
+  internal accumulator use distinct keys so nested schemas cannot overwrite siblings.
+Side effects: None.
+*/}}
+{{ $fields  := .accumulated | default slice }}
 {{ $field   := dict }}
 {{ $label   := .label | default .name }}
 {{ $hint    := .hint }}
@@ -11,9 +19,9 @@
 {{ end }}
 
 {{ $sub := slice }}
-{{ if .sub }}
-  {{ range .sub | default slice }}
-    {{ $opts := merge . (dict "fields" $sub "t" $.t) }}
+{{ if .fields }}
+  {{ range .fields | default slice }}
+    {{ $opts := merge . (dict "accumulated" $sub "t" $.t) }}
     {{ $sub   = partial "cms/config/collections/customs" $opts }}
   {{ end }}
 {{ end }}
@@ -39,9 +47,15 @@
   "fields"  $sub
 }}
 {{ $field = partial "func/obj-truly" $field }}
+{{ if ne .i18n nil }}
+  {{ $field = merge $field (dict "i18n" (cond (eq .i18n "yes") true .i18n)) }}
+{{ end }}
+{{ if ne .def nil }}
+  {{ $field = merge $field (dict "default" $def) }}
+{{ end }}
 
 {{ if $field }}
-  {{ $field  = partial "cms/widget" $field }}
+  {{ $field  = partial "cms/field" $field }}
   {{ $fields = $fields | append $field }}
 {{ end }}
 

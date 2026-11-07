@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { createHash } from 'node:crypto'
 import sharp from 'sharp'
 import ico from 'sharp-ico'
 
@@ -98,27 +99,41 @@ async function processAvifImages (publishDir) {
   if (!existsSync(manifestDir)) return
 
   const files = await fs.readdir(manifestDir)
-  await Promise.all(files.map(async file => {
+  const cacheDir = path.resolve('resources/_gen/sansoul-avif')
+  await fs.mkdir(cacheDir, { recursive: true })
+  const inputHashes = new Map()
+  const conversions = new Map()
+  async function processFile (file) {
     const manifestPath = path.join(manifestDir, file)
     const data = await readJson(manifestPath)
-    if (!data.path) {
-      throw new TypeError(`${manifestPath} does not contain a valid path`)
+    if (!data.path || !data.output || !Number.isInteger(data.quality) || data.quality < 1 || data.quality > 100) {
+      throw new TypeError(`${manifestPath} does not contain valid image processing options`)
     }
-
-    const inputPath = publicDir + data.path
-    const extension = path.extname(inputPath)
-    const baseName = inputPath.slice(0, -extension.length)
-    const outputPath = data.width && data.height
-      ? `${baseName}-${data.width}x${data.height}.avif`
-      : `${baseName}.avif`
-
-    let image = sharp(inputPath)
-    if (data.width && data.height) {
-      image = image.resize(data.width, data.height)
-    }
-
-    await image.avif({ quality: 60, effort: 0 }).toFile(outputPath)
+    const inputPath = path.resolve(publicDir, `.${data.path}`)
+    const outputPath = path.resolve(publicDir, `.${data.output}`)
+    const insidePublic = target => target.startsWith(path.resolve(publicDir) + path.sep)
+    if (!insidePublic(inputPath) || !insidePublic(outputPath)) throw new TypeError('Image manifest path escapes public directory')
+    if (!inputHashes.has(inputPath)) inputHashes.set(inputPath, fs.readFile(inputPath).then(bytes => createHash('sha256').update(bytes).digest('hex')))
+    const hash = await inputHashes.get(inputPath)
+    const key = createHash('sha256').update(JSON.stringify([hash, data.width, data.height, data.quality, sharp.versions])).digest('hex')
+    const cached = path.join(cacheDir, `${key}.avif`)
+    if (!conversions.has(key)) conversions.set(key, (async () => {
+      if (existsSync(cached)) return
+      const temporary = `${cached}.${process.pid}.tmp`
+      try {
+        await sharp(inputPath).resize(data.width, data.height, { withoutEnlargement: true }).avif({ quality: data.quality, effort: 0 }).toFile(temporary)
+        await fs.rename(temporary, cached)
+      } finally { await fs.rm(temporary, { force: true }) }
+    })())
+    await conversions.get(key)
+    await fs.mkdir(path.dirname(outputPath), { recursive: true })
+    await fs.copyFile(cached, outputPath)
     console.log(`✅ AVIF: ${inputPath} ⏩️ ${outputPath}`)
+  }
+  // Bound memory use; manifests already deduplicate identical published variants.
+  const pending = files[Symbol.iterator]()
+  await Promise.all(Array.from({ length: Math.min(4, files.length) }, async () => {
+    for (const file of pending) await processFile(file)
   }))
 
   console.log('🎉 AVIF images completed!')

@@ -11,6 +11,8 @@ export function validateCMSConfig (config) {
   function visit (value, location) {
     if (!value || typeof value !== 'object' || seen.has(value)) return
     seen.add(value)
+    if (value.widget === 'select' && (!Array.isArray(value.options) || !value.options.length)) throw new Error(`CMS select requires non-empty options at ${location}`)
+    if (value.widget === 'object' && !Array.isArray(value.fields) && !Array.isArray(value.types)) throw new Error(`CMS object requires fields or types at ${location}`)
     if (Array.isArray(value.fields) && (typeof value.name === 'string' || value.widget || location.endsWith('.index_file'))) {
       const names = new Set()
       for (const field of value.fields) {
@@ -19,7 +21,11 @@ export function validateCMSConfig (config) {
         names.add(field.name)
       }
     }
-    for (const [key, child] of Object.entries(value)) visit(child, `${location}.${key}`)
+    // Anchors can be intentionally incomplete fragments; validate their resolved uses.
+    for (const [key, child] of Object.entries(value)) {
+      if (location === 'config' && key === '_anchors') continue
+      visit(child, `${location}.${key}`)
+    }
   }
   visit(config, 'config')
   return i18n.default_locale

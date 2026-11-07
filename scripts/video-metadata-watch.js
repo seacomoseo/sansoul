@@ -1,4 +1,4 @@
-import { existsSync, watch } from 'node:fs'
+import { statSync, watch } from 'node:fs'
 import path from 'node:path'
 import { refreshVideoMetadata } from './video-metadata.js'
 
@@ -12,6 +12,7 @@ export function startVideoMetadataWatch ({
 } = {}) {
   const root = path.resolve(projectRoot)
   const directories = new Map()
+  const directoryIdentities = new Map()
   const controller = new AbortController()
   let timer
   let running
@@ -53,19 +54,34 @@ export function startVideoMetadataWatch ({
   }
 
   function attach (directory, replace = false) {
-    if (replace) {
-      directories.get(directory)?.close()
-      directories.delete(directory)
-    }
-    if (directories.has(directory) || !existsSync(path.join(root, directory))) return
+    const filename = path.join(root, directory)
+    let identity
     try {
-      const watcher = watch(path.join(root, directory), { recursive: true }, (event, filename) => {
+      const stat = statSync(filename)
+      identity = `${stat.dev}:${stat.ino}`
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error
+    }
+    if (directories.has(directory)) {
+      // macOS can deliver a delayed rename for the directory already watched.
+      if (!replace || directoryIdentities.get(directory) === identity) return false
+      directories.get(directory).close()
+      directories.delete(directory)
+      directoryIdentities.delete(directory)
+      if (!identity) return true
+    }
+    if (!identity) return false
+    try {
+      const watcher = watch(filename, { recursive: true }, (event, filename) => {
         if (relevant(directory, filename, event)) schedule()
       })
       watcher.on('error', fail)
       directories.set(directory, watcher)
+      directoryIdentities.set(directory, identity)
+      return true
     } catch (error) {
       if (error.code !== 'ENOENT') throw error
+      return false
     }
   }
 
@@ -74,8 +90,9 @@ export function startVideoMetadataWatch ({
       if (event !== 'rename') return
       const directory = filename?.toString()
       if (!['content', 'data', 'uploads'].includes(directory)) return
-      try { attach(directory, event === 'rename') } catch (error) { fail(error) }
-      schedule()
+      try {
+        if (attach(directory, true)) schedule()
+      } catch (error) { fail(error) }
     })
     rootWatcher.on('error', fail)
     for (const directory of ['content', 'data', 'uploads']) attach(directory)

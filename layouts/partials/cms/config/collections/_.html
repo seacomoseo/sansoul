@@ -131,7 +131,7 @@
   }}
   {{ if .Params.is_related }}
     {{ $fields = $fields | append
-      (partial "cms/widget" (dict
+      (partial "cms/field" (dict
         "alt"        `page_rel`
         "name"       `rel`
         "widget"     `rel`
@@ -147,7 +147,7 @@
   {{ end }}
   {{ if eq .Params.base "single" }}
     {{ $fields = $fields | append
-      (partial "cms/widget" (dict
+      (partial "cms/field" (dict
         "name"   `tpl`
         "widget" `dict`
         "label"  $.types_template
@@ -161,7 +161,7 @@
         )
       ))
       `~page_base`
-      (partial "cms/widget" (dict "<<" `page_date` "req" false))
+      (partial "cms/field" (dict "<<" `page_date` "req" false))
       `~page_mod`
       `~page_end`
       `~page_cancelled`
@@ -219,26 +219,25 @@
     }}
   {{ end }}
   {{ range .Params.customs | default slice }}
-    {{ $opts  := merge . (dict "fields" $fields "t" $) }}
+    {{ $opts  := merge . (dict "accumulated" $fields "t" $) }}
     {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
   {{ range .Params.taxonomies | default slice }}
-    {{ $opts  := merge . (dict "fields" $fields "t" $ "tax" true) }}
+    {{ $opts  := merge . (dict "accumulated" $fields "t" $ "tax" true) }}
     {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
 
   {{/*  Index  */}}
-  {{ $index_permalinks_hint := print $.index_permalinks_hint " <br> **" $.def " →** " .Params.cms.defaults.permalinks }}
+  {{ $index_prefix_hint := print $.index_prefix_hint " <br> **" $.def " →** " .Params.cms.defaults.prefix }}
   {{ $index_slug_hint       := print $.index_slug_hint       " <br> **" $.def " →** " .Params.cms.defaults.slug       }}
   {{ $index_singular_hint   := print                               "**" $.def " →** " .Params.cms.defaults.singular   }}
   {{ $index_title_hint      := print                               "**" $.def " →** " .Params.cms.defaults.title      }}
   {{ $index_sum_hint        := print $.page_sum_hint         " <br> **" $.def " →** " .Params.cms.defaults.sum        }}
-  {{ $index_permalinks      := partial "cms/widget" (dict "name" `permalinks` "label" $.index_permalinks "hint" $index_permalinks_hint            ) }}
-  {{ $index_slug            := partial "cms/widget" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "req" false) }}
-  {{ $index_singular        := partial "cms/widget" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint              ) }}
-  {{ $index_title           := partial "cms/widget" (dict "<<" `page_title`                              "hint" $index_title_hint                 ) }}
-  {{ $index_sum             := partial "cms/widget" (dict "<<" `page_sum`                                "hint" $index_sum_hint                   ) }}
-  {{ $index_preview         := print $base "{{fields.slug | default('" .Params.cms.defaults.slug "')}}/" }}
+  {{ $index_prefix      := partial "cms/field" (dict "name" `prefix` "label" $.index_prefix "hint" $index_prefix_hint            ) }}
+  {{ $index_slug            := partial "cms/field" (dict "<<" `page_slug`                               "hint" $index_slug_hint       "req" false) }}
+  {{ $index_singular        := partial "cms/field" (dict "name" `singular`   "label" $.index_singular   "hint" $index_singular_hint              ) }}
+  {{ $index_title           := partial "cms/field" (dict "<<" `page_title`                              "hint" $index_title_hint                 ) }}
+  {{ $index_sum             := partial "cms/field" (dict "<<" `page_sum`                                "hint" $index_sum_hint                   ) }}
 
 
   {{ if eq .Type "single" }}
@@ -272,13 +271,9 @@
       "name"             `_index`
       "label"            $.page_index
       "icon"             `lan`
-      "create"           true
-      "i18n"             true
-      "preview_path"     $index_preview
-      "thumbnail"        `img`
       "editor"           (dict "preview" true)
       "fields"           (slice
-        $index_permalinks
+        $index_prefix
         $index_slug
         $index_singular
         $index_title

@@ -154,8 +154,10 @@
 
   {{- $head_html := print `<head>` (partial "head" .) $custom_html_head `</head>` -}}
   {{- $document_html := print `<!DOCTYPE html><html lang="` (.Params.locale | default .Lang) `" data-base-lang="` .Lang `" class="preload">` $head_html `<body ` $body_attr `>` $body_html `</body></html>` -}}
-  {{- $resource_usage := partial "files/page-resource-usage" (dict "format" "html" "html" $document_html) -}}
-  {{- hugo.Store.SetInMap "sansoul.resources.rendered-usage.html" .RelPermalink $resource_usage -}}
+  {{- if hugo.IsProduction -}}
+    {{- $resource_usage := partial "files/page-resource-usage" (dict "format" "html" "html" $document_html) -}}
+    {{- hugo.Store.SetInMap "sansoul.resources.rendered-usage.html" .RelPermalink $resource_usage -}}
+  {{- end -}}
   {{- with (templates.Defer (dict "data" (dict "format" "html" "html" $document_html))) -}}
     {{- partial "files/svg-deferred" . -}}
   {{- end -}}

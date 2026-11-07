@@ -161,3 +161,82 @@ test('video watcher ignores its own atomic metadata cache writes', async () => {
     await rm(projectRoot, { recursive: true, force: true })
   }
 })
+
+test('video watcher ignores delayed root renames but detects replaced and new directories', async () => {
+  const { default: vm } = await import('node:vm')
+  const source = (await readFile(new URL('../video-metadata-watch.js', import.meta.url), 'utf8'))
+    .replace(/^import .+\n/gm, '').replace('export function ', 'function ')
+  const root = path.resolve('/fixture')
+  const identities = new Map([[path.join(root, 'data'), { dev: 1, ino: 10 }]])
+  const watchers = []
+  const timers = new Map()
+  let timerId = 0
+  let calls = 0
+  const api = vm.runInNewContext(source + '\n;({ startVideoMetadataWatch })', {
+    path,
+    AbortController,
+    refreshVideoMetadata: async () => {},
+    statSync: filename => {
+      if (identities.has(filename)) return identities.get(filename)
+      throw Object.assign(new Error('Missing directory'), { code: 'ENOENT' })
+    },
+    watch: (filename, options, callback) => {
+      const watcher = { filename, callback: callback || options, closed: false, on () {}, close () { this.closed = true } }
+      watchers.push(watcher)
+      return watcher
+    },
+    setTimeout: callback => { timers.set(++timerId, callback); return timerId },
+    clearTimeout: id => timers.delete(id)
+  })
+  const watcher = api.startVideoMetadataWatch({ projectRoot: root, refresh: async () => { calls++ } })
+  async function flush () {
+    const queued = [...timers.values()]
+    timers.clear()
+    queued.forEach(callback => callback())
+    // Let the refresh promise and its finally handler settle.
+    for (let i = 0; i < 8; i++) await Promise.resolve()
+  }
+  try {
+    await flush()
+    assert.equal(calls, 1)
+    const rootWatcher = watchers[0]
+    const original = watchers[1]
+    rootWatcher.callback('rename', 'data')
+    assert.equal(timers.size, 0)
+    assert.equal(watchers.length, 2)
+    assert.equal(original.closed, false)
+
+    identities.set(path.join(root, 'data'), { dev: 1, ino: 11 })
+    rootWatcher.callback('rename', 'data')
+    assert.equal(original.closed, true)
+    assert.equal(watchers.length, 3)
+    await flush()
+    assert.equal(calls, 2)
+
+    identities.set(path.join(root, 'uploads'), { dev: 1, ino: 12 })
+    rootWatcher.callback('rename', 'uploads')
+    assert.equal(watchers.length, 4)
+    await flush()
+    assert.equal(calls, 3)
+    rootWatcher.callback('rename', 'uploads')
+    assert.equal(timers.size, 0)
+
+    const originalUploads = watchers[3]
+    identities.delete(path.join(root, 'uploads'))
+    rootWatcher.callback('rename', 'uploads')
+    assert.equal(originalUploads.closed, true)
+    await flush()
+    assert.equal(calls, 4)
+
+    identities.set(path.join(root, 'uploads'), { dev: 1, ino: 13 })
+    rootWatcher.callback('rename', 'uploads')
+    assert.equal(watchers.length, 5)
+    assert.equal(watchers[4].filename, path.join(root, 'uploads'))
+    assert.equal(watchers[4].closed, false)
+    await flush()
+    assert.equal(calls, 5)
+  } finally {
+    await watcher.close()
+    assert.ok(watchers.every(item => item.closed))
+  }
+})

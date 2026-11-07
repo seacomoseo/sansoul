@@ -1,0 +1,74 @@
+{{/*
+Partial: func/set-value
+Purpose: Resolve one scalar's sibling dependencies or recurse into a nested value.
+Context: Internal map from func/set, carrying value, scope, stack, path, depth and deferred.
+Returns: The interpolated string or original scalar type; nested structures get their own scope.
+Side effects: Reports missing, cyclic, non-scalar, malformed or excessive references.
+Limits: 65536 bytes per intermediate/result string and 1048576 bytes of cumulative
+replacement output; size is checked before allocation, including repeated tokens.
+*/}}
+{{ $value := .value }}
+{{ $scope := .scope }}
+{{ $stack := .stack }}
+{{ $path := .path }}
+{{ $pattern := `\{\{\s*set\s+([A-Za-z_][A-Za-z0-9_-]*)\s*\}\}` }}
+{{ if eq (printf "%T" $value) "string" }}
+  {{ $tokens := findRE `\{\{\s*set\b[^}]*\}\}` $value 129 }}
+  {{ if gt (len $tokens) 128 }}
+    {{ errorf "SanSoul set: more than 128 expressions in one value at %s" $path }}
+  {{ else if and $tokens (gt (len $value) 65536) }}
+    {{ errorf "SanSoul set: interpolated value exceeds 65536 bytes at %s" $path }}
+  {{ else }}
+  {{ range $tokens | uniq }}
+    {{ $token := . }}
+    {{ $occurrences := sub (len (split $value $token)) 1 }}
+    {{ $.budget.Add "references" $occurrences }}
+    {{ if gt ($.budget.Get "references") 1024 }}
+      {{ errorf "SanSoul set: interpolation exceeds 1024 references at %s" $path }}
+    {{ else if not (findRE (print "^" $pattern "$") $token) }}
+      {{ errorf "SanSoul set: invalid expression %q at %s; expected {{ set sibling }}" $token $path }}
+    {{ else }}
+      {{ $key := replaceRE $pattern "$1" $token }}
+      {{ if in $stack $key }}
+        {{ errorf "SanSoul set: cyclic sibling reference %s at %s" (delimit ($stack | append $key) " -> ") $path }}
+      {{ else if ge (len $stack) 32 }}
+        {{ errorf "SanSoul set: dependency chain exceeds 32 keys at %s" $path }}
+      {{ else if not (isset $scope $key) }}
+        {{ errorf "SanSoul set: missing sibling %q at %s" $key $path }}
+      {{ else }}
+        {{ $source := index $scope $key }}
+        {{ if or (eq $source nil) (reflect.IsMap $source) (reflect.IsSlice $source) }}
+          {{ errorf "SanSoul set: sibling %q at %s must be a non-null scalar" $key $path }}
+        {{ else }}
+          {{ $source = partial "func/set-value" (dict "value" $source "scope" $scope "stack" ($stack | append $key) "path" $path "depth" $.depth "deferred" $.deferred "budget" $.budget) }}
+          {{ $source_text := $source }}
+          {{ if ne (printf "%T" $source_text) "string" }}
+            {{ $source_text = print $source_text }}
+          {{ end }}
+          {{/* Check the allocation size before replace expands repeated tokens. */}}
+          {{ $output_bytes := add (len $value) (mul $occurrences (sub (len $source_text) (len $token))) }}
+          {{ if gt $output_bytes 65536 }}
+            {{ errorf "SanSoul set: interpolated value would exceed 65536 bytes at %s" $path }}
+          {{ else }}
+            {{ $.budget.Add "outputBytes" $output_bytes }}
+            {{ if gt ($.budget.Get "outputBytes") 1048576 }}
+              {{ errorf "SanSoul set: interpolation exceeds 1048576 total output bytes at %s" $path }}
+            {{ else }}
+              {{ $value = replace $value $token $source_text }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ end }}
+{{ else if or (reflect.IsMap $value) (reflect.IsSlice $value) }}
+  {{ $defer := false }}
+  {{ if reflect.IsMap $value }}
+    {{ $defer = or $value.get $value.remap }}
+  {{ end }}
+  {{ if not $defer }}
+    {{ $value = partial "func/set" (dict "value" $value "path" $path "depth" (add (int $.depth) 1) "deferred" $.deferred "budget" $.budget) }}
+  {{ end }}
+{{ end }}
+{{ return $value }}

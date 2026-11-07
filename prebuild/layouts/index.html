@@ -144,7 +144,7 @@
 
         {{/*  permalinks  */}}
         {{ $permalinks  := "" }}
-        {{ with $type.permalinks }}
+        {{ with $type.prefix }}
           {{ $permalinks = . }}
         {{ else with index $t (print "types_def_" $name "_permalinks") }}
           {{ $permalinks = . }}
@@ -182,11 +182,11 @@
           "hint"     (index $i18n_cms (print "types_def_" $name "_hint"    ))
         }}
         {{ $default_values := dict
-          "permalinks" (index $t (print "types_def_" $name "_permalinks" ))
-          "slug"       (index $t (print "types_def_" $name "_slug"       ))
-          "singular"   (index $t (print "types_def_" $name "_singular"   ))
-          "title"      (index $t (print "types_def_" $name "_title"      ))
-          "sum"        (index $t (print "types_def_" $name "_sum"        ))
+          "prefix"   (index $t (print "types_def_" $name "_permalinks" ))
+          "slug"     (index $t (print "types_def_" $name "_slug"       ))
+          "singular" (index $t (print "types_def_" $name "_singular"   ))
+          "title"    (index $t (print "types_def_" $name "_title"      ))
+          "sum"      (index $t (print "types_def_" $name "_sum"        ))
         }}
         {{ $cms = dict
           "title"      (or $cms.title    $cms.singular $cms_defs.title    $type.title $name)
@@ -400,8 +400,10 @@ tree. Hugo's server otherwise classifies a normal page edit as an asset/data
 change when the same source tree is mounted into content, assets, and data.
 */}}
 {{ $content_mounts := site.Params.mainModuleMounts | default slice }}
+{{ $content_directories := slice "content/single" }}
 {{ range resources.Match "content/**/_index.*.md" }}
   {{ $name := strings.TrimPrefix "/" .Name }}
+  {{ $content_directories = $content_directories | append (path.Dir $name) }}
   {{ $content_mounts = $content_mounts | append (dict
     "source" $name
     "target" (print "assets/content-indexes/" (strings.TrimPrefix "content/" $name))
@@ -412,6 +414,19 @@ change when the same source tree is mounted into content, assets, and data.
   {{ $content_mounts = $content_mounts | append (dict
     "source" $name
     "target" (print "data/" (strings.TrimPrefix "content/" $name))
+  ) }}
+{{ end }}
+{{/*
+A file mount also participates in Hugo's source-directory lookup. Without an
+explicit directory mapping, a renamed home or index mount can shadow edits to
+its sibling pages, causing a rebuild that never invalidates their content.
+Keep these mappings after the file mounts, at the same virtual content paths.
+*/}}
+{{ range $content_directories | uniq }}
+  {{ $content_mounts = $content_mounts | append (dict
+    "source" .
+    "target" .
+    "files"  (slice "! _home.*.md" "! _index.*.md")
   ) }}
 {{ end }}
 {{ if $content_mounts }}

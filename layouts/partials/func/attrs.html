@@ -2,7 +2,7 @@
 {{ $attributes := slice }}
 {{ range $key, $value := . }}
   {{ if reflect.IsSlice $value }}
-    {{ $purged  := slice }}
+    {{ $purged := slice }}
     {{ range $value }}
       {{ with . }}
         {{ $purged = $purged | append . }}

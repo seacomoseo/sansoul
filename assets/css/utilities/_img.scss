@@ -162,6 +162,8 @@
   // }
   margin: var(--img-margin);
   width: var(--img-width);
+  // Inset media must include the box padding, matching its ratio and shade dimensions.
+  max-width: none;
   --img-margin: calc(var(--box-pd) * -1);
   --img-inset-block-margin: calc(max(var(--box-pd), 1em) - var(--box-gap));
   // --img-inset-pd-radius:
@@ -219,6 +221,16 @@
 
 
 // VIDEO POSTER
+
+.img--loading > :is(video, iframe) {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.img--loading > .icon {
+  pointer-events: none;
+}
 
 [data-vid] > img {
   object-fit: cover;

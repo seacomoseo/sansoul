@@ -1,3 +1,10 @@
+{{/*
+Partial: schema/imgs
+Purpose: Resolve image URLs used by schema arrays.
+Context: Slice of media paths or URLs.
+Returns: Slice of absolute image URLs.
+Side effects: Publishes local resources; config.imgs_remote can download and publish external images.
+*/}}
 {{ $imgs := slice }}
 
 {{ range . }}
@@ -9,6 +16,10 @@
     {{ end }}
   {{ else }}
     {{ $img = . }}
+    {{ if hugo.Data.config.imgs_remote }}
+      {{ $remote := partialCached "media/remote-resource" . . }}
+      {{ with $remote.resource }}{{ $img = .Permalink }}{{ end }}
+    {{ end }}
   {{ end }}
   {{ with $img }}
     {{ $imgs = $imgs | append . }}

@@ -11,11 +11,20 @@
   `~sides`
   `~group_radius`
   `~slider`
+  `~slider_infinite`
   `~slider_time`
   `~slider_pips`
   `~slider_arrows`
   `~align_x`
   `~align_y`
+  `~mt_vl`
+  `~mt`
+  `~mb_vl`
+  `~mb`
+  `~ml_vl`
+  `~ml`
+  `~mr_vl`
+  `~mr`
 )) }}
 {{ $titles := partial "cms/group" (dict "name" "titles" "label" (index . "cms_group_titles") "fields" (slice
   `~title`
@@ -64,12 +73,14 @@
 )) }}
 {{ $img := partial "cms/group" (dict "name" "img" "label" (index . "cms_group_img") "fields" (slice
   `~img_no_vid`
+  `~img_w`
+  `~img_h`
   `~hover`
   `~alt`
   `~hover_alt`
   `~vid`
-  `~vid_width`
-  `~vid_height`
+  `~vid_w`
+  `~vid_h`
   `~vid_duration`
   `~vid_upload`
   `~vid_title`
@@ -84,7 +95,8 @@
   `~shade`
 )) }}
 {{ $btn := partial "cms/group" (dict "name" "btn" "label" (index . "cms_group_btn") "fields" (slice
-  `~pin`
+  `~il`
+  `~ir`
   `~url`
   `~label`
   `~anchor`
@@ -92,6 +104,9 @@
   `~swap`
   `~ga4`
   `~btn_with_hide`
+  `~btn_full`
+  `~btn_mt`
+  `~btn_mt_vl`
 )) }}
 {{ $bg_boxes := partial "cms/group" (dict "name" "bg" "label" (index . "cms_group_bg") "fields" (slice
   `~color`
@@ -140,10 +155,10 @@
   `~menu_swap`
 )) }}
 {{ $boxi_boxes := partial "cms/group" (dict "name" "boxi" "label" (index . "cms_group_boxi") "fields" (slice
+  `~align_x`
   `~order`
   `~fit`
   `~fit_vs`
-  `~grow`
   `~align_y_self`
   `~align`
   `~align_vl`
@@ -151,14 +166,6 @@
   `~rate`
   `~space`
   `~class`
-  `~mt`
-  `~mt_vs`
-  `~mb`
-  `~mb_vs`
-  `~ml`
-  `~ml_vs`
-  `~mr`
-  `~mr_vs`
   `~pd`
   `~pd_vs`
   `~hide_shadow`
@@ -170,21 +177,12 @@
   `~order`
   `~fit`
   `~fit_vs`
-  `~grow`
   `~align`
   `~align_vl`
   `~side`
   `~rate`
   `~space`
   `~class`
-  `~mt`
-  `~mt_vs`
-  `~mb`
-  `~mb_vs`
-  `~ml`
-  `~ml_vs`
-  `~mr`
-  `~mr_vs`
   `~pd`
   `~pd_vs`
   `~hide_shadow`
@@ -192,6 +190,16 @@
   `~pill`
   `~card`
 )) }}
+{{ $box_margins := slice
+  `~mt_vl`
+  `~mt`
+  `~mb_vl`
+  `~mb`
+  `~ml_vl`
+  `~ml`
+  `~mr_vl`
+  `~mr`
+}}
 {{ $other_section := partial "cms/group" (dict "name" "other" "label" (index . "cms_group_other") "fields" (slice
   `~if`
   `~node`
@@ -210,12 +218,12 @@
   (partial "cms/group" (dict "name" "steps" "label" (index . "cms_group_steps") "fields" (slice `~step` `~steps`)))
   (partial "cms/group" (dict "name" "gallery" "label" (index . "cms_group_gallery") "fields" (slice `~gallery` `~imgs` `~limgs`)))
   (partial "cms/group" (dict "name" "faq" "label" (index . "cms_group_faq") "fields" (slice `~faq` `~faqs`)))
-  (partial "cms/group" (dict "name" "gss" "label" (index . "cms_group_gss") "fields" (slice `~gss` `~gss_sheet`)))
+  (partial "cms/group" (dict "name" "gss" "label" (index . "cms_group_gss") "fields" (slice `~gss`)))
   (partial "cms/group" (dict "name" "reviews" "label" (index . "cms_group_reviews") "fields" (slice `~review` `~reviews`)))
-  (partial "cms/group" (dict "name" "when" "label" (index . "cms_group_when") "fields" (slice `~when`)))
-  (partial "cms/group" (dict "name" "links" "label" (index . "cms_group_links") "fields" (slice `~links` `~dots`)))
+  (partial "cms/group" (dict "name" "when" "label" (index . "cms_group_when") "fields" (slice `~when` `~whens`)))
+  (partial "cms/group" (dict "name" "links" "label" (index . "cms_group_links") "fields" (slice `~link` `~links` `~dot` `~dots`)))
   (partial "cms/group" (dict "name" "form" "label" (index . "cms_group_form") "fields" (slice `~form` `~inputs`)))
-  (partial "cms/group" (dict "name" "map" "label" (index . "cms_group_map") "fields" (slice `~map` `~geos` `~zoom`)))
+  (partial "cms/group" (dict "name" "geo" "label" (index . "cms_group_geo") "fields" (slice `~geo` `~geos` `~zoom`)))
 ) }}
 
 
@@ -251,7 +259,7 @@
     $boxi
     $other
   )))
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict
     "var"    `box`
     "alt"    `box`
     "name"   `box`
@@ -260,7 +268,7 @@
   ))
 
 
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict
     "var"    `boxes_last`
     "alt"    `boxes`
     "name"   `boxes`
@@ -268,11 +276,11 @@
     "sum"    "{{fields.title}}"
     "fields" $boxes_fields
   ))
-  (partial "cms/widget" (dict "var" `boxes_2` "<<" `boxes_last` "fields" ($boxes_fields | append `~boxes_last`)))
-  (partial "cms/widget" (dict "var" `boxes`   "<<" `boxes_2`    "fields" ($boxes_fields | append `~boxes_last`)))
+  (partial "cms/field" (dict "var" `boxes_2` "<<" `boxes_last` "fields" ($boxes_fields | append `~boxes_last`)))
+  (partial "cms/field" (dict "var" `boxes`   "<<" `boxes_2`    "fields" ($boxes_fields | append `~boxes_last`)))
 
 
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict
     "var"    `modal`
     "name"   `modal`
     "widget" `dict`
@@ -287,11 +295,12 @@
       (partial "cms/group" (dict "name" "paddings" "label" (index . "cms_group_paddings") "fields" (slice `~ph`)))
       $size_modal
       $boxi
+      $box_margins
       $other
     ))
   ))
 
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict
     "var"    `modals`
     "name"   `modals`
     "widget" `slice`
@@ -308,6 +317,7 @@
       (partial "cms/group" (dict "name" "paddings" "label" (index . "cms_group_paddings") "fields" (slice `~ph`)))
       $size_modal
       $boxi
+      $box_margins
       $other
       `~box`
       $blocks

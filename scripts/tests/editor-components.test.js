@@ -107,3 +107,22 @@ test('all Markdown media pickers accept images and videos while retaining URL an
     }
   }
 })
+
+test('registered media dialogs retain width and height while editing captions', () => {
+  const { context, components } = editorContext()
+  vm.runInContext('initEditorComponentStyles = () => {}; initInlineComponentPreviews = () => {}; initSelectionPrefill = () => {}; initEditorComponents()', context)
+  for (const id of ['inline-image', 'gallery', 'gallery-simple']) {
+    const editor = components.find(component => component.id === id)
+    const prefix = id === 'gallery-simple' ? '<!-- gallery-simple -->\n' : ''
+    const markdown = `${prefix}![Alt](/u/video.mp4 "Caption {16/9 w360 h220}")`
+    const value = editor.fromBlock(markdown.match(editor.pattern))
+    const media = id === 'gallery' ? value.images[0] : value
+    assert.equal(media.ratio, '16/9')
+    assert.equal(media.img_w, 360)
+    assert.equal(media.img_h, 220)
+    media.title = 'Changed caption'
+    assert.equal(editor.toBlock(value), markdown.replace('Caption', 'Changed caption'))
+    const fields = id === 'gallery' ? editor.fields[0].fields : editor.fields
+    for (const name of ['img_w', 'img_h']) assert.equal(fields.find(field => field.name === name).widget, 'number')
+  }
+})

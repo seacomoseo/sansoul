@@ -4,7 +4,8 @@
 {{/*  MENU ITEMS  */}}
 {{ $menu_items_fields := slice
   `~url`
-  `~icon`
+  `~il`
+  `~ir`
   `~label`
   `~anchor`
   `~lock`
@@ -13,7 +14,7 @@
   `~ga4`
 }}
 {{ $variables = $variables | append
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict
     "var"    `global_menu_subitems_last`
     "alt"    `global_menu_subitems`
     "name"   `items`
@@ -21,9 +22,9 @@
     "sum"    "{{fields.label}}"
     "fields" $menu_items_fields
   ))
-  (partial "cms/widget" (dict "var" `global_menu_subitems_2` "<<" `global_menu_subitems_last` "fields" ($menu_items_fields | append `~global_menu_subitems_last`)))
-  (partial "cms/widget" (dict "var" `global_menu_subitems`   "<<" `global_menu_subitems_2`    "fields" ($menu_items_fields | append `~global_menu_subitems_last`)))
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict "var" `global_menu_subitems_2` "<<" `global_menu_subitems_last` "fields" ($menu_items_fields | append `~global_menu_subitems_last`)))
+  (partial "cms/field" (dict "var" `global_menu_subitems`   "<<" `global_menu_subitems_2`    "fields" ($menu_items_fields | append `~global_menu_subitems_last`)))
+  (partial "cms/field" (dict
     "var"    `global_menu_items`
     "name"   `items`
     "widget" `slice`
@@ -35,10 +36,10 @@
 
 {{/*  MENU  */}}
 {{ $variables = $variables | append
-  (partial "cms/widget" (dict "var" `global_menu_img`   "name" `img`   "widget" `img`))
-  (partial "cms/widget" (dict "var" `global_menu_title` "name" `title`               ))
-  (partial "cms/widget" (dict "var" `global_menu_sub`   "name" `sub`                 ))
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict "var" `global_menu_img`   "name" `img`   "widget" `img`))
+  (partial "cms/field" (dict "var" `global_menu_title` "name" `title`               ))
+  (partial "cms/field" (dict "var" `global_menu_sub`   "name" `sub`                 ))
+  (partial "cms/field" (dict
     "var"     `global_menu`
     "name"    `menu`
     "widget"  `dict`
@@ -54,15 +55,15 @@
 
 {{/*  CALLNOWS  */}}
 {{ $variables = $variables | append
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict
     "var"    `global_callnows`
     "name"   `callnows`
     "widget" `slice`
     "sum"    "{{fields.label}}"
     "types"  (slice
-      (partial "cms/widget" (dict "alt" `links_phone`    "name" `phone`    "widget" `dict` "fields" (slice `~links_label_phone` `~btn` `~icon`)))
-      (partial "cms/widget" (dict "alt" `links_whatsapp` "name" `whatsapp` "widget" `dict` "fields" (slice `~links_label_phone` `~btn`               )))
-      (partial "cms/widget" (dict "alt" `links_custom`   "name" `custom`   "widget" `dict` "fields" (slice `~url` `~icon` `~links_label` `~lock` `~btn` `~ga4`)))
+      (partial "cms/field" (dict "alt" `links_phone`    "name" `phone`    "widget" `dict` "fields" (slice `~links_label_phone` `~ga4` `~btn` `~il` `~ir`)))
+      (partial "cms/field" (dict "alt" `links_whatsapp` "name" `whatsapp` "widget" `dict` "fields" (slice `~links_label_phone` `~ga4` `~btn` `~il` `~ir`)))
+      (partial "cms/field" (dict "alt" `links_custom`   "name" `custom`   "widget" `dict` "fields" (slice `~url` `~il` `~ir` `~links_label` `~lock` `~btn` `~ga4`)))
     )
   ))
 }}
@@ -88,7 +89,7 @@
     "name"   "footer"
     "label"  "Footer"
     "widget" "dict"
-    "sub"    (slice
+    "fields" (slice
       (dict "var" "size")
       (dict "var" "color")
       (dict "var" "fade")
@@ -106,7 +107,7 @@
 {{ end }}
 {{ range $global_fields }}
   {{ if or .var .name }}
-    {{ $opts  := merge . (dict "fields" $fields "t" $) }}
+    {{ $opts  := merge . (dict "accumulated" $fields "t" $) }}
     {{ $fields = partial "cms/config/collections/customs" $opts }}
   {{ end }}
 {{ end }}

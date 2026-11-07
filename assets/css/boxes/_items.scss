@@ -95,3 +95,37 @@
   overflow: hidden;
   @include mixins.radius(var(--box-pd));
 }
+
+// Explicit group growth keeps the default box alignment unchanged.
+.boxes.justify-grow > .box {
+  flex-grow: 1;
+}
+
+:is(.boxes, .slider)[style*="--boxes-"] {
+  --boxes-mb-vs: initial;
+  --boxes-mb-vl: initial;
+  --boxes-ml-vs: initial;
+  --boxes-ml-vl: initial;
+  --boxes-mr-vs: initial;
+  --boxes-mr-vl: initial;
+  @include mixins.fluid-size(--boxes-mb, 1em, var(--boxes-mb-vs), var(--boxes-mb-vl));
+  @include mixins.fluid-size(--boxes-ml, 1em, var(--boxes-ml-vs), var(--boxes-ml-vl));
+  @include mixins.fluid-size(--boxes-mr, 1em, var(--boxes-mr-vs), var(--boxes-mr-vl));
+  &:is([style*="--boxes-ml-"], [style*="--boxes-mr-"]) {
+    container-type: inline-size;
+  }
+  margin-left: var(--boxes-ml, 0em);
+  margin-right: var(--boxes-mr, 0em);
+  width: calc(100% - var(--boxes-ml, 0em) - var(--boxes-mr, 0em));
+  &:not(.boxes--top, .boxes--bottom) {
+    margin-bottom: var(--boxes-mb, 0em);
+  }
+}
+
+:is(.boxes--top, .boxes--bottom)[style*="--boxes-"] {
+  columns: calc((100cqw - var(--boxes-ml, 0em) - var(--boxes-mr, 0em)) / var(--cols) - var(--gc));
+  margin-bottom: calc(var(--boxes-mb, 0em) - var(--cols-gap-y));
+  &:is(.gallery-wrap *) {
+    margin-bottom: var(--boxes-mb, 0em);
+  }
+}

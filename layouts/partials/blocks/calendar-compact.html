@@ -1,0 +1,85 @@
+{{- /*
+Partial: blocks/calendar-compact
+Purpose: Render twelve compact months per event year and one reusable event detail catalog.
+Context:
+  - entries (Pages): Date-sorted calendar entries, defining stable event indexes.
+  - years (slice): Unique ascending year strings containing any event day.
+  - id (string): Page-local calendar ID.
+Renders: Initially hidden compact calendars and detail panel; day buttons reference catalog indexes.
+Side effects: None. Calendar-day arithmetic uses UTC-normalized declared dates, independent of DST.
+*/ -}}
+{{- $id := .id -}}
+{{- $background := partial "func/color-background" (dict "child" "such" "parent" (.parent_color | default "light")) -}}
+{{- $event_background := partial "func/color-background" (dict "child" "such" "parent" $background.child) -}}
+{{- $days := dict -}}
+{{- range $index, $event := .entries -}}
+  {{- $first := time.AsTime ($event.Date.Format "2006-01-02") "UTC" -}}
+  {{- $last := $first -}}
+  {{- with $event.Params.end -}}
+    {{- $end := time.AsTime . -}}
+    {{- $last = time.AsTime ($end.Format "2006-01-02") "UTC" -}}
+  {{- end -}}
+  {{- if lt $last $first }}{{ $last = $first }}{{ end -}}
+  {{- range seq 0 (int (div (sub $last.Unix $first.Unix) 86400)) -}}
+    {{- $key := ($first.AddDate 0 0 .).Format "2006-01-02" -}}
+    {{- $events := index $days $key | default (slice) -}}
+    {{- $days = merge $days (dict $key ($events | append (printf "%d" $index))) -}}
+  {{- end -}}
+{{- end }}
+<section class="calendar__details bg bg-{{ $background.child }}" data-calendar-details id="{{ $id }}-details" role="region" aria-label="{{ i18n "calendar_details" }}" hidden>
+  <div class="bg-color"></div>
+  <div class="calendar__detail-header"><h3 id="{{ $id }}-detail-date" data-calendar-detail-date tabindex="-1"></h3>
+  <button type="button" class="calendar__close btn btn--dot btn--sm cta" data-calendar-close aria-label="{{ i18n "calendar_close" }}">{{ partial "icon" (dict "icon" "close") }}</button></div>
+  <div data-calendar-detail-events></div>
+</section>
+<div class="calendar__compact" data-calendar-compact hidden>
+  {{- range $year := .years -}}
+    {{- range $month := seq 1 12 -}}
+      {{- $key := printf "%s-%02d" $year $month -}}
+      {{- $start := time.AsTime (print $key "-01") "UTC" -}}
+      {{- $label := printf "%s-tile-%s" $id $key -}}
+      {{- $offset := mod (add (int $start.Weekday) 6) 7 -}}
+      <section class="calendar__mini" data-calendar-tile="{{ $key }}" aria-labelledby="{{ $label }}">
+        <h3 id="{{ $label }}" class="calendar__mini-heading">{{ time.Format "January" $start }}</h3>
+        <div class="calendar__mini-weekdays" aria-hidden="true">
+          {{- range seq 0 6 }}<span>{{ time.Format "Mon" ((time.AsTime "2024-01-01").AddDate 0 0 .) }}</span>{{ end -}}
+        </div>
+        <div class="calendar__mini-days">
+          {{- if gt $offset 0 -}}
+            {{- range seq $offset }}<span class="calendar__mini-empty" aria-hidden="true"></span>{{ end -}}
+          {{- end -}}
+          {{- range $day := seq (($start.AddDate 0 1 -1).Day) -}}
+            {{- $date := $start.AddDate 0 0 (sub $day 1) -}}
+            {{- $day_key := $date.Format "2006-01-02" -}}
+            {{- $events := index $days $day_key -}}
+            {{- with $events -}}
+              {{- $count := len . -}}
+              <button type="button" class="calendar__date-btn btn main" data-calendar-day="{{ $day_key }}" data-calendar-day-label="{{ time.Format "Monday 2 January 2006" $date }}" data-calendar-events="{{ delimit . "," }}" aria-controls="{{ $id }}-details" aria-expanded="false" aria-label="{{ time.Format "Monday 2 January 2006" $date }}, {{ i18n "calendar_events_count" (dict "Count" $count) }}">
+                <span>{{ $day }}</span>{{ if gt $count 1 }}<span class="calendar__date-count" aria-hidden="true">{{ $count }}</span>{{ end }}
+              </button>
+            {{- else -}}
+              <span class="calendar__mini-day">{{ $day }}</span>
+            {{- end -}}
+          {{- end }}
+        </div>
+      </section>
+    {{- end -}}
+  {{- end }}
+</div>
+<template data-calendar-event-template>
+  {{- range $index, $event := .entries }}
+    <article class="calendar__detail-event bg bg-{{ $event_background.child }}" data-calendar-event="{{ $index }}">
+      <div class="bg-color"></div>
+      <h4><a href="{{ $event.RelPermalink }}">{{ $event.Title }}</a></h4>
+      <div class="calendar__time">
+        {{- range partial "func/event-dates" (dict "Page" $event) -}}
+          <span class="calendar__tag">
+            {{- partial "icon" (dict "class" "calendar__tag-icon" "icon" .icon "def" .def) -}}
+            {{ .label | safeHTML }}
+          </span>
+        {{- end -}}
+      </div>
+      {{- if $event.Params.cancelled }}<span class="calendar__cancelled">{{ i18n "cancelled" }}</span>{{ end }}
+    </article>
+  {{- end }}
+</template>

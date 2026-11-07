@@ -1,4 +1,6 @@
+import { reducedMotion } from './motion'
 import { waitCSS } from './wait-css'
+import { hashTarget } from './hash-target'
 
 const c = document.body.classList
 
@@ -11,8 +13,8 @@ export function scrolling () {
 }
 
 export function scrollTo (targetElement, instant) {
-  scrolling()
-  targetElement.scrollIntoView({ behavior: 'smooth' })
+  if (!instant && !reducedMotion()) scrolling()
+  targetElement.scrollIntoView({ behavior: instant || reducedMotion() ? 'instant' : 'smooth' })
   // setTimeout(() => {
   // }, 500)
 }
@@ -20,7 +22,7 @@ export function scrollTo (targetElement, instant) {
 // SCROLL IF IS HASH WHEN LOAD (FIX SHOW)
 export function initScrollToHashWhenLoad () {
   if (!location.hash) return
-  const target = document.querySelector(location.hash)
+  const target = hashTarget()
   waitCSS(() => {
     if (target) scrollTo(target)
   })

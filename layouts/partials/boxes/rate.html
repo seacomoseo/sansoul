@@ -1,0 +1,44 @@
+{{/*
+Partial: boxes/rate
+Purpose: Resolve the effective box minimum-height ratio for CSS and cover estimates.
+Context: Expanded box map; explicit rate wins, cards default to 3/4, empty backgrounds to 16/9.
+Returns: Authored/default ratio, or nil when content determines the height.
+Side effects: None.
+*/}}
+{{ $rate := .rate }}
+{{ if not .rate }}
+  {{ if .card }}
+    {{ $rate = "3/4" }}
+  {{ else }}
+    {{ $no_content := or
+      .title
+      .sub
+      .md
+      .icon
+      .img
+      .boxes
+      .steps
+      .imgs
+      .limgs
+      .list
+      .faqs
+      .reviews
+      .links
+      .dots
+      .inputs
+      .geos
+      .whens
+      (and (reflect.IsMap .gss) .gss.id)
+      .vid
+      .price
+      .tags
+      (and .url (ne .btn "hide"))
+      | not
+    }}
+    {{ if and .is_bg $no_content }}
+      {{ $rate = "16/9" }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $rate }}

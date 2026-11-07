@@ -1,10 +1,33 @@
-{{- /*  anchor2: last default priority, prev $anchor_page  */}}
+{{- /*
+Partial: boxes/btn
+Purpose: Render the box link with its width and responsive top-margin overrides.
+Context: Expanded box map. btn_full inherits, then defaults to the box's own
+  background; explicit false forces automatic width. btn_mt/btn_mt_vl use the
+  same numeric em margins as block mt/mt_vl.
+Renders: A link or button through the shared link partial, without another wrapper.
+Side effects: Shared link/icon partials may register page resources.
+*/ -}}
+{{- $class := slice "box__btn" -}}
+{{- $full := and .is_bg .box_wrap -}}
+{{- if ne .btn_full nil -}}{{- $full = .btn_full -}}{{- end -}}
+{{- if $full -}}
+  {{- $class = $class | append "box__btn--full" -}}
+{{- else if eq .btn_full false -}}
+  {{- $class = $class | append "box__btn--auto" -}}
+{{- end -}}
+{{- $spacing := partial "blocks/margin-style" (dict "mt" .btn_mt "mt_vl" .btn_mt_vl) -}}
+{{- if $spacing -}}{{- $class = $class | append "box__btn--mt" -}}{{- end -}}
+{{- /* anchor2: last default priority, prev $anchor_page */}}
 {{ partial "link" (dict
-  "class"   "box__btn"
+  "class"   $class
+  "style"   $spacing
   "btn"     (.btn | default "cta")
+  "dot"     .btn_dot
+  "sm"      .btn_sm
   "swap"    .swap
   "ga4"     .ga4
-  "icon"    .pin
+  "il"      .il
+  "ir"      .ir
   "label"   (.label   | default (i18n "more") | markdownify)
   "anchor"  (.anchor  | default "auto"        | markdownify)
   "anchor2" (.hanchor | default .title        | markdownify)

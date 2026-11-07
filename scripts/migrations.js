@@ -4,9 +4,11 @@
 Purpose: Report consumer migrations between the project package version and
 the currently executing engine package version.
 Run from: Consumer project root through `sh do migrations`.
-Writes: Root package.json and an existing package-lock.json only for `mark --yes`.
+Writes: Root package.json, an existing package-lock.json and the legacy
+SanSoul subsection in .gitmodules only for `mark --yes`.
 */
 
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -70,8 +72,28 @@ if (command === 'mark') {
   if (!confirmed) {
     fail('Refusing to mark migrations without explicit confirmation. Run `sh do migrations mark --yes` after applying and validating them.')
   }
+  normalizeCoreSubmoduleName()
   updateProjectVersion(themeVersion.raw)
   console.log(`Updated project package version to ${themeVersion.raw}.`)
+}
+
+function normalizeCoreSubmoduleName () {
+  if (!fs.existsSync(path.join(projectDir, '.gitmodules'))) return
+
+  const config = spawnSync('git', ['config', '-z', '-f', '.gitmodules', '--list'], { encoding: 'utf8' })
+  if (config.status !== 0) fail('Unable to inspect .gitmodules before recording project compatibility.')
+  const records = config.stdout.split('\0')
+  const legacy = records.filter(record => record.startsWith('submodule.themes/sansoul.path\n'))
+  if (!legacy.includes('submodule.themes/sansoul.path\ncore')) return
+  const declarations = records.filter(record => /^submodule\..+\.path\ncore$/.test(record))
+  if (legacy.length !== 1 || declarations.length !== 1 || records.some(record => record.startsWith('submodule.core.'))) {
+    console.warn('Left .gitmodules as-is: the SanSoul subsection conflicts with another declaration for core.')
+    return
+  }
+
+  const rename = spawnSync('git', ['config', '-f', '.gitmodules', '--rename-section', 'submodule.themes/sansoul', 'submodule.core'], { encoding: 'utf8' })
+  if (rename.status !== 0) fail('Unable to normalize the SanSoul subsection in .gitmodules.')
+  console.log('Normalized the SanSoul subsection to [submodule "core"].')
 }
 
 function readMigrations () {

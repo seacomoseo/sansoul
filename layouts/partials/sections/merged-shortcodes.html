@@ -39,6 +39,8 @@ Side effects: Creates temporary resources while evaluating template strings.
     {{ end }}
     {{ with $json | findRE `\{\{ .+? \}\}` }}
       {{ range . | uniq }}
+        {{/* Sibling interpolation is resolved after data/default merges, never as a shortcode. */}}
+        {{ if not (findRE `^\{\{\s*set\b` .) }}
         {{ $param := .
           | replaceRE `^\{\{ ` "{{< "
           | replaceRE ` \}\}$` " >}}"
@@ -49,6 +51,7 @@ Side effects: Creates temporary resources while evaluating template strings.
           | replaceRE `\n+$` ""
         }}
         {{ $json = replace $json . $param }}
+        {{ end }}
       {{ end }}
       {{ $tmp = true }}
     {{ end }}

@@ -1,8 +1,11 @@
-{{ $url_iframe := print
-  "https://docs.google.com/spreadsheets/d/e/"
-  .gss
-  "/pubhtml?gid="
-  .gss_sheet
-  "&single=true&chrome=false&widget=false&headers=false"
-}}
-<div class="gss box__block" data-gss="{{ $url_iframe }}"></div>
+{{- /* A sheet is lazy-loaded by the existing gss initializer. */ -}}
+{{- with .gss -}}
+  {{- if not (reflect.IsMap .) -}}
+    {{- errorf "SanSoul gss must be an object; run the 13.0.0 block migration" -}}
+  {{- else -}}
+    {{- with .id -}}
+      {{- $url := printf "https://docs.google.com/spreadsheets/d/e/%s/pubhtml?gid=%v&single=true&chrome=false&widget=false&headers=false" . ($.gss.sheet | default 0) -}}
+      <div class="gss box__block" data-gss="{{ $url }}"{{ partial "func/attrs" (dict "style" (partial "blocks/margin-style" $.gss)) }}></div>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

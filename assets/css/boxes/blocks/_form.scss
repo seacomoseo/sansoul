@@ -8,6 +8,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
+  // --border: currentColor;
   --submit-waiting: color-mix(in srgb, var(--turn) 25%, gray);
   --submit-success: color-mix(in srgb, var(--turn) 25%, green);
   --submit-error: color-mix(in srgb, var(--turn) 25%, red);
@@ -15,11 +16,16 @@
 .form__item {
   position: relative;
   flex-grow: 1;
-  &:not(.full) {
-    width: 280px;
+  min-width: 0;
+  max-width: 100%;
+  width: min(280px, 100%);
+  &.form__item--full {
+    flex: 0 0 100%;
   }
   > *,
   .form__select:not(.form__select--pre) {
+    min-width: 0;
+    max-width: 100%;
     width: 100%;
   }
   &.form__item--error {
@@ -27,6 +33,20 @@
     --border: var(--submit-error);
     --form-control-color: var(--submit-error);
   }
+}
+// Explicit columns and fits replace the automatic 280px field distribution.
+.form {
+  --form-cols-vs: 1;
+  --form-cols-vl: var(--form-cols-vs);
+}
+.form--columns > .form__item:not(.form__item--full),
+.form > .form__item--fit {
+  --form-fit-vs: 1;
+  --form-fit-vl: var(--form-fit-vs);
+  @include mixins.fluid-size(--form-cols, 1, var(--form-cols-vs), var(--form-cols-vl));
+  @include mixins.fluid-size(--form-fit, 1, var(--form-fit-vs), var(--form-fit-vl));
+  flex: 0 1 auto;
+  width: calc((100% + 1em) * var(--form-fit) / var(--form-cols) - 1em);
 }
 .form__geo {
   display: none;
@@ -414,7 +434,7 @@ legend, .form__label {
 }
 .form__input:has(~ .form__icon),
 .form__area:has(~ .form__icon),
-.form__select:is(label:has(~ .form__icon) > *) {
+.form__select:is(:is(label, .form__select-wrap):has(~ .form__icon) > *) {
   padding-left: 2.625em;
 }
 .form__select:is(label.form__pre:has(~ .form__icon) > *) {
@@ -527,4 +547,62 @@ legend, .form__label {
   display: block;
   text-align: center;
   font-variant-numeric: tabular-nums;
+}
+
+.form__btn:not(.full) {
+  margin-inline: var(--align-margin, auto);
+}
+
+// Floating labels progressively enhance real associated labels. Without :has,
+// the existing outside-label layout remains usable.
+@supports selector(:has(*)) {
+  .form--labels-both .form__item--floating {
+    --label-inset: 1em;
+    transition: padding-top .2s;
+    > .form__label--floating {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: auto;
+      max-width: calc(100% - var(--label-inset) - 1em);
+      margin: 0;
+      font-size: 1rem;
+      font-weight: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transform: translateX(var(--label-inset)) translateY(0.5625rem);
+      transform-origin: left top;
+      transition: transform .2s, color .2s, max-width .2s;
+      z-index: 2;
+      cursor: text;
+      color: var(--text);
+      opacity: .5;
+    }
+    > .form__icon {
+      transition: top .2s;
+    }
+    &:has(> .form__icon) { --label-inset: 2.625em; }
+    &:has(> .form__pre) { --label-inset: 5.6em; }
+    &:has(> .form__pre):has(> .form__icon) { --label-inset: 6.5em; }
+    :is(input, textarea)::placeholder { color: transparent; }
+    select:has(option:checked[value=""]) { color: transparent; }
+    &:focus-within,
+    &:has(> :is(input, textarea):not(:placeholder-shown)),
+    &:has(select[name] option:checked:not([value=""])),
+    &:has(:is(input, textarea):autofill),
+    &:has(:is(input, textarea):-webkit-autofill) {
+      padding-top: 1.5rem;
+      > .form__label--floating {
+        max-width: calc(125% - 2em);
+        transform: translateX(1em) translateY(0) scale(.8);
+        color: inherit;
+        opacity: 1;
+        @include mixins.font-base-bold;
+      }
+      > .form__icon {
+        top: 2.0625rem;
+      }
+    }
+  }
 }

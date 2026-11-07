@@ -29,7 +29,12 @@ const migrationScripts = {
   '6.0.1': ['6.0.1-sharp.js'],
   '6.0.2': ['6.0.2-remove-legacy-css.js'],
   '7.0.0': ['7.0.0-content-adapters.js'],
-  '8.0.0': ['8.0.0-project-config.js', '8.0.0-markdown-metadata.js', '8.0.0-cms-groups.js']
+  '8.0.0': ['8.0.0-project-config.js', '8.0.0-markdown-metadata.js', '8.0.0-cms-groups.js'],
+  '9.0.0': ['9.0.0-authoring-layout.js'],
+  '10.0.0': ['10.0.0-authoring-api.js'],
+  '11.0.0': ['11.0.0-custom-fields.js'],
+  '12.0.0': ['12.0.0-section-fields.js'],
+  '13.0.0': ['13.0.0-block-defaults.js']
 }
 const registeredMigrationVersions = new Set([
   ...Object.keys(migrationScripts),
@@ -38,7 +43,11 @@ const registeredMigrationVersions = new Set([
   '5.1.3',
   '7.6.0',
   '7.7.0',
-  '8.0.0'
+  '8.0.0',
+  '8.1.0',
+  '9.0.0',
+  '13.1.0',
+  '13.3.0'
 ])
 const supportedManualMigrations = new Set([
   '5.1.0',
@@ -50,7 +59,11 @@ const supportedManualMigrations = new Set([
   '7.0.0',
   '7.6.0',
   '7.7.0',
-  '8.0.0'
+  '8.0.0',
+  '8.1.0',
+  '9.0.0',
+  '13.1.0',
+  '13.3.0'
 ])
 
 await main()
@@ -111,7 +124,7 @@ async function main () {
   )
 
   validateMigrationSupport(pending, targetCommit, rootVersion)
-  validateMigrationConflicts(pending)
+  validateMigrationConflicts(pending, targetCommit)
   validateTargetTemplates(targetCommit)
   validateInstallAvailability(pending)
 
@@ -280,7 +293,17 @@ function validateMigrationSupport (pending, targetCommit, rootVersion) {
   }
 }
 
-function validateMigrationConflicts (pending) {
+function validateMigrationConflicts (pending, targetCommit) {
+  for (const [version, script] of [['9.0.0', '9.0.0-authoring-layout.js'], ['10.0.0', '10.0.0-authoring-api.js'], ['11.0.0', '11.0.0-custom-fields.js']]) {
+    if (!pending.some(migration => migration.version.raw === version)) continue
+    // Run the target release's self-contained read-only planner before checkout.
+    const source = git(themeDir, ['show', `${targetCommit}:scripts/migrations/${script}`])
+      .replace(/^#![^\n]*\n/, '')
+    const result = spawnSync(process.execPath, ['--input-type=module', '--eval', source + '\nmigrateProject(process.cwd(), { check: true })'], { cwd: projectDir, encoding: 'utf8' })
+    if (result.error || result.status !== 0) {
+      fail(`The ${version} authoring preflight failed before checkout. No project files were changed.\n${result.error?.message || result.stderr || result.stdout}`)
+    }
+  }
   if (!pending.some(migration => migration.version.raw === '7.0.0')) return
   const contentDir = path.join(projectDir, 'content')
   if (!fs.existsSync(contentDir)) return

@@ -11,7 +11,7 @@ Side effects: None directly; called partials may read site data.
 {{ range $index, $layer := $tpls }}
   {{ $origin := "" }}
   {{ if eq $index (sub (len $tpls) 1) }}{{ $origin = "tpl" }}{{ end }}
-  {{ $layer = partial "preview/annotate" (dict "value" $layer "path" $origin) }}
+  {{ if ne site.Params.cms_enabled false }}{{ $layer = partial "preview/annotate" (dict "value" $layer "path" $origin) }}{{ end }}
   {{ with $layer }}
     {{/*  Create first section and merge all  */}}
     {{ $first := dict }}

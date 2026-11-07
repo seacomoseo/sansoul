@@ -11,6 +11,11 @@
 
 .slider__track {
   scroll-snap-type: x mandatory;
+  overflow-anchor: none;
+  &--rebasing {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
   overflow-x: auto;
   overflow-y: hidden;
   // margin: -.5em;
@@ -107,6 +112,30 @@
     &::before {
       width: 1em;
       height: 1em;
+    }
+  }
+}
+
+.slider__pips--pill {
+  gap: 0;
+  .slider__pip {
+    // Animate the target and its mark together so adjacent pips glide as a pair changes.
+    width: 2em;
+    min-width: 2em;
+    flex-shrink: 0;
+    transition: width .2s ease;
+    height: 2em;
+    padding: .5em;
+    --radius: .375em;
+    --base: var(--border);
+    &::before {
+      width: .75em;
+      height: .75em;
+      transition: width .2s ease, background-color .1s;
+    }
+    &--active {
+      width: 3.25em;
+      &::before { width: 2em; }
     }
   }
 }

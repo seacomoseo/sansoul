@@ -44,6 +44,9 @@ remap: [] # [ { from, to } ]
 ## BOXES
 
 box:
+  # Optional shared presentation dimensions, inherited by boxes.
+  # img_w: 360
+  # img_h: 220
   hn: h2
   # group
   cols: 2 # [ 0 = auto, > 0 ]
@@ -56,11 +59,21 @@ box:
   sides: false
   group_radius: false
   slider: true
+  infinite: false # Opt-in continuous native scroll when enough cards fit off-screen.
   time: 5
-  pips: '' # [ line, dot, hide ]
+  pips: '' # [ line, dot, pill, hide ]
   arrows: '' # [ main, cta, alt, light, dark, turn, such, none, hide, float ]
   align_y: top # [ stretch, top, center, bottom ]
   align_x: flex-end # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
+  # Optional margins applied once to the whole boxes group, in em.
+  # mt: 1
+  # mt_vl: 2
+  # mb: 0
+  # mb_vl: 1
+  # ml: 0.5
+  # ml_vl: 1
+  # mr: 0.5
+  # mr_vl: 1
   # add same to box_base
 boxes:
 
@@ -79,10 +92,10 @@ boxes:
   line: true
   # md
   md: |
-    Contenido de [Caja 1](#seccion)
+    Contenido de [Caja 1](#id-ejemplo-caja-1)
 
-    [[::link:: Botón con anchor ::link::]](#seccion "hola k ase [light]")
-    [[::link:: Botón sin anchor ::link::]](#seccion "[dark]")
+    [[::link:: Botón con anchor ::link::]](#id-ejemplo-caja-1 "hola k ase [light]")
+    [[::link:: Botón sin anchor ::link::]](#id-ejemplo-caja-1 "[dark]")
   md_align: center # [ left, center, right ]
   md_align_vl: center # [ left, center, right ]
   md_sm: false
@@ -98,13 +111,17 @@ boxes:
   icon_color: '' # [ main, cta, alt, light, dark, turn, such ]
   # image
   img: /u/base/icon.png
+  # Optional presentation dimensions; one missing side uses ratio or intrinsic proportions.
+  # img_w: 360
+  # img_h: 220
   hover: /u/base/poster.png
   alt: Descripción de la imagen
   hover_alt: Descripción de la imagen hover
   vid: https://www.youtube.com/watch?v=Pql69BV9rAU
+  # Shared box defaults also accept img_w and img_h. Markdown: "Caption {16/9 w360 h220}".
   # Optional video metadata overrides; cached values are used when omitted.
-  # vid_width: 1080
-  # vid_height: 1920
+  # vid_w: 1080
+  # vid_h: 1920
   # vid_duration: PT12S
   # vid_upload: '2025-01-01 00:00:00' # UTC
   # vid_title: Título del vídeo
@@ -119,39 +136,46 @@ boxes:
   shade: false
   # button
   url: /legal/
-  pin: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+  il: security # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+  ir: none # Optional right icon
   label: Legal
   anchor: Aviso Legal
   lock: false
   btn: none # [ main, cta, alt, light, dark, turn, such, none, hide ]
+  btn_dot: false
+  btn_sm: false
+  btn_full: false # defaults to full width only with a direct box background
+  btn_mt: 1 # Optional responsive top margin in em; 0 removes automatic spacing
+  btn_mt_vl: 2 # Optional large-screen top margin; defaults to btn_mt (btn_mt_vl alone starts at 0)
   swap: true
-  ga4: false
+  ga4: none # Explicitly clear any inherited additional event; survives CMS saves
+
   # bg
   color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
   color_alpha: '' # [ 0.00 - 1.00 ]
   fade: light # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
   fade_to: t # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
   bi: /u/base/icon.png
-  alpha: .8 # [ 0.00 - 1.00 ]
+  alpha: 0.8 # [ 0.00 - 1.00 ]
   scroll: '' # [ none, soft, box ]
   # boxi-boxes
   order: -1 # [ int ]
   fit: 2 # [ > 0.00 ]
   fit_vs: 1 # [ > 0.00 ]
-  grow: false
+  align_x: null # [ grow, center, space-evenly, space-between, space-around, flex-start, flex-end ]
   align_y: stretch # [ stretch, top, center, bottom ]
   # boxi
-  rate: 16/9 # [ int/int ]
+  rate: 16/9 # [ int/int ] Minimum box height; also informs cover image sizes.
   space: null # [ >= 0.00 ]
   class: '' # Custom classes added to the box wrapper, not its title
-  mt: null # [ -20.00 - 20.00 ] Large viewport margin in em
-  mb: null # [ -20.00 - 20.00 ] Large viewport margin in em
-  ml: null # [ -20.00 - 20.00 ] Large viewport margin in em
-  mr: null # [ -20.00 - 20.00 ] Large viewport margin in em
-  mt_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if mt is unset, it also applies to large viewports
-  mb_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if mb is unset, it also applies to large viewports
-  ml_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if ml is unset, it also applies to large viewports
-  mr_vs: null # [ -20.00 - 20.00 ] Small viewport margin in em; if mr is unset, it also applies to large viewports
+  mt_vl: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  mb_vl: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  ml_vl: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  mr_vl: null # [ -20.00 - 20.00 ] Large viewport margin in em
+  mt: null # [ -20.00 - 20.00 ] Base margin in em, inherited by large viewports when mt_vl is unset
+  mb: null # [ -20.00 - 20.00 ] Base margin in em, inherited by large viewports when mb_vl is unset
+  ml: null # [ -20.00 - 20.00 ] Base margin in em, inherited by large viewports when ml_vl is unset
+  mr: null # [ -20.00 - 20.00 ] Base margin in em, inherited by large viewports when mr_vl is unset
   pd: null # [ >= 0.00 ]
   pd_vs: null # [ >= 0.00 ]
   align: left # [ left, center, right ]
@@ -190,7 +214,8 @@ boxes:
   - type: custom
     icon: star
     label: ¡Holi!
-  sort: # default:
+  sort:
+  # default:
   - img
   - title
   - icon_sub
@@ -219,11 +244,13 @@ boxes:
   - title: Título de SubCaja 2
     hn: h2
 
-
 ## BLOCKS
 
 - list:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
     type: null # [ all, blog, event, product, category, author, page, ..., /, rel ]
+    view: list # [ list, calendar ]; calendar for article/event; mobile uses an agenda.
     max: 4 # int
     date: 2023-05-01 00:00:00 # date
     end: 2023-11-01 00:00:00 # date
@@ -237,9 +264,11 @@ boxes:
 ###
 
 - step:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
     border: cta # [ main, cta, alt, light, dark, turn, such, hide ]
     icon_size: 0 # [ 0 = auto, > 0.00 ]
-    hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
+    hn: h3 # [ h1, h2, h3, h4, h5, h6, p, span ]
     hs: null # [ 0.001 - 6.00 ]
     hs_vs: null # [ 0.001 - 6.00 ]
     caps: true
@@ -259,6 +288,8 @@ boxes:
 ###
 
 - gallery:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
     cols: 4 # [ 0 = auto, > 0 ]
     type: rows # [ grid, grid-contain, rows, cols, boxes ]
     color: '' # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
@@ -267,14 +298,15 @@ boxes:
     contain: true
     gray: true
     alt: Alt prefix in each image + index
-    url: /pagina-ejemplo/
-    pin: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    url: /
+    il: star # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    ir: none
     label: Ejemplo
     anchor: Jeje
     lock: false
     btn: none # [ main, cta, alt, light, dark, turn, such, none ]
     swap: true
-    ga4: false
+
   imgs:
   - https://images.unsplash.com/photo-1552664730-d307ca884978?fit=crop&w=512&q=60
   - https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?fit=crop&w=512&q=60
@@ -290,14 +322,16 @@ boxes:
     url: /
   - img: https://images.unsplash.com/photo-1519389950473-47ba0277781c?fit=crop&w=512&q=60
     alt: Descripción de la imagen 2
-    url: /pagina-ejemplo/
+    url: /
 
 ###
 
 - faq:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
     btn: '' # [ main, cta, alt, light, dark, turn, such, none ]
     swap: false
-    pin: '' # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
+    icon: question # FAQ disclosure icon; not a link icon
     hn: '' # [ h1, h2, h3, h4, h5, h6, p, span ]
     hs: '' # [ 1 - 6 ]
     hs_vs: '' # [ 1 - 6 ]
@@ -314,24 +348,30 @@ boxes:
 
 ###
 
-- gss: 2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C
-  gss_sheet: 1861644079
+- gss:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
+    id: 2PACX-1vQli2HOn7NN_zXn3ajHB-gXKDp9Q7X-QkekdrOrlluH8HQ6tRjhmgV1IX_m_3Om5McrNgxN6cFZ230C
+    sheet: 1861644079
 
 ###
 
 - review:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
     cols: 3 # [ 0 = auto, > 0 ]
     cols_vs: 1 # [ 0 = auto, > 0 ]
     color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
     fade: dark # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such, hide ]
     fade_to: tr # [ b, t, r, l, tr, br, tl, bl, disc, disc-alt, rad, rad-alt ]
-    alpha: .5 # [ 0.00 - 1.00 ]
+    alpha: 0.5 # [ 0.00 - 1.00 ]
     hide_shadow: true
     hs: null # [ 0.001 - 6.00 ]
     hs_vs: null # [ 0.001 - 6.00 ]
     slider: true
+    infinite: false # Optional continuous native scroll; same contract as box.infinite.
     time: 2
-    pips: '' # [ line, dot, hide ]
+    pips: '' # [ line, dot, pill, hide ]
     arrows: '' # [ main, cta, alt, light, dark, turn, such, none, hide ]
     btn: '' # [ main, cta, alt, light, dark, turn, such ]
   reviews:
@@ -356,31 +396,63 @@ boxes:
 
 ###
 
-- dots:
+- dot:
+    align_x: center # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
+    mt: null # float
+    mt_vl: null # float
+    url: null # string
+    label: null # string
+    icon: null # string
+    btn: null # [ main, cta, alt, light, dark, turn, such, none ]
+    btn_sm: false
+    swap: false
+    lock: false
+    ga4: null # string
+    blank: false
+  dots:
   - url: https://www.facebook.com/QuantumFracture
   - url: https://www.instagram.com/quantumfracture/
   - url: https://mastersoflol.com/collections/quantumfracture?YTC
-    icon: star
+    il: star
     label: Holi!
-    ga4: true
+    ga4: contact
 - when:
+    align_x: center # [ center, space-evenly, space-between, space-around, flex-start, flex-end ]
+    mt: null
+    mt_vl: null
+  whens:
   - days: Días
     hours: Horas
     full: false
-- links:
+- link:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
+    cols: null # null keeps content widths; 0 auto; 1-12 explicit columns
+    cols_vs: null
+    align_x: grow # [ grow, center, space-evenly, space-between, space-around, flex-start, flex-end ] # grow fills natural widths; other values match box.align_x
+    url: null # string
+    il: none # string
+    ir: none # string
+    label: null # string
+    btn: null # [ main, cta, alt, light, dark, turn, such, none ]
+    btn_sm: false
+    btn_dot: false
+    swap: false
+    anchor: null # string
+    lock: false
+    ga4: none # Optional event names, for example lead_contact,special_click
+    blank: false
+  links:
   - type: phone # [phone, whatsapp, mail]
     label: 123456789
-    full: false
     btn: cta # [ main, cta, alt, light, dark, turn, such, none ]
     swap: false
   - type: whatsapp
     label: 123456789
-    full: false
     btn: whatsapp # [ main, cta, alt, light, dark, turn, such, none ]
     swap: false
   - type: mail
     label: ejemplo@gmail.com
-    full: false
     btn: btn
     swap: false
   - type: address
@@ -388,36 +460,34 @@ boxes:
     anchor: Molando Ando, Calle País de Nunca Jamás, 42, 30000 Murcia, España
     geo: '{"type":"Point","coordinates":[-1.632843,39.2556514]}'
     zoom: 6
-    full: true
+    fit: 1
     btn: cta # [ main, cta, alt, light, dark, turn, such, none ]
     swap: false
-  - type: h2
-    label: Encabezado h2
   - type: h3
     label: Encabezado h3
-  - type: h4
-    label: Encabezado h4
   - type: h5
     label: Encabezado h5
-  - type: h6
-    label: Encabezado h6
   - type: custom
-    url: '#principal'
-    icon: logout
+    url: '#id-ejemplo-caja-1'
+    il: logout
     label: Personalizado
-    full: true
+    fit: 1
     anchor: Mola Mazo
     lock: false
     btn: light # [ main, cta, alt, light, dark, turn, such, none ]
     swap: false
-    ga4: false
-  - type: hr
 
 ###
 
 - form:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
+    cols: null # auto fields use a 280px minimum that may shrink to fit one column
+    cols_vs: null
     id: example
     action: ''
+    ajax: null # absent: provider default; true: fetch; false: native navigation
+    ga4: none # Optional event in addition to automatic contact
     to: '#gracias'
     subject: ''
     mail: info@example.com
@@ -429,16 +499,22 @@ boxes:
         We have **successfully received** your request.
       notice: |
         This is an automated message. Please do not reply to this email.
-    labels: out
+    labels: out # [ in, out, both ]; both floats on focus or value
     fill: false
     full: false
-    icon: none # https://fontawesome.com/search?o=r&s=solid&f=brands%2Cclassic
     label: ¡Dale!
+    il: none # string
+    ir: none # string
     btn: alt
+    btn_dot: false
+    btn_sm: false
+    btn_full: false
     swap: true
-    consent: Consiento el tratamiento de mis datos. [Leer más...](#holi)
+    consent: Consiento el tratamiento de mis datos. [Leer más...](/privacidad/)
   inputs:
   - type: text
+    fit: null # relative to a column; without cols, base = 100%
+    fit_vs: null
     name: Text
     label: Texto
     hint: Esto es un texto tipo leyenda para describir mejor el campo
@@ -576,11 +652,13 @@ boxes:
     req: true
     btn: alt
     swap: true
-    icon: upload
+    il: upload
 
 ###
 
-- map:
+- geo:
+    mt: null # Override this block top gap in em; 0 removes it
+    mt_vl: null # Optional large viewport endpoint
     zoom: 6
     tile: hybrid # [ streets, terrain, satellite, hybrid ]
     color: alt
@@ -600,7 +678,6 @@ boxes:
     label: Polígono
     color: alt
     geo: '{"type":"Polygon","coordinates":[[[-0.730882,37.9909474],[-0.7646935,38.5600661],[0.2231645,38.729593],[-0.730882,37.9909474]]]}'
-
 
 ## MODALS
 

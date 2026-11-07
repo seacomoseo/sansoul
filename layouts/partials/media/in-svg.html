@@ -14,7 +14,7 @@
     {{- $width  = 512 -}}
     {{- $height = 512 -}}
   {{- end -}}
-  {{- with .vid -}}{{- $width = .presentation.width -}}{{- $height = .presentation.height -}}{{- end -}}
+  {{- with .dimensions -}}{{- with .width -}}{{- $width = . -}}{{- end -}}{{- with .height -}}{{- $height = . -}}{{- end -}}{{- end -}}
   {{- if $head -}}
     {{- $source      := $src.Content -}}
     {{- $name := .img | replaceRE `^/?u/(icons?/)?` "" | replaceRE `\.svg$` "" -}}
@@ -66,12 +66,12 @@
       {{- $content | safeHTML -}}
     {{- else -}}
       {{/*  svg sprite  */}}
-      {{- $sprit := dict "class" .class "width" $width "height" $height "aria-label" .alt -}}
+      {{- $sprit := dict "class" .class "width" $width "height" $height "viewBox" (printf "0 0 %v %v" $width $height) "aria-label" .alt -}}
       {{- $attrs  = merge $attrs $sprit -}}
       {{- $attrs  = partial "func/attrs" $attrs -}}
       {{- partial "func/register-resource" (dict "kind" "svg" "value" $resource_name) -}}
       {{- $href := $svg_token }}
-      <svg {{- $attrs }}><use href="{{ $href }}"></use></svg>
+      <svg {{- $attrs }}><use href="{{ $href }}" width="100%" height="100%"></use></svg>
     {{- end -}}
 
     {{- /*  ICON PLAY  */ -}}
@@ -85,10 +85,11 @@
       {{- if .vid -}}
         {{- partial "schema/vid" (dict "name" (or .vid_title .video_title .alt) "thumbnailUrl" $original_src.Permalink "uploadDate" .vid_upload "duration" .vid_duration "contentUrl" (cond .vid.ifr "" .vid.url) "embedUrl" (cond .vid.ifr .vid.src "") "metadata" .vid.meta) -}}
       {{- else -}}
+      {{- $original_wh := partial "func/svg-sizes" $original_src.Content -}}
       {{- partial "schema/img" (dict
         "url"     $src.Permalink
-        "width"   $width
-        "height"  $height
+        "width"   $original_wh.width
+        "height"  $original_wh.height
         "caption" .alt
       ) -}}
       {{- end -}}

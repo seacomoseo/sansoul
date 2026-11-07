@@ -1,20 +1,45 @@
-{{- with .links -}}
+{{- /*
+Partial: blocks/links
+Purpose: Render links with shared item defaults and responsive column/fit layout.
+Context: Expanded box map containing `link` defaults and concrete `links` items.
+Renders: A wrapping flex group and one layout wrapper per supported link.
+Side effects: Registers icons and phone candidates through existing partials.
+*/ -}}
+{{- $defaults := merge (dict "type" "custom" "btn" .btn "swap" .swap) (.link | default dict) -}}
+{{- $items := slice -}}
+{{- range .links -}}
+  {{- $item := partial "func/set" (dict "value" (merge $defaults .) "path" "links[]" "composed" true) -}}
+  {{- if and (in (slice "phone" "whatsapp" "mail" "address" "custom") $item.type) (not (and (eq $item.type "address") $item.hide)) -}}
+    {{- $items = $items | append $item -}}
+  {{- end -}}
+{{- end -}}
+{{- $columns := partial "func/columns" (dict "each" $defaults "items" $items "col_vl" 1.0 "col_vs" 1.0) -}}
+{{- $has_columns := or (ne $defaults.cols nil) (ne $defaults.cols_vs nil) -}}
+{{- $align := $defaults.align_x | default "grow" -}}
+{{- $style := (partial "blocks/margin-style" $defaults) | append (print "--links-cols-vs:" $columns.vs) (print "--links-cols-vl:" $columns.vl) -}}
+{{- with $items -}}
   {{- $show := cond (not hugo.Data.config.show) "" " show" }}
-  <div class="links box__block {{- $show }}">
+  <div{{ partial "func/attrs" (dict "class" (slice "links" "box__block" (cond $.dots_mode "dots" "") (print "links--" $align) $show) "style" $style) }}>
     {{- range . -}}
-      {{- with merge (dict "btn" $.btn "swap" $.swap) . -}}
+      {{- with . -}}
 
-        {{- $full := cond (not .full) "" " full" -}}
 
-        {{- if eq .type "address" | and .hide -}}
-        {{- else if findRE `^(phone|whatsapp|mail|address|custom)$` .type -}}
 
+          {{- $sized := or $has_columns (ne .fit nil) (ne .fit_vs nil) -}}
+          {{- $item_style := slice -}}
+          {{- if ne .fit nil -}}
+            {{- $item_style = $item_style | append (print "--links-fit-vl:" .fit) -}}
+          {{- end -}}
+          {{- if ne .fit_vs nil -}}
+            {{- $item_style = $item_style | append (print "--links-fit-vs:" .fit_vs) -}}
+          {{- end -}}
+          <div{{ partial "func/attrs" (dict "class" (slice "links__item" (cond $sized "links__item--sized" "")) "style" $item_style) }}>
           {{- $class  := "" -}}
           {{- $num    := "" -}}
           {{- $url    := .url -}}
           {{- $btn    := .btn | default "cta" -}}
           {{- $swap   := .swap -}}
-          {{- $icon   := .icon -}}
+          {{- $icon   := .il -}}
           {{- $def    := "" -}}
           {{- $label  := .label -}}
           {{- $anchor := .anchor | default "auto" -}}
@@ -80,35 +105,25 @@
 
           {{- /*  LINK  */}}
           {{ partial "link" (dict
-            "class"  (print $class $full)
+            "class"  $class
             "btn"    $btn
+            "dot"    .btn_dot
+            "sm"     .btn_sm
             "swap"   $swap
             "ga4"    .ga4
-            "icon"   $icon
+            "il"     $icon
+            "ir"     .ir
             "def"    $def
             "label"  $label
             "anchor" $anchor
             "url"    $url
             "lock"   $lock
+            "blank"  .blank
+            "title"  .title
+            "nomore" .nomore
           ) -}}
 
-        {{- else if findRE `^h\d$` .type -}}
-
-          {{- /*  HN  */}}
-          {{- $h := replace .type "h" "" }}
-          <h {{- $h }} class="form__title full">{{ .label | markdownify }}</h {{- $h }}>
-
-        {{- else if eq .type "hr" -}}
-
-          {{- /*  HR  */}}
-          <hr>
-
-        {{- else if eq .type "br" -}}
-
-          {{- /*  BR  */}}
-          <div class="link__br"></div>
-
-        {{- end -}}
+          </div>
 
       {{- end -}}
     {{- end }}

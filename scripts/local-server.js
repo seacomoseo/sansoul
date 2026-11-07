@@ -10,19 +10,26 @@ import { startVideoMetadataWatch } from './video-metadata-watch.js'
 // content-adapter state after configuration changes or a failed data rebuild.
 const projectDir = process.cwd()
 const corePath = relativeEnginePath(projectDir)
+const requestedMode = process.argv[2]
+const hasMode = ['dev', 'server', 'cms', 'live', 'local'].includes(requestedMode)
+const mode = ['dev', 'server'].includes(requestedMode) ? 'dev' : 'cms'
+const label = mode.toUpperCase()
+const forwardedArgs = process.argv.slice(hasMode ? 3 : 2)
 const debounceMs = 200
-const lifecycle = new Lifecycle({ projectDir, label: 'LIVE' })
+const lifecycle = new Lifecycle({ projectDir, label })
 
 const serverArgs = [
   'server',
   '--config',
   [
     `${corePath}/hugo.default.yml`,
-    `${corePath}/hugo.local.yml`,
+    ...(mode === 'cms' ? [`${corePath}/hugo.local.yml`] : []),
     `${corePath}/prebuild/public/hugo.prebuild.yml`,
-    'hugo.yml'
+    'hugo.yml',
+    ...(mode === 'dev' ? [`${corePath}/hugo.dev.yml`] : [])
   ].join(','),
-  ...process.argv.slice(2)
+  '--disableFastRender',
+  ...forwardedArgs
 ]
 
 let serverProcess
@@ -42,7 +49,7 @@ const possiblePageRemovals = new Set()
 const watchers = []
 
 function log (message) {
-  console.log(`\u001b[1;36mLOCAL\u001b[0m ${message}`)
+  console.log(`\u001b[1;36m${label}\u001b[0m ${message}`)
 }
 
 function signalExitCode (signal) {
@@ -58,7 +65,7 @@ function signalExitCode (signal) {
 
 function reportAsyncFailure (promise) {
   promise.catch(error => {
-    console.error(`LOCAL ${error.stack || error.message}`)
+    console.error(`${label} ${error.stack || error.message}`)
     process.exitCode = 1
   })
 }
@@ -88,20 +95,20 @@ async function runPrebuild () {
   try {
     result = await run('sh', ['do', 'prebuild'])
   } catch (error) {
-    console.error(`LOCAL Unable to run the prebuild: ${error.message}`)
+    console.error(`${label} Unable to run the prebuild: ${error.message}`)
     prebuildFailureCode = 1
     return false
   }
 
   if (result.stopped === false) {
-    console.error('LOCAL Prebuild process group did not stop safely.')
+    console.error(`${label} Prebuild process group did not stop safely.`)
     prebuildFailureCode = 1
     return false
   }
 
   if (result.code !== 0) {
     const detail = result.signal ? `signal ${result.signal}` : `exit code ${result.code}`
-    console.error(`LOCAL Prebuild failed with ${detail}. Waiting for another source change.`)
+    console.error(`${label} Prebuild failed with ${detail}. Waiting for another source change.`)
     prebuildFailureCode = result.signal ? signalExitCode(result.signal) : (result.code || 1)
     return false
   }
@@ -122,7 +129,7 @@ function startServer () {
   serverProcess = lifecycle.track(child)
 
   child.once('error', error => {
-    console.error(`LOCAL Unable to start Hugo: ${error.message}`)
+    console.error(`${label} Unable to start Hugo: ${error.message}`)
     if (rebuilding || restartingServer) {
       serverRecoveryPending = true
       return
@@ -137,10 +144,10 @@ function startServer () {
     const detail = signal ? `signal ${signal}` : `exit code ${code}`
     if (rebuilding || restartingServer) {
       serverRecoveryPending = true
-      console.error(`LOCAL Hugo stopped unexpectedly with ${detail}; waiting for the prebuild refresh.`)
+      console.error(`${label} Hugo stopped unexpectedly with ${detail}; waiting for the prebuild refresh.`)
       return
     }
-    console.error(`LOCAL Hugo stopped unexpectedly with ${detail}.`)
+    console.error(`${label} Hugo stopped unexpectedly with ${detail}.`)
     reportAsyncFailure(shutdown(signal ? signalExitCode(signal) : (code || 1)))
   })
 }
@@ -264,7 +271,7 @@ function addDirectoryWatcher (directory, options = {}) {
   })
 
   watcher.on('error', error => {
-    console.error(`LOCAL Watcher failed for ${directory}: ${error.message}`)
+    console.error(`${label} Watcher failed for ${directory}: ${error.message}`)
     reportAsyncFailure(shutdown(1))
   })
   watchers.push(watcher)
@@ -323,19 +330,19 @@ async function shutdown (exitCode = 0) {
 
     let finalExitCode = exitCode
     if (!serverStopped || !childrenStopped) {
-      console.error('LIVE Unable to stop child processes safely; leaving generated outputs and lifecycle lock in place.')
+      console.error(`${label} Unable to stop child processes safely; leaving generated outputs and lifecycle lock in place.`)
       finalExitCode = 1
     } else {
       try {
         if (lifecycle.acquired) lifecycle.removeGeneratedOutputs()
       } catch (error) {
-        console.error(`LIVE Unable to clean generated outputs: ${error.message}`)
+        console.error(`${label} Unable to clean generated outputs: ${error.message}`)
         finalExitCode = 1
       }
       try {
         lifecycle.release()
       } catch (error) {
-        console.error(`LIVE Unable to release lifecycle lock: ${error.message}`)
+        console.error(`${label} Unable to release lifecycle lock: ${error.message}`)
         finalExitCode = 1
       }
     }
@@ -364,7 +371,7 @@ async function main () {
   videoWatcher = startVideoMetadataWatch({
     projectRoot: projectDir,
     onError: error => {
-      console.error(`LOCAL Video metadata watcher failed: ${error.message}`)
+      console.error(`${label} Video metadata watcher failed: ${error.message}`)
       reportAsyncFailure(shutdown(1))
     }
   })
@@ -376,6 +383,6 @@ process.once('SIGTERM', () => reportAsyncFailure(shutdown()))
 process.once('SIGHUP', () => reportAsyncFailure(shutdown()))
 
 main().catch(error => {
-  console.error(`LOCAL ${error.stack || error.message}`)
+  console.error(`${label} ${error.stack || error.message}`)
   reportAsyncFailure(shutdown(1))
 })

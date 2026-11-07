@@ -30,3 +30,21 @@
 .link--swap {
   @include mixins.font-base;
 }
+.icon--left {
+  order: -10;
+}
+.icon--right {
+  order: 10;
+}
+// Keep text icons on the same baseline regardless of their position.
+.icon--inline,
+.icon--left,
+.icon--right {
+  vertical-align: -.125em;
+}
+.link:not(.btn) > .icon--left {
+  margin-inline-end: .25em;
+}
+.link:not(.btn) > .icon--right {
+  margin-inline-start: .25em;
+}

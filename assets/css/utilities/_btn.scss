@@ -80,8 +80,12 @@
     // }
   }
   &:not(.btn--dot) {
-    > .icon {
+    > .icon,
+    > .icon--left {
       margin-left: -.125em;
+    }
+    > .icon--right {
+      margin-right: -.125em;
     }
   }
   > b {
@@ -204,6 +208,23 @@
     }
     @if variables.$chamfer {
       --pin-size: 1.5em;
+    }
+  }
+  &.btn--sm {
+    // Reserve the full hit area in layout; only the painted surfaces stay small.
+    padding: 0;
+    width: max(48px, 2em);
+    height: max(48px, 2em);
+    min-width: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
+    --pin-size: 1.25em;
+    &::before,
+    &::after {
+      width: 2em;
+      height: 2em;
+      top: calc((100% - 2em) / 2);
+      left: calc((100% - 2em) / 2);
     }
   }
 }

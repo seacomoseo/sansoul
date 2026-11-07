@@ -10,6 +10,9 @@ function setOpen (item, open) {
   itemButton(item)?.setAttribute('aria-expanded', String(open))
   if (open) content.removeAttribute('hidden')
   content.style.setProperty('--max-height', content.scrollHeight + 'px')
+  // Commit a numeric starting height before collapsing an initially open answer.
+  // Its CSS fallback is none, which cannot transition directly to zero.
+  if (!open) void content.offsetHeight
   item.classList.toggle('faq--active', open)
   if (!open) pending.set(item, setTimeout(() => content.setAttribute('hidden', 'until-found'), 300))
 }

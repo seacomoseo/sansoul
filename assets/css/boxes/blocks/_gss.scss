@@ -2,7 +2,17 @@
 
 .gss {
   max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
   width: fit-content;
-  margin: 0 auto;
+  margin: var(--block-mt, 0em) auto 0;
   filter: drop-shadow(variables.$shadow);
+}
+
+// Keep Markdown's full-bleed table rules outside the embedded sheet viewport.
+.gss.box__block > table.gss__table {
+  display: table;
+  border-collapse: collapse;
+  max-width: none;
+  margin: 0;
 }

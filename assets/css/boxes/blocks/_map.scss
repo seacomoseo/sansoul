@@ -80,8 +80,10 @@
   .leaflet-data-marker__icon {
     color: color-mix(in srgb, var(--base), var(--base-in) 75%);
     font-size: 1.9em;
-    translate: 0 var(--translate-x);
-    @include mixins.fluid-size(--translate-x, 1rem, -2.69, -2.525);
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    translate: -50% -50%;
   }
   .leaflet-overlay-pane svg {
     width: unset;
@@ -90,6 +92,6 @@
 }
 
 
-.map__next {
+.map--ready + .map__next {
   display: none;
 }

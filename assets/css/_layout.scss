@@ -138,15 +138,16 @@ fieldset {
   &:focus {
     border-color: var(--main);
   }
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
   &::placeholder {
     color: var(--text);
     opacity: .5;
     // position: relative;
     // top: .125em;
   }
-}
-select:has(option:checked[value=""]) {
-  color: color-mix(in srgb, var(--text), transparent 50%);
 }
 input:not([type="checkbox"], [type="radio"], [type="hidden"]),
 select {
@@ -223,7 +224,7 @@ legend {
 }
 [type='radio']:focus,
 [type="checkbox"]:focus {
-  outline: Max(2px, 0.15em) solid var(--main);
+  outline: Max(2px, 0.15em) solid currentColor;
   outline-offset: Max(2px, 0.15em);
 }
 [type='radio']:disabled,
@@ -312,6 +313,10 @@ iframe {
 }
 .icon--mat::before {
   content: attr(part);
+  // Ligature fallback text must stay inside the reserved icon while fonts load.
+  display: block;
+  width: 1em;
+  overflow: clip;
 }
 .icon--txt {
   @include mixins.font-base-bold;
@@ -347,7 +352,6 @@ pre {
   }
   &::before {
     content: attr(data-more);
-    order: 10;
   }
   > b,
   > b * {

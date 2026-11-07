@@ -1,0 +1,23 @@
+{{- /*
+Partial: func/link-icons
+Purpose: Extract edge icons and render remaining icon tokens in a link label.
+Context: string, rendered Markdown label.
+Returns: Map with text (HTML), il and ir (icon identifiers).
+Side effects: Registers inline icons through the icon partial.
+*/ -}}
+{{- $text := . -}}
+{{- $il := "" -}}
+{{- $ir := "" -}}
+{{- range findRESubmatch `(?s)^::([^:]+(?::[^:]+)?)::\s?(.*)$` $text 1 -}}
+  {{- $il = index . 1 -}}
+  {{- $text = index . 2 -}}
+{{- end -}}
+{{- range findRESubmatch `(?s)^(.*?)\s?::([^:]+(?::[^:]+)?)::$` $text 1 -}}
+  {{- $text = index . 1 -}}
+  {{- $ir = index . 2 -}}
+{{- end -}}
+{{- range findRESubmatch `::(.+?)::` $text | uniq -}}
+  {{- $html := partial "icon" (dict "icon" (index . 1) "class" "icon--inline") -}}
+  {{- $text = replace $text (index . 0) $html -}}
+{{- end -}}
+{{- return (dict "text" ($text | safeHTML) "il" $il "ir" $ir) -}}

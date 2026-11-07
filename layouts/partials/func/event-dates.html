@@ -1,0 +1,45 @@
+{{- /*
+Partial: func/event-dates
+Purpose: Compose the shared event date labels and icon defaults for tags and calendar bars.
+Context:
+  - Page (page.Page, required): Event page with Date and optional Params.end.
+  - hide_hour (bool, optional): Omit time-of-day labels.
+  - icon, ico (string, optional): Existing start-date and same-day icon overrides.
+Returns: Slice of tag dictionaries containing icon, def, label, and time.
+Side effects: None. Labels include semantic time elements and must render as safeHTML.
+*/ -}}
+{{- $page := .Page -}}
+{{- $items := slice -}}
+{{- $date  := partial "func/date-tag" (dict "date" $page.Date "hide_hour" .hide_hour) -}}
+{{- $end   := "" -}}
+{{- $hours := "" -}}
+{{- $ico   := .icon -}}
+{{- $def   := "calendar_start" -}}
+{{- if $page.Params.end -}}
+  {{- $date_full  := dateFormat "2006-01-02T15:04:05Z07:00" $page.Date       -}}
+  {{- $end_full   := dateFormat "2006-01-02T15:04:05Z07:00" $page.Params.end -}}
+  {{- if ne $date_full $end_full -}}
+    {{- $date_day := $page.Date       | time.Format "2 Jan 2006" -}}
+    {{- $end_day  := $page.Params.end | time.Format "2 Jan 2006" -}}
+    {{- if eq $date_day $end_day -}}
+      {{- if not .hide_hour -}}
+        {{- $date_hour := $page.Date | time.Format "15:04" -}}
+        {{- $end_hour  := $page.Params.end | time.Format "15:04" -}}
+        {{- $end_hour   = print `<time datetime="` $end_full `">` $end_hour `</time>` -}}
+        {{- $hours      = print "<i>" $date_hour "</i>" " / " $end_hour -}}
+        {{- $date       = partial "func/date-tag" (dict "date" $page.Date "hide_hour" true) -}}
+        {{- $ico        = .ico -}}
+        {{- $def        = "calendar" -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $end = partial "func/date-tag" (dict "date" $page.Params.end "hide_hour" .hide_hour) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $items = $items | append (dict "icon" $ico "def" $def "label" $date "time" true) -}}
+{{- if $end -}}
+  {{- $items = $items | append (dict "def" "calendar_end" "label" $end "time" true) -}}
+{{- else if $hours -}}
+  {{- $items = $items | append (dict "def" "clock" "label" $hours "time" true) -}}
+{{- end -}}
+{{- return $items -}}

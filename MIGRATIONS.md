@@ -41,6 +41,236 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+## 13.3.0 — 2026-10-23
+
+Funciones compatibles, sin migración obligatoria:
+
+- `btn_full`, `btn_mt` y `btn_mt_vl` permiten anular el ancho automático y
+  espaciar la acción de cada caja. Se conserva el comportamiento anterior por
+  defecto. Personalizaciones que dependan de `.box__btn:where(.bg > *)` pueden
+  usar la clase explícita `.box__btn--full`.
+- `form.ajax` permite forzar fetch o navegación nativa; vacío conserva el
+  comportamiento previo por proveedor.
+- `imgs_remote` permite descargar y procesar imágenes externas en el build.
+  Está desactivado por defecto; antes de activarlo, comprobar acceso al origen,
+  coste de compilación y los avisos de fallback a URL externa.
+
+Revisa los márgenes `mt`, `mb`, `ml`, `mr` y sus variantes `*_vl` en
+los valores compartidos `box`: ahora afectan al grupo de cajas una sola vez.
+Si una composición dependía de repetir un margen, define el valor en cada
+entrada de `boxes` que lo necesite. Los márgenes individuales ya guardados
+siguen vigentes.
+
+Los selectores del calendario siguen `styles.inputs.fill`. Sus detalles de hover
+se cierran al salir; clic/toque los fija. Las esquinas de medios laterales en el
+borde de la ventana se eliminan también cuando hay chaflanes.
+
+## 13.1.0 — 2026-10-22
+
+Ampliación compatible y opcional: `list.view: calendar` muestra bases `event` y
+`article` como calendario mensual, con agenda en contenedores pequeños. La vista
+predeterminada sigue siendo `list`. Mantiene filtros y `max`; agrupa las entradas
+seleccionadas sin paginación para no dividir los meses. Cada entrada aparece en
+su fecha inicial y muestra su intervalo completo. Los artículos conservan la
+lista cronológica salvo elección expresa. Validar fechas, zona horaria y enlaces.
+
+`box.infinite` y `review.infinite` habilitan continuidad del carrusel reciclando
+nodos originales, con suficiente contenido fuera de la vista. No se duplican
+IDs, formularios o reproductores. Sin la API `moveBefore`, los carruseles con
+medios incrustados permanecen finitos para preservar su estado. Comprobar gestos,
+flechas, indicadores, foco y resize en los navegadores objetivo.
+
+No hay renombres ni script de transformación. El actualizador registra la
+revisión manual de estas opciones; pueden dejarse ausentes. También se aísla el
+HTML de Google Sheets: revisar el formato de las hojas personalizadas después
+de actualizar, pues su CSS ya no puede modificar el resto del documento.
+
+## 13.0.0 — 2026-10-22
+
+Se completan los defaults de bloques: `dot` configura `dots`; `when` configura
+`whens`; `gss` pasa a ser un objeto con `id`, `sheet`, `mt` y `mt_vl`.
+`dot` admite defaults de enlaces, columnas/fit, `align_x` y márgenes; conserva
+el tamaño de los botones de icono y alineación centrada por defecto. `when.align_x` conserva
+`grow` como reparto predeterminado. Los nombres de bloques de `sort` no cambian.
+
+El actualizador ejecuta `core/scripts/migrations/13.0.0-block-defaults.js`.
+Migra sólo composición: lista antigua `when` a `whens`, identificador antiguo
+`gss` a `gss.id`, y `gss_sheet` a `gss.sheet`, incluidas rutas destino de `get`
+y rutas de `remap`. Conserva `org.when` y las fuentes de datos ajenas a `tpl`.
+También cubre payloads serializados y nombres de campos en defaults. `--check`
+es de sólo lectura; una colisión, alias/merge o entrada no transformable detiene
+todos los archivos antes de escribir. Puede reformatear el objeto de composición
+afectado; conserva comentarios y cuerpo Markdown. Revisar diffs y compilar.
+
+Guardar y reabrir defaults y elementos en CMS; verificar márgenes/alineación a
+ambos tamaños y la carga lazy de la hoja con un identificador público autorizado.
+No hace falta habilitar una hoja remota para comprobar su configuración o schema.
+
+## 12.0.0 — 2026-10-21
+
+Las secciones concretas guardan sus valores directamente en `tpl.sections[*]`;
+se elimina el envoltorio `params`. El actualizador ejecuta
+`core/scripts/migrations/12.0.0-section-fields.js`, disponible con `--check`.
+Conserva el cuerpo Markdown y comentarios, rechaza colisiones antes de escribir
+y cubre también defaults serializados `tpl` / `tpl.sections`. Los archivos de
+secciones reutilizables y `tpl.section` ya eran planos. En el CMS «Contenido»
+es un grupo visual plegado: al guardar no se crea ninguna clave adicional.
+Los valores concretos de la sección prevalecen sobre los del archivo `file`.
+Compilar, abrir una sección con archivo y valores propios, guardar/reabrirla en
+el CMS e inspeccionar el YAML antes de marcar compatibilidad raíz.
+
+Los márgenes de caja cambian de nombres: los antiguos `mt`, `mb`, `ml`, `mr`
+pasan a `mt_vl`, `mb_vl`, `ml_vl`, `mr_vl`; los antiguos `mt_vs`, `mb_vs`,
+`ml_vs`, `mr_vs` pasan a `mt`, `mb`, `ml`, `mr`. Por indicación expresa de Loren,
+que no los utiliza en sus consumidores, esta transformación no se incluye en
+scripts. Un consumidor externo que los emplee debe renombrarlos manualmente.
+El cero sigue siendo explícito; el valor base se hereda al grande y un `_vl`
+aislado parte de cero en pequeño. Los defaults estructurados de bloques admiten
+`mt`/`mt_vl` para sustituir la separación automática. Verificar ambos tamaños.
+
+## 11.0.0 — 2026-10-21
+
+`data/customs.yml` cambia `sub` por `fields` en cada definición de campo anidado.
+El script `core/scripts/migrations/11.0.0-custom-fields.js` renombra sólo esas
+claves, conserva comentarios y valores ajenos, y rechaza colisiones `sub/fields`
+y aliases/merges antes de escribir. También admite `data/customs.yaml`; si existen
+ambos archivos se requiere resolver la colisión. Se puede revisar con `--check`.
+No cambia las claves de los datos publicados ni la clave oficial `widget` de
+Sveltia. El partial interno `cms/widget.html` pasa a `cms/field.html`; si un
+consumidor tiene llamadas propias a `partial "cms/widget"`, debe ajustarlas.
+Compilar, inspeccionar el schema y guardar/reabrir un objeto con campos anidados
+en el CMS antes de marcar la compatibilidad raíz.
+
+La salida CMS usa las opciones nativas de la versión fijada de Sveltia:
+`modes` para Markdown, `allowInput` para color, `decimals` para mapa y
+`media_libraries.all.max_file_size` para límites específicos de archivos.
+No se migran valores de contenido por esta normalización.
+
+## 10.0.0 — 2026-10-21
+
+Cambios incompatibles de autoría e imágenes. El actualizador ejecuta
+`core/scripts/migrations/10.0.0-authoring-api.js` (también en la instalación
+legada `themes/sansoul/`), con preflight completo de colisiones antes de escribir.
+Front matter TOML/JSON y aliases/merges de autoría requieren migración manual;
+el script detiene todo el plan antes de escribir.
+Para una copia de desarrollo con cambios locales, ejecuta primero el mismo
+script con `--check` desde la raíz y revisa su plan; no fuerces el actualizador.
+
+- Índices `content/<type>/_index.<lang>.md` y definiciones `data/types/*.yml`:
+  `permalinks` pasa a `prefix`. Se deben migrar ambos para conservar las URLs
+  personalizadas de las fichas. La configuración generada de Hugo conserva su clave oficial `permalinks`.
+- Metadata de enlaces Markdown: `homefollow` pasa a `sublock` y `ga4` a
+  `ga4:contact`. Sólo títulos con metadata; código literal no se convierte.
+- `ga4: true` pasa a `ga4: contact` en contextos de enlace/formulario.
+  `false` y los strings vacíos explícitos pasan a `none` para conservar la anulación de defaults heredados al guardar en el CMS.
+  Un string solicita un evento adicional; los contactos tipados y formularios
+  correctos conservan `contact`, sin duplicarlo si coincide el nombre.
+- Botones de caja/galería: `pin` pasa a `il`. Enlaces, menú, callnow y dots:
+  `icon` pasa a `il`; `ir` añade el icono derecho. `review.icon`/`icon_right`
+  pasan a `il`/`ir`. Los iconos de caja, pasos, campos, FAQ y geografía se conservan.
+- Config: `webp` pasa a `imgs_webp`; `img_sizes` se retira. `imgs_quality`
+  controla AVIF/WebP (1–100, por defecto60); `imgs_dpr` limita las variantes
+  calculables (mayor que0, por defecto2). Las URLs derivadas incluyen identidad del contenido y calidad; no
+  referencies manualmente esos archivos generados. Los fondos de altura
+  desconocida conservan el techo original para cubrir casos no medibles.
+- CMS: medios heredan `duplicate_if_empty`; los cinco grupos de configuración
+  son exclusivamente visuales y no cambian el YAML persistido.
+
+Después de migrar: compila, inspecciona el schema CMS, guarda/reabre una entrada
+representativa, revisa enlaces con iconos, eventos GA4 sin enviar datos reales,
+y compara imágenes normales/fondos a distintos viewports/DPR. Las definiciones
+personalizadas GA4 y eventos clave se configuran en cada propiedad por su dueño.
+
+## 9.0.0 — 2026-10-19
+
+### Cambios incompatibles de autoría
+
+- `link` aporta defaults para `links`, incluidas columnas y alineación. Cada
+  elemento puede sobrescribirlos. `link.cols/cols_vs` y `links.fit/fit_vs`
+  comparten el cálculo de columnas de cajas. Sin columnas, un fit explícito usa
+  el 100 % como base; sin fit/columnas, el ancho natural crece con `align_x: grow`.
+- `form.cols/cols_vs` y `inputs.fit/fit_vs` reemplazan `inputs.full`. En modo
+  automático los campos mantienen mínimo habitual 280 px, pero una sola columna
+  encoge si los paddings dejan menos espacio. Los tipos antes completos lo
+  siguen siendo salvo fit explícito.
+- Se retira `full` de los elementos `inputs` y `links`; la migración convierte
+  `full: true` en `fit: 1` y retira `full: false`. Revisa combinaciones con
+  columnas nuevas: `fit: 1` representa una columna, no todo el grupo multicolumna.
+- `map` pasa a `geo` como defaults de `geos`, incluido el token de `sort`.
+  Clases DOM, SDK Leaflet y geometrías `geo` individuales no cambian.
+- `box.grow: true` pasa a `box.align_x: grow`. `grow` es una opción de alineación
+  en cajas y enlaces, pero sólo es default en `link`.
+- Se retiran los tipos `links` h2–h6, hr y br. Por indicación de Loren no hay
+  script para migrarlos: no se usan en proyectos consumidores. El catálogo deja
+  de mostrarlos.
+
+### Migración y revisión
+
+El script `core/scripts/migrations/9.0.0-authoring-layout.js` realiza las conversiones
+reconocidas de configuración de composición; `--check` informa sin escribir.
+Necesita `yaml` 2 instalado en el proyecto; si falta, instala las dependencias
+declaradas antes de actualizar. El preflight se detiene sin cambiar el checkout
+ni los archivos si no puede analizar la configuración.
+Valida colisiones antes de modificar archivos. Revisa referencias personalizadas
+`get`/`remap`, código y overrides que mencionen las claves retiradas.
+
+Los enlaces tienen un wrapper `.links__item`; adapta CSS personalizado que use
+selectores directos `.links > a` o `.links > button`. Prueba anchos por viewport,
+herencia, fit null/ausente y campos completos. Regenera el CMS, revisa una entrada
+representativa y compila el YAML guardado antes de marcar la compatibilidad.
+
+### Contraste de tarjetas
+
+Las tarjetas con imagen mantienen el degradado encima del contenido; el panel
+bajo el texto usa ahora su fondo configurado completo. Revisa overrides de
+`.bg-card::before/::after`. Una transparencia de color elegida por el proyecto
+sigue siendo transparente: debe validarse con su imagen y sus textos.
+
+### Comandos locales
+
+`sh do local` sirve builds completos de producción y reconstruye al cambiar las
+fuentes; `live` pasa a ser alias de `local`, ya no de `cms`. Usa `cms` para editar
+con Hugo en desarrollo y `dev` para desarrollo sin editor. Local escucha por
+omisión en localhost:1313, no inyecta livereload y responde 503 durante builds o
+fallos, evitando servir una salida parcial. Al cerrar elimina `public/` y
+`resources/`. Revisa automatizaciones que antes usaran `local`/`live` para CMS.
+
+El comando optativo `sh do preview` incorpora un prototipo local con Hugo
+persistente; `--demo` usa archivos virtuales del navegador. No requiere migrar
+contenido ni cambia la preview alojada. Consulta [su alcance](docs/cms-live-preview.md).
+
+## 8.1.0 — 2026-10-18
+
+**Impacto:** dimensiones de presentación editables y comandos de desarrollo
+separados del CMS. No hay reescritura automática de contenido ni nuevas
+versiones de dependencias.
+
+### Revisión del consumidor
+
+- Usa `sh do dev` para desarrollar el sitio: ahora también supervisa el prebuild,
+  pero omite administrador, assets del CMS y anotaciones/manifiestos/receptor de
+  preview. Si usabas el editor desde `dev`, cambia a `sh do cms`.
+- `sh do cms` incluye el editor y la misma vigilancia de prebuild. `live` y
+  `local` siguen funcionando como alias; `server` sigue siendo alias de `dev`.
+- `sh do build` es el nombre canónico de compilación; `sh do hugo` sigue
+  funcionando. `sh do` sin argumentos muestra ayuda. No es obligatorio modificar CI.
+- `img_w` y `img_h` sobrescriben la presentación en `box`, `boxes.*` y modales.
+  Una medida calcula la otra con el ratio explícito o proporción conocida.
+  En Markdown: `{16/9 w360 h220}`, `{w360}`, `{h220}` o `{w360 h220}`.
+  `{16/9}` conserva su significado. Comprueba medidas y herencia en la preview.
+- `vid_w` y `vid_h` sustituyen los nombres del CMS `vid_width` y `vid_height`.
+  Los nombres anteriores siguen como alias de lectura; una clave nueva no nula
+  tiene prioridad. No se migran archivos automáticamente: revisa los valores
+  legados al editar. Las medidas `img_*` no cambian los hechos del vídeo.
+- Se conserva `cookies_legal`: `false` o ausente no espera consentimiento;
+  `true` espera y respeta retirada para GA4 («Análisis») y medios externos
+  («Medios»: YouTube/Vimeo, mapas y Disqus). Comprueba los textos alternativos,
+  concesión, retirada, reactivación y reintento, y revisa la política de cookies
+  del proyecto según sus proveedores. Los mapas/comentarios que antes
+  se cargaban por intersección ahora esperan «Medios» cuando el flag es `true`.
+  No se cambia el valor explícito de un consumidor al actualizar. La referencia
+  usa `false`.
+
 ## 8.0.0 — 2026-10-15
 
 **Impacto:** nueva sintaxis canónica de metadatos Markdown, selección del motor
@@ -69,6 +299,14 @@ Los tres scripts admiten `--check`. La migración no cambia el gestor de paquete
 pnpm sigue siendo una elección explícita mediante la herramienta documentada.
 
 ### Comprobaciones
+
+- Revisa shortcodes y SCSS propios que dependan de `$timestamp`, de
+  `partial "func/timestamp"` o de `/draws.<timestamp>.svg#...`: el motor actual
+  resuelve SVG por recurso/página y no conserva ese sprite global. Usa el
+  parcial `icon` y clases propias para el estado/color del icono, sin construir
+  URLs de sprites ni selectores ligados a sus nombres. Esta adaptación de
+  código personalizado requiere revisión manual; los scripts de migración no
+  reescriben shortcodes ni SCSS arbitrarios.
 
 - Los segmentos CSS pequeños pueden insertarse en HTML. Para una CSP que no
   permita esos bloques, configura `params.assets_inline_css: false`; no añadas
@@ -110,10 +348,10 @@ pnpm sigue siendo una elección explícita mediante la herramienta documentada.
   colecciones de contenido. Revisa su aviso, el Markdown, medios y clic hacia
   campos anidados en `/admin/`. No evalúa `if` ni reconstruye la estructura.
 - Los metadatos de medios usan `vid_width`, `vid_height`, `vid_duration`,
-  `vid_upload`, `vid_title` y `vid_desc`. Los nombres anteriores siguen como
-  alias; no requieren una migración de archivos. El CMS guarda `vid_upload`
-  como fecha UTC `YYYY-MM-DD HH:mm:ss` y el JSON-LD la normaliza a ISO 8601.
-  Revisa también un enlace `/shorts/` sin ratio conocido: su fallback es vertical.
+  `vid_upload`, `vid_title` y `vid_desc`, además de sus alias históricos.
+  El CMS guarda `vid_upload` como fecha UTC `YYYY-MM-DD HH:mm:ss` y el JSON-LD
+  la normaliza a ISO 8601. Revisa también un enlace `/shorts/` sin ratio conocido:
+  su fallback es vertical.
 - Los posters locales generados se guardan en `uploads/video-posters/`; revisa y
   versiona los usados junto con la caché. Los `VideoObject` sin nombre, poster o
   fecha real de publicación se omiten con un aviso.

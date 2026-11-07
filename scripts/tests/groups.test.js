@@ -426,3 +426,16 @@ test('content YAML merge aliases retain effective Hugo values when serialized', 
   assert.deepEqual(codec.fromFile(source), expected)
   assert.deepEqual(codec.fromFile(codec.toFile(codec.fromFile(source))), expected)
 })
+
+test('native variable-list variants and source tokens omit unsupported field options', () => {
+  const { config } = setup({ collections: [{ name: 'typed', extension: 'yml', fields: [{ name: 'items', widget: 'list', types: [{ name: 'card', label: 'Card', summary: '{{fields.title}}', required: false, i18n: true, collapsed: true, fields: [group('title', 'text', { required: true, i18n: false })] }] }] }] })
+  const list = config.collections[0].fields.find(field => field.name === 'items')
+  const variant = list.types[0]
+  assert.equal(variant.label, 'Card')
+  assert.equal(variant.summary, '{{fields._sansoul_group_text.title}}')
+  for (const key of ['required', 'i18n', 'collapsed']) assert.equal(Object.hasOwn(variant, key), false)
+  const title = variant.fields[0].fields[0]
+  assert.equal(title.required, true)
+  assert.equal(title.i18n, false)
+  assert.equal(Object.hasOwn(variant.fields.find(field => field.name === SOURCE_TOKEN), 'required'), false)
+})

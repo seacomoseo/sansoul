@@ -4,7 +4,7 @@
 {{ $customs_types_def  := print $u.collections.emojis.global  " " $option_global }}
 {{ $customs_types_hint := print .def " → **" $customs_types_def "**" }}
 
-{{ $widgets_last := apply $u.widgets "dict" "value" "." }}
+{{ $widgets_last := apply hugo.Data.options.widgets "dict" "value" "." }}
 {{ $widgets_last  = where $widgets_last "value" "not in" (slice "dict" "slice") }}
 {{ $widgets_last  = apply $widgets_last "index" "." "value" }}
 
@@ -31,45 +31,45 @@
 
 {{ return slice
 
-  (partial "cms/widget" (dict "var" `customs_types`  "name" `types`  "widget" `select` "opts" `~opts_customs` "multi" true "hint" $customs_types_hint))
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict "var" `customs_types`  "name" `types`  "widget" `select` "opts" `~opts_customs` "multi" true "hint" $customs_types_hint))
+  (partial "cms/field" (dict
     "var"    `customs_pages`
     "name"   `pages`
     "widget" `slice`
-    "field"  (partial "cms/widget" (dict "label" .customs_pages_singular "name" `page`))
+    "field"  (partial "cms/field" (dict "label" .customs_pages_singular "name" `page`))
   ))
-  (partial "cms/widget" (dict "var" `customs_var`    "name" `var`                                            ))
-  (partial "cms/widget" (dict "var" `customs_name`   "name" `name`                                           ))
-  (partial "cms/widget" (dict "var" `customs_label`  "name" `label`                                          ))
-  (partial "cms/widget" (dict "var" `customs_hint_`  "name" `hint`                                           ))
-  (partial "cms/widget" (dict "var" `customs_widget` "name" `widget` "widget" `select` "opts" `~opts_widgets`))
-  (partial "cms/widget" (dict "var" `customs_def`    "name" `def`                                            ))
-  (partial "cms/widget" (dict "var" `customs_multi`  "name" `multi`  "widget" `bool`                         ))
-  (partial "cms/widget" (dict "var" `customs_i18n`   "name" `i18n`   "widget" `select` "opts" `~opts_i18n`   ))
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict "var" `customs_var`    "name" `var`                                            ))
+  (partial "cms/field" (dict "var" `customs_name`   "name" `name`                                           ))
+  (partial "cms/field" (dict "var" `customs_label`  "name" `label`                                          ))
+  (partial "cms/field" (dict "var" `customs_hint_`  "name" `hint`                                           ))
+  (partial "cms/field" (dict "var" `customs_widget` "name" `widget` "widget" `select` "opts" `~opts_widgets`))
+  (partial "cms/field" (dict "var" `customs_def`    "name" `def`                                            ))
+  (partial "cms/field" (dict "var" `customs_multi`  "name" `multi`  "widget" `bool`                         ))
+  (partial "cms/field" (dict "var" `customs_i18n`   "name" `i18n`   "widget" `select` "opts" `~opts_i18n`   ))
+  (partial "cms/field" (dict
     "var"    `customs_opts`
     "name"   `opts`
     "widget" `slice`
     "fields" (slice
-      (partial "cms/widget" (dict "alt" `customs_opts_label` "name" `label`))
-      (partial "cms/widget" (dict "alt" `customs_opts_value` "name" `value`))
+      (partial "cms/field" (dict "alt" `customs_opts_label` "name" `label`))
+      (partial "cms/field" (dict "alt" `customs_opts_value` "name" `value`))
     )
   ))
 
-  (partial "cms/widget" (dict "var" `customs_widget_last` "<<" `customs_widget` "opts" $widgets_last))
-  (partial "cms/widget" (dict
+  (partial "cms/field" (dict "var" `customs_widget_last` "<<" `customs_widget` "opts" $widgets_last))
+  (partial "cms/field" (dict
     "var"    `customs_last`
-    "alt"    `customs_sub`
-    "name"   `sub`
+    "alt"    `customs_fields`
+    "name"   `fields`
     "widget" `slice`
     "fields" $sub_fields_last
   ))
-  (partial "cms/widget" (dict "var" `customs_3` "<<" `customs_last` "fields" ($sub_fields | append `~customs_last`)))
-  (partial "cms/widget" (dict "var" `customs_2` "<<" `customs_3`    "fields" ($sub_fields | append `~customs_3`   )))
-  (partial "cms/widget" (dict "var" `customs_1` "<<" `customs_2`    "fields" ($sub_fields | append `~customs_2`   )))
+  (partial "cms/field" (dict "var" `customs_3` "<<" `customs_last` "fields" ($sub_fields | append `~customs_last`)))
+  (partial "cms/field" (dict "var" `customs_2` "<<" `customs_3`    "fields" ($sub_fields | append `~customs_3`   )))
+  (partial "cms/field" (dict "var" `customs_1` "<<" `customs_2`    "fields" ($sub_fields | append `~customs_2`   )))
 
   (dict "&customs" (slice
-    (partial "cms/widget" (dict
+    (partial "cms/field" (dict
       "alt"    `customs`
       "<<"     `customs_1`
       "root"   true

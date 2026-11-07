@@ -8,7 +8,7 @@
     (dict "partial" `files/google-site-verification` "path" .)
   }}
 {{ end }}
-{{ if not hugo.Data.config.cms_hide }}
+{{ if and (not hugo.Data.config.cms_hide) (ne site.Params.cms_enabled false) }}
   {{ $srcs = $srcs | append
     (dict "partial" `cms/index` "path" "/admin/index.html")
   }}

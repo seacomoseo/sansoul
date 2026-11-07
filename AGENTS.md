@@ -48,9 +48,9 @@ project data/content
 
 Configuration precedence is theme default, optional environment config, generated prebuild config, then project `hugo.yml`.
 
-The prebuild owns configuration derived from languages, types, defaults, and collection-index metadata. The root content adapter creates section pages and pages from remote sources during the main build. `sh do live` serializes prebuild regeneration, publishes valid config atomically, and restarts Hugo for a full build after a successful refresh. Failed prebuilds preserve the last valid config; known refresh-time server failures recover on the next valid refresh. Plain `sh do dev` still requires a manual restart for prebuild inputs.
+The prebuild owns configuration derived from languages, types, defaults, and collection-index metadata. The root content adapter creates section pages and pages from remote sources during the main build. `sh do dev` and `sh do cms` serialize prebuild regeneration, publishes valid config atomically, and restarts Hugo for a full build after a successful refresh. Failed prebuilds preserve the last valid config; known refresh-time server failures recover on the next valid refresh. `dev` omits CMS generation and preview instrumentation; `cms` includes them. `local` watches source changes and serves full production builds; `live` aliases `local`, and `server` aliases `dev`.
 
-Video metadata refreshes before the prebuild. Both development supervisors also
+Video metadata refreshes before the prebuild. Both development modes also
 watch referenced local videos and content/data references without restarting
 Hugo. `data/video_metadata.json` is public, versioned source; preserve its manual
 `overrides`. The generated statistics under `resources/` are disposable. Keep
@@ -90,8 +90,8 @@ baseof -> tpl-sections -> sections/merged-* -> sections/item
 - `faq` + `faqs` -> `blocks/faq`;
 - `review` + `reviews` -> `blocks/reviews`;
 - `form` + `inputs` -> `blocks/form`;
-- `map` + `geos` -> `blocks/map`;
-- `links`, `dots`, `when`, and `gss` -> direct block partials;
+- `geo` + `geos` -> `blocks/geo`;
+- `link` / `links`, `dot` / `dots`, `when` / `whens`, and `gss` -> direct block partials;
 - `boxes` -> recursive `boxes/items`.
 
 Preserve key ordering behavior in `sort`, conditional behavior in `if`, page/global lookup behavior in `get`, and move/copy/remove behavior in `remap`.
@@ -225,7 +225,7 @@ manager (`npm ci` for an npm consumer or the following for a pnpm consumer):
 
 ```sh
 pnpm install --frozen-lockfile
-sh do hugo
+sh do build
 ```
 
 For theme changes, also run:
@@ -235,6 +235,8 @@ For theme changes, also run:
 - a build using `_examples/data` and `_examples/content`;
 - browser checks for affected pages and `/admin/` when relevant;
 - the copied `_examples/` divider page and any divider reference identified by the consumer DNA.
+
+Close temporary audit tabs, browser instances, simulator devices, and owned helper processes when their checks finish or they will not be reused soon. Reuse suitable live resources first. Preserve unrelated user tabs and applications, and verify that closing Simulator also stops its devices; a closed window alone does not prove memory was released. Keep only explicitly needed local servers running.
 
 Use Hugo diagnostics such as `--printPathWarnings`, template metrics, and unused-template reports for investigation, not as deletion authority.
 
@@ -257,3 +259,7 @@ Avoid exhaustive parameter tables in instructions. Keep `_examples/` as the copy
 Perform a documentation and migration impact check after every implementation change without waiting for an explicit request. When behavior, commands, public parameters, file structure, requirements, or agent rules change, update the relevant source of truth in the same task. Do not edit unrelated documents merely to keep artificial pairs synchronized.
 
 After changing either root template, include the regenerated root file in the same change.
+
+## Production-local validation
+
+`sh do local` runs the complete production build, including prebuild and image post-processing, then serves its output on localhost:1313. It rebuilds serially when sources change; generated outputs do not trigger rebuild loops. During a build or after failure it returns HTTP 503 until a valid build completes. It does not inject live reload. It shares the project lifecycle lock and cleans public/resources on exit. Use a separate copy for parallel validation.

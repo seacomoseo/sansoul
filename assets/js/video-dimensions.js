@@ -25,7 +25,7 @@ export function observeVideoDimensions (element) {
   const width = Number(element.getAttribute('width'))
   const height = Number(element.getAttribute('height'))
   if (!(width > 0 && height > 0 && Number.isFinite(width) && Number.isFinite(height))) return
-  element.style.width = `${width}px`
+  element.style.width = element.closest('.box--side-left, .box--side-right, .box--side-center') ? '100%' : `${width}px`
   const update = () => {
     const displayed = element.clientWidth
     if (!displayed) return

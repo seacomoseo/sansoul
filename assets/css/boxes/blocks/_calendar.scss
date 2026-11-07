@@ -1,0 +1,264 @@
+@use "../../mixins";
+@use "../../variables";
+@use "sass:list";
+
+
+// Draw a real chamfered ring instead of clipping the corners off a CSS border.
+@mixin calendar-frame {
+  position: relative;
+  @if variables.$chamfer and variables.$is-any-radius {
+    border: none;
+    &::before {
+      @include mixins.radius-parent;
+      --radius: inherit;
+      --outline: 1px;
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background-color: var(--calendar-border, currentColor);
+      clip-path: var(--chamfer-outline);
+    }
+  }
+}
+
+.calendar {
+  width: 100%;
+  container-type: inline-size;
+  min-width: 0;
+  margin-top: var(--block-mt, 2em);
+  text-align: left;
+  [hidden] { display: none !important; }
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75em;
+    margin-bottom: 1em;
+    flex-wrap: wrap;
+    button:disabled { opacity: .5; cursor: default; }
+  }
+  &__period { display: flex; align-items: center; gap: .75em; max-width: 100%; }
+  &__select {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+    min-width: 0;
+    .calendar__field { position: relative; display: inline-flex; min-width: 0; }
+    select { max-width: 100%; }
+    .form__item-border { pointer-events: none; }
+  }
+  &__status,
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  &__heading { margin: 1em 0 .5em; }
+  &__weeks {
+    @include mixins.radius(0em, .35em);
+    overflow: clip;
+  }
+  &__day { display: none; }
+  &__entry {
+    display: block;
+    margin: .4em 0;
+    padding: .5em max(.5em, var(--radius, 0em) / 1.5);
+    min-width: 0;
+    // Let the shared button own its surfaces, corners and interaction colours.
+    isolation: isolate;
+    text-align: left;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    &--repeat,
+    &--outside-month { display: none; }
+    strong { color: inherit; font-size: .9em; }
+    &:focus-visible { outline: 3px solid var(--cta); outline-offset: 2px; }
+  }
+  &__time { margin-top: .4em; }
+  &__time,
+  &__cancelled { display: block; font-size: .75em; }
+  &__tag {
+    display: flex;
+    align-items: flex-start;
+    gap: .35em;
+    min-width: 0;
+    > .icon {
+      flex-shrink: 0;
+      --pin-size: 1em;
+      color: var(--pin-color);
+      opacity: var(--pin-opacity);
+      transition: color .1s;
+    }
+  }
+  &__weekdays { display: none; }
+  @container (min-width: 50em) {
+    &__weeks {
+      --calendar-border: color-mix(in srgb, currentColor 20%, transparent);
+      border: 1px solid var(--calendar-border);
+      @include calendar-frame;
+    }
+    &__weekdays,
+    &__week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    &__weekdays span { text-align: center; padding: .5em; font-size: .85em; }
+    &__week {
+      position: relative;
+      isolation: isolate;
+      grid-template-rows: 2em;
+      grid-auto-rows: auto;
+      align-content: start;
+      min-height: 8em;
+      padding-bottom: .5em;
+      // Paint one shared grid; neighbouring days never double the strokes.
+      background-image: linear-gradient(to right, transparent calc(100% - 1px), color-mix(in srgb, currentColor 20%, transparent) 0);
+      background-size: calc((100% + 1px) / 7) 100%;
+      &:not(:last-child) { border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
+    }
+    &__day {
+      display: block;
+      grid-row: 1;
+      padding: .25em .5em;
+      font-size: .85em;
+      text-align: right;
+      min-width: 0;
+      &--outside { opacity: .35; }
+    }
+    &__entry {
+      display: block;
+      margin: .4em .3em;
+      padding: .3em max(.5em, var(--radius, 0em) / 1.5);
+      // Fade only the button surfaces: labels and the keyboard focus stay intact.
+      &--continues-before { margin-left: 0; padding-left: calc(max(.5em, var(--radius, 0em) / 1.5) + .3em); --calendar-cut-left: 0px; --calendar-fade-left: min(.8em, 10%); }
+      &--continues-after { margin-right: 0; padding-right: calc(max(.5em, var(--radius, 0em) / 1.5) + .3em); --calendar-cut-right: 0px; --calendar-fade-right: min(.8em, 10%); }
+      &:is(.calendar__entry--continues-before, .calendar__entry--continues-after) {
+        --calendar-cut-left: var(--radius-calc);
+        --calendar-cut-right: var(--radius-calc);
+        &.calendar__entry--continues-before { --calendar-cut-left: 0px; }
+        &.calendar__entry--continues-after { --calendar-cut-right: 0px; }
+        &::before,
+        &::after {
+          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--calendar-fade-left, 0px), #000 calc(100% - var(--calendar-fade-right, 0px)), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 var(--calendar-fade-left, 0px), #000 calc(100% - var(--calendar-fade-right, 0px)), transparent 100%);
+          @if variables.$chamfer {
+            $shape: (
+              var(--calendar-cut-left) 0%, calc(100% - var(--calendar-cut-right)) 0%,
+              100% var(--calendar-cut-right), 100% calc(100% - var(--calendar-cut-right)),
+              calc(100% - var(--calendar-cut-right)) 100%, var(--calendar-cut-left) 100%,
+              0% calc(100% - var(--calendar-cut-left)), 0% var(--calendar-cut-left)
+            );
+            @if variables.$btns-outline {
+              $shape: list.join($shape, (var(--calendar-cut-left) 0%,
+                max(var(--outline), var(--calendar-cut-left)) var(--outline),
+                var(--outline) max(var(--outline), var(--calendar-cut-left)),
+                var(--outline) calc(100% - max(var(--outline), var(--calendar-cut-left))),
+                max(var(--outline), var(--calendar-cut-left)) calc(100% - var(--outline)),
+                calc(100% - max(var(--outline), var(--calendar-cut-right))) calc(100% - var(--outline)),
+                calc(100% - var(--outline)) calc(100% - max(var(--outline), var(--calendar-cut-right))),
+                calc(100% - var(--outline)) max(var(--outline), var(--calendar-cut-right)),
+                calc(100% - max(var(--outline), var(--calendar-cut-right))) var(--outline),
+                max(var(--outline), var(--calendar-cut-left)) var(--outline)), comma);
+            }
+            clip-path: polygon($shape);
+          } @else {
+            border-radius: var(--calendar-cut-left) var(--calendar-cut-right) var(--calendar-cut-right) var(--calendar-cut-left);
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// A single set of compact months serves the annual view and the narrow month view.
+.calendar__compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18em), 1fr));
+  gap: 1em;
+  align-items: start;
+}
+.calendar__mini {
+  min-width: 0;
+  padding: .75em;
+  @include mixins.radius-parent(0em, .35em);
+  @include calendar-frame;
+  --calendar-border: color-mix(in srgb, currentColor 25%, transparent);
+  border: 1px solid var(--calendar-border);
+  @if variables.$chamfer and variables.$is-any-radius { border: none; }
+}
+.calendar__mini-heading { font-size: 1.125em; margin: 0 0 .5em; }
+.calendar__mini-weekdays,
+.calendar__mini-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25em .6em; text-align: center; }
+.calendar__mini-weekdays { font-size: .75em; margin-bottom: .5em; }
+.calendar__mini-days { font-size: .875em; }
+.calendar__mini-day { display: grid; place-items: center; min-height: 2.75em; }
+.calendar__date-btn {
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75em;
+  padding: .25em;
+  font: inherit;
+  &:focus-visible { outline: 3px solid var(--cta); outline-offset: 1px; z-index: 1; }
+}
+.calendar__date-count {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: -.25em;
+  padding: .4em;
+  background: var(--base);
+  border-radius: 50%;
+  width: 2.5ch;
+  height: 2.5ch;
+  display: grid;
+  place-content: center;
+  font-size: .6em;
+  line-height: 1;
+  font-weight: bold;
+}
+.calendar__details {
+  position: fixed;
+  inset: auto 1em 1em auto;
+  margin: 0;
+  width: min(28em, calc(100vw - 2em));
+  max-height: min(65dvh, 32em, var(--calendar-detail-space, 65dvh));
+  overflow: auto;
+  padding: 1em;
+  isolation: isolate;
+  border: none;
+  @include mixins.radius-parent;
+  &::backdrop { background: transparent; pointer-events: none; }
+  &:not([popover]) { position: relative; inset: auto; width: 100%; margin-block: 1em; }
+  .calendar__detail-header { display: flex; flex-wrap: wrap; align-items: center; gap: .5em; margin-bottom: .75em; }
+  .calendar__detail-header h3 { flex: 1 1 11em; font-size: 1.125em; margin: 0; }
+  .calendar__close { flex-shrink: 0; margin-left: auto; }
+}
+.calendar__detail-event {
+  margin-top: .75em;
+  padding: .75em;
+  h4 { margin: 0; font-size: 1em; }
+  .calendar__time { font-size: .875em; }
+  .calendar__tag > .icon { --pin-size: 1em; color: inherit; opacity: .75; }
+}
+.calendar[data-calendar-view="agenda"] {
+  .calendar__weeks { border: none; overflow: visible; clip-path: none; border-radius: 0; &::before { content: none; } }
+  .calendar__week { display: block; min-height: 0; padding: 0; background: none; border: none; }
+  .calendar__day, .calendar__weekdays { display: none; }
+  .calendar__entry {
+    display: block;
+    margin: .75em 0;
+    padding: .5em max(.5em, var(--radius, 0em) / 1.5);
+    &--repeat, &--outside-month { display: none; }
+    &::before, &::after {
+      -webkit-mask-image: none;
+      mask-image: none;
+      @if variables.$chamfer {
+        clip-path: var(--chamfer);
+        @if variables.$btns-outline { clip-path: var(--chamfer-outline); }
+      } @else { border-radius: var(--radius-end); }
+    }
+  }
+}

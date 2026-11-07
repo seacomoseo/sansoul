@@ -6,3 +6,4 @@ sum: Herramienta de búsqueda rápida para encontrar contenido específico en la
 weight: 4
 type: system
 ---
+{{< search >}}
