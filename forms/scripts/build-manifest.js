@@ -8,11 +8,12 @@ import { formKey, MANIFEST_VERSION, validateManifest } from '../manifest.js'
 
 export function buildManifest ({ root = process.cwd(), publicDir = 'public', out = 'worker/forms.generated.js' } = {}) {
   const source = resolve(root, publicDir, '_forms')
-  if (!existsSync(source)) return null
   const forms = {}
   const specs = {}
   let site = ''
-  for (const name of readdirSync(source).filter(file => file.endsWith('.json')).sort()) {
+  // No published policies: refresh to an empty manifest so a stale one never survives.
+  const names = existsSync(source) ? readdirSync(source).filter(file => file.endsWith('.json')).sort() : []
+  for (const name of names) {
     const { page, site: domain, ...spec } = JSON.parse(readFileSync(join(source, name), 'utf8'))
     site ||= domain || ''
     const ref = createHash('sha256').update(JSON.stringify(spec)).digest('hex').slice(0, 16)

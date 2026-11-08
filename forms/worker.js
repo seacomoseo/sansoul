@@ -1,11 +1,16 @@
-import { dispatch } from './dispatch.js'
+import { dispatch, purgeFiles } from './dispatch.js'
 import { FormsError, errorResponse, isSameOrigin, jsonResponse, sha256Hex, timingSafeEqual } from './http.js'
 import { parseSubmission, readSubmission } from './intake.js'
 import { validateManifest } from './manifest.js'
 import { createProviders, resolveAuthority } from './providers/index.js'
-import { fileKey, findSubmission, hitRate, insertSubmission, requireDatabase, resolveHeld } from './store.js'
+import { fileKey, findSubmission, hitRate, insertSubmission, loadSubmission, requireDatabase, resolveHeld } from './store.js'
 
 export const RATE = Object.freeze({ windowMs: 10 * 60 * 1000, limit: 6 })
+// Confirmations go to a visitor-typed address: one per recipient and day, and
+// a site-wide daily cap, so the form cannot be used to mail third parties.
+export const CONFIRM_RATE = Object.freeze({ windowMs: 24 * 3600 * 1000, perRecipient: 1, perSite: 100 })
+// Safety net only: held/review attachments must be resolved within this time.
+export const FILE_TTL_SECONDS = 90 * 24 * 3600
 const receipt = row => jsonResponse({ result: 'success', persisted: true, submissionId: row.id, status: row.status })
 
 async function submit ({ request, env, ctx, manifest, providers, now }) {
@@ -32,7 +37,12 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
   const kv = env.FORMS_FILES
   if (parsed.files.length && (!kv || typeof kv.put !== 'function')) throw new FormsError('files_unavailable', 503)
   const files = parsed.files.map(({ bytes, ...file }, index) => ({ ...file, key: fileKey(parsed.submissionId, parsed.digest, index) }))
-  for (const [index, file] of parsed.files.entries()) await kv.put(files[index].key, file.bytes)
+  try {
+    for (const [index, file] of parsed.files.entries()) await kv.put(files[index].key, file.bytes, { expirationTtl: FILE_TTL_SECONDS })
+  } catch {
+    for (const file of files) await kv.delete(file.key).catch(() => {})
+    throw new FormsError('files_unavailable', 503)
+  }
 
   const content = {
     site: env.FORMS_SITE || manifest.site,
@@ -43,7 +53,7 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
   }
   const held = parsed.status === 'review' ? 'review' : authority.provider === 'hold' ? 'delivery_disabled' : null
   const jobs = [{ channel: 'owner', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content } }]
-  if (parsed.status === 'accepted' && parsed.spec.confirm && parsed.email) {
+  if (parsed.status === 'accepted' && parsed.spec.confirm && parsed.email && await confirmationAllowed(db, manifest, parsed.email, now())) {
     jobs.push({ channel: 'confirmation', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, confirm: parsed.spec.confirm } })
   }
 
@@ -69,6 +79,12 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
   return receipt({ id: parsed.submissionId, status: parsed.status })
 }
 
+async function confirmationAllowed (db, manifest, email, time) {
+  const recipient = (await sha256Hex(`${manifest.site}\n${email.toLowerCase()}`)).slice(0, 32)
+  if (await hitRate(db, `c:${recipient}`, time, CONFIRM_RATE.windowMs) > CONFIRM_RATE.perRecipient) return false
+  return await hitRate(db, `c:site:${manifest.site}`, time, CONFIRM_RATE.windowMs) <= CONFIRM_RATE.perSite
+}
+
 function authorized (request, env) {
   const token = env.FORMS_ADMIN_TOKEN
   const supplied = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
@@ -85,6 +101,9 @@ async function admin ({ request, env, path, providers, now }) {
   const job = path.match(/^jobs\/([A-Za-z0-9-]{16,64}:(?:owner|confirmation))\/(release|discard)$/)
   if (job) {
     if (!await resolveHeld(db, job[1], job[2], now())) throw new FormsError('job_not_held', 409)
+    if (job[2] === 'discard' && job[1].endsWith(':owner')) {
+      await purgeFiles(db, env.FORMS_FILES, await loadSubmission(db, job[1].split(':')[0]), now)
+    }
     return jsonResponse({ ok: true })
   }
   throw new FormsError('not_found', 404)

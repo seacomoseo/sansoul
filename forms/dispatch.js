@@ -1,7 +1,7 @@
 import { resolveAuthority } from './providers/index.js'
 import { renderConfirmation, renderOwner } from './render.js'
 import {
-  claimJob, dueJobs, loadSubmission, markFailed, markFilesPurged, markHeld, markRetry,
+  claimJob, dueJobs, loadSubmission, markFilesPurged, markHeld, markRetry,
   markSending, markSent, pruneRate, recoverExpiredLeases
 } from './store.js'
 
@@ -23,7 +23,7 @@ async function loadAttachments (kv, submission) {
   return attachments
 }
 
-async function purgeFiles (db, kv, submission, now) {
+export async function purgeFiles (db, kv, submission, now) {
   if (!submission.files.length || submission.files_purged_at || !kv) return
   for (const file of submission.files) await kv.delete(file.key)
   await markFilesPurged(db, submission.id, now())
@@ -75,7 +75,8 @@ async function deliver ({ env, db, kv, providers, now, job, token }) {
     if (error.kind === 'lost') return false
     const code = String(error.code || error.message || 'delivery_error').slice(0, 120)
     if (error.kind === 'retry') return markRetry(db, job.id, token, now(), code, job.attempts)
-    if (error.kind === 'fatal' && !sendingMarked) return markFailed(db, job.id, token, now(), code)
+    // Configuration problems before the provider call are fixable: hold them.
+    if (error.kind === 'fatal' && !sendingMarked) return markHeld(db, job.id, token, now(), code)
     // Unknown errors after the fence, and ambiguous answers, may have sent mail.
     if (error.kind === 'hold' || error.kind === 'ambiguous' || sendingMarked) return markHeld(db, job.id, token, now(), code)
     return markRetry(db, job.id, token, now(), code, job.attempts)

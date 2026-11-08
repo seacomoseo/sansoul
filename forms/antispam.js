@@ -21,19 +21,19 @@ export function looksLikeEmail (value) {
   return dot > 0 && dot < domain.length - 1
 }
 
-export function spamReasons ({ honeypot, values, email }) {
+export function spamReasons ({ honeypot, values, email, validEmail = looksLikeEmail }) {
   const reasons = []
   if (honeypot) reasons.push('honeypot')
   const text = values.join(' ')
   if (text.trim()) {
     if ((text.match(/https?:\/\//gi) || []).length > 2) reasons.push('too_many_urls')
-    if (/[Ѐ-ӿ一-鿿]/.test(text)) reasons.push('unexpected_script')
+    if (/[\u0400-\u04FF\u4E00-\u9FFF]/.test(text)) reasons.push('unexpected_script')
     const lower = text.toLowerCase()
     const matched = SPAM_PHRASES.filter(phrase => matchesPhrase(lower, phrase))
     if (matched.length) reasons.push(`spam_words:${matched.join('|')}`)
   }
   if (email) {
-    if (!looksLikeEmail(email)) reasons.push('invalid_email')
+    if (!validEmail(email)) reasons.push('invalid_email')
     else if (BLOCKED_EMAIL_DOMAINS.includes(email.split('@')[1].toLowerCase())) reasons.push('blocked_email_domain')
   }
   return reasons

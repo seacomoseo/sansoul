@@ -225,7 +225,7 @@ describe('accounts and providers', () => {
     google.state.identityOverride = 'intruder@example.test'
     worker = createFormsWorker(manifest, { fetch: google.fetch, now })
     const { id } = await send([['Nombre', 'Cy']], { page: '/es/empleo/', form: 'form-cv' })
-    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['failed', 'gmail_identity_mismatch'])
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'gmail_identity_mismatch'])
     assert.equal(google.state.sent.length, 2)
   })
 
@@ -237,10 +237,98 @@ describe('accounts and providers', () => {
     const accepted = await send([['Nombre', 'Eva']], { page: '/es/empleo/', form: 'form-cv' })
     google.state.sent.length = 0
     await bindings.db.prepare("UPDATE forms_jobs SET state = 'pending' WHERE id = ?").bind(`${accepted.id}:owner`).run()
-    env.FORMS_GMAIL_CREDENTIALS = JSON.stringify({ ...credentials, main: { ...credentials.main, refresh_token: 'rotated' } })
+    env.FORMS_GMAIL_CREDENTIALS = JSON.stringify({ ...credentials, main: { ...credentials.main, client_id: 'another-client' } })
     await dispatch({ env, db: bindings.db, kv: bindings.kv, providers: createProviders({ fetch: google.fetch }), now })
     assert.deepEqual([(await job(accepted.id, 'owner')).state, (await job(accepted.id, 'owner')).last_error], ['held', 'authority_drift'])
     assert.equal(google.state.sent.length, 0)
+  })
+})
+
+describe('review fixes', () => {
+  const footer = { page: '/es/', form: 'form-footer' }
+
+  test('a rotated refresh token keeps the same authority and delivers', async () => {
+    google.state.sendMode = '429'
+    const { id } = await send([['Email', 'a@example.org']], footer)
+    credentials.main.refresh_token = 'rt-main-rotated'
+    try {
+      env.FORMS_GMAIL_CREDENTIALS = JSON.stringify(credentials)
+      google.state.sendMode = 'ok'
+      clock += 61000
+      worker = createFormsWorker(manifest, { fetch: google.fetch, now })
+      await worker.fetch(adminRequest('dispatch'), env)
+      assert.equal((await job(id, 'owner')).state, 'sent')
+    } finally {
+      credentials.main.refresh_token = 'rt-main'
+    }
+  })
+
+  test('a grant without the email scope cannot be attested and is held', async () => {
+    google.state.tokeninfoNoEmail = true
+    const { id } = await send([['Email', 'a@example.org']], footer)
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'gmail_identity_unverified'])
+    assert.equal(google.state.sent.length, 0)
+    google.state.tokeninfoNoEmail = false
+    assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)).status, 200)
+    worker = createFormsWorker(manifest, { fetch: google.fetch, now })
+    await worker.fetch(adminRequest('dispatch'), env)
+    assert.equal((await job(id, 'owner')).state, 'sent')
+  })
+
+  test('Gmail quota (403) is retried with backoff, not held', async () => {
+    google.state.sendMode = '403quota'
+    const { id } = await send([['Email', 'a@example.org']], footer)
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['pending', 'gmail_quota'])
+  })
+
+  test('addresses the MIME writer rejects are review, not a silently lost lead', async () => {
+    const { id, body } = await send([['Nombre', 'José'], ['Email', 'josé@example.org'], ['Mensaje', 'hola']])
+    assert.equal(body.status, 'review')
+    assert.deepEqual((await jobs(id)).map(row => [row.channel, row.last_error]), [['owner', 'review']])
+  })
+
+  test('CRLF (multipart) and LF (local retry) produce the same receipt', async () => {
+    const id = crypto.randomUUID()
+    const first = await send([['Nombre', 'A'], ['Email', 'a@example.org'], ['Mensaje', 'uno\r\ndos']], { id })
+    const retry = await send([['Nombre', 'A'], ['Email', 'a@example.org'], ['Mensaje', 'uno\ndos']], { id, urlencoded: true })
+    assert.equal(retry.response.status, 200)
+    assert.deepEqual(retry.body, first.body)
+  })
+
+  test('one confirmation per recipient and day', async () => {
+    await send(contactFields)
+    const second = await send(contactFields)
+    assert.equal(second.body.status, 'accepted')
+    assert.deepEqual((await jobs(second.id)).map(row => row.channel), ['owner'])
+    assert.equal(google.state.sent.filter(mail => /^To: visitor@/m.test(mail.mime)).length, 1)
+  })
+
+  test('KV failures answer 503 and store nothing', async () => {
+    env.FORMS_FILES = { put: async () => { throw new Error('KV PUT failed: 429') }, delete: async () => {}, get: async () => null }
+    const { response, body } = await send([['Nombre', 'Ana'], ['CV', new Blob([new Uint8Array([1, 2])], { type: 'image/png' }), 'a.png']], { page: '/es/empleo/', form: 'form-cv' })
+    assert.equal(response.status, 503)
+    assert.equal(body.error, 'files_unavailable')
+    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_submissions').first()).n, 0)
+  })
+
+  test('a job that keeps dying before the provider stops after the attempt budget', async () => {
+    env.FORMS_PROVIDER = 'hold'
+    const { id } = await send([['Email', 'a@example.org']], footer)
+    await bindings.db.prepare("UPDATE forms_jobs SET state = 'leased', attempts = 6, lease_token = 'dead', lease_until = ?, sending_at = NULL WHERE id = ?").bind(clock - 1, `${id}:owner`).run()
+    await recoverExpiredLeases(bindings.db, clock)
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'lease_expired_repeatedly'])
+  })
+
+  test('discarding the owner job purges its attachments; failed jobs can be released', async () => {
+    env.FORMS_PROVIDER = 'hold'
+    const { id } = await send([['Nombre', 'Ana'], ['CV', new Blob([new Uint8Array([9])], { type: 'image/png' }), 'a.png']], { page: '/es/empleo/', form: 'form-cv' })
+    const files = JSON.parse((await bindings.db.prepare('SELECT files FROM forms_submissions WHERE id = ?').bind(id).first()).files)
+    assert.ok(await bindings.kv.get(files[0].key))
+    assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/discard`), env)).status, 200)
+    assert.equal(await bindings.kv.get(files[0].key), null)
+    assert.equal((await job(id, 'owner')).state, 'failed')
+    assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)).status, 200)
+    assert.equal((await job(id, 'owner')).state, 'pending')
   })
 })
 
@@ -305,6 +393,9 @@ describe('delivery failures and leases', () => {
     const accepted = await send([['Email', 'c@example.org']], footer)
     await bindings.db.prepare("UPDATE forms_jobs SET state = 'leased', lease_token = 'dead', lease_until = ?, sending_at = NULL WHERE id = ?").bind(clock - 1, `${accepted.id}:owner`).run()
     const before = google.state.sent.length
+    await worker.fetch(adminRequest('dispatch'), env)
+    assert.deepEqual([(await job(accepted.id, 'owner')).state, (await job(accepted.id, 'owner')).last_error], ['pending', 'lease_expired'])
+    clock += 61000
     await worker.fetch(adminRequest('dispatch'), env)
     assert.equal((await job(accepted.id, 'owner')).state, 'sent')
     assert.equal(google.state.sent.length, before + 1)

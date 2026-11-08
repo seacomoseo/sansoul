@@ -30,7 +30,9 @@ archivos) y `scripts/build-manifest.js` la mueve a `worker/forms.generated.js`,
 fuera de `public/`. Campos desconocidos, honeypot, URLs o palabras de spam y
 emails inválidos dejan el envío en `review`: se guarda y no envía nada hasta
 que un administrador lo libera. Archivos: tipo según `accept`, número según
-`max`, 8 MB por archivo y 10 MB por envío.
+`max` y 2 MB en total por envío (los adjuntos viajan en base64 dentro del correo y
+plegarlos cuesta ~2–7 ms de CPU por MB en workerd local; las imágenes ya se
+comprimen en el navegador). Archivos mayores requieren el adaptador Drive, pendiente.
 
 ## Persistencia y entrega
 
@@ -38,14 +40,23 @@ que un administrador lo libera. Archivos: tipo según `accept`, número según
   envío inmutable y un trabajo por canal (`owner`, `confirmation`) con la
   autoridad de entrega congelada (proveedor, cuenta, destinatarios y textos).
 - KV (`FORMS_FILES`) guarda los bytes de los adjuntos hasta enviar el correo al
-  propietario; después se borran. Sin archivos no hace falta KV.
+  propietario (o descartarlo); después se borran. TTL de seguridad de 90 días:
+  un envío retenido debe resolverse antes. Sin archivos no hace falta KV; si
+  KV falla, el envío responde `503 files_unavailable` sin guardar nada.
 - Entrega inmediata con `waitUntil`; reintentos con `POST /api/forms/admin/dispatch`
   (Bearer `FORMS_ADMIN_TOKEN`, p. ej. desde una Action programada) o cron
   opcional. Lease de 90 s con fencing antes del envío: un lease caducado antes
-  de llamar al proveedor vuelve a `pending`; después, queda `held`.
+  de llamar al proveedor vuelve a `pending` con backoff (tras 6 intentos, `held`);
+  después de llamarlo, queda `held`.
 - Respuestas ambiguas del proveedor (red caída, 5xx) quedan `held` y nunca se
-  reenvían solas. `POST /api/forms/admin/jobs/<id>:<canal>/release|discard`
-  es la decisión humana. Un cambio de credencial o proveedor posterior al
+  reenvían solas; cuotas (429, 403 de límite) se reintentan con backoff; los
+  errores de configuración (grant, scope, cuenta) quedan `held` hasta corregirlos.
+  `POST /api/forms/admin/jobs/<id>:<canal>/release|discard` es la decisión
+  humana (release también reabre un `failed`; discard del propietario purga
+  sus adjuntos).
+- Confirmación al visitante: una por destinatario y día y 100 por sitio y día;
+  por encima solo se notifica al propietario. Solo con email válido para MIME
+  (los demás pasan a `review`). Un cambio de credencial o proveedor posterior al
   envío deja el trabajo `held` (`authority_drift`): la historia no se reasigna.
 
 ## Proveedores
@@ -54,8 +65,11 @@ que un administrador lo libera. Archivos: tipo según `accept`, número según
 - `FORMS_PROVIDER = "gmail"`: secreto `FORMS_GMAIL_CREDENTIALS` con un mapa
   `{ "<ref>": { account, client_id, client_secret, refresh_token } }` y
   `FORMS_GMAIL_DEFAULT`. Cada formulario puede elegir otra referencia con
-  `form.account`. Antes de enviar se atestigua la cuenta y el scope
-  `gmail.send` del token; si no coincide, el trabajo falla sin enviar.
+  `form.account`. El grant necesita `gmail.send` y `openid email` (sin el
+  scope de email no se puede atestiguar la cuenta). Antes de enviar se
+  comprueban la cuenta y `gmail.send` del token; si no coinciden, el trabajo
+  queda `held` sin enviar. Rotar el refresh token del mismo cliente y cuenta no
+  cambia la autoridad; otro cliente OAuth u otra cuenta, sí (`authority_drift`).
 - Sin proveedor válido el endpoint responde `503 forms_unavailable` y no guarda.
 
 Drive, Sheets y otros proveedores (Brevo) no forman parte de este corte.

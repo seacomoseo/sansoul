@@ -107,6 +107,7 @@ export function createFakeGoogle () {
     }
     if (href.startsWith('https://oauth2.googleapis.com/tokeninfo')) {
       const token = new URL(href).searchParams.get('access_token')
+      if (state.tokeninfoNoEmail) return json({ scope: 'https://www.googleapis.com/auth/gmail.send' })
       return json({ email: state.identityOverride || byToken.get(token), scope: 'https://www.googleapis.com/auth/gmail.send openid' })
     }
     if (href.startsWith('https://gmail.googleapis.com/upload/gmail/v1/users/me/messages/send')) {
@@ -115,7 +116,8 @@ export function createFakeGoogle () {
       if (state.sendMode === 'network') throw new TypeError('fetch failed')
       if (state.sendMode === '503') return json({ error: 'backend' }, 503)
       if (state.sendMode === '429') return json({ error: 'rate' }, 429)
-      state.sent.push({ account, mime: String(init.body) })
+      if (state.sendMode === '403quota') return json({ error: { code: 403, errors: [{ reason: 'userRateLimitExceeded' }] } }, 403)
+      state.sent.push({ account, mime: new TextDecoder().decode(init.body) })
       return json({ id: `msg-${state.sent.length}` })
     }
     throw new Error(`unexpected fetch ${href}`)

@@ -3,7 +3,6 @@
 const encoder = new TextEncoder()
 
 export function base64 (bytes) {
-  if (typeof bytes.toBase64 === 'function') return bytes.toBase64()
   let binary = ''
   for (let index = 0; index < bytes.length; index += 0x8000) {
     binary += String.fromCharCode.apply(null, bytes.subarray(index, index + 0x8000))
@@ -11,7 +10,16 @@ export function base64 (bytes) {
   return btoa(binary)
 }
 
-const fold = text => text.replace(/.{1,76}/g, '$&\r\n')
+// Base64 bodies folded at 76 characters. Measured in local workerd, folding
+// costs ~2-7 ms CPU per MB whatever the method; native toBase64 plus sliced
+// lines is the cheapest, so inline attachments stay small (see intake LIMITS).
+export function base64Lines (bytes) {
+  const encoded = typeof bytes.toBase64 === 'function' ? bytes.toBase64() : base64(bytes)
+  const lines = []
+  for (let index = 0; index < encoded.length; index += 76) lines.push(encoded.slice(index, index + 76))
+  lines.push('')
+  return encoder.encode(lines.join('\r\n'))
+}
 
 export function encodeWord (text) {
   if (/[\r\n\0]/.test(text)) throw new Error('mime_header_invalid')
@@ -56,18 +64,29 @@ export function buildMime ({ from, fromName, to = [], bcc = [], replyTo, subject
     `Content-Type: multipart/mixed; boundary="${boundary}-m"`
   ].filter(Boolean)
   if (!validAddress(from) || (!to.length && !bcc.length)) throw new Error('mime_address_invalid')
-  const parts = [
-    `--${boundary}-m\r\nContent-Type: multipart/alternative; boundary="${boundary}-a"\r\n\r\n` +
-    `--${boundary}-a\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${fold(base64(encoder.encode(text)))}` +
-    `--${boundary}-a\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${fold(base64(encoder.encode(html)))}` +
+  const chunks = [
+    `${headers.join('\r\n')}\r\n\r\n--${boundary}-m\r\nContent-Type: multipart/alternative; boundary="${boundary}-a"\r\n\r\n` +
+    `--${boundary}-a\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n`,
+    base64Lines(encoder.encode(text)),
+    `--${boundary}-a\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n`,
+    base64Lines(encoder.encode(html)),
     `--${boundary}-a--\r\n`
   ]
   for (const file of attachments) {
-    parts.push(
+    chunks.push(
       `--${boundary}-m\r\nContent-Type: ${file.type}; name="${fileName(file.name)}"\r\n` +
       `Content-Disposition: attachment; filename="${fileName(file.name)}"\r\n` +
-      `Content-Transfer-Encoding: base64\r\n\r\n${fold(base64(file.bytes))}`
+      'Content-Transfer-Encoding: base64\r\n\r\n',
+      base64Lines(file.bytes)
     )
   }
-  return `${headers.join('\r\n')}\r\n\r\n${parts.join('')}--${boundary}-m--\r\n`
+  chunks.push(`--${boundary}-m--\r\n`)
+  const parts = chunks.map(chunk => typeof chunk === 'string' ? encoder.encode(chunk) : chunk)
+  const mime = new Uint8Array(parts.reduce((total, part) => total + part.length, 0))
+  let offset = 0
+  for (const part of parts) {
+    mime.set(part, offset)
+    offset += part.length
+  }
+  return mime
 }

@@ -53,13 +53,17 @@ export async function loadSubmission (db, id) {
 // Expired leases go back to pending only when the provider was never called;
 // otherwise the send may have happened and the job is held for review.
 export async function recoverExpiredLeases (db, now) {
+  // A job that keeps dying before the provider call (CPU/memory) stops after
+  // MAX_ATTEMPTS instead of being reclaimed first on every pass.
   await db.prepare(
     `UPDATE forms_jobs SET
-       state = CASE WHEN sending_at IS NULL THEN 'pending' ELSE 'held' END,
-       last_error = CASE WHEN sending_at IS NULL THEN last_error ELSE 'lease_expired_ambiguous' END,
+       state = CASE WHEN sending_at IS NOT NULL OR attempts >= ?2 THEN 'held' ELSE 'pending' END,
+       last_error = CASE WHEN sending_at IS NOT NULL THEN 'lease_expired_ambiguous'
+         WHEN attempts >= ?2 THEN 'lease_expired_repeatedly' ELSE 'lease_expired' END,
+       next_attempt_at = ?1 + ?3,
        lease_token = NULL, lease_until = NULL, updated_at = ?1
      WHERE id IN (SELECT id FROM forms_jobs WHERE state = 'leased' AND lease_until < ?1 LIMIT 10)`
-  ).bind(now).run()
+  ).bind(now, MAX_ATTEMPTS, BACKOFF_MS[0]).run()
 }
 
 export async function dueJobs (db, now, { submissionId, limit }) {
@@ -116,11 +120,11 @@ export async function pruneRate (db, now) {
   await db.prepare('DELETE FROM forms_rate WHERE window_start < ?').bind(now - 86400000).run()
 }
 
-// Human decision from the admin API: a held job is sent again (pending) or
-// closed (failed). Leased, sent and failed jobs are never reopened here.
+// Human decision from the admin API: a held or failed job is sent again
+// (pending, fresh attempt budget) or closed. Leased and sent jobs never reopen.
 export async function resolveHeld (db, id, action, now) {
   const result = action === 'release'
-    ? await db.prepare("UPDATE forms_jobs SET state = 'pending', next_attempt_at = ?, sending_at = NULL, last_error = 'released', updated_at = ? WHERE id = ? AND state = 'held'").bind(now, now, id).run()
-    : await db.prepare("UPDATE forms_jobs SET state = 'failed', last_error = 'discarded', updated_at = ? WHERE id = ? AND state = 'held'").bind(now, id).run()
+    ? await db.prepare("UPDATE forms_jobs SET state = 'pending', attempts = 0, next_attempt_at = ?, sending_at = NULL, last_error = 'released', updated_at = ? WHERE id = ? AND state IN ('held', 'failed')").bind(now, now, id).run()
+    : await db.prepare("UPDATE forms_jobs SET state = 'failed', last_error = 'discarded', updated_at = ? WHERE id = ? AND state IN ('held', 'failed')").bind(now, id).run()
   return result.meta.changes === 1
 }

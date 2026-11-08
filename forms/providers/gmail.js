@@ -54,7 +54,9 @@ export function createGmailProvider ({ fetch }) {
     } catch {
       throw new DeliveryError('gmail_identity_unreachable', 'retry')
     }
-    if (!info || String(info.email || '').toLowerCase() !== value.account.toLowerCase()) throw new DeliveryError('gmail_identity_mismatch', 'fatal')
+    // tokeninfo only returns `email` when the grant includes the email scope.
+    if (!info?.email) throw new DeliveryError('gmail_identity_unverified', 'fatal')
+    if (String(info.email).toLowerCase() !== value.account.toLowerCase()) throw new DeliveryError('gmail_identity_mismatch', 'fatal')
     if (!String(info.scope || '').split(' ').includes(SEND_SCOPE)) throw new DeliveryError('gmail_scope_missing', 'fatal')
     const expiresIn = Number(data.expires_in) > 0 ? Number(data.expires_in) : 600
     tokens.set(fingerprint, { token: data.access_token, expiresAt: Date.now() + expiresIn * 1000 })
@@ -70,13 +72,20 @@ export function createGmailProvider ({ fetch }) {
         provider: 'gmail',
         ref,
         account: value.account,
-        fingerprint: (await sha256Hex(`${value.client_id}\n${value.refresh_token}`)).slice(0, 32)
+        // A rotated refresh token for the same client and account is the same
+        // authority; another OAuth client or account is not.
+        fingerprint: (await sha256Hex(`${value.client_id}\n${value.account.toLowerCase()}`)).slice(0, 32)
       }
     },
     async send ({ env, authority, message, signal, beforeSend }) {
       const value = credential(env, authority.ref)
       const token = await accessToken(value, authority.fingerprint, signal)
-      const mime = buildMime({ ...message, from: authority.account })
+      let mime
+      try {
+        mime = buildMime({ ...message, from: authority.account })
+      } catch (error) {
+        throw new DeliveryError(String(error.message || 'mime_invalid'), 'fatal')
+      }
       // Last fence: the lease and authority are rechecked after every await.
       await beforeSend()
       let response
@@ -96,6 +105,11 @@ export function createGmailProvider ({ fetch }) {
       if (response.status === 401) {
         tokens.delete(authority.fingerprint)
         throw new DeliveryError('gmail_unauthorized', 'retry')
+      }
+      // Quota answers are rejections (nothing was sent): retry with backoff.
+      const reason = data?.error?.errors?.[0]?.reason || data?.error?.status || ''
+      if (response.status === 403 && /rateLimitExceeded|userRateLimitExceeded|dailyLimitExceeded|quotaExceeded|RESOURCE_EXHAUSTED/.test(reason)) {
+        throw new DeliveryError('gmail_quota', 'retry')
       }
       if (response.status >= 400 && response.status < 500) throw new DeliveryError(`gmail_rejected_${response.status}`, 'fatal')
       throw new DeliveryError(`gmail_send_ambiguous_${response.status}`, 'ambiguous')

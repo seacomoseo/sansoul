@@ -285,7 +285,8 @@ export function initFormSend () {
               // Only text-only submissions get a local copy for background retry.
               formOptions.body = formData
               if (![...formData.values()].some(value => value instanceof File && value.size)) {
-                setPendingSubmission({ submissionId, action, body: new URLSearchParams(formData).toString(), strict: true })
+                const text = [...formData.entries()].filter(([, value]) => typeof value === 'string')
+                setPendingSubmission({ submissionId, action, body: new URLSearchParams(text).toString(), strict: true })
               }
             } else if ((!googleScript && isFileType) || formSubmitCo) {
               // Send with files

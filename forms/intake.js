@@ -1,15 +1,18 @@
-import { looksLikeEmail, spamReasons } from './antispam.js'
+import { spamReasons } from './antispam.js'
 import { FormsError, sha256Hex } from './http.js'
 import { findSpec, formKey } from './manifest.js'
+import { validAddress } from './mime.js'
 
 export const LIMITS = Object.freeze({
-  bodyBytes: 12 * 1024 * 1024,
+  bodyBytes: 3 * 1024 * 1024,
   fields: 120,
   nameBytes: 200,
   valueChars: 20000,
   textBytes: 96 * 1024,
-  fileBytes: 8 * 1024 * 1024,
-  filesBytes: 10 * 1024 * 1024,
+  // Attachments travel base64-encoded inside the owner email; folding costs
+  // CPU per MB on Workers Free (10 ms), so the inline budget is small.
+  fileBytes: 2 * 1024 * 1024,
+  filesBytes: 2 * 1024 * 1024,
   fileNameChars: 200
 })
 export const RESERVED = Object.freeze(['_form', '_page', '_submission_id', '_gotcha'])
@@ -62,7 +65,7 @@ export async function parseSubmission (formData, manifest, limits = LIMITS) {
   let filesBytes = 0
   const encoder = new TextEncoder()
 
-  for (const [name, value] of formData.entries()) {
+  for (let [name, value] of formData.entries()) {
     if (RESERVED.includes(name)) continue
     if (fields.length + files.length >= limits.fields) throw new FormsError('too_many_fields', 413)
     if (encoder.encode(name).length > limits.nameBytes) throw new FormsError('field_name_too_large', 413)
@@ -74,6 +77,8 @@ export async function parseSubmission (formData, manifest, limits = LIMITS) {
         throw new FormsError('file_expected')
       }
       if (value.length > limits.valueChars) throw new FormsError('field_too_large', 413)
+      // Multipart sends CRLF and the urlencoded local retry LF: one digest.
+      value = value.replace(/\r\n?/g, '\n')
       textBytes += encoder.encode(name).length + encoder.encode(value).length
       if (textBytes > limits.textBytes) throw new FormsError('fields_too_large', 413)
       fields.push([name, value])
@@ -100,7 +105,7 @@ export async function parseSubmission (formData, manifest, limits = LIMITS) {
 
   const emailField = spec.fields.find(field => field.type === 'email')
   const email = emailField ? (fields.find(([name]) => name === emailField.name)?.[1] || '') : ''
-  reasons.push(...spamReasons({ honeypot: single('_gotcha'), values: fields.map(([, value]) => value), email }))
+  reasons.push(...spamReasons({ honeypot: single('_gotcha'), values: fields.map(([, value]) => value), email, validEmail: validAddress }))
   const key = formKey(page, id)
   const digest = await sha256Hex(JSON.stringify({
     key,
@@ -117,7 +122,7 @@ export async function parseSubmission (formData, manifest, limits = LIMITS) {
     files,
     reasons,
     digest,
-    email: looksLikeEmail(email) ? email : '',
+    email: validAddress(email) ? email : '',
     status: reasons.length ? 'review' : 'accepted'
   }
 }
