@@ -473,6 +473,7 @@ describe('raw uploads and Drive', () => {
   })
 
   test('without Drive the inline budget caps each file', async () => {
+    env.FORMS_DRIVE = 'false'
     const { response, body } = await send([['CV', new Blob([big()], { type: 'application/pdf' }), 'a.pdf']], cvPage)
     assert.equal(response.status, 413)
     assert.equal(body.error, 'file_too_large')

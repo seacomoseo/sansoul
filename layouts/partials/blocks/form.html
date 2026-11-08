@@ -270,6 +270,10 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   "target"    $target
   "data-to"   $data_to
 -}}
+{{- /* Worker forms: per-file and total limits of core/forms (Drive on by default). */ -}}
+{{- if $worker -}}
+  {{- $form_attrs = merge $form_attrs (dict "data-file-max" (mul 20 1024 1024) "data-files-max" (mul 25 1024 1024)) -}}
+{{- end -}}
 {{- $form_attrs = partial "func/attrs" $form_attrs }}
 {{- if and $worker (not hugo.IsServer) -}}
   {{- partial "func/form-manifest" (dict

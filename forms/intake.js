@@ -26,7 +26,9 @@ const FORM_TYPES = /^(multipart\/form-data|application\/x-www-form-urlencoded)(\
 const UPLOAD_REF = /^\d{1,2}$/
 const SHA256 = /^[0-9a-f]{64}$/
 
-export const driveEnabled = env => env?.FORMS_DRIVE === 'true'
+// Drive is on unless FORMS_DRIVE = "false" (the browser limits in
+// layouts/partials/blocks/form.html assume the Drive limits below).
+export const driveEnabled = env => env?.FORMS_DRIVE !== 'false'
 export const fileLimits = (env, limits = LIMITS) => driveEnabled(env)
   ? { file: limits.driveFileBytes, total: limits.driveFilesBytes }
   : { file: limits.inlineBytes, total: limits.inlineBytes }

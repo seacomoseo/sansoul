@@ -41,10 +41,13 @@ archivos) y `scripts/build-manifest.js` la mueve a `worker/forms.generated.js`,
 fuera de `public/`. Campos desconocidos, honeypot, URLs o palabras de spam y
 emails inválidos dejan el envío en `review`: se guarda y no envía nada hasta
 que un administrador lo libera. Archivos: tipo según `accept`, número según
-`max` (y 10 por envío). Sin Drive, 2 MB en total por envío, adjuntos al correo
-(el base64 cuesta ~2–7 ms de CPU por MB en workerd; las imágenes ya se
-comprimen en el navegador). Con `FORMS_DRIVE = "true"`: 20 MB por archivo y
-25 MB por envío; si el total pasa de 2 MB, todos van a Drive.
+`max` (y 10 por envío): 20 MB por archivo y 25 MB por envío; si el total pasa
+de 2 MB, todos van a Drive y si no, viajan adjuntos en el correo (el base64
+cuesta ~2–7 ms de CPU por MB en workerd; las imágenes ya se comprimen en el
+navegador). Con `FORMS_DRIVE = "false"`, sin Drive: 2 MB en total por envío.
+Los formularios Worker anuncian 20/25 MB al navegador (`data-file-max`,
+`data-files-max`); si se desactiva Drive, el servidor responde 413 por encima
+de 2 MB.
 
 ## Persistencia y entrega
 
@@ -87,7 +90,7 @@ comprimen en el navegador). Con `FORMS_DRIVE = "true"`: 20 MB por archivo y
 
 ## Drive (archivos grandes)
 
-Con `FORMS_DRIVE = "true"` y un grant con `drive.file`, el aviso al propietario
+Drive está activo salvo `FORMS_DRIVE = "false"`. Con un grant con `drive.file`, el aviso al propietario
 sube primero los archivos al Drive de la cuenta remitente y los enlaza en el
 correo (privados: el propietario del Drive comparte la carpeta con quien deba
 verlos). Ruta: `Forms/<proyecto>/<id del formulario>/`, con el proyecto
@@ -119,8 +122,8 @@ node core/forms/scripts/gmail-credentials.js --drive sansoulsend=<grant.json> \
   | node core/node_modules/wrangler/bin/wrangler.js secret put FORMS_GMAIL_CREDENTIALS --config wrangler.workers.toml
 ```
 
-y en `[vars]`: `FORMS_PROVIDER = "gmail"`, `FORMS_GMAIL_DEFAULT = "sansoulsend"`,
-`FORMS_DRIVE = "true"`. El script valida claves y scopes y se niega a escribir
+y en `[vars]`: `FORMS_PROVIDER = "gmail"` y `FORMS_GMAIL_DEFAULT = "sansoulsend"`
+(Drive va activo por defecto). El script valida claves y scopes y se niega a escribir
 el secreto en una terminal. Un `form.account` propio sigue teniendo prioridad.
 La cuota diaria de Gmail de `sansoulsend` la comparten todos los proyectos que
 la usan.
