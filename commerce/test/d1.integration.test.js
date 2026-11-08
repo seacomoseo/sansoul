@@ -1425,7 +1425,7 @@ export async function onRequest (context) {
     // Retry exactly the failed event, not an arbitrary new first-attempt event.
     for (let i = 0; i < 100; i++) {
       outboxDrain = await admin('outbox/dispatch', 'POST')
-      assert.equal(outboxDrain.response.status, 200)
+      assert.equal(outboxDrain.response.status, 200, JSON.stringify({ attempt: i, body: outboxDrain.body, logs: server.output.slice(-4000) }))
       if (outboxDrain.body.delivered === 1) break
     }
     assert.equal(outboxDrain.body.failed, 0)
