@@ -47,6 +47,8 @@ Side effects: Registers batch entries or publishes JavaScript; batch configurati
     "formSubmitWrong"        $t.form_submit_wrong
   }}
   {{ if $is_commerce }}
+    {{/* Languages without commerce strings fall back to English. */}}
+    {{ $t = merge (index hugo.Data.i18n "en") $t }}
     {{ $lang = merge $lang (dict "commerce" (dict
       "open_cart"                  $t.commerce_open_cart
       "cart"                       $t.commerce_cart

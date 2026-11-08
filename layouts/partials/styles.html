@@ -136,6 +136,20 @@ Side effects: Publishes CSS; stores the ordered resource list in sansoul.assets.
   {{ $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/styles.css") }}
   {{ page.Store.Set "sansoul.assets.styles" (slice $css) }}
 {{ end }}
+{{ if and (eq hugo.Data.commerce.enabled true) (or $usage.full $usage.flags.commerce) }}
+  {{ $commerce := resources.Get "css/commerce.scss" | toCSS (merge $to_css (dict "targetPath" (print "css/commerce-build-" $css_build_key ".css"))) }}
+  {{ if hugo.IsProduction }}{{ $commerce = $commerce | minify }}{{ end }}
+  {{ if and hugo.IsProduction (not $usage.full) }}
+    {{ $commerce = partial "func/publish-content-resource" (dict "resource" $commerce "target" "css/styles-commerce.css") }}
+    {{ $sheets := page.Store.Get "sansoul.assets.styles" }}
+    {{ page.Store.Set "sansoul.assets.styles" ($sheets | append $commerce) }}
+  {{ else }}
+    {{ $target := print "css/styles-commerce-" (substr (sha256 (print $css.Content $commerce.Content)) 0 12) ".css" }}
+    {{ $css = slice $css $commerce | resources.Concat $target }}
+    {{ $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/styles.css") }}
+    {{ page.Store.Set "sansoul.assets.styles" (slice $css) }}
+  {{ end }}
+{{ end }}
 {{ if page.Store.Get "sansoul.divider-demo" }}
   {{ $demo := resources.Get "css/divider-demo.css" | minify }}
   {{ if and hugo.IsProduction (not $usage.full) }}

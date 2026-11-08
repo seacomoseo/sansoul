@@ -12,7 +12,7 @@ cp -R core/_examples/commerce-backend/functions/. functions/
 sh do build
 ```
 
-El build debe incluir únicamente `/api/commerce/*` en `public/_routes.json`. `functions_enabled` opta por ese enrutamiento; si se omite, sigue `enabled` por compatibilidad. El manifiesto generado permanece en `functions/_commerce/catalog.generated.js`, fuera de `public/`. La compilación no inserta JavaScript ni UI de comercio.
+El build debe incluir únicamente `/api/commerce/*` en `public/_routes.json`. `functions_enabled` opta por ese enrutamiento; si se omite, sigue `enabled` por compatibilidad. El manifiesto generado permanece en `functions/_commerce/catalog.generated.js`, fuera de `public/`. Con `enabled: true` el sitio inserta además el carrito (vacío sin productos activos); para un backend sin UI usa `enabled: false` y `functions_enabled: true`. Los servidores `sh do dev`/`cms` no regeneran el catálogo: solo `sh do build` lo valida y escribe.
 
 `checkout_approved: false` y la ausencia de bindings mantienen bloqueada la creación de sesiones. El ejemplo no está listo para desplegar: no incluye base D1 ni secretos. No lo copies a una tienda con productos sin asignar primero, de forma explícita, sus identificadores comerciales estables y SKU únicos; con `enabled: true`, el build valida todos los productos y falla si esos datos faltan o son inválidos. Si `data/commerce.yml` se omite o se deja desactivado sin `functions_enabled: true`, esos campos no son necesarios y no se incluyen rutas de Functions.
 

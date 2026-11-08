@@ -37,9 +37,10 @@ Los comentarios `# [ ... ]` enumeran valores habituales, pero el generador del C
 
 ## Comercio opt-in
 
-El sitio general no activa comercio. El ejemplo `commerce-backend/` demuestra
-API-only (`enabled: false`, `functions_enabled: true`) sin añadir productos o
-datos comerciales ficticios. Para probar UI sobre un consumidor que ya tenga
+El sitio general no activa comercio. El ejemplo `commerce-backend/` activa el
+backend (`enabled: true`, `functions_enabled: true`) sin productos ni datos
+comerciales ficticios; el modo solo API es `enabled: false` con
+`functions_enabled: true`. Para probar UI sobre un consumidor que ya tenga
 productos con UUID/SKU válidos, sigue [catálogo y carrito](../README-ROOT.md#catálogo-carrito-e-identidades),
 usa `enabled: true` y conserva `checkout_approved: false`. Copia el ejemplo de
 `single/carrito.<lang>.md` con `commerce-cart` para ES/EN; no hace falta una plantilla
