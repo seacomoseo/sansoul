@@ -10,13 +10,18 @@ const source = fs.readFileSync(new URL('../../assets/js/cms/_index.js', import.m
   .split('initializeCMS().catch')[0]
 const flatConfig = { collections: [{ name: 'pages', fields: [{ name: 'title', _sansoul_group: { name: 'text', label: 'Text' } }] }] }
 
-async function initialize ({ CMS = {}, config = flatConfig, loadError, enabled = true } = {}) {
+async function initialize ({ CMS = {}, config = flatConfig, loadError, enabled = true, fetch } = {}) {
   const order = []
   const document = { documentElement: { dataset: {} } }
   let initialized
   const window = { document, __sansoulPreviewManualInit: true, CMS: { init: args => { initialized = args; order.push('init') }, registerCustomFormat: () => order.push('format'), registerEventListener: () => {}, ...CMS } }
   const context = {
-    window, fieldGroups: enabled, prepareFieldGroups,
+    window,
+    fieldGroups: enabled,
+    prepareFieldGroups,
+    fetch,
+    AbortSignal,
+    t: { forms_panel: 'Formularios' },
     loadFieldGroupConfig: async () => { if (loadError) throw loadError; return config },
     console: { error: () => {} },
     loadModule: async name => name === 'live-preview'
@@ -55,4 +60,16 @@ test('configuration loading failure and CMS init failure never call a generic in
   assert.equal(count, 0)
   await assert.rejects(initialize({ CMS: { init: args => { count++; assert.ok(args.config); throw Error('invalid config') } } }), /invalid config/)
   assert.equal(count, 1)
+})
+
+test('the forms panel page is registered before init only where the Worker answers', async () => {
+  const pages = []
+  const answer = (status, type) => async () => ({ status, headers: { get: () => type } })
+  const CMS = { registerCustomPage: page => pages.push(page) }
+  const worker = await initialize({ CMS, fetch: answer(401, 'application/json; charset=utf-8') })
+  assert.deepEqual(JSON.parse(JSON.stringify(pages)), [{ id: 'forms', label: 'Formularios', icon: 'inbox', url: '/admin/forms/' }])
+  assert.equal(worker.order.at(-1), 'init')
+  await initialize({ CMS, fetch: answer(404, 'text/html') })
+  await initialize({ CMS, fetch: async () => { throw new TypeError('offline') } })
+  assert.equal(pages.length, 1)
 })

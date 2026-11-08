@@ -26,6 +26,7 @@ test('dev omits CMS output and preview instrumentation while normal builds keep 
   await write('layouts/_default/single.html', '{{ .Content }}')
   for (const name of ['redirects', 'llms', 'og-svgs']) await write(`layouts/partials/files/${name}.html`, 'fixture')
   await write('layouts/partials/cms/index.html', '{{ (resources.FromString "admin/config.fixture.yml" "fixture: true").Publish }}CMS editor')
+  await write('layouts/partials/cms/forms.html', 'Forms panel')
   await write('layouts/partials/styles.html', '{{ return (resources.FromString "preview.css" "body{}") }}')
   await write('assets/js/preview-receiver.js', 'export function receiver () {}')
   await write('assets/js/preview-bootstrap.js', '/* bootstrap fixture */')
@@ -38,7 +39,7 @@ test('dev omits CMS output and preview instrumentation while normal builds keep 
     const html = await fs.readFile(path.join(output, 'index.html'), 'utf8')
     assert.match(html, /<h1>Home kept<\/h1>/)
     const present = async filename => fs.stat(path.join(output, filename)).then(() => true, () => false)
-    for (const filename of ['admin/index.html', 'admin/config.fixture.yml']) assert.equal(await present(filename), !disabled, filename)
+    for (const filename of ['admin/index.html', 'admin/config.fixture.yml', 'admin/forms/index.html']) assert.equal(await present(filename), !disabled, filename)
     assert.equal(await present('admin/info/index.html'), true, 'source pages retain project cascades')
     if (disabled) {
       assert.doesNotMatch(html, /data-sansoul-binding|sansoul-preview-manifest|data-sansoul-preview-receiver/)
