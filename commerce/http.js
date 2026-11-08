@@ -21,6 +21,8 @@ export function jsonResponse (data, status = 200, headers = {}) {
 export function errorResponse (error) {
   const status = error instanceof CommerceError ? error.status : 500
   const code = error instanceof CommerceError ? error.code : 'internal_error'
+  // Unexpected failures stay opaque to clients but visible in runtime logs; never log request data.
+  if (!(error instanceof CommerceError)) console.error('commerce_internal_error', error?.name, String(error?.message || error).slice(0, 300))
   return jsonResponse({ error: code }, status)
 }
 

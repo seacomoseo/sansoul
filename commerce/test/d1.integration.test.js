@@ -411,8 +411,10 @@ export async function onRequest (context) {
       return { response, body: await response.json() }
     }
     // Unexpected 500s are reported with the runtime log; assertions stay unchanged.
-    const reportServerError = (label, result) => {
-      if (result.response.status >= 500 && result.response.status !== 503) t.diagnostic(`${label} -> ${result.response.status} ${JSON.stringify(result.body).slice(0, 500)}\n${server.output.slice(-4000)}`)
+    const reportServerError = async (label, result) => {
+      if (result.response.status < 500 || result.response.status === 503) return
+      await new Promise(resolve => setTimeout(resolve, 300)) // let the runtime flush its log line
+      t.diagnostic(`${label} -> ${result.response.status} ${JSON.stringify(result.body).slice(0, 500)}\n${server.output.slice(-4000)}`)
     }
     const admin = async (path, method = 'GET', body, extraHeaders = {}) => {
       const response = await fetch(`${origin}/api/commerce/admin/${path}`, {
@@ -421,7 +423,7 @@ export async function onRequest (context) {
         ...(body ? { body: JSON.stringify(body) } : {})
       })
       const result = { response, body: response.headers.get('content-type')?.includes('json') ? await response.json() : await response.text() }
-      reportServerError(`admin ${method} ${path}`, result)
+      await reportServerError(`admin ${method} ${path}`, result)
       return result
     }
     const unauthenticatedAdmin = async (path, method = 'POST') => fetch(`${origin}/api/commerce/admin/${path}`, { method })
@@ -445,7 +447,7 @@ export async function onRequest (context) {
         const networkDiagnostics = server.output.split('\n').filter(line => /network|connection|socket|ECONN|fetch failed/i.test(line)).slice(-10).join('\n')
         throw new Error(`Webhook returned non-JSON: status=${response.status} content-type=${response.headers.get('content-type')} body=${text.slice(0, 1000)} network=${networkDiagnostics}`)
       }
-      reportServerError('webhook', { response, body })
+      await reportServerError('webhook', { response, body })
       return { response, body }
     }
     const event = (type, object) => ({
