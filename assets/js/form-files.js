@@ -3,7 +3,7 @@ import { waitCSS } from './wait-css'
 import params from './params'
 const { loading, formErrorFileOnload } = params
 
-const closeIcon = '<i class="icon close" onclick="closePreview(this)">close</i>'
+const closeIcon = '<i class="icon icon--mat" part="close" onclick="closePreview(this)"></i>'
 
 const canvasTest = document.createElement('canvas')
 const webpSupport = canvasTest.getContext && canvasTest.getContext('2d')
@@ -38,7 +38,7 @@ export function initFormFiles () {
             const placeholders = files.map(() => {
               const li = document.createElement('li')
               li.classList.add('form__preview-item')
-              li.innerHTML = `<i class="icon spin">sync</i> ${loading}…`
+              li.innerHTML = `<i class="icon icon--mat spin" part="sync"></i> ${loading}…`
               inputPreview.appendChild(li)
               return li
             })
