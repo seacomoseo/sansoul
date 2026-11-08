@@ -68,6 +68,7 @@ provider credentials in the environment and never infer unavailable video facts.
 - `assets/scripts.js`: main browser module graph.
 - `scripts/`: Node build utilities and repository automation.
 - `_examples/`: copyable integration fixture plus human/agent parameter references.
+- `commerce/`: opt-in commerce backend (Worker/Pages handlers, D1 migrations, catalog generator and suites). Keep checkout fail-closed; run `pnpm run test:commerce` and, for D1/runtime changes, `pnpm run test:commerce:workers` from this directory.
 
 ## Page builder implementation
 

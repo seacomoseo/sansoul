@@ -9,7 +9,7 @@ Este ejemplo separado activa únicamente las Pages Functions de comercio. No añ
 ```sh
 cp core/_examples/commerce-backend/data/commerce.yml data/commerce.yml
 cp -R core/_examples/commerce-backend/functions/. functions/
-sh do hugo
+sh do build
 ```
 
 El build debe incluir únicamente `/api/commerce/*` en `public/_routes.json`. `functions_enabled` opta por ese enrutamiento; si se omite, sigue `enabled` por compatibilidad. El manifiesto generado permanece en `functions/_commerce/catalog.generated.js`, fuera de `public/`. La compilación no inserta JavaScript ni UI de comercio.
@@ -20,7 +20,7 @@ Si una tienda ya tiene pedidos, no uses la eliminación de `data/commerce.yml` c
 
 Para pruebas de Pages Functions + D1 locales, consulta `commerce/test/d1.integration.test.js`; no se usan pagos reales.
 
-**Contrato de mantenimiento incompatible 8.0.0 integrado localmente, no publicado:** también
+**Mantenimiento acotado (13.6.0):** también
 aplica a estos handlers Pages compartidos. Antes de adoptar el código, aplica
 las migraciones 0001–0006 en orden sobre la base aprobada/respaldada y actualiza
 callers según `MIGRATIONS.md`: reconcile exige turnos separados para expiration,

@@ -2,9 +2,9 @@
 
 El ejemplo `worker.js` adapta los mismos cuatro handlers Pages; no duplica lógica
 comercial, SQL ni autenticación. Copia `worker.js`, `wrangler.workers.toml` y
-`functions/` a la raíz de un consumidor aislado. `sh do hugo` genera el catálogo
+`functions/` a la raíz de un consumidor aislado. `sh do build` genera el catálogo
 privado fuera de `public/`; `wrangler deploy --config wrangler.workers.toml --dry-run`
-valida el bundle, pero no publica. Wrangler está fijado en el lock del tema.
+valida el bundle, pero no publica. Wrangler está fijado en `core/package.json`.
 
 `assets.run_worker_first` contiene exclusivamente `/api/commerce/*`.
 `not_found_handling = "404-page"` evita usar un fallback SPA; `_routes.json` no
@@ -22,11 +22,10 @@ D1 continúa siendo SQL; R2 no sustituye transacciones ni pedidos. No se aplica
 ninguna migración remota. Free es una decisión de cuenta, no una opción TOML:
 no configurar CPU paid ni cambiar plan. Si agota cuotas, falla cerrado, no paga.
 
-Ejecuta `npm run test:commerce:workers` dentro del tema y conserva el resultado.
+Ejecuta `pnpm run test:commerce:workers` dentro de `core/` y conserva el resultado.
 Las fixtures fake son sintéticas, sin pagos reales. La prueba completa requiere
 varios minutos; un timeout no cuenta como pass. CPU de workerd local y tiempos
-HTTP no certifican CPU cloud de 10 ms. El contrato incompatible propuesto para
-8.0.0 (paquetes/locks locales sincronizados; sin publicar) separa mantenimiento: un pedido de
+HTTP no certifican CPU cloud de 10 ms. El contrato de mantenimiento de 13.6.0 separa mantenimiento: un pedido de
 expiración/reparación, un pedido del proveedor o un evento unmatched en llamadas
 distintas. Véase `README-ROOT.md` y `MIGRATIONS.md` para los tres valores de
 `operation`, cursores/revisión CAS y migraciones 0005–0006. Dispatch intenta una
@@ -58,5 +57,4 @@ negativo original fallido como evidencia externa. No afirmar bypass absoluto ni
 aprobar el despliegue sin revisar esta aceptación de routing.
 
 El opt-in CMS `cms_repo` desacopla el repositorio GitHub de domain/URLs;
-backend.skip_ci sigue true. Esta integración 8.0.0 es local, no una publicación.
-No mover gitlinks hasta verificar el SHA compartido publicado.
+backend.skip_ci sigue true. No mover gitlinks hasta verificar el SHA compartido publicado.
