@@ -53,7 +53,9 @@ const T = {
     retention: d => d ? `Los envíos cerrados se borran a los ${d} días.` : 'Sin borrado automático de envíos.',
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'archivo' : 'archivos'}${p ? `, ${p} pendientes` : ''}.`,
     reasonsTitle: 'Motivos de revisión',
-    openForm: 'Abrir el formulario en la web'
+    openForm: 'Abrir el formulario en la web',
+    date: 'Fecha del envío',
+    submissionId: 'Identificador del envío'
   },
   en: {
     title: 'Forms',
@@ -96,7 +98,9 @@ const T = {
     retention: d => d ? `Closed submissions are deleted after ${d} days.` : 'No automatic deletion of submissions.',
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'file' : 'files'}${p ? `, ${p} pending` : ''}.`,
     reasonsTitle: 'Review reasons',
-    openForm: 'Open the form on the site'
+    openForm: 'Open the form on the site',
+    date: 'Submission date',
+    submissionId: 'Submission ID'
   }
 }[lang]
 const STATES = {
@@ -164,6 +168,8 @@ function h (tag, attrs = {}, ...children) {
 
 // Inside the CMS, adopt its theme (light/dark and tokens) from the parent page.
 function adoptTheme () {
+  const system = window.matchMedia('(prefers-color-scheme: dark)')
+  document.documentElement.dataset.theme = system.matches ? 'dark' : 'light'
   let parentRoot
   try {
     if (window.parent === window || window.parent.location.origin !== location.origin) return
@@ -176,6 +182,9 @@ function adoptTheme () {
     const name = style[index]
     if (name.startsWith('--sui-')) document.documentElement.style.setProperty(name, style.getPropertyValue(name))
   }
+  // The CMS theme can differ from the system's: judge it by its own background.
+  const lightness = Number(style.getPropertyValue('--sui-background-color-1-hsl').trim().split(/\s+/)[2]?.replace('%', ''))
+  if (Number.isFinite(lightness)) document.documentElement.dataset.theme = lightness < 50 ? 'dark' : 'light'
   document.documentElement.dataset.embedded = 'true'
 }
 
@@ -227,7 +236,7 @@ function icon (name) {
   node.textContent = name
   return node
 }
-const ICONS = { refresh: 'refresh', back: 'arrow_back', file: 'description', clip: 'attach_file' }
+const ICONS = { refresh: 'refresh', back: 'arrow_back', file: 'description', clip: 'attach_file', date: 'calendar_today', link: 'link', id: 'fingerprint' }
 
 function stateChip (job) {
   return h('span', { class: `chip chip-${job.state}${job.reason === 'review' ? ' chip-review' : ''}`, title: reasonText(job.reason) }, job.state === 'held' && job.reason === 'review' ? T.review : (STATES[job.state] || job.state))
@@ -303,7 +312,12 @@ function detailPane () {
   return h('section', { class: 'detail-pane', 'aria-label': detail.id },
     h('div', { class: 'detail-head' },
       h('button', { type: 'button', class: 'button icon-button back', 'aria-label': T.back, title: T.back, onclick: () => select(null) }, icon(ICONS.back)),
-      h('div', {}, h('h2', {}, detail.form.split('#')[1]), h('p', { class: 'muted small' }, `${dateText(detail.createdAt)} · `, h('a', { href: `${detail.page}#${detail.form.split('#')[1]}`, target: '_blank', rel: 'noopener noreferrer', title: T.openForm }, `${detail.page}#${detail.form.split('#')[1]}`), ` · ${detail.id}`))),
+      h('div', {},
+        h('h2', {}, detail.form.split('#')[1]),
+        h('ul', { class: 'detail-meta' },
+          h('li', { title: T.date }, icon(ICONS.date), h('span', {}, dateText(detail.createdAt))),
+          h('li', { title: T.openForm }, icon(ICONS.link), h('a', { href: `${detail.page}#${detail.form.split('#')[1]}`, target: '_blank', rel: 'noopener noreferrer' }, `${detail.page}#${detail.form.split('#')[1]}`)),
+          h('li', { title: T.submissionId }, icon(ICONS.id), h('span', {}, detail.id))))),
     detail.reasons.length ? h('p', { class: 'alert alert-warning' }, `${T.reasonsTitle}: ${[...new Set(detail.reasons)].map(spamText).join('; ')}`) : null,
     h('h3', {}, T.fields),
     h('dl', { class: 'fields' }, detail.fields.flatMap(([name, value]) => [h('dt', {}, name), h('dd', {}, value || '—')])),
@@ -425,4 +439,7 @@ if (framedElsewhere()) {
   load()
   // The CMS session can start or end in another tab.
   window.addEventListener('storage', event => { if (event.key === 'sveltia-cms.user') load() })
+  // The CMS theme can change while this page stays open.
+  window.addEventListener('focus', adoptTheme)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', adoptTheme)
 }

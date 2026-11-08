@@ -9,7 +9,9 @@ async function registerFormsPanel (CMS) {
   try {
     const response = await fetch('/api/forms/admin/summary', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(2000) })
     if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
-    CMS.registerCustomPage({ id: 'forms', label: t?.forms_panel || 'Formularios', icon: 'inbox', url: '/admin/forms/' })
+    // Sveltia's interface language is a user setting; follow it, else the site's.
+    const label = { es: 'Formularios', en: 'Forms' }[String(window.document?.documentElement?.lang || '').slice(0, 2).toLowerCase()] || t?.forms_panel || 'Formularios'
+    CMS.registerCustomPage({ id: 'forms', label, icon: 'inbox', url: '/admin/forms/' })
   } catch {}
 }
 

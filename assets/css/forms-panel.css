@@ -18,7 +18,10 @@
 /* The CMS already shows the page name: no repeated title when embedded. */
 [data-embedded] h1 { display: none; }
 :root {
-  color-scheme: light dark;
+  /* Same names and values as Sveltia CMS (@sveltia/ui), read from the live CMS.
+     Inside the CMS the page overwrites them with the parent's, so this block
+     (light) and the dark one below are the only places where colors live. */
+  color-scheme: light;
   --sui-base-hue: 210;
   --sui-background-color-1-hsl: var(--sui-base-hue) 5% 100%;
   --sui-background-color-2-hsl: var(--sui-base-hue) 5% 98%;
@@ -29,6 +32,8 @@
   --sui-foreground-color-2-hsl: var(--sui-base-hue) 5% 25%;
   --sui-foreground-color-3-hsl: var(--sui-base-hue) 5% 35%;
   --sui-foreground-color-4-hsl: var(--sui-base-hue) 5% 45%;
+  --sui-foreground-color-5-hsl: var(--sui-base-hue) 5% 65%;
+  --sui-border-color-1-hsl: var(--sui-base-hue) 5% 60%;
   --sui-border-color-2-hsl: var(--sui-base-hue) 5% 72%;
   --sui-border-color-3-hsl: var(--sui-base-hue) 5% 80%;
   --sui-primary-accent-color: hsl(var(--sui-base-hue) 80% 40%);
@@ -42,29 +47,31 @@
   --sui-warning-color-hue: 40;
   --sui-success-color-hue: 100;
   --sui-info-color-hue: 210;
-  --alert-bg-l: 90%;
-  --alert-fg-l: 25%;
-  --alert-border-l: 55%;
+  --sui-alert-background-lightness: 90%;
+  --sui-alert-foreground-lightness: 25%;
+  --sui-alert-border-color-lightness: 68%;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-embedded]) {
-    --sui-background-color-1-hsl: var(--sui-base-hue) 10% 8%;
-    --sui-background-color-2-hsl: var(--sui-base-hue) 10% 10%;
-    --sui-background-color-3-hsl: var(--sui-base-hue) 10% 13%;
-    --sui-background-color-4-hsl: var(--sui-base-hue) 10% 16%;
-    --sui-background-color-5-hsl: var(--sui-base-hue) 10% 26%;
-    --sui-foreground-color-1-hsl: var(--sui-base-hue) 10% 95%;
-    --sui-foreground-color-2-hsl: var(--sui-base-hue) 10% 75%;
-    --sui-foreground-color-3-hsl: var(--sui-base-hue) 10% 65%;
-    --sui-foreground-color-4-hsl: var(--sui-base-hue) 10% 55%;
-    --sui-border-color-2-hsl: var(--sui-base-hue) 10% 24%;
-    --sui-border-color-3-hsl: var(--sui-base-hue) 10% 20%;
-    --sui-primary-accent-color: hsl(var(--sui-base-hue) 100% 40%);
-    --sui-primary-accent-color-text: hsl(var(--sui-base-hue) 100% 60%);
-  }
-}
-@media (prefers-color-scheme: dark) {
-  :root { --alert-bg-l: 10%; --alert-fg-l: 85%; --alert-border-l: 40%; }
+/* Set by the script: the CMS's theme when embedded, else the system's. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --sui-background-color-1-hsl: var(--sui-base-hue) 10% 8%;
+  --sui-background-color-2-hsl: var(--sui-base-hue) 10% 10%;
+  --sui-background-color-3-hsl: var(--sui-base-hue) 10% 13%;
+  --sui-background-color-4-hsl: var(--sui-base-hue) 10% 16%;
+  --sui-background-color-5-hsl: var(--sui-base-hue) 10% 26%;
+  --sui-foreground-color-1-hsl: var(--sui-base-hue) 10% 95%;
+  --sui-foreground-color-2-hsl: var(--sui-base-hue) 10% 75%;
+  --sui-foreground-color-3-hsl: var(--sui-base-hue) 10% 65%;
+  --sui-foreground-color-4-hsl: var(--sui-base-hue) 10% 55%;
+  --sui-foreground-color-5-hsl: var(--sui-base-hue) 10% 35%;
+  --sui-border-color-1-hsl: var(--sui-base-hue) 10% 40%;
+  --sui-border-color-2-hsl: var(--sui-base-hue) 10% 24%;
+  --sui-border-color-3-hsl: var(--sui-base-hue) 10% 20%;
+  --sui-primary-accent-color: hsl(var(--sui-base-hue) 100% 40%);
+  --sui-primary-accent-color-text: hsl(var(--sui-base-hue) 100% 60%);
+  --sui-alert-background-lightness: 10%;
+  --sui-alert-foreground-lightness: 85%;
+  --sui-alert-border-color-lightness: 38%;
 }
 
 * { box-sizing: border-box; }
@@ -78,7 +85,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 #app { display: flex; flex-direction: column; height: 100%; }
-h1, h2, h3 { margin: 0; font-weight: 700; color: hsl(var(--sui-foreground-color-1-hsl)); }
+h1, h2, h3 { margin: 0; font-weight: 700; color: hsl(var(--sui-foreground-color-2-hsl)); }
 h1 { font-size: var(--sui-font-size-large); }
 h2 { font-size: var(--sui-font-size-large); }
 h3 { font-size: var(--sui-font-size-default); margin: 24px 0 8px; }
@@ -126,9 +133,9 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .alert {
   margin: 12px 16px 0; padding: 8px 12px; border-radius: 4px; border: 1px solid;
   --hue: var(--sui-info-color-hue);
-  color: hsl(var(--hue) 85% var(--alert-fg-l));
-  background: hsl(var(--hue) 65% var(--alert-bg-l));
-  border-color: hsl(var(--hue) 55% var(--alert-border-l));
+  color: hsl(var(--hue) 85% var(--sui-alert-foreground-lightness));
+  background: hsl(var(--hue) 65% var(--sui-alert-background-lightness));
+  border-color: hsl(var(--hue) 55% var(--sui-alert-border-color-lightness));
 }
 .alert-warning { --hue: var(--sui-warning-color-hue); }
 .alert-error { --hue: var(--sui-error-color-hue); }
@@ -146,7 +153,7 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .row[aria-current="true"] { background: hsl(var(--sui-background-color-4-hsl)); }
 .row-main { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .row-title, .row-meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.row-title { color: hsl(var(--sui-foreground-color-1-hsl)); }
+.row-title { color: hsl(var(--sui-foreground-color-2-hsl)); }
 .row-meta { font-size: var(--sui-font-size-small); color: hsl(var(--sui-foreground-color-4-hsl)); }
 .more { margin: 4px 16px; }
 .list-footer { margin-top: auto; padding: 12px 16px; font-size: var(--sui-font-size-small); border-top: 1px solid hsl(var(--sui-border-color-3-hsl)); }
@@ -155,7 +162,7 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .chip {
   flex: none; padding: 0 8px; border-radius: 10px; font-size: var(--sui-font-size-small); line-height: 20px;
   --hue: var(--sui-info-color-hue);
-  color: hsl(var(--hue) 85% var(--alert-fg-l)); background: hsl(var(--hue) 65% var(--alert-bg-l));
+  color: hsl(var(--hue) 85% var(--sui-alert-foreground-lightness)); background: hsl(var(--hue) 65% var(--sui-alert-background-lightness));
 }
 .chip-sent { --hue: var(--sui-success-color-hue); }
 .chip-held, .chip-review { --hue: var(--sui-warning-color-hue); }
@@ -167,7 +174,7 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .detail-head .back { display: none; }
 .fields { display: grid; grid-template-columns: minmax(120px, max-content) 1fr; gap: 6px 16px; margin: 0; }
 .fields dt { color: hsl(var(--sui-foreground-color-4-hsl)); }
-.fields dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: hsl(var(--sui-foreground-color-1-hsl)); }
+.fields dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: hsl(var(--sui-foreground-color-2-hsl)); }
 .files { list-style: none; margin: 0; padding: 0; }
 .files li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0; }
 .file-name { flex: 1; min-width: 120px; overflow-wrap: anywhere; }
@@ -187,3 +194,9 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
   .fields { grid-template-columns: 1fr; gap: 0; }
   .fields dd { margin-bottom: 8px; }
 }
+
+.detail-meta { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+.detail-meta li { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: var(--sui-font-size-small); color: hsl(var(--sui-foreground-color-4-hsl)); }
+.detail-meta .ms { font-size: 18px; }
+.detail-meta a { color: var(--sui-primary-accent-color-text); overflow-wrap: anywhere; }
+.detail-meta span:last-child, .detail-meta a { min-width: 0; overflow-wrap: anywhere; }
