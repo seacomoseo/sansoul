@@ -302,6 +302,7 @@ export async function onRequest (context) {
     ].join('\n')
     writeFileSync(configPath, config)
     mkdirSync(publicDir, { recursive: true })
+    mkdirSync(dirname(catalogPath), { recursive: true })
     const disabledCatalog = {
       schemaVersion: 2,
       enabled: false,

@@ -7,6 +7,11 @@ Side effects: Registers batch entries or publishes JavaScript; batch configurati
 */}}
 {{/*  LANGS  */}}
 
+{{ $is_commerce := false }}
+{{ with hugo.Data.commerce }}
+  {{ $is_commerce = eq .enabled true }}
+{{ end }}
+
 {{ $langs := dict }}
 {{ range hugo.Sites }}
   {{ $t    := index hugo.Data.i18n .Language.Lang }}
@@ -40,7 +45,9 @@ Side effects: Registers batch entries or publishes JavaScript; batch configurati
     "formSubmitSending"      $t.form_submit_sending
     "formSubmitOk"           $t.form_submit_ok
     "formSubmitWrong"        $t.form_submit_wrong
-    "commerce" (dict
+  }}
+  {{ if $is_commerce }}
+    {{ $lang = merge $lang (dict "commerce" (dict
       "open_cart"                  $t.commerce_open_cart
       "cart"                       $t.commerce_cart
       "close"                      $t.commerce_close
@@ -95,8 +102,8 @@ Side effects: Registers batch entries or publishes JavaScript; batch configurati
       "increase"                   $t.commerce_increase
       "decrease"                   $t.commerce_decrease
       "free"                       $t.commerce_free
-    )
-  }}
+    )) }}
+  {{ end }}
   {{ $lang  = dict .Language.Lang $lang }}
   {{ $langs = merge $langs $lang  }}
 {{ end }}
@@ -130,11 +137,6 @@ Side effects: Registers batch entries or publishes JavaScript; batch configurati
 {{ $is_cookies := false }}
 {{ if site.GetPage "page/cookies" }}
   {{ $is_cookies = true }}
-{{ end }}
-
-{{ $is_commerce := false }}
-{{ with hugo.Data.commerce }}
-  {{ $is_commerce = eq .enabled true }}
 {{ end }}
 
 
