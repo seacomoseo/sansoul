@@ -7,7 +7,7 @@ import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
-export function dependencyManager (directory = process.cwd()) {
+export function dependencyManager (directory = process.cwd(), { allowMissingLock = false } = {}) {
   const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'package.json'), 'utf8'))
   const declared = manifest.packageManager || ''
   const pnpmLock = fs.existsSync(path.join(directory, 'pnpm-lock.yaml'))
@@ -21,12 +21,12 @@ export function dependencyManager (directory = process.cwd()) {
   if (name === 'pnpm' && !/^pnpm@\d+\.\d+\.\d+(?:\+sha\d+\..+)?$/.test(declared)) {
     throw new Error('Pin pnpm to an exact version in packageManager before installing.')
   }
-  if (name === 'pnpm' && !pnpmLock) throw new Error('Missing pnpm-lock.yaml. Refusing a non-reproducible pnpm build.')
+  if (name === 'pnpm' && !pnpmLock && !allowMissingLock) throw new Error('Missing pnpm-lock.yaml. Refusing a non-reproducible pnpm build.')
   return { name, declared, hasLock: name === 'pnpm' ? pnpmLock : npmLock }
 }
 
-export function checkDependencyManager (directory = process.cwd()) {
-  const manager = dependencyManager(directory)
+export function checkDependencyManager (directory = process.cwd(), options = {}) {
+  const manager = dependencyManager(directory, options)
   const result = spawnSync(manager.name, ['--version'], { cwd: directory, encoding: 'utf8' })
   if (result.error || result.status !== 0) throw new Error(`${manager.name} is unavailable. Install the version declared in package.json first.`)
   const pinned = manager.declared.split('@')[1]?.split('+')[0]
@@ -36,8 +36,8 @@ export function checkDependencyManager (directory = process.cwd()) {
   return manager
 }
 
-export function installDependencies ({ directory = process.cwd(), updateLockfile = false } = {}) {
-  const manager = checkDependencyManager(directory)
+export function installDependencies ({ directory = process.cwd(), updateLockfile = false, allowMissingLock = updateLockfile } = {}) {
+  const manager = checkDependencyManager(directory, { allowMissingLock })
   if (manager.name === 'pnpm' && !manager.hasLock && !updateLockfile) throw new Error('Missing pnpm-lock.yaml. Refusing a non-reproducible pnpm build.')
   const args = manager.name === 'pnpm'
     ? ['install', updateLockfile ? '--no-frozen-lockfile' : '--frozen-lockfile', '--config.enable-global-virtual-store=false']

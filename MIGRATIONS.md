@@ -22,7 +22,7 @@ sh do update
 
 El actualizador exige árboles Git limpios, salvo que la única diferencia de la raíz sea un gitlink de SanSoul ya avanzado de forma limpia y directa durante el arranque inicial. Descarga la rama declarada en `.gitmodules`, acepta solo avances directos, comprueba las migraciones conocidas y sus conflictos, y nunca fuerza la sustitución de README/AGENTS raíz no generados. `--check` descarga referencias Git, pero no cambia archivos ni el commit de SanSoul seleccionado.
 
-Después del preflight, `sh do update` avanza el submódulo, ejecuta los scripts de migración registrados, sincroniza siempre README y AGENTS desde las plantillas de SanSoul, instala dependencias cuando una migración lo requiere y compila el proyecto. Si quedan validaciones específicas de una migración, las muestra y solicita confirmación antes de sincronizar la versión raíz. En una ejecución no interactiva deja la versión sin cambiar; tras completar las comprobaciones, ejecuta `sh do migrations mark --yes`.
+Después del preflight, `sh do update` avanza el submódulo, ejecuta los scripts de migración registrados, mueve el motor a `core/` si aún está en `themes/sansoul` (`git mv` hace staging solo de ese movimiento), sincroniza siempre README y AGENTS desde las plantillas de SanSoul, convierte o verifica pnpm (obligatorio) y compila el proyecto. Si quedan validaciones específicas de una migración, las muestra y solicita confirmación antes de sincronizar la versión raíz. En una ejecución no interactiva deja la versión sin cambiar; tras completar las comprobaciones, ejecuta `sh do migrations mark --yes`.
 
 Para añadir una versión a `MIGRATIONS.md`, registra también su política en `scripts/update.js`. Si el actualizador no reconoce una migración pendiente, se detiene antes de cambiar archivos. Las acciones destructivas como `sh do root-docs --force` nunca se ejecutan automáticamente.
 
@@ -40,6 +40,40 @@ Añade una sección `## x.y.z — fecha` por cada versión que requiera interven
 Si una transformación puede automatizarse con seguridad, colócala en `scripts/migrations/` y enlázala desde la sección. No ejecutes migraciones automáticamente durante `hugo`, `server`, `local` ni al actualizar el submódulo.
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
+
+
+## 13.5.0 — 2026-11-07
+
+**Impacto:** todos los proyectos. `sh do update` normaliza ahora, sin pasos
+opcionales, la ubicación del motor y el gestor de dependencias.
+
+### Cambios automáticos
+
+- **Motor en `core/`.** Si el submódulo sigue en `themes/sansoul`, el actualizador
+  ejecuta `git mv themes/sansoul core` (esto **hace staging** del movimiento),
+  renombra la sección de `.gitmodules` a `[submodule "core"]`, elimina
+  `themes/` si queda vacía y sustituye `themes/sansoul` por `core` en los archivos
+  de texto versionados de la raíz (workflows, TOML, `package.json`, DNA…).
+  Los selectores `theme`/`themesDir` los retira antes la migración 8.0.0. El wrapper
+  `do` canónico admite ambas rutas y se conserva. Si `core/` ya existe o
+  `.gitmodules` ya declara otro `core`, se detiene antes de cambiar nada.
+- **pnpm obligatorio.** El proyecto queda con `packageManager` `pnpm@10.28.2`,
+  `.npmrc` con `enable-global-virtual-store=false` y `strict-dep-builds=true`, y
+  un único `pnpm-lock.yaml`. Con `package-lock.json` se usa `pnpm import` (mismas
+  versiones) y luego se elimina; sin lockfile se genera uno. Los scripts de
+  `package.json` pasan de `npx`/`npm run` a `pnpm dlx`/`pnpm run`. `netlify.toml`
+  recibe `PNPM_FLAGS` y `wrangler.toml` recibe `PNPM_VERSION` para que Netlify y
+  Cloudflare Pages instalen con el lockfile congelado. Si algo falla, se restauran
+  los archivos tocados. Requiere `pnpm` 10.28.2 activo antes de empezar; el
+  preflight lo comprueba y no modifica nada si falta.
+
+### Revisión del consumidor
+
+1. Revisa `git status`: el movimiento queda en staging, nada se confirma.
+2. Comprueba que CI, Netlify y Cloudflare usan `pnpm-lock.yaml` y confirma la
+   versión de Node.
+3. Confirma `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.gitmodules`, `core` y los
+   archivos con referencias actualizadas en un solo commit.
 
 ## 13.3.0 — 2026-10-23
 

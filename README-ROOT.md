@@ -108,7 +108,8 @@ un enlace a `../_tools/node_modules` entre proyectos con versiones distintas.
 
 El build utiliza el gestor declarado y exige el lockfile de pnpm. Las
 migraciones que modifican dependencias actualizan el lockfile de ese gestor
-antes de compilar; npm continúa disponible para consumidores sin convertir.
+antes de compilar. `sh do update` convierte automáticamente los proyectos npm a pnpm;
+ya no es opcional.
 Consulta el [informe de pruebas y migración](docs/development-dependencies.md)
 antes de convertir otros proyectos.
 
@@ -502,7 +503,7 @@ sh do update --check
 sh do update
 ```
 
-`--check` descarga la referencia remota y presenta el plan, pero no cambia archivos ni el commit activo del tema. `sh do update` repite el preflight y, si es seguro, avanza SanSoul, ejecuta las migraciones automáticas conocidas, sincroniza `README.md` y `AGENTS.md` desde sus plantillas y compila el proyecto. Se detiene si detecta cambios locales, historial divergente, documentos raíz no generados, una migración desconocida o un destino de renombrado ocupado. No confirma ni publica cambios.
+`--check` descarga la referencia remota y presenta el plan, pero no cambia archivos ni el commit activo del tema. `sh do update` repite el preflight y, si es seguro, avanza SanSoul, ejecuta las migraciones automáticas conocidas, mueve el motor a `core/` si seguía en `themes/sansoul` (con `git mv`, que hace staging solo de ese movimiento), convierte a pnpm si aún usaba npm, sincroniza `README.md` y `AGENTS.md` desde sus plantillas y compila el proyecto. Se detiene si detecta cambios locales, historial divergente, documentos raíz no generados, una migración desconocida o un destino de renombrado ocupado. No confirma ni publica cambios.
 
 Si quedan validaciones manuales de alguna migración, el comando las muestra y pide confirmación antes de actualizar la versión compatible en `package.json`. Si se ejecuta sin terminal interactiva, conserva la versión anterior; completa esas comprobaciones y ejecuta:
 

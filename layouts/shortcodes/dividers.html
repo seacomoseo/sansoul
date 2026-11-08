@@ -11,17 +11,17 @@
       {{- $class := print "div--example " .class -}}
       {{- $attrs  = dict "class" $class "style" .style -}}
       {{- $attrs  = partial "func/attrs" $attrs -}}
-    {{- end }}
-    <h2 class="h3" id="div-{{ . }}">
-      {{- partial "link" (dict
-        "label" .
-        "url"   (print "#div-" .)
-      ) -}}
-      <br>
-      {{- index $t (print "opt-div-" .) -}}
-    </h2>
-    <div {{- $attrs }}>
-      <div class="bg-color"></div>
-    </div>
+    {{- end -}}
+<h2 class="h3" id="div-{{ . }}">
+  {{- partial "link" (dict
+    "label" .
+    "url"   (print "#div-" .)
+  ) -}}
+  <br>
+  {{- index $t (print "opt-div-" .) -}}
+</h2>
+<div {{- $attrs }}>
+  <div class="bg-color"></div>
+</div>
   {{- end -}}
 {{- end -}}

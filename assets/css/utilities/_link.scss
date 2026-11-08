@@ -42,9 +42,14 @@
 .icon--right {
   vertical-align: -.125em;
 }
-.link:not(.btn) > .icon--left {
-  margin-inline-end: .25em;
-}
-.link:not(.btn) > .icon--right {
-  margin-inline-start: .25em;
+.link:not(.btn, .box__btn, > b) {
+  > .icon--left {
+    margin-inline-end: .25em;
+  }
+  .icon--inline {
+    margin-inline: .25em;
+  }
+  .icon--right {
+    margin-inline-start: .25em;
+  }
 }

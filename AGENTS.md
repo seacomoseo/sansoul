@@ -4,7 +4,7 @@
 
 These instructions apply to `core/`. This directory is a shared Git submodule and a separate repository. A change here can affect every consumer that updates the submodule.
 
-The same engine supports existing consumers installed at `themes/sansoul/`.
+The engine can still run from `themes/sansoul/`, but `sh do update` always moves a consumer to `core/` and to pnpm (`scripts/consumer-layout.js`).
 Resolve the executing engine path; do not assume its directory depth.
 
 Read `templates/root/AGENTS.md` first: it is the canonical consumer contract copied to every project root. Theme behavior must preserve that contract. Check Git status in both repositories before editing and preserve all existing user changes.

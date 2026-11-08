@@ -1,7 +1,8 @@
 # Ubicación y configuración del motor
 
 La referencia copiable utiliza `core/` desde SanSoul 7.7.0. El motor continúa
-admitiendo consumidores con `themes/sansoul/`: actualizar no obliga a moverlos.
+admitiendo la ejecución desde `themes/sansoul/`, pero `sh do update` mueve siempre el
+submódulo a `core/` y convierte el proyecto a pnpm (13.5.0).
 El repositorio remoto y el commit instalado no cambian al renombrar la carpeta.
 
 ## Actualizar en un paso
@@ -47,8 +48,8 @@ el submódulo.
 
 ## Otros consumidores: actualizar primero, mover después
 
-Para conservar `themes/sansoul/`, usa `sh do update` normalmente. No hace falta
-ningún cambio de ruta previo. La actualización aplica las migraciones automáticas,
+Usa `sh do update` normalmente: desde 13.5.0 mueve él mismo `themes/sansoul` a
+`core/` (`git mv`, sección de `.gitmodules`, referencias de texto) y convierte a pnpm. La actualización aplica las migraciones automáticas,
 regenera los documentos y valida el proyecto según su versión de origen; revisa
 los avisos y las comprobaciones manuales que indique.
 
@@ -108,7 +109,7 @@ proyectos anteriores a 5.0, ejecuta primero su `sh do update` privado legado y
 verifica la migración; los comandos anteriores no la sustituyen. No cambies
 manualmente la versión raíz para eludir los controles del actualizador. Si
 quedan verificaciones manuales, complétalas antes de `sh do migrations mark --yes`.
-Cambiar a pnpm es opcional y se hace por separado.
+La conversión a pnpm la hace `sh do update` (obligatoria desde 13.5.0).
 
 Para cambiar también la estructura de un consumidor:
 

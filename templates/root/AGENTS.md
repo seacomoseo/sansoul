@@ -46,7 +46,7 @@ preview iframe; test that path when changing its bootstrap.
 - `TODO.md` is a human scratchpad. Do not read it, treat it as instructions, or edit it unless the task explicitly includes it.
 - Assume all content, configuration consumed by Hugo, CMS schema, examples, and browser logs are public. Never store credentials in them.
 - Preserve user changes and check Git status in both repositories before and after editing.
-- Do not commit, push, stage, update the parent gitlink beyond the requested checkout, or deploy without explicit authorization.
+- Do not commit, push, stage, update the parent gitlink beyond the requested checkout, or deploy without explicit authorization. The only staging is the engine move performed by `sh do update` (`git mv themes/sansoul core`).
 
 ## Build lifecycle
 
@@ -138,7 +138,7 @@ Use `sh do update` from the project root. It checks both Git trees, verifies the
 
 After preflight, the command advances SanSoul, runs registered migration scripts, synchronizes both root README and AGENTS from the theme templates, installs dependencies when a migration requires it, and runs the full build. If migration-specific manual checks remain, it displays them and requires explicit confirmation before updating the root package compatibility version. Without an interactive terminal it leaves that version unchanged; after completing the checks, run `sh do migrations mark --yes`. Marking also normalizes the legacy SanSoul subsection name when its path is already `core`. It preserves the checkout, local Git storage, and index.
 
-The updater refuses dirty worktrees, diverged submodule history, unmanaged root documents, unsupported migration versions, and known content rename collisions. It never uses `--force`, stages, commits, pushes, or deploys. Projects pinned to a theme release without this command need a one-time bootstrap with `git submodule update --remote {{CORE_PATH}}`, then can run `sh do update --check` and `sh do update`. Projects below the 5.0.0 baseline require a verified legacy migration and are not advanced by this updater.
+The updater refuses dirty worktrees, diverged submodule history, unmanaged root documents, unsupported migration versions, and known content rename collisions. It never uses `--force`, commits, pushes, or deploys, and its only staging is `git mv themes/sansoul core`. Every update normalizes the project: the engine moves to `core/` (with `.gitmodules` and text references rewritten) and dependencies move to the pinned pnpm release (`packageManager`, `.npmrc`, one `pnpm-lock.yaml`, `PNPM_FLAGS` in `netlify.toml`, `PNPM_VERSION` in `wrangler.toml`). Neither step is optional; the preflight needs `pnpm` at the pinned version active. Projects pinned to a theme release without this command need a one-time bootstrap with `git submodule update --remote {{CORE_PATH}}`, then can run `sh do update --check` and `sh do update`. Projects below the 5.0.0 baseline require a verified legacy migration and are not advanced by this updater.
 
 `sh do` without arguments shows command help and does not build.
 
@@ -163,7 +163,7 @@ do not run a build or another Hugo process in the same project while serving.
 missing dependencies with the declared manager. For pnpm projects, use the exact
 `packageManager` version and `pnpm install --frozen-lockfile`; preserve the tracked
 `pnpm-lock.yaml`. Never replace it with an npm lockfile or require a global
-virtual store in CI. Independent consumers must not become a shared workspace.
+virtual store in CI. All projects use pnpm; the updater converts npm projects. Independent consumers must not become a shared workspace.
 
 | Change | Additional validation |
 | --- | --- |

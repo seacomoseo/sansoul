@@ -13,7 +13,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { spawnSync } from 'node:child_process'
 import { createInterface } from 'node:readline/promises'
-import { dependencyManager, checkDependencyManager, installDependencies } from './dependencies.js'
+import { ensurePnpm, preflightEngineMove, preflightPnpm, relocateEngine } from './consumer-layout.js'
 import { validateToken } from './lifecycle.js'
 import { engineDir as themeDir, relativeEnginePath } from './engine-paths.js'
 
@@ -47,7 +47,8 @@ const registeredMigrationVersions = new Set([
   '8.1.0',
   '9.0.0',
   '13.1.0',
-  '13.3.0'
+  '13.3.0',
+  '13.5.0'
 ])
 const supportedManualMigrations = new Set([
   '5.1.0',
@@ -126,7 +127,7 @@ async function main () {
   validateMigrationSupport(pending, targetCommit, rootVersion)
   validateMigrationConflicts(pending, targetCommit)
   validateTargetTemplates(targetCommit)
-  validateInstallAvailability(pending)
+  const layoutPlan = validateConsumerLayout()
 
   printPlan({
     branch,
@@ -135,7 +136,8 @@ async function main () {
     oldThemeVersion,
     rootVersion,
     targetVersion,
-    pending
+    pending,
+    layoutPlan
   })
 
   if (checkOnly) {
@@ -156,27 +158,37 @@ async function main () {
     }
   }
 
+  let engineRoot = themeDir
+  if (layoutPlan.moveEngine) {
+    console.log('\nMoving the SanSoul submodule to core/ (git mv stages only this move)…')
+    const moved = relocateEngine(projectDir, { engineRel: corePath, submoduleKey })
+    engineRoot = moved.engineDir
+    if (moved.leftovers.length > 0) console.warn(`Review remaining ${corePath} mentions in: ${moved.leftovers.join(', ')}`)
+  }
+
   run('sh', ['do', 'root-docs'], projectDir)
 
-  if (pending.some(migration => migration.version.raw === '8.0.0') ||
-      (migrationRequiresInstall(pending) && dependencyManager(projectDir).hasLock)) {
-    installDependencies({ directory: projectDir, updateLockfile: true })
+  console.log('\nEnsuring pnpm dependencies…')
+  try {
+    ensurePnpm(projectDir)
+  } catch (error) {
+    fail(error.message)
   }
 
   console.log('\nBuilding the updated consumer project…')
   run('sh', ['do', 'hugo'], projectDir)
 
   if (pending.length === 0) {
-    run(process.execPath, [path.join(themeDir, 'scripts', 'migrations.js'), 'mark', '--yes'], projectDir)
+    run(process.execPath, [path.join(engineRoot, 'scripts', 'migrations.js'), 'mark', '--yes'], projectDir)
     console.log('\nUpdate and build completed. The root package version now matches SanSoul.')
     return
   }
 
-  const migrationsCommand = [process.execPath, path.join(themeDir, 'scripts', 'migrations.js'), 'show']
+  const migrationsCommand = [process.execPath, path.join(engineRoot, 'scripts', 'migrations.js'), 'show']
   run(migrationsCommand[0], migrationsCommand.slice(1), projectDir)
 
   if (await confirmManualValidations()) {
-    run(process.execPath, [path.join(themeDir, 'scripts', 'migrations.js'), 'mark', '--yes'], projectDir)
+    run(process.execPath, [path.join(engineRoot, 'scripts', 'migrations.js'), 'mark', '--yes'], projectDir)
     console.log('\nUpdate completed and the compatibility version was synchronized.')
   } else {
     console.log('\nThe theme and automatic migrations are updated. Complete the listed project-specific checks, then run `sh do migrations mark --yes`.')
@@ -324,20 +336,17 @@ function validateTargetTemplates (targetCommit) {
   }
 }
 
-function validateInstallAvailability (pending) {
-  if (!migrationRequiresInstall(pending)) return
+function validateConsumerLayout () {
   try {
-    if (dependencyManager(projectDir).hasLock) checkDependencyManager(projectDir)
+    const move = preflightEngineMove(projectDir, corePath)
+    const pnpm = preflightPnpm(projectDir)
+    return { moveEngine: move.needed, convertPnpm: pnpm.needsConversion }
   } catch (error) {
-    fail(error.message)
+    fail(`${error.message} No project files were changed.`)
   }
 }
 
-function migrationRequiresInstall (pending) {
-  return pending.some(migration => /`npm install`/.test(migration.content))
-}
-
-function printPlan ({ branch, oldThemeCommit, targetCommit, oldThemeVersion, rootVersion, targetVersion, pending }) {
+function printPlan ({ branch, oldThemeCommit, targetCommit, oldThemeVersion, rootVersion, targetVersion, pending, layoutPlan }) {
   console.log('SanSoul update preflight')
   console.log(`- Theme: ${oldThemeVersion.raw} (${short(oldThemeCommit)}) → ${targetVersion.raw} (${short(targetCommit)})`)
   console.log(`- Remote branch: ${branch}`)
@@ -353,6 +362,8 @@ function printPlan ({ branch, oldThemeCommit, targetCommit, oldThemeVersion, roo
       if (supportedManualMigrations.has(migration.version.raw)) console.log(`  - ${migration.version.raw}: project-specific review remains after automatic steps`)
     }
   }
+  console.log(`- Engine path: ${layoutPlan.moveEngine ? `${corePath} → core (git mv, .gitmodules, references)` : 'core (already normalized)'}`)
+  console.log(`- Package manager: ${layoutPlan.convertPnpm ? 'convert to pnpm (mandatory)' : 'pnpm (already configured)'}`)
   console.log('- Validation: run the project build before synchronizing package.json')
 }
 

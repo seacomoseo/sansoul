@@ -5,7 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 
-test('divider shortcode emits headings and shapes instead of an indented Markdown code block', async t => {
+test('divider shortcode survives the consumer Markdown rendering path', async t => {
   if (spawnSync('hugo', ['version']).status !== 0) return t.skip('Hugo unavailable')
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sansoul-divider-shortcode-'))
   t.after(() => fs.rm(root, { recursive: true, force: true }))
@@ -16,7 +16,7 @@ test('divider shortcode emits headings and shapes instead of an indented Markdow
   await fs.writeFile(path.join(root, 'hugo.yml'), 'baseURL: https://fixture.example/\nmarkup:\n  goldmark:\n    renderer:\n      unsafe: true\n')
   await fs.writeFile(path.join(root, 'data/options.yml'), 'div: [tilt, curve, hide]\n')
   await fs.writeFile(path.join(root, 'content/_index.md'), '---\ntitle: Dividers\n---\n\nBefore.\n\n{{< dividers >}}\n\nAfter.\n')
-  await fs.writeFile(path.join(root, 'layouts/index.html'), '{{ .Content }}')
+  await fs.writeFile(path.join(root, 'layouts/index.html'), '{{ .Content | string | markdownify }}')
   await fs.writeFile(path.join(root, 'layouts/partials/func/i18n-cms.html'), '{{ return (dict "opt-div-tilt" "Tilt" "opt-div-curve" "Curve") }}')
   await fs.writeFile(path.join(root, 'layouts/partials/sections/divider-attr.html'), '{{ return (dict "class" "div" "style" "--div: url(/divider.svg)") }}')
   await fs.copyFile(new URL('../../layouts/partials/func/attrs.html', import.meta.url), path.join(root, 'layouts/partials/func/attrs.html'))

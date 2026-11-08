@@ -8,7 +8,7 @@ Proyecto creado con [Hugo](https://gohugo.io/) y el tema [SanSoul](https://githu
 Requisitos: Git y Hugo Extended. Para trabajar sin `node_modules` en local,
 instala Dart Sass una vez en el `PATH` (`brew install sass/sass/sass` en macOS).
 Node.js se requiere para los servidores administrados y los builds completos.
-En proyectos con pnpm, activa la versión exacta de `packageManager` e instala
+Todos los proyectos usan pnpm: activa la versión exacta de `packageManager` e instala
 con `pnpm install --frozen-lockfile`. `sh do build` instala las dependencias
 ausentes con el gestor del proyecto. Las versiones de despliegue se declaran
 en `.node-version`, `netlify.toml` y `wrangler.toml`.
