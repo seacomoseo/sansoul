@@ -42,6 +42,37 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 13.7.0 — formularios con backend propio (integración, sin publicar)
+
+**Impacto:** ninguno para formularios existentes. GAS, FormSubmit y acciones
+propias conservan su HTML y su JS. Aplica solo a formularios que elijan
+`action: worker` (o `inputs.action: worker` en `data/styles.yml`).
+
+### Qué incorpora
+
+- `core/forms/`: recepción same-origin en `POST /api/forms/submit` del Worker
+  del proyecto, política en servidor generada en el build (`worker/forms.generated.js`),
+  recibo durable `accepted`/`review` en D1, adjuntos temporales en KV, entrega
+  con lease/fencing y proveedor Gmail con cuenta por proyecto o por formulario
+  (`form.account`, campo CMS nuevo). Contrato en `core/forms/README.md`.
+- Ejemplo `_examples/forms-backend/` (Worker + `wrangler.workers.toml`, Free).
+- `scripts/update.js` registra 13.6.0 y 13.7.0 (13.6.0 faltaba en la política
+  del actualizador).
+
+### Acciones para adoptarlo (opcionales)
+
+1. Copiar el ejemplo, crear D1 y KV propios del proyecto y aplicar
+   `core/forms/migrations`; añadir `worker/forms.generated.js` a `.gitignore`.
+2. Configurar `FORMS_PROVIDER` (`hold` o `gmail`), los secretos
+   `FORMS_GMAIL_CREDENTIALS`/`FORMS_ADMIN_TOKEN` y `FORMS_GMAIL_DEFAULT`.
+3. Marcar los formularios con `action: worker` y comprobar en el build que
+   `public/_forms/` no existe y el manifiesto lista sus destinatarios.
+
+**Validación:** `pnpm run test:forms` en `core/`; envío de prueba en local con
+`FORMS_PROVIDER = "hold"` y recibo `accepted`. El puente GAS sigue vigente
+hasta migrar cada proyecto; mover el frontend no copia su deduplicación.
+
+
 ## 13.6.0 — comercio opt-in (integración, sin publicar)
 
 **Impacto:** ninguno para proyectos sin `data/commerce.yml` o con

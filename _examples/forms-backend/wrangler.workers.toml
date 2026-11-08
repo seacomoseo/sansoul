@@ -1,0 +1,34 @@
+# Workers Free only. Placeholder IDs: replace after review, never in this example.
+name = "site"
+main = "worker.js"
+compatibility_date = "2025-12-10"
+workers_dev = true
+preview_urls = false
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = ["/api/forms/*"]
+not_found_handling = "404-page"
+
+[vars]
+# `hold` stores submissions without sending; `gmail` needs the secrets below.
+FORMS_PROVIDER = "hold"
+FORMS_SENDER_NAME = "Example"
+# FORMS_GMAIL_DEFAULT = "main"
+# Secrets (wrangler secret put): FORMS_GMAIL_CREDENTIALS, FORMS_ADMIN_TOKEN
+
+[[d1_databases]]
+binding = "FORMS_DB"
+database_name = "forms-example"
+database_id = "00000000-0000-0000-0000-0000000000f1"
+migrations_dir = "core/forms/migrations"
+
+[[kv_namespaces]]
+binding = "FORMS_FILES"
+id = "000000000000000000000000000000f2"
+
+# Optional retry drain. Free accounts have few cron triggers; the admin
+# endpoint POST /api/forms/admin/dispatch does the same from a scheduled Action.
+# [triggers]
+# crons = ["*/15 * * * *"]
