@@ -1,4 +1,5 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -11,6 +12,7 @@ export const ADMIN_TOKEN = 'local-forms-admin-token-not-a-secret-0123456789'
 export const manifest = {
   version: 1,
   site: 'example.test',
+  project: 'acme-web',
   forms: {
     '/es/contacto/#form-contacto': 'contact',
     '/es/#form-footer': 'footer',
@@ -77,8 +79,10 @@ export async function createBindings () {
     kv_namespaces: [{ binding: 'FORMS_FILES', id: '000000000000000000000000000000f2' }]
   }))
   const proxy = await getPlatformProxy({ configPath: join(directory, 'wrangler.json'), persist: { path: join(directory, 'state') } })
-  const sql = readFileSync(join(FORMS_DIR, 'migrations/0001_forms.sql'), 'utf8')
-  for (const statement of splitSql(sql)) await proxy.env.FORMS_DB.prepare(statement).run()
+  for (const file of readdirSync(join(FORMS_DIR, 'migrations')).filter(name => name.endsWith('.sql')).sort()) {
+    const sql = readFileSync(join(FORMS_DIR, 'migrations', file), 'utf8')
+    for (const statement of splitSql(sql)) await proxy.env.FORMS_DB.prepare(statement).run()
+  }
   return {
     db: proxy.env.FORMS_DB,
     kv: proxy.env.FORMS_FILES,
@@ -89,11 +93,72 @@ export async function createBindings () {
   }
 }
 
-// Fake Google endpoints: records every call; behavior is switchable per test.
+// Fake Google endpoints (OAuth, Gmail, Drive): records every call; behavior
+// is switchable per test.
 export function createFakeGoogle () {
-  const state = { sent: [], tokenCalls: 0, sendMode: 'ok', identityOverride: null, sendHook: null }
+  const state = {
+    sent: [],
+    tokenCalls: 0,
+    sendMode: 'ok',
+    identityOverride: null,
+    sendHook: null,
+    driveScope: true,
+    drive: new Map(),
+    driveCalls: [],
+    uploadMode: 'ok',
+    checksumOverride: null,
+    nextId: 0
+  }
   const byToken = new Map()
   const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } })
+  const scopes = () => ['https://www.googleapis.com/auth/gmail.send', 'openid', 'https://www.googleapis.com/auth/userinfo.email', ...(state.driveScope ? ['https://www.googleapis.com/auth/drive.file'] : [])].join(' ')
+  const meta = file => ({
+    id: file.id,
+    size: String(file.bytes.length),
+    ...(file.bytes.length ? { sha256Checksum: state.checksumOverride || file.sha256 } : {}),
+    parents: file.parents,
+    trashed: false,
+    webViewLink: `https://drive.google.com/file/d/${file.id}/view?usp=drivesdk`
+  })
+  async function drive (href, init) {
+    const url = new URL(href)
+    const account = byToken.get(String(init.headers?.authorization).replace('Bearer ', ''))
+    state.driveCalls.push(`${init.method || 'GET'} ${url.pathname}`)
+    if (!account) return json({ error: { code: 401 } }, 401)
+    if (url.pathname === '/drive/v3/files/generateIds') {
+      return json({ ids: Array.from({ length: Number(url.searchParams.get('count')) }, () => `gen${++state.nextId}`) })
+    }
+    if (url.pathname === '/drive/v3/files' && (init.method || 'GET') === 'GET') {
+      const q = url.searchParams.get('q')
+      const [, name, parent] = q.match(/^name = '(.*)' and '(.*)' in parents/)
+      const files = [...state.drive.values()].filter(file => file.owner === account && file.folder && file.name === name.replace(/\\'/g, "'") && file.parents.includes(parent))
+      return json({ files: files.map(file => ({ id: file.id })) })
+    }
+    if (url.pathname === '/drive/v3/files' && init.method === 'POST') {
+      const body = JSON.parse(init.body)
+      const id = body.id || `auto${++state.nextId}`
+      if (state.drive.has(id)) return json({ error: { code: 409 } }, 409)
+      if (body.parents[0] !== 'root' && !state.drive.has(body.parents[0])) return json({ error: { code: 404 } }, 404)
+      state.drive.set(id, { id, owner: account, name: body.name, parents: body.parents, folder: body.mimeType === 'application/vnd.google-apps.folder', bytes: new Uint8Array(0) })
+      return json({ id })
+    }
+    const fileMatch = url.pathname.match(/^\/(upload\/)?drive\/v3\/files\/([\w-]+)$/)
+    if (fileMatch) {
+      const file = state.drive.get(fileMatch[2])
+      if (!file || file.owner !== account) return json({ error: { code: 404 } }, 404)
+      if (fileMatch[1]) {
+        if (state.uploadMode === 'network') {
+          state.uploadMode = 'ok'
+          throw new TypeError('fetch failed')
+        }
+        if (state.uploadMode === 'quota') return json({ error: { code: 403, errors: [{ reason: 'storageQuotaExceeded' }] } }, 403)
+        const bytes = new Uint8Array(await new Response(init.body).arrayBuffer())
+        Object.assign(file, { bytes, sha256: createHash('sha256').update(bytes).digest('hex') })
+      }
+      return json(meta(file))
+    }
+    throw new Error(`unexpected drive call ${href}`)
+  }
   async function fetch (url, init = {}) {
     const href = String(url)
     if (href === 'https://oauth2.googleapis.com/token') {
@@ -103,13 +168,14 @@ export function createFakeGoogle () {
       if (!entry) return json({ error: 'invalid_grant' }, 400)
       const token = `at-${entry.client_id}-${state.tokenCalls}`
       byToken.set(token, entry.account)
-      return json({ access_token: token, expires_in: 3600, scope: 'https://www.googleapis.com/auth/gmail.send openid https://www.googleapis.com/auth/userinfo.email' })
+      return json({ access_token: token, expires_in: 3600, scope: scopes() })
     }
     if (href.startsWith('https://oauth2.googleapis.com/tokeninfo')) {
       const token = new URL(href).searchParams.get('access_token')
       if (state.tokeninfoNoEmail) return json({ scope: 'https://www.googleapis.com/auth/gmail.send' })
-      return json({ email: state.identityOverride || byToken.get(token), scope: 'https://www.googleapis.com/auth/gmail.send openid' })
+      return json({ email: state.identityOverride || byToken.get(token), scope: scopes() })
     }
+    if (href.startsWith('https://www.googleapis.com/drive/') || href.startsWith('https://www.googleapis.com/upload/drive/')) return drive(href, init)
     if (href.startsWith('https://gmail.googleapis.com/upload/gmail/v1/users/me/messages/send')) {
       if (state.sendHook) await state.sendHook()
       const account = byToken.get(String(init.headers.authorization).replace('Bearer ', ''))
@@ -123,6 +189,24 @@ export function createFakeGoogle () {
     throw new Error(`unexpected fetch ${href}`)
   }
   return { fetch, state }
+}
+
+// Raw upload of one file, as form-send.js does before the submission.
+export async function uploadRequest (blob, { fileName = 'file', field, index, id, page = '/es/empleo/', form = 'form-cv', origin = ORIGIN, ip = '203.0.113.7', sha256 } = {}) {
+  const bytes = new Uint8Array(await blob.arrayBuffer())
+  const query = new URLSearchParams({ submission: id, page, form, field, index: String(index) })
+  return new Request(`${ORIGIN}/api/forms/upload?${query}`, {
+    method: 'POST',
+    headers: {
+      origin,
+      'cf-connecting-ip': ip,
+      'content-type': blob.type || 'application/octet-stream',
+      'content-length': String(bytes.byteLength),
+      'x-file-name': encodeURIComponent(fileName),
+      'x-file-sha256': sha256 || createHash('sha256').update(bytes).digest('hex')
+    },
+    body: bytes
+  })
 }
 
 export function submitRequest (fields, { origin = ORIGIN, page = '/es/contacto/', form = 'form-contacto', id = crypto.randomUUID(), urlencoded = false, ip = '203.0.113.7' } = {}) {

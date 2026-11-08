@@ -40,24 +40,25 @@ export function fillPlaceholders (html, fields) {
 
 const size = bytes => bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`
 
-function rows (fields, files) {
+function rows (fields, files, links) {
   const list = fields.map(([name, value]) => ({ name, value }))
-  for (const file of files) list.push({ name: file.field, value: `📎 ${file.name} (${size(file.size)})` })
+  for (const file of files) list.push({ name: file.field, value: `📎 ${file.name} (${size(file.size)})`, link: links?.get(file.index) })
   return list
 }
 
 function table (list) {
-  const cells = list.map(({ name, value }) =>
+  const cells = list.map(({ name, value, link }) =>
     `<tr><th align="left" valign="top" style="padding:4px 12px 4px 0">${escapeHtml(name)}</th>` +
-    `<td style="padding:4px 0;white-space:pre-wrap">${escapeHtml(value)}</td></tr>`
+    `<td style="padding:4px 0;white-space:pre-wrap">${link ? `<a href="${escapeHtml(link)}">${escapeHtml(value)}</a>` : escapeHtml(value)}</td></tr>`
   ).join('')
   return `<table cellspacing="0" cellpadding="0">${cells}</table>`
 }
 
-const textTable = list => list.map(({ name, value }) => `${name}: ${value}`).join('\n')
+const textTable = list => list.map(({ name, value, link }) => `${name}: ${value}${link ? ` ${link}` : ''}`).join('\n')
 
-export function renderOwner ({ submission, authority }) {
-  const list = rows(submission.fields, submission.files)
+// `links` (Map index → Drive URL) replaces inline attachments for large files.
+export function renderOwner ({ submission, authority, links = null }) {
+  const list = rows(submission.fields, submission.files, links)
   const footer = `${authority.site}${submission.page} · ${submission.id}`
   return {
     subject: authority.subject,

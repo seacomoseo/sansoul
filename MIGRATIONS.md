@@ -55,6 +55,15 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
   recibo durable `accepted`/`review` en D1, adjuntos temporales en KV, entrega
   con lease/fencing y proveedor Gmail con cuenta por proyecto o por formulario
   (`form.account`, campo CMS nuevo). Contrato en `core/forms/README.md`.
+- Archivos por subida raw (`POST /api/forms/upload`, uno por archivo, directo a
+  KV sin parsear ni hashear en el Worker); el envío solo lleva texto y
+  referencias. Hasta 2 MB por envío dentro del correo; con `FORMS_DRIVE = "true"`,
+  hasta 20 MB por archivo y 25 MB por envío, y lo que pase de 2 MB va al Drive
+  de la cuenta remitente (`Forms/<proyecto>/<formulario>/`, scope `drive.file`)
+  con enlace en el correo. Migración `0002_files.sql`.
+- Cuenta por defecto de SanSoul `sansoulsend@gmail.com`, cargada como
+  configuración (`FORMS_GMAIL_DEFAULT` + secreto) con
+  `forms/scripts/gmail-credentials.js`, que nunca imprime valores.
 - Ejemplo `_examples/forms-backend/` (Worker + `wrangler.workers.toml`, Free).
 - `scripts/update.js` registra 13.6.0 y 13.7.0 (13.6.0 faltaba en la política
   del actualizador).
@@ -64,7 +73,8 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
 1. Copiar el ejemplo, crear D1 y KV propios del proyecto y aplicar
    `core/forms/migrations`; añadir `worker/forms.generated.js` a `.gitignore`.
 2. Configurar `FORMS_PROVIDER` (`hold` o `gmail`), los secretos
-   `FORMS_GMAIL_CREDENTIALS`/`FORMS_ADMIN_TOKEN` y `FORMS_GMAIL_DEFAULT`.
+   `FORMS_GMAIL_CREDENTIALS`/`FORMS_ADMIN_TOKEN`, `FORMS_GMAIL_DEFAULT` y, para
+   archivos grandes, `FORMS_DRIVE = "true"` (opcional `FORMS_DRIVE_FOLDER`).
 3. Marcar los formularios con `action: worker` y comprobar en el build que
    `public/_forms/` no existe y el manifiesto lista sus destinatarios.
 

@@ -4,8 +4,8 @@ import { after, before, beforeEach, describe, test } from 'node:test'
 import { createFormsWorker } from '../worker.js'
 import { dispatch } from '../dispatch.js'
 import { createProviders } from '../providers/index.js'
-import { LEASE_MS, recoverExpiredLeases } from '../store.js'
-import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, decodeMime, manifest, submitRequest, withLength } from './helpers.js'
+import { LEASE_MS, recoverExpiredLeases, sweepOrphanUploads } from '../store.js'
+import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, decodeMime, manifest, submitRequest, uploadRequest, withLength } from './helpers.js'
 
 let bindings
 let google
@@ -22,8 +22,21 @@ const contactFields = [
   ['Intereses', 'dos']
 ]
 
-async function send (fields, options) {
-  const { id, request } = submitRequest(fields, options)
+// Like the browser: every Blob is uploaded raw first and replaced by its index.
+async function send (fields, options = {}) {
+  const submissionId = options.id || crypto.randomUUID()
+  const plain = []
+  let index = 0
+  for (const [name, value, fileName] of fields) {
+    if (!(value instanceof Blob)) {
+      plain.push([name, value])
+      continue
+    }
+    const response = await worker.fetch(await uploadRequest(value, { ...options, id: submissionId, field: name, index, fileName }), env, null)
+    if (!response.ok && response.status !== 409) return { id: submissionId, response, body: await response.json() }
+    plain.push([name, String(index++)])
+  }
+  const { id, request } = submitRequest(plain, { ...options, id: submissionId })
   const response = await worker.fetch(await withLength(request), env, null)
   return { id, response, body: await response.json() }
 }
@@ -35,7 +48,7 @@ const adminRequest = (path, token = ADMIN_TOKEN) => new Request(`https://example
 before(async () => { bindings = await createBindings() })
 after(async () => { await bindings.dispose() })
 beforeEach(async () => {
-  for (const table of ['forms_jobs', 'forms_submissions', 'forms_rate']) await bindings.db.prepare(`DELETE FROM ${table}`).run()
+  for (const table of ['forms_drive_files', 'forms_drive_folders', 'forms_uploads', 'forms_jobs', 'forms_submissions', 'forms_rate']) await bindings.db.prepare(`DELETE FROM ${table}`).run()
   google = createFakeGoogle()
   clock = 1_800_000_000_000
   worker = createFormsWorker(manifest, { fetch: google.fetch, now })
@@ -405,5 +418,143 @@ describe('delivery failures and leases', () => {
     const { id } = await send([['Email', 'a@example.org']], footer)
     await assert.rejects(bindings.db.prepare("UPDATE forms_submissions SET fields = '[]' WHERE id = ?").bind(id).run(), /forms_submission_immutable/)
     await assert.rejects(bindings.db.prepare("UPDATE forms_jobs SET authority = '{}' WHERE submission_id = ?").bind(id).run(), /forms_job_authority_immutable/)
+  })
+})
+
+describe('raw uploads and Drive', () => {
+  const big = () => {
+    const bytes = new Uint8Array(2.5 * 1024 * 1024)
+    for (let index = 0; index < bytes.length; index += 4096) bytes[index] = index % 251
+    return bytes
+  }
+  const cvPage = { page: '/es/empleo/', form: 'form-cv' }
+  const ownerMail = () => google.state.sent.find(mail => /rrhh@example\.test/.test(mail.mime))
+  const driveFiles = () => [...google.state.drive.values()].filter(file => !file.folder)
+  const folderNamed = name => [...google.state.drive.values()].find(file => file.folder && file.name === name)
+
+  test('large attachments go to Drive (Forms/<project>/<form>) and the email links them', async () => {
+    env.FORMS_DRIVE = 'true'
+    const bytes = big()
+    const { id, body } = await send([['Nombre', 'Ana'], ['CV', new Blob([bytes], { type: 'application/pdf' }), 'cv grande.pdf']], cvPage)
+    assert.equal(body.status, 'accepted')
+    assert.equal((await job(id, 'owner')).state, 'sent')
+    const [file] = driveFiles()
+    assert.equal(file.id, 'gen1')
+    assert.deepEqual(Buffer.from(file.bytes), Buffer.from(bytes))
+    assert.match(file.name, new RegExp(`^${id}-CV-1-[0-9a-f]{16}-cv grande\\.pdf$`))
+    const forms = folderNamed('Forms')
+    const project = folderNamed('acme-web')
+    const form = folderNamed('form-cv')
+    assert.deepEqual([forms.parents, project.parents, form.parents, file.parents], [['root'], [forms.id], [project.id], [form.id]])
+    const mail = decodeMime(ownerMail().mime)
+    assert.equal(mail.parts.filter(part => /Content-Disposition: attachment/.test(part.head)).length, 0)
+    assert.ok(mail.parts.some(part => part.body.toString().includes('https://drive.google.com/file/d/gen1/view')))
+    const row = await bindings.db.prepare('SELECT files, files_purged_at FROM forms_submissions WHERE id = ?').bind(id).first()
+    assert.ok(row.files_purged_at)
+    assert.equal(await bindings.kv.get(JSON.parse(row.files)[0].key), null)
+    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_uploads').first()).n, 0)
+
+    // The folder tree is resolved once per account and reused.
+    const before = google.state.driveCalls.length
+    clock += 1000
+    await send([['Nombre', 'Bea'], ['CV', new Blob([big()], { type: 'application/pdf' }), 'otro.pdf']], { ...cvPage, ip: '203.0.113.8' })
+    const calls = google.state.driveCalls.slice(before)
+    assert.equal(calls.filter(call => call === 'GET /drive/v3/files').length, 0)
+    assert.equal(calls.filter(call => call === 'POST /drive/v3/files').length, 1)
+  })
+
+  test('small totals stay inline even with Drive enabled', async () => {
+    env.FORMS_DRIVE = 'true'
+    const { id } = await send([['Nombre', 'Ana'], ['CV', new Blob([new Uint8Array(1000).fill(7)], { type: 'image/png' }), 'a.png']], cvPage)
+    assert.equal((await job(id, 'owner')).state, 'sent')
+    assert.equal(google.state.driveCalls.length, 0)
+    const mail = decodeMime(ownerMail().mime)
+    assert.equal(mail.parts.filter(part => /Content-Disposition: attachment/.test(part.head)).length, 1)
+  })
+
+  test('without Drive the inline budget caps each file', async () => {
+    const { response, body } = await send([['CV', new Blob([big()], { type: 'application/pdf' }), 'a.pdf']], cvPage)
+    assert.equal(response.status, 413)
+    assert.equal(body.error, 'file_too_large')
+  })
+
+  test('a lost Drive upload is retried on the same reserved file ID', async () => {
+    env.FORMS_DRIVE = 'true'
+    google.state.uploadMode = 'network'
+    const { id } = await send([['Nombre', 'Ana'], ['CV', new Blob([big()], { type: 'application/pdf' }), 'a.pdf']], cvPage)
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['pending', 'drive_upload_unreachable'])
+    assert.equal(ownerMail(), undefined)
+    clock += 61000
+    await worker.fetch(adminRequest('dispatch'), env, null)
+    assert.equal((await job(id, 'owner')).state, 'sent')
+    assert.deepEqual(driveFiles().map(file => file.id), ['gen1'])
+    assert.equal(google.state.driveCalls.filter(call => call === 'GET /drive/v3/files/generateIds').length, 1)
+  })
+
+  test('a declared checksum that Drive does not confirm holds the job', async () => {
+    env.FORMS_DRIVE = 'true'
+    const id = crypto.randomUUID()
+    const bytes = big()
+    const upload = await worker.fetch(await uploadRequest(new Blob([bytes], { type: 'application/pdf' }), { ...cvPage, id, field: 'CV', index: 0, fileName: 'a.pdf', sha256: 'a'.repeat(64) }), env, null)
+    assert.equal(upload.status, 200)
+    const { request } = submitRequest([['Nombre', 'Ana'], ['CV', '0']], { ...cvPage, id })
+    await worker.fetch(await withLength(request), env, null)
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'drive_checksum_mismatch'])
+    assert.equal(ownerMail(), undefined)
+  })
+
+  test('a grant without drive.file or a full Drive holds the job before mailing', async () => {
+    env.FORMS_DRIVE = 'true'
+    google.state.driveScope = false
+    const first = await send([['Nombre', 'Ana'], ['CV', new Blob([big()], { type: 'application/pdf' }), 'a.pdf']], cvPage)
+    assert.deepEqual([(await job(first.id, 'owner')).state, (await job(first.id, 'owner')).last_error], ['held', 'drive_scope_missing'])
+    assert.equal(google.state.driveCalls.length, 0)
+    google.state.driveScope = true
+    google.state.uploadMode = 'quota'
+    worker = createFormsWorker(manifest, { fetch: google.fetch, now })
+    const second = await send([['Nombre', 'Bo'], ['CV', new Blob([big()], { type: 'application/pdf' }), 'b.pdf']], { ...cvPage, ip: '203.0.113.9' })
+    assert.deepEqual([(await job(second.id, 'owner')).state, (await job(second.id, 'owner')).last_error], ['held', 'drive_storage_full'])
+    assert.equal(ownerMail(), undefined)
+  })
+
+  test('FORMS_DRIVE_FOLDER replaces the Forms base folder', async () => {
+    env.FORMS_DRIVE = 'true'
+    env.FORMS_DRIVE_FOLDER = 'shared1'
+    google.state.drive.set('shared1', { id: 'shared1', owner: credentials.main.account, name: 'Cliente', parents: ['root'], folder: true, bytes: new Uint8Array(0) })
+    const { id } = await send([['Nombre', 'Ana'], ['CV', new Blob([big()], { type: 'application/pdf' }), 'a.pdf']], cvPage)
+    assert.equal((await job(id, 'owner')).state, 'sent')
+    assert.equal(folderNamed('Forms'), undefined)
+    assert.deepEqual(folderNamed('acme-web').parents, ['shared1'])
+  })
+
+  test('upload guards: origin, checksum, committed submission, missing reference, multipart files', async () => {
+    const blob = new Blob([new Uint8Array([1, 2, 3])], { type: 'application/pdf' })
+    const id = crypto.randomUUID()
+    const status = async request => { const response = await worker.fetch(request, env, null); return [response.status, (await response.json()).error] }
+    assert.deepEqual(await status(await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 0, origin: 'https://evil.test' })), [403, 'origin_forbidden'])
+    const noChecksum = await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 0 })
+    noChecksum.headers.delete('x-file-sha256')
+    assert.deepEqual(await status(noChecksum), [400, 'file_checksum_required'])
+    assert.deepEqual(await status(await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 10 })), [400, 'file_reference_invalid'])
+
+    const missing = submitRequest([['Nombre', 'Ana'], ['CV', '3']], { ...cvPage, id })
+    assert.deepEqual(await status(await withLength(missing.request)), [400, 'file_missing'])
+    const multipart = submitRequest([['Nombre', 'Ana'], ['CV', blob, 'a.pdf']], { ...cvPage, id })
+    assert.deepEqual(await status(await withLength(multipart.request)), [400, 'upload_required'])
+
+    const done = await send([['Nombre', 'Ana'], ['CV', blob, 'a.pdf']], { ...cvPage, id })
+    assert.equal(done.body.status, 'accepted')
+    assert.deepEqual(await status(await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 0, fileName: 'a.pdf' })), [409, 'submission_committed'])
+  })
+
+  test('uploads of abandoned forms are swept with their bytes after a day', async () => {
+    const id = crypto.randomUUID()
+    await worker.fetch(await uploadRequest(new Blob([new Uint8Array([5])], { type: 'application/pdf' }), { ...cvPage, id, field: 'CV', index: 0, fileName: 'a.pdf' }), env, null)
+    const row = await bindings.db.prepare('SELECT kv_key FROM forms_uploads WHERE submission_id = ?').bind(id).first()
+    assert.ok(await bindings.kv.get(row.kv_key))
+    clock += 25 * 3600 * 1000
+    assert.equal(await sweepOrphanUploads(bindings.db, bindings.kv, clock), 1)
+    assert.equal(await bindings.kv.get(row.kv_key), null)
+    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_uploads').first()).n, 0)
   })
 })

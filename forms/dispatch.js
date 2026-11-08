@@ -2,10 +2,12 @@ import { resolveAuthority } from './providers/index.js'
 import { renderConfirmation, renderOwner } from './render.js'
 import {
   claimJob, dueJobs, loadSubmission, markFilesPurged, markHeld, markRetry,
-  markSending, markSent, pruneRate, recoverExpiredLeases
+  markSending, markSent, pruneRate, recoverExpiredLeases, sweepOrphanUploads
 } from './store.js'
 
 const SEND_TIMEOUT_MS = 25000
+// Up to 25 MB stream from KV to Drive; the 90 s lease covers it.
+const DRIVE_TIMEOUT_MS = 60000
 
 function sameAuthority (stored, current) {
   return ['provider', 'ref', 'account', 'fingerprint'].every(key => stored[key] === current[key])
@@ -43,21 +45,23 @@ async function deliver ({ env, db, kv, providers, now, job, token }) {
 
   const submission = await loadSubmission(db, job.submission_id)
   const isOwner = job.channel === 'owner'
-  const attachments = isOwner ? await loadAttachments(kv, submission) : []
+  const toDrive = isOwner && authority.files?.mode === 'drive' && submission.files.length > 0
+  const attachments = isOwner && !toDrive ? await loadAttachments(kv, submission) : []
   if (!attachments) return markHeld(db, job.id, token, now(), 'files_missing')
-  const body = isOwner ? renderOwner({ submission, authority }) : renderConfirmation({ submission, authority })
-  const message = {
-    ...body,
-    fromName: authority.senderName,
-    messageId: job.id.replace(':', '.'),
-    attachments,
-    ...(isOwner
-      ? { [authority.to.length > 1 ? 'bcc' : 'to']: authority.to, replyTo: authority.replyTo || undefined }
-      : { to: [authority.replyTo], replyTo: authority.to[0] })
-  }
-
   let sendingMarked = false
   try {
+    // Drive writes target reserved IDs, so this step is safe to repeat.
+    const links = toDrive ? await provider.storeFiles({ env, db, kv, authority, submission, signal: AbortSignal.timeout(DRIVE_TIMEOUT_MS), now }) : null
+    const body = isOwner ? renderOwner({ submission, authority, links }) : renderConfirmation({ submission, authority })
+    const message = {
+      ...body,
+      fromName: authority.senderName,
+      messageId: job.id.replace(':', '.'),
+      attachments,
+      ...(isOwner
+        ? { [authority.to.length > 1 ? 'bcc' : 'to']: authority.to, replyTo: authority.replyTo || undefined }
+        : { to: [authority.replyTo], replyTo: authority.to[0] })
+    }
     const result = await provider.send({
       env,
       authority,
@@ -96,6 +100,9 @@ export async function dispatch ({ env, db, kv, providers, now = Date.now, submis
     processed++
     await deliver({ env, db, kv, providers, now, job, token })
   }
-  if (!submissionId && Math.random() < 0.1) await pruneRate(db, now())
+  if (!submissionId && Math.random() < 0.1) {
+    await pruneRate(db, now())
+    await sweepOrphanUploads(db, kv, now())
+  }
   return { processed, hasMore: !submissionId && ids.length === limit }
 }

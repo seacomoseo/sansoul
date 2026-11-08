@@ -32,9 +32,15 @@ Side effects: Publishes public/_forms/<hash>.json; the post-build script moves i
   {{- end -}}
 {{- end -}}
 {{- $confirm := cond .confirm.enabled .confirm nil -}}
+{{- /* Drive folder of the project, same rule as the GAS bridge: Forms/<project>/<form>. */ -}}
+{{- $name := site.Params.name | default "" -}}
+{{- $owner := site.Params.owner | default "" -}}
+{{- $project := printf "%s-%s" $owner $name -}}
+{{- if eq $name "seacomoseo" }}{{ $project = $name }}{{ else if eq $name "site" }}{{ $project = $owner }}{{ end -}}
 {{- $spec := dict
   "id"      .id
   "site"    (site.Params.domain | default "")
+  "project" (strings.Trim $project "-")
   "lang"    site.Language.Lang
   "page"    .page
   "subject" .subject

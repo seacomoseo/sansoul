@@ -24,6 +24,10 @@ export function validateManifest (manifest) {
   if (!manifest || manifest.version !== MANIFEST_VERSION || typeof manifest.forms !== 'object' || typeof manifest.specs !== 'object') {
     throw new Error('forms_manifest_invalid')
   }
+  // Drive folder name (Forms/<project>/<form>): plain label, never a path.
+  if (manifest.project !== undefined && (typeof manifest.project !== 'string' || /[/\\\r\n]/.test(manifest.project) || manifest.project.length > 120)) {
+    throw new Error('forms_manifest_invalid_project')
+  }
   for (const [key, ref] of Object.entries(manifest.forms)) {
     if (!validSpec(manifest.specs[ref])) throw new Error(`forms_manifest_invalid_spec:${key}`)
   }

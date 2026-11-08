@@ -9,6 +9,9 @@ const holdProvider = {
   async authority () {
     return { provider: 'hold' }
   },
+  async storeFiles () {
+    throw new DeliveryError('delivery_disabled', 'hold')
+  },
   async send () {
     throw new DeliveryError('delivery_disabled', 'hold')
   }

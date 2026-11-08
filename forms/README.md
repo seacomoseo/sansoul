@@ -7,9 +7,20 @@ igual (GAS, FormSubmit o acción propia): el puente GAS no cambia.
 
 ## Contrato navegador → Worker
 
-- Cuerpo `multipart/form-data` nativo (`FormData`): orden, campos repetidos,
-  valores vacíos y archivos binarios llegan tal cual, sin Base64. También se
-  acepta `application/x-www-form-urlencoded` (reintento local sin archivos).
+- Cuerpo `multipart/form-data` nativo (`FormData`) solo con texto: orden,
+  campos repetidos y valores vacíos llegan tal cual. También se acepta
+  `application/x-www-form-urlencoded` (reintento local sin archivos). Una parte
+  binaria en el envío se rechaza con `upload_required`.
+- Archivos: antes del envío, el navegador sube cada archivo raw a
+  `POST /api/forms/upload?submission=&page=&form=&field=&index=` con
+  `Content-Type`, `Content-Length`, `X-File-Name` (URI-encoded) y
+  `X-File-Sha256` (calculado en el navegador). El Worker no parsea ni hashea:
+  pasa el stream a KV con `FixedLengthStream`. Motivo medido: en Workers,
+  `formData()` costó 8/113/170 ms de CPU para texto/5/8 MiB y el stream raw a
+  KV, 2–4 ms con 8 MB. En el envío, el campo de archivo lleva el índice de su
+  subida. Subir a un envío ya guardado da `409 submission_committed` (el
+  navegador sigue y recibe el recibo); las subidas abandonadas se borran a las
+  24 h.
 - Campos reservados: `_form` (ID del formulario), `_page` (ruta de la página),
   `_submission_id` (UUID del navegador, clave de idempotencia) y `_gotcha`
   (honeypot). Ningún input oculto define destinatarios, textos ni cuentas.
@@ -30,9 +41,10 @@ archivos) y `scripts/build-manifest.js` la mueve a `worker/forms.generated.js`,
 fuera de `public/`. Campos desconocidos, honeypot, URLs o palabras de spam y
 emails inválidos dejan el envío en `review`: se guarda y no envía nada hasta
 que un administrador lo libera. Archivos: tipo según `accept`, número según
-`max` y 2 MB en total por envío (los adjuntos viajan en base64 dentro del correo y
-plegarlos cuesta ~2–7 ms de CPU por MB en workerd local; las imágenes ya se
-comprimen en el navegador). Archivos mayores requieren el adaptador Drive, pendiente.
+`max` (y 10 por envío). Sin Drive, 2 MB en total por envío, adjuntos al correo
+(el base64 cuesta ~2–7 ms de CPU por MB en workerd; las imágenes ya se
+comprimen en el navegador). Con `FORMS_DRIVE = "true"`: 20 MB por archivo y
+25 MB por envío; si el total pasa de 2 MB, todos van a Drive.
 
 ## Persistencia y entrega
 
@@ -40,7 +52,8 @@ comprimen en el navegador). Archivos mayores requieren el adaptador Drive, pendi
   envío inmutable y un trabajo por canal (`owner`, `confirmation`) con la
   autoridad de entrega congelada (proveedor, cuenta, destinatarios y textos).
 - KV (`FORMS_FILES`) guarda los bytes de los adjuntos hasta enviar el correo al
-  propietario (o descartarlo); después se borran. TTL de seguridad de 90 días:
+  propietario (o descartarlo); después se borran. KV Free admite 1.000
+  escrituras y 1.000 borrados al día por cuenta: cada archivo gasta uno de cada. TTL de seguridad de 90 días:
   un envío retenido debe resolverse antes. Sin archivos no hace falta KV; si
   KV falla, el envío responde `503 files_unavailable` sin guardar nada.
 - Entrega inmediata con `waitUntil`; reintentos con `POST /api/forms/admin/dispatch`
@@ -72,9 +85,50 @@ comprimen en el navegador). Archivos mayores requieren el adaptador Drive, pendi
   cambia la autoridad; otro cliente OAuth u otra cuenta, sí (`authority_drift`).
 - Sin proveedor válido el endpoint responde `503 forms_unavailable` y no guarda.
 
-Drive, Sheets y otros proveedores (Brevo) no forman parte de este corte.
+## Drive (archivos grandes)
+
+Con `FORMS_DRIVE = "true"` y un grant con `drive.file`, el aviso al propietario
+sube primero los archivos al Drive de la cuenta remitente y los enlaza en el
+correo (privados: el propietario del Drive comparte la carpeta con quien deba
+verlos). Ruta: `Forms/<proyecto>/<id del formulario>/`, con el proyecto
+calculado como en el puente GAS (`params.name`; `params.owner` si el nombre es
+`site`; si no, `<owner>-<name>`). `FORMS_DRIVE_FOLDER` (ID de una carpeta a la
+que la app tenga acceso) sustituye a `Forms`. Con `drive.file` la app solo ve
+lo que crea ella: las carpetas de GAS no se reutilizan.
+
+- El ID de cada archivo se genera (`generateIds`) y se guarda en D1 antes de
+  subir nada; crear con ese ID y subir el contenido (`PATCH uploadType=media`,
+  stream desde KV) se puede repetir sin duplicar, así que los fallos de red o
+  5xx de Drive se reintentan solos.
+- Tras subir, Drive debe devolver el mismo tamaño, la carpeta y el SHA-256 que
+  declaró el navegador; si no coincide, `held` (`drive_checksum_mismatch`) sin
+  correo. Grant sin `drive.file` (`drive_scope_missing`) o Drive lleno
+  (`drive_storage_full`): `held` antes de subir o enviar.
+- Las carpetas se buscan o crean una vez por cuenta y se guardan en D1.
+
+## Cuenta por defecto de SanSoul
+
+La cuenta remitente por defecto es `sansoulsend@gmail.com` (grant `gmail.send`,
+`drive.file`, `openid`, `userinfo.email`). Loren autoriza guardarla como secreto
+del Worker de cada proyecto, también en cuentas Cloudflare de clientes. Es
+configuración, no código:
+
+```sh
+node core/forms/scripts/gmail-credentials.js --check --drive sansoulsend=<grant.json>
+node core/forms/scripts/gmail-credentials.js --drive sansoulsend=<grant.json> \
+  | node core/node_modules/wrangler/bin/wrangler.js secret put FORMS_GMAIL_CREDENTIALS --config wrangler.workers.toml
+```
+
+y en `[vars]`: `FORMS_PROVIDER = "gmail"`, `FORMS_GMAIL_DEFAULT = "sansoulsend"`,
+`FORMS_DRIVE = "true"`. El script valida claves y scopes y se niega a escribir
+el secreto en una terminal. Un `form.account` propio sigue teniendo prioridad.
+La cuota diaria de Gmail de `sansoulsend` la comparten todos los proyectos que
+la usan.
+
+Sheets y otros proveedores (Brevo) no forman parte de este corte.
 
 ## Pruebas
 
-`pnpm run test:forms` usa D1 y KV locales de workerd y un Google falso. No
-envía correos reales ni certifica la CPU de Workers Free en la nube.
+`pnpm run test:forms` usa D1 y KV locales de workerd y un Google falso
+(OAuth, Gmail y Drive). No envía correos reales, no escribe en Drive ni
+certifica la CPU de Workers Free en la nube.

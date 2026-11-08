@@ -10,9 +10,37 @@ export function requireDatabase (env) {
   return db
 }
 
-// The digest keeps a conflicting retry of the same ID from overwriting the files
-// of the submission that was actually committed.
-export const fileKey = (submissionId, digest, index) => `forms/${submissionId}/${digest.slice(0, 16)}/${index}`
+// The checksum in the key keeps a re-upload with other bytes from overwriting
+// the value a committed submission references.
+export const uploadKey = (submissionId, index, sha256) => `forms/${submissionId}/${index}-${sha256.slice(0, 16)}`
+export const UPLOAD_ORPHAN_MS = 24 * 3600 * 1000
+
+// Returns the KV key the row replaced, if any, so the caller can delete it.
+export async function stageUpload (db, upload, kvKey, now) {
+  const previous = await db.prepare('SELECT kv_key FROM forms_uploads WHERE submission_id = ? AND idx = ?').bind(upload.submissionId, upload.index).first()
+  await db.prepare(
+    `INSERT INTO forms_uploads (submission_id, idx, form_key, field, name, type, size, sha256, kv_key, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT (submission_id, idx) DO UPDATE SET form_key = excluded.form_key, field = excluded.field,
+       name = excluded.name, type = excluded.type, size = excluded.size, sha256 = excluded.sha256,
+       kv_key = excluded.kv_key, created_at = excluded.created_at`
+  ).bind(upload.submissionId, upload.index, upload.key, upload.field, upload.name, upload.type, upload.size, upload.sha256, kvKey, now).run()
+  return previous && previous.kv_key !== kvKey ? previous.kv_key : null
+}
+
+export async function stagedUploads (db, submissionId) {
+  return (await db.prepare('SELECT idx, form_key, field, name, type, size, sha256, kv_key FROM forms_uploads WHERE submission_id = ?').bind(submissionId).all()).results
+}
+
+// Uploads of forms never submitted: rows and bytes go after a day.
+export async function sweepOrphanUploads (db, kv, now, limit = 20) {
+  const rows = (await db.prepare('SELECT submission_id, idx, kv_key FROM forms_uploads WHERE created_at < ? LIMIT ?').bind(now - UPLOAD_ORPHAN_MS, limit).all()).results
+  for (const row of rows) {
+    await kv?.delete(row.kv_key)
+    await db.prepare('DELETE FROM forms_uploads WHERE submission_id = ? AND idx = ? AND kv_key = ?').bind(row.submission_id, row.idx, row.kv_key).run()
+  }
+  return rows.length
+}
 
 export async function findSubmission (db, id) {
   return db.prepare('SELECT id, digest, status FROM forms_submissions WHERE id = ?').bind(id).first()
@@ -31,6 +59,7 @@ export async function hitRate (db, bucket, now, windowMs) {
 }
 
 // The submission and its delivery jobs commit atomically, or nothing does.
+// Staged uploads become part of the submission in the same batch.
 export async function insertSubmission (db, { parsed, files, jobs, now }) {
   const statements = [
     db.prepare(
@@ -40,7 +69,8 @@ export async function insertSubmission (db, { parsed, files, jobs, now }) {
     ...jobs.map(job => db.prepare(
       `INSERT INTO forms_jobs (id, submission_id, channel, state, authority, next_attempt_at, last_error, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(`${parsed.submissionId}:${job.channel}`, parsed.submissionId, job.channel, job.state, JSON.stringify(job.authority), now, job.reason || null, now))
+    ).bind(`${parsed.submissionId}:${job.channel}`, parsed.submissionId, job.channel, job.state, JSON.stringify(job.authority), now, job.reason || null, now)),
+    db.prepare('DELETE FROM forms_uploads WHERE submission_id = ?').bind(parsed.submissionId)
   ]
   await db.batch(statements)
 }
@@ -127,4 +157,34 @@ export async function resolveHeld (db, id, action, now) {
     ? await db.prepare("UPDATE forms_jobs SET state = 'pending', attempts = 0, next_attempt_at = ?, sending_at = NULL, last_error = 'released', updated_at = ? WHERE id = ? AND state IN ('held', 'failed')").bind(now, now, id).run()
     : await db.prepare("UPDATE forms_jobs SET state = 'failed', last_error = 'discarded', updated_at = ? WHERE id = ? AND state IN ('held', 'failed')").bind(now, id).run()
   return result.meta.changes === 1
+}
+
+// Drive: IDs are reserved before any upload so every retry targets one file.
+export async function driveFiles (db, submissionId) {
+  const rows = (await db.prepare('SELECT idx, drive_id, folder_id, link, verified_at FROM forms_drive_files WHERE submission_id = ?').bind(submissionId).all()).results
+  return new Map(rows.map(row => [row.idx, row]))
+}
+
+export async function reserveDriveFiles (db, submissionId, entries) {
+  await db.batch(entries.map(([idx, driveId]) => db.prepare(
+    'INSERT INTO forms_drive_files (submission_id, idx, drive_id) VALUES (?, ?, ?) ON CONFLICT DO NOTHING'
+  ).bind(submissionId, idx, driveId)))
+}
+
+export async function markDriveFile (db, submissionId, idx, { folderId, link, verifiedAt = null }) {
+  await db.prepare('UPDATE forms_drive_files SET folder_id = ?, link = ?, verified_at = ? WHERE submission_id = ? AND idx = ?')
+    .bind(folderId, link, verifiedAt, submissionId, idx).run()
+}
+
+export async function cachedFolder (db, account, path) {
+  return (await db.prepare('SELECT folder_id FROM forms_drive_folders WHERE account = ? AND path = ?').bind(account, path).first())?.folder_id || null
+}
+
+export async function cacheFolder (db, account, path, folderId) {
+  await db.prepare('INSERT INTO forms_drive_folders (account, path, folder_id) VALUES (?, ?, ?) ON CONFLICT DO UPDATE SET folder_id = excluded.folder_id')
+    .bind(account, path, folderId).run()
+}
+
+export async function forgetFolders (db, account) {
+  await db.prepare('DELETE FROM forms_drive_folders WHERE account = ?').bind(account).run()
 }

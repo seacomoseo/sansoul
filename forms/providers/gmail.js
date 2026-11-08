@@ -1,5 +1,6 @@
 import { FormsError, sha256Hex } from '../http.js'
 import { buildMime, validAddress } from '../mime.js'
+import { DRIVE_SCOPE, createDrive } from './drive.js'
 import { DeliveryError } from './errors.js'
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
@@ -28,9 +29,12 @@ function credential (env, ref) {
 export function createGmailProvider ({ fetch }) {
   const tokens = new Map()
 
+  const drive = createDrive({ fetch })
+
+  // Returns the attested access token and its granted scopes.
   async function accessToken (value, fingerprint, signal) {
     const cached = tokens.get(fingerprint)
-    if (cached && cached.expiresAt > Date.now() + 60000) return cached.token
+    if (cached && cached.expiresAt > Date.now() + 60000) return cached
     let response
     try {
       response = await fetch(TOKEN_URL, {
@@ -59,8 +63,9 @@ export function createGmailProvider ({ fetch }) {
     if (String(info.email).toLowerCase() !== value.account.toLowerCase()) throw new DeliveryError('gmail_identity_mismatch', 'fatal')
     if (!String(info.scope || '').split(' ').includes(SEND_SCOPE)) throw new DeliveryError('gmail_scope_missing', 'fatal')
     const expiresIn = Number(data.expires_in) > 0 ? Number(data.expires_in) : 600
-    tokens.set(fingerprint, { token: data.access_token, expiresAt: Date.now() + expiresIn * 1000 })
-    return data.access_token
+    const grant = { token: data.access_token, scopes: String(info.scope || '').split(' '), expiresAt: Date.now() + expiresIn * 1000 }
+    tokens.set(fingerprint, grant)
+    return grant
   }
 
   return {
@@ -77,9 +82,20 @@ export function createGmailProvider ({ fetch }) {
         fingerprint: (await sha256Hex(`${value.client_id}\n${value.account.toLowerCase()}`)).slice(0, 32)
       }
     },
+    // Large attachments: same account and grant as the mail (drive.file).
+    async storeFiles ({ env, db, kv, authority, submission, signal, now }) {
+      const { token, scopes } = await accessToken(credential(env, authority.ref), authority.fingerprint, signal)
+      if (!scopes.includes(DRIVE_SCOPE)) throw new DeliveryError('drive_scope_missing', 'fatal')
+      try {
+        return await drive.store({ db, kv, token, authority, submission, signal, now })
+      } catch (error) {
+        if (error.unauthorized) tokens.delete(authority.fingerprint)
+        throw error
+      }
+    },
     async send ({ env, authority, message, signal, beforeSend }) {
       const value = credential(env, authority.ref)
-      const token = await accessToken(value, authority.fingerprint, signal)
+      const { token } = await accessToken(value, authority.fingerprint, signal)
       let mime
       try {
         mime = buildMime({ ...message, from: authority.account })
