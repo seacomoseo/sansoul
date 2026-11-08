@@ -11,6 +11,7 @@
 {{ if and (not hugo.Data.config.cms_hide) (ne site.Params.cms_enabled false) }}
   {{ $srcs = $srcs | append
     (dict "partial" `cms/index` "path" "/admin/index.html")
+    (dict "partial" `cms/forms` "path" "/admin/forms/index.html")
   }}
 {{ end }}
 {{ range $srcs }}

@@ -1,9 +1,21 @@
 /* eslint-disable */
-import { fieldGroups } from '@params'
+import { fieldGroups, t } from '@params'
 import { loadFieldGroupConfig, prepareFieldGroups } from './field-groups'
+
+// Forms panel as a CMS page, only where the project Worker serves the forms
+// admin API (an unauthenticated probe answers 401 JSON; static hosting, 404).
+async function registerFormsPanel (CMS) {
+  if (typeof CMS.registerCustomPage !== 'function') return
+  try {
+    const response = await fetch('/api/forms/admin/summary', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(2000) })
+    if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
+    CMS.registerCustomPage({ id: 'forms', label: t?.forms_panel || 'Formularios', icon: 'inbox', url: '/admin/forms/' })
+  } catch {}
+}
 
 async function initializeCMS () {
   const CMS = window.CMS
+  const formsPanel = registerFormsPanel(CMS)
   const source = await loadFieldGroupConfig(window.document)
   let groups
   try {
@@ -25,6 +37,7 @@ async function initializeCMS () {
   } catch (error) {
     console.error('SanSoul live preview initialization failed.', error)
   }
+  await formsPanel
   if (window.__sansoulPreviewManualInit) {
     window.__sansoulPreviewManualInit = false
     await CMS.init({ config: { ...groups.config, load_config_file: false } })

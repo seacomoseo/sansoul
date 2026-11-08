@@ -28,6 +28,10 @@ export function validateManifest (manifest) {
   if (manifest.project !== undefined && (typeof manifest.project !== 'string' || /[/\\\r\n]/.test(manifest.project) || manifest.project.length > 120)) {
     throw new Error('forms_manifest_invalid_project')
   }
+  // GitHub repository of the CMS: the panel admits people with push access.
+  if (manifest.repo !== undefined && manifest.repo !== '' && (typeof manifest.repo !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(manifest.repo))) {
+    throw new Error('forms_manifest_invalid_repo')
+  }
   for (const [key, ref] of Object.entries(manifest.forms)) {
     if (!validSpec(manifest.specs[ref])) throw new Error(`forms_manifest_invalid_spec:${key}`)
   }

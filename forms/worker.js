@@ -1,11 +1,12 @@
 /* global FixedLengthStream */
-import { dispatch, purgeFiles } from './dispatch.js'
-import { FormsError, errorResponse, isSameOrigin, jsonResponse, sha256Hex, timingSafeEqual } from './http.js'
+import { admin, pruneSubmissions } from './admin.js'
+import { dispatch } from './dispatch.js'
+import { FormsError, errorResponse, isSameOrigin, jsonResponse, sha256Hex } from './http.js'
 import { LIMITS, driveEnabled, fileLimits, parseSubmission, parseUpload, readSubmission } from './intake.js'
 import { validateManifest } from './manifest.js'
 import { createProviders, resolveAuthority } from './providers/index.js'
 import {
-  findSubmission, hitRate, insertSubmission, loadSubmission, requireDatabase, resolveHeld, stageUpload, stagedUploads, sweepOrphanUploads, uploadKey
+  findSubmission, hitRate, insertSubmission, loadSubmission, requireDatabase, stageUpload, stagedUploads, sweepOrphanUploads, uploadKey
 } from './store.js'
 
 // Uploads: per IP and window, plus a site-wide daily cap that keeps KV Free
@@ -144,42 +145,19 @@ async function confirmationAllowed (db, manifest, email, time) {
   return await hitRate(db, `c:site:${manifest.site}`, time, CONFIRM_RATE.windowMs) <= CONFIRM_RATE.perSite
 }
 
-function authorized (request, env) {
-  const token = env.FORMS_ADMIN_TOKEN
-  const supplied = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
-  return typeof token === 'string' && token.length >= 32 && timingSafeEqual(supplied, token)
-}
-
-async function admin ({ request, env, path, providers, now }) {
-  if (!authorized(request, env)) throw new FormsError('unauthorized', 401)
-  if (request.method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405, { allow: 'POST' })
-  const db = requireDatabase(env)
-  if (path === 'dispatch') {
-    return jsonResponse(await dispatch({ env, db, kv: env.FORMS_FILES, providers, now, limit: 3 }))
-  }
-  const job = path.match(/^jobs\/([A-Za-z0-9-]{16,64}:(?:owner|confirmation))\/(release|discard)$/)
-  if (job) {
-    if (!await resolveHeld(db, job[1], job[2], now())) throw new FormsError('job_not_held', 409)
-    if (job[2] === 'discard' && job[1].endsWith(':owner')) {
-      await purgeFiles(db, env.FORMS_FILES, await loadSubmission(db, job[1].split(':')[0]), now)
-    }
-    return jsonResponse({ ok: true })
-  }
-  throw new FormsError('not_found', 404)
-}
-
 // Returns { fetch, scheduled }. `fetch` answers only /api/forms/*; compose it in
 // the project Worker before commerce/ASSETS. Options exist for tests.
 export function createFormsWorker (manifest, { fetch, now = Date.now } = {}) {
   validateManifest(manifest)
-  const providers = createProviders({ fetch: fetch || ((...args) => globalThis.fetch(...args)) })
+  const send = fetch || ((...args) => globalThis.fetch(...args))
+  const providers = createProviders({ fetch: send })
   return {
     async fetch (request, env, ctx) {
       const path = new URL(request.url).pathname.replace(/\/$/, '')
       try {
         if (path === '/api/forms/submit') return await submit({ request, env, ctx, manifest, providers, now })
         if (path === '/api/forms/upload') return await upload({ request, env, ctx, manifest, now })
-        if (path.startsWith('/api/forms/admin/')) return await admin({ request, env, path: path.slice('/api/forms/admin/'.length), providers, now })
+        if (path.startsWith('/api/forms/admin/')) return await admin({ request, env, ctx, path: path.slice('/api/forms/admin/'.length), manifest, providers, fetch: send, now })
         return jsonResponse({ result: 'error', error: 'not_found' }, 404)
       } catch (error) {
         return errorResponse(error)
@@ -187,7 +165,8 @@ export function createFormsWorker (manifest, { fetch, now = Date.now } = {}) {
     },
     async scheduled (_event, env, ctx) {
       const db = requireDatabase(env)
-      ctx.waitUntil(dispatch({ env, db, kv: env.FORMS_FILES, providers, now, limit: 5 }))
+      ctx.waitUntil(dispatch({ env, db, kv: env.FORMS_FILES, providers, now, limit: 5 })
+        .then(() => pruneSubmissions(db, env.FORMS_FILES, env, now, 5)))
     }
   }
 }

@@ -41,6 +41,7 @@ Side effects: Publishes public/_forms/<hash>.json; the post-build script moves i
   "id"      .id
   "site"    (site.Params.domain | default "")
   "project" (strings.Trim $project "-")
+  "repo"    (or hugo.Data.config.cms_repo (print (or site.Params.owner "seacomoseo") "/" site.Params.domain))
   "lang"    site.Language.Lang
   "page"    .page
   "subject" .subject
