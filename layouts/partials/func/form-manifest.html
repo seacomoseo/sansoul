@@ -1,0 +1,47 @@
+{{- /*
+Partial: func/form-manifest
+Purpose: Publish the server policy of one Worker form for core/forms/scripts/build-manifest.js.
+Context: dict with `id`, `page`, `subject`, `mail`, `account`, `confirm`, `inputs` and `keys` (input types that submit values).
+Renders: Nothing.
+Side effects: Publishes public/_forms/<hash>.json; the post-build script moves it out of public/.
+*/ -}}
+{{- $to := slice -}}
+{{- if reflect.IsSlice .mail -}}
+  {{- $to = .mail -}}
+{{- else -}}
+  {{- range split (replaceRE `[;\s]+` "," (string .mail)) "," -}}
+    {{- with . }}{{ $to = $to | append . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- $fields := slice -}}
+{{- range .inputs -}}
+  {{- if in $.keys .type -}}
+    {{- if eq .type "checks" -}}
+      {{- $legend := or .label .name -}}
+      {{- range .items -}}
+        {{- $key := or .key .label -}}
+        {{- $fields = $fields | append (dict "name" (or .key (print $legend " ➡️ " $key)) "type" "checkbox") -}}
+      {{- end -}}
+    {{- else if .name -}}
+      {{- $field := dict "name" .name "type" .type -}}
+      {{- if eq .type "file" -}}
+        {{- $field = merge $field (dict "max" (int (.max | default 1)) "accept" (.accept | default "")) -}}
+      {{- end -}}
+      {{- $fields = $fields | append $field -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $confirm := cond .confirm.enabled .confirm nil -}}
+{{- $spec := dict
+  "id"      .id
+  "site"    (site.Params.domain | default "")
+  "lang"    site.Language.Lang
+  "page"    .page
+  "subject" .subject
+  "to"      $to
+  "account" (.account | default "")
+  "confirm" $confirm
+  "fields"  $fields
+-}}
+{{- $resource := resources.FromString (printf "_forms/%s.json" (md5 (print .page "#" .id))) ($spec | jsonify) -}}
+{{- $resource.Publish -}}

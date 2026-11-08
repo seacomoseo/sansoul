@@ -292,6 +292,8 @@ elif [ "$COMMAND" = hugo-development ]; then
 
   hecho "RUN HUGO DEVELOPMENT"
   hugo --gc --buildFuture --environment development --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
+  # Worker forms publish their policies in public/_forms; keep them out of assets.
+  if [ -d public/_forms ]; then node "$CORE_DIR/forms/scripts/build-manifest.js"; fi
 
 # Hugo build as production environement
 elif [ "$COMMAND" = hugo-production ]; then
@@ -303,6 +305,8 @@ elif [ "$COMMAND" = hugo-production ]; then
 
   hecho "RUN HUGO PRODUCTION"
   hugo --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/hugo.production.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
+  # Worker forms publish their policies in public/_forms; keep them out of assets.
+  if [ -d public/_forms ]; then node "$CORE_DIR/forms/scripts/build-manifest.js"; fi
 
   sh do imgs
   # sh do multilang

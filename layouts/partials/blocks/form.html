@@ -151,6 +151,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- $form          := merge hugo.Data.styles.inputs (or .form dict) -}}
 {{- $action_gss    := "https://script.google.com/macros/s/AKfycbzEd6cjH5eTjzVxDVk6x-3Q9QwUHDMWpR8V1Ij1g6IG7MYwpPM_epAGpxJUR1__ljrWMQ/exec" -}}
 {{- $action        := or $form.action $action_gss -}}
+{{- /* `worker` posts to the project's own Worker (/api/forms/submit); see core/forms. */ -}}
+{{- $worker        := eq $action "worker" -}}
+{{- if $worker }}{{ $action = "/api/forms/submit" }}{{ end -}}
 {{- $googleScript  := in $action "script.google.com" -}}
 {{- $formsubmit_co := in $action "formsubmit.co" -}}
 {{- $chamfer       := hugo.Data.styles.rounded.chamfer -}}
@@ -186,7 +189,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     "noticeHtml" ($confirmation_notice | markdownify)
   -}}
 {{- end -}}
-{{- if $googleScript -}}
+{{- if $worker -}}
+  {{- $provider     = "sw" -}}
+{{- else if $googleScript -}}
   {{- $provider     = "gas" -}}
 {{- else if $formsubmit_co -}}
   {{- $provider     = "fsc" -}}
@@ -233,7 +238,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   {{- $is_file_type = true -}}
   {{- break -}}
 {{- end -}}
-{{- if or $is_file_type $formsubmit_co | and (not $googleScript) -}}
+{{- if or $is_file_type $formsubmit_co $worker | and (not $googleScript) -}}
   {{- $enctype = "multipart/form-data" -}}
 {{- end -}}
 {{- with $provider -}}
@@ -266,6 +271,18 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   "data-to"   $data_to
 -}}
 {{- $form_attrs = partial "func/attrs" $form_attrs }}
+{{- if and $worker (not hugo.IsServer) -}}
+  {{- partial "func/form-manifest" (dict
+    "id"      $form_id
+    "page"    .Page.RelPermalink
+    "subject" $subject
+    "mail"    $mail
+    "account" $form.account
+    "confirm" $confirmation_payload
+    "inputs"  $inputs
+    "keys"    $slices.keys
+  ) -}}
+{{- end }}
 <form {{- $form_attrs }}>
 
 
@@ -287,6 +304,13 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     <input type="hidden" name="URL" value="{{ .Page.Permalink }}#{{ $form_id }}">
     {{- /* form-send.js assigns the submission time; keep the generated page deterministic. */ -}}
     <input type="hidden" name="Timestamp" value="" class="form-timestamp">
+    {{- /*  HONEYPOT  */}}
+    <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+    </div>
+  {{- else if $worker }}
+    <input type="hidden" name="_form" value="{{ $form_id }}">
+    <input type="hidden" name="_page" value="{{ .Page.RelPermalink }}">
     {{- /*  HONEYPOT  */}}
     <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off">
