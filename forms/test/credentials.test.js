@@ -13,8 +13,10 @@ test('composes the secret map from grant files and reports without values', () =
 })
 
 test('rejects grants without the required scopes or fields', () => {
-  assert.throws(() => composeCredentials(['main=/g'], { drive: true, read: () => grant(full.slice(0, 3)) }), /drive\.file/)
+  assert.throws(() => composeCredentials(['main=/g'], { read: () => grant(full.slice(0, 3)) }), /drive\.file/)
+  assert.doesNotThrow(() => composeCredentials(['main=/g'], { drive: false, read: () => grant(full.slice(0, 3)) }))
   assert.throws(() => composeCredentials(['main=/g'], { read: () => grant(full.slice(1)) }), /gmail\.send/)
+  assert.throws(() => composeCredentials(['main=/g'], { read: () => '{"refresh_token": "secret-value' }), error => /not JSON/.test(error.message) && !/secret-value/.test(error.message))
   assert.throws(() => composeCredentials(['main=/g'], { read: () => JSON.stringify({ account: 'a@b.test', scopes: full }) }), /client_id/)
   assert.throws(() => composeCredentials(['bad ref=/g'], { read: () => grant(full) }), /invalid argument/)
 })

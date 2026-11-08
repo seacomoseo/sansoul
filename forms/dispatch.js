@@ -8,6 +8,9 @@ import {
 const SEND_TIMEOUT_MS = 25000
 // Up to 25 MB stream from KV to Drive; the 90 s lease covers it.
 const DRIVE_TIMEOUT_MS = 60000
+// KV is eventually consistent across locations: a just-written file may not
+// be visible yet to the dispatcher. Missing files of young submissions retry.
+const FILES_SETTLE_MS = 5 * 60 * 1000
 
 function sameAuthority (stored, current) {
   return ['provider', 'ref', 'account', 'fingerprint'].every(key => stored[key] === current[key])
@@ -31,7 +34,7 @@ export async function purgeFiles (db, kv, submission, now) {
   await markFilesPurged(db, submission.id, now())
 }
 
-async function deliver ({ env, db, kv, providers, now, job, token }) {
+async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutMs }) {
   const authority = JSON.parse(job.authority)
   const provider = providers[authority.provider]
   if (!provider) return markHeld(db, job.id, token, now(), 'provider_unknown')
@@ -46,12 +49,13 @@ async function deliver ({ env, db, kv, providers, now, job, token }) {
   const submission = await loadSubmission(db, job.submission_id)
   const isOwner = job.channel === 'owner'
   const toDrive = isOwner && authority.files?.mode === 'drive' && submission.files.length > 0
+  const young = now() - submission.created_at < FILES_SETTLE_MS
   const attachments = isOwner && !toDrive ? await loadAttachments(kv, submission) : []
-  if (!attachments) return markHeld(db, job.id, token, now(), 'files_missing')
+  if (!attachments) return young ? markRetry(db, job.id, token, now(), 'files_missing', job.attempts) : markHeld(db, job.id, token, now(), 'files_missing')
   let sendingMarked = false
   try {
     // Drive writes target reserved IDs, so this step is safe to repeat.
-    const links = toDrive ? await provider.storeFiles({ env, db, kv, authority, submission, signal: AbortSignal.timeout(DRIVE_TIMEOUT_MS), now }) : null
+    const links = toDrive ? await provider.storeFiles({ env, db, kv, authority, submission, signal: AbortSignal.timeout(driveTimeoutMs || DRIVE_TIMEOUT_MS), now }) : null
     const body = isOwner ? renderOwner({ submission, authority, links }) : renderConfirmation({ submission, authority })
     const message = {
       ...body,
@@ -78,7 +82,7 @@ async function deliver ({ env, db, kv, providers, now, job, token }) {
   } catch (error) {
     if (error.kind === 'lost') return false
     const code = String(error.code || error.message || 'delivery_error').slice(0, 120)
-    if (error.kind === 'retry') return markRetry(db, job.id, token, now(), code, job.attempts)
+    if (error.kind === 'retry' || (code === 'files_missing' && young && !sendingMarked)) return markRetry(db, job.id, token, now(), code, job.attempts)
     // Configuration problems before the provider call are fixable: hold them.
     if (error.kind === 'fatal' && !sendingMarked) return markHeld(db, job.id, token, now(), code)
     // Unknown errors after the fence, and ambiguous answers, may have sent mail.
@@ -89,7 +93,7 @@ async function deliver ({ env, db, kv, providers, now, job, token }) {
 
 // Bounded work per invocation keeps Workers Free CPU predictable; callers
 // (waitUntil after intake, admin drain, optional cron) repeat as needed.
-export async function dispatch ({ env, db, kv, providers, now = Date.now, submissionId, limit = 2 }) {
+export async function dispatch ({ env, db, kv, providers, now = Date.now, submissionId, limit = 2, driveTimeoutMs }) {
   await recoverExpiredLeases(db, now())
   const ids = await dueJobs(db, now(), { submissionId, limit })
   let processed = 0
@@ -98,7 +102,9 @@ export async function dispatch ({ env, db, kv, providers, now = Date.now, submis
     const job = await claimJob(db, id, token, now())
     if (!job) continue
     processed++
-    await deliver({ env, db, kv, providers, now, job, token })
+    await deliver({ env, db, kv, providers, now, job, token, driveTimeoutMs })
+    // A Drive job can use ~40 of the 50 subrequests of a Free invocation.
+    if (job.channel === 'owner' && JSON.parse(job.authority).files?.mode === 'drive') return { processed, hasMore: true }
   }
   if (!submissionId && Math.random() < 0.1) {
     await pruneRate(db, now())

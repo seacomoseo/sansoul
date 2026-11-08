@@ -223,6 +223,10 @@ describe('attachments', () => {
     google.state.sendMode = 'ok'
     clock += 61000
     await worker.fetch(adminRequest('dispatch'), env)
+    // KV may lag across locations: a young submission retries first.
+    assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['pending', 'files_missing'])
+    clock += 310000
+    await worker.fetch(adminRequest('dispatch'), env)
     assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'files_missing'])
     assert.equal(google.state.sent.length, 0)
   })
@@ -557,5 +561,59 @@ describe('raw uploads and Drive', () => {
     assert.equal(await sweepOrphanUploads(bindings.db, bindings.kv, clock), 1)
     assert.equal(await bindings.kv.get(row.kv_key), null)
     assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_uploads').first()).n, 0)
+  })
+
+  test('a retry after commit with files gets the original receipt', async () => {
+    const id = crypto.randomUUID()
+    const fields = [['Nombre', 'Ana'], ['CV', new Blob([new Uint8Array([1, 2, 3])], { type: 'application/pdf' }), 'a.pdf']]
+    const first = await send(fields, { ...cvPage, id })
+    const again = await send(fields, { ...cvPage, id })
+    assert.equal(again.response.status, 200)
+    assert.deepEqual(again.body, first.body)
+    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_uploads').first()).n, 0)
+  })
+
+  test('a failed re-upload keeps the bytes of the earlier upload', async () => {
+    const id = crypto.randomUUID()
+    const bytes = new Uint8Array([7, 7, 7, 7])
+    const blob = new Blob([bytes], { type: 'application/pdf' })
+    assert.equal((await worker.fetch(await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 0, fileName: 'a.pdf' }), env, null)).status, 200)
+    const failing = { ...env, FORMS_FILES: { ...bindings.kv, get: bindings.kv.get.bind(bindings.kv), delete: bindings.kv.delete.bind(bindings.kv), put: async () => { throw new Error('kv down') } } }
+    assert.equal((await worker.fetch(await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 0, fileName: 'a.pdf' }), failing, null)).status, 503)
+    const { request } = submitRequest([['Nombre', 'Ana'], ['CV', '0']], { ...cvPage, id })
+    assert.equal((await worker.fetch(await withLength(request), env, null)).status, 200)
+    assert.equal((await job(id, 'owner')).state, 'sent')
+    const attachment = decodeMime(ownerMail().mime).parts.find(part => /Content-Disposition: attachment/.test(part.head))
+    assert.deepEqual([...attachment.body], [...bytes])
+  })
+
+  test('the sweep never touches a committed submission and late uploads are refused', async () => {
+    const id = crypto.randomUUID()
+    // Unknown field → review: the files stay in KV until a human decides.
+    const { body } = await send([['Nombre', 'Ana'], ['Extra', 'x'], ['CV', new Blob([new Uint8Array([4])], { type: 'application/pdf' }), 'a.pdf']], { ...cvPage, id })
+    assert.equal(body.status, 'review')
+    const [file] = JSON.parse((await bindings.db.prepare('SELECT files FROM forms_submissions WHERE id = ?').bind(id).first()).files)
+    const late = await worker.fetch(await uploadRequest(new Blob([new Uint8Array([9])], { type: 'application/pdf' }), { ...cvPage, id, field: 'CV', index: 0, fileName: 'b.pdf' }), env, null)
+    assert.equal(late.status, 409)
+    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_uploads').first()).n, 0)
+    clock += 25 * 3600 * 1000
+    await sweepOrphanUploads(bindings.db, bindings.kv, clock)
+    assert.ok(await bindings.kv.get(file.key))
+  })
+
+  test('staged uploads of one submission cannot exceed its total', async () => {
+    env.FORMS_DRIVE = 'false'
+    const id = crypto.randomUUID()
+    const part = size => new Blob([new Uint8Array(size)], { type: 'application/pdf' })
+    assert.equal((await worker.fetch(await uploadRequest(part(1.5 * 1024 * 1024), { ...cvPage, id, field: 'CV', index: 0, fileName: 'a.pdf' }), env, null)).status, 200)
+    const second = await worker.fetch(await uploadRequest(part(1024 * 1024), { ...cvPage, id, field: 'CV', index: 1, fileName: 'b.pdf' }), env, null)
+    assert.deepEqual([second.status, (await second.json()).error], [413, 'files_too_large'])
+  })
+
+  test('Google-native MIME types are stored as plain binary', async () => {
+    const id = crypto.randomUUID()
+    const blob = new Blob([new Uint8Array([1])], { type: 'application/vnd.google-apps.folder' })
+    assert.equal((await worker.fetch(await uploadRequest(blob, { ...cvPage, id, field: 'CV', index: 0, fileName: 'x.pdf' }), env, null)).status, 200)
+    assert.equal((await bindings.db.prepare('SELECT type FROM forms_uploads WHERE submission_id = ?').bind(id).first()).type, 'application/octet-stream')
   })
 })

@@ -163,8 +163,8 @@ export function formValid (form) {
   // })
 
   // Size limits: GAS defaults, or the ones a Worker form declares (core/forms)
-  const fileMaxBytes = Number(form.dataset.fileMax) || 3 * 1024 * 1024
-  const filesMaxBytes = Number(form.dataset.filesMax) || 4 * 1024 * 1024
+  const fileMaxBytes = Number(form.dataset?.fileMax) || 3 * 1024 * 1024
+  const filesMaxBytes = Number(form.dataset?.filesMax) || 4 * 1024 * 1024
   const megabytes = bytes => String(Math.round(bytes / 1024 / 1024))
   // Size Total for formErrorFileSizeTotal
   let counterTotalSize = 0

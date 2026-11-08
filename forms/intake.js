@@ -12,8 +12,10 @@ export const LIMITS = Object.freeze({
   textBytes: 96 * 1024,
   files: 10,
   // Inline attachments travel base64-encoded inside the owner email (~2-7 ms
-  // CPU per MB in workerd). Without Drive this is also the total per submission.
-  inlineBytes: 2 * 1024 * 1024,
+  // CPU per MB in workerd): with Drive, totals above 1 MB go there. Without
+  // Drive, 2 MB is the total per submission.
+  inlineBytes: 1024 * 1024,
+  noDriveBytes: 2 * 1024 * 1024,
   // With Drive the bytes stream KV → Drive without base64 or parsing. One KV
   // value holds up to 25 MiB.
   driveFileBytes: 20 * 1024 * 1024,
@@ -23,7 +25,7 @@ export const LIMITS = Object.freeze({
 export const RESERVED = Object.freeze(['_form', '_page', '_submission_id', '_gotcha'])
 const SUBMISSION_ID = /^[A-Za-z0-9-]{16,64}$/
 const FORM_TYPES = /^(multipart\/form-data|application\/x-www-form-urlencoded)(\s*;|$)/i
-const UPLOAD_REF = /^\d{1,2}$/
+const UPLOAD_REF = /^(0|[1-9]\d?)$/
 const SHA256 = /^[0-9a-f]{64}$/
 
 // Drive is on unless FORMS_DRIVE = "false" (the browser limits in
@@ -31,7 +33,7 @@ const SHA256 = /^[0-9a-f]{64}$/
 export const driveEnabled = env => env?.FORMS_DRIVE !== 'false'
 export const fileLimits = (env, limits = LIMITS) => driveEnabled(env)
   ? { file: limits.driveFileBytes, total: limits.driveFilesBytes }
-  : { file: limits.inlineBytes, total: limits.inlineBytes }
+  : { file: limits.noDriveBytes, total: limits.noDriveBytes }
 
 export function acceptsFile (accept, file) {
   if (!accept) return true
@@ -93,7 +95,8 @@ export function parseUpload (request, manifest, env, limits = LIMITS) {
   const rawType = (request.headers.get('content-type') || '').split(';')[0].trim().toLowerCase()
   const file = {
     name: (fileName || 'file').replace(/[\u0000-\u001f\u007f\\/]/g, '_').slice(0, limits.fileNameChars), // eslint-disable-line no-control-regex
-    type: /^[\w.+-]+\/[\w.+-]+$/.test(rawType) ? rawType : 'application/octet-stream',
+    // Google-native types would make Drive create a folder or a Doc.
+    type: /^[\w.+-]+\/[\w.+-]+$/.test(rawType) && !rawType.startsWith('application/vnd.google-apps.') ? rawType : 'application/octet-stream',
     size,
     sha256
   }

@@ -18,9 +18,14 @@ igual (GAS, FormSubmit o acción propia): el puente GAS no cambia.
   pasa el stream a KV con `FixedLengthStream`. Motivo medido: en Workers,
   `formData()` costó 8/113/170 ms de CPU para texto/5/8 MiB y el stream raw a
   KV, 2–4 ms con 8 MB. En el envío, el campo de archivo lleva el índice de su
-  subida. Subir a un envío ya guardado da `409 submission_committed` (el
-  navegador sigue y recibe el recibo); las subidas abandonadas se borran a las
-  24 h.
+  subida. Cada subida tiene su propia clave en KV (un reintento fallido nunca
+  borra la copia buena anterior). Subir a un envío ya guardado da
+  `409 submission_committed`; el navegador sigue y el reenvío devuelve el recibo
+  original (las referencias se resuelven desde el envío guardado). Las subidas
+  no usadas se borran al guardar el envío; las abandonadas, pasadas 24 h (al
+  subir otros archivos, en el dispatch admin o con el cron). Una subida de más
+  de 12 h ya no vale para enviar. Límites de subida: los del envío, 30 por IP y
+  10 minutos y 300 por sitio y día (KV Free: 1.000 escrituras/día por cuenta).
 - Campos reservados: `_form` (ID del formulario), `_page` (ruta de la página),
   `_submission_id` (UUID del navegador, clave de idempotencia) y `_gotcha`
   (honeypot). Ningún input oculto define destinatarios, textos ni cuentas.
@@ -42,7 +47,7 @@ fuera de `public/`. Campos desconocidos, honeypot, URLs o palabras de spam y
 emails inválidos dejan el envío en `review`: se guarda y no envía nada hasta
 que un administrador lo libera. Archivos: tipo según `accept`, número según
 `max` (y 10 por envío): 20 MB por archivo y 25 MB por envío; si el total pasa
-de 2 MB, todos van a Drive y si no, viajan adjuntos en el correo (el base64
+de 1 MB, todos van a Drive y si no, viajan adjuntos en el correo (el base64
 cuesta ~2–7 ms de CPU por MB en workerd; las imágenes ya se comprimen en el
 navegador). Con `FORMS_DRIVE = "false"`, sin Drive: 2 MB en total por envío.
 Los formularios Worker anuncian 20/25 MB al navegador (`data-file-max`,
@@ -107,7 +112,15 @@ lo que crea ella: las carpetas de GAS no se reutilizan.
   declaró el navegador; si no coincide, `held` (`drive_checksum_mismatch`) sin
   correo. Grant sin `drive.file` (`drive_scope_missing`) o Drive lleno
   (`drive_storage_full`): `held` antes de subir o enviar.
-- Las carpetas se buscan o crean una vez por cuenta y se guardan en D1.
+- Las carpetas se buscan o crean una vez por cuenta y se guardan en D1. Si
+  desaparece una carpeta guardada se vuelve a resolver; si desaparece
+  `FORMS_DRIVE_FOLDER`, `held` (`drive_root_missing`).
+- Tiempos: tras el envío, `waitUntil` da 25 s a Drive (el runtime corta a los
+  30 s); lo que no termine lo completa `POST /api/forms/admin/dispatch` (Action
+  programada) o el cron. Un trabajo Drive por invocación: puede gastar ~40 de
+  las 50 subpeticiones de Free.
+- KV es eventualmente consistente entre ubicaciones: si los bytes no aparecen y
+  el envío tiene menos de 5 minutos, se reintenta; después, `held`.
 
 ## Cuenta por defecto de SanSoul
 
@@ -117,14 +130,15 @@ del Worker de cada proyecto, también en cuentas Cloudflare de clientes. Es
 configuración, no código:
 
 ```sh
-node core/forms/scripts/gmail-credentials.js --check --drive sansoulsend=<grant.json>
-node core/forms/scripts/gmail-credentials.js --drive sansoulsend=<grant.json> \
+node core/forms/scripts/gmail-credentials.js --check sansoulsend=<grant.json>
+node core/forms/scripts/gmail-credentials.js sansoulsend=<grant.json> \
   | node core/node_modules/wrangler/bin/wrangler.js secret put FORMS_GMAIL_CREDENTIALS --config wrangler.workers.toml
 ```
 
 y en `[vars]`: `FORMS_PROVIDER = "gmail"` y `FORMS_GMAIL_DEFAULT = "sansoulsend"`
-(Drive va activo por defecto). El script valida claves y scopes y se niega a escribir
-el secreto en una terminal. Un `form.account` propio sigue teniendo prioridad.
+(Drive va activo por defecto). El script valida claves y scopes (`drive.file`
+incluido salvo `--no-drive`, y entonces `FORMS_DRIVE = "false"`) y se niega a
+escribir el secreto en una terminal. Un `form.account` propio sigue teniendo prioridad.
 La cuota diaria de Gmail de `sansoulsend` la comparten todos los proyectos que
 la usan.
 

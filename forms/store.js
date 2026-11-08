@@ -10,34 +10,42 @@ export function requireDatabase (env) {
   return db
 }
 
-// The checksum in the key keeps a re-upload with other bytes from overwriting
-// the value a committed submission references.
-export const uploadKey = (submissionId, index, sha256) => `forms/${submissionId}/${index}-${sha256.slice(0, 16)}`
-export const UPLOAD_ORPHAN_MS = 24 * 3600 * 1000
+// Every upload gets its own key: a failed or repeated upload never touches the
+// bytes another row (or a committed submission) references.
+export const uploadKey = (submissionId, index) => `forms/${submissionId}/${index}-${crypto.randomUUID()}`
+// Staged uploads older than this are ignored at submit and swept after twice
+// as long, so a submit never races the sweep for the same bytes.
+export const UPLOAD_STAGE_MS = 12 * 3600 * 1000
 
-// Returns the KV key the row replaced, if any, so the caller can delete it.
+// Returns { staged, replaced }: `staged` is false when the submission was
+// committed meanwhile (nothing written); `replaced` is the KV key to delete.
 export async function stageUpload (db, upload, kvKey, now) {
   const previous = await db.prepare('SELECT kv_key FROM forms_uploads WHERE submission_id = ? AND idx = ?').bind(upload.submissionId, upload.index).first()
-  await db.prepare(
+  const result = await db.prepare(
     `INSERT INTO forms_uploads (submission_id, idx, form_key, field, name, type, size, sha256, kv_key, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10
+     WHERE NOT EXISTS (SELECT 1 FROM forms_submissions WHERE id = ?1)
      ON CONFLICT (submission_id, idx) DO UPDATE SET form_key = excluded.form_key, field = excluded.field,
        name = excluded.name, type = excluded.type, size = excluded.size, sha256 = excluded.sha256,
        kv_key = excluded.kv_key, created_at = excluded.created_at`
   ).bind(upload.submissionId, upload.index, upload.key, upload.field, upload.name, upload.type, upload.size, upload.sha256, kvKey, now).run()
-  return previous && previous.kv_key !== kvKey ? previous.kv_key : null
+  return { staged: result.meta.changes === 1, replaced: previous?.kv_key || null }
 }
 
-export async function stagedUploads (db, submissionId) {
-  return (await db.prepare('SELECT idx, form_key, field, name, type, size, sha256, kv_key FROM forms_uploads WHERE submission_id = ?').bind(submissionId).all()).results
+export async function stagedUploads (db, submissionId, now) {
+  return (await db.prepare('SELECT idx, form_key, field, name, type, size, sha256, kv_key FROM forms_uploads WHERE submission_id = ? AND created_at >= ?').bind(submissionId, now - UPLOAD_STAGE_MS).all()).results
 }
 
-// Uploads of forms never submitted: rows and bytes go after a day.
-export async function sweepOrphanUploads (db, kv, now, limit = 20) {
-  const rows = (await db.prepare('SELECT submission_id, idx, kv_key FROM forms_uploads WHERE created_at < ? LIMIT ?').bind(now - UPLOAD_ORPHAN_MS, limit).all()).results
+// Rows are removed first; bytes go only for submissions that never committed
+// (a committed submission references other keys, see uploadKey).
+export async function sweepOrphanUploads (db, kv, now, limit = 10) {
+  const rows = (await db.prepare(
+    `SELECT u.submission_id, u.idx, u.kv_key FROM forms_uploads u
+     WHERE u.created_at < ? AND NOT EXISTS (SELECT 1 FROM forms_submissions s WHERE s.id = u.submission_id) LIMIT ?`
+  ).bind(now - 2 * UPLOAD_STAGE_MS, limit).all()).results
   for (const row of rows) {
-    await kv?.delete(row.kv_key)
-    await db.prepare('DELETE FROM forms_uploads WHERE submission_id = ? AND idx = ? AND kv_key = ?').bind(row.submission_id, row.idx, row.kv_key).run()
+    const deleted = await db.prepare('DELETE FROM forms_uploads WHERE submission_id = ? AND idx = ? AND kv_key = ?').bind(row.submission_id, row.idx, row.kv_key).run()
+    if (deleted.meta.changes === 1) await kv?.delete(row.kv_key)
   }
   return rows.length
 }
@@ -76,7 +84,7 @@ export async function insertSubmission (db, { parsed, files, jobs, now }) {
 }
 
 export async function loadSubmission (db, id) {
-  const row = await db.prepare('SELECT id, page, status, fields, files, files_purged_at FROM forms_submissions WHERE id = ?').bind(id).first()
+  const row = await db.prepare('SELECT id, form_key, page, status, fields, files, files_purged_at, created_at FROM forms_submissions WHERE id = ?').bind(id).first()
   return row && { ...row, fields: JSON.parse(row.fields), files: JSON.parse(row.files) }
 }
 

@@ -58,7 +58,7 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
 - Archivos por subida raw (`POST /api/forms/upload`, uno por archivo, directo a
   KV sin parsear ni hashear en el Worker); el envío solo lleva texto y
   referencias. Hasta 20 MB por archivo y 25 MB por envío: si el total pasa de
-  2 MB, va al Drive de la cuenta remitente (`Forms/<proyecto>/<formulario>/`,
+  1 MB, va al Drive de la cuenta remitente (`Forms/<proyecto>/<formulario>/`,
   scope `drive.file`) con enlace en el correo; si no, adjunto. `FORMS_DRIVE =
   "false"` desactiva Drive (2 MB por envío). Migración `0002_files.sql`.
 - Mensajes `form_error_file_size(_total)` con `{s}` (MB) en los seis idiomas; el

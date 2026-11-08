@@ -43,7 +43,7 @@ export function createDrive ({ fetch }) {
   // Finds or creates one folder level. drive.file only lists folders this
   // OAuth client created, so every project Worker with the same credential
   // shares the same Forms tree; IDs are cached per account in D1.
-  async function folder ({ db, token, account, parent, name, path, signal }) {
+  async function folder ({ db, token, account, parent, name, path, signal, root }) {
     const cached = await cachedFolder(db, account, path)
     if (cached) return cached
     const headers = { authorization: `Bearer ${token}` }
@@ -57,6 +57,12 @@ export function createDrive ({ fetch }) {
         body: JSON.stringify({ name, mimeType: FOLDER, parents: [parent] }),
         signal
       }, 'drive_folder')
+      // A configured root that vanished needs a human; a cached level is re-resolved.
+      if (created.missing) {
+        if (parent === root) throw new DeliveryError('drive_root_missing', 'fatal')
+        await forgetFolders(db, account)
+        throw new DeliveryError('drive_folder_missing', 'retry')
+      }
       if (!created.id) throw new DeliveryError('drive_folder_failed', 'retry')
       id = created.id
     }
@@ -69,12 +75,14 @@ export function createDrive ({ fetch }) {
     const account = authority.account
     let parent = root || await folder({ db, token, account, parent: 'root', name: DRIVE_BASE, path: DRIVE_BASE, signal })
     const base = root ? `id:${root}` : DRIVE_BASE
-    parent = await folder({ db, token, account, parent, name: project, path: `${base}/${project}`, signal })
-    return folder({ db, token, account, parent, name: label, path: `${base}/${project}/${label}`, signal })
+    parent = await folder({ db, token, account, parent, name: project, path: `${base}/${project}`, signal, root })
+    return folder({ db, token, account, parent, name: label, path: `${base}/${project}/${label}`, signal, root })
   }
 
   function verified (meta, file, folderId) {
-    if (!meta || meta.trashed) return false
+    if (!meta) return false
+    // Uploading into a trashed file would never surface: a human decides.
+    if (meta.trashed) throw new DeliveryError('drive_file_trashed', 'fatal')
     if (Number(meta.size) !== file.size || !(meta.parents || []).includes(folderId)) return false
     // Absent while Drive still processes the upload: check again later.
     if (!meta.sha256Checksum) throw new DeliveryError('drive_checksum_pending', 'retry')
@@ -113,8 +121,9 @@ export function createDrive ({ fetch }) {
           body: JSON.stringify({ id: row.drive_id, name: driveFileName(submission.id, file), mimeType: file.type, parents: [folderId] }),
           signal
         }, 'drive_create')
-        // An ID reserved for us that Drive says is taken: never write elsewhere.
-        if (created.conflict) throw new DeliveryError('drive_id_conflict', 'fatal')
+        // Taken although the GET missed it: a concurrent or lost create. Look
+        // again on the next pass (a foreign ID ends as failed after retries).
+        if (created.conflict) throw new DeliveryError('drive_id_conflict', 'retry')
         // The parent vanished (folder deleted by hand): resolve the tree again.
         if (created.missing) {
           await forgetFolders(db, authority.account)
