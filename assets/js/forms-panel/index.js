@@ -21,7 +21,7 @@ const T = {
     confirmation: 'Confirmación al visitante',
     to: 'Para',
     from: 'Cuenta',
-    attempts: 'intentos',
+    attempts: n => n === 1 ? 'intento' : 'intentos',
     release: 'Enviar',
     approve: 'Aprobar y enviar',
     discard: 'Descartar',
@@ -63,7 +63,7 @@ const T = {
     confirmation: 'Visitor confirmation',
     to: 'To',
     from: 'Account',
-    attempts: 'attempts',
+    attempts: n => n === 1 ? 'attempt' : 'attempts',
     release: 'Send',
     approve: 'Approve and send',
     discard: 'Discard',
@@ -127,6 +127,14 @@ const REASONS = {
     drive_root_missing: 'The configured Drive folder does not exist'
   }
 }[lang]
+const SPAM = {
+  es: { honeypot: 'campo trampa relleno (bot)', too_many_urls: 'demasiados enlaces', unexpected_script: 'código en el texto', spam_words: 'palabras de spam', invalid_email: 'email no válido', blocked_email_domain: 'dominio de email bloqueado', unknown_field: 'campos que el formulario no tiene' },
+  en: { honeypot: 'trap field filled (bot)', too_many_urls: 'too many links', unexpected_script: 'code in the text', spam_words: 'spam words', invalid_email: 'invalid email', blocked_email_domain: 'blocked email domain', unknown_field: 'fields the form does not have' }
+}[lang]
+const spamText = code => {
+  const [name, detail] = code.split(/:(.*)/)
+  return `${SPAM[name] || name}${detail ? ` (${detail.split('|').join(', ')})` : ''}`
+}
 const reasonText = code => code ? (REASONS[code] || code) : ''
 const dateText = time => new Intl.DateTimeFormat(lang, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(time))
 const sizeText = bytes => bytes < 1024 ? `${bytes} B` : bytes < 1048576 ? `${(bytes / 1024).toFixed(0)} KB` : `${(bytes / 1048576).toFixed(1)} MB`
@@ -218,7 +226,7 @@ const ICONS = {
 }
 
 function stateChip (job) {
-  return h('span', { class: `chip chip-${job.state}${job.reason === 'review' ? ' chip-review' : ''}`, title: reasonText(job.reason) }, STATES[job.state] || job.state)
+  return h('span', { class: `chip chip-${job.state}${job.reason === 'review' ? ' chip-review' : ''}`, title: reasonText(job.reason) }, job.state === 'held' && job.reason === 'review' ? T.review : (STATES[job.state] || job.state))
 }
 
 function fullScreenMessage (text, action) {
@@ -276,7 +284,7 @@ function jobCard (job) {
     h('div', { class: 'card-head' }, h('strong', {}, T[job.channel]), stateChip(job)),
     job.reason ? h('p', { class: 'muted' }, reasonText(job.reason)) : null,
     h('p', { class: 'muted small' },
-      [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
+      [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts(job.attempts)}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
     actionable && job.reason !== 'discarded'
       ? h('div', { class: 'actions' },
         h('button', { type: 'button', class: 'button primary', disabled: state.busy, onclick: () => act(`jobs/${state.detail.id}:${job.channel}/release`) }, review ? T.approve : T.release),
@@ -292,7 +300,7 @@ function detailPane () {
     h('div', { class: 'detail-head' },
       h('button', { type: 'button', class: 'button icon-button back', 'aria-label': T.back, title: T.back, onclick: () => select(null) }, icon(ICONS.back)),
       h('div', {}, h('h2', {}, detail.form.split('#')[1]), h('p', { class: 'muted small' }, `${dateText(detail.createdAt)} · ${detail.page} · ${detail.id}`))),
-    detail.reasons.length ? h('p', { class: 'alert alert-warning' }, `${T.reasonsTitle}: ${detail.reasons.join(', ')}`) : null,
+    detail.reasons.length ? h('p', { class: 'alert alert-warning' }, `${T.reasonsTitle}: ${[...new Set(detail.reasons)].map(spamText).join('; ')}`) : null,
     h('h3', {}, T.fields),
     h('dl', { class: 'fields' }, detail.fields.flatMap(([name, value]) => [h('dt', {}, name), h('dd', {}, value || '—')])),
     detail.files.length ? h('h3', {}, T.files) : null,

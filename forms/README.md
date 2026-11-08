@@ -144,6 +144,43 @@ la usan.
 
 Sheets y otros proveedores (Brevo) no forman parte de este corte.
 
+## Panel del proyecto
+
+`/admin/forms/` (página «Formularios» dentro de Sveltia CMS) lista los envíos
+por vistas —**Atención** (fallidos y retenidos que piden una decisión),
+**Revisión** (posible spam) y **Todos**— con detalle, adjuntos (descarga
+mientras sigan en KV, enlace de Drive después), «Enviar»/«Descartar» por
+trabajo y «Borrar envío». Avisa del envío desactivado (`hold`), de los
+correos enviados en 24 h por cuenta (la cuota de Gmail de una cuenta
+compartida la gastan todas sus webs), del estado de Drive y de la retención.
+
+- **Personas:** la sesión GitHub del propio CMS (Sveltia la guarda en
+  `localStorage`, mismo origen). El panel la manda como
+  `Authorization: GitHub <token>` y el Worker exige `permissions.push` sobre el
+  repositorio del CMS (`cms_repo` o `<owner>/<domain>`, que viaja en el
+  manifiesto; `FORMS_ADMIN_REPO` lo sustituye). Resultado positivo en caché
+  5 min por isolate. Sin sesión, el panel manda a entrar en el CMS; no hay
+  login propio ni credenciales generales en el navegador.
+- **Automatizaciones:** `Authorization: Bearer <FORMS_ADMIN_TOKEN>` (Action de
+  dispatch). Mismas rutas.
+- El CMS solo registra la página si `GET /api/forms/admin/summary` sin
+  credenciales responde 401 JSON (Worker de formularios presente). Página con
+  CSP estricta (`script-src 'self'`, `connect-src 'self'`), se niega a
+  pintarse dentro de otro origen y copia los tokens `--sui-*` del CMS para
+  seguir su tema. Respuestas `private, no-store`; descargas como
+  `application/octet-stream` adjunto con `sandbox`.
+
+Rutas (`/api/forms/admin/…`): `GET summary`, `GET submissions?view=attention|review|all&before=`,
+`GET submissions/<id>`, `GET submissions/<id>/files/<n>`, `POST submissions/<id>/delete`
+(no con un trabajo en cola o enviándose), `POST jobs/<id>:<canal>/release|discard`
+(release intenta enviar en el acto), `POST dispatch` (devuelve también `attention`
+y `pruned`) y `POST retention`.
+
+**Retención:** `FORMS_RETENTION_DAYS` (sin valor, no se borra nada). Borra los
+envíos más antiguos cuyos trabajos estén cerrados (enviados o fallidos), con
+sus bytes de KV; los retenidos esperan a una persona. Corre en el dispatch y
+en el cron. Los archivos ya copiados a Drive se quedan en Drive.
+
 ## Pruebas
 
 `pnpm run test:forms` usa D1 y KV locales de workerd y un Google falso

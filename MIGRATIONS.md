@@ -68,6 +68,10 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
   configuración (`FORMS_GMAIL_DEFAULT` + secreto) con
   `forms/scripts/gmail-credentials.js`, que nunca imprime valores.
 - Ejemplo `_examples/forms-backend/` (Worker + `wrangler.workers.toml`, Free).
+- Panel de formularios en `/admin/forms/` (página «Formularios» del CMS vía
+  `CMS.registerCustomPage`, solo si el Worker responde `/api/forms/admin/*`).
+  Autoriza con la sesión GitHub del CMS (permiso de escritura en `cms_repo`).
+  Retención opcional `FORMS_RETENTION_DAYS`. Sin migración de D1.
 - `scripts/update.js` registra 13.6.0 y 13.7.0 (13.6.0 faltaba en la política
   del actualizador).
 
