@@ -88,7 +88,7 @@
             {{- with $logo -}}
               {{- $title := site.Home.Params.seo.title | default site.Home.Params.title | markdownify }}
               <li class="menu__item menu__item--logo">
-                <a class="link menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}{{ site.Home.RelPermalink }}{{ end }}" title="{{ $title | plainify }}">
+                <a class="link menu__link menu__link--logo" href="{{ if page.IsHome }}#{{ else }}{{ site.Home.RelPermalink }}{{ end }}" title="{{ $title | plainify | htmlUnescape }}">
                   {{ partial "media/_" (dict
                     "class"     "menu__logo-img"
                     "img"       .

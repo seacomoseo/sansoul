@@ -52,7 +52,7 @@
   "@id"             $id
   "name"            .Title
   "url"             .Permalink
-  "description"     (partial "func/summary" .)
+  "description"     (partial "func/summary" . | htmlUnescape)
   "alternateName"   .Params.alts
   "honorificPrefix" .Params.prefix
   "jobTitle"        .Params.job

@@ -61,7 +61,7 @@
     "name"  .title
     "acceptedAnswer" (dict
       "@type" `Answer`
-      "text"  (.md | markdownify | plainify)
+      "text"  (.md | markdownify | plainify | htmlUnescape)
     )
   ) -}}
 {{- end -}}

@@ -44,7 +44,7 @@
   {{- /* TITLE MORE  */ -}}
   {{- $more  := "" -}}
   {{- if and $hanchor (ne $title $hanchor) (not $url) -}}
-    {{- $more  = $title | markdownify | plainify -}}
+    {{- $more  = $title | markdownify | plainify | htmlUnescape -}}
     {{- $title = print "<b>" $hanchor "</b>" -}}
   {{- end -}}
 

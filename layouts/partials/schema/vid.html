@@ -16,7 +16,7 @@ dates from the page date or file modification time. */}}
   "@context"       "https://schema.org"
   "@type"          "VideoObject"
   "name"           (.name | default $metadata.name)
-  "description"    (.desc | default $metadata.description | default "" | markdownify | plainify)
+  "description"    (.desc | default $metadata.description | default "" | markdownify | plainify | htmlUnescape)
   "thumbnailUrl"   $thumb
   "uploadDate"     (.uploadDate | default $metadata.uploadDate)
   "dateCreated"    $metadata.dateCreated

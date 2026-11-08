@@ -17,6 +17,7 @@
   | default .Summary
   | truncate 155
   | plainify
+  | htmlUnescape
   | replaceRE `::.+?::` ""
 -}}
 {{- $img_og       := partial "func/img-og" . -}}

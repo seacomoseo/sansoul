@@ -2,7 +2,7 @@
   "@type"            "Brand"
   "@id"              (print .Permalink "#schema-brand")
   "name"             .Title
-  "description"      (partial "func/summary" .)
+  "description"      (partial "func/summary" . | htmlUnescape)
   "url"              .Permalink
   "image"            (dict "@id" (print .Permalink "#schema-img"))
   "logo"             (dict "@id" (print .Permalink "#schema-img"))

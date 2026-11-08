@@ -104,7 +104,7 @@ object
             {{ end }}
           {{ end }}
         {{ end }}
-        {{ $contents = partial "func/md" $contents | plainify }}
+        {{ $contents = partial "func/md" $contents | plainify | htmlUnescape }}
         
         {{ $sum := dict
           "url"          .RelPermalink

@@ -27,7 +27,7 @@
   "@id"              (print .Permalink "#schema-service")
   "url"              .Permalink
   "name"             .Title
-  "description"      (partial "func/summary" .)
+  "description"      (partial "func/summary" . | htmlUnescape)
   "serviceType"      .Params.service_types
   "areaServed"       .Params.service_areas
   "offers"           $offers

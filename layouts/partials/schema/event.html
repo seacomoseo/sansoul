@@ -53,7 +53,7 @@
   "@type"               "Event"
   "@id"                 (print .Permalink "#schema-event")
   "name"                .Title
-  "description"         (partial "func/summary" .)
+  "description"         (partial "func/summary" . | htmlUnescape)
   "url"                 .Permalink
   "performer"           $artists
   "location"            $location

@@ -60,7 +60,7 @@
   "@type"            "Product"
   "@id"              (print .Permalink "#schema-product")
   "name"             .Title
-  "description"      (partial "func/summary" .)
+  "description"      (partial "func/summary" . | htmlUnescape)
   "sku"              .Params.sku
   "url"              .Permalink
   "inLanguage"       (.Params.locale | default .Lang)

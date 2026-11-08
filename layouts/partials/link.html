@@ -277,10 +277,10 @@
     {{- if $btn -}}
       {{- /*  if is a button, need one more child for prevent :before back problem  */ -}}
       {{- $label    = print "<b>" $label "</b>" | safeHTML -}}
-      {{- $sub_more = .label | plainify | replaceRE `::.+?::` "" -}}
+      {{- $sub_more = .label | plainify | htmlUnescape | replaceRE `::.+?::` "" -}}
     {{- else -}}
       {{- /*  else data-more in wrap  */ -}}
-      {{- $more_data = .label | plainify | replaceRE `::.+?::` "" -}}
+      {{- $more_data = .label | plainify | htmlUnescape | replaceRE `::.+?::` "" -}}
     {{- end -}}
     {{- $sub_tag = true -}}
   {{- else if $btn -}}

@@ -29,7 +29,7 @@
       "@type" "Person"
       "name"  .title
     )
-    "reviewBody"   (.md | markdownify | plainify)
+    "reviewBody"   (.md | markdownify | plainify | htmlUnescape)
     "datePublished" $published
     "itemReviewed" $item_reviewed
     "reviewRating" $rr
