@@ -207,7 +207,7 @@ async function api (path, { method = 'GET', raw = false } = {}) {
   return body
 }
 
-const state = { view: 'attention', summary: null, items: [], next: null, selected: null, detail: null, busy: false, message: null }
+const state = { view: null, summary: null, items: [], next: null, selected: null, detail: null, busy: false, message: null }
 const app = document.getElementById('app')
 
 function icon (path) {
@@ -339,6 +339,11 @@ async function load ({ more = false } = {}) {
   state.message = null
   render()
   try {
+    // First load: open the first view with something in it.
+    if (!state.view) {
+      state.summary = await api('summary')
+      state.view = state.summary.attention ? 'attention' : state.summary.review ? 'review' : 'all'
+    }
     const query = `submissions?view=${state.view}${more && state.next ? `&before=${encodeURIComponent(state.next)}` : ''}`
     const [summary, page] = await Promise.all([more ? state.summary : api('summary'), api(query)])
     state.summary = summary
