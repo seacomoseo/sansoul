@@ -84,7 +84,9 @@ describe('panel auth', () => {
     assert.equal(person.status, 200)
     assert.equal(person.body.actor, 'github')
     assert.equal(person.headers.get('cache-control'), 'private, no-store')
-    assert.equal((await call('summary', { auth: `Bearer ${ADMIN_TOKEN}` })).body.actor, 'token')
+    // The automation token drains and decides; it cannot read or delete data.
+    assert.equal((await call('summary', { auth: `Bearer ${ADMIN_TOKEN}` })).status, 403)
+    assert.equal((await call('dispatch', { method: 'POST', auth: `Bearer ${ADMIN_TOKEN}` })).status, 200)
   })
 
   test('a positive check is cached for minutes; GitHub down is 503, not access', async () => {
@@ -94,7 +96,7 @@ describe('panel auth', () => {
     clock += 6 * 60 * 1000
     github.down = true
     assert.equal((await call('summary')).status, 503)
-    assert.equal((await call('summary', { auth: `Bearer ${ADMIN_TOKEN}` })).status, 200)
+    assert.equal((await call('dispatch', { method: 'POST', auth: `Bearer ${ADMIN_TOKEN}` })).status, 200)
   })
 
   test('the repository comes from the manifest or FORMS_ADMIN_REPO', async () => {
@@ -208,5 +210,16 @@ describe('panel actions', () => {
     const left = (await bindings.db.prepare('SELECT id FROM forms_submissions').all()).results.map(row => row.id).sort()
     assert.deepEqual(left, [oldHeld, recent].sort())
     assert.equal(left.includes(old), false)
+  })
+
+  test('retention keeps submissions whose delivery failed until a person decides', async () => {
+    const failed = await send([['Email', 'failed@example.org']], footer)
+    await bindings.db.prepare("UPDATE forms_jobs SET state = 'failed', last_error = 'network_error' WHERE submission_id = ?").bind(failed).run()
+    clock += 31 * 24 * 3600 * 1000
+    env.FORMS_RETENTION_DAYS = '30'
+    assert.equal((await call('retention', { method: 'POST' })).body.deleted, 0)
+    assert.ok(await bindings.db.prepare('SELECT 1 FROM forms_submissions WHERE id = ?').bind(failed).first())
+    await bindings.db.prepare("UPDATE forms_jobs SET last_error = 'discarded' WHERE submission_id = ?").bind(failed).run()
+    assert.equal((await call('retention', { method: 'POST' })).body.deleted, 1)
   })
 })

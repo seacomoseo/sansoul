@@ -1,5 +1,22 @@
 /* Forms panel. Tokens mirror Sveltia CMS (@sveltia/ui); inside the CMS the
    page copies the live --sui-* values of the parent, so theme changes follow. */
+@font-face {
+  font-family: "Source Sans 3"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/fontsource/fonts/source-sans-3:vf@5.3.1/latin-wght-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Material Symbols Outlined"; font-style: normal; font-weight: 100 700; font-display: block;
+  src: url("https://cdn.jsdelivr.net/fontsource/fonts/material-symbols-outlined:vf@5.3.9/latin-wght-normal.woff2") format("woff2-variations");
+}
+.ms {
+  font-family: "Material Symbols Outlined"; font-weight: 400; font-style: normal; font-size: 20px; line-height: 1;
+  letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr;
+  font-feature-settings: "liga"; -webkit-font-feature-settings: "liga"; -webkit-font-smoothing: antialiased;
+  vertical-align: middle; flex: none; user-select: none;
+}
+.row-meta .ms { font-size: 15px; vertical-align: -3px; }
+/* The CMS already shows the page name: no repeated title when embedded. */
+[data-embedded] h1 { display: none; }
 :root {
   color-scheme: light dark;
   --sui-base-hue: 210;
@@ -9,7 +26,8 @@
   --sui-background-color-4-hsl: var(--sui-base-hue) 5% 92%;
   --sui-background-color-5-hsl: var(--sui-base-hue) 5% 84%;
   --sui-foreground-color-1-hsl: var(--sui-base-hue) 5% 5%;
-  --sui-foreground-color-2-hsl: var(--sui-base-hue) 5% 10%;
+  --sui-foreground-color-2-hsl: var(--sui-base-hue) 5% 25%;
+  --sui-foreground-color-3-hsl: var(--sui-base-hue) 5% 35%;
   --sui-foreground-color-4-hsl: var(--sui-base-hue) 5% 45%;
   --sui-border-color-2-hsl: var(--sui-base-hue) 5% 72%;
   --sui-border-color-3-hsl: var(--sui-base-hue) 5% 80%;
@@ -36,12 +54,13 @@
     --sui-background-color-4-hsl: var(--sui-base-hue) 10% 16%;
     --sui-background-color-5-hsl: var(--sui-base-hue) 10% 26%;
     --sui-foreground-color-1-hsl: var(--sui-base-hue) 10% 95%;
-    --sui-foreground-color-2-hsl: var(--sui-base-hue) 10% 92%;
-    --sui-foreground-color-4-hsl: var(--sui-base-hue) 10% 65%;
+    --sui-foreground-color-2-hsl: var(--sui-base-hue) 10% 75%;
+    --sui-foreground-color-3-hsl: var(--sui-base-hue) 10% 65%;
+    --sui-foreground-color-4-hsl: var(--sui-base-hue) 10% 55%;
     --sui-border-color-2-hsl: var(--sui-base-hue) 10% 24%;
     --sui-border-color-3-hsl: var(--sui-base-hue) 10% 20%;
-    --sui-primary-accent-color: hsl(var(--sui-base-hue) 80% 45%);
-    --sui-primary-accent-color-text: hsl(var(--sui-base-hue) 100% 70%);
+    --sui-primary-accent-color: hsl(var(--sui-base-hue) 100% 40%);
+    --sui-primary-accent-color-text: hsl(var(--sui-base-hue) 100% 60%);
   }
 }
 @media (prefers-color-scheme: dark) {

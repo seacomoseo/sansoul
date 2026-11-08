@@ -51,7 +51,8 @@ export async function authorize (request, env, { manifest, fetch, now }) {
   } catch {
     throw new FormsError('github_unavailable', 503)
   }
-  if (response.status >= 500) throw new FormsError('github_unavailable', 503)
+  // GitHub down or rate limited is not a verdict on the person.
+  if (response.status >= 500 || response.status === 429 || (response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0')) throw new FormsError('github_unavailable', 503)
   const data = response.ok ? await response.json().catch(() => null) : null
   const permissions = data?.permissions || {}
   if (!(permissions.push || permissions.maintain || permissions.admin)) throw new FormsError('unauthorized', 401)
@@ -114,7 +115,7 @@ async function summary (db, env, now) {
 async function list (db, url) {
   const view = VIEWS[url.searchParams.get('view')] ? url.searchParams.get('view') : 'all'
   const [beforeTime, beforeId] = (url.searchParams.get('before') || '').split('|')
-  const cursor = Number(beforeTime) > 0 && beforeId ? [Number(beforeTime), beforeId] : null
+  const cursor = Number.isSafeInteger(Number(beforeTime)) && Number(beforeTime) > 0 && beforeId ? [Number(beforeTime), beforeId] : null
   const rows = (await db.prepare(
     `SELECT s.id, s.form_key, s.page, s.status, s.fields, s.files, s.created_at FROM forms_submissions s
      WHERE (${VIEWS[view]}) ${cursor ? 'AND (s.created_at < ?1 OR (s.created_at = ?1 AND s.id < ?2))' : ''}
@@ -223,17 +224,25 @@ export async function deleteSubmission (db, kv, id, now) {
 }
 
 // Retention (FORMS_RETENTION_DAYS): only submissions whose jobs are all
-// closed (sent or failed) are deleted; held ones wait for a person.
+// closed are deleted: sent, or failed on purpose (discarded). Held and failed
+// ones wait for a person.
 export async function pruneSubmissions (db, kv, env, now, limit = 20) {
   const days = retentionDays(env)
   if (!days) return 0
   const ids = (await db.prepare(
     `SELECT id FROM forms_submissions s WHERE created_at < ?
-     AND NOT EXISTS (SELECT 1 FROM forms_jobs j WHERE j.submission_id = s.id AND j.state IN ('pending', 'leased', 'held'))
+     AND NOT EXISTS (SELECT 1 FROM forms_jobs j WHERE j.submission_id = s.id AND (j.state IN ('pending', 'leased', 'held') OR ${ATTENTION}))
      ORDER BY created_at LIMIT ?`
   ).bind(now() - days * DAY_MS, limit).all()).results.map(row => row.id)
   let deleted = 0
-  for (const id of ids) if (await deleteSubmission(db, kv, id, now)) deleted++
+  for (const id of ids) {
+    // A job queued since the SELECT (409) must not abort the whole drain.
+    try {
+      if (await deleteSubmission(db, kv, id, now)) deleted++
+    } catch (error) {
+      if (!(error instanceof FormsError)) throw error
+    }
+  }
   return deleted
 }
 
@@ -242,6 +251,8 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
   const db = requireDatabase(env)
   const kv = env.FORMS_FILES
   const method = request.method
+  // The automation token drains and decides; reading or deleting data needs a person.
+  if (actor === 'token' && !(method === 'POST' && (path === 'dispatch' || path === 'retention' || path.startsWith('jobs/')))) throw new FormsError('forbidden', 403)
   const url = new URL(request.url)
   const submission = path.match(/^submissions\/([A-Za-z0-9-]{16,64})(?:\/(delete|files\/(\d{1,2})))?$/)
 

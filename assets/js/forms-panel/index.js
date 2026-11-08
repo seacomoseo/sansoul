@@ -2,7 +2,15 @@
 // CMS (CMS.registerCustomPage). People are authorized with the GitHub session
 // of the CMS; the Worker checks push access to the site repository.
 const API = '/api/forms/admin/'
-const lang = document.documentElement.lang === 'es' ? 'es' : 'en'
+// Inside the CMS follow its interface language (same origin), else this page's.
+function pageLang () {
+  let value = document.documentElement.lang
+  try {
+    if (window.parent !== window && window.parent.location.origin === location.origin) value = window.parent.document.documentElement.lang || value
+  } catch {}
+  return value.toLowerCase().startsWith('es') ? 'es' : 'en'
+}
+const lang = pageLang()
 const T = {
   es: {
     title: 'Formularios',
@@ -44,7 +52,8 @@ const T = {
     sent24h: (n, account) => `${n} ${n === 1 ? 'correo enviado' : 'correos enviados'} en 24 h desde ${account || 'la cuenta de envío'}. La cuota diaria de Gmail se comparte con otras webs que usen esta cuenta.`,
     retention: d => d ? `Los envíos cerrados se borran a los ${d} días.` : 'Sin borrado automático de envíos.',
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'archivo' : 'archivos'}${p ? `, ${p} pendientes` : ''}.`,
-    reasonsTitle: 'Motivos de revisión'
+    reasonsTitle: 'Motivos de revisión',
+    openForm: 'Abrir el formulario en la web'
   },
   en: {
     title: 'Forms',
@@ -86,7 +95,8 @@ const T = {
     sent24h: (n, account) => `${n} ${n === 1 ? 'email' : 'emails'} sent in 24 h from ${account || 'the sender account'}. The daily Gmail quota is shared with other sites using this account.`,
     retention: d => d ? `Closed submissions are deleted after ${d} days.` : 'No automatic deletion of submissions.',
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'file' : 'files'}${p ? `, ${p} pending` : ''}.`,
-    reasonsTitle: 'Review reasons'
+    reasonsTitle: 'Review reasons',
+    openForm: 'Open the form on the site'
   }
 }[lang]
 const STATES = {
@@ -210,20 +220,14 @@ async function api (path, { method = 'GET', raw = false } = {}) {
 const state = { view: null, summary: null, items: [], next: null, selected: null, detail: null, busy: false, message: null }
 const app = document.getElementById('app')
 
-function icon (path) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-  svg.setAttribute('viewBox', '0 0 24 24')
-  svg.setAttribute('aria-hidden', 'true')
-  const shape = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  shape.setAttribute('d', path)
-  svg.append(shape)
-  return svg
+function icon (name) {
+  const node = document.createElement('span')
+  node.className = 'ms'
+  node.setAttribute('aria-hidden', 'true')
+  node.textContent = name
+  return node
 }
-const ICONS = {
-  refresh: 'M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z',
-  back: 'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z',
-  file: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z'
-}
+const ICONS = { refresh: 'refresh', back: 'arrow_back', file: 'description', clip: 'attach_file' }
 
 function stateChip (job) {
   return h('span', { class: `chip chip-${job.state}${job.reason === 'review' ? ' chip-review' : ''}`, title: reasonText(job.reason) }, job.state === 'held' && job.reason === 'review' ? T.review : (STATES[job.state] || job.state))
@@ -244,7 +248,7 @@ function banners () {
 
 function toolbar () {
   const summary = state.summary
-  const tabs = ['attention', 'review', 'all'].map(view => h('button', {
+  const tabs = ['all', 'attention', 'review'].map(view => h('button', {
     type: 'button',
     role: 'tab',
     class: 'tab',
@@ -264,7 +268,7 @@ function listPane () {
       h('button', { type: 'button', class: 'row', 'aria-current': String(state.selected === item.id), onclick: () => select(item.id) },
         h('span', { class: 'row-main' },
           h('span', { class: 'row-title' }, item.preview || item.form.split('#')[1]),
-          h('span', { class: 'row-meta' }, `${dateText(item.createdAt)} · ${item.page}`, item.files ? ` · ${item.files} 📎` : '')),
+          h('span', { class: 'row-meta' }, `${dateText(item.createdAt)} · ${item.form.split('#')[1]}`, item.files ? [' · ', icon(ICONS.clip), String(item.files)] : null)),
         job ? stateChip(job) : null))
   })
   const footer = state.summary
@@ -287,7 +291,7 @@ function jobCard (job) {
       [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts(job.attempts)}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
     actionable && job.reason !== 'discarded'
       ? h('div', { class: 'actions' },
-        h('button', { type: 'button', class: 'button primary', disabled: state.busy, onclick: () => act(`jobs/${state.detail.id}:${job.channel}/release`) }, review ? T.approve : T.release),
+        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => act(`jobs/${state.detail.id}:${job.channel}/release`) }, review ? T.approve : T.release),
         h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => confirm(T.discardConfirm) && act(`jobs/${state.detail.id}:${job.channel}/discard`) }, review ? T.spam : T.discard))
       : null)
 }
@@ -299,7 +303,7 @@ function detailPane () {
   return h('section', { class: 'detail-pane', 'aria-label': detail.id },
     h('div', { class: 'detail-head' },
       h('button', { type: 'button', class: 'button icon-button back', 'aria-label': T.back, title: T.back, onclick: () => select(null) }, icon(ICONS.back)),
-      h('div', {}, h('h2', {}, detail.form.split('#')[1]), h('p', { class: 'muted small' }, `${dateText(detail.createdAt)} · ${detail.page} · ${detail.id}`))),
+      h('div', {}, h('h2', {}, detail.form.split('#')[1]), h('p', { class: 'muted small' }, `${dateText(detail.createdAt)} · `, h('a', { href: `${detail.page}#${detail.form.split('#')[1]}`, target: '_blank', rel: 'noopener noreferrer', title: T.openForm }, `${detail.page}#${detail.form.split('#')[1]}`), ` · ${detail.id}`))),
     detail.reasons.length ? h('p', { class: 'alert alert-warning' }, `${T.reasonsTitle}: ${[...new Set(detail.reasons)].map(spamText).join('; ')}`) : null,
     h('h3', {}, T.fields),
     h('dl', { class: 'fields' }, detail.fields.flatMap(([name, value]) => [h('dt', {}, name), h('dd', {}, value || '—')])),
