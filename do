@@ -287,6 +287,7 @@ elif [ "$COMMAND" = hugo-development ]; then
 
   # remove cache directories
   rm -rf public resources
+  node "$CORE_DIR/commerce/scripts/build-catalog.js"
 
   hecho "RUN HUGO DEVELOPMENT"
   hugo --gc --buildFuture --environment development --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
@@ -296,6 +297,7 @@ elif [ "$COMMAND" = hugo-production ]; then
 
   sh do rm-public
   sh do prebuild
+  node "$CORE_DIR/commerce/scripts/build-catalog.js"
 
   hecho "RUN HUGO PRODUCTION"
   hugo --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/hugo.production.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"

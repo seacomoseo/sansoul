@@ -3,7 +3,20 @@ import params from './params'
 import { hasConsent } from './consent'
 const { cookiesVideo } = params
 
+// Blocked storage (privacy modes) throws on access; fall back to an in-memory store so
+// consent works for the current page without being persisted.
+function consentStore () {
+  try {
+    const store = window.localStorage
+    store.getItem('controlcookie')
+    return store
+  } catch {
+    return { removeItem (key) { delete this[key] } }
+  }
+}
+
 export function initCookies () {
+  const localStorage = consentStore()
   const cookiesMessage = document.querySelector('.cookies')
 
   // Inject CSS variables

@@ -50,6 +50,7 @@ modificados; `dev` y `cms` los detectan durante la sesión sin reiniciar Hugo.
 - [Metadatos Markdown]({{CORE_PATH}}/docs/markdown-metadata.md)
 - [Vídeos y caché]({{CORE_PATH}}/docs/video-metadata.md)
 - [Vista previa experimental del CMS]({{CORE_PATH}}/docs/cms-live-preview.md)
+- [Comercio opt-in y carrito]({{CORE_PATH}}/README-ROOT.md#comercio-opt-in)
 - [Instrucciones para agentes](AGENTS.md)
 
 Con Codex, «Actualiza el submódulo» activa el flujo completo de actualización, migraciones, validación y sincronización de versiones. No autoriza commit, push ni despliegue.

@@ -42,6 +42,51 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 13.6.0 — comercio opt-in (integración, sin publicar)
+
+**Impacto:** ninguno para proyectos sin `data/commerce.yml` o con
+`enabled: false` y sin adaptadores: no se insertan UI, JS, CSS ni rutas de
+comercio. Aplica solo a consumidores que adopten el comercio, incluidos los que
+traían las ramas locales 7.1.0/8.0.0 de comercio (nunca publicadas en `main`).
+
+### Qué incorpora
+
+- Catálogo, carrito, ficha de compra y página `commerce-cart`, activados con
+  `data/commerce.yml` `enabled: true`. Campos CMS ES/EN `commerce_id`,
+  `commerce_active`, `commerce_quote` y `commerce_weight_kg` (visibles solo con
+  comercio activo). El JS y el CSS de comercio entran en el pipeline selectivo
+  de producción como componente `commerce`.
+- Backend reutilizable en `core/commerce/` (checkout, totales y destinos
+  cotizados en servidor, webhook Stripe, estado privado del comprador,
+  administración, outbox con consumo `claim/ack`, mantenimiento acotado) con
+  ejemplos Workers y Pages en `core/_examples/commerce-backend/`.
+- `cms_repo` opcional en `data/config.yml` para separar el repositorio del CMS
+  de `owner/domain`.
+
+### Acciones al adoptar comercio
+
+1. Sigue [Comercio opt-in](README-ROOT.md#comercio-opt-in): identidades UUID/SKU
+   estables, `data/commerce.yml`, página `single/carrito` y backend copiado del
+   ejemplo con las rutas `core/…`.
+2. Base D1 aprobada y respaldada: aplica una vez y en orden
+   `core/commerce/migrations/0001`–`0006`. Quien venga de 8.0.0 local ya tiene
+   `0005`/`0006`; quien venga de 7.1.0 aplica solo las que falten. Ningún build
+   aplica migraciones remotas.
+3. Callers de mantenimiento: `reconcile` procesa un elemento por llamada y clase
+   (`operation=expiration|orders|unmatched_webhooks`; sin parámetro, `orders`);
+   `dispatch` devuelve `has_more` booleano en lugar del contador `pending`.
+   Programa las clases por turnos con límite de llamadas, sin bucles de drenaje.
+4. Mantén `checkout_approved: false` y `COMMERCE_CHECKOUT_APPROVED=false` hasta la
+   aprobación comercial (impuestos, envío, legal). El proveedor `fake` solo vale
+   con fixtures sintéticas en `test`.
+
+### Validación
+
+Desde `core/`: `pnpm run test:commerce` (unitarias y routing) y
+`pnpm run test:commerce:workers` (workerd + D1 local; varios minutos). En el
+consumidor: `sh do build`, CMS ES/EN con los campos opcionales, carrito, ficha
+y regresión sin comercio (divisores). El pass local no certifica CPU Free cloud.
+
 ## 13.5.0 — 2026-11-07
 
 **Impacto:** todos los proyectos. `sh do update` normaliza ahora, sin pasos

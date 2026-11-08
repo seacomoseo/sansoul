@@ -143,7 +143,9 @@
       const start = () => {
         console.log(...e)
       }
-      if (localStorage.controlcookieanalytics) {
+      let consent
+      try { consent = localStorage.controlcookieanalytics } catch (e) {}
+      if (consent) {
         start()
       } else {
         window.addEventListener('cookies:analytics', start, { once: true })

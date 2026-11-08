@@ -122,6 +122,7 @@
     (partial "bg" $bg)
     (partial "logo" $tpl)
     (partial "menu/_" $tpl)
+    (partial "commerce/shell" .)
   -}}
   {{- $section_html := slice -}}
   {{- range $sections -}}
@@ -152,7 +153,8 @@
   {{- $script_type := cond (and hugo.IsProduction (not $component_usage.full)) ` type="module"` "" -}}
   {{- $body_html = print $body_html `<script src="__SANSOUL_SCRIPTS__"` $script_type (cond (eq $script_type ` type="module"`) "></script>" " defer></script>") $custom_html_body (partial "preview/live" .) -}}
 
-  {{- $head_html := print `<head>` (partial "head" .) $custom_html_head `</head>` -}}
+  {{- $commerce_head := partial "commerce/return-head" . -}}
+  {{- $head_html := print `<head>` $commerce_head (partial "head" .) $custom_html_head `</head>` -}}
   {{- $document_html := print `<!DOCTYPE html><html lang="` (.Params.locale | default .Lang) `" data-base-lang="` .Lang `" class="preload">` $head_html `<body ` $body_attr `>` $body_html `</body></html>` -}}
   {{- if hugo.IsProduction -}}
     {{- $resource_usage := partial "files/page-resource-usage" (dict "format" "html" "html" $document_html) -}}

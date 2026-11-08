@@ -1,0 +1,24 @@
+{{- with hugo.Data.commerce -}}
+  {{- if eq .enabled true -}}
+    {{- $catalogPage := site.GetPage "category/catalogo" | default (site.GetPage "product") | default site.Home -}}
+    <section class="commerce__cart-page" data-commerce-cart-page aria-labelledby="commerce-cart-title">
+      <h2 class="commerce__title" id="commerce-cart-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label></span></h2>
+      <p class="commerce__status" data-commerce-status role="status" aria-live="polite" aria-atomic="true" hidden></p>
+      <div class="commerce__empty" data-commerce-empty>
+        {{ partial "icon" (dict "icon" "shopping_cart" "class" "commerce__empty-icon") }}
+        <p>{{ i18n "commerce_empty" }}</p>
+        <a class="btn" data-commerce-empty-link href="{{ $catalogPage.RelPermalink }}">{{ i18n "commerce_back_to_catalog" }}</a>
+      </div>
+      <div class="commerce__cart-grid" data-commerce-filled hidden>
+        <div class="commerce__cart-main">
+          <ul class="commerce__lines" data-commerce-lines></ul>
+          <a class="commerce__text-link" href="{{ $catalogPage.RelPermalink }}">{{ partial "icon" (dict "icon" "arrow_back") }}<span>{{ i18n "commerce_continue_shopping" }}</span></a>
+        </div>
+        <aside class="commerce__cart-aside">
+          {{- partial "commerce/summary" . -}}
+          {{- partial "commerce/checkout" . -}}
+        </aside>
+      </div>
+    </section>
+  {{- end -}}
+{{- end -}}
