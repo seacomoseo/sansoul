@@ -4,7 +4,7 @@ User-agent: *
   {{- .Content }}
 {{ end }}
 
-{{- if in site.BaseURL "netlify.app" | or (in site.BaseURL "pages.dev") }}
+{{- if in site.BaseURL "netlify.app" | or (in site.BaseURL "pages.dev") | or (in site.BaseURL "workers.dev") }}
 Disallow: /
 {{- end }}
 
