@@ -60,7 +60,43 @@ const T = {
     noForms: 'Todavía no hay formularios con envíos.',
     state: 'Estado',
     date: 'Fecha del envío',
-    submissionId: 'Identificador del envío'
+    submissionId: 'Identificador del envío',
+    created: 'Fecha',
+    form: 'Formulario',
+    summary: 'Valores',
+    search: 'Buscar en los valores',
+    sort: 'Ordenar',
+    filter: 'Filtrar',
+    group: 'Agrupar',
+    noGroup: 'Sin agrupar',
+    asc: 'Ascendente',
+    desc: 'Descendente',
+    addFilter: 'Añadir filtro',
+    removeFilter: 'Quitar filtro',
+    clearFilters: 'Quitar todos',
+    filterHint: 'Se cumplen todos los filtros a la vez.',
+    value: 'Valor',
+    empty_: '(vacío)',
+    ops: { contains: 'contiene', not_contains: 'no contiene', is: 'es', is_not: 'no es', empty: 'está vacío', not_empty: 'no está vacío', after: 'desde', before: 'hasta' },
+    filesOps: { empty: 'sin archivos', not_empty: 'con archivos' },
+    selectAll: 'Seleccionar todos los cargados',
+    selectRow: 'Seleccionar este envío',
+    deleteRow: 'Borrar este envío',
+    deleteSelected: n => `Borrar ${n}`,
+    deleteManyConfirm: n => `Se borrarán para siempre ${n} ${n === 1 ? 'envío' : 'envíos'} con sus datos y archivos guardados (lo ya copiado a Drive se queda en Drive). ¿Seguir?`,
+    deleted: (n, busy) => `${n} ${n === 1 ? 'envío borrado' : 'envíos borrados'}.${busy ? ` ${busy} ${busy === 1 ? 'se está enviando y no se ha borrado' : 'se están enviando y no se han borrado'}; prueba en un momento.` : ''}`,
+    count: (shown, total) => total == null ? `${shown}` : `${shown} de ${total}`,
+    csvView: 'CSV',
+    csvZip: 'CSV por formulario (ZIP)',
+    csvTitle: 'Descargar los envíos de esta vista (con sus filtros y orden)',
+    zipTitle: 'Un CSV por cada formulario de esta vista, en un ZIP',
+    preparing: n => `Preparando la descarga… ${n} envíos.`,
+    truncated: n => `La descarga se ha limitado a los ${n} primeros envíos: filtra para bajar el resto.`,
+    files_: 'Archivos',
+    page: 'Página',
+    id: 'ID',
+    siteMismatch: site => `Esta base de datos ya la usa otra web (${site}). Cada proyecto necesita su propia D1 y su propio KV: revisa wrangler.workers.toml.`,
+    dismiss: 'Cerrar'
   },
   en: {
     title: 'Forms',
@@ -110,18 +146,56 @@ const T = {
     noForms: 'No forms with submissions yet.',
     state: 'State',
     date: 'Submission date',
-    submissionId: 'Submission ID'
+    submissionId: 'Submission ID',
+    created: 'Date',
+    form: 'Form',
+    summary: 'Values',
+    search: 'Search the values',
+    sort: 'Sort',
+    filter: 'Filter',
+    group: 'Group',
+    noGroup: 'No grouping',
+    asc: 'Ascending',
+    desc: 'Descending',
+    addFilter: 'Add filter',
+    removeFilter: 'Remove filter',
+    clearFilters: 'Remove all',
+    filterHint: 'All filters must match.',
+    value: 'Value',
+    empty_: '(empty)',
+    ops: { contains: 'contains', not_contains: 'does not contain', is: 'is', is_not: 'is not', empty: 'is empty', not_empty: 'is not empty', after: 'from', before: 'until' },
+    filesOps: { empty: 'without files', not_empty: 'with files' },
+    selectAll: 'Select all loaded',
+    selectRow: 'Select this submission',
+    deleteRow: 'Delete this submission',
+    deleteSelected: n => `Delete ${n}`,
+    deleteManyConfirm: n => `${n} ${n === 1 ? 'submission' : 'submissions'} will be deleted for good with their stored data and files (anything already copied to Drive stays there). Continue?`,
+    deleted: (n, busy) => `${n} ${n === 1 ? 'submission' : 'submissions'} deleted.${busy ? ` ${busy} ${busy === 1 ? 'is' : 'are'} being sent and ${busy === 1 ? 'was' : 'were'} not deleted; try again in a moment.` : ''}`,
+    count: (shown, total) => total == null ? `${shown}` : `${shown} of ${total}`,
+    csvView: 'CSV',
+    csvZip: 'CSV per form (ZIP)',
+    csvTitle: 'Download the submissions of this view (with its filters and order)',
+    zipTitle: 'One CSV per form of this view, in a ZIP',
+    preparing: n => `Preparing the download… ${n} submissions.`,
+    truncated: n => `The download was limited to the first ${n} submissions: filter to get the rest.`,
+    files_: 'Files',
+    page: 'Page',
+    id: 'ID',
+    siteMismatch: site => `This database is already used by another site (${site}). Each project needs its own D1 and KV: check wrangler.workers.toml.`,
+    dismiss: 'Close'
   }
 }[lang]
 const STATES = {
-  es: { pending: 'En cola', leased: 'Enviando', sent: 'Enviado', held: 'Retenido', failed: 'Fallido' },
-  en: { pending: 'Queued', leased: 'Sending', sent: 'Sent', held: 'Held', failed: 'Failed' }
+  es: { pending: 'En cola', leased: 'Enviando', sent: 'Enviado', held: 'Retenido', failed: 'Fallido', review: 'Revisión', discarded: 'Descartado' },
+  en: { pending: 'Queued', leased: 'Sending', sent: 'Sent', held: 'Held', failed: 'Failed', review: 'Review', discarded: 'Discarded' }
 }[lang]
 const REASONS = {
   es: {
     review: 'En revisión: posible spam o datos no esperados',
     delivery_disabled: 'Envío desactivado en este entorno',
     released: 'Liberado a mano',
+    deferred: 'Se enviará en la próxima pasada programada',
+    submission_missing: 'El envío ya no existe',
     discarded: 'Descartado',
     files_missing: 'Faltan los archivos del envío',
     authority_drift: 'La cuenta de envío cambió después de recibirlo',
@@ -138,6 +212,8 @@ const REASONS = {
     review: 'In review: possible spam or unexpected data',
     delivery_disabled: 'Delivery disabled here',
     released: 'Released by hand',
+    deferred: 'Will be sent on the next scheduled pass',
+    submission_missing: 'The submission no longer exists',
     discarded: 'Discarded',
     files_missing: 'The files of the submission are missing',
     authority_drift: 'The sender account changed after it arrived',
@@ -161,6 +237,8 @@ const spamText = code => {
 }
 const reasonText = code => code ? (REASONS[code] || code) : ''
 const dateText = time => new Intl.DateTimeFormat(lang, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(time))
+const shortDate = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+const dayText = day => new Intl.DateTimeFormat(lang, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${day}T00:00:00Z`))
 const sizeText = bytes => bytes < 1024 ? `${bytes} B` : bytes < 1048576 ? `${(bytes / 1024).toFixed(0)} KB` : `${(bytes / 1048576).toFixed(1)} MB`
 
 // Elements are built with textContent only: no submitted value is ever HTML.
@@ -170,6 +248,7 @@ function h (tag, attrs = {}, ...children) {
     if (value === false || value == null) continue
     if (key.startsWith('on')) node.addEventListener(key.slice(2), value)
     else if (key === 'class') node.className = value
+    else if (key === 'indeterminate') node.indeterminate = Boolean(value)
     else node.setAttribute(key, value === true ? '' : value)
   }
   for (const child of children.flat()) if (child != null && child !== false) node.append(child)
@@ -225,19 +304,100 @@ class ApiError extends Error {
   }
 }
 
-async function api (path, { method = 'GET', raw = false } = {}) {
+async function api (path, { method = 'GET', raw = false, body, signal } = {}) {
   const token = githubToken()
   if (!token) throw new ApiError(401, 'signin')
-  const response = await fetch(API + path, { method, headers: { authorization: `GitHub ${token}` }, cache: 'no-store', credentials: 'omit' })
+  const headers = { authorization: `GitHub ${token}`, ...(body ? { 'content-type': 'application/json' } : {}) }
+  const response = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : undefined, signal, cache: 'no-store', credentials: 'omit' })
   if (raw && response.ok) return response
   const type = response.headers.get('content-type') || ''
-  const body = type.startsWith('application/json') ? await response.json().catch(() => ({})) : {}
-  if (!response.ok) throw new ApiError(response.status, body.error || (type.startsWith('application/json') ? 'error' : 'not_enabled'))
-  return body
+  const data = type.startsWith('application/json') ? await response.json().catch(() => ({})) : {}
+  if (!response.ok) throw new ApiError(response.status, data.error || (type.startsWith('application/json') ? 'error' : 'not_enabled'))
+  return data
 }
 
-const state = { forms: null, form: null, view: null, summary: null, items: [], next: null, selected: null, detail: null, busy: false, message: null }
+const PAGE_EXPORT_MAX = 5000
+const DELETE_CHUNK = 50
+const SETTINGS_KEY = 'sansoul-forms.views'
+const DEFAULT_SORT = 'created:desc'
+const STATE_KEYS = ['pending', 'leased', 'sent', 'held', 'failed', 'review', 'discarded']
+const ICONS = {
+  refresh: 'refresh',
+  back: 'arrow_back',
+  file: 'description',
+  clip: 'attach_file',
+  download: 'download',
+  date: 'calendar_today',
+  link: 'link',
+  id: 'fingerprint',
+  search: 'search',
+  sort: 'swap_vert',
+  filter: 'filter_list',
+  group: 'view_agenda',
+  close: 'close',
+  remove: 'delete',
+  add: 'add',
+  up: 'arrow_upward',
+  down: 'arrow_downward',
+  expand: 'expand_more',
+  collapse: 'chevron_right',
+  zip: 'folder_zip'
+}
+
+const state = {
+  summary: null,
+  forms: null,
+  view: null,
+  form: null,
+  items: [],
+  next: null,
+  total: null,
+  groups: null,
+  columns: [],
+  loading: false,
+  busy: false,
+  panel: null,
+  selection: new Set(),
+  anchor: null,
+  collapsed: new Set(),
+  selected: null,
+  detail: null,
+  message: null,
+  notice: null
+}
 const app = document.getElementById('app')
+// Scroll positions survive re-renders (and a pane hidden on mobile).
+const scrolls = new Map()
+
+// Sort, filters, grouping and search per view (and per form in the table
+// view), kept in this browser.
+const savedViews = (() => {
+  try {
+    return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') || {}
+  } catch {
+    return {}
+  }
+})()
+const viewKey = () => state.view === 'table' ? `form:${state.form}` : state.view
+function settings () {
+  const saved = savedViews[viewKey()]
+  return {
+    q: typeof saved?.q === 'string' ? saved.q : '',
+    sort: typeof saved?.sort === 'string' ? saved.sort : DEFAULT_SORT,
+    group: typeof saved?.group === 'string' ? saved.group : null,
+    filters: Array.isArray(saved?.filters) ? saved.filters.filter(Array.isArray) : []
+  }
+}
+function updateSettings (change, { reload = true } = {}) {
+  savedViews[viewKey()] = { ...settings(), ...change }
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(savedViews))
+  } catch {}
+  if (reload) {
+    state.next = null
+    load()
+  } else render()
+}
 
 function icon (name) {
   const node = document.createElement('span')
@@ -246,22 +406,93 @@ function icon (name) {
   node.textContent = name
   return node
 }
-const ICONS = { refresh: 'refresh', back: 'arrow_back', file: 'description', clip: 'attach_file', download: 'download', date: 'calendar_today', link: 'link', id: 'fingerprint' }
 
-function stateChip (job) {
-  return h('span', { class: `chip chip-${job.state}${job.reason === 'review' ? ' chip-review' : ''}`, title: reasonText(job.reason) }, job.state === 'held' && job.reason === 'review' ? T.review : (STATES[job.state] || job.state))
+const formId = key => String(key || '').split('#').slice(1).join('#') || String(key || '')
+const itemState = item => item.state || (item.jobs.find(job => job.channel === 'owner') || item.jobs[0])?.state || null
+const fieldValue = (item, name) => (item.fields || []).filter(([key]) => key === name).map(([, value]) => value).join(', ')
+
+function stateChip (code, reason) {
+  if (!code) return '—'
+  return h('span', { class: `chip chip-${code}`, title: reasonText(reason) || undefined }, STATES[code] || code)
 }
 
-function fullScreenMessage (text, action) {
-  app.replaceChildren(h('div', { class: 'empty-state' }, h('p', {}, text), action || null))
+// Columns of the current table. General views: fixed columns (the values
+// summary only when the table is alone on screen). Table view: the fields of
+// the chosen form, as the server lists them.
+function tableColumns () {
+  const fixed = state.view === 'table'
+    ? [
+        { id: 'created', label: T.created, type: 'date' },
+        ...state.columns.map(name => ({ id: `f:${name}`, label: name, type: 'text' })),
+        { id: 'files', label: T.files_, type: 'count' },
+        { id: 'state', label: T.state, type: 'enum' }
+      ]
+    : [
+        { id: 'created', label: T.created, type: 'date' },
+        { id: 'form', label: T.form, type: 'enum' },
+        { id: 'summary', label: T.summary, type: null },
+        { id: 'files', label: T.files_, type: 'count' },
+        { id: 'state', label: T.state, type: 'enum' }
+      ]
+  return fixed
+}
+const columnType = id => tableColumns().find(col => col.id === id)?.type || (id.startsWith('f:') ? 'text' : null)
+const OPS = { text: ['contains', 'not_contains', 'is', 'is_not', 'empty', 'not_empty'], enum: ['is', 'is_not'], count: ['not_empty', 'empty'], date: ['after', 'before'] }
+const needsValue = op => !['empty', 'not_empty'].includes(op)
+
+function enumOptions (id) {
+  if (id === 'state') return STATE_KEYS.map(key => [key, STATES[key]])
+  if (id === 'form') return (state.forms || []).map(entry => [entry.form, `${formId(entry.form)} · ${entry.page}`])
+  return []
+}
+
+function groupLabel (id, key) {
+  if (key === '' || key == null) return T.empty_
+  if (id === 'created') return dayText(key)
+  if (id === 'form') return `${formId(key)} · ${String(key).split('#')[0]}`
+  if (id === 'state') return STATES[key] || key
+  if (id === 'files') return `${key} ${T.files_.toLowerCase()}`
+  return String(key)
+}
+
+// Dates are chosen as local days and sent as instants.
+function filterParam (filters) {
+  return filters.filter(([id, op, value]) => columnType(id) && (!needsValue(op) || value)).map(([id, op, value]) => {
+    if (columnType(id) !== 'date') return [id, op, needsValue(op) ? value : '']
+    const start = new Date(`${value}T00:00:00`)
+    if (op === 'before') start.setDate(start.getDate() + 1)
+    return [id, op, String(start.getTime())]
+  })
+}
+
+function listQuery (extra = {}) {
+  const view = settings()
+  const params = new URLSearchParams()
+  params.set('view', state.view === 'table' ? 'all' : state.view)
+  if (state.view === 'table') params.set('form', state.form)
+  if (view.q) params.set('q', view.q)
+  const filters = filterParam(view.filters)
+  if (filters.length) params.set('filter', JSON.stringify(filters))
+  if (view.sort !== DEFAULT_SORT && columnType(view.sort.replace(/:(asc|desc)$/, ''))) params.set('sort', view.sort)
+  if (view.group && columnType(view.group)) {
+    params.set('group', view.group)
+    params.set('tz', String(-new Date().getTimezoneOffset()))
+  }
+  for (const [key, value] of Object.entries(extra)) if (value != null) params.set(key, value)
+  return `submissions?${params}`
 }
 
 function banners () {
   const summary = state.summary
   const list = []
+  if (summary.siteMismatch) list.push(h('div', { class: 'alert alert-error', role: 'alert' }, T.siteMismatch(summary.siteMismatch)))
   if (summary.provider === 'hold') list.push(h('div', { class: 'alert alert-info', role: 'status' }, T.holdBanner))
   if (summary.attention) list.push(h('div', { class: 'alert alert-warning', role: 'status' }, T.attentionBanner(summary.attention)))
   if (state.message) list.push(h('div', { class: 'alert alert-error', role: 'alert' }, state.message))
+  if (state.notice) {
+    list.push(h('div', { class: 'alert alert-info alert-dismissible', role: 'status' }, h('span', {}, state.notice),
+      h('button', { type: 'button', class: 'button icon-button', 'aria-label': T.dismiss, title: T.dismiss, onclick: () => { state.notice = null; render() } }, icon(ICONS.close))))
+  }
   return list
 }
 
@@ -277,84 +508,201 @@ function toolbar () {
   return h('header', { class: 'toolbar' },
     h('h1', {}, T.title),
     h('div', { class: 'tabs', role: 'tablist' }, tabs),
-    h('button', { type: 'button', class: 'button icon-button', title: T.refresh, 'aria-label': T.refresh, onclick: () => load(), disabled: state.busy }, icon(ICONS.refresh)))
+    h('button', { type: 'button', class: 'button icon-button', title: T.refresh, 'aria-label': T.refresh, onclick: () => refresh(), disabled: state.busy }, icon(ICONS.refresh)))
 }
 
-function listPane () {
-  const rows = state.items.map(item => {
-    const job = item.jobs.find(entry => entry.channel === 'owner') || item.jobs[0]
-    return h('li', {},
-      h('button', { type: 'button', class: 'row', 'aria-current': String(state.selected === item.id), onclick: () => select(item.id) },
-        h('span', { class: 'row-main' },
-          h('span', { class: 'row-title' }, item.preview || item.form.split('#')[1]),
-          h('span', { class: 'row-meta' }, `${dateText(item.createdAt)} · ${item.form.split('#')[1]}`, item.files ? [' · ', icon(ICONS.clip), String(item.files)] : null)),
-        job ? stateChip(job) : null))
+let searchTimer
+function tableBar () {
+  const view = settings()
+  const active = { sort: view.sort !== DEFAULT_SORT, filter: filterParam(view.filters).length, group: Boolean(view.group) }
+  const toggle = name => h('button', {
+    type: 'button',
+    class: `button${active[name] ? ' active' : ''}`,
+    'aria-expanded': String(state.panel === name),
+    onclick: () => { state.panel = state.panel === name ? null : name; ensureForms().then(render) }
+  }, icon(ICONS[name]), T[name], name === 'filter' && active.filter ? h('span', { class: 'badge' }, String(active.filter)) : null)
+  const chooser = state.view === 'table' && state.forms?.length
+    ? h('select', { class: 'select form-select', 'aria-label': T.formLabel, 'data-focus': 'form', onchange: event => { state.form = event.target.value; resetList(); load() } },
+      state.forms.map(entry => h('option', { value: entry.form, selected: entry.form === state.form }, `${formId(entry.form)} · ${entry.page} (${entry.total})`)))
+    : null
+  const selected = state.selection.size
+  return h('div', { class: 'table-bar' },
+    chooser,
+    h('label', { class: 'search' }, icon(ICONS.search),
+      h('input', {
+        type: 'search',
+        value: view.q,
+        placeholder: T.search,
+        'aria-label': T.search,
+        'data-focus': 'search',
+        oninput: event => {
+          clearTimeout(searchTimer)
+          const value = event.target.value
+          searchTimer = setTimeout(() => updateSettings({ q: value.trim() }), 350)
+        }
+      })),
+    toggle('sort'), toggle('filter'), toggle('group'),
+    h('span', { class: 'spacer' }),
+    selected ? h('button', { type: 'button', class: 'button danger', disabled: state.busy, onclick: () => deleteMany([...state.selection]) }, icon(ICONS.remove), T.deleteSelected(selected)) : null,
+    h('button', { type: 'button', class: 'button', title: T.csvTitle, disabled: state.busy || !state.items.length, onclick: () => download('csv') }, icon(ICONS.download), T.csvView),
+    state.view !== 'table' ? h('button', { type: 'button', class: 'button', title: T.zipTitle, disabled: state.busy || !state.items.length, onclick: () => download('zip') }, icon(ICONS.zip), T.csvZip) : null)
+}
+
+function columnSelect (value, onchange, { allowNone = false } = {}) {
+  const columns = tableColumns().filter(col => col.type)
+  return h('select', { class: 'select', onchange: event => onchange(event.target.value) },
+    allowNone ? h('option', { value: '', selected: !value }, T.noGroup) : null,
+    columns.map(col => h('option', { value: col.id, selected: col.id === value }, col.label)))
+}
+
+function optionsPanel () {
+  const view = settings()
+  if (state.panel === 'sort') {
+    const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 'asc' : 'desc']
+    return h('div', { class: 'options-panel' },
+      columnSelect(id, value => updateSettings({ sort: `${value}:${dir}` })),
+      h('select', { class: 'select', 'aria-label': T.sort, onchange: event => updateSettings({ sort: `${id}:${event.target.value}` }) },
+        h('option', { value: 'asc', selected: dir === 'asc' }, T.asc), h('option', { value: 'desc', selected: dir === 'desc' }, T.desc)))
+  }
+  if (state.panel === 'group') {
+    return h('div', { class: 'options-panel' }, columnSelect(view.group, value => { state.collapsed.clear(); updateSettings({ group: value || null }) }, { allowNone: true }))
+  }
+  if (state.panel !== 'filter') return null
+  const filters = view.filters
+  // Text values arrive here after a pause (see the input); the rest at once.
+  const setFilter = (index, next) => updateSettings({ filters: filters.map((filter, at) => at === index ? next : filter) })
+  const rows = filters.map(([id, op, value], index) => {
+    const type = columnType(id) || 'text'
+    const ops = OPS[type]
+    const valueInput = !needsValue(op)
+      ? null
+      : type === 'enum'
+        ? h('select', { class: 'select', 'aria-label': T.value, onchange: event => setFilter(index, [id, op, event.target.value]) },
+          h('option', { value: '' }, '—'), enumOptions(id).map(([key, label]) => h('option', { value: key, selected: key === value }, label)))
+        : type === 'date'
+          ? h('input', { class: 'input', type: 'date', value, 'aria-label': T.value, onchange: event => setFilter(index, [id, op, event.target.value]) })
+          : h('input', {
+            class: 'input',
+            type: 'text',
+            value,
+            'aria-label': T.value,
+            'data-focus': `filter-${index}`,
+            oninput: event => {
+              clearTimeout(searchTimer)
+              const text = event.target.value
+              searchTimer = setTimeout(() => setFilter(index, [id, op, text]), 450)
+            }
+          })
+    return h('div', { class: 'filter-row' },
+      columnSelect(id, next => setFilter(index, [next, OPS[columnType(next)][0], ''])),
+      h('select', { class: 'select', 'aria-label': T.filter, onchange: event => setFilter(index, [id, event.target.value, needsValue(event.target.value) ? value : '']) },
+        ops.map(key => h('option', { value: key, selected: key === op }, type === 'count' ? T.filesOps[key] : T.ops[key]))),
+      valueInput,
+      h('button', { type: 'button', class: 'button icon-button', title: T.removeFilter, 'aria-label': T.removeFilter, onclick: () => updateSettings({ filters: filters.filter((_, at) => at !== index) }) }, icon(ICONS.close)))
   })
+  const first = tableColumns().find(col => col.type === 'text') || tableColumns()[0]
+  return h('div', { class: 'options-panel filters' },
+    rows,
+    h('div', { class: 'filter-actions' },
+      filters.length < 10 ? h('button', { type: 'button', class: 'button', onclick: () => updateSettings({ filters: [...filters, [first.id, OPS[first.type][0], '']] }, { reload: false }) }, icon(ICONS.add), T.addFilter) : null,
+      filters.length ? h('button', { type: 'button', class: 'button', onclick: () => updateSettings({ filters: [] }) }, T.clearFilters) : null,
+      filters.length > 1 ? h('span', { class: 'muted small' }, T.filterHint) : null))
+}
+
+function headerCell (col) {
+  const view = settings()
+  if (!col.type) return h('th', { scope: 'col', class: `col-${col.id}` }, col.label)
+  const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 'asc' : 'desc']
+  const sorted = id === col.id
+  const next = sorted ? (dir === 'asc' ? 'desc' : 'asc') : (col.type === 'date' ? 'desc' : 'asc')
+  return h('th', { scope: 'col', class: `col-${col.id.startsWith('f:') ? 'field' : col.id}`, 'aria-sort': sorted ? (dir === 'asc' ? 'ascending' : 'descending') : undefined },
+    h('button', { type: 'button', class: 'sort-button', onclick: () => updateSettings({ sort: `${col.id}:${next}` }) }, col.label, sorted ? icon(dir === 'asc' ? ICONS.up : ICONS.down) : null))
+}
+
+function cell (item, col) {
+  if (col.id === 'created') return h('td', { class: 'nowrap col-created', title: dateText(item.createdAt) }, shortDate.format(new Date(item.createdAt)))
+  if (col.id === 'form') return h('td', { class: 'col-form', title: item.form }, formId(item.form))
+  if (col.id === 'summary') return h('td', { class: 'col-summary' }, item.preview || '—')
+  if (col.id === 'files') return h('td', { class: 'col-files' }, item.files ? [icon(ICONS.clip), String(item.files)] : '—')
+  if (col.id === 'state') {
+    const owner = item.jobs.find(job => job.channel === 'owner') || item.jobs[0]
+    return h('td', { class: 'col-state' }, stateChip(itemState(item), owner?.reason))
+  }
+  return h('td', { class: 'col-field' }, fieldValue(item, col.id.slice(2)) || '—')
+}
+
+function toggleRow (id, checked, range) {
+  const ids = state.items.map(item => item.id)
+  if (range && state.anchor && ids.includes(state.anchor)) {
+    const [from, to] = [ids.indexOf(state.anchor), ids.indexOf(id)].sort((a, b) => a - b)
+    for (const key of ids.slice(from, to + 1)) checked ? state.selection.add(key) : state.selection.delete(key)
+  } else if (checked) state.selection.add(id)
+  else state.selection.delete(id)
+  state.anchor = id
+  render()
+}
+
+function tablePane () {
+  const columns = tableColumns()
+  const view = settings()
+  const busyRow = item => item.jobs.some(job => job.state === 'pending' || job.state === 'leased')
+  const all = state.items.length > 0 && state.items.every(item => state.selection.has(item.id))
+  const some = !all && state.items.some(item => state.selection.has(item.id))
+  const head = h('tr', {},
+    h('th', { scope: 'col', class: 'col-check' }, h('input', { type: 'checkbox', checked: all, indeterminate: some, 'aria-label': T.selectAll, disabled: !state.items.length, onclick: event => { for (const item of state.items) event.target.checked ? state.selection.add(item.id) : state.selection.delete(item.id); render() } })),
+    columns.map(headerCell),
+    h('th', { scope: 'col', class: 'col-actions' }, h('span', { class: 'sr-only' }, T.deleteRow)))
+  const groupCounts = new Map((state.groups || []).map(group => [group.key, group.count]))
+  const body = []
+  let current
+  for (const item of state.items) {
+    if (view.group && item.group !== current) {
+      current = item.group
+      const key = current
+      const collapsed = state.collapsed.has(key)
+      body.push(h('tr', { class: 'group-row' }, h('th', { scope: 'rowgroup', colspan: String(columns.length + 2) },
+        h('button', { type: 'button', class: 'group-button', 'aria-expanded': String(!collapsed), onclick: () => { collapsed ? state.collapsed.delete(key) : state.collapsed.add(key); render() } },
+          icon(collapsed ? ICONS.collapse : ICONS.expand), h('span', {}, groupLabel(view.group, key)), h('span', { class: 'muted' }, String(groupCounts.get(key) ?? ''))))))
+    }
+    if (view.group && state.collapsed.has(item.group)) continue
+    const checked = state.selection.has(item.id)
+    body.push(h('tr', {
+      class: checked ? 'checked' : null,
+      tabindex: '0',
+      'aria-current': String(state.selected === item.id),
+      onclick: () => select(item.id),
+      onkeydown: event => { if (event.key === 'Enter' && event.target === event.currentTarget) select(item.id) }
+    },
+    h('td', { class: 'col-check', onclick: event => event.stopPropagation() },
+      h('input', { type: 'checkbox', checked, 'aria-label': T.selectRow, onclick: event => toggleRow(item.id, event.target.checked, event.shiftKey) })),
+    columns.map(col => cell(item, col)),
+    h('td', { class: 'col-actions', onclick: event => event.stopPropagation() },
+      h('button', { type: 'button', class: 'button icon-button danger', title: T.deleteRow, 'aria-label': T.deleteRow, disabled: state.busy || busyRow(item), onclick: () => deleteMany([item.id]) }, icon(ICONS.remove)))))
+  }
+  const content = state.loading && !state.items.length
+    ? h('div', { class: 'loader delayed', role: 'status' }, h('span', { class: 'spinner', 'aria-hidden': 'true' }))
+    : state.items.length
+      ? h('div', { class: 'table-scroll', 'data-scroll': `table:${viewKey()}` }, h('table', { class: 'data-table' }, h('thead', {}, head), h('tbody', {}, body)))
+      : h('p', { class: 'muted pad' }, state.view === 'table' && !state.forms?.length ? T.noForms : (view.q || filterParam(view.filters).length ? T.empty.all : T.empty[state.view === 'table' ? 'all' : state.view]))
   const footer = state.summary
-  return h('section', { class: 'list-pane', 'aria-label': T[state.view] },
-    rows.length ? h('ul', { class: 'rows' }, rows) : h('p', { class: 'muted pad' }, T.empty[state.view]),
-    state.next ? h('button', { type: 'button', class: 'button more', onclick: () => load({ more: true }), disabled: state.busy }, T.more) : null,
+  return h('section', { class: 'table-pane', 'aria-label': T[state.view], 'aria-busy': String(state.loading) },
+    tableBar(),
+    optionsPanel(),
+    content,
+    h('div', { class: 'table-foot' },
+      state.items.length ? h('span', { class: 'muted small' }, T.count(state.items.length, state.total)) : null,
+      state.next ? h('button', { type: 'button', class: 'button', onclick: () => load({ more: true }), disabled: state.busy }, T.more) : null),
     h('footer', { class: 'list-footer muted' },
       footer.sent24h.map(row => h('p', {}, T.sent24h(row.sent, row.account))),
       footer.drive.files ? h('p', {}, T.drive(footer.drive.files, footer.drive.pending)) : null,
       h('p', {}, T.retention(footer.retentionDays))))
 }
 
-// Columns are the union of the fields of the loaded submissions, in order of
-// first appearance: forms change over time, missing values show as a dash.
-function tableColumns () {
-  const columns = []
-  for (const item of state.items) for (const [name] of item.fields || []) if (!columns.includes(name)) columns.push(name)
-  return columns
-}
-
-function csvCell (value) {
-  // Values come from visitors: neutralize spreadsheet formulas.
-  const text = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
-  return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
-}
-
-function downloadCsv () {
-  const columns = tableColumns()
-  const rows = [[T.date, ...columns, T.files, T.state], ...state.items.map(item => {
-    const values = new Map(item.fields || [])
-    const job = item.jobs.find(entry => entry.channel === 'owner') || item.jobs[0]
-    return [new Date(item.createdAt).toISOString(), ...columns.map(name => values.get(name) ?? ''), String(item.files), job ? (STATES[job.state] || job.state) : '']
-  })]
-  const url = URL.createObjectURL(new Blob(['\ufeff' + rows.map(row => row.map(csvCell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }))
-  const link = h('a', { href: url, download: `${(state.form || 'forms').split('#').pop()}.csv` })
-  document.body.append(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 30000)
-}
-
-function tablePane () {
-  if (!state.forms?.length) return h('section', { class: 'table-pane' }, h('p', { class: 'muted pad' }, T.noForms))
-  const columns = tableColumns()
-  const choose = h('select', { class: 'select', 'aria-label': T.formLabel, onchange: event => { state.form = event.target.value; state.next = null; load() } },
-    state.forms.map(entry => h('option', { value: entry.form, selected: entry.form === state.form }, `${entry.form.split('#')[1]} · ${entry.page} (${entry.total})`)))
-  const head = h('tr', {}, [T.date, ...columns, T.files, T.state].map(name => h('th', { scope: 'col' }, name)))
-  const body = state.items.map(item => {
-    const values = new Map(item.fields || [])
-    const job = item.jobs.find(entry => entry.channel === 'owner') || item.jobs[0]
-    return h('tr', { tabindex: '0', onclick: () => select(item.id), onkeydown: event => { if (event.key === 'Enter') select(item.id) } },
-      h('td', { class: 'nowrap' }, dateText(item.createdAt)),
-      columns.map(name => h('td', {}, values.get(name) || '—')),
-      h('td', {}, item.files ? [icon(ICONS.clip), String(item.files)] : '—'),
-      h('td', {}, job ? stateChip(job) : '—'))
-  })
-  return h('section', { class: 'table-pane' },
-    h('div', { class: 'table-bar' }, choose, h('button', { type: 'button', class: 'button', onclick: downloadCsv, disabled: !state.items.length }, icon(ICONS.download), T.csv)),
-    h('div', { class: 'table-scroll' }, h('table', { class: 'data-table' }, h('thead', {}, head), h('tbody', {}, body))),
-    state.next ? h('button', { type: 'button', class: 'button more', onclick: () => load({ more: true }), disabled: state.busy }, T.more) : null)
-}
-
 function jobCard (job) {
   const actionable = job.state === 'held' || job.state === 'failed'
   const review = job.reason === 'review'
   return h('div', { class: 'card' },
-    h('div', { class: 'card-head' }, h('strong', {}, T[job.channel]), stateChip(job)),
+    h('div', { class: 'card-head' }, h('strong', {}, T[job.channel]), stateChip(review ? 'review' : job.reason === 'discarded' ? 'discarded' : job.state, job.reason)),
     job.reason ? h('p', { class: 'muted' }, reasonText(job.reason)) : null,
     h('p', { class: 'muted small' },
       [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts(job.attempts)}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
@@ -367,17 +715,18 @@ function jobCard (job) {
 
 function detailPane () {
   const detail = state.detail
-  if (!detail) return h('section', { class: 'detail-pane empty' }, h('p', { class: 'muted' }, T.select))
+  if (!detail) return h('section', { class: 'detail-pane empty' }, state.selected ? h('div', { class: 'loader delayed', role: 'status' }, h('span', { class: 'spinner', 'aria-hidden': 'true' })) : h('p', { class: 'muted' }, T.select))
   const busy = detail.jobs.some(job => job.state === 'pending' || job.state === 'leased')
-  return h('section', { class: 'detail-pane', 'aria-label': detail.id },
+  return h('section', { class: 'detail-pane', 'aria-label': detail.id, 'data-scroll': `detail:${detail.id}` },
     h('div', { class: 'detail-head' },
       h('button', { type: 'button', class: 'button icon-button back', 'aria-label': T.back, title: T.back, onclick: () => select(null) }, icon(ICONS.back)),
       h('div', {},
-        h('h2', {}, detail.form.split('#')[1]),
+        h('h2', { tabindex: '-1' }, formId(detail.form)),
         h('ul', { class: 'detail-meta' },
           h('li', { title: T.date }, icon(ICONS.date), h('span', {}, dateText(detail.createdAt))),
-          h('li', { title: T.openForm }, icon(ICONS.link), h('a', { href: `${detail.page}#${detail.form.split('#')[1]}`, target: '_blank', rel: 'noopener noreferrer' }, `${detail.page}#${detail.form.split('#')[1]}`)),
-          h('li', { title: T.submissionId }, icon(ICONS.id), h('span', {}, detail.id))))),
+          h('li', { title: T.openForm }, icon(ICONS.link), h('a', { href: `${detail.page}#${formId(detail.form)}`, target: '_blank', rel: 'noopener noreferrer' }, `${detail.page}#${formId(detail.form)}`)),
+          h('li', { title: T.submissionId }, icon(ICONS.id), h('span', {}, detail.id)))),
+      h('button', { type: 'button', class: 'button icon-button close', 'aria-label': T.dismiss, title: T.dismiss, onclick: () => select(null) }, icon(ICONS.close))),
     detail.reasons.length ? h('p', { class: 'alert alert-warning' }, `${T.reasonsTitle}: ${[...new Set(detail.reasons)].map(spamText).join('; ')}`) : null,
     h('h3', {}, T.fields),
     h('dl', { class: 'fields' }, detail.fields.flatMap(([name, value]) => [h('dt', {}, name), h('dd', {}, value || '—')])),
@@ -398,14 +747,26 @@ function detailPane () {
 
 function render () {
   if (!state.summary) return
-  const layout = state.view === 'table'
-    ? h('div', { class: `layout table-layout${state.detail ? ' has-detail' : ''}` }, state.detail ? detailPane() : tablePane())
-    : h('div', { class: `layout${state.detail ? ' has-detail' : ''}` }, listPane(), detailPane())
+  // Keep focus (search, filter values) and scroll positions across renders.
+  const focused = document.activeElement?.dataset?.focus
+  const caret = focused && document.activeElement.selectionStart
+  const layout = h('div', { class: `layout layout-${state.view === 'table' ? 'table' : 'list'}${state.selected ? ' has-detail' : ''}` }, tablePane(), detailPane())
   app.replaceChildren(toolbar(), ...banners(), layout)
   app.setAttribute('aria-busy', String(state.busy))
+  for (const node of app.querySelectorAll('[data-scroll]')) {
+    const saved = scrolls.get(node.dataset.scroll)
+    if (saved) [node.scrollTop, node.scrollLeft] = saved
+    node.addEventListener('scroll', () => scrolls.set(node.dataset.scroll, [node.scrollTop, node.scrollLeft]), { passive: true })
+  }
+  if (focused) {
+    const node = app.querySelector(`[data-focus="${focused}"]`)
+    node?.focus()
+    if (node && typeof caret === 'number' && node.setSelectionRange) node.setSelectionRange(caret, caret)
+  }
 }
 
 function fail (error) {
+  if (error.name === 'AbortError') return
   if (error.code === 'signin') return fullScreenMessage(T.signin, h('a', { class: 'button primary', href: '/admin/', target: '_top' }, T.openCms))
   if (error.status === 401) return fullScreenMessage(T.denied, h('a', { class: 'button', href: '/admin/', target: '_top' }, T.openCms))
   if (error.code === 'not_enabled' || error.code === 'not_found') return fullScreenMessage(T.notEnabled)
@@ -414,57 +775,107 @@ function fail (error) {
   render()
 }
 
-async function load ({ more = false } = {}) {
+function fullScreenMessage (text, action) {
+  app.replaceChildren(h('div', { class: 'empty-state' }, h('p', {}, text), action || null))
+}
+
+async function ensureForms () {
+  if (state.forms) return
+  try {
+    state.forms = (await api('forms')).forms
+  } catch {
+    state.forms = []
+  }
+}
+
+function resetList () {
+  state.items = []
+  state.next = null
+  state.total = null
+  state.groups = null
+  state.columns = []
+  state.selection.clear()
+  state.collapsed.clear()
+  state.anchor = null
+  state.panel = null
+}
+
+// Only the latest load paints: a newer one aborts the request in flight
+// (tab clicks, the CMS session changing in another tab).
+let loadSeq = 0
+let controller = null
+async function load ({ more = false, withSummary = false } = {}) {
+  const seq = ++loadSeq
+  controller?.abort()
+  controller = new AbortController()
+  const signal = controller.signal
   state.busy = true
+  state.loading = !more
   state.message = null
   render()
   try {
+    if (!state.summary || withSummary) state.summary = await api('summary', { signal })
     // First load: open the first view with something in it.
-    if (!state.view) {
-      state.summary = await api('summary')
-      state.view = state.summary.attention ? 'attention' : state.summary.review ? 'review' : 'all'
-    }
-    if (state.view === 'table' && !more) {
-      state.forms = (await api('forms')).forms
+    if (!state.view) state.view = state.summary.attention ? 'attention' : state.summary.review ? 'review' : 'all'
+    if (state.view === 'table') {
+      await ensureForms()
       if (!state.forms.some(entry => entry.form === state.form)) state.form = state.forms[0]?.form || null
-    }
-    const scope = state.view === 'table' ? (state.form ? `view=all&form=${encodeURIComponent(state.form)}` : null) : `view=${state.view}`
-    const query = scope && `submissions?${scope}${more && state.next ? `&before=${encodeURIComponent(state.next)}` : ''}`
-    const [summary, page] = await Promise.all([more ? state.summary : api('summary'), query ? api(query) : { items: [], next: null }])
-    state.summary = summary
-    state.items = more ? [...state.items, ...page.items] : page.items
+    } else if (settings().filters.some(([id]) => id === 'form')) await ensureForms()
+    const page = state.view === 'table' && !state.form
+      ? { items: [], next: null, total: 0 }
+      : await api(listQuery(more && state.next ? { before: state.next } : {}), { signal })
+    if (seq !== loadSeq) return
+    state.items = more ? [...state.items, ...page.items.filter(item => !state.items.some(known => known.id === item.id))] : page.items
     state.next = page.next
-    if (state.selected) state.detail = await api(`submissions/${state.selected}`).catch(() => null)
+    if (!more) {
+      state.total = page.total ?? null
+      state.groups = page.groups || null
+      if (page.columns) state.columns = page.columns
+      const ids = new Set(state.items.map(item => item.id))
+      for (const id of state.selection) if (!ids.has(id)) state.selection.delete(id)
+    }
+    if (state.selected) state.detail = await api(`submissions/${state.selected}`, { signal }).catch(error => error.name === 'AbortError' ? Promise.reject(error) : null)
     if (!state.detail) state.selected = null
   } catch (error) {
+    if (seq !== loadSeq || error.name === 'AbortError') return
     state.busy = false
+    state.loading = false
     return fail(error)
   }
   state.busy = false
+  state.loading = false
   render()
 }
 
-function selectView (view) {
-  state.view = view
+function refresh () {
+  state.forms = null
   state.next = null
+  load({ withSummary: true })
+}
+
+function selectView (view) {
+  if (view === state.view) return
+  state.view = view
+  state.selected = null
+  state.detail = null
+  resetList()
   load()
 }
 
 async function select (id) {
   state.selected = id
   state.detail = null
-  if (!id) return render()
-  state.busy = true
   render()
+  if (!id) return
   try {
-    state.detail = await api(`submissions/${id}`)
+    const detail = await api(`submissions/${id}`)
+    if (state.selected !== id) return
+    state.detail = detail
   } catch (error) {
-    state.busy = false
     return fail(error)
   }
-  state.busy = false
   render()
-  app.querySelector('.detail-pane h2')?.focus?.()
+  app.querySelector('.detail-pane h2')?.focus({ preventScroll: true })
 }
 
 async function act (path, { deleted = false } = {}) {
@@ -473,6 +884,7 @@ async function act (path, { deleted = false } = {}) {
   try {
     await api(path, { method: 'POST' })
     if (deleted) {
+      state.selection.delete(state.selected)
       state.selected = null
       state.detail = null
     }
@@ -481,18 +893,165 @@ async function act (path, { deleted = false } = {}) {
     fail(error)
     return
   }
-  await load()
+  await load({ withSummary: true })
+}
+
+async function deleteMany (ids) {
+  if (!ids.length || !confirm(ids.length === 1 ? T.deleteConfirm : T.deleteManyConfirm(ids.length))) return
+  state.busy = true
+  render()
+  let deleted = 0
+  let busy = 0
+  try {
+    for (let index = 0; index < ids.length; index += DELETE_CHUNK) {
+      const result = await api('submissions/delete', { method: 'POST', body: { ids: ids.slice(index, index + DELETE_CHUNK) } })
+      deleted += result.deleted.length
+      busy += result.busy.length
+      for (const id of [...result.deleted, ...result.missing]) state.selection.delete(id)
+      if (result.deleted.includes(state.selected)) {
+        state.selected = null
+        state.detail = null
+      }
+    }
+  } catch (error) {
+    state.busy = false
+    fail(error)
+    return
+  }
+  state.notice = T.deleted(deleted, busy)
+  await load({ withSummary: true })
+}
+
+// Exports read every matching submission page by page (full values, current
+// filters and order), so the Worker never builds a large file.
+async function exportRows () {
+  const rows = []
+  let next = null
+  do {
+    const page = await api(listQuery({ full: '1', limit: '100', before: next }))
+    rows.push(...page.items)
+    next = page.next
+    state.notice = T.preparing(rows.length)
+    render()
+  } while (next && rows.length < PAGE_EXPORT_MAX)
+  return { rows, truncated: Boolean(next) }
+}
+
+function csvCell (value) {
+  // Values come from visitors: neutralize spreadsheet formulas.
+  const text = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+  return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
+}
+const csvDate = time => new Date(time).toLocaleString('sv-SE')
+
+// One form: its fields as columns. Several forms: fixed columns first.
+function csvText (rows, { oneForm }) {
+  const names = []
+  for (const name of oneForm ? state.columns : []) if (!names.includes(name)) names.push(name)
+  for (const item of rows) for (const [name] of item.fields || []) if (!names.includes(name)) names.push(name)
+  const stateOf = item => STATES[itemState(item)] || itemState(item) || ''
+  const table = oneForm
+    ? [[T.created, ...names, T.files_, T.state, T.id], ...rows.map(item => [csvDate(item.createdAt), ...names.map(name => fieldValue(item, name)), String(item.files), stateOf(item), item.id])]
+    : [[T.created, T.form, T.page, T.state, T.files_, T.id, ...names], ...rows.map(item => [csvDate(item.createdAt), formId(item.form), item.page, stateOf(item), String(item.files), item.id, ...names.map(name => fieldValue(item, name))])]
+  return '﻿' + table.map(row => row.map(value => csvCell(String(value ?? ''))).join(',')).join('\r\n')
+}
+
+const fileSlug = key => `${String(key).split('#')[0].replace(/^\/|\/$/g, '').replace(/[^\w-]+/g, '-') || 'home'}-${formId(key)}`.replace(/[^\w-]+/g, '-')
+
+// Minimal ZIP (stored, no compression): one CSV per form, no dependency.
+const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+  let c = n
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+  return c >>> 0
+})
+function crc32 (bytes) {
+  let crc = 0xffffffff
+  for (const byte of bytes) crc = CRC_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8)
+  return (crc ^ 0xffffffff) >>> 0
+}
+function zip (files) {
+  const encoder = new TextEncoder()
+  const now = new Date()
+  const time = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)
+  const date = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()
+  const parts = []
+  const central = []
+  let offset = 0
+  for (const file of files) {
+    const name = encoder.encode(file.name)
+    const data = encoder.encode(file.text)
+    const crc = crc32(data)
+    const header = (signature, extra) => {
+      const view = new DataView(new ArrayBuffer(extra ? 46 : 30))
+      let at = 0
+      const u32 = value => { view.setUint32(at, value, true); at += 4 }
+      const u16 = value => { view.setUint16(at, value, true); at += 2 }
+      u32(signature)
+      if (extra) u16(20)
+      u16(20); u16(0x0800); u16(0); u16(time); u16(date); u32(crc); u32(data.length); u32(data.length); u16(name.length); u16(0)
+      if (extra) { u16(0); u16(0); u16(0); u32(0); u32(offset) }
+      return new Uint8Array(view.buffer)
+    }
+    const local = header(0x04034b50, false)
+    parts.push(local, name, data)
+    central.push(header(0x02014b50, true), name)
+    offset += local.length + name.length + data.length
+  }
+  const size = central.reduce((total, part) => total + part.length, 0)
+  const end = new DataView(new ArrayBuffer(22))
+  end.setUint32(0, 0x06054b50, true)
+  end.setUint16(8, files.length, true)
+  end.setUint16(10, files.length, true)
+  end.setUint32(12, size, true)
+  end.setUint32(16, offset, true)
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: 'application/zip' })
+}
+
+function saveBlob (blob, name) {
+  const url = URL.createObjectURL(blob)
+  const link = h('a', { href: url, download: name })
+  document.body.append(link)
+  link.click()
+  link.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 30000)
+}
+
+async function download (kind) {
+  state.busy = true
+  render()
+  try {
+    const { rows, truncated } = await exportRows()
+    const day = new Date().toLocaleDateString('sv-SE')
+    if (kind === 'zip') {
+      const byForm = new Map()
+      for (const item of rows) byForm.set(item.form, [...(byForm.get(item.form) || []), item])
+      const names = new Set()
+      const files = [...byForm].map(([key, items]) => {
+        let name = `${fileSlug(key)}.csv`
+        for (let n = 2; names.has(name); n++) name = `${fileSlug(key)}-${n}.csv`
+        names.add(name)
+        return { name, text: csvText(items, { oneForm: false }) }
+      })
+      saveBlob(zip(files), `${T.title.toLowerCase()}-${state.view}-${day}.zip`)
+    } else {
+      const oneForm = state.view === 'table'
+      saveBlob(new Blob([csvText(rows, { oneForm })], { type: 'text/csv;charset=utf-8' }), `${oneForm ? fileSlug(state.form) : `${T.title.toLowerCase()}-${state.view}`}-${day}.csv`)
+    }
+    state.notice = truncated ? T.truncated(PAGE_EXPORT_MAX) : null
+  } catch (error) {
+    state.notice = null
+    state.busy = false
+    fail(error)
+    return
+  }
+  state.busy = false
+  render()
 }
 
 async function downloadFile (file) {
   try {
     const response = await api(`submissions/${state.detail.id}/files/${file.index}`, { raw: true })
-    const url = URL.createObjectURL(await response.blob())
-    const link = h('a', { href: url, download: file.name })
-    document.body.append(link)
-    link.click()
-    link.remove()
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
+    saveBlob(await response.blob(), file.name)
   } catch (error) {
     fail(error)
   }
@@ -505,8 +1064,9 @@ if (framedElsewhere()) {
   document.title = `${T.title} · ${document.title.split(' · ').slice(1).join(' · ')}`.replace(/ · $/, '')
   load()
   // The CMS session can start or end in another tab.
-  window.addEventListener('storage', event => { if (event.key === 'sveltia-cms.user') load() })
+  window.addEventListener('storage', event => { if (event.key === 'sveltia-cms.user') refresh() })
   // The CMS theme can change while this page stays open.
   window.addEventListener('focus', adoptTheme)
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', adoptTheme)
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && state.panel) { state.panel = null; render() } })
 }
