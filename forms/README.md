@@ -207,9 +207,13 @@ horario actual del navegador (en el cambio de hora, un envío cercano a
 medianoche puede caer en el día de al lado). Filtrar, ordenar y agrupar ocurre en D1
 sobre todos los envíos que cumplen, así que páginas, `total` y `groups` son
 exactos; el Worker solo convierte la página que devuelve (50 filas por
-defecto). Coste: cada lista recorre los envíos que cumplen (filas leídas de
-D1 Free: 5 M al día, de sobra para miles de envíos) y la primera página añade
-el recuento. Borrar es una transacción: si un trabajo del envío está en cola o
+defecto). Coste en filas leídas (D1 Free: 5 M al día): con el orden por
+defecto, el índice de fecha para tras una página y el recuento de la primera
+página lee una fila por envío que cumple; con otro orden o agrupación, cada
+envío que cumple cuesta lo que su clave (≈1 fila la fecha o el formulario, ≈2
+el estado, ≈1 por campo del envío un campo) y el resumen, el estado y los
+valores se calculan solo para la página (medido en D1: ~16 filas por envío si
+se calculasen para todos). Borrar es una transacción: si un trabajo del envío está en cola o
 enviándose, ese envío no se borra (`busy`); los bytes de KV se borran después,
 hasta 100 por llamada (KV Free: 1.000 borrados al día; lo que falle o pase de
 ahí lo elimina su TTL de 90 días). Las exportaciones leen en el orden por

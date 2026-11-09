@@ -267,15 +267,20 @@ async function list (db, url) {
     ? { sql: `${query.where.sql} AND s.created_at <= ? AND (s.created_at < ? OR s.id < ?)`, params: [...query.where.params, cursor[0], cursor[0], cursor[1]] }
     : query.where
   const withFields = Boolean(query.form) || full
-  const groupSelect = query.group ? `, ${query.group.sql} AS g` : ''
-  const sortExpr = query.sort.type === 'text' ? `${query.sort.sql} COLLATE NOCASE` : query.sort.sql
-  const order = [query.group?.order, `${sortExpr} ${query.sort.dir}`, 's.created_at DESC', 's.id DESC'].filter(Boolean).join(', ')
-  const statements = [
-    db.prepare(
-      `SELECT s.id, s.form_key, s.page, s.status, s.created_at, json_array_length(s.files) AS files, ${STATE_SQL} AS state, ${PREVIEW_SQL} AS preview
-       ${withFields ? `, ${full ? 's.fields' : CELLS_SQL} AS cells` : ''}${groupSelect}
-       FROM forms_submissions s WHERE ${where.sql} ORDER BY ${order} LIMIT ${size + 1} OFFSET ${offset}`
-    ).bind(...(query.group?.params || []), ...where.params, ...query.sort.params)
+  const columns = `s.id, s.form_key, s.page, s.status, s.created_at, json_array_length(s.files) AS files, ${STATE_SQL} AS state,
+    ${PREVIEW_SQL} AS preview${withFields ? `, ${full ? 's.fields' : CELLS_SQL} AS cells` : ''}`
+  // Default order: the created_at index stops after one page. Any other order
+  // or grouping ranks every match by its keys alone and computes previews,
+  // states and cells only for the page (each costs rows read in D1).
+  const statements = [keyset
+    ? db.prepare(`SELECT ${columns} FROM forms_submissions s WHERE ${where.sql} ORDER BY s.created_at DESC, s.id DESC LIMIT ${size + 1}`).bind(...where.params)
+    : db.prepare(
+      `WITH m AS (SELECT s.id AS pid, s.created_at AS c, ${query.group ? query.group.sql : 'NULL'} AS g, ${query.sort.sql} AS k
+         FROM forms_submissions s WHERE ${where.sql}),
+       p AS (SELECT pid, g, row_number() OVER (ORDER BY ${[query.group?.order, `k${query.sort.type === 'text' ? ' COLLATE NOCASE' : ''} ${query.sort.dir}`, 'c DESC', 'pid DESC'].filter(Boolean).join(', ')}) AS rn
+         FROM m ORDER BY rn LIMIT ${size + 1} OFFSET ${offset})
+       SELECT ${columns}, p.g AS g FROM p JOIN forms_submissions s ON s.id = p.pid ORDER BY p.rn`
+    ).bind(...(query.group?.params || []), ...query.sort.params, ...where.params)
   ]
   // Counts, groups and the columns of a form come with the first page only.
   if (first) {
@@ -295,7 +300,7 @@ async function list (db, url) {
   const rows = results[0]
   const total = first ? results[1][0].n : null
   const groups = first && query.group ? results[2] : null
-  const columns = first && query.form ? results[query.group ? 3 : 2] : null
+  const formColumns = first && query.form ? results[query.group ? 3 : 2] : null
   const page = rows.slice(0, size)
   const jobs = page.length
     ? (await db.prepare('SELECT submission_id, channel, state, last_error, attempts, updated_at FROM forms_jobs WHERE submission_id IN (SELECT value FROM json_each(?)) ORDER BY channel DESC')
@@ -324,7 +329,7 @@ async function list (db, url) {
     next: rows.length > size ? (keyset ? `${last.created_at}|${last.id}` : `+${offset + size}`) : null,
     ...(first ? { total } : {}),
     ...(groups ? { groups: groups.map(row => ({ key: row.g ?? '', count: row.n })) } : {}),
-    ...(columns ? { columns: columns.map(row => String(row.name)) } : {})
+    ...(formColumns ? { columns: formColumns.map(row => String(row.name)) } : {})
   })
   return meta.replace('"items":null', `"items":[${items.join(',')}]`)
 }
