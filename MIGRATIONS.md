@@ -42,7 +42,7 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
-## 13.7.0 — formularios con backend propio (integración, sin publicar)
+## 13.7.0 — 2026-11-09 — formularios con backend propio
 
 **Impacto:** ninguno para formularios existentes. GAS, FormSubmit y acciones
 propias conservan su HTML y su JS. Aplica solo a formularios que elijan
@@ -94,7 +94,7 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
 hasta migrar cada proyecto; mover el frontend no copia su deduplicación.
 
 
-## 13.6.0 — comercio opt-in (integración, sin publicar)
+## 13.6.0 — 2026-11-09 — comercio opt-in
 
 **Impacto:** ninguno para proyectos sin `data/commerce.yml` o con
 `enabled: false` y sin adaptadores: no se insertan UI, JS, CSS ni rutas de
