@@ -210,12 +210,13 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .data-table th, .data-table td { padding: 6px 10px; text-align: start; vertical-align: middle; border-bottom: 1px solid hsl(var(--sui-border-color-3-hsl)); max-width: 320px; overflow-wrap: anywhere; }
 .data-table thead th { position: sticky; top: 0; z-index: 2; white-space: nowrap; font-weight: 700; color: hsl(var(--sui-foreground-color-4-hsl)); background: hsl(var(--sui-background-color-3-hsl)); }
 .data-table tbody tr { cursor: pointer; }
-.data-table tbody tr:hover, .data-table tbody tr:focus-visible { background: hsl(var(--sui-background-color-4-hsl) / 70%); outline: none; }
+.data-table tbody tr:hover { background: hsl(var(--sui-background-color-4-hsl) / 70%); }
+.data-table tbody tr:focus-visible { outline: 2px solid var(--sui-primary-accent-color); outline-offset: -2px; }
 .data-table tbody tr[aria-current="true"], .data-table tbody tr.checked { background: hsl(var(--sui-background-color-4-hsl)); }
 .data-table .nowrap { white-space: nowrap; }
 .data-table .ms { font-size: 15px; vertical-align: -3px; }
 .data-table .col-check, .data-table .col-actions { width: 1%; padding-inline: 8px; }
-.data-table .col-check input { width: 16px; height: 16px; margin: 0; vertical-align: middle; accent-color: var(--sui-primary-accent-color); cursor: pointer; }
+.data-table .col-check input { width: 18px; height: 18px; margin: 0; vertical-align: middle; accent-color: var(--sui-primary-accent-color); cursor: pointer; }
 .data-table .col-actions .icon-button { width: 28px; height: 28px; }
 .data-table .col-actions .ms { font-size: 18px; vertical-align: middle; }
 .data-table .col-summary { min-width: 220px; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -248,6 +249,7 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
   .fields dd { margin-bottom: 8px; }
   .search { max-width: none; flex-basis: 100%; }
 }
+@media (pointer: coarse) { .data-table .col-check input { width: 22px; height: 22px; } }
 /* Phones: the bar keeps one row of icon buttons (names stay as labels). */
 @media (max-width: 599px) {
   .table-bar .button .label { display: none; }

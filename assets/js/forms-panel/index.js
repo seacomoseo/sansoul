@@ -367,7 +367,10 @@ const state = {
   selected: null,
   detail: null,
   message: null,
-  notice: null
+  notice: null,
+  exporting: false,
+  // Text typed in search and filter inputs, kept across re-renders.
+  drafts: new Map()
 }
 const app = document.getElementById('app')
 // Scroll positions survive re-renders (and a pane hidden on mobile).
@@ -469,16 +472,16 @@ function filterParam (filters) {
   })
 }
 
-function listQuery (extra = {}) {
+function listQuery (extra = {}, { ordered = true } = {}) {
   const view = settings()
   const params = new URLSearchParams()
   params.set('view', state.view === 'table' ? 'all' : state.view)
   if (state.view === 'table') params.set('form', state.form)
-  if (view.q) params.set('q', view.q)
+  if (view.q.trim()) params.set('q', view.q.trim())
   const filters = filterParam(view.filters)
   if (filters.length) params.set('filter', JSON.stringify(filters))
-  if (view.sort !== DEFAULT_SORT && columnType(view.sort.replace(/:(asc|desc)$/, ''))) params.set('sort', view.sort)
-  if (view.group && columnType(view.group)) {
+  if (ordered && view.sort !== DEFAULT_SORT && columnType(view.sort.replace(/:(asc|desc)$/, ''))) params.set('sort', view.sort)
+  if (ordered && view.group && columnType(view.group)) {
     params.set('group', view.group)
     params.set('tz', String(-new Date().getTimezoneOffset()))
   }
@@ -507,6 +510,7 @@ function toolbar () {
     role: 'tab',
     class: 'tab',
     'aria-selected': String(state.view === view),
+    disabled: state.exporting,
     onclick: () => selectView(view)
   }, T[view], (view === 'attention' || view === 'review') && summary[view] ? h('span', { class: 'badge' }, String(summary[view])) : null))
   return h('header', { class: 'toolbar' },
@@ -515,7 +519,14 @@ function toolbar () {
     h('button', { type: 'button', class: 'button icon-button', title: T.refresh, 'aria-label': T.refresh, onclick: () => refresh(), disabled: state.busy }, icon(ICONS.refresh)))
 }
 
-let searchTimer
+// One pending timer per input; the value is read from settings() when it fires.
+const timers = new Map()
+function debounce (key, ms, fn) {
+  clearTimeout(timers.get(key))
+  timers.set(key, setTimeout(() => { timers.delete(key); fn() }, ms))
+}
+const draft = (key, saved) => state.drafts.has(key) ? state.drafts.get(key) : saved
+
 function tableBar () {
   const view = settings()
   const active = { sort: view.sort !== DEFAULT_SORT, filter: filterParam(view.filters).length, group: Boolean(view.group) }
@@ -525,6 +536,7 @@ function tableBar () {
     'aria-expanded': String(state.panel === name),
     'aria-label': T[name],
     title: T[name],
+    disabled: state.exporting,
     onclick: () => { state.panel = state.panel === name ? null : name; ensureForms().then(render) }
   }, icon(ICONS[name]), h('span', { class: 'label' }, T[name]), name === 'filter' && active.filter ? h('span', { class: 'badge' }, String(active.filter)) : null)
   const chooser = state.view === 'table' && state.forms?.length
@@ -537,14 +549,13 @@ function tableBar () {
     h('label', { class: 'search' }, icon(ICONS.search),
       h('input', {
         type: 'search',
-        value: view.q,
+        value: draft('search', view.q),
         placeholder: T.search,
         'aria-label': T.search,
         'data-focus': 'search',
         oninput: event => {
-          clearTimeout(searchTimer)
-          const value = event.target.value
-          searchTimer = setTimeout(() => updateSettings({ q: value.trim() }), 350)
+          state.drafts.set('search', event.target.value)
+          debounce('search', 350, () => updateSettings({ q: state.drafts.get('search') }))
         }
       })),
     toggle('sort'), toggle('filter'), toggle('group'),
@@ -552,6 +563,10 @@ function tableBar () {
     selected ? h('button', { type: 'button', class: 'button danger', disabled: state.busy, onclick: () => deleteMany([...state.selection]) }, icon(ICONS.remove), T.deleteSelected(selected)) : null,
     h('button', { type: 'button', class: 'button', title: T.csvTitle, 'aria-label': T.csvTitle, disabled: state.busy || !state.items.length, onclick: () => download('csv') }, icon(ICONS.download), h('span', { class: 'label' }, T.csvView)),
     state.view !== 'table' ? h('button', { type: 'button', class: 'button', title: T.zipTitle, 'aria-label': T.zipTitle, disabled: state.busy || !state.items.length, onclick: () => download('zip') }, icon(ICONS.zip), h('span', { class: 'label' }, T.csvZip)) : null)
+}
+
+function clearDrafts (prefix) {
+  for (const key of [...state.drafts.keys()]) if (key.startsWith(prefix)) { state.drafts.delete(key); clearTimeout(timers.get(key)); timers.delete(key) }
 }
 
 function columnSelect (value, onchange, { allowNone = false } = {}) {
@@ -577,7 +592,8 @@ function optionsPanel () {
   if (state.panel !== 'filter') return null
   const filters = view.filters
   // Text values arrive here after a pause (see the input); the rest at once.
-  const setFilter = (index, next) => updateSettings({ filters: filters.map((filter, at) => at === index ? next : filter) })
+  // The list is read again when it fires, so changes in between survive.
+  const setFilter = (index, next) => updateSettings({ filters: settings().filters.map((filter, at) => at === index ? next : filter) })
   const rows = filters.map(([id, op, value], index) => {
     const type = columnType(id) || 'text'
     const ops = OPS[type]
@@ -591,13 +607,15 @@ function optionsPanel () {
           : h('input', {
             class: 'input',
             type: 'text',
-            value,
+            value: draft(`filter-${index}`, value),
             'aria-label': T.value,
             'data-focus': `filter-${index}`,
             oninput: event => {
-              clearTimeout(searchTimer)
-              const text = event.target.value
-              searchTimer = setTimeout(() => setFilter(index, [id, op, text]), 450)
+              state.drafts.set(`filter-${index}`, event.target.value)
+              debounce(`filter-${index}`, 450, () => {
+                const [col, operator] = settings().filters[index] || []
+                if (col) setFilter(index, [col, operator, state.drafts.get(`filter-${index}`)])
+              })
             }
           })
     return h('div', { class: 'filter-row' },
@@ -605,14 +623,14 @@ function optionsPanel () {
       h('select', { class: 'select', 'aria-label': T.filter, onchange: event => setFilter(index, [id, event.target.value, needsValue(event.target.value) ? value : '']) },
         ops.map(key => h('option', { value: key, selected: key === op }, type === 'count' ? T.filesOps[key] : T.ops[key]))),
       valueInput,
-      h('button', { type: 'button', class: 'button icon-button', title: T.removeFilter, 'aria-label': T.removeFilter, onclick: () => updateSettings({ filters: filters.filter((_, at) => at !== index) }) }, icon(ICONS.close)))
+      h('button', { type: 'button', class: 'button icon-button', title: T.removeFilter, 'aria-label': T.removeFilter, onclick: () => { clearDrafts('filter-'); updateSettings({ filters: filters.filter((_, at) => at !== index) }) } }, icon(ICONS.close)))
   })
   const first = tableColumns().find(col => col.type === 'text') || tableColumns()[0]
   return h('div', { class: 'options-panel filters' },
     rows,
     h('div', { class: 'filter-actions' },
       filters.length < 10 ? h('button', { type: 'button', class: 'button', onclick: () => updateSettings({ filters: [...filters, [first.id, OPS[first.type][0], '']] }, { reload: false }) }, icon(ICONS.add), T.addFilter) : null,
-      filters.length ? h('button', { type: 'button', class: 'button', onclick: () => updateSettings({ filters: [] }) }, T.clearFilters) : null,
+      filters.length ? h('button', { type: 'button', class: 'button', onclick: () => { clearDrafts('filter-'); updateSettings({ filters: [] }) } }, T.clearFilters) : null,
       filters.length > 1 ? h('span', { class: 'muted small' }, T.filterHint) : null))
 }
 
@@ -638,8 +656,15 @@ function cell (item, col) {
   return h('td', { class: 'col-field' }, fieldValue(item, col.id.slice(2)) || '—')
 }
 
+// Rows on screen: those of folded groups are never selected by a range or
+// by "select all".
+function visibleItems () {
+  const group = settings().group
+  return group ? state.items.filter(item => !state.collapsed.has(item.group)) : state.items
+}
+
 function toggleRow (id, checked, range) {
-  const ids = state.items.map(item => item.id)
+  const ids = visibleItems().map(item => item.id)
   if (range && state.anchor && ids.includes(state.anchor)) {
     const [from, to] = [ids.indexOf(state.anchor), ids.indexOf(id)].sort((a, b) => a - b)
     for (const key of ids.slice(from, to + 1)) checked ? state.selection.add(key) : state.selection.delete(key)
@@ -653,10 +678,11 @@ function tablePane () {
   const columns = tableColumns()
   const view = settings()
   const busyRow = item => item.jobs.some(job => job.state === 'pending' || job.state === 'leased')
-  const all = state.items.length > 0 && state.items.every(item => state.selection.has(item.id))
-  const some = !all && state.items.some(item => state.selection.has(item.id))
+  const visible = visibleItems()
+  const all = visible.length > 0 && visible.every(item => state.selection.has(item.id))
+  const some = !all && visible.some(item => state.selection.has(item.id))
   const head = h('tr', {},
-    h('th', { scope: 'col', class: 'col-check' }, h('input', { type: 'checkbox', checked: all, indeterminate: some, 'aria-label': T.selectAll, disabled: !state.items.length, onclick: event => { for (const item of state.items) event.target.checked ? state.selection.add(item.id) : state.selection.delete(item.id); render() } })),
+    h('th', { scope: 'col', class: 'col-check' }, h('input', { type: 'checkbox', checked: all, indeterminate: some, 'aria-label': T.selectAll, disabled: !visible.length || state.exporting, onclick: event => { for (const item of visible) event.target.checked ? state.selection.add(item.id) : state.selection.delete(item.id); render() } })),
     columns.map(headerCell),
     h('th', { scope: 'col', class: 'col-actions' }, h('span', { class: 'sr-only' }, T.deleteRow)))
   const groupCounts = new Map((state.groups || []).map(group => [group.key, group.count]))
@@ -668,8 +694,20 @@ function tablePane () {
       const key = current
       const collapsed = state.collapsed.has(key)
       body.push(h('tr', { class: 'group-row' }, h('th', { scope: 'rowgroup', colspan: String(columns.length + 2) },
-        h('button', { type: 'button', class: 'group-button', 'aria-expanded': String(!collapsed), onclick: () => { collapsed ? state.collapsed.delete(key) : state.collapsed.add(key); render() } },
-          icon(collapsed ? ICONS.collapse : ICONS.expand), h('span', {}, groupLabel(view.group, key)), h('span', { class: 'muted' }, String(groupCounts.get(key) ?? ''))))))
+        h('button', {
+          type: 'button',
+          class: 'group-button',
+          'aria-expanded': String(!collapsed),
+          onclick: () => {
+            if (collapsed) state.collapsed.delete(key)
+            else {
+              state.collapsed.add(key)
+              for (const entry of state.items) if (entry.group === key) state.selection.delete(entry.id)
+            }
+            render()
+          }
+        },
+        icon(collapsed ? ICONS.collapse : ICONS.expand), h('span', {}, groupLabel(view.group, key)), h('span', { class: 'muted' }, String(groupCounts.get(key) ?? ''))))))
     }
     if (view.group && state.collapsed.has(item.group)) continue
     const checked = state.selection.has(item.id)
@@ -796,6 +834,7 @@ async function ensureForms () {
 }
 
 function resetList () {
+  clearDrafts('')
   state.items = []
   state.next = null
   state.total = null
@@ -841,27 +880,32 @@ async function load ({ more = false, withSummary = false } = {}) {
       const ids = new Set(state.items.map(item => item.id))
       for (const id of state.selection) if (!ids.has(id)) state.selection.delete(id)
     }
-    if (state.selected) state.detail = await api(`submissions/${state.selected}`, { signal }).catch(error => error.name === 'AbortError' ? Promise.reject(error) : null)
+    // The open detail is read again only after an action or a refresh.
+    if (state.selected && (withSummary || !state.detail)) state.detail = await api(`submissions/${state.selected}`, { signal }).catch(error => error.name === 'AbortError' ? Promise.reject(error) : null)
     if (!state.detail) state.selected = null
   } catch (error) {
     if (seq !== loadSeq || error.name === 'AbortError') return
-    state.busy = false
+    state.busy = state.exporting
     state.loading = false
     return fail(error)
   }
-  state.busy = false
+  state.busy = state.exporting
   state.loading = false
   render()
 }
 
-function refresh () {
+// Refresh also drains what waits in the queue (deferred sends, retries due)
+// when no scheduled drain does it.
+async function refresh () {
+  if (state.exporting) return
   state.forms = null
   state.next = null
+  if (state.summary?.queued) await api('dispatch', { method: 'POST' }).catch(() => {})
   load({ withSummary: true })
 }
 
 function selectView (view) {
-  if (view === state.view) return
+  if (view === state.view || state.exporting) return
   state.view = view
   state.notice = null
   state.selected = null
@@ -924,6 +968,7 @@ async function deleteMany (ids) {
   } catch (error) {
     state.busy = false
     fail(error)
+    if (deleted) await load({ withSummary: true })
     return
   }
   state.notice = T.deleted(deleted, busy)
@@ -931,23 +976,51 @@ async function deleteMany (ids) {
 }
 
 // Exports read every matching submission page by page (full values, current
-// filters and order), so the Worker never builds a large file.
+// filters) in the cheap default order, then sort like the view in the
+// browser: the Worker never builds a large file and D1 never re-sorts per page.
+// The query is fixed when the export starts; the view is locked meanwhile.
 async function exportRows () {
+  const base = listQuery({ full: '1', limit: '100' }, { ordered: false })
   const rows = []
+  const seen = new Set()
   let next = null
   do {
-    const page = await api(listQuery({ full: '1', limit: '100', before: next }))
-    rows.push(...page.items)
+    const page = await api(next ? `${base}&before=${encodeURIComponent(next)}` : base)
+    for (const item of page.items) if (!seen.has(item.id)) seen.add(item.id) && rows.push(item)
     next = page.next
     state.notice = T.preparing(rows.length)
     render()
   } while (next && rows.length < PAGE_EXPORT_MAX)
-  return { rows, truncated: Boolean(next) }
+  return { rows: sortLikeView(rows), truncated: Boolean(next) }
+}
+
+function sortValue (item, id) {
+  if (id === 'created') return item.createdAt
+  if (id === 'files') return item.files
+  if (id === 'form') return item.form
+  if (id === 'state') return itemState(item) || ''
+  return fieldValue(item, id.slice(2))
+}
+const localDay = time => new Date(time).toLocaleDateString('sv-SE')
+function sortLikeView (rows) {
+  const view = settings()
+  const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 1 : -1]
+  const compare = (a, b) => typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b), undefined, { sensitivity: 'base' })
+  const group = view.group && columnType(view.group)
+  const groupKey = item => view.group === 'created' ? localDay(item.createdAt) : String(sortValue(item, view.group) ?? '').slice(0, 100)
+  return [...rows].sort((a, b) => {
+    if (group) {
+      const [ga, gb] = [groupKey(a), groupKey(b)]
+      if (ga !== gb) return view.group === 'created' ? (ga < gb ? 1 : -1) : (ga === '') - (gb === '') || compare(ga, gb)
+    }
+    return dir * compare(sortValue(a, id), sortValue(b, id)) || b.createdAt - a.createdAt
+  })
 }
 
 function csvCell (value) {
-  // Values come from visitors: neutralize spreadsheet formulas.
-  const text = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+  // Values come from visitors: neutralize spreadsheet formulas (phone numbers
+  // like "+34 600 000 000" are left alone).
+  const text = /^[=+\-@\t\r]/.test(value) && !/^\+[\d\s().-]+$/.test(value) ? `'${value}` : value
   return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
 }
 const csvDate = time => new Date(time).toLocaleString('sv-SE')
@@ -1026,6 +1099,8 @@ function saveBlob (blob, name) {
 
 async function download (kind) {
   state.busy = true
+  state.exporting = true
+  state.panel = null
   render()
   try {
     const { rows, truncated } = await exportRows()
@@ -1049,10 +1124,12 @@ async function download (kind) {
   } catch (error) {
     state.notice = null
     state.busy = false
+    state.exporting = false
     fail(error)
     return
   }
   state.busy = false
+  state.exporting = false
   render()
 }
 

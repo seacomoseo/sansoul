@@ -1,7 +1,7 @@
 // Admin API of the forms module: the project panel (people, GitHub session of
 // the CMS) and automations (Bearer FORMS_ADMIN_TOKEN) use the same routes.
 import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
-import { FormsError, jsonResponse, sha256Hex, timingSafeEqual } from './http.js'
+import { FormsError, jsonResponse, jsonTextResponse, sha256Hex, timingSafeEqual } from './http.js'
 import { safeFileName } from './intake.js'
 import { loadSubmission, requireDatabase, resolveHeld } from './store.js'
 
@@ -10,6 +10,9 @@ const PAGE_SIZE = 50
 const PAGE_MAX = 100
 const CELL_MAX = 300
 const DELETE_MAX = 50
+// KV deletes per batch call (KV Free: 1,000 deletes a day per account); bytes
+// beyond it expire with their 90-day TTL.
+const KV_DELETE_MAX = 100
 // A positive GitHub check is reused for a few minutes per isolate (one
 // subrequest instead of one per panel call): a revoked permission keeps
 // working here until it expires. Denials are kept for a minute, so a junk
@@ -70,8 +73,12 @@ export async function authorize (request, env, { manifest, fetch, now }) {
   if (response.status >= 500 || response.status === 429 || (response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0')) throw new FormsError('github_unavailable', 503)
   const data = response.ok ? await response.json().catch(() => null) : null
   const permissions = data?.permissions || {}
-  const ok = Boolean(permissions.push || permissions.maintain || permissions.admin)
-  if (githubCache.size > 200) githubCache.clear()
+  // permissions are the person's; OAuth and classic tokens also list their own
+  // scopes: a token without repo access (another app's) is not enough.
+  const scopes = response.headers.get('x-oauth-scopes')
+  const scoped = scopes === null || /(^|[\s,])(public_)?repo([\s,]|$)/.test(scopes)
+  const ok = scoped && Boolean(permissions.push || permissions.maintain || permissions.admin)
+  if (githubCache.size >= 200) for (const old of [...githubCache.keys()].slice(0, 50)) githubCache.delete(old)
   githubCache.set(key, { ok, until: now() + (ok ? GITHUB_TTL_MS : GITHUB_DENY_MS) })
   if (!ok) throw new FormsError('unauthorized', 401)
   return 'github'
@@ -83,12 +90,6 @@ const parse = (text, fallback) => {
   } catch {
     return fallback
   }
-}
-
-// Short one-line preview of a submission for the list.
-function preview (fields) {
-  return fields.filter(([name, value]) => !name.startsWith('_') && typeof value === 'string' && value.trim())
-    .slice(0, 3).map(([, value]) => value.replace(/\s+/g, ' ').slice(0, 60)).join(' · ')
 }
 
 const publicJob = job => ({
@@ -206,7 +207,7 @@ function listQuery (url) {
   const form = (params.get('form') || '').slice(0, 300) || null
   if (form) where.push({ sql: 's.form_key = ?', params: [form] })
   const search = (params.get('q') || '').trim().slice(0, 200)
-  if (search) where.push({ sql: "s.fields LIKE ? ESCAPE '\\'", params: [likeArg(search)] })
+  if (search) where.push({ sql: "EXISTS (SELECT 1 FROM json_each(s.fields) f WHERE json_extract(f.value, '$[1]') LIKE ? ESCAPE '\\')", params: [likeArg(search)] })
   const filters = parseJson(params.get('filter'), [])
   if (!Array.isArray(filters) || filters.length > 10) throw new FormsError('invalid_filter')
   for (const filter of filters) where.push(condition(Array.isArray(filter) ? filter : []))
@@ -226,7 +227,7 @@ function listQuery (url) {
     group = groupCol.type === 'date'
       ? { sql: "date(s.created_at / 1000 + ?, 'unixepoch')", params: [tz * 60], order: 'g DESC' }
       : groupCol.type === 'text'
-        ? { sql: `substr(IFNULL(${groupCol.sql}, ''), 1, 100)`, params: groupCol.params, order: "g = '', g COLLATE NOCASE" }
+        ? { sql: `substr(IFNULL(${groupCol.sql}, ''), 1, 100)`, params: groupCol.params, order: "g = '', g COLLATE NOCASE, g" }
         : { sql: `IFNULL(${groupCol.sql}, '')`, params: groupCol.params, order: "g = '', g" }
   }
   return {
@@ -237,6 +238,16 @@ function listQuery (url) {
     group
   }
 }
+
+// Previews and cells are cut in SQL: a page never parses whole submissions in
+// the Worker (values can reach 20,000 characters each).
+const PREVIEW_SQL = `(SELECT group_concat(v, ' · ') FROM (
+  SELECT trim(substr(replace(replace(replace(json_extract(f.value, '$[1]'), char(10), ' '), char(13), ' '), char(9), ' '), 1, 60)) AS v
+  FROM json_each(s.fields) f
+  WHERE substr(json_extract(f.value, '$[0]'), 1, 1) <> '_' AND trim(IFNULL(json_extract(f.value, '$[1]'), '')) <> ''
+  ORDER BY f.key LIMIT 3))`
+const CELLS_SQL = `(SELECT json_group_array(json_array(json_extract(f.value, '$[0]'), substr(IFNULL(json_extract(f.value, '$[1]'), ''), 1, ${CELL_MAX})))
+  FROM json_each(s.fields) f)`
 
 async function list (db, url) {
   const query = listQuery(url)
@@ -253,23 +264,26 @@ async function list (db, url) {
   const first = !cursor && !offset
 
   const where = cursor
-    ? { sql: `${query.where.sql} AND (s.created_at < ? OR (s.created_at = ? AND s.id < ?))`, params: [...query.where.params, cursor[0], cursor[0], cursor[1]] }
+    ? { sql: `${query.where.sql} AND s.created_at <= ? AND (s.created_at < ? OR s.id < ?)`, params: [...query.where.params, cursor[0], cursor[0], cursor[1]] }
     : query.where
+  const withFields = Boolean(query.form) || full
   const groupSelect = query.group ? `, ${query.group.sql} AS g` : ''
   const sortExpr = query.sort.type === 'text' ? `${query.sort.sql} COLLATE NOCASE` : query.sort.sql
   const order = [query.group?.order, `${sortExpr} ${query.sort.dir}`, 's.created_at DESC', 's.id DESC'].filter(Boolean).join(', ')
   const statements = [
     db.prepare(
-      `SELECT s.id, s.form_key, s.page, s.status, s.fields, s.files, s.created_at, ${STATE_SQL} AS state${groupSelect}
+      `SELECT s.id, s.form_key, s.page, s.status, s.created_at, json_array_length(s.files) AS files, ${STATE_SQL} AS state, ${PREVIEW_SQL} AS preview
+       ${withFields ? `, ${full ? 's.fields' : CELLS_SQL} AS cells` : ''}${groupSelect}
        FROM forms_submissions s WHERE ${where.sql} ORDER BY ${order} LIMIT ${size + 1} OFFSET ${offset}`
     ).bind(...(query.group?.params || []), ...where.params, ...query.sort.params)
   ]
   // Counts, groups and the columns of a form come with the first page only.
   if (first) {
-    statements.push(query.group
-      ? db.prepare(`SELECT g, COUNT(*) AS n FROM (SELECT ${query.group.sql} AS g FROM forms_submissions s WHERE ${where.sql}) GROUP BY g ORDER BY ${query.group.order} LIMIT 200`)
-        .bind(...query.group.params, ...where.params)
-      : db.prepare(`SELECT COUNT(*) AS n FROM forms_submissions s WHERE ${where.sql}`).bind(...where.params))
+    statements.push(db.prepare(`SELECT COUNT(*) AS n FROM forms_submissions s WHERE ${where.sql}`).bind(...where.params))
+    if (query.group) {
+      statements.push(db.prepare(`SELECT g, COUNT(*) AS n FROM (SELECT ${query.group.sql} AS g FROM forms_submissions s WHERE ${where.sql}) GROUP BY g ORDER BY ${query.group.order} LIMIT 200`)
+        .bind(...query.group.params, ...where.params))
+    }
     if (query.form) {
       statements.push(db.prepare(
         `SELECT json_extract(f.value, '$[0]') AS name, MAX(s.created_at) AS last, MIN(f.key) AS pos
@@ -277,37 +291,42 @@ async function list (db, url) {
       ).bind(query.form))
     }
   }
-  const [rows, counts, columns] = (await db.batch(statements)).map(result => result.results)
+  const results = (await db.batch(statements)).map(result => result.results)
+  const rows = results[0]
+  const total = first ? results[1][0].n : null
+  const groups = first && query.group ? results[2] : null
+  const columns = first && query.form ? results[query.group ? 3 : 2] : null
   const page = rows.slice(0, size)
   const jobs = page.length
     ? (await db.prepare('SELECT submission_id, channel, state, last_error, attempts, updated_at FROM forms_jobs WHERE submission_id IN (SELECT value FROM json_each(?)) ORDER BY channel DESC')
         .bind(JSON.stringify(page.map(row => row.id))).all()).results
     : []
   const last = page[page.length - 1]
-  const withFields = Boolean(query.form) || full
-  return {
+  // Field values travel as the JSON D1 produced, spliced in unparsed.
+  const items = page.map(row => {
+    const item = JSON.stringify({
+      id: row.id,
+      form: row.form_key,
+      page: row.page,
+      status: row.status,
+      state: row.state || null,
+      createdAt: row.created_at,
+      preview: row.preview || '',
+      ...(query.group ? { group: row.g ?? '' } : {}),
+      files: row.files || 0,
+      jobs: jobs.filter(job => job.submission_id === row.id).map(publicJob)
+    })
+    return withFields ? `${item.slice(0, -1)},"fields":${row.cells || '[]'}}` : item
+  })
+  const meta = JSON.stringify({
     view: query.view,
-    items: page.map(row => {
-      const fields = parse(row.fields, [])
-      return {
-        id: row.id,
-        form: row.form_key,
-        page: row.page,
-        status: row.status,
-        state: row.state || null,
-        createdAt: row.created_at,
-        preview: preview(fields),
-        ...(withFields ? { fields: fields.map(([name, value]) => [String(name), full ? String(value ?? '') : String(value ?? '').slice(0, CELL_MAX)]) } : {}),
-        ...(query.group ? { group: row.g ?? '' } : {}),
-        files: parse(row.files, []).length,
-        jobs: jobs.filter(job => job.submission_id === row.id).map(publicJob)
-      }
-    }),
+    items: null,
     next: rows.length > size ? (keyset ? `${last.created_at}|${last.id}` : `+${offset + size}`) : null,
-    ...(first && query.group ? { groups: counts.map(row => ({ key: row.g ?? '', count: row.n })), total: counts.reduce((sum, row) => sum + row.n, 0) } : {}),
-    ...(first && !query.group ? { total: counts[0].n } : {}),
+    ...(first ? { total } : {}),
+    ...(groups ? { groups: groups.map(row => ({ key: row.g ?? '', count: row.n })) } : {}),
     ...(columns ? { columns: columns.map(row => String(row.name)) } : {})
-  }
+  })
+  return meta.replace('"items":null', `"items":[${items.join(',')}]`)
 }
 
 async function detail (db, id) {
@@ -400,7 +419,7 @@ export async function deleteSubmissions (db, kv, ids) {
     db.prepare(`SELECT id FROM forms_submissions WHERE id IN (${inList})`).bind(list)
   ])
   const keys = removed.results.filter(row => !row.files_purged_at).flatMap(row => parse(row.files, []).map(file => file.key))
-  if (kv) await Promise.all(keys.map(key => kv.delete(key).catch(() => {})))
+  if (kv) await Promise.all(keys.slice(0, KV_DELETE_MAX).map(key => kv.delete(key).catch(() => {})))
   const deleted = removed.results.map(row => row.id)
   const busy = remaining.results.map(row => row.id)
   return { deleted, busy, missing: ids.filter(id => !deleted.includes(id) && !busy.includes(id)) }
@@ -433,7 +452,7 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
 
   if (method === 'GET') {
     if (path === 'summary') return jsonResponse({ ...(await summary(db, env, manifest, now)), actor })
-    if (path === 'submissions') return jsonResponse(await list(db, url))
+    if (path === 'submissions') return jsonTextResponse(await list(db, url))
     if (path === 'forms') {
       const forms = (await db.prepare('SELECT form_key, page, COUNT(*) AS total, MAX(created_at) AS last FROM forms_submissions GROUP BY form_key, page ORDER BY last DESC LIMIT 100').all()).results
       return jsonResponse({ forms: forms.map(row => ({ form: row.form_key, page: row.page, total: row.total, last: row.last })) })

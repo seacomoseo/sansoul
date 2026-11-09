@@ -7,7 +7,12 @@ export class FormsError extends Error {
 }
 
 export function jsonResponse (data, status = 200, headers = {}) {
-  return new Response(JSON.stringify(data), {
+  return jsonTextResponse(JSON.stringify(data), status, headers)
+}
+
+// Already serialized JSON (large values spliced in without parsing them).
+export function jsonTextResponse (text, status = 200, headers = {}) {
+  return new Response(text, {
     status,
     headers: {
       'content-type': 'application/json; charset=utf-8',

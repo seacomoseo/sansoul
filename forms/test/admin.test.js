@@ -6,6 +6,7 @@ import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, manifest, s
 const REPO = 'acme/web'
 const PUSH = 'gho_pushAccessToken0000000000000000000'
 const READ = 'gho_readOnlyToken000000000000000000000'
+const OTHER_APP = 'gho_otherAppReadUserToken0000000000000'
 
 let bindings
 let google
@@ -25,10 +26,11 @@ function fakeFetch (url, init = {}) {
   github.calls.push(href)
   if (github.down) return Promise.reject(new TypeError('fetch failed'))
   const token = String(init.headers?.authorization).replace('Bearer ', '')
-  const permissions = { [PUSH]: { pull: true, push: true }, [READ]: { pull: true, push: false } }[token]
+  const permissions = { [PUSH]: { pull: true, push: true }, [READ]: { pull: true, push: false }, [OTHER_APP]: { pull: true, push: true } }[token]
   if (!permissions) return Promise.resolve(new Response('{"message":"Bad credentials"}', { status: 401 }))
   if (href !== `https://api.github.com/repos/${REPO}`) return Promise.resolve(new Response('{}', { status: 404 }))
-  return Promise.resolve(Response.json({ full_name: REPO, permissions }))
+  // OAuth tokens list their scopes; another app's token of a maintainer has push in permissions, not repo scope.
+  return Promise.resolve(Response.json({ full_name: REPO, permissions }, { headers: { 'x-oauth-scopes': token === OTHER_APP ? 'read:user, user:email' : 'repo, user:email' } }))
 }
 
 async function send (fields, options = {}) {
@@ -81,6 +83,7 @@ describe('panel auth', () => {
     assert.equal((await call('summary', { auth: `GitHub ${READ}` })).status, 401)
     assert.equal((await call('summary', { auth: 'GitHub gho_unknownToken0000000000000000000000' })).status, 401)
     assert.equal((await call('summary', { auth: `Bearer ${PUSH}` })).status, 401)
+    assert.equal((await call('summary', { auth: `GitHub ${OTHER_APP}` })).status, 401)
     const person = await call('summary')
     assert.equal(person.status, 200)
     assert.equal(person.body.actor, 'github')
@@ -338,6 +341,8 @@ describe('panel tables', () => {
     assert.deepEqual(ids$(await q({ filter: JSON.stringify([['files', 'not_empty']]) })), [])
     assert.deepEqual(ids$(await q({ filter: JSON.stringify([['state', 'is', 'held']]) })).length, 4)
     assert.deepEqual(ids$(await q({ q: 'bea@' })), [ids.bea])
+    // Search looks at values, not field names.
+    assert.deepEqual(ids$(await q({ q: 'Email' })), [])
     assert.equal((await call(`submissions?filter=${encodeURIComponent(JSON.stringify([['f:x', 'drop table']]))}`)).status, 400)
     assert.equal((await call(`submissions?filter=${encodeURIComponent(JSON.stringify([['s.id; --', 'is', 'x']]))}`)).status, 400)
     assert.equal((await call('submissions?sort=1;drop:asc')).status, 400)
@@ -351,6 +356,10 @@ describe('panel tables', () => {
     assert.deepEqual(grouped.items.map(item => item.group), ['/es/#form-footer', '/es/contacto/#form-contacto', '/es/contacto/#form-contacto', '/es/contacto/#form-contacto'])
     const byField = await q({ form: '/es/contacto/#form-contacto', group: 'f:Mensaje' })
     assert.deepEqual(byField.groups.map(group => group.key), ['Hola 100%', ''])
+    // Keys that differ only in case stay apart and contiguous.
+    const byName = await q({ form: '/es/contacto/#form-contacto', group: 'f:Nombre' })
+    assert.deepEqual(byName.groups.map(group => group.key), ['Ana', 'Bea', 'luis'])
+    assert.deepEqual(byName.items.map(item => item.group), ['Ana', 'Bea', 'luis'])
     const paged = await q({ group: 'form', limit: '3' })
     assert.equal(paged.next, '+3')
     const rest = await q({ group: 'form', limit: '3', before: paged.next })
@@ -366,5 +375,8 @@ describe('panel tables', () => {
     const long = await send([['Nombre', 'Largo'], ['Email', 'l@example.org'], ['Mensaje', 'y'.repeat(900)]], { page: '/es/contacto/', form: 'form-contacto' })
     const page = await q({ full: '1', limit: '100' })
     assert.equal(page.items.find(item => item.id === long).fields.find(([name]) => name === 'Mensaje')[1].length, 900)
+    const listed = (await q({})).items.find(item => item.id === long)
+    assert.equal(listed.fields, undefined)
+    assert.equal(listed.preview, `Largo · l@example.org · ${'y'.repeat(60)}`)
   })
 })
