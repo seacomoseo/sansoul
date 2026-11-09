@@ -1,29 +1,19 @@
 /* eslint-disable */
-import { fieldGroups, t } from '@params'
+import { fieldGroups } from '@params'
 import { loadFieldGroupConfig, prepareFieldGroups } from './field-groups'
 
-// Sveltia keeps its preferences in IndexedDB (idb-keyval); 'auto' means the
-// browser language. The database is only opened if it already exists: opening
-// it empty would stop Sveltia from creating its store.
-async function cmsLocale () {
+// Interface language Sveltia will use (0.245): its preferences are JSON in
+// localStorage['sveltia-cms.prefs']; 'auto' (also what 'en' becomes) or no
+// choice means the first browser language it has a translation for.
+const SVELTIA_LANGUAGES = ['ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es', 'fa', 'fi', 'fr', 'he', 'hr', 'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'sk', 'sv', 'tr', 'uk', 'vi', 'zh']
+function cmsLanguage () {
+  let locale
   try {
-    const idb = window.indexedDB
-    if (idb && typeof idb.databases === 'function' && (await idb.databases()).some(entry => entry.name === 'keyval-store')) {
-      const prefs = await new Promise((resolve, reject) => {
-        const open = idb.open('keyval-store')
-        open.onerror = () => reject(open.error)
-        open.onsuccess = () => {
-          try {
-            const get = open.result.transaction('keyval').objectStore('keyval').get('sveltia-cms.prefs')
-            get.onsuccess = () => { open.result.close(); resolve(get.result) }
-            get.onerror = () => reject(get.error)
-          } catch (error) { reject(error) }
-        }
-      })
-      if (prefs?.locale && prefs.locale !== 'auto') return prefs.locale
-    }
+    locale = JSON.parse(window.localStorage.getItem('sveltia-cms.prefs') || '{}')?.locale
   } catch {}
-  return window.navigator?.language
+  const candidates = locale && locale !== 'auto' ? [locale] : [...(window.navigator?.languages || []), window.navigator?.language]
+  const base = candidates.map(code => String(code || '').slice(0, 2).toLowerCase()).find(code => SVELTIA_LANGUAGES.includes(code))
+  return base || 'en'
 }
 
 // Forms panel as a CMS page, only where the project Worker serves the forms
@@ -34,9 +24,9 @@ async function registerFormsPanel (CMS) {
     const response = await fetch('/api/forms/admin/summary', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(2000) })
     if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
     // Pages are registered before Sveltia starts, so its interface language is
-    // not on <html> yet: read the same preference it will use.
-    const locale = String(await cmsLocale() || '').slice(0, 2).toLowerCase()
-    const label = { es: 'Formularios', en: 'Forms' }[locale] || t?.forms_panel || 'Formularios'
+    // not on <html> yet: read the same preference it will use. The label is a
+    // fixed string: a language change in the CMS shows after a reload.
+    const label = cmsLanguage() === 'es' ? 'Formularios' : 'Forms'
     CMS.registerCustomPage({ id: 'forms', label, icon: 'inbox', url: '/admin/forms/' })
   } catch {}
 }
