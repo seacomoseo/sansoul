@@ -132,7 +132,7 @@ configuración, no código:
 ```sh
 node core/forms/scripts/gmail-credentials.js --check sansoulsend=<grant.json>
 node core/forms/scripts/gmail-credentials.js sansoulsend=<grant.json> \
-  | node core/node_modules/wrangler/bin/wrangler.js secret put FORMS_GMAIL_CREDENTIALS --config wrangler.workers.toml
+  | node core/node_modules/wrangler/bin/wrangler.js secret put FORMS_GMAIL_CREDENTIALS --config worker/wrangler.jsonc
 ```
 
 y en `[vars]`: `FORMS_PROVIDER = "gmail"` y `FORMS_GMAIL_DEFAULT = "sansoulsend"`

@@ -1,0 +1,35 @@
+{{- /*
+Partial: cms/help
+Purpose: Sign-in and publishing help plus project links, shared by the login
+  screen of /admin/ and the CMS page /admin/help/.
+Context: page.
+Renders: A <section>. Access emails travel base64-encoded in data-mails and are
+  written by js/cms-help.js (kept out of the static HTML for scrapers).
+*/ -}}
+{{- $t := partial "func/i18n-cms" . -}}
+{{- $p := partialCached "func/project" "project" -}}
+{{- $repo := print $p.owner "/" $p.repo -}}
+<section class="sansoul-help">
+  <p><strong>{{ $t.help_intro }}</strong></p>
+  <ol>
+    <li>{{ $t.help_login }}</li>
+    <li>{{ $t.help_publish }}</li>
+  </ol>
+  <ul>
+    <li><a href="https://seacomoseo.com/cms/" target="_blank" rel="noopener">{{ $t.help_tutorial }}</a></li>
+    {{- with site.Params.drive_url }}
+    <li><a href="{{ . }}" target="_blank" rel="noopener">{{ $t.help_drive }}</a>
+      {{- with site.Params.drive_mails }}<br>{{ $t.help_drive_view }}: <span data-mails="{{ . | base64Encode }}"></span>{{ end }}</li>
+    {{- end }}
+  </ul>
+  <p><strong>{{ $t.help_links }}</strong></p>
+  <ul>
+    <li><a href="https://github.com/{{ $repo }}" target="_blank" rel="noopener">{{ $t.help_repo }}</a></li>
+    <li><a href="https://github.com/{{ $repo }}/actions" target="_blank" rel="noopener">{{ $t.help_actions }}</a></li>
+    <li><a href="https://dash.cloudflare.com/?to=/:account/workers/services/view/{{ $p.worker }}/production" target="_blank" rel="noopener">{{ $t.help_cloudflare }}</a></li>
+    {{- with $p.netlify }}
+    <li><a href="https://app.netlify.com/sites/{{ . }}/deploys" target="_blank" rel="noopener">{{ $t.help_netlify }}</a></li>
+    {{- end }}
+    <li><a href="https://gitlab.com/{{ $p.owner }}/{{ $p.repo }}" target="_blank" rel="noopener">{{ $t.help_gitlab }}</a></li>
+  </ul>
+</section>

@@ -1,0 +1,41 @@
+/* Help of /admin/ (login screen) and /admin/help/. Uses Sveltia's --sui-*
+   tokens when present (inside the CMS) with plain fallbacks. */
+.sansoul-help {
+  font: 15px/1.5 "Source Sans 3", system-ui, sans-serif;
+  color: hsl(var(--sui-foreground-color-2-hsl, 210 5% 25%));
+  max-width: 40rem;
+}
+.sansoul-help a { color: var(--sui-primary-accent-color-text, hsl(210 80% 40%)); }
+.sansoul-help ol, .sansoul-help ul { padding-inline-start: 1.25rem; margin: .25rem 0 .75rem; }
+.sansoul-help li { margin-block: .25rem; }
+/* Login screen: a collapsed "Help" button that opens over the corner. */
+#sansoul-login-help {
+  position: fixed; inset: auto 1rem 1rem auto; z-index: 10;
+  max-width: calc(100vw - 2rem);
+  font: 15px/1.5 "Source Sans 3", system-ui, sans-serif;
+}
+#sansoul-login-help[hidden] { display: none; }
+#sansoul-login-help summary {
+  list-style: none; cursor: pointer; margin-inline-start: auto; width: max-content;
+  padding: .375rem .875rem; border-radius: 999px;
+  background: #fff; color: #1f5fbf; border: 1px solid #c9ccd0; box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+}
+#sansoul-login-help summary::-webkit-details-marker { display: none; }
+#sansoul-login-help[open] summary { margin-block-end: .5rem; }
+#sansoul-login-help .sansoul-help {
+  width: min(24rem, calc(100vw - 2rem)); max-height: 60vh; overflow: auto; box-sizing: border-box;
+  padding: .75rem 1rem; border-radius: .5rem;
+  background: #fff; color: #3a3d40; border: 1px solid #c9ccd0; box-shadow: 0 4px 16px rgb(0 0 0 / 14%);
+}
+.sansoul-help > :first-child { margin-top: 0; }
+.sansoul-help > :last-child { margin-bottom: 0; }
+@media (prefers-color-scheme: dark) {
+  #sansoul-login-help summary, #sansoul-login-help .sansoul-help { background: #26292c; color: #c4c7ca; border-color: #44484c; }
+  #sansoul-login-help summary, #sansoul-login-help a { color: #6fa8ff; }
+}
+.sansoul-help-page { margin: 0; padding: 1.5rem; background: hsl(var(--sui-background-color-1-hsl, 210 5% 100%)); }
+@media (prefers-color-scheme: dark) {
+  .sansoul-help-page { background: #1b1d1f; }
+  .sansoul-help-page .sansoul-help { color: #c4c7ca; }
+  .sansoul-help-page .sansoul-help a { color: #6fa8ff; }
+}

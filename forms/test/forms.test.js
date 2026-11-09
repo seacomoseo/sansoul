@@ -5,7 +5,7 @@ import { createFormsWorker } from '../worker.js'
 import { dispatch } from '../dispatch.js'
 import { createProviders } from '../providers/index.js'
 import { LEASE_MS, recoverExpiredLeases, sweepOrphanUploads } from '../store.js'
-import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, decodeMime, manifest, submitRequest, uploadRequest, withLength } from './helpers.js'
+import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, decodeMime, manifest, netlifySign, submitRequest, uploadRequest, withLength } from './helpers.js'
 
 let bindings
 let google
@@ -144,6 +144,35 @@ describe('intake and receipts', () => {
     assert.equal(retry.response.status, 200)
     clock += 11 * 60 * 1000
     assert.equal((await send([['Email', 'n8@example.org']], { page: '/es/', form: 'form-footer' })).response.status, 200)
+  })
+})
+
+describe('Netlify mirror (signed proxy)', () => {
+  const secret = 'proxy-secret-for-tests-only-0123456789abcdef'
+  const footer = { page: '/es/', form: 'form-footer', origin: 'https://site.test' }
+  const proxied = (visitor, sign = netlifySign(secret, { exp: Math.floor(clock / 1000) + 60 })) =>
+    ({ ...footer, ip: '198.51.100.1', headers: { 'x-nf-sign': sign, 'x-nf-client-connection-ip': visitor } })
+
+  test('the public site origin from the manifest is accepted besides the Worker origin', async () => {
+    assert.equal((await send([['Email', 'a@example.org']], footer)).response.status, 403)
+    worker = createFormsWorker({ ...manifest, origins: ['https://site.test'] }, { fetch: google.fetch, now })
+    assert.equal((await send([['Email', 'a@example.org']], footer)).response.status, 200)
+  })
+
+  test('rate limits use the visitor IP only behind a verified signature', async () => {
+    worker = createFormsWorker({ ...manifest, origins: ['https://site.test'] }, { fetch: google.fetch, now })
+    env.SANSOUL_PROXY_SECRET = secret
+    // Seven visitors behind the same Netlify egress IP are not one bucket.
+    for (let index = 0; index < 7; index++) {
+      assert.equal((await send([['Email', `v${index}@example.org`]], proxied(`203.0.113.${index + 10}`))).response.status, 200)
+    }
+    // Forged or expired signatures fall back to the connecting IP (Netlify's).
+    const forged = netlifySign('another-secret-of-sufficient-length-000000')
+    const expired = netlifySign(secret, { exp: Math.floor(clock / 1000) - 1 })
+    const statuses = []
+    for (let index = 0; index < 6; index++) statuses.push((await send([['Email', `f${index}@example.org`]], proxied('203.0.113.99', index % 2 ? forged : expired))).response.status)
+    assert.deepEqual(statuses, [200, 200, 200, 200, 200, 200])
+    assert.equal((await send([['Email', 'f7@example.org']], proxied('203.0.113.98', forged))).response.status, 429)
   })
 })
 

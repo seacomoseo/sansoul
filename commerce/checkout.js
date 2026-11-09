@@ -1,6 +1,7 @@
 import { sha256Hex } from './catalog.js'
 import { applyPaymentState, expirePendingCheckouts, persistCheckoutSession } from './orders.js'
 import { CommerceError, errorResponse, isSameOrigin, jsonResponse, methodNotAllowed, readJsonBody, requireDatabase, requireEnabledCatalog } from './http.js'
+import { clientIp, verifiedProxy } from '../edge/proxy.js'
 import { hmacSha256Hex } from './signature.js'
 import { createPaymentProvider } from './provider.js'
 import { buyerStatusCookie, resolveBuyerStatusCapability } from './status.js'
@@ -15,7 +16,7 @@ const RATE_WINDOW_SECONDS = 600
 
 async function consumeRateLimit (db, request, env, now) {
   const salt = env.COMMERCE_RATE_LIMIT_SALT
-  const ip = request.headers.get('cf-connecting-ip')
+  const ip = await clientIp(request, env)
   if (typeof salt !== 'string' || salt.length < 32 || (!ip && env.COMMERCE_ENV !== 'test')) throw new CommerceError('rate_limit_unavailable', 503)
   const clientKey = await hmacSha256Hex(ip || 'local-test', salt)
   const windowStart = Math.floor(now / RATE_WINDOW_SECONDS) * RATE_WINDOW_SECONDS
@@ -106,7 +107,7 @@ export async function handleCheckout (request, env, catalog) {
   try {
     if (request.method !== 'POST') return methodNotAllowed(['POST'])
     requireEnabledCatalog(catalog)
-    if (!isSameOrigin(request, catalog.origin)) throw new CommerceError('origin_not_allowed', 403)
+    if (!isSameOrigin(request, catalog.origin, await verifiedProxy(request, env))) throw new CommerceError('origin_not_allowed', 403)
     requireCheckoutAuthorization(catalog, env)
     const db = requireDatabase(env)
     const provider = createPaymentProvider(env)

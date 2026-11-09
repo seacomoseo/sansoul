@@ -18,8 +18,8 @@ Necesitas Git y Hugo Extended. Para desarrollar sin `node_modules` en cada
 proyecto, instala Dart Sass una sola vez en el `PATH`
 (`brew install sass/sass/sass` en macOS). Node.js se requiere para los servidores
 administrados y el build completo; `sh do build` instala las dependencias ausentes
-con el gestor del proyecto. Las versiones de despliegue se fijan en
-`.node-version`, `netlify.toml` y `wrangler.toml`.
+con el gestor del proyecto. Node se fija en `.node-version`; Hugo y Wrangler, en
+el motor (`core/ci/run` y `core/package.json`).
 
 ```sh
 git clone --recurse-submodules <url-del-repositorio>
@@ -67,9 +67,7 @@ bloqueo abandonado.
 
 Hugo recomendado: **0.168.0** (mínimo del motor: 0.164.0). La
 [comparación y validación de la actualización](docs/hugo-0.168.0.md) recoge los
-cambios de seguridad y compatibilidad. Netlify usa `netlify.toml`; el flujo de
-esta referencia mantiene sus versiones de Cloudflare Pages en `wrangler.toml`.
-Se conservan `HUGO_VERSION=0.168.0` y `PNPM_VERSION=10.28.2` en el consumidor.
+cambios de seguridad y compatibilidad. El CI la instala desde `core/ci/run`.
 
 Cada repositorio mantiene su propio `package.json` y `pnpm-lock.yaml`. No se
 necesita un monorepo ni un workspace compartido. El almacén de contenido de pnpm
@@ -200,10 +198,10 @@ Las particularidades nunca deben añadirse a README/AGENTS raíz porque son gene
 
 ### Operación del proyecto
 
-- `hugo.yml`: URL base y parámetros privados del proyecto —privados en el sentido de específicos, no secretos—.
+- `hugo.yml`: URL base y parámetros del proyecto —específicos, no secretos—, incluida su identidad de despliegue (`owner`, `repo`, `worker`, `netlify`, `worker_vars`; `domain` sale del host de `baseURL`).
 - `package.json`: dependencias Node utilizadas por Hugo y los scripts de posprocesado.
-- `netlify.toml` y `wrangler.toml`: configuración de despliegue.
-- `.github/workflows/`: automatizaciones; `backup.yml` replica el repositorio en GitLab. Requiere el secreto `GL_PAT`; GitHub proporciona automáticamente el token temporal de lectura usado para clonar el origen.
+- `.github/workflows/sansoul.yml`: stub generado por `sh do root-docs`; toda la lógica está en `core/ci/run`.
+- `worker/` (generado, fuera de Git): entrada del Worker, manifiesto de formularios y `wrangler.jsonc`.
 - `TODO.md`: lista humana de tareas y anotaciones; los agentes no deben leerla ni modificarla salvo petición expresa.
 
 ## El ciclo de construcción
@@ -288,10 +286,11 @@ Para probar la recompilación estructural local usa `sh do preview --demo` y abr
 recalcula `if/get/remap` al editar, sin guardar en el proyecto. Es experimental:
 consulta los límites y la diferencia respecto al CMS alojado en la guía enlazada.
 
-Guardar no significa que el despliegue haya terminado. Sveltia muestra el estado
-del cambio junto al enlace a la entrada publicada cuando Git y CI están
-conectados. El indicador general de `/admin/info/` no demuestra qué versión de
-una entrada está publicada.
+Guardar no publica: el CMS guarda con `[skip ci]`. Para publicar, «Publicar
+cambios» en el menú de la cuenta de Sveltia lanza el workflow `SanSoul`
+(`repository_dispatch`), y Sveltia muestra el estado del run junto a cada cambio.
+`/admin/info/` ya no existe: redirige a `/admin/`, que antes de iniciar sesión
+muestra la ayuda de acceso.
 
 La [validación de SanSoul 8](docs/sansoul-8-validation.md) recoge las pruebas
 integradas, el clon limpio y las comprobaciones reales del editor y reproductor.
@@ -641,9 +640,28 @@ La carpeta [`_examples/commerce-backend/`](_examples/commerce-backend/README.md)
 
 ## Despliegue
 
-Tanto Netlify como Cloudflare Pages publican `public/` y ejecutan `sh do build`. Mantén alineadas las versiones de Hugo Extended y Node declaradas por cada plataforma y prueba localmente esas mismas versiones antes de actualizar.
+Hosting único: **Cloudflare Workers Free** (Worker con Static Assets en
+`<worker>.<subdominio>.workers.dev` o en el dominio del cliente). Cada push a
+`main`, «Publicar cambios» en el CMS (`repository_dispatch`) o una ejecución
+manual lanzan el workflow `SanSoul`, que ejecuta `core/ci/run` en un solo job:
 
-El workflow `.github/workflows/backup.yml` inicializa los submódulos y ejecuta el script de réplica del tema. Sus tokens deben vivir exclusivamente en secretos del proveedor.
+1. copia en GitLab si existe el secreto `GL_PAT` (`GITLAB_NAMESPACE`, por defecto `seacomoseo`);
+2. Hugo Extended fijado por el motor, `pnpm install --frozen-lockfile` y `sh do build`;
+3. con `CLOUDFLARE_API_TOKEN`: `core/scripts/worker-config.js --resolve` elige la cuenta
+   (la única que ve el token, o `CLOUDFLARE_ACCOUNT_ID`), busca o crea por nombre las
+   D1/KV propias (`<worker>-forms`, `<worker>-files`, `<worker>-commerce`), aplica sus
+   migraciones y despliega. Sin el secreto, un push a `main` falla de forma visible.
+
+El token de CI es **de cuenta** (Workers Scripts, D1 y Workers KV en escritura;
+Account Settings en lectura), nunca un token personal. Los secretos del Worker
+(`FORMS_ADMIN_TOKEN`, credenciales de Gmail…) se cargan una vez con
+`wrangler secret put` y sobreviven a los despliegues; las variables no secretas van
+en `params.worker_vars`. Con formularios, un cron del Worker cada 15 minutos
+reintenta las entregas pendientes. La copia `workers.dev` responde
+`X-Robots-Tag: noindex` (`static/_headers`) cuando el canónico es otro dominio.
+
+Para probar la configuración sin desplegar: `sh do build && node core/scripts/worker-config.js`
+y `pnpm dlx wrangler@4.147.0 deploy --config worker/wrangler.jsonc --dry-run`.
 
 ## Lista mínima de validación
 

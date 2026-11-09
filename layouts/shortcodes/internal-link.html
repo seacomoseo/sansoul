@@ -4,7 +4,7 @@
 {{- $url    := $page.RelPermalink -}}
 {{- $lock   := true -}}
 {{- if eq $param "index" -}}
-  {{- $title = site.Params.domain -}}
+  {{- $title = (partialCached "func/project" "project").domain -}}
   {{- $url   = site.Home.RelPermalink -}}
   {{- $lock  = false -}}
 {{- end -}}

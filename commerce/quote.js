@@ -1,5 +1,6 @@
 import { buildOrderSnapshot, MAX_ORDER_MINOR, normalizeCart } from './catalog.js'
 import { CommerceError, errorResponse, isSameOrigin, jsonResponse, methodNotAllowed, readJsonBody, requireEnabledCatalog } from './http.js'
+import { verifiedProxy } from '../edge/proxy.js'
 import { requireCheckoutAuthorization } from './approval.js'
 import { assertTotalsPolicy, calculateOrderTotals, normalizeDestination, publicQuote } from './totals.js'
 
@@ -51,7 +52,7 @@ export async function handleQuote (request, env, catalog) {
   try {
     if (request.method !== 'POST') return methodNotAllowed(['POST'])
     requireEnabledCatalog(catalog)
-    if (!isSameOrigin(request, catalog.origin)) throw new CommerceError('origin_not_allowed', 403)
+    if (!isSameOrigin(request, catalog.origin, await verifiedProxy(request, env))) throw new CommerceError('origin_not_allowed', 403)
     requireCheckoutAuthorization(catalog, env)
     const { value } = await readJsonBody(request, 4096)
     const { items, destination } = normalizeCommerceRequest(value, { withQuote: false })

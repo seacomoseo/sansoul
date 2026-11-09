@@ -119,11 +119,6 @@ Side effects: Registers batch entries or publishes JavaScript; batch configurati
   "params"     (dict
     "cookiesLegal" (hugo.Data.config.cookies_legal | not | not)
     "icons"        (page.Store.Get "sansoul.resources.svg-urls" | default dict)
-    "name"         site.Params.name
-    "netlify"      (getenv "NETLIFY")
-    "netlifyId"    site.Params.netlify_id
-    "netlifyHook"  site.Params.netlify_hook
-    "cloudflareId" site.Params.cloudflare_id
     "langs"        $langs
   )
 }}

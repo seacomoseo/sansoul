@@ -1,9 +1,0 @@
----
-slug: admin/info
-title: CMS
-icon: construction
-sum: Zugang zum Admin-Panel, Deploy-Status, Repository-Links und technische Projektdaten.
-weight: 6
-type: system
----
-{{% info %}}

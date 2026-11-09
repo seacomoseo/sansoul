@@ -35,7 +35,7 @@
   {{- end -}}
 
 {{- else if eq $param "web" -}}
-  {{- site.Params.domain -}}
+  {{- (partialCached "func/project" "project").domain -}}
 {{- else if eq $param "https" -}}
   {{- site.BaseURL -}}
 {{- end -}}

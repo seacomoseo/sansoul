@@ -1,10 +1,15 @@
 # Backend opcional en Workers Free
 
-El ejemplo `worker.js` adapta los mismos cuatro handlers Pages; no duplica lógica
-comercial, SQL ni autenticación. Copia `worker.js`, `wrangler.workers.toml` y
-`functions/` a la raíz de un consumidor aislado. `sh do build` genera el catálogo
-privado fuera de `public/`; `wrangler deploy --config wrangler.workers.toml --dry-run`
-valida el bundle, pero no publica. Wrangler está fijado en `core/package.json`.
+Desde SanSoul 14.0.0 el Worker lo genera el motor: si existe
+`functions/_commerce/catalog.generated.js` (lo produce `sh do build` con los
+adaptadores de `functions/api/commerce/`), `core/scripts/worker-config.js` añade
+el router de comercio, la D1 `<worker>-commerce` y `/api/commerce/*` a
+`run_worker_first`. Los adaptadores siguen siendo los cuatro handlers Pages; no
+duplican lógica comercial, SQL ni autenticación. Copia solo `functions/` y
+`data/commerce.yml` a un consumidor aislado; valida con
+`pnpm dlx wrangler@4.147.0 deploy --config worker/wrangler.jsonc --dry-run`.
+`worker.js` y `wrangler.workers.toml` de esta carpeta quedan como fixture de las
+pruebas de integración (la misma composición que la entrada generada); no se copian.
 
 `assets.run_worker_first` contiene exclusivamente `/api/commerce/*`.
 `not_found_handling = "404-page"` evita usar un fallback SPA; `_routes.json` no

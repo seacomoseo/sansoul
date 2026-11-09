@@ -32,16 +32,18 @@ Side effects: Publishes public/_forms/<hash>.json; the post-build script moves i
   {{- end -}}
 {{- end -}}
 {{- $confirm := cond .confirm.enabled .confirm nil -}}
-{{- /* Drive folder of the project, same rule as the GAS bridge: Forms/<project>/<form>. */ -}}
-{{- $name := site.Params.name | default "" -}}
-{{- $owner := site.Params.owner | default "" -}}
-{{- $project := printf "%s-%s" $owner $name -}}
-{{- if eq $name "seacomoseo" }}{{ $project = $name }}{{ else if eq $name "site" }}{{ $project = $owner }}{{ end -}}
+{{- /* Drive folder of the project, Forms/<project>/<form>: <owner>-<repo>, or
+  the owner alone for a client organization's `site` repository. */ -}}
+{{- $p := partialCached "func/project" "project" -}}
+{{- $project := printf "%s-%s" $p.owner $p.repo -}}
+{{- if eq $p.repo "seacomoseo" }}{{ $project = $p.repo }}{{ else if eq $p.repo "site" }}{{ $project = $p.owner }}{{ end -}}
+{{- $base := urls.Parse site.BaseURL -}}
 {{- $spec := dict
   "id"      .id
-  "site"    (site.Params.domain | default "")
+  "site"    $p.domain
+  "origin"  (print $base.Scheme "://" $base.Host)
   "project" (strings.Trim $project "-")
-  "repo"    (or hugo.Data.config.cms_repo (print (or site.Params.owner "seacomoseo") "/" site.Params.domain))
+  "repo"    (or hugo.Data.config.cms_repo (print $p.owner "/" $p.repo))
   "lang"    site.Language.Lang
   "page"    .page
   "subject" .subject

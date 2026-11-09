@@ -1,0 +1,20 @@
+{{/*
+Partial: func/project
+Purpose: Resolve the project identity from flat hugo.yml params (14.0.0); the
+  same rules as scripts/project.js, which generates the Worker/Netlify configs.
+Context: string "project" (the cache key; the value is unused).
+Returns: dict owner, repo, worker, domain, netlify. `domain` defaults to the
+  baseURL host; `worker` defaults to the lowercased repo.
+Side effects: None.
+Example: {{ $project := partialCached "func/project" "project" }}
+*/}}
+{{- $p := site.Params -}}
+{{- $repo := $p.repo | default "" | string -}}
+{{- $domain := $p.domain | default (urls.Parse site.BaseURL).Host -}}
+{{- return dict
+  "owner"   ($p.owner | default "")
+  "repo"    $repo
+  "worker"  ($p.worker | default (lower $repo))
+  "domain"  $domain
+  "netlify" ($p.netlify | default "")
+-}}

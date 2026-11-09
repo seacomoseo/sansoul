@@ -2,7 +2,7 @@
 Purpose: Bring a consumer to the mandatory SanSoul layout: the engine at core/
   and dependencies managed by the pinned pnpm release.
 Run from: A consumer root, called by `sh do update`.
-Writes: package.json, .npmrc, pnpm-lock.yaml, deployment TOML files and tracked
+Writes: package.json, .npmrc, pnpm-lock.yaml, netlify.toml and tracked
   text references; `git mv` stages only the engine move. Never commits.
 Safety: Preflight functions change nothing. Dependency conversion restores the
   files it touched when any step fails.
@@ -182,7 +182,6 @@ function ensureTomlKey (file, section, key, value, log) {
 
 export function syncDeploymentConfig (projectDir, log = console.log) {
   ensureTomlKey(path.join(projectDir, 'netlify.toml'), 'build.environment', 'PNPM_FLAGS', PNPM_FLAGS, log)
-  ensureTomlKey(path.join(projectDir, 'wrangler.toml'), 'vars', 'PNPM_VERSION', PINNED_PNPM_VERSION, log)
   const ignore = path.join(projectDir, '.gitignore')
   if (fs.existsSync(ignore)) {
     const source = fs.readFileSync(ignore, 'utf8')

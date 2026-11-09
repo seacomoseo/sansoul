@@ -72,18 +72,20 @@ test('the forms panel page is registered before init only where the Worker answe
   const answer = (status, type) => async () => ({ status, headers: { get: () => type } })
   const CMS = { registerCustomPage: page => pages.push(page) }
   const worker = await initialize({ CMS, fetch: answer(401, 'application/json; charset=utf-8') })
-  assert.deepEqual(JSON.parse(JSON.stringify(pages)), [{ id: 'forms', label: 'Formularios', icon: 'inbox', url: '/admin/forms/' }])
+  const help = { id: 'help', label: 'Ayuda', icon: 'help', url: '/admin/help/' }
+  assert.deepEqual(JSON.parse(JSON.stringify(pages)), [help, { id: 'forms', label: 'Formularios', icon: 'inbox', url: '/admin/forms/' }])
   assert.equal(worker.order.at(-1), 'init')
+  pages.length = 0
   await initialize({ CMS, fetch: answer(404, 'text/html') })
   await initialize({ CMS, fetch: async () => { throw new TypeError('offline') } })
-  assert.equal(pages.length, 1)
+  assert.deepEqual(pages.map(page => page.id), ['help', 'help'])
 })
 
 test('the forms page label follows the interface language Sveltia will use', async () => {
   const label = async options => {
     const pages = []
     await initialize({ CMS: { registerCustomPage: page => pages.push(page) }, fetch: async () => ({ status: 401, headers: { get: () => 'application/json' } }), ...options })
-    return pages[0].label
+    return pages.find(page => page.id === 'forms').label
   }
   // Chosen in the CMS (localStorage prefs), whatever the browser says.
   assert.equal(await label({ prefs: { locale: 'en-US' }, languages: ['es-ES'] }), 'Forms')

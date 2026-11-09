@@ -9,6 +9,10 @@ Resolve the executing engine path; do not assume its directory depth.
 
 Read `templates/root/AGENTS.md` first: it is the canonical consumer contract copied to every project root. Theme behavior must preserve that contract. Check Git status in both repositories before editing and preserve all existing user changes.
 
+## Reuse boundary
+
+Anything repeated across SanSoul projects lives in this engine: CI (`ci/run`), the Worker entry and Wrangler config (`scripts/worker-config.js`), Netlify config, scripts, CMS/admin pages and documentation. A consumer keeps only its data (mainly `hugo.yml` params, content, data and uploads) plus thin generated stubs that `sh do root-docs` syncs from `templates/root/` (README, AGENTS, `.github/workflows/sansoul.yml`). Never add logic to a consumer that another project would need; add it here and generate or sync it. `hugo.yml` is the single source of project identity (`scripts/project.js`, `layouts/partials/func/project.html`); Wrangler/Netlify files are derived outputs. Hosting is Cloudflare Workers Free only.
+
 ## Hard rules
 
 - Do not commit, push, publish, update the parent submodule pointer, or deploy unless explicitly requested.
@@ -67,6 +71,7 @@ provider credentials in the environment and never infer unavailable video facts.
 - `assets/js/`: browser ESM modules.
 - `assets/scripts.js`: main browser module graph.
 - `scripts/`: Node build utilities and repository automation.
+- `ci/run`: the complete consumer CI (backup, build, Worker deploy, mirrors) called by the generated workflow stub.
 - `_examples/`: copyable integration fixture plus human/agent parameter references.
 - `commerce/`: opt-in commerce backend (Worker/Pages handlers, D1 migrations, catalog generator and suites). Keep checkout fail-closed; run `pnpm run test:commerce` and, for D1/runtime changes, `pnpm run test:commerce:workers` from this directory.
 - `forms/`: opt-in forms backend for the project Worker (`action: worker`): same-origin intake, D1 record/outbox, KV attachments, delivery providers and the build-time policy manifest. Run `pnpm run test:forms` from this directory after changes.
