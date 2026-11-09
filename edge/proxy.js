@@ -1,6 +1,7 @@
 // Netlify mirror in front of the project Worker. netlify.toml rewrites /api/*
 // to the Worker with `signed = "SANSOUL_PROXY_SECRET"`: Netlify then adds
-// x-nf-sign, a JWS (HS256) whose claims carry iss "netlify" and a short exp.
+// x-nf-sign, a JWS (HS256) whose claims carry iss "netlify" and a short exp
+// (5 minutes, measured 2026-11). Netlify reads the secret on every request.
 // A valid signature proves the request crossed this project's Netlify site,
 // so its client-IP header can be trusted. It does not bind method, path or
 // body: authorization, CSRF and idempotency stay with each handler.

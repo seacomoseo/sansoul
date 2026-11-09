@@ -650,7 +650,9 @@ manual lanzan el workflow `SanSoul`, que ejecuta `core/ci/run` en un solo job:
 3. con `CLOUDFLARE_API_TOKEN`: `core/scripts/worker-config.js --resolve` elige la cuenta
    (la única que ve el token, o `CLOUDFLARE_ACCOUNT_ID`), busca o crea por nombre las
    D1/KV propias (`<worker>-forms`, `<worker>-files`, `<worker>-commerce`), aplica sus
-   migraciones y despliega. Sin el secreto, un push a `main` falla de forma visible.
+   migraciones y despliega. Sin el secreto, un push a `main` falla de forma visible;
+4. con `params.netlify` y el secreto `NETLIFY_AUTH_TOKEN`: publica el espejo en Netlify
+   (siguiente apartado).
 
 El token de CI es **de cuenta** (Workers Scripts, D1 y Workers KV en escritura;
 Account Settings en lectura), nunca un token personal. Los secretos del Worker
@@ -662,6 +664,35 @@ reintenta las entregas pendientes. La copia `workers.dev` responde
 
 Para probar la configuración sin desplegar: `sh do build && node core/scripts/worker-config.js`
 y `pnpm dlx wrangler@4.147.0 deploy --config worker/wrangler.jsonc --dry-run`.
+
+### Espejo Netlify (opcional)
+
+Para clientes cuyo dominio se sirve desde Netlify (por ejemplo, cuando Cloudflare
+puede quedar bloqueado). Basta con `netlify: <nombre-del-sitio>` en `params` y el
+secreto `NETLIFY_AUTH_TOKEN` en GitHub; `core/scripts/netlify-mirror.js` hace el resto:
+
+- crea el sitio en Netlify si no existe (sin conectarlo a Git) y quita el distintivo
+  «Powered by Netlify»;
+- sube el mismo `public/` ya construido (`netlify deploy --prod --no-build`, CLI fijada) con
+  un `netlify.toml` generado que reenvía `/api/*` al Worker con firma;
+- genera una sola vez el secreto `SANSOUL_PROXY_SECRET`, lo guarda en el sitio Netlify y en
+  el Worker, y no lo rota. Para rotarlo: borrar la variable en Netlify y relanzar el workflow.
+
+Así formularios y comercio siguen viviendo solo en el Worker, que reconoce las peticiones
+firmadas por Netlify y usa la IP real del visitante. `baseURL` debe ser el dominio que sirve
+Netlify (los formularios solo aceptan ese origen).
+
+Límites del plan Free de Netlify, medidos:
+
+- **Créditos**: cada despliegue de producción cuesta 15 de 300 al mes. El CI publica como
+  mucho una vez por hora y 15 veces al mes; si se salta un commit, lo publica el siguiente
+  push o la recuperación automática cada 6 horas (el workflow solo la incluye en proyectos
+  con `netlify`; tras añadir el parámetro, `sh do root-docs`).
+- **Adjuntos**: Netlify no deja pasar peticiones de más de 8 MiB, así que en estos proyectos
+  el formulario limita cada archivo a 8 MB (en lugar de 20).
+- **Tiempo**: Netlify corta a los ~28 s si el Worker no responde.
+- En Free, la variable del secreto no puede ocultarse: la ve quien tenga acceso al sitio
+  Netlify. Netlify añade además un comentario HTML propio en cada página.
 
 ## Lista mínima de validación
 
