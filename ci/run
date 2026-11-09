@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Purpose: The whole CI of a SanSoul project, called by the generated
+#   .github/workflows/sansoul.yml stub: GitLab backup, build, Cloudflare Workers
+#   deploy and the optional Netlify mirror. Logic lives here so every project
+#   follows the engine version pinned by its submodule.
+# Run from: The consumer root, in GitHub Actions (node and pnpm already set up).
+# Secrets (environment, all optional except the deploy token on main):
+#   CLOUDFLARE_API_TOKEN  account token limited to this project's account.
+#   GL_PAT                GitLab mirror (GITLAB_NAMESPACE, default seacomoseo).
+#   NETLIFY_AUTH_TOKEN    Netlify mirror of params.netlify.
+# Usage: sh core/ci/run [event]
+
+set -eu
+
+EVENT=${1:-${GITHUB_EVENT_NAME:-push}}
+CORE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+HUGO_VERSION=0.168.0
+WRANGLER_VERSION=$(node -p "require('$CORE_DIR/package.json').devDependencies.wrangler")
+export CLOUDFLARE_SEND_METRICS=false
+failed=''
+
+step () { printf '\n::group::%s\n' "$1"; }
+end () { printf '::endgroup::\n'; }
+fail_later () { printf '::error::%s\n' "$1"; failed="$failed $2"; }
+
+case "$EVENT" in
+  push|workflow_dispatch) ;;
+  *) printf 'Unsupported event: %s\n' "$EVENT" >&2; exit 2 ;;
+esac
+
+# 1. Backup first: it does not depend on the build.
+if [ -n "${GL_PAT:-}" ]; then
+  step 'Backup to GitLab'
+  GH_PAT=${GH_PAT:-${GITHUB_TOKEN:-}} sh "$CORE_DIR/scripts/mirror-to-gitlab.sh" || fail_later 'GitLab backup failed' backup
+  end
+else
+  printf '::notice::No GL_PAT secret: GitLab backup skipped.\n'
+fi
+
+# 2. Hugo Extended, pinned by the engine.
+if ! hugo version 2>/dev/null | grep -q "v$HUGO_VERSION-.*extended"; then
+  step "Install Hugo Extended $HUGO_VERSION"
+  bin="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/hugo-$HUGO_VERSION"
+  mkdir -p "$bin"
+  curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v$HUGO_VERSION/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" | tar -xz -C "$bin" hugo
+  PATH="$bin:$PATH"
+  export PATH
+  [ -n "${GITHUB_PATH:-}" ] && printf '%s\n' "$bin" >> "$GITHUB_PATH"
+  end
+fi
+hugo version
+
+# 3. Build.
+step 'Install dependencies'
+pnpm install --frozen-lockfile
+end
+step 'Build'
+sh do build
+end
+
+# 4. Cloudflare Workers.
+if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+  step 'Worker config (account, D1, KV)'
+  node "$CORE_DIR/scripts/worker-config.js" --resolve > "${RUNNER_TEMP:-/tmp}/sansoul-worker.json"
+  cat "${RUNNER_TEMP:-/tmp}/sansoul-worker.json"
+  end
+  wrangler () { npx --yes "wrangler@$WRANGLER_VERSION" "$@"; }
+  for binding in $(node -p "require('${RUNNER_TEMP:-/tmp}/sansoul-worker.json').databases.join(' ')"); do
+    step "D1 migrations $binding"
+    wrangler d1 migrations apply "$binding" --remote --config worker/wrangler.jsonc
+    end
+  done
+  step 'Deploy Worker'
+  wrangler deploy --config worker/wrangler.jsonc
+  end
+elif [ "${GITHUB_REF:-}" = refs/heads/main ]; then
+  fail_later 'Missing secret CLOUDFLARE_API_TOKEN (account token limited to this project; see core/README-ROOT.md).' deploy
+fi
+
+if [ -n "$failed" ]; then
+  printf 'Failed steps:%s\n' "$failed" >&2
+  exit 1
+fi

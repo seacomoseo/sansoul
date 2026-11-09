@@ -1,6 +1,6 @@
 {{- $param := index .Params 0 -}}
 {{- if eq $param "index" -}}
-  {{- site.Params.domain -}}
+  {{- (partialCached "func/project" "project").domain -}}
 {{- else -}}
   {{- $page := site.GetPage (print "page/" $param) -}}
   {{- $page.Title -}}

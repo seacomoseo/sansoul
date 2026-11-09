@@ -176,6 +176,7 @@ elif [ "$COMMAND" = check ]; then
   sh -n "$CORE_DIR/do"
   sh -n "$CORE_DIR/scripts/bin/sass"
   sh -n "$CORE_DIR/scripts/mirror-to-gitlab.sh"
+  sh -n "$CORE_DIR/ci/run"
 
   hecho "CHECK TOOLING REGRESSIONS"
   node --test "$CORE_DIR"/scripts/tests/*.test.js

@@ -42,6 +42,63 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.0.0 — 2026-11-09 — solo Workers: CI y Worker generados por el motor
+
+**Impacto:** todos los proyectos. Cloudflare Workers pasa a ser el único
+hosting (Pages convive solo hasta verificar la migración de cada proyecto) y
+todo lo repetido entre proyectos vive en `core/`. El proyecto conserva sus datos
+(`hugo.yml`) y stubs generados.
+
+### Qué cambia
+
+- **Parámetros planos en `hugo.yml`:** `owner`, `repo` (repositorio GitHub),
+  `worker` (nombre del Worker; por defecto `repo` en minúsculas), `netlify`
+  (sitio espejo, opcional), `drive_url`, `drive_mails` y `worker_vars` (mapa de
+  variables del Worker, p. ej. `FORMS_PROVIDER`). `domain` se deriva del host de
+  `baseURL` y solo se escribe para sobrescribirlo. Se eliminan `name`,
+  `netlify_id`, `netlify_hook` y `cloudflare_id`. El repositorio del CMS y del
+  manifiesto de formularios es `owner/repo` (`cms_repo` sigue como override).
+- **Worker generado:** `sh do build` + `core/scripts/worker-config.js` escriben
+  `worker/entry.generated.js` y `worker/wrangler.jsonc` desde `hugo.yml`; el
+  proyecto ya no lleva `worker.js` ni `wrangler.workers.toml`. D1/KV propios
+  por nombre (`<worker>-forms`, `<worker>-files`, `<worker>-commerce`), buscados
+  o creados (Free) por el CI; cuenta = la única que ve el token o
+  `CLOUDFLARE_ACCOUNT_ID`. El reintento de entregas de formularios pasa a un
+  cron del Worker cada 15 min (antes, Action programada).
+- **Un único workflow:** `.github/workflows/sansoul.yml`, generado por
+  `sh do root-docs` desde `core/templates/root/sansoul.yml`, llama a
+  `core/ci/run`: copia en GitLab (`GL_PAT`), build, migraciones D1 y despliegue
+  (`CLOUDFLARE_API_TOKEN`). Sustituye `deploy-workers.yml`, `backup.yml` y
+  `forms-dispatch.yml`. Un solo job por push: menos minutos de Actions en
+  repositorios privados.
+- `/worker/`, `.wrangler` y `.dev.vars` quedan fuera de Git.
+
+### Acciones obligatorias
+
+1. Ejecutar `sh do update`. La automatización
+   `core/scripts/migrations/14.0.0-workers-ci.js` aplana los parámetros
+   (`owner`/`repo` desde el remoto GitHub, `worker` desde el Worker ya desplegado
+   o desde `name` si el repositorio no es un nombre válido, `netlify` desde
+   `name` si había `netlify_id`, `[vars]` de `wrangler.workers.toml` a
+   `worker_vars`) y borra solo los archivos de serie reconocidos; los
+   personalizados se conservan y se avisan.
+2. Revisar `params` en `hugo.yml`: `worker` es el nombre del Worker en
+   `workers.dev`; `domain` solo si difiere del host de `baseURL`.
+3. Crear el secreto `CLOUDFLARE_API_TOKEN` (token **de cuenta** del cliente con
+   Workers Scripts, D1 y Workers KV en escritura y Account Settings en lectura) y,
+   para la copia, `GL_PAT`. Nunca el token personal amplio.
+4. Si el proyecto ya tenía D1/KV de formularios con otro nombre, el primer
+   despliegue crea `<worker>-forms`/`<worker>-files` vacíos: copiar los datos o
+   aceptar el cambio antes de borrar los antiguos.
+5. Tras verificar el despliegue en `workers.dev`, borrar el proyecto Pages o
+   desconectar Netlify de Git y retirar `wrangler.toml`/`netlify.toml` heredados.
+   Hacer privado el repositorio.
+
+**Validación:** el run de `SanSoul` en Actions termina en verde con
+«Deploy Worker» y la URL `workers.dev` sirve el build; `/api/forms/*` responde
+si hay formularios `action: worker`.
+
+
 ## 13.7.0 — 2026-11-09 — formularios con backend propio
 
 **Impacto:** ninguno para formularios existentes. GAS, FormSubmit y acciones

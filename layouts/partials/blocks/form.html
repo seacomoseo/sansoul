@@ -299,7 +299,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     {{- with $mail }}
       <input type="hidden" name="CC" value="{{ . | base64Encode }}">
     {{- end }}
-    <input type="hidden" name="_domain" value="{{ site.Params.domain }}">
+    <input type="hidden" name="_domain" value="{{ (partialCached "func/project" "project").domain }}">
     <input type="hidden" name="_id" value="{{ $form_id }}">
     <input type="hidden" name="_subject" value="{{ $subject }}">
     {{- if $confirmation_payload.enabled }}
