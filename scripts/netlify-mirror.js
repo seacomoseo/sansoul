@@ -180,7 +180,7 @@ async function main () {
   console.log(`Netlify mirror: ${site.ssl_url || site.url} (${decision.reason})`)
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch(error => {
     console.error(`netlify mirror: ${error.message}`)
     process.exit(1)
