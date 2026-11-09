@@ -42,6 +42,41 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.1.0 — 2026-11-09 — espejo Netlify y Worker local
+
+**Impacto:** ninguno salvo que se active. Proyectos sin `params.netlify` y sin
+formularios `action: worker` ni comercio no notan cambios.
+
+### Qué incorpora
+
+- **Espejo Netlify** (`core/scripts/netlify-mirror.js`, paso 5 de `core/ci/run`): con
+  `params.netlify` y el secreto `NETLIFY_AUTH_TOKEN`, el CI crea el sitio si falta (sin Git,
+  sin distintivo «Powered by Netlify»), genera `netlify.toml` en una carpeta limpia
+  (`/api/*` → Worker, `status = 200`, `signed = "SANSOUL_PROXY_SECRET"`), fija el secreto una
+  sola vez en Netlify y en el Worker y publica `public/` con `netlify-cli` fijado
+  (`deploy --prod --no-build`). Límites de créditos Free: un despliegue por hora y 15 al mes;
+  el workflow generado incluye una recuperación cada 6 horas solo en proyectos con `netlify`.
+- Formularios `action: worker` de proyectos con espejo: 8 MB por archivo (Netlify rechaza
+  peticiones de más de 8 MiB). El resto conserva 20 MB.
+- **`sh do local` con Worker**: si el build genera backend (formularios o comercio), arranca
+  `wrangler dev` con D1/KV locales (`worker/.wrangler/state`), `FORMS_PROVIDER=hold` y
+  `COMMERCE_ENV=test`, y le envía `/api/*`. Secretos opcionales en `worker/.dev.vars`.
+
+### Acciones
+
+- Ninguna obligatoria. `sh do update` regenera el workflow con `sh do root-docs`.
+- Para activar el espejo: `netlify: <sitio>` en `params`, secreto `NETLIFY_AUTH_TOKEN` en
+  GitHub, `sh do root-docs` (añade la recuperación programada) y `baseURL` con el dominio que
+  sirve Netlify. El dominio propio en Netlify se configura a mano.
+
+### Validación
+
+- Primer push: el paso «Netlify mirror» crea el sitio, informa «Proxy secret: Netlify created,
+  Worker updated» y publica; `curl -X POST https://<dominio>/api/forms/submit` responde JSON del
+  Worker (no 404 de Netlify).
+- `sh do local`: el log muestra `Worker (forms/commerce, local D1/KV, …) on /api/*`.
+
+
 ## 14.0.0 — 2026-11-09 — solo Workers: CI y Worker generados por el motor
 
 **Impacto:** todos los proyectos. Cloudflare Workers pasa a ser el único
