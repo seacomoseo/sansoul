@@ -8,8 +8,10 @@
 # Secrets (environment, all optional except the deploy token on main):
 #   CLOUDFLARE_API_TOKEN  account token limited to this project's account.
 #   GL_PAT                GitLab mirror (GITLAB_NAMESPACE, default seacomoseo).
-#   NETLIFY_AUTH_TOKEN    Netlify mirror of params.netlify.
+#   NETLIFY_AUTH_TOKEN    Netlify mirror of params.netlify (scripts/netlify-mirror.js).
 # Usage: sh core/ci/run [event]
+#   `schedule` (only in the stub of projects with params.netlify) publishes on
+#   Netlify a commit that the mirror's hourly limit skipped; nothing else.
 
 set -eu
 
@@ -26,11 +28,18 @@ fail_later () { printf '::error::%s\n' "$1"; failed="$failed $2"; }
 
 case "$EVENT" in
   push|workflow_dispatch|repository_dispatch) ;;
+  schedule)
+    if [ -z "${NETLIFY_AUTH_TOKEN:-}" ]; then
+      printf '::notice::No NETLIFY_AUTH_TOKEN secret: nothing to catch up.\n'
+      exit 0
+    fi ;;
   *) printf 'Unsupported event: %s\n' "$EVENT" >&2; exit 2 ;;
 esac
 
 # 1. Backup first: it does not depend on the build.
-if [ -n "${GL_PAT:-}" ]; then
+if [ "$EVENT" = schedule ]; then
+  :
+elif [ -n "${GL_PAT:-}" ]; then
   step 'Backup to GitLab'
   GH_PAT=${GH_PAT:-${GITHUB_TOKEN:-}} sh "$CORE_DIR/scripts/mirror-to-gitlab.sh" || fail_later 'GitLab backup failed' backup
   end
@@ -55,6 +64,9 @@ hugo version
 step 'Install dependencies'
 pnpm install --frozen-lockfile
 end
+if [ "$EVENT" = schedule ] && [ "$(node "$CORE_DIR/scripts/netlify-mirror.js" check)" != deploy ]; then
+  exit 0
+fi
 step 'Build'
 sh do build
 end
@@ -66,13 +78,19 @@ if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
   cat "${RUNNER_TEMP:-/tmp}/sansoul-worker.json"
   end
   wrangler () { npx --yes "wrangler@$WRANGLER_VERSION" "$@"; }
-  for binding in $(node -p "require('${RUNNER_TEMP:-/tmp}/sansoul-worker.json').databases.join(' ')"); do
+  [ "$EVENT" = schedule ] || for binding in $(node -p "require('${RUNNER_TEMP:-/tmp}/sansoul-worker.json').databases.join(' ')"); do
     step "D1 migrations $binding"
     wrangler d1 migrations apply "$binding" --remote --config worker/wrangler.jsonc
     end
   done
-  step 'Deploy Worker'
-  wrangler deploy --config worker/wrangler.jsonc
+  if [ "$EVENT" != schedule ]; then
+    step 'Deploy Worker'
+    wrangler deploy --config worker/wrangler.jsonc
+    end
+  fi
+  # 5. Netlify mirror (params.netlify): same public/, /api/* signed to the Worker.
+  step 'Netlify mirror'
+  node "$CORE_DIR/scripts/netlify-mirror.js" deploy "${RUNNER_TEMP:-/tmp}/sansoul-worker.json" || fail_later 'Netlify mirror failed' netlify
   end
 elif [ "${GITHUB_REF:-}" = refs/heads/main ]; then
   fail_later 'Missing secret CLOUDFLARE_API_TOKEN (account token limited to this project; see core/README-ROOT.md).' deploy
