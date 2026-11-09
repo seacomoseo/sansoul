@@ -35,6 +35,12 @@ export const fileLimits = (env, limits = LIMITS) => driveEnabled(env)
   ? { file: limits.driveFileBytes, total: limits.driveFilesBytes }
   : { file: limits.noDriveBytes, total: limits.noDriveBytes }
 
+// Control characters and slashes become '_'; bidi and invisible format
+// characters are dropped (they can disguise an extension: "cv\u202Efdp.exe").
+export function safeFileName (name) {
+  return String(name || '').replace(/[\u0000-\u001f\u007f\\/]/g, '_').replace(/[\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g, '') || 'file' // eslint-disable-line no-control-regex
+}
+
 export function acceptsFile (accept, file) {
   if (!accept) return true
   const name = file.name.toLowerCase()
@@ -94,7 +100,7 @@ export function parseUpload (request, manifest, env, limits = LIMITS) {
   }
   const rawType = (request.headers.get('content-type') || '').split(';')[0].trim().toLowerCase()
   const file = {
-    name: (fileName || 'file').replace(/[\u0000-\u001f\u007f\\/]/g, '_').slice(0, limits.fileNameChars), // eslint-disable-line no-control-regex
+    name: safeFileName(fileName).slice(0, limits.fileNameChars),
     // Google-native types would make Drive create a folder or a Doc.
     type: /^[\w.+-]+\/[\w.+-]+$/.test(rawType) && !rawType.startsWith('application/vnd.google-apps.') ? rawType : 'application/octet-stream',
     size,

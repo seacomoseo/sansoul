@@ -336,7 +336,7 @@ describe('review fixes', () => {
     assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'lease_expired_repeatedly'])
   })
 
-  test('discarding the owner job purges its attachments; failed jobs can be released', async () => {
+  test('discarding the owner job purges its attachments; failed jobs can be released, discarded ones not', async () => {
     env.FORMS_PROVIDER = 'hold'
     const { id } = await send([['Nombre', 'Ana'], ['CV', new Blob([new Uint8Array([9])], { type: 'image/png' }), 'a.png']], { page: '/es/empleo/', form: 'form-cv' })
     const files = JSON.parse((await bindings.db.prepare('SELECT files FROM forms_submissions WHERE id = ?').bind(id).first()).files)
@@ -344,6 +344,8 @@ describe('review fixes', () => {
     assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/discard`), env)).status, 200)
     assert.equal(await bindings.kv.get(files[0].key), null)
     assert.equal((await job(id, 'owner')).state, 'failed')
+    assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)).status, 409)
+    await bindings.db.prepare("UPDATE forms_jobs SET last_error = 'network_error' WHERE id = ?").bind(`${id}:owner`).run()
     assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)).status, 200)
     assert.equal((await job(id, 'owner')).state, 'pending')
   })
@@ -388,6 +390,20 @@ describe('delivery failures and leases', () => {
     assert.deepEqual([(await job(id, 'owner')).state, (await job(id, 'owner')).last_error], ['held', 'lease_expired_ambiguous'])
     await worker.fetch(adminRequest('dispatch'), env)
     assert.equal(google.state.sent.length, 1)
+  })
+
+  test('with too little time left before the waitUntil cut, the send waits for the next drain', async () => {
+    const { id } = await send([['Email', 'a@example.org']], footer)
+    await bindings.db.prepare("UPDATE forms_jobs SET state = 'pending', sending_at = NULL, attempts = 1 WHERE id = ?").bind(`${id}:owner`).run()
+    const sentBefore = google.state.sent.length
+    const providers = createProviders({ fetch: google.fetch })
+    await dispatch({ env, db: bindings.db, kv: bindings.kv, providers, now, submissionId: id, deadline: clock + 5000 })
+    const deferred = await job(id, 'owner')
+    assert.deepEqual([deferred.state, deferred.last_error, deferred.attempts], ['pending', 'deferred', 1])
+    assert.equal(google.state.sent.length, sentBefore)
+    await dispatch({ env, db: bindings.db, kv: bindings.kv, providers, now, submissionId: id, deadline: clock + 28000 })
+    assert.equal((await job(id, 'owner')).state, 'sent')
+    assert.equal(google.state.sent.length, sentBefore + 1)
   })
 
   test('a lease lost before the provider call sends nothing', async () => {

@@ -146,6 +146,12 @@ export function markRetry (db, id, token, now, code, attempts) {
   return fenced(db, "UPDATE forms_jobs SET state = 'pending', next_attempt_at = ?, last_error = ?, lease_token = NULL, lease_until = NULL, sending_at = NULL, updated_at = ?", [next, code, now], id, token)
 }
 
+// Not enough time left in this invocation to send safely: back to the queue
+// for the next drain, without spending an attempt.
+export function markDeferred (db, id, token, now) {
+  return fenced(db, "UPDATE forms_jobs SET state = 'pending', next_attempt_at = ?, attempts = MAX(attempts - 1, 0), last_error = 'deferred', lease_token = NULL, lease_until = NULL, updated_at = ?", [now, now], id, token)
+}
+
 export function markFailed (db, id, token, now, code) {
   return fenced(db, "UPDATE forms_jobs SET state = 'failed', last_error = ?, lease_token = NULL, lease_until = NULL, updated_at = ?", [code, now], id, token)
 }
@@ -159,10 +165,11 @@ export async function pruneRate (db, now) {
 }
 
 // Human decision from the admin API: a held or failed job is sent again
-// (pending, fresh attempt budget) or closed. Leased and sent jobs never reopen.
+// (pending, fresh attempt budget) or closed. Leased and sent jobs never reopen,
+// and neither do discarded ones (their files may already be gone).
 export async function resolveHeld (db, id, action, now) {
   const result = action === 'release'
-    ? await db.prepare("UPDATE forms_jobs SET state = 'pending', attempts = 0, next_attempt_at = ?, sending_at = NULL, last_error = 'released', updated_at = ? WHERE id = ? AND state IN ('held', 'failed')").bind(now, now, id).run()
+    ? await db.prepare("UPDATE forms_jobs SET state = 'pending', attempts = 0, next_attempt_at = ?, sending_at = NULL, last_error = 'released', updated_at = ? WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded'").bind(now, now, id).run()
     : await db.prepare("UPDATE forms_jobs SET state = 'failed', last_error = 'discarded', updated_at = ? WHERE id = ? AND state IN ('held', 'failed')").bind(now, id).run()
   return result.meta.changes === 1
 }

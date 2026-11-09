@@ -1,6 +1,6 @@
 /* global FixedLengthStream */
 import { admin, pruneSubmissions } from './admin.js'
-import { dispatch } from './dispatch.js'
+import { WAIT_UNTIL_MS, dispatch } from './dispatch.js'
 import { FormsError, errorResponse, isSameOrigin, jsonResponse, sha256Hex } from './http.js'
 import { LIMITS, driveEnabled, fileLimits, parseSubmission, parseUpload, readSubmission } from './intake.js'
 import { validateManifest } from './manifest.js'
@@ -129,9 +129,10 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
   const unused = stagedKeys.filter(key => !referenced.has(key))
   const work = Promise.all([
     ...unused.map(key => kv?.delete(key).catch(() => {})),
-    // waitUntil stops 30 s after the response: Drive gets 25 s here and the
-    // rest is finished by the admin dispatch or the optional cron.
-    held || dispatch({ env, db, kv, providers, now, submissionId: parsed.submissionId, limit: 2, driveTimeoutMs: 25000 })
+    // waitUntil stops 30 s after the response: Drive gets 25 s here; a send
+    // that would not fit in what is left, and anything unfinished, goes to the
+    // admin dispatch or the optional cron.
+    held || dispatch({ env, db, kv, providers, now, submissionId: parsed.submissionId, limit: 2, driveTimeoutMs: 25000, deadline: now() + WAIT_UNTIL_MS })
       .catch(error => console.error('forms_dispatch_error', error?.name, String(error?.message).slice(0, 200)))
   ])
   if (ctx?.waitUntil) ctx.waitUntil(work)

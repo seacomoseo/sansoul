@@ -4,8 +4,8 @@ import { createFormsWorker } from '../worker.js'
 import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, manifest, submitRequest, uploadRequest, withLength } from './helpers.js'
 
 const REPO = 'acme/web'
-const PUSH = 'gho_push_access_token_000000000000'
-const READ = 'gho_read_only_token_00000000000000'
+const PUSH = 'gho_pushAccessToken0000000000000000000'
+const READ = 'gho_readOnlyToken000000000000000000000'
 
 let bindings
 let google
@@ -49,8 +49,9 @@ async function send (fields, options = {}) {
   return submissionId
 }
 
-const call = async (path, { method = 'GET', auth = `GitHub ${PUSH}` } = {}) => {
-  const response = await worker.fetch(new Request(`https://example.test/api/forms/admin/${path}`, { method, headers: auth ? { authorization: auth } : {} }), env, null)
+const call = async (path, { method = 'GET', auth = `GitHub ${PUSH}`, json } = {}) => {
+  const headers = { ...(auth ? { authorization: auth } : {}), ...(json ? { 'content-type': 'application/json' } : {}) }
+  const response = await worker.fetch(new Request(`https://example.test/api/forms/admin/${path}`, { method, headers, body: json ? JSON.stringify(json) : undefined }), env, null)
   return { status: response.status, headers: response.headers, body: response.headers.get('content-type')?.startsWith('application/json') ? await response.json() : await response.arrayBuffer() }
 }
 const jobState = async (id, channel = 'owner') => (await bindings.db.prepare('SELECT state, last_error FROM forms_jobs WHERE id = ?').bind(`${id}:${channel}`).first())
@@ -78,7 +79,7 @@ describe('panel auth', () => {
   test('GitHub push access or the admin token; nothing else', async () => {
     assert.equal((await call('summary', { auth: null })).status, 401)
     assert.equal((await call('summary', { auth: `GitHub ${READ}` })).status, 401)
-    assert.equal((await call('summary', { auth: 'GitHub gho_unknown_token_000000000000000' })).status, 401)
+    assert.equal((await call('summary', { auth: 'GitHub gho_unknownToken0000000000000000000000' })).status, 401)
     assert.equal((await call('summary', { auth: `Bearer ${PUSH}` })).status, 401)
     const person = await call('summary')
     assert.equal(person.status, 200)
@@ -97,6 +98,18 @@ describe('panel auth', () => {
     github.down = true
     assert.equal((await call('summary')).status, 503)
     assert.equal((await call('dispatch', { method: 'POST', auth: `Bearer ${ADMIN_TOKEN}` })).status, 200)
+  })
+
+  test('denials are cached for a minute; malformed tokens never reach GitHub', async () => {
+    const unknown = 'GitHub gho_unknownToken0000000000000000000000'
+    assert.equal((await call('summary', { auth: unknown })).status, 401)
+    assert.equal((await call('summary', { auth: unknown })).status, 401)
+    assert.equal(github.calls.length, 1)
+    assert.equal((await call('summary', { auth: 'GitHub not-a-github-token-at-all-000' })).status, 401)
+    assert.equal(github.calls.length, 1)
+    clock += 61 * 1000
+    assert.equal((await call('summary', { auth: unknown })).status, 401)
+    assert.equal(github.calls.length, 2)
   })
 
   test('the repository comes from the manifest or FORMS_ADMIN_REPO', async () => {
@@ -161,7 +174,7 @@ describe('panel data', () => {
     assert.equal(file.status, 200)
     assert.deepEqual([...new Uint8Array(file.body)], [1, 2, 3])
     assert.equal(file.headers.get('content-type'), 'application/octet-stream')
-    assert.match(file.headers.get('content-disposition'), /^attachment; filename\*=UTF-8''cv%20%3C1%3E\.pdf$/)
+    assert.equal(file.headers.get('content-disposition'), 'attachment; filename="cv <1>.pdf"; filename*=UTF-8\'\'cv%20%3C1%3E.pdf')
     assert.match(file.headers.get('content-security-policy'), /sandbox/)
     assert.equal((await call(`submissions/${id}/files/1`)).status, 404)
     assert.equal((await call(`jobs/${id}:owner/discard`, { method: 'POST' })).status, 200)
@@ -239,5 +252,119 @@ describe('panel actions', () => {
     assert.equal(rows[0].fields.find(([name]) => name === 'Mensaje')[1].length, 300)
     assert.equal((await call('submissions?view=all')).body.items.every(row => row.fields === undefined), true)
     assert.equal((await call('forms', { auth: `Bearer ${ADMIN_TOKEN}` })).status, 403)
+  })
+
+  test('several deletions at once: result per id, busy ones kept', async () => {
+    env.FORMS_PROVIDER = 'hold'
+    const a = await send([['Nombre', 'A'], ['CV', new Blob([new Uint8Array([1])], { type: 'application/pdf' }), 'a.pdf']], cv)
+    const b = await send([['Email', 'b@example.org']], footer)
+    const c = await send([['Email', 'c@example.org']], footer)
+    const key = JSON.parse((await bindings.db.prepare('SELECT files FROM forms_submissions WHERE id = ?').bind(a).first()).files)[0].key
+    await bindings.db.prepare("UPDATE forms_jobs SET state = 'leased' WHERE submission_id = ?").bind(c).run()
+    const missing = '00000000-0000-4000-8000-000000000000'
+    const result = (await call('submissions/delete', { method: 'POST', json: { ids: [a, b, c, missing] } })).body
+    assert.deepEqual(result.deleted.sort(), [a, b].sort())
+    assert.deepEqual(result.busy, [c])
+    assert.deepEqual(result.missing, [missing])
+    assert.equal(await bindings.kv.get(key), null)
+    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_jobs WHERE submission_id = ?').bind(c).first()).n, 1)
+    assert.equal((await call('submissions/delete', { method: 'POST', json: { ids: [] } })).status, 400)
+    assert.equal((await call('submissions/delete', { method: 'POST', json: { ids: Array.from({ length: 51 }, () => crypto.randomUUID()) } })).status, 400)
+    assert.equal((await call('submissions/delete', { method: 'POST', json: { ids: ["x' OR 1=1 --"] } })).status, 400)
+    assert.equal((await call('submissions/delete', { method: 'POST', auth: `Bearer ${ADMIN_TOKEN}`, json: { ids: [c] } })).status, 403)
+  })
+
+  test('a discarded job cannot be released again', async () => {
+    const spam = await send([['Email', 'b@example.org'], ['Mensaje', 'casino']], { page: '/es/contacto/', form: 'form-contacto' })
+    assert.equal((await call(`jobs/${spam}:owner/discard`, { method: 'POST' })).status, 200)
+    assert.equal((await call(`jobs/${spam}:owner/release`, { method: 'POST' })).status, 409)
+    assert.equal(google.state.sent.length, 0)
+  })
+
+  test('bidi and invisible characters never reach a file name', async () => {
+    env.FORMS_PROVIDER = 'hold'
+    const id = await send([['Nombre', 'Ana'], ['CV', new Blob([new Uint8Array([1])], { type: 'application/pdf' }), 'cv\u202Efdp.exe\u200B(1).pdf']], cv)
+    const detail = (await call(`submissions/${id}`)).body
+    assert.equal(detail.files[0].name, 'cvfdp.exe(1).pdf')
+    assert.match((await call(`submissions/${id}/files/0`)).headers.get('content-disposition'), /filename\*=UTF-8''cvfdp\.exe%281%29\.pdf$/)
+  })
+
+  test('summary warns when the database already belongs to another site', async () => {
+    assert.equal((await call('summary')).body.siteMismatch, null)
+    worker = createFormsWorker({ ...manifest, site: 'other.test', repo: REPO }, { fetch: fakeFetch, now })
+    assert.equal((await call('summary')).body.siteMismatch, 'example.test')
+    await bindings.db.prepare('DELETE FROM forms_meta').run()
+  })
+})
+
+describe('panel tables', () => {
+  async function fixture () {
+    env.FORMS_PROVIDER = 'hold'
+    const ids = {}
+    clock += 1000
+    ids.ana = await send([['Nombre', 'Ana'], ['Email', 'ana@example.org'], ['Mensaje', 'Hola 100%']], { page: '/es/contacto/', form: 'form-contacto' })
+    clock += 1000
+    ids.luis = await send([['Nombre', 'luis'], ['Email', 'luis@example.org'], ['Intereses', 'a'], ['Intereses', 'b']], { page: '/es/contacto/', form: 'form-contacto' })
+    clock += 1000
+    ids.bea = await send([['Nombre', 'Bea'], ['Email', 'bea@example.org']], { page: '/es/contacto/', form: 'form-contacto' })
+    clock += 1000
+    ids.foot = await send([['Email', 'f@example.org']], footer)
+    return ids
+  }
+  const q = (params) => call(`submissions?${new URLSearchParams(params)}`).then(response => response.body)
+
+  test('sort by any column, in D1, with exact totals', async () => {
+    const ids = await fixture()
+    const byName = await q({ form: '/es/contacto/#form-contacto', sort: 'f:Nombre:asc' })
+    assert.deepEqual(byName.items.map(item => item.id), [ids.ana, ids.bea, ids.luis])
+    assert.equal(byName.total, 3)
+    assert.deepEqual(byName.columns.slice(0, 2), ['Nombre', 'Email'])
+    assert.ok(byName.columns.includes('Mensaje') && byName.columns.includes('Intereses'))
+    const byDate = await q({ sort: 'created:asc' })
+    assert.deepEqual(byDate.items.map(item => item.id), [ids.ana, ids.luis, ids.bea, ids.foot])
+    assert.equal(byDate.items[0].state, 'held')
+    assert.equal(byDate.items[0].fields, undefined)
+  })
+
+  test('filters: text operators, repeated fields, dates, files and search', async () => {
+    const ids = await fixture()
+    const ids$ = body => body.items.map(item => item.id).sort()
+    assert.deepEqual(ids$(await q({ form: '/es/contacto/#form-contacto', filter: JSON.stringify([['f:Nombre', 'contains', 'LU']]) })), [ids.luis])
+    assert.deepEqual(ids$(await q({ form: '/es/contacto/#form-contacto', filter: JSON.stringify([['f:Intereses', 'is', 'a, b']]) })), [ids.luis])
+    assert.deepEqual(ids$(await q({ form: '/es/contacto/#form-contacto', filter: JSON.stringify([['f:Mensaje', 'empty']]) })), [ids.luis, ids.bea].sort())
+    assert.deepEqual(ids$(await q({ filter: JSON.stringify([['f:Mensaje', 'contains', '%']]) })), [ids.ana])
+    assert.deepEqual(ids$(await q({ filter: JSON.stringify([['form', 'is_not', '/es/contacto/#form-contacto']]) })), [ids.foot])
+    assert.deepEqual(ids$(await q({ filter: JSON.stringify([['created', 'after', String(clock - 1500)]]) })), [ids.foot, ids.bea].sort())
+    assert.deepEqual(ids$(await q({ filter: JSON.stringify([['files', 'not_empty']]) })), [])
+    assert.deepEqual(ids$(await q({ filter: JSON.stringify([['state', 'is', 'held']]) })).length, 4)
+    assert.deepEqual(ids$(await q({ q: 'bea@' })), [ids.bea])
+    assert.equal((await call(`submissions?filter=${encodeURIComponent(JSON.stringify([['f:x', 'drop table']]))}`)).status, 400)
+    assert.equal((await call(`submissions?filter=${encodeURIComponent(JSON.stringify([['s.id; --', 'is', 'x']]))}`)).status, 400)
+    assert.equal((await call('submissions?sort=1;drop:asc')).status, 400)
+  })
+
+  test('groups: counts for every group, rows in group order, offset pages', async () => {
+    const ids = await fixture()
+    const grouped = await q({ group: 'form' })
+    assert.deepEqual(grouped.groups, [{ key: '/es/#form-footer', count: 1 }, { key: '/es/contacto/#form-contacto', count: 3 }])
+    assert.equal(grouped.total, 4)
+    assert.deepEqual(grouped.items.map(item => item.group), ['/es/#form-footer', '/es/contacto/#form-contacto', '/es/contacto/#form-contacto', '/es/contacto/#form-contacto'])
+    const byField = await q({ form: '/es/contacto/#form-contacto', group: 'f:Mensaje' })
+    assert.deepEqual(byField.groups.map(group => group.key), ['Hola 100%', ''])
+    const paged = await q({ group: 'form', limit: '3' })
+    assert.equal(paged.next, '+3')
+    const rest = await q({ group: 'form', limit: '3', before: paged.next })
+    assert.deepEqual(rest.items.map(item => item.id), [ids.ana])
+    assert.equal(rest.groups, undefined)
+    const days = await q({ group: 'created', tz: '60' })
+    assert.equal(days.groups.length, 1)
+    assert.match(days.groups[0].key, /^\d{4}-\d{2}-\d{2}$/)
+  })
+
+  test('full export pages carry untruncated fields', async () => {
+    await fixture()
+    const long = await send([['Nombre', 'Largo'], ['Email', 'l@example.org'], ['Mensaje', 'y'.repeat(900)]], { page: '/es/contacto/', form: 'form-contacto' })
+    const page = await q({ full: '1', limit: '100' })
+    assert.equal(page.items.find(item => item.id === long).fields.find(([name]) => name === 'Mensaje')[1].length, 900)
   })
 })

@@ -1,11 +1,16 @@
 import { resolveAuthority } from './providers/index.js'
 import { renderConfirmation, renderOwner } from './render.js'
 import {
-  claimJob, dueJobs, loadSubmission, markFilesPurged, markHeld, markRetry,
-  markSending, markSent, pruneRate, recoverExpiredLeases, sweepOrphanUploads
+  claimJob, dueJobs, loadSubmission, markDeferred, markFailed, markFilesPurged, markHeld,
+  markRetry, markSending, markSent, pruneRate, recoverExpiredLeases, sweepOrphanUploads
 } from './store.js'
 
 const SEND_TIMEOUT_MS = 25000
+// With a deadline (waitUntil stops 30 s after the response), a send that could
+// be cut off midway (lease_expired_ambiguous) is left for the next drain.
+const SEND_MIN_MS = 8000
+export const WAIT_UNTIL_MS = 28000
+const DEADLINE_MARGIN_MS = 2000
 // Up to 25 MB stream from KV to Drive; the 90 s lease covers it.
 const DRIVE_TIMEOUT_MS = 60000
 // KV is eventually consistent across locations: a just-written file may not
@@ -34,7 +39,7 @@ export async function purgeFiles (db, kv, submission, now) {
   await markFilesPurged(db, submission.id, now())
 }
 
-async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutMs }) {
+async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutMs, deadline }) {
   const authority = JSON.parse(job.authority)
   const provider = providers[authority.provider]
   if (!provider) return markHeld(db, job.id, token, now(), 'provider_unknown')
@@ -47,6 +52,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
   if (!sameAuthority(authority, current)) return markHeld(db, job.id, token, now(), 'authority_drift')
 
   const submission = await loadSubmission(db, job.submission_id)
+  if (!submission) return markFailed(db, job.id, token, now(), 'submission_missing')
   const isOwner = job.channel === 'owner'
   const toDrive = isOwner && authority.files?.mode === 'drive' && submission.files.length > 0
   const young = now() - submission.created_at < FILES_SETTLE_MS
@@ -56,6 +62,8 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
   try {
     // Drive writes target reserved IDs, so this step is safe to repeat.
     const links = toDrive ? await provider.storeFiles({ env, db, kv, authority, submission, signal: AbortSignal.timeout(driveTimeoutMs || DRIVE_TIMEOUT_MS), now }) : null
+    const sendTimeout = deadline ? Math.min(SEND_TIMEOUT_MS, deadline - now() - DEADLINE_MARGIN_MS) : SEND_TIMEOUT_MS
+    if (sendTimeout < SEND_MIN_MS) return markDeferred(db, job.id, token, now())
     const body = isOwner ? renderOwner({ submission, authority, links }) : renderConfirmation({ submission, authority })
     const message = {
       ...body,
@@ -70,7 +78,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
       env,
       authority,
       message,
-      signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
+      signal: AbortSignal.timeout(sendTimeout),
       beforeSend: async () => {
         if (!await markSending(db, job.id, token, now())) throw Object.assign(new Error('lease_lost'), { kind: 'lost' })
         sendingMarked = true
@@ -93,7 +101,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
 
 // Bounded work per invocation keeps Workers Free CPU predictable; callers
 // (waitUntil after intake, admin drain, optional cron) repeat as needed.
-export async function dispatch ({ env, db, kv, providers, now = Date.now, submissionId, limit = 2, driveTimeoutMs }) {
+export async function dispatch ({ env, db, kv, providers, now = Date.now, submissionId, limit = 2, driveTimeoutMs, deadline }) {
   await recoverExpiredLeases(db, now())
   const ids = await dueJobs(db, now(), { submissionId, limit })
   let processed = 0
@@ -102,7 +110,7 @@ export async function dispatch ({ env, db, kv, providers, now = Date.now, submis
     const job = await claimJob(db, id, token, now())
     if (!job) continue
     processed++
-    await deliver({ env, db, kv, providers, now, job, token, driveTimeoutMs })
+    await deliver({ env, db, kv, providers, now, job, token, driveTimeoutMs, deadline })
     // A Drive job can use ~40 of the 50 subrequests of a Free invocation.
     if (job.channel === 'owner' && JSON.parse(job.authority).files?.mode === 'drive') return { processed, hasMore: true }
   }
