@@ -72,8 +72,9 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
   `CMS.registerCustomPage`, solo si el Worker responde `/api/forms/admin/*`).
   Autoriza con la sesión GitHub del CMS (permiso de escritura en `cms_repo`).
   Tablas con orden, filtros, grupos y búsqueda en D1, borrado por lotes y CSV/ZIP.
-  Retención opcional `FORMS_RETENTION_DAYS`. Migración `0003_panel.sql` (índice
-  y tabla `forms_meta`; sin ella el panel funciona, sin el aviso de D1 compartida).
+  Retención opcional `FORMS_RETENTION_DAYS`. Migraciones `0003_panel.sql` (índice
+  y tabla `forms_meta`; sin ella el panel funciona, sin el aviso de D1 compartida)
+  y `0004_forms_index.sql` (índice por formulario).
 - `scripts/update.js` registra 13.6.0 y 13.7.0 (13.6.0 faltaba en la política
   del actualizador).
 

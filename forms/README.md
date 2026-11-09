@@ -166,13 +166,16 @@ de la retención y de una D1 compartida con otra web.
 - **Una D1 y un KV por proyecto.** Las tablas no llevan columna de sitio: dos
   Workers sobre la misma base mezclarían envíos, límites y retención. El panel
   guarda el sitio (`manifest.site`) que usó la base primero y avisa si otro
-  sitio la usa.
+  sitio la usa. Si un proyecto cambia de dominio a propósito:
+  `DELETE FROM forms_meta WHERE key = 'site'` en su D1.
 
 - **Personas:** la sesión GitHub del propio CMS (Sveltia la guarda en
   `localStorage`, mismo origen). El panel la manda como
   `Authorization: GitHub <token>` y el Worker exige `permissions.push` sobre el
   repositorio del CMS (`cms_repo` o `<owner>/<domain>`, que viaja en el
-  manifiesto; `FORMS_ADMIN_REPO` lo sustituye). Resultado positivo en caché
+  manifiesto; `FORMS_ADMIN_REPO` lo sustituye). Un token OAuth o clásico debe
+  traer además el scope `repo` o `public_repo` (el del CMS lo trae): el token
+  de otra aplicación de alguien con permiso no basta. Resultado positivo en caché
   5 min por isolate. Sin sesión, el panel manda a entrar en el CMS; no hay
   login propio ni credenciales generales en el navegador. Revocar el permiso en
   GitHub tarda hasta esos 5 min en surtir efecto en el panel; las denegaciones
@@ -195,18 +198,23 @@ el acto; un trabajo descartado no se reabre), `POST dispatch` (devuelve también
 `attention` y `pruned`) y `POST retention`.
 
 `GET submissions` admite `view=all|attention|review`, `form=<página#id>`,
-`q=` (busca en los valores), `filter=` (JSON `[[columna, operador, valor], …]`,
+`q=` (busca en los valores, no en los nombres de campo), `filter=` (JSON `[[columna, operador, valor], …]`,
 hasta 10), `sort=<columna>:asc|desc`, `group=<columna>` (con `tz=` en minutos
 para agrupar por día), `limit=` (≤ 100), `full=1` (valores completos, para
 exportar) y `before=` (el `next` de la página anterior). Columnas: `created`,
-`form`, `state`, `files` y `f:<campo>`. Filtrar, ordenar y agrupar ocurre en D1
+`form`, `state`, `files` y `f:<campo>`. Agrupar por día usa el desfase
+horario actual del navegador (en el cambio de hora, un envío cercano a
+medianoche puede caer en el día de al lado). Filtrar, ordenar y agrupar ocurre en D1
 sobre todos los envíos que cumplen, así que páginas, `total` y `groups` son
 exactos; el Worker solo convierte la página que devuelve (50 filas por
 defecto). Coste: cada lista recorre los envíos que cumplen (filas leídas de
 D1 Free: 5 M al día, de sobra para miles de envíos) y la primera página añade
 el recuento. Borrar es una transacción: si un trabajo del envío está en cola o
-enviándose, ese envío no se borra (`busy`); los bytes de KV se borran después
-(si fallara, su TTL de 90 días los elimina).
+enviándose, ese envío no se borra (`busy`); los bytes de KV se borran después,
+hasta 100 por llamada (KV Free: 1.000 borrados al día; lo que falle o pase de
+ahí lo elimina su TTL de 90 días). Las exportaciones leen en el orden por
+defecto (cursor por índice) y ordenan en el navegador; el Worker no parsea los
+valores: recorta en SQL o devuelve el JSON guardado tal cual.
 
 Un envío que no cabe en lo que queda de `waitUntil` (30 s, Drive incluido) no
 se empieza: vuelve a la cola (`deferred`) sin gastar intento y lo termina el
