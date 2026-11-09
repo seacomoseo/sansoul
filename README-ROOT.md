@@ -735,6 +735,19 @@ o hay un fallo devuelve 503 en lugar de mostrar una salida parcial. No inyecta
 livereload: recarga el navegador después del build. Ctrl-C/SIGTERM/SIGHUP
 eliminan public/resources; sólo un proceso administrado por proyecto.
 
+Si el proyecto tiene formularios `action: worker` o comercio, `sh do local` también
+arranca el Worker del proyecto en tu equipo (`wrangler dev`) y le pasa todo lo que
+llega a `/api/*`, así que puedes enviar formularios y probar el carrito de verdad:
+
+- los datos se guardan en una D1/KV local (`worker/.wrangler/state`), nunca en Cloudflare,
+  y se conservan entre sesiones (borra esa carpeta para empezar de cero);
+- los formularios quedan retenidos (`FORMS_PROVIDER=hold`): no sale ningún correo;
+- el comercio funciona solo en modo prueba (`COMMERCE_ENV=test`: Stripe exige claves de test);
+- los secretos opcionales (por ejemplo `FORMS_ADMIN_TOKEN` o `STRIPE_SECRET_KEY` de test) van en
+  `worker/.dev.vars`, que Git ignora.
+
+El Worker se reinicia tras cada build. `sh do dev` y `sh do cms` siguen sin Worker.
+
 Para el editor usa `sh do cms`; para iterar rápido sin editor, `sh do dev`.
 La evaluación de [plantillas de preview](docs/preview-template-evaluation-2026-10-19.md)
 explica por qué un shell HTML por tipo no ejecuta de nuevo la composición Hugo.
