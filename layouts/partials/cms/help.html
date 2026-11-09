@@ -3,8 +3,9 @@ Partial: cms/help
 Purpose: Sign-in and publishing help plus project links, shared by the login
   screen of /admin/ and the CMS page /admin/help/.
 Context: page.
-Renders: A <section>. Access emails travel base64-encoded in data-mails and are
-  written by js/cms-help.js (kept out of the static HTML for scrapers).
+Renders: A <section>. Access emails (data-mails) and the SanSoul contact
+  (data-mail) travel base64-encoded and are written by js/cms-help.js, so no
+  address or mailto appears in the static HTML for scrapers.
 */ -}}
 {{- $t := partial "func/i18n-cms" . -}}
 {{- $p := partialCached "func/project" "project" -}}
@@ -21,6 +22,7 @@ Renders: A <section>. Access emails travel base64-encoded in data-mails and are
     <li><a href="{{ . }}" target="_blank" rel="noopener">{{ $t.help_drive }}</a>
       {{- with site.Params.drive_mails }}<br>{{ $t.help_drive_view }}: <span data-mails="{{ . | base64Encode }}"></span>{{ end }}</li>
     {{- end }}
+    <li hidden>{{ $t.help_contact }}: <a data-mail="{{ "sansoul@seacomoseo.com" | base64Encode }}"></a></li>
   </ul>
   <p><strong>{{ $t.help_links }}</strong></p>
   <ul>

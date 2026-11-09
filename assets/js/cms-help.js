@@ -1,9 +1,17 @@
-// Help of /admin/ and /admin/help/: decode the access emails, and on the login
+// Help of /admin/ and /admin/help/: decode the emails, and on the login
 // screen show the help only while nobody is signed in to Sveltia.
+const decode = value => new TextDecoder().decode(Uint8Array.from(atob(value), char => char.charCodeAt(0)))
 for (const node of document.querySelectorAll('[data-mails]')) {
   try {
-    node.textContent = new TextDecoder().decode(Uint8Array.from(atob(node.dataset.mails), char => char.charCodeAt(0)))
-      .split(',').map(mail => mail.trim()).filter(Boolean).join(', ')
+    node.textContent = decode(node.dataset.mails).split(',').map(mail => mail.trim()).filter(Boolean).join(', ')
+  } catch {}
+}
+for (const link of document.querySelectorAll('a[data-mail]')) {
+  try {
+    const mail = decode(link.dataset.mail)
+    link.href = `mailto:${mail}`
+    link.textContent = mail
+    link.closest('li').hidden = false
   } catch {}
 }
 
