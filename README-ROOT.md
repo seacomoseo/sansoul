@@ -534,7 +534,7 @@ checkout_destination_countries:
 
 El generador valida formato y coherencia, no verifica el contenido real del aviso legal, los destinos autorizados ni las reglas del negocio: debe aprobarlos la persona responsable. No guardes secretos ahí: el catálogo generado puede publicarse junto a Functions.
 
-La autorización de Stripe requiere además configuración de servidor Pages explícita: `COMMERCE_ENV` debe ser `test` o `live`, `COMMERCE_PROVIDER=stripe` y `COMMERCE_CHECKOUT_APPROVED=true`. Los parámetros de URL, `localStorage` y el payload del navegador no pueden habilitarla. En la implementación actual los totales de impuestos y envío no están calculados, por lo que Stripe queda bloqueado también con los demás valores completos; no se considera `subtotal` un total comercial válido para productos físicos.
+La autorización de Stripe requiere además configuración explícita del servidor (variables del Worker): `COMMERCE_ENV` debe ser `test` o `live`, `COMMERCE_PROVIDER=stripe` y `COMMERCE_CHECKOUT_APPROVED=true`. Los parámetros de URL, `localStorage` y el payload del navegador no pueden habilitarla. En la implementación actual los totales de impuestos y envío no están calculados, por lo que Stripe queda bloqueado también con los demás valores completos; no se considera `subtotal` un total comercial válido para productos físicos.
 
 El proveedor `fake` solo admite fixtures sintéticos cuando `COMMERCE_ENV=test` y `COMMERCE_TEST_FIXTURE=synthetic-commerce-test`; se rechaza en `live`. Al apagar la autorización se bloquean también los replays de checkout para no volver a entregar URLs de pago. Esto no revoca sesiones Stripe emitidas previamente; esas sesiones caducan según su expiración o requieren cancelación por el proveedor. Webhooks, conciliación y consulta privada del estado de pedidos anteriores siguen activos.
 
@@ -650,7 +650,9 @@ manual lanzan el workflow `SanSoul`, que ejecuta `core/ci/run` en un solo job:
 3. con `CLOUDFLARE_API_TOKEN`: `core/scripts/worker-config.js --resolve` elige la cuenta
    (la única que ve el token, o `CLOUDFLARE_ACCOUNT_ID`), busca o crea por nombre las
    D1/KV propias (`<worker>-forms`, `<worker>-files`, `<worker>-commerce`), aplica sus
-   migraciones y despliega. Sin el secreto, un push a `main` falla de forma visible.
+   migraciones y despliega. Sin el secreto, un push a `main` falla de forma visible;
+4. con `params.netlify` y el secreto `NETLIFY_AUTH_TOKEN`: publica el espejo en Netlify
+   (siguiente apartado).
 
 El token de CI es **de cuenta** (Workers Scripts, D1 y Workers KV en escritura;
 Account Settings en lectura), nunca un token personal. Los secretos del Worker
@@ -662,6 +664,40 @@ reintenta las entregas pendientes. La copia `workers.dev` responde
 
 Para probar la configuración sin desplegar: `sh do build && node core/scripts/worker-config.js`
 y `pnpm dlx wrangler@4.147.0 deploy --config worker/wrangler.jsonc --dry-run`.
+
+### Espejo Netlify (opcional)
+
+Para clientes cuyo dominio se sirve desde Netlify (por ejemplo, cuando Cloudflare
+puede quedar bloqueado). Basta con `netlify: <nombre-del-sitio>` en `params` y el
+secreto `NETLIFY_AUTH_TOKEN` en GitHub; `core/scripts/netlify-mirror.js` hace el resto:
+
+- crea el sitio en Netlify si no existe (sin conectarlo a Git; en el equipo de la variable
+  `NETLIFY_ACCOUNT_SLUG` si la defines) y quita el distintivo «Powered by Netlify»;
+- sube el mismo `public/` ya construido (`netlify deploy --prod --no-build`, CLI fijada) con
+  un `netlify.toml` generado que reenvía `/api/*` al Worker con firma y, detrás, las reglas de
+  `_redirects` (Netlify aplica `_redirects` antes que `netlify.toml` y una regla `/*` se
+  tragaría `/api/*`);
+- genera una sola vez el secreto `SANSOUL_PROXY_SECRET`, lo guarda en el sitio Netlify y en
+  el Worker, y no lo rota. Para rotarlo: borrar la variable en Netlify y relanzar el workflow
+  (la sincronización se hace aunque no toque desplegar).
+
+Así formularios y comercio siguen viviendo solo en el Worker, que reconoce las peticiones
+firmadas por Netlify y usa la IP real del visitante. `baseURL` debe ser el dominio que sirve
+Netlify (los formularios solo aceptan ese origen).
+
+Límites del plan Free de Netlify, medidos:
+
+- **Créditos**: cada despliegue de producción cuesta 15 de los 300 que tiene cada equipo de
+  Netlify por ciclo. El CI publica como mucho una vez por hora por sitio y 15 veces en
+  cualquier periodo de 31 días sumando todos los sitios del equipo; si se salta un commit, lo
+  publica el siguiente push o la recuperación automática cada 6 horas (solo en proyectos con
+  `netlify`; tras añadir el parámetro, `sh do root-docs`). La recuperación solo publica un
+  commit que el Worker ya tiene desplegado y espera si hay otro despliegue en marcha.
+- **Adjuntos**: Netlify no deja pasar peticiones de más de 8 MiB, así que en estos proyectos
+  el formulario limita cada archivo a 8 MB (en lugar de 20).
+- **Tiempo**: Netlify corta a los ~28 s si el Worker no responde.
+- En Free, la variable del secreto no puede ocultarse: la ve quien tenga acceso al sitio
+  Netlify. Netlify añade además un comentario HTML propio en cada página.
 
 ## Lista mínima de validación
 
@@ -703,6 +739,21 @@ sirve en localhost:1313 y vigila las fuentes para repetirlo. Mientras construye
 o hay un fallo devuelve 503 en lugar de mostrar una salida parcial. No inyecta
 livereload: recarga el navegador después del build. Ctrl-C/SIGTERM/SIGHUP
 eliminan public/resources; sólo un proceso administrado por proyecto.
+
+Si el proyecto tiene formularios `action: worker` o comercio, `sh do local` también
+arranca el Worker del proyecto en tu equipo (`wrangler dev`) y le pasa todo lo que
+llega a `/api/*`, así que puedes enviar formularios y probar el carrito de verdad:
+
+- los datos se guardan en una D1/KV local (`worker/.wrangler/state`), nunca en Cloudflare,
+  y se conservan entre sesiones (borra esa carpeta para empezar de cero);
+- los formularios quedan retenidos (`FORMS_PROVIDER=hold`): no sale ningún correo;
+- el comercio funciona solo en modo prueba (`COMMERCE_ENV=test`: Stripe exige claves de test);
+- los secretos opcionales (por ejemplo `FORMS_ADMIN_TOKEN` o `STRIPE_SECRET_KEY` de test) van en
+  `worker/.dev.vars`, que Git ignora.
+
+El Worker se reinicia tras cada build (mientras tanto, `/api/*` responde 503). Con
+`--bind 0.0.0.0` también lo alcanza tu red local, incluidos los secretos de `.dev.vars`.
+`sh do dev` y `sh do cms` siguen sin Worker.
 
 Para el editor usa `sh do cms`; para iterar rápido sin editor, `sh do dev`.
 La evaluación de [plantillas de preview](docs/preview-template-evaluation-2026-10-19.md)

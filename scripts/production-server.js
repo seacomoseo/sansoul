@@ -50,7 +50,7 @@ export function sourceSnapshot (directory) {
     for (const entry of readdirSync(absolute, { withFileTypes: true })) {
       if (ignoredDirectories.has(entry.name) || ignoredFiles.has(entry.name)) continue
       const child = path.join(relative, entry.name)
-      if (['public', 'resources', 'core/prebuild/public', 'themes/sansoul/prebuild/public'].includes(child.split(path.sep).join('/'))) continue
+      if (['public', 'resources', 'worker', 'core/prebuild/public', 'themes/sansoul/prebuild/public'].includes(child.split(path.sep).join('/'))) continue
       try {
         const stats = lstatSync(path.join(directory, child))
         if (stats.isDirectory()) visit(child)
@@ -68,11 +68,21 @@ export function changedSources (previous, current) {
   return [...new Set([...previous.keys(), ...current.keys()])].filter(file => previous.get(file) !== current.get(file))
 }
 
-export function serveOutput (publicDir, isReady) {
+// worker(): the running local Worker ({ port, origin }) or null; /api/* goes
+// there through proxy() when the project has a forms/commerce backend.
+export function serveOutput (publicDir, isReady, { worker = () => null, backend: expectsWorker = () => false, proxy, localOrigins = [] } = {}) {
   return (request, response) => {
     const fail = (code, message) => {
       response.writeHead(code, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' })
       response.end(request.method === 'HEAD' ? undefined : message)
+    }
+    const backend = worker()
+    if (/^\/api\//.test(request.url)) {
+      if (backend && isReady()) return proxy(request, response, { ...backend, localOrigins })
+      if (expectsWorker()) {
+        response.setHeader('Retry-After', '2')
+        return fail(503, 'Local Worker unavailable: building, or it failed to start (see the local log).')
+      }
     }
     if (!['GET', 'HEAD'].includes(request.method)) return fail(405, 'Only GET and HEAD are supported.')
     if (!isReady()) {
@@ -145,7 +155,11 @@ export async function startProductionServer (options = {}) {
   let ready = false
   let stopping = false
   let latestBuildFailed = false
-  const server = createServer(serveOutput(path.join(projectDir, 'public'), () => ready))
+  let worker = null
+  let hasBackend = false
+  let localWorker
+  const localOrigins = [...new Set([bind, 'localhost', '127.0.0.1'].map(host => `http://${host}:${port}`))]
+  const server = createServer(serveOutput(path.join(projectDir, 'public'), () => ready, { worker: () => worker, backend: () => hasBackend, proxy: (...args) => localWorker.proxyToWorker(...args), localOrigins }))
   const log = message => console.log(`LOCAL ${message}`)
   let shutdownPromise
   const shutdown = (code = 0) => {
@@ -179,6 +193,12 @@ export async function startProductionServer (options = {}) {
     ready = false
     log('Building production (prebuild, Hugo, image processing and CMS validation)…')
     try {
+      // The build regenerates the Worker inputs: restart it afterwards.
+      if (worker) {
+        const previous = worker
+        worker = null
+        await lifecycle.stopChildAndWait(previous.child)
+      }
       const child = lifecycle.track(spawn('sh', ['do', 'build'], {
         cwd: projectDir,
         env: { ...process.env, SANSOUL_LIFECYCLE_TOKEN: lifecycle.lockToken, SANSOUL_BUILD_PRODUCTION: '1' },
@@ -190,6 +210,20 @@ export async function startProductionServer (options = {}) {
       })
       const stopped = await lifecycle.waitForChild(child)
       latestBuildFailed = result.code !== 0 || Boolean(result.signal) || !stopped
+      if (!latestBuildFailed && !stopping) {
+        try {
+          // Loaded only for projects whose build produced a Worker backend.
+          hasBackend = ['worker/forms.generated.js', 'functions/_commerce/catalog.generated.js'].some(file => existsSync(path.join(projectDir, file)))
+          if (hasBackend) {
+            localWorker ||= await import('./local-worker.js')
+            worker = await localWorker.startLocalWorker({ projectDir, lifecycle, log })
+            // An empty forms manifest needs no Worker.
+            if (!worker) hasBackend = false
+          }
+        } catch (error) {
+          console.error(`LOCAL Worker unavailable (static pages still served): ${error.message}`)
+        }
+      }
       if (!stopping) {
         ready = !latestBuildFailed
         log(ready ? `Production ready at http://${bind}:${port}/` : 'Build failed; serving HTTP 503 until a successful source change rebuild.')
@@ -229,7 +263,7 @@ export async function startProductionServer (options = {}) {
 if (import.meta.url === pathToFileURL(process.argv[1] ? realpathSync(process.argv[1]) : '').href) {
   try {
     const options = parseOptions(process.argv.slice(2))
-    if (options.help) console.log('sh do local [--port 1313] [--bind localhost]\nFull production rebuild on source changes. live aliases local. Exit removes public/resources.')
+    if (options.help) console.log('sh do local [--port 1313] [--bind localhost]\nFull production rebuild on source changes; /api/* runs the project Worker locally (forms held, commerce test). live aliases local. Exit removes public/resources.')
     else await startProductionServer(options)
   } catch (error) {
     console.error(`LOCAL ${error.message}`)

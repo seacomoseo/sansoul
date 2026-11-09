@@ -11,7 +11,7 @@ Read `templates/root/AGENTS.md` first: it is the canonical consumer contract cop
 
 ## Reuse boundary
 
-Anything repeated across SanSoul projects lives in this engine: CI (`ci/run`), the Worker entry and Wrangler config (`scripts/worker-config.js`), Netlify config, scripts, CMS/admin pages and documentation. A consumer keeps only its data (mainly `hugo.yml` params, content, data and uploads) plus thin generated stubs that `sh do root-docs` syncs from `templates/root/` (README, AGENTS, `.github/workflows/sansoul.yml`). Never add logic to a consumer that another project would need; add it here and generate or sync it. `hugo.yml` is the single source of project identity (`scripts/project.js`, `layouts/partials/func/project.html`); Wrangler/Netlify files are derived outputs. Hosting is Cloudflare Workers Free only.
+Anything repeated across SanSoul projects lives in this engine: CI (`ci/run`), the Worker entry and Wrangler config (`scripts/worker-config.js`), the optional Netlify mirror (`scripts/netlify-mirror.js`: generated `netlify.toml`, signed proxy secret, credit limits), scripts, CMS/admin pages and documentation. A consumer keeps only its data (mainly `hugo.yml` params, content, data and uploads) plus thin generated stubs that `sh do root-docs` syncs from `templates/root/` (README, AGENTS, `.github/workflows/sansoul.yml`). Never add logic to a consumer that another project would need; add it here and generate or sync it. `hugo.yml` is the single source of project identity (`scripts/project.js`, `layouts/partials/func/project.html`); Wrangler/Netlify files are derived outputs. Hosting is Cloudflare Workers Free only.
 
 ## Hard rules
 

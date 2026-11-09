@@ -25,7 +25,7 @@ SanSoul commands (run from the project root):
   sh do cms       Watch site and prebuild inputs with the CMS.
   sh do preview   Experimental local structural CMS preview in an isolated copy.
   sh do build     Compile and validate the site.
-  sh do local     Rebuild production on changes and serve localhost:1313.
+  sh do local     Rebuild production on changes and serve localhost:1313 (+ local Worker on /api/*).
   sh do check     Run regression checks and build the site.
   sh do update    Update the engine, migrate and validate the project.
   sh do update --check  Inspect the update plan without changing the checkout.
