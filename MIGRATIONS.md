@@ -54,8 +54,12 @@ formularios `action: worker` ni comercio no notan cambios.
   sin distintivo «Powered by Netlify»), genera `netlify.toml` en una carpeta limpia
   (`/api/*` → Worker, `status = 200`, `signed = "SANSOUL_PROXY_SECRET"`), fija el secreto una
   sola vez en Netlify y en el Worker y publica `public/` con `netlify-cli` fijado
-  (`deploy --prod --no-build`). Límites de créditos Free: un despliegue por hora y 15 al mes;
-  el workflow generado incluye una recuperación cada 6 horas solo en proyectos con `netlify`.
+  (`deploy --prod --no-build`); las reglas de `_redirects` pasan al `netlify.toml` detrás de
+  `/api/*`. Límites de créditos Free: un despliegue por hora por sitio y 15 por equipo de
+  Netlify en 31 días; el workflow generado incluye una recuperación cada 6 horas solo en
+  proyectos con `netlify`, que publica únicamente commits que el Worker ya ejecuta.
+- Workflow generado: grupos de concurrencia `sansoul-deploy` y `sansoul-mirror`, permiso
+  `actions: read` y `wrangler deploy --message "SanSoul <sha>"` en `core/ci/run`.
 - Formularios `action: worker` de proyectos con espejo: 8 MB por archivo (Netlify rechaza
   peticiones de más de 8 MiB). El resto conserva 20 MB.
 - **`sh do local` con Worker**: si el build genera backend (formularios o comercio), arranca

@@ -64,8 +64,9 @@ hugo version
 step 'Install dependencies'
 pnpm install --frozen-lockfile
 end
-if [ "$EVENT" = schedule ] && [ "$(node "$CORE_DIR/scripts/netlify-mirror.js" check)" != deploy ]; then
-  exit 0
+if [ "$EVENT" = schedule ]; then
+  decision=$(node "$CORE_DIR/scripts/netlify-mirror.js" check) || exit 1
+  [ "$decision" = deploy ] || exit 0
 fi
 step 'Build'
 sh do build
@@ -85,7 +86,8 @@ if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
   done
   if [ "$EVENT" != schedule ]; then
     step 'Deploy Worker'
-    wrangler deploy --config worker/wrangler.jsonc
+    # The message lets the Netlify catch-up see which commit the Worker runs.
+    wrangler deploy --config worker/wrangler.jsonc --message "SanSoul ${GITHUB_SHA:-$(git rev-parse HEAD)}"
     end
   fi
   # 5. Netlify mirror (params.netlify): same public/, /api/* signed to the Worker.

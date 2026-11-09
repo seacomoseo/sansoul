@@ -671,12 +671,15 @@ Para clientes cuyo dominio se sirve desde Netlify (por ejemplo, cuando Cloudflar
 puede quedar bloqueado). Basta con `netlify: <nombre-del-sitio>` en `params` y el
 secreto `NETLIFY_AUTH_TOKEN` en GitHub; `core/scripts/netlify-mirror.js` hace el resto:
 
-- crea el sitio en Netlify si no existe (sin conectarlo a Git) y quita el distintivo
-  «Powered by Netlify»;
+- crea el sitio en Netlify si no existe (sin conectarlo a Git; en el equipo de la variable
+  `NETLIFY_ACCOUNT_SLUG` si la defines) y quita el distintivo «Powered by Netlify»;
 - sube el mismo `public/` ya construido (`netlify deploy --prod --no-build`, CLI fijada) con
-  un `netlify.toml` generado que reenvía `/api/*` al Worker con firma;
+  un `netlify.toml` generado que reenvía `/api/*` al Worker con firma y, detrás, las reglas de
+  `_redirects` (Netlify aplica `_redirects` antes que `netlify.toml` y una regla `/*` se
+  tragaría `/api/*`);
 - genera una sola vez el secreto `SANSOUL_PROXY_SECRET`, lo guarda en el sitio Netlify y en
-  el Worker, y no lo rota. Para rotarlo: borrar la variable en Netlify y relanzar el workflow.
+  el Worker, y no lo rota. Para rotarlo: borrar la variable en Netlify y relanzar el workflow
+  (la sincronización se hace aunque no toque desplegar).
 
 Así formularios y comercio siguen viviendo solo en el Worker, que reconoce las peticiones
 firmadas por Netlify y usa la IP real del visitante. `baseURL` debe ser el dominio que sirve
@@ -684,10 +687,12 @@ Netlify (los formularios solo aceptan ese origen).
 
 Límites del plan Free de Netlify, medidos:
 
-- **Créditos**: cada despliegue de producción cuesta 15 de 300 al mes. El CI publica como
-  mucho una vez por hora y 15 veces al mes; si se salta un commit, lo publica el siguiente
-  push o la recuperación automática cada 6 horas (el workflow solo la incluye en proyectos
-  con `netlify`; tras añadir el parámetro, `sh do root-docs`).
+- **Créditos**: cada despliegue de producción cuesta 15 de los 300 que tiene cada equipo de
+  Netlify por ciclo. El CI publica como mucho una vez por hora por sitio y 15 veces en
+  cualquier periodo de 31 días sumando todos los sitios del equipo; si se salta un commit, lo
+  publica el siguiente push o la recuperación automática cada 6 horas (solo en proyectos con
+  `netlify`; tras añadir el parámetro, `sh do root-docs`). La recuperación solo publica un
+  commit que el Worker ya tiene desplegado y espera si hay otro despliegue en marcha.
 - **Adjuntos**: Netlify no deja pasar peticiones de más de 8 MiB, así que en estos proyectos
   el formulario limita cada archivo a 8 MB (en lugar de 20).
 - **Tiempo**: Netlify corta a los ~28 s si el Worker no responde.

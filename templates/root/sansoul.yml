@@ -9,12 +9,15 @@ on:
   repository_dispatch:
     types: [sveltia-cms-publish]
 {{NETLIFY_SCHEDULE}}
+# Deploys queue in their own group; the Netlify catch-up uses another one so
+# it can never cancel a waiting deploy (it skips while one is running).
 concurrency:
-  group: sansoul
+  group: sansoul-${{ github.event_name == 'schedule' && 'mirror' || 'deploy' }}
   cancel-in-progress: false
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   site:
@@ -34,5 +37,6 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_ACCOUNT_SLUG: ${{ vars.NETLIFY_ACCOUNT_SLUG }}
           GL_PAT: ${{ secrets.GL_PAT }}
           GITHUB_TOKEN: ${{ github.token }}
