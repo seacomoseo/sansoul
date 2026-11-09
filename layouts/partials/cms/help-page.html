@@ -1,0 +1,29 @@
+{{- /*
+Partial: cms/help-page
+Purpose: Help page of the project (/admin/help/), shown inside Sveltia CMS as a custom page.
+Context: page.
+Renders: A standalone HTML page.
+*/ -}}
+{{- $t        := partial "func/i18n-cms" . -}}
+{{- $lang_cms := partial "func/lang-cms" . -}}
+{{- $config   := index (where hugo.Data.langs "lang" $lang_cms) 0 -}}
+{{- $css := resources.Get "css/cms-help.css" | minify -}}
+{{- $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/cms-help.css") -}}
+{{- $js := resources.Get "js/cms-help.js" | js.Build (dict "minify" true "targetPath" "js/cms-help.js" "format" "iife") -}}
+{{- $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/cms-help.js") -}}
+<!doctype html>
+<html lang="{{ $lang_cms }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>{{ $t.help }} · {{ $config.title }}</title>
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <script src="{{ $js.RelPermalink }}" defer></script>
+</head>
+<body class="sansoul-help-page">
+  {{ partial "cms/help" . }}
+</body>
+</html>

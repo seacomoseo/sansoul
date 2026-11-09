@@ -31,8 +31,15 @@ async function registerFormsPanel (CMS) {
   } catch {}
 }
 
+// Sign-in/publishing help and project links, always available in the CMS.
+function registerHelpPage (CMS) {
+  if (typeof CMS.registerCustomPage !== 'function') return
+  CMS.registerCustomPage({ id: 'help', label: cmsLanguage() === 'es' ? 'Ayuda' : 'Help', icon: 'help', url: '/admin/help/' })
+}
+
 async function initializeCMS () {
   const CMS = window.CMS
+  registerHelpPage(CMS)
   const formsPanel = registerFormsPanel(CMS)
   const source = await loadFieldGroupConfig(window.document)
   let groups

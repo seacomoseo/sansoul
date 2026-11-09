@@ -1,6 +1,9 @@
 {{- /* One build serves Workers and the Netlify mirror: rules use the syntax
   both accept (no Netlify-only `!` force suffix). */ -}}
 /index.php / 301
+/admin/info /admin/ 301
+/admin/info/* /admin/ 301
+/:lang/admin/info/* /admin/ 301
 # ---
 {{- with hugo.Data.redirects -}}
   {{- range . }}

@@ -42,9 +42,18 @@
   {{ end }}
   {{ $styles = partial "func/publish-content-resource" (dict "resource" $styles "target" "css/cms.css") }}
   <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+  {{ $help_css := resources.Get "css/cms-help.css" | minify }}
+  {{ $help_css = partial "func/publish-content-resource" (dict "resource" $help_css "target" "css/cms-help.css") }}
+  <link rel="stylesheet" href="{{ $help_css.RelPermalink }}">
 
 </head>
 <body style="--login: '{{ $t.login }}'">
+
+  {{/*  SIGN-IN HELP (hidden once signed in)  */}}
+  <details id="sansoul-login-help"><summary>{{ $t.help }}</summary>{{ partial "cms/help" . }}</details>
+  {{ $help_js := resources.Get "js/cms-help.js" | js.Build (dict "minify" true "targetPath" "js/cms-help.js" "format" "iife") }}
+  {{ $help_js = partial "func/publish-content-resource" (dict "resource" $help_js "target" "js/cms-help.js") }}
+  <script src="{{ $help_js.RelPermalink }}" defer></script>
 
   {{/*  SVELTIA CMS  */}}
   <script>

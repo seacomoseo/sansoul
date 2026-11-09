@@ -151,9 +151,8 @@ puede aportar el estado mediante checks y Netlify mediante estados/despliegues.
 SanSoul ya genera `site_url` y `preview_path`; no se añade un sondeo paralelo.
 `backend.preview_context` permite elegir un proveedor si hay varios estados.
 
-El indicador de `/admin/info/` resume la construcción del sitio, pero no
-identifica qué cambio de una entrada está publicado. Se conserva y se añade
-esta distinción. El backend local de prueba no tiene commits ni CI: permite
+Desde 14.0.0 no hay indicador propio (`/admin/info/` redirige a `/admin/`):
+el estado es el de los checks de GitHub Actions que muestra Sveltia. El backend local de prueba no tiene commits ni CI: permite
 validar el editor, pero no comprobar estados reales de Cloudflare o Netlify.
 
 ## Comprobación aislada

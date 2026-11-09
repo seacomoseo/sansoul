@@ -72,6 +72,24 @@ todo lo repetido entre proyectos vive en `core/`. El proyecto conserva sus datos
   `forms-dispatch.yml`. Un solo job por push: menos minutos de Actions en
   repositorios privados.
 - `/worker/`, `.wrangler` y `.dev.vars` quedan fuera de Git.
+- **Publicar desde el CMS:** el CMS sigue guardando con `[skip ci]`; «Publicar
+  cambios» (menú de la cuenta en Sveltia) envía `repository_dispatch`
+  `sveltia-cms-publish`, que el workflow escucha. Sveltia muestra el estado del
+  run junto a cada cambio.
+- **`/admin/info/` desaparece** (páginas `content/page/cms.*`, `info.js`, sus
+  estilos y textos, y los Workers `deploy`/`deploy-status` dejan de usarse): las
+  redirecciones por defecto llevan `/admin/info/*` a `/admin/`. En el login de
+  `/admin/` hay un botón «Ayuda» (acceso con GitHub, publicar, tutorial, hoja de
+  Drive con emails escritos por JS, enlaces a GitHub, Actions, Cloudflare, Netlify
+  y GitLab), que dentro del CMS es la página «Ayuda» (`/admin/help/`). El mapa del
+  sitio enlaza a `/admin/`.
+- **Worker tras el espejo Netlify:** los formularios aceptan también el `Origin`
+  de `baseURL` (manifiesto `origins`); con `SANSOUL_PROXY_SECRET` y la firma
+  `x-nf-sign` válida, formularios y comercio limitan por la IP real del visitante
+  y comercio acepta el origen canónico a través del proxy (`core/edge/proxy.js`).
+  `static/_headers` añade `X-Robots-Tag: noindex` solo en el host `workers.dev`.
+  `_redirects` deja el sufijo `!` exclusivo de Netlify: un build sirve a ambos.
+- Ejemplo `_examples/forms-backend/` sin archivos que copiar.
 
 ### Acciones obligatorias
 

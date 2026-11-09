@@ -25,7 +25,7 @@ end () { printf '::endgroup::\n'; }
 fail_later () { printf '::error::%s\n' "$1"; failed="$failed $2"; }
 
 case "$EVENT" in
-  push|workflow_dispatch) ;;
+  push|workflow_dispatch|repository_dispatch) ;;
   *) printf 'Unsupported event: %s\n' "$EVENT" >&2; exit 2 ;;
 esac
 

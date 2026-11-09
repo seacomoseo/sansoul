@@ -1,4 +1,5 @@
 {{- range sort site.Sections "Weight" "asc" }}
+  {{- $section := . }}
   <h2 class="md__heading">
     {{- $parent_icon := .Params.icon -}}
     {{- if .Params.icon }}
@@ -31,6 +32,12 @@
             "anchor" "auto"
             "lock"   .Params.seo.noindex
           ) -}}
+        </li>
+      {{- end }}
+      {{- /* The CMS (/admin/) replaces the former /admin/info/ system page. */ -}}
+      {{- if and (eq $section.Section "page") (not hugo.Data.config.cms_hide) (ne site.Params.cms_enabled false) }}
+        <li>
+          {{- partial "link" (dict "icon" "construction" "label" (i18n "cms") "url" "/admin/" "lock" true) -}}
         </li>
       {{- end }}
     </ul>
