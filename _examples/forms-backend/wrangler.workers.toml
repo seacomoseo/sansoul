@@ -23,6 +23,8 @@ FORMS_SENDER_NAME = "Example"
 # Secrets: FORMS_ADMIN_TOKEN and FORMS_GMAIL_CREDENTIALS, the latter loaded with
 # core/forms/scripts/gmail-credentials.js (see core/forms/README.md).
 
+# One D1 and one KV per project: never shared with another site (the tables
+# carry no site column; the panel warns when it finds another site's data).
 [[d1_databases]]
 binding = "FORMS_DB"
 database_name = "forms-example"

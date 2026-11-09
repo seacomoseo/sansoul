@@ -146,13 +146,27 @@ Sheets y otros proveedores (Brevo) no forman parte de este corte.
 
 ## Panel del proyecto
 
-`/admin/forms/` (página «Formularios» dentro de Sveltia CMS) lista los envíos
-por vistas —**Atención** (fallidos y retenidos que piden una decisión),
-**Revisión** (posible spam) y **Todos**— con detalle, adjuntos (descarga
-mientras sigan en KV, enlace de Drive después), «Enviar»/«Descartar» por
-trabajo y «Borrar envío». Avisa del envío desactivado (`hold`), de los
-correos enviados en 24 h por cuenta (la cuota de Gmail de una cuenta
-compartida la gastan todas sus webs), del estado de Drive y de la retención.
+`/admin/forms/` (página «Formularios» dentro de Sveltia CMS) muestra los envíos
+en tablas: **Todos**, **Atención** (fallidos y retenidos que piden una
+decisión), **Revisión** (posible spam) y **Tabla** (un formulario, con sus
+campos como columnas). Cada tabla se ordena por cualquier columna, se filtra
+(campo, operador y valor; todos los filtros a la vez), se agrupa (grupos
+plegables con recuento) y se busca en los valores; la configuración queda por
+vista en el navegador. En pantalla ancha, tabla y detalle van lado a lado; en
+una columna, la tabla añade el resumen de valores y se desplaza en horizontal.
+Detalle con adjuntos (descarga mientras sigan en KV, enlace de Drive después),
+«Enviar»/«Descartar» por trabajo y borrado por fila o por selección (casillas,
+seleccionar todo y mayúsculas+clic para un rango). Descarga CSV de la vista y,
+en las vistas generales, un ZIP con un CSV por formulario (fórmulas
+neutralizadas, BOM UTF-8, hasta 5.000 envíos por descarga). Avisa del envío
+desactivado (`hold`), de los correos enviados en 24 h por cuenta (la cuota de
+Gmail de una cuenta compartida la gastan todas sus webs), del estado de Drive,
+de la retención y de una D1 compartida con otra web.
+
+- **Una D1 y un KV por proyecto.** Las tablas no llevan columna de sitio: dos
+  Workers sobre la misma base mezclarían envíos, límites y retención. El panel
+  guarda el sitio (`manifest.site`) que usó la base primero y avisa si otro
+  sitio la usa.
 
 - **Personas:** la sesión GitHub del propio CMS (Sveltia la guarda en
   `localStorage`, mismo origen). El panel la manda como
@@ -160,7 +174,10 @@ compartida la gastan todas sus webs), del estado de Drive y de la retención.
   repositorio del CMS (`cms_repo` o `<owner>/<domain>`, que viaja en el
   manifiesto; `FORMS_ADMIN_REPO` lo sustituye). Resultado positivo en caché
   5 min por isolate. Sin sesión, el panel manda a entrar en el CMS; no hay
-  login propio ni credenciales generales en el navegador.
+  login propio ni credenciales generales en el navegador. Revocar el permiso en
+  GitHub tarda hasta esos 5 min en surtir efecto en el panel; las denegaciones
+  se recuerdan 1 min y un token con formato que no es de GitHub se rechaza sin
+  consultarlo.
 - **Automatizaciones:** `Authorization: Bearer <FORMS_ADMIN_TOKEN>` (Action de
   dispatch). Mismas rutas.
 - El CMS solo registra la página si `GET /api/forms/admin/summary` sin
@@ -170,11 +187,30 @@ compartida la gastan todas sus webs), del estado de Drive y de la retención.
   seguir su tema. Respuestas `private, no-store`; descargas como
   `application/octet-stream` adjunto con `sandbox`.
 
-Rutas (`/api/forms/admin/…`): `GET summary`, `GET submissions?view=attention|review|all&before=`,
-`GET submissions/<id>`, `GET submissions/<id>/files/<n>`, `POST submissions/<id>/delete`
-(no con un trabajo en cola o enviándose), `POST jobs/<id>:<canal>/release|discard`
-(release intenta enviar en el acto), `POST dispatch` (devuelve también `attention`
-y `pruned`) y `POST retention`.
+Rutas (`/api/forms/admin/…`): `GET summary`, `GET forms`, `GET submissions`,
+`GET submissions/<id>`, `GET submissions/<id>/files/<n>`, `POST submissions/<id>/delete`,
+`POST submissions/delete` (`{ ids }`, hasta 50; responde `deleted`, `busy` y
+`missing`), `POST jobs/<id>:<canal>/release|discard` (release intenta enviar en
+el acto; un trabajo descartado no se reabre), `POST dispatch` (devuelve también
+`attention` y `pruned`) y `POST retention`.
+
+`GET submissions` admite `view=all|attention|review`, `form=<página#id>`,
+`q=` (busca en los valores), `filter=` (JSON `[[columna, operador, valor], …]`,
+hasta 10), `sort=<columna>:asc|desc`, `group=<columna>` (con `tz=` en minutos
+para agrupar por día), `limit=` (≤ 100), `full=1` (valores completos, para
+exportar) y `before=` (el `next` de la página anterior). Columnas: `created`,
+`form`, `state`, `files` y `f:<campo>`. Filtrar, ordenar y agrupar ocurre en D1
+sobre todos los envíos que cumplen, así que páginas, `total` y `groups` son
+exactos; el Worker solo convierte la página que devuelve (50 filas por
+defecto). Coste: cada lista recorre los envíos que cumplen (filas leídas de
+D1 Free: 5 M al día, de sobra para miles de envíos) y la primera página añade
+el recuento. Borrar es una transacción: si un trabajo del envío está en cola o
+enviándose, ese envío no se borra (`busy`); los bytes de KV se borran después
+(si fallara, su TTL de 90 días los elimina).
+
+Un envío que no cabe en lo que queda de `waitUntil` (30 s, Drive incluido) no
+se empieza: vuelve a la cola (`deferred`) sin gastar intento y lo termina el
+siguiente dispatch.
 
 **Retención:** `FORMS_RETENTION_DAYS` (sin valor, no se borra nada). Borra los
 envíos más antiguos cuyos trabajos estén cerrados (enviados o fallidos), con

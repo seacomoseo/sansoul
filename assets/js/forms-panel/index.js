@@ -523,8 +523,10 @@ function tableBar () {
     type: 'button',
     class: `button${active[name] ? ' active' : ''}`,
     'aria-expanded': String(state.panel === name),
+    'aria-label': T[name],
+    title: T[name],
     onclick: () => { state.panel = state.panel === name ? null : name; ensureForms().then(render) }
-  }, icon(ICONS[name]), T[name], name === 'filter' && active.filter ? h('span', { class: 'badge' }, String(active.filter)) : null)
+  }, icon(ICONS[name]), h('span', { class: 'label' }, T[name]), name === 'filter' && active.filter ? h('span', { class: 'badge' }, String(active.filter)) : null)
   const chooser = state.view === 'table' && state.forms?.length
     ? h('select', { class: 'select form-select', 'aria-label': T.formLabel, 'data-focus': 'form', onchange: event => { state.form = event.target.value; resetList(); load() } },
       state.forms.map(entry => h('option', { value: entry.form, selected: entry.form === state.form }, `${formId(entry.form)} · ${entry.page} (${entry.total})`)))
@@ -548,8 +550,8 @@ function tableBar () {
     toggle('sort'), toggle('filter'), toggle('group'),
     h('span', { class: 'spacer' }),
     selected ? h('button', { type: 'button', class: 'button danger', disabled: state.busy, onclick: () => deleteMany([...state.selection]) }, icon(ICONS.remove), T.deleteSelected(selected)) : null,
-    h('button', { type: 'button', class: 'button', title: T.csvTitle, disabled: state.busy || !state.items.length, onclick: () => download('csv') }, icon(ICONS.download), T.csvView),
-    state.view !== 'table' ? h('button', { type: 'button', class: 'button', title: T.zipTitle, disabled: state.busy || !state.items.length, onclick: () => download('zip') }, icon(ICONS.zip), T.csvZip) : null)
+    h('button', { type: 'button', class: 'button', title: T.csvTitle, 'aria-label': T.csvTitle, disabled: state.busy || !state.items.length, onclick: () => download('csv') }, icon(ICONS.download), h('span', { class: 'label' }, T.csvView)),
+    state.view !== 'table' ? h('button', { type: 'button', class: 'button', title: T.zipTitle, 'aria-label': T.zipTitle, disabled: state.busy || !state.items.length, onclick: () => download('zip') }, icon(ICONS.zip), h('span', { class: 'label' }, T.csvZip)) : null)
 }
 
 function columnSelect (value, onchange, { allowNone = false } = {}) {
@@ -951,9 +953,9 @@ function csvCell (value) {
 const csvDate = time => new Date(time).toLocaleString('sv-SE')
 
 // One form: its fields as columns. Several forms: fixed columns first.
-function csvText (rows, { oneForm }) {
+function csvText (rows, { oneForm, columns = [] }) {
   const names = []
-  for (const name of oneForm ? state.columns : []) if (!names.includes(name)) names.push(name)
+  for (const name of columns) if (!names.includes(name)) names.push(name)
   for (const item of rows) for (const [name] of item.fields || []) if (!names.includes(name)) names.push(name)
   const stateOf = item => STATES[itemState(item)] || itemState(item) || ''
   const table = oneForm
@@ -1036,12 +1038,12 @@ async function download (kind) {
         let name = `${fileSlug(key)}.csv`
         for (let n = 2; names.has(name); n++) name = `${fileSlug(key)}-${n}.csv`
         names.add(name)
-        return { name, text: csvText(items, { oneForm: false }) }
+        return { name, text: csvText(items, { oneForm: true }) }
       })
       saveBlob(zip(files), `${T.title.toLowerCase()}-${state.view}-${day}.zip`)
     } else {
       const oneForm = state.view === 'table'
-      saveBlob(new Blob([csvText(rows, { oneForm })], { type: 'text/csv;charset=utf-8' }), `${oneForm ? fileSlug(state.form) : `${T.title.toLowerCase()}-${state.view}`}-${day}.csv`)
+      saveBlob(new Blob([csvText(rows, { oneForm, columns: oneForm ? state.columns : [] })], { type: 'text/csv;charset=utf-8' }), `${oneForm ? fileSlug(state.form) : `${T.title.toLowerCase()}-${state.view}`}-${day}.csv`)
     }
     state.notice = truncated ? T.truncated(PAGE_EXPORT_MAX) : null
   } catch (error) {

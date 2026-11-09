@@ -71,14 +71,17 @@ propias conservan su HTML y su JS. Aplica solo a formularios que elijan
 - Panel de formularios en `/admin/forms/` (página «Formularios» del CMS vía
   `CMS.registerCustomPage`, solo si el Worker responde `/api/forms/admin/*`).
   Autoriza con la sesión GitHub del CMS (permiso de escritura en `cms_repo`).
-  Retención opcional `FORMS_RETENTION_DAYS`. Sin migración de D1.
+  Tablas con orden, filtros, grupos y búsqueda en D1, borrado por lotes y CSV/ZIP.
+  Retención opcional `FORMS_RETENTION_DAYS`. Migración `0003_panel.sql` (índice
+  y tabla `forms_meta`; sin ella el panel funciona, sin el aviso de D1 compartida).
 - `scripts/update.js` registra 13.6.0 y 13.7.0 (13.6.0 faltaba en la política
   del actualizador).
 
 ### Acciones para adoptarlo (opcionales)
 
-1. Copiar el ejemplo, crear D1 y KV propios del proyecto y aplicar
-   `core/forms/migrations`; añadir `worker/forms.generated.js` a `.gitignore`.
+1. Copiar el ejemplo, crear D1 y KV **propios del proyecto** (no compartidos
+   con otra web) y aplicar `core/forms/migrations`; añadir
+   `worker/forms.generated.js` a `.gitignore`.
 2. Configurar `FORMS_PROVIDER` (`hold` o `gmail`), los secretos
    `FORMS_GMAIL_CREDENTIALS`/`FORMS_ADMIN_TOKEN` y `FORMS_GMAIL_DEFAULT`
    (Drive activo salvo `FORMS_DRIVE = "false"`; opcional `FORMS_DRIVE_FOLDER`).

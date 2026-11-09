@@ -13,6 +13,8 @@
   letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr;
   font-feature-settings: "liga"; -webkit-font-feature-settings: "liga"; -webkit-font-smoothing: antialiased;
   vertical-align: middle; flex: none; user-select: none;
+  /* If the icon font fails, the ligature name never spills as text. */
+  width: 1em; overflow: hidden;
 }
 /* The CMS already shows the page name: no repeated title when embedded. */
 [data-embedded] h1 { display: none; }
@@ -245,6 +247,11 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
   .fields { grid-template-columns: 1fr; gap: 0; }
   .fields dd { margin-bottom: 8px; }
   .search { max-width: none; flex-basis: 100%; }
+}
+/* Phones: the bar keeps one row of icon buttons (names stay as labels). */
+@media (max-width: 599px) {
+  .table-bar .button .label { display: none; }
+  .table-bar .button { min-width: 32px; }
 }
 
 /* Shown by the HTML until the script renders: the page is never blank. */
