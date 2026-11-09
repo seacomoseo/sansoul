@@ -75,12 +75,13 @@ function getPendingSubmissions () {
   return pending
 }
 
-function setPendingSubmission ({ submissionId, action, body }) {
+function setPendingSubmission ({ submissionId, action, body, strict = false }) {
   try {
     localStorage.setItem(`${pendingStorageKey}.${submissionId}`, JSON.stringify({
       submissionId,
       action,
       body,
+      strict,
       createdAt: new Date().toISOString()
     }))
     return true
@@ -109,12 +110,44 @@ function getSubmissionInput (form) {
   return input
 }
 
-function isPersistedSubmission (data, submissionId) {
+// Worker forms: each file goes first as one raw upload (the Worker streams it
+// to storage without parsing it) and the submission references it by index.
+// The SHA-256 lets the server verify the stored copy.
+async function workerBody (formData, action, signal) {
+  const body = new FormData()
+  const query = { submission: formData.get(submissionInputName), page: formData.get('_page'), form: formData.get('_form') }
+  let index = 0
+  for (const [name, value] of formData.entries()) {
+    if (!(value instanceof File)) {
+      body.append(name, value)
+      continue
+    }
+    if (!value.size) {
+      body.append(name, '')
+      continue
+    }
+    const digest = await crypto.subtle.digest('SHA-256', await value.arrayBuffer())
+    const sha256 = [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('')
+    const url = `${action.replace(/submit$/, 'upload')}?${new URLSearchParams({ ...query, field: name, index })}`
+    const response = await fetch(url, {
+      method: 'POST',
+      body: value,
+      signal,
+      headers: { 'Content-Type': value.type || 'application/octet-stream', 'X-File-Name': encodeURIComponent(value.name), 'X-File-Sha256': sha256 }
+    })
+    // 409: an earlier attempt already committed; the submit returns its receipt.
+    if (!response.ok && response.status !== 409) throw new Error('Upload HTTP status ' + response.status)
+    body.append(name, String(index++))
+  }
+  return body
+}
+
+function isPersistedSubmission (data, submissionId, strict = false) {
   if (!data || data.result !== 'success') return false
 
   // Keep compatibility with existing Apps Script handlers while upgraded
   // handlers return a durable receipt that can be verified.
-  if (typeof data.persisted === 'undefined' && typeof data.submissionId === 'undefined') return true
+  if (!strict && typeof data.persisted === 'undefined' && typeof data.submissionId === 'undefined') return true
 
   return data.persisted === true && Boolean(data.submissionId) && (
     data.submissionId === submissionId || data.status === 'review'
@@ -149,7 +182,7 @@ async function retryPendingSubmissions () {
       if (!response.ok) continue
 
       const data = await response.json()
-      if (isPersistedSubmission(data, submission.submissionId)) {
+      if (isPersistedSubmission(data, submission.submissionId, submission.strict)) {
         removePendingSubmission(submission.submissionId)
       }
     } catch (_) {
@@ -225,6 +258,8 @@ export function initFormSend () {
           let action = atob(actionEncoded)
           const isFileType = form.querySelector('[type="file"]')
           const googleScript = form.dataset.prov === 'gas'
+          const workerForm = form.dataset.prov === 'sw'
+          const durable = googleScript || workerForm
           const formSubmitCo = form.dataset.prov === 'fsc'
           if (!formUsesAjax(form)) {
             if (formSubmitCo) action = action.replace('/ajax', '')
@@ -248,8 +283,8 @@ export function initFormSend () {
             formMessage.innerHTML = `<i class="icon icon--mat spin--reverse" part="sync"></i> ${formSubmitSending}…`
             form.append(formMessage)
 
-            const submissionInput = googleScript ? getSubmissionInput(form) : null
-            const submissionId = submissionInput?.value
+            const submissionInput = durable ? getSubmissionInput(form) : null
+            let submissionId = submissionInput?.value
 
             const formOptions = { method: 'POST' }
             const formData = new FormData(form)
@@ -277,7 +312,17 @@ export function initFormSend () {
               ]))
             }
 
-            if ((!googleScript && isFileType) || formSubmitCo) {
+            let fileBytes = 0
+            if (workerForm) {
+              // Multipart keeps order and repeated/empty values; files are
+              // uploaded first (workerBody). Only text-only submissions get a
+              // local copy for background retry.
+              fileBytes = [...formData.values()].reduce((total, value) => total + (value instanceof File ? value.size : 0), 0)
+              if (![...formData.values()].some(value => value instanceof File && value.size)) {
+                const text = [...formData.entries()].filter(([, value]) => typeof value === 'string')
+                setPendingSubmission({ submissionId, action, body: new URLSearchParams(text).toString(), strict: true })
+              }
+            } else if ((!googleScript && isFileType) || formSubmitCo) {
               // Send with files
               formOptions.timeout = 30000
               // formOptions.headers = { Accept: 'application/json' }
@@ -304,32 +349,47 @@ export function initFormSend () {
               : null
             let formTimeout
             formOptions.signal = formController?.signal
+            // The same ID with different content means the form changed after
+            // an ambiguous attempt: send the current content once as new.
+            const post = async retried => {
+              if (workerForm) formOptions.body = await workerBody(formData, action, formOptions.signal)
+              const response = await fetch(action, formOptions)
+              if (workerForm && response.status === 409 && !retried) {
+                removePendingSubmission(submissionId)
+                submissionId = createSubmissionId()
+                submissionInput.value = submissionId
+                formData.set(submissionInputName, submissionId)
+                return post(true)
+              }
+              return response
+            }
             Promise.race([
-              fetch(action, formOptions),
+              post(false),
               new Promise((_resolve, reject) => {
                 formTimeout = setTimeout(() => {
                   formController?.abort()
                   reject(new Error('Submission timed out'))
-                }, 60000)
+                  // Uploads get extra time: ~100 KB/s on a slow connection.
+                }, 60000 + Math.round(fileBytes / 100))
               })
             ])
               .then(response => {
                 if (!response.ok) {
                   throw new Error('HTTP status ' + response.status)
                 }
-                return googleScript ? response.json() : response
+                return durable ? response.json() : response
               })
               .then(data => {
-                if (googleScript && !isPersistedSubmission(data, submissionId)) {
+                if (durable && !isPersistedSubmission(data, submissionId, workerForm)) {
                   throw new Error(data.message || 'Unknown error, data: ' + JSON.stringify(data))
                 }
-                if (googleScript) {
+                if (durable) {
                   removePendingSubmission(submissionId)
                   submissionInput.remove()
                 }
                 formMessage.classList.add('form__submit--success')
                 formMessage.innerHTML = `<i class="icon icon--mat" part="check_circle"></i> ${closeIcon} ${formSubmitOk}`
-                formSubmited(form, googleScript ? data : null)
+                formSubmited(form, durable ? data : null)
                 // Reset
                 form.reset()
                 // Remove previews

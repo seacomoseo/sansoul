@@ -1,5 +1,7 @@
 # base
 cms: Gestor de Contenidos
+forms_panel: Formularios
+forms_loading: Cargando…
 login: Iniciar sesión
 recent: Contenido reciente de
 def: Por defecto
@@ -285,6 +287,7 @@ config_main_org_hint: Ruta interna hacia la página \n **Ejemplo →** supplier/
 config_html: HTML Personalizado
 config_html_head: Antes de </head>
 config_html_body: Antes de </body>
+config_cms_repo: Repositorio GitHub del CMS (opcional; por defecto owner/domain)
 config_cms_logo: CMS Logo
 config_cms_lang: CMS Idioma
 config_cms_editorial: CMS Flujo Editorial
@@ -869,7 +872,9 @@ dots_singular: Botón de Punto
 dots_hint: Botones con enlaces hacia Redes Sociales y otros
 form: Formulario
 form_action: Acción
-form_action_hint: Acción que se ejecuta al enviar el formulario
+form_account: Cuenta de envío
+form_account_hint: Referencia de la credencial del proyecto con la que se envía este formulario (backend Worker). Vacío usa la cuenta por defecto del proyecto.
+form_action_hint: Acción que se ejecuta al enviar el formulario. `worker` usa el backend propio del proyecto (/api/forms/submit)
 form_to: Destino
 form_to_hint: URL de la página que se abrirá si el formulario se envía correctamente
 form_subject: Asunto
@@ -1624,3 +1629,13 @@ form_ajax_hint: >-
 
 config_imgs_remote: Servir imágenes externas desde este dominio
 config_imgs_remote_hint: Descarga durante la compilación las imágenes HTTP(S) usadas por el sistema de medios. Procesa los formatos raster compatibles como locales y publica SVG como imagen externa segura. Si falla la descarga, conserva la URL original y muestra un aviso. Desactivado por defecto.
+
+page_sku_hint: SKU comercial único y estable; no lo derives del título ni lo cambies después de asignarlo.
+page_commerce_id: ID de comercio
+page_commerce_id_hint: UUID estable asignado por la herramienta de productos del proyecto; no lo cambies después de publicarlo.
+page_commerce_active: Disponible en el carrito
+page_commerce_active_hint: Habilita los controles del carrito, pero no autoriza cobros.
+page_commerce_quote: Solo presupuesto
+page_commerce_weight_kg: Peso embalado (kg)
+page_commerce_weight_kg_hint: Peso del producto ya embalado para enviarlo solo. Si falta, el pedido va a presupuesto cuando el envío tiene límite de peso.
+page_commerce_quote_hint: Muestra una solicitud de presupuesto en lugar de añadir el producto al carrito.

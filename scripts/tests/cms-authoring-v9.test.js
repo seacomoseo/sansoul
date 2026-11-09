@@ -53,7 +53,7 @@ test('CMS media inheritance, custom i18n and config visual groups retain flat st
   assert.deepEqual(groups.google.map(field => field['<<']), ['~config_ga4', '~config_g_site_verify', '~config_g_file_verify', '~config_g_translate'])
   assert.deepEqual(groups.locale.map(field => field['<<']), ['~config_phone_code', '~config_time_zone', '~config_currency'])
   assert.deepEqual(groups.images.map(field => field.name), ['imgs_webp', 'imgs_remote', 'imgs_quality', 'imgs_dpr'])
-  assert.deepEqual(groups.cms.map(field => field.name), ['cms_logo', 'cms_lang', 'cms_editorial', 'cms_hide'])
+  assert.deepEqual(groups.cms.map(field => field.name), ['cms_repo', 'cms_logo', 'cms_lang', 'cms_editorial', 'cms_hide'])
   assert.deepEqual(groups.site.map(field => field.name), ['favicon', 'lang_main_subdir', 'cookies_legal', 'ga4_pagespeed_hide', 'dev', 'show'])
   const imageField = name => groups.images.find(field => field.name === name)
   assert.equal(imageField('imgs_quality').min, 1)

@@ -109,6 +109,7 @@ Use `{{CORE_PATH}}/_examples/data/section/example.yml` as the parameter catalog 
 - `data/customs.yml`: custom CMS fields consumed through `get`.
 - `data/remote.yml`: remote content created as virtual pages by the main content adapter; preserve determinism and handle network failure.
 - `data/redirects.yml`: redirect rules.
+- `data/commerce.yml`: optional commerce. Absent or `enabled: false` emits no commerce UI or assets. Never enable checkout approval or real payments without explicit merchant approval; see `core/README-ROOT.md#comercio-opt-in`.
 
 ## CMS contract
 

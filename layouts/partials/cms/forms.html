@@ -1,0 +1,30 @@
+{{- /*
+Partial: cms/forms
+Purpose: Forms panel of the project (/admin/forms/), shown inside Sveltia CMS as a custom page.
+Context: page.
+Renders: A standalone HTML page. Data comes from /api/forms/admin/* with the GitHub session of the CMS.
+*/ -}}
+{{- $t        := partial "func/i18n-cms" . -}}
+{{- $lang_cms := partial "func/lang-cms" . -}}
+{{- $config   := index (where hugo.Data.langs "lang" $lang_cms) 0 -}}
+{{- $css := resources.Get "css/forms-panel.css" | minify -}}
+{{- $css = partial "func/publish-content-resource" (dict "resource" $css "target" "css/forms-panel.css") -}}
+{{- $opts := dict "minify" true "targetPath" "js/forms-panel.js" "format" "iife" -}}
+{{- $js := resources.Get "js/forms-panel/index.js" | js.Build $opts -}}
+{{- $js = partial "func/publish-content-resource" (dict "resource" $js "target" "js/forms-panel.js") -}}
+<!doctype html>
+<html lang="{{ $lang_cms }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src https://cdn.jsdelivr.net; base-uri 'none'; form-action 'none'">
+  <title>{{ $t.forms_panel | default "Formularios" }} · {{ $config.title }}</title>
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  <script src="{{ $js.RelPermalink }}" defer></script>
+</head>
+<body>
+  <main id="app" aria-live="polite" aria-busy="true"><div class="loader" role="status"><span class="spinner" aria-hidden="true"></span><span class="sr-only">{{ $t.forms_loading | default "Cargando…" }}</span></div></main>
+</body>
+</html>

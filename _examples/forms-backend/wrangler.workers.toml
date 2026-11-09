@@ -1,0 +1,41 @@
+# Workers Free only. Placeholder IDs: replace after review, never in this example.
+name = "site"
+main = "worker.js"
+compatibility_date = "2025-12-10"
+workers_dev = true
+preview_urls = false
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = ["/api/forms/*"]
+not_found_handling = "404-page"
+
+[vars]
+# `hold` stores submissions without sending (previews). Production default:
+# FORMS_PROVIDER = "gmail" and FORMS_GMAIL_DEFAULT = "sansoulsend". Totals over
+# 2 MB go to the sender's Drive unless FORMS_DRIVE = "false".
+FORMS_PROVIDER = "hold"
+FORMS_SENDER_NAME = "Example"
+# FORMS_GMAIL_DEFAULT = "sansoulsend"
+# FORMS_DRIVE = "false"
+# FORMS_DRIVE_FOLDER = "<folder id the OAuth client can write to>"
+# Secrets: FORMS_ADMIN_TOKEN and FORMS_GMAIL_CREDENTIALS, the latter loaded with
+# core/forms/scripts/gmail-credentials.js (see core/forms/README.md).
+
+# One D1 and one KV per project: never shared with another site (the tables
+# carry no site column; the panel warns when it finds another site's data).
+[[d1_databases]]
+binding = "FORMS_DB"
+database_name = "forms-example"
+database_id = "00000000-0000-0000-0000-0000000000f1"
+migrations_dir = "core/forms/migrations"
+
+[[kv_namespaces]]
+binding = "FORMS_FILES"
+id = "000000000000000000000000000000f2"
+
+# Optional retry drain. Free accounts have few cron triggers; the admin
+# endpoint POST /api/forms/admin/dispatch does the same from a scheduled Action.
+# [triggers]
+# crons = ["*/15 * * * *"]

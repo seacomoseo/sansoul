@@ -162,6 +162,10 @@ export function formValid (form) {
   //   }
   // })
 
+  // Size limits: GAS defaults, or the ones a Worker form declares (core/forms)
+  const fileMaxBytes = Number(form.dataset?.fileMax) || 3 * 1024 * 1024
+  const filesMaxBytes = Number(form.dataset?.filesMax) || 4 * 1024 * 1024
+  const megabytes = bytes => String(Math.round(bytes / 1024 / 1024))
   // Size Total for formErrorFileSizeTotal
   let counterTotalSize = 0
   form.querySelectorAll('.form__file [type="file"]').forEach(input => {
@@ -170,14 +174,14 @@ export function formValid (form) {
     input.closest('.form__item').querySelectorAll('.form__preview :is(input, textarea)').forEach(inputPreview => {
       const size = inputPreview.dataset.size
       counterTotalSize += parseInt(size)
-      if (size > 3 * 1024 * 1024) {
+      if (size > fileMaxBytes) {
         // setItemStyle(input, true)
         inputPreview.parentElement.style.setProperty('--text', 'var(--submit-error)')
         tooBig = true
       }
     })
     if (tooBig) {
-      addMessage(formErrorFileSize, input.dataset.placeholder)
+      addMessage(formErrorFileSize.replace('{s}', megabytes(fileMaxBytes)), input.dataset.placeholder)
     }
 
     // File Length
@@ -203,8 +207,8 @@ export function formValid (form) {
   })
 
   // FileSizeTotal
-  if (counterTotalSize > 4 * 1024 * 1024) {
-    addMessage(formErrorFileSizeTotal)
+  if (counterTotalSize > filesMaxBytes) {
+    addMessage(formErrorFileSizeTotal.replace('{s}', megabytes(filesMaxBytes)))
     form.classList.add('form--error-files-total-size')
   } else {
     form.classList.remove('form--error-files-total-size')

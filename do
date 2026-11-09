@@ -287,18 +287,30 @@ elif [ "$COMMAND" = hugo-development ]; then
 
   # remove cache directories
   rm -rf public resources
+  # Commerce adapters opt in to the private catalog; other projects skip it.
+  if [ -d ./functions/api ]; then node "$CORE_DIR/commerce/scripts/build-catalog.js"; fi
 
   hecho "RUN HUGO DEVELOPMENT"
   hugo --gc --buildFuture --environment development --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
+  # Worker forms publish their policies in public/_forms; keep them out of assets.
+  if [ -d public/_forms ] || [ -f worker/forms.generated.js ]; then
+    node "$CORE_DIR/forms/scripts/build-manifest.js" || { rm -rf public/_forms; exit 1; }
+  fi
 
 # Hugo build as production environement
 elif [ "$COMMAND" = hugo-production ]; then
 
   sh do rm-public
   sh do prebuild
+  # Commerce adapters opt in to the private catalog; other projects skip it.
+  if [ -d ./functions/api ]; then node "$CORE_DIR/commerce/scripts/build-catalog.js"; fi
 
   hecho "RUN HUGO PRODUCTION"
   hugo --config "$CORE_PATH/hugo.default.yml,$CORE_PATH/hugo.production.yml,$CORE_PATH/prebuild/public/hugo.prebuild.yml,hugo.yml"
+  # Worker forms publish their policies in public/_forms; keep them out of assets.
+  if [ -d public/_forms ] || [ -f worker/forms.generated.js ]; then
+    node "$CORE_DIR/forms/scripts/build-manifest.js" || { rm -rf public/_forms; exit 1; }
+  fi
 
   sh do imgs
   # sh do multilang

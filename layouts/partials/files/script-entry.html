@@ -1,7 +1,7 @@
 {{/*
 Partial: files/script-entry
 Purpose: Create a deterministic whole-module entry for the production batch or complete build.
-Context: Map with opts, usage, show and cookies.
+Context: Map with opts, usage, show, cookies and commerce.
 Returns: Resource, build options and content/options signature.
 Side effects: Creates a virtual entry. Selective entries share global params; page SVG URLs stay in full integrations only.
 */}}
@@ -38,6 +38,7 @@ Side effects: Creates a virtual entry. Selective entries share global params; pa
 {{ range slice
   (dict "path" "scroll-show" "enabled" (and .show (or $usage.full $usage.flags.show)) "function" "initScrollShow")
   (dict "path" "cookies" "enabled" (and .cookies (or $usage.full $usage.flags.cookies)) "function" "initCookies")
+  (dict "path" "commerce" "enabled" (and .commerce (or $usage.full $usage.flags.commerce)) "function" "initCommerce")
 }}
   {{ if .enabled }}
     {{ if strings.Contains $source "  window.__sansoulInitialized = true" }}

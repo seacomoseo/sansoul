@@ -1,0 +1,722 @@
+@use "variables" as *;
+@use "mixins";
+
+// Commerce UI: header cart button, cart drawer, cart page and product purchase box.
+// Local tokens keep the component consistent and easy to retheme.
+:is(.commerce, .commerce__cart-page, .commerce__product-actions) {
+  --c-radius: .625rem;
+  --c-line: color-mix(in srgb, #{$text} 12%, transparent);
+  --c-muted: color-mix(in srgb, #{$text} 62%, transparent);
+  --c-soft: color-mix(in srgb, #{$light} 70%, #{$white});
+  --c-control: 2.75rem;
+}
+
+.commerce [hidden],
+.commerce__cart-page [hidden],
+.commerce__product-actions[hidden] {
+  display: none !important;
+}
+
+
+// HEADER BUTTON
+// Mirrors the floating menu toggle: same size, same row, just to its left.
+
+.commerce__cart-trigger {
+  position: fixed;
+  z-index: 220;
+  top: .75em;
+  right: 4.5em;
+  --pin-size: 1.5em;
+  transition: top .3s, filter .3s;
+  > .icon {
+    max-width: none;
+  }
+}
+
+.body-menu--logo:not(.body-menu--sticky--active) {
+  .commerce__cart-trigger {
+    top: .375em;
+  }
+  &.body-top,
+  &.body-menu--clear:not(.body-menu--logo--sticky) {
+    .commerce__cart-trigger {
+      top: calc(var(--menu-py) - .375em);
+    }
+  }
+}
+
+// No menu toggle (menu hidden or empty): the cart takes the corner, and the logo
+// reserves the cart's width with the same fluid curve the theme uses for the toggle.
+body:not(:has(.menu__toggle)) .commerce__cart-trigger {
+  right: 1em;
+}
+.body-menu--logo:not(:has(.menu__toggle)):has(.commerce__cart-trigger) .logo {
+  @include mixins.fluid-size(--margin-cart-right, 1em, 4, 0);
+  @media (min-width: 540px) {
+    --margin-cart-right: 0em;
+  }
+  padding-right: var(--margin-cart-right, 4em);
+  &:has(> .align-right) {
+    padding-right: 4em;
+  }
+}
+
+// Floating logo: the theme reserves the toggle's 4em on the right (--margin-toggle-right,
+// fluid down to 0 on wide screens). The floating cart adds 3.5em more on the same curve,
+// so a centred logo stays centred in the space left by both buttons. Conditioned on the
+// button's existence (not its JS-revealed state) to avoid a layout shift on load.
+.body-menu--logo:not(.body-menu--sticky--active):has(.menu__toggle):has(.commerce__cart-trigger) .logo:has(~ .menu) {
+  padding-right: calc(var(--margin-toggle-right, 4em) * 1.875);
+  &:has(> .align-right) {
+    padding-right: 7.5em;
+  }
+}
+
+// Horizontal menu: commerce.js moves the button into this slot, at the end of the row.
+// The slot also reserves its width while the theme measures whether the menu fits.
+.menu__item--cart {
+  display: none;
+}
+.body-menu--sticky--active .menu .menu__item--cart,
+.body-menu--sticky--calculate .menu .menu__item--cart {
+  display: flex;
+  align-items: center;
+  // Item padding (.5em each side) + 2.5em button: same width empty (measuring) and filled.
+  min-width: 3.5em;
+}
+// The slot is now the last item: keep the previous last dropdown aligned to the right edge.
+.body-menu--sticky--active .menu .menu__item--subitems:has(+ .menu__item--cart) .menu__subitems {
+  right: 0;
+}
+.commerce__cart-trigger--inline {
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: auto;
+  // Match the height of menu buttons so the compact (scrolled) bar keeps its size.
+  width: 2.5em;
+  height: 2.5em;
+  margin: .306em 0;
+  padding: .375em;
+  --pin-size: 1.25em;
+  // The compact bar sits flush with the viewport top: keep the badge below the button edge.
+  .commerce__badge {
+    top: auto;
+    bottom: -.35rem;
+  }
+}
+
+.commerce__badge {
+  position: absolute;
+  z-index: 1;
+  top: -.4rem;
+  right: -.4rem;
+  box-sizing: border-box;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 .3rem;
+  border-radius: 1rem;
+  color: var(--main-in);
+  background-color: var(--main);
+  box-shadow: 0 0 0 2px #{$white};
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1.375rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.commerce__cart-trigger--bump .commerce__badge {
+  animation: commerce-bump .45s cubic-bezier(.3, 1.6, .5, 1);
+}
+
+@keyframes commerce-bump {
+  0% { transform: scale(.4); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+
+// DRAWER
+
+html:has(.commerce__drawer[open]) {
+  overflow: hidden;
+}
+
+.commerce__drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  box-sizing: border-box;
+  width: min(27rem, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: $text;
+  background: $white;
+  border: 0;
+  box-shadow: -1rem 0 3rem rgb(0 0 0 / .18);
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), overlay .3s allow-discrete, display .3s allow-discrete;
+  &[open] {
+    transform: none;
+    @starting-style {
+      transform: translateX(100%);
+    }
+  }
+  &::backdrop {
+    background-color: rgb(0 0 0 / 0);
+    transition: background-color .3s, overlay .3s allow-discrete, display .3s allow-discrete;
+  }
+  &[open]::backdrop {
+    background-color: rgb(0 0 0 / .5);
+    @starting-style {
+      background-color: rgb(0 0 0 / 0);
+    }
+  }
+}
+
+.commerce__panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.commerce__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.commerce__title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.commerce__title-count {
+  color: var(--c-muted);
+  font-size: .7em;
+  font-weight: 400;
+}
+
+.commerce__icon-btn {
+  display: grid;
+  place-items: center;
+  width: var(--c-control);
+  height: var(--c-control);
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background-color .15s;
+  &:hover,
+  &:focus-visible {
+    background-color: var(--c-soft);
+  }
+}
+
+.commerce__body {
+  flex: 1;
+  min-height: 0;
+  padding: .5rem 1.5rem 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.commerce__foot {
+  padding: 1rem 1.5rem calc(1rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--c-line);
+  background: $white;
+  box-shadow: 0 -.75rem 1.5rem rgb(0 0 0 / .05);
+}
+
+
+// STATUS AND EMPTY STATE
+
+.commerce__status {
+  margin: 1rem 0 0;
+  padding: .75rem 1rem;
+  border-radius: var(--c-radius);
+  border-inline-start: .25rem solid $cta;
+  background-color: color-mix(in srgb, #{$cta} 16%, #{$white});
+  font-size: .925rem;
+  line-height: 1.4;
+}
+
+.commerce__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  p {
+    margin: 0;
+    color: var(--c-muted);
+  }
+}
+
+.commerce__empty-icon {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background-color: var(--c-soft);
+  color: var(--c-muted);
+  font-size: 2.5rem;
+}
+
+
+// LINES
+
+:is(.commerce, .commerce__cart-page) .commerce__lines {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  > .commerce__line {
+    display: grid;
+    grid-column: auto;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0 1rem;
+    margin: 0;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--c-line);
+    &::before {
+      content: none;
+    }
+  }
+}
+
+.commerce__thumb {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--c-radius);
+  background-color: var(--c-soft);
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.commerce__line-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .25rem;
+  min-width: 0;
+}
+
+.commerce__line-name {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--title);
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  &[href]:hover {
+    text-decoration: underline;
+  }
+}
+
+.commerce__line-unit {
+  color: var(--c-muted);
+  font-size: .875rem;
+}
+
+.commerce__line-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .75rem;
+  margin-top: .5rem;
+}
+
+.commerce__line-total {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.commerce__remove {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  min-height: 2.25rem;
+  padding: 0 .25rem;
+  color: var(--c-muted);
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: .875rem;
+  cursor: pointer;
+  .icon {
+    font-size: 1.125rem;
+  }
+  &:hover,
+  &:focus-visible {
+    color: $main;
+    text-decoration: underline;
+  }
+}
+
+
+// QUANTITY STEPPER
+
+.commerce__stepper {
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  height: 2.5rem;
+  border: 1px solid color-mix(in srgb, #{$text} 22%, transparent);
+  border-radius: 2rem;
+  background: $white;
+  .commerce__step {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    padding: 0;
+    color: inherit;
+    background: none;
+    border: 0;
+    border-radius: 2rem;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: background-color .15s;
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background-color: var(--c-soft);
+    }
+    &:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+    }
+  }
+  .commerce__stepper-input {
+    width: 2.25rem;
+    height: auto;
+    padding: 0;
+    border: 0;
+    font-weight: 600;
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      margin: 0;
+      -webkit-appearance: none;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--main);
+      outline-offset: -2px;
+    }
+  }
+}
+
+
+// DESTINATION AND SUMMARY
+
+.commerce__destination {
+  margin: 1.5rem 0 1rem;
+  padding: 1rem;
+  border-radius: var(--c-radius);
+  background-color: var(--c-soft);
+}
+
+.commerce__label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0 0 .75rem;
+  font-weight: 600;
+  .icon {
+    font-size: 1.25rem;
+    color: $main;
+  }
+}
+
+.commerce__destination-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: .5rem;
+}
+
+.commerce__field {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 0;
+  > span {
+    color: var(--c-muted);
+    font-size: .8125rem;
+  }
+  :is(input, select) {
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--c-control);
+    padding: 0 .875rem;
+    border: 1px solid color-mix(in srgb, #{$text} 22%, transparent);
+    border-radius: calc(var(--c-radius) * .8);
+    background-color: $white;
+    font: inherit;
+    &:focus {
+      border-color: var(--main);
+      box-shadow: 0 0 0 3px color-mix(in srgb, #{$main} 20%, transparent);
+    }
+  }
+  select {
+    padding-right: 2rem;
+  }
+}
+
+.commerce__field--postal {
+  flex: 1 1 7rem;
+}
+
+.commerce__field--country {
+  flex: 1 1 9rem;
+}
+
+.commerce__quote-btn {
+  min-height: var(--c-control);
+  &[aria-busy] {
+    cursor: progress;
+  }
+}
+
+.commerce__summary {
+  margin: 0;
+  > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .375rem 0;
+  }
+  dt {
+    color: var(--c-muted);
+  }
+  dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    &[data-pending] {
+      color: var(--c-muted);
+      font-size: .875rem;
+      font-style: italic;
+    }
+  }
+}
+
+
+// CHECKOUT BLOCK (drawer footer and cart page aside)
+
+.commerce__total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  strong {
+    color: var(--title);
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    &[data-pending] {
+      color: var(--c-muted);
+      font-size: 1.125rem;
+      font-weight: 400;
+    }
+  }
+}
+
+.commerce__hint,
+.commerce__checkout-note {
+  margin: 0 0 .75rem;
+  color: var(--c-muted);
+  font-size: .8125rem;
+  line-height: 1.4;
+}
+
+.commerce__checkout-note {
+  margin: .75rem 0 0;
+  text-align: center;
+}
+
+.commerce__checkout {
+  display: flex;
+  width: 100%;
+  min-height: 3.25rem;
+  font-size: 1.0625rem;
+  &[aria-busy] {
+    cursor: progress;
+  }
+}
+
+.commerce__quote {
+  margin: 0 0 .75rem;
+  .btn {
+    width: 100%;
+  }
+}
+
+.commerce__text-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  min-height: 2.5rem;
+  margin-top: .25rem;
+  color: inherit;
+  font-size: .9375rem;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+
+// CART PAGE
+
+.commerce__cart-page {
+  text-align: left;
+  // The page already shows its own H1; keep this heading for assistive tech only.
+  > .commerce__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .commerce__text-link {
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+}
+
+.commerce__cart-aside {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: var(--c-radius);
+  background-color: var(--c-soft);
+  .commerce__destination {
+    margin-top: 0;
+    background-color: $white;
+  }
+  .commerce__summary {
+    margin-bottom: 1rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--c-line);
+  }
+}
+
+@media (min-width: 60rem) {
+  .commerce__cart-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    align-items: start;
+    gap: 3rem;
+  }
+  .commerce__cart-aside {
+    position: sticky;
+    top: 6rem;
+    margin-top: 0;
+  }
+}
+
+
+// PRODUCT PURCHASE BOX
+// Listing cards: one full-width button (quantity 1). Product hero: stepper + button.
+
+.commerce__product-actions {
+  display: flex;
+  align-self: stretch;
+  width: 100%;
+  margin-top: .75rem;
+  .commerce__stepper {
+    display: none;
+  }
+  .commerce__add {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.section--hero .commerce__product-actions {
+  width: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  margin-block: 1.25rem .5rem;
+  .commerce__stepper {
+    display: inline-flex;
+    height: 3rem;
+  }
+  .commerce__add {
+    flex: 0 1 auto;
+    min-height: 3rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  // Fallback buy box (hero without a price block) renders beside the container:
+  // stack it under the hero content on phones.
+  .type-product .section--hero:has(> .commerce__product-actions) {
+    flex-direction: column;
+    > .container {
+      width: 100%;
+    }
+  }
+  .section--hero .commerce__product-actions .commerce__add {
+    flex: 1;
+  }
+  // Icon-only remove on phones; the button keeps its full aria-label.
+  .commerce__remove {
+    min-width: 2.5rem;
+    justify-content: center;
+    span {
+      display: none;
+    }
+    .icon {
+      font-size: 1.375rem;
+    }
+  }
+  :is(.commerce, .commerce__cart-page) .commerce__lines > .commerce__line {
+    grid-template-columns: 4rem minmax(0, 1fr) auto;
+    gap: 0 .75rem;
+  }
+  .commerce__head {
+    padding-left: 1.25rem;
+  }
+  .commerce__body,
+  .commerce__foot {
+    padding-inline: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commerce__drawer,
+  .commerce__drawer::backdrop,
+  .commerce__cart-trigger {
+    transition: none;
+  }
+  .commerce__cart-trigger--bump .commerce__badge {
+    animation: none;
+  }
+}

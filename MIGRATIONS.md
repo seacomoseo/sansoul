@@ -42,6 +42,103 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 13.7.0 — 2026-11-09 — formularios con backend propio
+
+**Impacto:** ninguno para formularios existentes. GAS, FormSubmit y acciones
+propias conservan su HTML y su JS. Aplica solo a formularios que elijan
+`action: worker` (o `inputs.action: worker` en `data/styles.yml`).
+
+### Qué incorpora
+
+- `core/forms/`: recepción same-origin en `POST /api/forms/submit` del Worker
+  del proyecto, política en servidor generada en el build (`worker/forms.generated.js`),
+  recibo durable `accepted`/`review` en D1, adjuntos temporales en KV, entrega
+  con lease/fencing y proveedor Gmail con cuenta por proyecto o por formulario
+  (`form.account`, campo CMS nuevo). Contrato en `core/forms/README.md`.
+- Archivos por subida raw (`POST /api/forms/upload`, uno por archivo, directo a
+  KV sin parsear ni hashear en el Worker); el envío solo lleva texto y
+  referencias. Hasta 20 MB por archivo y 25 MB por envío: si el total pasa de
+  1 MB, va al Drive de la cuenta remitente (`Forms/<proyecto>/<formulario>/`,
+  scope `drive.file`) con enlace en el correo; si no, adjunto. `FORMS_DRIVE =
+  "false"` desactiva Drive (2 MB por envío). Migración `0002_files.sql`.
+- Mensajes `form_error_file_size(_total)` con `{s}` (MB) en los seis idiomas; el
+  JS usa 3/4 MB salvo que el formulario declare `data-file-max`/`data-files-max`.
+  Un consumidor que haya sobrescrito esos textos con la cifra fija la conserva.
+- Cuenta por defecto de SanSoul `sansoulsend@gmail.com`, cargada como
+  configuración (`FORMS_GMAIL_DEFAULT` + secreto) con
+  `forms/scripts/gmail-credentials.js`, que nunca imprime valores.
+- Ejemplo `_examples/forms-backend/` (Worker + `wrangler.workers.toml`, Free).
+- Panel de formularios en `/admin/forms/` (página «Formularios» del CMS vía
+  `CMS.registerCustomPage`, solo si el Worker responde `/api/forms/admin/*`).
+  Autoriza con la sesión GitHub del CMS (permiso de escritura en `cms_repo`).
+  Tablas con orden, filtros, grupos y búsqueda en D1, borrado por lotes y CSV/ZIP.
+  Retención opcional `FORMS_RETENTION_DAYS`. Migraciones `0003_panel.sql` (índice
+  y tabla `forms_meta`; sin ella el panel funciona, sin el aviso de D1 compartida)
+  y `0004_forms_index.sql` (índice por formulario).
+- `scripts/update.js` registra 13.6.0 y 13.7.0 (13.6.0 faltaba en la política
+  del actualizador).
+
+### Acciones para adoptarlo (opcionales)
+
+1. Copiar el ejemplo, crear D1 y KV **propios del proyecto** (no compartidos
+   con otra web) y aplicar `core/forms/migrations`; añadir
+   `worker/forms.generated.js` a `.gitignore`.
+2. Configurar `FORMS_PROVIDER` (`hold` o `gmail`), los secretos
+   `FORMS_GMAIL_CREDENTIALS`/`FORMS_ADMIN_TOKEN` y `FORMS_GMAIL_DEFAULT`
+   (Drive activo salvo `FORMS_DRIVE = "false"`; opcional `FORMS_DRIVE_FOLDER`).
+3. Marcar los formularios con `action: worker` y comprobar en el build que
+   `public/_forms/` no existe y el manifiesto lista sus destinatarios.
+
+**Validación:** `pnpm run test:forms` en `core/`; envío de prueba en local con
+`FORMS_PROVIDER = "hold"` y recibo `accepted`. El puente GAS sigue vigente
+hasta migrar cada proyecto; mover el frontend no copia su deduplicación.
+
+
+## 13.6.0 — 2026-11-09 — comercio opt-in
+
+**Impacto:** ninguno para proyectos sin `data/commerce.yml` o con
+`enabled: false` y sin adaptadores: no se insertan UI, JS, CSS ni rutas de
+comercio. Aplica solo a consumidores que adopten el comercio, incluidos los que
+traían las ramas locales 7.1.0/8.0.0 de comercio (nunca publicadas en `main`).
+
+### Qué incorpora
+
+- Catálogo, carrito, ficha de compra y página `commerce-cart`, activados con
+  `data/commerce.yml` `enabled: true`. Campos CMS ES/EN `commerce_id`,
+  `commerce_active`, `commerce_quote` y `commerce_weight_kg` (visibles solo con
+  comercio activo). El JS y el CSS de comercio entran en el pipeline selectivo
+  de producción como componente `commerce`.
+- Backend reutilizable en `core/commerce/` (checkout, totales y destinos
+  cotizados en servidor, webhook Stripe, estado privado del comprador,
+  administración, outbox con consumo `claim/ack`, mantenimiento acotado) con
+  ejemplos Workers y Pages en `core/_examples/commerce-backend/`.
+- `cms_repo` opcional en `data/config.yml` para separar el repositorio del CMS
+  de `owner/domain`.
+
+### Acciones al adoptar comercio
+
+1. Sigue [Comercio opt-in](README-ROOT.md#comercio-opt-in): identidades UUID/SKU
+   estables, `data/commerce.yml`, página `single/carrito` y backend copiado del
+   ejemplo con las rutas `core/…`.
+2. Base D1 aprobada y respaldada: aplica una vez y en orden
+   `core/commerce/migrations/0001`–`0006`. Quien venga de 8.0.0 local ya tiene
+   `0005`/`0006`; quien venga de 7.1.0 aplica solo las que falten. Ningún build
+   aplica migraciones remotas.
+3. Callers de mantenimiento: `reconcile` procesa un elemento por llamada y clase
+   (`operation=expiration|orders|unmatched_webhooks`; sin parámetro, `orders`);
+   `dispatch` devuelve `has_more` booleano en lugar del contador `pending`.
+   Programa las clases por turnos con límite de llamadas, sin bucles de drenaje.
+4. Mantén `checkout_approved: false` y `COMMERCE_CHECKOUT_APPROVED=false` hasta la
+   aprobación comercial (impuestos, envío, legal). El proveedor `fake` solo vale
+   con fixtures sintéticas en `test`.
+
+### Validación
+
+Desde `core/`: `pnpm run test:commerce` (unitarias y routing) y
+`pnpm run test:commerce:workers` (workerd + D1 local; varios minutos). En el
+consumidor: `sh do build`, CMS ES/EN con los campos opcionales, carrito, ficha
+y regresión sin comercio (divisores). El pass local no certifica CPU Free cloud.
+
 ## 13.5.0 — 2026-11-07
 
 **Impacto:** todos los proyectos. `sh do update` normaliza ahora, sin pasos

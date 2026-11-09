@@ -31,8 +31,22 @@ El ejemplo presupone que el proyecto dispone de los recursos habituales de la pl
 - `data/types/example.yml`: ejemplo funcional de un tipo y referencia comentada de sus parámetros disponibles.
 - `data/config.yml`, `data/langs.yml`, `data/styles.yml`, `data/defaults.yml`, `data/customs.yml` y `data/remote.yml`: esquemas orientativos de configuración.
 - los demás archivos de `data/types/` y `content/`: ejemplos semánticos de colecciones y schema.org.
+- [`commerce-backend/`](commerce-backend/README.md): backend de comercio opt-in aislado (Worker o Pages Functions); no se copia con los datos y el contenido generales ni incluye UI o productos.
 
 Los comentarios `# [ ... ]` enumeran valores habituales, pero el generador del CMS y el código del tema son la autoridad cuando discrepen. Tras una compilación, consulta `public/admin/config.<hash>.yml` para ver el esquema efectivo.
+
+## Comercio opt-in
+
+El sitio general no activa comercio. El ejemplo `commerce-backend/` activa el
+backend (`enabled: true`, `functions_enabled: true`) sin productos ni datos
+comerciales ficticios; el modo solo API es `enabled: false` con
+`functions_enabled: true`. Para probar UI sobre un consumidor que ya tenga
+productos con UUID/SKU válidos, sigue [catálogo y carrito](../README-ROOT.md#catálogo-carrito-e-identidades),
+usa `enabled: true` y conserva `checkout_approved: false`. Copia el ejemplo de
+`single/carrito.<lang>.md` con `commerce-cart` para ES/EN; no hace falta una plantilla
+propia. Comprueba acciones, panel, página y campos opcionales del CMS en ambos
+idiomas. No copies el registro de identidades de otra tienda ni lo publiques como
+asset. Mantén el ejemplo/divisores sin comercio como regresión independiente.
 
 ## Reglas de mantenimiento
 
