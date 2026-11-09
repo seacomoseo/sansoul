@@ -222,4 +222,22 @@ describe('panel actions', () => {
     await bindings.db.prepare("UPDATE forms_jobs SET last_error = 'discarded' WHERE submission_id = ?").bind(failed).run()
     assert.equal((await call('retention', { method: 'POST' })).body.deleted, 1)
   })
+
+  test('table view: forms with counts, and one form\'s submissions with their fields', async () => {
+    const first = await send([['Nombre', 'Ana'], ['Email', 'ana@example.org']], footer)
+    clock += 1000
+    const second = await send([['Nombre', 'Luis'], ['Teléfono', '600'], ['Mensaje', 'x'.repeat(500)]], footer)
+    clock += 1000
+    await send([['Email', 'otro@example.org']], { page: '/es/contacto/', form: 'form-contacto' })
+    const forms = (await call('forms')).body.forms
+    assert.equal(forms.length, 2)
+    assert.equal(forms[0].form, '/es/contacto/#form-contacto')
+    assert.equal(forms.find(entry => entry.form === '/es/#form-footer').total, 2)
+    const rows = (await call(`submissions?view=all&form=${encodeURIComponent('/es/#form-footer')}`)).body.items
+    assert.deepEqual(rows.map(row => row.id), [second, first])
+    assert.deepEqual(rows[1].fields, [['Nombre', 'Ana'], ['Email', 'ana@example.org']])
+    assert.equal(rows[0].fields.find(([name]) => name === 'Mensaje')[1].length, 300)
+    assert.equal((await call('submissions?view=all')).body.items.every(row => row.fields === undefined), true)
+    assert.equal((await call('forms', { auth: `Bearer ${ADMIN_TOKEN}` })).status, 403)
+  })
 })

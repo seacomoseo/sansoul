@@ -25,6 +25,6 @@ Renders: A standalone HTML page. Data comes from /api/forms/admin/* with the Git
   <script src="{{ $js.RelPermalink }}" defer></script>
 </head>
 <body>
-  <main id="app" aria-live="polite"></main>
+  <main id="app" aria-live="polite" aria-busy="true"><div class="loader" role="status"><span class="spinner" aria-hidden="true"></span><span class="sr-only">{{ $t.forms_loading | default "Cargando…" }}</span></div></main>
 </body>
 </html>

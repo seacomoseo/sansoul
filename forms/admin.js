@@ -6,6 +6,7 @@ import { loadSubmission, requireDatabase, resolveHeld } from './store.js'
 
 const DAY_MS = 24 * 3600 * 1000
 const PAGE_SIZE = 50
+const CELL_MAX = 300
 // A positive GitHub check is reused for a few minutes per isolate (one
 // subrequest instead of one per panel call); denials are not cached.
 const GITHUB_TTL_MS = 5 * 60 * 1000
@@ -116,11 +117,13 @@ async function list (db, url) {
   const view = VIEWS[url.searchParams.get('view')] ? url.searchParams.get('view') : 'all'
   const [beforeTime, beforeId] = (url.searchParams.get('before') || '').split('|')
   const cursor = Number.isSafeInteger(Number(beforeTime)) && Number(beforeTime) > 0 && beforeId ? [Number(beforeTime), beforeId] : null
+  // One form (table view): its submissions carry their fields.
+  const form = (url.searchParams.get('form') || '').slice(0, 300) || null
   const rows = (await db.prepare(
     `SELECT s.id, s.form_key, s.page, s.status, s.fields, s.files, s.created_at FROM forms_submissions s
-     WHERE (${VIEWS[view]}) ${cursor ? 'AND (s.created_at < ?1 OR (s.created_at = ?1 AND s.id < ?2))' : ''}
+     WHERE (${VIEWS[view]}) ${form ? 'AND s.form_key = ?' : ''} ${cursor ? 'AND (s.created_at < ? OR (s.created_at = ? AND s.id < ?))' : ''}
      ORDER BY s.created_at DESC, s.id DESC LIMIT ${PAGE_SIZE + 1}`
-  ).bind(...(cursor || [])).all()).results
+  ).bind(...(form ? [form] : []), ...(cursor ? [cursor[0], cursor[0], cursor[1]] : [])).all()).results
   const page = rows.slice(0, PAGE_SIZE)
   const jobs = page.length
     ? (await db.prepare('SELECT submission_id, channel, state, last_error, attempts, updated_at FROM forms_jobs WHERE submission_id IN (SELECT value FROM json_each(?)) ORDER BY channel DESC')
@@ -136,6 +139,7 @@ async function list (db, url) {
       status: row.status,
       createdAt: row.created_at,
       preview: preview(parse(row.fields, [])),
+      ...(form ? { fields: parse(row.fields, []).map(([name, value]) => [String(name), String(value ?? '').slice(0, CELL_MAX)]) } : {}),
       files: parse(row.files, []).length,
       jobs: jobs.filter(job => job.submission_id === row.id).map(publicJob)
     })),
@@ -259,6 +263,10 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
   if (method === 'GET') {
     if (path === 'summary') return jsonResponse({ ...(await summary(db, env, now)), actor })
     if (path === 'submissions') return jsonResponse(await list(db, url))
+    if (path === 'forms') {
+      const forms = (await db.prepare('SELECT form_key, page, COUNT(*) AS total, MAX(created_at) AS last FROM forms_submissions GROUP BY form_key, page ORDER BY last DESC LIMIT 100').all()).results
+      return jsonResponse({ forms: forms.map(row => ({ form: row.form_key, page: row.page, total: row.total, last: row.last })) })
+    }
     if (submission && !submission[2]) return jsonResponse(await detail(db, submission[1]))
     if (submission?.[3] !== undefined) return download(db, kv, submission[1], Number(submission[3]))
     throw new FormsError('not_found', 404)

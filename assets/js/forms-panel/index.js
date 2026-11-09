@@ -54,6 +54,11 @@ const T = {
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'archivo' : 'archivos'}${p ? `, ${p} pendientes` : ''}.`,
     reasonsTitle: 'Motivos de revisión',
     openForm: 'Abrir el formulario en la web',
+    table: 'Tabla',
+    formLabel: 'Formulario',
+    csv: 'Descargar CSV',
+    noForms: 'Todavía no hay formularios con envíos.',
+    state: 'Estado',
     date: 'Fecha del envío',
     submissionId: 'Identificador del envío'
   },
@@ -99,6 +104,11 @@ const T = {
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'file' : 'files'}${p ? `, ${p} pending` : ''}.`,
     reasonsTitle: 'Review reasons',
     openForm: 'Open the form on the site',
+    table: 'Table',
+    formLabel: 'Form',
+    csv: 'Download CSV',
+    noForms: 'No forms with submissions yet.',
+    state: 'State',
     date: 'Submission date',
     submissionId: 'Submission ID'
   }
@@ -226,7 +236,7 @@ async function api (path, { method = 'GET', raw = false } = {}) {
   return body
 }
 
-const state = { view: null, summary: null, items: [], next: null, selected: null, detail: null, busy: false, message: null }
+const state = { forms: null, form: null, view: null, summary: null, items: [], next: null, selected: null, detail: null, busy: false, message: null }
 const app = document.getElementById('app')
 
 function icon (name) {
@@ -236,7 +246,7 @@ function icon (name) {
   node.textContent = name
   return node
 }
-const ICONS = { refresh: 'refresh', back: 'arrow_back', file: 'description', clip: 'attach_file', date: 'calendar_today', link: 'link', id: 'fingerprint' }
+const ICONS = { refresh: 'refresh', back: 'arrow_back', file: 'description', clip: 'attach_file', download: 'download', date: 'calendar_today', link: 'link', id: 'fingerprint' }
 
 function stateChip (job) {
   return h('span', { class: `chip chip-${job.state}${job.reason === 'review' ? ' chip-review' : ''}`, title: reasonText(job.reason) }, job.state === 'held' && job.reason === 'review' ? T.review : (STATES[job.state] || job.state))
@@ -257,13 +267,13 @@ function banners () {
 
 function toolbar () {
   const summary = state.summary
-  const tabs = ['all', 'attention', 'review'].map(view => h('button', {
+  const tabs = ['all', 'attention', 'review', 'table'].map(view => h('button', {
     type: 'button',
     role: 'tab',
     class: 'tab',
     'aria-selected': String(state.view === view),
     onclick: () => selectView(view)
-  }, T[view], view !== 'all' && summary[view] ? h('span', { class: 'badge' }, String(summary[view])) : null))
+  }, T[view], (view === 'attention' || view === 'review') && summary[view] ? h('span', { class: 'badge' }, String(summary[view])) : null))
   return h('header', { class: 'toolbar' },
     h('h1', {}, T.title),
     h('div', { class: 'tabs', role: 'tablist' }, tabs),
@@ -288,6 +298,56 @@ function listPane () {
       footer.sent24h.map(row => h('p', {}, T.sent24h(row.sent, row.account))),
       footer.drive.files ? h('p', {}, T.drive(footer.drive.files, footer.drive.pending)) : null,
       h('p', {}, T.retention(footer.retentionDays))))
+}
+
+// Columns are the union of the fields of the loaded submissions, in order of
+// first appearance: forms change over time, missing values show as a dash.
+function tableColumns () {
+  const columns = []
+  for (const item of state.items) for (const [name] of item.fields || []) if (!columns.includes(name)) columns.push(name)
+  return columns
+}
+
+function csvCell (value) {
+  // Values come from visitors: neutralize spreadsheet formulas.
+  const text = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+  return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
+}
+
+function downloadCsv () {
+  const columns = tableColumns()
+  const rows = [[T.date, ...columns, T.files, T.state], ...state.items.map(item => {
+    const values = new Map(item.fields || [])
+    const job = item.jobs.find(entry => entry.channel === 'owner') || item.jobs[0]
+    return [new Date(item.createdAt).toISOString(), ...columns.map(name => values.get(name) ?? ''), String(item.files), job ? (STATES[job.state] || job.state) : '']
+  })]
+  const url = URL.createObjectURL(new Blob(['\ufeff' + rows.map(row => row.map(csvCell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }))
+  const link = h('a', { href: url, download: `${(state.form || 'forms').split('#').pop()}.csv` })
+  document.body.append(link)
+  link.click()
+  link.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 30000)
+}
+
+function tablePane () {
+  if (!state.forms?.length) return h('section', { class: 'table-pane' }, h('p', { class: 'muted pad' }, T.noForms))
+  const columns = tableColumns()
+  const choose = h('select', { class: 'select', 'aria-label': T.formLabel, onchange: event => { state.form = event.target.value; state.next = null; load() } },
+    state.forms.map(entry => h('option', { value: entry.form, selected: entry.form === state.form }, `${entry.form.split('#')[1]} · ${entry.page} (${entry.total})`)))
+  const head = h('tr', {}, [T.date, ...columns, T.files, T.state].map(name => h('th', { scope: 'col' }, name)))
+  const body = state.items.map(item => {
+    const values = new Map(item.fields || [])
+    const job = item.jobs.find(entry => entry.channel === 'owner') || item.jobs[0]
+    return h('tr', { tabindex: '0', onclick: () => select(item.id), onkeydown: event => { if (event.key === 'Enter') select(item.id) } },
+      h('td', { class: 'nowrap' }, dateText(item.createdAt)),
+      columns.map(name => h('td', {}, values.get(name) || '—')),
+      h('td', {}, item.files ? [icon(ICONS.clip), String(item.files)] : '—'),
+      h('td', {}, job ? stateChip(job) : '—'))
+  })
+  return h('section', { class: 'table-pane' },
+    h('div', { class: 'table-bar' }, choose, h('button', { type: 'button', class: 'button', onclick: downloadCsv, disabled: !state.items.length }, icon(ICONS.download), T.csv)),
+    h('div', { class: 'table-scroll' }, h('table', { class: 'data-table' }, h('thead', {}, head), h('tbody', {}, body))),
+    state.next ? h('button', { type: 'button', class: 'button more', onclick: () => load({ more: true }), disabled: state.busy }, T.more) : null)
 }
 
 function jobCard (job) {
@@ -338,7 +398,9 @@ function detailPane () {
 
 function render () {
   if (!state.summary) return
-  const layout = h('div', { class: `layout${state.detail ? ' has-detail' : ''}` }, listPane(), detailPane())
+  const layout = state.view === 'table'
+    ? h('div', { class: `layout table-layout${state.detail ? ' has-detail' : ''}` }, state.detail ? detailPane() : tablePane())
+    : h('div', { class: `layout${state.detail ? ' has-detail' : ''}` }, listPane(), detailPane())
   app.replaceChildren(toolbar(), ...banners(), layout)
   app.setAttribute('aria-busy', String(state.busy))
 }
@@ -362,8 +424,13 @@ async function load ({ more = false } = {}) {
       state.summary = await api('summary')
       state.view = state.summary.attention ? 'attention' : state.summary.review ? 'review' : 'all'
     }
-    const query = `submissions?view=${state.view}${more && state.next ? `&before=${encodeURIComponent(state.next)}` : ''}`
-    const [summary, page] = await Promise.all([more ? state.summary : api('summary'), api(query)])
+    if (state.view === 'table' && !more) {
+      state.forms = (await api('forms')).forms
+      if (!state.forms.some(entry => entry.form === state.form)) state.form = state.forms[0]?.form || null
+    }
+    const scope = state.view === 'table' ? (state.form ? `view=all&form=${encodeURIComponent(state.form)}` : null) : `view=${state.view}`
+    const query = scope && `submissions?${scope}${more && state.next ? `&before=${encodeURIComponent(state.next)}` : ''}`
+    const [summary, page] = await Promise.all([more ? state.summary : api('summary'), query ? api(query) : { items: [], next: null }])
     state.summary = summary
     state.items = more ? [...state.items, ...page.items] : page.items
     state.next = page.next
