@@ -91,6 +91,8 @@ export async function findSite (name, { token, fetch = globalThis.fetch, create 
   const sites = await netlify('GET', `/sites?name=${encodeURIComponent(name)}&filter=all&per_page=100`)
   let site = sites.find(item => item.name === name)
   if (!site && create) site = await netlify('POST', '/sites', { name })
+  // Free sites get a «Powered by Netlify» script injected unless this is off.
+  if (site && create && site.built_with_badge_enabled !== false) site = await netlify('PATCH', `/sites/${site.id}`, { built_with_badge_enabled: false })
   return site || null
 }
 

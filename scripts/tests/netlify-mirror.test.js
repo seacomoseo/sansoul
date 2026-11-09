@@ -45,8 +45,13 @@ function fakeApi (state) {
     calls.push({ method: init.method, pathname, body })
     const json = (data, status = 200) => new Response(JSON.stringify(data), { status })
     if (pathname === '/api/v1/sites' && init.method === 'GET') return json(state.sites.filter(site => site.name.includes(searchParams.get('name'))))
+    if (pathname.startsWith('/api/v1/sites/') && init.method === 'PATCH') {
+      const site = state.sites.find(item => item.id === pathname.split('/').pop())
+      Object.assign(site, body)
+      return json(site)
+    }
     if (pathname === '/api/v1/sites' && init.method === 'POST') {
-      const site = { id: 'new-site', account_id: 'nf-acc', name: body.name }
+      const site = { id: 'new-site', account_id: 'nf-acc', name: body.name, built_with_badge_enabled: true }
       state.sites.push(site)
       return json(site, 201)
     }
@@ -71,6 +76,7 @@ test('sites are found by exact name and created only when asked', async () => {
   assert.equal(await findSite('demo', { token: 't', fetch }), null)
   const site = await findSite('demo', { token: 't', fetch, create: true })
   assert.equal(site.id, 'new-site')
+  assert.equal(site.built_with_badge_enabled, false)
   assert.equal((await findSite('demo', { token: 't', fetch })).id, 'new-site')
 })
 

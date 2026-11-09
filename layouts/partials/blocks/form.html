@@ -270,9 +270,12 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
   "target"    $target
   "data-to"   $data_to
 -}}
-{{- /* Worker forms: per-file and total limits of core/forms (Drive on by default). */ -}}
+{{- /* Worker forms: per-file and total limits of core/forms (Drive on by default).
+  The Netlify mirror's proxy rejects request bodies above 8 MiB, and each file
+  is one raw upload, so mirrored projects cap files there. */ -}}
 {{- if $worker -}}
-  {{- $form_attrs = merge $form_attrs (dict "data-file-max" (mul 20 1024 1024) "data-files-max" (mul 25 1024 1024)) -}}
+  {{- $file_max := cond (ne (string (site.Params.netlify | default "")) "") (mul 8 1024 1024) (mul 20 1024 1024) -}}
+  {{- $form_attrs = merge $form_attrs (dict "data-file-max" $file_max "data-files-max" (mul 25 1024 1024)) -}}
 {{- end -}}
 {{- $form_attrs = partial "func/attrs" $form_attrs }}
 {{- if and $worker (not hugo.IsServer) -}}
