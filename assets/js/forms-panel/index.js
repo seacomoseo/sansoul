@@ -66,6 +66,8 @@ const T = {
     summary: 'Valores',
     search: 'Buscar en los valores',
     sort: 'Ordenar',
+    sortBy: 'Ordenar por',
+    groupBy: 'Agrupar por',
     filter: 'Filtrar',
     group: 'Agrupar',
     noGroup: 'Sin agrupar',
@@ -152,6 +154,8 @@ const T = {
     summary: 'Values',
     search: 'Search the values',
     sort: 'Sort',
+    sortBy: 'Sort by',
+    groupBy: 'Group by',
     filter: 'Filter',
     group: 'Group',
     noGroup: 'No grouping',
@@ -560,12 +564,13 @@ function optionsPanel () {
   if (state.panel === 'sort') {
     const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 'asc' : 'desc']
     return h('div', { class: 'options-panel' },
+      h('span', { class: 'muted' }, T.sortBy),
       columnSelect(id, value => updateSettings({ sort: `${value}:${dir}` })),
       h('select', { class: 'select', 'aria-label': T.sort, onchange: event => updateSettings({ sort: `${id}:${event.target.value}` }) },
         h('option', { value: 'asc', selected: dir === 'asc' }, T.asc), h('option', { value: 'desc', selected: dir === 'desc' }, T.desc)))
   }
   if (state.panel === 'group') {
-    return h('div', { class: 'options-panel' }, columnSelect(view.group, value => { state.collapsed.clear(); updateSettings({ group: value || null }) }, { allowNone: true }))
+    return h('div', { class: 'options-panel' }, h('span', { class: 'muted' }, T.groupBy), columnSelect(view.group, value => { state.collapsed.clear(); updateSettings({ group: value || null }) }, { allowNone: true }))
   }
   if (state.panel !== 'filter') return null
   const filters = view.filters
@@ -856,6 +861,7 @@ function refresh () {
 function selectView (view) {
   if (view === state.view) return
   state.view = view
+  state.notice = null
   state.selected = null
   state.detail = null
   resetList()
