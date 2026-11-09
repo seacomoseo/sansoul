@@ -7,6 +7,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { LOCAL_VARS, proxyToWorker, wranglerDevArgs, writeLocalWorker } from '../local-worker.js'
+import { serveOutput } from '../production-server.js'
 
 const engine = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -97,5 +98,35 @@ test('proxy maps the local Origin to the public one and streams both ways', asyn
     assert.equal((await send(down.address().port, {})).status, 502)
   } finally {
     down.close()
+  }
+})
+
+test('production server: /api/* goes to the Worker, or 503 while it is unavailable', async () => {
+  const publicDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-local-api-'))
+  let worker = null
+  let expects = true
+  const proxied = []
+  const handler = serveOutput(publicDir, () => true, {
+    worker: () => worker,
+    backend: () => expects,
+    proxy: (req, res, options) => { proxied.push(options); res.writeHead(200); res.end('worker') },
+    localOrigins: ['http://localhost:1313']
+  })
+  const front = await listen(handler)
+  try {
+    const port = front.address().port
+    let answer = await send(port, {})
+    assert.equal(answer.status, 503)
+    assert.equal(answer.headers['retry-after'], '2')
+    worker = { port: 1, origin: 'https://www.example.com' }
+    answer = await send(port, {})
+    assert.equal(answer.text, 'worker')
+    assert.deepEqual(proxied[0], { port: 1, origin: 'https://www.example.com', localOrigins: ['http://localhost:1313'] })
+    worker = null
+    expects = false
+    assert.equal((await send(port, {})).status, 405)
+  } finally {
+    front.close()
+    fs.rmSync(publicDir, { recursive: true, force: true })
   }
 })

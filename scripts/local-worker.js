@@ -81,12 +81,17 @@ export async function startLocalWorker ({ projectDir, lifecycle, log = console.l
   const started = Date.now()
   while (Date.now() - started < timeoutMs) {
     const exited = await Promise.race([done.then(code => ({ code })), new Promise(resolve => setTimeout(resolve, 500))])
-    if (exited) throw new Error(`wrangler dev exited with ${exited.code}`)
+    if (exited) {
+      await lifecycle.waitForChild(child)
+      throw new Error(`wrangler dev exited with ${exited.code}`)
+    }
     if (await reachable(port)) {
       log(`Worker (forms/commerce, local D1/KV, ${Object.entries(LOCAL_VARS).map(pair => pair.join('=')).join(', ')}) on /api/*`)
       return { port, origin: new URL(baseURL).origin, child }
     }
   }
+  // Never leave a stray Worker sharing the local state with the next one.
+  await lifecycle.stopChildAndWait(child)
   throw new Error('wrangler dev did not start in time')
 }
 
@@ -109,8 +114,10 @@ export function proxyToWorker (request, response, { port, origin, localOrigins }
     answer.pipe(response)
   })
   upstream.once('error', () => {
-    if (!response.headersSent) response.writeHead(502, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' })
+    if (response.headersSent) return response.destroy()
+    response.writeHead(502, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' })
     response.end('Local Worker unavailable.')
   })
+  response.once('close', () => { if (!response.writableFinished) upstream.destroy() })
   request.pipe(upstream)
 }

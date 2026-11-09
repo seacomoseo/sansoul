@@ -746,7 +746,9 @@ llega a `/api/*`, así que puedes enviar formularios y probar el carrito de verd
 - los secretos opcionales (por ejemplo `FORMS_ADMIN_TOKEN` o `STRIPE_SECRET_KEY` de test) van en
   `worker/.dev.vars`, que Git ignora.
 
-El Worker se reinicia tras cada build. `sh do dev` y `sh do cms` siguen sin Worker.
+El Worker se reinicia tras cada build (mientras tanto, `/api/*` responde 503). Con
+`--bind 0.0.0.0` también lo alcanza tu red local, incluidos los secretos de `.dev.vars`.
+`sh do dev` y `sh do cms` siguen sin Worker.
 
 Para el editor usa `sh do cms`; para iterar rápido sin editor, `sh do dev`.
 La evaluación de [plantillas de preview](docs/preview-template-evaluation-2026-10-19.md)

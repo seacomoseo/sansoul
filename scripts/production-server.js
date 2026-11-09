@@ -70,14 +70,20 @@ export function changedSources (previous, current) {
 
 // worker(): the running local Worker ({ port, origin }) or null; /api/* goes
 // there through proxy() when the project has a forms/commerce backend.
-export function serveOutput (publicDir, isReady, { worker = () => null, proxy, localOrigins = [] } = {}) {
+export function serveOutput (publicDir, isReady, { worker = () => null, backend: expectsWorker = () => false, proxy, localOrigins = [] } = {}) {
   return (request, response) => {
     const fail = (code, message) => {
       response.writeHead(code, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' })
       response.end(request.method === 'HEAD' ? undefined : message)
     }
     const backend = worker()
-    if (backend && isReady() && /^\/api\//.test(request.url)) return proxy(request, response, { ...backend, localOrigins })
+    if (/^\/api\//.test(request.url)) {
+      if (backend && isReady()) return proxy(request, response, { ...backend, localOrigins })
+      if (expectsWorker()) {
+        response.setHeader('Retry-After', '2')
+        return fail(503, 'Local Worker unavailable: building, or it failed to start (see the local log).')
+      }
+    }
     if (!['GET', 'HEAD'].includes(request.method)) return fail(405, 'Only GET and HEAD are supported.')
     if (!isReady()) {
       response.setHeader('Retry-After', '1')
@@ -150,9 +156,10 @@ export async function startProductionServer (options = {}) {
   let stopping = false
   let latestBuildFailed = false
   let worker = null
+  let hasBackend = false
   let localWorker
   const localOrigins = [...new Set([bind, 'localhost', '127.0.0.1'].map(host => `http://${host}:${port}`))]
-  const server = createServer(serveOutput(path.join(projectDir, 'public'), () => ready, { worker: () => worker, proxy: (...args) => localWorker.proxyToWorker(...args), localOrigins }))
+  const server = createServer(serveOutput(path.join(projectDir, 'public'), () => ready, { worker: () => worker, backend: () => hasBackend, proxy: (...args) => localWorker.proxyToWorker(...args), localOrigins }))
   const log = message => console.log(`LOCAL ${message}`)
   let shutdownPromise
   const shutdown = (code = 0) => {
@@ -206,9 +213,12 @@ export async function startProductionServer (options = {}) {
       if (!latestBuildFailed && !stopping) {
         try {
           // Loaded only for projects whose build produced a Worker backend.
-          if (['worker/forms.generated.js', 'functions/_commerce/catalog.generated.js'].some(file => existsSync(path.join(projectDir, file)))) {
+          hasBackend = ['worker/forms.generated.js', 'functions/_commerce/catalog.generated.js'].some(file => existsSync(path.join(projectDir, file)))
+          if (hasBackend) {
             localWorker ||= await import('./local-worker.js')
             worker = await localWorker.startLocalWorker({ projectDir, lifecycle, log })
+            // An empty forms manifest needs no Worker.
+            if (!worker) hasBackend = false
           }
         } catch (error) {
           console.error(`LOCAL Worker unavailable (static pages still served): ${error.message}`)
