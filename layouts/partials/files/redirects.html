@@ -1,11 +1,10 @@
-{{- $netlify := getenv "NETLIFY" -}}
-{{- $a := cond (not $netlify) "" "!" -}}
-
+{{- /* One build serves Workers and the Netlify mirror: rules use the syntax
+  both accept (no Netlify-only `!` force suffix). */ -}}
 /index.php / 301
 # ---
 {{- with hugo.Data.redirects -}}
   {{- range . }}
-{{ .from }} {{ .to }} {{ .type | default "301" }}{{ $a }}
+{{ .from }} {{ .to }} {{ .type | default "301" }}
   {{- end -}}
 {{- end }}
 # ---
@@ -18,25 +17,21 @@
     {{- range .AllTranslations }}
       {{- $siteBaseURL := .Site.BaseURL }}
       {{- range .Translations }}
-{{ $siteBaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301{{ $a }}
+{{ $siteBaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301
       {{- end }}
-{{ .Site.BaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301{{ $a }}
-{{ .Site.BaseURL }}/404.html /{{ .Lang }}/404 404{{ $a }}
-{{ .Site.BaseURL }}/404 /{{ .Lang }}/404.html 404{{ $a }}
+{{ .Site.BaseURL }}/{{ .Lang }}/* {{ .Site.BaseURL }}/:splat 301
+{{ .Site.BaseURL }}/404.html /{{ .Lang }}/404 404
+{{ .Site.BaseURL }}/404 /{{ .Lang }}/404.html 404
 {{ .Site.BaseURL }}/* /{{ .Lang }}/:splat 200
 {{ .Site.BaseURL }}/* /{{ .Lang }}/404.html 404
     {{- end }}
   {{- else }}
 # multilanguage
     {{- range .Translations }}
-/{{ .Lang }}/404.html /{{ .Lang }}/404 404{{ $a }}
-/{{ .Lang }}/404 /{{ .Lang }}/404.html 404{{ $a }}
+/{{ .Lang }}/404.html /{{ .Lang }}/404 404
+/{{ .Lang }}/404 /{{ .Lang }}/404.html 404
 /{{ .Lang }}/* /{{ .Lang }}/404.html 404
     {{- end }}
   {{- end }}
 {{- end }}
 
-{{- if $netlify }}
-/404.html /404 404{{ $a }}
-/404 /404.html 404{{ $a }}
-{{- end -}}

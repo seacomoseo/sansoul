@@ -68,14 +68,16 @@ export async function readJsonBody (request, maxBytes = 8192) {
   }
 }
 
-export function isSameOrigin (request, allowedOrigin) {
+// `proxied`: a verified Netlify mirror request (edge/proxy.js), which reaches
+// the Worker on its workers.dev URL while serving the canonical origin.
+export function isSameOrigin (request, allowedOrigin, proxied = false) {
   let requestOrigin
   try {
     requestOrigin = new URL(request.url).origin
   } catch {
     return false
   }
-  if (requestOrigin !== allowedOrigin) return false
+  if (requestOrigin !== allowedOrigin && !proxied) return false
   const suppliedOrigin = request.headers.get('origin')
   return suppliedOrigin === allowedOrigin
 }

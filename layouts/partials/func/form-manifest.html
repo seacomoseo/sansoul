@@ -37,9 +37,11 @@ Side effects: Publishes public/_forms/<hash>.json; the post-build script moves i
 {{- $p := partialCached "func/project" "project" -}}
 {{- $project := printf "%s-%s" $p.owner $p.repo -}}
 {{- if eq $p.repo "seacomoseo" }}{{ $project = $p.repo }}{{ else if eq $p.repo "site" }}{{ $project = $p.owner }}{{ end -}}
+{{- $base := urls.Parse site.BaseURL -}}
 {{- $spec := dict
   "id"      .id
   "site"    $p.domain
+  "origin"  (print $base.Scheme "://" $base.Host)
   "project" (strings.Trim $project "-")
   "repo"    (or hugo.Data.config.cms_repo (print $p.owner "/" $p.repo))
   "lang"    site.Language.Lang

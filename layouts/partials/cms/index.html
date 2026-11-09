@@ -1,7 +1,6 @@
 {{- $t        := partial "func/i18n-cms" . -}}
 {{- $lang_cms := partial "func/lang-cms" . -}}
 {{- $config   := index (where hugo.Data.langs "lang" $lang_cms) 0 -}}
-{{- $netlify  := getenv "NETLIFY" -}}
 
 <!doctype html>
 <html lang="{{ $lang_cms }}">

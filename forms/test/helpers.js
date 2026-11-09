@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import { createHash, createHmac } from 'node:crypto'
 import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -209,7 +209,7 @@ export async function uploadRequest (blob, { fileName = 'file', field, index, id
   })
 }
 
-export function submitRequest (fields, { origin = ORIGIN, page = '/es/contacto/', form = 'form-contacto', id = crypto.randomUUID(), urlencoded = false, ip = '203.0.113.7' } = {}) {
+export function submitRequest (fields, { origin = ORIGIN, page = '/es/contacto/', form = 'form-contacto', id = crypto.randomUUID(), urlencoded = false, ip = '203.0.113.7', headers: extra = {} } = {}) {
   const data = new FormData()
   data.append('_form', form)
   data.append('_page', page)
@@ -219,7 +219,7 @@ export function submitRequest (fields, { origin = ORIGIN, page = '/es/contacto/'
     if (value instanceof Blob) data.append(name, value, fileName)
     else data.append(name, value)
   }
-  const headers = { origin, 'cf-connecting-ip': ip }
+  const headers = { origin, 'cf-connecting-ip': ip, ...extra }
   let body = data
   if (urlencoded) {
     body = new URLSearchParams(data).toString()
@@ -244,4 +244,11 @@ export function decodeMime (raw) {
     return { head, body: Buffer.from(rest.join('\r\n')) }
   })
   return { headers: raw.split('\r\n\r\n')[0], parts: decoded }
+}
+
+// Netlify signed-proxy header (JWS HS256), as netlify.toml `signed` produces.
+export function netlifySign (secret, { exp = Math.floor(Date.now() / 1000) + 60, iss = 'netlify' } = {}) {
+  const part = value => Buffer.from(JSON.stringify(value)).toString('base64url')
+  const unsigned = `${part({ alg: 'HS256', typ: 'JWT' })}.${part({ iss, exp, site_url: 'https://site.test' })}`
+  return `${unsigned}.${createHmac('sha256', secret).update(unsigned).digest('base64url')}`
 }

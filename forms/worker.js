@@ -4,6 +4,7 @@ import { WAIT_UNTIL_MS, dispatch } from './dispatch.js'
 import { FormsError, errorResponse, isSameOrigin, jsonResponse, sha256Hex } from './http.js'
 import { LIMITS, driveEnabled, fileLimits, parseSubmission, parseUpload, readSubmission } from './intake.js'
 import { validateManifest } from './manifest.js'
+import { clientIp } from '../edge/proxy.js'
 import { createProviders, resolveAuthority } from './providers/index.js'
 import {
   findSubmission, hitRate, insertSubmission, loadSubmission, requireDatabase, stageUpload, stagedUploads, sweepOrphanUploads, uploadKey
@@ -17,8 +18,8 @@ export const RATE = Object.freeze({ windowMs: 10 * 60 * 1000, limit: 6, uploads:
 export const CONFIRM_RATE = Object.freeze({ windowMs: 24 * 3600 * 1000, perRecipient: 1, perSite: 100 })
 // Safety net only: held/review attachments must be resolved within this time.
 export const FILE_TTL_SECONDS = 90 * 24 * 3600
-const ipBucket = async (request, manifest, prefix = '') => {
-  const ip = request.headers.get('cf-connecting-ip')
+const ipBucket = async (request, env, manifest, now, prefix = '') => {
+  const ip = await clientIp(request, env, now())
   return ip ? prefix + (await sha256Hex(`${manifest.site}\n${ip}`)).slice(0, 32) : null
 }
 const receipt = row => jsonResponse({ result: 'success', persisted: true, submissionId: row.id, status: row.status })
@@ -27,7 +28,7 @@ const receipt = row => jsonResponse({ result: 'success', persisted: true, submis
 // the submission that references it commits.
 async function upload ({ request, env, ctx, manifest, now }) {
   if (request.method !== 'POST') return jsonResponse({ result: 'error', error: 'method_not_allowed' }, 405, { allow: 'POST' })
-  if (!isSameOrigin(request)) throw new FormsError('origin_forbidden', 403)
+  if (!isSameOrigin(request, manifest.origins)) throw new FormsError('origin_forbidden', 403)
   const db = requireDatabase(env)
   const kv = env.FORMS_FILES
   if (!kv || typeof kv.put !== 'function') throw new FormsError('files_unavailable', 503)
@@ -37,7 +38,7 @@ async function upload ({ request, env, ctx, manifest, now }) {
   const staged = await stagedUploads(db, file.submissionId, now())
   const total = staged.reduce((sum, row) => sum + (row.idx === file.index ? 0 : row.size), file.size)
   if (staged.filter(row => row.idx !== file.index).length >= LIMITS.files || total > fileLimits(env).total) throw new FormsError('files_too_large', 413)
-  const bucket = await ipBucket(request, manifest, 'u:')
+  const bucket = await ipBucket(request, env, manifest, now, 'u:')
   if (bucket && await hitRate(db, bucket, now(), RATE.windowMs) > RATE.uploads) throw new FormsError('rate_limited', 429)
   if (await hitRate(db, `u:site:${manifest.site}`, now(), 24 * 3600 * 1000) > RATE.uploadsPerDay) throw new FormsError('rate_limited', 429)
   const key = uploadKey(file.submissionId, file.index)
@@ -66,7 +67,7 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
   if (request.method !== 'POST') return jsonResponse({ result: 'error', error: 'method_not_allowed' }, 405, { allow: 'POST' })
   // A same-origin POST always carries Origin; it limits drive-by cross-site use
   // but is not visitor authentication (antispam, limits and review still apply).
-  if (!isSameOrigin(request)) throw new FormsError('origin_forbidden', 403)
+  if (!isSameOrigin(request, manifest.origins)) throw new FormsError('origin_forbidden', 403)
   const db = requireDatabase(env)
   // A retry after commit resolves its file references from the stored
   // submission, so it gets the same digest (and receipt) as the original.
@@ -83,7 +84,7 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
     if (existing.digest !== parsed.digest) throw new FormsError('submission_conflict', 409)
     return receipt(existing)
   }
-  const bucket = await ipBucket(request, manifest)
+  const bucket = await ipBucket(request, env, manifest, now)
   if (bucket && await hitRate(db, bucket, now(), RATE.windowMs) > RATE.limit) throw new FormsError('rate_limited', 429)
 
   const authority = await resolveAuthority(env, parsed.spec, providers)

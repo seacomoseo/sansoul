@@ -30,11 +30,14 @@ export function errorResponse (error) {
   return jsonResponse({ result: 'error', error: known ? error.code : 'internal_error' }, known ? error.status : 500)
 }
 
-export function isSameOrigin (request) {
+// Origin must be the request's own origin or a site origin from the manifest
+// (baseURL): behind the Netlify mirror the Worker sees its workers.dev URL
+// while the browser sends the public site's Origin.
+export function isSameOrigin (request, origins = []) {
   const origin = request.headers.get('origin')
   if (!origin) return false
   try {
-    return new URL(request.url).origin === origin
+    return new URL(request.url).origin === origin || origins.includes(origin)
   } catch {
     return false
   }

@@ -32,6 +32,10 @@ export function validateManifest (manifest) {
   if (manifest.repo !== undefined && manifest.repo !== '' && (typeof manifest.repo !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(manifest.repo))) {
     throw new Error('forms_manifest_invalid_repo')
   }
+  // Public site origins (baseURL) accepted besides the Worker's own origin.
+  if (manifest.origins !== undefined && (!Array.isArray(manifest.origins) || !manifest.origins.every(origin => typeof origin === 'string' && /^https?:\/\/[^/\s]+$/.test(origin)))) {
+    throw new Error('forms_manifest_invalid_origins')
+  }
   for (const [key, ref] of Object.entries(manifest.forms)) {
     if (!validSpec(manifest.specs[ref])) throw new Error(`forms_manifest_invalid_spec:${key}`)
   }
