@@ -7,6 +7,7 @@ import { rotateCandidates } from './maintenance.js'
 const tokenEncoder = new TextEncoder()
 import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
+import { hasMailNotifier, sendOrderNotice } from './notifier.js'
 
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -285,10 +286,14 @@ async function reconcile (db, env, catalog, now, operation) {
   }, failed ? 503 : 200)
 }
 
-async function notifierSend (env, item, attempts) {
+async function notifierSend (env, item, attempts, db, options) {
   if (isSyntheticTestFixture(env)) {
     if (env.COMMERCE_FAKE_EMAIL_FAIL_FIRST === 'true' && attempts === 1) throw new Error('notifier_unavailable')
     return
+  }
+  // A service binding wins; otherwise mail the merchant through the forms Gmail provider.
+  if ((!env.COMMERCE_NOTIFIER || typeof env.COMMERCE_NOTIFIER.fetch !== 'function') && hasMailNotifier(env)) {
+    return await sendOrderNotice({ env, db, item, site: options.site, fetch: options.fetch })
   }
   if (!env.COMMERCE_NOTIFIER || typeof env.COMMERCE_NOTIFIER.fetch !== 'function') throw new Error('notifier_unavailable')
   const response = await env.COMMERCE_NOTIFIER.fetch('https://commerce-notifier/outbox', {
@@ -303,7 +308,7 @@ async function notifierSend (env, item, attempts) {
 // One notification per call. Stale recovery selects one lease and CAS resets it.
 const OUTBOX_DISPATCH_LIMIT = 1
 
-async function dispatchOutbox (db, env, now) {
+async function dispatchOutbox (db, env, now, options = {}) {
   const stale = await db.prepare(`
     SELECT event_key, claimed_at FROM outbox INDEXED BY outbox_expired_claims
     WHERE status = 'processing' AND claimed_at < ?
@@ -330,19 +335,21 @@ async function dispatchOutbox (db, env, now) {
     if (!claim.meta?.changes) continue
     const attempts = item.attempts + 1
     try {
-      await notifierSend(env, item, attempts)
+      await notifierSend(env, item, attempts, db, options)
       const ack = await db.prepare(`
         UPDATE outbox SET status = 'delivered', claimed_at = NULL, last_error = NULL, updated_at = ?
         WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND attempts = ?
       `).bind(now, item.event_key, now, attempts).run()
       if (!ack.meta?.changes) throw new Error('outbox_claim_lost')
       delivered++
-    } catch {
+    } catch (error) {
       const delay = Math.min(30 * (2 ** Math.min(attempts - 1, 7)), 3600)
+      // Provider codes only (e.g. gmail_grant_invalid); never messages with data.
+      const code = /^[a-z0-9_]{1,64}$/.test(error?.code || '') ? error.code : 'notifier_unavailable'
       await db.prepare(`
-        UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?, last_error = 'notifier_unavailable', updated_at = ?
+        UPDATE outbox SET status = 'pending', claimed_at = NULL, next_attempt_at = ?, last_error = ?, updated_at = ?
         WHERE event_key = ? AND status = 'processing' AND claimed_at = ? AND attempts = ?
-      `).bind(now + delay, now, item.event_key, now, attempts).run()
+      `).bind(now + delay, code, now, item.event_key, now, attempts).run()
       failed++
     }
   }
@@ -419,6 +426,30 @@ async function ackOutbox (request, db, now) {
   return jsonResponse({ acked: Boolean(result.meta?.changes) })
 }
 
+function siteName (catalog) {
+  try {
+    return new URL(catalog?.origin).host || 'SanSoul'
+  } catch {
+    return 'SanSoul'
+  }
+}
+
+// Cron drain (project Worker `scheduled`): at most `limit` notices per tick, each
+// with the same lease/backoff as the admin dispatch. Reconciliation stays manual.
+export async function dispatchScheduledNotices (env, catalog, { limit = 3, fetch, now = () => Math.floor(Date.now() / 1000) } = {}) {
+  if (!env.COMMERCE_DB) return { attempted: 0, delivered: 0, failed: 0, has_more: false }
+  const summary = { attempted: 0, delivered: 0, failed: 0, has_more: false }
+  for (let turn = 0; turn < limit; turn++) {
+    const result = await (await dispatchOutbox(env.COMMERCE_DB, env, now(), { site: siteName(catalog), fetch })).json()
+    summary.attempted += result.attempted
+    summary.delivered += result.delivered
+    summary.failed += result.failed
+    summary.has_more = result.has_more
+    if (!result.delivered) break
+  }
+  return summary
+}
+
 export async function handleAdmin (request, env, catalog) {
   try {
     const allowed = await authorized(request, env)
@@ -442,7 +473,7 @@ export async function handleAdmin (request, env, catalog) {
       if (!['orders', 'expiration', 'unmatched_webhooks'].includes(operation)) throw new CommerceError('invalid_operation', 400)
       return await reconcile(db, env, catalog, now, operation)
     }
-    if (path === '/api/commerce/admin/outbox/dispatch' && request.method === 'POST') return await dispatchOutbox(db, env, now)
+    if (path === '/api/commerce/admin/outbox/dispatch' && request.method === 'POST') return await dispatchOutbox(db, env, now, { site: siteName(catalog) })
     if (path === '/api/commerce/admin/outbox/claim' && request.method === 'POST') return await claimOutbox(db, now)
     if (path === '/api/commerce/admin/outbox/ack' && request.method === 'POST') return await ackOutbox(request, db, now)
 

@@ -316,7 +316,8 @@ export function initCommerce () {
           destination_not_supported: 'commerce_quote_required',
           quote_only: 'commerce_quote_only',
           product_unavailable: 'commerce_unavailable_product',
-          checkout_not_approved: 'commerce_checkout_disabled'
+          checkout_not_approved: 'commerce_checkout_disabled',
+          checkout_in_progress: 'commerce_checkout_in_progress'
         }
         quoteRequired = errorKeys[result.error] === 'commerce_quote_required'
         throw new Error(errorKeys[result.error] || 'commerce_checkout_unavailable')
@@ -473,7 +474,8 @@ export function initCommerce () {
           out_of_stock: 'commerce_out_of_stock',
           quote_only: 'commerce_quote_only',
           product_unavailable: 'commerce_unavailable_product',
-          checkout_not_approved: 'commerce_checkout_disabled'
+          checkout_not_approved: 'commerce_checkout_disabled',
+          checkout_in_progress: 'commerce_checkout_in_progress'
         }
         throw new Error(errorKeys[result.error] || 'commerce_checkout_failed')
       }

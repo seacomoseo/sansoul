@@ -1,0 +1,22 @@
+{{/*
+Partial: commerce/note
+Purpose: Render the merchant's optional commerce note (price, tax and shipping terms).
+Context:
+  - key (string, required): "product" (product hero, under the buy box) or "cart" (drawer and cart page).
+  - page (page.Page, optional): Product page; when given, the note renders only for an active, enabled product.
+Renders: <p class="commerce__note"> from data/commerce.yml `notes.<key>` (a Markdown string, or a map of language code to string); nothing when absent.
+Side effects: None.
+*/}}
+{{- with hugo.Data.commerce -}}
+  {{- $show := eq .enabled true -}}
+  {{- with $.page -}}
+    {{- $show = and $show (eq .Params.commerce_active true) .Params.commerce_id -}}
+  {{- end -}}
+  {{- $note := index (.notes | default dict) $.key -}}
+  {{- if reflect.IsMap $note -}}
+    {{- $note = index $note site.Language.Lang -}}
+  {{- end -}}
+  {{- if and $show $note -}}
+    <p class="commerce__note commerce__note--{{ $.key }}">{{ $note | markdownify }}</p>
+  {{- end -}}
+{{- end -}}

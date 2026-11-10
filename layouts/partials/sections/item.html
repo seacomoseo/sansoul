@@ -25,6 +25,7 @@ Side effects: Sets page.Store `is_container` while rendering child boxes.
   {{- with .Page -}}
     {{- if and $.is_hero (eq .Type "product") (not (page.Store.Get "commerce_actions_rendered")) -}}
       {{- partial "commerce/product-actions" . -}}
+      {{- partial "commerce/note" (dict "key" "product" "page" .) -}}
     {{- end -}}
   {{- end -}}
 

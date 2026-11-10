@@ -69,7 +69,11 @@ test('Worker config: assets-only without backends, bindings and cron with forms'
     fs.writeFileSync(path.join(directory, 'functions/_commerce/catalog.generated.js'), '')
     plan = planWorker(directory, { core: 'core' })
     assert.deepEqual(plan.databases.map(db => db.database_name), ['demo-forms', 'demo-commerce'])
-    assert.match(renderEntry(plan), /return commerce\.fetch\(request, env, ctx\)/)
+    const both = renderEntry(plan)
+    assert.match(both, /return commerce\.fetch\(request, env, ctx\)/)
+    assert.match(both, /commerce\.scheduled\(event, env, ctx\)\n    return forms\.scheduled\(event, env, ctx\)/)
+    assert.deepEqual(JSON.parse(renderConfig(plan).replace(/^\/\/.*\n/, '')).triggers.crons, ['*/15 * * * *'])
+    assert.match(renderEntry({ core: 'core', forms: false, commerce: true }), /scheduled: commerce\.scheduled/)
   } finally {
     fs.rmSync(directory, { recursive: true, force: true })
   }

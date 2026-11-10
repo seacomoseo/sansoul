@@ -40,7 +40,11 @@ function readIdempotencyKey (request) {
 }
 
 async function readRecord (db, key) {
-  return db.prepare('SELECT * FROM commerce_idempotency WHERE idempotency_key = ?').bind(key).first()
+  // The order's payment state rides along so a replay never hands out a dead session URL.
+  return db.prepare(`
+    SELECT i.*, o.payment_status AS order_payment_status
+    FROM commerce_idempotency i LEFT JOIN orders o ON o.id = i.order_id WHERE i.idempotency_key = ?
+  `).bind(key).first()
 }
 
 function storedSnapshot (record) {
@@ -126,6 +130,8 @@ export async function handleCheckout (request, env, catalog) {
     let allowBuyerCapabilityCreation = false
     if (record && record.request_hash !== requestHash) throw new CommerceError('idempotency_conflict', 409)
     if (record?.expires_at <= now) throw new CommerceError('checkout_expired', 409)
+    // Stripe can end a session early (expired webhook, manual expiry): no replay URL then.
+    if (record?.order_payment_status && record.order_payment_status !== 'pending') throw new CommerceError('checkout_expired', 409)
     if (record?.status === 'ready' && record.checkout_url) {
       const snapshot = storedSnapshot(record)
       if (snapshot.orderId !== record.order_id || snapshot.idempotencyKey !== key) throw new CommerceError('order_snapshot_unavailable', 503)

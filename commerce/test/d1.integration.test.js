@@ -928,6 +928,15 @@ export async function onRequest (context) {
     assert.equal(expiredSessionOrder.payment_status, 'expired')
     assert.equal((await reservationByOrder(expiredSessionOrder.id)).status, 'expired')
 
+    // A session the provider expired early (webhook) must not be replayed by URL.
+    const earlyExpiryKey = 'replay-after-provider-expiry-001'
+    const earlyExpiry = await checkout([{ id: firstId, quantity: 1 }], earlyExpiryKey, null, '198.51.100.83')
+    assert.equal(earlyExpiry.response.status, 201)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--command', `UPDATE orders SET payment_status = 'expired', fulfillment_status = 'cancelled' WHERE id = '${earlyExpiry.body.order_id}'`], workspace)
+    const earlyExpiryReplay = await checkout([{ id: firstId, quantity: 1 }], earlyExpiryKey, null, '198.51.100.83')
+    assert.equal(earlyExpiryReplay.response.status, 409)
+    assert.equal(earlyExpiryReplay.body.error, 'checkout_expired')
+
     const multi = await checkout([{ id: firstId, quantity: 1 }, { id: secondId, quantity: 1 }], 'multiple-items-key')
     assert.equal(multi.response.status, 201)
     const multiOrder = await orderById(multi.body.order_id)

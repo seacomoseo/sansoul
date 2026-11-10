@@ -45,6 +45,7 @@ Side effects: Called media and block partials may register assets in page.Store.
         {{- /*  Product hero: purchase controls sit right under the price.  */ -}}
         {{- if and $.section.is_hero (eq page.Type "product") (not (page.Store.Get "commerce_actions_rendered")) -}}
           {{- partial "commerce/product-actions" page -}}
+          {{- partial "commerce/note" (dict "key" "product" "page" page) -}}
           {{- page.Store.Set "commerce_actions_rendered" true -}}
         {{- end -}}
       {{- end -}}
