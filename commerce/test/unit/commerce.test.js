@@ -344,6 +344,19 @@ async function createStripeSession (payload, inspect) {
   }), inspect)
 }
 
+test('Stripe idempotency contention is a retryable 409, other rejections stay 502', async () => {
+  const originalFetch = globalThis.fetch
+  try {
+    for (const [status, code, http] of [[409, 'checkout_in_progress', 409], [400, 'payment_provider_rejected', 502]]) {
+      globalThis.fetch = async () => new Response(JSON.stringify({ error: { type: 'idempotency_error' } }), { status })
+      await assert.rejects(createPaymentProvider(stripeEnv).createCheckoutSession({ snapshot: checkoutSnapshot(), providerIdempotencyKey: stripeOrderId, catalog: { origin: 'https://shop.example' } }),
+        error => error.code === code && error.status === http)
+    }
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})
+
 for (const [status, paymentStatus] of [['complete', 'paid'], ['expired', 'unpaid']]) {
   test(`Stripe retrieval accepts ${status} sessions with nullable URL`, async () => {
     await withStripeResponse(stripePayload({ status, payment_status: paymentStatus, url: null }), async () => {

@@ -48,6 +48,9 @@ async function stripeRequest (env, path, options = {}) {
   } catch {
     throw new CommerceError('payment_provider_invalid_response', 502)
   }
+  // 409: another request with the same idempotency key is still in flight at
+  // Stripe. Retrying with the same key replays the stored session.
+  if (response.status === 409) throw new CommerceError('checkout_in_progress', 409)
   if (!response.ok) throw new CommerceError('payment_provider_rejected', 502)
   return payload
 }
