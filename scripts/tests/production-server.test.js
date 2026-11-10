@@ -39,7 +39,7 @@ test('source polling covers deletion and nested additions but ignores generated 
   fs.rmSync(path.join(directory, 'content/a.md'))
   fs.mkdirSync(path.join(directory, 'content/new'))
   fs.writeFileSync(path.join(directory, 'content/new/b.md'), 'b')
-  for (const output of ['public', 'resources', 'core/prebuild/public', 'node_modules', '.git']) {
+  for (const output of ['public', 'resources', 'worker', 'functions/_commerce', 'core/prebuild/public', 'node_modules', '.git']) {
     fs.mkdirSync(path.join(directory, output), { recursive: true })
     fs.writeFileSync(path.join(directory, output, 'generated'), 'generated')
   }

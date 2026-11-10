@@ -50,7 +50,7 @@ export function sourceSnapshot (directory) {
     for (const entry of readdirSync(absolute, { withFileTypes: true })) {
       if (ignoredDirectories.has(entry.name) || ignoredFiles.has(entry.name)) continue
       const child = path.join(relative, entry.name)
-      if (['public', 'resources', 'worker', 'core/prebuild/public', 'themes/sansoul/prebuild/public'].includes(child.split(path.sep).join('/'))) continue
+      if (['public', 'resources', 'worker', 'functions/_commerce', 'core/prebuild/public', 'themes/sansoul/prebuild/public'].includes(child.split(path.sep).join('/'))) continue
       try {
         const stats = lstatSync(path.join(directory, child))
         if (stats.isDirectory()) visit(child)
