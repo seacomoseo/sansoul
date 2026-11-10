@@ -165,10 +165,13 @@ test('root-docs adds the catch-up schedule only for Netlify-mirrored projects', 
     fs.writeFileSync(path.join(project, 'hugo.yml'), 'baseURL: https://example.com/\nparams:\n  owner: acme\n  repo: site\n')
     let text = workflow()
     assert.doesNotMatch(text, /\n  schedule:|NETLIFY_SCHEDULE/)
+    assert.match(fs.readFileSync(path.join(project, '.node-version'), 'utf8'), /^\d+\.\d+\.\d+\n$/)
+    fs.writeFileSync(path.join(project, '.node-version'), '24.0.0\n')
     fs.writeFileSync(path.join(project, 'hugo.yml'), 'baseURL: https://example.com/\nparams:\n  owner: acme\n  repo: site\n  netlify: site\n')
     text = workflow()
     assert.match(text, /\n {2}schedule:\n {4}- cron: '41 \*\/6 \* \* \*'\n/)
     assert.match(text, /types: \[sveltia-cms-publish\]\n {2}# Netlify mirror catch-up/)
+    assert.equal(fs.readFileSync(path.join(project, '.node-version'), 'utf8'), '24.0.0\n')
   } finally {
     fs.rmSync(project, { recursive: true, force: true })
   }
