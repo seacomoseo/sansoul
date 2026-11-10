@@ -208,10 +208,11 @@ function validateNotes (notes) {
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
+  if (config.privacy_retention !== undefined && (!plainObject(config.privacy_retention) || Object.entries(config.privacy_retention).some(([key, value]) => !['orders', 'delivery'].includes(key) || typeof value !== 'string' || !value.trim()))) throw new Error('data/commerce.yml: invalid_privacy_retention')
   const functionsEnabled = config.functions_enabled ?? (config.enabled === true)
   if (config.enabled !== true) {
     const checkout = buildCheckoutApproval(config)

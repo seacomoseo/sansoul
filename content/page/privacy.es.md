@@ -40,5 +40,7 @@ Incrustamos vídeos de YouTube. La conexión a los servidores de YouTube se esta
 Utilizamos OpenStreetMap para mostrar mapas. Esto es necesario para mostrarle nuestra ubicación. Su dirección IP puede ser transmitida a la Fundación OpenStreetMap para este fin.
 - **Base legal:** Art. 6(1)(f) RGPD (Interés legítimo).
 
+{{% commerce-privacy %}}
+
 ## Sus Derechos
 Tiene derecho de acceso, rectificación, supresión, limitación, portabilidad y oposición. Para ejercer estos derechos, contacte a **{{% legal mail %}}**.
