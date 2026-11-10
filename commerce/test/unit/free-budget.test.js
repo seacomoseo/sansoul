@@ -159,7 +159,7 @@ test('outbox SQL failures terminate safely; exhausted fallback preserves process
     ['stale-select', sql => sql.includes('SELECT event_key, claimed_at'), 1, 0],
     ['select', sql => sql.includes('FROM outbox INDEXED BY outbox_due_notifications'), 2, 0],
     ['claim', sql => sql.includes("SET status = 'processing'"), 3, 0],
-    ['fallback', sql => sql.includes("SET status = 'delivered'") || sql.includes("last_error = 'notifier_unavailable'"), 5, 1],
+    ['fallback', sql => sql.includes("SET status = 'delivered'") || sql.includes('last_error = ?'), 5, 1],
     ['presence', sql => sql.includes('SELECT event_key FROM outbox'), 5, 1],
     ['quota', sql => sql.includes("SET status = 'delivered'"), 5, 1]
   ]) {

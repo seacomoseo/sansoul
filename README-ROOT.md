@@ -560,6 +560,19 @@ El estado privado para comprador está disponible en `GET /api/commerce/status/<
 
 Durante `sh do build`, el tema genera el catálogo antes de la compilación Hugo. Sin adaptadores de Pages Functions no genera artefactos de comercio. Con los adaptadores presentes, una configuración ausente o desactivada sin `functions_enabled: true` genera un catálogo desactivado y `_routes.json` incluye y excluye únicamente `/`; no exige SKU ni activa tráfico de Functions. `functions_enabled: true` conserva `/api/commerce/*` incluso cuando `enabled: false`: ese modo mantiene webhook, estado privado, administración y conciliación accesibles, mientras el checkout y sus replays quedan bloqueados por el catálogo desactivado. Para detener todo el tráfico de Functions, usa `functions_enabled: false` o elimina la configuración únicamente cuando no haya operaciones pendientes. Quitar configuración/rutas no cancela sesiones ya emitidas ni revierte pedidos o pagos en D1/Stripe; para pausar una tienda con pedidos, conserva binding, base y credenciales necesarias, y usa `enabled: false` junto a `functions_enabled: true`. La salida de catálogo queda en `functions/_commerce/catalog.generated.js`, fuera de `public/`; no la copies ni publiques como asset estático.
 
+### Textos visibles y avisos de pedidos
+
+`notes` (opcional) en `data/commerce.yml` añade una línea Markdown bajo el botón de compra de la ficha (`product`) y sobre el pago en el carrito (`cart`): IVA incluido, condiciones de envío, destinos con presupuesto. Cada valor es un texto o un mapa idioma → texto; son solo informativos y no cambian el cálculo, que sigue saliendo de `totals_policy`.
+
+```yaml
+notes:
+  product: "IVA incluido. Envío a península y Baleares: 12,05 €."
+  cart:
+    es: "Otros destinos o más de 2 kg: pide presupuesto."
+```
+
+El cron del Worker (el mismo de formularios, cada 15 minutos) envía a la tienda un correo por cada evento del outbox (`payment.paid`, reembolsos y excepciones) cuando hay `COMMERCE_NOTIFY_TO` (una o varias direcciones separadas por comas, en `worker_vars`) y credenciales Gmail de formularios (`FORMS_GMAIL_CREDENTIALS` con `FORMS_GMAIL_DEFAULT`, o la referencia de `COMMERCE_NOTIFY_ACCOUNT`). El correo lleva pedido, identificador de pago, artículos, totales y código postal de destino; nombre, contacto y dirección se consultan en el panel de Stripe o en `admin/orders`, para no dejar datos personales en el buzón emisor. Si el envío falla, el evento queda pendiente con reintentos y el código del proveedor en `last_error` (p. ej. `gmail_grant_invalid`). Un binding `COMMERCE_NOTIFIER` tiene prioridad sobre el correo. La conciliación sigue siendo manual (`admin/reconcile`).
+
 ### Operación privada, exportación y respaldo
 
 Todas las rutas `/api/commerce/admin/*` exigen `Authorization: Bearer <COMMERCE_ADMIN_TOKEN>` y el binding privado `COMMERCE_ADMIN_TOKEN`, de al menos 32 caracteres; las respuestas no se almacenan en caché. Falta de configuración válida devuelve 503 y credenciales incorrectas 401. Usa el token solo desde un cliente administrativo protegido: no lo incluyas en HTML, JavaScript del navegador, URL, CMS o `localStorage`. `GET /api/commerce/admin/orders?limit=50&cursor=…` admite 1–100 pedidos por página, en orden estable `(created_at DESC, id DESC)`, y devuelve `next_cursor`. Reutiliza el cursor con los mismos filtros `payment_status`/`fulfillment_status`; no es un snapshot transaccional: cambios de estado no reordenan filas y pedidos nuevos anteriores al cursor quedan para una consulta posterior.

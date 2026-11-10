@@ -188,6 +188,13 @@ test('catalog, Functions routing and checkout approval are independent and fail 
   assert.throws(() => buildCatalogFixture(approvalBase.replace('  - ES\n', '  - FR\n') + 'totals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n'), /destination_countries_must_match_totals_policy/)
   assert.throws(() => buildCatalogFixture(approvalBase + 'totals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n'.replace('rate_percent: 21 } }', 'rate_percent: 21 }, max_weight: 2 }')), /invalid_totals_policy/)
 
+  // Display notes: string or per-language map; anything else fails the build.
+  const plain = 'enabled: true\norigin: "https://shop.example"\ncurrency: eur\nstock_mode: made_to_order\n'
+  assert.equal(buildCatalogFixture(plain + 'notes:\n  product: "IVA incluido."\n  cart:\n    es: "Envío 12,05 €"\n').catalog.enabled, true)
+  for (const bad of ['notes: "x"\n', 'notes:\n  footer: "x"\n', 'notes:\n  cart: ""\n', 'notes:\n  cart: 3\n']) {
+    assert.throws(() => buildCatalogFixture(plain + bad), /invalid_notes/, bad)
+  }
+
   const multilineProduct = buildCatalogFixture('enabled: true\norigin: "https://shop.example"\ncurrency: eur\nstock_mode: made_to_order\n', '---\ntitle: >-\n  Fixture\n  product\ncommerce_id: 11111111-1111-4111-8111-111111111111\nsku: TEST-001\ncommerce_active: true\ncommerce_quote: false\nprice: 10.00\n---\n')
   assert.equal(multilineProduct.catalog.products[0].names.es, 'Fixture product')
   assert.equal(multilineProduct.catalog.products[0].priceMinor, 1000)

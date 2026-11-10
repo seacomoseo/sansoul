@@ -194,12 +194,24 @@ function enginePackage (root) {
   return installed || fileURLToPath(new URL('../../package.json', import.meta.url))
 }
 
+// Display-only notes: `notes.product|cart` as a string or a map of language to string.
+function validateNotes (notes) {
+  if (notes === undefined || notes === null) return
+  const error = 'data/commerce.yml: invalid_notes'
+  if (!plainObject(notes) || Object.keys(notes).some(key => !['product', 'cart'].includes(key))) throw new Error(error)
+  for (const value of Object.values(notes)) {
+    const texts = plainObject(value) ? Object.values(value) : [value]
+    if (!texts.length || texts.some(text => typeof text !== 'string' || !text.trim() || text.length > 1000)) throw new Error(error)
+  }
+}
+
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
+  validateNotes(config.notes)
   const functionsEnabled = config.functions_enabled ?? (config.enabled === true)
   if (config.enabled !== true) {
     const checkout = buildCheckoutApproval(config)
