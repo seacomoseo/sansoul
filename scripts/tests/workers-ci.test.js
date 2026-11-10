@@ -135,3 +135,21 @@ test('14.0.0 migration flattens params and removes only stock engine files', () 
     fs.rmSync(directory, { recursive: true, force: true })
   }
 })
+
+test('14.0.0 migration takes the owner from the GitHub remote of a transferred repository', () => {
+  const directory = project({ 'hugo.yml': 'baseURL: https://shop.example\nparams:\n  owner: agency\n  name: shop\n' })
+  try {
+    spawnSync('git', ['init', '-q'], { cwd: directory })
+    spawnSync('git', ['remote', 'add', 'origin', 'https://github.com/client/site.git'], { cwd: directory })
+    const result = migrateProject(directory)
+    const hugo = fs.readFileSync(path.join(directory, 'hugo.yml'), 'utf8')
+    assert.match(hugo, /owner: client\n/)
+    assert.match(hugo, /repo: site\n/)
+    assert.doesNotMatch(hugo, /worker:/)
+    assert.ok(result.warnings.some(warning => /params\.owner = client \(was agency/.test(warning)))
+    assert.ok(result.warnings.some(warning => /Worker will be named site .* called shop/.test(warning)))
+    assert.deepEqual(migrateProject(directory).changed, [])
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true })
+  }
+})

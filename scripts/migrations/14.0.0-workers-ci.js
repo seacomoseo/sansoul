@@ -42,12 +42,15 @@ export function migrateProject (projectDir, { check = false } = {}) {
   }
   const remote = githubRemote(projectDir)
   const cmsRepo = cmsRepository(projectDir)
-  const owner = get('owner') || remote?.owner || cmsRepo?.owner || ''
+  // A transferred repository keeps a stale owner: the GitHub remote is the truth.
+  const staleOwner = Boolean(get('owner') && remote && remote.owner.toLowerCase() !== get('owner').toLowerCase())
+  const owner = (staleOwner ? remote.owner : get('owner')) || remote?.owner || cmsRepo?.owner || ''
   const repo = get('repo') || remote?.repo || cmsRepo?.repo || get('domain')
   let host = ''
   try { host = new URL(String(doc.get('baseURL') || '')).host } catch {}
   if (!owner || !repo) warnings.push('Could not infer params.owner/params.repo; set them in hugo.yml.')
-  if (owner && !get('owner')) params.set('owner', owner)
+  if (staleOwner) warnings.push(`params.owner = ${owner} (was ${get('owner')}; the origin remote is ${remote.owner}/${remote.repo}). The CMS and CI use it: check it.`)
+  if (owner && (staleOwner || !get('owner'))) params.set('owner', owner)
   if (repo && !get('repo')) params.set('repo', repo)
   const deployed = wranglerName(projectDir)
   if (deployed && !get('worker') && deployed !== repo.toLowerCase()) params.set('worker', deployed)
@@ -56,6 +59,8 @@ export function migrateProject (projectDir, { check = false } = {}) {
     const worker = WORKER_NAME.test(legacy) ? legacy : repo.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 63)
     params.set('worker', worker)
     warnings.push(`params.worker = ${worker} (the repository name is not a valid Worker name); check it before the first deploy.`)
+  } else if (repo && !get('worker') && !deployed && get('name') && get('name').toLowerCase() !== repo.toLowerCase()) {
+    warnings.push(`The Worker will be named ${repo.toLowerCase()} (the repository); the project was called ${get('name')}. Set params.worker before the first deploy to choose another name.`)
   }
   if (get('netlify_id') && !get('netlify') && WORKER_NAME.test(get('name'))) params.set('netlify', get('name'))
   if (get('domain') && get('domain') === host) params.delete('domain')

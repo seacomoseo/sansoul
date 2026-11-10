@@ -5,7 +5,7 @@ Purpose: Synchronize generated root README.md, AGENTS.md and the CI workflow
 stub from the theme, and scaffold dna/_index.md when a project does not have one.
 Run from: Consumer project root through `sh do root-docs [--force]`.
 Writes: Root README.md, AGENTS.md and .github/workflows/sansoul.yml; creates
-dna/_index.md only when absent.
+dna/_index.md and .node-version (read by the workflow) only when absent.
 Legacy README/AGENTS content is never copied into DNA.
 */
 
@@ -52,6 +52,13 @@ if (!fs.existsSync(dnaFile)) {
   fs.mkdirSync(path.dirname(dnaFile), { recursive: true })
   fs.copyFileSync(path.join(themeDir, 'templates', 'dna', '_index.md'), dnaFile)
   console.log('Created the blank dna/_index.md scaffold; complete it separately with this project\'s particulars.')
+}
+
+// The generated workflow reads Node from .node-version; a project's own pin wins.
+const nodeVersionFile = path.join(projectDir, '.node-version')
+if (!fs.existsSync(nodeVersionFile)) {
+  fs.copyFileSync(path.join(themeDir, 'templates', 'root', 'node-version'), nodeVersionFile)
+  console.log('Created .node-version.')
 }
 
 for (const target of targets) syncFile(target)
