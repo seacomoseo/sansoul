@@ -229,6 +229,10 @@ envíos más antiguos cuyos trabajos estén cerrados (enviados o fallidos), con
 sus bytes de KV; los retenidos esperan a una persona. Corre en el dispatch y
 en el cron. Los archivos ya copiados a Drive se quedan en Drive.
 
+## Importar el histórico de Google Sheets
+
+Herramienta manual, nunca automática (ni CI, ni build, ni cron): al migrar un proyecto desde el backend antiguo, `node forms/scripts/import-sheet.js --csv <pestaña.csv> --form <id> --tz <zona de la hoja> --out <x.sql>` convierte una pestaña exportada a CSV en `INSERT OR IGNORE` sobre `forms_submissions` (marca `imported:sheets`, sin trabajos de envío, ids estables, repetible sin duplicar). Opciones: `--page /ruta/ --fixed-page` agrupa un formulario retirado bajo una sola entrada del panel; `--drop-values ❌` descarta celdas «no elegido». Se aplica con `wrangler d1 execute <db> --remote --file <x.sql>`, con aprobación y verificación de recuentos; después hay que borrar los CSV/SQL (datos personales). Deshacer: `DELETE FROM forms_submissions WHERE reasons LIKE '%imported:sheets%'`.
+
 ## Pruebas
 
 `pnpm run test:forms` usa D1 y KV locales de workerd y un Google falso
