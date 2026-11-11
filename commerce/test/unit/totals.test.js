@@ -279,15 +279,18 @@ test('public quote exposes amounts and policy version but never the postal code'
   assert.doesNotMatch(JSON.stringify(quote), /28001/)
 })
 
-test('calculator is not a checkout authorization: live and policy-less catalogs stay closed', () => {
+test('calculator is not a checkout authorization: policy-less catalogs and foreign-mode keys stay closed', () => {
   calculateOrderTotals(snapshot(), policy(), MADRID)
   const checkout = { approved: true, legalVersion: 'fixture-v1', destinationCountries: ['ES'], taxPolicy: 'calculated', shippingPolicy: 'flat_rate' }
-  const env = environment => ({ COMMERCE_ENV: environment, COMMERCE_PROVIDER: 'stripe', COMMERCE_CHECKOUT_APPROVED: 'true' })
+  const env = environment => ({ COMMERCE_ENV: environment, COMMERCE_PROVIDER: 'stripe', COMMERCE_CHECKOUT_APPROVED: 'true', STRIPE_SECRET_KEY: `rk_${environment}_fixture`, STRIPE_WEBHOOK_SECRET: 'whsec_fixture' })
   for (const environment of ['test', 'live']) {
     assert.equal(isCheckoutAuthorized({ enabled: true, checkout }, env(environment)), false)
   }
   const withPolicy = { enabled: true, checkout: { ...checkout, totalsPolicy: policy() } }
   assert.equal(isCheckoutAuthorized(withPolicy, env('test')), true)
   assert.equal(isCheckoutAuthorized(withPolicy, env('live')), false)
+  const retained = { ...withPolicy, checkout: { ...withPolicy.checkout, deliveryRetentionDays: 1095 } }
+  assert.equal(isCheckoutAuthorized(retained, env('live')), true)
+  assert.equal(isCheckoutAuthorized(retained, { ...env('live'), STRIPE_SECRET_KEY: 'rk_test_fixture' }), false)
   assert.equal(isCheckoutAuthorized({ ...withPolicy, enabled: false }, env('test')), false)
 })

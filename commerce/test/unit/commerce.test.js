@@ -179,9 +179,23 @@ test('catalog, Functions routing and checkout approval are independent and fail 
   assert.deepEqual(completeApproval.catalog.checkout.destinationCountries, ['ES'])
   assert.deepEqual(completeApproval.catalog.checkout.totalsPolicy.destinations.ES.shipping, { amountMinor: 1205, tax: { mode: 'inclusive', rateBps: 2100 } })
   assert.deepEqual(completeApproval.catalog.checkout.totalsPolicy.destinations.ES.tax, { mode: 'inclusive', rateBps: 2100 })
-  // Server-verified totals open Stripe TEST only; live stays closed in code with every flag set.
+  // Live needs every gate the TEST purchase passed plus keys of its own mode; any missing piece keeps it closed.
   assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), true)
-  assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_ENV: 'live', STRIPE_SECRET_KEY: 'sk_live_unit_fixture', COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
+  const liveEnv = { ...stripeEnv, COMMERCE_ENV: 'live', STRIPE_SECRET_KEY: 'rk_live_unit_fixture', COMMERCE_CHECKOUT_APPROVED: 'true' }
+  // Shipped goods keep buyer addresses: live also needs the erasure deadline.
+  assert.equal(isCheckoutAuthorized(completeApproval.catalog, liveEnv), false)
+  const retained = buildCatalogFixture(approvalBase + 'delivery_retention_days: 1095\ntotals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n')
+  assert.equal(retained.catalog.checkout.deliveryRetentionDays, 1095)
+  for (const bad of ['0', '29', '3651', '"3 años"', '365.5']) {
+    assert.throws(() => buildCatalogFixture(approvalBase.replace('checkout_approved: true', 'checkout_approved: false') + `delivery_retention_days: ${bad}\n`), /invalid_delivery_retention_days/, bad)
+  }
+  assert.equal(isCheckoutAuthorized(retained.catalog, liveEnv), true)
+  assert.equal(isCheckoutAuthorized(retained.catalog, { ...liveEnv, STRIPE_SECRET_KEY: 'sk_test_unit_fixture' }), false)
+  assert.equal(isCheckoutAuthorized(retained.catalog, { ...liveEnv, STRIPE_SECRET_KEY: undefined }), false)
+  assert.equal(isCheckoutAuthorized(retained.catalog, { ...liveEnv, STRIPE_WEBHOOK_SECRET: undefined }), false)
+  assert.equal(isCheckoutAuthorized(retained.catalog, { ...liveEnv, COMMERCE_CHECKOUT_APPROVED: undefined }), false)
+  assert.equal(isCheckoutAuthorized({ ...retained.catalog, checkout: { ...retained.catalog.checkout, approved: false } }, liveEnv), false)
+  assert.equal(isCheckoutAuthorized(retained.catalog, { ...stripeEnv, STRIPE_SECRET_KEY: 'sk_live_unit_fixture', COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
   assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'false' }), false)
   assert.equal(isCheckoutAuthorized({ ...completeApproval.catalog, checkout: { ...completeApproval.catalog.checkout, totalsPolicy: undefined } }, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
   assert.equal(isCheckoutAuthorized({ ...completeApproval.catalog, checkout: { ...completeApproval.catalog.checkout, destinationCountries: ['ES', 'FR'] } }, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), false)
