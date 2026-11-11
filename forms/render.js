@@ -49,7 +49,7 @@ function rows (fields, files, links) {
 function table (list) {
   const cells = list.map(({ name, value, link }) =>
     `<tr><th align="left" valign="top" style="padding:4px 12px 4px 0">${escapeHtml(name)}</th>` +
-    `<td style="padding:4px 0;white-space:pre-wrap">${link ? `<a href="${escapeHtml(link)}">${escapeHtml(value)}</a>` : escapeHtml(value)}</td></tr>`
+    `<td style="padding:4px 0;white-space:pre-wrap">${link ? `<a href="${escapeHtml(link)}">${escapeHtml(value)}</a>` : escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
   ).join('')
   return `<table cellspacing="0" cellpadding="0">${cells}</table>`
 }
