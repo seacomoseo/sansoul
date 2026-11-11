@@ -29,3 +29,18 @@ export async function rotateCandidates (db, operation, selectSql, whereSql, time
   `).bind(selected.cursor_created_at, selected.cursor_id, now, operation, cursor.cursor_created_at, cursor.cursor_id, cursor.revision).run()
   return { rows: advanced.meta?.changes ? [selected] : [], contended: !advanced.meta?.changes, hasMore: rows.length > 1 }
 }
+
+// Erase delivery address and contact of closed orders once the retention window passes.
+// Bounded per call; the order, amounts and status stay for accounting.
+export async function purgeExpiredDeliveryDetails (db, retentionDays, now, limit = 50) {
+  if (!Number.isSafeInteger(retentionDays) || retentionDays <= 0) return { purged: 0 }
+  const result = await db.prepare(`
+    DELETE FROM order_delivery_details WHERE order_id IN (
+      SELECT d.order_id FROM order_delivery_details d JOIN orders o ON o.id = d.order_id
+      WHERE (o.fulfillment_status IN ('shipped', 'cancelled') OR o.payment_status IN ('refunded', 'expired', 'failed'))
+        AND o.updated_at < ?
+      LIMIT ?
+    )
+  `).bind(now - retentionDays * 86400, limit).run()
+  return { purged: result.meta?.changes || 0 }
+}

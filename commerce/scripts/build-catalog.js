@@ -180,6 +180,11 @@ function buildCheckoutApproval (config, totalsPolicy = null) {
     checkout.destinationCountries = policyCountries
     checkout.totalsPolicy = totalsPolicy
   }
+  // Days after an order closes before its delivery address and contact are erased.
+  if (config.delivery_retention_days !== undefined) {
+    if (!Number.isSafeInteger(config.delivery_retention_days) || config.delivery_retention_days < 30 || config.delivery_retention_days > 3650) throw new Error('data/commerce.yml: invalid_delivery_retention_days')
+    checkout.deliveryRetentionDays = config.delivery_retention_days
+  }
   if (checkout.legalVersion !== null && !isValidCheckoutLegalVersion(checkout.legalVersion)) throw new Error('data/commerce.yml: invalid_checkout_legal_version')
   if (!isValidDestinationCountries(checkout.destinationCountries)) throw new Error('data/commerce.yml: invalid_checkout_destination_countries')
   if (checkout.taxPolicy !== null && !CHECKOUT_TAX_POLICIES.includes(checkout.taxPolicy)) throw new Error('data/commerce.yml: invalid_checkout_tax_policy')
@@ -208,7 +213,7 @@ function validateNotes (notes) {
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention', 'delivery_retention_days'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
