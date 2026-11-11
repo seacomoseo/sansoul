@@ -52,7 +52,7 @@ export function sheetTime (text, timeZone) {
 const sha = text => createHash('sha256').update(text).digest('hex')
 const sql = value => `'${String(value).replace(/'/g, "''")}'`
 
-export function convert ({ csv, form, timeZone, pageDefault = '/', fixedPage = false }) {
+export function convert ({ csv, form, timeZone, pageDefault = '/', fixedPage = false, dropValues = [] }) {
   const [header, ...body] = parseCsv(csv)
   const col = name => header.indexOf(name)
   const iTs = col('Timestamp')
@@ -67,7 +67,7 @@ export function convert ({ csv, form, timeZone, pageDefault = '/', fixedPage = f
     let origin = ''
     try { if (iUrl >= 0 && row[iUrl]) origin = new URL(row[iUrl]).pathname } catch { /* keep the default */ }
     if (origin && !fixedPage) page = origin
-    const fields = header.map((name, i) => [name, (row[i] || '').replace(/\r\n?/g, '\n')]).filter(([name, value]) => !DROP.has(name) && value.trim() !== '')
+    const fields = header.map((name, i) => [name, (row[i] || '').replace(/\r\n?/g, '\n')]).filter(([name, value]) => !DROP.has(name) && value.trim() !== '' && !dropValues.includes(value.trim()))
     // One panel entry for a retired form that lived on many pages: keep where it came from as a field.
     if (fixedPage && origin) fields.push(['Página de origen', origin])
     const key = formKey(page, form)
@@ -89,8 +89,8 @@ export function toSql (items) {
 
 function main (argv) {
   const args = Object.fromEntries(argv.map((a, i) => a.startsWith('--') && !a.startsWith('--fixed') ? [a.slice(2), argv[i + 1]] : null).filter(Boolean))
-  if (!args.csv || !args.form || !args.out || !args.tz) throw new Error('usage: --csv FILE --form ID --tz ZONE --out FILE.sql [--page /] [--fixed-page]')
-  const items = convert({ csv: readFileSync(args.csv, 'utf8'), form: args.form, timeZone: args.tz, pageDefault: args.page || '/', fixedPage: argv.includes('--fixed-page') })
+  if (!args.csv || !args.form || !args.out || !args.tz) throw new Error('usage: --csv FILE --form ID --tz ZONE --out FILE.sql [--page /] [--fixed-page] [--drop-values ❌]')
+  const items = convert({ csv: readFileSync(args.csv, 'utf8'), form: args.form, timeZone: args.tz, pageDefault: args.page || '/', fixedPage: argv.includes('--fixed-page'), dropValues: args['drop-values'] ? args['drop-values'].split(',') : [] })
   writeFileSync(args.out, toSql(items), { mode: 0o600 })
   const times = items.map(i => i.createdAt)
   console.log(JSON.stringify({ form: args.form, rows: items.length, legacyIds: items.filter(i => !i.id.startsWith('legacy-')).length, from: new Date(Math.min(...times)).toISOString(), to: new Date(Math.max(...times)).toISOString(), keys: [...new Set(items.map(i => i.key))] }))

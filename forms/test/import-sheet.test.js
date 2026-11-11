@@ -45,6 +45,12 @@ test('fixedPage groups a retired multi-page form under one key and keeps the ori
   assert.deepEqual(items[1].fields.at(-1), ['Página de origen', '/tienda/'])
 })
 
+test('dropValues removes cells that only mean "not chosen"', () => {
+  const csv = '"Timestamp","URL","Producto ➡️ A","Producto ➡️ B","_submission_id"\n"2026-01-02 10:00:00","https://acme.test/","✅","❌",""\n'
+  const [item] = convert({ csv, form: 'form-comprar', timeZone: ZONE, dropValues: ['❌'] })
+  assert.deepEqual(item.fields, [['Producto ➡️ A', '✅']])
+})
+
 test('the SQL loads into the real schema, is idempotent and creates no jobs', async () => {
   const sql = toSql(convert({ csv: CSV, form: 'form-contacto', timeZone: ZONE }))
   const run = async () => { for (const statement of splitSql(sql)) await bindings.db.prepare(statement).run() }
