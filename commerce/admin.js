@@ -174,14 +174,14 @@ function adminOrder (order) {
 }
 
 // Optional shipping reference sent with `ship`: a carrier tracking link or code.
-const TRACKING = /^[^\u0000-\u001f\u007f]{1,200}$/u
+const trackingValid = value => value.length >= 1 && value.length <= 200 && !Array.from(value).some(char => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
 
 async function readTracking (request) {
   if (!/^application\/json/i.test(request.headers.get('content-type') || '')) return null
   const { value } = await readJsonBody(request, 1024)
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => key !== 'tracking')) throw new CommerceError('invalid_shipment')
   if (value.tracking === undefined || value.tracking === null || value.tracking === '') return null
-  if (typeof value.tracking !== 'string' || !TRACKING.test(value.tracking.trim())) throw new CommerceError('invalid_shipment')
+  if (typeof value.tracking !== 'string' || !trackingValid(value.tracking.trim())) throw new CommerceError('invalid_shipment')
   return value.tracking.trim()
 }
 
