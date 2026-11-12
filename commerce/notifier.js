@@ -1,11 +1,15 @@
 import { createGmailProvider } from '../forms/providers/gmail.js'
 import { validAddress } from '../forms/mime.js'
+import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, paymentTime, renderInvoicePdf } from './invoice.js'
 
 // Merchant order notices through the forms Gmail provider (FORMS_GMAIL_CREDENTIALS,
-// FORMS_GMAIL_DEFAULT or COMMERCE_NOTIFY_ACCOUNT) to COMMERCE_NOTIFY_TO. The body
-// carries order, items, totals and the destination postal code only: buyer
+// FORMS_GMAIL_DEFAULT or COMMERCE_NOTIFY_ACCOUNT) to COMMERCE_NOTIFY_TO. By default
+// the body carries order, items, totals and the destination postal code only: buyer
 // contact and street address stay in D1 and in the payment provider's dashboard,
-// so no personal data lands in the sending mailbox.
+// so no personal data lands in the sending mailbox. With `order_notices` enabled in
+// data/commerce.yml (catalog.notices) the notice also carries the buyer's contact and
+// delivery address, the invoice PDF is attached to the paid notice, and a
+// confirmation (with the same invoice) goes to the buyer as its own outbox event.
 const SUBJECTS = Object.freeze({
   'payment.paid': 'Nuevo pedido pagado',
   'payment.awaiting_address': 'Pedido pagado sin dirección de envío',
@@ -27,19 +31,52 @@ export function hasMailNotifier (env) {
 }
 
 function money (minor, currency, minorUnit = 2) {
-  if (!Number.isSafeInteger(minor)) return '—'
-  try {
-    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: currency.toUpperCase() }).format(minor / 10 ** minorUnit)
-  } catch {
-    return `${(minor / 10 ** minorUnit).toFixed(minorUnit)} ${currency.toUpperCase()}`
-  }
+  return Number.isSafeInteger(minor) ? formatMoney(minor, currency, minorUnit, 'es') : '—'
 }
 
 function escapeHtml (value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
 }
 
-export function renderOrderNotice ({ item, order, site }) {
+const BUYER_EVENT = 'buyer.confirmation'
+
+const BUYER_TEXT = Object.freeze({
+  es: {
+    subject: site => `Hemos recibido tu pedido · ${site}`,
+    greeting: name => name ? `Hola ${name},` : 'Hola,',
+    intro: 'Gracias por tu compra. Hemos recibido el pago de tu pedido.',
+    items: 'Resumen del pedido:',
+    shipping: 'Envío',
+    total: 'Total',
+    destination: 'Dirección de envío:',
+    invoice: 'Adjuntamos la factura en PDF.',
+    reply: 'Si necesitas algo, responde a este correo.'
+  },
+  en: {
+    subject: site => `We received your order · ${site}`,
+    greeting: name => name ? `Hello ${name},` : 'Hello,',
+    intro: 'Thank you for your purchase. We have received the payment for your order.',
+    items: 'Order summary:',
+    shipping: 'Shipping',
+    total: 'Total',
+    destination: 'Shipping address:',
+    invoice: 'The invoice is attached as a PDF.',
+    reply: 'If you need anything, reply to this email.'
+  }
+})
+
+function addressLines (order, language = 'es') {
+  return [
+    order.recipient_name || order.buyer_name,
+    order.address_line1,
+    order.address_line2,
+    [order.postal_code, order.locality].filter(Boolean).join(' '),
+    order.administrative_area,
+    order.country_code && countryName(order.country_code, language)
+  ].filter(Boolean)
+}
+
+export function renderOrderNotice ({ item, order, site, merchantDetails = false, invoiceNote = null }) {
   const subject = `${SUBJECTS[item.event_type] || `Aviso de pedido (${item.event_type})`} · ${site}`
   if (!order) {
     const text = `${subject}\n\nPedido ${item.order_id}: no se encontró en la base de datos. Revísalo en el panel de pagos.\n`
@@ -62,36 +99,145 @@ export function renderOrderNotice ({ item, order, site }) {
     ['Total', money(order.amount_total_minor, currency, unit)],
     ...(order.refund_amount_minor ? [['Reembolsado', money(order.refund_amount_minor, currency, unit)]] : [])
   ]
-  const note = 'Nombre, contacto y dirección del comprador: panel de Stripe → Pagos (busca el identificador de pago).'
-  const text = [subject, '', ...rows.map(([key, value]) => `${key}: ${value}`), '', 'Artículos:', ...lines, '', note, ''].join('\n')
+  const buyer = [
+    ['Comprador', order.buyer_name],
+    ['Correo', order.buyer_email],
+    ['Teléfono', order.buyer_phone]
+  ].filter(([, value]) => value)
+  const shipTo = addressLines(order)
+  const blocks = []
+  if (merchantDetails) {
+    if (buyer.length || shipTo.length) {
+      if (buyer.length) blocks.push({ title: 'Comprador', rows: buyer.map(([key, value]) => [key, value]) })
+      if (shipTo.length) blocks.push({ title: 'Enviar a', lines: shipTo })
+    } else {
+      blocks.push({ title: 'Comprador', lines: ['Sin datos de entrega guardados (aún no han llegado o ya se borraron). Consúltalos en el panel de pagos.'] })
+    }
+  }
+  const note = merchantDetails ? invoiceNote : 'Nombre, contacto y dirección del comprador: panel de Stripe → Pagos (busca el identificador de pago).'
+  const text = [subject, '', ...rows.map(([key, value]) => `${key}: ${value}`), '', 'Artículos:', ...lines, '',
+    ...blocks.flatMap(block => [`${block.title}:`, ...(block.rows ? block.rows.map(([key, value]) => `${key}: ${value}`) : block.lines), '']),
+    ...(note ? [note, ''] : [])].join('\n')
   const html = `<p><strong>${escapeHtml(subject)}</strong></p><table>${rows.map(([key, value]) => `<tr><th align="left">${escapeHtml(key)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}</table>` +
-    `<p>Artículos:</p><ul>${lines.map(line => `<li>${escapeHtml(line.slice(2))}</li>`).join('')}</ul><p>${escapeHtml(note)}</p>`
+    `<p>Artículos:</p><ul>${lines.map(line => `<li>${escapeHtml(line.slice(2))}</li>`).join('')}</ul>` +
+    blocks.map(block => `<p><strong>${escapeHtml(block.title)}</strong><br>${(block.rows ? block.rows.map(([key, value]) => `${key}: ${value}`) : block.lines).map(escapeHtml).join('<br>')}</p>`).join('') +
+    (note ? `<p>${escapeHtml(note)}</p>` : '')
   return { subject, text, html }
 }
 
+const ORDER_COLUMNS = `
+  SELECT o.id, o.session_id, o.payment_intent_id, o.currency, o.amount_total_minor, o.snapshot_json,
+    o.payment_status, o.fulfillment_status, o.refund_amount_minor, o.updated_at,
+    d.buyer_name, d.buyer_email, d.buyer_phone, d.recipient_name, d.address_line1, d.address_line2,
+    d.locality, d.administrative_area, d.postal_code, d.country_code
+  FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id WHERE o.id = ?
+`
+
+export function loadOrder (db, orderId) {
+  return db.prepare(ORDER_COLUMNS).bind(orderId).first()
+}
+
+async function attachInvoice (db, order, catalog) {
+  const issuedAt = await paymentTime(db, order)
+  const row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt })
+  return { name: invoiceFilename(row), type: 'application/pdf', bytes: renderInvoicePdf(row) }
+}
+
+// Invoice problems caused by the order data degrade the notice (it still goes out,
+// with the reason); anything else is transient and propagates to the outbox retry.
+async function invoiceAttachment (db, order, catalog) {
+  try {
+    return { attachment: await attachInvoice(db, order, catalog), note: 'Factura PDF adjunta.' }
+  } catch (error) {
+    if (!(error instanceof InvoiceError)) throw error
+    return { attachment: null, note: `Factura no generada (${error.code}). Se puede obtener desde el panel de administración cuando se corrija.` }
+  }
+}
+
+function buyerMessage ({ order, site, catalog, hasInvoice }) {
+  const language = catalog.notices.language
+  const t = BUYER_TEXT[language]
+  const snapshot = JSON.parse(order.snapshot_json)
+  const totals = snapshot.totals || {}
+  const currency = order.currency || snapshot.currency || 'eur'
+  const unit = snapshot.minorUnit ?? 2
+  const money = minor => formatMoney(minor, currency, unit, language)
+  const lines = (snapshot.items || []).map(line => `- ${line.quantity} × ${line.name || line.sku} — ${money(line.lineTotalMinor)}`)
+  if (totals.shippingBaseMinor > 0) lines.push(`- ${t.shipping} — ${money(totals.shippingBaseMinor)}`)
+  const name = order.buyer_name || order.recipient_name || ''
+  const address = addressLines(order, language)
+  const text = [t.greeting(name), '', t.intro, '', t.items, ...lines, `${t.total}: ${money(order.amount_total_minor)}`, '',
+    ...(address.length ? [t.destination, ...address, ''] : []),
+    ...(hasInvoice ? [t.invoice, ''] : []), t.reply, ''].join('\n')
+  const html = `<p>${escapeHtml(t.greeting(name))}</p><p>${escapeHtml(t.intro)}</p><p>${escapeHtml(t.items)}</p>` +
+    `<ul>${lines.map(line => `<li>${escapeHtml(line.slice(2))}</li>`).join('')}</ul><p><strong>${escapeHtml(t.total)}: ${escapeHtml(money(order.amount_total_minor))}</strong></p>` +
+    (address.length ? `<p>${escapeHtml(t.destination)}<br>${address.map(escapeHtml).join('<br>')}</p>` : '') +
+    (hasInvoice ? `<p>${escapeHtml(t.invoice)}</p>` : '') + `<p>${escapeHtml(t.reply)}</p>`
+  return { subject: t.subject(site), text, html }
+}
+
+// One confirmation per paid order, enqueued as its own outbox event so a retry of the
+// merchant notice can never resend it (and vice versa). Idempotent by event key.
+async function enqueueBuyerConfirmation (db, item) {
+  const eventKey = `${item.order_id}:${BUYER_EVENT}`
+  const now = Math.floor(Date.now() / 1000)
+  await db.prepare(`
+    INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'pending', 0, 0, ?, ?)
+  `).bind(eventKey, item.order_id, BUYER_EVENT, JSON.stringify({ eventKey, orderId: item.order_id, eventType: BUYER_EVENT }), now, now).run()
+}
+
 // Throws on any failure so the outbox reschedules with backoff (at-least-once).
-export async function sendOrderNotice ({ env, db, item, site, fetch = (...args) => globalThis.fetch(...args) }) {
+export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (...args) => globalThis.fetch(...args) }) {
   if (!hasMailNotifier(env)) throw new Error('notifier_unavailable')
-  const order = await db.prepare(`
-    SELECT o.id, o.session_id, o.payment_intent_id, o.currency, o.amount_total_minor, o.snapshot_json,
-      o.payment_status, o.fulfillment_status, o.refund_amount_minor, d.postal_code, d.country_code
-    FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id WHERE o.id = ?
-  `).bind(item.order_id).first()
+  const notices = catalog?.notices || null
+  const order = await loadOrder(db, item.order_id)
   const gmail = provider(fetch)
   const authority = await gmail.authority(env, { account: env.COMMERCE_NOTIFY_ACCOUNT || '' })
-  const { subject, text, html } = renderOrderNotice({ item, order, site })
+  const message = {
+    fromName: site,
+    to: env.COMMERCE_NOTIFY_TO.split(',').map(value => value.trim()).filter(Boolean),
+    messageId: `commerce-${item.event_key}`.replace(/[^A-Za-z0-9.-]/g, '-')
+  }
+
+  if (item.event_type === BUYER_EVENT) {
+    // Confirmation to the buyer, with the invoice if configured. Nothing to do
+    // without an address (never collected, or already erased by the retention job).
+    if (!notices?.buyerConfirmation || !order || !validAddress(order.buyer_email || '')) return
+    const invoice = notices.buyerInvoice ? await invoiceAttachment(db, order, catalog) : { attachment: null }
+    const rendered = buyerMessage({ order, site, catalog, hasInvoice: Boolean(invoice.attachment) })
+    await gmail.send({
+      env,
+      authority,
+      signal: AbortSignal.timeout(15000),
+      beforeSend: async () => {},
+      message: {
+        ...message,
+        fromName: catalog.invoice?.seller?.name || site,
+        to: [order.buyer_email],
+        replyTo: message.to[0],
+        ...rendered,
+        attachments: invoice.attachment ? [invoice.attachment] : []
+      }
+    })
+    return
+  }
+
+  if (notices?.buyerConfirmation && item.event_type === 'payment.paid') await enqueueBuyerConfirmation(db, item)
+  const invoice = notices?.merchantInvoice && item.event_type === 'payment.paid' && order ? await invoiceAttachment(db, order, catalog) : { attachment: null, note: null }
+  const { subject, text, html } = renderOrderNotice({ item, order, site, merchantDetails: Boolean(notices?.merchantDetails), invoiceNote: invoice.note })
   await gmail.send({
     env,
     authority,
     signal: AbortSignal.timeout(15000),
     beforeSend: async () => {},
     message: {
-      fromName: site,
-      to: env.COMMERCE_NOTIFY_TO.split(',').map(value => value.trim()).filter(Boolean),
+      ...message,
       subject,
       text,
       html,
-      messageId: `commerce-${item.event_key}`.replace(/[^A-Za-z0-9.-]/g, '-')
+      ...(notices?.merchantDetails && validAddress(order?.buyer_email || '') ? { replyTo: order.buyer_email } : {}),
+      attachments: invoice.attachment ? [invoice.attachment] : []
     }
   })
 }

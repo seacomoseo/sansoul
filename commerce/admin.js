@@ -7,7 +7,8 @@ import { rotateCandidates } from './maintenance.js'
 const tokenEncoder = new TextEncoder()
 import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
-import { hasMailNotifier, sendOrderNotice } from './notifier.js'
+import { hasMailNotifier, loadOrder, sendOrderNotice } from './notifier.js'
+import { InvoiceError, getOrIssueInvoice, invoiceFilename, paymentTime, renderInvoicePdf } from './invoice.js'
 
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -293,7 +294,7 @@ async function notifierSend (env, item, attempts, db, options) {
   }
   // A service binding wins; otherwise mail the merchant through the forms Gmail provider.
   if ((!env.COMMERCE_NOTIFIER || typeof env.COMMERCE_NOTIFIER.fetch !== 'function') && hasMailNotifier(env)) {
-    return await sendOrderNotice({ env, db, item, site: options.site, fetch: options.fetch })
+    return await sendOrderNotice({ env, db, item, site: options.site, catalog: options.catalog, fetch: options.fetch })
   }
   if (!env.COMMERCE_NOTIFIER || typeof env.COMMERCE_NOTIFIER.fetch !== 'function') throw new Error('notifier_unavailable')
   const response = await env.COMMERCE_NOTIFIER.fetch('https://commerce-notifier/outbox', {
@@ -426,6 +427,24 @@ async function ackOutbox (request, db, now) {
   return jsonResponse({ acked: Boolean(result.meta?.changes) })
 }
 
+// The invoice of a paid order as a PDF; issues it (next number of the series) if it
+// does not exist yet. Same idempotent path as the order notices.
+async function invoicePdf (db, catalog, orderId) {
+  if (!catalog?.invoice) throw new CommerceError('invoice_not_configured', 404)
+  const order = await loadOrder(db, orderId)
+  if (!order) throw new CommerceError('not_found', 404)
+  let row
+  try {
+    row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt: await paymentTime(db, order) })
+  } catch (error) {
+    if (error instanceof InvoiceError) throw new CommerceError(error.code, 409)
+    throw error
+  }
+  return new Response(renderInvoicePdf(row), {
+    headers: { 'content-type': 'application/pdf', 'content-disposition': `attachment; filename="${invoiceFilename(row)}"`, 'cache-control': 'no-store' }
+  })
+}
+
 function siteName (catalog) {
   try {
     return new URL(catalog?.origin).host || 'SanSoul'
@@ -440,7 +459,7 @@ export async function dispatchScheduledNotices (env, catalog, { limit = 3, fetch
   if (!env.COMMERCE_DB) return { attempted: 0, delivered: 0, failed: 0, has_more: false }
   const summary = { attempted: 0, delivered: 0, failed: 0, has_more: false }
   for (let turn = 0; turn < limit; turn++) {
-    const result = await (await dispatchOutbox(env.COMMERCE_DB, env, now(), { site: siteName(catalog), fetch })).json()
+    const result = await (await dispatchOutbox(env.COMMERCE_DB, env, now(), { site: siteName(catalog), catalog, fetch })).json()
     summary.attempted += result.attempted
     summary.delivered += result.delivered
     summary.failed += result.failed
@@ -473,9 +492,12 @@ export async function handleAdmin (request, env, catalog) {
       if (!['orders', 'expiration', 'unmatched_webhooks'].includes(operation)) throw new CommerceError('invalid_operation', 400)
       return await reconcile(db, env, catalog, now, operation)
     }
-    if (path === '/api/commerce/admin/outbox/dispatch' && request.method === 'POST') return await dispatchOutbox(db, env, now, { site: siteName(catalog) })
+    if (path === '/api/commerce/admin/outbox/dispatch' && request.method === 'POST') return await dispatchOutbox(db, env, now, { site: siteName(catalog), catalog })
     if (path === '/api/commerce/admin/outbox/claim' && request.method === 'POST') return await claimOutbox(db, now)
     if (path === '/api/commerce/admin/outbox/ack' && request.method === 'POST') return await ackOutbox(request, db, now)
+
+    const invoice = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/invoice\.pdf$/i)
+    if (invoice && request.method === 'GET' && ORDER_ID.test(invoice[1])) return await invoicePdf(db, catalog, invoice[1])
 
     const match = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/(manufacture|ship|cancel-partial)$/i)
     if (match && request.method === 'POST' && ORDER_ID.test(match[1])) {

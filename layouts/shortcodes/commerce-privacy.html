@@ -2,16 +2,22 @@
 Shortcode: commerce-privacy
 Purpose: Privacy section for online orders, shown only when data/commerce.yml enables commerce.
 Context: none. Retention comes from data/commerce.yml `privacy_retention` (optional strings):
-  orders (order and invoicing data) and delivery (delivery address and contact).
+  orders (order and invoicing data, which includes the stored invoices) and delivery (delivery address and contact).
+  The recipients line follows `order_notices` (merchant details, buyer confirmation).
 Renders: Markdown section (Spanish) or nothing.
 */}}
 {{- with hugo.Data.commerce -}}
   {{- if eq .enabled true -}}
     {{- $retention := .privacy_retention | default dict -}}
+    {{- $notices := .order_notices | default dict -}}
+    {{- $noticesOn := eq $notices.enabled true -}}
+    {{- $merchantDetails := and $noticesOn (ne $notices.merchant_details false) -}}
+    {{- $buyerMail := and $noticesOn (ne $notices.buyer_confirmation false) -}}
+    {{- $buyerInvoice := and $buyerMail (eq (.invoice | default dict).enabled true) (ne $notices.buyer_invoice false) -}}
 ### Compras en la tienda online
 Si realiza un pedido, tratamos los datos necesarios para cobrarlo, fabricarlo, enviarlo y emitir la factura: artículos e importes, nombre, email, teléfono y dirección de entrega. El pago lo procesa **Stripe Payments Europe, Ltd.**, que recoge los datos de pago y de envío en su página segura; nosotros no vemos ni guardamos el número de su tarjeta.
 - **Base legal:** Art. 6(1)(b) RGPD (ejecución del contrato) y Art. 6(1)(c) (obligaciones contables y fiscales).
 - **Conservación:** datos del pedido y de facturación, {{ index $retention "orders" | default "el plazo que exija la normativa contable y fiscal" }}; dirección y contacto de entrega, {{ index $retention "delivery" | default "mientras sean necesarios para el envío, las devoluciones y la garantía" }}.
-- **Destinatarios:** Stripe (pago), la empresa de transporte (envío) y nuestro proveedor de alojamiento (Cloudflare). El aviso interno de cada pedido no incluye su dirección ni su contacto.
+- **Destinatarios:** Stripe (pago), la empresa de transporte (envío) y nuestro proveedor de alojamiento (Cloudflare).{{ if $noticesOn }} Los correos del pedido se envían a través de Google (Gmail).{{ end }} {{ if $merchantDetails }}El aviso interno de cada pedido incluye sus datos de contacto y de entrega para poder prepararlo y enviarlo.{{ else }}El aviso interno de cada pedido no incluye su dirección ni su contacto.{{ end }}{{ if $buyerMail }} Le enviaremos por correo la confirmación del pedido{{ if $buyerInvoice }} con su factura en PDF{{ end }}.{{ end }}
   {{- end -}}
 {{- end -}}

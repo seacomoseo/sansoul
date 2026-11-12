@@ -228,6 +228,7 @@ export function calculateOrderTotals (snapshot, policy, destination) {
     shippingBaseMinor: rule.shipping.amountMinor,
     shippingNetMinor: Number(shipping.net),
     shippingTaxMinor: Number(shipping.tax),
+    shippingTax: { mode: rule.shipping.tax.mode, rateBps: rule.shipping.tax.rateBps },
     shippingTotalMinor: Number(shipping.total),
     taxMinor: Number(merchandiseTax + shipping.tax),
     addedTaxMinor: Number(addedTax),

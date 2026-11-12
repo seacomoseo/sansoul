@@ -571,7 +571,56 @@ notes:
     es: "Otros destinos o más de 2 kg: pide presupuesto."
 ```
 
-El cron del Worker (el mismo de formularios, cada 15 minutos) envía a la tienda un correo por cada evento del outbox (`payment.paid`, reembolsos y excepciones) cuando hay `COMMERCE_NOTIFY_TO` (una o varias direcciones separadas por comas, en `worker_vars`) y credenciales Gmail de formularios (`FORMS_GMAIL_CREDENTIALS` con `FORMS_GMAIL_DEFAULT`, o la referencia de `COMMERCE_NOTIFY_ACCOUNT`). El correo lleva pedido, identificador de pago, artículos, totales y código postal de destino; nombre, contacto y dirección se consultan en el panel de Stripe o en `admin/orders`, para no dejar datos personales en el buzón emisor. Si el envío falla, el evento queda pendiente con reintentos y el código del proveedor en `last_error` (p. ej. `gmail_grant_invalid`). Un binding `COMMERCE_NOTIFIER` tiene prioridad sobre el correo. La conciliación sigue siendo manual (`admin/reconcile`).
+El cron del Worker (el mismo de formularios, cada 15 minutos) envía a la tienda un correo por cada evento del outbox (`payment.paid`, reembolsos y excepciones) cuando hay `COMMERCE_NOTIFY_TO` (una o varias direcciones separadas por comas, en `worker_vars`) y credenciales Gmail de formularios (`FORMS_GMAIL_CREDENTIALS` con `FORMS_GMAIL_DEFAULT`, o la referencia de `COMMERCE_NOTIFY_ACCOUNT`). Por defecto el correo lleva pedido, identificador de pago, artículos, totales y código postal de destino; nombre, contacto y dirección se consultan en el panel de Stripe o en `admin/orders`, para no dejar datos personales en el buzón emisor (para recibirlos por correo y con factura, ver «Avisos completos y factura PDF»). Si el envío falla, el evento queda pendiente con reintentos y el código del proveedor en `last_error` (p. ej. `gmail_grant_invalid`). Un binding `COMMERCE_NOTIFIER` tiene prioridad sobre el correo. La conciliación sigue siendo manual (`admin/reconcile`).
+
+### Avisos completos y factura PDF
+
+Opcional y por proyecto, en `data/commerce.yml`. Sin las claves `order_notices` e `invoice` todo queda como arriba: avisos sin datos personales y sin factura. Hace falta lo mismo que para los avisos (`COMMERCE_NOTIFY_TO` y credenciales Gmail de formularios) y que el Worker tenga aplicada la migración D1 `0007_invoices.sql` (el CI la aplica con el resto).
+
+```yaml
+order_notices:
+  enabled: true              # sin esto, nada de lo de abajo se activa
+  language: es               # es | en (correo al comprador)
+  merchant_details: true     # el aviso al vendedor incluye nombre, correo, teléfono y dirección de envío (por defecto true)
+  merchant_invoice: true     # y la factura PDF adjunta en el aviso de pedido pagado (por defecto: true si hay `invoice`)
+  buyer_confirmation: true   # correo de confirmación al comprador (por defecto true)
+  buyer_invoice: true        # con la misma factura adjunta (por defecto: true si hay `invoice`; false = solo resumen)
+invoice:
+  enabled: true
+  language: es               # es | en
+  timezone: Europe/Madrid    # para la fecha y el año de la serie (ver zonas admitidas abajo)
+  seller:
+    name: Nombre o razón social del titular
+    tax_id: 00000000T
+    address:                    # de 1 a 4 líneas (una por elemento; cuidado con las comas en la sintaxis [a, b])
+      - Calle Ejemplo 4, 2.º A
+      - 30000 Ciudad (Provincia)
+    email: tienda@example.com   # opcional
+    phone: 600 000 000          # opcional
+  series:
+    prefix: WEB               # serie propia de la tienda: WEB-2026-0001
+    year: true                # una serie por año (empieza en `start` cada enero); false = WEB-0001 continua
+    digits: 4
+    start: 1                  # número con el que empieza cada serie
+    credit_prefix: RWEB       # serie de las rectificativas (por defecto R + prefix)
+  item_label: "Venta material 3D ({name})"   # concepto de cada línea; {name} y {sku}
+  shipping_label: Envío                      # opcional
+  payment_text: Pagado con tarjeta           # omitido = texto por defecto; false o '' = no imprimir forma de pago
+  exempt_note: "Operación exenta de IVA según art. 21 Ley 37/1992 (envío a Canarias)"   # sale solo si hay líneas exentas
+  footer: Texto libre al pie (opcional)
+```
+
+Cómo funciona, en llano:
+
+- **Cuándo se emite**: al enviar el aviso de `payment.paid` (o al pedirla a mano con `GET /api/commerce/admin/orders/<id>/invoice.pdf`, con el token de administración). Se emite **una por pedido**: reintentos del webhook, del cron o de la descarga devuelven la misma, con el mismo número. El número se asigna dentro de la misma operación D1 que guarda la factura, así que un fallo no deja huecos. Las filas son registros fiscales: un trigger impide modificarlas o borrarlas. La factura guarda en D1 todo lo que dibuja (titular, cliente, líneas, IVA); por eso se puede regenerar el PDF aunque `delivery_retention_days` ya haya borrado la dirección de entrega. Eso es una conservación por obligación fiscal: refleja el plazo en `privacy_retention.orders`.
+- **Qué lleva**: fecha (en `timezone`), número, titular y NIF, cliente (nombre y dirección de entrega que devolvió Stripe; sin NIF, que Stripe no recoge aquí), una línea por artículo y el envío, desglose por tipo de IVA (base imponible e IVA, o base exenta), total y forma de pago. Con IVA incluido se imprime «Precios con IVA incluido». Los importes salen de `snapshot.totals` del pedido (la misma política que cobró), no se recalculan. Si el pedido no tiene esos totales (pedidos antiguos), el aviso sale igualmente con «Factura no generada (código)».
+- **IVA del envío y exenciones**: el envío usa el IVA de su regla en `totals_policy` (`shipping.tax`). La coletilla `exempt_note` se imprime solo si alguna línea o el envío están exentos (`mode: exempt`), p. ej. una zona de Canarias con regla propia.
+- **Rectificativa**: el esquema y el generador están preparados (serie `credit_prefix`, importes en negativo, referencia a la factura original), pero ningún flujo la emite todavía: los reembolsos no generan factura rectificativa. Emítela a mano en el panel de pagos o, cuando se active, desde un flujo nuevo.
+- **Aviso al vendedor**: con `merchant_details` el correo añade comprador, correo, teléfono y dirección de envío y pone `Reply-To` al comprador. Esos datos quedan también en la carpeta de enviados de la cuenta Gmail emisora y en la bandeja de quien recibe: alinea `privacy_retention` y el texto de privacidad (el shortcode `commerce-privacy` ya cambia su frase de destinatarios según `order_notices`).
+- **Confirmación al comprador**: con `buyer_confirmation` (activada por defecto) se encola un evento propio `buyer.confirmation` al procesar el aviso de pedido pagado: resumen, dirección y, si `buyer_invoice`, la factura PDF. Sale desde la cuenta Gmail de formularios (nombre del titular, `Reply-To` a la primera dirección de `COMMERCE_NOTIFY_TO`). Si el comprador no dejó correo no se envía nada. **Stripe también envía recibos**: si activas la confirmación propia, desactiva los recibos de Stripe (Ajustes → Correos electrónicos de recibos) para no duplicar. Solo funciona con el correo integrado (no con un binding `COMMERCE_NOTIFIER` ni con un relé por pull).
+- **Zonas horarias admitidas** (se calcula sin `Intl`, que costaría más CPU de la que permite Workers Free): `UTC`, `Europe/Madrid`, `Europe/Paris`, `Europe/Berlin`, `Europe/Rome`, `Europe/Brussels`, `Europe/Amsterdam`, `Europe/Lisbon`, `Atlantic/Canary`, `Europe/London`, `Europe/Dublin`, `America/Argentina/Buenos_Aires`, `America/Bogota`, `America/Lima`, `America/Mexico_City`, `America/Montevideo`. Otra zona detiene el build.
+- **Coste**: unos 5 ms de CPU y ~3 KB por factura en local (el generador de PDF no usa dependencias, solo Helvetica estándar; límite Free 10 ms por invocación), 3-4 consultas D1 por aviso y un correo más por pedido. El cron sigue drenando como máximo 3 eventos por pasada.
+- **Probar**: `pnpm run test:commerce` (incluye `commerce/test/unit/invoice.test.js`); con un Worker de prueba, cambia `COMMERCE_NOTIFY_TO` a tu correo y lanza `POST /api/commerce/admin/outbox/dispatch` o espera al cron. Abre el PDF y compara con tu modelo.
 
 ### Operación privada, exportación y respaldo
 
