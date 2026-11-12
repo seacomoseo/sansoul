@@ -575,16 +575,28 @@ El cron del Worker (el mismo de formularios, cada 15 minutos) envía a la tienda
 
 ### Avisos completos y factura PDF
 
-Opcional y por proyecto, en `data/commerce.yml`. Sin las claves `order_notices` e `invoice` todo queda como arriba: avisos sin datos personales y sin factura. Hace falta lo mismo que para los avisos (`COMMERCE_NOTIFY_TO` y credenciales Gmail de formularios) y que el Worker tenga aplicada la migración D1 `0007_invoices.sql` (el CI la aplica con el resto).
+Opcional y por proyecto, en `data/commerce.yml`. Sin las claves `order_notices` e `invoice` todo queda como arriba: avisos sin datos personales y sin factura. Hace falta lo mismo que para los avisos (`COMMERCE_NOTIFY_TO` y credenciales Gmail de formularios) y que el Worker tenga aplicadas las migraciones D1 `0007_invoices.sql` y `0008_buyer_tax_and_delivery_notes.sql` (el CI las aplica con el resto).
 
 ```yaml
 order_notices:
   enabled: true              # sin esto, nada de lo de abajo se activa
-  language: es               # es | en (correo al comprador)
-  merchant_details: true     # el aviso al vendedor incluye nombre, correo, teléfono y dirección de envío (por defecto true)
-  merchant_invoice: true     # y la factura PDF adjunta en el aviso de pedido pagado (por defecto: true si hay `invoice`)
-  buyer_confirmation: true   # correo de confirmación al comprador (por defecto true)
-  buyer_invoice: true        # con la misma factura adjunta (por defecto: true si hay `invoice`; false = solo resumen)
+  language: es               # idioma por defecto del comprador (es, en, de, fr, it, pt) si la compra no trae el suyo
+  merchant: full             # full = con nombre, contacto y dirección | summary = sin datos personales | none = sin aviso nuestro
+  merchant_language: es      # es | en (aviso al vendedor)
+  merchant_invoice: true     # factura PDF adjunta en el aviso de pedido pagado (por defecto: true si hay `invoice` y aviso)
+  buyer: own                 # own = confirmación nuestra | stripe = solo el recibo de Stripe | none = nada
+  buyer_invoice: on_request  # always | on_request (casilla en el carrito o empresa con NIF) | never. Por defecto on_request si hay `invoice`
+  templates:                 # opcional: textos propios por idioma; sin ellos, los del motor
+    buyer_paid:              # confirmación al comprador
+      subject: { es: "Hemos recibido tu pedido {order}", en: "We received your order {order}" }
+      intro: { es: "Hola {name}, gracias por tu compra.", en: "Hi {name}, thank you." }
+      outro: "Plazo de fabricación: unas **2 semanas**. [Condiciones](https://example.com/legal/)"
+    buyer_invoice: { subject: "…", intro: "…", outro: "…" }   # correo aparte con la factura (buyer: stripe)
+    merchant_paid: { subject: "Pedido de {name}", intro: "…" } # aviso de pedido pagado
+```
+
+Las claves de 14.3 siguen valiendo: `merchant_details: true|false` = `merchant: full|summary`, `buyer_confirmation: true|false` = `buyer: own|none`, `buyer_invoice: true|false` = `always|never`. Usar a la vez una clave antigua y su sustituta detiene el build.
+
 invoice:
   enabled: true
   language: es               # es | en
@@ -613,14 +625,28 @@ invoice:
 Cómo funciona, en llano:
 
 - **Cuándo se emite**: al enviar el aviso de `payment.paid` (o al pedirla a mano con `GET /api/commerce/admin/orders/<id>/invoice.pdf`, con el token de administración). Se emite **una por pedido**: reintentos del webhook, del cron o de la descarga devuelven la misma, con el mismo número. El número se asigna dentro de la misma operación D1 que guarda la factura, así que un fallo no deja huecos. Las filas son registros fiscales: un trigger impide modificarlas o borrarlas. La factura guarda en D1 todo lo que dibuja (titular, cliente, líneas, IVA); por eso se puede regenerar el PDF aunque `delivery_retention_days` ya haya borrado la dirección de entrega. Eso es una conservación por obligación fiscal: refleja el plazo en `privacy_retention.orders`.
-- **Qué lleva**: fecha (en `timezone`), número, titular y NIF, cliente (nombre y dirección de entrega que devolvió Stripe; sin NIF, que Stripe no recoge aquí), una línea por artículo y el envío, desglose por tipo de IVA (base imponible e IVA, o base exenta), total y forma de pago. Con IVA incluido se imprime «Precios con IVA incluido». Los importes salen de `snapshot.totals` del pedido (la misma política que cobró), no se recalculan. Si el pedido no tiene esos totales (pedidos antiguos), el aviso sale igualmente con «Factura no generada (código)».
+- **Qué lleva**: fecha (en `timezone`), número, titular y NIF, cliente (nombre y dirección de entrega que devolvió Stripe; si compró como empresa, razón social y NIF), una línea por artículo y el envío, desglose por tipo de IVA (base imponible e IVA, o base exenta), total y forma de pago. Con IVA incluido se imprime «Precios con IVA incluido». Los importes salen de `snapshot.totals` del pedido (la misma política que cobró), no se recalculan. Si el pedido no tiene esos totales (pedidos antiguos), el aviso sale igualmente con «Factura no generada (código)».
 - **IVA del envío y exenciones**: el envío usa el IVA de su regla en `totals_policy` (`shipping.tax`). La coletilla `exempt_note` se imprime solo si alguna línea o el envío están exentos (`mode: exempt`), p. ej. una zona de Canarias con regla propia.
 - **Rectificativa**: el esquema y el generador están preparados (serie `credit_prefix`, importes en negativo, referencia a la factura original), pero ningún flujo la emite todavía: los reembolsos no generan factura rectificativa. Emítela a mano en el panel de pagos o, cuando se active, desde un flujo nuevo.
-- **Aviso al vendedor**: con `merchant_details` el correo añade comprador, correo, teléfono y dirección de envío y pone `Reply-To` al comprador. Esos datos quedan también en la carpeta de enviados de la cuenta Gmail emisora y en la bandeja de quien recibe: alinea `privacy_retention` y el texto de privacidad (el shortcode `commerce-privacy` ya cambia su frase de destinatarios según `order_notices`).
-- **Confirmación al comprador**: con `buyer_confirmation` (activada por defecto) se encola un evento propio `buyer.confirmation` al procesar el aviso de pedido pagado: resumen, dirección y, si `buyer_invoice`, la factura PDF. Sale desde la cuenta Gmail de formularios (nombre del titular, `Reply-To` a la primera dirección de `COMMERCE_NOTIFY_TO`). Si el comprador no dejó correo no se envía nada. **Stripe también envía recibos**: si activas la confirmación propia, desactiva los recibos de Stripe (Ajustes → Correos electrónicos de recibos) para no duplicar. Solo funciona con el correo integrado (no con un binding `COMMERCE_NOTIFIER` ni con un relé por pull).
+- **Aviso al vendedor** (`merchant`): con `full` el correo añade comprador, correo, teléfono, razón social y NIF si es empresa, dirección de envío, teléfono e indicaciones de entrega, si el comprador pidió factura, y pone `Reply-To` al comprador. Esos datos quedan también en la carpeta de enviados de la cuenta Gmail emisora y en la bandeja de quien recibe: alinea `privacy_retention` y el texto de privacidad (el shortcode `commerce-privacy` cambia su frase de destinatarios según `order_notices`). Con `none` no se envía aviso nuestro; el aviso de Stripe a los miembros del equipo se activa en el perfil de cada usuario de Stripe (no es configurable por API). `COMMERCE_NOTIFY_TO` sigue haciendo falta: es el `Reply-To` de los correos al comprador.
+- **Confirmación al comprador** (`buyer: own`, por defecto): se encola un evento propio `buyer.confirmation` al procesar el aviso de pedido pagado: resumen, dirección, indicaciones de entrega y, según `buyer_invoice`, la factura PDF. Va en el idioma de la compra (ver abajo). Sale desde la cuenta Gmail de formularios (nombre del titular, `Reply-To` a la primera dirección de `COMMERCE_NOTIFY_TO`). Si el comprador no dejó correo no se envía nada. Es la opción recomendada: puede llevar condiciones y plazos (plantilla `outro`), cosa que el recibo de Stripe no permite. **Desactiva entonces los recibos de Stripe** (Ajustes → Correos electrónicos de clientes → Pagos correctos) para no duplicar. Solo funciona con el correo integrado (no con un binding `COMMERCE_NOTIFIER` ni con un relé por pull).
+- **Recibo de Stripe** (`buyer: stripe`): el motor no envía confirmación; **activa «Pagos correctos»** en Stripe (solo editable en modo live) para que Stripe mande su recibo (logo y colores en Branding; texto no editable; sin dirección de envío ni factura). Si además `buyer_invoice` no es `never`, el motor manda un segundo correo corto solo con la factura (evento `buyer.invoice`) a quien la pidió, es empresa o, con `always`, a todos.
+- **Factura a petición** (`buyer_invoice: on_request`): el carrito muestra la casilla «Quiero factura»; quien la marca o se identifica como empresa con NIF en Stripe recibe la factura. El motor la **emite siempre** (numeración correlativa) y la adjunta al aviso del vendedor si `merchant_invoice`; lo que cambia es a quién se envía. Con `never`, el titular puede reenviarla a mano (`admin/orders/<id>/invoice.pdf`).
+- **Plantillas** (`templates`): asunto, entrada y cierre por tipo de correo, en Markdown sencillo (párrafos, `**negrita**`, `*cursiva*`, `[enlace](https://…)`), una cadena para todos los idiomas o un mapa idioma → texto. Marcadores: `{site}`, `{name}`, `{order}`, `{total}` (los valores del comprador se escapan). Falta el idioma de la compra → texto `*` (cadena única) → idioma `language` → texto del motor. La entrada sustituye al saludo; el cierre, a «Si necesitas algo, responde a este correo». Las tablas (artículos, totales, dirección) las pone siempre el motor.
 - **Zonas horarias admitidas** (se calcula sin `Intl`, que costaría más CPU de la que permite Workers Free): `UTC`, `Europe/Madrid`, `Europe/Paris`, `Europe/Berlin`, `Europe/Rome`, `Europe/Brussels`, `Europe/Amsterdam`, `Europe/Lisbon`, `Atlantic/Canary`, `Europe/London`, `Europe/Dublin`, `America/Argentina/Buenos_Aires`, `America/Bogota`, `America/Lima`, `America/Mexico_City`, `America/Montevideo`. Otra zona detiene el build.
 - **Coste**: unos 5 ms de CPU y ~3 KB por factura en local (el generador de PDF no usa dependencias, solo Helvetica estándar; límite Free 10 ms por invocación), 3-4 consultas D1 por aviso y un correo más por pedido. El cron sigue drenando como máximo 3 eventos por pasada.
 - **Probar**: `pnpm run test:commerce` (incluye `commerce/test/unit/invoice.test.js`); con un Worker de prueba, cambia `COMMERCE_NOTIFY_TO` a tu correo y lanza `POST /api/commerce/admin/outbox/dispatch` o espera al cron. Abre el PDF y compara con tu modelo.
+
+### Idioma de la compra, datos de empresa y entrega
+
+- **Idioma de la compra**: el carrito envía el idioma de la página (`es`, `en`, `de`, `fr`, `it`, `pt`); se guarda en el pedido y decide el idioma de la página de pago de Stripe (y de su recibo), las líneas «IVA» y «Envío», el nombre del producto y la confirmación al comprador. Pedidos sin idioma (carritos anteriores a 14.4) usan `order_notices.language`. La factura sigue en `invoice.language` y el aviso al vendedor en `merchant_language`.
+- **Empresa con NIF** (`checkout_tax_id`, por defecto `true` si hay `invoice`): Stripe Checkout ofrece «Compro como empresa» con razón social y NIF (CIF español, IVA intracomunitario, etc.; Stripe comprueba el formato). Llegan con el webhook, se guardan junto a la dirección (mismo borrado por `delivery_retention_days`) y salen en el aviso y en la factura. Stripe no recoge DNI de particulares. `checkout_tax_id: false` lo desactiva.
+- **Entrega** (`checkout_fields`, opcional): `[recipient_phone, delivery_notes]` añade a la página de pago «Teléfono de quien recibe (si no eres tú)» e «Indicaciones para el repartidor», opcionales, como campos propios de Stripe (máximo 3 por sesión; etiquetas en el idioma de la compra; hasta 40 y 255 caracteres). Se ven en el aviso, la confirmación, `admin/orders` y el CSV.
+- El CSV de `admin/export.csv` añade al final las columnas `buyer_business_name`, `buyer_tax_id`, `buyer_tax_id_type`, `recipient_phone`, `delivery_notes`, `invoice_requested` y `locale` (las anteriores no cambian de posición).
+
+### Capa de pagos
+
+El código de Stripe común (claves, peticiones, validación de sesiones y firma de webhooks) vive en `core/payments/` y no depende de la tienda. Cada sesión y PaymentIntent lleva `metadata[purpose]=order`; el webhook aplica a pedidos solo los eventos de comercio (los que no traen `purpose` también, por compatibilidad) y registra como ignorados los de otro propósito. Así, un formulario con pago, reservas o acceso a contenidos podrán usar la misma cuenta y el mismo endpoint de Stripe como consumidores propios, sin tocar la tienda. Las tablas genéricas de pagos y el alias `/api/payments/webhook` llegarán con el primer consumidor que no sea la tienda; hoy el endpoint sigue siendo `/api/commerce/webhook`.
 
 ### Operación privada, exportación y respaldo
 
