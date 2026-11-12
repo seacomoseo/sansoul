@@ -42,6 +42,10 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.3.1 — 2026-11-12 — avisos de pedido en tablas
+
+**Impacto:** solo presentación. Los avisos al vendedor y la confirmación al comprador pasan del listado con viñetas a tablas HTML (artículo, cantidad, precio; subtotal, envío, IVA y total al pie; comprador y dirección en tablas). El texto plano no cambia. Sin migraciones ni cambios de configuración.
+
 ## 14.3.0 — 2026-11-12 — avisos completos de pedido y factura PDF
 
 **Impacto:** ninguno salvo que se active. Los proyectos sin `order_notices` ni `invoice` en

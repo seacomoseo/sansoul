@@ -38,6 +38,31 @@ function escapeHtml (value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
 }
 
+const CELL = 'padding:6px 10px;border-bottom:1px solid #e5e5e5;vertical-align:top'
+const TABLE = 'border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;margin:0 0 16px'
+
+// Email-safe HTML tables (inline styles only). `head`: header cells; `rows`: arrays of
+// cells (numeric columns right-aligned via `right`); `foot`: [label, value, strong] rows
+// whose label spans every column but the last.
+function htmlTable ({ head = [], rows = [], foot = [], right = [] }) {
+  const align = index => right.includes(index) ? ';text-align:right;white-space:nowrap' : ';text-align:left'
+  const cols = Math.max(head.length, ...rows.map(row => row.length), 2)
+  return `<table cellpadding="0" cellspacing="0" style="${TABLE}">` +
+    (head.length ? `<thead><tr>${head.map((cell, i) => `<th style="${CELL}${align(i)};background:#f4f4f4">${escapeHtml(cell)}</th>`).join('')}</tr></thead>` : '') +
+    `<tbody>${rows.map(row => `<tr>${row.map((cell, i) => `<td style="${CELL}${align(i)}">${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}` +
+    foot.map(([label, value, strong]) => `<tr><td colspan="${cols - 1}" style="${CELL};text-align:right${strong ? ';font-weight:bold' : ''}">${escapeHtml(label)}</td><td style="${CELL};text-align:right;white-space:nowrap${strong ? ';font-weight:bold' : ''}">${escapeHtml(value)}</td></tr>`).join('') +
+    '</tbody></table>'
+}
+
+function keyValueTable (rows, title) {
+  return (title ? `<p style="font-family:Arial,sans-serif;margin:0 0 6px"><strong>${escapeHtml(title)}</strong></p>` : '') +
+    `<table cellpadding="0" cellspacing="0" style="${TABLE}">${rows.map(([key, value]) => `<tr><th style="${CELL};text-align:left;background:#f4f4f4">${escapeHtml(key)}</th><td style="${CELL}">${escapeHtml(value)}</td></tr>`).join('')}</table>`
+}
+
+function taxLabel (totals, total) {
+  return totals.subtotalMinor + totals.shippingTotalMinor === total ? 'IVA incluido' : 'IVA'
+}
+
 const BUYER_EVENT = 'buyer.confirmation'
 
 const BUYER_TEXT = Object.freeze({
@@ -47,6 +72,12 @@ const BUYER_TEXT = Object.freeze({
     intro: 'Gracias por tu compra. Hemos recibido el pago de tu pedido.',
     items: 'Resumen del pedido:',
     shipping: 'Envío',
+    subtotal: 'Subtotal',
+    tax: 'IVA',
+    taxIncluded: 'IVA incluido',
+    colItem: 'Artículo',
+    colQty: 'Cant.',
+    colPrice: 'Precio',
     total: 'Total',
     destination: 'Dirección de envío:',
     invoice: 'Adjuntamos la factura en PDF.',
@@ -58,6 +89,12 @@ const BUYER_TEXT = Object.freeze({
     intro: 'Thank you for your purchase. We have received the payment for your order.',
     items: 'Order summary:',
     shipping: 'Shipping',
+    subtotal: 'Subtotal',
+    tax: 'VAT',
+    taxIncluded: 'VAT included',
+    colItem: 'Item',
+    colQty: 'Qty',
+    colPrice: 'Price',
     total: 'Total',
     destination: 'Shipping address:',
     invoice: 'The invoice is attached as a PDF.',
@@ -100,7 +137,7 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
     ...(order.refund_amount_minor ? [['Reembolsado', money(order.refund_amount_minor, currency, unit)]] : [])
   ]
   const buyer = [
-    ['Comprador', order.buyer_name],
+    ['Nombre', order.buyer_name],
     ['Correo', order.buyer_email],
     ['Teléfono', order.buyer_phone]
   ].filter(([, value]) => value)
@@ -118,10 +155,23 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
   const text = [subject, '', ...rows.map(([key, value]) => `${key}: ${value}`), '', 'Artículos:', ...lines, '',
     ...blocks.flatMap(block => [`${block.title}:`, ...(block.rows ? block.rows.map(([key, value]) => `${key}: ${value}`) : block.lines), '']),
     ...(note ? [note, ''] : [])].join('\n')
-  const html = `<p><strong>${escapeHtml(subject)}</strong></p><table>${rows.map(([key, value]) => `<tr><th align="left">${escapeHtml(key)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}</table>` +
-    `<p>Artículos:</p><ul>${lines.map(line => `<li>${escapeHtml(line.slice(2))}</li>`).join('')}</ul>` +
-    blocks.map(block => `<p><strong>${escapeHtml(block.title)}</strong><br>${(block.rows ? block.rows.map(([key, value]) => `${key}: ${value}`) : block.lines).map(escapeHtml).join('<br>')}</p>`).join('') +
-    (note ? `<p>${escapeHtml(note)}</p>` : '')
+  const foot = [
+    ['Subtotal', money(totals.subtotalMinor ?? snapshot.subtotalMinor, currency, unit)],
+    ['Envío', money(totals.shippingTotalMinor, currency, unit)],
+    [taxLabel(totals, order.amount_total_minor), money(totals.taxMinor, currency, unit)],
+    ...(order.refund_amount_minor ? [['Reembolsado', money(order.refund_amount_minor, currency, unit)]] : []),
+    ['Total', money(order.amount_total_minor, currency, unit), true]
+  ]
+  const html = `<p style="font-family:Arial,sans-serif;font-size:16px"><strong>${escapeHtml(subject)}</strong></p>` +
+    keyValueTable(rows.slice(0, 4)) +
+    htmlTable({
+      head: ['Artículo', 'Cant.', 'Precio'],
+      rows: (snapshot.items || []).map(line => [`${line.name || line.sku} (${line.sku})`, String(line.quantity), money(line.lineTotalMinor, currency, unit)]),
+      foot,
+      right: [1, 2]
+    }) +
+    blocks.map(block => block.rows ? keyValueTable(block.rows, block.title) : htmlTable({ head: [block.title], rows: block.lines.map(line => [line]) })).join('') +
+    (note ? `<p style="font-family:Arial,sans-serif;font-size:13px;color:#555">${escapeHtml(note)}</p>` : '')
   return { subject, text, html }
 }
 
@@ -169,10 +219,17 @@ function buyerMessage ({ order, site, catalog, hasInvoice }) {
   const text = [t.greeting(name), '', t.intro, '', t.items, ...lines, `${t.total}: ${money(order.amount_total_minor)}`, '',
     ...(address.length ? [t.destination, ...address, ''] : []),
     ...(hasInvoice ? [t.invoice, ''] : []), t.reply, ''].join('\n')
-  const html = `<p>${escapeHtml(t.greeting(name))}</p><p>${escapeHtml(t.intro)}</p><p>${escapeHtml(t.items)}</p>` +
-    `<ul>${lines.map(line => `<li>${escapeHtml(line.slice(2))}</li>`).join('')}</ul><p><strong>${escapeHtml(t.total)}: ${escapeHtml(money(order.amount_total_minor))}</strong></p>` +
-    (address.length ? `<p>${escapeHtml(t.destination)}<br>${address.map(escapeHtml).join('<br>')}</p>` : '') +
-    (hasInvoice ? `<p>${escapeHtml(t.invoice)}</p>` : '') + `<p>${escapeHtml(t.reply)}</p>`
+  const items = snapshot.items || []
+  const foot = [
+    ...(totals.shippingTotalMinor > 0 ? [[t.subtotal, money(totals.subtotalMinor)]] : []),
+    ...(totals.shippingTotalMinor > 0 ? [[t.shipping, money(totals.shippingTotalMinor)]] : []),
+    ...(totals.taxMinor > 0 ? [[taxLabel(totals, order.amount_total_minor) === 'IVA incluido' ? t.taxIncluded : t.tax, money(totals.taxMinor)]] : []),
+    [t.total, money(order.amount_total_minor), true]
+  ]
+  const html = `<div style="font-family:Arial,sans-serif;font-size:14px"><p>${escapeHtml(t.greeting(name))}</p><p>${escapeHtml(t.intro)}</p></div>` +
+    htmlTable({ head: [t.colItem, t.colQty, t.colPrice], rows: items.map(line => [line.name || line.sku, String(line.quantity), money(line.lineTotalMinor)]), foot, right: [1, 2] }) +
+    (address.length ? htmlTable({ head: [t.destination.replace(/:$/, '')], rows: address.map(line => [line]) }) : '') +
+    `<div style="font-family:Arial,sans-serif;font-size:14px">${hasInvoice ? `<p>${escapeHtml(t.invoice)}</p>` : ''}<p>${escapeHtml(t.reply)}</p></div>`
   return { subject: t.subject(site), text, html }
 }
 
