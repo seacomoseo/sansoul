@@ -42,6 +42,51 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.4.0 — 2026-11-12 — avisos configurables, factura a petición, contactos y panel de pedidos
+
+**Impacto:** ninguno en proyectos sin comercio o sin `invoice`. Es una versión *minor*: añade
+las migraciones D1 `0008_buyer_tax_and_delivery_notes.sql` y `0009_audience_contacts.sql`, que
+el CI aplica solas con el resto (`wrangler d1 migrations apply`). Las claves de 14.3
+(`merchant_details`, `buyer_confirmation`, `buyer_invoice: true|false`) siguen valiendo; con la
+configuración de 3DNAU los correos salen byte a byte como en 14.3.3 (prueba *golden*).
+
+### Qué cambia sin tocar la configuración (solo proyectos con `invoice`)
+
+- `buyer_invoice` sin valor pasa de `always` a `on_request`: el comprador recibe la factura solo
+  si marca «Quiero factura» o compra como empresa con NIF. Para conservar el envío a todos, pon
+  `buyer_invoice: always`.
+- `checkout_tax_id` vale `true` por defecto: Stripe Checkout muestra «Compro como empresa» (NIF y
+  razón social). Para ocultarlo, `checkout_tax_id: false`.
+- El idioma de la página se guarda en el pedido y decide el idioma de Stripe Checkout y de la
+  confirmación al comprador (es, en, de, fr, it, pt); los pedidos anteriores usan
+  `order_notices.language`.
+
+### Qué incorpora (opt-in en `data/commerce.yml`)
+
+- `order_notices` ampliado: `merchant: full|summary|none`, `merchant_language`, `merchant_invoice`,
+  `buyer: own|stripe|none`, `buyer_invoice: always|on_request|never`, `buyer_shipped` (aviso de
+  envío con seguimiento) y `templates` por idioma.
+- `checkout_fields` (teléfono del destinatario e indicaciones de entrega en Stripe Checkout),
+  `checkout_terms` (casilla obligatoria con versión legal) y `audience` (contactos con
+  consentimiento, exportables en CSV; sin envíos del motor).
+- `admin_panel: true`: panel «Pedidos» en el CMS con la sesión GitHub del CMS.
+- Capa de pagos `core/payments/` independiente de la tienda (`metadata[purpose]`).
+
+### Acciones
+
+- Proyectos con `invoice`: decide `buyer_invoice` y `checkout_tax_id` según lo anterior.
+- Con `buyer: stripe`: activa «Pagos correctos» en Stripe (solo en modo live). Con `buyer: own`,
+  desactívalo para no duplicar.
+- Con `audience`: fija `privacy_retention.contacts` y, si usas una plataforma de correo,
+  `audience.provider`; el shortcode `commerce-privacy` añade la sección de consentimiento.
+
+### Validación
+
+- `pnpm run test:commerce` y `pnpm run test:commerce:workers` desde `core/` (la integración D1
+  tarda de 7 a 11 min; `COMMERCE_D1_TEST_TIMEOUT_MS` amplía su límite de 20 min).
+- Con el Worker de pruebas: compra en TEST con y sin factura; el aviso y la confirmación salen
+  en el idioma esperado.
+
 ## 14.3.3 — 2026-11-12 — avisos de formularios en tablas y envío compacto
 
 **Impacto:** solo presentación. Los correos de formularios usan el mismo estilo de tabla que los de pedidos. En los de pedidos, «Enviar a» pasa a una fila de la tabla del comprador (nombre y dirección en una línea) y la confirmación al comprador muestra «Dirección de envío» con una tabla de dos filas (Nombre, Dirección).
