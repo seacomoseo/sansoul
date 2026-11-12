@@ -4,6 +4,8 @@ Purpose: Privacy section for online orders, shown only when data/commerce.yml en
 Context: none. Retention comes from data/commerce.yml `privacy_retention` (optional strings):
   orders (order and invoicing data, which includes the stored invoices) and delivery (delivery address and contact).
   The recipients line follows `order_notices` (merchant notice, buyer confirmation, buyer invoice).
+  With `audience.enabled` adds the consent section: `privacy_retention.contacts` (optional) and
+  `audience.provider` (optional, e.g. "Brevo (Sendinblue SAS, Francia)") name retention and sender.
 Renders: Markdown section (Spanish) or nothing.
 */}}
 {{- with hugo.Data.commerce -}}
@@ -26,5 +28,15 @@ Si realiza un pedido, tratamos los datos necesarios para cobrarlo, fabricarlo, e
 - **Base legal:** Art. 6(1)(b) RGPD (ejecución del contrato) y Art. 6(1)(c) (obligaciones contables y fiscales).
 - **Conservación:** datos del pedido y de facturación, {{ index $retention "orders" | default "el plazo que exija la normativa contable y fiscal" }}; dirección y contacto de entrega, {{ index $retention "delivery" | default "mientras sean necesarios para el envío, las devoluciones y la garantía" }}.
 - **Destinatarios:** Stripe (pago), la empresa de transporte (envío) y nuestro proveedor de alojamiento (Cloudflare).{{ if $noticesOn }} Los correos del pedido se envían a través de Google (Gmail).{{ end }}{{ if $merchantDetails }} El aviso interno de cada pedido incluye sus datos de contacto y de entrega para poder prepararlo y enviarlo.{{ else if or $merchantMail (not $noticesOn) }} El aviso interno de cada pedido no incluye su dirección ni su contacto.{{ end }}{{ if $buyerMail }} Le enviaremos por correo la confirmación del pedido{{ $invoiceText }}.{{ else if $stripeReceipt }} Stripe le enviará por correo el recibo del pago{{ if eq $buyerInvoice "always" }} y nosotros, su factura en PDF{{ else if eq $buyerInvoice "on_request" }} y, si la solicita, le enviaremos su factura en PDF{{ end }}.{{ end }}
+    {{- with .audience -}}{{- if eq .enabled true }}
+    {{- $consentText := .consent_text -}}
+    {{- if reflect.IsMap $consentText -}}{{- $consentText = index $consentText "es" | default (index $consentText "en") | default "" -}}{{- end }}
+
+#### Avisos de novedades (opcional)
+Si al comprar marca la casilla de avisos{{ with $consentText }} («{{ . | plainify }}»){{ end }}, guardamos su correo, nombre, idioma, la fecha y la versión del texto aceptado para enviarle avisos puntuales, nunca envíos periódicos. La casilla aparece desmarcada y la compra no depende de ella.{{ if eq .customers true }} Si compra sin marcarla, guardamos igualmente su correo y nombre en nuestro registro de clientes, sin usarlos para comunicaciones comerciales.{{ end }}
+- **Base legal:** Art. 6(1)(a) RGPD (consentimiento), que puede retirar en cualquier momento respondiendo a cualquier aviso o escribiéndonos; la baja no afecta a los avisos ya enviados.{{ if eq .customers true }} Registro de clientes: Art. 6(1)(f) RGPD (interés legítimo en la gestión de clientes).{{ end }}
+- **Conservación:** {{ index $retention "contacts" | default "hasta que retire el consentimiento o pida la supresión; tras la baja conservamos solo la constancia del consentimiento y de la baja para poder acreditarlos" }}.
+- **Destinatarios:** {{ with .provider }}los avisos se envían a través de {{ . }}, que actúa como encargado del tratamiento.{{ else }}los avisos los enviamos nosotros desde nuestro correo; no cedemos su contacto a terceros.{{ end }}
+    {{- end -}}{{- end -}}
   {{- end -}}
 {{- end -}}

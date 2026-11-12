@@ -237,9 +237,11 @@ function localizedText (value, error) {
 function compileAudience (source) {
   if (source === undefined || source === null) return null
   const error = 'data/commerce.yml: invalid_audience'
-  if (!plainObject(source) || Object.keys(source).some(key => !['enabled', 'customers', 'consent_version', 'consent_text'].includes(key)) || typeof source.enabled !== 'boolean') throw new Error(error)
+  if (!plainObject(source) || Object.keys(source).some(key => !['enabled', 'customers', 'consent_version', 'consent_text', 'provider'].includes(key)) || typeof source.enabled !== 'boolean') throw new Error(error)
   if (!source.enabled) return null
   if (source.customers !== undefined && typeof source.customers !== 'boolean') throw new Error(error)
+  // `provider` only feeds the privacy text (who sends the notices); the Worker ignores it.
+  if (source.provider !== undefined && (typeof source.provider !== 'string' || !source.provider.trim() || source.provider.length > 200)) throw new Error(`${error}_provider`)
   if (!isValidCheckoutLegalVersion(source.consent_version)) throw new Error(`${error}_consent_version`)
   // The text of the box is the proof of what was accepted: it is mandatory and versioned.
   localizedText(source.consent_text, `${error}_consent_text`)
@@ -253,7 +255,7 @@ function makeCatalog (root) {
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
-  if (config.privacy_retention !== undefined && (!plainObject(config.privacy_retention) || Object.entries(config.privacy_retention).some(([key, value]) => !['orders', 'delivery'].includes(key) || typeof value !== 'string' || !value.trim()))) throw new Error('data/commerce.yml: invalid_privacy_retention')
+  if (config.privacy_retention !== undefined && (!plainObject(config.privacy_retention) || Object.entries(config.privacy_retention).some(([key, value]) => !['orders', 'delivery', 'contacts'].includes(key) || typeof value !== 'string' || !value.trim()))) throw new Error('data/commerce.yml: invalid_privacy_retention')
   const functionsEnabled = config.functions_enabled ?? (config.enabled === true)
   const invoice = compileInvoice(config.invoice)
   const notices = compileNotices(config.order_notices, invoice)
