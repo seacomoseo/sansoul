@@ -84,6 +84,8 @@ const BUYER_TEXT = Object.freeze({
     subtotal: 'Subtotal',
     tax: 'IVA',
     taxIncluded: 'IVA incluido',
+    name: 'Nombre',
+    address: 'Dirección',
     colItem: 'Artículo',
     colQty: 'Cant.',
     colPrice: 'Precio',
@@ -101,6 +103,8 @@ const BUYER_TEXT = Object.freeze({
     subtotal: 'Subtotal',
     tax: 'VAT',
     taxIncluded: 'VAT included',
+    name: 'Name',
+    address: 'Address',
     colItem: 'Item',
     colQty: 'Qty',
     colPrice: 'Price',
@@ -110,6 +114,17 @@ const BUYER_TEXT = Object.freeze({
     reply: 'If you need anything, reply to this email.'
   }
 })
+
+// [recipient, one-line address] for the compact shipping tables.
+function addressParts (order, language = 'es') {
+  const [name, ...rest] = [order.recipient_name || order.buyer_name,
+    order.address_line1,
+    order.address_line2,
+    [order.postal_code, order.locality].filter(Boolean).join(' '),
+    order.administrative_area,
+    order.country_code && countryName(order.country_code, language)].map((value, i) => i === 0 ? value || '' : value)
+  return [name, rest.filter(Boolean).join(', ')]
+}
 
 function addressLines (order, language = 'es') {
   return [
@@ -151,11 +166,11 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
     ['Teléfono', order.buyer_phone]
   ].filter(([, value]) => value)
   const shipTo = addressLines(order)
+  const [shipName, shipAddress] = addressParts(order)
   const blocks = []
   if (merchantDetails) {
     if (buyer.length || shipTo.length) {
-      if (buyer.length) blocks.push({ title: 'Comprador', rows: buyer.map(([key, value]) => [key, value]) })
-      if (shipTo.length) blocks.push({ title: 'Enviar a', lines: shipTo })
+      blocks.push({ title: 'Comprador', rows: [...buyer, ...(shipTo.length ? [['Enviar a', [shipName, shipAddress].filter(Boolean).join(', ')]] : [])] })
     } else {
       blocks.push({ title: 'Comprador', lines: ['Sin datos de entrega guardados (aún no han llegado o ya se borraron). Consúltalos en el panel de pagos.'] })
     }
@@ -226,6 +241,7 @@ function buyerMessage ({ order, site, catalog, hasInvoice }) {
   if (totals.shippingBaseMinor > 0) lines.push(`- ${t.shipping} — ${money(totals.shippingBaseMinor)}`)
   const name = order.buyer_name || order.recipient_name || ''
   const address = addressLines(order, language)
+  const [shipName, shipAddress] = addressParts(order, language)
   const text = [t.greeting(name), '', t.intro, '', t.items, ...lines, `${t.total}: ${money(order.amount_total_minor)}`, '',
     ...(address.length ? [t.destination, ...address, ''] : []),
     ...(hasInvoice ? [t.invoice, ''] : []), t.reply, ''].join('\n')
@@ -238,7 +254,7 @@ function buyerMessage ({ order, site, catalog, hasInvoice }) {
   ]
   const html = `<div style="font-family:Arial,sans-serif;font-size:14px"><p>${escapeHtml(t.greeting(name))}</p><p>${escapeHtml(t.intro)}</p></div>` +
     htmlTable({ head: [t.colItem, t.colQty, t.colPrice], rows: items.map(line => [line.name || line.sku, String(line.quantity), money(line.lineTotalMinor)]), foot, right: [1, 2] }) +
-    (address.length ? htmlTable({ head: [t.destination.replace(/:$/, '')], rows: address.map(line => [line]) }) : '') +
+    (address.length ? `<p style="font-family:Arial,sans-serif;font-size:14px;margin:0 0 6px"><strong>${escapeHtml(t.destination.replace(/:$/, ''))}</strong></p>` + keyValueTable([[t.name, shipName], [t.address, shipAddress]].filter(([, value]) => value)) : '') +
     `<div style="font-family:Arial,sans-serif;font-size:14px">${hasInvoice ? `<p>${escapeHtml(t.invoice)}</p>` : ''}<p>${escapeHtml(t.reply)}</p></div>`
   return { subject: t.subject(site), text, html }
 }

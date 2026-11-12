@@ -42,6 +42,10 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.3.3 — 2026-11-12 — avisos de formularios en tablas y envío compacto
+
+**Impacto:** solo presentación. Los correos de formularios usan el mismo estilo de tabla que los de pedidos. En los de pedidos, «Enviar a» pasa a una fila de la tabla del comprador (nombre y dirección en una línea) y la confirmación al comprador muestra «Dirección de envío» con una tabla de dos filas (Nombre, Dirección).
+
 ## 14.3.2 — 2026-11-12 — frase explicativa en los avisos al vendedor
 
 **Impacto:** solo presentación. Cada aviso al vendedor abre con una frase que dice qué ha pasado y qué hacer (pagado, reembolsado, sin dirección, destino o existencias por revisar). Sin migraciones ni configuración.

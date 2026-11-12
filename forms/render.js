@@ -46,12 +46,14 @@ function rows (fields, files, links) {
   return list
 }
 
+const CELL = 'padding:6px 10px;border-bottom:1px solid #e5e5e5;vertical-align:top'
+
 function table (list) {
   const cells = list.map(({ name, value, link }) =>
-    `<tr><th align="left" valign="top" style="padding:4px 12px 4px 0">${escapeHtml(name)}</th>` +
-    `<td style="padding:4px 0;white-space:pre-wrap">${link ? `<a href="${escapeHtml(link)}">${escapeHtml(value)}</a>` : escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
+    `<tr><th align="left" valign="top" style="${CELL};text-align:left;background:#f4f4f4">${escapeHtml(name)}</th>` +
+    `<td style="${CELL};white-space:pre-wrap">${link ? `<a href="${escapeHtml(link)}">${escapeHtml(value)}</a>` : escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
   ).join('')
-  return `<table cellspacing="0" cellpadding="0">${cells}</table>`
+  return `<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;margin:0 0 16px">${cells}</table>`
 }
 
 const textTable = list => list.map(({ name, value, link }) => `${name}: ${value}${link ? ` ${link}` : ''}`).join('\n')
