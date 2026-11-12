@@ -11,6 +11,7 @@ import { handleAdmin } from '../../admin.js'
 import { handleCheckout } from '../../checkout.js'
 import { paymentStatements } from '../../orders.js'
 import { createPaymentProvider, getWebhookSecret } from '../../provider.js'
+import { paymentPageText } from '../../messages.js'
 import { createBuyerStatusCapability, handleOrderStatus } from '../../status.js'
 import { handleWebhook } from '../../webhook.js'
 import { makeStripeSignature, verifyStripeSignature } from '../../signature.js'
@@ -466,6 +467,25 @@ test('Stripe Checkout collects delivery only for the quoted country and itemizes
     assert.equal(body.get('shipping_options[0][shipping_rate_data][display_name]'), 'Versand')
   })
 
+  // Company tax ID and delivery custom fields (labels within Stripe's 50 characters).
+  await withStripeResponse(payload, () => createPaymentProvider(stripeEnv).createCheckoutSession({
+    snapshot: { ...itemized, locale: 'fr' },
+    providerIdempotencyKey: stripeOrderId,
+    catalog: { origin: 'https://shop.example', taxIdCollection: true, checkoutFields: ['recipient_phone', 'delivery_notes'] }
+  }), options => {
+    const body = new URLSearchParams(options.body)
+    assert.equal(body.get('tax_id_collection[enabled]'), 'true')
+    assert.equal(body.get('custom_fields[0][key]'), 'recipientphone')
+    assert.equal(body.get('custom_fields[1][key]'), 'deliverynotes')
+    assert.equal(body.get('custom_fields[1][optional]'), 'true')
+    assert.equal(body.get('custom_fields[1][text][maximum_length]'), '255')
+    assert.equal(body.get('custom_fields[1][label][custom]'), 'Instructions pour le livreur')
+  })
+  for (const language of ['es', 'en', 'de', 'fr', 'it', 'pt']) {
+    const labels = paymentPageText(language)
+    assert.ok(labels.recipientPhone.length <= 50 && labels.deliveryNotes.length <= 50, language)
+  }
+
   for (const broken of [{ ...checkoutSnapshot(), totals: undefined }, checkoutSnapshot({ totalMinor: 999 }), checkoutSnapshot({ destination: { country: 'es' } })]) {
     await assert.rejects(() => createPaymentProvider(stripeEnv).createCheckoutSession({ snapshot: broken, providerIdempotencyKey: stripeOrderId, catalog: { origin: 'https://shop.example' } }), /order_totals_unavailable/)
   }
@@ -538,7 +558,7 @@ function reconciliationEnvironment () {
   // Execute actual SQL, including index hints, keyset wrap and revision CAS.
   const sqlite = new DatabaseSync(':memory:')
   sqlite.exec('PRAGMA foreign_keys = ON')
-  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql']) {
+  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']) {
     sqlite.exec(readFileSync(new URL(`../../migrations/${name}`, import.meta.url), 'utf8'))
   }
   const snapshot = JSON.stringify({ stockMode: 'made_to_order' })

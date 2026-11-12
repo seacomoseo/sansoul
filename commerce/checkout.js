@@ -153,6 +153,8 @@ export async function handleCheckout (request, env, catalog) {
       if (!quoteMatches(quoted.totals, quote)) return jsonResponse({ error: 'quote_changed', quote: publicQuote(quoted.totals) }, 409)
       snapshot = quoted.snapshot
       if (options.locale) snapshot.locale = options.locale
+      // Only meaningful when the shop invoices; ignored otherwise.
+      if (options.invoiceRequested && catalog.invoice) snapshot.invoiceRequested = true
       snapshot.totals = quoted.totals
       snapshot.totalMinor = quoted.totals.totalMinor
       snapshot.idempotencyKey = key

@@ -198,7 +198,9 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
   const sum = taxes.reduce((total, group) => total + group.baseMinor + group.taxMinor, 0)
   if (sum !== totals.totalMinor) throw new InvoiceError('invoice_total_mismatch')
   const modes = new Set([...lines, ...(shipping ? [shipping] : [])].map(entry => entry.taxMode))
-  const name = details?.buyer_name || details?.recipient_name || details?.buyer_email || ''
+  // A company buyer (tax ID collected at checkout) is invoiced under its name and ID.
+  const taxId = details?.buyer_tax_id || null
+  const name = (taxId && details?.buyer_business_name) || details?.buyer_name || details?.recipient_name || details?.buyer_email || ''
   const address = [
     details?.address_line1,
     details?.address_line2,
@@ -215,7 +217,7 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
     currency: totals.currency,
     minorUnit: totals.minorUnit,
     seller: config.seller,
-    customer: { name, address },
+    customer: { name, address, ...(taxId ? { taxId } : {}) },
     lines,
     shipping,
     taxes,
@@ -319,7 +321,7 @@ export function renderInvoicePdf (row) {
   page.rect(MARGIN, y - 11, RIGHT - MARGIN, 16, { gray: 0.92 })
   page.text(labels.customer, MARGIN + 5, y, { size: 9, bold: true })
   y += 17
-  for (const line of [data.customer.name, ...data.customer.address].filter(Boolean)) {
+  for (const line of [data.customer.name, ...data.customer.address, data.customer.taxId && `${labels.taxId}: ${data.customer.taxId}`].filter(Boolean)) {
     page.text(line, MARGIN + 5, y, { size: 10 })
     y += 13
   }

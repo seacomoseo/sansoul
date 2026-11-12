@@ -116,3 +116,19 @@ test('templates: per-language subject, intro and outro with escaped placeholders
   // No English outro: the one-for-all text applies.
   assert.match(english[1].body, /Plazo de fabricación/)
 })
+
+test('company buyer: merchant notice and invoice carry the company name and tax ID; delivery extras shown', async () => {
+  const config = configWith({ buyer_invoice: 'on_request' })
+  const sent = await run({ config, orders: [{ id: ORDER, key: 'a' }], update: sqlite => sqlite.prepare("UPDATE order_delivery_details SET buyer_business_name = 'Empresa Ficticia SL', buyer_tax_id = 'B00000000', buyer_tax_id_type = 'es_cif', recipient_phone = '+34 600 000 000', delivery_notes = 'Portal verde'").run() })
+  const [merchant, buyer] = sent.map(decode)
+  assert.match(merchant.body, /Razón social: Empresa Ficticia SL/)
+  assert.match(merchant.body, /NIF: B00000000/)
+  assert.match(merchant.body, /Teléfono de entrega: \+34 600 000 000/)
+  assert.match(merchant.body, /Indicaciones: Portal verde/)
+  // A company always receives the invoice under on_request.
+  assert.equal(buyer.pdf, true)
+  assert.match(buyer.body, /Indicaciones: Portal verde/)
+  const pdf = Buffer.from(sent[1].split('application/pdf')[1].split('\r\n\r\n')[1].split('\r\n--')[0].replace(/\r\n/g, ''), 'base64').toString('latin1')
+  assert.match(pdf, /Empresa Ficticia SL/)
+  assert.match(pdf, /NIF: B00000000/)
+})

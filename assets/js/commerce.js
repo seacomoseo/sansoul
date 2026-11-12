@@ -54,10 +54,15 @@ function parseProducts (root) {
 
 const LOCALES = ['es', 'en', 'de', 'fr', 'it', 'pt']
 
-// Optional checkout keys (no personal data): the page language for Stripe and the emails.
+// Optional checkout keys (no personal data): the page language for Stripe and the
+// emails, and the buyer's choices in the cart.
 function checkoutOptions () {
   const locale = (document.documentElement.lang || '').slice(0, 2).toLowerCase()
-  return LOCALES.includes(locale) ? { locale } : {}
+  const invoice = document.querySelector('[data-commerce-invoice-request]')
+  return {
+    ...(LOCALES.includes(locale) ? { locale } : {}),
+    ...(invoice?.checked ? { invoice_requested: true } : {})
+  }
 }
 
 function sameItems (left, right) {
@@ -447,8 +452,10 @@ export function initCommerce () {
     const quote = currentQuote.quote
     try {
       // A new destination or quote needs a new idempotency key; identical retries reuse it.
-      if (checkoutAttempt && checkoutAttempt.scope !== currentQuote.scope + quote.total_minor + quote.policy_version) checkoutAttempt = null
-      checkoutAttempt ||= { key: `browser-${crypto.randomUUID()}`, items: items.map(item => ({ ...item })), scope: currentQuote.scope + quote.total_minor + quote.policy_version }
+      // The buyer's choices are part of the request identity too.
+      const attemptScope = currentQuote.scope + quote.total_minor + quote.policy_version + JSON.stringify(checkoutOptions())
+      if (checkoutAttempt && checkoutAttempt.scope !== attemptScope) checkoutAttempt = null
+      checkoutAttempt ||= { key: `browser-${crypto.randomUUID()}`, items: items.map(item => ({ ...item })), scope: attemptScope }
     } catch {
       announce('commerce_checkout_unavailable')
       return

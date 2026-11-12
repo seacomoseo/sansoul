@@ -12,7 +12,7 @@ import { calculateOrderTotals } from '../../totals.js'
 import { dispatchScheduledNotices, handleAdmin } from '../../admin.js'
 
 // Real SQLite with every migration; D1-shaped adapter. Synthetic data only.
-const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql']
+const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']
 const PRODUCT = '11111111-1111-4111-8111-111111111111'
 const ORDER = '22222222-2222-4222-8222-222222222222'
 const PAID_AT = Date.UTC(2026, 10, 12, 10, 0, 0) / 1000
@@ -203,6 +203,17 @@ test('catalog build: absent keys leave the release untouched; configured keys ar
     const configured = buildCatalog(root)
     assert.equal(configured.invoice.series.prefix, 'WEB')
     assert.equal(configured.notices.buyer, 'own')
+    // Invoicing shops collect the company tax ID by default; delivery fields are opt-in.
+    assert.equal(configured.taxIdCollection, true)
+    assert.equal(Object.hasOwn(configured, 'checkoutFields'), false)
+    writeFileSync(join(root, 'data/commerce.yml'), `${base}checkout_fields: [delivery_notes, recipient_phone]\ncheckout_tax_id: false\n`)
+    const fields = buildCatalog(root)
+    assert.deepEqual(fields.checkoutFields, ['delivery_notes', 'recipient_phone'])
+    assert.equal(Object.hasOwn(fields, 'taxIdCollection'), false)
+    for (const bad of ['checkout_fields: [email]', 'checkout_fields: [delivery_notes, delivery_notes]', 'checkout_tax_id: "yes"']) {
+      writeFileSync(join(root, 'data/commerce.yml'), `${base}${bad}\n`)
+      assert.throws(() => buildCatalog(root), /checkout_fields|checkout_tax_id/, bad)
+    }
     assert.notEqual(configured.release, plain.release)
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

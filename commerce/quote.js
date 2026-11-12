@@ -19,7 +19,7 @@ function exactKeys (value, keys) {
 
 // Optional checkout keys: the page language and the buyer's choices. None is personal
 // data; older storefronts simply omit them.
-const CHECKOUT_OPTIONS = ['locale']
+const CHECKOUT_OPTIONS = ['locale', 'invoice_requested']
 
 // The browser sends only product IDs, quantities and a destination; checkout also
 // echoes the quote it displayed so a changed price or policy is never charged silently.
@@ -38,6 +38,10 @@ export function normalizeCommerceRequest (payload, { withQuote }) {
     // Unknown languages are not an error: the order falls back to the project default.
     const locale = supportedLocale(payload.locale)
     if (locale) options.locale = locale
+  }
+  if (payload.invoice_requested !== undefined) {
+    if (typeof payload.invoice_requested !== 'boolean') throw new CommerceError('invalid_cart')
+    if (payload.invoice_requested) options.invoiceRequested = true
   }
   return { items, destination, quote: { policy_version: quote.policy_version, total_minor: quote.total_minor }, options }
 }

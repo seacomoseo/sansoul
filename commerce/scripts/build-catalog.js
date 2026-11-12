@@ -211,10 +211,13 @@ function validateNotes (notes) {
   }
 }
 
+// Stripe allows three custom fields per Checkout Session.
+const CHECKOUT_FIELDS = ['recipient_phone', 'delivery_notes']
+
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
@@ -222,7 +225,18 @@ function makeCatalog (root) {
   const functionsEnabled = config.functions_enabled ?? (config.enabled === true)
   const invoice = compileInvoice(config.invoice)
   const notices = compileNotices(config.order_notices, invoice)
-  const optional = { ...(invoice ? { invoice } : {}), ...(notices ? { notices } : {}) }
+  // Stripe Checkout extras: delivery custom fields and the company tax ID (on by
+  // default when the shop invoices). Absent from the catalog when unused.
+  const fields = config.checkout_fields ?? []
+  if (!Array.isArray(fields) || fields.some(field => !CHECKOUT_FIELDS.includes(field)) || new Set(fields).size !== fields.length || fields.length > 3) throw new Error(`data/commerce.yml: checkout_fields_subset_of_${CHECKOUT_FIELDS.join('|')}`)
+  if (config.checkout_tax_id !== undefined && typeof config.checkout_tax_id !== 'boolean') throw new Error('data/commerce.yml: checkout_tax_id_must_be_boolean')
+  const taxIdCollection = config.checkout_tax_id ?? Boolean(invoice)
+  const optional = {
+    ...(invoice ? { invoice } : {}),
+    ...(notices ? { notices } : {}),
+    ...(fields.length ? { checkoutFields: fields } : {}),
+    ...(taxIdCollection ? { taxIdCollection: true } : {})
+  }
   if (config.enabled !== true) {
     const checkout = buildCheckoutApproval(config)
     if (config.enabled !== undefined && config.enabled !== false) throw new Error('data/commerce.yml: enabled_must_be_boolean')

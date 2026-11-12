@@ -3,6 +3,16 @@
   <strong data-commerce-total>—</strong>
 </div>
 {{ partial "commerce/note" (dict "key" "cart") }}
+{{- /* Invoice on request (order_notices.buyer_invoice: on_request, the default when the shop invoices). */ -}}
+{{- with hugo.Data.commerce -}}
+  {{- $notices := .order_notices | default dict -}}
+  {{- $buyer := $notices.buyer | default (cond (eq $notices.buyer_confirmation false) "none" "own") -}}
+  {{- $invoiceOn := eq (.invoice | default dict).enabled true -}}
+  {{- $onRequest := and (eq $notices.enabled true) $invoiceOn (ne $buyer "none") (or (eq $notices.buyer_invoice "on_request") (not (isset $notices "buyer_invoice"))) -}}
+  {{- if $onRequest }}
+<label class="commerce__option"><input type="checkbox" data-commerce-invoice-request> <span>{{ i18n "commerce_invoice_request" }}</span></label>
+  {{- end -}}
+{{- end }}
 <p class="commerce__hint" data-commerce-quote-hint>{{ i18n "commerce_provisional_note" }}</p>
 <p class="commerce__quote" data-commerce-quote-request hidden><a class="btn" href="{{ site.Home.RelPermalink }}#contacto">{{ i18n "commerce_request_quote" }}</a></p>
 <button class="btn commerce__checkout" type="button" data-commerce-checkout disabled>{{ partial "icon" (dict "icon" "lock") }}<span>{{ i18n "commerce_checkout" }}</span></button>

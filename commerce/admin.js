@@ -36,7 +36,9 @@ function csvResponse (orders, nextCursor) {
     'refund_amount_minor', 'payment_status', 'fulfillment_status', 'created_at', 'updated_at', 'expires_at',
     'snapshot_json', 'buyer_name', 'buyer_email', 'buyer_phone', 'recipient_name', 'address_line1',
     'address_line2', 'locality', 'administrative_area', 'postal_code', 'country_code',
-    'sku', 'product_id', 'product_name', 'quantity', 'unit_amount_minor', 'line_total_minor'
+    'sku', 'product_id', 'product_name', 'quantity', 'unit_amount_minor', 'line_total_minor',
+    // 14.4, appended so existing column positions do not move.
+    'buyer_business_name', 'buyer_tax_id', 'buyer_tax_id_type', 'recipient_phone', 'delivery_notes', 'invoice_requested', 'locale'
   ]]
   for (const order of orders) {
     const base = [
@@ -49,9 +51,10 @@ function csvResponse (orders, nextCursor) {
     ]
     const snapshot = JSON.parse(order.snapshot_json)
     const items = Array.isArray(snapshot?.items) ? snapshot.items : []
-    if (items.length === 0) rows.push([...base, '', '', '', '', '', ''])
+    const extra = [order.buyer_business_name, order.buyer_tax_id, order.buyer_tax_id_type, order.recipient_phone, order.delivery_notes, snapshot?.invoiceRequested ? 1 : 0, snapshot?.locale || '']
+    if (items.length === 0) rows.push([...base, '', '', '', '', '', '', ...extra])
     for (const item of items) {
-      rows.push([...base, item.sku, item.productId, item.name, item.quantity, item.unitAmountMinor, item.lineTotalMinor])
+      rows.push([...base, item.sku, item.productId, item.name, item.quantity, item.unitAmountMinor, item.lineTotalMinor, ...extra])
     }
   }
   const csv = rows.map(row => row.map(csvCell).join(',')).join('\r\n') + '\r\n'
@@ -87,7 +90,8 @@ async function listOrders (db, url, defaultLimit = 50) {
     SELECT o.id, o.session_id, o.payment_intent_id, o.catalog_release, o.currency, o.amount_total_minor,
       o.snapshot_json, o.payment_status, o.fulfillment_status, o.refund_amount_minor, o.created_at, o.updated_at, o.expires_at,
       d.source AS delivery_source, d.buyer_name, d.buyer_email, d.buyer_phone, d.recipient_name,
-      d.address_line1, d.address_line2, d.locality, d.administrative_area, d.postal_code, d.country_code
+      d.address_line1, d.address_line2, d.locality, d.administrative_area, d.postal_code, d.country_code,
+      d.buyer_business_name, d.buyer_tax_id, d.buyer_tax_id_type, d.recipient_phone, d.delivery_notes
     FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id
     WHERE (? IS NULL OR o.payment_status = ?) AND (? IS NULL OR o.fulfillment_status = ?)
       AND (? IS NULL OR o.created_at < ? OR (o.created_at = ? AND o.id < ?))
@@ -113,6 +117,11 @@ function adminOrder (order) {
     administrative_area: administrativeArea,
     postal_code: postalCode,
     country_code: countryCode,
+    buyer_business_name: businessName,
+    buyer_tax_id: taxId,
+    buyer_tax_id_type: taxIdType,
+    recipient_phone: recipientPhone,
+    delivery_notes: notes,
     ...rest
   } = order
   return {
@@ -120,7 +129,11 @@ function adminOrder (order) {
     snapshot: JSON.parse(order.snapshot_json),
     snapshot_json: undefined,
     delivery: source
-      ? { source, buyer: { name, email, phone }, shipping: { recipient, line1, line2, locality, administrative_area: administrativeArea, postal_code: postalCode, country_code: countryCode } }
+      ? {
+          source,
+          buyer: { name, email, phone, business_name: businessName ?? null, tax_id: taxId ?? null, tax_id_type: taxIdType ?? null },
+          shipping: { recipient, line1, line2, locality, administrative_area: administrativeArea, postal_code: postalCode, country_code: countryCode, phone: recipientPhone ?? null, notes: notes ?? null }
+        }
       : null
   }
 }
@@ -393,7 +406,8 @@ async function claimOutbox (db, now) {
     SELECT o.id, o.session_id, o.payment_intent_id, o.catalog_release, o.currency, o.amount_total_minor,
       o.snapshot_json, o.payment_status, o.fulfillment_status, o.refund_amount_minor, o.created_at, o.updated_at, o.expires_at,
       d.source AS delivery_source, d.buyer_name, d.buyer_email, d.buyer_phone, d.recipient_name,
-      d.address_line1, d.address_line2, d.locality, d.administrative_area, d.postal_code, d.country_code
+      d.address_line1, d.address_line2, d.locality, d.administrative_area, d.postal_code, d.country_code,
+      d.buyer_business_name, d.buyer_tax_id, d.buyer_tax_id_type, d.recipient_phone, d.delivery_notes
     FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id WHERE o.id = ?
   `).bind(item.order_id).first()
   return jsonResponse({

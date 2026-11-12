@@ -18,7 +18,7 @@ const WEBHOOK_SECRET = 'whsec_totals_fixture'
 function database () {
   const sqlite = new DatabaseSync(':memory:')
   sqlite.exec('PRAGMA foreign_keys = ON')
-  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql']) {
+  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']) {
     sqlite.exec(readFileSync(new URL(`../../migrations/${name}`, import.meta.url), 'utf8'))
   }
   const db = {
@@ -353,4 +353,33 @@ test('request identity does not contain the postal code', async () => {
   assert.equal(record.request_hash, expected)
   assert.notEqual(record.request_hash, withPostal)
   assert.doesNotMatch(record.snapshot_json, /28001/)
+})
+
+test('14.4: purchase language and invoice request reach the snapshot; company and delivery fields reach D1', async () => {
+  const db = database()
+  const env = environment(db)
+  const cat = { ...catalog(), invoice: { seller: { name: 'Titular' } }, products: catalog().products.map(product => ({ ...product, names: { es: product.names.es, en: `${product.names.es} (en)` } })) }
+  const quoted = await quote(env, cat, { items, destination: MADRID })
+  const body = { items, destination: MADRID, quote: { policy_version: quoted.body.quote.policy_version, total_minor: quoted.body.quote.total_minor } }
+  assert.equal((await checkout(env, cat, 'v144-key-bad', { ...body, invoice_requested: 'yes' })).body.error, 'invalid_cart')
+  const created = await checkout(env, cat, 'v144-key-0001', { ...body, locale: 'en', invoice_requested: true })
+  assert.equal(created.status, 201)
+  const order = db.sqlite.prepare('SELECT * FROM orders WHERE id = ?').get(created.body.order_id)
+  const snapshot = JSON.parse(order.snapshot_json)
+  assert.equal(snapshot.locale, 'en')
+  assert.equal(snapshot.invoiceRequested, true)
+  assert.equal(snapshot.items[0].name, 'Modelo A (en)')
+  // Same key, different choices: a different request.
+  assert.equal((await checkout(env, cat, 'v144-key-0001', body)).status, 409)
+
+  const event = sessionEvent(order, { address: { country: 'ES', postalCode: '28001' } })
+  event.data.object.customer_details = { ...event.data.object.customer_details, business_name: 'Empresa Ficticia SL', tax_ids: [{ type: 'es_cif', value: 'B00000000' }] }
+  event.data.object.custom_fields = [
+    { key: 'recipientphone', type: 'text', text: { value: '+34 600 000 000' } },
+    { key: 'deliverynotes', type: 'text', text: { value: 'Portal verde,\nllamar al timbre 2' } },
+    { key: 'other', type: 'text', text: { value: 'ignored' } }
+  ]
+  assert.equal((await sendWebhook(env, event)).status, 200)
+  const details = db.sqlite.prepare('SELECT buyer_business_name, buyer_tax_id, buyer_tax_id_type, recipient_phone, delivery_notes FROM order_delivery_details WHERE order_id = ?').get(order.id)
+  assert.deepEqual({ ...details }, { buyer_business_name: 'Empresa Ficticia SL', buyer_tax_id: 'B00000000', buyer_tax_id_type: 'es_cif', recipient_phone: '+34 600 000 000', delivery_notes: 'Portal verde, llamar al timbre 2' })
 })

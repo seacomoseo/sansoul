@@ -116,9 +116,10 @@ export function paymentStatements (db, order, target, now, eventId = null) {
     statements.unshift(db.prepare(`
       INSERT INTO order_delivery_details (
         order_id, source, buyer_name, buyer_email, buyer_phone, recipient_name,
-        address_line1, address_line2, locality, administrative_area, postal_code, country_code, updated_at
+        address_line1, address_line2, locality, administrative_area, postal_code, country_code,
+        buyer_business_name, buyer_tax_id, buyer_tax_id_type, recipient_phone, delivery_notes, updated_at
       )
-      SELECT ?, 'stripe_checkout', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      SELECT ?, 'stripe_checkout', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       FROM orders WHERE id = ?${eventGuard}
       ON CONFLICT(order_id) DO UPDATE SET
         buyer_name = COALESCE(excluded.buyer_name, order_delivery_details.buyer_name),
@@ -131,8 +132,14 @@ export function paymentStatements (db, order, target, now, eventId = null) {
         administrative_area = COALESCE(excluded.administrative_area, order_delivery_details.administrative_area),
         postal_code = COALESCE(excluded.postal_code, order_delivery_details.postal_code),
         country_code = COALESCE(excluded.country_code, order_delivery_details.country_code),
+        buyer_business_name = COALESCE(excluded.buyer_business_name, order_delivery_details.buyer_business_name),
+        buyer_tax_id = COALESCE(excluded.buyer_tax_id, order_delivery_details.buyer_tax_id),
+        buyer_tax_id_type = COALESCE(excluded.buyer_tax_id_type, order_delivery_details.buyer_tax_id_type),
+        recipient_phone = COALESCE(excluded.recipient_phone, order_delivery_details.recipient_phone),
+        delivery_notes = COALESCE(excluded.delivery_notes, order_delivery_details.delivery_notes),
         updated_at = excluded.updated_at
-    `).bind(order.id, details.buyerName, details.buyerEmail, details.buyerPhone, details.recipientName, details.line1, details.line2, details.city, details.state, details.postalCode, details.countryCode, now, order.id, ...eventArgs))
+    `).bind(order.id, details.buyerName, details.buyerEmail, details.buyerPhone, details.recipientName, details.line1, details.line2, details.city, details.state, details.postalCode, details.countryCode,
+      details.businessName ?? null, details.taxId ?? null, details.taxIdType ?? null, details.recipientPhone ?? null, details.deliveryNotes ?? null, now, order.id, ...eventArgs))
   }
 
   statements.push(...destinationGateStatements(db, order, snapshot, now, eventGuard, eventArgs))

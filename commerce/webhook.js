@@ -40,9 +40,37 @@ function deliveryDetails (object) {
     city: boundedText(address.city, 100),
     state: boundedText(address.state, 100),
     postalCode,
-    countryCode
+    countryCode,
+    ...companyDetails(customer),
+    ...customFields(object.custom_fields)
   }
   return Object.values(details).some(value => value !== null) ? details : null
+}
+
+// Company buyers (tax_id_collection): the first tax ID and the business name.
+const TAX_ID_TYPE = /^[a-z]{2,3}_[a-z]{2,6}$/
+function companyDetails (customer) {
+  const taxId = Array.isArray(customer.tax_ids) ? customer.tax_ids.find(entry => entry && typeof entry === 'object') : null
+  const type = taxId && typeof taxId.type === 'string' && TAX_ID_TYPE.test(taxId.type) ? taxId.type : null
+  const value = taxId ? boundedText(taxId.value, 40) : null
+  return {
+    businessName: boundedText(customer.business_name, 200),
+    taxId: value,
+    taxIdType: value ? type : null
+  }
+}
+
+// Checkout custom fields the engine creates (see provider.js); others are ignored.
+// Notes may hold line breaks: they are folded into one line.
+function customFields (fields) {
+  const values = {}
+  for (const field of Array.isArray(fields) ? fields : []) {
+    if (!field || typeof field !== 'object' || field.type !== 'text') continue
+    const raw = typeof field.text?.value === 'string' ? field.text.value.replace(/[\r\n\t]+/g, ' ') : null
+    if (field.key === 'recipientphone') values.recipientPhone = boundedText(raw, 40)
+    if (field.key === 'deliverynotes') values.deliveryNotes = boundedText(raw, 255)
+  }
+  return { recipientPhone: values.recipientPhone ?? null, deliveryNotes: values.deliveryNotes ?? null }
 }
 
 function eventTarget (event) {

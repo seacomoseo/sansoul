@@ -286,7 +286,8 @@ const ORDER_COLUMNS = `
   SELECT o.id, o.session_id, o.payment_intent_id, o.currency, o.amount_total_minor, o.snapshot_json,
     o.payment_status, o.fulfillment_status, o.refund_amount_minor, o.updated_at,
     d.buyer_name, d.buyer_email, d.buyer_phone, d.recipient_name, d.address_line1, d.address_line2,
-    d.locality, d.administrative_area, d.postal_code, d.country_code
+    d.locality, d.administrative_area, d.postal_code, d.country_code,
+    d.buyer_business_name, d.buyer_tax_id, d.buyer_tax_id_type, d.recipient_phone, d.delivery_notes
   FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id WHERE o.id = ?
 `
 

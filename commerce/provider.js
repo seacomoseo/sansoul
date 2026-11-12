@@ -137,6 +137,20 @@ export function createPaymentProvider (env) {
         form.set(`${prefix}[price_data][product_data][name]`, labels.tax)
         form.set(`${prefix}[quantity]`, '1')
       }
+      // Company buyers give their tax ID and name on Stripe's page (no Customer is
+      // created); delivery extras are optional custom fields labelled in the
+      // purchase language. Keys must match webhook.js.
+      if (catalog.taxIdCollection) form.set('tax_id_collection[enabled]', 'true')
+      ;(catalog.checkoutFields || []).forEach((field, index) => {
+        const prefix = `custom_fields[${index}]`
+        const recipientPhone = field === 'recipient_phone'
+        form.set(`${prefix}[key]`, recipientPhone ? 'recipientphone' : 'deliverynotes')
+        form.set(`${prefix}[label][type]`, 'custom')
+        form.set(`${prefix}[label][custom]`, recipientPhone ? labels.recipientPhone : labels.deliveryNotes)
+        form.set(`${prefix}[type]`, 'text')
+        form.set(`${prefix}[optional]`, 'true')
+        form.set(`${prefix}[text][maximum_length]`, recipientPhone ? '40' : '255')
+      })
       if (totals.shippingBaseMinor > 0) {
         form.set('shipping_options[0][shipping_rate_data][type]', 'fixed_amount')
         form.set('shipping_options[0][shipping_rate_data][display_name]', labels.shipping)
