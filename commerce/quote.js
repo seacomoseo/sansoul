@@ -3,6 +3,7 @@ import { CommerceError, errorResponse, isSameOrigin, jsonResponse, methodNotAllo
 import { verifiedProxy } from '../edge/proxy.js'
 import { requireCheckoutAuthorization } from './approval.js'
 import { assertTotalsPolicy, calculateOrderTotals, normalizeDestination, publicQuote } from './totals.js'
+import { supportedLocale } from './messages.js'
 
 const VERSION = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/
 // Any well-formed v4 UUID works: quotes never persist and their snapshot is discarded.
@@ -16,17 +17,29 @@ function exactKeys (value, keys) {
   return object(value) && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key))
 }
 
+// Optional checkout keys: the page language and the buyer's choices. None is personal
+// data; older storefronts simply omit them.
+const CHECKOUT_OPTIONS = ['locale']
+
 // The browser sends only product IDs, quantities and a destination; checkout also
 // echoes the quote it displayed so a changed price or policy is never charged silently.
 export function normalizeCommerceRequest (payload, { withQuote }) {
-  if (!exactKeys(payload, withQuote ? ['items', 'destination', 'quote'] : ['items', 'destination'])) throw new CommerceError('invalid_cart')
+  const required = withQuote ? ['items', 'destination', 'quote'] : ['items', 'destination']
+  const allowed = withQuote ? [...required, ...CHECKOUT_OPTIONS] : required
+  if (!object(payload) || !required.every(key => Object.hasOwn(payload, key)) || Object.keys(payload).some(key => !allowed.includes(key))) throw new CommerceError('invalid_cart')
   const items = normalizeCart({ items: payload.items })
   const destination = normalizeDestination(payload.destination)
   if (!withQuote) return { items, destination }
   const quote = payload.quote
   if (!exactKeys(quote, ['policy_version', 'total_minor']) || typeof quote.policy_version !== 'string' || !VERSION.test(quote.policy_version) ||
     !Number.isSafeInteger(quote.total_minor) || quote.total_minor < 0 || quote.total_minor > MAX_ORDER_MINOR) throw new CommerceError('invalid_quote')
-  return { items, destination, quote: { policy_version: quote.policy_version, total_minor: quote.total_minor } }
+  const options = {}
+  if (payload.locale !== undefined) {
+    // Unknown languages are not an error: the order falls back to the project default.
+    const locale = supportedLocale(payload.locale)
+    if (locale) options.locale = locale
+  }
+  return { items, destination, quote: { policy_version: quote.policy_version, total_minor: quote.total_minor }, options }
 }
 
 export function requireTotalsPolicy (catalog) {
@@ -37,9 +50,9 @@ export function requireTotalsPolicy (catalog) {
   return policy
 }
 
-export function quoteOrder (catalog, items, destination, orderId = QUOTE_ORDER_ID, createdAt = Math.floor(Date.now() / 1000)) {
+export function quoteOrder (catalog, items, destination, orderId = QUOTE_ORDER_ID, createdAt = Math.floor(Date.now() / 1000), locale = 'es') {
   const policy = requireTotalsPolicy(catalog)
-  const snapshot = buildOrderSnapshot(catalog, items, orderId, 'es', createdAt)
+  const snapshot = buildOrderSnapshot(catalog, items, orderId, locale, createdAt)
   const totals = calculateOrderTotals(snapshot, policy, destination)
   return { snapshot, totals }
 }

@@ -1,6 +1,7 @@
 import { createGmailProvider } from '../forms/providers/gmail.js'
 import { validAddress } from '../forms/mime.js'
 import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, paymentTime, renderInvoicePdf } from './invoice.js'
+import { buyerText, supportedLocale } from './messages.js'
 
 // Merchant order notices through the forms Gmail provider (FORMS_GMAIL_CREDENTIALS,
 // FORMS_GMAIL_DEFAULT or COMMERCE_NOTIFY_ACCOUNT) to COMMERCE_NOTIFY_TO. By default
@@ -73,47 +74,6 @@ function taxLabel (totals, total) {
 }
 
 const BUYER_EVENT = 'buyer.confirmation'
-
-const BUYER_TEXT = Object.freeze({
-  es: {
-    subject: site => `Hemos recibido tu pedido · ${site}`,
-    greeting: name => name ? `Hola ${name},` : 'Hola,',
-    intro: 'Gracias por tu compra. Hemos recibido el pago de tu pedido.',
-    items: 'Resumen del pedido:',
-    shipping: 'Envío',
-    subtotal: 'Subtotal',
-    tax: 'IVA',
-    taxIncluded: 'IVA incluido',
-    name: 'Nombre',
-    address: 'Dirección',
-    colItem: 'Artículo',
-    colQty: 'Cant.',
-    colPrice: 'Precio',
-    total: 'Total',
-    destination: 'Dirección de envío:',
-    invoice: 'Adjuntamos la factura en PDF.',
-    reply: 'Si necesitas algo, responde a este correo.'
-  },
-  en: {
-    subject: site => `We received your order · ${site}`,
-    greeting: name => name ? `Hello ${name},` : 'Hello,',
-    intro: 'Thank you for your purchase. We have received the payment for your order.',
-    items: 'Order summary:',
-    shipping: 'Shipping',
-    subtotal: 'Subtotal',
-    tax: 'VAT',
-    taxIncluded: 'VAT included',
-    name: 'Name',
-    address: 'Address',
-    colItem: 'Item',
-    colQty: 'Qty',
-    colPrice: 'Price',
-    total: 'Total',
-    destination: 'Shipping address:',
-    invoice: 'The invoice is attached as a PDF.',
-    reply: 'If you need anything, reply to this email.'
-  }
-})
 
 // [recipient, one-line address] for the compact shipping tables.
 function addressParts (order, language = 'es') {
@@ -229,10 +189,15 @@ async function invoiceAttachment (db, order, catalog) {
   }
 }
 
+// The purchase language when the storefront sent one; otherwise the project's.
+export function buyerLanguage (snapshot, notices) {
+  return supportedLocale(snapshot?.locale) || notices?.language || 'es'
+}
+
 function buyerMessage ({ order, site, catalog, hasInvoice }) {
-  const language = catalog.notices.language
-  const t = BUYER_TEXT[language]
   const snapshot = JSON.parse(order.snapshot_json)
+  const language = buyerLanguage(snapshot, catalog.notices)
+  const t = buyerText(language)
   const totals = snapshot.totals || {}
   const currency = order.currency || snapshot.currency || 'eur'
   const unit = snapshot.minorUnit ?? 2

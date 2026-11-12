@@ -2,6 +2,7 @@ import { CommerceError } from './http.js'
 import { sha256Hex } from './catalog.js'
 import { isSyntheticTestFixture } from './approval.js'
 import { STRIPE_SESSION_MAX_TTL_SECONDS, STRIPE_SESSION_MIN_TTL_SECONDS } from './expiry.js'
+import { paymentPageText, supportedLocale } from './messages.js'
 
 const STRIPE_API = 'https://api.stripe.com/v1'
 const SESSION_ID = /^cs_(?:(?:test|live)_)?[A-Za-z0-9]+$/
@@ -105,7 +106,12 @@ export function createPaymentProvider (env) {
       const totals = snapshot.totals
       if (!totals || totals.totalMinor !== snapshot.totalMinor || totals.currency !== snapshot.currency || !/^[A-Z]{2}$/.test(totals.destination?.country || '')) throw new CommerceError('order_totals_unavailable', 503)
       const form = new URLSearchParams()
+      // Orders without a purchase language (older storefronts) keep Stripe's browser
+      // detection and the Spanish line labels of 14.3.
+      const locale = supportedLocale(snapshot.locale)
+      const labels = paymentPageText(locale || 'es')
       form.set('mode', 'payment')
+      if (locale) form.set('locale', locale)
       form.set('client_reference_id', snapshot.orderId)
       form.set('metadata[commerce_order_id]', snapshot.orderId)
       form.set('payment_intent_data[metadata][commerce_order_id]', snapshot.orderId)
@@ -128,12 +134,12 @@ export function createPaymentProvider (env) {
         const prefix = `line_items[${snapshot.items.length}]`
         form.set(`${prefix}[price_data][currency]`, snapshot.currency)
         form.set(`${prefix}[price_data][unit_amount]`, String(totals.addedTaxMinor))
-        form.set(`${prefix}[price_data][product_data][name]`, 'IVA')
+        form.set(`${prefix}[price_data][product_data][name]`, labels.tax)
         form.set(`${prefix}[quantity]`, '1')
       }
       if (totals.shippingBaseMinor > 0) {
         form.set('shipping_options[0][shipping_rate_data][type]', 'fixed_amount')
-        form.set('shipping_options[0][shipping_rate_data][display_name]', 'Envío')
+        form.set('shipping_options[0][shipping_rate_data][display_name]', labels.shipping)
         form.set('shipping_options[0][shipping_rate_data][fixed_amount][amount]', String(totals.shippingBaseMinor))
         form.set('shipping_options[0][shipping_rate_data][fixed_amount][currency]', snapshot.currency)
       }

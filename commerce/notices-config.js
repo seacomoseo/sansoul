@@ -1,4 +1,5 @@
 import { TIME_ZONES } from './invoice.js'
+import { LOCALES } from './messages.js'
 
 // Build-time validation of `order_notices` and `invoice` in data/commerce.yml.
 // Output goes into the catalog; neither key present means today's behavior.
@@ -18,9 +19,9 @@ function bool (value, fallback, error) {
   return value
 }
 
-function language (value, error) {
+function language (value, error, allowed = ['es', 'en']) {
   if (value === undefined) return 'es'
-  if (!['es', 'en'].includes(value)) throw new Error(error)
+  if (!allowed.includes(value)) throw new Error(error)
   return value
 }
 
@@ -79,7 +80,7 @@ export function compileNotices (source, invoice) {
   if (!source.enabled) return null
   const withInvoice = invoice !== null
   const notices = {
-    language: language(source.language, error),
+    language: language(source.language, error, LOCALES),
     merchantDetails: bool(source.merchant_details, true, error),
     merchantInvoice: bool(source.merchant_invoice, withInvoice, error),
     buyerConfirmation: bool(source.buyer_confirmation, true, error),

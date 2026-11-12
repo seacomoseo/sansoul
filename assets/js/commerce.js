@@ -52,6 +52,14 @@ function parseProducts (root) {
   }
 }
 
+const LOCALES = ['es', 'en', 'de', 'fr', 'it', 'pt']
+
+// Optional checkout keys (no personal data): the page language for Stripe and the emails.
+function checkoutOptions () {
+  const locale = (document.documentElement.lang || '').slice(0, 2).toLowerCase()
+  return LOCALES.includes(locale) ? { locale } : {}
+}
+
 function sameItems (left, right) {
   return JSON.stringify([...left].sort((a, b) => a.id.localeCompare(b.id))) ===
     JSON.stringify([...right].sort((a, b) => a.id.localeCompare(b.id)))
@@ -459,7 +467,7 @@ export function initCommerce () {
           accept: 'application/json',
           'idempotency-key': checkoutAttempt.key
         },
-        body: JSON.stringify({ items, destination, quote: { policy_version: quote.policy_version, total_minor: quote.total_minor } })
+        body: JSON.stringify({ items, destination, quote: { policy_version: quote.policy_version, total_minor: quote.total_minor }, ...checkoutOptions() })
       })
       const result = await response.json().catch(() => ({}))
       if (response.status === 409 && result.error === 'quote_changed' && validQuote(result.quote)) {

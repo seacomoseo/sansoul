@@ -116,12 +116,13 @@ export async function handleCheckout (request, env, catalog) {
     const db = requireDatabase(env)
     const provider = createPaymentProvider(env)
     const { value } = await readJsonBody(request)
-    const { items: cart, destination, quote } = normalizeCommerceRequest(value, { withQuote: true })
+    const { items: cart, destination, quote, options } = normalizeCommerceRequest(value, { withQuote: true })
     const key = readIdempotencyKey(request)
     // Country and displayed quote are part of the request identity: changing either
     // requires a new key, while identical retries replay the stored order. The postal
     // code is left out so this pre-payment hash cannot be brute-forced back to it.
-    const requestHash = await sha256Hex(JSON.stringify({ items: cart, country: destination.country, quote }))
+    // Options join the hash only when present, so older storefronts keep their identity.
+    const requestHash = await sha256Hex(JSON.stringify({ items: cart, country: destination.country, quote, ...(Object.keys(options).length ? { options } : {}) }))
     const now = Math.floor(Date.now() / 1000)
     await consumeRateLimit(db, request, env, now)
     await expirePendingCheckouts(db, now)
@@ -148,9 +149,10 @@ export async function handleCheckout (request, env, catalog) {
       snapshot = storedSnapshot(record)
     } else {
       allowBuyerCapabilityCreation = true
-      const quoted = quoteOrder(catalog, cart, destination, crypto.randomUUID(), now)
+      const quoted = quoteOrder(catalog, cart, destination, crypto.randomUUID(), now, options.locale || 'es')
       if (!quoteMatches(quoted.totals, quote)) return jsonResponse({ error: 'quote_changed', quote: publicQuote(quoted.totals) }, 409)
       snapshot = quoted.snapshot
+      if (options.locale) snapshot.locale = options.locale
       snapshot.totals = quoted.totals
       snapshot.totalMinor = quoted.totals.totalMinor
       snapshot.idempotencyKey = key

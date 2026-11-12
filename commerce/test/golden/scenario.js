@@ -29,7 +29,7 @@ invoice:
   exempt_note: "Operación exenta de IVA según art. 21 Ley 37/1992 (envío a Canarias)"
 `
 
-const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql']
+export const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql']
 const PRODUCT = '11111111-1111-4111-8111-111111111111'
 const PAID_AT = Date.UTC(2026, 10, 12, 10, 0, 0) / 1000
 const SEND = 'https://www.googleapis.com/auth/gmail.send'
@@ -67,8 +67,8 @@ function database (migrations = MIGRATIONS) {
   return { sqlite, db }
 }
 
-function addOrder (sqlite, { id, key, mode = 'inclusive', delivery = true, event = 'payment.paid', status = 'paid', refund = 0 }) {
-  const snapshot = snapshotFor(mode)
+function addOrder (sqlite, { id, key, mode = 'inclusive', delivery = true, event = 'payment.paid', status = 'paid', refund = 0, extra = {} }) {
+  const snapshot = { ...snapshotFor(mode), ...extra }
   const json = JSON.stringify(snapshot)
   sqlite.prepare("INSERT INTO commerce_idempotency VALUES (?, 'hash', ?, ?, 'creating', NULL, NULL, 1, 1, 9999999999)").run(`key-${key}`, id, json)
   sqlite.prepare(`INSERT INTO orders (id, idempotency_key, catalog_release, currency, amount_total_minor, snapshot_json, payment_status, fulfillment_status, payment_intent_id, refund_amount_minor, created_at, updated_at, expires_at)
@@ -82,7 +82,7 @@ function addOrder (sqlite, { id, key, mode = 'inclusive', delivery = true, event
     .run(eventKey, id, event, JSON.stringify({ eventKey, orderId: id, eventType: event }), PAID_AT, PAID_AT)
 }
 
-function gmail () {
+export function gmail () {
   const sent = []
   const fetch = async (url, init = {}) => {
     const href = String(url)
@@ -97,7 +97,7 @@ function gmail () {
   return { fetch, sent }
 }
 
-async function run ({ config, orders, migrations }) {
+export async function run ({ config, orders, migrations, env: extraEnv = {} }) {
   const { sqlite, db } = database(migrations)
   for (const order of orders) addOrder(sqlite, order)
   const invoice = compileInvoice(config.invoice)
@@ -107,7 +107,8 @@ async function run ({ config, orders, migrations }) {
     COMMERCE_DB: db,
     COMMERCE_NOTIFY_TO: 'tienda@example.invalid',
     FORMS_GMAIL_DEFAULT: 'sender',
-    FORMS_GMAIL_CREDENTIALS: JSON.stringify({ sender: { account: 'sender@example.invalid', client_id: 'cid', client_secret: 'csecret', refresh_token: 'rtoken' } })
+    FORMS_GMAIL_CREDENTIALS: JSON.stringify({ sender: { account: 'sender@example.invalid', client_id: 'cid', client_secret: 'csecret', refresh_token: 'rtoken' } }),
+    ...extraEnv
   }
   const { fetch, sent } = gmail()
   await dispatchScheduledNotices(env, catalog, { limit: 10, fetch, now: () => PAID_AT + 60 })

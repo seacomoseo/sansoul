@@ -75,13 +75,16 @@ export function formatMoney (minor, currency, minorUnit, language = 'es') {
   const whole = digits.slice(0, digits.length - minorUnit)
   const fraction = minorUnit ? digits.slice(-minorUnit) : ''
   const spanish = language === 'es'
-  // es-ES groups from five digits (1234,56 but 12.345,67); en groups from four.
-  const grouped = !spanish || whole.length > 4 ? whole.replace(/\B(?=(\d{3})+(?!\d))/g, spanish ? '.' : ',') : whole
-  const number = fraction ? `${grouped}${spanish ? ',' : '.'}${fraction}` : grouped
+  // Comma decimals and the symbol after the amount; fr groups with a narrow space.
+  const comma = spanish || ['de', 'fr', 'it', 'pt'].includes(language)
+  const separator = language === 'fr' ? '\u202f' : comma ? '.' : ','
+  // es-ES groups from five digits (1234,56 but 12.345,67); the rest from four.
+  const grouped = !spanish || whole.length > 4 ? whole.replace(/\B(?=(\d{3})+(?!\d))/g, separator) : whole
+  const number = fraction ? `${grouped}${comma ? ',' : '.'}${fraction}` : grouped
   const code = currency.toUpperCase()
   const symbol = SYMBOLS[code]
   const sign = negative ? '-' : ''
-  if (spanish) return `${sign}${number}\u00a0${symbol || code}`
+  if (comma) return `${sign}${number}\u00a0${symbol || code}`
   return symbol ? `${sign}${symbol}${number}` : `${sign}${number}\u00a0${code}`
 }
 
@@ -130,7 +133,11 @@ export function invoiceNumber (row, data = JSON.parse(row.data_json)) {
 
 const COUNTRIES = Object.freeze({
   es: { ES: 'España', FR: 'Francia', PT: 'Portugal', DE: 'Alemania', IT: 'Italia', GB: 'Reino Unido', IE: 'Irlanda', NL: 'Países Bajos', BE: 'Bélgica', AD: 'Andorra' },
-  en: { ES: 'Spain', FR: 'France', PT: 'Portugal', DE: 'Germany', IT: 'Italy', GB: 'United Kingdom', IE: 'Ireland', NL: 'Netherlands', BE: 'Belgium', AD: 'Andorra' }
+  en: { ES: 'Spain', FR: 'France', PT: 'Portugal', DE: 'Germany', IT: 'Italy', GB: 'United Kingdom', IE: 'Ireland', NL: 'Netherlands', BE: 'Belgium', AD: 'Andorra' },
+  de: { ES: 'Spanien', FR: 'Frankreich', PT: 'Portugal', DE: 'Deutschland', IT: 'Italien', GB: 'Vereinigtes Königreich', IE: 'Irland', NL: 'Niederlande', BE: 'Belgien', AD: 'Andorra' },
+  fr: { ES: 'Espagne', FR: 'France', PT: 'Portugal', DE: 'Allemagne', IT: 'Italie', GB: 'Royaume-Uni', IE: 'Irlande', NL: 'Pays-Bas', BE: 'Belgique', AD: 'Andorre' },
+  it: { ES: 'Spagna', FR: 'Francia', PT: 'Portogallo', DE: 'Germania', IT: 'Italia', GB: 'Regno Unito', IE: 'Irlanda', NL: 'Paesi Bassi', BE: 'Belgio', AD: 'Andorra' },
+  pt: { ES: 'Espanha', FR: 'França', PT: 'Portugal', DE: 'Alemanha', IT: 'Itália', GB: 'Reino Unido', IE: 'Irlanda', NL: 'Países Baixos', BE: 'Bélgica', AD: 'Andorra' }
 })
 
 export function countryName (code, language) {

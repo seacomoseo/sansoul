@@ -451,6 +451,19 @@ test('Stripe Checkout collects delivery only for the quoted country and itemizes
     assert.equal(body.get('shipping_options[0][shipping_rate_data][type]'), 'fixed_amount')
     assert.equal(body.get('shipping_options[0][shipping_rate_data][fixed_amount][amount]'), '395')
     assert.equal(body.get('shipping_options[0][shipping_rate_data][fixed_amount][currency]'), 'eur')
+    assert.equal(body.has('locale'), false)
+  })
+
+  // The purchase language drives Stripe's page and the engine's own line labels.
+  await withStripeResponse(payload, () => createPaymentProvider(stripeEnv).createCheckoutSession({
+    snapshot: { ...itemized, locale: 'de' },
+    providerIdempotencyKey: stripeOrderId,
+    catalog: { origin: 'https://shop.example' }
+  }), options => {
+    const body = new URLSearchParams(options.body)
+    assert.equal(body.get('locale'), 'de')
+    assert.equal(body.get('line_items[1][price_data][product_data][name]'), 'MwSt.')
+    assert.equal(body.get('shipping_options[0][shipping_rate_data][display_name]'), 'Versand')
   })
 
   for (const broken of [{ ...checkoutSnapshot(), totals: undefined }, checkoutSnapshot({ totalMinor: 999 }), checkoutSnapshot({ destination: { country: 'es' } })]) {
