@@ -31,6 +31,18 @@ async function registerFormsPanel (CMS) {
   } catch {}
 }
 
+// Orders panel as a CMS page, only where the project Worker serves the commerce
+// admin with the panel on. The probe carries a malformed GitHub credential: the
+// Worker answers 401 JSON when the panel is on, 404 when it is off or absent.
+async function registerOrdersPanel (CMS) {
+  if (typeof CMS.registerCustomPage !== 'function') return
+  try {
+    const response = await fetch('/api/commerce/admin/orders', { cache: 'no-store', credentials: 'omit', headers: { authorization: 'GitHub probe-probe-probe-probe' }, signal: AbortSignal.timeout(2000) })
+    if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
+    CMS.registerCustomPage({ id: 'orders', label: cmsLanguage() === 'es' ? 'Pedidos' : 'Orders', icon: 'shopping_cart', url: '/admin/orders/' })
+  } catch {}
+}
+
 // Sign-in/publishing help and project links, always available in the CMS.
 function registerHelpPage (CMS) {
   if (typeof CMS.registerCustomPage !== 'function') return
@@ -41,6 +53,7 @@ async function initializeCMS () {
   const CMS = window.CMS
   registerHelpPage(CMS)
   const formsPanel = registerFormsPanel(CMS)
+  const ordersPanel = registerOrdersPanel(CMS)
   const source = await loadFieldGroupConfig(window.document)
   let groups
   try {
@@ -63,6 +76,7 @@ async function initializeCMS () {
     console.error('SanSoul live preview initialization failed.', error)
   }
   await formsPanel
+  await ordersPanel
   if (window.__sansoulPreviewManualInit) {
     window.__sansoulPreviewManualInit = false
     await CMS.init({ config: { ...groups.config, load_config_file: false } })

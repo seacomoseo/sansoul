@@ -644,13 +644,38 @@ Cómo funciona, en llano:
 - **Entrega** (`checkout_fields`, opcional): `[recipient_phone, delivery_notes]` añade a la página de pago «Teléfono de quien recibe (si no eres tú)» e «Indicaciones para el repartidor», opcionales, como campos propios de Stripe (máximo 3 por sesión; etiquetas en el idioma de la compra; hasta 40 y 255 caracteres). Se ven en el aviso, la confirmación, `admin/orders` y el CSV.
 - El CSV de `admin/export.csv` añade al final las columnas `buyer_business_name`, `buyer_tax_id`, `buyer_tax_id_type`, `recipient_phone`, `delivery_notes`, `invoice_requested` y `locale` (las anteriores no cambian de posición).
 
+### Aviso de envío, condiciones, contactos y panel de pedidos
+
+Todo opcional y por proyecto (`data/commerce.yml`); sin estas claves nada cambia.
+
+```yaml
+order_notices:
+  buyer_shipped: true        # correo al comprador cuando se marca «enviado» (plantilla `templates.buyer_shipped`: subject, intro, outro)
+checkout_legal_version: terms-v1
+checkout_terms: true         # casilla obligatoria en el carrito; el pedido guarda `terms: { version, acceptedAt }`
+checkout_terms_text:         # opcional: texto de la casilla (Markdown, string o mapa por idioma); por defecto, el del motor (es/en)
+  es: "He leído y acepto las [condiciones de compra](/condiciones/)"
+audience:                    # contactos con permiso para avisos puntuales (nada de envíos periódicos)
+  enabled: true
+  customers: false           # true = guardar también a quien compra sin marcar la casilla (sin permiso comercial)
+  consent_version: promo-v1  # versión del texto: cambia al editarlo
+  consent_text:              # texto de la casilla (siempre desmarcada); string o mapa por idioma
+    es: "Quiero recibir avisos puntuales de modelos nuevos."
+admin_panel: true            # panel «Pedidos» del CMS (/admin/orders/)
+```
+
+- **Aviso de envío**: `POST /api/commerce/admin/orders/<id>/ship` acepta `{"tracking": "<enlace https o código>"}` (opcional, 200 caracteres). El correo se encola en la misma transacción del cambio a `shipped`, una vez por pedido; sale en el idioma de la compra, con el seguimiento como enlace si empieza por `https://`. Sin `buyer_shipped` o con `buyer: none` no se envía nada.
+- **Condiciones**: sin la casilla marcada el botón de pago queda desactivado y el servidor responde `terms_required` (400). Exige `checkout_legal_version`.
+- **Contactos** (módulo `audience`, migración D1 `0009_audience_contacts.sql`): al cobrarse el pedido, el consentimiento elegido en el carrito se une al correo que devuelve Stripe y se guarda en `contacts` (correo normalizado, idioma, fecha, versión del texto, pedido de origen). Un pedido posterior sin la casilla **no** retira un permiso anterior; un permiso nuevo anula una baja. Las bajas son manuales (panel o `POST admin/contacts/unsubscribe` con `{"email"}`); el motor no envía promociones. `GET admin/contacts.csv` (por defecto solo con permiso y sin baja; `?scope=all` para todos) trae `email,name,language,source,consent_promotions,consent_at,consent_version,order_id,unsubscribed_at`, importable en Brevo, Mailchimp o MailerLite. Los contactos de `customers: true` se conservan mientras no se borren a mano: define su plazo en la política de privacidad.
+- **Panel «Pedidos»** (`/admin/orders/`, pestaña del CMS si el Worker lo sirve): lista filtrable por estado, detalle con comprador, empresa/NIF, dirección, teléfono y notas de entrega, condiciones aceptadas, factura PDF, paso a «en fabricación» y «enviado» (con seguimiento), exportación CSV y pestaña de contactos. Entra quien tenga **permiso de escritura en el repositorio del CMS** (`cms_repo` de `data/config.yml` o `owner/repo` de `hugo.yml`), con la misma sesión GitHub del CMS que el panel «Formularios» (comprobación compartida en `edge/github-access.js`, caché de 5 min). Las rutas de operación (`reconcile`, `outbox/*`, `inventory`, `cancel-partial`) siguen siendo solo del token Bearer.
+
 ### Capa de pagos
 
 El código de Stripe común (claves, peticiones, validación de sesiones y firma de webhooks) vive en `core/payments/` y no depende de la tienda. Cada sesión y PaymentIntent lleva `metadata[purpose]=order`; el webhook aplica a pedidos solo los eventos de comercio (los que no traen `purpose` también, por compatibilidad) y registra como ignorados los de otro propósito. Así, un formulario con pago, reservas o acceso a contenidos podrán usar la misma cuenta y el mismo endpoint de Stripe como consumidores propios, sin tocar la tienda. Las tablas genéricas de pagos y el alias `/api/payments/webhook` llegarán con el primer consumidor que no sea la tienda; hoy el endpoint sigue siendo `/api/commerce/webhook`.
 
 ### Operación privada, exportación y respaldo
 
-Todas las rutas `/api/commerce/admin/*` exigen `Authorization: Bearer <COMMERCE_ADMIN_TOKEN>` y el binding privado `COMMERCE_ADMIN_TOKEN`, de al menos 32 caracteres; las respuestas no se almacenan en caché. Falta de configuración válida devuelve 503 y credenciales incorrectas 401. Usa el token solo desde un cliente administrativo protegido: no lo incluyas en HTML, JavaScript del navegador, URL, CMS o `localStorage`. `GET /api/commerce/admin/orders?limit=50&cursor=…` admite 1–100 pedidos por página, en orden estable `(created_at DESC, id DESC)`, y devuelve `next_cursor`. Reutiliza el cursor con los mismos filtros `payment_status`/`fulfillment_status`; no es un snapshot transaccional: cambios de estado no reordenan filas y pedidos nuevos anteriores al cursor quedan para una consulta posterior.
+Todas las rutas `/api/commerce/admin/*` exigen `Authorization: Bearer <COMMERCE_ADMIN_TOKEN>` (o, con `admin_panel: true`, `Authorization: GitHub <token>` de una persona con permiso de escritura en el repositorio, solo para las rutas de pedidos y contactos) y el binding privado `COMMERCE_ADMIN_TOKEN`, de al menos 32 caracteres; las respuestas no se almacenan en caché. Falta de configuración válida devuelve 503 y credenciales incorrectas 401. Usa el token solo desde un cliente administrativo protegido: no lo incluyas en HTML, JavaScript del navegador, URL, CMS o `localStorage`. `GET /api/commerce/admin/orders?limit=50&cursor=…` admite 1–100 pedidos por página, en orden estable `(created_at DESC, id DESC)`, y devuelve `next_cursor`. Reutiliza el cursor con los mismos filtros `payment_status`/`fulfillment_status`; no es un snapshot transaccional: cambios de estado no reordenan filas y pedidos nuevos anteriores al cursor quedan para una consulta posterior.
 
 `GET /api/commerce/admin/export.csv?limit=100&cursor=…` exporta una página y devuelve la siguiente clave en `x-next-cursor`; solicita páginas sucesivas hasta que esa cabecera esté vacía para recorrer todo el historial. Incluye snapshot de artículos/precios, estados, referencias del proveedor, reembolsos y, si el proveedor los entregó, contacto/dirección privada. Guárdalo como dato sensible y compártelo solo con personal autorizado. Es un extracto operativo CSV, no copia de seguridad: no contiene el esquema completo, reservas, eventos, deduplicación, capacidades ni outbox.
 

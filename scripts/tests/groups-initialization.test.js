@@ -69,12 +69,16 @@ test('configuration loading failure and CMS init failure never call a generic in
 
 test('the forms panel page is registered before init only where the Worker answers', async () => {
   const pages = []
-  const answer = (status, type) => async () => ({ status, headers: { get: () => type } })
+  const answer = (status, type, only = '') => async url => (String(url).includes(only) ? { status, headers: { get: () => type } } : { status: 404, headers: { get: () => 'text/html' } })
   const CMS = { registerCustomPage: page => pages.push(page) }
-  const worker = await initialize({ CMS, fetch: answer(401, 'application/json; charset=utf-8') })
+  const worker = await initialize({ CMS, fetch: answer(401, 'application/json; charset=utf-8', '/api/forms/') })
   const help = { id: 'help', label: 'Ayuda', icon: 'help', url: '/admin/help/' }
   assert.deepEqual(JSON.parse(JSON.stringify(pages)), [help, { id: 'forms', label: 'Formularios', icon: 'inbox', url: '/admin/forms/' }])
   assert.equal(worker.order.at(-1), 'init')
+  // The orders panel appears only where the commerce admin answers 401 JSON (panel on).
+  pages.length = 0
+  await initialize({ CMS, fetch: answer(401, 'application/json', '/api/commerce/') })
+  assert.deepEqual(pages.map(page => page.id), ['help', 'orders'])
   pages.length = 0
   await initialize({ CMS, fetch: answer(404, 'text/html') })
   await initialize({ CMS, fetch: async () => { throw new TypeError('offline') } })
@@ -84,7 +88,7 @@ test('the forms panel page is registered before init only where the Worker answe
 test('the forms page label follows the interface language Sveltia will use', async () => {
   const label = async options => {
     const pages = []
-    await initialize({ CMS: { registerCustomPage: page => pages.push(page) }, fetch: async () => ({ status: 401, headers: { get: () => 'application/json' } }), ...options })
+    await initialize({ CMS: { registerCustomPage: page => pages.push(page) }, fetch: async url => String(url).includes('/api/forms/') ? ({ status: 401, headers: { get: () => 'application/json' } }) : ({ status: 404, headers: { get: () => 'text/html' } }), ...options })
     return pages.find(page => page.id === 'forms').label
   }
   // Chosen in the CMS (localStorage prefs), whatever the browser says.
