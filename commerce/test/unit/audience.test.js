@@ -99,3 +99,26 @@ test('checkout options: terms and consent are booleans, unknown keys still fail'
   assert.throws(() => normalizeCommerceRequest({ ...base, terms_accepted: 'yes' }, { withQuote: true }))
   assert.throws(() => normalizeCommerceRequest({ ...base, marketing: true }, { withQuote: true }))
 })
+
+test('admin panel: GitHub push access opens people routes, never operator routes', async () => {
+  const { env } = fixture()
+  const catalog = { origin: 'https://shop.example', functionsEnabled: true, adminRepo: 'acme/shop', audience: { customers: false, version: 'v1' } }
+  const token = `ghp_${'a'.repeat(36)}`
+  const original = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async (url, init) => {
+    calls++
+    assert.equal(String(url), 'https://api.github.com/repos/acme/shop')
+    return new Response(JSON.stringify({ permissions: { push: init.headers.authorization === `Bearer ${token}` } }), { headers: { 'x-oauth-scopes': 'repo' } })
+  }
+  try {
+    const call = (path, auth, method = 'GET') => handleAdmin(new Request(`https://shop.example/api/commerce/admin/${path}`, { method, headers: { authorization: auth } }), env, catalog)
+    assert.equal((await call('contacts', `GitHub ${token}`)).status, 200)
+    assert.equal((await call('orders', `GitHub ${token}`)).status, 200)
+    assert.equal(calls, 1, 'second call served from the cache')
+    assert.equal((await call('reconcile', `GitHub ${token}`, 'POST')).status, 403)
+    assert.equal((await call('outbox/claim', `GitHub ${token}`, 'POST')).status, 403)
+    assert.equal((await call('contacts', `GitHub ghp_${'b'.repeat(36)}`)).status, 401)
+    assert.equal((await handleAdmin(new Request('https://shop.example/api/commerce/admin/orders', { headers: { authorization: `GitHub ${token}` } }), env, { ...catalog, adminRepo: undefined })).status, 404)
+  } finally { globalThis.fetch = original }
+})

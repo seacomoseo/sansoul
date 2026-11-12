@@ -1,7 +1,8 @@
 // Admin API of the forms module: the project panel (people, GitHub session of
 // the CMS) and automations (Bearer FORMS_ADMIN_TOKEN) use the same routes.
+import { hasPushAccess } from '../edge/github-access.js'
 import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
-import { FormsError, jsonResponse, jsonTextResponse, sha256Hex, timingSafeEqual } from './http.js'
+import { FormsError, jsonResponse, jsonTextResponse, timingSafeEqual } from './http.js'
 import { safeFileName } from './intake.js'
 import { loadSubmission, requireDatabase, resolveHeld } from './store.js'
 
@@ -13,17 +14,6 @@ const DELETE_MAX = 50
 // KV deletes per batch call (KV Free: 1,000 deletes a day per account); bytes
 // beyond it expire with their 90-day TTL.
 const KV_DELETE_MAX = 100
-// A positive GitHub check is reused for a few minutes per isolate (one
-// subrequest instead of one per panel call): a revoked permission keeps
-// working here until it expires. Denials are kept for a minute, so a junk
-// token costs one GitHub call per isolate and minute at most.
-const GITHUB_TTL_MS = 5 * 60 * 1000
-const GITHUB_DENY_MS = 60 * 1000
-const githubCache = new Map()
-// Token formats GitHub issues (OAuth, PAT, app); anything else is refused
-// without asking GitHub.
-const GITHUB_TOKEN = /^(gh[opsu]_[A-Za-z0-9]{30,250}|github_pat_\w{40,250}|[0-9a-f]{40})$/
-
 // Jobs that need a person: failures (except discards) and holds that are not
 // the expected ones (review queue, delivery disabled on previews).
 const ATTENTION = `(j.state = 'failed' AND IFNULL(j.last_error, '') <> 'discarded')
@@ -53,33 +43,12 @@ export async function authorize (request, env, { manifest, fetch, now }) {
   }
   const repo = adminRepo(env, manifest)
   if (!repo) throw new FormsError('admin_repo_unset', 503)
-  if (!GITHUB_TOKEN.test(credential)) throw new FormsError('unauthorized', 401)
-  const key = await sha256Hex(`${repo}\n${credential}`)
-  const cached = githubCache.get(key)
-  if (cached && cached.until > now()) {
-    if (cached.ok) return 'github'
-    throw new FormsError('unauthorized', 401)
-  }
-  let response
+  let ok
   try {
-    response = await fetch(`https://api.github.com/repos/${repo}`, {
-      headers: { authorization: `Bearer ${credential}`, accept: 'application/vnd.github+json', 'user-agent': 'sansoul-forms', 'x-github-api-version': '2022-11-28' },
-      signal: AbortSignal.timeout(8000)
-    })
+    ok = await hasPushAccess(repo, credential, { fetch, now, userAgent: 'sansoul-forms' })
   } catch {
     throw new FormsError('github_unavailable', 503)
   }
-  // GitHub down or rate limited is not a verdict on the person.
-  if (response.status >= 500 || response.status === 429 || (response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0')) throw new FormsError('github_unavailable', 503)
-  const data = response.ok ? await response.json().catch(() => null) : null
-  const permissions = data?.permissions || {}
-  // permissions are the person's; OAuth and classic tokens also list their own
-  // scopes: a token without repo access (another app's) is not enough.
-  const scopes = response.headers.get('x-oauth-scopes')
-  const scoped = scopes === null || /(^|[\s,])(public_)?repo([\s,]|$)/.test(scopes)
-  const ok = scoped && Boolean(permissions.push || permissions.maintain || permissions.admin)
-  if (githubCache.size >= 200) for (const old of [...githubCache.keys()].slice(0, 50)) githubCache.delete(old)
-  githubCache.set(key, { ok, until: now() + (ok ? GITHUB_TTL_MS : GITHUB_DENY_MS) })
   if (!ok) throw new FormsError('unauthorized', 401)
   return 'github'
 }

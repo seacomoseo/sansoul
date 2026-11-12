@@ -2,6 +2,7 @@ import { applyPaymentState, expirePendingCheckouts, persistCheckoutSession } fro
 import { CommerceError, errorResponse, jsonResponse, methodNotAllowed, readJsonBody, requireDatabase } from './http.js'
 import { createPaymentProvider } from './provider.js'
 import { rotateCandidates } from './maintenance.js'
+import { hasPushAccess } from '../edge/github-access.js'
 // Admin tokens are compared as fixed-size SHA-256 digests; no HMAC key import
 // or token-dependent early exit, and no credentials retained in module caches.
 const tokenEncoder = new TextEncoder()
@@ -11,6 +12,19 @@ import { hasMailNotifier, loadOrder, sendOrderNotice } from './notifier.js'
 import { InvoiceError, getOrIssueInvoice, invoiceFilename, paymentTime, renderInvoicePdf } from './invoice.js'
 
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+// People (the CMS orders panel): `Authorization: GitHub <token>` of someone with push
+// access to the site repository. Automations keep the Bearer admin token.
+async function authorizedPerson (request, env, catalog) {
+  const credential = request.headers.get('authorization')?.match(/^GitHub (\S{20,400})$/i)?.[1]
+  if (!credential) return false
+  if (!catalog?.adminRepo) throw new CommerceError('admin_panel_disabled', 404)
+  try {
+    return await hasPushAccess(catalog.adminRepo, credential, { userAgent: 'sansoul-commerce' })
+  } catch {
+    throw new CommerceError('github_unavailable', 503)
+  }
+}
 
 async function authorized (request, env) {
   const expected = env.COMMERCE_ADMIN_TOKEN
@@ -545,7 +559,8 @@ export async function dispatchScheduledNotices (env, catalog, { limit = 3, fetch
 
 export async function handleAdmin (request, env, catalog) {
   try {
-    const allowed = await authorized(request, env)
+    const person = /^GitHub /i.test(request.headers.get('authorization') || '')
+    const allowed = person ? await authorizedPerson(request, env, catalog) : await authorized(request, env)
     if (!allowed) throw new CommerceError('unauthorized', 401)
     const db = requireDatabase(env)
     const url = new URL(request.url)
@@ -560,6 +575,8 @@ export async function handleAdmin (request, env, catalog) {
       const page = await listOrders(db, url, 100)
       return csvResponse(page.orders, page.nextCursor)
     }
+    // Operator routes (reconciliation, notifier pull, stock, partial refunds) stay with the token.
+    if (person && /^\/api\/commerce\/admin\/(reconcile|outbox\/|inventory$)|\/cancel-partial$/.test(path)) throw new CommerceError('forbidden', 403)
     if (catalog?.audience && path === '/api/commerce/admin/contacts' && request.method === 'GET') {
       const contacts = await listContacts(db, url.searchParams.get('scope') || 'consented')
       return jsonResponse({ contacts })
