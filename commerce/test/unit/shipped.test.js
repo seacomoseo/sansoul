@@ -4,12 +4,13 @@ import { DatabaseSync } from 'node:sqlite'
 import { readFileSync } from 'node:fs'
 import { dispatchScheduledNotices, handleAdmin } from '../../admin.js'
 import { compileNotices } from '../../notices-config.js'
+import { MIGRATIONS } from '../migrations.js'
 
 const SEND = 'https://www.googleapis.com/auth/gmail.send'
 
 function fixture () {
   const sqlite = new DatabaseSync(':memory:')
-  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']) {
+  for (const name of MIGRATIONS) {
     sqlite.exec(readFileSync(new URL(`../../migrations/${name}`, import.meta.url), 'utf8'))
   }
   const wrap = sql => {

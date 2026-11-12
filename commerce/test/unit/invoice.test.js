@@ -10,9 +10,9 @@ import { buildCreditNoteData, buildInvoiceData, formatMoney, getOrIssueInvoice, 
 import { createPdf, textWidth, toWinAnsi, wrapText } from '../../pdf.js'
 import { calculateOrderTotals } from '../../totals.js'
 import { dispatchScheduledNotices, handleAdmin } from '../../admin.js'
+import { MIGRATIONS } from '../migrations.js'
 
 // Real SQLite with every migration; D1-shaped adapter. Synthetic data only.
-const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']
 const PRODUCT = '11111111-1111-4111-8111-111111111111'
 const ORDER = '22222222-2222-4222-8222-222222222222'
 const PAID_AT = Date.UTC(2026, 10, 12, 10, 0, 0) / 1000

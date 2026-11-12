@@ -133,9 +133,9 @@ function sqlString (value) {
   return `'${String(value).replaceAll("'", "''")}'`
 }
 
-// The measured full D1 run took 298585 ms; allow 2x headroom for local Wrangler startup/queries.
-// Full run takes ~420-690 s on the 4-core VPS depending on host load; slow hosts can raise it.
-const D1_TEST_TIMEOUT_MS = Number(process.env.COMMERCE_D1_TEST_TIMEOUT_MS) || 600000
+// ~100 sequential Wrangler spawns: 420-690 s on the 4-core VPS, up to ~11 min under load.
+// 20 min keeps headroom; slow hosts can raise it with COMMERCE_D1_TEST_TIMEOUT_MS.
+const D1_TEST_TIMEOUT_MS = Number(process.env.COMMERCE_D1_TEST_TIMEOUT_MS) || 1200000
 
 test('Pages Functions + local D1 checkout, webhook, operations, recovery and restore', { timeout: D1_TEST_TIMEOUT_MS }, async t => {
   const started = performance.now()
@@ -368,6 +368,7 @@ export async function onRequest (context) {
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0006_bounded_maintenance.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0007_invoices.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0008_buyer_tax_and_delivery_notes.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0009_audience_contacts.sql')], workspace)
     const migratedCursors = await queryD1(databaseName, 'SELECT * FROM commerce_operation_cursors ORDER BY operation', workspace)
     assert.deepEqual(migratedCursors, [
       { operation: 'expiration', cursor_created_at: 0, cursor_id: '', updated_at: 0, revision: 0 },

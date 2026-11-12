@@ -4,6 +4,9 @@ import { parse } from 'yaml'
 import { compileInvoice, compileNotices } from '../../notices-config.js'
 import { calculateOrderTotals } from '../../totals.js'
 import { dispatchScheduledNotices } from '../../admin.js'
+import { MIGRATIONS } from '../migrations.js'
+
+export { MIGRATIONS }
 
 // Golden scenario: the notices a shop configured like 3DNAU (14.3.3) sends, captured
 // as raw MIME. Synthetic seller and buyer; same keys and shape as the real project.
@@ -29,7 +32,6 @@ invoice:
   exempt_note: "Operación exenta de IVA según art. 21 Ley 37/1992 (envío a Canarias)"
 `
 
-export const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']
 const PRODUCT = '11111111-1111-4111-8111-111111111111'
 const PAID_AT = Date.UTC(2026, 10, 12, 10, 0, 0) / 1000
 const SEND = 'https://www.googleapis.com/auth/gmail.send'

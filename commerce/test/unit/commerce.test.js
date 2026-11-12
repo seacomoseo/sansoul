@@ -16,6 +16,7 @@ import { createBuyerStatusCapability, handleOrderStatus } from '../../status.js'
 import { handleWebhook } from '../../webhook.js'
 import { makeStripeSignature, verifyStripeSignature } from '../../signature.js'
 import { STRIPE_SESSION_MAX_TTL_SECONDS, STRIPE_SESSION_MIN_TTL_SECONDS } from '../../expiry.js'
+import { MIGRATIONS } from '../migrations.js'
 
 const firstId = '11111111-1111-4111-8111-111111111111'
 const secondId = '22222222-2222-4222-8222-222222222222'
@@ -560,7 +561,7 @@ function reconciliationEnvironment () {
   // Execute actual SQL, including index hints, keyset wrap and revision CAS.
   const sqlite = new DatabaseSync(':memory:')
   sqlite.exec('PRAGMA foreign_keys = ON')
-  for (const name of ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql']) {
+  for (const name of MIGRATIONS) {
     sqlite.exec(readFileSync(new URL(`../../migrations/${name}`, import.meta.url), 'utf8'))
   }
   const snapshot = JSON.stringify({ stockMode: 'made_to_order' })
@@ -774,4 +775,5 @@ test('checkout_terms and audience are opt-in, versioned and strictly validated',
   assert.throws(() => buildCatalogFixture(base + 'checkout_terms: true\n'), /checkout_terms_requires_checkout_legal_version/)
   assert.throws(() => buildCatalogFixture(base + 'audience:\n  enabled: true\n  consent_version: v1\n'), /invalid_audience_consent_text/)
   assert.throws(() => buildCatalogFixture(base + 'audience:\n  enabled: true\n  consent_text: x\n'), /invalid_audience_consent_version/)
+  assert.throws(() => buildCatalogFixture(base + 'audience:\n  enabled: true\n  consent_version: v1\n  consent_text: x\n  provider: 3\n'), /invalid_audience_provider/)
 })

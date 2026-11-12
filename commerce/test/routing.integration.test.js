@@ -158,6 +158,7 @@ export default { async fetch (...args) { const response = await worker.fetch(...
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0006_bounded_maintenance.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0007_invoices.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0008_buyer_tax_and_delivery_notes.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0009_audience_contacts.sql')], workspace)
 
     const now = Math.floor(Date.now() / 1000)
     const requestHash = createHash('sha256').update(JSON.stringify([{ id: '11111111-1111-4111-8111-111111111111', quantity: 1 }])).digest('hex')

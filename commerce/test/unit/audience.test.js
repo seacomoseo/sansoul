@@ -5,8 +5,8 @@ import { readFileSync } from 'node:fs'
 import { handleAdmin } from '../../admin.js'
 import { paymentStatements } from '../../orders.js'
 import { normalizeCommerceRequest } from '../../quote.js'
+import { MIGRATIONS } from '../migrations.js'
 
-const MIGRATIONS = ['0001_commerce.sql', '0002_buyer_status.sql', '0003_provider_session_expiry.sql', '0004_operations_and_delivery.sql', '0005_outbox_indexes.sql', '0006_bounded_maintenance.sql', '0007_invoices.sql', '0008_buyer_tax_and_delivery_notes.sql', '0009_audience_contacts.sql']
 
 function fixture () {
   const sqlite = new DatabaseSync(':memory:')
