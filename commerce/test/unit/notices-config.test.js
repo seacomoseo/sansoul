@@ -10,7 +10,8 @@ const ORDER = '22222222-2222-4222-8222-222222222222'
 
 // Decoded subject and readable parts of a sent MIME message.
 export function decode (mime) {
-  const subject = mime.match(/^Subject: =\?UTF-8\?B\?([^?]*)\?=/m)
+  const header = (mime.match(/^Subject: (.*(?:\r\n[ \t].*)*)/m) || [])[1] || ''
+  const subject = header.replace(/=\?UTF-8\?B\?([^?]*)\?=\s*/g, (match, b64) => Buffer.from(b64, 'base64').toString('utf8'))
   let body = ''
   for (const part of mime.split(/\r\n--[A-Za-z0-9-]+/)) {
     const [head, ...rest] = part.split(/\r\n\r\n/)
@@ -19,7 +20,7 @@ export function decode (mime) {
   }
   return {
     to: (mime.match(/^To: (.*)$/m) || [])[1],
-    subject: subject ? Buffer.from(subject[1], 'base64').toString('utf8') : '',
+    subject,
     body,
     pdf: /application\/pdf/.test(mime)
   }
@@ -51,4 +52,67 @@ test('buyer confirmation follows the purchase language; merchant notice stays in
   assert.match(sent[1].body, /Lieferadresse/)
   assert.match(sent[1].body, /Spanien/)
   assert.match(sent[1].body, /36,00 €/)
+})
+
+function configWith (notices) {
+  const config = parse(CONFIG)
+  config.order_notices = { enabled: true, ...notices }
+  return config
+}
+
+test('merchant: none sends no merchant mail but keeps the buyer confirmation; merchant_language en', async () => {
+  const none = (await run({ config: configWith({ merchant: 'none', buyer_invoice: 'never' }), orders: [{ id: ORDER, key: 'a' }] })).map(decode)
+  assert.deepEqual(none.map(mail => mail.to), ['comprador@example.invalid'])
+  const english = (await run({ config: configWith({ merchant_language: 'en', buyer: 'none' }), orders: [{ id: ORDER, key: 'a' }] })).map(decode)
+  assert.equal(english.length, 1)
+  assert.match(english[0].subject, /^New paid order · /)
+  assert.match(english[0].body, /Ship to: Persona Ficticia, Calle Falsa 1/)
+  assert.match(english[0].body, /Invoice PDF attached\./)
+  assert.equal(english[0].pdf, true)
+})
+
+test('buyer_invoice on_request: attached only when the buyer asked for it', async () => {
+  const config = configWith({ buyer_invoice: 'on_request', merchant_invoice: false })
+  const plain = (await run({ config, orders: [{ id: ORDER, key: 'a' }] })).map(decode)
+  assert.deepEqual(plain.map(mail => [mail.to, mail.pdf]), [['tienda@example.invalid', false], ['comprador@example.invalid', false]])
+  const asked = (await run({ config, orders: [{ id: ORDER, key: 'a', extra: { invoiceRequested: true } }] })).map(decode)
+  assert.deepEqual(asked.map(mail => [mail.to, mail.pdf]), [['tienda@example.invalid', false], ['comprador@example.invalid', true]])
+  assert.match(asked[0].body, /Factura: La ha pedido/)
+  assert.match(asked[1].body, /Adjuntamos la factura en PDF\./)
+})
+
+test('buyer: stripe sends no confirmation, only a separate invoice mail to who asked for it', async () => {
+  const config = configWith({ buyer: 'stripe', buyer_invoice: 'on_request' })
+  const plain = (await run({ config, orders: [{ id: ORDER, key: 'a' }] })).map(decode)
+  assert.deepEqual(plain.map(mail => mail.to), ['tienda@example.invalid'])
+  const asked = (await run({ config, orders: [{ id: ORDER, key: 'a', extra: { invoiceRequested: true, locale: 'en' } }] })).map(decode)
+  assert.deepEqual(asked.map(mail => [mail.to, mail.pdf]), [['tienda@example.invalid', true], ['comprador@example.invalid', true]])
+  assert.match(asked[1].subject, /^Your invoice · /)
+  assert.match(asked[1].body, /The invoice for your order is attached as a PDF\./)
+})
+
+test('templates: per-language subject, intro and outro with escaped placeholders', async () => {
+  const config = configWith({
+    buyer_invoice: 'never',
+    templates: {
+      buyer_paid: {
+        subject: { es: 'Pedido {order} recibido', en: 'Order {order} received' },
+        intro: { es: 'Hola {name}, gracias.\n\nTotal: **{total}**', en: 'Hi {name}, thanks.' },
+        outro: 'Plazo de fabricación: 2 semanas. [Condiciones](https://shop.example.invalid/legal/)'
+      },
+      merchant_paid: { subject: 'Pedido de {name}', intro: 'Prepara el pedido **ya**.' }
+    }
+  })
+  const sent = (await run({ config, orders: [{ id: ORDER, key: 'a' }] })).map(decode)
+  assert.equal(sent[0].subject, 'Pedido de Persona Ficticia')
+  assert.match(sent[0].body, /Prepara el pedido <strong>ya<\/strong>\./)
+  assert.equal(sent[1].subject, `Pedido ${ORDER} recibido`)
+  assert.match(sent[1].body, /<p>Hola Persona Ficticia, gracias\.<\/p><p>Total: <strong>36,00 €<\/strong><\/p>/)
+  assert.match(sent[1].body, /Plazo de fabricación: 2 semanas\. Condiciones \(https:\/\/shop\.example\.invalid\/legal\/\)/)
+  assert.match(sent[1].body, /<a href="https:\/\/shop\.example\.invalid\/legal\/" rel="noopener noreferrer">Condiciones<\/a>/)
+  assert.doesNotMatch(sent[1].body, /Si necesitas algo/)
+  const english = (await run({ config, orders: [{ id: ORDER, key: 'a', extra: { locale: 'en' } }] })).map(decode)
+  assert.equal(english[1].subject, `Order ${ORDER} received`)
+  // No English outro: the one-for-all text applies.
+  assert.match(english[1].body, /Plazo de fabricación/)
 })

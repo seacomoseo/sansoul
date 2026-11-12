@@ -3,7 +3,7 @@ Shortcode: commerce-privacy
 Purpose: Privacy section for online orders, shown only when data/commerce.yml enables commerce.
 Context: none. Retention comes from data/commerce.yml `privacy_retention` (optional strings):
   orders (order and invoicing data, which includes the stored invoices) and delivery (delivery address and contact).
-  The recipients line follows `order_notices` (merchant details, buyer confirmation).
+  The recipients line follows `order_notices` (merchant notice, buyer confirmation, buyer invoice).
 Renders: Markdown section (Spanish) or nothing.
 */}}
 {{- with hugo.Data.commerce -}}
@@ -11,13 +11,20 @@ Renders: Markdown section (Spanish) or nothing.
     {{- $retention := .privacy_retention | default dict -}}
     {{- $notices := .order_notices | default dict -}}
     {{- $noticesOn := eq $notices.enabled true -}}
-    {{- $merchantDetails := and $noticesOn (ne $notices.merchant_details false) -}}
-    {{- $buyerMail := and $noticesOn (ne $notices.buyer_confirmation false) -}}
-    {{- $buyerInvoice := and $buyerMail (eq (.invoice | default dict).enabled true) (ne $notices.buyer_invoice false) -}}
+    {{- /* 14.3 keys (merchant_details, buyer_confirmation, boolean buyer_invoice) map onto the 14.4 ones. */ -}}
+    {{- $merchant := $notices.merchant | default (cond (eq $notices.merchant_details false) "summary" "full") -}}
+    {{- $buyer := $notices.buyer | default (cond (eq $notices.buyer_confirmation false) "none" "own") -}}
+    {{- $invoiceOn := eq (.invoice | default dict).enabled true -}}
+    {{- $buyerInvoice := cond (eq $notices.buyer_invoice true) "always" (cond (eq $notices.buyer_invoice false) "never" ($notices.buyer_invoice | default (cond (and $invoiceOn (ne $buyer "none")) "on_request" "never"))) -}}
+    {{- $merchantDetails := and $noticesOn (eq $merchant "full") -}}
+    {{- $merchantMail := and $noticesOn (ne $merchant "none") -}}
+    {{- $buyerMail := and $noticesOn (eq $buyer "own") -}}
+    {{- $stripeReceipt := and $noticesOn (eq $buyer "stripe") -}}
+    {{- $invoiceText := cond (eq $buyerInvoice "always") " con su factura en PDF" (cond (eq $buyerInvoice "on_request") " y, si la solicita, su factura en PDF" "") -}}
 ### Compras en la tienda online
 Si realiza un pedido, tratamos los datos necesarios para cobrarlo, fabricarlo, enviarlo y emitir la factura: artículos e importes, nombre, email, teléfono y dirección de entrega. El pago lo procesa **Stripe Payments Europe, Ltd.**, que recoge los datos de pago y de envío en su página segura; nosotros no vemos ni guardamos el número de su tarjeta.
 - **Base legal:** Art. 6(1)(b) RGPD (ejecución del contrato) y Art. 6(1)(c) (obligaciones contables y fiscales).
 - **Conservación:** datos del pedido y de facturación, {{ index $retention "orders" | default "el plazo que exija la normativa contable y fiscal" }}; dirección y contacto de entrega, {{ index $retention "delivery" | default "mientras sean necesarios para el envío, las devoluciones y la garantía" }}.
-- **Destinatarios:** Stripe (pago), la empresa de transporte (envío) y nuestro proveedor de alojamiento (Cloudflare).{{ if $noticesOn }} Los correos del pedido se envían a través de Google (Gmail).{{ end }} {{ if $merchantDetails }}El aviso interno de cada pedido incluye sus datos de contacto y de entrega para poder prepararlo y enviarlo.{{ else }}El aviso interno de cada pedido no incluye su dirección ni su contacto.{{ end }}{{ if $buyerMail }} Le enviaremos por correo la confirmación del pedido{{ if $buyerInvoice }} con su factura en PDF{{ end }}.{{ end }}
+- **Destinatarios:** Stripe (pago), la empresa de transporte (envío) y nuestro proveedor de alojamiento (Cloudflare).{{ if $noticesOn }} Los correos del pedido se envían a través de Google (Gmail).{{ end }}{{ if $merchantDetails }} El aviso interno de cada pedido incluye sus datos de contacto y de entrega para poder prepararlo y enviarlo.{{ else if or $merchantMail (not $noticesOn) }} El aviso interno de cada pedido no incluye su dirección ni su contacto.{{ end }}{{ if $buyerMail }} Le enviaremos por correo la confirmación del pedido{{ $invoiceText }}.{{ else if $stripeReceipt }} Stripe le enviará por correo el recibo del pago{{ if eq $buyerInvoice "always" }} y nosotros, su factura en PDF{{ else if eq $buyerInvoice "on_request" }} y, si la solicita, le enviaremos su factura en PDF{{ end }}.{{ end }}
   {{- end -}}
 {{- end -}}

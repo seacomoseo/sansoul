@@ -25,7 +25,7 @@ const INVOICE = {
   itemLabel: 'Venta material 3D ({name})',
   exemptNote: 'Operación exenta de IVA según art. 21 Ley 37/1992 (envío a Canarias)'
 }
-const NOTICES = { language: 'es', merchantDetails: true, merchantInvoice: true, buyerConfirmation: true, buyerInvoice: true }
+const NOTICES = { language: 'es', merchant: 'full', merchantLanguage: 'es', merchantInvoice: true, buyer: 'own', buyerInvoice: 'always' }
 
 function policy (taxMode = 'inclusive', rateBps = 2100) {
   const tax = taxMode === 'exempt' ? { mode: 'exempt', rateBps: 0 } : { mode: taxMode, rateBps }
@@ -163,12 +163,29 @@ test('invoice config: defaults, opt-in and strict validation', () => {
 
   assert.equal(compileNotices(undefined, null), null)
   assert.equal(compileNotices({ enabled: false }, null), null)
-  assert.deepEqual(compileNotices({ enabled: true }, null), { language: 'es', merchantDetails: true, merchantInvoice: false, buyerConfirmation: true, buyerInvoice: false })
-  assert.deepEqual(compileNotices({ enabled: true }, minimal), { language: 'es', merchantDetails: true, merchantInvoice: true, buyerConfirmation: true, buyerInvoice: true })
-  assert.equal(compileNotices({ enabled: true, buyer_confirmation: false, buyer_invoice: false }, minimal).buyerConfirmation, false)
+  assert.deepEqual(compileNotices({ enabled: true }, null), { language: 'es', merchant: 'full', merchantLanguage: 'es', merchantInvoice: false, buyer: 'own', buyerInvoice: 'never' })
+  assert.deepEqual(compileNotices({ enabled: true }, minimal), { language: 'es', merchant: 'full', merchantLanguage: 'es', merchantInvoice: true, buyer: 'own', buyerInvoice: 'on_request' })
+  // 14.3 keys map onto the new ones.
+  assert.equal(compileNotices({ enabled: true, buyer_confirmation: false, buyer_invoice: false }, minimal).buyer, 'none')
+  assert.equal(compileNotices({ enabled: true, buyer_confirmation: false }, minimal).buyerInvoice, 'never')
+  assert.equal(compileNotices({ enabled: true, merchant_details: false }, null).merchant, 'summary')
+  assert.equal(compileNotices({ enabled: true, buyer_invoice: true }, minimal).buyerInvoice, 'always')
+  assert.equal(compileNotices({ enabled: true, buyer_invoice: false }, minimal).buyerInvoice, 'never')
+  assert.equal(compileNotices({ enabled: true, merchant: 'none' }, minimal).merchantInvoice, false)
   assert.throws(() => compileNotices({ enabled: true, merchant_invoice: true }, null), /requires_invoice/)
-  assert.throws(() => compileNotices({ enabled: true, buyer_confirmation: false }, minimal), /buyer_invoice_requires/)
+  assert.throws(() => compileNotices({ enabled: true, buyer_confirmation: false, buyer_invoice: true }, minimal), /buyer_invoice_requires/)
+  assert.throws(() => compileNotices({ enabled: true, merchant: 'none', merchant_invoice: true }, minimal), /merchant_invoice_requires/)
+  assert.throws(() => compileNotices({ enabled: true, merchant: 'full', merchant_details: true }, null), /merchant_and_merchant_details/)
+  assert.throws(() => compileNotices({ enabled: true, buyer: 'own', buyer_confirmation: true }, null), /buyer_and_buyer_confirmation/)
   assert.throws(() => compileNotices({ enabled: true, merchant_details: 'yes' }, null), /invalid_order_notices/)
+  assert.throws(() => compileNotices({ enabled: true, buyer: 'email' }, null), /invalid_order_notices/)
+  assert.throws(() => compileNotices({ enabled: true, merchant_language: 'de' }, null), /invalid_order_notices/)
+  assert.throws(() => compileNotices({ enabled: true, templates: { buyer_paid: { body: 'x' } } }, null), /templates/)
+  assert.throws(() => compileNotices({ enabled: true, templates: { buyer_paid: { subject: { zh: 'x' } } } }, null), /templates/)
+  const templated = compileNotices({ enabled: true, templates: { buyer_paid: { subject: 'Gracias · {site}', outro: { es: 'Plazo: **2 semanas**. [Condiciones](https://shop.example.invalid/legal/)', en: 'Lead time: 2 weeks.' } } } }, null)
+  assert.deepEqual(templated.templates.buyer_paid.subject, { '*': 'Gracias · {site}' })
+  assert.equal(templated.templates.buyer_paid.outro.es.html, '<p>Plazo: <strong>2 semanas</strong>. <a href="https://shop.example.invalid/legal/">Condiciones</a></p>')
+  assert.equal(templated.templates.buyer_paid.outro.es.text, 'Plazo: 2 semanas. Condiciones (https://shop.example.invalid/legal/)')
 })
 
 test('catalog build: absent keys leave the release untouched; configured keys are compiled', () => {
@@ -185,7 +202,7 @@ test('catalog build: absent keys leave the release untouched; configured keys ar
     writeFileSync(join(root, 'data/commerce.yml'), `${base}order_notices:\n  enabled: true\ninvoice:\n  enabled: true\n  seller:\n    name: Titular\n    tax_id: 00000000T\n    address: [Calle 1]\n  series:\n    prefix: WEB\n`)
     const configured = buildCatalog(root)
     assert.equal(configured.invoice.series.prefix, 'WEB')
-    assert.equal(configured.notices.buyerConfirmation, true)
+    assert.equal(configured.notices.buyer, 'own')
     assert.notEqual(configured.release, plain.release)
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
@@ -348,9 +365,9 @@ test('notices: merchant gets buyer data and the invoice, buyer gets a confirmati
 
 test('notices: buyer confirmation without invoice, without address or switched off', async () => {
   for (const [notices, buyerEmail, expectMail] of [
-    [{ ...NOTICES, buyerInvoice: false }, 'comprador@example.invalid', 'plain'],
+    [{ ...NOTICES, buyerInvoice: 'never' }, 'comprador@example.invalid', 'plain'],
     [NOTICES, '', 'none'],
-    [{ ...NOTICES, buyerConfirmation: false, buyerInvoice: false }, 'comprador@example.invalid', 'none']
+    [{ ...NOTICES, buyer: 'none', buyerInvoice: 'never' }, 'comprador@example.invalid', 'none']
   ]) {
     const { sqlite, env, catalog } = fixture({ notices, buyerEmail })
     try {
