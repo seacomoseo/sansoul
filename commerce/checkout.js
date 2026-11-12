@@ -149,12 +149,19 @@ export async function handleCheckout (request, env, catalog) {
       snapshot = storedSnapshot(record)
     } else {
       allowBuyerCapabilityCreation = true
+      if (catalog.termsRequired && !options.termsAccepted) throw new CommerceError('terms_required', 400)
       const quoted = quoteOrder(catalog, cart, destination, crypto.randomUUID(), now, options.locale || 'es')
       if (!quoteMatches(quoted.totals, quote)) return jsonResponse({ error: 'quote_changed', quote: publicQuote(quoted.totals) }, 409)
       snapshot = quoted.snapshot
       if (options.locale) snapshot.locale = options.locale
       // Only meaningful when the shop invoices; ignored otherwise.
       if (options.invoiceRequested && catalog.invoice) snapshot.invoiceRequested = true
+      // Proof of acceptance: the terms version in force and when the box was checked.
+      if (catalog.termsRequired) snapshot.terms = { version: catalog.checkout.legalVersion, acceptedAt: now }
+      // Audience: recorded for the contact registry; a consent is only what the buyer checked.
+      if (catalog.audience && (options.audienceConsent || catalog.audience.customers)) {
+        snapshot.audience = { consent: Boolean(options.audienceConsent), version: catalog.audience.version }
+      }
       snapshot.totals = quoted.totals
       snapshot.totalMinor = quoted.totals.totalMinor
       snapshot.idempotencyKey = key

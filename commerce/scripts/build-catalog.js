@@ -214,10 +214,27 @@ function validateNotes (notes) {
 // Stripe allows three custom fields per Checkout Session.
 const CHECKOUT_FIELDS = ['recipient_phone', 'delivery_notes']
 
+function localizedText (value, error) {
+  const entries = typeof value === 'string' ? [value] : plainObject(value) ? Object.values(value) : []
+  if (!entries.length || entries.some(text => typeof text !== 'string' || !text.trim() || text.length > 500)) throw new Error(error)
+}
+
+function compileAudience (source) {
+  if (source === undefined || source === null) return null
+  const error = 'data/commerce.yml: invalid_audience'
+  if (!plainObject(source) || Object.keys(source).some(key => !['enabled', 'customers', 'consent_version', 'consent_text'].includes(key)) || typeof source.enabled !== 'boolean') throw new Error(error)
+  if (!source.enabled) return null
+  if (source.customers !== undefined && typeof source.customers !== 'boolean') throw new Error(error)
+  if (!isValidCheckoutLegalVersion(source.consent_version)) throw new Error(`${error}_consent_version`)
+  // The text of the box is the proof of what was accepted: it is mandatory and versioned.
+  localizedText(source.consent_text, `${error}_consent_text`)
+  return { customers: source.customers === true, version: source.consent_version }
+}
+
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id', 'checkout_terms', 'checkout_terms_text', 'audience'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
@@ -231,7 +248,14 @@ function makeCatalog (root) {
   if (!Array.isArray(fields) || fields.some(field => !CHECKOUT_FIELDS.includes(field)) || new Set(fields).size !== fields.length || fields.length > 3) throw new Error(`data/commerce.yml: checkout_fields_subset_of_${CHECKOUT_FIELDS.join('|')}`)
   if (config.checkout_tax_id !== undefined && typeof config.checkout_tax_id !== 'boolean') throw new Error('data/commerce.yml: checkout_tax_id_must_be_boolean')
   const taxIdCollection = config.checkout_tax_id ?? Boolean(invoice)
+  // Terms checkbox (proof of acceptance with the legal version) and audience (contacts
+  // with an optional promotions consent). Both opt-in; texts are rendered by the theme.
+  if (config.checkout_terms !== undefined && typeof config.checkout_terms !== 'boolean') throw new Error('data/commerce.yml: checkout_terms_must_be_boolean')
+  if (config.checkout_terms && !isValidCheckoutLegalVersion(config.checkout_legal_version)) throw new Error('data/commerce.yml: checkout_terms_requires_checkout_legal_version')
+  const audience = compileAudience(config.audience)
   const optional = {
+    ...(config.checkout_terms ? { termsRequired: true } : {}),
+    ...(audience ? { audience } : {}),
     ...(invoice ? { invoice } : {}),
     ...(notices ? { notices } : {}),
     ...(fields.length ? { checkoutFields: fields } : {}),

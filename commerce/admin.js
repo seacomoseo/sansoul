@@ -69,6 +69,41 @@ function csvResponse (orders, nextCursor) {
   })
 }
 
+// Contacts (module audience). `consented` = the people Saray may mail about new
+// models: consent given and not withdrawn. Hard cap per call; the export is the
+// whole list because a mailing platform imports one file.
+const CONTACTS_MAX = 5000
+
+async function listContacts (db, scope) {
+  if (!['consented', 'all'].includes(scope)) throw new CommerceError('invalid_scope')
+  const rows = await db.prepare(`
+    SELECT email, name, locale, source, consent_promotions, consent_at, consent_version, consent_ref, unsubscribed_at, created_at, updated_at
+    FROM contacts
+    WHERE ? = 'all' OR (consent_promotions = 1 AND unsubscribed_at IS NULL)
+    ORDER BY email LIMIT ?
+  `).bind(scope, CONTACTS_MAX).all()
+  return rows.results || []
+}
+
+function contactsCsv (contacts) {
+  const iso = seconds => seconds ? new Date(seconds * 1000).toISOString() : ''
+  const rows = [['email', 'name', 'language', 'source', 'consent_promotions', 'consent_at', 'consent_version', 'order_id', 'unsubscribed_at']]
+  for (const contact of contacts) rows.push([contact.email, contact.name, contact.locale, contact.source, contact.consent_promotions, iso(contact.consent_at), contact.consent_version, contact.consent_ref, iso(contact.unsubscribed_at)])
+  return new Response(rows.map(row => row.map(csvCell).join(',')).join('\r\n') + '\r\n', {
+    headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="contacts.csv"', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }
+  })
+}
+
+async function unsubscribeContact (request, db, now) {
+  const { value } = await readJsonBody(request, 1024)
+  if (!value || typeof value !== 'object' || Object.keys(value).length !== 1 || typeof value.email !== 'string' || value.email.length > 320) throw new CommerceError('invalid_contact')
+  const result = await db.prepare('UPDATE contacts SET unsubscribed_at = ?, updated_at = ? WHERE email = ? AND unsubscribed_at IS NULL').bind(now, now, value.email.trim().toLowerCase()).run()
+  if (result.meta?.changes) return jsonResponse({ unsubscribed: true })
+  const contact = await db.prepare('SELECT email FROM contacts WHERE email = ?').bind(value.email.trim().toLowerCase()).first()
+  if (!contact) throw new CommerceError('contact_not_found', 404)
+  return jsonResponse({ unsubscribed: true, already: true })
+}
+
 async function listOrders (db, url, defaultLimit = 50) {
   const limitText = url.searchParams.get('limit') || String(defaultLimit)
   const limit = Number(limitText)
@@ -525,6 +560,12 @@ export async function handleAdmin (request, env, catalog) {
       const page = await listOrders(db, url, 100)
       return csvResponse(page.orders, page.nextCursor)
     }
+    if (catalog?.audience && path === '/api/commerce/admin/contacts' && request.method === 'GET') {
+      const contacts = await listContacts(db, url.searchParams.get('scope') || 'consented')
+      return jsonResponse({ contacts })
+    }
+    if (catalog?.audience && path === '/api/commerce/admin/contacts.csv' && request.method === 'GET') return contactsCsv(await listContacts(db, url.searchParams.get('scope') || 'consented'))
+    if (catalog?.audience && path === '/api/commerce/admin/contacts/unsubscribe' && request.method === 'POST') return await unsubscribeContact(request, db, now)
     if (path === '/api/commerce/admin/inventory' && request.method === 'POST') return await updateInventory(request, db, catalog, now)
     if (path === '/api/commerce/admin/reconcile' && request.method === 'POST') {
       const operation = url.searchParams.get('operation') || 'orders'

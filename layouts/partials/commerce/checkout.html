@@ -13,6 +13,22 @@
 <label class="commerce__option"><input type="checkbox" data-commerce-invoice-request> <span>{{ i18n "commerce_invoice_request" }}</span></label>
   {{- end -}}
 {{- end }}
+{{- /* Optional boxes (data/commerce.yml: checkout_terms, audience): terms are required to pay, the promotions consent is never pre-checked. */ -}}
+{{- with hugo.Data.commerce -}}
+  {{- $lang := site.Language.Lang -}}
+  {{- if eq .checkout_terms true }}
+    {{- $terms := .checkout_terms_text -}}
+    {{- if reflect.IsMap $terms }}{{ $terms = index $terms $lang }}{{ end }}
+<label class="commerce__option"><input type="checkbox" data-commerce-terms> <span>{{ with $terms }}{{ . | markdownify }}{{ else }}{{ i18n "commerce_terms_accept" }}{{ end }}</span></label>
+  {{- end -}}
+  {{- with .audience }}
+    {{- if eq .enabled true }}
+      {{- $consent := .consent_text -}}
+      {{- if reflect.IsMap $consent }}{{ $consent = index $consent $lang | default (index $consent site.Language.Lang) | default (index $consent "es") }}{{ end }}
+<label class="commerce__option"><input type="checkbox" data-commerce-audience-consent> <span>{{ $consent | markdownify }}</span></label>
+    {{- end -}}
+  {{- end -}}
+{{- end }}
 <p class="commerce__hint" data-commerce-quote-hint>{{ i18n "commerce_provisional_note" }}</p>
 <p class="commerce__quote" data-commerce-quote-request hidden><a class="btn" href="{{ site.Home.RelPermalink }}#contacto">{{ i18n "commerce_request_quote" }}</a></p>
 <button class="btn commerce__checkout" type="button" data-commerce-checkout disabled>{{ partial "icon" (dict "icon" "lock") }}<span>{{ i18n "commerce_checkout" }}</span></button>

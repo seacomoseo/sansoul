@@ -164,6 +164,30 @@ export function paymentStatements (db, order, target, now, eventId = null) {
       SELECT ?, id, 'payment.paid', ?, 'pending', 0, ?, ?, ?
       FROM orders WHERE id = ? AND payment_status = 'paid' AND fulfillment_status = 'ready'${eventGuard}
     `).bind(eventKey, JSON.stringify({ eventKey, orderId: order.id, eventType: 'payment.paid' }), now, now, now, order.id, ...eventArgs))
+    // Audience (opt-in per project): the consent chosen in the cart joins the email
+    // Stripe returned. Only orders whose snapshot carries `audience` reach this table.
+    if (snapshot.audience) {
+      statements.push(db.prepare(`
+        INSERT INTO contacts (email, name, locale, source, consent_promotions, consent_at, consent_version, consent_ref, created_at, updated_at)
+        SELECT lower(trim(d.buyer_email)), d.buyer_name, json_extract(o.snapshot_json, '$.locale'), 'order',
+          CASE WHEN json_extract(o.snapshot_json, '$.audience.consent') = 1 THEN 1 ELSE 0 END,
+          CASE WHEN json_extract(o.snapshot_json, '$.audience.consent') = 1 THEN ? END,
+          json_extract(o.snapshot_json, '$.audience.version'),
+          CASE WHEN json_extract(o.snapshot_json, '$.audience.consent') = 1 THEN o.id END,
+          ?, ?
+        FROM orders o JOIN order_delivery_details d ON d.order_id = o.id
+        WHERE o.id = ? AND o.payment_status = 'paid' AND d.buyer_email IS NOT NULL AND trim(d.buyer_email) <> ''${eventGuard}
+        ON CONFLICT(email) DO UPDATE SET
+          name = COALESCE(excluded.name, contacts.name),
+          locale = COALESCE(excluded.locale, contacts.locale),
+          consent_at = CASE WHEN excluded.consent_promotions = 1 THEN excluded.consent_at ELSE contacts.consent_at END,
+          consent_version = CASE WHEN excluded.consent_promotions = 1 THEN excluded.consent_version ELSE contacts.consent_version END,
+          consent_ref = CASE WHEN excluded.consent_promotions = 1 THEN excluded.consent_ref ELSE contacts.consent_ref END,
+          unsubscribed_at = CASE WHEN excluded.consent_promotions = 1 THEN NULL ELSE contacts.unsubscribed_at END,
+          consent_promotions = CASE WHEN excluded.consent_promotions = 1 THEN 1 ELSE contacts.consent_promotions END,
+          updated_at = excluded.updated_at
+      `).bind(now, now, now, order.id, ...eventArgs))
+    }
   } else if (target.state === 'failed' || target.state === 'expired') {
     statements.push(db.prepare(`
       UPDATE stock_reservations SET status = ?, updated_at = ?

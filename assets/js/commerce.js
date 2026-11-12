@@ -59,11 +59,19 @@ const LOCALES = ['es', 'en', 'de', 'fr', 'it', 'pt']
 function checkoutOptions () {
   const locale = (document.documentElement.lang || '').slice(0, 2).toLowerCase()
   const invoice = document.querySelector('[data-commerce-invoice-request]')
+  const audience = document.querySelector('[data-commerce-audience-consent]')
   return {
     ...(LOCALES.includes(locale) ? { locale } : {}),
-    ...(invoice?.checked ? { invoice_requested: true } : {})
+    ...(invoice?.checked ? { invoice_requested: true } : {}),
+    ...(termsBoxes().length ? { terms_accepted: termsAccepted() } : {}),
+    ...(audience?.checked ? { audience_consent: true } : {})
   }
 }
+
+// The terms box is required when the shop enables it; the cart drawer and the cart
+// page each render one, so they are kept in sync.
+const termsBoxes = () => [...document.querySelectorAll('[data-commerce-terms]')]
+const termsAccepted = () => termsBoxes().length === 0 || termsBoxes().some(box => box.checked)
 
 function sameItems (left, right) {
   return JSON.stringify([...left].sort((a, b) => a.id.localeCompare(b.id))) ===
@@ -244,7 +252,7 @@ export function initCommerce () {
     })
     commerceNodes('[data-commerce-quote-request]').forEach(node => { node.hidden = !(quoteRequired && items.length > 0) })
     commerceNodes('[data-commerce-checkout]').forEach(button => {
-      button.disabled = !quote || root.dataset.commerceCheckoutApproved !== 'true' || checkoutBusy || quoteBusy
+      button.disabled = !quote || root.dataset.commerceCheckoutApproved !== 'true' || checkoutBusy || quoteBusy || !termsAccepted()
       button.toggleAttribute('aria-busy', checkoutBusy)
       button.hidden = quoteRequired && items.length > 0
     })
@@ -330,6 +338,7 @@ export function initCommerce () {
           quote_only: 'commerce_quote_only',
           product_unavailable: 'commerce_unavailable_product',
           checkout_not_approved: 'commerce_checkout_disabled',
+          terms_required: 'commerce_terms_required',
           checkout_in_progress: 'commerce_checkout_in_progress'
         }
         quoteRequired = errorKeys[result.error] === 'commerce_quote_required'
@@ -490,6 +499,7 @@ export function initCommerce () {
           quote_only: 'commerce_quote_only',
           product_unavailable: 'commerce_unavailable_product',
           checkout_not_approved: 'commerce_checkout_disabled',
+          terms_required: 'commerce_terms_required',
           checkout_in_progress: 'commerce_checkout_in_progress'
         }
         throw new Error(errorKeys[result.error] || 'commerce_checkout_failed')
@@ -591,6 +601,13 @@ export function initCommerce () {
   }
   document.addEventListener('input', invalidateDestination)
   document.addEventListener('change', invalidateDestination)
+
+  document.addEventListener('change', event => {
+    const terms = event.target instanceof HTMLInputElement && event.target.matches('[data-commerce-terms]') ? event.target : null
+    if (!terms) return
+    termsBoxes().forEach(box => { box.checked = terms.checked })
+    render()
+  })
 
   document.addEventListener('change', event => {
     const postal = event.target instanceof HTMLInputElement && event.target.matches('[data-commerce-postal]') ? event.target : null

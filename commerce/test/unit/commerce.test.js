@@ -762,3 +762,16 @@ test('existing buyer status and webhooks remain available when checkout creation
   const paid = await handleOrderStatus(statusRequest(statusOrderId, cookie), fixture.env)
   assert.deepEqual(await paid.json(), { order_id: statusOrderId, payment_status: 'paid' })
 })
+
+test('checkout_terms and audience are opt-in, versioned and strictly validated', () => {
+  const base = 'enabled: true\norigin: "https://shop.example"\ncurrency: eur\nstock_mode: made_to_order\n'
+  const off = buildCatalogFixture(base)
+  assert.equal(off.catalog.termsRequired, undefined)
+  assert.equal(off.catalog.audience, undefined)
+  const on = buildCatalogFixture(base + 'checkout_legal_version: terms-v1\ncheckout_terms: true\naudience:\n  enabled: true\n  customers: true\n  consent_version: promo-v1\n  consent_text:\n    es: Quiero recibir avisos puntuales.\n')
+  assert.equal(on.catalog.termsRequired, true)
+  assert.deepEqual(on.catalog.audience, { customers: true, version: 'promo-v1' })
+  assert.throws(() => buildCatalogFixture(base + 'checkout_terms: true\n'), /checkout_terms_requires_checkout_legal_version/)
+  assert.throws(() => buildCatalogFixture(base + 'audience:\n  enabled: true\n  consent_version: v1\n'), /invalid_audience_consent_text/)
+  assert.throws(() => buildCatalogFixture(base + 'audience:\n  enabled: true\n  consent_text: x\n'), /invalid_audience_consent_version/)
+})
