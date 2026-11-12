@@ -463,6 +463,8 @@ test('Stripe Checkout collects delivery only for the quoted country and itemizes
   }), options => {
     const body = new URLSearchParams(options.body)
     assert.equal(body.get('locale'), 'de')
+    assert.equal(body.get('metadata[purpose]'), 'order')
+    assert.equal(body.get('payment_intent_data[metadata][purpose]'), 'order')
     assert.equal(body.get('line_items[1][price_data][product_data][name]'), 'MwSt.')
     assert.equal(body.get('shipping_options[0][shipping_rate_data][display_name]'), 'Versand')
   })

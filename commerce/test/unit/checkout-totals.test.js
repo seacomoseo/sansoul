@@ -383,3 +383,21 @@ test('14.4: purchase language and invoice request reach the snapshot; company an
   const details = db.sqlite.prepare('SELECT buyer_business_name, buyer_tax_id, buyer_tax_id_type, recipient_phone, delivery_notes FROM order_delivery_details WHERE order_id = ?').get(order.id)
   assert.deepEqual({ ...details }, { buyer_business_name: 'Empresa Ficticia SL', buyer_tax_id: 'B00000000', buyer_tax_id_type: 'es_cif', recipient_phone: '+34 600 000 000', delivery_notes: 'Portal verde, llamar al timbre 2' })
 })
+
+test('payments layer: events of another purpose are recorded and never touch the order', async () => {
+  const db = database()
+  const env = environment(db)
+  const order = await paidOrder(env, catalog(), 'purpose-key-0001')
+  const foreign = sessionEvent(order, { address: { country: 'ES', postalCode: '28001' } })
+  foreign.data.object.metadata.purpose = 'booking'
+  const result = await sendWebhook(env, foreign)
+  assert.equal(result.status, 200)
+  assert.equal(result.body.ignored, true)
+  assert.deepEqual(orderRow(db, order.id), { payment_status: 'pending', fulfillment_status: 'awaiting_payment' })
+  assert.equal(db.sqlite.prepare('SELECT status FROM webhook_events WHERE event_id = ?').get(foreign.id).status, 'ignored')
+  // Explicit purpose order (14.4 sessions) is processed as before.
+  const own = sessionEvent(order, { address: { country: 'ES', postalCode: '28001' } })
+  own.data.object.metadata.purpose = 'order'
+  assert.equal((await sendWebhook(env, own)).status, 200)
+  assert.deepEqual(orderRow(db, order.id), { payment_status: 'paid', fulfillment_status: 'ready' })
+})

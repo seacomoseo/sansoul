@@ -2,7 +2,8 @@ import { sha256Hex } from './catalog.js'
 import { CommerceError, errorResponse, jsonResponse, methodNotAllowed, readJsonBody, requireDatabase } from './http.js'
 import { getWebhookSecret } from './provider.js'
 import { paymentStatements, WEBHOOK_CLAIMED_AT } from './orders.js'
-import { verifyStripeSignature } from './signature.js'
+import { verifyStripeSignature } from '../payments/signature.js'
+import { paymentPurpose } from '../payments/purpose.js'
 import { normalizePostalCode } from './totals.js'
 
 const EVENT_ID = /^evt_[A-Za-z0-9]+$/
@@ -241,7 +242,8 @@ export async function handleWebhook (request, env) {
     const existing = await db.prepare('SELECT status FROM webhook_events WHERE event_id = ?').bind(event.id).first()
     if (existing && existing.status !== 'unmatched') return jsonResponse({ received: true, duplicate: true })
 
-    const target = eventTarget(event)
+    // Payments of other consumers (metadata[purpose]) are recorded, never applied to orders.
+    const target = paymentPurpose(event.data.object) === 'order' ? eventTarget(event) : null
     if (!target) {
       const claimed = await applyEvent(db, event, bodyHash, null, null, now)
       return jsonResponse(claimed ? { received: true, ignored: true } : { received: true, duplicate: true })

@@ -1,10 +1,6 @@
-export class CommerceError extends Error {
-  constructor (code, status = 400) {
-    super(code)
-    this.code = code
-    this.status = status
-  }
-}
+import { PaymentError } from '../payments/errors.js'
+
+export class CommerceError extends PaymentError {}
 
 export function jsonResponse (data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -19,10 +15,11 @@ export function jsonResponse (data, status = 200, headers = {}) {
 }
 
 export function errorResponse (error) {
-  const status = error instanceof CommerceError ? error.status : 500
-  const code = error instanceof CommerceError ? error.code : 'internal_error'
+  const known = error instanceof PaymentError
+  const status = known ? error.status : 500
+  const code = known ? error.code : 'internal_error'
   // Unexpected failures stay opaque to clients but visible in runtime logs; never log request data.
-  if (!(error instanceof CommerceError)) console.error('commerce_internal_error', error?.name, String(error?.message || error).slice(0, 300))
+  if (!known) console.error('commerce_internal_error', error?.name, String(error?.message || error).slice(0, 300))
   return jsonResponse({ error: code }, status)
 }
 
