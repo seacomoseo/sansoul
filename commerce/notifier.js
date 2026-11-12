@@ -19,6 +19,15 @@ const SUBJECTS = Object.freeze({
   'payment.refunded': 'Pedido reembolsado'
 })
 
+const EXPLAIN = Object.freeze({
+  'payment.paid': 'El pago se ha completado. Ya puedes preparar y enviar el pedido con los datos de abajo.',
+  'payment.awaiting_address': 'El pago se ha completado pero aún no tenemos la dirección de envío. Consúltala en el panel de pagos antes de enviar.',
+  'payment.destination_review': 'El pago se ha completado, pero el destino está fuera de la política de envío. Revísalo antes de preparar el pedido.',
+  'payment.inventory_exception': 'El pago se ha completado, pero hay un problema de existencias. Revísalo antes de preparar el pedido.',
+  'payment.partially_refunded': 'Se ha devuelto una parte del importe de este pedido.',
+  'payment.refunded': 'Se ha devuelto el importe completo de este pedido.'
+})
+
 const providers = new Map()
 
 function provider (fetch) {
@@ -152,7 +161,7 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
     }
   }
   const note = merchantDetails ? invoiceNote : 'Nombre, contacto y dirección del comprador: panel de Stripe → Pagos (busca el identificador de pago).'
-  const text = [subject, '', ...rows.map(([key, value]) => `${key}: ${value}`), '', 'Artículos:', ...lines, '',
+  const text = [subject, ...(EXPLAIN[item.event_type] ? ['', EXPLAIN[item.event_type]] : []), '', ...rows.map(([key, value]) => `${key}: ${value}`), '', 'Artículos:', ...lines, '',
     ...blocks.flatMap(block => [`${block.title}:`, ...(block.rows ? block.rows.map(([key, value]) => `${key}: ${value}`) : block.lines), '']),
     ...(note ? [note, ''] : [])].join('\n')
   const foot = [
@@ -162,7 +171,8 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
     ...(order.refund_amount_minor ? [['Reembolsado', money(order.refund_amount_minor, currency, unit)]] : []),
     ['Total', money(order.amount_total_minor, currency, unit), true]
   ]
-  const html = `<p style="font-family:Arial,sans-serif;font-size:16px"><strong>${escapeHtml(subject)}</strong></p>` +
+  const html = `<p style="font-family:Arial,sans-serif;font-size:16px;margin:0 0 6px"><strong>${escapeHtml(subject)}</strong></p>` +
+    (EXPLAIN[item.event_type] ? `<p style="font-family:Arial,sans-serif;font-size:14px;margin:0 0 16px">${escapeHtml(EXPLAIN[item.event_type])}</p>` : '') +
     keyValueTable(rows.slice(0, 4)) +
     htmlTable({
       head: ['Artículo', 'Cant.', 'Precio'],

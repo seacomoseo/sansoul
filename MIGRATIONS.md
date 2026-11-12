@@ -42,6 +42,10 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.3.2 — 2026-11-12 — frase explicativa en los avisos al vendedor
+
+**Impacto:** solo presentación. Cada aviso al vendedor abre con una frase que dice qué ha pasado y qué hacer (pagado, reembolsado, sin dirección, destino o existencias por revisar). Sin migraciones ni configuración.
+
 ## 14.3.1 — 2026-11-12 — avisos de pedido en tablas
 
 **Impacto:** solo presentación. Los avisos al vendedor y la confirmación al comprador pasan del listado con viñetas a tablas HTML (artículo, cantidad, precio; subtotal, envío, IVA y total al pie; comprador y dirección en tablas). El texto plano no cambia. Sin migraciones ni cambios de configuración.
