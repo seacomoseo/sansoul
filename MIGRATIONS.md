@@ -42,6 +42,46 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.3.0 — 2026-11-12 — avisos completos de pedido y factura PDF
+
+**Impacto:** ninguno salvo que se active. Los proyectos sin `order_notices` ni `invoice` en
+`data/commerce.yml` envían exactamente los mismos avisos que antes. Es una versión *minor*:
+añade la migración D1 `0007_invoices.sql`, que el CI aplica sola con el resto
+(`wrangler d1 migrations apply`).
+
+### Qué incorpora
+
+- **Factura PDF** generada en el Worker (`commerce/invoice.js`, `commerce/pdf.js`, sin
+  dependencias; unos 3 KB por factura) desde el pedido pagado y la configuración `invoice`:
+  titular, NIF, domicilio, serie propia por proyecto (`WEB-2026-0001`, contador atómico en D1
+  sin saltos y sin duplicados por reintentos), desglose de IVA por tipo, IVA del envío,
+  coletilla de exención y forma de pago configurable. Descarga/emisión manual:
+  `GET /api/commerce/admin/orders/<id>/invoice.pdf` (token de administración).
+- **Aviso completo al vendedor** (`order_notices`): además de artículos e importes, nombre,
+  correo, teléfono y dirección de envío del comprador, con la factura adjunta y `Reply-To` al
+  comprador. Sin activar, el aviso sigue sin datos personales.
+- **Confirmación al comprador**, activada por defecto dentro de `order_notices`, con resumen y
+  la misma factura (la adjunta se puede quitar aparte con `buyer_invoice: false`).
+- Factura rectificativa preparada para reembolsos (serie propia, importes en negativo): el motor
+  puede emitirla, pero ningún flujo la emite todavía.
+
+### Acciones (opcionales)
+
+- Para adoptarlo: añade `invoice` y `order_notices` a `data/commerce.yml` (ver README-ROOT,
+  «Avisos completos y factura PDF») y revisa `privacy_retention`: el aviso ya no es «sin datos
+  personales» y las facturas emitidas se conservan por obligación fiscal aunque se borren los
+  datos de entrega.
+- Con Stripe, desactiva en el panel los recibos por correo de Stripe si la confirmación propia
+  está activada, para que el comprador no reciba dos.
+
+### Validación
+
+- `pnpm run test:commerce` (incluye `commerce/test/unit/invoice.test.js`) y
+  `pnpm run test:commerce:d1` desde `core/`.
+- Con el Worker de pruebas: una compra de prueba genera un correo con PDF; repetir el despacho
+  no emite un segundo número.
+
+
 ## 14.1.0 — 2026-11-09 — espejo Netlify y Worker local
 
 **Impacto:** ninguno salvo que se active. Proyectos sin `params.netlify` y sin

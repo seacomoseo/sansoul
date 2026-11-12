@@ -366,6 +366,7 @@ export async function onRequest (context) {
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0005_outbox_indexes.sql')], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--command', "UPDATE commerce_operation_cursors SET cursor_created_at = 1700000000, cursor_id = 'legacy-cursor', updated_at = 1700000001"], workspace)
     await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0006_bounded_maintenance.sql')], workspace)
+    await runWrangler(['d1', 'execute', databaseName, '--local', '--file', resolve(THEME, 'commerce/migrations/0007_invoices.sql')], workspace)
     const migratedCursors = await queryD1(databaseName, 'SELECT * FROM commerce_operation_cursors ORDER BY operation', workspace)
     assert.deepEqual(migratedCursors, [
       { operation: 'expiration', cursor_created_at: 0, cursor_id: '', updated_at: 0, revision: 0 },
