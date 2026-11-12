@@ -385,7 +385,25 @@ function invoiceMessage ({ order, site, catalog }) {
   return { subject: template(catalog, 'buyer_invoice', 'subject', language, vars) || t.invoiceSubject(site), text, html }
 }
 
+// Mail sent when the merchant marks the order as shipped; `tracking` is a link or a code.
+function shippedMessage ({ order, site, catalog, tracking }) {
+  const snapshot = JSON.parse(order.snapshot_json)
+  const language = buyerLanguage(snapshot, catalog.notices)
+  const t = buyerText(language)
+  const vars = buyerVars(order, site, language)
+  const name = order.buyer_name || order.recipient_name || ''
+  const intro = paragraphs(template(catalog, 'buyer_shipped', 'intro', language, vars), null)
+  const outro = paragraphs(template(catalog, 'buyer_shipped', 'outro', language, vars), null)
+  const link = tracking && /^https:\/\//i.test(tracking)
+  const trackingHtml = tracking ? `<p style="font-family:Arial,sans-serif;font-size:14px;margin:0 0 12px"><strong>${escapeHtml(t.tracking)}:</strong> ${link ? `<a href="${escapeHtml(tracking)}">${escapeHtml(tracking)}</a>` : escapeHtml(tracking)}</p>` : ''
+  const text = [...(intro ? [intro.text] : [t.greeting(name), '', t.shippedIntro]), ...(tracking ? ['', `${t.tracking}: ${tracking}`] : []), '', outro ? outro.text : t.reply, ''].join('\n')
+  const html = (intro ? intro.html : `<div style="${PARAGRAPH}"><p>${escapeHtml(t.greeting(name))}</p><p>${escapeHtml(t.shippedIntro)}</p></div>`) + trackingHtml +
+    (outro ? outro.html : `<div style="${PARAGRAPH}"><p>${escapeHtml(t.reply)}</p></div>`)
+  return { subject: template(catalog, 'buyer_shipped', 'subject', language, vars) || t.shippedSubject(site), text, html }
+}
+
 const BUYER_CONFIRMATION = 'buyer.confirmation'
+const BUYER_SHIPPED = 'buyer.shipped'
 const BUYER_INVOICE = 'buyer.invoice'
 
 // One buyer mail per paid order and kind, enqueued as its own outbox event so a retry
@@ -412,6 +430,16 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     messageId: `commerce-${item.event_key}`.replace(/[^A-Za-z0-9.-]/g, '-')
   }
   const send = extra => gmail.send({ env, authority, signal: AbortSignal.timeout(15000), beforeSend: async () => {}, message: { ...message, ...extra } })
+
+  if (item.event_type === BUYER_SHIPPED) {
+    if (!notices?.buyerShipped || notices.buyer === 'none' || !order || !validAddress(order.buyer_email || '')) return
+    let tracking = null
+    try {
+      tracking = JSON.parse(item.payload_json).tracking || null
+    } catch {}
+    await send({ fromName: catalog.invoice?.seller?.name || site, to: [order.buyer_email], replyTo: message.to[0], ...shippedMessage({ order, site, catalog, tracking }) })
+    return
+  }
 
   if (item.event_type === BUYER_CONFIRMATION || item.event_type === BUYER_INVOICE) {
     // Nothing to do without an address (never collected, or already erased by the

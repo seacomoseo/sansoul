@@ -138,7 +138,19 @@ function adminOrder (order) {
   }
 }
 
-async function transitionOrder (db, orderId, from, to, now) {
+// Optional shipping reference sent with `ship`: a carrier tracking link or code.
+const TRACKING = /^[^\u0000-\u001f\u007f]{1,200}$/u
+
+async function readTracking (request) {
+  if (!/^application\/json/i.test(request.headers.get('content-type') || '')) return null
+  const { value } = await readJsonBody(request, 1024)
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => key !== 'tracking')) throw new CommerceError('invalid_shipment')
+  if (value.tracking === undefined || value.tracking === null || value.tracking === '') return null
+  if (typeof value.tracking !== 'string' || !TRACKING.test(value.tracking.trim())) throw new CommerceError('invalid_shipment')
+  return value.tracking.trim()
+}
+
+async function transitionOrder (db, orderId, from, to, now, { catalog, tracking } = {}) {
   if (to === 'shipped') {
     const delivery = await db.prepare(`
       SELECT order_id FROM order_delivery_details
@@ -147,11 +159,24 @@ async function transitionOrder (db, orderId, from, to, now) {
     `).bind(orderId).first()
     if (!delivery) throw new CommerceError('delivery_details_missing', 409)
   }
-  const result = await db.prepare(`
+  const update = db.prepare(`
     UPDATE orders SET fulfillment_status = ?, updated_at = ?
     WHERE id = ? AND payment_status = 'paid' AND fulfillment_status = ?
-  `).bind(to, now, orderId, from).run()
-  if (result.meta?.changes) return jsonResponse({ order_id: orderId, fulfillment_status: to })
+  `).bind(to, now, orderId, from)
+  // The shipping mail is enqueued with the transition, so it exists exactly once.
+  const notify = to === 'shipped' && catalog?.notices?.buyerShipped && catalog.notices.buyer !== 'none'
+  let changes
+  if (notify) {
+    const eventKey = `${orderId}:buyer.shipped`
+    const payload = JSON.stringify({ eventKey, orderId, eventType: 'buyer.shipped', ...(tracking ? { tracking } : {}) })
+    const results = await db.batch([update, db.prepare(`
+      INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
+      SELECT ?, id, 'buyer.shipped', ?, 'pending', 0, ?, ?, ?
+      FROM orders WHERE id = ? AND fulfillment_status = 'shipped' AND updated_at = ? AND changes() > 0
+    `).bind(eventKey, payload, now, now, now, orderId, now)])
+    changes = results[0]?.meta?.changes
+  } else changes = (await update.run()).meta?.changes
+  if (changes) return jsonResponse({ order_id: orderId, fulfillment_status: to })
   const order = await db.prepare('SELECT id FROM orders WHERE id = ?').bind(orderId).first()
   if (!order) throw new CommerceError('order_not_found', 404)
   throw new CommerceError('invalid_order_transition', 409)
@@ -517,7 +542,8 @@ export async function handleAdmin (request, env, catalog) {
     if (match && request.method === 'POST' && ORDER_ID.test(match[1])) {
       const action = match[2].toLowerCase()
       if (action === 'cancel-partial') return await cancelPartialRefund(db, match[1], now)
-      return await transitionOrder(db, match[1], action === 'manufacture' ? 'ready' : 'manufacturing', action === 'manufacture' ? 'manufacturing' : 'shipped', now)
+      const tracking = action === 'ship' ? await readTracking(request) : null
+      return await transitionOrder(db, match[1], action === 'manufacture' ? 'ready' : 'manufacturing', action === 'manufacture' ? 'manufacturing' : 'shipped', now, { catalog, tracking })
     }
     if (path.startsWith('/api/commerce/admin/') && !['GET', 'POST'].includes(request.method)) return methodNotAllowed(['GET', 'POST'])
     throw new CommerceError('not_found', 404)

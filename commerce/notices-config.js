@@ -134,7 +134,7 @@ function choice (value, allowed, fallback, error) {
 export function compileNotices (source, invoice) {
   if (source === undefined || source === null) return null
   const error = 'data/commerce.yml: invalid_order_notices'
-  only(source, ['enabled', 'language', 'merchant', 'merchant_details', 'merchant_invoice', 'merchant_language', 'buyer', 'buyer_confirmation', 'buyer_invoice', 'templates'], error)
+  only(source, ['enabled', 'language', 'merchant', 'merchant_details', 'merchant_invoice', 'merchant_language', 'buyer', 'buyer_confirmation', 'buyer_invoice', 'buyer_shipped', 'templates'], error)
   if (typeof source.enabled !== 'boolean') throw new Error(error)
   if (!source.enabled) return null
   if (source.merchant !== undefined && source.merchant_details !== undefined) throw new Error('data/commerce.yml: order_notices_merchant_and_merchant_details')
@@ -157,6 +157,8 @@ export function compileNotices (source, invoice) {
     buyer,
     buyerInvoice
   }
+  // Only when on, so catalogs of existing projects keep their exact shape.
+  if (bool(source.buyer_shipped, false, error)) notices.buyerShipped = true
   const templates = compileTemplates(source.templates, error)
   if (templates) notices.templates = templates
   if ((notices.merchantInvoice || notices.buyerInvoice !== 'never') && !withInvoice) throw new Error('data/commerce.yml: order_notices_invoice_requires_invoice')
