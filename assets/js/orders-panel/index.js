@@ -258,7 +258,7 @@ function detailPane (order) {
   const buyer = order.delivery?.buyer || {}
   const ship = order.delivery?.shipping || {}
   const row = (label, value) => value ? [h('dt', {}, label), h('dd', {}, value)] : []
-  const address = [ship.line1, ship.line2, [ship.postal_code, ship.locality].filter(Boolean).join(' '), ship.administrative_area, ship.country_code].filter(Boolean).join('\n')
+  const address = [ship.line1, ship.line2, [ship.postal_code, ship.locality].filter(Boolean).join(' '), ship.region_name || ship.administrative_area, ship.country_name || ship.country_code].filter(Boolean).join('\n')
   const tracking = h('input', { class: 'input', type: 'text', maxlength: '200', placeholder: T.tracking, 'aria-label': T.tracking })
   const refreshOrder = async () => {
     await loadOrders()

@@ -1,7 +1,7 @@
 import { createGmailProvider } from '../forms/providers/gmail.js'
 import { validAddress } from '../forms/mime.js'
 import { sanitizeHtml } from '../forms/render.js'
-import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, paymentTime, renderInvoicePdf } from './invoice.js'
+import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 import { buyerText, supportedLocale } from './messages.js'
 
 // Merchant order notices through the forms Gmail provider (FORMS_GMAIL_CREDENTIALS,
@@ -191,7 +191,7 @@ function addressParts (order, language = 'es') {
     order.address_line1,
     order.address_line2,
     [order.postal_code, order.locality].filter(Boolean).join(' '),
-    order.administrative_area,
+    regionName(order.country_code, order.administrative_area),
     order.country_code && countryName(order.country_code, language)].map((value, i) => i === 0 ? value || '' : value)
   return [name, rest.filter(Boolean).join(', ')]
 }
@@ -202,7 +202,7 @@ function addressLines (order, language = 'es') {
     order.address_line1,
     order.address_line2,
     [order.postal_code, order.locality].filter(Boolean).join(' '),
-    order.administrative_area,
+    regionName(order.country_code, order.administrative_area),
     order.country_code && countryName(order.country_code, language)
   ].filter(Boolean)
 }

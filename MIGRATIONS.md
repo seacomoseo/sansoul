@@ -48,7 +48,8 @@ Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegram
 las migraciones D1 `0008_buyer_tax_and_delivery_notes.sql` y `0009_audience_contacts.sql`, que
 el CI aplica solas con el resto (`wrangler d1 migrations apply`). Las claves de 14.3
 (`merchant_details`, `buyer_confirmation`, `buyer_invoice: true|false`) siguen valiendo; con la
-configuración de 3DNAU los correos salen byte a byte como en 14.3.3 (prueba *golden*).
+configuración de 3DNAU los correos salen byte a byte como en 14.3.3 (prueba *golden*), salvo la
+provincia (ver abajo).
 
 ### Qué cambia sin tocar la configuración (solo proyectos con `invoice`)
 
@@ -57,6 +58,8 @@ configuración de 3DNAU los correos salen byte a byte como en 14.3.3 (prueba *go
   `buyer_invoice: always`.
 - `checkout_tax_id` vale `true` por defecto: Stripe Checkout muestra «Compro como empresa» (NIF y
   razón social). Para ocultarlo, `checkout_tax_id: false`.
+- Las direcciones españolas muestran la provincia por su nombre («Murcia») y no por el código que
+  devuelve Stripe («MU»), en avisos, confirmación, factura y panel; el CSV y la API conservan el código.
 - El idioma de la página se guarda en el pedido y decide el idioma de Stripe Checkout y de la
   confirmación al comprador (es, en, de, fr, it, pt); los pedidos anteriores usan
   `order_notices.language`.

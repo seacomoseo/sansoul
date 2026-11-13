@@ -9,7 +9,7 @@ const tokenEncoder = new TextEncoder()
 import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
 import { hasMailNotifier, loadOrder, sendOrderNotice } from './notifier.js'
-import { InvoiceError, getOrIssueInvoice, invoiceFilename, paymentTime, renderInvoicePdf } from './invoice.js'
+import { InvoiceError, countryName, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -181,7 +181,20 @@ function adminOrder (order) {
       ? {
           source,
           buyer: { name, email, phone, business_name: businessName ?? null, tax_id: taxId ?? null, tax_id_type: taxIdType ?? null },
-          shipping: { recipient, line1, line2, locality, administrative_area: administrativeArea, postal_code: postalCode, country_code: countryCode, phone: recipientPhone ?? null, notes: notes ?? null }
+          shipping: {
+            recipient,
+            line1,
+            line2,
+            locality,
+            administrative_area: administrativeArea,
+            postal_code: postalCode,
+            country_code: countryCode,
+            // Display names for the panel; the codes above stay the data contract.
+            region_name: regionName(countryCode, administrativeArea),
+            country_name: countryCode ? countryName(countryCode, 'es') : null,
+            phone: recipientPhone ?? null,
+            notes: notes ?? null
+          }
         }
       : null
   }

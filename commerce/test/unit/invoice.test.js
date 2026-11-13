@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { buildCatalog } from '../../scripts/build-catalog.js'
 import { compileInvoice, compileNotices } from '../../notices-config.js'
-import { buildCreditNoteData, buildInvoiceData, formatMoney, getOrIssueInvoice, InvoiceError, invoiceNumber, issueInvoice, localDate, renderInvoicePdf } from '../../invoice.js'
+import { buildCreditNoteData, buildInvoiceData, formatMoney, getOrIssueInvoice, InvoiceError, invoiceNumber, issueInvoice, localDate, regionName, renderInvoicePdf } from '../../invoice.js'
 import { createPdf, textWidth, toWinAnsi, wrapText } from '../../pdf.js'
 import { calculateOrderTotals } from '../../totals.js'
 import { dispatchScheduledNotices, handleAdmin } from '../../admin.js'
@@ -300,6 +300,14 @@ test('money formatting without Intl: grouping, signs, zero-decimal and other cur
   assert.equal(formatMoney(-1234567, 'usd', 2, 'en'), '-$12,345.67')
   assert.equal(formatMoney(1500, 'jpy', 0), '1500\u00a0JPY')
   assert.equal(formatMoney(1500, 'chf', 2, 'en'), '15.00\u00a0CHF')
+})
+
+test('region names: Spanish provinces by name, other countries keep the code', () => {
+  assert.equal(regionName('ES', 'MU'), 'Murcia')
+  assert.equal(regionName('ES', 'PM'), 'Baleares')
+  assert.equal(regionName('ES', 'XX'), 'XX')
+  assert.equal(regionName('PT', '11'), '11')
+  assert.equal(regionName('ES', null), null)
 })
 
 test('invoice orders must be paid', async () => {

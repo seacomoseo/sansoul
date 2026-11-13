@@ -144,6 +144,16 @@ export function countryName (code, language) {
   return COUNTRIES[language]?.[code] || code
 }
 
+// Stripe returns the subdivision as its ISO 3166-2 suffix ("MU"); Spanish provinces
+// read better by name on invoices and notices. Other countries keep the code.
+const REGIONS = Object.freeze({
+  ES: { A: 'Alicante', AB: 'Albacete', AL: 'Almería', AV: 'Ávila', B: 'Barcelona', BA: 'Badajoz', BI: 'Vizcaya', BU: 'Burgos', C: 'A Coruña', CA: 'Cádiz', CC: 'Cáceres', CE: 'Ceuta', CO: 'Córdoba', CR: 'Ciudad Real', CS: 'Castellón', CU: 'Cuenca', GC: 'Las Palmas', GI: 'Girona', GR: 'Granada', GU: 'Guadalajara', H: 'Huelva', HU: 'Huesca', J: 'Jaén', L: 'Lleida', LE: 'León', LO: 'La Rioja', LU: 'Lugo', M: 'Madrid', MA: 'Málaga', ML: 'Melilla', MU: 'Murcia', NA: 'Navarra', O: 'Asturias', OR: 'Ourense', P: 'Palencia', PM: 'Baleares', PO: 'Pontevedra', S: 'Cantabria', SA: 'Salamanca', SE: 'Sevilla', SG: 'Segovia', SO: 'Soria', SS: 'Guipúzcoa', T: 'Tarragona', TE: 'Teruel', TF: 'Santa Cruz de Tenerife', TO: 'Toledo', V: 'Valencia', VA: 'Valladolid', VI: 'Álava', Z: 'Zaragoza', ZA: 'Zamora' }
+})
+
+export function regionName (country, code) {
+  return (code && REGIONS[country]?.[code]) || code || null
+}
+
 function groupTaxes (lines, shipping) {
   const groups = new Map()
   for (const entry of [...lines, ...(shipping ? [shipping] : [])]) {
@@ -205,7 +215,7 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
     details?.address_line1,
     details?.address_line2,
     [details?.postal_code, details?.locality].filter(Boolean).join(' '),
-    details?.administrative_area,
+    regionName(details?.country_code, details?.administrative_area),
     details?.country_code ? countryName(details.country_code, config.language) : null
   ].filter(Boolean)
   const hasPayment = config.paymentText !== null
