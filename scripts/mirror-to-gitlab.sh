@@ -5,11 +5,15 @@ set -eu
 repo="${GITHUB_REPOSITORY:?Missing GITHUB_REPOSITORY}"
 repo_name="${GITHUB_REPOSITORY#*/}"
 gitlab_namespace="${GITLAB_NAMESPACE:-seacomoseo}"
-gitlab_repo="${GITLAB_REPO:-${gitlab_namespace}/${repo_name}}"
+# Naming rule: <owner> when the repository is `site` (almost all), else <owner>-<repo>.
+repo_owner="${repo%%/*}"
+if [ "$repo_name" = site ]; then gitlab_name="$repo_owner"; else gitlab_name="${repo_owner}-${repo_name}"; fi
+gitlab_repo="${GITLAB_REPO:-${gitlab_namespace}/${gitlab_name}}"
 gitlab_username="${GL_USERNAME:-oauth2}"
 gitlab_api_base="${GITLAB_API_BASE:-https://gitlab.com/api/v4}"
 workdir="$(mktemp -d)"
 gitlab_namespace_path="$(printf '%s' "$gitlab_namespace" | sed 's/\//%2F/g')"
+gitlab_project_name="${gitlab_repo##*/}"
 gitlab_project_path="$(printf '%s' "$gitlab_repo" | sed 's/\//%2F/g')"
 
 cleanup () {
@@ -30,7 +34,7 @@ if [ "$project_status" = "404" ]; then
 
   namespace_id="$(curl --silent --show-error --fail \
     --header "PRIVATE-TOKEN: ${GL_PAT}" \
-    "${gitlab_api_base}/groups/${gitlab_namespace_path}" |
+    "${gitlab_api_base}/namespaces/${gitlab_namespace_path}" |
     sed -n 's/.*"id":\([0-9][0-9]*\).*/\1/p' |
     head -n 1)"
 
@@ -44,7 +48,7 @@ if [ "$project_status" = "404" ]; then
     --request POST \
     --header "PRIVATE-TOKEN: ${GL_PAT}" \
     --header "Content-Type: application/json" \
-    --data "{\"name\":\"${repo_name}\",\"path\":\"${repo_name}\",\"namespace_id\":${namespace_id}}" \
+    --data "{\"name\":\"${gitlab_project_name}\",\"path\":\"${gitlab_project_name}\",\"namespace_id\":${namespace_id}}" \
     "${gitlab_api_base}/projects")"
 
   if ! printf '%s' "$create_response" | grep -q "\"path_with_namespace\":\"${gitlab_repo}\""; then

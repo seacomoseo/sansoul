@@ -42,13 +42,16 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
-## 14.4.2 — 2026-11-13 — `params.gitlab`: nombre propio del proyecto de GitLab
+## 14.4.3 — 2026-11-13 — nombre de la copia en GitLab por regla (sustituye a 14.4.2)
 
-**Impacto:** ninguno en proyectos que no lo usan. La copia a GitLab buscaba siempre
-`<namespace>/<repo>`; si el proyecto de GitLab tiene otro nombre (p. ej. `3dnau.com` frente al
-repo `site`), el paso fallaba («Unable to resolve GitLab namespace» al intentar crearlo). Ahora
-se puede fijar `params.gitlab: seacomoseo/3dnau.com` en `hugo.yml`; `GITLAB_REPO` en el entorno
-sigue teniendo prioridad.
+**Impacto:** la copia a GitLab usa `<namespace>/<owner>` si el repositorio de GitHub se llama
+`site`, y `<namespace>/<owner>-<repo>` en otro caso (`github.com/acme/site` →
+`gitlab.com/seacomoseo/acme`; `acme/podologo` → `seacomoseo/acme-podologo`). Antes se usaba
+`<namespace>/<repo>`, que para `site` colisionaba. El script crea el proyecto si no existe y
+ahora consulta `/namespaces/<ns>` (sirve también para cuentas personales; `/groups/` daba 404).
+`GITLAB_REPO` en el entorno sigue teniendo prioridad. **Acción:** si el proyecto de GitLab ya
+existía con otro nombre, renómbralo (nombre y ruta) o se creará uno nuevo. `params.gitlab`, que
+solo existió en 14.4.2, desaparece y no hace falta en `hugo.yml`.
 
 ## 14.4.1 — 2026-11-13 — el actualizador acepta 14.3.1–14.3.3
 

@@ -198,7 +198,7 @@ Las particularidades nunca deben añadirse a README/AGENTS raíz porque son gene
 
 ### Operación del proyecto
 
-- `hugo.yml`: URL base y parámetros del proyecto —específicos, no secretos—, incluida su identidad de despliegue (`owner`, `repo`, `worker`, `netlify`, `gitlab`, `worker_vars`; `domain` sale del host de `baseURL`).
+- `hugo.yml`: URL base y parámetros del proyecto —específicos, no secretos—, incluida su identidad de despliegue (`owner`, `repo`, `worker`, `netlify`, `worker_vars`; `domain` sale del host de `baseURL`).
 - `package.json`: dependencias Node utilizadas por Hugo y los scripts de posprocesado.
 - `.github/workflows/sansoul.yml`: stub generado por `sh do root-docs`; toda la lógica está en `core/ci/run`.
 - `worker/` (generado, fuera de Git): entrada del Worker, manifiesto de formularios y `wrangler.jsonc`.
@@ -761,7 +761,7 @@ Hosting único: **Cloudflare Workers Free** (Worker con Static Assets en
 `main`, «Publicar cambios» en el CMS (`repository_dispatch`) o una ejecución
 manual lanzan el workflow `SanSoul`, que ejecuta `core/ci/run` en un solo job:
 
-1. copia en GitLab si existe el secreto `GL_PAT` (`GITLAB_NAMESPACE`, por defecto `seacomoseo`; si el proyecto de GitLab no se llama como el repo, `params.gitlab: <namespace>/<proyecto>` en `hugo.yml`);
+1. copia en GitLab si existe el secreto `GL_PAT` (`GITLAB_NAMESPACE`, por defecto `seacomoseo`; el proyecto se llama `<owner>`, o `<owner>-<repo>` si el repo no es `site`, y se crea solo si no existe);
 2. Hugo Extended fijado por el motor, `pnpm install --frozen-lockfile` y `sh do build`;
 3. con `CLOUDFLARE_API_TOKEN`: `core/scripts/worker-config.js --resolve` elige la cuenta
    (la única que ve el token, o `CLOUDFLARE_ACCOUNT_ID`), busca o crea por nombre las
