@@ -42,7 +42,7 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
-## 14.4.0 — 2026-11-12 — avisos configurables, factura a petición, contactos y panel de pedidos
+## 14.4.0 — 2026-11-13 — avisos configurables, factura a petición, contactos y panel de pedidos
 
 **Impacto:** ninguno en proyectos sin comercio o sin `invoice`. Es una versión *minor*: añade
 las migraciones D1 `0008_buyer_tax_and_delivery_notes.sql` y `0009_audience_contacts.sql`, que
