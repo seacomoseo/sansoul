@@ -42,6 +42,12 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.4.1 — 2026-11-13 — el actualizador acepta 14.3.1–14.3.3
+
+**Impacto:** ninguno en proyectos. `sh do update` ya no se detiene con «Migration 14.3.1 has no
+updater policy» al saltar desde 14.3.0 o anteriores: 14.3.1, 14.3.2 y 14.3.3 (solo presentación
+de correos) quedan registradas sin revisión manual.
+
 ## 14.4.0 — 2026-11-13 — avisos configurables, factura a petición, contactos y panel de pedidos
 
 **Impacto:** ninguno en proyectos sin comercio o sin `invoice`. Es una versión *minor*: añade
