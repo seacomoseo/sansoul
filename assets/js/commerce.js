@@ -58,20 +58,24 @@ const LOCALES = ['es', 'en', 'de', 'fr', 'it', 'pt']
 // emails, and the buyer's choices in the cart.
 function checkoutOptions () {
   const locale = (document.documentElement.lang || '').slice(0, 2).toLowerCase()
-  const invoice = document.querySelector('[data-commerce-invoice-request]')
-  const audience = document.querySelector('[data-commerce-audience-consent]')
   return {
     ...(LOCALES.includes(locale) ? { locale } : {}),
-    ...(invoice?.checked ? { invoice_requested: true } : {}),
+    ...(anyChecked(INVOICE_BOX) ? { invoice_requested: true } : {}),
     ...(termsBoxes().length ? { terms_accepted: termsAccepted() } : {}),
-    ...(audience?.checked ? { audience_consent: true } : {})
+    ...(anyChecked(AUDIENCE_BOX) ? { audience_consent: true } : {})
   }
 }
 
-// The terms box is required when the shop enables it; the cart drawer and the cart
-// page each render one, so they are kept in sync.
-const termsBoxes = () => [...document.querySelectorAll('[data-commerce-terms]')]
-const termsAccepted = () => termsBoxes().length === 0 || termsBoxes().some(box => box.checked)
+// The cart drawer and the cart page each render the same boxes, so every copy is
+// kept in sync and read together. The terms box is required when the shop enables it.
+const TERMS_BOX = '[data-commerce-terms]'
+const INVOICE_BOX = '[data-commerce-invoice-request]'
+const AUDIENCE_BOX = '[data-commerce-audience-consent]'
+const CART_BOXES = [TERMS_BOX, INVOICE_BOX, AUDIENCE_BOX]
+const boxes = selector => [...document.querySelectorAll(selector)]
+const anyChecked = selector => boxes(selector).some(box => box.checked)
+const termsBoxes = () => boxes(TERMS_BOX)
+const termsAccepted = () => termsBoxes().length === 0 || anyChecked(TERMS_BOX)
 
 function sameItems (left, right) {
   return JSON.stringify([...left].sort((a, b) => a.id.localeCompare(b.id))) ===
@@ -603,9 +607,10 @@ export function initCommerce () {
   document.addEventListener('change', invalidateDestination)
 
   document.addEventListener('change', event => {
-    const terms = event.target instanceof HTMLInputElement && event.target.matches('[data-commerce-terms]') ? event.target : null
-    if (!terms) return
-    termsBoxes().forEach(box => { box.checked = terms.checked })
+    const box = event.target instanceof HTMLInputElement ? event.target : null
+    const selector = box && CART_BOXES.find(item => box.matches(item))
+    if (!selector) return
+    boxes(selector).forEach(other => { other.checked = box.checked })
     render()
   })
 
