@@ -42,6 +42,14 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.4.2 — 2026-11-13 — `params.gitlab`: nombre propio del proyecto de GitLab
+
+**Impacto:** ninguno en proyectos que no lo usan. La copia a GitLab buscaba siempre
+`<namespace>/<repo>`; si el proyecto de GitLab tiene otro nombre (p. ej. `3dnau.com` frente al
+repo `site`), el paso fallaba («Unable to resolve GitLab namespace» al intentar crearlo). Ahora
+se puede fijar `params.gitlab: seacomoseo/3dnau.com` en `hugo.yml`; `GITLAB_REPO` en el entorno
+sigue teniendo prioridad.
+
 ## 14.4.1 — 2026-11-13 — el actualizador acepta 14.3.1–14.3.3
 
 **Impacto:** ninguno en proyectos. `sh do update` ya no se detiene con «Migration 14.3.1 has no

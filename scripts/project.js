@@ -4,7 +4,9 @@ Purpose: Read the project identity that deployment tooling derives from the
 Run from: A consumer root.
 Side effects: None.
 Contract (flat params, 14.0.0): owner, repo, worker (default repo), netlify
-  (optional mirror site), domain (optional; default the baseURL host),
+  (optional mirror site), gitlab (optional GitLab project path of the backup,
+  e.g. seacomoseo/3dnau.com; read by core/ci/run with sed, default
+  <namespace>/<repo>), domain (optional; default the baseURL host),
   worker_vars (optional map of Worker environment variables).
 */
 import fs from 'node:fs'
@@ -32,6 +34,7 @@ export function readProject (projectDir = process.cwd()) {
     repo,
     worker,
     netlify: text(params.netlify),
+    gitlab: text(params.gitlab),
     domain: text(params.domain) || host,
     workerVars: params.worker_vars || {}
   }
@@ -40,6 +43,7 @@ export function readProject (projectDir = process.cwd()) {
   if (!GITHUB_NAME.test(repo)) errors.push('params.repo must name the GitHub repository')
   if (!WORKER_NAME.test(worker)) errors.push(`Worker name "${worker}" is invalid: set params.worker to lowercase letters, digits and dashes`)
   if (project.netlify && !WORKER_NAME.test(project.netlify)) errors.push('params.netlify must be the Netlify site name')
+  if (project.gitlab && !/^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)+$/.test(project.gitlab)) errors.push('params.gitlab must be the GitLab project path, e.g. namespace/project')
   if (typeof project.workerVars !== 'object' || Array.isArray(project.workerVars)) errors.push('params.worker_vars must be a map')
   else {
     for (const [key, value] of Object.entries(project.workerVars)) {

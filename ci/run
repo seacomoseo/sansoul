@@ -7,7 +7,8 @@
 # Run from: The consumer root, in GitHub Actions (node and pnpm already set up).
 # Secrets (environment, all optional except the deploy token on main):
 #   CLOUDFLARE_API_TOKEN  account token limited to this project's account.
-#   GL_PAT                GitLab mirror (GITLAB_NAMESPACE, default seacomoseo).
+#   GL_PAT                GitLab mirror (GITLAB_NAMESPACE, default seacomoseo; params.gitlab
+#                         names the project when it differs from the repo).
 #   NETLIFY_AUTH_TOKEN    Netlify mirror of params.netlify (scripts/netlify-mirror.js).
 # Usage: sh core/ci/run [event]
 #   `schedule` (only in the stub of projects with params.netlify) publishes on
@@ -41,6 +42,11 @@ if [ "$EVENT" = schedule ]; then
   :
 elif [ -n "${GL_PAT:-}" ]; then
   step 'Backup to GitLab'
+  # params.gitlab: GitLab project path when it differs from <namespace>/<repo>.
+  if [ -z "${GITLAB_REPO:-}" ] && [ -f hugo.yml ]; then
+    GITLAB_REPO=$(sed -n 's/^  gitlab:[[:space:]]*\([^[:space:]#]*\).*/\1/p' hugo.yml | head -n 1)
+    [ -n "$GITLAB_REPO" ] && export GITLAB_REPO
+  fi
   GH_PAT=${GH_PAT:-${GITHUB_TOKEN:-}} sh "$CORE_DIR/scripts/mirror-to-gitlab.sh" || fail_later 'GitLab backup failed' backup
   end
 else
