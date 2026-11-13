@@ -42,6 +42,15 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.5.0 — 2026-11-13 — copia en GitLab con clave SSH de despliegue (`GL_DEPLOY_KEY`)
+
+**Impacto:** ninguno si no haces nada: `GL_PAT` sigue funcionando. Novedad opcional y
+recomendada: el secreto `GL_DEPLOY_KEY` (clave privada SSH, sin caducidad) sustituye al token,
+que en gitlab.com caduca como máximo al año. El proyecto de GitLab (`<owner>` o
+`<owner>-<repo>`) debe existir con la clave pública activada y permiso de escritura; el CI ya no
+lo crea en este modo. El stub `.github/workflows/sansoul.yml` pasa el secreto nuevo; se
+regenera con `sh do update`. La clave del servidor (gitlab.com) queda fijada en el script.
+
 ## 14.4.3 — 2026-11-13 — nombre de la copia en GitLab por regla (sustituye a 14.4.2)
 
 **Impacto:** la copia a GitLab usa `<namespace>/<owner>` si el repositorio de GitHub se llama

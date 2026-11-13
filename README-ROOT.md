@@ -761,7 +761,7 @@ Hosting único: **Cloudflare Workers Free** (Worker con Static Assets en
 `main`, «Publicar cambios» en el CMS (`repository_dispatch`) o una ejecución
 manual lanzan el workflow `SanSoul`, que ejecuta `core/ci/run` en un solo job:
 
-1. copia en GitLab si existe el secreto `GL_PAT` (`GITLAB_NAMESPACE`, por defecto `seacomoseo`; el proyecto se llama `<owner>`, o `<owner>-<repo>` si el repo no es `site`, y se crea solo si no existe);
+1. copia en GitLab si existe el secreto `GL_DEPLOY_KEY` (clave SSH de despliegue sin caducidad; preferido) o, heredado, `GL_PAT` (`GITLAB_NAMESPACE`, por defecto `seacomoseo`). El proyecto se llama `<owner>`, o `<owner>-<repo>` si el repo no es `site`. Con la clave SSH debe existir ya, con la clave activada y permiso de escritura (se crea al migrar); con `GL_PAT` se crea solo si falta;
 2. Hugo Extended fijado por el motor, `pnpm install --frozen-lockfile` y `sh do build`;
 3. con `CLOUDFLARE_API_TOKEN`: `core/scripts/worker-config.js --resolve` elige la cuenta
    (la única que ve el token, o `CLOUDFLARE_ACCOUNT_ID`), busca o crea por nombre las

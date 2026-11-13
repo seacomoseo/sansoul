@@ -24,4 +24,5 @@ test('GitLab copy name: <owner> for site, <owner>-<repo> otherwise', () => {
   assert.equal(target('clinicalopezdelamo/podologo'), 'seacomoseo/clinicalopezdelamo-podologo')
   assert.equal(target('3dnau/site', { GITLAB_NAMESPACE: 'otro' }), 'otro/3dnau')
   assert.equal(target('acme/site', { GITLAB_REPO: 'seacomoseo/legado' }), 'seacomoseo/legado')
+  assert.equal(target('acme/podologo', { GL_PAT: '', GL_DEPLOY_KEY: 'k' }), 'seacomoseo/acme-podologo')
 })

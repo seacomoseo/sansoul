@@ -25,6 +25,25 @@ trap cleanup EXIT INT TERM
 echo "Origin:  github.com/${repo}"
 echo "Target:  gitlab.com/${gitlab_repo}"
 
+# Preferred path (no expiry): SSH deploy key (GL_DEPLOY_KEY) enabled on the existing
+# GitLab project with push rights. The project is created once, at migration time.
+if [ -n "${GL_DEPLOY_KEY:-}" ]; then
+  key="$workdir/deploy_key"
+  printf '%s\n' "$GL_DEPLOY_KEY" > "$key"
+  chmod 600 "$key"
+  # Pinned gitlab.com ED25519 host key (SHA256:eUXGGm1YGsMAS7vkcx6JOJdOGHPem5gQp4taiCfCLB8).
+  printf '%s\n' 'gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf' > "$workdir/known_hosts"
+  git clone --mirror "https://x-access-token:${GH_PAT:?Missing GH_PAT}@github.com/${repo}.git" "$workdir/repo-mirror"
+  cd "$workdir/repo-mirror"
+  git remote set-url --push origin "git@gitlab.com:${gitlab_repo}.git"
+  if ! GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$workdir/known_hosts" git push --mirror; then
+    echo "Mirror push failed for gitlab.com/${gitlab_repo}" >&2
+    echo "Check that the project exists and the deploy key is enabled on it with write access." >&2
+    exit 1
+  fi
+  exit 0
+fi
+
 project_status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
   --header "PRIVATE-TOKEN: ${GL_PAT}" \
   "${gitlab_api_base}/projects/${gitlab_project_path}")"
