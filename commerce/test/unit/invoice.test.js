@@ -210,9 +210,12 @@ test('catalog build: absent keys leave the release untouched; configured keys ar
     const fields = buildCatalog(root)
     assert.deepEqual(fields.checkoutFields, ['delivery_notes', 'recipient_phone'])
     assert.equal(Object.hasOwn(fields, 'taxIdCollection'), false)
-    for (const bad of ['checkout_fields: [email]', 'checkout_fields: [delivery_notes, delivery_notes]', 'checkout_tax_id: "yes"']) {
+    // cart_quote is a presentation flag (cart notice button): accepted, never in the catalog.
+    writeFileSync(join(root, 'data/commerce.yml'), `${base}cart_quote: true\n`)
+    assert.equal(Object.hasOwn(buildCatalog(root), 'cart_quote'), false)
+    for (const bad of ['checkout_fields: [email]', 'checkout_fields: [delivery_notes, delivery_notes]', 'checkout_tax_id: "yes"', 'cart_quote: "yes"']) {
       writeFileSync(join(root, 'data/commerce.yml'), `${base}${bad}\n`)
-      assert.throws(() => buildCatalog(root), /checkout_fields|checkout_tax_id/, bad)
+      assert.throws(() => buildCatalog(root), /checkout_fields|checkout_tax_id|cart_quote/, bad)
     }
     assert.notEqual(configured.release, plain.release)
   } finally { rmSync(root, { recursive: true, force: true }) }
