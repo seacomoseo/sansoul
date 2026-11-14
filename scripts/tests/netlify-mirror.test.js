@@ -5,7 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { SECRET_NAME, TEAM_DEPLOYS, deployDecision, findSite, listTeamDeploys, otherRunsActive, parseRedirects, renderNetlifyToml, syncSecret, workerRunsSha } from '../netlify-mirror.js'
+import { SECRET_NAME, TEAM_DEPLOYS, deployDecision, findSite, listDeploys, listTeamDeploys, otherRunsActive, parseRedirects, renderNetlifyToml, syncSecret, workerRunsSha } from '../netlify-mirror.js'
 
 const engine = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const now = Date.parse('2026-11-20T12:00:00Z')
@@ -46,6 +46,27 @@ test('deploy decision: current commit, hourly throttle and rolling team budget',
   assert.match(deployDecision({ deploys: [deploy(90)], teamDeploys: team, sha: 'new', now }).reason, /team budget reached/)
   const old = team.map(item => ({ ...item, created_at: new Date(now - 32 * 24 * 3600 * 1000).toISOString() }))
   assert.equal(deployDecision({ deploys: [deploy(90)], teamDeploys: [...old, deploy(90, { context: 'deploy-preview' })], sha: 'new', now }).deploy, true)
+})
+
+test('an unreadable old deploy does not break the list (Netlify 500 after unlinking Git)', async () => {
+  const items = [deploy(90, { title: 'SanSoul abc' }), deploy(600), 'broken', deploy(3000)]
+  const fetch = async url => {
+    const { searchParams } = new URL(url)
+    const json = (data, status = 200) => new Response(JSON.stringify(data), { status })
+    if (searchParams.get('per_page') !== '1') return json({ error: 'no implicit conversion of nil into String' }, 500)
+    const item = items[Number(searchParams.get('page')) - 1]
+    if (item === 'broken') return json({ error: 'no implicit conversion of nil into String' }, 500)
+    return json(item ? [item] : [])
+  }
+  const deploys = await listDeploys('s1', { token: 't', fetch })
+  assert.deepEqual(deploys.map(item => item.state), ['ready', 'ready', 'ready', 'unreadable'])
+  assert.equal(deployDecision({ deploys, sha: 'abc', now }).deploy, false)
+  assert.match(deployDecision({ deploys, sha: 'new', now }).reason, /Team deploy 5\/15/)
+  // Netlify down: nothing readable, the error stays visible.
+  const down = async () => new Response('{}', { status: 503 })
+  await assert.rejects(listDeploys('s1', { token: 't', fetch: down }), /Netlify GET \/sites\/s1\/deploys: HTTP 503/)
+  const missing = async () => new Response('{}', { status: 404 })
+  await assert.rejects(listDeploys('s1', { token: 't', fetch: missing }), /HTTP 404/)
 })
 
 const jsonFetch = routes => async url => {

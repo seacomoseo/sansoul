@@ -79,7 +79,8 @@ export function parseRedirects (text) {
 }
 
 // deploys: this site's, newest first; teamDeploys: every site of its team.
-// Failed deploys count for the throttle and the budget (they may cost credits).
+// Failed deploys count for the throttle and the budget (they may cost credits);
+// unreadable ones (no created_at, listed last) only for the budget.
 export function deployDecision ({ deploys, teamDeploys = deploys, sha, now = Date.now(), minInterval = MIN_INTERVAL_MS, budget = TEAM_DEPLOYS, window = BUDGET_WINDOW_MS }) {
   const production = list => list.filter(deploy => deploy.context === 'production')
   const site = production(deploys)
@@ -89,7 +90,7 @@ export function deployDecision ({ deploys, teamDeploys = deploys, sha, now = Dat
     const wait = minInterval - (now - Date.parse(site[0].created_at))
     if (wait > 0) return { deploy: false, reason: `Last Netlify deploy was under an hour ago; the next run or the scheduled catch-up publishes this commit (in ${Math.ceil(wait / 60000)} min or later).`, throttled: true }
   }
-  const used = production(teamDeploys).filter(deploy => now - Date.parse(deploy.created_at) < window).length
+  const used = production(teamDeploys).filter(deploy => !deploy.created_at || now - Date.parse(deploy.created_at) < window).length
   if (used >= budget) return { deploy: false, reason: `Netlify team budget reached (${used}/${budget} production deploys in 31 days); the scheduled catch-up retries.`, throttled: true }
   return { deploy: true, reason: `Team deploy ${used + 1}/${budget} in 31 days.` }
 }
@@ -105,7 +106,7 @@ function client (base, token, fetchImpl, label) {
     const data = await response.json().catch(() => ({}))
     if (!response.ok || data?.success === false) {
       const reason = data?.message || (data?.errors || []).map(error => `${error.code} ${error.message}`).join('; ') || `HTTP ${response.status}`
-      throw new Error(`${label} ${method} ${route.split('?')[0]}: ${reason}`)
+      throw Object.assign(new Error(`${label} ${method} ${route.split('?')[0]}: ${reason}`), { status: response.status })
     }
     return data
   }
@@ -121,10 +122,37 @@ export async function findSite (name, { token, fetch = globalThis.fetch, create 
   return site || null
 }
 
-export async function listDeploys (siteId, { token, fetch = globalThis.fetch }) {
+// Netlify answers 500 for the whole list when a single old deploy no longer
+// serializes (seen after unlinking the site's Git repo, e.g. when a project
+// migrates). The list is then read one deploy per page: an unreadable one
+// counts for the budget (date unknown) but not for the throttle. If none is
+// readable, Netlify is down and the error stays visible.
+export async function listDeploys (siteId, { token, fetch = globalThis.fetch, max = 100 }) {
   const netlify = client(NETLIFY_API, token, fetch, 'Netlify')
-  const deploys = await netlify('GET', `/sites/${siteId}/deploys?per_page=100`)
-  return deploys.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+  const newestFirst = list => list.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+  try {
+    return newestFirst(await netlify('GET', `/sites/${siteId}/deploys?per_page=${max}`))
+  } catch (error) {
+    if (!(error.status >= 500)) throw error
+    const readable = []
+    let unreadable = 0
+    let failures = 0
+    for (let page = 1; page <= max && failures < 5; page++) {
+      try {
+        const [item] = await netlify('GET', `/sites/${siteId}/deploys?per_page=1&page=${page}`)
+        if (!item) break
+        readable.push(item)
+        failures = 0
+      } catch (inner) {
+        if (!(inner.status >= 500)) throw inner
+        unreadable++
+        failures++
+      }
+    }
+    if (!readable.length) throw error
+    console.log(`::warning::Netlify cannot read ${unreadable} deploy(s) of site ${siteId} (HTTP ${error.status}); they count for the team budget. Delete them in Netlify if they persist.`)
+    return [...newestFirst(readable), ...Array.from({ length: unreadable }, () => ({ context: 'production', state: 'unreadable', site_id: siteId }))]
+  }
 }
 
 // Credits are per team: count the deploys of every site the team owns.
