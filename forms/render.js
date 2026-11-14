@@ -58,14 +58,23 @@ function table (list) {
 
 const textTable = list => list.map(({ name, value, link }) => `${name}: ${value}${link ? ` ${link}` : ''}`).join('\n')
 
+// The footer links straight to the form on its page: https://<site><page>#<form id>.
+function footerOf (submission, authority) {
+  const hash = String(submission.form_key || '').lastIndexOf('#')
+  const formId = hash >= 0 ? submission.form_key.slice(hash + 1) : ''
+  const url = `https://${authority.site}${submission.page}${formId ? `#${formId}` : ''}`
+  const label = `${authority.pageTitle || submission.page}${formId ? ` · #${formId}` : ''}`
+  return { url, label, id: submission.id }
+}
+
 // `links` (Map index → Drive URL) replaces inline attachments for large files.
 export function renderOwner ({ submission, authority, links = null }) {
   const list = rows(submission.fields, submission.files, links)
-  const footer = `${authority.site}${submission.page} · ${submission.id}`
+  const footer = footerOf(submission, authority)
   return {
     subject: authority.subject,
-    text: `${textTable(list)}\n\n--\n${footer}\n`,
-    html: `${table(list)}<p style="color:#777;font-size:12px">${escapeHtml(footer)}</p>`
+    text: `${textTable(list)}\n\n--\n${footer.label}\n${footer.url}\n${footer.id}\n`,
+    html: `${table(list)}<p style="color:#777;font-size:12px"><a href="${escapeHtml(footer.url)}" style="color:#777">${escapeHtml(footer.label)}</a><br>${escapeHtml(footer.url)}<br>${escapeHtml(footer.id)}</p>`
   }
 }
 

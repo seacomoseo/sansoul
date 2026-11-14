@@ -451,3 +451,36 @@ test('admin: invoice PDF endpoint issues once, needs the token and the configura
     assert.equal((await call(url, { method: 'DELETE' })).status, 405)
   } finally { sqlite.close() }
 })
+
+test('simplified invoice: «FACTURA SIMPLIFICADA» only without buyer tax ID, credit note included', async () => {
+  const seller = { name: 'Titular', tax_id: '00000000T', address: ['Calle 1'] }
+  assert.equal(compileInvoice({ enabled: true, seller }).simplified, true)
+  assert.equal(compileInvoice({ enabled: true, seller, language: 'en' }).simplified, false)
+  assert.equal(compileInvoice({ enabled: true, seller, simplified: false }).simplified, false)
+  assert.equal(compileInvoice({ enabled: true, seller, language: 'en', simplified: true }).simplified, true)
+  assert.throws(() => compileInvoice({ enabled: true, seller, simplified: 'yes' }), /invalid_invoice/)
+
+  const config = { ...INVOICE, simplified: true }
+  const { sqlite, order } = fixture()
+  try {
+    const row = await order(ORDER)
+    const text = data => new TextDecoder().decode(renderInvoicePdf({ kind: 'invoice', series: 'WEB-2026', number: 1, issued_at: PAID_AT, data_json: JSON.stringify(data) }))
+    const plain = buildInvoiceData({ order: row, details: row, config, issuedAt: PAID_AT })
+    assert.equal(plain.simplified, true)
+    assert.match(text(plain), /FACTURA SIMPLIFICADA/)
+    const company = buildInvoiceData({ order: row, details: { ...row, buyer_tax_id: 'B12345674', buyer_business_name: 'Empresa SL' }, config, issuedAt: PAID_AT })
+    assert.equal(Object.hasOwn(company, 'simplified'), false)
+    assert.doesNotMatch(text(company), /SIMPLIFICADA/)
+    const off = buildInvoiceData({ order: row, details: row, config: INVOICE, issuedAt: PAID_AT })
+    assert.doesNotMatch(text(off), /SIMPLIFICADA/)
+    // Rows issued before 14.6.0 carry no flag and keep their title.
+    const old = { ...plain }
+    delete old.simplified
+    assert.doesNotMatch(text(old), /SIMPLIFICADA/)
+
+    const invoice = { kind: 'invoice', series: 'WEB-2026', number: 1, issued_at: PAID_AT, data_json: JSON.stringify(plain) }
+    const credit = buildCreditNoteData(invoice, config, PAID_AT + 86400)
+    assert.equal(credit.simplified, true)
+    assert.match(new TextDecoder().decode(renderInvoicePdf({ kind: 'credit_note', series: 'RWEB-2026', number: 1, issued_at: PAID_AT + 86400, data_json: JSON.stringify(credit) })), /FACTURA RECTIFICATIVA SIMPLIFICADA/)
+  } finally { sqlite.close() }
+})

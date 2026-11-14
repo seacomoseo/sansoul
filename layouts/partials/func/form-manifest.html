@@ -1,7 +1,7 @@
 {{- /*
 Partial: func/form-manifest
 Purpose: Publish the server policy of one Worker form for core/forms/scripts/build-manifest.js.
-Context: dict with `id`, `page`, `subject`, `mail`, `account`, `confirm`, `inputs` and `keys` (input types that submit values).
+Context: dict with `id`, `page`, `title`, `subject`, `mail`, `account`, `confirm`, `inputs` and `keys` (input types that submit values).
 Renders: Nothing.
 Side effects: Publishes public/_forms/<hash>.json; the post-build script moves it out of public/.
 */ -}}
@@ -46,6 +46,7 @@ Side effects: Publishes public/_forms/<hash>.json; the post-build script moves i
   "repo"    (or hugo.Data.config.cms_repo (print $p.owner "/" $p.repo))
   "lang"    site.Language.Lang
   "page"    .page
+  "title"   (replaceRE `\s+` " " (string (.title | default "")) | strings.TrimSpace)
   "subject" .subject
   "to"      $to
   "account" (.account | default "")

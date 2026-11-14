@@ -94,6 +94,7 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
     site: env.FORMS_SITE || manifest.site,
     senderName: env.FORMS_SENDER_NAME || manifest.site,
     subject: parsed.spec.subject,
+    pageTitle: parsed.spec.title || '',
     to: parsed.spec.to,
     replyTo: parsed.email
   }

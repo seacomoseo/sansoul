@@ -16,6 +16,8 @@ const LABELS = Object.freeze({
   es: {
     invoice: 'FACTURA',
     creditNote: 'FACTURA RECTIFICATIVA',
+    simplifiedInvoice: 'FACTURA SIMPLIFICADA',
+    simplifiedCreditNote: 'FACTURA RECTIFICATIVA SIMPLIFICADA',
     number: 'Nº',
     date: 'Fecha',
     customer: 'CLIENTE',
@@ -38,6 +40,8 @@ const LABELS = Object.freeze({
   en: {
     invoice: 'INVOICE',
     creditNote: 'CREDIT NOTE',
+    simplifiedInvoice: 'SIMPLIFIED INVOICE',
+    simplifiedCreditNote: 'SIMPLIFIED CREDIT NOTE',
     number: 'No.',
     date: 'Date',
     customer: 'CUSTOMER',
@@ -61,6 +65,13 @@ const LABELS = Object.freeze({
 
 export function labelsFor (language) {
   return LABELS[language] || LABELS.es
+}
+
+// Document title: a buyer without tax ID gets a simplified invoice when the
+// project enables it (`data.simplified`, set at issue time; older rows lack it).
+function titleOf (labels, data, credit) {
+  if (data.simplified && !data.customer?.taxId) return credit ? labels.simplifiedCreditNote : labels.simplifiedInvoice
+  return credit ? labels.creditNote : labels.invoice
 }
 
 // No Intl anywhere on this path: constructing NumberFormat, DateTimeFormat or
@@ -228,6 +239,7 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
     minorUnit: totals.minorUnit,
     seller: config.seller,
     customer: { name, address, ...(taxId ? { taxId } : {}) },
+    ...(config.simplified && !taxId ? { simplified: true } : {}),
     lines,
     shipping,
     taxes,
@@ -305,7 +317,7 @@ export function renderInvoicePdf (row) {
   const number = invoiceNumber(row, data)
   const credit = row.kind === 'credit_note'
   const pdf = createPdf({
-    title: `${credit ? labels.creditNote : labels.invoice} ${number}`,
+    title: `${titleOf(labels, data, credit)} ${number}`,
     author: data.seller.name,
     created: new Date(row.issued_at * 1000)
   })
@@ -320,7 +332,7 @@ export function renderInvoicePdf (row) {
     page.text(line, MARGIN, y, { size: 9, gray: 0.25 })
   }
   let titleY = 62
-  page.text(credit ? labels.creditNote : labels.invoice, RIGHT, titleY, { size: 18, bold: true, align: 'right' })
+  page.text(titleOf(labels, data, credit), RIGHT, titleY, { size: 18, bold: true, align: 'right' })
   for (const line of [`${labels.number} ${number}`, `${labels.date}: ${displayDate(data.date)}`, data.rectifies && `${labels.rectifies} ${data.rectifies.number} (${displayDate(data.rectifies.date)})`].filter(Boolean)) {
     titleY += 15
     page.text(line, RIGHT, titleY, { size: 10, align: 'right' })

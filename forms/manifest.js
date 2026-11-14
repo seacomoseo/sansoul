@@ -15,6 +15,7 @@ function validSpec (spec) {
   if (typeof spec.lang !== 'string' || typeof spec.subject !== 'string' || /[\r\n]/.test(spec.subject)) return false
   if (!Array.isArray(spec.to) || !spec.to.length || !spec.to.every(address => EMAIL.test(address))) return false
   if (typeof spec.account !== 'string') return false
+  if (spec.title !== undefined && (typeof spec.title !== 'string' || /[\r\n]/.test(spec.title))) return false
   if (spec.confirm !== null && (typeof spec.confirm !== 'object' || typeof spec.confirm.subject !== 'string' || /[\r\n]/.test(spec.confirm.subject))) return false
   if (!Array.isArray(spec.fields)) return false
   return spec.fields.every(field => field && typeof field.name === 'string' && field.name && FIELD_TYPES.includes(field.type))

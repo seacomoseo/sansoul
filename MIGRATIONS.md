@@ -42,6 +42,23 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.6.0 — 2026-11-14 — aviso de formularios con enlace al formulario y «FACTURA SIMPLIFICADA»
+
+**Impacto:** ninguno si no haces nada; hay dos cambios visibles.
+
+1. **Pie del aviso de formularios.** Antes era texto plano (`sitio/ · id`). Ahora el correo al
+   propietario termina con un enlace clicable `https://<sitio><página>#<id del formulario>` que
+   abre la página directamente en el formulario, con el título de la página y el id del formulario
+   como texto del enlace, y debajo la URL y el id del envío (HTML y texto plano). El título viaja en
+   la política del formulario (`title`, generado por Hugo); los avisos ya en cola, sin título, usan
+   la ruta de la página. Nada que configurar.
+2. **`invoice.simplified`** (`data/commerce.yml`). Cuando el comprador no da NIF/CIF, el PDF se
+   titula **FACTURA SIMPLIFICADA** (y **FACTURA RECTIFICATIVA SIMPLIFICADA** la rectificativa); con
+   NIF sigue siendo FACTURA. Por defecto está **activo solo con `invoice.language: es`**; `false`
+   conserva el título anterior en todos los casos y `true` lo fuerza también en `en`. Las facturas
+   ya emitidas no cambian (el indicador se guarda al emitir). El golden de 14.3.3 fija
+   `simplified: false` para seguir comprobando los bytes anteriores.
+
 ## 14.5.0 — 2026-11-13 — copia en GitLab con clave SSH de despliegue (`GL_DEPLOY_KEY`)
 
 **Impacto:** ninguno si no haces nada: `GL_PAT` sigue funcionando. Novedad opcional y

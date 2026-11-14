@@ -11,6 +11,8 @@ export { MIGRATIONS }
 // Golden scenario: the notices a shop configured like 3DNAU (14.3.3) sends, captured
 // as raw MIME. Synthetic seller and buyer; same keys and shape as the real project.
 // Any engine change must keep these bytes identical for an unchanged commerce.yml.
+// Since 14.6.0 a Spanish invoice without buyer tax ID is titled FACTURA SIMPLIFICADA
+// by default; `simplified: false` pins the 14.3.3 title.
 export const CONFIG = `
 order_notices:
   enabled: true
@@ -27,6 +29,7 @@ invoice:
       - 30000 Ciudad (Provincia)
   series:
     prefix: WEB
+  simplified: false
   payment_text: Pagado con tarjeta bancaria
   item_label: "Venta material 3D ({name})"
   exempt_note: "Operación exenta de IVA según art. 21 Ley 37/1992 (envío a Canarias)"
