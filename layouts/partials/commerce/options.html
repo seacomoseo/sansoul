@@ -1,0 +1,43 @@
+{{/*
+Partial: commerce/options
+Purpose: Cart notice and optional boxes, in the scrolling part of the drawer and in the cart page aside.
+Context: hugo.Data.commerce (the shell passes it as dot; only global data is read).
+Renders: the `notes.cart` notice (with a «Request a quote» button when `cart_quote: true`), the
+  invoice request box (order_notices.buyer_invoice: on_request) and the promotions consent (audience).
+  The required terms box stays beside the pay button (commerce/checkout). Boxes sync across surfaces
+  by data attribute (commerce.js).
+Side effects: None.
+*/}}
+{{- with hugo.Data.commerce -}}
+  {{- $note := partial "commerce/note" (dict "key" "cart") -}}
+  {{- if $note }}
+<div class="commerce__notice">
+  {{ partial "icon" (dict "icon" "info" "class" "commerce__notice-icon") }}
+  <div class="commerce__notice-body">
+    {{ $note }}
+    {{- if eq .cart_quote true }}
+    <a class="btn btn--sm commerce__notice-btn" href="{{ site.Home.RelPermalink }}#contacto">{{ partial "icon" (dict "icon" "request_quote") }}<span>{{ i18n "commerce_request_quote" }}</span></a>
+    {{- end }}
+  </div>
+</div>
+  {{- end -}}
+  {{- /* Invoice on request (order_notices.buyer_invoice: on_request, the default when the shop invoices). */ -}}
+  {{- $notices := .order_notices | default dict -}}
+  {{- $buyer := $notices.buyer | default (cond (eq $notices.buyer_confirmation false) "none" "own") -}}
+  {{- $invoiceOn := eq (.invoice | default dict).enabled true -}}
+  {{- $onRequest := and (eq $notices.enabled true) $invoiceOn (ne $buyer "none") (or (eq $notices.buyer_invoice "on_request") (not (isset $notices "buyer_invoice"))) -}}
+  {{- $lang := site.Language.Lang -}}
+  {{- $audience := and .audience (eq .audience.enabled true) -}}
+  {{- if or $onRequest $audience }}
+<div class="commerce__options">
+    {{- if $onRequest }}
+  <label class="commerce__option"><input type="checkbox" data-commerce-invoice-request> <span>{{ i18n "commerce_invoice_request" }}</span></label>
+    {{- end -}}
+    {{- if $audience }}
+      {{- $consent := .audience.consent_text -}}
+      {{- if reflect.IsMap $consent }}{{ $consent = index $consent $lang | default (index $consent "es") }}{{ end }}
+  <label class="commerce__option"><input type="checkbox" data-commerce-audience-consent> <span>{{ $consent | markdownify }}</span></label>
+    {{- end }}
+</div>
+  {{- end -}}
+{{- end -}}

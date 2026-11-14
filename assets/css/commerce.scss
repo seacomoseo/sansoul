@@ -4,11 +4,37 @@
 // Commerce UI: header cart button, cart drawer, cart page and product purchase box.
 // Local tokens keep the component consistent and easy to retheme.
 :is(.commerce, .commerce__cart-page, .commerce__product-actions) {
-  --c-radius: .625rem;
+  // Corners follow styles.yml (rounded.radius; rounded.chamfer in c-control).
+  --c-radius: #{$radius};
+  --c-border: color-mix(in srgb, #{$text} 22%, transparent);
   --c-line: color-mix(in srgb, #{$text} 12%, transparent);
   --c-muted: color-mix(in srgb, #{$text} 62%, transparent);
   --c-soft: color-mix(in srgb, #{$light} 70%, #{$white});
   --c-control: 2.75rem;
+}
+
+// Bordered control (quantity stepper, destination fields) with the theme corners.
+// clip-path cuts borders, so with chamfers a ring pseudo-element draws the border.
+@mixin c-control {
+  @if $chamfer and $is-radius {
+    @include mixins.radius-parent;
+    position: relative;
+    border: 0;
+    clip-path: var(--chamfer);
+    --outline: 1px;
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: var(--c-border);
+      clip-path: var(--chamfer-outline);
+      pointer-events: none;
+    }
+  } @else {
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    border-radius: var(--c-radius);
+  }
 }
 
 .commerce [hidden],
@@ -200,9 +226,21 @@ html:has(.commerce__drawer[open]) {
 }
 
 .commerce__title-count {
-  color: var(--c-muted);
-  font-size: .7em;
-  font-weight: 400;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-start: .25rem;
+  padding: 0 .375rem;
+  border-radius: 1rem;
+  color: var(--main-in);
+  background-color: var(--main);
+  font-size: .8125rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+  text-align: center;
+  vertical-align: .2em;
+  font-variant-numeric: tabular-nums;
 }
 
 .commerce__icon-btn {
@@ -285,10 +323,13 @@ html:has(.commerce__drawer[open]) {
   margin: 0;
   padding: 0;
   list-style: none;
+  // Name and total on top, actions (stepper + remove) across the full width below.
   > .commerce__line {
     display: grid;
     grid-column: auto;
     grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    grid-template-areas: "thumb name total" "thumb unit unit" "thumb actions actions";
+    grid-template-rows: auto auto 1fr;
     align-items: start;
     gap: 0 1rem;
     margin: 0;
@@ -301,6 +342,7 @@ html:has(.commerce__drawer[open]) {
 }
 
 .commerce__thumb {
+  grid-area: thumb;
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
@@ -315,14 +357,13 @@ html:has(.commerce__drawer[open]) {
 }
 
 .commerce__line-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: .25rem;
-  min-width: 0;
+  display: contents;
 }
 
 .commerce__line-name {
+  grid-area: name;
+  justify-self: start;
+  min-width: 0;
   display: -webkit-box;
   overflow: hidden;
   color: var(--title);
@@ -337,19 +378,24 @@ html:has(.commerce__drawer[open]) {
 }
 
 .commerce__line-unit {
+  grid-area: unit;
+  margin-top: .25rem;
   color: var(--c-muted);
   font-size: .875rem;
 }
 
 .commerce__line-actions {
+  grid-area: actions;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: .25rem .75rem;
-  margin-top: .5rem;
+  justify-content: space-between;
+  gap: .75rem;
+  min-width: 0;
+  margin-top: .625rem;
 }
 
 .commerce__line-total {
+  grid-area: total;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -380,12 +426,11 @@ html:has(.commerce__drawer[open]) {
 // QUANTITY STEPPER
 
 .commerce__stepper {
+  @include c-control;
   display: inline-flex;
   align-items: stretch;
   flex-shrink: 0;
   height: 2.5rem;
-  border: 1px solid color-mix(in srgb, #{$text} 22%, transparent);
-  border-radius: 2rem;
   background: $white;
   .commerce__step {
     display: grid;
@@ -395,7 +440,7 @@ html:has(.commerce__drawer[open]) {
     color: inherit;
     background: none;
     border: 0;
-    border-radius: 2rem;
+    border-radius: 0;
     font-size: 1.125rem;
     cursor: pointer;
     transition: background-color .15s;
@@ -467,18 +512,26 @@ html:has(.commerce__drawer[open]) {
     color: var(--c-muted);
     font-size: .8125rem;
   }
+  .commerce__control {
+    @include c-control;
+    display: block;
+    background-color: $white;
+    &:focus-within {
+      --c-border: var(--main);
+    }
+  }
   :is(input, select) {
     box-sizing: border-box;
     width: 100%;
-    height: var(--c-control);
+    height: calc(var(--c-control) - 2px);
     padding: 0 .875rem;
-    border: 1px solid color-mix(in srgb, #{$text} 22%, transparent);
-    border-radius: calc(var(--c-radius) * .8);
-    background-color: $white;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
     font: inherit;
-    &:focus {
-      border-color: var(--main);
-      box-shadow: 0 0 0 3px color-mix(in srgb, #{$main} 20%, transparent);
+    &:focus-visible {
+      outline: 2px solid var(--main);
+      outline-offset: -2px;
     }
   }
   select {
@@ -521,6 +574,48 @@ html:has(.commerce__drawer[open]) {
       font-size: .875rem;
       font-style: italic;
     }
+  }
+}
+
+
+// NOTICE AND OPTIONS (scrolling part of the drawer, cart page aside)
+
+.commerce__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: .625rem;
+  margin: 1rem 0;
+  padding: .875rem 1rem;
+  border-radius: var(--c-radius);
+  background-color: var(--c-soft);
+  font-size: .9375rem;
+  line-height: 1.45;
+  .commerce__note {
+    margin: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+}
+
+.commerce__notice-icon {
+  flex: none;
+  margin-top: .1em;
+  color: $main;
+  font-size: 1.25rem;
+}
+
+.commerce__notice-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .75rem;
+  min-width: 0;
+}
+
+.commerce__options {
+  margin: 1rem 0 0;
+  .commerce__option {
+    font-size: .875rem;
   }
 }
 
@@ -628,6 +723,13 @@ html:has(.commerce__drawer[open]) {
 
 .commerce__cart-aside {
   margin-top: 2rem;
+  .commerce__notice {
+    margin-top: 0;
+    background-color: $white;
+  }
+  .commerce__options {
+    margin-bottom: 1rem;
+  }
   padding: 1.5rem;
   border-radius: var(--c-radius);
   background-color: var(--c-soft);
@@ -658,7 +760,8 @@ html:has(.commerce__drawer[open]) {
 
 
 // PRODUCT PURCHASE BOX
-// Listing cards: one full-width button (quantity 1). Product hero: stepper + button.
+// Listing cards: an icon-only button (quantity 1) beside «See product», with
+// its own hover (.box__own-hover). Product hero: stepper + labelled button.
 
 .commerce__product-actions {
   display: flex;
@@ -671,6 +774,30 @@ html:has(.commerce__drawer[open]) {
   .commerce__add {
     flex: 1;
     min-width: 0;
+  }
+}
+
+.box__btn-row > .commerce__product-actions {
+  flex: none;
+  width: auto;
+  margin: 0;
+  :is(.commerce__add, .btn) {
+    flex: none;
+    width: 2.5em;
+    min-height: 2.5em;
+    padding: 0;
+    --pin-size: 1.375em;
+    > span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+  &.commerce__quote {
+    margin: 0;
   }
 }
 
@@ -707,17 +834,6 @@ html:has(.commerce__drawer[open]) {
   .section--hero .commerce__product-actions .commerce__add {
     flex: 1;
   }
-  // Icon-only remove on phones; the button keeps its full aria-label.
-  .commerce__remove {
-    min-width: 2.5rem;
-    justify-content: center;
-    span {
-      display: none;
-    }
-    .icon {
-      font-size: 1.375rem;
-    }
-  }
   :is(.commerce, .commerce__cart-page) .commerce__lines > .commerce__line {
     grid-template-columns: 4rem minmax(0, 1fr) auto;
     gap: 0 .75rem;
@@ -728,6 +844,20 @@ html:has(.commerce__drawer[open]) {
   .commerce__body,
   .commerce__foot {
     padding-inline: 1.25rem;
+  }
+}
+
+@media (max-width: 22rem) {
+  // Icon-only remove on the narrowest phones; the button keeps its accessible name.
+  .commerce__remove {
+    min-width: 2.5rem;
+    justify-content: center;
+    span {
+      display: none;
+    }
+    .icon {
+      font-size: 1.375rem;
+    }
   }
 }
 

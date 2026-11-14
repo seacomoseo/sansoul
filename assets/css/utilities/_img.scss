@@ -306,7 +306,7 @@ img[src*=".svg"].img__in {
   }
   // HOVER
   &:has(.search__result-item-link:focus),
-  &:hover,
+  &:hover:where(:not(:has(.box__own-hover:hover))),
   &:focus {
     > .img .img__in:not(.img__in--hover):where(.icon),
     > .img .img__in:not(.img__in--hover) img,
@@ -341,7 +341,7 @@ img[src*=".svg"].img__in {
   }
   // IMAGE HOVER HOVER
   &:has(.search__result-item-link:focus),
-  &:hover,
+  &:hover:where(:not(:has(.box__own-hover:hover))),
   &:focus {
     > .img--hover {
       .img__in:not(.img__in--hover) {
@@ -363,9 +363,9 @@ img[src*=".svg"].img__in {
     }
     // HOVER
     &:has(.search__result-item-link:focus),
-    &:hover,
+    &:hover:where(:not(:has(.box__own-hover:hover))),
     &:focus,
-    &:active {
+    &:active:where(:not(:has(.box__own-hover:active))) {
       > .img--gray {
         &.bg-fig-img,
         .img__in {

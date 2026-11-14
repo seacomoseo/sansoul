@@ -206,7 +206,10 @@ export function initCommerce () {
       node.textContent = count > 99 ? '99+' : String(count)
       node.hidden = count === 0
     })
-    commerceNodes('[data-commerce-count-label]').forEach(node => { node.textContent = count ? `(${count})` : '' })
+    commerceNodes('[data-commerce-count-label]').forEach(node => {
+      node.textContent = count > 99 ? '99+' : String(count)
+      node.hidden = count === 0
+    })
     if (trigger) {
       trigger.hidden = false
       trigger.setAttribute('aria-label', count ? `${message('commerce_open_cart')} (${count})` : message('commerce_open_cart'))

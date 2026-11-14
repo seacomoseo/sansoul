@@ -34,7 +34,7 @@
       <dialog class="commerce__drawer" id="commerce-drawer" data-commerce-drawer aria-labelledby="commerce-drawer-title">
         <div class="commerce__panel">
           <header class="commerce__head">
-            <h2 class="commerce__title" id="commerce-drawer-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label></span></h2>
+            <h2 class="commerce__title" id="commerce-drawer-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label hidden></span></h2>
             <button class="commerce__icon-btn" type="button" data-commerce-close aria-label="{{ i18n "commerce_close" }}">{{ partial "icon" (dict "icon" "close") }}</button>
           </header>
           <div class="commerce__body">
@@ -45,7 +45,7 @@
               <a class="btn" data-commerce-empty-link href="{{ $catalogPage.RelPermalink }}">{{ i18n "commerce_back_to_catalog" }}</a>
             </div>
             <ul class="commerce__lines" data-commerce-lines></ul>
-            <div data-commerce-filled hidden>{{ partial "commerce/summary" . }}</div>
+            <div data-commerce-filled hidden>{{ partial "commerce/summary" . }}{{ partial "commerce/options" . }}</div>
           </div>
           <footer class="commerce__foot" data-commerce-filled hidden>
             {{ partial "commerce/checkout" . }}

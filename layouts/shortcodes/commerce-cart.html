@@ -2,7 +2,7 @@
   {{- if eq .enabled true -}}
     {{- $catalogPage := site.GetPage "category/catalogo" | default (site.GetPage "product") | default site.Home -}}
     <section class="commerce__cart-page" data-commerce-cart-page aria-labelledby="commerce-cart-title">
-      <h2 class="commerce__title" id="commerce-cart-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label></span></h2>
+      <h2 class="commerce__title" id="commerce-cart-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label hidden></span></h2>
       <p class="commerce__status" data-commerce-status role="status" aria-live="polite" aria-atomic="true" hidden></p>
       <div class="commerce__empty" data-commerce-empty>
         {{ partial "icon" (dict "icon" "shopping_cart" "class" "commerce__empty-icon") }}
@@ -16,6 +16,7 @@
         </div>
         <aside class="commerce__cart-aside">
           {{- partial "commerce/summary" . -}}
+          {{- partial "commerce/options" . -}}
           {{- partial "commerce/checkout" . -}}
         </aside>
       </div>

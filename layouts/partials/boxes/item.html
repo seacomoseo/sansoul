@@ -185,7 +185,12 @@ Side effects: Called media and block partials may register assets in page.Store.
 
       {{- /*  BUTTON  */ -}}
       {{- if $.is_btn_url -}}
-        {{- partial "boxes/btn" $ -}}
+        {{- if $.commerce_product -}}
+          {{- /*  Product card: the purchase actions join this row after the one-link check (see below).  */ -}}
+          <div class="box__btn-row">{{ partial "boxes/btn" $ }}<i data-commerce-slot></i></div>
+        {{- else -}}
+          {{- partial "boxes/btn" $ -}}
+        {{- end -}}
       {{- end -}}
 
     {{- end -}}
@@ -234,11 +239,18 @@ Side effects: Called media and block partials may register assets in page.Store.
 {{- end -}}
 
 {{- /*  INBOX  */ -}}
-{{- $inbox -}}
-
 {{- if .commerce_product -}}
-  {{- partial "commerce/product-actions" (.Page | default page) -}}
+  {{- /*  Inserted after the one-link check: the card stays a box--go link, its
+       purchase buttons are a .box__own-hover zone with their own hover.  */ -}}
+  {{- $actions := partial "commerce/product-actions" (.Page | default page) -}}
+  {{- $slot := `<i data-commerce-slot></i>` -}}
+  {{- if strings.Contains $inbox $slot -}}
+    {{- $inbox = replace $inbox $slot $actions | safeHTML -}}
+  {{- else -}}
+    {{- $inbox = print $inbox $actions | safeHTML -}}
+  {{- end -}}
 {{- end -}}
+{{- $inbox -}}
 
 {{- /*  MODAL NAV  */ -}}
 {{- if and .root .is_modal (not .section.ph) }}

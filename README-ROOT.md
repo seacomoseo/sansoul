@@ -562,9 +562,10 @@ Durante `sh do build`, el tema genera el catálogo antes de la compilación Hugo
 
 ### Textos visibles y avisos de pedidos
 
-`notes` (opcional) en `data/commerce.yml` añade una línea Markdown bajo el botón de compra de la ficha (`product`) y sobre el pago en el carrito (`cart`): IVA incluido, condiciones de envío, destinos con presupuesto. Cada valor es un texto o un mapa idioma → texto; son solo informativos y no cambian el cálculo, que sigue saliendo de `totals_policy`.
+`notes` (opcional) en `data/commerce.yml` añade una línea Markdown bajo el botón de compra de la ficha (`product`) y un aviso destacado en el carrito (`cart`), en la parte con scroll del cajón y en la columna de la página del carrito, encima de las casillas opcionales: IVA incluido, condiciones de envío, destinos con presupuesto. Cada valor es un texto o un mapa idioma → texto; son solo informativos y no cambian el cálculo, que sigue saliendo de `totals_policy`. `cart_quote: true` añade al aviso del carrito un botón «Solicitar presupuesto» hacia el formulario `#contacto` de la portada. En el pie fijo del cajón quedan solo el total, la casilla obligatoria de condiciones (`checkout_terms`) y el pago.
 
 ```yaml
+cart_quote: true    # botón «Solicitar presupuesto» junto al aviso del carrito
 notes:
   product: "IVA incluido. Envío a península y Baleares: 12,05 €."
   cart:

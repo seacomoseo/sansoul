@@ -8,13 +8,13 @@
     <input type="hidden" data-commerce-country value="{{ index $countries 0 }}">
     {{- else }}
     <label class="commerce__field commerce__field--country"><span>{{ i18n "commerce_country" }}</span>
-      <select data-commerce-country autocomplete="shipping country">
+      <span class="commerce__control"><select data-commerce-country autocomplete="shipping country">
         {{- range $countries }}<option value="{{ . }}">{{ . }}</option>{{ end -}}
-      </select>
+      </select></span>
     </label>
     {{- end }}
     <label class="commerce__field commerce__field--postal"><span>{{ i18n "commerce_postal_code" }}</span>
-      <input type="text" data-commerce-postal inputmode="numeric" autocomplete="shipping postal-code" maxlength="16" placeholder="28001" required>
+      <span class="commerce__control"><input type="text" data-commerce-postal inputmode="numeric" autocomplete="shipping postal-code" maxlength="16" placeholder="28001" required></span>
     </label>
     <button class="btn btn--sm commerce__quote-btn" type="submit" data-commerce-quote>{{ i18n "commerce_calculate" }}</button>
   </div>

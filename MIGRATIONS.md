@@ -42,6 +42,26 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.7.0 — 2026-11-14 — carrito más compacto y tarjetas de producto con el carrito al lado
+
+**Impacto:** ninguno si no haces nada; hay cambios visibles en la tienda.
+
+1. **Tarjetas de los listados de productos.** «Ver producto» y «Añadir al carrito» van en una
+   sola fila: el carrito es un botón cuadrado solo con icono (con su texto accesible y un
+   tooltip). Con el cursor sobre la tarjeta se animan la tarjeta, la imagen y «Ver producto»;
+   sobre el carrito solo se anima ese botón. El tema expone la clase genérica
+   `.box__own-hover` para cualquier zona de una tarjeta enlazada (`box--go`) con su propio hover.
+2. **Cajón y página del carrito.** El selector de cantidad y los campos de destino siguen las
+   esquinas de `styles.yml` (`rounded.radius` y `rounded.chamfer`). «Quitar» va en la misma fila
+   que el selector. El número de artículos del título es un badge como el del botón del carrito.
+   El aviso `notes.cart` y las casillas opcionales (factura, promociones) pasan a la parte con
+   scroll; en el pie fijo quedan el total, la casilla obligatoria de condiciones y el pago.
+3. **Opcional: `cart_quote: true`** en `data/commerce.yml` añade al aviso del carrito un botón
+   «Solicitar presupuesto» hacia el formulario `#contacto` de la portada.
+
+**Validación:** en un listado de productos y en el carrito, a 375 y 1280 px, los botones caben
+en una fila y el cajón deja ver las líneas del pedido con el pie fijo a la vista.
+
 ## 14.6.0 — 2026-11-14 — aviso de formularios con enlace al formulario y «FACTURA SIMPLIFICADA»
 
 **Impacto:** ninguno si no haces nada; hay dos cambios visibles.

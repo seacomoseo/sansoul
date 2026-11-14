@@ -2,31 +2,13 @@
   <span>{{ i18n "commerce_total" }}</span>
   <strong data-commerce-total>—</strong>
 </div>
-{{ partial "commerce/note" (dict "key" "cart") }}
-{{- /* Invoice on request (order_notices.buyer_invoice: on_request, the default when the shop invoices). */ -}}
+{{- /* Required terms box (data/commerce.yml: checkout_terms) stays next to the pay button; the notice
+     and the optional boxes live in commerce/options. */ -}}
 {{- with hugo.Data.commerce -}}
-  {{- $notices := .order_notices | default dict -}}
-  {{- $buyer := $notices.buyer | default (cond (eq $notices.buyer_confirmation false) "none" "own") -}}
-  {{- $invoiceOn := eq (.invoice | default dict).enabled true -}}
-  {{- $onRequest := and (eq $notices.enabled true) $invoiceOn (ne $buyer "none") (or (eq $notices.buyer_invoice "on_request") (not (isset $notices "buyer_invoice"))) -}}
-  {{- if $onRequest }}
-<label class="commerce__option"><input type="checkbox" data-commerce-invoice-request> <span>{{ i18n "commerce_invoice_request" }}</span></label>
-  {{- end -}}
-{{- end }}
-{{- /* Optional boxes (data/commerce.yml: checkout_terms, audience): terms are required to pay, the promotions consent is never pre-checked. */ -}}
-{{- with hugo.Data.commerce -}}
-  {{- $lang := site.Language.Lang -}}
   {{- if eq .checkout_terms true }}
     {{- $terms := .checkout_terms_text -}}
-    {{- if reflect.IsMap $terms }}{{ $terms = index $terms $lang }}{{ end }}
+    {{- if reflect.IsMap $terms }}{{ $terms = index $terms site.Language.Lang }}{{ end }}
 <label class="commerce__option"><input type="checkbox" data-commerce-terms> <span>{{ with $terms }}{{ . | markdownify }}{{ else }}{{ i18n "commerce_terms_accept" }}{{ end }}</span></label>
-  {{- end -}}
-  {{- with .audience }}
-    {{- if eq .enabled true }}
-      {{- $consent := .consent_text -}}
-      {{- if reflect.IsMap $consent }}{{ $consent = index $consent $lang | default (index $consent site.Language.Lang) | default (index $consent "es") }}{{ end }}
-<label class="commerce__option"><input type="checkbox" data-commerce-audience-consent> <span>{{ $consent | markdownify }}</span></label>
-    {{- end -}}
   {{- end -}}
 {{- end }}
 <p class="commerce__hint" data-commerce-quote-hint>{{ i18n "commerce_provisional_note" }}</p>
