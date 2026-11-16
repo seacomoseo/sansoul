@@ -187,6 +187,15 @@ export function paymentStatements (db, order, target, now, eventId = null) {
           consent_promotions = CASE WHEN excluded.consent_promotions = 1 THEN 1 ELSE contacts.consent_promotions END,
           updated_at = excluded.updated_at
       `).bind(now, now, now, order.id, ...eventArgs))
+      // Mirror a consent to the mailing provider (no-op at delivery without Brevo config).
+      if (snapshot.audience.consent) {
+        const syncKey = `${order.id}:audience.sync`
+        statements.push(db.prepare(`
+          INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
+          SELECT ?, id, 'audience.sync', ?, 'pending', 0, ?, ?, ?
+          FROM orders WHERE id = ? AND payment_status = 'paid'${eventGuard}
+        `).bind(syncKey, JSON.stringify({ eventKey: syncKey, orderId: order.id, eventType: 'audience.sync' }), now, now, now, order.id, ...eventArgs))
+      }
     }
   } else if (target.state === 'failed' || target.state === 'expired') {
     statements.push(db.prepare(`

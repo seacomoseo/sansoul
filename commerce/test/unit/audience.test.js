@@ -122,3 +122,37 @@ test('admin panel: GitHub push access opens people routes, never operator routes
     assert.equal((await handleAdmin(new Request('https://shop.example/api/commerce/admin/orders', { headers: { authorization: `GitHub ${token}` } }), env, { ...catalog, adminRepo: undefined })).status, 404)
   } finally { globalThis.fetch = original }
 })
+
+test('brevo: consent queues a sync, unsubscribe queues a removal, webhook marks the contact', async () => {
+  const { syncAudienceEvent, handleBrevoWebhook } = await import('../../audience-brevo.js')
+  const { sqlite, db, pay, env } = fixture()
+  const id = await pay('a@example.invalid', { consent: true, version: 'v1' })
+  await pay('c@example.invalid', { consent: false, version: 'v1' })
+  const queued = sqlite.prepare("SELECT event_key, order_id FROM outbox WHERE event_type = 'audience.sync'").all()
+  assert.deepEqual(queued.map(row => row.order_id), [id], 'only consents are mirrored')
+  const catalog = { origin: 'https://shop.example', functionsEnabled: true, audience: { customers: true, version: 'v1', brevoListId: 7 } }
+  const calls = []
+  const fetch = async (url, init) => { calls.push({ url, body: JSON.parse(init.body), key: init.headers['api-key'] }); return new Response('{}', { status: 201 }) }
+  const item = sqlite.prepare("SELECT * FROM outbox WHERE event_type = 'audience.sync'").get()
+  await syncAudienceEvent({ env: { ...env, BREVO_API_KEY: 'k' }, db, item, catalog, fetch })
+  assert.equal(calls[0].url, 'https://api.brevo.com/v3/contacts')
+  assert.deepEqual(calls[0].body.listIds, [7])
+  assert.equal(calls[0].body.attributes.VERSION_CONSENTIMIENTO, 'v1')
+  await syncAudienceEvent({ env, db, item, catalog, fetch })
+  assert.equal(calls.length, 1, 'no key, no call')
+  const admin = (path, init) => handleAdmin(new Request(`https://shop.example/api/commerce/admin/${path}`, { ...init, headers: { authorization: `Bearer ${env.COMMERCE_ADMIN_TOKEN}`, 'content-type': 'application/json' } }), env, catalog)
+  await admin('contacts/unsubscribe', { method: 'POST', body: JSON.stringify({ email: 'a@example.invalid' }) })
+  const removal = sqlite.prepare("SELECT * FROM outbox WHERE event_type = 'audience.unsubscribe'").get()
+  await syncAudienceEvent({ env: { ...env, BREVO_API_KEY: 'k' }, db, item: removal, catalog, fetch })
+  assert.equal(calls[1].url, 'https://api.brevo.com/v3/contacts/lists/7/contacts/remove')
+  // A late sync after the unsubscribe never re-adds the contact.
+  await syncAudienceEvent({ env: { ...env, BREVO_API_KEY: 'k' }, db, item, catalog, fetch })
+  assert.equal(calls.length, 2)
+  // Brevo -> web.
+  await pay('b@example.invalid', { consent: true, version: 'v1' })
+  const hook = (secret, body) => handleBrevoWebhook(new Request(`https://shop.example/api/commerce/audience/brevo?s=${secret}`, { method: 'POST', body: JSON.stringify(body) }), { ...env, BREVO_WEBHOOK_SECRET: 's'.repeat(32) }, catalog)
+  await assert.rejects(hook('wrong', { event: 'unsubscribe', email: 'b@example.invalid' }), { status: 403 })
+  assert.equal(contact(sqlite, 'b@example.invalid').unsubscribed_at, null)
+  assert.equal((await hook('s'.repeat(32), { event: 'unsubscribe', email: 'B@example.invalid' })).status, 200)
+  assert.notEqual(contact(sqlite, 'b@example.invalid').unsubscribed_at, null)
+})

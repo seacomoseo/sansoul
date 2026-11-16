@@ -8,6 +8,7 @@ import { hasPushAccess } from '../edge/github-access.js'
 const tokenEncoder = new TextEncoder()
 import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
+import { AUDIENCE_SYNC, AUDIENCE_UNSUBSCRIBE, enqueueUnsubscribe, syncAudienceEvent } from './audience-brevo.js'
 import { hasMailNotifier, loadOrder, sendOrderNotice } from './notifier.js'
 import { InvoiceError, countryName, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 
@@ -111,8 +112,13 @@ function contactsCsv (contacts) {
 async function unsubscribeContact (request, db, now) {
   const { value } = await readJsonBody(request, 1024)
   if (!value || typeof value !== 'object' || Object.keys(value).length !== 1 || typeof value.email !== 'string' || value.email.length > 320) throw new CommerceError('invalid_contact')
-  const result = await db.prepare('UPDATE contacts SET unsubscribed_at = ?, updated_at = ? WHERE email = ? AND unsubscribed_at IS NULL').bind(now, now, value.email.trim().toLowerCase()).run()
-  if (result.meta?.changes) return jsonResponse({ unsubscribed: true })
+  const email = value.email.trim().toLowerCase()
+  const result = await db.prepare('UPDATE contacts SET unsubscribed_at = ?, updated_at = ? WHERE email = ? AND unsubscribed_at IS NULL').bind(now, now, email).run()
+  if (result.meta?.changes) {
+    const contact = await db.prepare('SELECT email, consent_ref FROM contacts WHERE email = ?').bind(email).first()
+    if (contact?.consent_ref) await enqueueUnsubscribe(db, contact, now).run()
+    return jsonResponse({ unsubscribed: true })
+  }
   const contact = await db.prepare('SELECT email FROM contacts WHERE email = ?').bind(value.email.trim().toLowerCase()).first()
   if (!contact) throw new CommerceError('contact_not_found', 404)
   return jsonResponse({ unsubscribed: true, already: true })
@@ -392,6 +398,7 @@ async function notifierSend (env, item, attempts, db, options) {
     if (env.COMMERCE_FAKE_EMAIL_FAIL_FIRST === 'true' && attempts === 1) throw new Error('notifier_unavailable')
     return
   }
+  if (item.event_type === AUDIENCE_SYNC || item.event_type === AUDIENCE_UNSUBSCRIBE) return await syncAudienceEvent({ env, db, item, catalog: options.catalog, fetch: options.fetch })
   // A service binding wins; otherwise mail the merchant through the forms Gmail provider.
   if ((!env.COMMERCE_NOTIFIER || typeof env.COMMERCE_NOTIFIER.fetch !== 'function') && hasMailNotifier(env)) {
     return await sendOrderNotice({ env, db, item, site: options.site, catalog: options.catalog, fetch: options.fetch })

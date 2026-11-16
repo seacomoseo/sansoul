@@ -42,6 +42,19 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.9.0 — 2026-11-16 — contactos con permiso sincronizados con Brevo
+
+**Impacto:** ninguno si no haces nada (sin `brevo_list_id` ni `BREVO_API_KEY` no se llama a Brevo).
+
+1. **`audience.brevo_list_id`** (entero) en `data/commerce.yml` + secreto `BREVO_API_KEY` del Worker:
+   cada compra con la casilla de promociones marcada da de alta el contacto en esa lista de Brevo
+   (`POST /v3/contacts`, atributos NOMBRE, IDIOMA, ORIGEN, FECHA_CONSENTIMIENTO, VERSION_CONSENTIMIENTO;
+   no gasta cupo de envío). Va por la cola de avisos (`audience.sync`, con reintentos).
+2. **Baja web → Brevo:** `contacts/unsubscribe` encola `audience.unsubscribe` (quita de la lista).
+   Un alta tardía nunca revierte una baja.
+3. **Baja Brevo → web:** webhook de marketing de Brevo (`unsubscribe`, `spam`) a
+   `https://<sitio>/api/commerce/audience/brevo?s=<BREVO_WEBHOOK_SECRET>` (secreto del Worker).
+
 ## 14.8.0 — 2026-11-16 — formulario de presupuesto en el carrito, chaflanes en todo y controles como los inputs
 
 **Impacto:** ninguno si no haces nada; hay cambios visibles en la tienda y, con `cart_quote: true`,

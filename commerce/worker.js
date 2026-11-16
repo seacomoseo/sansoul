@@ -1,4 +1,5 @@
-import { jsonResponse } from './http.js'
+import { errorResponse, jsonResponse } from './http.js'
+import { handleBrevoWebhook } from './audience-brevo.js'
 import { dispatchScheduledNotices } from './admin.js'
 import { purgeExpiredDeliveryDetails } from './maintenance.js'
 
@@ -18,6 +19,7 @@ export function createCommerceWorker (catalog, routes) {
       if (routePath === '/api/commerce/checkout') handler = routes.checkout
       else if (routePath === '/api/commerce/quote') handler = routes.quote
       else if (routePath === '/api/commerce/webhook') handler = routes.webhook
+      else if (routePath === '/api/commerce/audience/brevo') return handleBrevoWebhook(request, env, catalog).catch(errorResponse)
       else {
         const status = routePath.match(/^\/api\/commerce\/status\/([^/]+)$/)
         const admin = routePath.match(/^\/api\/commerce\/admin(?:\/(.*))?$/)

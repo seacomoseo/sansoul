@@ -237,15 +237,16 @@ function localizedText (value, error) {
 function compileAudience (source) {
   if (source === undefined || source === null) return null
   const error = 'data/commerce.yml: invalid_audience'
-  if (!plainObject(source) || Object.keys(source).some(key => !['enabled', 'customers', 'consent_version', 'consent_text', 'provider'].includes(key)) || typeof source.enabled !== 'boolean') throw new Error(error)
+  if (!plainObject(source) || Object.keys(source).some(key => !['enabled', 'customers', 'consent_version', 'consent_text', 'provider', 'brevo_list_id'].includes(key)) || typeof source.enabled !== 'boolean') throw new Error(error)
   if (!source.enabled) return null
   if (source.customers !== undefined && typeof source.customers !== 'boolean') throw new Error(error)
-  // `provider` only feeds the privacy text (who sends the notices); the Worker ignores it.
+  // `provider` feeds the privacy text; `brevo_list_id` (with the BREVO_API_KEY secret) turns on the Brevo contact sync.
   if (source.provider !== undefined && (typeof source.provider !== 'string' || !source.provider.trim() || source.provider.length > 200)) throw new Error(`${error}_provider`)
   if (!isValidCheckoutLegalVersion(source.consent_version)) throw new Error(`${error}_consent_version`)
   // The text of the box is the proof of what was accepted: it is mandatory and versioned.
   localizedText(source.consent_text, `${error}_consent_text`)
-  return { customers: source.customers === true, version: source.consent_version }
+  if (source.brevo_list_id !== undefined && (!Number.isInteger(source.brevo_list_id) || source.brevo_list_id < 1)) throw new Error(`${error}_brevo_list_id`)
+  return { customers: source.customers === true, version: source.consent_version, ...(source.brevo_list_id ? { brevoListId: source.brevo_list_id } : {}) }
 }
 
 function makeCatalog (root) {
