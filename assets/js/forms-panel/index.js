@@ -506,7 +506,9 @@ async function connectGmail () {
     const { url, nonce } = await api('google/connect', { method: 'POST', body: { ref: state.summary.google.default } })
     // Ties the flow to this browser (the Worker checks it in the callback).
     document.cookie = `forms_oauth=${nonce}; Path=/api/forms/admin/google/callback; Max-Age=600; Secure; SameSite=Lax`
-    location.assign(url)
+    // Google refuses to load inside the CMS frame: leave it from the top window.
+    const target = window.top || window
+    target.location.assign(url)
   } catch {
     state.message = T.gmailFailed
     render()

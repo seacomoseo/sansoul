@@ -438,7 +438,7 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
   const url = new URL(request.url)
   if (path === 'google/connect' && method === 'POST') {
     if (actor !== 'github') throw new FormsError('forbidden', 403)
-    return jsonResponse(await startConnect({ request, env, now }))
+    return jsonResponse(await startConnect({ request, env, now, origins: manifest.origins }))
   }
   const submission = path.match(/^submissions\/([A-Za-z0-9-]{16,64})(?:\/(delete|files\/(\d{1,2})))?$/)
 

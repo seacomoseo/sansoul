@@ -92,7 +92,7 @@ async function verifyState (env, state, now) {
   } catch {}
   if (!valid) throw new FormsError('invalid_state', 400)
   const payload = JSON.parse(new TextDecoder().decode(unb64(body)))
-  if (!REF.test(payload.r) || typeof payload.n !== 'string' || !(payload.e > now)) throw new FormsError('invalid_state', 400)
+  if (!REF.test(payload.r) || typeof payload.n !== 'string' || typeof payload.u !== 'string' || !(payload.e > now)) throw new FormsError('invalid_state', 400)
   return payload
 }
 
@@ -101,12 +101,16 @@ async function verifier (env, nonce) {
   return b64(await crypto.subtle.sign('HMAC', hmac, encoder.encode(`pkce:${nonce}`)))
 }
 
-function redirectUri (request) {
-  return `${new URL(request.url).origin}/api/forms/admin/google/callback`
+// The public origin the browser used: behind a mirror (Netlify proxy) the Worker sees
+// its workers.dev URL, so the browser's own Origin counts when the manifest lists it.
+function redirectUri (request, origins = []) {
+  const origin = request.headers.get('origin')
+  const base = origin && origins.includes(origin) ? origin : new URL(request.url).origin
+  return `${base}/api/forms/admin/google/callback`
 }
 
 // POST google/connect: returns the Google consent URL for one reference.
-export async function startConnect ({ request, env, now }) {
+export async function startConnect ({ request, env, now, origins }) {
   if (!googleConfigured(env)) throw new FormsError('google_not_configured', 503)
   const body = await request.json().catch(() => ({}))
   const ref = body?.ref || connectRef(env)
@@ -118,11 +122,12 @@ export async function startConnect ({ request, env, now }) {
     if (error instanceof FormsError) throw error
   }
   const nonce = b64(crypto.getRandomValues(new Uint8Array(16)))
-  const state = await signState(env, { r: ref, n: nonce, e: now() + STATE_TTL_MS })
+  const redirect = redirectUri(request, origins)
+  const state = await signState(env, { r: ref, n: nonce, e: now() + STATE_TTL_MS, u: redirect })
   const challenge = b64(await crypto.subtle.digest('SHA-256', encoder.encode(await verifier(env, nonce))))
   const params = new URLSearchParams({
     client_id: env.FORMS_GOOGLE_CLIENT_ID,
-    redirect_uri: redirectUri(request),
+    redirect_uri: redirect,
     response_type: 'code',
     scope: SCOPES.join(' '),
     access_type: 'offline',
@@ -165,7 +170,7 @@ export async function finishConnect ({ request, env, fetch, now }) {
   try {
     const response = await fetch(TOKEN_URL, {
       method: 'POST',
-      body: new URLSearchParams({ grant_type: 'authorization_code', code, client_id: env.FORMS_GOOGLE_CLIENT_ID, client_secret: env.FORMS_GOOGLE_CLIENT_SECRET, redirect_uri: redirectUri(request), code_verifier: await verifier(env, payload.n) }),
+      body: new URLSearchParams({ grant_type: 'authorization_code', code, client_id: env.FORMS_GOOGLE_CLIENT_ID, client_secret: env.FORMS_GOOGLE_CLIENT_SECRET, redirect_uri: payload.u, code_verifier: await verifier(env, payload.n) }),
       signal: AbortSignal.timeout(10000)
     })
     tokens = response.ok ? await response.json() : null

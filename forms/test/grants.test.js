@@ -140,3 +140,18 @@ test('fallback: a dead main credential sends through the backup and records it; 
   // Without a backup the original error surfaces.
   await assert.rejects(provider.send({ env: { ...env, FORMS_GMAIL_FALLBACK: '' }, authority, message, signal: AbortSignal.timeout(5000), beforeSend: async () => {} }), { code: 'gmail_grant_invalid' })
 })
+
+test('behind a mirror the redirect URI is the browser origin listed in the manifest, and the exchange reuses it', async () => {
+  const env = baseEnv()
+  const request = new Request('https://workers.example/api/forms/admin/google/connect', { method: 'POST', body: '{}', headers: { origin: 'https://public.example' } })
+  const { url, nonce } = await startConnect({ request, env, now: () => 1_000_000, origins: ['https://public.example'] })
+  const params = new URL(url).searchParams
+  assert.equal(params.get('redirect_uri'), 'https://public.example/api/forms/admin/google/callback')
+  // An origin the manifest does not list is ignored.
+  const other = await startConnect({ request: new Request('https://workers.example/x', { method: 'POST', body: '{}', headers: { origin: 'https://evil.example' } }), env, now: () => 1_000_000, origins: ['https://public.example'] })
+  assert.equal(new URL(other.url).searchParams.get('redirect_uri'), 'https://workers.example/api/forms/admin/google/callback')
+  const google = googleFetch()
+  const done = await finishConnect({ request: withCookie(nonce, `https://workers.example/api/forms/admin/google/callback?code=abc&state=${encodeURIComponent(params.get('state'))}`), env, fetch: google.fetch, now: () => 1_000_000 })
+  assert.equal(done.status, 200)
+  assert.equal(google.calls[0].body.redirect_uri, 'https://public.example/api/forms/admin/google/callback')
+})

@@ -42,6 +42,12 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.10.1 — 2026-11-17 — «Conectar Gmail» detrás del espejo y dentro del CMS
+
+Corrección de 14.10.0: la URI de redirección usa el origen público del navegador (el de `baseURL`,
+no el `workers.dev` que ve el Worker tras el espejo de Netlify) y se guarda en el `state`; el botón
+sale del marco del CMS (Google no se carga en un iframe). Sin acciones.
+
 ## 14.10.0 — 2026-11-16 — conectar el Gmail del propietario desde el panel, respaldo y copia de facturas en Drive
 
 **Impacto:** ninguno si no haces nada. Hay dos migraciones D1 nuevas (`forms/0005_grants`, `commerce/0010_invoice_archive`; el CI las aplica).
