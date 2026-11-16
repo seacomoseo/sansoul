@@ -68,13 +68,17 @@ function footerOf (submission, authority) {
 }
 
 // `links` (Map index → Drive URL) replaces inline attachments for large files.
+// `authority.lead` ({ html, text }, built and escaped by an enricher such as
+// commerce/quote-request.js) goes first; `leadHide` drops the fields it already shows.
 export function renderOwner ({ submission, authority, links = null }) {
-  const list = rows(submission.fields, submission.files, links)
+  const hidden = new Set(authority.lead ? authority.leadHide || [] : [])
+  const list = rows(submission.fields.filter(([name]) => !hidden.has(name)), submission.files, links)
   const footer = footerOf(submission, authority)
+  const lead = authority.lead || { html: '', text: '' }
   return {
     subject: authority.subject,
-    text: `${textTable(list)}\n\n--\n${footer.label}\n${footer.url}\n${footer.id}\n`,
-    html: `${table(list)}<p style="color:#777;font-size:12px"><a href="${escapeHtml(footer.url)}" style="color:#777">${escapeHtml(footer.label)}</a><br>${escapeHtml(footer.url)}<br>${escapeHtml(footer.id)}</p>`
+    text: `${lead.text ? `${lead.text}\n\n` : ''}${textTable(list)}\n\n--\n${footer.label}\n${footer.url}\n${footer.id}\n`,
+    html: `${lead.html}${table(list)}<p style="color:#777;font-size:12px"><a href="${escapeHtml(footer.url)}" style="color:#777">${escapeHtml(footer.label)}</a><br>${escapeHtml(footer.url)}<br>${escapeHtml(footer.id)}</p>`
   }
 }
 
@@ -83,11 +87,12 @@ export function renderConfirmation ({ submission, authority }) {
   const intro = fillPlaceholders(sanitizeHtml(confirm.introHtml), submission.fields)
   const notice = fillPlaceholders(sanitizeHtml(confirm.noticeHtml), submission.fields)
   const list = confirm.fields ? rows(submission.fields, submission.files) : []
+  const lead = authority.lead || { html: '', text: '' }
   const plain = html => html.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|li|h\d)>/gi, '\n').replace(/<[^>]+>/g, '')
     .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').trim()
   return {
     subject: confirm.subject,
-    text: [plain(intro), list.length ? textTable(list) : '', plain(notice)].filter(Boolean).join('\n\n') + '\n',
-    html: `${intro}${list.length ? table(list) : ''}${notice}`
+    text: [plain(intro), lead.text, list.length ? textTable(list) : '', plain(notice)].filter(Boolean).join('\n\n') + '\n',
+    html: `${intro}${lead.html}${list.length ? table(list) : ''}${notice}`
   }
 }

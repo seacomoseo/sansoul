@@ -12,6 +12,13 @@
   {{- end -}}
 {{- end }}
 <p class="commerce__hint" data-commerce-quote-hint>{{ i18n "commerce_provisional_note" }}</p>
-<p class="commerce__quote" data-commerce-quote-request hidden><a class="btn" href="{{ site.Home.RelPermalink }}#contacto">{{ i18n "commerce_request_quote" }}</a></p>
+{{- /* With `cart_quote: true` the button opens the quote view of the drawer; otherwise it links to the contact section. */}}
+<p class="commerce__quote" data-commerce-quote-request hidden>
+  {{- if eq hugo.Data.commerce.cart_quote true -}}
+  <button class="btn" type="button" data-commerce-quote-open>{{ partial "icon" (dict "icon" "request_quote") }}<span>{{ i18n "commerce_request_quote" }}</span></button>
+  {{- else -}}
+  <a class="btn" href="{{ site.Home.RelPermalink }}#contacto">{{ i18n "commerce_request_quote" }}</a>
+  {{- end -}}
+</p>
 <button class="btn commerce__checkout" type="button" data-commerce-checkout disabled>{{ partial "icon" (dict "icon" "lock") }}<span>{{ i18n "commerce_checkout" }}</span></button>
 <p class="commerce__checkout-note" data-commerce-checkout-note>{{ i18n "commerce_checkout_disabled" }}</p>

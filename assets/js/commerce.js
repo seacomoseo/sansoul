@@ -149,6 +149,12 @@ export function initCommerce () {
   const trigger = root.querySelector('[data-commerce-open]')
   const closeButton = root.querySelector('[data-commerce-close]')
   const lineTemplate = root.querySelector('[data-commerce-line-template]')
+  // Quote request (cart_quote): a second view of the drawer with a Worker form.
+  const panel = root.querySelector('[data-commerce-panel]')
+  const quoteView = root.querySelector('[data-commerce-quote-view]')
+  const quoteForm = quoteView?.querySelector('form')
+  const quoteCountries = (quoteView?.dataset.countries || '').split(',').filter(Boolean)
+  let quoteOpen = false
   let persistent = true
   let statusMessage = ''
   let opener = null
@@ -269,6 +275,8 @@ export function initCommerce () {
         ? message('commerce_checkout_note')
         : message('commerce_checkout_disabled')
     })
+    if (quoteOpen && items.length === 0) showQuote(false)
+    if (quoteOpen) renderQuote()
     commerceNodes('[data-commerce-status]').forEach(node => {
       node.textContent = statusMessage
       node.hidden = !statusMessage
@@ -365,6 +373,109 @@ export function initCommerce () {
   function validQuote (quote) {
     return quote && typeof quote.policy_version === 'string' && quote.currency === currency.toLowerCase() &&
       ['subtotal_minor', 'shipping_minor', 'tax_minor', 'added_tax_minor', 'total_minor'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
+  }
+
+  // QUOTE REQUEST
+
+  const quoteField = key => {
+    const name = quoteView?.dataset[`${key}Field`]
+    return name ? quoteForm?.querySelector(`[name="${CSS.escape(name)}"]`) : null
+  }
+
+  function regionName (code) {
+    try {
+      return new Intl.DisplayNames([i18n.lang || document.documentElement.lang || 'es'], { type: 'region' }).of(code) || code
+    } catch {
+      return code
+    }
+  }
+
+  // The visitor types the country; the shop's own destinations map back to their code
+  // so the merchant sees which shipping rule failed. Anything else is "other".
+  const fold = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase()
+  function quoteCountry (text) {
+    const wanted = fold(text || '')
+    if (!wanted) return null
+    return quoteCountries.find(code => fold(code) === wanted || fold(regionName(code)) === wanted) || null
+  }
+
+  // Only IDs, quantities and page paths travel: names, prices and weights come from
+  // the catalog on the server (core/commerce/quote-request.js).
+  function syncQuoteCart () {
+    const field = quoteField('cart')
+    if (!field) return
+    field.value = JSON.stringify({
+      items: items.map(item => {
+        const url = products.get(item.id)?.url
+        return { id: item.id, quantity: item.quantity, ...(url ? { path: new URL(url, location.origin).pathname } : {}) }
+      }),
+      country: quoteCountry(quoteField('country')?.value),
+      postalCode: (quoteField('postal')?.value || '').trim()
+    })
+  }
+
+  function renderQuote () {
+    const list = quoteView.querySelector('[data-commerce-quote-lines]')
+    let subtotal = 0
+    let complete = true
+    list.replaceChildren(...items.map(item => {
+      const product = products.get(item.id)
+      const priced = product && !product.quote && Number.isSafeInteger(product.priceMinor)
+      if (priced) subtotal += product.priceMinor * item.quantity
+      else complete = false
+      const line = document.createElement('li')
+      line.className = 'commerce__quote-line'
+      const quantity = document.createElement('span')
+      quantity.className = 'commerce__quote-qty'
+      quantity.textContent = `${item.quantity} ×`
+      const name = document.createElement('span')
+      name.className = 'commerce__quote-name'
+      name.textContent = product?.name || message('commerce_unavailable_product')
+      const total = document.createElement('strong')
+      total.textContent = priced ? money(product.priceMinor * item.quantity, currency) : message('commerce_quote_on_request')
+      line.append(quantity, name, total)
+      return line
+    }))
+    const node = quoteView.querySelector('[data-commerce-quote-subtotal]')
+    node.textContent = `${money(subtotal, currency)}${complete ? '' : ` + ${message('commerce_quote_on_request').toLowerCase()}`}`
+    syncQuoteCart()
+  }
+
+  function showQuote (open) {
+    if (!quoteView || !panel) return
+    quoteOpen = open && items.length > 0
+    panel.classList.toggle('commerce__panel--quote', quoteOpen)
+    quoteView.hidden = !quoteOpen
+    if (!quoteOpen) {
+      // Next time the form shows again; typed values stay in case the drawer closed by accident.
+      quoteView.querySelector('[data-commerce-quote-ask]').hidden = false
+      quoteView.querySelector('[data-commerce-quote-done]').hidden = true
+      quoteForm?.querySelectorAll('.form__submit, .form__error').forEach(node => node.remove())
+      return
+    }
+    const country = quoteField('country')
+    const postal = quoteField('postal')
+    const cartCountry = destination?.country || commerceNodes('[data-commerce-country]')[0]?.value || quoteCountries[0]
+    if (country && !country.value && cartCountry) country.value = regionName(cartCountry)
+    const cartPostal = destination?.postalCode || commerceNodes('[data-commerce-postal]').map(input => input.value.trim()).find(Boolean)
+    if (postal && !postal.value && cartPostal) postal.value = cartPostal
+    renderQuote()
+    quoteView.querySelector('#commerce-quote-title')?.focus()
+  }
+
+  function openQuote (button) {
+    if (!items.length) return
+    openCart(button)
+    showQuote(true)
+  }
+
+  function quoteSent () {
+    const email = quoteField('email')?.value || ''
+    const text = quoteView.querySelector('[data-commerce-quote-done-text]')
+    text.textContent = message('commerce_quote_done').replace('{email}', email)
+    quoteView.querySelector('[data-commerce-quote-ask]').hidden = true
+    quoteView.querySelector('[data-commerce-quote-done]').hidden = false
+    quoteView.querySelector('.commerce__quote-done-title')?.focus()
   }
 
   function openCart (button) {
@@ -525,6 +636,16 @@ export function initCommerce () {
 
   document.addEventListener('click', event => {
     const target = event.target instanceof Element ? event.target : null
+    const quoteButton = target?.closest('[data-commerce-quote-open]')
+    if (quoteButton) {
+      openQuote(quoteButton)
+      return
+    }
+    if (target?.closest('[data-commerce-quote-back]')) {
+      showQuote(false)
+      ;(root.querySelector('.commerce__body [data-commerce-quote-open]') || closeButton)?.focus()
+      return
+    }
     const openButton = target?.closest('[data-commerce-open]')
     if (openButton) {
       openCart(openButton)
@@ -643,8 +764,23 @@ export function initCommerce () {
     announce('commerce_updated')
   })
 
+  // Capture phase: runs before form-send.js reads the form, so the hidden cart field
+  // always matches the cart the visitor sees.
+  document.addEventListener('submit', event => {
+    if (event.target !== quoteForm) return
+    if (!items.length) {
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      showQuote(false)
+      return
+    }
+    syncQuoteCart()
+  }, true)
+  if (quoteForm) document.addEventListener(`submited-${quoteForm.id}`, quoteSent)
+
   dialog?.addEventListener('close', () => {
     trigger?.setAttribute('aria-expanded', 'false')
+    showQuote(false)
     opener?.focus()
     opener = null
   })
@@ -683,4 +819,6 @@ export function initCommerce () {
 
   render()
   verifyPaymentReturn()
+  // The panel and the notice link to the form: https://<site>/carrito/#form-presupuesto.
+  if (quoteForm && location.hash === `#${quoteForm.id}`) openQuote()
 }

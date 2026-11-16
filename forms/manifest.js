@@ -18,6 +18,10 @@ function validSpec (spec) {
   if (spec.title !== undefined && (typeof spec.title !== 'string' || /[\r\n]/.test(spec.title))) return false
   if (spec.confirm !== null && (typeof spec.confirm !== 'object' || typeof spec.confirm.subject !== 'string' || /[\r\n]/.test(spec.confirm.subject))) return false
   if (!Array.isArray(spec.fields)) return false
+  // Optional server-side enrichment (createFormsWorker `enrichers`): the hidden
+  // field it reads must be one of the form's own fields.
+  if (spec.enrich !== undefined && (typeof spec.enrich !== 'object' || spec.enrich === null || typeof spec.enrich.type !== 'string' ||
+    !/^[a-z_]{1,40}$/.test(spec.enrich.type) || !spec.fields.some(field => field?.name === spec.enrich.cart && field.type === 'hidden'))) return false
   return spec.fields.every(field => field && typeof field.name === 'string' && field.name && FIELD_TYPES.includes(field.type))
 }
 

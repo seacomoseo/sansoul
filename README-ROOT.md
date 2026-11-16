@@ -562,10 +562,10 @@ Durante `sh do build`, el tema genera el catálogo antes de la compilación Hugo
 
 ### Textos visibles y avisos de pedidos
 
-`notes` (opcional) en `data/commerce.yml` añade una línea Markdown bajo el botón de compra de la ficha (`product`) y un aviso destacado en el carrito (`cart`), en la parte con scroll del cajón y en la columna de la página del carrito, encima de las casillas opcionales: IVA incluido, condiciones de envío, destinos con presupuesto. Cada valor es un texto o un mapa idioma → texto; son solo informativos y no cambian el cálculo, que sigue saliendo de `totals_policy`. `cart_quote: true` añade al aviso del carrito un botón «Solicitar presupuesto» hacia el formulario `#contacto` de la portada. En el pie fijo del cajón quedan solo el total, la casilla obligatoria de condiciones (`checkout_terms`) y el pago.
+`notes` (opcional) en `data/commerce.yml` añade una línea Markdown bajo el botón de compra de la ficha (`product`) y un aviso destacado en el carrito (`cart`), en la parte con scroll del cajón y en la columna de la página del carrito, encima de las casillas opcionales: IVA incluido, condiciones de envío, destinos con presupuesto. Cada valor es un texto o un mapa idioma → texto; son solo informativos y no cambian el cálculo, que sigue saliendo de `totals_policy`. `cart_quote: true` añade al aviso del carrito un botón «Solicitar presupuesto» que abre, en el mismo cajón, un formulario de presupuesto (formulario Worker `form-presupuesto`: requiere el backend de formularios con proveedor). El navegador envía solo IDs y cantidades; el Worker completa nombre, referencia, precio, peso y el motivo del presupuesto desde el catálogo, el aviso al propietario lleva la tabla con enlaces a las fichas y el envío sale en el panel «Formularios». Sin `cart_quote`, el botón que aparece cuando el cálculo exige presupuesto enlaza a `#contacto`. En el pie fijo del cajón quedan solo el total, la casilla obligatoria de condiciones (`checkout_terms`) y el pago.
 
 ```yaml
-cart_quote: true    # botón «Solicitar presupuesto» junto al aviso del carrito
+cart_quote: true    # «Solicitar presupuesto»: formulario de presupuesto en el cajón del carrito
 notes:
   product: "IVA incluido. Envío a península y Baleares: 12,05 €."
   cart:

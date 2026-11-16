@@ -11,29 +11,66 @@
   --c-muted: color-mix(in srgb, #{$text} 62%, transparent);
   --c-soft: color-mix(in srgb, #{$light} 70%, #{$white});
   --c-control: 2.75rem;
+  // Same border as the form inputs (styles.yml inputs.fill).
+  --c-input-border: #{if(sass($inputs-fill): color-mix(in srgb, var(--such), var(--turn) 25%); else: var(--border))};
 }
 
-// Bordered control (quantity stepper, destination fields) with the theme corners.
-// clip-path cuts borders, so with chamfers a ring pseudo-element draws the border.
-@mixin c-control {
+// Corners follow styles.yml: rounded.radius, and with rounded.chamfer nothing is round
+// (chamfered corners, diamonds instead of circles).
+@mixin c-corners {
   @if $chamfer and $is-radius {
     @include mixins.radius-parent;
-    position: relative;
-    border: 0;
     clip-path: var(--chamfer);
-    --outline: 1px;
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-color: var(--c-border);
-      clip-path: var(--chamfer-outline);
-      pointer-events: none;
+  } @else {
+    border-radius: var(--c-radius);
+  }
+}
+// Count badges: pills, or with chamfers a pointed pill (a diamond when square).
+@mixin c-pill($height) {
+  @if $chamfer {
+    border-radius: 0;
+    clip-path: polygon(#{$height * .5} 0, calc(100% - #{$height * .5}) 0, 100% 50%, calc(100% - #{$height * .5}) 100%, #{$height * .5} 100%, 0 50%);
+  } @else {
+    border-radius: $height;
+  }
+}
+
+// Controls (quantity stepper, destination fields) look like the form inputs
+// (styles.yml inputs.fill, core/assets/css/boxes/blocks/_form.scss): filled with a
+// full border (radius or chamfer), or transparent with a bottom line only.
+// clip-path cuts borders, so with chamfers a ring pseudo-element draws the border.
+@mixin c-control {
+  --outline: 1px;
+  @if $inputs-fill {
+    color: var(--such-in);
+    background-color: var(--such);
+    @if $chamfer and $is-radius {
+      @include mixins.radius-parent;
+      position: relative;
+      border: 0;
+      clip-path: var(--chamfer);
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-color: var(--c-input-border);
+        clip-path: var(--chamfer-outline);
+        pointer-events: none;
+      }
+    } @else {
+      overflow: hidden;
+      border: var(--outline) solid var(--c-input-border);
+      border-radius: var(--c-radius);
+      box-shadow: $shadow inset;
     }
   } @else {
-    overflow: hidden;
-    border: 1px solid var(--c-border);
-    border-radius: var(--c-radius);
+    background-color: transparent;
+    border: 0;
+    border-bottom: var(--outline) solid var(--c-input-border);
+    border-radius: 0;
+  }
+  &:focus-within {
+    --c-input-border: var(--main);
   }
 }
 
@@ -141,10 +178,11 @@ body:not(:has(.menu__toggle)) .commerce__cart-trigger {
   min-width: 1.375rem;
   height: 1.375rem;
   padding: 0 .3rem;
-  border-radius: 1rem;
+  @include c-pill(1.375rem);
   color: var(--main-in);
   background-color: var(--main);
-  box-shadow: 0 0 0 2px #{$white};
+  // clip-path would cut the ring: chamfered badges go without it.
+  @if not $chamfer { box-shadow: 0 0 0 2px #{$white}; }
   font-size: .75rem;
   font-weight: 700;
   line-height: 1.375rem;
@@ -232,7 +270,7 @@ html:has(.commerce__drawer[open]) {
   height: 1.5rem;
   margin-inline-start: .25rem;
   padding: 0 .375rem;
-  border-radius: 1rem;
+  @include c-pill(1.5rem);
   color: var(--main-in);
   background-color: var(--main);
   font-size: .8125rem;
@@ -252,7 +290,7 @@ html:has(.commerce__drawer[open]) {
   color: inherit;
   background: none;
   border: 0;
-  border-radius: 50%;
+  @include mixins.disc;
   font-size: 1.5rem;
   cursor: pointer;
   transition: background-color .15s;
@@ -283,7 +321,7 @@ html:has(.commerce__drawer[open]) {
 .commerce__status {
   margin: 1rem 0 0;
   padding: .75rem 1rem;
-  border-radius: var(--c-radius);
+  @include c-corners;
   border-inline-start: .25rem solid $cta;
   background-color: color-mix(in srgb, #{$cta} 16%, #{$white});
   font-size: .925rem;
@@ -308,7 +346,7 @@ html:has(.commerce__drawer[open]) {
   place-items: center;
   width: 5rem;
   height: 5rem;
-  border-radius: 50%;
+  @include mixins.disc;
   background-color: var(--c-soft);
   color: var(--c-muted);
   font-size: 2.5rem;
@@ -346,7 +384,7 @@ html:has(.commerce__drawer[open]) {
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: var(--c-radius);
+  @include c-corners;
   background-color: var(--c-soft);
   img {
     display: block;
@@ -431,7 +469,6 @@ html:has(.commerce__drawer[open]) {
   align-items: stretch;
   flex-shrink: 0;
   height: 2.5rem;
-  background: $white;
   .commerce__step {
     display: grid;
     place-items: center;
@@ -458,6 +495,9 @@ html:has(.commerce__drawer[open]) {
     height: auto;
     padding: 0;
     border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    color: inherit;
     font-weight: 600;
     text-align: center;
     -moz-appearance: textfield;
@@ -480,7 +520,7 @@ html:has(.commerce__drawer[open]) {
 .commerce__destination {
   margin: 1.5rem 0 1rem;
   padding: 1rem;
-  border-radius: var(--c-radius);
+  @include c-corners;
   background-color: var(--c-soft);
 }
 
@@ -515,10 +555,6 @@ html:has(.commerce__drawer[open]) {
   .commerce__control {
     @include c-control;
     display: block;
-    background-color: $white;
-    &:focus-within {
-      --c-border: var(--main);
-    }
   }
   :is(input, select) {
     box-sizing: border-box;
@@ -528,6 +564,7 @@ html:has(.commerce__drawer[open]) {
     border: 0;
     border-radius: 0;
     background-color: transparent;
+    color: inherit;
     font: inherit;
     &:focus-visible {
       outline: 2px solid var(--main);
@@ -586,7 +623,7 @@ html:has(.commerce__drawer[open]) {
   gap: .625rem;
   margin: 1rem 0;
   padding: .875rem 1rem;
-  border-radius: var(--c-radius);
+  @include c-corners;
   background-color: var(--c-soft);
   font-size: .9375rem;
   line-height: 1.45;
@@ -702,6 +739,116 @@ html:has(.commerce__drawer[open]) {
 }
 
 
+// QUOTE REQUEST (second view of the drawer, commerce/quote-view)
+
+.commerce__panel--quote > :not(.commerce__quote-view) {
+  display: none !important;
+}
+
+.commerce__quote-view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  text-align: left;
+}
+
+.commerce__head--quote {
+  justify-content: flex-start;
+  gap: .25rem;
+  padding-left: .5rem;
+  .commerce__title {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.25rem;
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.commerce__quote-intro {
+  margin: 1rem 0;
+  color: var(--c-muted);
+  font-size: .9375rem;
+  line-height: 1.45;
+}
+
+.commerce__quote-summary {
+  @include c-corners;
+  margin: 0 0 1.5rem;
+  padding: .5rem 1rem;
+  background-color: var(--c-soft);
+  .commerce__summary {
+    padding-top: .25rem;
+    font-size: .9375rem;
+  }
+}
+
+.commerce .commerce__quote-lines {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  > .commerce__quote-line {
+    display: grid;
+    grid-column: auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: .5rem;
+    margin: 0;
+    padding: .5rem 0;
+    border-bottom: 1px solid var(--c-line);
+    font-size: .9375rem;
+    &::before {
+      content: none;
+    }
+    strong {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+  }
+}
+
+.commerce__quote-qty {
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.commerce__quote-name {
+  overflow-wrap: anywhere;
+}
+
+.commerce__quote-view .form {
+  margin-bottom: .5rem;
+}
+
+.commerce__quote-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  padding: 3rem .5rem;
+  text-align: center;
+  .commerce__empty-icon {
+    color: var(--main);
+  }
+  p {
+    margin: 0 0 .75rem;
+    color: var(--c-muted);
+  }
+}
+
+.commerce__quote-done-title {
+  margin: 0;
+  &:focus {
+    outline: none;
+  }
+}
+
+
 // CART PAGE
 
 .commerce__cart-page {
@@ -731,7 +878,7 @@ html:has(.commerce__drawer[open]) {
     margin-bottom: 1rem;
   }
   padding: 1.5rem;
-  border-radius: var(--c-radius);
+  @include c-corners;
   background-color: var(--c-soft);
   .commerce__destination {
     margin-top: 0;
@@ -848,6 +995,10 @@ html:has(.commerce__drawer[open]) {
 }
 
 @media (max-width: 22rem) {
+  // Country and postal code stack: half a 320 px drawer cuts their placeholders.
+  .commerce__quote-view .form > .form__item--fit {
+    width: 100%;
+  }
   // Icon-only remove on the narrowest phones; the button keeps its accessible name.
   .commerce__remove {
     min-width: 2.5rem;

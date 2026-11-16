@@ -1,7 +1,8 @@
 {{- /*
 Partial: func/form-manifest
 Purpose: Publish the server policy of one Worker form for core/forms/scripts/build-manifest.js.
-Context: dict with `id`, `page`, `title`, `subject`, `mail`, `account`, `confirm`, `inputs` and `keys` (input types that submit values).
+Context: dict with `id`, `page`, `title`, `subject`, `mail`, `account`, `confirm`, `inputs`, `keys` (input types that submit values)
+  and optional `enrich` (server-side enrichment, e.g. the cart quote request: {type, cart}).
 Renders: Nothing.
 Side effects: Publishes public/_forms/<hash>.json; the post-build script moves it out of public/.
 */ -}}
@@ -53,5 +54,6 @@ Side effects: Publishes public/_forms/<hash>.json; the post-build script moves i
   "confirm" $confirm
   "fields"  $fields
 -}}
+{{- with .enrich }}{{ $spec = merge $spec (dict "enrich" .) }}{{ end -}}
 {{- $resource := resources.FromString (printf "_forms/%s.json" (md5 (print .page "#" .id))) ($spec | jsonify) -}}
 {{- $resource.Publish -}}

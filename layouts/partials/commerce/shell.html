@@ -32,7 +32,7 @@
         <span class="commerce__badge" data-commerce-count aria-hidden="true" hidden>0</span>
       </button>
       <dialog class="commerce__drawer" id="commerce-drawer" data-commerce-drawer aria-labelledby="commerce-drawer-title">
-        <div class="commerce__panel">
+        <div class="commerce__panel" data-commerce-panel>
           <header class="commerce__head">
             <h2 class="commerce__title" id="commerce-drawer-title">{{ i18n "commerce_cart" }} <span class="commerce__title-count" data-commerce-count-label hidden></span></h2>
             <button class="commerce__icon-btn" type="button" data-commerce-close aria-label="{{ i18n "commerce_close" }}">{{ partial "icon" (dict "icon" "close") }}</button>
@@ -51,6 +51,7 @@
             {{ partial "commerce/checkout" . }}
             {{ with $cartPage }}<a class="commerce__text-link" href="{{ .RelPermalink }}">{{ i18n "commerce_view_cart" }}</a>{{ end }}
           </footer>
+          {{- partial "commerce/quote-view" . }}
         </div>
       </dialog>
       <template data-commerce-line-template>

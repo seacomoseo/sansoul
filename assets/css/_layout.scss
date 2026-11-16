@@ -233,8 +233,26 @@ legend {
   color: var(--form-control-disabled);
   cursor: not-allowed;
 }
+// With chamfers nothing is round: radios turn into diamonds (a rotated square keeps
+// the whole border) and checkboxes lose their corner radius.
 [type='radio'] {
-  border-radius: 50%;
+  @if variables.$chamfer {
+    width: .8em;
+    height: .8em;
+    margin-inline: .1em;
+    border-radius: 0;
+    rotate: 45deg;
+    &::before {
+      rotate: -45deg;
+    }
+  } @else {
+    border-radius: 50%;
+  }
+}
+@if variables.$chamfer {
+  [type="checkbox"] {
+    border-radius: 0;
+  }
 }
 table {
   @include mixins.radius;
@@ -375,5 +393,5 @@ pre {
 .icon[part="svg:flag-de"],
 .icon[part="svg:flag-pt"],
 .icon[part="svg:flag-it"] {
-  border-radius: 50%;
+  @include mixins.disc;
 }

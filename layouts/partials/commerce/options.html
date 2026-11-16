@@ -2,7 +2,8 @@
 Partial: commerce/options
 Purpose: Cart notice and optional boxes, in the scrolling part of the drawer and in the cart page aside.
 Context: hugo.Data.commerce (the shell passes it as dot; only global data is read).
-Renders: the `notes.cart` notice (with a «Request a quote» button when `cart_quote: true`), the
+Renders: the `notes.cart` notice (with a «Request a quote» button that opens the quote view of the
+  drawer, commerce/quote-view, when `cart_quote: true`), the
   invoice request box (order_notices.buyer_invoice: on_request) and the promotions consent (audience).
   The required terms box stays beside the pay button (commerce/checkout). Boxes sync across surfaces
   by data attribute (commerce.js).
@@ -16,7 +17,7 @@ Side effects: None.
   <div class="commerce__notice-body">
     {{ $note }}
     {{- if eq .cart_quote true }}
-    <a class="btn btn--sm commerce__notice-btn" href="{{ site.Home.RelPermalink }}#contacto">{{ partial "icon" (dict "icon" "request_quote") }}<span>{{ i18n "commerce_request_quote" }}</span></a>
+    <button class="btn btn--sm commerce__notice-btn" type="button" data-commerce-quote-open>{{ partial "icon" (dict "icon" "request_quote") }}<span>{{ i18n "commerce_request_quote" }}</span></button>
     {{- end }}
   </div>
 </div>

@@ -42,6 +42,37 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.8.0 — 2026-11-16 — formulario de presupuesto en el carrito, chaflanes en todo y controles como los inputs
+
+**Impacto:** ninguno si no haces nada; hay cambios visibles en la tienda y, con `cart_quote: true`,
+un formulario nuevo.
+
+1. **Formulario de presupuesto (`cart_quote: true`).** «Solicitar presupuesto» (en el aviso del
+   carrito y cuando el cálculo exige presupuesto) ya no lleva a `#contacto`: abre una segunda vista
+   del mismo cajón con el resumen del carrito y un formulario propio (nombre, email, teléfono, país,
+   código postal y comentarios). Es un formulario Worker (`form-presupuesto`, una política por
+   idioma ligada a la página del carrito): se guarda en D1, sale en el panel «Formularios» y se
+   entrega como los demás. El navegador solo envía IDs, cantidades y rutas; el Worker añade nombre,
+   referencia, precio, peso y el **motivo** del presupuesto (destino, unidades, peso, producto a
+   consultar) desde el catálogo. El aviso al propietario lleva la tabla con enlaces a las fichas y
+   el visitante recibe una confirmación con su resumen (responder a ella escribe al propietario).
+   Requiere el backend de formularios Worker con proveedor configurado (Gmail); sin él, el envío
+   falla con `forms_unavailable`. Revisa el texto de `notes.cart`: si enlaza a `#contacto`, ya no
+   hace falta (el botón está al lado).
+2. **Chaflanes en todo** (`rounded.chamfer: true`): miniaturas, aviso, columna, estado, resumen y
+   campos del carrito achaflanados; badges, botones de icono y estados vacíos en rombo; en el tema,
+   radios en rombo, casillas sin radio y banderas de idioma en rombo (`mixins.disc` ya no depende de
+   `%radius`).
+3. **Selector de cantidad y campos de destino = inputs del formulario** según `inputs.fill`
+   (nueva variable Sass `$inputs-fill`): sin relleno, solo línea inferior; con relleno, borde
+   completo con radio o chaflán y el mismo fondo.
+4. Bloque de formulario: `autocomplete` e `inputmode` por campo y `form.show: false` para quitar
+   la animación de entrada.
+
+**Validación:** con artículos en el carrito, «Solicitar presupuesto» abre la vista de presupuesto
+sin salir de la página; tras enviar, la confirmación muestra el email y «Volver al carrito» deja
+las líneas intactas; el envío aparece en el panel con «Carrito» y «Motivo del presupuesto».
+
 ## 14.7.0 — 2026-11-14 — carrito más compacto y tarjetas de producto con el carrito al lado
 
 **Impacto:** ninguno si no haces nada; hay cambios visibles en la tienda.

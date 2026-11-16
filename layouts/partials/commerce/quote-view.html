@@ -1,0 +1,82 @@
+{{/*
+Partial: commerce/quote-view
+Purpose: Quote request inside the cart drawer (data/commerce.yml `cart_quote: true`): a second view of
+  the same dialog with the cart summary and a Worker form, so the buyer never leaves the page and the
+  cart stays as it is.
+Context: hugo.Data.commerce (the shell passes it as dot).
+Renders: <section data-commerce-quote-view> with the summary, the form (blocks/form, action worker,
+  enrich commerce_quote) and the sent state. commerce.js fills the hidden cart field (product IDs,
+  quantities and page paths, plus the destination) and switches the views.
+Side effects: Publishes one form policy per language, keyed to the cart page (or home), so the panel
+  lists every request under one form whatever page it was sent from.
+*/}}
+{{- with hugo.Data.commerce -}}
+  {{- if and (eq .enabled true) (eq .cart_quote true) -}}
+    {{- $page := site.GetPage "single/carrito" | default site.Home -}}
+    {{- $countries := slice -}}
+    {{- with .totals_policy }}{{ range $code, $_ := .destinations }}{{ $countries = $countries | append $code }}{{ end }}{{ end -}}
+    {{- $names := dict
+      "name"     (i18n "commerce_quote_name")
+      "email"    (i18n "commerce_quote_email")
+      "phone"    (i18n "commerce_quote_phone")
+      "country"  (i18n "commerce_quote_country")
+      "postal"   (i18n "commerce_quote_postal")
+      "comments" (i18n "commerce_quote_comments")
+      "cart"     (i18n "commerce_quote_cart")
+    -}}
+    {{- $inputs := slice
+      (dict "type" "text"  "name" $names.name     "req" true "autocomplete" "name"         "fit" 2 "fit_vs" 2)
+      (dict "type" "email" "name" $names.email    "req" true "autocomplete" "email"        "fit" 2 "fit_vs" 2)
+      (dict "type" "tel"   "name" $names.phone    "autocomplete" "tel-national"            "fit" 2 "fit_vs" 2)
+      (dict "type" "text"  "name" $names.country  "req" true "autocomplete" "country-name" "fit" 1 "fit_vs" 1)
+      (dict "type" "text"  "name" $names.postal   "req" true "autocomplete" "postal-code"  "fit" 1 "fit_vs" 1)
+      (dict "type" "area"  "name" $names.comments "label" (i18n "commerce_quote_comments_label") "fit" 2 "fit_vs" 2)
+      (dict "type" "hidden" "name" $names.cart)
+    -}}
+    {{- $form := dict
+      "id"      "form-presupuesto"
+      "action"  "worker"
+      "subject" (i18n "commerce_quote_subject")
+      "label"   (i18n "commerce_quote_send")
+      "show"    false
+      "cols"    2
+      "cols_vs" 2
+      "enrich"  (dict "type" "commerce_quote" "cart" $names.cart)
+      "confirm" (dict
+        "enabled" true
+        "fields"  false
+        "subject" (i18n "commerce_quote_confirm_subject")
+        "intro"   (i18n "commerce_quote_confirm_intro" (dict "name" (print "[[" $names.name "]]")))
+        "notice"  (i18n "commerce_quote_confirm_notice")
+      )
+    -}}
+<section class="commerce__quote-view" data-commerce-quote-view hidden aria-labelledby="commerce-quote-title"
+  data-cart-field="{{ $names.cart }}" data-email-field="{{ $names.email }}" data-country-field="{{ $names.country }}" data-postal-field="{{ $names.postal }}"
+  data-countries="{{ delimit $countries "," }}">
+  <header class="commerce__head commerce__head--quote">
+    <button class="commerce__icon-btn" type="button" data-commerce-quote-back aria-label="{{ i18n "commerce_quote_back" }}">{{ partial "icon" (dict "icon" "arrow_back") }}</button>
+    <h2 class="commerce__title" id="commerce-quote-title" tabindex="-1">{{ i18n "commerce_request_quote" }}</h2>
+    <button class="commerce__icon-btn" type="button" data-commerce-close aria-label="{{ i18n "commerce_close" }}">{{ partial "icon" (dict "icon" "close") }}</button>
+  </header>
+  <div class="commerce__body">
+    <div data-commerce-quote-ask>
+      <p class="commerce__quote-intro">{{ i18n "commerce_quote_intro" }}</p>
+      <div class="commerce__quote-summary">
+        <ul class="commerce__quote-lines" data-commerce-quote-lines></ul>
+        <dl class="commerce__summary">
+          <div><dt>{{ i18n "commerce_subtotal" }}</dt><dd data-commerce-quote-subtotal>—</dd></div>
+          <div><dt>{{ i18n "commerce_shipping" }}</dt><dd data-pending>{{ i18n "commerce_quote_shipping" }}</dd></div>
+        </dl>
+      </div>
+      {{ partial "blocks/form" (dict "form" $form "inputs" $inputs "section" dict "Page" $page) }}
+    </div>
+    <div class="commerce__quote-done" data-commerce-quote-done hidden>
+      {{ partial "icon" (dict "icon" "check_circle" "class" "commerce__empty-icon") }}
+      <h3 class="commerce__quote-done-title" tabindex="-1">{{ i18n "commerce_quote_done_title" }}</h3>
+      <p data-commerce-quote-done-text>{{ i18n "commerce_quote_done" }}</p>
+      <button class="btn" type="button" data-commerce-quote-back>{{ partial "icon" (dict "icon" "arrow_back") }}<span>{{ i18n "commerce_quote_back" }}</span></button>
+    </div>
+  </div>
+</section>
+  {{- end -}}
+{{- end -}}

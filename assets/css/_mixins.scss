@@ -170,9 +170,10 @@
   @include radius-parent($padding, $r);
   @include radius-child;
 }
+// Circles become diamonds with chamfers (literal polygon: works without %radius).
 @mixin disc {
   @if variables.$chamfer {
-    clip-path: var(--diamond);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   } @else {
     border-radius: 50%;
   }

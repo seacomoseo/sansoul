@@ -63,7 +63,7 @@ async function upload ({ request, env, ctx, manifest, now }) {
   return jsonResponse({ result: 'success', index: file.index })
 }
 
-async function submit ({ request, env, ctx, manifest, providers, now }) {
+async function submit ({ request, env, ctx, manifest, providers, enrichers, now }) {
   if (request.method !== 'POST') return jsonResponse({ result: 'error', error: 'method_not_allowed' }, 405, { allow: 'POST' })
   // A same-origin POST always carries Origin; it limits drive-by cross-site use
   // but is not visitor authentication (antispam, limits and review still apply).
@@ -87,11 +87,24 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
   const bucket = await ipBucket(request, env, manifest, now)
   if (bucket && await hitRate(db, bucket, now(), RATE.windowMs) > RATE.limit) throw new FormsError('rate_limited', 429)
 
+  const site = env.FORMS_SITE || manifest.site
+  // Forms with `enrich` (e.g. the cart quote request) get server-side data before
+  // they are stored. The digest above covers what the visitor sent, so a retry
+  // still matches; the stored fields are the enriched ones.
+  let extra = null
+  if (parsed.spec.enrich) {
+    const enrich = enrichers?.[parsed.spec.enrich.type]
+    if (typeof enrich !== 'function') throw new FormsError('forms_unavailable', 503)
+    extra = enrich({ spec: parsed.spec, fields: parsed.fields, site })
+    if (extra?.error) throw new FormsError(extra.error)
+    parsed.fields = extra.fields
+  }
+
   const authority = await resolveAuthority(env, parsed.spec, providers)
   const kv = env.FORMS_FILES
   const files = parsed.files
   const content = {
-    site: env.FORMS_SITE || manifest.site,
+    site,
     senderName: env.FORMS_SENDER_NAME || manifest.site,
     subject: parsed.spec.subject,
     pageTitle: parsed.spec.title || '',
@@ -109,9 +122,10 @@ async function submit ({ request, env, ctx, manifest, providers, now }) {
     }
   }
   const held = parsed.status === 'review' ? 'review' : authority.provider === 'hold' ? 'delivery_disabled' : null
-  const jobs = [{ channel: 'owner', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, ...storage } }]
+  const ownerLead = extra?.owner ? { lead: extra.owner, leadHide: extra.hide || [] } : null
+  const jobs = [{ channel: 'owner', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, ...storage, ...ownerLead } }]
   if (parsed.status === 'accepted' && parsed.spec.confirm && parsed.email && await confirmationAllowed(db, manifest, parsed.email, now())) {
-    jobs.push({ channel: 'confirmation', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, confirm: parsed.spec.confirm } })
+    jobs.push({ channel: 'confirmation', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, confirm: parsed.spec.confirm, ...(extra?.visitor ? { lead: extra.visitor } : null) } })
   }
 
   const stagedKeys = (await db.prepare('SELECT kv_key FROM forms_uploads WHERE submission_id = ?').bind(parsed.submissionId).all()).results.map(row => row.kv_key)
@@ -149,8 +163,9 @@ async function confirmationAllowed (db, manifest, email, time) {
 }
 
 // Returns { fetch, scheduled }. `fetch` answers only /api/forms/*; compose it in
-// the project Worker before commerce/ASSETS. Options exist for tests.
-export function createFormsWorker (manifest, { fetch, now = Date.now } = {}) {
+// the project Worker before commerce/ASSETS. `enrichers` maps a spec's
+// `enrich.type` to a function (commerce/quote-request.js); the rest exist for tests.
+export function createFormsWorker (manifest, { fetch, now = Date.now, enrichers = {} } = {}) {
   validateManifest(manifest)
   const send = fetch || ((...args) => globalThis.fetch(...args))
   const providers = createProviders({ fetch: send })
@@ -158,7 +173,7 @@ export function createFormsWorker (manifest, { fetch, now = Date.now } = {}) {
     async fetch (request, env, ctx) {
       const path = new URL(request.url).pathname.replace(/\/$/, '')
       try {
-        if (path === '/api/forms/submit') return await submit({ request, env, ctx, manifest, providers, now })
+        if (path === '/api/forms/submit') return await submit({ request, env, ctx, manifest, providers, enrichers, now })
         if (path === '/api/forms/upload') return await upload({ request, env, ctx, manifest, now })
         if (path.startsWith('/api/forms/admin/')) return await admin({ request, env, ctx, path: path.slice('/api/forms/admin/'.length), manifest, providers, fetch: send, now })
         return jsonResponse({ result: 'error', error: 'not_found' }, 404)

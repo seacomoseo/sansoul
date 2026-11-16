@@ -64,6 +64,7 @@ test('Worker config: assets-only without backends, bindings and cron with forms'
     assert.match(entry, /from '\.\.\/core\/forms\/worker\.js'/)
     assert.match(entry, /scheduled: forms\.scheduled/)
     assert.doesNotMatch(entry, /commerce/)
+    assert.match(entry, /const forms = createFormsWorker\(manifest\)\n/)
 
     fs.mkdirSync(path.join(directory, 'functions/_commerce'), { recursive: true })
     fs.writeFileSync(path.join(directory, 'functions/_commerce/catalog.generated.js'), '')
@@ -71,6 +72,8 @@ test('Worker config: assets-only without backends, bindings and cron with forms'
     assert.deepEqual(plan.databases.map(db => db.database_name), ['demo-forms', 'demo-commerce'])
     const both = renderEntry(plan)
     assert.match(both, /return commerce\.fetch\(request, env, ctx\)/)
+    assert.match(both, /import \{ createQuoteRequestEnricher \} from '\.\.\/core\/commerce\/quote-request\.js'/)
+    assert.match(both, /createFormsWorker\(manifest, \{ enrichers: \{ commerce_quote: createQuoteRequestEnricher\(catalog\) \} \}\)/)
     assert.match(both, /commerce\.scheduled\(event, env, ctx\)\n    return forms\.scheduled\(event, env, ctx\)/)
     assert.deepEqual(JSON.parse(renderConfig(plan).replace(/^\/\/.*\n/, '')).triggers.crons, ['*/15 * * * *'])
     assert.match(renderEntry({ core: 'core', forms: false, commerce: true }), /scheduled: commerce\.scheduled/)

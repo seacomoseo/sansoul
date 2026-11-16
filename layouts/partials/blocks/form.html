@@ -160,7 +160,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- $inputs_fill   := cond (not $form.fill) "" "form--fill-inputs" -}}
 {{- $labels_out    := cond (eq $form.labels "out") "form--labels-out" "" -}}
 {{- $labels_both   := cond (eq $form.labels "both") "form--labels-both" "" -}}
-{{- $show          := cond (not hugo.Data.config.show) "" "show" -}}
+{{- /* `form.show: false` opts out of the reveal animation (forms inside dialogs). */ -}}
+{{- $show          := cond (or (not hugo.Data.config.show) (eq .form.show false)) "" "show" -}}
 {{- $class         := slice "form" $inputs_fill $labels_out $labels_both "box__block" $show -}}
 {{- $provider      := "" -}}
 {{- $confirmation := $form.confirm -}}
@@ -289,6 +290,7 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
     "confirm" $confirmation_payload
     "inputs"  $inputs
     "keys"    $slices.keys
+    "enrich"  $form.enrich
   ) -}}
 {{- end }}
 <form {{- $form_attrs }}>
@@ -493,6 +495,8 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
           "maxlength"        $maxlength
           "data-max"         $max_data
           "multiple"         $multiple
+          "autocomplete"     .autocomplete
+          "inputmode"        .inputmode
         -}}
         {{- $input_attrs  = partial "func/attrs" $input_attrs }}
         <input {{- $input_attrs }}>

@@ -49,8 +49,11 @@ export function renderEntry ({ core, forms, commerce }) {
     lines.push("import { catalog } from '../functions/_commerce/catalog.generated.js'")
     for (const [name, file] of commerceRoutes) lines.push(`import { onRequest as ${name} } from '../functions/api/commerce/${file}'`)
   }
+  // The cart quote request is a Worker form enriched with the catalog.
+  if (forms && commerce) lines.push(`import { createQuoteRequestEnricher } from '../${core}/commerce/quote-request.js'`)
   lines.push('')
-  if (forms) lines.push('const forms = createFormsWorker(manifest)')
+  if (forms && commerce) lines.push('const forms = createFormsWorker(manifest, { enrichers: { commerce_quote: createQuoteRequestEnricher(catalog) } })')
+  else if (forms) lines.push('const forms = createFormsWorker(manifest)')
   if (commerce) lines.push(`const commerce = createCommerceWorker(catalog, { ${commerceRoutes.map(([name]) => name).join(', ')} })`)
   lines.push('', 'export default {', '  fetch (request, env, ctx) {')
   if (forms) lines.push("    if (new URL(request.url).pathname.startsWith('/api/forms/')) return forms.fetch(request, env, ctx)")

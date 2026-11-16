@@ -54,6 +54,21 @@ Los formularios Worker anuncian 20/25 MB al navegador (`data-file-max`,
 `data-files-max`); si se desactiva Drive, el servidor responde 413 por encima
 de 2 MB.
 
+## Enriquecimiento en servidor (`enrich`)
+
+Una política puede declarar `enrich: { type, cart }`: antes de guardar, el Worker
+llama a la función registrada para ese `type` en
+`createFormsWorker(manifest, { enrichers })`, que recibe los campos validados y
+devuelve los campos que se guardan, un bloque `{ html, text }` para el aviso
+(`lead`, con `leadHide` para no repetir campos) y otro para la confirmación. El
+digest de idempotencia cubre lo que envió el visitante, así que un reintento
+devuelve el mismo recibo. `cart` debe ser un campo `hidden` del propio
+formulario; si el `type` no está registrado, el envío responde
+`503 forms_unavailable` sin guardar nada. Uso actual: `commerce_quote`
+(`core/commerce/quote-request.js`, formulario de presupuesto del carrito con
+`cart_quote: true`), que el generador del Worker conecta solo cuando el proyecto
+tiene formularios y comercio.
+
 ## Persistencia y entrega
 
 - D1 (`FORMS_DB`, migraciones en `forms/migrations`) es el registro canónico:
