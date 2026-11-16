@@ -152,5 +152,34 @@ export function createDrive ({ fetch }) {
     return links
   }
 
-  return { store }
+  // Files one small document (an invoice PDF) under a folder path of the account's
+  // own tree. Idempotent by name: an existing, untrashed file is reused.
+  async function archive ({ db, token, account, path, name, type, bytes, signal }) {
+    const headers = { authorization: `Bearer ${token}` }
+    let parent = 'root'
+    let key = 'Archive'
+    for (const part of path) {
+      key += `/${part}`
+      parent = await folder({ db, token, account, parent, name: part, path: key, signal })
+    }
+    const q = `name = ${quote(name)} and ${quote(parent)} in parents and trashed = false`
+    const found = await call(fetch, `${API}?${new URLSearchParams({ q, fields: 'files(id,webViewLink)', pageSize: '1', spaces: 'drive' })}`, { headers, signal }, 'drive_find')
+    if (found.files?.[0]?.id) return { id: found.files[0].id, link: found.files[0].webViewLink || null }
+    const boundary = `b${crypto.randomUUID().replace(/-/g, '')}`
+    const encoder = new TextEncoder()
+    const body = new Blob([
+      encoder.encode(`--${boundary}\r\ncontent-type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name, parents: [parent], mimeType: type })}\r\n--${boundary}\r\ncontent-type: ${type}\r\n\r\n`),
+      bytes,
+      encoder.encode(`\r\n--${boundary}--`)
+    ])
+    const created = await call(fetch, `${UPLOAD}?uploadType=multipart&fields=id,webViewLink`, { method: 'POST', headers: { ...headers, 'content-type': `multipart/related; boundary=${boundary}` }, body, signal }, 'drive_archive')
+    if (created.missing) {
+      await forgetFolders(db, account)
+      throw new DeliveryError('drive_folder_missing', 'retry')
+    }
+    if (!created.id) throw new DeliveryError('drive_archive_failed', 'retry')
+    return { id: created.id, link: created.webViewLink || null }
+  }
+
+  return { store, archive }
 }

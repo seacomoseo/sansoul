@@ -405,6 +405,7 @@ function shippedMessage ({ order, site, catalog, tracking }) {
 const BUYER_CONFIRMATION = 'buyer.confirmation'
 const BUYER_SHIPPED = 'buyer.shipped'
 const BUYER_INVOICE = 'buyer.invoice'
+export const INVOICE_ARCHIVE = 'invoice.archive'
 
 // One buyer mail per paid order and kind, enqueued as its own outbox event so a retry
 // of the merchant notice can never resend it (and vice versa). Idempotent by event key.
@@ -430,6 +431,26 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     messageId: `commerce-${item.event_key}`.replace(/[^A-Za-z0-9.-]/g, '-')
   }
   const send = extra => gmail.send({ env, authority, signal: AbortSignal.timeout(15000), beforeSend: async () => {}, message: { ...message, ...extra } })
+
+  if (item.event_type === INVOICE_ARCHIVE) {
+    if (!catalog?.invoice?.driveArchive || !order) return
+    let row
+    let pdf
+    try {
+      const issuedAt = await paymentTime(db, order)
+      row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt })
+      pdf = renderInvoicePdf(row)
+    } catch (error) {
+      // Data problems were already reported by the merchant notice; nothing to file.
+      if (error instanceof InvoiceError) return
+      throw error
+    }
+    if (await db.prepare('SELECT 1 AS done FROM invoice_archive WHERE invoice_id = ?').bind(row.id).first()) return
+    const year = new Date(row.issued_at * 1000).getUTCFullYear()
+    const filed = await gmail.archiveFile({ env, authority, path: [`Facturas web ${site}`.slice(0, 80), String(year)], name: invoiceFilename(row), type: 'application/pdf', bytes: pdf, signal: AbortSignal.timeout(20000) })
+    await db.prepare('INSERT OR IGNORE INTO invoice_archive (invoice_id, drive_file_id, link, created_at) VALUES (?, ?, ?, ?)').bind(row.id, filed.id, filed.link, Math.floor(Date.now() / 1000)).run()
+    return
+  }
 
   if (item.event_type === BUYER_SHIPPED) {
     if (!notices?.buyerShipped || notices.buyer === 'none' || !order || !validAddress(order.buyer_email || '')) return
@@ -463,6 +484,7 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     return
   }
 
+  if (item.event_type === 'payment.paid' && order && catalog?.invoice?.driveArchive) await enqueueBuyerEvent(db, item, INVOICE_ARCHIVE)
   if (notices && item.event_type === 'payment.paid' && order) {
     if (notices.buyer === 'own') await enqueueBuyerEvent(db, item, BUYER_CONFIRMATION)
     if (notices.buyer === 'stripe' && buyerWantsInvoice(notices, JSON.parse(order.snapshot_json), order)) await enqueueBuyerEvent(db, item, BUYER_INVOICE)

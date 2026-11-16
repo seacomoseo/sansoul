@@ -3,6 +3,7 @@
 import { hasPushAccess } from '../edge/github-access.js'
 import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
 import { FormsError, jsonResponse, jsonTextResponse, timingSafeEqual } from './http.js'
+import { connectRef, finishConnect, googleConfigured, listGrants, startConnect } from './grants.js'
 import { safeFileName } from './intake.js'
 import { loadSubmission, requireDatabase, resolveHeld } from './store.js'
 
@@ -89,6 +90,16 @@ async function siteCheck (db, site) {
   }
 }
 
+// Last time the backup account sent instead of the main one (cleared on reconnect).
+async function fallbackUse (db) {
+  const row = await db.prepare("SELECT value FROM forms_meta WHERE key = 'gmail_fallback'").first()
+  try {
+    return row ? JSON.parse(row.value) : null
+  } catch {
+    return null
+  }
+}
+
 async function summary (db, env, manifest, now) {
   const time = now()
   const [submissions, attention, review, queued, sent, drive] = (await db.batch([
@@ -112,7 +123,8 @@ async function summary (db, env, manifest, now) {
     sent24h: sent.map(row => ({ account: row.account || null, sent: row.sent })),
     drive: { files: drive[0].files || 0, pending: drive[0].pending || 0 },
     retentionDays: retentionDays(env),
-    siteMismatch: await siteCheck(db, manifest.site)
+    siteMismatch: await siteCheck(db, manifest.site),
+    google: { configured: googleConfigured(env), grants: await listGrants(env), default: connectRef(env), fallback: await fallbackUse(db) }
   }
 }
 
@@ -415,6 +427,8 @@ export async function pruneSubmissions (db, kv, env, now, limit = 20) {
 }
 
 export async function admin ({ request, env, ctx, path, manifest, providers, fetch, now }) {
+  // Google redirects the browser here: the signed state is the credential.
+  if (path === 'google/callback' && request.method === 'GET') return finishConnect({ request, env, fetch, now })
   const actor = await authorize(request, env, { manifest, fetch, now })
   const db = requireDatabase(env)
   const kv = env.FORMS_FILES
@@ -422,6 +436,10 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
   // The automation token drains and decides; reading or deleting data needs a person.
   if (actor === 'token' && !(method === 'POST' && (path === 'dispatch' || path === 'retention' || path.startsWith('jobs/')))) throw new FormsError('forbidden', 403)
   const url = new URL(request.url)
+  if (path === 'google/connect' && method === 'POST') {
+    if (actor !== 'github') throw new FormsError('forbidden', 403)
+    return jsonResponse(await startConnect({ request, env, now }))
+  }
   const submission = path.match(/^submissions\/([A-Za-z0-9-]{16,64})(?:\/(delete|files\/(\d{1,2})))?$/)
 
   if (method === 'GET') {

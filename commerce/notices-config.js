@@ -32,7 +32,7 @@ function only (value, keys, error) {
 export function compileInvoice (source) {
   if (source === undefined || source === null) return null
   const error = 'data/commerce.yml: invalid_invoice'
-  only(source, ['enabled', 'language', 'timezone', 'seller', 'series', 'payment_text', 'exempt_note', 'footer', 'item_label', 'shipping_label', 'simplified'], error)
+  only(source, ['enabled', 'language', 'timezone', 'seller', 'series', 'payment_text', 'exempt_note', 'footer', 'item_label', 'shipping_label', 'simplified', 'drive_archive'], error)
   if (typeof source.enabled !== 'boolean') throw new Error(error)
   if (!source.enabled) return null
   const seller = source.seller
@@ -63,6 +63,8 @@ export function compileInvoice (source) {
     itemLabel: source.item_label === undefined ? '{name}' : text(source.item_label, 120, error)
   }
   // A buyer without tax ID gets «FACTURA SIMPLIFICADA»; on by default only for Spanish invoices.
+  // Copy of every issued invoice in the owner's Drive (needs the Gmail grant with drive.file).
+  if (source.drive_archive !== undefined) compiled.driveArchive = bool(source.drive_archive, false, error)
   compiled.simplified = bool(source.simplified, compiled.language === 'es', error)
   // Absent: the default text of the language. false/null/'' : print nothing.
   if (Object.hasOwn(source, 'payment_text')) {

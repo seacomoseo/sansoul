@@ -42,6 +42,27 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.10.0 — 2026-11-16 — conectar el Gmail del propietario desde el panel, respaldo y copia de facturas en Drive
+
+**Impacto:** ninguno si no haces nada. Hay dos migraciones D1 nuevas (`forms/0005_grants`, `commerce/0010_invoice_archive`; el CI las aplica).
+
+1. **«Conectar Gmail» en el panel** (`/admin/forms/`): una persona con acceso al repositorio autoriza su
+   cuenta de Google sin llamadas ni SSH. Secretos del Worker: `FORMS_GOOGLE_CLIENT_ID`,
+   `FORMS_GOOGLE_CLIENT_SECRET` (cliente OAuth **Web**, con la URI
+   `https://<dominio>/api/forms/admin/google/callback` registrada), `FORMS_GRANT_KEY` (32 bytes en
+   base64url) y `FORMS_GMAIL_CONNECT` (referencia que se conecta; si falta, `FORMS_GMAIL_DEFAULT`).
+   El token se guarda cifrado (AES-GCM) en D1 `forms_grants`; el `state` va firmado, con PKCE, ligado al
+   navegador por una cookie de 10 min y de un solo uso. Una referencia presente en
+   `FORMS_GMAIL_CREDENTIALS` tiene prioridad y no se puede conectar desde el panel.
+   Tras conectar, cambia `FORMS_GMAIL_DEFAULT` y `COMMERCE_NOTIFY_ACCOUNT` a esa referencia.
+2. **Respaldo `FORMS_GMAIL_FALLBACK`**: si la cuenta principal da un rechazo que no envió nada
+   (credencial caducada, cuenta distinta, falta de permiso, cuota), el envío sale por la de respaldo y el
+   panel avisa hasta reconectar. Nunca ante un resultado ambiguo (no duplica). Ojo: los envíos
+   quedan en «Enviados» de la cuenta de respaldo.
+3. **`invoice.drive_archive: true`** (`data/commerce.yml`): cada factura emitida se copia como PDF en
+   «Facturas web <sitio>» › año del Drive de la cuenta de correo (`drive.file`; evento `invoice.archive`
+   con reintentos, idempotente, tabla `invoice_archive`).
+
 ## 14.9.0 — 2026-11-16 — contactos con permiso sincronizados con Brevo
 
 **Impacto:** ninguno si no haces nada (sin `brevo_list_id` ni `BREVO_API_KEY` no se llama a Brevo).

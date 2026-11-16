@@ -47,6 +47,12 @@ const T = {
     unavailable: 'Los formularios de esta web no responden ahora.',
     notEnabled: 'Esta web no tiene activado el backend de formularios.',
     error: 'No se ha podido completar la acción',
+    connectGmail: 'Conectar Gmail',
+    reconnectGmail: 'Reconectar Gmail',
+    gmailMissing: 'El correo de la web aún no está conectado a tu Gmail. Conéctalo para que los avisos salgan desde tu cuenta.',
+    gmailFallback: 'Los últimos avisos han salido por la cuenta de respaldo porque tu Gmail ha dejado de funcionar. Reconéctalo.',
+    gmailConnected: account => `Correo de la web conectado como ${account}.`,
+    gmailFailed: 'No se ha podido iniciar la conexión con Google.',
     holdBanner: 'Envío desactivado en este entorno: los envíos se guardan, pero no se manda ningún correo.',
     attentionBanner: n => `${n} ${n === 1 ? 'envío necesita' : 'envíos necesitan'} una decisión.`,
     sent24h: (n, account) => `${n} ${n === 1 ? 'correo enviado' : 'correos enviados'} en 24 h desde ${account || 'la cuenta de envío'}. La cuota diaria de Gmail se comparte con otras webs que usen esta cuenta.`,
@@ -135,6 +141,12 @@ const T = {
     unavailable: 'The forms of this site are not answering right now.',
     notEnabled: 'This site does not have the forms backend enabled.',
     error: 'The action could not be completed',
+    connectGmail: 'Connect Gmail',
+    reconnectGmail: 'Reconnect Gmail',
+    gmailMissing: 'The site mail is not connected to your Gmail yet. Connect it so notices are sent from your account.',
+    gmailFallback: 'Recent notices went out through the backup account because your Gmail stopped working. Reconnect it.',
+    gmailConnected: account => `Site mail connected as ${account}.`,
+    gmailFailed: 'Could not start the connection with Google.',
     holdBanner: 'Delivery is disabled here: submissions are stored, but no email is sent.',
     attentionBanner: n => `${n} ${n === 1 ? 'submission needs' : 'submissions need'} a decision.`,
     sent24h: (n, account) => `${n} ${n === 1 ? 'email' : 'emails'} sent in 24 h from ${account || 'the sender account'}. The daily Gmail quota is shared with other sites using this account.`,
@@ -489,12 +501,37 @@ function listQuery (extra = {}, { ordered = true } = {}) {
   return `submissions?${params}`
 }
 
+async function connectGmail () {
+  try {
+    const { url, nonce } = await api('google/connect', { method: 'POST', body: { ref: state.summary.google.default } })
+    // Ties the flow to this browser (the Worker checks it in the callback).
+    document.cookie = `forms_oauth=${nonce}; Path=/api/forms/admin/google/callback; Max-Age=600; Secure; SameSite=Lax`
+    location.assign(url)
+  } catch {
+    state.message = T.gmailFailed
+    render()
+  }
+}
+
 function banners () {
   const summary = state.summary
   const list = []
   if (summary.siteMismatch) list.push(h('div', { class: 'alert alert-error', role: 'alert' }, T.siteMismatch(summary.siteMismatch)))
   if (summary.provider === 'hold') list.push(h('div', { class: 'alert alert-info', role: 'status' }, T.holdBanner))
   if (summary.attention) list.push(h('div', { class: 'alert alert-warning', role: 'status' }, T.attentionBanner(summary.attention)))
+  const google = summary.google
+  if (google?.configured && google.default) {
+    const connected = google.grants.some(grant => grant.ref === google.default)
+    const grant = google.grants.find(item => item.ref === google.default)
+    if (connected && !google.fallback) {
+      list.push(h('div', { class: 'alert alert-info', role: 'status' }, h('span', {}, T.gmailConnected(grant.account)),
+        h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: connectGmail }, T.reconnectGmail)))
+    }
+    if (!connected || google.fallback) {
+      list.push(h('div', { class: `alert ${connected ? 'alert-warning' : 'alert-info'}`, role: 'status' }, h('span', {}, connected ? T.gmailFallback : T.gmailMissing),
+        h('button', { type: 'button', class: 'button primary', disabled: state.busy, onclick: connectGmail }, connected ? T.reconnectGmail : T.connectGmail)))
+    }
+  }
   if (state.message) list.push(h('div', { class: 'alert alert-error', role: 'alert' }, state.message))
   if (state.notice) {
     list.push(h('div', { class: 'alert alert-info alert-dismissible', role: 'status' }, h('span', {}, state.notice),
