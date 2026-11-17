@@ -25,8 +25,21 @@ export default {
     const list = async (p, key) => (await api(`${p}${p.includes('?') ? '&' : '?'}pageSize=200`))[key] || []
 
     const properties = await list(`/v1beta/properties?filter=${encodeURIComponent(`parent:accounts/${GA4_ACCOUNT}`)}`, 'properties')
-    let property = properties.find(p => p.displayName === ctx.domain)
-    if (property) ctx.done(`propiedad «${ctx.domain}» (${property.name})`)
+    // An existing project keeps the property behind its data/config.yml id,
+    // whatever its name; one outside the agency account is left alone.
+    const configured = configuredId(ctx.dir)
+    let property = null
+    if (configured) {
+      for (const candidate of properties) {
+        const streams = await list(`/v1beta/${candidate.name}/dataStreams`, 'dataStreams')
+        if (streams.some(s => s.webStreamData?.measurementId === configured)) { property = candidate; break }
+      }
+      if (!property) {
+        ctx.done(`data/config.yml usa ${configured}, fuera de la cuenta GA4 ${GA4_ACCOUNT}: no se toca`)
+        return ctx.manual(`GA4 ${configured}: revisar retención de 14 meses, evento clave contact y dimensiones id/label/type en su cuenta`)
+      }
+    } else property = properties.find(p => p.displayName === ctx.domain)
+    if (property) ctx.done(`propiedad «${property.displayName}» (${property.name})`)
     else if (!ctx.apply) return ctx.todo(`crear la propiedad «${ctx.domain}» (Europe/Madrid, EUR) con flujo web, retención de 14 meses, evento clave contact y dimensiones id/label/type`)
     else {
       property = await api('/v1beta/properties', { method: 'POST', body: { parent: `accounts/${GA4_ACCOUNT}`, displayName: ctx.domain, timeZone: 'Europe/Madrid', currencyCode: 'EUR' } })
@@ -78,8 +91,29 @@ export default {
       else if (!ctx.apply) ctx.todo(`data/config.yml ga4 = ${measurement}`)
       else { editYaml(file, doc => doc.set('ga4', measurement)); ctx.changed.push('data/config.yml'); ctx.done(`data/config.yml ga4 = ${measurement}`) }
     }
-    ctx.manual(`Activar Google Signals: https://analytics.google.com/analytics/web/#/a${GA4_ACCOUNT}p${p.split('/')[1]}/admin/datapolicies/datacollection`)
+    await signals(ctx, p, headers)
   }
+}
+
+// Google Signals: readable by API; enabling may need consent given in the UI.
+async function signals (ctx, property, headers) {
+  const url = `${API}/v1alpha/${property}/googleSignalsSettings`
+  const link = `https://analytics.google.com/analytics/web/#/a${GA4_ACCOUNT}p${property.split('/')[1]}/admin/datapolicies/datacollection`
+  const current = (await http(url, { headers, ok: [200, 403] })).data || {}
+  if (current.state === 'GOOGLE_SIGNALS_ENABLED') return ctx.done('Google Signals activo')
+  if (!ctx.apply) return ctx.todo('activar Google Signals')
+  try {
+    await http(`${url}?updateMask=state`, { method: 'PATCH', headers, body: { state: 'GOOGLE_SIGNALS_ENABLED' } })
+    ctx.done('Google Signals activado')
+  } catch {
+    ctx.manual(`Activar Google Signals: ${link}`)
+  }
+}
+
+function configuredId (dir) {
+  const file = dir && path.join(dir, 'data', 'config.yml')
+  if (!file || !fs.existsSync(file)) return ''
+  return fs.readFileSync(file, 'utf8').match(/^ga4:\s*["']?(G-[A-Z0-9]+)/m)?.[1] || ''
 }
 
 async function access (ctx, property) {

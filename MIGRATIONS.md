@@ -42,6 +42,13 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.14.1 — 2026-11-17 — `sh do new`: GA4 respeta la propiedad existente
+
+**Impacto:** ninguno. En un proyecto con `ga4` en `data/config.yml`, el paso `ga4` usa la propiedad de ese ID
+(se llame como se llame) y, si está fuera de la cuenta de la agencia, no la toca; ya no crea una propiedad nueva.
+También comprueba Google Signals y lo intenta activar (si Google exige el consentimiento en la interfaz, queda en la
+lista manual).
+
 ## 14.14.0 — 2026-11-17 — `params.project`: nombre real del proyecto
 
 **Impacto:** opcional. `hugo.yml` admite `params.project` con el nombre del proyecto tal como su nota del Vault
