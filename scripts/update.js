@@ -75,7 +75,8 @@ const registeredMigrationVersions = new Set([
   '14.13.0',
   '14.14.0',
   '14.14.1',
-  '14.14.2'
+  '14.14.2',
+  '14.14.3'
 ])
 const supportedManualMigrations = new Set([
   '5.1.0',

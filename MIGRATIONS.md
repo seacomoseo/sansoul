@@ -42,6 +42,11 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.14.3 — 2026-11-17 — `sh do new`: publicar sin identidad Git global
+
+**Impacto:** ninguno. El paso `publish` firma como el usuario autenticado de GitHub cuando el clon no tiene
+identidad Git, también en proyectos existentes.
+
 ## 14.14.2 — 2026-11-17 — `sh do new`: producción solo se revisa sin `--production`
 
 **Impacto:** ninguno. Sin `--production`, el paso `cloudflare` comprueba en modo lectura la zona y los dominios del
