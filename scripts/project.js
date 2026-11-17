@@ -3,7 +3,8 @@ Purpose: Read the project identity that deployment tooling derives from the
   consumer hugo.yml (the single source; Wrangler/Netlify configs are generated).
 Run from: A consumer root.
 Side effects: None.
-Contract (flat params, 14.0.0): owner, repo, worker (default repo), netlify
+Contract (flat params, 14.0.0): project (optional, 14.14.0: Vault name used by
+  `sh do new` for the Cloudflare account and Drive files), owner, repo, worker (default repo), netlify
   (optional mirror site), domain (optional; default the baseURL host),
   worker_vars (optional map of Worker environment variables).
 */

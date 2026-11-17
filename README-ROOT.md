@@ -95,8 +95,8 @@ que falta. Al final lista lo que solo puede hacer una persona.
 
 ```sh
 # Proyecto nuevo (desde cualquier carpeta; se clona en ~/repos/<dominio>)
-sh ~/repos/sansoul/do new acme.es --owner acme --mails cliente@acme.es
-sh ~/repos/sansoul/do new acme.es --owner acme --mails cliente@acme.es --apply
+sh ~/repos/sansoul/do new acme.es --owner acme --project "Clínica Acmé" --mails cliente@acme.es
+sh ~/repos/sansoul/do new acme.es --owner acme --project "Clínica Acmé" --mails cliente@acme.es --apply
 
 # Proyecto existente (desde su raíz; lee hugo.yml): migración o revisión
 sh do new --only ci-token,gitlab,drive --apply
@@ -105,7 +105,9 @@ sh do new --only ci-token,gitlab,drive --apply
 Pasos, en este orden:
 
 1. **repo**: repositorio privado `<org>/site` copiado de `sansoul-demo`, con el motor en `core/`.
-2. **cloudflare**: la cuenta del cliente (la que se llama como el dominio, o `--cf-account`) y su subdominio
+2. **cloudflare**: la cuenta del cliente, que se llama como el proyecto (`params.project`, el nombre de su nota del
+   Vault). Se encuentra por la zona del dominio, por el Worker o por ese nombre (o `--cf-account`); una cuenta puede
+   tener varios dominios. Solo se renombra si aún tiene el nombre por defecto o el del dominio. Y su subdominio
    workers.dev. Worker, D1 y KV los crea el CI en el primer despliegue.
 3. **ci-token**: token de Cloudflare limitado a esa cuenta, guardado como secreto `CLOUDFLARE_API_TOKEN`.
 4. **gitlab**: copia de refuerzo `seacomoseo/<org>` (o `<org>-<repo>`) con su propia clave (`GL_DEPLOY_KEY`).
@@ -114,8 +116,8 @@ Pasos, en este orden:
    dimensiones `id`, `label` y `type`, y acceso de lectura para los correos del cliente. El ID va a
    `data/config.yml` (`ga4`), que el cliente puede cambiar desde el CMS.
 7. **gsc**: propiedad de dominio en Search Console. Se verifica por DNS y se envía el sitemap con `--production`.
-8. **drive**: `<org>.md` (notas) y `<org> accesos.tsv` (accesos, sin contraseñas) en la carpeta SanSoul, propiedad
-   de Sea Como SEO y compartida con `params.drive_mails`; el enlace queda en `params.drive_url`.
+8. **drive**: `<Proyecto>.md` (notas) y `<Proyecto> accesos.tsv` (accesos, sin contraseñas; uno por cliente aunque
+   tenga varias webs) en la carpeta SanSoul, propiedad de Sea Como SEO y compartida con `params.drive_mails`; el enlace queda en `params.drive_url`.
 9. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
 
 Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo

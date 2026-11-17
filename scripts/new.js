@@ -61,6 +61,8 @@ const HELP = `Uso:
   Proyecto nuevo:     sh <motor>/do new <dominio> --owner <org> [opciones]
   Proyecto existente: sh do new [opciones]   (desde su raíz; lee hugo.yml)
 Opciones:
+  --project "Nombre"  nombre del proyecto, como su nota del Vault (params.project): nombra la
+                      cuenta de Cloudflare y los archivos de Drive
   --repo NAME         repositorio (por defecto site)
   --worker NAME       Worker (por defecto el nombre del proyecto)
   --mails a,b         correos del cliente (drive_mails)
@@ -78,6 +80,7 @@ async function main () {
     allowPositionals: true,
     options: {
       owner: { type: 'string' },
+      project: { type: 'string' },
       repo: { type: 'string' },
       worker: { type: 'string' },
       mails: { type: 'string' },
@@ -99,7 +102,8 @@ async function main () {
   const unknown = (only || []).filter(id => !STEPS.some(s => s.id === id))
   if (unknown.length) throw new Error(`pasos desconocidos: ${unknown.join(', ')}`)
 
-  console.log(`\nSanSoul new · ${ctx.domain} · ${ctx.owner}/${ctx.repo} · Worker ${ctx.worker} · ${ctx.apply ? 'EJECUCIÓN' : 'PLAN (sin cambios; --apply para ejecutar)'}${ctx.production ? ' · PRODUCCIÓN' : ''}`)
+  if (!ctx.project) console.log('\n! Sin params.project: pasa --project "Nombre del Vault" (se guarda en hugo.yml) para nombrar la cuenta de Cloudflare y los archivos de Drive.')
+  console.log(`\nSanSoul new · ${ctx.project ? `${ctx.project} · ` : ''}${ctx.domain} · ${ctx.owner}/${ctx.repo} · Worker ${ctx.worker} · ${ctx.apply ? 'EJECUCIÓN' : 'PLAN (sin cambios; --apply para ejecutar)'}${ctx.production ? ' · PRODUCCIÓN' : ''}`)
   for (const step of STEPS) {
     if ((only && !only.includes(step.id)) || step.skip?.(ctx)) continue
     console.log(`\n▸ ${step.title}`)
@@ -125,11 +129,12 @@ export function context (values, positionals) {
   if (positionals[0]) {
     if (!values.owner) throw new Error('falta --owner <org de GitHub>')
     const domain = positionals[0].toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '')
+    if (!values.project) throw new Error('falta --project "Nombre del proyecto en el Vault"')
     base = { domain, owner: values.owner, repo: values.repo || 'site', dir: path.resolve(values.dir || path.join(os.homedir(), 'repos', domain)), worker: values.worker }
   } else if (consumer) {
     const project = readProject()
     const params = parse(fs.readFileSync('hugo.yml', 'utf8'))?.params || {}
-    base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: params.worker ? project.worker : '', netlify: project.netlify, mails: params.drive_mails }
+    base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: params.worker ? project.worker : '', netlify: project.netlify, mails: params.drive_mails, project: params.project }
   } else {
     throw new Error(`indica el dominio (o ejecútalo desde la raíz de un proyecto)\n\n${HELP}`)
   }
@@ -140,6 +145,7 @@ export function context (values, positionals) {
   const ctx = {
     ...base,
     name,
+    project: String(values.project ?? base.project ?? '').trim(),
     worker: (values.worker || base.worker || name).toLowerCase(),
     netlify: values.netlify ?? base.netlify ?? '',
     mails,

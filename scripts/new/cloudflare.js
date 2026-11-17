@@ -1,7 +1,10 @@
 /*
-Purpose: `cloudflare` step. Find the project's own Cloudflare account (by id,
-  else by name = domain or project name), give it a workers.dev subdomain and
-  rename a default-named account. The Worker, D1 and KV are created by the CI
+Purpose: `cloudflare` step. Find the project's Cloudflare account: --cf-account,
+  else the account holding the domain's zone (one account may hold several
+  projects' domains), else the one running the project's Worker, else the one
+  named like the project (params.project, as in the Vault). Give it a
+  workers.dev subdomain and rename it to the project name only when it still
+  has a default name or the name of this very domain (old criterion). The Worker, D1 and KV are created by the CI
   (scripts/worker-config.js). With --production only: zone and Worker custom
   domains (apex and www).
 Credentials: CLOUDFLARE_USER_TOKEN or secrets file cloudflare-user-token.
@@ -18,14 +21,14 @@ export default {
     const cf = (path, options = {}) => http(`${CF}${path}`, { ...options, headers: auth }).then(r => r.data.result)
     const account = await findAccount(ctx, cf)
     if (!account) {
-      ctx.manual(`Crear la cuenta de Cloudflare «${ctx.domain}» (Free) y repetir; o pasar --cf-account ID`)
+      ctx.manual(`Crear la cuenta de Cloudflare «${ctx.project || ctx.domain}» (Free) y repetir; o pasar --cf-account ID`)
       return
     }
     ctx.cfAccount = account.id
     ctx.done(`cuenta «${account.name}» (${account.id})`)
-    if (/'s Account$/i.test(account.name)) {
-      if (!ctx.apply) ctx.todo(`renombrar la cuenta a «${ctx.domain}»`)
-      else { await cf(`/accounts/${account.id}`, { method: 'PUT', body: { name: ctx.domain } }); ctx.done(`cuenta renombrada a «${ctx.domain}»`) }
+    if (ctx.project && account.name !== ctx.project && renamable(account.name, ctx.domain)) {
+      if (!ctx.apply) ctx.todo(`renombrar la cuenta «${account.name}» a «${ctx.project}»`)
+      else { await cf(`/accounts/${account.id}`, { method: 'PUT', body: { name: ctx.project } }); ctx.done(`cuenta renombrada a «${ctx.project}»`) }
     }
     const sub = await cf(`/accounts/${account.id}/workers/subdomain`).catch(() => null)
     if (sub?.subdomain) {
@@ -48,11 +51,29 @@ export default {
 
 async function findAccount (ctx, cf) {
   if (ctx.cfAccount) return cf(`/accounts/${ctx.cfAccount}`)
+  const apex = ctx.domain.replace(/^www\./, '')
+  const [zone] = await cf(`/zones?name=${apex}`)
+  if (zone) return cf(`/accounts/${zone.account.id}`)
   const accounts = await cf('/accounts?per_page=50')
-  const wanted = [ctx.domain, ctx.name].map(s => s.toLowerCase())
-  const matches = accounts.filter(a => wanted.includes(a.name.trim().toLowerCase()))
-  if (matches.length > 1) throw new Error(`varias cuentas de Cloudflare se llaman como el proyecto: pasa --cf-account (${matches.map(a => a.id).join(', ')})`)
+  for (const account of accounts) {
+    const script = await cf(`/accounts/${account.id}/workers/scripts/${ctx.worker}/settings`).catch(() => null)
+    if (script) return account
+  }
+  if (!ctx.project) return null
+  const matches = accounts.filter(a => sameName(a.name, ctx.project))
+  if (matches.length > 1) throw new Error(`varias cuentas de Cloudflare se llaman «${ctx.project}»: pasa --cf-account (${matches.map(a => a.id).join(', ')})`)
   return matches[0] || null
+}
+
+// Old criterion (account named after its domain) or Cloudflare's default name.
+export function renamable (name, domain) {
+  const current = name.trim().toLowerCase()
+  return /'s account$/.test(current) || current === domain.toLowerCase() || current === domain.replace(/^www\./, '').toLowerCase()
+}
+
+export function sameName (a, b) {
+  const norm = s => s.normalize('NFC').trim().toLowerCase()
+  return norm(a) === norm(b)
 }
 
 async function production (ctx, cf, account) {
