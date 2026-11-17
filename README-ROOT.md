@@ -55,6 +55,7 @@ Ejecuta todos los comandos desde la raíz:
 | `sh do up [mensaje]` | Guarda todo en un commit, trae lo nuevo del remoto y sube. Sin mensaje, pone la fecha y los primeros archivos cambiados. |
 | `sh do down` | Trae lo nuevo del remoto sin tocar lo que estás editando. |
 | `sh do fonts` | Convierte las fuentes `.ttf`/`.otf` de `assets/fonts/` en los `.woff2` de `uploads/fonts/` que busca el build. |
+| `sh do new` | Alta o revisión del proyecto fuera de su carpeta (GitHub, Cloudflare, GitLab, GA4, Search Console, Drive). Sin `--apply` solo muestra el plan. |
 
 `public/`, `resources/`, `.hugo_build.lock` y `core/prebuild/public/` son salidas generadas. No deben editarse a mano.
 
@@ -84,6 +85,44 @@ queda la versión más nueva. Si no:
 `down` aparta un momento lo que tengas sin guardar y lo devuelve tal cual. Los
 cambios dentro de `core/` no se suben desde aquí: el motor es otro repositorio y
 se actualiza con `sh do update`.
+
+### Alta y migración de proyectos (`new`)
+
+`sh do new` prepara todo lo que un proyecto necesita fuera de su carpeta. Primero
+muestra lo que ya existe (✓) y lo que haría (+), sin tocar nada; con `--apply` lo
+hace. Repetirlo es seguro: cada paso busca sus recursos por nombre y solo crea lo
+que falta. Al final lista lo que solo puede hacer una persona.
+
+```sh
+# Proyecto nuevo (desde cualquier carpeta; se clona en ~/repos/<dominio>)
+sh ~/repos/sansoul/do new acme.es --owner acme --mails cliente@acme.es
+sh ~/repos/sansoul/do new acme.es --owner acme --mails cliente@acme.es --apply
+
+# Proyecto existente (desde su raíz; lee hugo.yml): migración o revisión
+sh do new --only ci-token,gitlab,drive --apply
+```
+
+Pasos, en este orden:
+
+1. **repo**: repositorio privado `<org>/site` copiado de `sansoul-demo`, con el motor en `core/`.
+2. **cloudflare**: la cuenta del cliente (la que se llama como el dominio, o `--cf-account`) y su subdominio
+   workers.dev. Worker, D1 y KV los crea el CI en el primer despliegue.
+3. **ci-token**: token de Cloudflare limitado a esa cuenta, guardado como secreto `CLOUDFLARE_API_TOKEN`.
+4. **gitlab**: copia de refuerzo `seacomoseo/<org>` (o `<org>-<repo>`) con su propia clave (`GL_DEPLOY_KEY`).
+5. **netlify** (solo con `params.netlify`): comprueba el secreto `NETLIFY_AUTH_TOKEN`; el CI crea el espejo.
+6. **ga4**: propiedad en la cuenta de Sea Como SEO con flujo web, retención de 14 meses, evento clave `contact`,
+   dimensiones `id`, `label` y `type`, y acceso de lectura para los correos del cliente. El ID va a
+   `data/config.yml` (`ga4`), que el cliente puede cambiar desde el CMS.
+7. **gsc**: propiedad de dominio en Search Console. Se verifica por DNS y se envía el sitemap con `--production`.
+8. **drive**: `<org>.md` (notas) y `<org> accesos.tsv` (accesos, sin contraseñas) en la carpeta SanSoul, propiedad
+   de Sea Como SEO y compartida con `params.drive_mails`; el enlace queda en `params.drive_url`.
+9. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
+
+Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo
+se hace con `--production`, después de aprobarlo. `--rotate` renueva el token de CI y
+la clave de GitLab. Las credenciales se leen de variables de entorno o de
+`~/.config/agentes/secrets/` (el VPS de los agentes); nunca se escriben en el repo
+ni se muestran.
 
 ### Dependencias compartidas con pnpm
 

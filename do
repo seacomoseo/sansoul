@@ -5,6 +5,12 @@ set -eu
 # Run from the consumer root; locate the executing engine without assuming its depth.
 PROJECT_DIR=$PWD
 CORE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+# Project setup also runs outside a consumer (new project from the engine).
+if [ "${1:-}" = new ]; then
+  shift
+  exec node "$CORE_DIR/scripts/new.js" "$@"
+fi
 CORE_PATH=${CORE_DIR#"$PROJECT_DIR"/}
 case "$CORE_PATH" in
   core|themes/sansoul) ;;
@@ -32,6 +38,7 @@ SanSoul commands (run from the project root):
   sh do up [message]    Commit everything, bring remote changes in and push.
   sh do down      Bring remote changes in, keeping local work in place.
   sh do fonts     Convert .ttf/.otf in assets/fonts into uploads/fonts/*.woff2.
+  sh do new [domain --owner org]  Set up a project (plan; --apply to run). --help for options.
 Aliases: server = dev; live = local; hugo = build.
 HELP
     exit 0
