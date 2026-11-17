@@ -26,7 +26,11 @@ export default {
     if (remote) {
       const { isPrivate } = JSON.parse(remote)
       ctx.done(`${slug} existe${isPrivate ? ' (privado)' : ''}`)
-      if (!isPrivate) ctx.warn(`${slug} es público: los repos de clientes son privados (gh repo edit ${slug} --visibility private --accept-visibility-change-consequences)`)
+      // Client repositories are private (Loren's rule).
+      if (!isPrivate) {
+        if (!ctx.apply) ctx.todo(`hacer privado ${slug}`)
+        else { gh(['api', '-X', 'PATCH', `repos/${slug}`, '-f', 'visibility=private']); ctx.done(`${slug} ahora es privado`) }
+      }
       if (!local) {
         if (!ctx.apply) return ctx.todo(`clonar en ${ctx.dir}`)
         gh(['repo', 'clone', slug, ctx.dir, '--', '--recurse-submodules'])
@@ -47,6 +51,7 @@ export default {
     git(['remote', 'add', 'origin', `https://github.com/${slug}.git`], ctx.dir)
     ctx.created = true
     ctx.done(`${slug} creado (privado); se sube en el paso final`)
+    ctx.manual(`Avatar de la organización: https://github.com/organizations/${ctx.owner}/settings/profile`)
   }
 }
 

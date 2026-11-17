@@ -85,7 +85,7 @@ test('Drive templates are filled without passwords', () => {
 test('steps run in an order where secrets exist before the first push', () => {
   const ids = STEPS.map(s => s.id)
   assert.equal(ids[0], 'repo')
-  assert.equal(ids.at(-1), 'publish')
+  assert.equal(ids.at(-2), 'publish')
   assert.ok(ids.indexOf('cloudflare') < ids.indexOf('ci-token'))
   assert.ok(ids.indexOf('cloudflare') < ids.indexOf('gsc'))
 })
@@ -110,4 +110,13 @@ test('Cloudflare accounts are renamed only from a default or this domain name', 
   assert.ok(!renamable('cuprico.com', 'technimur.es'))
   assert.ok(!renamable('Cúprico', 'technimur.es'))
   assert.ok(sameName('Cúprico', ' cúprico'.normalize('NFD')))
+})
+
+test('retire only runs on request and team mirrors the 3dnau organization', async () => {
+  const { TEAMS } = await import('../new/team.js')
+  assert.deepEqual(TEAMS.map(t => [t.slug, t.permission]), [['operations', 'admin'], ['clients', 'maintain']])
+  const retire = STEPS.find(s => s.id === 'retire')
+  assert.equal(retire.skip({ retire: false }), true)
+  assert.equal(retire.skip({ retire: true }), false)
+  assert.equal(STEPS.at(-1).id, 'retire')
 })

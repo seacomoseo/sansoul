@@ -38,6 +38,8 @@ export default {
       }
       await http(`${SV}/webResource?verificationMethod=DNS_TXT`, { method: 'POST', headers, body: { site: domain } })
       ctx.done(`${site} verificada por DNS`)
+      // The GA4 ↔ Search Console link has no API.
+      ctx.manual(`Vincular Search Console en GA4: Administrar ⏩ Vinculaciones de productos ⏩ Search Console ⏩ ${site}${ctx.ga4Property ? ` (https://analytics.google.com/analytics/web/#/a2157126p${ctx.ga4Property.split('/')[1]}/admin/integrations/search-console)` : ''}`)
     }
     if (!ctx.production) return
     const sitemap = `https://${ctx.domain}/sitemap.xml`

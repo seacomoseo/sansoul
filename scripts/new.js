@@ -19,6 +19,8 @@ import { parse } from 'yaml'
 import { readProject } from './project.js'
 import { git, projectName, repoSecrets } from './new/lib.js'
 import repo, { identity } from './new/repo.js'
+import team from './new/team.js'
+import retire from './new/retire.js'
 import cloudflare from './new/cloudflare.js'
 import ciToken from './new/ci-token.js'
 import gitlab from './new/gitlab.js'
@@ -56,7 +58,7 @@ const publish = {
   }
 }
 
-export const STEPS = [repo, cloudflare, ciToken, gitlab, netlify, ga4, gsc, drive, publish]
+export const STEPS = [repo, team, cloudflare, ciToken, gitlab, netlify, ga4, gsc, drive, publish, retire]
 
 const HELP = `Uso:
   Proyecto nuevo:     sh <motor>/do new <dominio> --owner <org> [opciones]
@@ -67,6 +69,7 @@ Opciones:
   --repo NAME         repositorio (por defecto site)
   --worker NAME       Worker (por defecto el nombre del proyecto)
   --mails a,b         correos del cliente (drive_mails)
+  --members u1,u2     usuarios de GitHub del cliente (equipo clients: maintain en el repo)
   --netlify NAME      espejo de Netlify opcional
   --cf-account ID     cuenta de Cloudflare (por defecto, la que se llame como el dominio)
   --gitlab-old NS/P   proyecto de GitLab antiguo a renombrar; --delete-old lo borra tras copiar
@@ -74,7 +77,9 @@ Opciones:
   --only a,b          pasos: ${STEPS.map(s => s.id).join(', ')}
   --rotate            regenera el token de CI y la clave de GitLab
   --apply             ejecuta (sin él solo muestra el plan)
-  --production        permite zona, DNS, dominios del Worker y verificar Search Console`
+  --production        permite zona, DNS, dominios del Worker y verificar Search Console
+  --retire            tras verificar la migración: borra el Pages antiguo y el repo antiguo
+                      (--old-repo OWNER/REPO, por defecto seacomoseo/<dominio>), con copia previa`
 
 async function main () {
   const { values, positionals } = parseArgs({
@@ -85,6 +90,9 @@ async function main () {
       repo: { type: 'string' },
       worker: { type: 'string' },
       mails: { type: 'string' },
+      members: { type: 'string' },
+      retire: { type: 'boolean' },
+      'old-repo': { type: 'string' },
       netlify: { type: 'string' },
       'cf-account': { type: 'string' },
       'gitlab-old': { type: 'string' },
@@ -150,6 +158,9 @@ export function context (values, positionals) {
     worker: (values.worker || base.worker || name).toLowerCase(),
     netlify: values.netlify ?? base.netlify ?? '',
     mails,
+    members: String(values.members ?? '').split(',').map(m => m.trim().replace(/^@/, '')).filter(Boolean),
+    retire: Boolean(values.retire),
+    oldRepo: values['old-repo'] || '',
     cfAccount: values['cf-account'] || '',
     gitlabOld: values['gitlab-old'] || '',
     deleteOld: Boolean(values['delete-old']),

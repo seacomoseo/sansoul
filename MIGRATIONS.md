@@ -42,6 +42,19 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.15.0 — 2026-11-18 — `sh do new`: permisos del cliente y retirada de lo antiguo
+
+**Impacto:** ninguno en los proyectos. Pasos nuevos de `sh do new`:
+
+1. **`team`**: en la organización del cliente, equipo `operations` (admin en el repo) y equipo `clients` (maintain:
+   CMS y contenidos, sin ajustes); miembros sin acceso por defecto ni creación de repos. `--members` invita a los
+   usuarios de GitHub del cliente al equipo `clients`.
+2. **`retire`** (solo con `--retire`, con la migración ya comprobada): borra los proyectos de Cloudflare Pages del
+   dominio o del repo antiguo y el repo antiguo (`seacomoseo/<dominio>` o `--old-repo`), con copia `git bundle`
+   previa. No hace nada si el dominio aún apunta a Pages o si el repo antiguo tiene commits posteriores a la migración.
+3. El paso `repo` hace privado un repo de cliente público; en un alta, la lista final incluye el avatar de la org, y
+   al verificar Search Console, la vinculación con GA4 (sin API). Las plantillas de Drive pasan a `_SanSoul Demo*`.
+
 ## 14.14.3 — 2026-11-17 — `sh do new`: publicar sin identidad Git global
 
 **Impacto:** ninguno. El paso `publish` firma como el usuario autenticado de GitHub cuando el clon no tiene

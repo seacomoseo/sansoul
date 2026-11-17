@@ -104,21 +104,27 @@ sh do new --only ci-token,gitlab,drive --apply
 
 Pasos, en este orden:
 
-1. **repo**: repositorio privado `<org>/site` copiado de `sansoul-demo`, con el motor en `core/`.
-2. **cloudflare**: la cuenta del cliente, que se llama como el proyecto (`params.project`, el nombre de su nota del
+1. **repo**: repositorio privado `<org>/site` copiado de `sansoul-demo`, con el motor en `core/` (un repo de cliente
+   público pasa a privado).
+2. **team**: en la organización, equipo `operations` (admin) y `clients` (maintain: contenidos y CMS), con los usuarios
+   de GitHub del cliente (`--members`).
+3. **cloudflare**: la cuenta del cliente, que se llama como el proyecto (`params.project`, el nombre de su nota del
    Vault). Se encuentra por la zona del dominio, por el Worker o por ese nombre (o `--cf-account`); una cuenta puede
    tener varios dominios. Solo se renombra si aún tiene el nombre por defecto o el del dominio. Y su subdominio
    workers.dev. Worker, D1 y KV los crea el CI en el primer despliegue.
-3. **ci-token**: token de Cloudflare limitado a esa cuenta, guardado como secreto `CLOUDFLARE_API_TOKEN`.
-4. **gitlab**: copia de refuerzo `seacomoseo/<org>` (o `<org>-<repo>`) con su propia clave (`GL_DEPLOY_KEY`).
-5. **netlify** (solo con `params.netlify`): comprueba el secreto `NETLIFY_AUTH_TOKEN`; el CI crea el espejo.
-6. **ga4**: propiedad en la cuenta de Sea Como SEO con flujo web, retención de 14 meses, evento clave `contact`,
+4. **ci-token**: token de Cloudflare limitado a esa cuenta, guardado como secreto `CLOUDFLARE_API_TOKEN`.
+5. **gitlab**: copia de refuerzo `seacomoseo/<org>` (o `<org>-<repo>`) con su propia clave (`GL_DEPLOY_KEY`).
+6. **netlify** (solo con `params.netlify`): comprueba el secreto `NETLIFY_AUTH_TOKEN`; el CI crea el espejo.
+7. **ga4**: propiedad en la cuenta de Sea Como SEO con flujo web, retención de 14 meses, evento clave `contact`,
    dimensiones `id`, `label` y `type`, y acceso de lectura para los correos del cliente. El ID va a
    `data/config.yml` (`ga4`), que el cliente puede cambiar desde el CMS.
-7. **gsc**: propiedad de dominio en Search Console. Se verifica por DNS y se envía el sitemap con `--production`.
-8. **drive**: `<Proyecto>.md` (notas) y `<Proyecto> accesos.tsv` (accesos, sin contraseñas; uno por cliente aunque
+8. **gsc**: propiedad de dominio en Search Console. Se verifica por DNS y se envía el sitemap con `--production`.
+9. **drive**: `<Proyecto>.md` (notas) y `<Proyecto> accesos.tsv` (accesos, sin contraseñas; uno por cliente aunque
    tenga varias webs) en la carpeta SanSoul, propiedad de Sea Como SEO y compartida con `params.drive_mails`; el enlace queda en `params.drive_url`.
-9. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
+10. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
+11. **retire** (solo con `--retire`, con la migración comprobada): borra el Cloudflare Pages antiguo y el repo antiguo
+    `seacomoseo/<dominio>`, con copia previa. No toca nada si el dominio aún apunta a Pages o si el repo antiguo
+    tiene cambios posteriores a la migración.
 
 Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo
 se hace con `--production`, después de aprobarlo. `--rotate` renueva el token de CI y
