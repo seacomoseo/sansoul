@@ -42,6 +42,11 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.15.1 — 2026-11-18 — `sh do new`: cuentas de Loren como owners de la org
+
+**Impacto:** ninguno. El paso `team` deja `lorensansol`, `lorensansol2` y `seocomosea` como owners de la organización
+del cliente (cuentas de respaldo por si suspenden una).
+
 ## 14.15.0 — 2026-11-18 — `sh do new`: permisos del cliente y retirada de lo antiguo
 
 **Impacto:** ninguno en los proyectos. Pasos nuevos de `sh do new`:

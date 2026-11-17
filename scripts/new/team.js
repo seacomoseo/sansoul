@@ -4,10 +4,13 @@ Purpose: `team` step. Access to the client's organization, as in 3dnau:
   `clients` (maintain on the repo: CMS and content, no settings), members with
   no default repository access who cannot create repositories. --members adds
   the client's GitHub users to `clients` (GitHub invites them to the org).
+  Loren's accounts are organization owners (API role `admin` = Owner): two
+  spares in case one gets suspended (it has happened).
   Skipped for repositories owned by a personal account.
 */
 import { gh } from './lib.js'
 
+export const OWNERS = ['lorensansol', 'lorensansol2', 'seocomosea']
 export const TEAMS = [
   { slug: 'operations', permission: 'admin', description: 'Sea Como SEO: operación y despliegue' },
   { slug: 'clients', permission: 'maintain', description: 'Cliente: contenidos y CMS' }
@@ -24,6 +27,15 @@ export default {
     if (!owner) return ctx.todo(`permisos en ${ctx.owner}: la cuenta aún no existe`)
     if (JSON.parse(owner).type !== 'Organization') return ctx.done(`${ctx.owner} es una cuenta personal: sin equipos`)
     const me = JSON.parse(gh(['api', 'user'])).login
+
+    for (const user of OWNERS) {
+      const state = api(`orgs/${ctx.owner}/memberships/${user}`)
+      const current = state ? JSON.parse(state) : {}
+      if (current.role === 'admin') { ctx.done(`${user} owner${current.state === 'pending' ? ' (invitación pendiente)' : ''}`); continue }
+      if (!ctx.apply) { ctx.todo(`${user} como owner${current.role ? ` (ahora ${current.role})` : ''}`); continue }
+      api(`orgs/${ctx.owner}/memberships/${user}`, 'PUT', ['role=admin'])
+      ctx.done(`${user} invitado como owner`)
+    }
 
     const org = JSON.parse(api(`orgs/${ctx.owner}`) || '{}')
     if (org.default_repository_permission === 'none' && org.members_can_create_repositories === false) ctx.done('miembros sin acceso por defecto ni creación de repos')

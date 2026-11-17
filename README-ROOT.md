@@ -106,7 +106,7 @@ Pasos, en este orden:
 
 1. **repo**: repositorio privado `<org>/site` copiado de `sansoul-demo`, con el motor en `core/` (un repo de cliente
    público pasa a privado).
-2. **team**: en la organización, equipo `operations` (admin) y `clients` (maintain: contenidos y CMS), con los usuarios
+2. **team**: en la organización, las cuentas de Loren como owners (respaldo), equipo `operations` (admin) y `clients` (maintain: contenidos y CMS), con los usuarios
    de GitHub del cliente (`--members`).
 3. **cloudflare**: la cuenta del cliente, que se llama como el proyecto (`params.project`, el nombre de su nota del
    Vault). Se encuentra por la zona del dominio, por el Worker o por ese nombre (o `--cf-account`); una cuenta puede

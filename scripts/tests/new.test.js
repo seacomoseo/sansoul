@@ -115,6 +115,8 @@ test('Cloudflare accounts are renamed only from a default or this domain name', 
 test('retire only runs on request and team mirrors the 3dnau organization', async () => {
   const { TEAMS } = await import('../new/team.js')
   assert.deepEqual(TEAMS.map(t => [t.slug, t.permission]), [['operations', 'admin'], ['clients', 'maintain']])
+  const { OWNERS } = await import('../new/team.js')
+  assert.deepEqual(OWNERS, ['lorensansol', 'lorensansol2', 'seocomosea'])
   const retire = STEPS.find(s => s.id === 'retire')
   assert.equal(retire.skip({ retire: false }), true)
   assert.equal(retire.skip({ retire: true }), false)
