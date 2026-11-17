@@ -52,6 +52,9 @@ Ejecuta todos los comandos desde la raíz:
 | `sh do root-docs` | Genera README/AGENTS raíz desde las plantillas canónicas del tema. |
 | `sh do prebuild` | Regenera únicamente la configuración previa requerida por Hugo. |
 | `sh do imgs` | Regenera favicon, PNG derivados y variantes AVIF a partir de los manifiestos del build. |
+| `sh do up [mensaje]` | Guarda todo en un commit, trae lo nuevo del remoto y sube. Sin mensaje, pone la fecha y los primeros archivos cambiados. |
+| `sh do down` | Trae lo nuevo del remoto sin tocar lo que estás editando. |
+| `sh do fonts` | Convierte las fuentes `.ttf`/`.otf` de `assets/fonts/` en los `.woff2` de `uploads/fonts/` que busca el build. |
 
 `public/`, `resources/`, `.hugo_build.lock` y `core/prebuild/public/` son salidas generadas. No deben editarse a mano.
 
@@ -62,6 +65,25 @@ proyecto: no ejecutes dos servidores administrados ni un build simultáneo en
 la misma carpeta; usa copias independientes. SIGKILL, un apagado o un fallo del
 sistema no permiten ejecutar la limpieza. El siguiente arranque detecta el
 bloqueo abandonado.
+
+### Subir y bajar cambios (`up` y `down`)
+
+`sh do up` y `sh do down` nunca se quedan a medias. Si alguien ha subido cambios
+mientras trabajabas, los integran con los tuyos. Cuando el choque tiene una única
+respuesta razonable, lo resuelven solos: el `pnpm-lock.yaml` se regenera, README,
+AGENTS y el workflow vuelven a generarse y, si `core` avanzó en los dos lados, se
+queda la versión más nueva. Si no:
+
+1. deshacen la integración y dejan tu carpeta exactamente como estaba;
+2. guardan una copia de tu trabajo en una rama `local/AAAA-MM-DD-HHMM` y la suben;
+3. escriben un encargo listo para pegarle a un agente, con la rama, los archivos en
+   conflicto y los pasos. Lo muestran en pantalla, lo copian al portapapeles si
+   pueden (Mac, Linux con escritorio, Termux) y lo guardan en
+   `.git/sansoul-agent-prompt.md`.
+
+`down` aparta un momento lo que tengas sin guardar y lo devuelve tal cual. Los
+cambios dentro de `core/` no se suben desde aquí: el motor es otro repositorio y
+se actualiza con `sh do update`.
 
 ### Dependencias compartidas con pnpm
 
@@ -167,6 +189,7 @@ cadena de merges.
 - `assets/robots.txt`: reglas adicionales para rastreadores; el sitemap se incorpora durante el build.
 - `assets/llms.txt`: contenido adicional para el archivo `llms.txt` generado.
 - `uploads/`: medios originales administrables por el CMS.
+- `assets/fonts/`: fuentes propias en `.ttf`/`.otf` (no se publican). `sh do fonts` las convierte en `uploads/fonts/<familia>-<peso>[-italic].woff2`; las de Google Fonts no necesitan nada porque las descarga el build.
 
 `uploads/foo/bar.png` se monta como recurso y como archivo estático. En el contenido se referencia mediante `/u/foo/bar.png`, no mediante `/uploads/...`.
 

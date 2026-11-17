@@ -37,6 +37,9 @@ sh do dev
 - `sh do update`: actualiza SanSoul, aplica migraciones automáticas, sincroniza README/AGENTS y valida el proyecto; se detiene antes de modificar archivos si detecta conflictos.
 - `sh do migrations`: migraciones pendientes después de actualizar el tema.
 - `sh do root-docs`: sincroniza este README y `AGENTS.md` con sus plantillas.
+- `sh do up [mensaje]`: commit de todo, integra lo nuevo del remoto y sube. Ante un conflicto sin respuesta clara no pierde nada: copia tu trabajo en una rama `local/<fecha>` y deja un encargo listo para un agente.
+- `sh do down`: trae lo nuevo del remoto sin tocar lo que estás editando.
+- `sh do fonts`: convierte las fuentes `.ttf`/`.otf` de `assets/fonts/` en `uploads/fonts/*.woff2`.
 
 `dev`, `cms` y `local` limpian `public/`, `resources/` y la salida del prebuild al
 terminar normalmente o recibir Ctrl-C, SIGTERM o SIGHUP. Solo se admite un servidor

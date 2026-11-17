@@ -47,6 +47,7 @@ preview iframe; test that path when changing its bootstrap.
 - Assume all content, configuration consumed by Hugo, CMS schema, examples, and browser logs are public. Never store credentials in them.
 - Preserve user changes and check Git status in both repositories before and after editing.
 - Do not commit, push, stage, update the parent gitlink beyond the requested checkout, or deploy without explicit authorization. The only staging is the engine move performed by `sh do update` (`git mv themes/sansoul core`).
+- `sh do up` stages, commits and pushes everything, so run it only when publishing was requested. `sh do down` and `sh do up` never leave a half-done rebase: on an unresolved conflict they restore the tree, push a `local/<date>` rescue branch and write `.git/sansoul-agent-prompt.md`. When you receive that prompt, merge the rescue branch into the target branch, keep both sides' intent, build, push and delete the rescue branch.
 
 ## Build lifecycle
 
