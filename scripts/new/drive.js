@@ -2,7 +2,7 @@
 Purpose: `drive` step. The project's notes `<project>.md` and access sheet
   `<project> accesos.tsv` (params.project, as in the Vault: one pair per
   client even with several sites) in the SanSoul Drive folder (next to the templates
-  `_sansoul-demo.md` and `_sansoul-demo accesos.tsv`), owned by the agency
+  `_SanSoul Demo.md` and `_SanSoul Demo accesos.tsv`), owned by the agency
   account. New project: copy the templates, fill var_* (never passwords), share
   the sheet with params.drive_mails and set params.drive_url. Migration: files
   found by params.drive_url or the legacy names (`<domain>`, or the
@@ -20,7 +20,7 @@ import { editYaml } from './repo.js'
 const API = 'https://www.googleapis.com/drive/v3/files'
 const UPLOAD = 'https://www.googleapis.com/upload/drive/v3/files'
 const AGENCY = 'google-seacomoseo-oauth-token.json'
-const TEMPLATES = { md: '_sansoul-demo.md', tsv: '_sansoul-demo accesos.tsv' }
+const TEMPLATES = { md: '_SanSoul Demo.md', tsv: '_SanSoul Demo accesos.tsv' }
 const SHARE_MESSAGE = 'Hoja de cálculo de Google Drive donde indicaremos todos los servicios externos relevantes al sitio web; con sus emails, usuarios y contraseñas (si procede) de acceso correspondientes. Más detalles aquí: https://seacomoseo.com/entrega/'
 const FIELDS = 'id,name,parents,owners(emailAddress,permissionId),webViewLink'
 
