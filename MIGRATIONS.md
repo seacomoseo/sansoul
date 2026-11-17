@@ -42,6 +42,23 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.12.0 — 2026-11-17 — `sh do up`/`down` seguros y comandos sin `../_tools`
+
+**Impacto:** solo quien usaba comandos que dependían de la carpeta `../_tools` del Mac de Loren. Sin acciones
+obligatorias; `sh do update` regenera README y AGENTS raíz con los comandos nuevos.
+
+1. **`sh do up [mensaje]`** ya vive en el motor: commit de todo (mensaje automático con fecha y archivos), rebase
+   sobre el remoto y push. Resuelve solo lo seguro (lockfile regenerado, README/AGENTS/workflow generados, `core`
+   que avanza en los dos lados); si no, deja la carpeta como estaba, sube el trabajo a `local/<fecha>` y escribe un
+   encargo para un agente en `.git/sansoul-agent-prompt.md` (y al portapapeles).
+2. **`sh do down`** trae el remoto apartando y devolviendo lo que no está guardado, con el mismo rescate.
+3. **`sh do fonts`** convierte `.ttf`/`.otf` de `assets/fonts/` a `uploads/fonts/<familia>-<peso>[-italic].woff2`
+   sin herramientas del sistema (conversores JavaScript en la caché del usuario).
+4. **Retirados:** `sup`, `spush`, `sdown`, `spull`, `smerge`, `sreset`, `sremote`, `scheck`, `sbranch` y `sdu`
+   (el motor se actualiza con `sh do update`), `merge` y `du` (los cubre `up`), `favicon` (lo genera el build),
+   `gfonts` (el build descarga Google Fonts), `yml` (lo cubre la validación del CMS en cada build), `normalize`,
+   `spaces`, `clean`, `places` y `reviews`.
+
 ## 14.11.0 — 2026-11-17 — presupuestos: factura proforma, pago con tarjeta por enlace y transferencia
 
 **Impacto:** ninguno si no haces nada. Migración D1 nueva `commerce/0011_quotes` (el CI la aplica). Hace falta

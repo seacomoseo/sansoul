@@ -14,7 +14,7 @@ esac
 # Variables
 PROJECT="${PWD##*/}"
 COMMAND=${1:-}
-PATH="$CORE_DIR/scripts/bin:$PWD/node_modules/.bin:$PWD/../_tools/node_modules/.bin:$PATH"
+PATH="$CORE_DIR/scripts/bin:$PWD/node_modules/.bin:$PATH"
 export PATH
 
 case "$COMMAND" in
@@ -29,6 +29,9 @@ SanSoul commands (run from the project root):
   sh do check     Run regression checks and build the site.
   sh do update    Update the engine, migrate and validate the project.
   sh do update --check  Inspect the update plan without changing the checkout.
+  sh do up [message]    Commit everything, bring remote changes in and push.
+  sh do down      Bring remote changes in, keeping local work in place.
+  sh do fonts     Convert .ttf/.otf in assets/fonts into uploads/fonts/*.woff2.
 Aliases: server = dev; live = local; hugo = build.
 HELP
     exit 0
@@ -65,36 +68,10 @@ esac
 ## GIT COMMANDS ##
 ##################
 
-if [ "$COMMAND" = up ]; then
-  . ../_tools/git/up.sh
-elif [ "$COMMAND" = sup ]; then
-  . ../_tools/git/sup.sh
-elif [ "$COMMAND" = spush ]; then
-  . ../_tools/git/spush.sh
-elif [ "$COMMAND" = down ]; then
-  . ../_tools/git/down.sh
-elif [ "$COMMAND" = sdown ]; then
-  . ../_tools/git/sdown.sh
-elif [ "$COMMAND" = spull ]; then
-  . ../_tools/git/spull.sh
-elif [ "$COMMAND" = merge ]; then
-  . ../_tools/git/merge.sh
-elif [ "$COMMAND" = smerge ]; then
-  . ../_tools/git/smerge.sh
-elif [ "$COMMAND" = sreset ]; then
-  . ../_tools/git/sreset.sh
-elif [ "$COMMAND" = sremote ]; then
-  . ../_tools/git/sremote.sh
-elif [ "$COMMAND" = scheck ]; then
-  . ../_tools/git/scheck.sh
-elif [ "$COMMAND" = sbranch ]; then
-  . ../_tools/git/sbranch.sh
-elif [ "$COMMAND" = du ]; then
-  sh do down
-  sh do up
-elif [ "$COMMAND" = sdu ]; then
-  sh do sdown
-  sh do sup
+# Safe sync: conflicts without an obvious answer never stay half-done; the work
+# goes to a local/<date> branch and a prompt for an agent is written.
+if [ "$COMMAND" = up ] || [ "$COMMAND" = down ]; then
+  node "$CORE_DIR/scripts/git-sync.js" "$@"
 
 
 ##################
@@ -116,49 +93,9 @@ elif [ "$COMMAND" = update ]; then
   shift
   node "$CORE_DIR/scripts/update.js" "$@"
 
-# Normalize yaml and markdown files
-elif [ "$COMMAND" = normalize ]; then
-  python3 ../_tools/others/yaml-normalize.py
-
-# Refactoring spaces in Hugo
-elif [ "$COMMAND" = spaces ]; then
-  sh ../_tools/others/refactoring-spaces.sh "$2"
-
-# Create favicon.ico
-elif [ "$COMMAND" = favicon ]; then
-  . ../_tools/others/favicon.sh
-
-# Create woff2 and scss by font files
+# Convert .ttf/.otf font files into the woff2 faces the build looks up
 elif [ "$COMMAND" = fonts ]; then
-  . ../_tools/others/fonts.sh
-
-# Download woff2 from Google Fonts by font styles
-elif [ "$COMMAND" = gfonts ]; then
-  node ../_tools/others/gfonts.js "$PROJECT"
-
-# Remove binary files from history
-elif [ "$COMMAND" = clean ]; then
-  . ../_tools/others/remove-history-binary-files.sh
-
-# Check yaml error of Static CMS
-elif [ "$COMMAND" = yml ]; then
-  node ../_tools/others/check-yaml.js "$PROJECT" "${2:-}"
-
-# Get data of place by Google API
-elif [ "$COMMAND" = places ]; then
-  COLOR=$(awk '/main:/ {found=1} found && /color:/ {gsub(/'\''/, "", $2); print $2; exit}' ./data/styles.yml)
-  LANGS=$(grep 'lang:' data/langs.yml | awk -F': ' '{print $2}')
-  for LANG in $LANGS; do
-    node ../_tools/others/fetch-place.js "$PROJECT" "$COLOR" "$LANG" "${2:-}"
-  done
-
-# Scrap reviews by Google Maps
-elif [ "$COMMAND" = reviews ]; then
-  # do reviews "Inspirits Bar"
-  LANGS=$(grep 'lang:' data/langs.yml | awk -F': ' '{print $2}')
-  for LANG in $LANGS; do
-    node ../_tools/others/scrape-reviews.js "$PROJECT" "$LANG" "${2:-}"
-  done
+  node "$CORE_DIR/scripts/fonts.js"
 
 
 #####################
