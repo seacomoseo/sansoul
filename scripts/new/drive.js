@@ -1,11 +1,12 @@
 /*
-Purpose: `drive` step. The project's notes `<name>.md` and access sheet
-  `<name> accesos.tsv` in the SanSoul Drive folder (next to the templates
+Purpose: `drive` step. The project's notes `<project>.md` and access sheet
+  `<project> accesos.tsv` (params.project, as in the Vault: one pair per
+  client even with several sites) in the SanSoul Drive folder (next to the templates
   `_sansoul-demo.md` and `_sansoul-demo accesos.tsv`), owned by the agency
   account. New project: copy the templates, fill var_* (never passwords), share
   the sheet with params.drive_mails and set params.drive_url. Migration: files
-  found by params.drive_url or the legacy names `<domain>.md` /
-  `<domain> accesos.tsv` move to the agency account (pending owner + accept,
+  found by params.drive_url or the legacy names (`<domain>`, or the
+  `<owner>[-<repo>]` of 14.13.0) move to the agency account (pending owner + accept,
   existing shares kept) and are renamed; nothing else changes.
 Credentials: google-seacomoseo-oauth-token.json (drive); for ownership moves
   also the current owner's grant, google-<account>-oauth-token.json, where
@@ -39,14 +40,18 @@ export default {
     }
     const folder = templates.md.parents[0]
     const params = readParams(ctx.dir)
-    const names = { md: `${ctx.name}.md`, tsv: `${ctx.name} accesos.tsv` }
-    const legacy = { md: `${ctx.domain}.md`, tsv: `${ctx.domain} accesos.tsv` }
+    if (!ctx.project) return ctx.manual('Drive: falta el nombre del proyecto (--project «Nombre del Vault», se guarda en params.project)')
+    const names = { md: `${ctx.project}.md`, tsv: `${ctx.project} accesos.tsv` }
+    const legacy = [ctx.domain, ctx.domain.replace(/^www\./, ''), ctx.name]
     const files = {}
     for (const kind of ['md', 'tsv']) {
       const byId = kind === 'tsv' && params.drive_url && /\/d\/([\w-]+)/.exec(params.drive_url)?.[1]
       files[kind] = (byId && await agency.call(`${API}/${byId}?fields=${FIELDS}`).catch(() => null)) ||
-        (await agency.find(`name = '${esc(names[kind])}' and '${folder}' in parents`))[0] ||
-        (await agency.find(`name = '${esc(legacy[kind])}' and '${folder}' in parents`))[0]
+        (await agency.find(`name = '${esc(names[kind])}' and '${folder}' in parents`))[0]
+      for (const old of legacy) {
+        if (files[kind]) break
+        files[kind] = (await agency.find(`name = '${esc(kind === 'md' ? `${old}.md` : `${old} accesos.tsv`)}' and '${folder}' in parents`))[0]
+      }
     }
 
     for (const kind of ['md', 'tsv']) {
@@ -113,7 +118,7 @@ export function fill (text, ctx) {
   return text
     .replaceAll('var_domain', ctx.domain)
     .replaceAll('var_owner', ctx.owner)
-    .replaceAll('var_name', ctx.name)
+    .replaceAll('var_name', ctx.project || ctx.name)
     .replaceAll('var_members', ctx.mails.join(', '))
     .replaceAll('var_pw', '')
     .replaceAll('var_cf_email', '')

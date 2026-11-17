@@ -32,6 +32,7 @@ export default {
         gh(['repo', 'clone', slug, ctx.dir, '--', '--recurse-submodules'])
         ctx.done(`clonado en ${ctx.dir}`)
       }
+      saveProject(ctx)
       return
     }
     if (local) throw new Error(`${ctx.dir} existe pero ${slug} no está en GitHub: revísalo a mano`)
@@ -71,6 +72,18 @@ function scaffold (ctx) {
   git(['commit', '--quiet', '-m', `SanSoul: alta de ${ctx.domain}`], ctx.dir)
 }
 
+// params.project (Vault name) is the project's identity for account and file names.
+function saveProject (ctx) {
+  const file = path.join(ctx.dir, 'hugo.yml')
+  if (!ctx.project || !fs.existsSync(file)) return
+  const current = parseDocument(fs.readFileSync(file, 'utf8')).getIn(['params', 'project'])
+  if (current === ctx.project) return ctx.done(`hugo.yml project = ${ctx.project}`)
+  if (!ctx.apply) return ctx.todo(`hugo.yml project = ${ctx.project}${current ? ` (antes ${current})` : ''}`)
+  editYaml(file, doc => doc.setIn(['params', 'project'], ctx.project))
+  ctx.changed.push('hugo.yml')
+  ctx.done(`hugo.yml project = ${ctx.project}`)
+}
+
 // Without a global git identity, commit as the authenticated GitHub user.
 function identity (dir) {
   try { git(['config', 'user.email'], dir); return } catch {}
@@ -83,6 +96,7 @@ function identity (dir) {
 export function adapt (dir, ctx) {
   editYaml(path.join(dir, 'hugo.yml'), doc => {
     doc.set('baseURL', `https://${ctx.domain}`)
+    if (ctx.project) doc.setIn(['params', 'project'], ctx.project)
     doc.setIn(['params', 'owner'], ctx.owner)
     doc.setIn(['params', 'repo'], ctx.repo)
     doc.setIn(['params', 'worker'], ctx.worker)

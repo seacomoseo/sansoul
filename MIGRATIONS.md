@@ -42,6 +42,18 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.14.0 — 2026-11-17 — `params.project`: nombre real del proyecto
+
+**Impacto:** opcional. `hugo.yml` admite `params.project` con el nombre del proyecto tal como su nota del Vault
+(mayúsculas, acentos y espacios). Lo escribe `sh do new --project "Nombre"`; si falta, el comando avisa.
+
+1. **Cuenta de Cloudflare = nombre del proyecto.** `sh do new` la encuentra por la zona del dominio (una cuenta
+   puede alojar varios dominios, p. ej. Cúprico con technimur.es), después por el Worker y por último por el nombre;
+   solo renombra cuentas con nombre por defecto o con el nombre de ese mismo dominio.
+2. **Drive por proyecto:** `<Proyecto>.md` y `<Proyecto> accesos.tsv`, uno por cliente aunque tenga varias webs.
+   Los nombres antiguos (`<dominio>` o `<org>[-<repo>]`) se renombran en la migración.
+3. GA4 sigue nombrando la propiedad por el dominio: una propiedad es un sitio.
+
 ## 14.13.0 — 2026-11-17 — alta y migración de proyectos con `sh do new`
 
 **Impacto:** ninguno en los proyectos existentes. Sustituye al alta manual de `TODO.md` y a las herramientas

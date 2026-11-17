@@ -9,6 +9,7 @@ import { projectName } from '../new/lib.js'
 import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
 import { context, STEPS } from '../new.js'
+import { renamable, sameName } from '../new/cloudflare.js'
 
 const quiet = fn => {
   const log = console.log
@@ -22,7 +23,8 @@ test('project name: <owner> for site, <owner>-<repo> otherwise (GitLab and Drive
 })
 
 test('new project context: defaults, normalized domain and mails', () => {
-  const ctx = quiet(() => context({ owner: 'Acme', mails: ' a@x.es, b@y.es ' }, ['https://Acme.es/']))
+  const ctx = quiet(() => context({ owner: 'Acme', project: ' Acmé Clínica ', mails: ' a@x.es, b@y.es ' }, ['https://Acme.es/']))
+  assert.equal(ctx.project, 'Acmé Clínica')
   assert.equal(ctx.domain, 'acme.es')
   assert.equal(ctx.repo, 'site')
   assert.equal(ctx.name, 'acme')
@@ -31,7 +33,8 @@ test('new project context: defaults, normalized domain and mails', () => {
   assert.equal(ctx.apply, false)
   assert.equal(ctx.dir, path.join(os.homedir(), 'repos', 'acme.es'))
   assert.throws(() => context({}, ['acme.es']), /--owner/)
-  assert.throws(() => context({ owner: 'a' }, ['nodomain']), /dominio no válido/)
+  assert.throws(() => context({ owner: 'a' }, ['acme.es']), /--project/)
+  assert.throws(() => context({ owner: 'a', project: 'A' }, ['nodomain']), /dominio no válido/)
 })
 
 test('existing project context reads hugo.yml', t => {
@@ -40,13 +43,14 @@ test('existing project context reads hugo.yml', t => {
   t.after(() => { process.chdir(cwd); fs.rmSync(root, { recursive: true, force: true }) })
   fs.mkdirSync(path.join(root, 'core'))
   fs.writeFileSync(path.join(root, 'core/do'), '')
-  fs.writeFileSync(path.join(root, 'hugo.yml'), 'baseURL: https://www.acme.es\nparams:\n  owner: acme\n  repo: podologo\n  drive_mails: c@z.es\n')
+  fs.writeFileSync(path.join(root, 'hugo.yml'), 'baseURL: https://www.acme.es\nparams:\n  owner: acme\n  repo: podologo\n  drive_mails: c@z.es\n  project: Acmé Podología\n')
   process.chdir(root)
   const ctx = quiet(() => context({}, []))
   assert.equal(ctx.domain, 'www.acme.es')
   assert.equal(ctx.name, 'acme-podologo')
   assert.equal(ctx.worker, 'acme-podologo')
   assert.deepEqual(ctx.mails, ['c@z.es'])
+  assert.equal(ctx.project, 'Acmé Podología')
   assert.equal(ctx.dir, root)
 })
 
@@ -58,11 +62,11 @@ test('scaffold adapts the demo identity without touching other settings', t => {
   fs.writeFileSync(path.join(root, 'data/config.yml'), '# Demo comment\nmail: sansoul@seacomoseo.com\nga4: G-DEMO\ncms_repo: seacomoseo/sansoul-demo\nshow: true\n')
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: 'sansoul-demo', homepage: 'https://github.com/seacomoseo/sansoul-demo', repository: { url: 'git+https://github.com/seacomoseo/sansoul-demo.git' } }))
   fs.writeFileSync(path.join(root, 'TODO.md'), 'var_domain var_owner var_name\n')
-  adapt(root, { domain: 'acme.es', owner: 'acme', repo: 'site', worker: 'acme', name: 'acme', mails: ['a@x.es'], netlify: '' })
+  adapt(root, { domain: 'acme.es', owner: 'acme', repo: 'site', worker: 'acme', name: 'acme', project: 'Acmé', mails: ['a@x.es'], netlify: '' })
   const hugo = parse(fs.readFileSync(path.join(root, 'hugo.yml'), 'utf8'))
   assert.equal(hugo.baseURL, 'https://acme.es')
   assert.equal(hugo.buildFuture, true)
-  assert.deepEqual(hugo.params, { owner: 'acme', drive_mails: 'a@x.es', repo: 'site', worker: 'acme', worker_vars: { FORMS_PROVIDER: 'hold', FORMS_SENDER_NAME: 'acme.es' } })
+  assert.deepEqual(hugo.params, { project: 'Acmé', owner: 'acme', drive_mails: 'a@x.es', repo: 'site', worker: 'acme', worker_vars: { FORMS_PROVIDER: 'hold', FORMS_SENDER_NAME: 'acme.es' } })
   const config = fs.readFileSync(path.join(root, 'data/config.yml'), 'utf8')
   assert.doesNotMatch(config, /Demo comment|ga4/)
   assert.deepEqual(parse(config), { mail: 'a@x.es', cms_repo: 'acme/site', show: true })
@@ -98,4 +102,12 @@ test('`do new` works outside a consumer and prints its help', () => {
   } finally {
     fs.rmSync(root, { recursive: true, force: true })
   }
+})
+
+test('Cloudflare accounts are renamed only from a default or this domain name', () => {
+  assert.ok(renamable("ana@x.es's Account", 'acme.es'))
+  assert.ok(renamable('Acme.es', 'www.acme.es'))
+  assert.ok(!renamable('cuprico.com', 'technimur.es'))
+  assert.ok(!renamable('Cúprico', 'technimur.es'))
+  assert.ok(sameName('Cúprico', ' cúprico'.normalize('NFD')))
 })
