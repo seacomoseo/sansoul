@@ -21,7 +21,7 @@ const UPLOAD = 'https://www.googleapis.com/upload/drive/v3/files'
 const AGENCY = 'google-seacomoseo-oauth-token.json'
 const TEMPLATES = { md: '_sansoul-demo.md', tsv: '_sansoul-demo accesos.tsv' }
 const SHARE_MESSAGE = 'Hoja de cálculo de Google Drive donde indicaremos todos los servicios externos relevantes al sitio web; con sus emails, usuarios y contraseñas (si procede) de acceso correspondientes. Más detalles aquí: https://seacomoseo.com/entrega/'
-const FIELDS = 'id,name,parents,owners(emailAddress),webViewLink'
+const FIELDS = 'id,name,parents,owners(emailAddress,permissionId),webViewLink'
 
 export default {
   id: 'drive',
@@ -29,7 +29,9 @@ export default {
   async run (ctx) {
     if (!hasSecret('', AGENCY)) return ctx.manual('Drive: falta el grant google-seacomoseo (google-account-oauth.py seacomoseo)')
     const agency = drive(await googleAccessToken(AGENCY))
-    const me = (await agency.call('https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)')).user.emailAddress
+    // One account can appear under several addresses (seacomoseo@gmail.com and
+    // info@seacomoseo.com): compare permission ids, never emails.
+    const { emailAddress: me, permissionId: myId } = (await agency.call('https://www.googleapis.com/drive/v3/about?fields=user(emailAddress,permissionId)')).user
     const templates = {}
     for (const [kind, name] of Object.entries(TEMPLATES)) {
       templates[kind] = (await agency.find(`name = '${esc(name)}'`))[0]
@@ -59,12 +61,12 @@ export default {
         continue
       }
       const owner = file.owners?.[0]?.emailAddress
-      if (owner && owner !== me) {
+      if (owner && file.owners[0].permissionId !== myId) {
         const account = owner.split('@')[0].toLowerCase()
         if (!ctx.apply) ctx.todo(`«${file.name}»: propietario ${owner} → ${me}`)
         else if (!hasSecret('', `google-${account}-oauth-token.json`)) ctx.manual(`«${file.name}»: para pasarlo a ${me} falta el grant google-${account} (google-account-oauth.py ${account})`)
         else {
-          await transfer(file.id, drive(await googleAccessToken(`google-${account}-oauth-token.json`)), agency, me)
+          await transfer(file.id, drive(await googleAccessToken(`google-${account}-oauth-token.json`)), agency, myId)
           ctx.done(`«${file.name}»: propietario ${owner} → ${me} (compartidos intactos)`)
         }
       } else ctx.done(`«${file.name}» (propietario ${me})`)
@@ -99,17 +101,11 @@ export default {
 
 // Consumer Google accounts cannot hand over ownership directly: the owner
 // marks the new owner as pending, and the new owner accepts it.
-async function transfer (fileId, current, agency, me) {
-  const perms = (await current.call(`${API}/${fileId}/permissions?fields=permissions(id,emailAddress,role,pendingOwner)`)).permissions
-  const mine = perms.find(p => (p.emailAddress || '').toLowerCase() === me.toLowerCase())
-  if (mine && mine.role !== 'owner') {
-    await current.call(`${API}/${fileId}/permissions/${mine.id}`, { method: 'PATCH', body: { role: 'writer', pendingOwner: true } })
-  } else if (!mine) {
-    await current.call(`${API}/${fileId}/permissions?sendNotificationEmail=false`, { method: 'POST', body: { type: 'user', role: 'writer', emailAddress: me, pendingOwner: true } })
-  }
-  const own = (await agency.call(`${API}/${fileId}/permissions?fields=permissions(id,emailAddress)`)).permissions
-    .find(p => (p.emailAddress || '').toLowerCase() === me.toLowerCase())
-  await agency.call(`${API}/${fileId}/permissions/${own.id}?transferOwnership=true`, { method: 'PATCH', body: { role: 'owner' } })
+async function transfer (fileId, current, agency, myId) {
+  const perms = (await current.call(`${API}/${fileId}/permissions?fields=permissions(id)`)).permissions
+  if (!perms.some(p => p.id === myId)) throw new Error('la cuenta de la agencia no tiene acceso al archivo')
+  await current.call(`${API}/${fileId}/permissions/${myId}`, { method: 'PATCH', body: { role: 'writer', pendingOwner: true } })
+  await agency.call(`${API}/${fileId}/permissions/${myId}?transferOwnership=true`, { method: 'PATCH', body: { role: 'owner' } })
 }
 
 // Placeholders of the templates; passwords are never filled in.
