@@ -276,3 +276,30 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
   :root:not([data-theme]) body { background: hsl(210 10% 8%); }
   :root:not([data-theme]) .spinner { border-color: hsl(210 10% 24%); border-top-color: hsl(210 100% 60%); }
 }
+
+/* Proforma editor (orders panel, 14.11). */
+.editor h3 { margin: 20px 0 8px; }
+.editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.editor-field { display: grid; gap: 4px; min-width: 0; font-size: var(--sui-font-size-small); color: hsl(var(--sui-foreground-color-4-hsl)); }
+.editor-field.wide { grid-column: 1 / -1; }
+.editor-field .input, .editor-field .select { width: 100%; color: hsl(var(--sui-foreground-color-2-hsl)); }
+.editor-field textarea.input { min-height: 72px; padding: 6px 8px; resize: vertical; }
+.editor-field .inline { display: flex; gap: 8px; }
+.editor-field .inline .select { flex: none; width: auto; }
+.editor-lines .data-table { width: 100%; }
+.editor-lines .data-table tbody tr { cursor: default; }
+.editor-lines .input, .editor-lines .select { width: 100%; min-width: 80px; }
+.editor-lines td:nth-child(2) .input { min-width: 140px; }
+.editor .input.money { max-width: 110px; text-align: end; }
+.editor .input.small-number { max-width: 80px; }
+.editor .amount { text-align: end; }
+.editor-check { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+.editor .totals { margin: 12px 0; padding: 12px; border: 1px solid hsl(var(--sui-border-color-3-hsl)); border-radius: 6px; background: hsl(var(--sui-background-color-2-hsl)); }
+.editor .totals dd { text-align: end; }
+.editor .actions + .editor-grid { margin-top: 16px; }
+.editor-lines td:first-child .select { min-width: 120px; }
+.editor-lines .input.money { min-width: 72px; }
+.editor-lines .input.small-number { min-width: 56px; }
+.table-scroll.compact { flex: none; max-height: 40vh; }
+@media (max-width: 599px) { .editor-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 899px) { .editor .totals { grid-template-columns: 1fr auto; gap: 4px 16px; } .editor .totals dd { margin: 0; } }

@@ -41,7 +41,7 @@ Side effects: Publishes one form policy per language, keyed to the cart page (or
       "show"    false
       "cols"    2
       "cols_vs" 2
-      "enrich"  (dict "type" "commerce_quote" "cart" $names.cart)
+      "enrich"  (dict "type" "commerce_quote" "cart" $names.cart "fields" (dict "name" $names.name "email" $names.email "phone" $names.phone "country" $names.country "postal" $names.postal "comments" $names.comments))
       "confirm" (dict
         "enabled" true
         "fields"  false

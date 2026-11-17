@@ -35,7 +35,9 @@ const LABELS = Object.freeze({
     exclusive: 'Precios sin IVA.',
     rectifies: 'Rectifica la factura',
     shipping: 'Envío',
-    paid: 'Pagado con tarjeta'
+    discount: 'Descuento',
+    paid: 'Pagado con tarjeta',
+    paidTransfer: 'Pagado por transferencia bancaria'
   },
   en: {
     invoice: 'INVOICE',
@@ -59,7 +61,9 @@ const LABELS = Object.freeze({
     exclusive: 'Prices exclude VAT.',
     rectifies: 'Corrects invoice',
     shipping: 'Shipping',
-    paid: 'Paid by card'
+    discount: 'Discount',
+    paid: 'Paid by card',
+    paidTransfer: 'Paid by bank transfer'
   }
 })
 
@@ -133,7 +137,7 @@ export function localDate (seconds, timeZone) {
   return new Date(millis + offset * 3600000).toISOString().slice(0, 10)
 }
 
-function displayDate (isoDate) {
+export function displayDate (isoDate) {
   const [year, month, day] = isoDate.split('-')
   return `${day}/${month}/${year}`
 }
@@ -165,7 +169,7 @@ export function regionName (country, code) {
   return (code && REGIONS[country]?.[code]) || code || null
 }
 
-function groupTaxes (lines, shipping) {
+export function groupTaxes (lines, shipping) {
   const groups = new Map()
   for (const entry of [...lines, ...(shipping ? [shipping] : [])]) {
     const key = `${entry.taxMode}:${entry.taxRateBps}`
@@ -191,11 +195,14 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
   if (totals.totalMinor !== order.amount_total_minor) throw new InvoiceError('invoice_total_mismatch')
   const labels = labelsFor(config.language)
   const byProduct = new Map(totals.lines.map(line => [line.productId, line]))
-  const lines = (snapshot.items || []).map(item => {
-    const tax = byProduct.get(item.productId)
+  // Proforma orders (14.11) may repeat a product or carry free lines: their tax
+  // lines follow the items by position, and free lines print as written.
+  const quote = Boolean(snapshot.quote)
+  const lines = (snapshot.items || []).map((item, index) => {
+    const tax = quote ? totals.lines[index] : byProduct.get(item.productId)
     if (!tax) throw new InvoiceError('invoice_totals_missing')
     return {
-      description: config.itemLabel.replaceAll('{name}', item.name || item.sku).replaceAll('{sku}', item.sku),
+      description: quote && !item.productId ? item.name : config.itemLabel.replaceAll('{name}', item.name || item.sku).replaceAll('{sku}', item.sku || ''),
       quantity: item.quantity,
       unitMinor: item.unitAmountMinor,
       totalMinor: item.lineTotalMinor,
@@ -215,10 +222,21 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
         taxRateBps: totals.shippingTax.rateBps
       }
     : null
-  const taxes = groupTaxes(lines, shipping)
+  // A proforma discount is one negative line at the proforma's tax rate.
+  const discount = totals.discountMinor > 0
+    ? {
+        description: labels.discount,
+        totalMinor: -totals.discountMinor,
+        netMinor: -totals.discountNetMinor,
+        taxMinor: -totals.discountTaxMinor,
+        taxMode: totals.discountTax.mode,
+        taxRateBps: totals.discountTax.rateBps
+      }
+    : null
+  const taxes = groupTaxes(discount ? [...lines, discount] : lines, shipping)
   const sum = taxes.reduce((total, group) => total + group.baseMinor + group.taxMinor, 0)
   if (sum !== totals.totalMinor) throw new InvoiceError('invoice_total_mismatch')
-  const modes = new Set([...lines, ...(shipping ? [shipping] : [])].map(entry => entry.taxMode))
+  const modes = new Set([...lines, ...(discount ? [discount] : []), ...(shipping ? [shipping] : [])].map(entry => entry.taxMode))
   // A company buyer (tax ID collected at checkout) is invoiced under its name and ID.
   const taxId = details?.buyer_tax_id || null
   const name = (taxId && details?.buyer_business_name) || details?.buyer_name || details?.recipient_name || details?.buyer_email || ''
@@ -241,11 +259,13 @@ export function buildInvoiceData ({ order, details, config, issuedAt }) {
     customer: { name, address, ...(taxId ? { taxId } : {}) },
     ...(config.simplified && !taxId ? { simplified: true } : {}),
     lines,
+    ...(discount ? { discount } : {}),
     shipping,
     taxes,
     totalMinor: totals.totalMinor,
     pricesIncludeTax: modes.size === 1 && modes.has('inclusive') ? true : modes.size === 1 && modes.has('exclusive') ? false : null,
-    paymentText: hasPayment ? config.paymentText ?? labels.paid : null,
+    // An order paid by transfer carries its own text, fixed when it was marked paid.
+    paymentText: typeof snapshot.paymentText === 'string' ? snapshot.paymentText : hasPayment ? config.paymentText ?? labels.paid : null,
     exemptNote: modes.has('exempt') && config.exemptNote ? config.exemptNote : null,
     footer: config.footer || null
   }
@@ -260,6 +280,7 @@ export function buildCreditNoteData (invoiceRow, config, issuedAt) {
     numberDigits: config.series.digits,
     date: localDate(issuedAt, config.timezone),
     lines: data.lines.map(negate),
+    ...(data.discount ? { discount: negate(data.discount) } : {}),
     shipping: data.shipping ? negate(data.shipping) : null,
     taxes: data.taxes.map(group => ({ ...group, baseMinor: -group.baseMinor, taxMinor: -group.taxMinor })),
     totalMinor: -data.totalMinor,
@@ -313,13 +334,32 @@ const BOTTOM = 780
 export function renderInvoicePdf (row) {
   const data = JSON.parse(row.data_json)
   const labels = labelsFor(data.language)
-  const money = minor => formatMoney(minor, data.currency, data.minorUnit, data.language)
   const number = invoiceNumber(row, data)
   const credit = row.kind === 'credit_note'
+  return renderDocumentPdf({
+    data,
+    title: titleOf(labels, data, credit),
+    number,
+    headerLines: [`${labels.number} ${number}`, `${labels.date}: ${displayDate(data.date)}`, data.rectifies && `${labels.rectifies} ${data.rectifies.number} (${displayDate(data.rectifies.date)})`],
+    created: new Date(row.issued_at * 1000),
+    notes: [
+      data.paymentText && `${labels.payment}: ${data.paymentText}`,
+      data.pricesIncludeTax === true ? labels.inclusive : data.pricesIncludeTax === false ? labels.exclusive : null,
+      data.exemptNote,
+      data.footer
+    ]
+  })
+}
+
+// Shared layout of invoices and proformas (14.11): seller and title header,
+// customer block, lines (+ discount + shipping), tax breakdown, total and notes.
+export function renderDocumentPdf ({ data, title, number, headerLines, created, notes }) {
+  const labels = labelsFor(data.language)
+  const money = minor => formatMoney(minor, data.currency, data.minorUnit, data.language)
   const pdf = createPdf({
-    title: `${titleOf(labels, data, credit)} ${number}`,
+    title: `${title} ${number}`,
     author: data.seller.name,
-    created: new Date(row.issued_at * 1000)
+    created
   })
   let page = pdf.addPage()
 
@@ -332,8 +372,8 @@ export function renderInvoicePdf (row) {
     page.text(line, MARGIN, y, { size: 9, gray: 0.25 })
   }
   let titleY = 62
-  page.text(titleOf(labels, data, credit), RIGHT, titleY, { size: 18, bold: true, align: 'right' })
-  for (const line of [`${labels.number} ${number}`, `${labels.date}: ${displayDate(data.date)}`, data.rectifies && `${labels.rectifies} ${data.rectifies.number} (${displayDate(data.rectifies.date)})`].filter(Boolean)) {
+  page.text(title, RIGHT, titleY, { size: 18, bold: true, align: 'right' })
+  for (const line of headerLines.filter(Boolean)) {
     titleY += 15
     page.text(line, RIGHT, titleY, { size: 10, align: 'right' })
   }
@@ -365,7 +405,7 @@ export function renderInvoicePdf (row) {
     y = 62
   }
   header()
-  const rows = [...data.lines, ...(data.shipping ? [{ ...data.shipping, quantity: null, unitMinor: null }] : [])]
+  const rows = [...data.lines, ...(data.discount ? [{ ...data.discount, quantity: null, unitMinor: null }] : []), ...(data.shipping ? [{ ...data.shipping, quantity: null, unitMinor: null }] : [])]
   for (const row of rows) {
     const wrapped = wrapText(row.description, 9.5, false, conceptWidth)
     const height = wrapped.length * 12 + 6
@@ -407,13 +447,7 @@ export function renderInvoicePdf (row) {
   y += 30
 
   // Notes.
-  const notes = [
-    data.paymentText && `${labels.payment}: ${data.paymentText}`,
-    data.pricesIncludeTax === true ? labels.inclusive : data.pricesIncludeTax === false ? labels.exclusive : null,
-    data.exemptNote,
-    data.footer
-  ].filter(Boolean)
-  for (const note of notes) {
+  for (const note of notes.filter(Boolean)) {
     const wrapped = wrapText(note, 9, false, RIGHT - MARGIN)
     if (y + wrapped.length * 12 > 800) newPage()
     for (const line of wrapped) {

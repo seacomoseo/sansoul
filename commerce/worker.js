@@ -1,5 +1,6 @@
 import { errorResponse, jsonResponse } from './http.js'
 import { handleBrevoWebhook } from './audience-brevo.js'
+import { handleQuoteLink } from './quotes.js'
 import { dispatchScheduledNotices } from './admin.js'
 import { purgeExpiredDeliveryDetails } from './maintenance.js'
 
@@ -20,7 +21,12 @@ export function createCommerceWorker (catalog, routes) {
       else if (routePath === '/api/commerce/quote') handler = routes.quote
       else if (routePath === '/api/commerce/webhook') handler = routes.webhook
       else if (routePath === '/api/commerce/audience/brevo') return handleBrevoWebhook(request, env, catalog).catch(errorResponse)
-      else {
+      else if (routePath.startsWith('/api/commerce/quote/')) {
+        // Proforma payment link (14.11): /quote/<token> page and /quote/<token>/pay.
+        const link = routePath.match(/^\/api\/commerce\/quote\/([A-Za-z0-9_-]{43})(\/pay)?$/)
+        if (!link) return jsonResponse({ error: 'not_found' }, 404)
+        return handleQuoteLink(request, env, catalog, link[1], Boolean(link[2]))
+      } else {
         const status = routePath.match(/^\/api\/commerce\/status\/([^/]+)$/)
         const admin = routePath.match(/^\/api\/commerce\/admin(?:\/(.*))?$/)
         if (status) {

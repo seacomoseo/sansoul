@@ -2,6 +2,8 @@
 // CMS (CMS.registerCustomPage). People are authorized with the GitHub session
 // of the CMS; the Worker checks push access to the site repository. Styles are
 // the forms panel's (same tokens and components).
+import { createQuotesTab } from './quotes.js'
+
 const API = '/api/commerce/admin/'
 
 function pageLang () {
@@ -17,6 +19,8 @@ const T = {
     title: 'Pedidos',
     orders: 'Pedidos',
     contacts: 'Contactos',
+    quotes: 'Presupuestos',
+    quotesDisabled: 'Esta tienda no tiene activadas las proformas (hace falta cart_quote e invoice en data/commerce.yml).',
     refresh: 'Actualizar',
     more: 'Cargar más',
     select: 'Elige un pedido para ver el detalle.',
@@ -70,6 +74,8 @@ const T = {
     title: 'Orders',
     orders: 'Orders',
     contacts: 'Contacts',
+    quotes: 'Quotes',
+    quotesDisabled: 'This shop does not have pro formas enabled (it needs cart_quote and invoice in data/commerce.yml).',
     refresh: 'Refresh',
     more: 'Load more',
     select: 'Pick an order to see its details.',
@@ -228,14 +234,21 @@ async function loadOrders (more = false) {
   state.next = page.next_cursor
 }
 
+const quotes = createQuotesTab({ h, api, lang, money, date, saveBlob, githubToken, render: () => render(), fail: error => fail(error) })
+
 async function load () {
   state.busy = true
   state.message = ''
   try {
     if (state.tab === 'orders') await loadOrders()
+    else if (state.tab === 'quotes') await quotes.load()
     else state.contacts = (await api('contacts')).contacts
   } catch (error) {
     state.busy = false
+    if (state.tab === 'quotes' && error.status !== 401 && error.code !== 'signin') {
+      state.message = ['quotes_disabled', 'invoice_not_configured'].includes(error.code) ? T.quotesDisabled : `${T.error} (${error.code || error.status}).`
+      return render()
+    }
     return fail(error)
   }
   state.busy = false
@@ -311,9 +324,9 @@ function contactsView () {
 
 function render () {
   const tabs = h('div', { class: 'toolbar' }, h('h1', {}, T.title), h('div', { class: 'tabs' },
-    [['orders', T.orders], ['contacts', T.contacts]].map(([key, label]) => h('button', { class: `tab${state.tab === key ? ' active' : ''}`, type: 'button', onclick: () => { state.tab = key; state.detail = null; load() } }, label))),
+    [['orders', T.orders], ['quotes', T.quotes], ['contacts', T.contacts]].map(([key, label]) => h('button', { class: `tab${state.tab === key ? ' active' : ''}`, type: 'button', onclick: () => { state.tab = key; state.detail = null; quotes.reset(); load() } }, label))),
   h('button', { class: 'button icon-button', type: 'button', title: T.refresh, 'aria-label': T.refresh, onclick: load }, h('span', { class: 'ms', 'aria-hidden': 'true' }, 'refresh')))
-  app.replaceChildren(...[tabs, state.message ? h('div', { class: 'alert alert-error' }, state.message) : null, ...(state.tab === 'orders' ? ordersView() : contactsView())].filter(Boolean))
+  app.replaceChildren(...[tabs, state.message ? h('div', { class: 'alert alert-error' }, state.message) : null, ...(state.tab === 'orders' ? ordersView() : state.tab === 'quotes' ? quotes.view() : contactsView())].filter(Boolean))
   app.setAttribute('aria-busy', String(state.busy))
 }
 

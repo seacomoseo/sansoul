@@ -172,3 +172,41 @@ export function compileNotices (source, invoice) {
   if (notices.buyerInvoice !== 'never' && buyer === 'none') throw new Error('data/commerce.yml: buyer_invoice_requires_buyer_confirmation')
   return notices
 }
+
+// IBAN: country code, check digits and up to 30 letters or digits (spaces allowed),
+// with a valid ISO 13616 mod-97 checksum. Stored grouped by four for printing.
+export function normalizeIban (value) {
+  if (typeof value !== 'string') return null
+  const compact = value.replace(/\s+/g, '').toUpperCase()
+  if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(compact)) return null
+  const digits = (compact.slice(4) + compact.slice(0, 4)).replace(/[A-Z]/g, char => String(char.charCodeAt(0) - 55))
+  let remainder = 0
+  for (const digit of digits) remainder = (remainder * 10 + Number(digit)) % 97
+  return remainder === 1 ? compact.replace(/(.{4})(?=.)/g, '$1 ') : null
+}
+
+// `quotes` (14.11): proformas from the cart quote requests, prepared in the orders
+// panel. Present whenever the shop has `cart_quote: true`; the key only tunes it.
+// Without `transfer.iban` the proforma offers card payment only.
+export function compileQuotes (source, { cartQuote = false } = {}) {
+  if ((source === undefined || source === null) && !cartQuote) return null
+  const value = source ?? {}
+  const error = 'data/commerce.yml: invalid_quotes'
+  only(value, ['enabled', 'validity_days', 'transfer', 'note'], error)
+  if (bool(value.enabled, true, error) === false) return null
+  const validityDays = value.validity_days === undefined ? 15 : value.validity_days
+  if (!Number.isSafeInteger(validityDays) || validityDays < 1 || validityDays > 90) throw new Error(`${error}_validity_days`)
+  const compiled = { validityDays }
+  if (value.transfer !== undefined && value.transfer !== null) {
+    only(value.transfer, ['iban', 'holder', 'payment_text'], error)
+    const iban = normalizeIban(value.transfer.iban)
+    if (!iban) throw new Error(`${error}_iban`)
+    compiled.transfer = {
+      iban,
+      ...(value.transfer.holder === undefined ? {} : { holder: text(value.transfer.holder, 120, error) }),
+      ...(value.transfer.payment_text === undefined ? {} : { paymentText: text(value.transfer.payment_text, 120, error) })
+    }
+  }
+  if (value.note !== undefined) compiled.note = text(value.note, 600, error)
+  return compiled
+}

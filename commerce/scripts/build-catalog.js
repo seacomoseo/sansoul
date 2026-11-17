@@ -6,7 +6,7 @@ import { parseDocument } from 'yaml'
 import { priceToMinor } from '../catalog.js'
 import { CHECKOUT_SHIPPING_POLICIES, CHECKOUT_TAX_POLICIES, hasCompleteCommercialApproval, isValidCheckoutLegalVersion, isValidDestinationCountries } from '../approval.js'
 import { assertTotalsPolicy } from '../totals.js'
-import { compileInvoice, compileNotices } from '../notices-config.js'
+import { compileInvoice, compileNotices, compileQuotes } from '../notices-config.js'
 import { readProject } from '../../scripts/project.js'
 
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -252,7 +252,7 @@ function compileAudience (source) {
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'cart_quote', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id', 'checkout_terms', 'checkout_terms_text', 'audience', 'admin_panel'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'cart_quote', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id', 'checkout_terms', 'checkout_terms_text', 'audience', 'admin_panel', 'quotes'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
@@ -275,12 +275,14 @@ function makeCatalog (root) {
   // repository (the CMS one: data/config.yml cms_repo, else hugo.yml owner/repo).
   if (config.admin_panel !== undefined && typeof config.admin_panel !== 'boolean') throw new Error('data/commerce.yml: admin_panel_must_be_boolean')
   if (config.cart_quote !== undefined && typeof config.cart_quote !== 'boolean') throw new Error('data/commerce.yml: cart_quote_must_be_boolean')
+  const quotes = compileQuotes(config.quotes, { cartQuote: config.cart_quote === true })
   const adminRepo = config.admin_panel ? panelRepository(root) : ''
   if (config.admin_panel && !adminRepo) throw new Error('data/commerce.yml: admin_panel_requires_repository')
   const optional = {
     ...(adminRepo ? { adminRepo } : {}),
     ...(config.checkout_terms ? { termsRequired: true } : {}),
     ...(audience ? { audience } : {}),
+    ...(quotes ? { quotes } : {}),
     ...(invoice ? { invoice } : {}),
     ...(notices ? { notices } : {}),
     ...(fields.length ? { checkoutFields: fields } : {}),

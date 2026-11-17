@@ -15,6 +15,7 @@ const BUYER = Object.freeze({
     intro: 'Gracias por tu compra. Hemos recibido el pago de tu pedido.',
     items: 'Resumen del pedido:',
     shipping: 'Envío',
+    discount: 'Descuento',
     subtotal: 'Subtotal',
     tax: 'IVA',
     taxIncluded: 'IVA incluido',
@@ -41,6 +42,7 @@ const BUYER = Object.freeze({
     intro: 'Thank you for your purchase. We have received the payment for your order.',
     items: 'Order summary:',
     shipping: 'Shipping',
+    discount: 'Discount',
     subtotal: 'Subtotal',
     tax: 'VAT',
     taxIncluded: 'VAT included',
@@ -67,6 +69,7 @@ const BUYER = Object.freeze({
     intro: 'Danke für deinen Einkauf. Wir haben die Zahlung für deine Bestellung erhalten.',
     items: 'Bestellübersicht:',
     shipping: 'Versand',
+    discount: 'Rabatt',
     subtotal: 'Zwischensumme',
     tax: 'MwSt.',
     taxIncluded: 'inkl. MwSt.',
@@ -93,6 +96,7 @@ const BUYER = Object.freeze({
     intro: 'Merci pour votre achat. Nous avons bien reçu le paiement de votre commande.',
     items: 'Récapitulatif de la commande :',
     shipping: 'Livraison',
+    discount: 'Remise',
     subtotal: 'Sous-total',
     tax: 'TVA',
     taxIncluded: 'TVA incluse',
@@ -119,6 +123,7 @@ const BUYER = Object.freeze({
     intro: 'Grazie per il tuo acquisto. Abbiamo ricevuto il pagamento del tuo ordine.',
     items: 'Riepilogo dell’ordine:',
     shipping: 'Spedizione',
+    discount: 'Sconto',
     subtotal: 'Subtotale',
     tax: 'IVA',
     taxIncluded: 'IVA inclusa',
@@ -145,6 +150,7 @@ const BUYER = Object.freeze({
     intro: 'Obrigado pela tua compra. Recebemos o pagamento da tua encomenda.',
     items: 'Resumo da encomenda:',
     shipping: 'Envio',
+    discount: 'Desconto',
     subtotal: 'Subtotal',
     tax: 'IVA',
     taxIncluded: 'IVA incluído',
@@ -173,12 +179,12 @@ export function buyerText (language) {
 
 // Labels the engine sends to Stripe Checkout (tax line, shipping rate, custom fields).
 const PAYMENT_PAGE = Object.freeze({
-  es: { tax: 'IVA', shipping: 'Envío', recipientPhone: 'Teléfono de quien recibe (si no eres tú)', deliveryNotes: 'Indicaciones para el repartidor' },
-  en: { tax: 'VAT', shipping: 'Shipping', recipientPhone: 'Recipient phone (if not you)', deliveryNotes: 'Notes for the courier' },
-  de: { tax: 'MwSt.', shipping: 'Versand', recipientPhone: 'Telefon des Empfängers (falls nicht du)', deliveryNotes: 'Hinweise für den Zusteller' },
-  fr: { tax: 'TVA', shipping: 'Livraison', recipientPhone: 'Téléphone du destinataire (si ce n’est pas vous)', deliveryNotes: 'Instructions pour le livreur' },
-  it: { tax: 'IVA', shipping: 'Spedizione', recipientPhone: 'Telefono di chi riceve (se non sei tu)', deliveryNotes: 'Indicazioni per il corriere' },
-  pt: { tax: 'IVA', shipping: 'Envio', recipientPhone: 'Telefone de quem recebe (se não fores tu)', deliveryNotes: 'Indicações para o estafeta' }
+  es: { tax: 'IVA', shipping: 'Envío', quote: 'Presupuesto', recipientPhone: 'Teléfono de quien recibe (si no eres tú)', deliveryNotes: 'Indicaciones para el repartidor' },
+  en: { tax: 'VAT', shipping: 'Shipping', quote: 'Quote', recipientPhone: 'Recipient phone (if not you)', deliveryNotes: 'Notes for the courier' },
+  de: { tax: 'MwSt.', shipping: 'Versand', quote: 'Angebot', recipientPhone: 'Telefon des Empfängers (falls nicht du)', deliveryNotes: 'Hinweise für den Zusteller' },
+  fr: { tax: 'TVA', shipping: 'Livraison', quote: 'Devis', recipientPhone: 'Téléphone du destinataire (si ce n’est pas vous)', deliveryNotes: 'Instructions pour le livreur' },
+  it: { tax: 'IVA', shipping: 'Spedizione', quote: 'Preventivo', recipientPhone: 'Telefono di chi riceve (se non sei tu)', deliveryNotes: 'Indicazioni per il corriere' },
+  pt: { tax: 'IVA', shipping: 'Envio', quote: 'Orçamento', recipientPhone: 'Telefone de quem recebe (se não fores tu)', deliveryNotes: 'Indicações para o estafeta' }
 })
 
 export function paymentPageText (language) {

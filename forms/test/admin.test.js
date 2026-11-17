@@ -380,3 +380,22 @@ describe('panel tables', () => {
     assert.equal(listed.preview, `Largo · l@example.org · ${'y'.repeat(60)}`)
   })
 })
+
+describe('quote forms in the summary', () => {
+  test('lists commerce_quote forms with their field names for the orders panel', async () => {
+    const spec = {
+      id: 'form-presupuesto',
+      lang: 'es',
+      subject: 'Presupuesto',
+      to: ['owner@example.test'],
+      account: '',
+      confirm: null,
+      enrich: { type: 'commerce_quote', cart: 'Carrito', fields: { name: 'Nombre', email: 'Email' } },
+      fields: [{ name: 'Nombre', type: 'text' }, { name: 'Email', type: 'email' }, { name: 'Carrito', type: 'hidden' }]
+    }
+    worker = createFormsWorker({ ...manifest, repo: REPO, forms: { ...manifest.forms, '/carrito/#form-presupuesto': 'quote' }, specs: { ...manifest.specs, quote: spec } }, { fetch: fakeFetch, now })
+    const { status, body } = await call('summary')
+    assert.equal(status, 200)
+    assert.deepEqual(body.quoteForms, [{ form: '/carrito/#form-presupuesto', lang: 'es', cart: 'Carrito', fields: { name: 'Nombre', email: 'Email' } }])
+  })
+})

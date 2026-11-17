@@ -42,6 +42,28 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.11.0 — 2026-11-17 — presupuestos: factura proforma, pago con tarjeta por enlace y transferencia
+
+**Impacto:** ninguno si no haces nada. Migración D1 nueva `commerce/0011_quotes` (el CI la aplica). Hace falta
+`admin_panel: true` para ver la pestaña.
+
+1. **Pestaña «Presupuestos»** en el panel de pedidos (`/admin/orders/`, con `admin_panel: true`, `cart_quote: true`
+   e `invoice`): lista las solicitudes del carrito y las proformas. «Preparar proforma» precarga cliente y líneas
+   (por SKU, con el precio del catálogo); la tienda añade portes, descuento (importe o %), IVA o exento (Canarias,
+   Ceuta, Melilla, fuera de la UE), plazo de envío, nota y validez. El Worker calcula los totales.
+2. **«Enviar al cliente»**: PDF «FACTURA PROFORMA» con numeración propia `P-AAAA-NNNN` (no es la serie fiscal) y
+   correo desde la cuenta de `COMMERCE_NOTIFY_ACCOUNT` (o la de formularios), con `Reply-To` a `COMMERCE_NOTIFY_TO`.
+   Cada envío lleva un enlace nuevo; editar una proforma enviada la devuelve a borrador e invalida el enlace.
+3. **Pago con tarjeta**: el enlace abre `/api/commerce/quote/<token>` (página propia; los escáneres de correo no
+   crean pagos) y su botón crea una sesión de Stripe Checkout por el importe exacto, una línea «Presupuesto
+   P-…». Solo con cobros abiertos (mismas puertas que el carrito). El pago es un pedido normal: webhook, factura en
+   la serie de la tienda, avisos y panel.
+4. **Transferencia**: con `quotes.transfer.iban` la proforma y el correo llevan IBAN y concepto; «Marcar pagado por
+   transferencia» crea el pedido pagado y la factura con «Pagado por transferencia bancaria». Pide la dirección
+   completa del cliente.
+5. Configuración opcional en `data/commerce.yml` (sección «Presupuestos y factura proforma» del README):
+   `quotes: { validity_days, transfer: { iban, holder, payment_text }, note }`.
+
 ## 14.10.1 — 2026-11-17 — «Conectar Gmail» detrás del espejo y dentro del CMS
 
 Corrección de 14.10.0: la URI de redirección usa el origen público del navegador (el de `baseURL`,

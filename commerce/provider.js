@@ -46,7 +46,14 @@ export function createPaymentProvider (env) {
       // Only the quoted country can be entered; postal zones are re-checked by the webhook.
       if (catalog.checkout?.shippingPolicy !== 'not_applicable') form.set('shipping_address_collection[allowed_countries][0]', totals.destination.country)
       // Let Stripe's 24-hour default start at real session creation; retries keep identical parameters.
-      snapshot.items.forEach((item, index) => {
+      // A proforma (14.11) is charged as one line for its exact total: discounts and
+      // free lines cannot be expressed as Checkout line items.
+      if (snapshot.quote) {
+        form.set('line_items[0][price_data][currency]', snapshot.currency)
+        form.set('line_items[0][price_data][unit_amount]', String(snapshot.totalMinor))
+        form.set('line_items[0][price_data][product_data][name]', `${labels.quote} ${snapshot.quote.reference}`)
+        form.set('line_items[0][quantity]', '1')
+      } else snapshot.items.forEach((item, index) => {
         const prefix = `line_items[${index}]`
         form.set(`${prefix}[price_data][currency]`, snapshot.currency)
         form.set(`${prefix}[price_data][unit_amount]`, String(item.unitAmountMinor))
@@ -55,7 +62,7 @@ export function createPaymentProvider (env) {
         form.set(`${prefix}[quantity]`, String(item.quantity))
       })
       // Line prices + shipping base + tax added on exclusive prices = totals.totalMinor.
-      if (totals.addedTaxMinor > 0) {
+      if (!snapshot.quote && totals.addedTaxMinor > 0) {
         const prefix = `line_items[${snapshot.items.length}]`
         form.set(`${prefix}[price_data][currency]`, snapshot.currency)
         form.set(`${prefix}[price_data][unit_amount]`, String(totals.addedTaxMinor))
@@ -76,7 +83,7 @@ export function createPaymentProvider (env) {
         form.set(`${prefix}[optional]`, 'true')
         form.set(`${prefix}[text][maximum_length]`, recipientPhone ? '40' : '255')
       })
-      if (totals.shippingBaseMinor > 0) {
+      if (!snapshot.quote && totals.shippingBaseMinor > 0) {
         form.set('shipping_options[0][shipping_rate_data][type]', 'fixed_amount')
         form.set('shipping_options[0][shipping_rate_data][display_name]', labels.shipping)
         form.set('shipping_options[0][shipping_rate_data][fixed_amount][amount]', String(totals.shippingBaseMinor))

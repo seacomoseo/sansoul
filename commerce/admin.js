@@ -10,6 +10,7 @@ import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
 import { AUDIENCE_SYNC, AUDIENCE_UNSUBSCRIBE, enqueueUnsubscribe, syncAudienceEvent } from './audience-brevo.js'
 import { hasMailNotifier, loadOrder, sendOrderNotice } from './notifier.js'
+import { handleQuotesAdmin } from './quotes.js'
 import { InvoiceError, countryName, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 
 const ORDER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -603,6 +604,7 @@ export async function handleAdmin (request, env, catalog) {
     }
     if (catalog?.audience && path === '/api/commerce/admin/contacts.csv' && request.method === 'GET') return contactsCsv(await listContacts(db, url.searchParams.get('scope') || 'consented'))
     if (catalog?.audience && path === '/api/commerce/admin/contacts/unsubscribe' && request.method === 'POST') return await unsubscribeContact(request, db, now)
+    if (/^\/api\/commerce\/admin\/quotes(?:\/|$)/.test(path)) return await handleQuotesAdmin({ request, env, catalog, db, path, url, now })
     if (path === '/api/commerce/admin/inventory' && request.method === 'POST') return await updateInventory(request, db, catalog, now)
     if (path === '/api/commerce/admin/reconcile' && request.method === 'POST') {
       const operation = url.searchParams.get('operation') || 'orders'

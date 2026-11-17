@@ -124,8 +124,18 @@ async function summary (db, env, manifest, now) {
     drive: { files: drive[0].files || 0, pending: drive[0].pending || 0 },
     retentionDays: retentionDays(env),
     siteMismatch: await siteCheck(db, manifest.site),
-    google: { configured: googleConfigured(env), grants: await listGrants(env), default: connectRef(env), fallback: await fallbackUse(db) }
+    google: { configured: googleConfigured(env), grants: await listGrants(env), default: connectRef(env), fallback: await fallbackUse(db) },
+    quoteForms: quoteForms(manifest)
   }
+}
+
+// Cart quote request forms (enrich commerce_quote): the orders panel lists their
+// submissions and prefills a proforma with the field names given here.
+function quoteForms (manifest) {
+  return Object.entries(manifest.forms || {})
+    .map(([form, ref]) => [form, manifest.specs?.[ref]])
+    .filter(([, spec]) => spec?.enrich?.type === 'commerce_quote')
+    .map(([form, spec]) => ({ form, lang: spec.lang, cart: spec.enrich.cart, fields: spec.enrich.fields && typeof spec.enrich.fields === 'object' ? spec.enrich.fields : null }))
 }
 
 // Display state of a submission: its owner job (else the only one), with the

@@ -641,6 +641,29 @@ Cómo funciona, en llano:
 - **Spam**: en la prueba real, Gmail mandó a spam el primer aviso a la tienda (la confirmación al comprador llegó a la bandeja). Pide a quien lo reciba que lo marque como «No es spam» o cree un filtro para el remitente.
 - **Probar**: `pnpm run test:commerce` (incluye `commerce/test/unit/invoice.test.js`); con un Worker de prueba, cambia `COMMERCE_NOTIFY_TO` a tu correo y lanza `POST /api/commerce/admin/outbox/dispatch` o espera al cron. Abre el PDF y compara con tu modelo.
 
+### Presupuestos y factura proforma
+
+Con `cart_quote: true`, `invoice` y `admin_panel: true`, el panel de pedidos (`/admin/orders/`) tiene la pestaña **«Presupuestos»**: las solicitudes del carrito pendientes y las proformas hechas. Requiere la migración D1 `0011_quotes.sql` (el CI la aplica).
+
+```yaml
+quotes:                      # opcional: sin la clave, valores por defecto
+  validity_days: 15          # validez de la proforma (1-90 días)
+  transfer:                  # opcional: sin IBAN, la proforma solo ofrece tarjeta
+    iban: ES00 0000 0000 0000 0000 0000
+    holder: Nombre del titular        # opcional; por defecto invoice.seller.name
+    payment_text: Pagado por transferencia bancaria   # opcional: texto en la factura
+  note: Texto fijo al pie de cada proforma (opcional)
+  # enabled: false           # desactiva las proformas aunque haya cart_quote
+```
+
+Cómo funciona:
+
+- **Preparar**: «Preparar proforma» abre el editor con el cliente (nombre, correo, teléfono, país y código postal de la solicitud) y las líneas del carrito (por referencia, con el precio del catálogo; se pueden cambiar, quitar o añadir conceptos libres). La tienda añade portes, descuento (importe o porcentaje, sobre los productos), IVA de la tienda o exento (el editor propone exento para Canarias, Ceuta, Melilla y fuera de la UE; la nota es `invoice.exempt_note`), plazo de envío, nota y validez. Un solo tipo de IVA por proforma. El Worker recalcula los totales al guardar.
+- **Enviar**: PDF «FACTURA PROFORMA» con numeración propia por año (`P-2026-0001`, nunca la serie fiscal) y correo desde la cuenta de `COMMERCE_NOTIFY_ACCOUNT` (o la de formularios), con el titular como remitente y `Reply-To` a `COMMERCE_NOTIFY_TO`. Cada envío genera un enlace nuevo y los anteriores dejan de servir; editar una proforma enviada la devuelve a borrador.
+- **Tarjeta**: el botón del correo abre `/api/commerce/quote/<token>`, una página del Worker con el resumen y el botón de pago (los escáneres de enlaces del correo solo hacen GET y no crean pagos). El botón crea en ese momento una sesión de Stripe Checkout por el importe exacto (una línea «Presupuesto P-…», dirección de envío limitada al país de la proforma). Necesita los cobros abiertos (las mismas puertas que el carrito); si están cerrados, el correo sale sin botón y el panel lo avisa. El pago es un pedido normal: webhook, factura en la serie de la tienda, avisos, confirmación al comprador y panel. La proforma pasa a «Pagada».
+- **Transferencia**: con `transfer.iban` (validado), el PDF y el correo llevan IBAN, titular y concepto. Al recibirla, «Marcar pagado por transferencia» crea el pedido pagado (hace falta dirección, localidad y código postal del cliente en el editor) y su factura con la forma de pago de `payment_text`.
+- **Coste**: un correo por envío y unas pocas consultas D1; el PDF no usa dependencias (~5 ms de CPU).
+
 ### Idioma de la compra, datos de empresa y entrega
 
 - **Idioma de la compra**: el carrito envía el idioma de la página (`es`, `en`, `de`, `fr`, `it`, `pt`); se guarda en el pedido y decide el idioma de la página de pago de Stripe (y de su recibo), las líneas «IVA» y «Envío», el nombre del producto y la confirmación al comprador. Pedidos sin idioma (carritos anteriores a 14.4) usan `order_notices.language`. La factura sigue en `invoice.language` y el aviso al vendedor en `merchant_language`.

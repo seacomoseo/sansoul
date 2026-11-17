@@ -35,6 +35,8 @@ const MERCHANT = Object.freeze({
     other: type => `Aviso de pedido (${type})`,
     missing: id => `Pedido ${id}: no se encontró en la base de datos. Revísalo en el panel de pagos.`,
     order: 'Pedido',
+    quote: 'Presupuesto',
+    discount: 'Descuento',
     payment: 'Pago',
     status: 'Estado',
     destination: 'Destino',
@@ -87,6 +89,8 @@ const MERCHANT = Object.freeze({
     other: type => `Order notice (${type})`,
     missing: id => `Order ${id}: not found in the database. Check it in the payments dashboard.`,
     order: 'Order',
+    quote: 'Quote',
+    discount: 'Discount',
     payment: 'Payment',
     status: 'Status',
     destination: 'Destination',
@@ -163,7 +167,12 @@ function keyValueTable (rows, title) {
 }
 
 function taxIncluded (totals, total) {
-  return totals.subtotalMinor + totals.shippingTotalMinor === total
+  return totals.subtotalMinor - (totals.discountMinor || 0) + totals.shippingTotalMinor === total
+}
+
+// Product label in notices: proforma lines may have no SKU.
+function itemLabel (line) {
+  return `${line.name || line.sku}${line.sku ? ` (${line.sku})` : ''}`
 }
 
 // Template text for `language`: its own entry, the one for every language ('*'),
@@ -221,14 +230,17 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
   }
   const totals = snapshot.totals || {}
   const amount = minor => money(minor, currency, unit, language)
-  const lines = (snapshot.items || []).map(line => `- ${line.quantity} × ${line.name || line.sku} (${line.sku}) — ${amount(line.lineTotalMinor)}`)
+  const lines = (snapshot.items || []).map(line => `- ${line.quantity} × ${itemLabel(line)} — ${amount(line.lineTotalMinor)}`)
+  const discount = totals.discountMinor > 0 ? [[m.discount, amount(-totals.discountMinor)]] : []
   const destination = [order.postal_code && `${m.postal} ${order.postal_code}`, order.country_code || totals.destination?.country].filter(Boolean).join(' · ')
   const rows = [
     [m.order, order.id],
+    ...(snapshot.quote ? [[m.quote, snapshot.quote.reference]] : []),
     [m.payment, order.payment_intent_id || order.session_id || '—'],
     [m.status, `${order.payment_status} / ${order.fulfillment_status}`],
     [m.destination, destination || m.pending],
     [m.subtotal, amount(totals.subtotalMinor ?? snapshot.subtotalMinor)],
+    ...discount,
     [m.shipping, amount(totals.shippingTotalMinor)],
     [m.taxes, amount(totals.taxMinor)],
     [m.total, amount(order.amount_total_minor)],
@@ -263,6 +275,7 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
     ...(note ? [note, ''] : [])].join('\n')
   const foot = [
     [m.subtotal, amount(totals.subtotalMinor ?? snapshot.subtotalMinor)],
+    ...discount,
     [m.shipping, amount(totals.shippingTotalMinor)],
     [taxIncluded(totals, order.amount_total_minor) ? m.taxIncluded : m.tax, amount(totals.taxMinor)],
     ...(order.refund_amount_minor ? [[m.refunded, amount(order.refund_amount_minor)]] : []),
@@ -270,10 +283,10 @@ export function renderOrderNotice ({ item, order, site, merchantDetails = false,
   ]
   const html = `<p style="font-family:Arial,sans-serif;font-size:16px;margin:0 0 6px"><strong>${escapeHtml(subject)}</strong></p>` +
     (explain ? (custom.intro ? `<div style="${PARAGRAPH};margin:0 0 16px">${explain.html}</div>` : `<p style="${PARAGRAPH};margin:0 0 16px">${explain.html}</p>`) : '') +
-    keyValueTable(rows.slice(0, 4)) +
+    keyValueTable(rows.slice(0, snapshot.quote ? 5 : 4)) +
     htmlTable({
       head: [m.colItem, m.colQty, m.colPrice],
-      rows: (snapshot.items || []).map(line => [`${line.name || line.sku} (${line.sku})`, String(line.quantity), amount(line.lineTotalMinor)]),
+      rows: (snapshot.items || []).map(line => [itemLabel(line), String(line.quantity), amount(line.lineTotalMinor)]),
       foot,
       right: [1, 2]
     }) +
@@ -344,6 +357,7 @@ function buyerMessage ({ order, site, catalog, hasInvoice }) {
   const unit = snapshot.minorUnit ?? 2
   const money = minor => formatMoney(minor, currency, unit, language)
   const lines = (snapshot.items || []).map(line => `- ${line.quantity} × ${line.name || line.sku} — ${money(line.lineTotalMinor)}`)
+  if (totals.discountMinor > 0) lines.push(`- ${t.discount} — ${money(-totals.discountMinor)}`)
   if (totals.shippingBaseMinor > 0) lines.push(`- ${t.shipping} — ${money(totals.shippingBaseMinor)}`)
   const name = order.buyer_name || order.recipient_name || ''
   const address = addressLines(order, language)
@@ -356,7 +370,8 @@ function buyerMessage ({ order, site, catalog, hasInvoice }) {
     ...(hasInvoice ? [t.invoice, ''] : []), ...(outro ? [outro.text] : [t.reply]), ''].join('\n')
   const items = snapshot.items || []
   const foot = [
-    ...(totals.shippingTotalMinor > 0 ? [[t.subtotal, money(totals.subtotalMinor)]] : []),
+    ...(totals.shippingTotalMinor > 0 || totals.discountMinor > 0 ? [[t.subtotal, money(totals.subtotalMinor)]] : []),
+    ...(totals.discountMinor > 0 ? [[t.discount, money(-totals.discountMinor)]] : []),
     ...(totals.shippingTotalMinor > 0 ? [[t.shipping, money(totals.shippingTotalMinor)]] : []),
     ...(totals.taxMinor > 0 ? [[taxIncluded(totals, order.amount_total_minor) ? t.taxIncluded : t.tax, money(totals.taxMinor)]] : []),
     [t.total, money(order.amount_total_minor), true]

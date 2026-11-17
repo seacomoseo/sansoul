@@ -38,7 +38,7 @@ function destinationGateStatements (db, order, snapshot, now, eventGuard, eventA
   const eligible = `EXISTS (
     SELECT 1 FROM order_delivery_details AS details
     WHERE details.order_id = orders.id AND details.country_code = ? AND details.postal_code IS NOT NULL
-      AND ${postalCodeSql(destination.country, 'details.postal_code')}
+      AND ${destination.anyPostalCode === true ? '1' : postalCodeSql(destination.country, 'details.postal_code')}
       ${prefixes.map(() => 'AND substr(details.postal_code, 1, ?) <> ?').join(' ')}
   )`
   const eligibleArgs = [destination.country, ...prefixes.flatMap(prefix => [prefix.length, prefix])]
@@ -164,6 +164,14 @@ export function paymentStatements (db, order, target, now, eventId = null) {
       SELECT ?, id, 'payment.paid', ?, 'pending', 0, ?, ?, ?
       FROM orders WHERE id = ? AND payment_status = 'paid' AND fulfillment_status = 'ready'${eventGuard}
     `).bind(eventKey, JSON.stringify({ eventKey, orderId: order.id, eventType: 'payment.paid' }), now, now, now, order.id, ...eventArgs))
+    // Proforma (14.11): the first paid attempt closes it, whichever attempt it was.
+    if (snapshot.quote?.id) {
+      statements.push(db.prepare(`
+        UPDATE quotes SET status = 'paid', order_id = ?, payment_method = ?, paid_at = ?, updated_at = ?
+        WHERE id = ? AND status IN ('draft', 'sent')
+          AND EXISTS (SELECT 1 FROM orders WHERE id = ? AND payment_status = 'paid')${eventGuard}
+      `).bind(order.id, snapshot.paymentMethod === 'transfer' ? 'transfer' : 'card', now, now, snapshot.quote.id, order.id, ...eventArgs))
+    }
     // Audience (opt-in per project): the consent chosen in the cart joins the email
     // Stripe returned. Only orders whose snapshot carries `audience` reach this table.
     if (snapshot.audience) {

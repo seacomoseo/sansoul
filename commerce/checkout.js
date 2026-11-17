@@ -14,7 +14,7 @@ const IDEMPOTENCY_KEY = /^[A-Za-z0-9._:-]{8,128}$/
 const RATE_LIMIT = 20
 const RATE_WINDOW_SECONDS = 600
 
-async function consumeRateLimit (db, request, env, now) {
+export async function consumeRateLimit (db, request, env, now) {
   const salt = env.COMMERCE_RATE_LIMIT_SALT
   const ip = await clientIp(request, env)
   if (typeof salt !== 'string' || salt.length < 32 || (!ip && env.COMMERCE_ENV !== 'test')) throw new CommerceError('rate_limit_unavailable', 503)
