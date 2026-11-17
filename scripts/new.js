@@ -18,7 +18,7 @@ import { parseArgs } from 'node:util'
 import { parse } from 'yaml'
 import { readProject } from './project.js'
 import { git, projectName, repoSecrets } from './new/lib.js'
-import repo from './new/repo.js'
+import repo, { identity } from './new/repo.js'
 import cloudflare from './new/cloudflare.js'
 import ciToken from './new/ci-token.js'
 import gitlab from './new/gitlab.js'
@@ -47,8 +47,9 @@ const publish = {
     if (!dirty && !unpushed) return ctx.done('nada que publicar')
     if (!ctx.apply) return ctx.todo(`commit y push a main (${ctx.changed.join(', ') || 'repositorio nuevo'})`)
     if (dirty) {
+      identity(ctx.dir)
       git(['add', ...(ctx.changed.length ? ctx.changed : ['-A'])], ctx.dir)
-      git(['commit', '--quiet', '-m', `SanSoul: alta de ${ctx.domain} (${ctx.changed.join(', ') || 'configuración'})`], ctx.dir)
+      git(['commit', '--quiet', '-m', `SanSoul: ${ctx.created ? 'alta de' : 'sh do new en'} ${ctx.domain} (${ctx.changed.join(', ') || 'configuración'})`], ctx.dir)
     }
     git(['push', '--quiet', '-u', 'origin', 'main'], ctx.dir)
     ctx.done(`publicado en ${ctx.owner}/${ctx.repo} (el CI despliega${ctx.workersDev ? ` en ${ctx.workersDev}` : ''})`)

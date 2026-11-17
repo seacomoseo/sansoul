@@ -85,7 +85,7 @@ function saveProject (ctx) {
 }
 
 // Without a global git identity, commit as the authenticated GitHub user.
-function identity (dir) {
+export function identity (dir) {
   try { git(['config', 'user.email'], dir); return } catch {}
   const user = JSON.parse(gh(['api', 'user']))
   git(['config', 'user.name', user.name || user.login], dir)
