@@ -41,11 +41,13 @@ export default {
       ctx.workersDev = `https://${ctx.worker}.${created.subdomain}.workers.dev`
       ctx.done(`workers.dev registrado: ${ctx.workersDev}`)
     }
-    if (!ctx.production) {
-      ctx.manual(`Producción (con aprobación): repetir con --only cloudflare,gsc --production para la zona ${ctx.domain}, sus DNS y el dominio del Worker`)
-      return
-    }
-    await production(ctx, cf, account)
+    if (ctx.production) return production(ctx, cf, account)
+    // Without --production, only look: what is missing becomes an approval item.
+    const pending = []
+    const view = { ...ctx, apply: false, todo: item => pending.push(item), manual: item => pending.push(item) }
+    await production(view, cf, account)
+    ctx.zoneId = view.zoneId
+    if (pending.length) ctx.manual(`Producción (con aprobación, --only cloudflare,gsc --production): ${pending.join('; ')}`)
   }
 }
 
@@ -79,7 +81,7 @@ export function sameName (a, b) {
 async function production (ctx, cf, account) {
   let [zone] = await cf(`/zones?name=${ctx.domain}&account.id=${account.id}`)
   if (!zone) {
-    if (!ctx.apply) return ctx.todo(`crear la zona ${ctx.domain} (Free)`)
+    if (!ctx.apply) return ctx.todo(`crear la zona ${ctx.domain} (Free) y apuntar sus DNS`)
     zone = await cf('/zones', { method: 'POST', body: { name: ctx.domain, account: { id: account.id }, type: 'full' } })
     ctx.done(`zona ${ctx.domain} creada`)
   }
@@ -89,6 +91,8 @@ async function production (ctx, cf, account) {
     return
   }
   ctx.done(`zona ${ctx.domain} activa`)
+  // With a Netlify mirror the domain points to Netlify; the Worker stays on workers.dev.
+  if (ctx.netlify) return ctx.done(`${ctx.domain} apunta al espejo de Netlify (${ctx.netlify}); el Worker no lleva dominio propio`)
   const domains = await cf(`/accounts/${account.id}/workers/domains?zone_id=${zone.id}`)
   for (const hostname of [ctx.domain, `www.${ctx.domain}`]) {
     const current = domains.find(d => d.hostname === hostname)
