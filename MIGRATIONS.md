@@ -42,6 +42,11 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.14.2 — 2026-11-17 — `sh do new`: producción solo se revisa sin `--production`
+
+**Impacto:** ninguno. Sin `--production`, el paso `cloudflare` comprueba en modo lectura la zona y los dominios del
+Worker y solo lista como pendiente de aprobación lo que falte.
+
 ## 14.14.1 — 2026-11-17 — `sh do new`: GA4 respeta la propiedad existente
 
 **Impacto:** ninguno. En un proyecto con `ga4` en `data/config.yml`, el paso `ga4` usa la propiedad de ese ID

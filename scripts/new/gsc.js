@@ -27,7 +27,7 @@ export default {
     else { await http(`${SC}/${encodeURIComponent(site)}`, { method: 'PUT', headers }); ctx.done(`${site} añadida`) }
 
     if (!verified) {
-      if (!ctx.production || !ctx.zoneId) return ctx.manual(`Verificar ${site}: repetir con --only cloudflare,gsc --production cuando la zona esté activa`)
+      if (!ctx.production || !ctx.zoneId) return ctx.manual(`Verificar ${site} (con aprobación, --only cloudflare,gsc --production, con la zona activa)`)
       if (!ctx.apply) return ctx.todo(`verificar ${site} con un registro TXT en Cloudflare`)
       const domain = { type: 'INET_DOMAIN', identifier: ctx.domain }
       const { token } = (await http(`${SV}/token`, { method: 'POST', headers, body: { site: domain, verificationMethod: 'DNS_TXT' } })).data
