@@ -42,6 +42,20 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.13.0 — 2026-11-17 — alta y migración de proyectos con `sh do new`
+
+**Impacto:** ninguno en los proyectos existentes. Sustituye al alta manual de `TODO.md` y a las herramientas
+privadas `sansoul-ci-token` y `sansoul-gitlab-backup`.
+
+1. **`sh <motor>/do new <dominio> --owner <org>`** da de alta un proyecto: repo privado copiado de `sansoul-demo`,
+   cuenta de Cloudflare (subdominio workers.dev), token de CI, copia en GitLab con clave propia, propiedad GA4,
+   Search Console, notas y hoja de accesos en Drive, y el primer push (el CI despliega). Sin `--apply` solo muestra
+   el plan; zona, DNS, dominio del Worker y verificación de Search Console necesitan además `--production`.
+2. **`sh do new [--only pasos]`** desde la raíz de un proyecto existente repite los mismos pasos, que son
+   idempotentes (cada uno busca sus recursos por nombre). Es la vía de las migraciones: token de CI, GitLab
+   (`--gitlab-old`, `--delete-old`), GA4 y Drive (pasa los archivos a la cuenta de la agencia y los renombra a
+   `<org>.md` / `<org> accesos.tsv`, o `<org>-<repo>`, conservando lo compartido).
+
 ## 14.12.0 — 2026-11-17 — `sh do up`/`down` seguros y comandos sin `../_tools`
 
 **Impacto:** solo quien usaba comandos que dependían de la carpeta `../_tools` del Mac de Loren. Sin acciones

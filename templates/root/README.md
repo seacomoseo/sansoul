@@ -40,6 +40,7 @@ sh do dev
 - `sh do up [mensaje]`: commit de todo, integra lo nuevo del remoto y sube. Ante un conflicto sin respuesta clara no pierde nada: copia tu trabajo en una rama `local/<fecha>` y deja un encargo listo para un agente.
 - `sh do down`: trae lo nuevo del remoto sin tocar lo que estás editando.
 - `sh do fonts`: convierte las fuentes `.ttf`/`.otf` de `assets/fonts/` en `uploads/fonts/*.woff2`.
+- `sh do new`: revisa o completa lo de fuera del repo (Cloudflare, GitLab, GA4, Search Console, Drive); sin `--apply` solo muestra el plan.
 
 `dev`, `cms` y `local` limpian `public/`, `resources/` y la salida del prebuild al
 terminar normalmente o recibir Ctrl-C, SIGTERM o SIGHUP. Solo se admite un servidor
