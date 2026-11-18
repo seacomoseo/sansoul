@@ -185,6 +185,8 @@ export async function startProductionServer (options = {}) {
   }
   const onSignal = () => { shutdown().catch(error => { console.error(error); process.exitCode = 1 }) }
   for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(signal, onSignal)
+  // Exit paths that skip shutdown (uncaught errors) still take the build and Worker down.
+  process.once('exit', () => lifecycle.killChildrenSync())
 
   async function rebuild () {
     if (stopping) return
@@ -199,6 +201,7 @@ export async function startProductionServer (options = {}) {
         worker = null
         await lifecycle.stopChildAndWait(previous.child)
       }
+      if (stopping) return
       const child = lifecycle.track(spawn('sh', ['do', 'build'], {
         cwd: projectDir,
         env: { ...process.env, SANSOUL_LIFECYCLE_TOKEN: lifecycle.lockToken, SANSOUL_BUILD_PRODUCTION: '1' },

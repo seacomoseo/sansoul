@@ -118,6 +118,8 @@ async function runPrebuild () {
 }
 
 function startServer () {
+  // A signal can land while the prebuild finishes: never start Hugo after shutdown began.
+  if (shuttingDown) return
   log('Starting Hugo server…')
   expectedServerExit = false
 
@@ -362,6 +364,7 @@ async function main () {
   lifecycle.removeGeneratedOutputs()
 
   const succeeded = await runPrebuild()
+  if (shuttingDown) return
   if (!succeeded) {
     await shutdown(prebuildFailureCode || 1)
     return
@@ -378,9 +381,17 @@ async function main () {
   startServer()
 }
 
-process.once('SIGINT', () => reportAsyncFailure(shutdown()))
-process.once('SIGTERM', () => reportAsyncFailure(shutdown()))
-process.once('SIGHUP', () => reportAsyncFailure(shutdown()))
+// Every stop signal waits for Hugo, the prebuild and the watchers. A repeated
+// signal must not fall back to Node's default handler, which would exit at
+// once and orphan Hugo; shutdown already escalates to SIGKILL on its own.
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+  process.on(signal, () => {
+    if (shuttingDown) return log(`${signal} received; still stopping child processes…`)
+    reportAsyncFailure(shutdown())
+  })
+}
+// Exit paths that skip shutdown (uncaught errors) still take Hugo down.
+process.on('exit', () => lifecycle.killChildrenSync())
 
 main().catch(error => {
   console.error(`${label} ${error.stack || error.message}`)

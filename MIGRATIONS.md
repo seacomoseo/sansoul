@@ -42,6 +42,13 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.16.1 — 2026-11-18 — `sh do dev|cms|local` no dejan Hugo huérfano
+
+**Impacto:** ninguno en los proyectos. Si llegaba una señal de parada (SIGINT, SIGTERM o SIGHUP) justo al terminar el
+prebuild, el supervisor limpiaba `public/` y `.sansoul-dev.lock` y después arrancaba `hugo server`, que quedaba vivo en
+el 1313 sin dueño. Ahora no arranca nada tras empezar la parada, una segunda señal no corta la espera y, si el proceso
+sale por un error, mata a sus hijos. `sh do local` tampoco lanza un build después de parar.
+
 ## 14.16.0 — 2026-11-18 — `{{% get %}}` en páginas de colección, `.sansoul-dev.lock` fuera de Git y fricciones de `sh do new`
 
 **Impacto:** compatible; puede cambiar el HTML de páginas de colección.
@@ -60,7 +67,7 @@ Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegram
 
 **Acciones obligatorias:** ninguna; `sh do update` aplica el punto 2.
 
-**Validación:** tras actualizar, `git check-ignore .sansoul-dev.lock` lo encuentra y `sh do build` termina bien. Si una
+**Validación:** tras actualizar, `git check-ignore .sansoul-dev.lock/owner` lo encuentra y `sh do build` termina bien. Si una
 sección compartida usa `{{% get … %}}`, revisa una página de colección: debe mostrar su propio valor.
 
 ## 14.15.2 — 2026-11-18 — `sh do new`: Worker por defecto = repo (`<repo>.<org>.workers.dev`)
