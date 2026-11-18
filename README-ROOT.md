@@ -111,7 +111,8 @@ Pasos, en este orden:
 3. **cloudflare**: la cuenta del cliente, que se llama como el proyecto (`params.project`, el nombre de su nota del
    Vault). Se encuentra por la zona del dominio, por el Worker o por ese nombre (o `--cf-account`); una cuenta puede
    tener varios dominios. Solo se renombra si aún tiene el nombre por defecto o el del dominio. Y su subdominio
-   workers.dev. Worker, D1 y KV los crea el CI en el primer despliegue.
+   workers.dev, que es el de la org: el Worker se llama como el repo (`<repo>.<org>.workers.dev`, p. ej.
+   `site.acme.workers.dev`; `params.worker` solo para otro nombre). Worker, D1 y KV los crea el CI en el primer despliegue.
 4. **ci-token**: token de Cloudflare limitado a esa cuenta, guardado como secreto `CLOUDFLARE_API_TOKEN`.
 5. **gitlab**: copia de refuerzo `seacomoseo/<org>` (o `<org>-<repo>`) con su propia clave (`GL_DEPLOY_KEY`).
 6. **netlify** (solo con `params.netlify`): comprueba el secreto `NETLIFY_AUTH_TOKEN`; el CI crea el espejo.

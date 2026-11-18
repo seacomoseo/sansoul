@@ -67,7 +67,7 @@ Opciones:
   --project "Nombre"  nombre del proyecto, como su nota del Vault (params.project): nombra la
                       cuenta de Cloudflare y los archivos de Drive
   --repo NAME         repositorio (por defecto site)
-  --worker NAME       Worker (por defecto el nombre del proyecto)
+  --worker NAME       Worker (por defecto el repo: <repo>.<org>.workers.dev)
   --mails a,b         correos del cliente (drive_mails)
   --members u1,u2     usuarios de GitHub del cliente (equipo clients: maintain en el repo)
   --netlify NAME      espejo de Netlify opcional
@@ -143,7 +143,7 @@ export function context (values, positionals) {
   } else if (consumer) {
     const project = readProject()
     const params = parse(fs.readFileSync('hugo.yml', 'utf8'))?.params || {}
-    base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: params.worker ? project.worker : '', netlify: project.netlify, mails: params.drive_mails, project: params.project }
+    base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: project.worker, netlify: project.netlify, mails: params.drive_mails, project: params.project }
   } else {
     throw new Error(`indica el dominio (o ejecútalo desde la raíz de un proyecto)\n\n${HELP}`)
   }
@@ -155,7 +155,7 @@ export function context (values, positionals) {
     ...base,
     name,
     project: String(values.project ?? base.project ?? '').trim(),
-    worker: (values.worker || base.worker || name).toLowerCase(),
+    worker: (values.worker || base.worker || base.repo).toLowerCase(),
     netlify: values.netlify ?? base.netlify ?? '',
     mails,
     members: String(values.members ?? '').split(',').map(m => m.trim().replace(/^@/, '')).filter(Boolean),

@@ -42,6 +42,13 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.15.2 — 2026-11-18 — `sh do new`: Worker por defecto = repo (`<repo>.<org>.workers.dev`)
+
+**Impacto:** ninguno en los proyectos. `sh do new` tomaba por defecto el owner (o `<owner>-<repo>`) como nombre del
+Worker, mientras que el CI (`scripts/project.js`) usa el repo: el despliegue y la producción podían apuntar a Workers
+distintos. Ahora ambos usan `params.worker` o, si falta, el repo (`site.acme.workers.dev`). Los proyectos migrados hasta
+hoy ya despliegan con el nombre del repo.
+
 ## 14.15.1 — 2026-11-18 — `sh do new`: cuentas de Loren como owners de la org
 
 **Impacto:** ninguno. El paso `team` deja `lorensansol`, `lorensansol2` y `seocomosea` como owners de la organización
