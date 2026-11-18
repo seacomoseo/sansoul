@@ -149,9 +149,9 @@ Side effects: Registers icons/scripts indirectly through called partials; does n
 {{- /*  More Vars  */ -}}
 {{- $mail          := or .form.mail site.Params.mail -}}
 {{- $form          := merge hugo.Data.styles.inputs (or .form dict) -}}
-{{- $action_gss    := "https://script.google.com/macros/s/AKfycbzEd6cjH5eTjzVxDVk6x-3Q9QwUHDMWpR8V1Ij1g6IG7MYwpPM_epAGpxJUR1__ljrWMQ/exec" -}}
-{{- $action        := or $form.action $action_gss -}}
-{{- /* `worker` posts to the project's own Worker (/api/forms/submit); see core/forms. */ -}}
+{{- /* Without an action, forms post to the project's own Worker
+  (/api/forms/submit; see core/forms). Any URL keeps its own provider. */ -}}
+{{- $action        := or $form.action "worker" -}}
 {{- $worker        := eq $action "worker" -}}
 {{- if $worker }}{{ $action = "/api/forms/submit" }}{{ end -}}
 {{- $googleScript  := in $action "script.google.com" -}}

@@ -125,8 +125,12 @@ Pasos, en este orden:
    Los destinatarios (de la hoja y de la lectura en GA4) salen en el plan. Si vienen de `hugo.yml` y no de `--mails`,
    `--apply` pregunta antes de compartir; sin terminal interactiva no comparte y deja el comando con `--mails` para
    repetirlo. Un `--mails` confirmado sustituye también `params.drive_mails`.
-10. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
-11. **retire** (solo con `--retire`, con la migración comprobada): borra el Cloudflare Pages antiguo y el repo antiguo
+10. **forms-history**: copia los envíos del proyecto desde la hoja central de formularios (pestañas
+    `<dominio>#<formulario>`) a su base de datos de Cloudflare, para verlos en el panel «Formularios» del CMS. Crea la
+    base si falta; repetirlo solo añade lo nuevo y no envía nada. Necesita el paso **cloudflare** en la misma
+    ejecución: `sh do new --only cloudflare,forms-history`. Detalle en [forms/README.md](forms/README.md).
+11. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
+12. **retire** (solo con `--retire`, con la migración comprobada): borra el Cloudflare Pages antiguo y el repo antiguo
     `seacomoseo/<dominio>`, con copia previa. No toca nada si el dominio aún apunta a Pages o si el repo antiguo
     tiene cambios posteriores a la migración.
 
@@ -967,7 +971,7 @@ o hay un fallo devuelve 503 en lugar de mostrar una salida parcial. No inyecta
 livereload: recarga el navegador después del build. Ctrl-C/SIGTERM/SIGHUP
 eliminan public/resources; sólo un proceso administrado por proyecto.
 
-Si el proyecto tiene formularios `action: worker` o comercio, `sh do local` también
+Si el proyecto tiene formularios del Worker (sin `action` o con `action: worker`) o comercio, `sh do local` también
 arranca el Worker del proyecto en tu equipo (`wrangler dev`) y le pasa todo lo que
 llega a `/api/*`, así que puedes enviar formularios y probar el carrito de verdad:
 
@@ -1220,6 +1224,12 @@ btn_mt_vl: 2
 ```
 
 ## Elegir el envío de formularios
+
+Desde 14.18.0, un formulario sin `action` (ni en el formulario ni en `inputs.action` de `data/styles.yml`) envía al
+Worker del propio proyecto: guarda cada envío en su base de datos, lo muestra en el panel «Formularios» del CMS y
+avisa por correo cuando la cuenta de Google está conectada ([forms/README.md](forms/README.md)). Una URL en `action`
+mantiene ese proveedor. Al actualizar desde una versión anterior, `sh do update` fija el Apps Script compartido en
+`inputs.action` para no cambiar nada; borrar esa línea pasa el proyecto al Worker.
 
 `form.ajax` vacío conserva el comportamiento del proveedor: Apps Script usa
 fetch, FormSubmit lo usa sin archivos y las otras acciones navegan normalmente.

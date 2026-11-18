@@ -1,9 +1,12 @@
 # Formularios con backend propio (Worker)
 
-Módulo opt-in del motor. Un formulario con `action: worker` (o todos, con
-`inputs.action: worker` en `data/styles.yml`) envía al Worker del propio
-proyecto en `POST /api/forms/submit`, same-origin. El resto de formularios sigue
-igual (GAS, FormSubmit o acción propia): el puente GAS no cambia.
+Envío por defecto desde 14.18.0. Un formulario sin `action` (ni propio ni en
+`inputs.action` de `data/styles.yml`), o con `action: worker`, envía al Worker
+del propio proyecto en `POST /api/forms/submit`, same-origin. Un formulario con
+una URL (Apps Script, FormSubmit o acción propia) sigue con ese proveedor: el
+puente GAS no cambia. Los proyectos anteriores a 14.18.0 conservan el Apps
+Script compartido porque la migración lo fija en `inputs.action`; quitarlo pasa
+el proyecto al Worker.
 
 ## Contrato navegador → Worker
 
@@ -246,7 +249,23 @@ en el cron. Los archivos ya copiados a Drive se quedan en Drive.
 
 ## Importar el histórico de Google Sheets
 
-Herramienta manual, nunca automática (ni CI, ni build, ni cron): al migrar un proyecto desde el backend antiguo, `node forms/scripts/import-sheet.js --csv <pestaña.csv> --form <id> --tz <zona de la hoja> --out <x.sql>` convierte una pestaña exportada a CSV en `INSERT OR IGNORE` sobre `forms_submissions` (marca `imported:sheets`, sin trabajos de envío, ids estables, repetible sin duplicar). Opciones: `--page /ruta/ --fixed-page` agrupa un formulario retirado bajo una sola entrada del panel; `--drop-values ❌` descarta celdas «no elegido». Se aplica con `wrangler d1 execute <db> --remote --file <x.sql>`, con aprobación y verificación de recuentos; después hay que borrar los CSV/SQL (datos personales). Deshacer: `DELETE FROM forms_submissions WHERE reasons LIKE '%imported:sheets%'`.
+**Hoja central (Apps Script compartido):** `sh do new --only cloudflare,forms-history`
+muestra el plan y `--apply` lo ejecuta. Exporta la hoja «Formularios» en
+memoria como XLSX (`forms/scripts/xlsx.js`, sin dependencias), toma las
+pestañas `<dominio>#<id del formulario>` (XLSX corta los nombres a 31
+caracteres: el id se recupera de los `id:` del proyecto y, si es ambiguo, el
+plan lo marca para revisar), crea la D1 `<worker>-forms` si falta, aplica sus
+migraciones registrándolas en `d1_migrations` como Wrangler, importa con
+`INSERT OR IGNORE` y comprueba que cada fila exista por su id. Repetirlo solo
+añade filas nuevas. Credenciales: el grant de Drive de la agencia y el token de
+usuario de Cloudflare. No escribe archivos locales.
+
+El panel aparece tras el siguiente despliegue aunque el proyecto ya no tenga
+formularios del Worker: la build publica la identidad del sitio
+(`files/forms-site`) y el CI activa el backend si encuentra esa D1
+(`worker-config.js --resolve`, `hasHistory`).
+
+**Otras hojas (CSV):** herramienta manual, nunca automática (ni CI, ni build, ni cron): al migrar un proyecto desde el backend antiguo, `node forms/scripts/import-sheet.js --csv <pestaña.csv> --form <id> --tz <zona de la hoja> --out <x.sql>` convierte una pestaña exportada a CSV en `INSERT OR IGNORE` sobre `forms_submissions` (marca `imported:sheets`, sin trabajos de envío, ids estables, repetible sin duplicar). Opciones: `--page /ruta/ --fixed-page` agrupa un formulario retirado bajo una sola entrada del panel; `--drop-values ❌` descarta celdas «no elegido». Se aplica con `wrangler d1 execute <db> --remote --file <x.sql>`, con aprobación y verificación de recuentos; después hay que borrar los CSV/SQL (datos personales). Deshacer: `DELETE FROM forms_submissions WHERE reasons LIKE '%imported:sheets%'`.
 
 ## Pruebas
 

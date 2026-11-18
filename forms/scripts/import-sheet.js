@@ -34,12 +34,20 @@ export function parseCsv (text) {
   return rows.filter(r => r.some(value => value.trim()))
 }
 
-// "2025-12-16 3:53:17" in the sheet's time zone -> epoch ms.
+// "2025-12-16 3:53:17" (CSV export) or a serial day number such as
+// 45849.5445 (XLSX export), both wall time in the sheet's time zone -> epoch ms.
 export function sheetTime (text, timeZone) {
-  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2}):(\d{2})$/.exec(text.trim())
-  if (!m) throw new Error(`bad_timestamp:${text}`)
-  const [y, mo, d, h, mi, s] = m.slice(1).map(Number)
-  const wall = Date.UTC(y, mo - 1, d, h, mi, s)
+  const value = String(text).trim()
+  let wall
+  if (/^\d+(\.\d+)?$/.test(value)) {
+    // Serial days since 1899-12-30, rounded to the second like Sheets shows it.
+    wall = Math.round((Number(value) * 86400000 + Date.UTC(1899, 11, 30)) / 1000) * 1000
+  } else {
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2}):(\d{2})$/.exec(value)
+    if (!m) throw new Error(`bad_timestamp:${text}`)
+    const [y, mo, d, h, mi, s] = m.slice(1).map(Number)
+    wall = Date.UTC(y, mo - 1, d, h, mi, s)
+  }
   const offset = at => {
     const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(new Date(at)).map(p => [p.type, p.value]))
     return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second) - at
@@ -52,8 +60,8 @@ export function sheetTime (text, timeZone) {
 const sha = text => createHash('sha256').update(text).digest('hex')
 const sql = value => `'${String(value).replace(/'/g, "''")}'`
 
-export function convert ({ csv, form, timeZone, pageDefault = '/', fixedPage = false, dropValues = [] }) {
-  const [header, ...body] = parseCsv(csv)
+export function convert ({ csv, rows, form, timeZone, pageDefault = '/', fixedPage = false, dropValues = [] }) {
+  const [header, ...body] = (rows || parseCsv(csv)).filter(row => row.some(value => String(value ?? '').trim()))
   const col = name => header.indexOf(name)
   const iTs = col('Timestamp')
   if (iTs < 0) throw new Error('missing_timestamp_column')
@@ -67,11 +75,11 @@ export function convert ({ csv, form, timeZone, pageDefault = '/', fixedPage = f
     let origin = ''
     try { if (iUrl >= 0 && row[iUrl]) origin = new URL(row[iUrl]).pathname } catch { /* keep the default */ }
     if (origin && !fixedPage) page = origin
-    const fields = header.map((name, i) => [name, (row[i] || '').replace(/\r\n?/g, '\n')]).filter(([name, value]) => !DROP.has(name) && value.trim() !== '' && !dropValues.includes(value.trim()))
+    const fields = header.map((name, i) => [name, String(row[i] ?? '').replace(/\r\n?/g, '\n')]).filter(([name, value]) => !DROP.has(name) && value.trim() !== '' && !dropValues.includes(value.trim()))
     // One panel entry for a retired form that lived on many pages: keep where it came from as a field.
     if (fixedPage && origin) fields.push(['Página de origen', origin])
     const key = formKey(page, form)
-    const legacy = iId >= 0 ? row[iId].trim() : ''
+    const legacy = iId >= 0 ? String(row[iId] ?? '').trim() : ''
     const id = /^[A-Za-z0-9-]{16,64}$/.test(legacy) ? legacy : `legacy-${sha(`${form}\n${row.join('\u0001')}`).slice(0, 24)}`
     if (seen.has(id)) continue // duplicated id in the sheet: the first row wins
     seen.add(id)

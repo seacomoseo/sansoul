@@ -1,0 +1,17 @@
+{{- /*
+Partial: files/forms-site
+Purpose: Site identity of the forms Worker (domain, origin, Drive project and CMS
+  repository), computed like each form policy in func/form-manifest.
+Context: page.
+Returns: JSON string published at /_forms/_site.json (removed by build-manifest).
+*/ -}}
+{{- $p := partialCached "func/project" "project" -}}
+{{- $project := printf "%s-%s" $p.owner $p.repo -}}
+{{- if eq $p.repo "seacomoseo" }}{{ $project = $p.repo }}{{ else if eq $p.repo "site" }}{{ $project = $p.owner }}{{ end -}}
+{{- $base := urls.Parse site.BaseURL -}}
+{{- dict
+  "site"    $p.domain
+  "origin"  (print $base.Scheme "://" $base.Host)
+  "project" (strings.Trim $project "-")
+  "repo"    (or hugo.Data.config.cms_repo (print $p.owner "/" $p.repo))
+  | jsonify -}}

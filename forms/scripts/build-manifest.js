@@ -6,6 +6,8 @@ import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { formKey, MANIFEST_VERSION, validateManifest } from '../manifest.js'
 
+const SITE_FILE = '_site.json'
+
 export function buildManifest ({ root = process.cwd(), publicDir = 'public', out = 'worker/forms.generated.js' } = {}) {
   const source = resolve(root, publicDir, '_forms')
   const forms = {}
@@ -15,7 +17,7 @@ export function buildManifest ({ root = process.cwd(), publicDir = 'public', out
   let repo = ''
   const origins = new Set()
   // No published policies: refresh to an empty manifest so a stale one never survives.
-  const names = existsSync(source) ? readdirSync(source).filter(file => file.endsWith('.json')).sort() : []
+  const names = existsSync(source) ? readdirSync(source).filter(file => file.endsWith('.json') && file !== SITE_FILE).sort() : []
   for (const name of names) {
     const { page, site: domain, project: folder, repo: repoName, origin, ...spec } = JSON.parse(readFileSync(join(source, name), 'utf8'))
     if (origin) origins.add(origin)
@@ -26,6 +28,12 @@ export function buildManifest ({ root = process.cwd(), publicDir = 'public', out
     specs[ref] = spec
     forms[formKey(page, spec.id)] = ref
   }
+  // Site identity without Worker forms: the panel still serves imported history.
+  const identity = existsSync(join(source, SITE_FILE)) ? JSON.parse(readFileSync(join(source, SITE_FILE), 'utf8')) : {}
+  site ||= identity.site || ''
+  project ||= identity.project || ''
+  repo ||= identity.repo || ''
+  if (identity.origin) origins.add(identity.origin)
   const manifest = validateManifest({ version: MANIFEST_VERSION, site, project, repo, origins: [...origins].sort(), forms, specs })
   const target = resolve(root, out)
   mkdirSync(resolve(target, '..'), { recursive: true })

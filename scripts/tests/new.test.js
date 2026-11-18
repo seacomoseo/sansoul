@@ -10,6 +10,7 @@ import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
 import { context, identityHint, STEPS } from '../new.js'
 import { renamable, sameName } from '../new/cloudflare.js'
+import { domainTabs, projectFormIds } from '../new/forms-history.js'
 
 const quiet = fn => {
   const log = console.log
@@ -257,4 +258,48 @@ test('drive step never shares with unconfirmed hugo.yml mails in a non-interacti
   ctx.manuals.length = 0
   await quietAsync(() => drive.run(ctx))
   assert.equal(posts.filter(url => url.includes('/tsv/permissions')).length, 2)
+})
+
+test('forms history takes only this domain\'s tabs and restores cut form ids', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-forms-history-'))
+  try {
+    fs.mkdirSync(path.join(dir, 'content/single'), { recursive: true })
+    fs.mkdirSync(path.join(dir, 'data/section'), { recursive: true })
+    fs.writeFileSync(path.join(dir, 'content/single/contacto.es.md'), '---\nform:\n  id: form-presupuesto-instalacion\n---\n')
+    fs.writeFileSync(path.join(dir, 'data/section/form.yml'), "boxes:\n  - id: 'form-contacto'\n  - id: form-presupuesto-cargador\n")
+    const ids = projectFormIds(dir)
+    for (const id of ['form-presupuesto-instalacion', 'form-contacto', 'form-presupuesto-cargador']) assert.ok(ids.has(id), id)
+
+    const head = ['Timestamp', 'URL', 'Nombre']
+    const row = ['45849.5', 'https://acme.es/', 'Ana']
+    // XLSX caps tab names at 31 characters: 'acme.es#' leaves 23 for the form id.
+    const cutTab = 'acme.es#form-presupuesto-instal'
+    const unknownTab = 'acme.es#form-presupuesto-xyzwvu'
+    assert.equal(cutTab.length, 31)
+    assert.equal(unknownTab.length, 31)
+    const tabs = new Map([
+      ['acme.es#form-contacto', [head, row]],
+      ['acme.es#form-vacio', [head]], // header only: nothing to import
+      [cutTab, [head, row]],
+      [unknownTab, [head, row, row]],
+      ['otro.es#form-contacto', [head, row]],
+      ['xacme.es#form-contacto', [head, row]]
+    ])
+    assert.deepEqual(domainTabs(tabs, 'acme.es', ids).map(({ tab, form, cut, rows }) => [tab, form, cut, rows.length]), [
+      ['acme.es#form-contacto', 'form-contacto', false, 2],
+      [cutTab, 'form-presupuesto-instalacion', false, 2],
+      [unknownTab, 'form-presupuesto-xyzwvu', true, 3]
+    ])
+    // Two declared ids share the cut prefix: keep the tab name and flag it.
+    const [ambiguous] = domainTabs(new Map([[cutTab, [head, row]]]), 'acme.es', new Set(['form-presupuesto-instalacion', 'form-presupuesto-instalador']))
+    assert.deepEqual([ambiguous.form, ambiguous.cut], ['form-presupuesto-instal', true])
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('forms history runs after cloudflare and before publish', () => {
+  const ids = STEPS.map(s => s.id)
+  assert.ok(ids.indexOf('cloudflare') < ids.indexOf('forms-history'))
+  assert.ok(ids.indexOf('forms-history') < ids.indexOf('publish'))
 })

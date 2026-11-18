@@ -74,7 +74,7 @@ provider credentials in the environment and never infer unavailable video facts.
 - `ci/run`: the complete consumer CI (backup, build, Worker deploy, mirrors) called by the generated workflow stub.
 - `_examples/`: copyable integration fixture plus human/agent parameter references.
 - `commerce/`: opt-in commerce backend (Worker/Pages handlers, D1 migrations, catalog generator and suites). Keep checkout fail-closed; run `pnpm run test:commerce` and, for D1/runtime changes, `pnpm run test:commerce:workers` from this directory.
-- `forms/`: opt-in forms backend for the project Worker (`action: worker`): same-origin intake, D1 record/outbox, KV attachments, delivery providers and the build-time policy manifest. Run `pnpm run test:forms` from this directory after changes.
+- `forms/`: default forms backend of the project Worker (no `action`, or `action: worker`; 14.18.0 pins existing projects to the legacy Apps Script): same-origin intake, D1 record/outbox, KV attachments, delivery providers and the build-time policy manifest. Run `pnpm run test:forms` from this directory after changes.
 
 ## Page builder implementation
 
