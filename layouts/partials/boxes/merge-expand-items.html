@@ -1,6 +1,16 @@
 {{ $items := slice }}
 {{ $duo   := partial "func/duo" . }}
-{{ $box   := $duo.box }}
+{{ $box   := $duo.box | default dict }}
+{{/*  Global box defaults (styles.yml `box`) fill only the keys this group leaves unset  */}}
+{{ with partialCached "func/style-box" "box" "box" }}
+  {{ $fill := dict }}
+  {{ range $key, $setting := . }}
+    {{ if eq (index $box $key) nil }}
+      {{ $fill = merge $fill (dict $key $setting) }}
+    {{ end }}
+  {{ end }}
+  {{ $box = merge $box $fill }}
+{{ end }}
 {{ $boxes := $duo.boxes }}
 {{ $group_margins := dict }}
 {{ $box_defaults := $box }}

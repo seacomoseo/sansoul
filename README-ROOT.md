@@ -145,6 +145,18 @@ Pasos, en este orden:
 
 Si se ejecuta `sh do new` antes de actualizar, se detiene y recuerda estos pasos.
 
+**Lo que el script no puede hacer** (sale en «Solo Loren» al final de cada ejecución; repásalo en cada alta o
+migración):
+
+- **Avatar de la organización** con el icono del cliente en PNG o JPG cuadrado; basta el símbolo, sin el texto del logo (GitHub no tiene API para esto).
+- **Aprobar «CMS Authenticator» en la organización.** Las organizaciones nuevas restringen las aplicaciones de terceros;
+  sin esta aprobación el CMS inicia sesión pero dice que no tiene acceso al repositorio. Se hace como owner con el botón
+  «Grant» de la aplicación.
+- **Producción**, con aprobación: `--only cloudflare,gsc --production`, y después `--retire` (plan y `--apply`).
+- **Tras el paso a producción**, pedir al cliente que conecte su cuenta de Google en el panel «Formularios» del CMS, para
+  que los avisos salgan de su Gmail y los adjuntos vayan a su Drive.
+- Crear la cuenta de Cloudflare si no existe, y el token de Netlify si el proyecto usa espejo.
+
 Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo
 se hace con `--production`, después de aprobarlo. `--rotate` renueva el token de CI y
 la clave de GitLab. Las credenciales se leen de variables de entorno o de
@@ -399,6 +411,8 @@ Cada entrada traducible usa el sufijo `.<lang>.md`, por ejemplo `servicio.es.md`
 
 Un archivo `data/types/<type>.yml` declara una colección. Sus páginas viven en `content/<type>/` y su índice opcional en `content/<type>/_index.<lang>.md`.
 
+La página de la colección muestra por defecto el listado de sus fichas. Con `index_tpl: true` en `data/types/<type>.yml` usa la misma plantilla del tipo, para convertirla en una landing (por ejemplo, una página regional que enlaza a todos los municipios). Las secciones que solo correspondan a las fichas o al índice se separan con `if: not collection` o `if: collection`. Las claves del `_index` que no son metadatos de la colección (`hero`, `zonas`, `landing`…) llegan a esa página como parámetros, igual que el front matter de una ficha; `tpl` en el `_index` se ignora. El índice es `noindex` salvo `seo.noindex: false`.
+
 Los tipos base reconocidos incluyen `article`, `event`, `product`, `brand`, `author`, `org`, `service` y `page`. Nombres habituales como `blog`, `new`, `category`, `supplier` o `manufacturer` reciben valores i18n predeterminados, pero pueden sobrescribirse por completo.
 
 Tres tipos tienen un papel estructural:
@@ -484,6 +498,8 @@ Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, dis
 | `links`, `dots`, `when`, `gss` | Enlaces, redes, horarios y datos tabulares. |
 | `boxes` | Subcajas recursivas. |
 
+Los defaults de bloque `step`, `gallery`, `faq`, `review`, `when`, `dot`, `link`, `form` y `geo` también pueden fijarse para todo el sitio en `data/styles.yml`, con las mismas claves que en la caja (pestaña Estilos del CMS). `box` admite además un subconjunto de claves de caja para todas las cajas: separación y carrusel del grupo (`gap`, `gap_vs`, `gap_ny`, `infinite`, `time`, `pips`, `arrows`, `align_x`, `align_y`), `caps`, `line`, las de Markdown (`md_*`), `icon_size`, `icon_color`, las de imagen (`disc`, `contain`, `border`, `inset`, `gray`, `shade`), `alpha`, `scroll`, `space`, `pd`, `pd_vs`, `align`, `align_vl`, las de botón (`il`, `ir`, `btn`, `btn_dot`, `btn_sm`, `btn_full`, `btn_mt`, `btn_mt_vl`, `swap`) y `sort`. Solo rellenan lo que la sección o la caja no definen. En el archivo y en el CMS van al final, después de los tokens de diseño. Se aplican a toda caja que pinte ese bloque y cualquier valor de la caja o de su `box` los sobrescribe. `form` sustituye a la antigua clave `inputs` desde 14.19.0; `inputs` se sigue leyendo como respaldo.
+
 Los formularios admiten `type: range` con `min`, `max`, `step` y `value`,
 incluido el cero. El control tiene etiqueta, valor visible y teclado nativo;
 también está disponible en el CMS. `show_if` y `req_if` interpretan `&&` antes
@@ -504,7 +520,7 @@ campos de texto muestran un contorno interior al recibir foco de teclado;
 radios y casillas usan un contorno exterior en el color del texto. Comprueba
 el contraste de texto, foco y fondo cuando personalices los colores.
 
-`get` obtiene valores de la página o de `content/global.<lang>.yml`. `remap` mueve, copia o elimina rutas de parámetros. `if` condiciona el renderizado. Son herramientas potentes: pruébalas con una página aislada antes de reutilizarlas globalmente.
+`get` obtiene valores de la página o de `content/global.<lang>.yml`. `remap` mueve, copia o elimina rutas de parámetros. `if` condiciona el renderizado: una palabra clave (`content`, `rel`, `children`, `collection`…), una ruta de parámetro que debe tener valor (`zonas`, `landing.s1`), una igualdad de texto (`province=murcia`), cualquiera precedida de `not `, o varias con `or a b` / `and a b` (`!término` niega uno solo: `and province=alicante !landing.deduction`). Son herramientas potentes: pruébalas con una página aislada antes de reutilizarlas globalmente.
 
 Los formularios enviados a Google Apps Script asignan un `_submission_id` estable y conservan temporalmente en `localStorage` los envíos sin recibo verificable para reintentarlos. También adjuntan `User Agent` y, cuando el servicio externo responde en 1,5 segundos, la IP pública consultada mediante ipify; un fallo de esa consulta nunca bloquea el formulario. El Apps Script receptor debe persistir el payload antes de responder y devolver el mismo identificador. Documenta este tratamiento y su finalidad en la política de privacidad del sitio.
 
@@ -1066,7 +1082,7 @@ individuales usan `duplicate_if_empty` por defecto; los campos de medios con
 `multiple: true` usan `i18n: true`, porque Sveltia no admite aquella estrategia
 para arrays. Una configuración i18n explícita se conserva.
 
-`inputs.labels` en estilos y `form.labels` por formulario admiten `in`, `out` y
+`form.labels` en estilos y por formulario admiten `in`, `out` y
 `both`. Con `both`, una etiqueta HTML asociada empieza dentro del campo vacío,
 sube al enfocar o tener valor y vuelve al interior al vaciarlo y perder foco.
 No se necesita JavaScript para sincronizarla: responde también a valores nativos
@@ -1225,11 +1241,11 @@ btn_mt_vl: 2
 
 ## Elegir el envío de formularios
 
-Desde 14.18.0, un formulario sin `action` (ni en el formulario ni en `inputs.action` de `data/styles.yml`) envía al
+Desde 14.18.0, un formulario sin `action` (ni en el formulario ni en `form.action` de `data/styles.yml`) envía al
 Worker del propio proyecto: guarda cada envío en su base de datos, lo muestra en el panel «Formularios» del CMS y
 avisa por correo cuando la cuenta de Google está conectada ([forms/README.md](forms/README.md)). Una URL en `action`
 mantiene ese proveedor. Al actualizar desde una versión anterior, `sh do update` fija el Apps Script compartido en
-`inputs.action` para no cambiar nada; borrar esa línea pasa el proyecto al Worker.
+`form.action` (antes `inputs.action`) para no cambiar nada; borrar esa línea pasa el proyecto al Worker.
 
 `form.ajax` vacío conserva el comportamiento del proveedor: Apps Script usa
 fetch, FormSubmit lo usa sin archivos y las otras acciones navegan normalmente.

@@ -145,6 +145,19 @@
       )
     ))
     (partial "cms/field" (dict
+      "alt"    `styles_shadow`
+      "name"   `shadow`
+      "widget" `dict`
+      "req"    true
+      "fields" (slice
+        (partial "cms/field" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `float`  "step" 0.05 "min" -1 "max" 1  "req" true))
+        (partial "cms/field" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `float`  "step" 0.05 "min" -1 "max" 1  "req" true))
+        (partial "cms/field" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `float`  "step" 0.05          "max" 1  "req" true))
+        (partial "cms/field" (dict "alt" `styles_shadow_color` "name" `color` "widget" `select` "opts" `~opts_color_bg`       "req" true))
+        (partial "cms/field" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `float`  "step" 0.05          "max" 1  "req" true))
+      )
+    ))
+    (partial "cms/field" (dict
       "alt"    `styles_rounded`
       "name"   `rounded`
       "widget" `dict`
@@ -189,28 +202,39 @@
       )
     ))
     (partial "cms/field" (dict
-      "alt"    `styles_inputs`
-      "name"   `inputs`
+      "alt"    `styles_box`
+      "name"   `box`
       "widget" `dict`
-      "req"    true
-      "fields" (slice
-        (partial "cms/field" (dict "alt" `styles_inputs_fill`    "name" `fill`   "widget" `bool`                         "req" true))
-        (partial "cms/field" (dict "alt" `styles_inputs_labels`  "name" `labels` "widget" `select` "opts" `~opts_labels` "req" true))
-        (partial "cms/field" (dict "alt" `styles_inputs_consent` "name" `consent`                                                  ))
-      )
+      "fields" (partial "cms/fields" (slice
+        (partial "cms/group" (dict "name" "layout" "label" (index . "cms_group_layout") "fields" (slice
+          `~gap` `~gap_vs` `~gap_ny` `~slider_infinite` `~slider_time` `~slider_pips` `~slider_arrows` `~align_x` `~align_y`
+        )))
+        (partial "cms/group" (dict "name" "titles" "label" (index . "cms_group_titles") "fields" (slice `~caps` `~line`)))
+        (partial "cms/group" (dict "name" "md" "label" (index . "cms_group_md") "fields" (slice
+          `~md_align` `~md_align_vl` `~md_sm` `~md_caps` `~md_line` `~md_index` `~md_nav` `~md_border`
+        )))
+        (partial "cms/group" (dict "name" "icon" "label" (index . "cms_group_icon") "fields" (slice `~icon_size` `~icon_color`)))
+        (partial "cms/group" (dict "name" "img" "label" (index . "cms_group_img") "fields" (slice
+          `~contain` `~border` `~inset` `~disc` `~gray` `~shade`
+        )))
+        (partial "cms/group" (dict "name" "btn" "label" (index . "cms_group_btn") "fields" (slice
+          `~il` `~ir` `~swap` `~btn` `~btn_dot` `~btn_sm` `~btn_full` `~btn_mt` `~btn_mt_vl`
+        )))
+        (partial "cms/group" (dict "name" "bg" "label" (index . "cms_group_bg") "fields" (slice `~alpha` `~scroll`)))
+        (partial "cms/group" (dict "name" "boxi" "label" (index . "cms_group_boxi") "fields" (slice
+          `~align` `~align_vl` `~space` `~pd` `~pd_vs`
+        )))
+        (partial "cms/group" (dict "name" "other" "label" (index . "cms_group_other") "fields" (slice `~sort`)))
+      ))
     ))
-    (partial "cms/field" (dict
-      "alt"    `styles_shadow`
-      "name"   `shadow`
-      "widget" `dict`
-      "req"    true
-      "fields" (slice
-        (partial "cms/field" (dict "alt" `styles_shadow_left`  "name" `left`  "widget" `float`  "step" 0.05 "min" -1 "max" 1  "req" true))
-        (partial "cms/field" (dict "alt" `styles_shadow_top`   "name" `top`   "widget" `float`  "step" 0.05 "min" -1 "max" 1  "req" true))
-        (partial "cms/field" (dict "alt" `styles_shadow_blur`  "name" `blur`  "widget" `float`  "step" 0.05          "max" 1  "req" true))
-        (partial "cms/field" (dict "alt" `styles_shadow_color` "name" `color` "widget" `select` "opts" `~opts_color_bg`       "req" true))
-        (partial "cms/field" (dict "alt" `styles_shadow_alpha` "name" `alpha` "widget" `float`  "step" 0.05          "max" 1  "req" true))
-      )
-    ))
+    `~step`
+    `~gallery`
+    `~faq`
+    `~review`
+    `~when`
+    `~dot`
+    `~link`
+    `~form`
+    `~geo`
   ))
 }}

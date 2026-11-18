@@ -186,7 +186,7 @@ Las claves especializadas se mapean así:
 | `imgs`, `limgs` | `blocks/gallery.html` |
 | `faqs` | `blocks/faq.html` |
 | `reviews` | `blocks/reviews.html` |
-| `inputs` | `blocks/form.html` |
+| `inputs` | `blocks/form.html` (defaults: `styles.form`, legacy `styles.inputs`) |
 | `geos` | `blocks/map.html` |
 | `links` | `blocks/links.html` |
 | `dots` | `blocks/dots.html` |

@@ -27,7 +27,7 @@ Contract: Hugo's parsed dates keep their declared timezone; the browser never re
 {{- range $months }}{{ $years = $years | append (substr . 0 4) }}{{ end -}}
 {{- $years = uniq $years -}}
 <div{{ partial "func/attrs" (dict "class" (slice "calendar" "box__block") "style" (partial "blocks/margin-style" .block_spacing)) }} data-calendar data-calendar-timezone="{{ site.Params.time_zone | default "UTC" }}">
-  <div class="calendar__nav{{ if hugo.Data.styles.inputs.fill }} form--fill-inputs{{ end }}" hidden>
+  <div class="calendar__nav{{ if (partialCached "func/style-block" "form" "form").fill }} form--fill-inputs{{ end }}" hidden>
     <label class="calendar__select">{{ i18n "calendar_view" }}
       <span class="calendar__field"><span class="form__item-border" aria-hidden="true"></span><select data-calendar-mode>
         <option value="month">{{ i18n "calendar_month" }}</option>

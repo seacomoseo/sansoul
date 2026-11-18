@@ -1,0 +1,30 @@
+{{/*
+Partial: func/style-box
+Purpose: Return the global box defaults of data/styles.yml (`box`), limited to the
+  presentation keys that are safe to share across every box.
+Context: Ignored (call through partialCached with a constant key).
+Returns: Map with the allowed keys that styles.yml sets (may be empty).
+Side effects: None.
+Example: {{ $defaults := partialCached "func/style-box" "box" "box" }}
+*/}}
+{{ $allowed := slice
+  "gap" "gap_vs" "gap_ny" "infinite" "time" "pips" "arrows" "align_y" "align_x"
+  "caps" "line"
+  "md_align" "md_align_vl" "md_sm" "md_caps" "md_line" "md_index" "md_nav" "md_border"
+  "icon_size" "icon_color"
+  "disc" "contain" "border" "inset" "gray" "shade"
+  "alpha" "scroll"
+  "space" "pd" "pd_vs" "align" "align_vl"
+  "il" "ir" "btn" "btn_dot" "btn_sm" "btn_full" "btn_mt" "btn_mt_vl" "swap"
+  "sort"
+}}
+{{ $value := dict }}
+{{ $box := (hugo.Data.styles | default dict).box }}
+{{ if reflect.IsMap $box }}
+  {{ range $key, $setting := $box }}
+    {{ if and (in $allowed $key) (ne $setting nil) }}
+      {{ $value = merge $value (dict $key $setting) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $value }}

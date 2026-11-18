@@ -97,6 +97,12 @@ colors:
     gray: '#767676' # string hex color
     dark: '#282525' # string hex color
     black: '#000000' # string hex color
+shadow:
+  left: 0.15 # [ 0.00 - 99.00 ]
+  top: 0.15 # [ 0.00 - 99.00 ]
+  blur: 0 # [ 0.00 - 99.00 ]
+  color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such ]
+  alpha: 0.85 # [ 0.00 - 1.00 ]
 rounded:
   radius: 0.33 # [ 0.00 - 1.25 ]
   chamfer: true # boolean
@@ -113,12 +119,20 @@ btns:
     type: base # [ base, title, cursive ]
     bold: false # boolean
     caps: false # boolean
-inputs:
+# Global defaults (optional), last so they read as overrides of the design tokens:
+# `box` takes a fixed subset of box keys (layout, titles, Markdown, icon, image,
+# button, background, box and sort); the blocks take the same keys as their map in
+# _examples/data/section/example.yml (step, gallery, faq, review, when, dot, link,
+# form, geo). Any section or box value wins.
+# box:
+#   md_align: left
+#   btn: cta
+# step:
+#   border: cta
+# faq:
+#   headers: true
+# review:
+#   slider: true
+form:
   fill: false # boolean
   labels: in # [ in, out, both ]
-shadow:
-  left: 0.15 # [ 0.00 - 99.00 ]
-  top: 0.15 # [ 0.00 - 99.00 ]
-  blur: 0 # [ 0.00 - 99.00 ]
-  color: black # [ main, main-light, main-dark, alt, alt-light, alt-dark, cta, cta-light, cta-dark, white, light, gray, dark, black, turn, such ]
-  alpha: 0.85 # [ 0.00 - 1.00 ]

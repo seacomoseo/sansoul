@@ -90,7 +90,7 @@ Side effects: Publishes CSS; stores the ordered resource list in sansoul.assets.
 
     "styles-rounded-radius"            (.rounded.radius                  | default 0)
     "styles-rounded-chamfer"           (.rounded.chamfer                 | not | not | string)
-    "styles-inputs-fill"               (.inputs.fill                     | not | not | string)
+    "styles-inputs-fill"               ((partialCached "func/style-block" "form" "form").fill | not | not | string)
 
     "styles-btns-pill"                 (.btns.pill                       | not | not | string)
     "styles-btns-disc"                 (.btns.disc                       | not | not | string)

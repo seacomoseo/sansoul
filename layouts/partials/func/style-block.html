@@ -1,0 +1,22 @@
+{{/*
+Partial: func/style-block
+Purpose: Return the global defaults that data/styles.yml defines for one box block.
+Context: string block key: step, gallery, faq, review, when, dot, link, form or geo.
+Returns: Map (empty when styles.yml defines nothing). `form` also reads the legacy
+  `inputs` key (renamed by the 14.19.0 migration); `form` wins on conflicts.
+Side effects: None.
+Example: {{ $faq := merge (partialCached "func/style-block" "faq" "faq") (.faq | default dict) }}
+*/}}
+{{ $styles := hugo.Data.styles | default dict }}
+{{ $value  := index $styles . }}
+{{ if not (reflect.IsMap $value) }}
+  {{ $value = dict }}
+{{ end }}
+{{ if eq . "form" }}
+  {{ with $styles.inputs }}
+    {{ if reflect.IsMap . }}
+      {{ $value = merge . $value }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $value }}

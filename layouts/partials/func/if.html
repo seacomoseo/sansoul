@@ -1,3 +1,17 @@
+{{/*
+Partial: func/if
+Purpose: Evaluate an author `if` condition for a section, box or modal.
+Context:
+  - Page (page.Page, required): Current page.
+  - if (string, optional): Condition. Nil renders. Accepted forms: a keyword (content,
+    rel, comments, children, collection, taxonomy, author, true, false), a page/global
+    parameter path (truthy check), `path=value` (string equality), each optionally
+    prefixed by `not `, or `or a b` / `and a b` with space-separated terms, where `!term`
+    negates one term.
+Returns: bool.
+Side effects: None.
+Example: {{ $show := partial "func/if" (dict "Page" . "if" "and province=alicante !landing.deduction") }}
+*/}}
 {{ define "partials/check" }}
   {{ $if := true }}
   {{ with .if }}
@@ -21,6 +35,13 @@
       {{ $if = false }}
     {{ else if eq . "author" }}
       {{ $if = and (not $.Page.IsSection) $.Page.Params.author }}
+    {{ else if findRE `^[^=\s]+=` . }}
+      {{/*  EQUALS: "param.path=value" compares the resolved value as a string  */}}
+      {{ $pair := split . "=" }}
+      {{ $name := index $pair 0 }}
+      {{ $want := delimit (after 1 $pair) "=" }}
+      {{ $have := partial "func/get-param" (dict "Page" $.Page "name" $name) }}
+      {{ $if = and (ne $have nil) (ne $have "") (eq (printf "%v" $have) $want) }}
     {{ else }}
       {{ $opts := dict "Page" page "name" . }}
       {{ $if    = partial "func/get-param" $opts }}
@@ -56,15 +77,19 @@
     {{ $cond = $cond | replaceRE `^or ` "" }}
     {{ $all := slice }}
     {{ range split $cond " " }}
-      {{ $if = or $if (partial "check" (dict "Page" $.Page "if" .)) }}
+      {{ $term := partial "check" (dict "Page" $.Page "if" (strings.TrimPrefix "!" .)) }}
+      {{ if hasPrefix . "!" }}{{ $term = not $term }}{{ end }}
+      {{ $if = or $if $term }}
     {{ end }}
   {{ else if $cond | findRE `^and ` }}
     {{/*  AND  */}}
-    {{ $if   = false }}
+    {{ $if   = true }}
     {{ $cond = $cond | replaceRE `^and ` "" }}
     {{ $all := slice }}
     {{ range split $cond " " }}
-      {{ $if = and $if (partial "check" (dict "Page" $.Page "if" .)) }}
+      {{ $term := partial "check" (dict "Page" $.Page "if" (strings.TrimPrefix "!" .)) }}
+      {{ if hasPrefix . "!" }}{{ $term = not $term }}{{ end }}
+      {{ $if = and $if $term }}
     {{ end }}
   {{ else }}
     {{/*  SIMPLE  */}}
