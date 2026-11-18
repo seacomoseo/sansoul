@@ -42,6 +42,14 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.18.1 — 2026-11-18 — `sh do new`: el histórico de formularios ya importado sale al día
+
+**Impacto:** compatible; solo cambia el plan de `forms-history`. Si todas las filas de la hoja ya están en la D1
+(comprobado por id), el paso sale como hecho («histórico al día») en vez de como acción pendiente, y `--apply` no
+vuelve a insertar. Si faltan filas, el plan dice cuántas son nuevas.
+
+**Acciones obligatorias:** ninguna.
+
 ## 14.18.0 — 2026-11-18 — El Worker del proyecto es el envío por defecto de los formularios; histórico de Sheets en el panel
 
 **Impacto:** compatible. Un formulario sin `action` (ni propio ni en `inputs.action` de `data/styles.yml`) deja de
