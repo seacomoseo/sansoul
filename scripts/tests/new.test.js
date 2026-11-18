@@ -38,7 +38,7 @@ test('new project context: defaults, normalized domain and mails', () => {
 })
 
 test('existing project context reads hugo.yml', t => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-'))
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-')))
   const cwd = process.cwd()
   t.after(() => { process.chdir(cwd); fs.rmSync(root, { recursive: true, force: true }) })
   fs.mkdirSync(path.join(root, 'core'))
@@ -121,4 +121,43 @@ test('retire only runs on request and team mirrors the 3dnau organization', asyn
   assert.equal(retire.skip({ retire: false }), true)
   assert.equal(retire.skip({ retire: true }), false)
   assert.equal(STEPS.at(-1).id, 'retire')
+})
+
+test('API calls retry 429/5xx with backoff; POST retries only rate limits', async t => {
+  const { http, retryPolicy, retryDelay } = await import('../new/lib.js')
+  const realFetch = globalThis.fetch
+  const realSleep = retryPolicy.sleep
+  const waits = []
+  retryPolicy.sleep = async ms => { waits.push(ms) }
+  t.after(() => { globalThis.fetch = realFetch; retryPolicy.sleep = realSleep })
+  const reply = (status, body = {}, headers = {}) => new Response(JSON.stringify(body), { status, headers })
+  const queue = (...responses) => {
+    const calls = []
+    globalThis.fetch = async (url, init) => { calls.push(init.method); return responses.shift() }
+    return calls
+  }
+
+  // GA4 listing hit by a transient 503, then OK.
+  let calls = queue(reply(503, { error: { message: 'The service is currently unavailable.' } }), reply(429, {}, { 'retry-after': '2' }), reply(200, { properties: [1] }))
+  assert.deepEqual((await http('https://analyticsadmin.googleapis.com/v1beta/properties')).data, { properties: [1] })
+  assert.equal(calls.length, 3)
+  assert.deepEqual(waits, [retryDelay(0), 2000])
+
+  // A persistent outage fails after the attempt budget with a clear message.
+  calls = queue(...Array.from({ length: retryPolicy.attempts }, () => reply(503)))
+  await assert.rejects(http('https://analyticsadmin.googleapis.com/v1beta/properties'), new RegExp(`HTTP 503 tras ${retryPolicy.attempts} intentos`))
+  assert.equal(calls.length, retryPolicy.attempts)
+
+  // A POST is not repeated after a 5xx (it may have been applied), but is after a 429.
+  calls = queue(reply(503))
+  await assert.rejects(http('https://x.test/create', { method: 'POST', body: {} }), /HTTP 503 /)
+  assert.equal(calls.length, 1)
+  calls = queue(reply(429), reply(201, { name: 'properties/1' }))
+  assert.equal((await http('https://x.test/create', { method: 'POST', body: {} })).data.name, 'properties/1')
+
+  // Client errors fail at once.
+  calls = queue(reply(404))
+  await assert.rejects(http('https://x.test/missing'), /HTTP 404/)
+  assert.equal(calls.length, 1)
+  assert.equal(retryDelay(10, undefined, 1000), 30000)
 })

@@ -37,23 +37,57 @@ export function hasSecret (envName, file) {
   return Boolean(process.env[envName]) || fs.existsSync(path.join(secretsDir(), file))
 }
 
+// Transient API failures (rate limits, 5xx, dropped connections) are retried
+// with exponential backoff, honouring Retry-After. Only idempotent methods
+// retry a 5xx or a network error: a POST may already have been applied.
+const RETRY_STATUS = new Set([429, 500, 502, 503, 504])
+const IDEMPOTENT = new Set(['GET', 'HEAD', 'PUT', 'PATCH', 'DELETE'])
+export const retryPolicy = {
+  attempts: 5,
+  baseMs: Number(process.env.SANSOUL_HTTP_RETRY_MS ?? 1000),
+  sleep: ms => new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export function retryDelay (attempt, retryAfter, baseMs = retryPolicy.baseMs) {
+  const seconds = Number(retryAfter)
+  if (retryAfter && Number.isFinite(seconds)) return Math.min(seconds * 1000, 60000)
+  return Math.min(baseMs * 2 ** attempt, 30000)
+}
+
+function retriable (method, status) {
+  return status === 429 || (RETRY_STATUS.has(status) && IDEMPOTENT.has(method))
+}
+
 // JSON request; throws with the API's own message (never the request headers).
 export async function http (url, { method = 'GET', headers = {}, body, ok = [200, 201, 204] } = {}) {
-  const response = await fetch(url, {
-    method,
-    headers: { ...(body !== undefined ? { 'content-type': 'application/json' } : {}), ...headers },
-    body: body === undefined ? undefined : JSON.stringify(body)
-  })
-  const text = await response.text()
-  let data = null
-  try { data = text ? JSON.parse(text) : null } catch { data = text }
-  if (!ok.includes(response.status)) {
+  for (let attempt = 0; ; attempt++) {
+    const last = attempt >= retryPolicy.attempts - 1
+    let response
+    try {
+      response = await fetch(url, {
+        method,
+        headers: { ...(body !== undefined ? { 'content-type': 'application/json' } : {}), ...headers },
+        body: body === undefined ? undefined : JSON.stringify(body)
+      })
+    } catch (error) {
+      if (last || !IDEMPOTENT.has(method)) throw new Error(`${method} ${url.split('?')[0]}: ${error.cause?.code || error.message}`)
+      await retryPolicy.sleep(retryDelay(attempt))
+      continue
+    }
+    const text = await response.text()
+    let data = null
+    try { data = text ? JSON.parse(text) : null } catch { data = text }
+    if (ok.includes(response.status)) return { status: response.status, data }
+    if (!last && retriable(method, response.status)) {
+      await retryPolicy.sleep(retryDelay(attempt, response.headers.get('retry-after')))
+      continue
+    }
     const detail = typeof data === 'string' ? data.slice(0, 300) : JSON.stringify(data?.errors || data?.error || data).slice(0, 300)
-    const error = new Error(`${method} ${url.split('?')[0]}: HTTP ${response.status} ${detail}`)
+    const tries = attempt ? ` tras ${attempt + 1} intentos` : ''
+    const error = new Error(`${method} ${url.split('?')[0]}: HTTP ${response.status}${tries} ${detail}`)
     error.status = response.status
     throw error
   }
-  return { status: response.status, data }
 }
 
 export function gh (args, { input, cwd, allowFail = false } = {}) {
