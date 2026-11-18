@@ -24,7 +24,7 @@ El actualizador exige árboles Git limpios, salvo que la única diferencia de la
 
 Después del preflight, `sh do update` avanza el submódulo, ejecuta los scripts de migración registrados, mueve el motor a `core/` si aún está en `themes/sansoul` (`git mv` hace staging solo de ese movimiento), sincroniza siempre README y AGENTS desde las plantillas de SanSoul, convierte o verifica pnpm (obligatorio) y compila el proyecto. Si quedan validaciones específicas de una migración, las muestra y solicita confirmación antes de sincronizar la versión raíz. En una ejecución no interactiva deja la versión sin cambiar; tras completar las comprobaciones, ejecuta `sh do migrations mark --yes`.
 
-Para añadir una versión a `MIGRATIONS.md`, registra también su política en `scripts/update.js`. Si el actualizador no reconoce una migración pendiente, se detiene antes de cambiar archivos. Las acciones destructivas como `sh do root-docs --force` nunca se ejecutan automáticamente.
+Para añadir una versión a `MIGRATIONS.md`, registra también su política en `scripts/migration-policy.json` (`scripts` si tiene migración automática, `reviewed` si no, y `manual` si deja revisiones al proyecto). El actualizador lee esa política del commit de destino, así que un motor instalado más antiguo puede aplicar migraciones posteriores. Si el actualizador no reconoce una migración pendiente, se detiene antes de cambiar archivos. Las acciones destructivas como `sh do root-docs --force` nunca se ejecutan automáticamente.
 
 El comando no confirma ni publica cambios. Revisa el diff de la raíz y del submódulo y confirma cada repositorio según el flujo del proyecto.
 
@@ -41,6 +41,37 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
+
+## 14.19.0 — 2026-11-18 — Defaults de bloque en `styles.yml` (`inputs` pasa a `form`), `if` con igualdad y política del actualizador
+
+**Impacto:** compatible. `data/styles.yml` admite defaults globales para las cajas (`box`, con un subconjunto fijo de
+claves de presentación: separación y carrusel del grupo, títulos, Markdown, icono, imagen, botón, fondo, caja y
+`sort`) y para los bloques `step`, `gallery`, `faq`,
+`review`, `when`, `dot`, `link`, `form` y `geo`, con las mismas claves que en la caja; la caja (o su `box`) los
+sobrescribe. La clave `inputs` pasa a llamarse `form` y admite todas las claves del bloque de formulario (`action`,
+`ajax`, `labels`, `fill`, `consent`…); `inputs` se sigue leyendo como respaldo. En el CMS, la colección Estilos
+muestra un grupo por bloque.
+
+1. `sh do update` ejecuta `core/scripts/migrations/14.19.0-styles-form.js`: renombra `inputs` a `form` en
+   `data/styles.yml`, conservando claves y comentarios (si ya existía `form`, gana y completa con `inputs`), y aplica
+   el orden del CMS: `shadow` justo después de `colors`, y `box` y los bloques al final.
+2. `if` acepta igualdades de texto (`province=murcia`, `not province=murcia`), negar un término de `or`/`and` con
+   `!` (`and province=alicante !landing.deduction`), y `and a b` ya funciona (antes siempre daba falso).
+3. Con chaflanes (`rounded.chamfer`) y formularios sin relleno, el borde de los grupos de casillas y radios
+   (`fieldset`) también queda achaflanado.
+4. El actualizador lee su política de `scripts/migration-policy.json` del commit de destino. Un motor instalado en
+   14.18.x o anterior aún usa su tabla interna: si dice «Migration 14.19.0 has no updater policy», ejecuta una vez
+   `git submodule update --remote core` y repite `sh do update`.
+5. `.box__title:has(> .box__icon)` ya no envuelve (`flex-wrap`): el icono lateral y el título quedan en la misma línea.
+6. `sh do new` recuerda en «Solo Loren», para toda organización, el avatar y la aprobación de «CMS Authenticator».
+7. `index_tpl: true` en `data/types/<type>.yml` hace que la página de la colección use la plantilla del tipo en vez del
+   listado, y las claves no reservadas del `_index` (`hero`, `zonas`…) llegan a esa página como parámetros. Sin
+   `index_tpl` nada cambia.
+
+**Acciones obligatorias:** ninguna más allá de `sh do update`.
+
+**Validación:** tras `sh do update`, `data/styles.yml` tiene `form` y no `inputs`, y los formularios publicados
+apuntan a la misma `action` que antes.
 
 ## 14.18.1 — 2026-11-18 — `sh do new`: el histórico de formularios ya importado sale al día
 

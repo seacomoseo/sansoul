@@ -70,7 +70,7 @@ test('calendar uses filtered dated pages, leap-day grids and original links/date
   for (const directory of ['layouts/partials/blocks', 'layouts/partials/func', 'layouts/partials/boxes', 'content/events', 'content/articles', 'content/products', 'data/types', 'i18n']) {
     await fs.mkdir(path.join(root, directory), { recursive: true })
   }
-  for (const file of ['blocks/list.html', 'blocks/calendar.html', 'blocks/calendar-compact.html', 'blocks/margin-style.html', 'boxes/tags.html', 'func/attrs.html', 'func/color-background.html', 'func/event-dates.html', 'func/date-tag.html', 'func/date-format.html']) {
+  for (const file of ['blocks/list.html', 'blocks/calendar.html', 'blocks/calendar-compact.html', 'blocks/margin-style.html', 'boxes/tags.html', 'func/attrs.html', 'func/color-background.html', 'func/event-dates.html', 'func/date-tag.html', 'func/date-format.html', 'func/style-block.html']) {
     await fs.copyFile(new URL(`layouts/partials/${file}`, engine), path.join(root, 'layouts/partials', file))
   }
   await fs.writeFile(path.join(root, 'layouts/partials/icon.html'), '{{ return (printf `<i data-icon-default="%s"></i>` .def | safeHTML) }}')

@@ -22,12 +22,22 @@ Side effects: Reads project data and localized index resources.
   {{ $type := . }}
   {{ $name := .name }}
   {{ $source := resources.Get (printf "content-indexes/%s/_index.%s.md" $name $.Lang) }}
+  {{ $params := dict }}
 
   {{ with $source }}
     {{ $raw := .Content | string }}
     {{ if $raw | findRE `(?s)^---.+---` }}
       {{ $sourceData := transform.Unmarshal $raw }}
       {{ $type = merge $type $sourceData (dict "lang_title" $sourceData.title) }}
+      {{/*  Other front matter (hero, zonas, landing...) becomes page params, so an index
+        that renders its type template (index_tpl) can use it. The prebuild cascade owns
+        the reserved keys, and `tpl` stays ignored as before.  */}}
+      {{ $reserved := slice "slug" "prefix" "title" "singular" "sum" "icon" "emoji" "img" "hide" "weight" "seo" "llms" "cms" "customs" "tpl" "content" }}
+      {{ range $key, $value := $sourceData }}
+        {{ if not (in $reserved $key) }}
+          {{ $params = merge $params (dict $key $value) }}
+        {{ end }}
+      {{ end }}
       {{ $body := replaceRE `(?s)^---\s*\n.*?\n---\s*\n?` "" $raw }}
       {{ if strings.TrimSpace $body }}
         {{ $type = merge $type (dict "content" $body) }}
@@ -47,6 +57,7 @@ Side effects: Reads project data and localized index resources.
       "value" $content
     )
     "kind" "section"
+    "params" $params
     "path" $name
     "title" $title
     "weight" ($type.weight | default 0)

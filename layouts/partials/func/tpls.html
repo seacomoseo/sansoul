@@ -2,7 +2,8 @@
 Partial: func/tpls
 Purpose: Collect the ordered template layers used to build a page.
 Context: page.Page.
-Returns: Slice of maps in low-to-high precedence order: localized globals, internal defaults, all-type, current-type, page.
+Returns: Slice of maps in low-to-high precedence order: localized globals, internal defaults, all-type, current-type
+  (also on its collection page when the type sets index_tpl), page.
 Side effects: None.
 */}}
 {{/*  If change for store method
@@ -40,6 +41,15 @@ Side effects: None.
   {{ with .Type }}
     {{ $type = index hugo.Data.types . }}
     {{ $type = $type.tpl }}
+  {{ end }}
+{{ else if and .IsSection (not .IsHome) }}
+  {{/*  A collection page keeps the listing unless its type opts in with index_tpl  */}}
+  {{ with .Type }}
+    {{ with index hugo.Data.types . }}
+      {{ if .index_tpl }}
+        {{ $type = .tpl }}
+      {{ end }}
+    {{ end }}
   {{ end }}
 {{ end }}
 

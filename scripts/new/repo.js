@@ -12,6 +12,8 @@ import { parseDocument } from 'yaml'
 import { gh, git } from './lib.js'
 
 const DEMO = 'https://github.com/seacomoseo/sansoul-demo.git'
+// GitHub OAuth app behind the shared CMS login (sveltia-cms-auth.sansoul.workers.dev).
+const CMS_OAUTH_APP = 'https://github.com/settings/connections/applications/Ov23lifahC1z50WsMkK9'
 const ENGINE = 'https://github.com/seacomoseo/sansoul.git'
 // Demo-only material: its DNA describes the demo; dividers page is a sample.
 const SKIP = [/^core$/, /^dna\//, /^content\/page\//]
@@ -37,6 +39,7 @@ export default {
         ctx.done(`clonado en ${ctx.dir}`)
       }
       saveProject(ctx)
+      orgManuals(ctx)
       return
     }
     if (local) throw new Error(`${ctx.dir} existe pero ${slug} no está en GitHub: revísalo a mano`)
@@ -51,8 +54,18 @@ export default {
     git(['remote', 'add', 'origin', `https://github.com/${slug}.git`], ctx.dir)
     ctx.created = true
     ctx.done(`${slug} creado (privado); se sube en el paso final`)
-    ctx.manual(`Avatar de la organización: https://github.com/organizations/${ctx.owner}/settings/profile`)
+    orgManuals(ctx)
   }
+}
+
+// GitHub has no API for an organization avatar or for approving an OAuth app under
+// "Access restricted" (the default for new organizations), so both stay manual. Without
+// the approval the CMS login works but reports "no access to the repository".
+function orgManuals (ctx) {
+  const type = gh(['api', `users/${ctx.owner}`, '--jq', '.type'], { allowFail: true })
+  if (String(type).trim() !== 'Organization') return
+  ctx.manual(`Avatar de la organización ${ctx.owner} (icono del cliente, PNG o JPG cuadrado): https://github.com/organizations/${ctx.owner}/settings/profile`)
+  ctx.manual(`Aprobar «CMS Authenticator» para ${ctx.owner} (botón Grant, como owner): ${CMS_OAUTH_APP}`)
 }
 
 function scaffold (ctx) {

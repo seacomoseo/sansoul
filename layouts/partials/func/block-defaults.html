@@ -1,0 +1,36 @@
+{{/*
+Partial: func/block-defaults
+Purpose: Apply data/styles.yml block defaults to a box before it renders. Each block
+  default applies only when the box carries that block's items, and box values win.
+Context: Box map.
+Returns: The box map with merged block option maps (step, gallery, faq, review,
+  when, dot, link, form, geo).
+Side effects: None.
+*/}}
+{{ $box := . }}
+{{ $blocks := dict
+  "step"    (slice "steps")
+  "gallery" (slice "imgs" "limgs")
+  "faq"     (slice "faqs")
+  "review"  (slice "reviews")
+  "when"    (slice "whens")
+  "dot"     (slice "dots")
+  "link"    (slice "links")
+  "form"    (slice "inputs")
+  "geo"     (slice "geos")
+}}
+{{ range $key, $triggers := $blocks }}
+  {{ $used := false }}
+  {{ range $triggers }}
+    {{ if index $box . }}{{ $used = true }}{{ end }}
+  {{ end }}
+  {{ if $used }}
+    {{ $defaults := partialCached "func/style-block" $key $key }}
+    {{ if $defaults }}
+      {{ $own := index $box $key }}
+      {{ if not (reflect.IsMap $own) }}{{ $own = dict }}{{ end }}
+      {{ $box = merge $box (dict $key (merge $defaults $own)) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $box }}

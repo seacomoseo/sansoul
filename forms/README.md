@@ -1,11 +1,11 @@
 # Formularios con backend propio (Worker)
 
 Envío por defecto desde 14.18.0. Un formulario sin `action` (ni propio ni en
-`inputs.action` de `data/styles.yml`), o con `action: worker`, envía al Worker
+`form.action` de `data/styles.yml`, antes `inputs.action`), o con `action: worker`, envía al Worker
 del propio proyecto en `POST /api/forms/submit`, same-origin. Un formulario con
 una URL (Apps Script, FormSubmit o acción propia) sigue con ese proveedor: el
 puente GAS no cambia. Los proyectos anteriores a 14.18.0 conservan el Apps
-Script compartido porque la migración lo fija en `inputs.action`; quitarlo pasa
+Script compartido porque la migración lo fija en `form.action`; quitarlo pasa
 el proyecto al Worker.
 
 ## Contrato navegador → Worker

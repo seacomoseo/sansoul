@@ -11,6 +11,17 @@ export function initOpenLinks () {
   function processLink (urlIni, blank) {
     if (urlIni === '#more') {
       scrollTo(document.querySelector('.section--1'))
+    } else if (urlIni.startsWith('#') && urlIni.length > 1 && !blank) {
+      // Same-page anchor. When this page lacks it (e.g. a shared menu's #contacto on a
+      // legal page), open that anchor on the home page of the current language.
+      const hash = urlIni.slice(1)
+      const target = document.getElementById(hash)
+      if (!target) {
+        openLink((document.documentElement.dataset.home || '/') + urlIni)
+      } else {
+        if (!target.classList.contains('modal')) scrollTo(target)
+        location.hash = hash
+      }
     } else {
       // const isOut = urlIni.match(/^https?:/) && !urlIni.startsWith(location.origin)
       const url = urlIni.startsWith('/') ? location.origin + urlIni : urlIni
