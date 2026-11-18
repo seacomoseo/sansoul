@@ -166,6 +166,16 @@ export class Lifecycle {
     return this.waitForChild(child)
   }
 
+  // Last resort for process exit paths that cannot await (uncaught errors, a
+  // forced exit): kill every tracked process group so none outlives us.
+  killChildrenSync () {
+    for (const child of this.children) {
+      if ((child.exitCode !== null || child.signalCode !== null) && !isProcessGroupAlive(child.pid)) continue
+      try { process.kill(-child.pid, 'SIGKILL') } catch {}
+      try { child.kill('SIGKILL') } catch {}
+    }
+  }
+
   async stopChildren (signal = 'SIGTERM') {
     const children = [...this.children]
     const results = await Promise.all(children.map(child => this.stopChildAndWait(child, signal)))

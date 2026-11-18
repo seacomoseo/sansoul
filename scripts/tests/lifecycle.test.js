@@ -73,6 +73,10 @@ if [ -n "$destination" ]; then
   fi
   mkdir -p "$destination"
   printf 'generated: true\\n' > "$destination/hugo.prebuild.yml"
+  if [ -n "$HUGO_PREBUILD_SIGNAL_FILE" ] && [ -f "$HUGO_PREBUILD_SIGNAL_FILE" ]; then
+    # Signal the supervisor just after a successful prebuild has exited.
+    ( trap '' INT TERM; sleep 0.15; kill -TERM "$(cat "$HUGO_PREBUILD_SIGNAL_FILE")" ) &
+  fi
   exit "\${HUGO_PREBUILD_EXIT:-0}"
 fi
 mkdir -p public resources "$SANSOUL_TEST_ENGINE_PATH/prebuild/public"
@@ -94,7 +98,8 @@ if [ -n "$HUGO_SERVER_EXIT_FILE" ]; then
   exit 2
 fi
 if [ -n "$HUGO_EXIT" ]; then exit "$HUGO_EXIT"; fi
-trap 'exit 0' INT TERM
+if [ -n "$HUGO_SERVER_PID_FILE" ]; then printf '%s\\n' "$$" >> "$HUGO_SERVER_PID_FILE"; fi
+if [ -n "$HUGO_SLOW_STOP" ]; then trap 'sleep 1; exit 0' INT TERM; else trap 'exit 0' INT TERM; fi
 while :; do sleep 1; done
 `
   writeFileSync(path.join(fixture, 'bin', 'hugo'), hugo)
@@ -452,6 +457,72 @@ function testStaleLockRefusal () {
   }
 }
 
+function processAlive (pid) {
+  try { process.kill(pid, 0); return true } catch (error) { return error.code === 'EPERM' }
+}
+
+// 'exit' rather than 'close': an orphaned Hugo would keep the pipes open.
+function waitForProcessExit (child) {
+  if (child.exitCode !== null || child.signalCode !== null) return Promise.resolve({ code: child.exitCode, signal: child.signalCode })
+  return new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })))
+}
+
+function killRecorded (pidFile) {
+  if (!existsSync(pidFile)) return
+  for (const pid of readFileSync(pidFile, 'utf8').split('\n').filter(Boolean).map(Number)) {
+    try { process.kill(pid, 'SIGKILL') } catch {}
+  }
+}
+
+// A stop signal that lands while a successful prebuild is finishing used to
+// let the supervisor start Hugo after it had already cleaned up, orphaning it.
+async function testSignalAsPrebuildSucceeds (mode) {
+  const fixture = createFixture()
+  const signalFile = path.join(fixture, 'supervisor.pid')
+  const pidFile = path.join(fixture, 'hugo-server.pid')
+  let child
+  try {
+    child = spawnLifecycle(fixture, mode, [], { HUGO_PREBUILD_SIGNAL_FILE: signalFile, HUGO_SERVER_PID_FILE: pidFile })
+    writeFileSync(signalFile, String(child.pid))
+    const exited = waitForProcessExit(child)
+    const result = await Promise.race([exited, new Promise(resolve => setTimeout(() => resolve('hung'), 8000))])
+    assert.notEqual(result, 'hung', `${mode} supervisor kept running after SIGTERM\n${child.testOutput}`)
+    assert.equal(result.code, 0, child.testOutput)
+    assert.equal(countLines(fixture, /^server --config/), 0, `${mode} started Hugo after shutdown began`)
+    await waitFor(() => isClean(fixture), `${mode} cleanup after early signal`)
+  } finally {
+    killRecorded(pidFile)
+    if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+    rmSync(fixture, { recursive: true, force: true })
+  }
+}
+
+// Repeated SIGTERM/SIGINT/SIGHUP while Hugo is slow to stop must still wait
+// for it instead of exiting through Node's default signal handler.
+async function testRepeatedSignals (mode) {
+  const fixture = createFixture()
+  const pidFile = path.join(fixture, 'hugo-server.pid')
+  let child
+  try {
+    child = spawnLifecycle(fixture, mode, [], { HUGO_SERVER_PID_FILE: pidFile, HUGO_SLOW_STOP: '1' })
+    await waitFor(() => existsSync(pidFile), `${mode} Hugo start`).catch(error => { throw new Error(`${error.message}\n${child.testOutput}`) })
+    const hugoPid = Number(readFileSync(pidFile, 'utf8').trim())
+    const exited = waitForProcessExit(child)
+    child.kill('SIGTERM')
+    await new Promise(resolve => setTimeout(resolve, 100))
+    for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP']) child.kill(signal)
+    const result = await exited
+    assert.equal(result.signal, null, `${mode} supervisor died from a repeated signal`)
+    assert.equal(result.code, 0, child.testOutput)
+    assert.equal(processAlive(hugoPid), false, `${mode} left Hugo ${hugoPid} running`)
+    await waitFor(() => isClean(fixture), `${mode} cleanup after repeated signals`)
+  } finally {
+    killRecorded(pidFile)
+    if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+    rmSync(fixture, { recursive: true, force: true })
+  }
+}
+
 async function main () {
   for (const layout of ['core', 'themes/sansoul']) {
     fixtureEnginePath = layout
@@ -461,6 +532,10 @@ async function main () {
     await testSignalCleanup('cms', 'SIGHUP')
     await testGrandchildCleanup('dev')
     await testGrandchildCleanup('cms')
+    await testSignalAsPrebuildSucceeds('dev')
+    await testSignalAsPrebuildSucceeds('cms')
+    await testRepeatedSignals('dev')
+    await testRepeatedSignals('cms')
     await testInitialFailure()
     await testLiveInitialFailure()
     await testChildFailure('server')
