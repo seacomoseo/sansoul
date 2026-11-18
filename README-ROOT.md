@@ -474,7 +474,7 @@ Las cajas aceptan títulos, Markdown, icono, imagen o vídeo, botón, fondo, dis
 | `steps` | Pasos de un proceso; `step` configura sus defaults. |
 | `imgs` / `limgs` | Galería; `gallery` configura el conjunto. |
 | `faqs` | Preguntas desplegables; `faq` configura el conjunto. |
-| `reviews` | Reseñas; `review` configura el conjunto. |
+| `reviews` | Reseñas; `review` configura el conjunto. Solo las páginas de producto las marcan en JSON-LD salvo `review.schema: true`; las reseñas sobre la propia organización son autoatribuidas. |
 | `inputs` | Formulario; `form` configura envío y presentación. |
 | `geos` | Mapa; `geo` configura vista y capas. |
 | `links`, `dots`, `when`, `gss` | Enlaces, redes, horarios y datos tabulares. |
