@@ -127,6 +127,17 @@ Pasos, en este orden:
     `seacomoseo/<dominio>`, con copia previa. No toca nada si el dominio aún apunta a Pages o si el repo antiguo
     tiene cambios posteriores a la migración.
 
+**Migrar un proyecto anterior a 14** (p. ej. 13.x): `sh do new` lee `params.owner` y `params.repo`, que llegan con
+14.0.0, así que el orden es:
+
+1. Copiar el repositorio a la org del cliente y clonarlo.
+2. Actualizar el motor desde su raíz, con el árbol limpio y el servidor local parado:
+   `sansoul_update=$(curl -fsSL https://raw.githubusercontent.com/seacomoseo/sansoul/main/scripts/update-project.sh) && sh -c "$sansoul_update"`.
+3. Revisar en `hugo.yml` `params.owner` y `params.repo` (org y repo de destino) y confirmar el cambio.
+4. `sh do new` (plan) y `sh do new --apply`.
+
+Si se ejecuta `sh do new` antes de actualizar, se detiene y recuerda estos pasos.
+
 Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo
 se hace con `--production`, después de aprobarlo. `--rotate` renueva el token de CI y
 la clave de GitLab. Las credenciales se leen de variables de entorno o de

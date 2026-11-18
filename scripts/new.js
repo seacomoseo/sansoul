@@ -141,7 +141,8 @@ export function context (values, positionals) {
     if (!values.project) throw new Error('falta --project "Nombre del proyecto en el Vault"')
     base = { domain, owner: values.owner, repo: values.repo || 'site', dir: path.resolve(values.dir || path.join(os.homedir(), 'repos', domain)), worker: values.worker }
   } else if (consumer) {
-    const project = readProject()
+    let project
+    try { project = readProject() } catch (error) { throw new Error(identityHint(error, process.cwd())) }
     const params = parse(fs.readFileSync('hugo.yml', 'utf8'))?.params || {}
     base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: project.worker, netlify: project.netlify, mails: params.drive_mails, project: params.project }
   } else {
@@ -178,6 +179,26 @@ export function context (values, positionals) {
   ctx.warn = item => console.log(`  ! ${item}`)
   ctx.manual = lines('☐', ctx.manuals)
   return ctx
+}
+
+export const UPDATE_COMMAND = 'sansoul_update=$(curl -fsSL https://raw.githubusercontent.com/seacomoseo/sansoul/main/scripts/update-project.sh) && sh -c "$sansoul_update"'
+
+// hugo.yml identity errors usually mean a project still on an engine before
+// 14.0.0 (no flat params.owner/params.repo): say how to update it first.
+export function identityHint (error, dir) {
+  let version = ''
+  try { version = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).version || '' } catch {}
+  const major = Number(String(version).split('.')[0])
+  const legacy = fs.existsSync(path.join(dir, 'themes', 'sansoul', 'do')) || (Number.isFinite(major) && major > 0 && major < 14)
+  if (!legacy) return `${error.message}\nCorrige params.owner y params.repo en hugo.yml (org y repositorio de GitHub de destino) y repite sh do new.`
+  return [
+    error.message,
+    `Este proyecto está en SanSoul ${version || 'anterior a 14'}: sh do new necesita el motor 14 o posterior. Orden:`,
+    '  1. Con el árbol limpio y el servidor local parado, actualiza el motor desde la raíz del proyecto:',
+    `     ${UPDATE_COMMAND}`,
+    '  2. Revisa params.owner y params.repo en hugo.yml (org y repositorio de GitHub de destino) y confirma el cambio.',
+    '  3. Repite sh do new.'
+  ].join('\n')
 }
 
 function hasUpstream (dir) {

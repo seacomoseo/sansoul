@@ -8,7 +8,7 @@ import { parse } from 'yaml'
 import { projectName } from '../new/lib.js'
 import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
-import { context, STEPS } from '../new.js'
+import { context, identityHint, STEPS } from '../new.js'
 import { renamable, sameName } from '../new/cloudflare.js'
 
 const quiet = fn => {
@@ -160,4 +160,25 @@ test('API calls retry 429/5xx with backoff; POST retries only rate limits', asyn
   await assert.rejects(http('https://x.test/missing'), /HTTP 404/)
   assert.equal(calls.length, 1)
   assert.equal(retryDelay(10, undefined, 1000), 30000)
+})
+
+test('a pre-14 project is told to update the engine before sh do new', t => {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-')))
+  const cwd = process.cwd()
+  t.after(() => { process.chdir(cwd); fs.rmSync(root, { recursive: true, force: true }) })
+  fs.mkdirSync(path.join(root, 'core'))
+  fs.writeFileSync(path.join(root, 'core/do'), '')
+  fs.writeFileSync(path.join(root, 'package.json'), '{"version":"13.7.0"}')
+  fs.writeFileSync(path.join(root, 'hugo.yml'), 'baseURL: https://cuprico.com\nparams:\n  name: cuprico\n  domain: cuprico.com\n')
+  process.chdir(root)
+  assert.throws(() => quiet(() => context({}, [])), error => {
+    assert.match(error.message, /params\.repo must name the GitHub repository/)
+    assert.match(error.message, /SanSoul 13\.7\.0: sh do new necesita el motor 14/)
+    assert.match(error.message, /update-project\.sh/)
+    assert.match(error.message, /Repite sh do new/)
+    return true
+  })
+  fs.writeFileSync(path.join(root, 'package.json'), '{"version":"14.15.2"}')
+  assert.doesNotMatch(identityHint(new Error('x'), root), /update-project/)
+  assert.match(identityHint(new Error('x'), root), /Corrige params\.owner y params\.repo/)
 })

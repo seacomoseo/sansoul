@@ -142,6 +142,8 @@ After preflight, the command advances SanSoul, runs registered migration scripts
 
 The updater refuses dirty worktrees, diverged submodule history, unmanaged root documents, unsupported migration versions, and known content rename collisions. It never uses `--force`, commits, pushes, or deploys, and its only staging is `git mv themes/sansoul core`. Every update normalizes the project: the engine moves to `core/` (with `.gitmodules` and text references rewritten) and dependencies move to the pinned pnpm release (`packageManager`, `.npmrc`, one `pnpm-lock.yaml`, `PNPM_FLAGS` in a legacy `netlify.toml`). Neither step is optional; the preflight needs `pnpm` at the pinned version active. Projects pinned to a theme release without this command need a one-time bootstrap with `git submodule update --remote {{CORE_PATH}}`, then can run `sh do update --check` and `sh do update`. Projects below the 5.0.0 baseline require a verified legacy migration and are not advanced by this updater.
 
+`sh do new` (project setup outside the repository) reads the 14.x identity params (`params.owner`, `params.repo`). On a project still below 14.0.0, update the engine first (`scripts/update-project.sh`, then `sh do update` as above), check `owner`/`repo` in `hugo.yml`, and only then run `sh do new`; before the update it stops with these steps.
+
 `sh do` without arguments shows command help and does not build.
 
 `sh do preview` is an opt-in experimental structural CMS preview. It copies
