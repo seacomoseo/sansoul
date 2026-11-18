@@ -87,6 +87,16 @@ test('up uses the given message and does nothing when there is nothing new', asy
   assert.equal(git(me, 'rev-parse', 'HEAD'), head)
 })
 
+test('up never pushes the lifecycle lock of a running dev server, and untracks an old one', async t => {
+  const { me } = setup(t, { 'content/a.md': 'a\n', '.sansoul-dev.lock/owner': 'stale\n' })
+  write(me, 'content/a.md', 'mine\n')
+  write(me, '.sansoul-dev.lock/owner', '{"pid":1}\n')
+  assert.equal((await sync('up', { cwd: me, ...quiet })).ok, true)
+  git(me, 'fetch', '-q')
+  assert.equal(git(me, 'ls-tree', '-r', '--name-only', 'origin/main'), 'content/a.md')
+  assert.equal(read(me, '.sansoul-dev.lock/owner'), '{"pid":1}\n')
+})
+
 test('up conflict aborts cleanly, pushes a rescue branch and writes an agent prompt', async t => {
   const { me, other } = setup(t)
   commitAndPush(other, { 'content/a.md': 'theirs\n' })

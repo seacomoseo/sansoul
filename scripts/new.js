@@ -50,7 +50,7 @@ const publish = {
     if (!ctx.apply) return ctx.todo(`commit y push a main (${ctx.changed.join(', ') || 'repositorio nuevo'})`)
     if (dirty) {
       identity(ctx.dir)
-      git(['add', ...(ctx.changed.length ? ctx.changed : ['-A'])], ctx.dir)
+      git(['add', ...(ctx.changed.length ? ['--', ...ctx.changed] : ['-A', '--', '.', ':(exclude).sansoul-dev.lock'])], ctx.dir)
       git(['commit', '--quiet', '-m', `SanSoul: ${ctx.created ? 'alta de' : 'sh do new en'} ${ctx.domain} (${ctx.changed.join(', ') || 'configuración'})`], ctx.dir)
     }
     git(['push', '--quiet', '-u', 'origin', 'main'], ctx.dir)

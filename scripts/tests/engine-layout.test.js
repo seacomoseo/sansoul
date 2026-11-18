@@ -348,3 +348,21 @@ test('update moves a legacy npm consumer to core and pnpm without leaving refere
     fs.rmSync(fixture.temporary, { recursive: true, force: true })
   }
 })
+
+test('updates keep local-only state out of Git (.pnpm-store, lifecycle lock)', async () => {
+  const { ensureGitignore } = await import('../consumer-layout.js')
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-gitignore-'))
+  try {
+    const file = path.join(directory, '.gitignore')
+    fs.writeFileSync(file, 'node_modules\npublic\n.pnpm-store/')
+    assert.deepEqual(ensureGitignore(directory, () => {}), ['.sansoul-dev.lock'])
+    assert.equal(fs.readFileSync(file, 'utf8'), 'node_modules\npublic\n.pnpm-store/\n.sansoul-dev.lock\n')
+    assert.deepEqual(ensureGitignore(directory, () => {}), [])
+    fs.writeFileSync(file, '/.sansoul-dev.lock/\n.pnpm-store\n')
+    assert.deepEqual(ensureGitignore(directory, () => {}), [])
+    fs.rmSync(file)
+    assert.deepEqual(ensureGitignore(directory, () => {}), ['.pnpm-store', '.sansoul-dev.lock'])
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true })
+  }
+})
