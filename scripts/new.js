@@ -18,6 +18,7 @@ import { parseArgs } from 'node:util'
 import { parse } from 'yaml'
 import { readProject } from './project.js'
 import { git, projectName, repoSecrets } from './new/lib.js'
+import { MAIL_STEPS, confirmMails } from './new/mails.js'
 import repo, { identity } from './new/repo.js'
 import team from './new/team.js'
 import retire from './new/retire.js'
@@ -68,7 +69,8 @@ Opciones:
                       cuenta de Cloudflare y los archivos de Drive
   --repo NAME         repositorio (por defecto site)
   --worker NAME       Worker (por defecto el repo: <repo>.<org>.workers.dev)
-  --mails a,b         correos del cliente (drive_mails)
+  --mails a,b         correos del cliente (drive_mails): confirma a quién se comparten la hoja de
+                      accesos y GA4; sin él, --apply pide confirmar los de hugo.yml (o no comparte)
   --members u1,u2     usuarios de GitHub del cliente (equipo clients: maintain en el repo)
   --netlify NAME      espejo de Netlify opcional
   --cf-account ID     cuenta de Cloudflare (por defecto, la que se llame como el dominio)
@@ -113,6 +115,9 @@ async function main () {
 
   if (!ctx.project) console.log('\n! Sin params.project: pasa --project "Nombre del Vault" (se guarda en hugo.yml) para nombrar la cuenta de Cloudflare y los archivos de Drive.')
   console.log(`\nSanSoul new · ${ctx.project ? `${ctx.project} · ` : ''}${ctx.domain} · ${ctx.owner}/${ctx.repo} · Worker ${ctx.worker} · ${ctx.apply ? 'EJECUCIÓN' : 'PLAN (sin cambios; --apply para ejecutar)'}${ctx.production ? ' · PRODUCCIÓN' : ''}`)
+  if (ctx.mails.length && (!only || only.some(id => MAIL_STEPS.includes(id)))) {
+    console.log(`Destinatarios (hoja de accesos y lectura en GA4): ${ctx.mails.join(', ')} · ${ctx.mailsSource === 'flag' ? 'de --mails' : 'de params.drive_mails en hugo.yml: compruébalos; --apply pedirá confirmación o --mails'}`)
+  }
   for (const step of STEPS) {
     if ((only && !only.includes(step.id)) || step.skip?.(ctx)) continue
     console.log(`\n▸ ${step.title}`)
@@ -159,6 +164,9 @@ export function context (values, positionals) {
     worker: (values.worker || base.worker || base.repo).toLowerCase(),
     netlify: values.netlify ?? base.netlify ?? '',
     mails,
+    // --mails is an explicit confirmation; recipients read from hugo.yml may be
+    // stale (a former partner) and need confirming before anything is shared.
+    mailsSource: values.mails !== undefined ? 'flag' : mails.length ? 'hugo.yml' : '',
     members: String(values.members ?? '').split(',').map(m => m.trim().replace(/^@/, '')).filter(Boolean),
     retire: Boolean(values.retire),
     oldRepo: values['old-repo'] || '',
@@ -178,6 +186,7 @@ export function context (values, positionals) {
   ctx.todo = item => { ctx.todos++; console.log(`  + ${item}`) }
   ctx.warn = item => console.log(`  ! ${item}`)
   ctx.manual = lines('☐', ctx.manuals)
+  ctx.confirmMails = () => confirmMails(ctx)
   return ctx
 }
 

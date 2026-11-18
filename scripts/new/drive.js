@@ -16,6 +16,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { bearer, googleAccessToken, hasSecret, http } from './lib.js'
 import { editYaml } from './repo.js'
+import { unconfirmedMails } from './mails.js'
 
 const API = 'https://www.googleapis.com/drive/v3/files'
 const UPLOAD = 'https://www.googleapis.com/upload/drive/v3/files'
@@ -87,7 +88,8 @@ export default {
     const missing = ctx.mails.filter(m => !shared.some(p => (p.emailAddress || '').toLowerCase() === m.toLowerCase()))
     if (!ctx.mails.length) ctx.manual('Compartir la hoja de accesos: falta params.drive_mails (--mails)')
     else if (!missing.length) ctx.done(`hoja compartida con ${ctx.mails.join(', ')}`)
-    else if (!ctx.apply) ctx.todo(`compartir la hoja con ${missing.join(', ')}`)
+    else if (!ctx.apply) ctx.todo(`compartir la hoja con ${missing.join(', ')}${ctx.mailsSource === 'hugo.yml' ? ' (de params.drive_mails: confírmalos)' : ''}`)
+    else if (!await ctx.confirmMails()) unconfirmedMails(ctx, `Compartir la hoja con ${missing.join(', ')}`)
     else {
       for (const emailAddress of missing) {
         await agency.call(`${API}/${sheet.id}/permissions?sendNotificationEmail=true&emailMessage=${encodeURIComponent(SHARE_MESSAGE)}`, { method: 'POST', body: { type: 'user', role: 'writer', emailAddress } })
@@ -96,10 +98,20 @@ export default {
     }
     const url = `https://drive.google.com/file/d/${sheet.id}`
     if (!ctx.dir || !fs.existsSync(path.join(ctx.dir, 'hugo.yml'))) return
+    // Confirmed --mails replace a stale list in hugo.yml.
+    const listed = ctx.mails.join(', ')
+    if (ctx.mailsSource === 'flag' && listed && params.drive_mails !== listed) {
+      if (!ctx.apply) ctx.todo(`hugo.yml drive_mails = ${listed}`)
+      else {
+        editYaml(path.join(ctx.dir, 'hugo.yml'), doc => doc.setIn(['params', 'drive_mails'], listed))
+        if (!ctx.changed.includes('hugo.yml')) ctx.changed.push('hugo.yml')
+        ctx.done(`hugo.yml drive_mails = ${listed}`)
+      }
+    }
     if (params.drive_url === url) return ctx.done(`hugo.yml drive_url = ${url}`)
     if (!ctx.apply) return ctx.todo(`hugo.yml drive_url = ${url}`)
     editYaml(path.join(ctx.dir, 'hugo.yml'), doc => doc.setIn(['params', 'drive_url'], url))
-    ctx.changed.push('hugo.yml')
+    if (!ctx.changed.includes('hugo.yml')) ctx.changed.push('hugo.yml')
     ctx.done(`hugo.yml drive_url = ${url}`)
   }
 }
@@ -147,7 +159,7 @@ function readParams (dir) {
   if (!file || !fs.existsSync(file)) return {}
   const doc = fs.readFileSync(file, 'utf8')
   const value = key => new RegExp(`^\\s+${key}:\\s*(.+)$`, 'm').exec(doc)?.[1].trim().replace(/^["']|["']$/g, '')
-  return { drive_url: value('drive_url') }
+  return { drive_url: value('drive_url'), drive_mails: value('drive_mails') }
 }
 
 function esc (value) {
