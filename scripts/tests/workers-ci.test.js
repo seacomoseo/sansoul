@@ -4,9 +4,11 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { parse } from 'yaml'
 import { readProject } from '../project.js'
-import { planWorker, renderConfig, renderEntry, resolveResources } from '../worker-config.js'
+import { findDatabase, hasHistory, planWorker, renderConfig, renderEntry, resolveAccount, resolveResources } from '../worker-config.js'
 import { migrateProject } from '../migrations/14.0.0-workers-ci.js'
+import { LEGACY_GAS_ACTION, migrateProject as migrateFormsDefault } from '../migrations/14.18.0-forms-worker-default.js'
 
 function project (files) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-workers-'))
@@ -158,5 +160,79 @@ test('14.0.0 migration takes the owner from the GitHub remote of a transferred r
     assert.deepEqual(migrateProject(directory).changed, [])
   } finally {
     fs.rmSync(directory, { recursive: true, force: true })
+  }
+})
+
+test('forms history keeps the forms backend without Worker forms', async () => {
+  const directory = project({ 'hugo.yml': 'baseURL: https://demo.example.dev\nparams:\n  owner: acme\n  repo: site\n  worker: demo\n' })
+  try {
+    const plain = planWorker(directory, { core: 'core' })
+    assert.equal(plain.forms, false)
+    const plan = planWorker(directory, { core: 'core', history: true })
+    assert.equal(plan.forms, true)
+    assert.deepEqual(plan.databases.map(db => db.database_name), ['demo-forms'])
+    assert.deepEqual(plan.kv.map(kv => kv.title), ['demo-files'])
+    assert.match(renderEntry(plan), /createFormsWorker\(manifest\)/)
+
+    const seen = []
+    const reply = (result, status = 200) => async url => {
+      seen.push(new URL(url).pathname.replace('/client/v4', '') + new URL(url).search)
+      return new Response(JSON.stringify({ success: status === 200, result, errors: status === 200 ? [] : [{ code: 10000, message: 'Authentication error' }] }), { status })
+    }
+    assert.equal(await resolveAccount({ token: 't', account: 'given', fetch: reply([]) }), 'given')
+    assert.equal(await resolveAccount({ token: 't', account: '', fetch: reply([{ id: 'acc' }]) }), 'acc')
+    // Exact name only: a longer name that contains it is not the database.
+    assert.equal(await findDatabase('demo-forms', { token: 't', account: 'acc', fetch: reply([{ name: 'demo-forms-old', uuid: 'x' }]) }), null)
+    assert.deepEqual(await findDatabase('demo-forms', { token: 't', account: 'acc', fetch: reply([{ name: 'demo-forms', uuid: 'db' }]) }), { name: 'demo-forms', uuid: 'db' })
+    assert.match(seen.at(-1), /^\/accounts\/acc\/d1\/database\?name=demo-forms/)
+
+    assert.equal(await hasHistory(plain, { token: 't', account: 'acc', fetch: reply([{ name: 'demo-forms', uuid: 'db' }]) }), true)
+    assert.equal(await hasHistory(plain, { token: 't', account: 'acc', fetch: reply([]) }), false)
+    // Worker forms already bind the database: no lookup.
+    const before = seen.length
+    assert.equal(await hasHistory(plan, { token: 't', account: 'acc', fetch: reply([{ name: 'demo-forms' }]) }), false)
+    assert.equal(seen.length, before)
+    // A CI token without D1 access must not stop an assets-only deploy.
+    const warnings = []
+    assert.equal(await hasHistory(plain, { token: 't', account: 'acc', fetch: reply(null, 403), warn: message => warnings.push(message) }), false)
+    assert.match(warnings[0], /forms history check skipped .*Authentication error/)
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true })
+  }
+})
+
+test('14.18.0 migration pins the legacy Apps Script only where no action is set', () => {
+  const read = directory => fs.readFileSync(path.join(directory, 'data/styles.yml'), 'utf8')
+  const unset = project({ 'data/styles.yml': '# Design tokens\ncolors:\n  main: red # brand\ninputs:\n  ajax: true\n' })
+  const missing = project({})
+  const empty = project({ 'data/styles.yml': 'inputs:\n  action: \'\'\n' })
+  const own = project({ 'data/styles.yml': 'inputs:\n  action: https://formsubmit.co/x # own\n' })
+  const broken = project({ 'data/styles.yml': 'inputs: [\n' })
+  try {
+    assert.deepEqual(migrateFormsDefault(unset, { check: true }), { changed: true, action: LEGACY_GAS_ACTION })
+    assert.doesNotMatch(read(unset), /script\.google/)
+
+    assert.deepEqual(migrateFormsDefault(unset), { changed: true, action: LEGACY_GAS_ACTION })
+    const text = read(unset)
+    assert.match(text, /^# Design tokens\n/)
+    assert.match(text, /main: red # brand/)
+    assert.match(text, /# Legacy shared Apps Script \(pinned by SanSoul 14\.18\.0\)/)
+    const styles = parse(text)
+    assert.equal(styles.inputs.action, LEGACY_GAS_ACTION)
+    assert.equal(styles.inputs.ajax, true)
+    // Repeating is a no-op.
+    assert.deepEqual(migrateFormsDefault(unset), { changed: false, action: LEGACY_GAS_ACTION })
+    assert.equal(read(unset), text)
+
+    migrateFormsDefault(missing)
+    assert.equal(parse(read(missing)).inputs.action, LEGACY_GAS_ACTION)
+    migrateFormsDefault(empty)
+    assert.equal(parse(read(empty)).inputs.action, LEGACY_GAS_ACTION)
+
+    assert.deepEqual(migrateFormsDefault(own), { changed: false, action: 'https://formsubmit.co/x' })
+    assert.equal(read(own), 'inputs:\n  action: https://formsubmit.co/x # own\n')
+    assert.throws(() => migrateFormsDefault(broken), /data\/styles\.yml/)
+  } finally {
+    for (const directory of [unset, missing, empty, own, broken]) fs.rmSync(directory, { recursive: true, force: true })
   }
 })

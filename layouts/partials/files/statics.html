@@ -16,6 +16,9 @@
     (dict "partial" `cms/help-page` "path" "/admin/help/index.html")
   }}
 {{ end }}
+{{/*  Site identity for the forms Worker manifest, also without Worker forms
+  (imported history): forms/scripts/build-manifest.js reads and removes it.  */}}
+{{ $srcs = $srcs | append (dict "partial" `files/forms-site` "path" "/_forms/_site.json") }}
 {{ range $srcs }}
   {{ $str := partial .partial . | string }}
   {{ $src := resources.FromString .path $str }}

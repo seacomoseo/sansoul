@@ -36,7 +36,8 @@ const migrationScripts = {
   '11.0.0': ['11.0.0-custom-fields.js'],
   '12.0.0': ['12.0.0-section-fields.js'],
   '13.0.0': ['13.0.0-block-defaults.js'],
-  '14.0.0': ['14.0.0-workers-ci.js']
+  '14.0.0': ['14.0.0-workers-ci.js'],
+  '14.18.0': ['14.18.0-forms-worker-default.js']
 }
 const registeredMigrationVersions = new Set([
   ...Object.keys(migrationScripts),
@@ -82,7 +83,8 @@ const registeredMigrationVersions = new Set([
   '14.15.2',
   '14.16.0',
   '14.16.1',
-  '14.17.0'
+  '14.17.0',
+  '14.18.0'
 ])
 const supportedManualMigrations = new Set([
   '5.1.0',

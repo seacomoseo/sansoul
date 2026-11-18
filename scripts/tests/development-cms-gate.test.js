@@ -24,7 +24,7 @@ test('dev omits CMS output and preview instrumentation while normal builds keep 
   await write('content/_index.md', '---\ntitle: Home\n---\n')
   await write('content/page/cms.md', '---\ntitle: CMS info\nurl: /admin/info/\n---\nInfo.\n')
   await write('layouts/_default/single.html', '{{ .Content }}')
-  for (const name of ['redirects', 'llms', 'og-svgs']) await write(`layouts/partials/files/${name}.html`, 'fixture')
+  for (const name of ['redirects', 'llms', 'og-svgs', 'forms-site']) await write(`layouts/partials/files/${name}.html`, 'fixture')
   await write('layouts/partials/cms/index.html', '{{ (resources.FromString "admin/config.fixture.yml" "fixture: true").Publish }}CMS editor')
   await write('layouts/partials/cms/forms.html', 'Forms panel')
   await write('layouts/partials/cms/orders.html', 'Orders panel')

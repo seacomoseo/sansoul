@@ -42,6 +42,29 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.18.0 — 2026-11-18 — El Worker del proyecto es el envío por defecto de los formularios; histórico de Sheets en el panel
+
+**Impacto:** compatible. Un formulario sin `action` (ni propio ni en `inputs.action` de `data/styles.yml`) deja de
+enviar al Apps Script compartido y pasa al Worker del proyecto (D1 + panel «Formularios» del CMS). La migración fija
+el comportamiento anterior en los proyectos existentes, así que nada cambia sin querer.
+
+1. `sh do update` ejecuta `core/scripts/migrations/14.18.0-forms-worker-default.js`: si `data/styles.yml` no tiene
+   `inputs.action`, la fija a la URL del Apps Script compartido, con un comentario. Los formularios con su propia
+   `action` (Apps Script del cliente, FormSubmit, otra URL o `worker`) no se tocan.
+2. Cada build publica la identidad del sitio para el manifiesto del Worker (`public/_forms/_site.json`, que
+   `build-manifest.js` retira de `public/`). Con ella, si la cuenta ya tiene la D1 `<worker>-forms` (histórico
+   importado o envíos anteriores), el CI mantiene el backend y el panel aunque no queden formularios del Worker. Si
+   el token de CI no puede leer D1, se omite la comprobación y el despliegue sigue como antes.
+3. Nuevo paso `forms-history` de `sh do new`: copia las pestañas `<dominio>#<formulario>` de la hoja central de
+   formularios a la D1 del proyecto, de forma repetible (ver `forms/README.md`).
+
+**Acciones obligatorias:** ninguna. Para pasar un proyecto al Worker, quita `inputs.action` de `data/styles.yml`
+cuando su correo esté configurado (cuenta de Google conectada en el panel o `FORMS_PROVIDER`).
+
+**Validación:** tras `sh do update`, `data/styles.yml` tiene `inputs.action` con el Apps Script (o la acción que ya
+tenía) y los formularios publicados apuntan a la misma URL que antes. `worker/forms.generated.js` lleva `site` y
+`repo` aunque no haya formularios del Worker.
+
 ## 14.17.0 — 2026-11-18 — Reseñas fuera del JSON-LD de la propia organización; `email` e idiomas en la organización
 
 **Impacto:** compatible; cambia el JSON-LD.

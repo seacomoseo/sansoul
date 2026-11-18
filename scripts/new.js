@@ -28,6 +28,7 @@ import gitlab from './new/gitlab.js'
 import ga4 from './new/ga4.js'
 import gsc from './new/gsc.js'
 import drive from './new/drive.js'
+import formsHistory from './new/forms-history.js'
 
 const netlify = {
   id: 'netlify',
@@ -59,7 +60,7 @@ const publish = {
   }
 }
 
-export const STEPS = [repo, team, cloudflare, ciToken, gitlab, netlify, ga4, gsc, drive, publish, retire]
+export const STEPS = [repo, team, cloudflare, ciToken, gitlab, netlify, ga4, gsc, drive, formsHistory, publish, retire]
 
 const HELP = `Uso:
   Proyecto nuevo:     sh <motor>/do new <dominio> --owner <org> [opciones]

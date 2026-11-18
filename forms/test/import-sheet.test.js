@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
+import zlib from 'node:zlib'
 import { unstable_splitSqlQuery as splitSql } from 'wrangler'
 import { convert, IMPORT_REASON, parseCsv, sheetTime, toSql } from '../scripts/import-sheet.js'
+import { readWorkbook } from '../scripts/xlsx.js'
 import { createBindings } from './helpers.js'
 
 const ZONE = 'Europe/Madrid'
@@ -62,4 +64,64 @@ test('the SQL loads into the real schema, is idempotent and creates no jobs', as
   assert.deepEqual(JSON.parse(rows[0].reasons), [IMPORT_REASON])
   assert.equal(JSON.parse(rows[0].fields)[2][1], 'Hola, \'qué\' tal\nsegunda línea')
   assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_jobs').first()).n, 0)
+})
+
+// A tiny XLSX like the Drive export: shared strings, an inline string, numbers and a gap.
+function xlsx (sheets) {
+  const { deflateRawSync, crc32 } = zlib
+  const files = {
+    'xl/workbook.xml': `<workbook xmlns:r="r"><sheets>${sheets.map((s, i) => `<sheet name="${s.name}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets></workbook>`,
+    'xl/_rels/workbook.xml.rels': `<Relationships>${sheets.map((s, i) => `<Relationship Id="rId${i + 1}" Type="ws" Target="worksheets/sheet${i + 1}.xml"/>`).join('')}</Relationships>`,
+    'xl/sharedStrings.xml': '<sst><si><t>Timestamp</t></si><si><t>URL</t></si><si><r><t>Nom</t></r><r><t>bre</t></r></si><si><t xml:space="preserve">Ana &amp; Luis</t></si></sst>'
+  }
+  sheets.forEach((s, i) => { files[`xl/worksheets/sheet${i + 1}.xml`] = `<worksheet><sheetData>${s.xml}</sheetData></worksheet>` })
+  const locals = []
+  const central = []
+  let offset = 0
+  for (const [name, text] of Object.entries(files)) {
+    const raw = Buffer.from(text)
+    const data = deflateRawSync(raw)
+    const head = Buffer.alloc(30)
+    head.writeUInt32LE(0x04034b50, 0); head.writeUInt16LE(8, 8); head.writeUInt32LE(crc32(raw), 14)
+    head.writeUInt32LE(data.length, 18); head.writeUInt32LE(raw.length, 22); head.writeUInt16LE(name.length, 26)
+    const entry = Buffer.alloc(46)
+    entry.writeUInt32LE(0x02014b50, 0); entry.writeUInt16LE(8, 10); entry.writeUInt32LE(crc32(raw), 16)
+    entry.writeUInt32LE(data.length, 20); entry.writeUInt32LE(raw.length, 24); entry.writeUInt16LE(name.length, 28); entry.writeUInt32LE(offset, 42)
+    locals.push(head, Buffer.from(name), data)
+    central.push(entry, Buffer.from(name))
+    offset += 30 + name.length + data.length
+  }
+  const dir = Buffer.concat(central)
+  const end = Buffer.alloc(22)
+  end.writeUInt32LE(0x06054b50, 0); end.writeUInt16LE(central.length / 2, 8); end.writeUInt16LE(central.length / 2, 10)
+  end.writeUInt32LE(dir.length, 12); end.writeUInt32LE(offset, 16)
+  return Buffer.concat([...locals, dir, end])
+}
+
+test('readWorkbook returns every tab as rows of strings, keeping gaps and entities', () => {
+  const book = xlsx([
+    { name: 'acme.test#form-contacto', xml: '<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c></row><row r="2"><c r="A2" s="1"><v>45849.544525462964</v></c><c r="C2" t="s"><v>3</v></c></row><row r="3"><c r="A3"><v>46320.5</v></c><c r="B3" t="inlineStr"><is><t>https://acme.test/x/</t></is></c><c r="C3" t="b"><v>1</v></c></row>' },
+    { name: 'other.test#form', xml: '' }
+  ])
+  const tabs = readWorkbook(book)
+  assert.deepEqual([...tabs.keys()], ['acme.test#form-contacto', 'other.test#form'])
+  assert.deepEqual(tabs.get('acme.test#form-contacto'), [
+    ['Timestamp', 'URL', 'Nombre'],
+    ['45849.544525462964', '', 'Ana & Luis'],
+    ['46320.5', 'https://acme.test/x/', 'TRUE']
+  ])
+  assert.deepEqual(tabs.get('other.test#form'), [])
+})
+
+test('serial day timestamps from the XLSX export follow the sheet zone', () => {
+  assert.equal(new Date(sheetTime('45849.544525462964', ZONE)).toISOString(), '2025-07-11T11:04:07.000Z')
+  assert.equal(new Date(sheetTime('46012.75', ZONE)).toISOString(), '2025-12-21T17:00:00.000Z')
+})
+
+test('convert accepts workbook rows like CSV rows', () => {
+  const rows = parseCsv(CSV)
+  assert.deepEqual(convert({ rows, form: 'form-contacto', timeZone: ZONE }), convert({ csv: CSV, form: 'form-contacto', timeZone: ZONE }))
+  const [item] = convert({ rows: [['Timestamp', 'URL', 'Nombre'], ['45849.544525462964', 'https://acme.test/x/', 'Ana'], ['', '', '']], form: 'f', timeZone: ZONE })
+  assert.equal(item.key, '/x/#f')
+  assert.equal(item.createdAt, Date.parse('2025-07-11T11:04:07Z'))
 })

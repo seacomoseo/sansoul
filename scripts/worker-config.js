@@ -24,9 +24,11 @@ const COMPATIBILITY_DATE = '2025-12-10'
 // (Free allows five per account).
 const WORKER_CRON = '*/15 * * * *'
 
-export function planWorker (projectDir = process.cwd(), { core = relativeEnginePath(projectDir) } = {}) {
+// `history`: the account already holds <worker>-forms (imported or earlier
+// submissions), so the forms backend and its CMS panel stay on without forms.
+export function planWorker (projectDir = process.cwd(), { core = relativeEnginePath(projectDir), history = false } = {}) {
   const project = readProject(projectDir)
-  const forms = hasForms(projectDir)
+  const forms = hasForms(projectDir) || history
   const commerce = fs.existsSync(path.join(projectDir, 'functions', '_commerce', 'catalog.generated.js'))
   const databases = []
   const kv = []
@@ -96,8 +98,8 @@ export function renderConfig (plan, { account = '', ids = {} } = {}) {
     JSON.stringify(config, null, 2) + '\n'
 }
 
-export async function resolveResources (plan, { token, account, fetch = globalThis.fetch }) {
-  const call = async (method, route, body) => {
+function cloudflareCall ({ token, fetch }) {
+  return async (method, route, body) => {
     const response = await fetch(`${API}${route}`, {
       method,
       headers: { authorization: `Bearer ${token}`, ...(body ? { 'content-type': 'application/json' } : {}) },
@@ -110,11 +112,37 @@ export async function resolveResources (plan, { token, account, fetch = globalTh
     }
     return data
   }
-  if (!account) {
-    const { result } = await call('GET', '/accounts?per_page=50')
-    if (result.length !== 1) throw new Error(`The token sees ${result.length} Cloudflare accounts; set CLOUDFLARE_ACCOUNT_ID.`)
-    account = result[0].id
+}
+
+export async function resolveAccount ({ token, account, fetch = globalThis.fetch }) {
+  if (account) return account
+  const { result } = await cloudflareCall({ token, fetch })('GET', '/accounts?per_page=50')
+  if (result.length !== 1) throw new Error(`The token sees ${result.length} Cloudflare accounts; set CLOUDFLARE_ACCOUNT_ID.`)
+  return result[0].id
+}
+
+// Find a D1 database by exact name without creating it.
+export async function findDatabase (name, { token, account, fetch = globalThis.fetch }) {
+  const { result } = await cloudflareCall({ token, fetch })('GET', `/accounts/${account}/d1/database?name=${encodeURIComponent(name)}&per_page=100`)
+  return result.find(item => item.name === name) || null
+}
+
+// No Worker forms, but <worker>-forms exists (imported history or earlier
+// submissions): keep serving its CMS panel. A token without D1 access only
+// skips the check, so assets-only projects keep deploying.
+export async function hasHistory (plan, { token, account, fetch = globalThis.fetch, warn = message => console.error(message) }) {
+  if (plan.forms) return false
+  try {
+    return Boolean(await findDatabase(`${plan.project.worker}-forms`, { token, account, fetch }))
+  } catch (error) {
+    warn(`worker config: forms history check skipped (${error.message})`)
+    return false
   }
+}
+
+export async function resolveResources (plan, { token, account, fetch = globalThis.fetch }) {
+  const call = cloudflareCall({ token, fetch })
+  account = await resolveAccount({ token, account, fetch })
   const ids = {}
   const created = []
   for (const db of plan.databases) {
@@ -155,12 +183,14 @@ function hasForms (projectDir) {
 
 async function main () {
   const projectDir = process.cwd()
-  const plan = planWorker(projectDir)
+  let plan = planWorker(projectDir)
   let resolved = { account: process.env.CLOUDFLARE_ACCOUNT_ID || '', ids: {}, created: [], subdomain: '' }
   if (process.argv.includes('--resolve')) {
     const token = process.env.CLOUDFLARE_API_TOKEN
     if (!token) throw new Error('--resolve needs CLOUDFLARE_API_TOKEN.')
-    resolved = await resolveResources(plan, { token, account: resolved.account })
+    const account = await resolveAccount({ token, account: resolved.account })
+    if (await hasHistory(plan, { token, account })) plan = planWorker(projectDir, { history: true })
+    resolved = await resolveResources(plan, { token, account })
   }
   const dir = path.join(projectDir, 'worker')
   fs.mkdirSync(dir, { recursive: true })
