@@ -10,6 +10,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { bearer, googleAccessToken, hasSecret, http } from './lib.js'
 import { editYaml } from './repo.js'
+import { unconfirmedMails } from './mails.js'
 
 export const GA4_ACCOUNT = process.env.SANSOUL_GA4_ACCOUNT || '2157126'
 const API = 'https://analyticsadmin.googleapis.com'
@@ -124,7 +125,8 @@ async function access (ctx, property) {
   const users = bindings.map(b => (b.user || '').toLowerCase())
   const missing = ctx.mails.filter(m => !users.includes(m.toLowerCase()))
   if (!missing.length) return ctx.done(`acceso GA4 de ${ctx.mails.join(', ')}`)
-  if (!ctx.apply) return ctx.todo(`acceso de lectura en GA4 para ${missing.join(', ')}`)
+  if (!ctx.apply) return ctx.todo(`acceso de lectura en GA4 para ${missing.join(', ')}${ctx.mailsSource === 'hugo.yml' ? ' (de params.drive_mails: confírmalos)' : ''}`)
+  if (!await ctx.confirmMails()) return unconfirmedMails(ctx, `Lectura en GA4 para ${missing.join(', ')}`)
   for (const user of missing) {
     await http(`${API}/v1alpha/${property}/accessBindings`, { method: 'POST', headers, body: { user, roles: ['predefinedRoles/viewer'] } })
   }

@@ -180,11 +180,21 @@ function ensureTomlKey (file, section, key, value, log) {
   }
 }
 
+// Local-only state that must never reach Git: the pnpm store and the lifecycle
+// lock that `sh do dev|cms|local` holds while running (committed, it fails CI).
+export const LOCAL_IGNORES = ['.pnpm-store', '.sansoul-dev.lock']
+
+export function ensureGitignore (projectDir, log = console.log) {
+  const ignore = path.join(projectDir, '.gitignore')
+  const source = fs.existsSync(ignore) ? fs.readFileSync(ignore, 'utf8') : ''
+  const missing = LOCAL_IGNORES.filter(entry => !new RegExp(`^/?${entry.replace(/\./g, '\\.')}/?\\s*$`, 'm').test(source))
+  if (!missing.length) return []
+  fs.writeFileSync(ignore, `${source ? source.replace(/\n*$/, '\n') : ''}${missing.join('\n')}\n`)
+  log(`Added ${missing.join(', ')} to .gitignore.`)
+  return missing
+}
+
 export function syncDeploymentConfig (projectDir, log = console.log) {
   ensureTomlKey(path.join(projectDir, 'netlify.toml'), 'build.environment', 'PNPM_FLAGS', PNPM_FLAGS, log)
-  const ignore = path.join(projectDir, '.gitignore')
-  if (fs.existsSync(ignore)) {
-    const source = fs.readFileSync(ignore, 'utf8')
-    if (!/^\.pnpm-store\/?$/m.test(source)) fs.writeFileSync(ignore, `${source.replace(/\n*$/, '\n')}.pnpm-store\n`)
-  }
+  ensureGitignore(projectDir, log)
 }

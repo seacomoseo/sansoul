@@ -8,13 +8,18 @@ import { parse } from 'yaml'
 import { projectName } from '../new/lib.js'
 import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
-import { context, STEPS } from '../new.js'
+import { context, identityHint, STEPS } from '../new.js'
 import { renamable, sameName } from '../new/cloudflare.js'
 
 const quiet = fn => {
   const log = console.log
   console.log = () => {}
   try { return fn() } finally { console.log = log }
+}
+const quietAsync = async fn => {
+  const log = console.log
+  console.log = () => {}
+  try { return await fn() } finally { console.log = log }
 }
 
 test('project name: <owner> for site, <owner>-<repo> otherwise (GitLab and Drive)', () => {
@@ -38,7 +43,7 @@ test('new project context: defaults, normalized domain and mails', () => {
 })
 
 test('existing project context reads hugo.yml', t => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-'))
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-')))
   const cwd = process.cwd()
   t.after(() => { process.chdir(cwd); fs.rmSync(root, { recursive: true, force: true }) })
   fs.mkdirSync(path.join(root, 'core'))
@@ -121,4 +126,135 @@ test('retire only runs on request and team mirrors the 3dnau organization', asyn
   assert.equal(retire.skip({ retire: false }), true)
   assert.equal(retire.skip({ retire: true }), false)
   assert.equal(STEPS.at(-1).id, 'retire')
+})
+
+test('API calls retry 429/5xx with backoff; POST retries only rate limits', async t => {
+  const { http, retryPolicy, retryDelay } = await import('../new/lib.js')
+  const realFetch = globalThis.fetch
+  const realSleep = retryPolicy.sleep
+  const waits = []
+  retryPolicy.sleep = async ms => { waits.push(ms) }
+  t.after(() => { globalThis.fetch = realFetch; retryPolicy.sleep = realSleep })
+  const reply = (status, body = {}, headers = {}) => new Response(JSON.stringify(body), { status, headers })
+  const queue = (...responses) => {
+    const calls = []
+    globalThis.fetch = async (url, init) => { calls.push(init.method); return responses.shift() }
+    return calls
+  }
+
+  // GA4 listing hit by a transient 503, then OK.
+  let calls = queue(reply(503, { error: { message: 'The service is currently unavailable.' } }), reply(429, {}, { 'retry-after': '2' }), reply(200, { properties: [1] }))
+  assert.deepEqual((await http('https://analyticsadmin.googleapis.com/v1beta/properties')).data, { properties: [1] })
+  assert.equal(calls.length, 3)
+  assert.deepEqual(waits, [retryDelay(0), 2000])
+
+  // A persistent outage fails after the attempt budget with a clear message.
+  calls = queue(...Array.from({ length: retryPolicy.attempts }, () => reply(503)))
+  await assert.rejects(http('https://analyticsadmin.googleapis.com/v1beta/properties'), new RegExp(`HTTP 503 tras ${retryPolicy.attempts} intentos`))
+  assert.equal(calls.length, retryPolicy.attempts)
+
+  // A POST is not repeated after a 5xx (it may have been applied), but is after a 429.
+  calls = queue(reply(503))
+  await assert.rejects(http('https://x.test/create', { method: 'POST', body: {} }), /HTTP 503 /)
+  assert.equal(calls.length, 1)
+  calls = queue(reply(429), reply(201, { name: 'properties/1' }))
+  assert.equal((await http('https://x.test/create', { method: 'POST', body: {} })).data.name, 'properties/1')
+
+  // Client errors fail at once.
+  calls = queue(reply(404))
+  await assert.rejects(http('https://x.test/missing'), /HTTP 404/)
+  assert.equal(calls.length, 1)
+  assert.equal(retryDelay(10, undefined, 1000), 30000)
+})
+
+test('a pre-14 project is told to update the engine before sh do new', t => {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-')))
+  const cwd = process.cwd()
+  t.after(() => { process.chdir(cwd); fs.rmSync(root, { recursive: true, force: true }) })
+  fs.mkdirSync(path.join(root, 'core'))
+  fs.writeFileSync(path.join(root, 'core/do'), '')
+  fs.writeFileSync(path.join(root, 'package.json'), '{"version":"13.7.0"}')
+  fs.writeFileSync(path.join(root, 'hugo.yml'), 'baseURL: https://cuprico.com\nparams:\n  name: cuprico\n  domain: cuprico.com\n')
+  process.chdir(root)
+  assert.throws(() => quiet(() => context({}, [])), error => {
+    assert.match(error.message, /params\.repo must name the GitHub repository/)
+    assert.match(error.message, /SanSoul 13\.7\.0: sh do new necesita el motor 14/)
+    assert.match(error.message, /update-project\.sh/)
+    assert.match(error.message, /Repite sh do new/)
+    return true
+  })
+  fs.writeFileSync(path.join(root, 'package.json'), '{"version":"14.15.2"}')
+  assert.doesNotMatch(identityHint(new Error('x'), root), /update-project/)
+  assert.match(identityHint(new Error('x'), root), /Corrige params\.owner y params\.repo/)
+})
+
+test('drive_mails from hugo.yml need confirmation before sharing; --mails confirms', async () => {
+  const { confirmMails } = await import('../new/mails.js')
+  const project = (values = {}) => {
+    const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-new-')))
+    const cwd = process.cwd()
+    fs.mkdirSync(path.join(root, 'core'))
+    fs.writeFileSync(path.join(root, 'core/do'), '')
+    fs.writeFileSync(path.join(root, 'hugo.yml'), 'baseURL: https://acme.es\nparams:\n  owner: acme\n  repo: site\n  drive_mails: cliente@acme.es, exsocio@acme.es\n')
+    process.chdir(root)
+    try { return quiet(() => context(values, [])) } finally { process.chdir(cwd); fs.rmSync(root, { recursive: true, force: true }) }
+  }
+  const never = async () => { throw new Error('must not ask') }
+
+  const plan = project()
+  assert.equal(plan.mailsSource, 'hugo.yml')
+  assert.equal(await confirmMails(plan, { interactive: false, ask: never }), true, 'a plan only lists them')
+
+  const batch = project({ apply: true })
+  assert.equal(await confirmMails(batch, { interactive: false, ask: never }), false, 'non-interactive --apply refuses')
+
+  const tty = project({ apply: true })
+  let asked = 0
+  const yes = async question => { asked++; assert.match(question, /cliente@acme\.es, exsocio@acme\.es/); return true }
+  assert.equal(await confirmMails(tty, { interactive: true, ask: yes }), true)
+  assert.equal(await confirmMails(tty, { interactive: true, ask: yes }), true)
+  assert.equal(asked, 1, 'asked once for drive and ga4')
+
+  const flagged = project({ apply: true, mails: 'cliente@acme.es' })
+  assert.equal(flagged.mailsSource, 'flag')
+  assert.deepEqual(flagged.mails, ['cliente@acme.es'])
+  assert.equal(await confirmMails(flagged, { interactive: false, ask: never }), true)
+})
+
+test('drive step never shares with unconfirmed hugo.yml mails in a non-interactive --apply', async t => {
+  const { default: drive } = await import('../new/drive.js')
+  const { retryPolicy } = await import('../new/lib.js')
+  const secrets = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-secrets-'))
+  fs.writeFileSync(path.join(secrets, 'google-seacomoseo-oauth-token.json'), JSON.stringify({ refresh_token: 'r', client_id: 'c', client_secret: 's', token_uri: 'https://oauth.test/token' }))
+  const realFetch = globalThis.fetch
+  const oldDir = process.env.SANSOUL_SECRETS_DIR
+  process.env.SANSOUL_SECRETS_DIR = secrets
+  retryPolicy.attempts = 1
+  t.after(() => { globalThis.fetch = realFetch; process.env.SANSOUL_SECRETS_DIR = oldDir ?? ''; if (oldDir === undefined) delete process.env.SANSOUL_SECRETS_DIR; retryPolicy.attempts = 5; fs.rmSync(secrets, { recursive: true, force: true }) })
+  const posts = []
+  const me = { emailAddress: 'agency@x.test', permissionId: 'me' }
+  const file = (id, name) => ({ id, name, parents: ['folder'], owners: [me] })
+  globalThis.fetch = async (url, init = {}) => {
+    const json = body => new Response(JSON.stringify(body), { status: 200 })
+    if (url.startsWith('https://oauth.test')) return json({ access_token: 't-new-project' })
+    if (url.includes('/about')) return json({ user: me })
+    if (init.method === 'POST') { posts.push(url); return json({}) }
+    if (url.includes('/permissions')) return json({ permissions: [{ emailAddress: 'agency@x.test', role: 'owner' }] })
+    const q = decodeURIComponent(new URL(url).searchParams.get('q') || '')
+    if (q.includes('_SanSoul Demo accesos.tsv')) return json({ files: [file('tpl-tsv', '_SanSoul Demo accesos.tsv')] })
+    if (q.includes('_SanSoul Demo.md')) return json({ files: [file('tpl-md', '_SanSoul Demo.md')] })
+    if (q.includes('Acmé accesos.tsv')) return json({ files: [file('tsv', 'Acmé accesos.tsv')] })
+    if (q.includes('Acmé.md')) return json({ files: [file('md', 'Acmé.md')] })
+    return json({ files: [] })
+  }
+  const ctx = quiet(() => context({ owner: 'acme', project: 'Acmé', apply: true }, ['acme.es']))
+  Object.assign(ctx, { dir: '', mails: ['cliente@acme.es', 'exsocio@acme.es'], mailsSource: 'hugo.yml', confirmMails: async () => false })
+  await quietAsync(() => drive.run(ctx))
+  assert.deepEqual(posts, [])
+  assert.match(ctx.manuals.join('\n'), /sin confirmar params\.drive_mails \(cliente@acme\.es, exsocio@acme\.es\)[\s\S]*--mails "cliente@acme\.es,exsocio@acme\.es" --only ga4,drive --apply/)
+
+  ctx.confirmMails = async () => true
+  ctx.manuals.length = 0
+  await quietAsync(() => drive.run(ctx))
+  assert.equal(posts.filter(url => url.includes('/tsv/permissions')).length, 2)
 })

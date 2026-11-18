@@ -9,6 +9,8 @@ CORE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 # Project setup also runs outside a consumer (new project from the engine).
 if [ "${1:-}" = new ]; then
   shift
+  # A fresh clone has no node_modules yet: install them with the pinned manager.
+  node "$CORE_DIR/scripts/dependencies.js" --runtime || exit 1
   exec node "$CORE_DIR/scripts/new.js" "$@"
 fi
 CORE_PATH=${CORE_DIR#"$PROJECT_DIR"/}

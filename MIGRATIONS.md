@@ -42,6 +42,27 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.16.0 — 2026-11-18 — `{{% get %}}` en páginas de colección, `.sansoul-dev.lock` fuera de Git y fricciones de `sh do new`
+
+**Impacto:** compatible; puede cambiar el HTML de páginas de colección.
+
+1. **Render:** el Markdown de las secciones (`md`) se renderiza sobre la página en curso, no sobre la portada. Los
+   shortcodes que leen parámetros de página (`{{% get header.md %}}`, `{{% get location %}}`, `{{% get others.* %}}`…)
+   en una sección compartida devuelven ahora el valor de cada página de colección o single que lo defina; antes daban el
+   de la portada. Los proyectos que esquivaron el fallo leyendo esos valores por datos (`get: from/to`) siguen
+   funcionando y pueden volver al shortcode.
+2. **`.gitignore`:** `sh do update` añade `.sansoul-dev.lock` (y `.pnpm-store`) si faltan. `sh do up` no sube nunca el
+   bloqueo del servidor local y lo retira del índice si un commit anterior lo subió (el CI fallaba con «Stale SanSoul
+   lifecycle lock»).
+3. **`sh do new`:** instala las dependencias con el pnpm fijado en un clon recién hecho; reintenta con espera los
+   429/5xx de las APIs; en un proyecto anterior a 14 explica que primero hay que actualizar el motor; y los correos de
+   `params.drive_mails` salen en el plan y solo se comparten (hoja de accesos y GA4) tras confirmarlos o con `--mails`.
+
+**Acciones obligatorias:** ninguna; `sh do update` aplica el punto 2.
+
+**Validación:** tras actualizar, `git check-ignore .sansoul-dev.lock` lo encuentra y `sh do build` termina bien. Si una
+sección compartida usa `{{% get … %}}`, revisa una página de colección: debe mostrar su propio valor.
+
 ## 14.15.2 — 2026-11-18 — `sh do new`: Worker por defecto = repo (`<repo>.<org>.workers.dev`)
 
 **Impacto:** ninguno en los proyectos. `sh do new` tomaba por defecto el owner (o `<owner>-<repo>`) como nombre del

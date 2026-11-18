@@ -5,6 +5,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 
 export function dependencyManager (directory = process.cwd(), { allowMissingLock = false } = {}) {
@@ -46,10 +47,36 @@ export function installDependencies ({ directory = process.cwd(), updateLockfile
   if (result.error || result.status !== 0) throw new Error(`${manager.name} ${args.join(' ')} failed${result.error ? `: ${result.error.message}` : ` (exit ${result.status ?? result.signal})`}.`)
 }
 
+// Commands that run before any build (`sh do new`) need the engine's runtime
+// packages. Resolve them from the engine scripts; when missing, install them
+// with the pinned manager in the directory whose node_modules Node will search:
+// the consumer root when run from one, else the engine checkout itself.
+export function ensureRuntimeDependencies ({ engineDir, projectDir = process.cwd(), packages = ['yaml'], install = installDependencies, log = console.error } = {}) {
+  const resolver = createRequire(path.join(engineDir, 'scripts', 'noop.js'))
+  const missing = () => packages.filter(name => { try { resolver.resolve(name); return false } catch { return true } })
+  let absent = missing()
+  if (!absent.length) return null
+  const engineInsideProject = path.relative(projectDir, engineDir) && !path.relative(projectDir, engineDir).startsWith('..')
+  const directory = engineInsideProject && fs.existsSync(path.join(projectDir, 'package.json')) ? projectDir : engineDir
+  log(`SanSoul: faltan dependencias (${absent.join(', ')}); se instalan con el gestor fijado en ${directory}.`)
+  try {
+    install({ directory })
+  } catch (error) {
+    throw new Error(`${error.message}\nInstala las dependencias a mano y repite: cd ${JSON.stringify(directory)} && pnpm install --frozen-lockfile`)
+  }
+  absent = missing()
+  if (absent.length) throw new Error(`Siguen faltando ${absent.join(', ')} tras instalar en ${directory}.`)
+  return directory
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const args = process.argv.slice(2)
-    if (args.some(arg => arg !== '--update-lockfile')) throw new Error('Usage: sh do hugo (or node <engine>/scripts/dependencies.js [--update-lockfile])')
+    if (args[0] === '--runtime') {
+      ensureRuntimeDependencies({ engineDir: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..') })
+      process.exit(0)
+    }
+    if (args.some(arg => arg !== '--update-lockfile')) throw new Error('Usage: sh do hugo (or node <engine>/scripts/dependencies.js [--update-lockfile | --runtime])')
     installDependencies({ updateLockfile: args.includes('--update-lockfile') })
   } catch (error) {
     console.error(`SanSoul dependencies: ${error.message}`)

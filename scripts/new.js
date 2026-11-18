@@ -18,6 +18,7 @@ import { parseArgs } from 'node:util'
 import { parse } from 'yaml'
 import { readProject } from './project.js'
 import { git, projectName, repoSecrets } from './new/lib.js'
+import { MAIL_STEPS, confirmMails } from './new/mails.js'
 import repo, { identity } from './new/repo.js'
 import team from './new/team.js'
 import retire from './new/retire.js'
@@ -50,7 +51,7 @@ const publish = {
     if (!ctx.apply) return ctx.todo(`commit y push a main (${ctx.changed.join(', ') || 'repositorio nuevo'})`)
     if (dirty) {
       identity(ctx.dir)
-      git(['add', ...(ctx.changed.length ? ctx.changed : ['-A'])], ctx.dir)
+      git(['add', ...(ctx.changed.length ? ['--', ...ctx.changed] : ['-A', '--', '.', ':(exclude).sansoul-dev.lock'])], ctx.dir)
       git(['commit', '--quiet', '-m', `SanSoul: ${ctx.created ? 'alta de' : 'sh do new en'} ${ctx.domain} (${ctx.changed.join(', ') || 'configuración'})`], ctx.dir)
     }
     git(['push', '--quiet', '-u', 'origin', 'main'], ctx.dir)
@@ -68,7 +69,8 @@ Opciones:
                       cuenta de Cloudflare y los archivos de Drive
   --repo NAME         repositorio (por defecto site)
   --worker NAME       Worker (por defecto el repo: <repo>.<org>.workers.dev)
-  --mails a,b         correos del cliente (drive_mails)
+  --mails a,b         correos del cliente (drive_mails): confirma a quién se comparten la hoja de
+                      accesos y GA4; sin él, --apply pide confirmar los de hugo.yml (o no comparte)
   --members u1,u2     usuarios de GitHub del cliente (equipo clients: maintain en el repo)
   --netlify NAME      espejo de Netlify opcional
   --cf-account ID     cuenta de Cloudflare (por defecto, la que se llame como el dominio)
@@ -113,6 +115,9 @@ async function main () {
 
   if (!ctx.project) console.log('\n! Sin params.project: pasa --project "Nombre del Vault" (se guarda en hugo.yml) para nombrar la cuenta de Cloudflare y los archivos de Drive.')
   console.log(`\nSanSoul new · ${ctx.project ? `${ctx.project} · ` : ''}${ctx.domain} · ${ctx.owner}/${ctx.repo} · Worker ${ctx.worker} · ${ctx.apply ? 'EJECUCIÓN' : 'PLAN (sin cambios; --apply para ejecutar)'}${ctx.production ? ' · PRODUCCIÓN' : ''}`)
+  if (ctx.mails.length && (!only || only.some(id => MAIL_STEPS.includes(id)))) {
+    console.log(`Destinatarios (hoja de accesos y lectura en GA4): ${ctx.mails.join(', ')} · ${ctx.mailsSource === 'flag' ? 'de --mails' : 'de params.drive_mails en hugo.yml: compruébalos; --apply pedirá confirmación o --mails'}`)
+  }
   for (const step of STEPS) {
     if ((only && !only.includes(step.id)) || step.skip?.(ctx)) continue
     console.log(`\n▸ ${step.title}`)
@@ -141,7 +146,8 @@ export function context (values, positionals) {
     if (!values.project) throw new Error('falta --project "Nombre del proyecto en el Vault"')
     base = { domain, owner: values.owner, repo: values.repo || 'site', dir: path.resolve(values.dir || path.join(os.homedir(), 'repos', domain)), worker: values.worker }
   } else if (consumer) {
-    const project = readProject()
+    let project
+    try { project = readProject() } catch (error) { throw new Error(identityHint(error, process.cwd())) }
     const params = parse(fs.readFileSync('hugo.yml', 'utf8'))?.params || {}
     base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: project.worker, netlify: project.netlify, mails: params.drive_mails, project: params.project }
   } else {
@@ -158,6 +164,9 @@ export function context (values, positionals) {
     worker: (values.worker || base.worker || base.repo).toLowerCase(),
     netlify: values.netlify ?? base.netlify ?? '',
     mails,
+    // --mails is an explicit confirmation; recipients read from hugo.yml may be
+    // stale (a former partner) and need confirming before anything is shared.
+    mailsSource: values.mails !== undefined ? 'flag' : mails.length ? 'hugo.yml' : '',
     members: String(values.members ?? '').split(',').map(m => m.trim().replace(/^@/, '')).filter(Boolean),
     retire: Boolean(values.retire),
     oldRepo: values['old-repo'] || '',
@@ -177,7 +186,28 @@ export function context (values, positionals) {
   ctx.todo = item => { ctx.todos++; console.log(`  + ${item}`) }
   ctx.warn = item => console.log(`  ! ${item}`)
   ctx.manual = lines('☐', ctx.manuals)
+  ctx.confirmMails = () => confirmMails(ctx)
   return ctx
+}
+
+export const UPDATE_COMMAND = 'sansoul_update=$(curl -fsSL https://raw.githubusercontent.com/seacomoseo/sansoul/main/scripts/update-project.sh) && sh -c "$sansoul_update"'
+
+// hugo.yml identity errors usually mean a project still on an engine before
+// 14.0.0 (no flat params.owner/params.repo): say how to update it first.
+export function identityHint (error, dir) {
+  let version = ''
+  try { version = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).version || '' } catch {}
+  const major = Number(String(version).split('.')[0])
+  const legacy = fs.existsSync(path.join(dir, 'themes', 'sansoul', 'do')) || (Number.isFinite(major) && major > 0 && major < 14)
+  if (!legacy) return `${error.message}\nCorrige params.owner y params.repo en hugo.yml (org y repositorio de GitHub de destino) y repite sh do new.`
+  return [
+    error.message,
+    `Este proyecto está en SanSoul ${version || 'anterior a 14'}: sh do new necesita el motor 14 o posterior. Orden:`,
+    '  1. Con el árbol limpio y el servidor local parado, actualiza el motor desde la raíz del proyecto:',
+    `     ${UPDATE_COMMAND}`,
+    '  2. Revisa params.owner y params.repo en hugo.yml (org y repositorio de GitHub de destino) y confirma el cambio.',
+    '  3. Repite sh do new.'
+  ].join('\n')
 }
 
 function hasUpstream (dir) {

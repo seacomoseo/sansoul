@@ -1,7 +1,16 @@
+{{/*
+Partial: func/md
+Purpose: Render author Markdown (with shortcodes) and SanSoul inline syntax.
+Context: string (Markdown).
+Returns: template.HTML.
+Notes: Renders on the page being built, so page-aware shortcodes such as
+  {{% get header.md %}} read that page's params (collection pages included),
+  not the home page's. Falls back to the home page outside a page context.
+*/}}
 {{ $store   := page.Store -}}
 {{ $inline  := $store.Get "md_inline" }}
 {{ $display := cond $inline "inline" "block" }}
-{{ $md      := . | site.Home.RenderString (dict "display" $display) }}
+{{ $md      := . | (page | default site.Home).RenderString (dict "display" $display) }}
 
 {{ range $md | findRESubmatch `::(.+?)::` | uniq }}
   {{ $str  := index . 0 }}

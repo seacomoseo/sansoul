@@ -122,10 +122,24 @@ Pasos, en este orden:
 8. **gsc**: propiedad de dominio en Search Console. Se verifica por DNS y se envía el sitemap con `--production`.
 9. **drive**: `<Proyecto>.md` (notas) y `<Proyecto> accesos.tsv` (accesos, sin contraseñas; uno por cliente aunque
    tenga varias webs) en la carpeta SanSoul, propiedad de Sea Como SEO y compartida con `params.drive_mails`; el enlace queda en `params.drive_url`.
+   Los destinatarios (de la hoja y de la lectura en GA4) salen en el plan. Si vienen de `hugo.yml` y no de `--mails`,
+   `--apply` pregunta antes de compartir; sin terminal interactiva no comparte y deja el comando con `--mails` para
+   repetirlo. Un `--mails` confirmado sustituye también `params.drive_mails`.
 10. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
 11. **retire** (solo con `--retire`, con la migración comprobada): borra el Cloudflare Pages antiguo y el repo antiguo
     `seacomoseo/<dominio>`, con copia previa. No toca nada si el dominio aún apunta a Pages o si el repo antiguo
     tiene cambios posteriores a la migración.
+
+**Migrar un proyecto anterior a 14** (p. ej. 13.x): `sh do new` lee `params.owner` y `params.repo`, que llegan con
+14.0.0, así que el orden es:
+
+1. Copiar el repositorio a la org del cliente y clonarlo.
+2. Actualizar el motor desde su raíz, con el árbol limpio y el servidor local parado:
+   `sansoul_update=$(curl -fsSL https://raw.githubusercontent.com/seacomoseo/sansoul/main/scripts/update-project.sh) && sh -c "$sansoul_update"`.
+3. Revisar en `hugo.yml` `params.owner` y `params.repo` (org y repo de destino) y confirmar el cambio.
+4. `sh do new` (plan) y `sh do new --apply`.
+
+Si se ejecuta `sh do new` antes de actualizar, se detiene y recuerda estos pasos.
 
 Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo
 se hace con `--production`, después de aprobarlo. `--rotate` renueva el token de CI y
