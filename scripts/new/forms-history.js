@@ -85,6 +85,24 @@ async function importedCount (api, uuid) {
   }
 }
 
+// How many of these items already exist under their stable ids.
+async function presentCount (api, uuid, items) {
+  let present = 0
+  for (let i = 0; i < items.length; i += BATCH) {
+    const ids = items.slice(i, i + BATCH).map(item => `'${item.id.replace(/'/g, "''")}'`).join(', ')
+    present += rowsOf(await api.query(uuid, `SELECT COUNT(*) AS n FROM forms_submissions WHERE id IN (${ids})`))[0]?.n ?? 0
+  }
+  return present
+}
+
+// Plan line: `done` when every source row is already in the database.
+export function historyPlan ({ name, exists, schema, present = 0, total, summary }) {
+  if (exists && schema && present >= total) return { done: true, text: `histórico al día en ${name}: ${total} envío(s) ya importado(s) (${summary})` }
+  const state = !exists ? `crear la D1 ${name}, aplicar sus migraciones e ` : !schema ? `aplicar las migraciones de ${name} e ` : ''
+  const count = present ? `${total - present} envío(s) nuevo(s) de ${total}` : `${total} envío(s)`
+  return { done: false, text: `${state}importar ${count} (${summary})` }
+}
+
 // Forms migrations not yet recorded, applied and recorded like `wrangler d1 migrations apply`.
 async function migrate (api, uuid) {
   await api.query(uuid, 'CREATE TABLE IF NOT EXISTS d1_migrations(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);')
@@ -115,11 +133,10 @@ export default {
     const api = d1(ctx.cfAccount)
     const name = `${ctx.worker}-forms`
     let db = await api.find(name)
-    const before = db ? await importedCount(api, db.uuid) : null
-    if (!ctx.apply) {
-      const state = !db ? `crear la D1 ${name}, aplicar sus migraciones e ` : before === null ? `aplicar las migraciones de ${name} e ` : ''
-      return ctx.todo(`${state}importar ${items.length} envío(s) (${summary})${before ? `; ya hay ${before} importado(s), solo se añaden los nuevos` : ''}`)
-    }
+    const schema = db ? (await importedCount(api, db.uuid)) !== null : false
+    const plan = historyPlan({ name, exists: Boolean(db), schema, present: schema ? await presentCount(api, db.uuid, items) : 0, total: items.length, summary })
+    if (plan.done) return ctx.done(plan.text)
+    if (!ctx.apply) return ctx.todo(plan.text)
     if (!db) {
       db = await api.create(name)
       ctx.done(`D1 ${name} creada`)
@@ -131,11 +148,7 @@ export default {
     for (let i = 0; i < statements.length; i += BATCH) await api.query(db.uuid, statements.slice(i, i + BATCH).join('\n'))
     const end = await importedCount(api, db.uuid)
     // Every source row must now exist under its stable id.
-    let present = 0
-    for (let i = 0; i < items.length; i += BATCH) {
-      const ids = items.slice(i, i + BATCH).map(item => `'${item.id.replace(/'/g, "''")}'`).join(', ')
-      present += rowsOf(await api.query(db.uuid, `SELECT COUNT(*) AS n FROM forms_submissions WHERE id IN (${ids})`))[0]?.n ?? 0
-    }
+    const present = await presentCount(api, db.uuid, items)
     if (present !== items.length) throw new Error(`D1 ${name}: tras importar hay ${present} de ${items.length} envíos`)
     ctx.done(`histórico importado en ${name}: ${end - start} nuevo(s), ${end} en total (${summary}); el panel aparece tras el siguiente despliegue`)
   }

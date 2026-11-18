@@ -10,7 +10,7 @@ import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
 import { context, identityHint, STEPS } from '../new.js'
 import { renamable, sameName } from '../new/cloudflare.js'
-import { domainTabs, projectFormIds } from '../new/forms-history.js'
+import { domainTabs, historyPlan, projectFormIds } from '../new/forms-history.js'
 
 const quiet = fn => {
   const log = console.log
@@ -302,4 +302,12 @@ test('forms history runs after cloudflare and before publish', () => {
   const ids = STEPS.map(s => s.id)
   assert.ok(ids.indexOf('cloudflare') < ids.indexOf('forms-history'))
   assert.ok(ids.indexOf('forms-history') < ids.indexOf('publish'))
+})
+
+test('forms history plan is up to date once every row is imported', () => {
+  const base = { name: 'site-forms', total: 56, summary: 'form-contacto 56' }
+  assert.deepEqual(historyPlan({ ...base, exists: false, schema: false }), { done: false, text: 'crear la D1 site-forms, aplicar sus migraciones e importar 56 envío(s) (form-contacto 56)' })
+  assert.deepEqual(historyPlan({ ...base, exists: true, schema: false }), { done: false, text: 'aplicar las migraciones de site-forms e importar 56 envío(s) (form-contacto 56)' })
+  assert.deepEqual(historyPlan({ ...base, exists: true, schema: true, present: 50 }), { done: false, text: 'importar 6 envío(s) nuevo(s) de 56 (form-contacto 56)' })
+  assert.deepEqual(historyPlan({ ...base, exists: true, schema: true, present: 56 }), { done: true, text: 'histórico al día en site-forms: 56 envío(s) ya importado(s) (form-contacto 56)' })
 })
