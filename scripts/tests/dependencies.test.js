@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { dependencyManager, checkDependencyManager, installDependencies } from '../dependencies.js'
+import { dependencyManager, checkDependencyManager, ensureRuntimeDependencies, installDependencies } from '../dependencies.js'
 
 test('dependency manager selection preserves npm consumers and rejects ambiguity', () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-manager-'))
@@ -50,5 +50,41 @@ test('installs stay frozen and project-local; a missing or mismatched manager fa
   } finally {
     process.env.PATH = oldPath
     fs.rmSync(directory, { recursive: true, force: true })
+  }
+})
+
+test('sh do new installs missing runtime packages where Node will look for them', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sansoul-runtime-'))
+  const quiet = () => {}
+  try {
+    const project = path.join(root, 'project')
+    const engine = path.join(project, 'core')
+    fs.mkdirSync(path.join(engine, 'scripts'), { recursive: true })
+    fs.writeFileSync(path.join(project, 'package.json'), '{}')
+    const pkg = 'sansoul-fixture-runtime-pkg'
+    const installed = []
+    const install = ({ directory }) => {
+      installed.push(directory)
+      fs.mkdirSync(path.join(directory, 'node_modules', pkg), { recursive: true })
+      fs.writeFileSync(path.join(directory, 'node_modules', pkg, 'index.js'), '')
+      fs.writeFileSync(path.join(directory, 'node_modules', pkg, 'package.json'), '{"main":"index.js"}')
+    }
+    // Consumer: dependencies belong to the project root.
+    assert.equal(ensureRuntimeDependencies({ engineDir: engine, projectDir: project, packages: [pkg], install, log: quiet }), project)
+    assert.equal(ensureRuntimeDependencies({ engineDir: engine, projectDir: project, packages: [pkg], install, log: quiet }), null)
+    // Standalone engine clone, run from elsewhere: install in the engine.
+    const clone = path.join(root, 'sansoul')
+    fs.mkdirSync(path.join(clone, 'scripts'), { recursive: true })
+    assert.equal(ensureRuntimeDependencies({ engineDir: clone, projectDir: root, packages: [pkg], install, log: quiet }), root === clone ? null : clone)
+    assert.deepEqual(installed, [project, clone])
+    // A failed install explains how to recover.
+    const broken = path.join(root, 'broken')
+    fs.mkdirSync(path.join(broken, 'scripts'), { recursive: true })
+    assert.throws(
+      () => ensureRuntimeDependencies({ engineDir: broken, projectDir: broken, packages: ['sansoul-missing-pkg'], install: () => { throw new Error('pnpm is unavailable.') }, log: quiet }),
+      /pnpm is unavailable[\s\S]*pnpm install --frozen-lockfile/
+    )
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true })
   }
 })
