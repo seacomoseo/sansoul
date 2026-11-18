@@ -42,6 +42,22 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.17.0 — 2026-11-18 — Reseñas fuera del JSON-LD de la propia organización; `email` e idiomas en la organización
+
+**Impacto:** compatible; cambia el JSON-LD.
+
+1. El bloque de reseñas ya no emite `Review` ni `AggregateRating` salvo en páginas `base: product`. Las reseñas sobre la
+   propia organización son autoatribuidas y Google no las admite para fragmentos de reseña. Nueva opción tri-estado
+   `review.schema` (campo «Datos Estructurados» de la plantilla de reseñas): vacío = solo producto, `true` = siempre,
+   `false` = nunca. Las reseñas se siguen mostrando igual.
+2. La organización publica `email` a partir del campo existente `org.mail` y `knowsLanguage` con los idiomas del sitio.
+
+**Acciones obligatorias:** ninguna. Si un proyecto quiere conservar el marcado anterior, añade `schema: true` en el
+`review` de esa sección.
+
+**Validación:** en una página de servicio con reseñas no aparece `AggregateRating` en el JSON-LD; en una ficha de
+producto sí. El nodo `#schema-org` incluye `email` (si hay `org.mail`) y `knowsLanguage`.
+
 ## 14.16.1 — 2026-11-18 — `sh do dev|cms|local` no dejan Hugo huérfano
 
 **Impacto:** ninguno en los proyectos. Si llegaba una señal de parada (SIGINT, SIGTERM o SIGHUP) justo al terminar el

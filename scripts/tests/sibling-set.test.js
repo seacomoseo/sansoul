@@ -121,7 +121,7 @@ test('FAQ and review structured data uses the same effective interpolated conten
   if (!f) return
   await fs.writeFile(path.join(f.root, 'layouts/partials/icon.html'), '{{ return "" }}')
   const faq = { level: 2, faq: { title: '{{ set question }}', md: '**{{ set answer }}**', open: true }, faqs: [{ question: 'Visible question', answer: 'Visible answer' }] }
-  const review = { level: 2, review: { title: '{{ set person }}', md: '**{{ set quote }}**', rating: 4 }, reviews: [{ person: 'Visible reviewer', quote: 'Visible testimonial' }] }
+  const review = { level: 2, review: { title: '{{ set person }}', md: '**{{ set quote }}**', rating: 4, schema: true }, reviews: [{ person: 'Visible reviewer', quote: 'Visible testimonial' }] }
   const built = await f.build(`{{ partial "blocks/faq" (${literal(faq)}) }}{{ partial "blocks/reviews" (${literal(review)}) }}`)
   assert.equal(built.status, 0, built.stdout + built.stderr)
   const output = await f.output()
@@ -137,6 +137,18 @@ test('FAQ and review structured data uses the same effective interpolated conten
   assert.equal(schemaReview.reviewBody, 'Visible testimonial')
   assert.equal(schemaReview.reviewRating.ratingValue, 4)
   assert.doesNotMatch(output, /\{\{\s*set\b/)
+})
+
+test('review structured data is omitted by default outside product pages', async t => {
+  const f = await fixture(t)
+  if (!f) return
+  await fs.writeFile(path.join(f.root, 'layouts/partials/icon.html'), '{{ return "" }}')
+  const review = { level: 2, review: { rating: 5 }, reviews: [{ title: 'Visible reviewer', md: 'Visible testimonial' }] }
+  const built = await f.build(`{{ partial "blocks/reviews" (${literal(review)}) }}{{ partial "blocks/reviews" (${literal({ ...review, review: { ...review.review, schema: false } })}) }}`)
+  assert.equal(built.status, 0, built.stdout + built.stderr)
+  const output = await f.output()
+  assert.match(output, /<p[^>]*>Visible reviewer<\/p>/)
+  assert.doesNotMatch(output, /application\/ld\+json/)
 })
 
 test('set bounds repeated-token expansion before allocation and allows normal repeated references', async t => {

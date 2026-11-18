@@ -158,10 +158,18 @@
     {{- end }}
   </div>
 </div>
-{{- /* SCHEMA  */}}
+{{- /* SCHEMA: by default only product pages mark up their reviews. Reviews
+  about the site's own organization are self-serving and not eligible for
+  review rich results; `review.schema: true` forces them, `false` omits all. */}}
+{{- $review_schema := .review.schema -}}
+{{- if eq $review_schema nil -}}
+  {{- $review_schema = eq page.Params.base "product" -}}
+{{- end -}}
+{{- if $review_schema }}
 <script type="application/ld+json">
   {{- partial "schema/review" (merge . (dict "reviews" $items)) | safeJS }}
 </script>
+{{- end -}}
 
 {{- if .review.slider }}
   {{ partial "boxes/slider-nav"

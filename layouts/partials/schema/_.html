@@ -14,6 +14,13 @@
   }}
 {{ end }}
 
+{{/*  Main Organization languages: one per site language  */}}
+{{ $langs := slice }}
+{{ range hugo.Sites }}
+  {{ $langs = $langs | append .Language.Lang }}
+{{ end }}
+{{ $org = merge $org (dict "knowsLanguage" ($langs | uniq)) }}
+
 {{/*  General  */}}
 {{ $schemas := slice
   (partial "schema/website"  .)
