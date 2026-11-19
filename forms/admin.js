@@ -5,8 +5,8 @@ import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
 import { FormsError, jsonResponse, jsonTextResponse, timingSafeEqual } from './http.js'
 import { connectRef, finishConnect, googleConfigured, listGrants, startConnect } from './grants.js'
 import { safeFileName } from './intake.js'
-import { loadSubmission, replacePendingJob, requireDatabase, resolveHeld } from './store.js'
-import { UNCONFIGURED, resolvePending } from './delivery.js'
+import { loadSubmission, replacePlaceholderJob, requireDatabase, resolveHeld } from './store.js'
+import { UNCONFIGURED, resolvePlaceholder } from './delivery.js'
 import { resolveAccountId } from '../mail/accounts.js'
 
 const DAY_MS = 24 * 3600 * 1000
@@ -444,17 +444,18 @@ export async function pruneSubmissions (db, kv, env, now, limit = 20) {
   return ids.length ? (await deleteSubmissions(db, kv, ids)).deleted.length : 0
 }
 
-// Release (send again) or discard one held/failed job. A job that waited for a
-// mail account is resolved now and replaced (409 mail_unconfigured without one).
+// Only jobs that never had a mail account can be assigned one at release.
 export async function releaseOrDiscard ({ db, env, mailer, manifest, id, action, now }) {
   if (action === 'release') {
-    const row = await db.prepare('SELECT authority FROM forms_jobs WHERE id = ?').bind(id).first()
-    const stored = row ? JSON.parse(row.authority) : null
-    if (stored?.provider === 'pending') {
-      const submission = await loadSubmission(db, id.split(':')[0])
-      const authority = submission && await resolvePending({ env, mailer, stored, submission, manifest })
+    if (env.FORMS_PROVIDER === 'hold') throw new FormsError('delivery_disabled', 409)
+    const row = await db.prepare("SELECT submission_id, channel, authority FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded'").bind(id).first()
+    if (!row) return false
+    const stored = JSON.parse(row.authority)
+    if (stored.provider === 'pending' || stored.provider === 'hold') {
+      const submission = await loadSubmission(db, row.submission_id)
+      const authority = submission && await resolvePlaceholder({ env, mailer, channel: row.channel, stored, submission, manifest })
       if (!authority) throw new FormsError(UNCONFIGURED, 409)
-      return replacePendingJob(db, id, authority, now())
+      return replacePlaceholderJob(db, id, row, authority, now())
     }
   }
   return resolveHeld(db, id, action, now())

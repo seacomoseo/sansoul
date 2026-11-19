@@ -158,11 +158,12 @@ async function send (fields, options = {}) {
   return submissionId
 }
 
-const call = async (path, { method = 'GET', auth = `GitHub ${PUSH}`, json } = {}) => {
+const call = async (path, { method = 'GET', auth = `GitHub ${PUSH}`, json, panel = 'mail' } = {}) => {
   const headers = { ...(auth ? { authorization: auth } : {}), ...(json ? { 'content-type': 'application/json', origin: 'https://example.test' } : {}) }
-  const response = await worker.fetch(new Request(`https://example.test/api/mail/admin/${path}`, { method, headers, body: json ? JSON.stringify(json) : undefined }), env, null)
+  const response = await worker.fetch(new Request(`https://example.test/api/${panel}/admin/${path}`, { method, headers, body: json ? JSON.stringify(json) : undefined }), env, null)
   return { status: response.status, body: await response.json() }
 }
+const release = (id, channel = 'owner') => call(`jobs/${id}:${channel}/release`, { method: 'POST', panel: 'forms' })
 const jobs = async id => (await bindings.db.prepare('SELECT channel, state, last_error, authority FROM forms_jobs WHERE submission_id = ? ORDER BY channel').bind(id).all()).results
   .map(row => ({ ...row, authority: JSON.parse(row.authority) }))
 const owner = async id => (await jobs(id)).find(row => row.channel === 'owner')
@@ -282,6 +283,48 @@ describe('routing', () => {
 })
 
 describe('delivery states', () => {
+  test('Formularios can release historical holds through the current route of each channel', async () => {
+    env.FORMS_PROVIDER = 'hold'
+    delete env.FORMS_GMAIL_DEFAULT
+    const id = await send(contactFields, { page: '/es/contacto/', form: 'form-contacto' })
+    const held = await jobs(id)
+    // Older hold jobs did not capture the form's account choice.
+    assert.deepEqual(held.map(row => [row.channel, row.state, row.last_error]), [
+      ['confirmation', 'held', 'delivery_disabled'], ['owner', 'held', 'delivery_disabled']
+    ])
+    if (Object.hasOwn(held[0].authority, 'choice')) {
+      for (const row of held) {
+        const { choice, ...authority } = row.authority
+        const jobId = `${id}:${row.channel}`
+        await bindings.db.batch([
+          bindings.db.prepare('DELETE FROM forms_jobs WHERE id = ?').bind(jobId),
+          bindings.db.prepare(`INSERT INTO forms_jobs (id, submission_id, channel, state, authority, next_attempt_at, last_error, updated_at)
+            VALUES (?, ?, ?, 'held', ?, ?, 'delivery_disabled', ?)`).bind(jobId, id, row.channel, JSON.stringify(authority), clock, clock)
+        ])
+      }
+    }
+    assert.equal((await release(id)).body.error, 'delivery_disabled')
+    delete env.FORMS_PROVIDER
+    assert.equal((await release(id)).body.error, 'mail_unconfigured')
+
+    await call('accounts', { method: 'POST', json: brevoAccount() })
+    await call('accounts', { method: 'POST', json: { provider: 'smtp2go', id: 'smtp2go', sender: 'hola@example.test', secret: SMTP2GO_KEY } })
+    await call('routes', { method: 'POST', json: { routes: { 'forms.owner': 'brevo', 'forms.visitor': 'smtp2go' } } })
+    assert.deepEqual((await call('pending/release', { method: 'POST', json: {} })).body, { released: 0, remaining: 0 })
+    const results = await Promise.all([release(id), release(id)])
+    assert.deepEqual(results.map(result => result.status).sort(), [200, 409])
+    assert.equal((await owner(id)).authority.subject, manifest.specs.contact.subject)
+    assert.deepEqual((await jobs(id)).map(row => [row.state, row.authority.provider]), [['held', 'hold'], ['sent', 'brevo']])
+    assert.equal(providers.state.brevo.length, 1)
+    assert.equal(providers.state.smtp2go.length, 0)
+
+    assert.equal((await release(id, 'confirmation')).status, 200)
+    assert.deepEqual((await jobs(id)).map(row => [row.state, row.authority.provider]), [['sent', 'smtp2go'], ['sent', 'brevo']])
+    assert.deepEqual(providers.state.smtp2go[0].to, ['visitor@example.org'])
+    assert.equal((await release(id, 'confirmation')).status, 409)
+    assert.equal(providers.state.smtp2go.length, 1)
+  })
+
   test('quota retries; a 5xx is ambiguous and held; key rotation keeps the authority, a new sender drifts', async () => {
     await call('accounts', { method: 'POST', json: brevoAccount() })
     await call('routes', { method: 'POST', json: { routes: { 'forms.owner': 'brevo' } } })
@@ -371,6 +414,24 @@ describe('without an account', () => {
 
 describe('files', () => {
   const big = size => new Blob([new Uint8Array(size).fill(65)], { type: 'application/pdf' })
+
+  test('releasing a hold replans a large file using the real delivery account', async () => {
+    env.FORMS_PROVIDER = 'hold'
+    await call('accounts', { method: 'POST', json: brevoAccount() })
+    await call('routes', { method: 'POST', json: { routes: { 'forms.owner': 'brevo' } } })
+    const id = await send([['Nombre', 'Ana'], ['CV', big(1.5 * 1024 * 1024), 'cv.pdf']], { page: '/es/empleo/', form: 'form-cv' })
+    assert.equal((await owner(id)).authority.files.mode, 'drive')
+
+    delete env.FORMS_PROVIDER
+    assert.equal((await release(id)).status, 200)
+    const job = await owner(id)
+    assert.deepEqual([job.state, job.authority.files.mode], ['sent', 'panel'])
+    assert.match(providers.state.brevo[0].textContent, /https:\/\/example\.test\/admin\/forms\//)
+    assert.equal(google.state.driveCalls.length, 0)
+    const submission = await bindings.db.prepare('SELECT files, files_purged_at FROM forms_submissions WHERE id = ?').bind(id).first()
+    assert.equal(submission.files_purged_at, null)
+    assert.equal((await bindings.kv.get(JSON.parse(submission.files)[0].key, 'arrayBuffer')).byteLength, 1.5 * 1024 * 1024)
+  })
 
   test('without a Gmail account, large files stay in the panel and the notice links to it', async () => {
     await call('accounts', { method: 'POST', json: brevoAccount() })

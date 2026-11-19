@@ -103,7 +103,7 @@ async function releasePending ({ db, env, ctx, mailer, manifest, now }) {
     try {
       if (await releaseOrDiscard({ db, env, mailer, manifest, id, action: 'release', now })) released++
     } catch (error) {
-      if (error.code === UNCONFIGURED) throw error
+      if (error.code === UNCONFIGURED || error.code === 'delivery_disabled') throw error
     }
   }
   if (released) {

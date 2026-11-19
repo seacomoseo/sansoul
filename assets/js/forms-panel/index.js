@@ -31,6 +31,7 @@ const T = {
     from: 'Cuenta',
     attempts: n => n === 1 ? 'intento' : 'intentos',
     release: 'Enviar',
+    releaseRequested: 'Envío solicitado.',
     approve: 'Aprobar y enviar',
     discard: 'Descartar',
     spam: 'Descartar (spam)',
@@ -127,6 +128,7 @@ const T = {
     from: 'Account',
     attempts: n => n === 1 ? 'attempt' : 'attempts',
     release: 'Send',
+    releaseRequested: 'Send requested.',
     approve: 'Approve and send',
     discard: 'Discard',
     spam: 'Discard (spam)',
@@ -808,7 +810,7 @@ function jobCard (job) {
       [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts(job.attempts)}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
     actionable && job.reason !== 'discarded'
       ? h('div', { class: 'actions' },
-        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => act(`jobs/${state.detail.id}:${job.channel}/release`) }, review ? T.approve : T.release),
+        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => act(`jobs/${state.detail.id}:${job.channel}/release`, { notice: T.releaseRequested }) }, review ? T.approve : T.release),
         h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => confirm(T.discardConfirm) && act(`jobs/${state.detail.id}:${job.channel}/discard`) }, review ? T.spam : T.discard))
       : null)
 }
@@ -871,7 +873,9 @@ function fail (error) {
   if (error.status === 401) return fullScreenMessage(T.denied, h('a', { class: 'button', href: '/admin/', target: '_top' }, T.openCms))
   if (error.code === 'not_enabled' || error.code === 'not_found') return fullScreenMessage(T.notEnabled)
   if (!state.summary) return fullScreenMessage(T.unavailable)
-  state.message = `${T.error} (${error.code || error.status}).`
+  state.message = ['delivery_disabled', 'mail_unconfigured'].includes(error.code)
+    ? reasonText(error.code)
+    : `${T.error} (${error.code || error.status}).`
   render()
 }
 
@@ -985,11 +989,14 @@ async function select (id) {
   app.querySelector('.detail-pane h2')?.focus({ preventScroll: true })
 }
 
-async function act (path, { deleted = false } = {}) {
+async function act (path, { deleted = false, notice = null } = {}) {
   state.busy = true
+  state.notice = null
+  state.message = null
   render()
   try {
     await api(path, { method: 'POST' })
+    state.notice = notice
     if (deleted) {
       state.selection.delete(state.selected)
       state.selected = null

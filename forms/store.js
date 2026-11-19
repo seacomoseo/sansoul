@@ -174,16 +174,15 @@ export async function resolveHeld (db, id, action, now) {
   return result.meta.changes === 1
 }
 
-// A job that waited for a mail account gets its real authority when a person
-// releases it: the placeholder row is replaced (authority is immutable), only
-// while it is still held or failed and not discarded.
-export async function replacePendingJob (db, id, authority, now) {
+// Replace the exact placeholder atomically. A concurrent release can only
+// queue it once, and a discard that already won cannot be reopened.
+export async function replacePlaceholderJob (db, id, row, authority, now) {
   const [, inserted] = await db.batch([
-    db.prepare("DELETE FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded' AND json_extract(authority, '$.provider') = 'pending'").bind(id),
+    db.prepare("DELETE FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded' AND authority = ?").bind(id, row.authority),
     db.prepare(
       `INSERT INTO forms_jobs (id, submission_id, channel, state, authority, next_attempt_at, last_error, updated_at)
        SELECT ?1, ?2, ?3, 'pending', ?4, ?5, 'released', ?5 WHERE changes() = 1`
-    ).bind(id, id.split(':')[0], id.split(':')[1], JSON.stringify(authority), now)
+    ).bind(id, row.submission_id, row.channel, JSON.stringify(authority), now)
   ])
   return inserted.meta.changes === 1
 }

@@ -3,6 +3,7 @@
 // is frozen in each job's authority when the submission is accepted.
 import { FormsError, sha256Hex } from './http.js'
 import { LIMITS, driveEnabled } from './intake.js'
+import { findSpec } from './manifest.js'
 import { loadRoutes } from '../mail/accounts.js'
 
 export const OWNER_KIND = 'forms.owner'
@@ -20,7 +21,7 @@ async function withFingerprint (authority) {
 // `pending` placeholder that names what to resolve later.
 export async function channelAuthority ({ env, mailer, channel, spec, routes }) {
   const kind = CHANNEL_KIND[channel]
-  if (env.FORMS_PROVIDER === 'hold') return withFingerprint({ provider: 'hold' })
+  if (env.FORMS_PROVIDER === 'hold') return withFingerprint({ provider: 'hold', choice: spec.account || '' })
   try {
     const resolved = await mailer.resolve(env, kind, { account: spec.account || '', routes })
     if (resolved) return resolved
@@ -69,16 +70,17 @@ export async function planJobs ({ env, mailer, parsed, manifest, content, extra,
   return jobs
 }
 
-// Releasing an owner job that waited for an account: resolve it now (a human
-// decision) and replace the placeholder job. Returns the new authority or null.
-export async function resolvePending ({ env, mailer, stored, submission, manifest }) {
+// A person releasing a placeholder can assign its first real account. Older
+// holds had no saved choice, so use the current form's choice if it still exists.
+export async function resolvePlaceholder ({ env, mailer, channel, stored, submission, manifest }) {
   const routes = await loadRoutes(env)
-  const spec = { account: stored.choice || '', id: stored.files?.label || formLabel(submission) }
-  const owner = await channelAuthority({ env, mailer, channel: 'owner', spec, routes })
-  if (owner.provider === 'pending' || owner.provider === 'hold') return null
+  const id = formLabel(submission)
+  const spec = { account: stored.choice ?? findSpec(manifest, submission.page, id)?.account ?? '', id: stored.files?.label || id }
+  const authority = await channelAuthority({ env, mailer, channel, spec, routes })
+  if (authority.provider === 'pending' || authority.provider === 'hold') return null
   const { provider, kind, choice, files, ...content } = stored
-  const storage = await filesPlan({ env, mailer, authority: owner, files: submission.files, manifest, spec, routes })
-  return { ...content, ...owner, ...(storage ? { files: storage } : {}) }
+  const storage = channel === 'owner' ? await filesPlan({ env, mailer, authority, files: submission.files, manifest, spec, routes }) : null
+  return { ...content, ...authority, ...(storage ? { files: storage } : {}) }
 }
 
 const formLabel = submission => String(submission.form_key || '').split('#').slice(1).join('#') || 'form'

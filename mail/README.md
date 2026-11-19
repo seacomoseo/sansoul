@@ -87,6 +87,11 @@ enlace a «Correo», y «Correo» ofrece **«Enviar pendientes»**: al liberarlo
 resuelve la cuenta en ese momento (decisión humana) y el trabajo se sustituye por
 uno con la autoridad real (la autoridad sigue siendo inmutable).
 
+Si el sitio tenía `FORMS_PROVIDER = "hold"`, los avisos antiguos siguen
+retenidos cuando se habilita el envío. Para solicitar uno, abre el detalle en
+«Formularios» y pulsa **«Enviar»**. Se resuelve la cuenta para ese aviso en ese
+momento y se conservan su texto y destinatarios.
+
 ## Archivos
 
 - Hasta 1 MB en total: adjuntos en el correo (desde KV).

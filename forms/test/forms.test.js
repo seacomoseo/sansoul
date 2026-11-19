@@ -4,7 +4,7 @@ import { after, before, beforeEach, describe, test } from 'node:test'
 import { createFormsWorker } from '../worker.js'
 import { dispatch } from '../dispatch.js'
 import { createProviders } from '../providers/index.js'
-import { LEASE_MS, recoverExpiredLeases, sweepOrphanUploads } from '../store.js'
+import { LEASE_MS, MAX_ATTEMPTS, recoverExpiredLeases, sweepOrphanUploads } from '../store.js'
 import { ADMIN_TOKEN, createBindings, createFakeGoogle, credentials, decodeMime, manifest, netlifySign, submitRequest, uploadRequest, withLength } from './helpers.js'
 
 let bindings
@@ -381,10 +381,20 @@ describe('review fixes', () => {
     assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/discard`), env)).status, 200)
     assert.equal(await bindings.kv.get(files[0].key), null)
     assert.equal((await job(id, 'owner')).state, 'failed')
-    assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)).status, 409)
-    await bindings.db.prepare("UPDATE forms_jobs SET last_error = 'network_error' WHERE id = ?").bind(`${id}:owner`).run()
-    assert.equal((await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)).status, 200)
-    assert.equal((await job(id, 'owner')).state, 'pending')
+    env.FORMS_PROVIDER = 'gmail'
+    const discarded = await worker.fetch(adminRequest(`jobs/${id}:owner/release`), env)
+    assert.equal(discarded.status, 409)
+    assert.equal((await discarded.json()).error, 'job_not_held')
+
+    google.state.sendMode = '429'
+    const { id: failed } = await send([['Email', 'a@example.org']], footer)
+    await bindings.db.prepare('UPDATE forms_jobs SET attempts = ?, next_attempt_at = ? WHERE id = ?')
+      .bind(MAX_ATTEMPTS - 1, clock, `${failed}:owner`).run()
+    await worker.fetch(adminRequest('dispatch'), env)
+    assert.equal((await job(failed, 'owner')).state, 'failed')
+    google.state.sendMode = 'ok'
+    assert.equal((await worker.fetch(adminRequest(`jobs/${failed}:owner/release`), env)).status, 200)
+    assert.equal((await job(failed, 'owner')).state, 'sent')
   })
 })
 
