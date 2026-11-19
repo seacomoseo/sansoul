@@ -71,16 +71,17 @@ function footerOf (submission, authority) {
 // `panel`: files too large to attach without Drive stay in the site's panel.
 // `authority.lead` ({ html, text }, built and escaped by an enricher such as
 // commerce/quote-request.js) goes first; `leadHide` drops the fields it already shows.
-export function renderOwner ({ submission, authority, links = null, panel = false }) {
+export function renderOwner ({ submission, authority, links = null, panel = false, missingFiles = false }) {
   if (panel) links = new Map(submission.files.map(file => [file.index, `https://${authority.site}/admin/forms/`]))
   const hidden = new Set(authority.lead ? authority.leadHide || [] : [])
   const list = rows(submission.fields.filter(([name]) => !hidden.has(name)), submission.files, links)
   const footer = footerOf(submission, authority)
   const lead = authority.lead || { html: '', text: '' }
+  const notice = missingFiles ? 'Los adjuntos originales que ya no están guardados no se incluyen en este reenvío. / Original attachments that are no longer stored are omitted from this resend.' : ''
   return {
     subject: authority.subject,
-    text: `${lead.text ? `${lead.text}\n\n` : ''}${textTable(list)}\n\n--\n${footer.label}\n${footer.url}\n${footer.id}\n`,
-    html: `${lead.html}${table(list)}<p style="color:#777;font-size:12px"><a href="${escapeHtml(footer.url)}" style="color:#777">${escapeHtml(footer.label)}</a><br>${escapeHtml(footer.url)}<br>${escapeHtml(footer.id)}</p>`
+    text: `${lead.text ? `${lead.text}\n\n` : ''}${textTable(list)}${notice ? `\n\n${notice}` : ''}\n\n--\n${footer.label}\n${footer.url}\n${footer.id}\n`,
+    html: `${lead.html}${table(list)}${notice ? `<p>${notice}</p>` : ''}<p style="color:#777;font-size:12px"><a href="${escapeHtml(footer.url)}" style="color:#777">${escapeHtml(footer.label)}</a><br>${escapeHtml(footer.url)}<br>${escapeHtml(footer.id)}</p>`
   }
 }
 

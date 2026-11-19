@@ -66,6 +66,10 @@ comprador, Drive). Sin tocar nada, los proyectos con `FORMS_PROVIDER`, `FORMS_GM
    para los envíos anteriores y futuros. El CI aplica ambas antes de desplegar el Worker.
 7. Cuando Brevo no admite un adjunto, el aviso incluye un enlace a Drive o Formularios según la configuración.
    Los avisos retenidos tras un HTTP 400 de Brevo se pueden reintentar manualmente con la configuración actual.
+8. D1 `0009_forms_multiple_labels.sql` conserva las etiquetas existentes y permite asignar varias por envío.
+   Los filtros buscan pertenencia y la agrupación usa la combinación de etiquetas.
+9. Los avisos al propietario aceptados por el proveedor se pueden reenviar desde el panel, con confirmación,
+   la cuenta actual y un registro de entrega nuevo. Los adjuntos disponibles se enlazan y los ya eliminados se omiten.
 
 **Acciones obligatorias:** ninguna. Para guardar cuentas desde el panel hace falta el secreto `FORMS_GRANT_KEY` (el
 mismo de «Conectar Gmail»); para Brevo, SMTP2GO o SMTP, verificar el remitente y el dominio (SPF/DKIM) en el

@@ -1,12 +1,12 @@
 // Admin API of the forms module: the project panel (people, GitHub session of
 // the CMS) and automations (Bearer FORMS_ADMIN_TOKEN) use the same routes.
 import { hasPushAccess } from '../edge/github-access.js'
-import { LABEL_ID, labels, readAnnotation, saveAnnotation, saveLabel } from './annotations.js'
+import { LABEL_ID, LABELS_SQL, labels, readAnnotation, saveAnnotation, saveLabel } from './annotations.js'
 import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
 import { FormsError, jsonResponse, jsonTextResponse, timingSafeEqual } from './http.js'
 import { connectRef, finishConnect, googleConfigured, listGrants, startConnect } from './grants.js'
 import { safeFileName } from './intake.js'
-import { loadSubmission, replaceReleasedJob, requireDatabase, resolveHeld } from './store.js'
+import { loadSubmission, queueResend, replaceReleasedJob, requireDatabase, resolveHeld } from './store.js'
 import { UNCONFIGURED, resolveRelease } from './delivery.js'
 import { resolveAccountId } from '../mail/accounts.js'
 
@@ -152,12 +152,16 @@ function quoteForms (manifest) {
 // review queue and discards told apart.
 const STATE_SQL = `(SELECT CASE WHEN j.state = 'held' AND j.last_error = 'review' THEN 'review'
   WHEN j.state = 'failed' AND j.last_error = 'discarded' THEN 'discarded' ELSE j.state END
-  FROM forms_jobs j WHERE j.submission_id = s.id ORDER BY j.channel DESC LIMIT 1)`
+  FROM forms_jobs j WHERE j.submission_id = s.id ORDER BY j.channel DESC, j.id LIMIT 1)`
 // Value of one field (repeated fields joined, as in the panel).
 const FIELD_SQL = "(SELECT group_concat(json_extract(f.value, '$[1]'), ', ') FROM json_each(s.fields) f WHERE json_extract(f.value, '$[0]') = ?)"
 const NOTE_SQL = '(SELECT note FROM forms_annotations WHERE submission_id = s.id)'
-const LABEL_SQL = '(SELECT label_id FROM forms_annotations WHERE submission_id = s.id)'
-const LABEL_NAME_SQL = `(SELECT name FROM forms_labels WHERE id = ${LABEL_SQL})`
+const LABEL_GROUP_SQL = `CASE json_array_length(${LABELS_SQL})
+  WHEN 0 THEN '' WHEN 1 THEN json_extract(${LABELS_SQL}, '$[0]') ELSE ${LABELS_SQL} END`
+const LABEL_NAME_SQL = `(SELECT group_concat(name, ', ') FROM (
+  SELECT l.name FROM forms_submission_labels a JOIN forms_labels l ON l.id = a.label_id
+  WHERE a.submission_id = s.id ORDER BY l.name COLLATE NOCASE, l.id
+))`
 const OPS = {
   text: ['contains', 'not_contains', 'is', 'is_not', 'empty', 'not_empty'],
   enum: ['is', 'is_not', 'empty', 'not_empty'],
@@ -174,7 +178,7 @@ function column (id) {
   if (id === 'state') return { sql: STATE_SQL, params: [], type: 'enum' }
   if (id === 'files') return { sql: 'json_array_length(s.files)', params: [], type: 'count' }
   if (id === 'note') return { sql: NOTE_SQL, params: [], type: 'text' }
-  if (id === 'label') return { sql: LABEL_SQL, orderSql: LABEL_NAME_SQL, params: [], type: 'enum' }
+  if (id === 'label') return { sql: `NULLIF(${LABELS_SQL}, '[]')`, orderSql: LABEL_NAME_SQL, params: [], type: 'enum' }
   if (id.startsWith('f:') && id.length > 2 && id.length <= 202) return { sql: FIELD_SQL, params: [id.slice(2)], type: 'text' }
   return null
 }
@@ -186,6 +190,10 @@ function condition ([id, op, value]) {
   if (!col || !OPS[col.type].includes(op)) throw new FormsError('invalid_filter')
   const text = typeof value === 'string' ? value.slice(0, 200) : ''
   const expr = `IFNULL(${col.sql}, '')`
+  if (id === 'label' && (op === 'is' || op === 'is_not')) {
+    if (!LABEL_ID.test(text)) throw new FormsError('invalid_filter')
+    return { sql: `${op === 'is_not' ? 'NOT ' : ''}EXISTS (SELECT 1 FROM forms_submission_labels WHERE submission_id = s.id AND label_id = ?)`, params: [text] }
+  }
   if (col.type === 'date') {
     if (!/^\d{1,15}$/.test(text)) throw new FormsError('invalid_filter')
     return { sql: `${col.sql} ${op === 'after' ? '>=' : '<'} ?`, params: [...col.params, Number(text)] }
@@ -241,7 +249,7 @@ function listQuery (url) {
       ? { sql: "date(s.created_at / 1000 + ?, 'unixepoch')", params: [tz * 60], order: 'g DESC' }
       : groupCol.type === 'text'
         ? { sql: `substr(IFNULL(${groupCol.sql}, ''), 1, 100)`, params: groupCol.params, order: "g = '', g COLLATE NOCASE, g" }
-        : { sql: `IFNULL(${groupCol.sql}, '')`, params: groupCol.params, order: "g = '', g" }
+        : { sql: params.get('group') === 'label' ? LABEL_GROUP_SQL : `IFNULL(${groupCol.sql}, '')`, params: groupCol.params, order: "g = '', g" }
   }
   return {
     view,
@@ -282,7 +290,7 @@ async function list (db, url) {
     : query.where
   const withFields = Boolean(query.form) || full
   const columns = `s.id, s.form_key, s.page, s.status, s.created_at, json_array_length(s.files) AS files, ${STATE_SQL} AS state,
-    ${full ? NOTE_SQL : `substr(${NOTE_SQL}, 1, ${CELL_MAX})`} AS note, ${LABEL_SQL} AS label,
+    ${full ? NOTE_SQL : `substr(${NOTE_SQL}, 1, ${CELL_MAX})`} AS note, ${LABELS_SQL} AS labels,
     ${PREVIEW_SQL} AS preview${withFields ? `, ${full ? 's.fields' : CELLS_SQL} AS cells` : ''}`
   const sortSelect = query.sort.map((col, index) => `${col.orderSql || col.sql} AS k${index}`).join(', ')
   const sortOrder = query.sort.map((col, index) => `k${index}${col.type === 'text' || col.orderSql ? ' COLLATE NOCASE' : ''} ${col.dir}`)
@@ -326,6 +334,7 @@ async function list (db, url) {
   const last = page[page.length - 1]
   // Field values travel as the JSON D1 produced, spliced in unparsed.
   const items = page.map(row => {
+    const selected = parse(row.labels, [])
     const item = JSON.stringify({
       id: row.id,
       form: row.form_key,
@@ -335,7 +344,8 @@ async function list (db, url) {
       createdAt: row.created_at,
       preview: row.preview || '',
       note: row.note || '',
-      label: row.label || null,
+      label: selected[0] || null,
+      labels: selected,
       ...(query.group ? { group: row.g ?? '' } : {}),
       files: row.files || 0,
       jobs: jobs.filter(job => job.submission_id === row.id).map(publicJob)
@@ -353,17 +363,21 @@ async function list (db, url) {
   return meta.replace('"items":null', `"items":[${items.join(',')}]`)
 }
 
-async function detail (db, id) {
+async function detail (db, id, delivery) {
   const submission = await loadSubmission(db, id)
   if (!submission) throw new FormsError('not_found', 404)
   const reasons = (await db.prepare('SELECT reasons FROM forms_submissions WHERE id = ?').bind(id).first())?.reasons
   const drive = new Map((await db.prepare('SELECT idx, link, verified_at FROM forms_drive_files WHERE submission_id = ?').bind(id).all()).results.map(row => [row.idx, row]))
   const jobs = (await db.prepare(
-    `SELECT channel, state, last_error, attempts, updated_at, provider_ref,
+    `SELECT id, channel, state, last_error, attempts, updated_at, provider_ref, authority,
        json_extract(authority, '$.provider') AS provider, json_extract(authority, '$.account') AS account,
        json_extract(authority, '$.to') AS recipients, json_extract(authority, '$.files.mode') AS files_mode
-     FROM forms_jobs WHERE submission_id = ? ORDER BY channel DESC`
+     FROM forms_jobs WHERE submission_id = ? ORDER BY channel DESC, updated_at DESC, rowid DESC`
   ).bind(id).all()).results
+  const owner = jobs.filter(job => job.channel === 'owner')
+  const previouslySent = owner.find(job => job.state === 'sent')
+  const current = previouslySent && !owner.some(job => job.state !== 'sent' && job.last_error !== 'discarded') &&
+    await resolveRelease({ ...delivery, channel: 'owner', stored: JSON.parse(previouslySent.authority), submission, resend: true })
   return {
     id: submission.id,
     form: submission.form_key,
@@ -373,6 +387,13 @@ async function detail (db, id) {
     createdAt: submission.created_at,
     fields: submission.fields,
     ...await readAnnotation(db, id),
+    resend: current ? {
+      job: previouslySent.id,
+      account: current.account,
+      provider: current.provider,
+      anchor: current.ref,
+      missingFiles: Boolean(submission.files_purged_at && submission.files.some(file => !drive.get(file.index)?.verified_at))
+    } : null,
     files: submission.files.map(file => ({
       index: file.index,
       field: file.field,
@@ -384,6 +405,7 @@ async function detail (db, id) {
     })),
     jobs: jobs.map(job => ({
       ...publicJob(job),
+      id: job.id,
       provider: job.provider,
       account: job.account || null,
       recipients: job.channel === 'owner' ? parse(job.recipients, []) : [],
@@ -391,6 +413,26 @@ async function detail (db, id) {
       ref: job.provider_ref || null
     }))
   }
+}
+
+async function resendOwner ({ db, env, manifest, mailer, source, request, now }) {
+  if (env.FORMS_PROVIDER === 'hold') throw new FormsError('delivery_disabled', 409)
+  if (Number(request.headers.get('content-length') || 0) > 1024) throw new FormsError('payload_too_large', 413)
+  const input = await request.json().catch(() => null)
+  if (typeof input?.id !== 'string' || !LABEL_ID.test(input.id)) throw new FormsError('invalid_resend')
+  const row = await db.prepare("SELECT submission_id, authority FROM forms_jobs WHERE id = ? AND channel = 'owner' AND state = 'sent'").bind(source).first()
+  if (!row) throw new FormsError('resend_unavailable', 409)
+  const id = `${row.submission_id}:owner:${input.id}`
+  if (await db.prepare('SELECT id FROM forms_jobs WHERE id = ?').bind(id).first()) return null
+  const submission = await loadSubmission(db, row.submission_id)
+  const authority = submission && await resolveRelease({ env, manifest, mailer, channel: 'owner', stored: JSON.parse(row.authority), submission, resend: true })
+  if (!authority) throw new FormsError(UNCONFIGURED, 409)
+  if (authority.ref !== input.anchor || authority.account !== input.account || authority.provider !== input.provider) throw new FormsError('resend_account_changed', 409)
+  if (!await queueResend(db, { source, submissionId: row.submission_id, id, authority, now: now() })) {
+    if (await db.prepare('SELECT id FROM forms_jobs WHERE id = ?').bind(id).first()) return null
+    throw new FormsError('resend_unavailable', 409)
+  }
+  return row.submission_id
 }
 
 // RFC 6266/5987: an ASCII fallback plus the exact UTF-8 name ('()* encoded too).
@@ -475,7 +517,7 @@ export async function releaseOrDiscard ({ db, env, mailer, manifest, id, action,
     const stored = JSON.parse(row.authority)
     if (stored.provider === 'pending' || stored.provider === 'hold' || (stored.provider === 'brevo' && row.last_error === 'brevo_rejected_400')) {
       const submission = await loadSubmission(db, row.submission_id)
-      const authority = submission && await resolveRelease({ env, mailer, channel: row.channel, stored, submission, manifest })
+      const authority = submission && await resolveRelease({ env, mailer, channel: row.channel, stored, submission, manifest, resend: stored.files?.mode === 'resend' })
       if (!authority) throw new FormsError(UNCONFIGURED, 409)
       return replaceReleasedJob(db, id, row, authority, now())
     }
@@ -506,7 +548,7 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
       const forms = (await db.prepare('SELECT form_key, page, COUNT(*) AS total, MAX(created_at) AS last FROM forms_submissions GROUP BY form_key, page ORDER BY last DESC LIMIT 100').all()).results
       return jsonResponse({ forms: forms.map(row => ({ form: row.form_key, page: row.page, total: row.total, last: row.last })) })
     }
-    if (submission && !submission[2]) return jsonResponse(await detail(db, submission[1]))
+    if (submission && !submission[2]) return jsonResponse(await detail(db, submission[1], { env, manifest, mailer: providers }))
     if (submission?.[3] !== undefined) return download(db, kv, submission[1], Number(submission[3]))
     throw new FormsError('not_found', 404)
   }
@@ -547,12 +589,18 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
     if (!ids?.length || ids.length > DELETE_MAX || !ids.every(id => typeof id === 'string' && /^[A-Za-z0-9-]{16,64}$/.test(id))) throw new FormsError('invalid_ids')
     return jsonResponse(await deleteSubmissions(db, kv, ids))
   }
-  const job = path.match(/^jobs\/([A-Za-z0-9-]{16,64}:(?:owner|confirmation))\/(release|discard)$/)
+  const job = path.match(/^jobs\/([A-Za-z0-9-]{16,64}:(owner|confirmation)(?::[a-f0-9-]{36})?)\/(release|discard|resend)$/)
   if (job) {
-    const submissionId = job[1].split(':')[0]
-    if (!await releaseOrDiscard({ db, env, mailer: providers, manifest, id: job[1], action: job[2], now })) throw new FormsError('job_not_held', 409)
-    if (job[2] === 'discard' && job[1].endsWith(':owner')) await purgeFiles(db, kv, await loadSubmission(db, submissionId), now)
-    if (job[2] === 'release') {
+    const [, id, channel, action] = job
+    let submissionId = id.split(':')[0]
+    if (action === 'resend') {
+      if (actor !== 'github') throw new FormsError('forbidden', 403)
+      submissionId = await resendOwner({ db, env, manifest, mailer: providers, source: id, request, now })
+    } else {
+      if (!await releaseOrDiscard({ db, env, mailer: providers, manifest, id, action, now })) throw new FormsError('job_not_held', 409)
+      if (action === 'discard' && channel === 'owner' && id === `${submissionId}:owner`) await purgeFiles(db, kv, await loadSubmission(db, submissionId), now)
+    }
+    if (submissionId && action !== 'discard') {
       // Send right away; the scheduled drain picks up whatever does not finish.
       const work = dispatch({ env, db, kv, providers, now, submissionId, limit: 2, driveTimeoutMs: 25000, deadline: now() + WAIT_UNTIL_MS })
         .catch(error => console.error('forms_dispatch_error', error?.name, String(error?.message).slice(0, 200)))

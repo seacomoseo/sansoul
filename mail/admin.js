@@ -7,6 +7,7 @@ import { UNCONFIGURED } from '../forms/delivery.js'
 import { FormsError, jsonResponse } from '../forms/http.js'
 import { validAddress } from '../forms/mime.js'
 import { connectRef, googleConfigured, grantKeyConfigured, startConnect } from '../forms/grants.js'
+import { driveEnabled } from '../forms/intake.js'
 import { hitRate, requireDatabase } from '../forms/store.js'
 import { ACCOUNT_ID, accountProvider, deleteAccount, listAccounts, loadRoutes, recordTest, renameGmail, resolveAccountId, saveAccount, saveRoutes } from './accounts.js'
 import { DRIVE_KIND, mailKinds } from './kinds.js'
@@ -47,6 +48,7 @@ async function summary (db, env) {
     effective,
     kinds: mailKinds().map(kind => ({ id: kind.id, label: kind.label, group: kind.group, gmailOnly: kind.gmailOnly })),
     hold: env.FORMS_PROVIDER === 'hold',
+    formsDriveEnabled: driveEnabled(env),
     unconfigured: unconfigured[0].n,
     google: { configured: googleConfigured(env), connectRef: connectRef(env) },
     grantKey: grantKeyConfigured(env),

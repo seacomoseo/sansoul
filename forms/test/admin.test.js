@@ -350,9 +350,17 @@ describe('panel tables', () => {
     assert.deepEqual(rest.items.map(item => item.id), [ids.luis])
     assert.deepEqual((await q({ group: 'note', filter: JSON.stringify([['label', 'is', id]]) })).groups.map(group => group.key), ['Follow up', 'Later'])
     assert.equal((await call(`submissions/${ids.ana}`)).body.label, id)
+    const other = (await post('labels', { name: 'Important', color: '#113355' })).body.id
+    assert.equal((await post(`submissions/${ids.ana}/annotation`, { note: 'Follow up', labels: [id, other, id] })).status, 200)
+    assert.deepEqual((await call(`submissions/${ids.ana}`)).body.labels, [id, other].sort())
+    const byBoth = await q({ filter: JSON.stringify([['label', 'is', id], ['label', 'is', other]]), group: 'label' })
+    assert.deepEqual(byBoth.items.map(row => row.id), [ids.ana])
+    assert.deepEqual(byBoth.groups, [{ key: JSON.stringify([id, other].sort()), count: 1 }])
+    assert.equal((await post(`submissions/${ids.ana}/annotation`, { note: 'Discarded edit', labels: [crypto.randomUUID()] })).status, 400)
+    assert.deepEqual((await call(`submissions/${ids.ana}`)).body.labels, [id, other].sort())
     assert.equal((await post(`labels/${id}/delete`, {})).status, 200)
     const detail = (await call(`submissions/${ids.ana}`)).body
-    assert.deepEqual([detail.note, detail.label], ['Follow up', null])
+    assert.deepEqual([detail.note, detail.label, detail.labels], ['Follow up', other, [other]])
   })
 
   test('filters: text operators, repeated fields, dates, files and search', async () => {

@@ -284,6 +284,32 @@ describe('routing', () => {
 })
 
 describe('delivery states', () => {
+  test('a manual resend preserves the first acceptance and can use a new or the same account', async () => {
+    const submission = await send([['Nombre', 'Ana'], ['CV', new Blob(['test'], { type: 'application/pdf' }), 'cv.pdf']], { page: '/es/empleo/', form: 'form-cv' })
+    const detail = async () => (await call(`submissions/${submission}`, { panel: 'forms' })).body
+    const original = (await detail()).jobs[0]
+    assert.equal(original.state, 'sent')
+    await call('routes', { method: 'POST', json: { routes: { 'forms.owner': 'second' } } })
+    const resend = async (source, json, auth) => call(`jobs/${source}/resend`, { method: 'POST', panel: 'forms', json, auth })
+    const target = (await detail()).resend
+    assert.deepEqual([target.account, target.missingFiles], ['other@example.test', true])
+    const body = { ...target, id: crypto.randomUUID() }
+    assert.equal((await resend(original.id, body, `Bearer ${env.FORMS_ADMIN_TOKEN}`)).status, 403)
+    assert.equal((await resend(original.id, { ...body, account: 'not-current@example.test' })).body.error, 'resend_account_changed')
+    const raced = await Promise.all([resend(original.id, body), resend(original.id, body)])
+    assert.deepEqual(raced.map(result => result.status), [200, 200])
+    const after = await detail()
+    assert.deepEqual(after.jobs.find(job => job.id === original.id), original)
+    assert.equal(after.jobs[0].account, 'other@example.test')
+    assert.equal(after.jobs[0].state, 'sent')
+    assert.equal(google.state.sent.length, 2)
+    const resent = decodeMime(google.state.sent.at(-1).mime)
+    assert.ok(resent.parts.some(part => part.body.toString().includes('Original attachments')))
+    assert.equal((await resend(original.id, { ...body, id: crypto.randomUUID() })).status, 409)
+    assert.equal((await resend(after.resend.job, { ...after.resend, id: crypto.randomUUID() })).status, 200)
+    assert.equal(google.state.sent.length, 3)
+  })
+
   test('a confirmed Brevo rejection can be retried with the current Gmail route', async () => {
     assert.equal((await call('accounts', { method: 'POST', json: brevoAccount() })).status, 200)
     await call('routes', { method: 'POST', json: { routes: { default: 'brevo' } } })

@@ -74,15 +74,15 @@ export async function planJobs ({ env, mailer, parsed, manifest, content, extra,
 
 // Resolve a released placeholder or a notice definitively rejected by Brevo.
 // Older holds had no saved choice, so consult the current form if it exists.
-export async function resolveRelease ({ env, mailer, channel, stored, submission, manifest }) {
+export async function resolveRelease ({ env, mailer, channel, stored, submission, manifest, resend = false }) {
   const routes = await loadRoutes(env)
   const id = formLabel(submission)
   const spec = { account: stored.choice ?? findSpec(manifest, submission.page, id)?.account ?? '', id: stored.files?.label || id }
   const authority = await channelAuthority({ env, mailer, channel, spec, routes })
   if (authority.provider === 'pending' || authority.provider === 'hold') return null
   const { provider, kind, choice, files, ref, account, fingerprint, senderName, ...content } = stored
-  const storage = channel === 'owner' ? await filesPlan({ env, mailer, authority, files: submission.files, manifest, spec, routes }) : null
-  const fromName = provider === 'brevo' ? env.FORMS_SENDER_NAME || manifest.site : senderName
+  const storage = resend ? { mode: 'resend' } : channel === 'owner' ? await filesPlan({ env, mailer, authority, files: submission.files, manifest, spec, routes }) : null
+  const fromName = resend || provider === 'brevo' ? env.FORMS_SENDER_NAME || manifest.site : senderName
   return { ...content, senderName: fromName, ...authority, ...(storage ? { files: storage } : {}) }
 }
 

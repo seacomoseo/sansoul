@@ -31,6 +31,12 @@ const T = {
     from: 'Cuenta',
     attempts: n => n === 1 ? 'intento' : 'intentos',
     release: 'Enviar',
+    resend: 'Reenviar aviso',
+    resent: 'Reenvío del aviso',
+    resendConfirm: (account, to) => `¿Reenviar desde ${account} a ${to}? El destinatario podría recibir una copia.`,
+    providerAccepted: 'El proveedor aceptó el aviso. La entrega en el buzón sigue sin verificar.',
+    resendFilesMissing: 'Algunos adjuntos originales ya no están disponibles.',
+    resendFilePolicy: 'Los archivos disponibles se incluyen como enlaces.',
     releaseRequested: 'Envío solicitado.',
     retryCurrent: 'Reintentar con la configuración actual',
     approve: 'Aprobar y enviar',
@@ -94,7 +100,9 @@ const T = {
     value: 'Valor',
     empty_: '(vacío)',
     note: 'Anotación',
-    label: 'Etiqueta',
+    label: 'Etiquetas',
+    hasLabel: 'Tiene la etiqueta',
+    lacksLabel: 'No tiene la etiqueta',
     noLabel: 'Sin etiqueta',
     organization: 'Seguimiento',
     manageLabels: 'Gestionar etiquetas',
@@ -144,6 +152,12 @@ const T = {
     from: 'Account',
     attempts: n => n === 1 ? 'attempt' : 'attempts',
     release: 'Send',
+    resend: 'Resend notice',
+    resent: 'Resent notice',
+    resendConfirm: (account, to) => `Resend from ${account} to ${to}? The recipient might receive a duplicate.`,
+    providerAccepted: 'The provider accepted the notice. Inbox delivery is unverified.',
+    resendFilesMissing: 'Some original attachments are no longer available.',
+    resendFilePolicy: 'Available files are included as links.',
     releaseRequested: 'Send requested.',
     retryCurrent: 'Retry with current settings',
     approve: 'Approve and send',
@@ -207,7 +221,9 @@ const T = {
     value: 'Value',
     empty_: '(empty)',
     note: 'Note',
-    label: 'Label',
+    label: 'Labels',
+    hasLabel: 'Has label',
+    lacksLabel: 'Does not have label',
     noLabel: 'No label',
     organization: 'Follow-up',
     manageLabels: 'Manage labels',
@@ -264,6 +280,8 @@ const REASONS = {
     mail_unconfigured: 'Espera a que haya una cuenta de correo (página «Correo»)',
     mail_account_missing: 'La cuenta de correo elegida ya no existe',
     brevo_rejected_400: 'Brevo rechazó el aviso. Puedes reintentar con la configuración actual.',
+    resend_unavailable: 'Ya hay otro intento o cambió el historial. Actualiza antes de reenviar.',
+    resend_account_changed: 'Cambió la cuenta de envío. Actualiza antes de reenviar.',
     smtp_send_ambiguous: 'Respuesta dudosa del servidor: comprueba el buzón antes de reenviar',
     smtp_auth_failed: 'El servidor SMTP rechazó el usuario o la contraseña'
   },
@@ -287,6 +305,8 @@ const REASONS = {
     mail_unconfigured: 'Waiting for a mail account (Mail page)',
     mail_account_missing: 'The chosen mail account no longer exists',
     brevo_rejected_400: 'Brevo rejected this notice. You can retry with the current settings.',
+    resend_unavailable: 'An attempt is already open or the history changed. Refresh before resending.',
+    resend_account_changed: 'The sending account changed. Refresh before resending.',
     smtp_send_ambiguous: 'Unclear server answer: check the mailbox before resending',
     smtp_auth_failed: 'The SMTP server refused the username or password'
   }
@@ -513,7 +533,14 @@ const columnType = id => tableColumns().find(col => col.id === id)?.type || (typ
 const OPS = { text: ['contains', 'not_contains', 'is', 'is_not', 'empty', 'not_empty'], enum: ['is', 'is_not', 'empty', 'not_empty'], count: ['not_empty', 'empty'], date: ['after', 'before'] }
 const needsValue = op => !['empty', 'not_empty'].includes(op)
 const currentSort = settings => settings.sort.filter(([id, dir]) => columnType(id) && ['asc', 'desc'].includes(dir)).slice(0, MAX_SORTS)
-const labelById = id => state.summary.labels?.find(label => label.id === id)
+const labelsFor = ids => (state.summary.labels || []).filter(label => ids.includes(label.id))
+const labelNames = ids => labelsFor(ids).map(label => label.name).join(', ')
+
+function labelBadge (label) {
+  const badge = h('span', { class: 'tag-chip' }, label.name)
+  badge.style.borderInlineStartColor = label.color
+  return badge
+}
 
 function enumOptions (id) {
   if (id === 'state') return STATE_KEYS.map(key => [key, STATES[key]])
@@ -527,7 +554,7 @@ function groupLabel (id, key) {
   if (id === 'created') return dayText(key)
   if (id === 'form') return `${formId(key)} · ${String(key).split('#')[0]}`
   if (id === 'state') return STATES[key] || key
-  if (id === 'label') return labelById(key)?.name || T.noLabel
+  if (id === 'label') return labelNames(key.startsWith('[') ? JSON.parse(key) : [key]) || T.noLabel
   if (id === 'files') return `${key} ${T.files_.toLowerCase()}`
   return String(key)
 }
@@ -750,7 +777,8 @@ function optionsPanel () {
     return h('div', { class: 'filter-row' },
       columnSelect(id, next => setFilter(index, [next, OPS[columnType(next)][0], ''])),
       h('select', { class: 'select', 'aria-label': T.filter, onchange: event => setFilter(index, [id, event.target.value, needsValue(event.target.value) ? value : '']) },
-        ops.map(key => h('option', { value: key, selected: key === op }, type === 'count' ? T.filesOps[key] : T.ops[key]))),
+        ops.map(key => h('option', { value: key, selected: key === op },
+          id === 'label' && key === 'is' ? T.hasLabel : id === 'label' && key === 'is_not' ? T.lacksLabel : type === 'count' ? T.filesOps[key] : T.ops[key]))),
       valueInput,
       h('button', { type: 'button', class: 'button icon-button', title: T.removeFilter, 'aria-label': T.removeFilter, onclick: () => { clearDrafts('filter-'); updateSettings({ filters: filters.filter((_, at) => at !== index) }) } }, icon(ICONS.close)))
   })
@@ -782,10 +810,8 @@ function cell (item, col) {
   if (col.id === 'summary') return h('td', { class: 'col-summary' }, item.preview || '—')
   if (col.id === 'note') return h('td', { class: 'col-note' }, item.note || '—')
   if (col.id === 'label') {
-    const label = labelById(item.label)
-    const badge = label ? h('span', { class: 'tag-chip' }, label.name) : null
-    if (badge) badge.style.borderInlineStartColor = label.color
-    return h('td', { class: 'col-label' }, badge || '—')
+    const chips = labelsFor(item.labels || []).map(labelBadge)
+    return h('td', { class: 'col-label' }, chips.length ? h('div', { class: 'tag-list' }, chips) : '—')
   }
   if (col.id === 'files') return h('td', { class: 'col-files' }, item.files ? [icon(ICONS.clip), String(item.files)] : '—')
   if (col.id === 'state') {
@@ -884,16 +910,24 @@ function jobCard (job) {
   const actionable = job.state === 'held' || job.state === 'failed'
   const review = job.reason === 'review'
   const releaseLabel = review ? T.approve : job.reason === 'brevo_rejected_400' ? T.retryCurrent : T.release
+  const resend = state.detail.resend
   return h('div', { class: 'card' },
-    h('div', { class: 'card-head' }, h('strong', {}, T[job.channel]), stateChip(review ? 'review' : job.reason === 'discarded' ? 'discarded' : job.state, job.reason)),
+    h('div', { class: 'card-head' }, h('strong', {}, job.filesMode === 'resend' ? T.resent : T[job.channel]), stateChip(review ? 'review' : job.reason === 'discarded' ? 'discarded' : job.state, job.reason)),
     job.reason ? h('p', { class: 'muted' }, reasonText(job.reason)) : null,
+    job.state === 'sent' && job.channel === 'owner' ? h('p', { class: 'muted small' }, T.providerAccepted) : null,
     h('p', { class: 'muted small' },
       [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts(job.attempts)}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
     actionable && job.reason !== 'discarded'
       ? h('div', { class: 'actions' },
-        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => releaseJob(job.channel) }, releaseLabel),
-        h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => confirm(T.discardConfirm) && act(`jobs/${state.detail.id}:${job.channel}/discard`) }, review ? T.spam : T.discard))
-      : null)
+        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => releaseJob(job) }, releaseLabel),
+        h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => confirm(T.discardConfirm) && act(`jobs/${job.id}/discard`) }, review ? T.spam : T.discard))
+      : null,
+    resend?.job === job.id ? h('div', { class: 'actions' },
+      h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => {
+        const files = state.detail.files.length ? `\n\n${T.resendFilePolicy}${resend.missingFiles ? ` ${T.resendFilesMissing}` : ''}` : ''
+        if (!confirm(T.resendConfirm(resend.account, job.recipients.join(', ')) + files)) return
+        releaseJob(job, { ...resend, id: crypto.randomUUID() })
+      } }, T.resend)) : null)
 }
 
 function labelEditor (label = null) {
@@ -917,12 +951,13 @@ function organizationPane (detail) {
     h('form', { class: 'editor', onsubmit: event => {
       event.preventDefault()
       const data = new FormData(event.currentTarget)
-      act(`submissions/${detail.id}/annotation`, { body: { note: data.get('note'), label: data.get('label') || null } })
+      act(`submissions/${detail.id}/annotation`, { body: { note: data.get('note'), labels: data.getAll('label') } })
     } },
     h('div', { class: 'editor-grid' },
-      h('label', { class: 'editor-field' }, T.label,
-        h('select', { class: 'select', name: 'label', 'aria-label': T.label }, h('option', { value: '' }, T.noLabel),
-          labels.map(label => h('option', { value: label.id, selected: label.id === detail.label }, label.name)))),
+      labels.length ? h('fieldset', { class: 'label-choices wide' }, h('legend', {}, T.label),
+        h('div', { class: 'tag-list' }, labels.map(label => h('label', { class: 'tag-choice' },
+          h('input', { type: 'checkbox', name: 'label', value: label.id, checked: detail.labels?.includes(label.id) }),
+          labelBadge(label))))) : null,
       h('label', { class: 'editor-field wide' }, T.note, h('textarea', { class: 'input', name: 'note', 'aria-label': T.note, rows: 3, maxlength: 4000 }, detail.note || ''))),
     h('div', { class: 'actions' }, h('button', { type: 'submit', class: 'button primary', disabled: state.busy }, T.save))),
     h('details', { open: state.manageLabels, ontoggle: event => { state.manageLabels = event.currentTarget.open } },
@@ -988,7 +1023,7 @@ function fail (error) {
   if (error.status === 401) return fullScreenMessage(T.denied, h('a', { class: 'button', href: '/admin/', target: '_top' }, T.openCms))
   if (error.code === 'not_enabled' || error.code === 'not_found') return fullScreenMessage(T.notEnabled)
   if (!state.summary) return fullScreenMessage(T.unavailable)
-  state.message = ['delivery_disabled', 'mail_unconfigured'].includes(error.code)
+  state.message = ['delivery_disabled', 'mail_unconfigured', 'resend_unavailable', 'resend_account_changed'].includes(error.code)
     ? reasonText(error.code)
     : `${T.error} (${error.code || error.status}).`
   render()
@@ -1110,10 +1145,11 @@ async function select (id) {
   app.querySelector('.detail-pane h2')?.focus({ preventScroll: true })
 }
 
-async function releaseJob (channel) {
+async function releaseJob (job, resend = null) {
   const id = state.detail.id
-  if (!await act(`jobs/${id}:${channel}/release`, { notice: T.releaseRequested })) return
-  const inFlight = detail => detail?.jobs.some(job => job.channel === channel && ['pending', 'leased'].includes(job.state))
+  if (!await act(`jobs/${job.id}/${resend ? 'resend' : 'release'}`, { notice: T.releaseRequested, body: resend })) return
+  const jobId = resend ? `${id}:owner:${resend.id}` : job.id
+  const inFlight = detail => detail?.jobs.some(item => item.id === jobId && ['pending', 'leased'].includes(item.state))
   for (const delay of [1000, 2000, 4000, 8000, 12000]) {
     if (state.selected !== id || !inFlight(state.detail)) return
     await new Promise(resolve => setTimeout(resolve, delay))
@@ -1201,7 +1237,7 @@ function sortValue (item, id) {
   if (id === 'form') return item.form
   if (id === 'state') return itemState(item) || ''
   if (id === 'note') return item.note || ''
-  if (id === 'label') return labelById(item.label)?.name || ''
+  if (id === 'label') return labelNames(item.labels || [])
   return fieldValue(item, id.slice(2))
 }
 const localDay = time => new Date(time).toLocaleDateString('sv-SE')
@@ -1210,7 +1246,11 @@ function sortLikeView (rows) {
   const sort = currentSort(view)
   const compare = (a, b) => typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b), undefined, { sensitivity: 'base' })
   const group = view.group && columnType(view.group)
-  const groupKey = item => view.group === 'created' ? localDay(item.createdAt) : String(view.group === 'label' ? item.label || '' : sortValue(item, view.group) ?? '').slice(0, 100)
+  const groupKey = item => {
+    if (view.group === 'created') return localDay(item.createdAt)
+    if (view.group === 'label') return item.labels?.length > 1 ? JSON.stringify(item.labels) : item.labels?.[0] || ''
+    return String(sortValue(item, view.group) ?? '').slice(0, 100)
+  }
   return [...rows].sort((a, b) => {
     if (group) {
       const [ga, gb] = [groupKey(a), groupKey(b)]
@@ -1238,7 +1278,7 @@ function csvText (rows, { oneForm, columns = [] }) {
   for (const name of columns) if (!names.includes(name)) names.push(name)
   for (const item of rows) for (const [name] of item.fields || []) if (!names.includes(name)) names.push(name)
   const stateOf = item => STATES[itemState(item)] || itemState(item) || ''
-  const followUp = item => [labelById(item.label)?.name || '', item.note || '']
+  const followUp = item => [labelNames(item.labels || []), item.note || '']
   const table = oneForm
     ? [[T.created, ...names, T.files_, T.state, T.id, T.label, T.note], ...rows.map(item => [csvDate(item.createdAt), ...names.map(name => fieldValue(item, name)), String(item.files), stateOf(item), item.id, ...followUp(item)])]
     : [[T.created, T.form, T.page, T.state, T.files_, T.id, ...names, T.label, T.note], ...rows.map(item => [csvDate(item.createdAt), formId(item.form), item.page, stateOf(item), String(item.files), item.id, ...names.map(name => fieldValue(item, name)), ...followUp(item)])]

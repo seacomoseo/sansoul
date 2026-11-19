@@ -187,6 +187,19 @@ export async function replaceReleasedJob (db, id, row, authority, now) {
   return inserted.meta.changes === 1
 }
 
+export async function queueResend (db, { source, submissionId, id, authority, now }) {
+  const result = await db.prepare(
+    `INSERT INTO forms_jobs (id, submission_id, channel, state, authority, next_attempt_at, updated_at)
+     SELECT ?1, ?2, 'owner', 'pending', ?3, ?4, ?4
+     WHERE ?5 = (SELECT id FROM forms_jobs WHERE submission_id = ?2 AND channel = 'owner' AND state = 'sent'
+       ORDER BY updated_at DESC, rowid DESC LIMIT 1)
+       AND NOT EXISTS (SELECT 1 FROM forms_jobs WHERE submission_id = ?2 AND channel = 'owner'
+         AND state <> 'sent' AND IFNULL(last_error, '') <> 'discarded')
+     ON CONFLICT (id) DO NOTHING`
+  ).bind(id, submissionId, JSON.stringify(authority), now, source).run()
+  return result.meta.changes === 1
+}
+
 // Drive: IDs are reserved before any upload so every retry targets one file.
 export async function driveFiles (db, submissionId) {
   const rows = (await db.prepare('SELECT idx, drive_id, folder_id, link, verified_at FROM forms_drive_files WHERE submission_id = ?').bind(submissionId).all()).results

@@ -228,10 +228,17 @@ Rutas (`/api/forms/admin/…`): `GET summary`, `GET forms`, `GET submissions`,
 el acto; un trabajo descartado no se reabre), `POST dispatch` (devuelve también
 `attention` y `pruned`) y `POST retention`.
 
-El detalle permite guardar una anotación y asignar una etiqueta de seguimiento
+El detalle permite guardar una anotación y marcar varias etiquetas de seguimiento
 con color. La sesión GitHub puede editar estos datos mediante
-`POST submissions/<id>/annotation` con `{ note, label }` y gestionar las etiquetas
+`POST submissions/<id>/annotation` con `{ note, labels }` y gestionar las etiquetas
 con `POST labels` con `{ id?, name, color }` y `POST labels/<id>/delete`.
+Se sigue aceptando `{ note, label }` para clientes con una sola etiqueta.
+
+**Reenviar aviso** conserva el intento anterior y crea otro para el mismo
+destinatario desde la cuenta actual, incluso si coincide con la anterior.
+El panel pide confirmar el remitente y avisa si faltan adjuntos. El correo
+enlaza los archivos disponibles en Drive o en Formularios. «Enviado» significa
+que el proveedor lo aceptó, sin confirmar su llegada al buzón.
 
 `GET submissions` admite `view=all|attention|review`, `form=<página#id>`,
 `q=` (busca en los valores, no en los nombres de campo), `filter=` (JSON `[[columna, operador, valor], …]`,
@@ -239,7 +246,9 @@ hasta 10), `sort=<columna>:asc|desc` o `sort=[[columna, dirección], …]`
 (hasta cuatro criterios en orden de prioridad), `group=<columna>` (con `tz=` en minutos
 para agrupar por día), `limit=` (≤ 100), `full=1` (valores completos, para
 exportar) y `before=` (el `next` de la página anterior). Columnas: `created`,
-`form`, `state`, `files`, `note`, `label` (por id al filtrar) y `f:<campo>`. Agrupar por día usa el desfase
+`form`, `state`, `files`, `note`, `label` y `f:<campo>`. Para `label`, el
+filtro comprueba la presencia de cada etiqueta por id, el orden usa nombres
+y los grupos reúnen envíos con la misma combinación. Agrupar por día usa el desfase
 horario actual del navegador (en el cambio de hora, un envío cercano a
 medianoche puede caer en el día de al lado). Filtrar, ordenar y agrupar ocurre en D1
 sobre todos los envíos que cumplen, así que páginas, `total` y `groups` son
