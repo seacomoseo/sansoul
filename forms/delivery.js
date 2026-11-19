@@ -5,6 +5,7 @@ import { FormsError, sha256Hex } from './http.js'
 import { LIMITS, driveEnabled } from './intake.js'
 import { findSpec } from './manifest.js'
 import { loadRoutes } from '../mail/accounts.js'
+import { brevoAcceptsFiles } from '../mail/providers/http.js'
 
 export const OWNER_KIND = 'forms.owner'
 export const VISITOR_KIND = 'forms.visitor'
@@ -41,7 +42,8 @@ export async function filesPlan ({ env, mailer, authority, files, manifest, spec
   if (!files.length) return null
   const bytes = files.reduce((total, file) => total + file.size, 0)
   const base = { root: env.FORMS_DRIVE_FOLDER || '', project: manifest.project || manifest.site, label: spec.id }
-  if (bytes <= LIMITS.inlineBytes) return { ...base, mode: 'inline' }
+  const canAttach = authority.provider !== 'brevo' || brevoAcceptsFiles(files)
+  if (canAttach && bytes <= LIMITS.inlineBytes) return { ...base, mode: 'inline' }
   if (driveEnabled(env)) {
     // Hold: nothing is sent; keep the historical plan.
     if (authority.provider === 'hold') return { ...base, mode: 'drive' }
@@ -49,7 +51,7 @@ export async function filesPlan ({ env, mailer, authority, files, manifest, spec
     if (drive) return { ...base, mode: 'drive', ...(drive.ref !== authority.ref || drive.provider !== authority.provider ? { drive } : {}) }
   }
   const attachable = authority.provider === 'gmail' ? LIMITS.noDriveBytes : LIMITS.inlineBytes
-  return { ...base, mode: bytes <= attachable ? 'inline' : 'panel' }
+  return { ...base, mode: canAttach && bytes <= attachable ? 'inline' : 'panel' }
 }
 
 // Owner and visitor jobs for an accepted (or review) submission.
@@ -70,17 +72,18 @@ export async function planJobs ({ env, mailer, parsed, manifest, content, extra,
   return jobs
 }
 
-// A person releasing a placeholder can assign its first real account. Older
-// holds had no saved choice, so use the current form's choice if it still exists.
-export async function resolvePlaceholder ({ env, mailer, channel, stored, submission, manifest }) {
+// Resolve a released placeholder or a notice definitively rejected by Brevo.
+// Older holds had no saved choice, so consult the current form if it exists.
+export async function resolveRelease ({ env, mailer, channel, stored, submission, manifest }) {
   const routes = await loadRoutes(env)
   const id = formLabel(submission)
   const spec = { account: stored.choice ?? findSpec(manifest, submission.page, id)?.account ?? '', id: stored.files?.label || id }
   const authority = await channelAuthority({ env, mailer, channel, spec, routes })
   if (authority.provider === 'pending' || authority.provider === 'hold') return null
-  const { provider, kind, choice, files, ...content } = stored
+  const { provider, kind, choice, files, ref, account, fingerprint, senderName, ...content } = stored
   const storage = channel === 'owner' ? await filesPlan({ env, mailer, authority, files: submission.files, manifest, spec, routes }) : null
-  return { ...content, ...authority, ...(storage ? { files: storage } : {}) }
+  const fromName = provider === 'brevo' ? env.FORMS_SENDER_NAME || manifest.site : senderName
+  return { ...content, senderName: fromName, ...authority, ...(storage ? { files: storage } : {}) }
 }
 
 const formLabel = submission => String(submission.form_key || '').split('#').slice(1).join('#') || 'form'

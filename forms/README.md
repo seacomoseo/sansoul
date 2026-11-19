@@ -228,12 +228,18 @@ Rutas (`/api/forms/admin/…`): `GET summary`, `GET forms`, `GET submissions`,
 el acto; un trabajo descartado no se reabre), `POST dispatch` (devuelve también
 `attention` y `pruned`) y `POST retention`.
 
+El detalle permite guardar una anotación y asignar una etiqueta de seguimiento
+con color. La sesión GitHub puede editar estos datos mediante
+`POST submissions/<id>/annotation` con `{ note, label }` y gestionar las etiquetas
+con `POST labels` con `{ id?, name, color }` y `POST labels/<id>/delete`.
+
 `GET submissions` admite `view=all|attention|review`, `form=<página#id>`,
 `q=` (busca en los valores, no en los nombres de campo), `filter=` (JSON `[[columna, operador, valor], …]`,
-hasta 10), `sort=<columna>:asc|desc`, `group=<columna>` (con `tz=` en minutos
+hasta 10), `sort=<columna>:asc|desc` o `sort=[[columna, dirección], …]`
+(hasta cuatro criterios en orden de prioridad), `group=<columna>` (con `tz=` en minutos
 para agrupar por día), `limit=` (≤ 100), `full=1` (valores completos, para
 exportar) y `before=` (el `next` de la página anterior). Columnas: `created`,
-`form`, `state`, `files` y `f:<campo>`. Agrupar por día usa el desfase
+`form`, `state`, `files`, `note`, `label` (por id al filtrar) y `f:<campo>`. Agrupar por día usa el desfase
 horario actual del navegador (en el cambio de hora, un envío cercano a
 medianoche puede caer en el día de al lado). Filtrar, ordenar y agrupar ocurre en D1
 sobre todos los envíos que cumplen, así que páginas, `total` y `groups` son

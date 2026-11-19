@@ -61,6 +61,11 @@ comprador, Drive). Sin tocar nada, los proyectos con `FORMS_PROVIDER`, `FORMS_GM
    aviso enlaza a `/admin/forms/` (CPU de Workers Free medida en `core/mail/README.md`).
 5. Opcional: relé de retorno OAuth (`FORMS_GOOGLE_REDIRECT` en el sitio, `FORMS_OAUTH_RELAY_HOSTS` en el relé) para
    conectar Gmail sin registrar cada dominio en Google Cloud.
+6. D1 `0007_mail_account_names.sql` añade nombres visibles editables a cuentas y autorizaciones de Gmail.
+   Conserva ids, rutas y credenciales. `0008_forms_annotations.sql` añade anotaciones y etiquetas de seguimiento
+   para los envíos anteriores y futuros. El CI aplica ambas antes de desplegar el Worker.
+7. Cuando Brevo no admite un adjunto, el aviso incluye un enlace a Drive o Formularios según la configuración.
+   Los avisos retenidos tras un HTTP 400 de Brevo se pueden reintentar manualmente con la configuración actual.
 
 **Acciones obligatorias:** ninguna. Para guardar cuentas desde el panel hace falta el secreto `FORMS_GRANT_KEY` (el
 mismo de «Conectar Gmail»); para Brevo, SMTP2GO o SMTP, verificar el remitente y el dominio (SPF/DKIM) en el

@@ -1,5 +1,6 @@
 import { UNCONFIGURED } from './delivery.js'
 import { renderConfirmation, renderOwner } from './render.js'
+import { brevoAcceptsFiles } from '../mail/providers/http.js'
 import {
   claimJob, dueJobs, loadSubmission, markDeferred, markFailed, markFilesPurged, markHeld,
   markRetry, markSending, markSent, pruneRate, recoverExpiredLeases, sweepOrphanUploads
@@ -72,7 +73,8 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
   const toDrive = isOwner && authority.files?.mode === 'drive' && submission.files.length > 0
   // `panel`: too large to attach without Drive; the files stay in KV (TTL) and
   // the notice links to the panel.
-  const inPanel = isOwner && authority.files?.mode === 'panel' && submission.files.length > 0
+  const inPanel = isOwner && submission.files.length > 0 && (authority.files?.mode === 'panel' ||
+    (!toDrive && authority.provider === 'brevo' && !brevoAcceptsFiles(submission.files)))
   const young = now() - submission.created_at < FILES_SETTLE_MS
   const attachments = isOwner && !toDrive && !inPanel ? await loadAttachments(kv, submission) : []
   if (!attachments) return young ? markRetry(db, job.id, token, now(), 'files_missing', job.attempts) : markHeld(db, job.id, token, now(), 'files_missing')

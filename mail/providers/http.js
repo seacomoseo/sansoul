@@ -17,6 +17,10 @@ export const PROVIDER_LIMITS = Object.freeze({
   smtp: { file: 10 * 1024 * 1024, total: 10 * 1024 * 1024 }
 })
 
+// https://developers.brevo.com/reference/send-transac-email
+const BREVO_EXTENSIONS = new Set('xlsx xls ods docx docm doc csv pdf txt gif jpg jpeg png tif tiff rtf bmp cgm css shtml html htm zip xml ppt pptx tar ez ics mobi msg pub eps odt mp3 m4a m4v wma ogg flac wav aif aifc aiff mp4 mov avi mkv mpeg mpg wmv pkpass xlsm'.split(' '))
+export const brevoAcceptsFiles = files => files.every(file => BREVO_EXTENSIONS.has(/\.([^.]+)$/.exec(file.name)?.[1].toLowerCase()))
+
 const encode = bytes => typeof bytes.toBase64 === 'function' ? bytes.toBase64() : base64(bytes)
 
 // The account behind a frozen authority, checked again right before sending.

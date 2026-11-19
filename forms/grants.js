@@ -96,8 +96,8 @@ export async function loadGrant (env, ref) {
 
 export async function listGrants (env) {
   if (!env.FORMS_DB) return []
-  const rows = (await env.FORMS_DB.prepare('SELECT ref, account, scopes, created_at FROM forms_grants ORDER BY ref').all()).results
-  return rows.map(row => ({ ref: row.ref, account: row.account, scopes: row.scopes.split(' '), created_at: row.created_at }))
+  const rows = (await env.FORMS_DB.prepare('SELECT ref, account, scopes, created_at, display_name FROM forms_grants ORDER BY ref').all()).results
+  return rows.map(row => ({ ref: row.ref, account: row.account, scopes: row.scopes.split(' '), created_at: row.created_at, displayName: row.display_name || '' }))
 }
 
 async function signState (env, payload) {

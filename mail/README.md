@@ -17,6 +17,8 @@ ninguna cuenta de Seacomoseo.
 
 - Puede haber varias cuentas a la vez, también dos del mismo proveedor con
   remitentes distintos. Todas comparten un espacio de ids (`[A-Za-z0-9_.-]`).
+- El panel asigna el id al crear la cuenta. El nombre visible es opcional y
+  editable, también para Gmail, y se puede cambiar sin tocar las rutas.
 - Claves y contraseñas se guardan cifradas en D1 (`FORMS_DB`, migración
   `forms/migrations/0006_mail.sql`) con AES-GCM derivado de `FORMS_GRANT_KEY`,
   ligadas a id, proveedor y remitente. Sin `FORMS_GRANT_KEY` el panel no guarda
@@ -92,9 +94,15 @@ retenidos cuando se habilita el envío. Para solicitar uno, abre el detalle en
 «Formularios» y pulsa **«Enviar»**. Se resuelve la cuenta para ese aviso en ese
 momento y se conservan su texto y destinatarios.
 
+Si Brevo rechazó el aviso con HTTP 400, el detalle muestra **«Reintentar con
+la configuración actual»**. Al pulsarlo, se elige otra vez la cuenta y el
+destino de los adjuntos. Las respuestas ambiguas conservan la cuenta original.
+
 ## Archivos
 
 - Hasta 1 MB en total: adjuntos en el correo (desde KV).
+- Cuando Brevo no admite una extensión, como WebP, el aviso enlaza a Drive
+  si está configurado o al panel de Formularios si el archivo sigue en KV.
 - Más de 1 MB con una cuenta Gmail para `drive`: se suben a su Drive y el correo
   los enlaza (puede salir por Brevo, SMTP2GO o SMTP con los enlaces de Drive).
 - Sin Gmail: los archivos de más de 1 MB en total se quedan en KV (TTL de 90
@@ -130,6 +138,9 @@ se desconecta), `POST accounts/<id>/test` (`{ to }`), `POST routes`
 (`{ routes: { <tipo>|default: <id>|'' } }`), `POST pending/release` (hasta 20 por
 llamada) y `POST google/connect` (`{ ref }`; una referencia nueva añade otro
 Gmail).
+
+Para cambiar el nombre visible de una cuenta Gmail del panel, se usa
+`POST accounts/<id>/name` con `{ displayName }`.
 
 ## Conectar Gmail sin registrar cada dominio
 

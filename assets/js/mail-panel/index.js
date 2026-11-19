@@ -38,7 +38,7 @@ const T = {
     drive: 'Con Drive',
     noDrive: 'Sin permiso de Drive',
     fields: {
-      id: 'Nombre interno (opcional)',
+      displayName: 'Nombre de la cuenta (opcional)',
       sender: 'Correo remitente',
       senderName: 'Nombre del remitente (opcional)',
       label: 'Nota (opcional)',
@@ -105,7 +105,7 @@ const T = {
     drive: 'With Drive',
     noDrive: 'No Drive permission',
     fields: {
-      id: 'Internal name (optional)',
+      displayName: 'Account name (optional)',
       sender: 'Sender address',
       senderName: 'Sender name (optional)',
       label: 'Note (optional)',
@@ -225,7 +225,7 @@ async function api (path, { method = 'GET', body } = {}) {
 const state = { summary: null, busy: false, message: null, notice: null, editing: null, testing: null, routes: null, advanced: false }
 const app = document.getElementById('app')
 
-const accountName = account => `${account.id} · ${account.sender}`
+const accountName = account => account.displayName ? `${account.displayName} · ${account.sender}` : account.sender
 const accountOptions = (accounts, selected, first) => [
   first ? h('option', { value: '' }, first) : null,
   ...accounts.map(account => h('option', { value: account.id, selected: account.id === selected }, `${accountName(account)} (${PROVIDERS[account.provider] || account.provider})`))
@@ -271,8 +271,8 @@ function accountCard (account) {
       : h('div', { class: 'actions' },
         h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => { state.testing = { id: account.id }; render() } }, icon('send'), T.test),
         panel && account.provider === 'gmail' && state.summary.google.configured ? h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => connectGmail(account.id) }, T.reconnect) : null,
-        panel && account.provider !== 'gmail' ? h('button', { type: 'button', class: 'button', disabled: state.busy || !state.summary.grantKey, onclick: () => { state.editing = { ...account, ...account.settings }; render() } }, T.edit) : null,
-        panel ? h('button', { type: 'button', class: 'button danger', disabled: state.busy, onclick: () => removeAccount(account.id) }, T.remove) : null))
+        panel ? h('button', { type: 'button', class: 'button', disabled: state.busy || !state.summary.grantKey, onclick: () => { state.editing = { ...account, ...account.settings }; render() } }, T.edit) : null,
+        panel ? h('button', { type: 'button', class: 'button danger', disabled: state.busy, onclick: () => removeAccount(account) }, T.remove) : null))
 }
 
 function field (label, input, { wide = false, hint } = {}) {
@@ -282,21 +282,23 @@ function field (label, input, { wide = false, hint } = {}) {
 function editor () {
   const e = state.editing
   const isNew = !e.id || e.isNew
+  const gmail = e.provider === 'gmail'
   const input = (name, attrs = {}) => h('input', { class: 'input', name, value: e[name] ?? '', ...attrs })
   const secretHint = isNew ? null : T.fields.keepSecret
   return h('form', { class: 'card editor', onsubmit: event => { event.preventDefault(); saveAccount(new FormData(event.target)) } },
-    h('div', { class: 'card-head' }, h('strong', {}, `${PROVIDERS[e.provider]}${e.id && !e.isNew ? ` · ${e.id}` : ''}`)),
-    h('p', { class: 'muted small' }, T.help[e.provider]),
+    h('div', { class: 'card-head' }, h('strong', {}, isNew ? PROVIDERS[e.provider] : accountName(e))),
+    gmail ? null : h('p', { class: 'muted small' }, T.help[e.provider]),
     h('div', { class: 'editor-grid' },
-      isNew ? field(T.fields.id, input('id', { pattern: '[A-Za-z0-9_.-]{1,64}', autocomplete: 'off' })) : null,
+      field(T.fields.displayName, input('displayName', { maxlength: 80 }), { wide: gmail }),
+      gmail ? null : [
       field(T.fields.sender, input('sender', { type: 'email', required: true, autocomplete: 'email' })),
       field(T.fields.senderName, input('senderName', { maxlength: 80 })),
       e.provider === 'smtp' ? field(T.fields.host, input('host', { required: true, placeholder: 'smtp.example.com' })) : null,
       e.provider === 'smtp' ? field(T.fields.port, h('select', { class: 'select', name: 'port' }, ...[587, 465, 2525].map(port => h('option', { value: String(port), selected: Number(e.port || 587) === port }, String(port))))) : null,
       e.provider === 'smtp' ? field(T.fields.username, input('username', { required: true, autocomplete: 'off' })) : null,
       field(e.provider === 'smtp' ? T.fields.password : T.fields.apiKey, h('input', { class: 'input', name: 'secret', type: 'password', required: isNew, autocomplete: 'new-password' }), { hint: secretHint }),
-      field(T.fields.label, input('label', { maxlength: 80 }), { wide: true })),
-    h('p', { class: 'muted small' }, T.help.dns),
+      field(T.fields.label, input('label', { maxlength: 80 }), { wide: true })]),
+    gmail ? null : h('p', { class: 'muted small' }, T.help.dns),
     h('div', { class: 'actions' },
       h('button', { type: 'submit', class: 'button primary', disabled: state.busy }, T.save),
       h('button', { type: 'button', class: 'button', onclick: () => { state.editing = null; render() } }, T.cancel)))
@@ -311,7 +313,7 @@ function accountsSection () {
   return h('section', {},
     h('h3', {}, T.accounts),
     s.accounts.length ? s.accounts.map(accountCard) : h('p', { class: 'muted' }, T.noAccounts),
-    state.editing ? editor() : h('div', { class: 'actions' }, h('span', { class: 'muted small' }, `${T.add}:`), ...adders))
+    state.editing ? editor() : h('div', { class: 'account-add' }, h('p', { class: 'muted small' }, T.add), h('div', { class: 'actions' }, ...adders)))
 }
 
 function routingSection () {
@@ -319,11 +321,15 @@ function routingSection () {
   const routes = state.routes
   const gmail = s.accounts.filter(account => account.provider === 'gmail')
   const sourceText = choice => choice ? T.sources[choice.source] || choice.source : ''
+  const routeName = choice => {
+    const account = s.accounts.find(item => item.id === choice?.id)
+    return account ? accountName(account) : choice?.id
+  }
   const rows = s.kinds.map(kind => h('tr', {},
     h('td', {}, kind.label[lang] || kind.label.es),
     h('td', {}, h('select', { class: 'select', onchange: event => { routes[kind.id] = event.target.value; render() } },
       ...accountOptions(kind.gmailOnly ? gmail : s.accounts, routes[kind.id] || '', kind.gmailOnly ? T.driveDefault : T.useDefault))),
-    h('td', { class: 'muted small' }, T.effective(s.effective[kind.id]?.id, sourceText(s.effective[kind.id])))))
+    h('td', { class: 'muted small' }, T.effective(routeName(s.effective[kind.id]), sourceText(s.effective[kind.id])))))
   return h('section', {},
     h('h3', {}, T.routing),
     field(T.defaultAccount, h('select', { class: 'select', onchange: event => { routes.default = event.target.value; render() } }, ...accountOptions(s.accounts, routes.default || '', s.variables.FORMS_GMAIL_DEFAULT ? T.variableDefault(s.variables.FORMS_GMAIL_DEFAULT) : T.none)), { hint: T.defaultHint }),
@@ -407,18 +413,19 @@ async function connectGmail (ref) {
 
 function saveAccount (data) {
   const e = state.editing
-  const body = { provider: e.provider, id: e.isNew ? String(data.get('id') || '').trim() : e.id }
-  for (const key of ['sender', 'senderName', 'label', 'secret', 'host', 'port', 'username']) if (data.has(key)) body[key] = String(data.get(key)).trim()
+  const body = { provider: e.provider, id: e.id }
+  for (const key of ['displayName', 'sender', 'senderName', 'label', 'secret', 'host', 'port', 'username']) if (data.has(key)) body[key] = String(data.get(key)).trim()
   if (body.port) body.port = Number(body.port)
   act(async () => {
-    await api('accounts', { method: 'POST', body })
+    const route = e.provider === 'gmail' ? `accounts/${encodeURIComponent(e.id)}/name` : 'accounts'
+    await api(route, { method: 'POST', body })
     state.editing = null
   })
 }
 
-function removeAccount (id) {
-  if (!window.confirm(T.removeConfirm(id))) return
-  act(() => api(`accounts/${encodeURIComponent(id)}/delete`, { method: 'POST', body: {} }))
+function removeAccount (account) {
+  if (!window.confirm(T.removeConfirm(accountName(account)))) return
+  act(() => api(`accounts/${encodeURIComponent(account.id)}/delete`, { method: 'POST', body: {} }))
 }
 
 function sendTest (account, to) {

@@ -174,11 +174,11 @@ export async function resolveHeld (db, id, action, now) {
   return result.meta.changes === 1
 }
 
-// Replace the exact placeholder atomically. A concurrent release can only
+// Replace the exact releasable job atomically. A concurrent release can only
 // queue it once, and a discard that already won cannot be reopened.
-export async function replacePlaceholderJob (db, id, row, authority, now) {
+export async function replaceReleasedJob (db, id, row, authority, now) {
   const [, inserted] = await db.batch([
-    db.prepare("DELETE FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded' AND authority = ?").bind(id, row.authority),
+    db.prepare("DELETE FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND last_error IS ? AND authority = ?").bind(id, row.last_error, row.authority),
     db.prepare(
       `INSERT INTO forms_jobs (id, submission_id, channel, state, authority, next_attempt_at, last_error, updated_at)
        SELECT ?1, ?2, ?3, 'pending', ?4, ?5, 'released', ?5 WHERE changes() = 1`

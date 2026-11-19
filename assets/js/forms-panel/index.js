@@ -32,6 +32,7 @@ const T = {
     attempts: n => n === 1 ? 'intento' : 'intentos',
     release: 'Enviar',
     releaseRequested: 'Envío solicitado.',
+    retryCurrent: 'Reintentar con la configuración actual',
     approve: 'Aprobar y enviar',
     discard: 'Descartar',
     spam: 'Descartar (spam)',
@@ -58,7 +59,8 @@ const T = {
     unconfiguredBanner: n => `${n} ${n === 1 ? 'aviso espera' : 'avisos esperan'} a que haya una cuenta de correo.`,
     openMail: 'Configurar el correo',
     attentionBanner: n => `${n} ${n === 1 ? 'envío necesita' : 'envíos necesitan'} una decisión.`,
-    sent24h: (n, account) => `${n} ${n === 1 ? 'correo enviado' : 'correos enviados'} en 24 h desde ${account || 'la cuenta de envío'}. La cuota diaria de Gmail se comparte con otras webs que usen esta cuenta.`,
+    sent24h: (n, account) => `${n} ${n === 1 ? 'correo enviado' : 'correos enviados'} en 24 h desde ${account || 'la cuenta de envío'}.`,
+    gmailQuota: 'La cuota diaria de Gmail se comparte con otras webs que usen esta cuenta.',
     retention: d => d ? `Los envíos cerrados se borran a los ${d} días.` : 'Sin borrado automático de envíos.',
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'archivo' : 'archivos'}${p ? `, ${p} pendientes` : ''}.`,
     reasonsTitle: 'Motivos de revisión',
@@ -76,6 +78,9 @@ const T = {
     search: 'Buscar en los valores',
     sort: 'Ordenar',
     sortBy: 'Ordenar por',
+    addSort: 'Añadir criterio',
+    removeSort: 'Quitar criterio',
+    moveSortUp: 'Subir prioridad',
     groupBy: 'Agrupar por',
     filter: 'Filtrar',
     group: 'Agrupar',
@@ -88,6 +93,17 @@ const T = {
     filterHint: 'Se cumplen todos los filtros a la vez.',
     value: 'Valor',
     empty_: '(vacío)',
+    note: 'Anotación',
+    label: 'Etiqueta',
+    noLabel: 'Sin etiqueta',
+    organization: 'Seguimiento',
+    manageLabels: 'Gestionar etiquetas',
+    labelName: 'Nombre de la etiqueta',
+    labelColor: 'Color de la etiqueta',
+    addLabel: 'Añadir etiqueta',
+    deleteLabel: 'Eliminar etiqueta',
+    deleteLabelConfirm: name => `¿Quitar «${name}» de todos los envíos?`,
+    save: 'Guardar',
     ops: { contains: 'contiene', not_contains: 'no contiene', is: 'es', is_not: 'no es', empty: 'está vacío', not_empty: 'no está vacío', after: 'desde', before: 'hasta' },
     filesOps: { empty: 'sin archivos', not_empty: 'con archivos' },
     selectAll: 'Seleccionar todos los cargados',
@@ -129,6 +145,7 @@ const T = {
     attempts: n => n === 1 ? 'attempt' : 'attempts',
     release: 'Send',
     releaseRequested: 'Send requested.',
+    retryCurrent: 'Retry with current settings',
     approve: 'Approve and send',
     discard: 'Discard',
     spam: 'Discard (spam)',
@@ -155,7 +172,8 @@ const T = {
     unconfiguredBanner: n => `${n} ${n === 1 ? 'notice is' : 'notices are'} waiting for a mail account.`,
     openMail: 'Set up mail',
     attentionBanner: n => `${n} ${n === 1 ? 'submission needs' : 'submissions need'} a decision.`,
-    sent24h: (n, account) => `${n} ${n === 1 ? 'email' : 'emails'} sent in 24 h from ${account || 'the sender account'}. The daily Gmail quota is shared with other sites using this account.`,
+    sent24h: (n, account) => `${n} ${n === 1 ? 'email' : 'emails'} sent in 24 h from ${account || 'the sender account'}.`,
+    gmailQuota: 'The daily Gmail quota is shared with other sites using this account.',
     retention: d => d ? `Closed submissions are deleted after ${d} days.` : 'No automatic deletion of submissions.',
     drive: (n, p) => `Drive: ${n} ${n === 1 ? 'file' : 'files'}${p ? `, ${p} pending` : ''}.`,
     reasonsTitle: 'Review reasons',
@@ -173,6 +191,9 @@ const T = {
     search: 'Search the values',
     sort: 'Sort',
     sortBy: 'Sort by',
+    addSort: 'Add sort criterion',
+    removeSort: 'Remove sort criterion',
+    moveSortUp: 'Move up in sort priority',
     groupBy: 'Group by',
     filter: 'Filter',
     group: 'Group',
@@ -185,6 +206,17 @@ const T = {
     filterHint: 'All filters must match.',
     value: 'Value',
     empty_: '(empty)',
+    note: 'Note',
+    label: 'Label',
+    noLabel: 'No label',
+    organization: 'Follow-up',
+    manageLabels: 'Manage labels',
+    labelName: 'Label name',
+    labelColor: 'Label color',
+    addLabel: 'Add label',
+    deleteLabel: 'Delete label',
+    deleteLabelConfirm: name => `Remove “${name}” from all submissions?`,
+    save: 'Save',
     ops: { contains: 'contains', not_contains: 'does not contain', is: 'is', is_not: 'is not', empty: 'is empty', not_empty: 'is not empty', after: 'from', before: 'until' },
     filesOps: { empty: 'without files', not_empty: 'with files' },
     selectAll: 'Select all loaded',
@@ -231,6 +263,7 @@ const REASONS = {
     drive_root_missing: 'La carpeta de Drive configurada no existe',
     mail_unconfigured: 'Espera a que haya una cuenta de correo (página «Correo»)',
     mail_account_missing: 'La cuenta de correo elegida ya no existe',
+    brevo_rejected_400: 'Brevo rechazó el aviso. Puedes reintentar con la configuración actual.',
     smtp_send_ambiguous: 'Respuesta dudosa del servidor: comprueba el buzón antes de reenviar',
     smtp_auth_failed: 'El servidor SMTP rechazó el usuario o la contraseña'
   },
@@ -253,6 +286,7 @@ const REASONS = {
     drive_root_missing: 'The configured Drive folder does not exist',
     mail_unconfigured: 'Waiting for a mail account (Mail page)',
     mail_account_missing: 'The chosen mail account no longer exists',
+    brevo_rejected_400: 'Brevo rejected this notice. You can retry with the current settings.',
     smtp_send_ambiguous: 'Unclear server answer: check the mailbox before resending',
     smtp_auth_failed: 'The SMTP server refused the username or password'
   }
@@ -349,7 +383,8 @@ async function api (path, { method = 'GET', raw = false, body, signal } = {}) {
 const PAGE_EXPORT_MAX = 5000
 const DELETE_CHUNK = 50
 const SETTINGS_KEY = 'sansoul-forms.views'
-const DEFAULT_SORT = 'created:desc'
+const GMAIL_DISMISS_KEY = 'sansoul-forms.gmail-dismissed'
+const MAX_SORTS = 4
 const STATE_KEYS = ['pending', 'leased', 'sent', 'held', 'failed', 'review', 'discarded']
 const ICONS = {
   refresh: 'refresh',
@@ -391,6 +426,7 @@ const state = {
   anchor: null,
   collapsed: new Set(),
   selected: null,
+  manageLabels: false,
   detail: null,
   message: null,
   notice: null,
@@ -401,6 +437,10 @@ const state = {
 const app = document.getElementById('app')
 // Scroll positions survive re-renders (and a pane hidden on mobile).
 const scrolls = new Map()
+let dismissedGmail = ''
+try {
+  dismissedGmail = localStorage.getItem(GMAIL_DISMISS_KEY) || ''
+} catch {}
 
 // Sort, filters, grouping and search per view (and per form in the table
 // view), kept in this browser.
@@ -414,9 +454,10 @@ const savedViews = (() => {
 const viewKey = () => state.view === 'table' ? `form:${state.form}` : state.view
 function settings () {
   const saved = savedViews[viewKey()]
+  const legacy = typeof saved?.sort === 'string' && saved.sort.match(/^(.+):(asc|desc)$/)
   return {
     q: typeof saved?.q === 'string' ? saved.q : '',
-    sort: typeof saved?.sort === 'string' ? saved.sort : DEFAULT_SORT,
+    sort: Array.isArray(saved?.sort) ? saved.sort.filter(pair => Array.isArray(pair) && pair.length === 2) : legacy ? [legacy.slice(1)] : [],
     group: typeof saved?.group === 'string' ? saved.group : null,
     filters: Array.isArray(saved?.filters) ? saved.filters.filter(Array.isArray) : []
   }
@@ -449,8 +490,7 @@ function stateChip (code, reason) {
   return h('span', { class: `chip chip-${code}`, title: reasonText(reason) || undefined }, STATES[code] || code)
 }
 
-// Columns of the current table. General views: fixed columns (the values
-// summary only when the table is alone on screen). Table view: the fields of
+// Columns of the current table. General views have fixed columns. Table view has the fields of
 // the chosen form, as the server lists them.
 function tableColumns () {
   const fixed = state.view === 'table'
@@ -467,14 +507,17 @@ function tableColumns () {
         { id: 'files', label: T.files_, type: 'count' },
         { id: 'state', label: T.state, type: 'enum' }
       ]
-  return fixed
+  return [...fixed, { id: 'label', label: T.label, type: 'enum' }, { id: 'note', label: T.note, type: 'text' }]
 }
-const columnType = id => tableColumns().find(col => col.id === id)?.type || (id.startsWith('f:') ? 'text' : null)
-const OPS = { text: ['contains', 'not_contains', 'is', 'is_not', 'empty', 'not_empty'], enum: ['is', 'is_not'], count: ['not_empty', 'empty'], date: ['after', 'before'] }
+const columnType = id => tableColumns().find(col => col.id === id)?.type || (typeof id === 'string' && id.startsWith('f:') ? 'text' : null)
+const OPS = { text: ['contains', 'not_contains', 'is', 'is_not', 'empty', 'not_empty'], enum: ['is', 'is_not', 'empty', 'not_empty'], count: ['not_empty', 'empty'], date: ['after', 'before'] }
 const needsValue = op => !['empty', 'not_empty'].includes(op)
+const currentSort = settings => settings.sort.filter(([id, dir]) => columnType(id) && ['asc', 'desc'].includes(dir)).slice(0, MAX_SORTS)
+const labelById = id => state.summary.labels?.find(label => label.id === id)
 
 function enumOptions (id) {
   if (id === 'state') return STATE_KEYS.map(key => [key, STATES[key]])
+  if (id === 'label') return (state.summary.labels || []).map(label => [label.id, label.name])
   if (id === 'form') return (state.forms || []).map(entry => [entry.form, `${formId(entry.form)} · ${entry.page}`])
   return []
 }
@@ -484,6 +527,7 @@ function groupLabel (id, key) {
   if (id === 'created') return dayText(key)
   if (id === 'form') return `${formId(key)} · ${String(key).split('#')[0]}`
   if (id === 'state') return STATES[key] || key
+  if (id === 'label') return labelById(key)?.name || T.noLabel
   if (id === 'files') return `${key} ${T.files_.toLowerCase()}`
   return String(key)
 }
@@ -506,7 +550,8 @@ function listQuery (extra = {}, { ordered = true } = {}) {
   if (view.q.trim()) params.set('q', view.q.trim())
   const filters = filterParam(view.filters)
   if (filters.length) params.set('filter', JSON.stringify(filters))
-  if (ordered && view.sort !== DEFAULT_SORT && columnType(view.sort.replace(/:(asc|desc)$/, ''))) params.set('sort', view.sort)
+  const sort = currentSort(view)
+  if (ordered && sort.length) params.set('sort', JSON.stringify(sort))
   if (ordered && view.group && columnType(view.group)) {
     params.set('group', view.group)
     params.set('tz', String(-new Date().getTimezoneOffset()))
@@ -541,11 +586,17 @@ function banners () {
   }
   const google = summary.google
   if (google?.configured && google.default && (!summary.mailOwner || summary.mailOwner === google.default)) {
-    const connected = google.grants.some(grant => grant.ref === google.default)
     const grant = google.grants.find(item => item.ref === google.default)
-    if (connected && !google.fallback) {
-      list.push(h('div', { class: 'alert alert-info', role: 'status' }, h('span', {}, T.gmailConnected(grant.account)),
-        h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: connectGmail }, T.reconnectGmail)))
+    const connected = Boolean(grant)
+    const key = grant && JSON.stringify([grant.ref, grant.account, grant.created_at])
+    if (connected && !google.fallback && dismissedGmail !== key) {
+      list.push(h('div', { class: 'alert alert-info alert-dismissible', role: 'status' }, h('span', {}, T.gmailConnected(grant.account)),
+        h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: connectGmail }, T.reconnectGmail),
+        h('button', { type: 'button', class: 'button icon-button', 'aria-label': T.dismiss, title: T.dismiss, onclick: () => {
+          dismissedGmail = key
+          try { localStorage.setItem(GMAIL_DISMISS_KEY, key) } catch {}
+          render()
+        } }, icon(ICONS.close))))
     }
     if (!connected || google.fallback) {
       list.push(h('div', { class: `alert ${connected ? 'alert-warning' : 'alert-info'}`, role: 'status' }, h('span', {}, connected ? T.gmailFallback : T.gmailMissing),
@@ -562,13 +613,24 @@ function banners () {
 
 function toolbar () {
   const summary = state.summary
-  const tabs = ['all', 'attention', 'review', 'table'].map(view => h('button', {
+  const views = ['all', 'attention', 'review', 'table']
+  const tabs = views.map((view, index) => h('button', {
     type: 'button',
     role: 'tab',
     class: 'tab',
+    id: `tab-${view}`,
+    'data-focus': `tab-${view}`,
+    'aria-controls': 'forms-view',
     'aria-selected': String(state.view === view),
+    tabindex: state.view === view ? 0 : -1,
     disabled: state.exporting,
-    onclick: () => selectView(view)
+    onclick: () => selectView(view),
+    onkeydown: event => {
+      const next = { Home: 0, End: views.length - 1, ArrowRight: (index + 1) % views.length, ArrowLeft: (index + views.length - 1) % views.length }[event.key]
+      if (next === undefined) return
+      event.preventDefault()
+      selectView(views[next], { focus: true })
+    }
   }, T[view], (view === 'attention' || view === 'review') && summary[view] ? h('span', { class: 'badge' }, String(summary[view])) : null))
   return h('header', { class: 'toolbar' },
     h('h1', {}, T.title),
@@ -586,7 +648,7 @@ const draft = (key, saved) => state.drafts.has(key) ? state.drafts.get(key) : sa
 
 function tableBar () {
   const view = settings()
-  const active = { sort: view.sort !== DEFAULT_SORT, filter: filterParam(view.filters).length, group: Boolean(view.group) }
+  const active = { sort: currentSort(view).length, filter: filterParam(view.filters).length, group: Boolean(view.group) }
   const toggle = name => h('button', {
     type: 'button',
     class: `button${active[name] ? ' active' : ''}`,
@@ -626,9 +688,9 @@ function clearDrafts (prefix) {
   for (const key of [...state.drafts.keys()]) if (key.startsWith(prefix)) { state.drafts.delete(key); clearTimeout(timers.get(key)); timers.delete(key) }
 }
 
-function columnSelect (value, onchange, { allowNone = false } = {}) {
-  const columns = tableColumns().filter(col => col.type)
-  return h('select', { class: 'select', onchange: event => onchange(event.target.value) },
+function columnSelect (value, onchange, { allowNone = false, except = [], label } = {}) {
+  const columns = tableColumns().filter(col => col.type && !except.includes(col.id))
+  return h('select', { class: 'select', 'aria-label': label, onchange: event => onchange(event.target.value) },
     allowNone ? h('option', { value: '', selected: !value }, T.noGroup) : null,
     columns.map(col => h('option', { value: col.id, selected: col.id === value }, col.label)))
 }
@@ -636,12 +698,22 @@ function columnSelect (value, onchange, { allowNone = false } = {}) {
 function optionsPanel () {
   const view = settings()
   if (state.panel === 'sort') {
-    const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 'asc' : 'desc']
-    return h('div', { class: 'options-panel' },
+    const sort = currentSort(view)
+    const candidate = tableColumns().find(col => col.type && !sort.some(([id]) => col.id === id))
+    const update = (index, pair) => updateSettings({ sort: sort.map((old, at) => at === index ? pair : old) })
+    return h('div', { class: 'options-panel sort-options' },
       h('span', { class: 'muted' }, T.sortBy),
-      columnSelect(id, value => updateSettings({ sort: `${value}:${dir}` })),
-      h('select', { class: 'select', 'aria-label': T.sort, onchange: event => updateSettings({ sort: `${id}:${event.target.value}` }) },
-        h('option', { value: 'asc', selected: dir === 'asc' }, T.asc), h('option', { value: 'desc', selected: dir === 'desc' }, T.desc)))
+      sort.map(([id, dir], index) => h('div', { class: 'filter-row' },
+        columnSelect(id, value => update(index, [value, dir]), { except: sort.filter((_, at) => at !== index).map(([key]) => key), label: `${T.sortBy} ${index + 1}` }),
+        h('select', { class: 'select', 'aria-label': `${T.sort} ${index + 1}`, onchange: event => update(index, [id, event.target.value]) },
+          h('option', { value: 'asc', selected: dir === 'asc' }, T.asc), h('option', { value: 'desc', selected: dir === 'desc' }, T.desc)),
+        index > 0 ? h('button', { type: 'button', class: 'button icon-button', title: T.moveSortUp, 'aria-label': T.moveSortUp, onclick: () => {
+          const next = [...sort]
+          next.splice(index - 1, 2, sort[index], sort[index - 1])
+          updateSettings({ sort: next })
+        } }, icon(ICONS.up)) : null,
+        h('button', { type: 'button', class: 'button icon-button', title: T.removeSort, 'aria-label': T.removeSort, onclick: () => updateSettings({ sort: sort.filter((_, at) => at !== index) }) }, icon(ICONS.close)))),
+      candidate && sort.length < MAX_SORTS ? h('button', { type: 'button', class: 'button', onclick: () => updateSettings({ sort: [...sort, [candidate.id, 'asc']] }) }, icon(ICONS.add), T.addSort) : null)
   }
   if (state.panel === 'group') {
     return h('div', { class: 'options-panel' }, h('span', { class: 'muted' }, T.groupBy), columnSelect(view.group, value => { state.collapsed.clear(); updateSettings({ group: value || null }) }, { allowNone: true }))
@@ -692,19 +764,29 @@ function optionsPanel () {
 }
 
 function headerCell (col) {
-  const view = settings()
+  const sort = currentSort(settings())
   if (!col.type) return h('th', { scope: 'col', class: `col-${col.id}` }, col.label)
-  const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 'asc' : 'desc']
-  const sorted = id === col.id
-  const next = sorted ? (dir === 'asc' ? 'desc' : 'asc') : (col.type === 'date' ? 'desc' : 'asc')
-  return h('th', { scope: 'col', class: `col-${col.id.startsWith('f:') ? 'field' : col.id}`, 'aria-sort': sorted ? (dir === 'asc' ? 'ascending' : 'descending') : undefined },
-    h('button', { type: 'button', class: 'sort-button', onclick: () => updateSettings({ sort: `${col.id}:${next}` }) }, col.label, sorted ? icon(dir === 'asc' ? ICONS.up : ICONS.down) : null))
+  const index = sort.findIndex(([id]) => id === col.id)
+  const dir = sort[index]?.[1]
+  const first = col.type === 'date' ? 'desc' : 'asc'
+  const next = !dir ? first : dir === first ? (first === 'asc' ? 'desc' : 'asc') : null
+  return h('th', { scope: 'col', class: `col-${col.id.startsWith('f:') ? 'field' : col.id}`, 'aria-sort': index === 0 ? (dir === 'asc' ? 'ascending' : 'descending') : undefined },
+    h('button', { type: 'button', class: 'sort-button', 'data-focus': `sort-header-${col.id}`, onclick: () => updateSettings({ sort: next ? [[col.id, next]] : [] }) },
+      col.label, dir ? icon(dir === 'asc' ? ICONS.up : ICONS.down) : null, dir && sort.length > 1 ? String(index + 1) : null))
 }
 
 function cell (item, col) {
-  if (col.id === 'created') return h('td', { class: 'nowrap col-created', title: dateText(item.createdAt) }, shortDate.format(new Date(item.createdAt)))
+  if (col.id === 'created') return h('td', { class: 'nowrap col-created', title: dateText(item.createdAt) },
+    h('button', { type: 'button', class: 'sort-button', 'data-detail': item.id, onclick: event => { event.stopPropagation(); select(item.id) } }, shortDate.format(new Date(item.createdAt))))
   if (col.id === 'form') return h('td', { class: 'col-form', title: item.form }, formId(item.form))
   if (col.id === 'summary') return h('td', { class: 'col-summary' }, item.preview || '—')
+  if (col.id === 'note') return h('td', { class: 'col-note' }, item.note || '—')
+  if (col.id === 'label') {
+    const label = labelById(item.label)
+    const badge = label ? h('span', { class: 'tag-chip' }, label.name) : null
+    if (badge) badge.style.borderInlineStartColor = label.color
+    return h('td', { class: 'col-label' }, badge || '—')
+  }
   if (col.id === 'files') return h('td', { class: 'col-files' }, item.files ? [icon(ICONS.clip), String(item.files)] : '—')
   if (col.id === 'state') {
     const owner = item.jobs.find(job => job.channel === 'owner') || item.jobs[0]
@@ -770,10 +852,8 @@ function tablePane () {
     const checked = state.selection.has(item.id)
     body.push(h('tr', {
       class: checked ? 'checked' : null,
-      tabindex: '0',
       'aria-current': String(state.selected === item.id),
-      onclick: () => select(item.id),
-      onkeydown: event => { if (event.key === 'Enter' && event.target === event.currentTarget) select(item.id) }
+      onclick: () => select(item.id)
     },
     h('td', { class: 'col-check', onclick: event => event.stopPropagation() },
       h('input', { type: 'checkbox', checked, 'aria-label': T.selectRow, onclick: event => toggleRow(item.id, event.target.checked, event.shiftKey) })),
@@ -784,25 +864,26 @@ function tablePane () {
   const content = state.loading && !state.items.length
     ? h('div', { class: 'loader delayed', role: 'status' }, h('span', { class: 'spinner', 'aria-hidden': 'true' }))
     : state.items.length
-      ? h('div', { class: 'table-scroll', 'data-scroll': `table:${viewKey()}` }, h('table', { class: 'data-table' }, h('thead', {}, head), h('tbody', {}, body)))
+      ? h('table', { class: 'data-table' }, h('thead', {}, head), h('tbody', {}, body))
       : h('p', { class: 'muted pad' }, state.view === 'table' && !state.forms?.length ? T.noForms : (view.q || filterParam(view.filters).length ? T.empty.all : T.empty[state.view === 'table' ? 'all' : state.view]))
   const footer = state.summary
   return h('section', { class: 'table-pane', 'aria-label': T[state.view], 'aria-busy': String(state.loading) },
     tableBar(),
     optionsPanel(),
-    content,
-    h('div', { class: 'table-foot' },
-      state.items.length ? h('span', { class: 'muted small' }, T.count(state.items.length, state.total)) : null,
-      state.next ? h('button', { type: 'button', class: 'button', onclick: () => load({ more: true }), disabled: state.busy }, T.more) : null),
-    h('footer', { class: 'list-footer muted' },
-      footer.sent24h.map(row => h('p', {}, T.sent24h(row.sent, row.account))),
-      footer.drive.files ? h('p', {}, T.drive(footer.drive.files, footer.drive.pending)) : null,
-      h('p', {}, T.retention(footer.retentionDays))))
+    h('div', { class: 'table-scroll forms-results', 'data-scroll': `table:${viewKey()}` }, content,
+      h('div', { class: 'table-foot' },
+        state.items.length ? h('span', { class: 'muted small' }, T.count(state.items.length, state.total)) : null,
+        state.next ? h('button', { type: 'button', class: 'button', onclick: () => load({ more: true }), disabled: state.busy }, T.more) : null),
+      h('footer', { class: 'list-footer muted' },
+        footer.sent24h.map(row => h('p', {}, T.sent24h(row.sent, row.account), row.gmail ? ` ${T.gmailQuota}` : null)),
+        footer.drive.files ? h('p', {}, T.drive(footer.drive.files, footer.drive.pending)) : null,
+        h('p', {}, T.retention(footer.retentionDays)))))
 }
 
 function jobCard (job) {
   const actionable = job.state === 'held' || job.state === 'failed'
   const review = job.reason === 'review'
+  const releaseLabel = review ? T.approve : job.reason === 'brevo_rejected_400' ? T.retryCurrent : T.release
   return h('div', { class: 'card' },
     h('div', { class: 'card-head' }, h('strong', {}, T[job.channel]), stateChip(review ? 'review' : job.reason === 'discarded' ? 'discarded' : job.state, job.reason)),
     job.reason ? h('p', { class: 'muted' }, reasonText(job.reason)) : null,
@@ -810,9 +891,42 @@ function jobCard (job) {
       [job.recipients.length ? `${T.to}: ${job.recipients.join(', ')}` : null, job.account ? `${T.from}: ${job.account}` : null, `${job.attempts} ${T.attempts(job.attempts)}`, dateText(job.updatedAt)].filter(Boolean).join(' · ')),
     actionable && job.reason !== 'discarded'
       ? h('div', { class: 'actions' },
-        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => act(`jobs/${state.detail.id}:${job.channel}/release`, { notice: T.releaseRequested }) }, review ? T.approve : T.release),
+        h('button', { type: 'button', class: 'button primary', disabled: state.busy || state.summary.provider === 'hold', title: state.summary.provider === 'hold' ? T.holdBanner : undefined, onclick: () => releaseJob(job.channel) }, releaseLabel),
         h('button', { type: 'button', class: 'button', disabled: state.busy, onclick: () => confirm(T.discardConfirm) && act(`jobs/${state.detail.id}:${job.channel}/discard`) }, review ? T.spam : T.discard))
       : null)
+}
+
+function labelEditor (label = null) {
+  return h('form', { class: 'label-editor', onsubmit: event => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    act('labels', { body: { id: label?.id, name: data.get('name'), color: data.get('color') } })
+  } },
+  h('input', { class: 'input', name: 'name', 'aria-label': T.labelName, placeholder: T.labelName, value: label?.name || '', maxlength: 80, required: true }),
+  h('input', { class: 'input', type: 'color', name: 'color', 'aria-label': T.labelColor, value: label?.color || '#1268b3' }),
+  h('button', { type: 'submit', class: 'button', disabled: state.busy }, label ? T.save : T.addLabel),
+  label ? h('button', { type: 'button', class: 'button icon-button danger', 'aria-label': T.deleteLabel, title: T.deleteLabel, disabled: state.busy, onclick: () => {
+    if (confirm(T.deleteLabelConfirm(label.name))) act(`labels/${label.id}/delete`)
+  } }, icon(ICONS.remove)) : null)
+}
+
+function organizationPane (detail) {
+  const labels = state.summary.labels || []
+  return h('div', { class: 'organization' },
+    h('h3', {}, T.organization),
+    h('form', { class: 'editor', onsubmit: event => {
+      event.preventDefault()
+      const data = new FormData(event.currentTarget)
+      act(`submissions/${detail.id}/annotation`, { body: { note: data.get('note'), label: data.get('label') || null } })
+    } },
+    h('div', { class: 'editor-grid' },
+      h('label', { class: 'editor-field' }, T.label,
+        h('select', { class: 'select', name: 'label', 'aria-label': T.label }, h('option', { value: '' }, T.noLabel),
+          labels.map(label => h('option', { value: label.id, selected: label.id === detail.label }, label.name)))),
+      h('label', { class: 'editor-field wide' }, T.note, h('textarea', { class: 'input', name: 'note', 'aria-label': T.note, rows: 3, maxlength: 4000 }, detail.note || ''))),
+    h('div', { class: 'actions' }, h('button', { type: 'submit', class: 'button primary', disabled: state.busy }, T.save))),
+    h('details', { open: state.manageLabels, ontoggle: event => { state.manageLabels = event.currentTarget.open } },
+      h('summary', {}, T.manageLabels), labels.map(labelEditor), labelEditor()))
 }
 
 function detailPane () {
@@ -841,6 +955,7 @@ function detailPane () {
         file.drive && !file.drive.verified ? h('span', { class: 'muted small' }, T.drivePending) : null,
         file.stored ? h('button', { type: 'button', class: 'button', onclick: () => downloadFile(file) }, T.download) : (!file.drive?.link ? h('span', { class: 'muted small' }, T.purged) : null))))
       : null,
+    organizationPane(detail),
     h('h3', {}, T.delivery),
     detail.jobs.map(jobCard),
     h('div', { class: 'actions danger-zone' },
@@ -852,7 +967,7 @@ function render () {
   // Keep focus (search, filter values) and scroll positions across renders.
   const focused = document.activeElement?.dataset?.focus
   const caret = focused && document.activeElement.selectionStart
-  const layout = h('div', { class: `layout layout-${state.view === 'table' ? 'table' : 'list'}${state.selected ? ' has-detail' : ''}` }, tablePane(), detailPane())
+  const layout = h('div', { class: `layout${state.selected ? ' has-detail' : ''}`, id: 'forms-view', role: 'tabpanel', 'aria-labelledby': `tab-${state.view}` }, tablePane(), detailPane())
   app.replaceChildren(toolbar(), ...banners(), layout)
   app.setAttribute('aria-busy', String(state.busy))
   for (const node of app.querySelectorAll('[data-scroll]')) {
@@ -861,7 +976,7 @@ function render () {
     node.addEventListener('scroll', () => scrolls.set(node.dataset.scroll, [node.scrollTop, node.scrollLeft]), { passive: true })
   }
   if (focused) {
-    const node = app.querySelector(`[data-focus="${focused}"]`)
+    const node = app.querySelector(`[data-focus="${CSS.escape(focused)}"]`)
     node?.focus()
     if (node && typeof caret === 'number' && node.setSelectionRange) node.setSelectionRange(caret, caret)
   }
@@ -963,7 +1078,7 @@ async function refresh () {
   load({ withSummary: true })
 }
 
-function selectView (view) {
+function selectView (view, { focus = false } = {}) {
   if (view === state.view || state.exporting) return
   state.view = view
   state.notice = null
@@ -971,13 +1086,19 @@ function selectView (view) {
   state.detail = null
   resetList()
   load()
+  if (focus) app.querySelector(`#tab-${view}`)?.focus()
 }
 
 async function select (id) {
+  const previous = state.selected
   state.selected = id
   state.detail = null
+  state.manageLabels = false
   render()
-  if (!id) return
+  if (!id) {
+    if (previous) app.querySelector(`[data-detail="${CSS.escape(previous)}"]`)?.focus({ preventScroll: true })
+    return
+  }
   try {
     const detail = await api(`submissions/${id}`)
     if (state.selected !== id) return
@@ -989,13 +1110,30 @@ async function select (id) {
   app.querySelector('.detail-pane h2')?.focus({ preventScroll: true })
 }
 
-async function act (path, { deleted = false, notice = null } = {}) {
+async function releaseJob (channel) {
+  const id = state.detail.id
+  if (!await act(`jobs/${id}:${channel}/release`, { notice: T.releaseRequested })) return
+  const inFlight = detail => detail?.jobs.some(job => job.channel === channel && ['pending', 'leased'].includes(job.state))
+  for (const delay of [1000, 2000, 4000, 8000, 12000]) {
+    if (state.selected !== id || !inFlight(state.detail)) return
+    await new Promise(resolve => setTimeout(resolve, delay))
+    if (state.selected !== id || state.busy) return
+    const detail = await api(`submissions/${id}`).catch(() => null)
+    if (state.selected !== id || state.busy || !detail) return
+    if (!inFlight(detail)) {
+      await load({ withSummary: true })
+      return
+    }
+  }
+}
+
+async function act (path, { deleted = false, notice = null, body } = {}) {
   state.busy = true
   state.notice = null
   state.message = null
   render()
   try {
-    await api(path, { method: 'POST' })
+    await api(path, { method: 'POST', body })
     state.notice = notice
     if (deleted) {
       state.selection.delete(state.selected)
@@ -1005,9 +1143,10 @@ async function act (path, { deleted = false, notice = null } = {}) {
   } catch (error) {
     state.busy = false
     fail(error)
-    return
+    return false
   }
   await load({ withSummary: true })
+  return true
 }
 
 async function deleteMany (ids) {
@@ -1061,21 +1200,27 @@ function sortValue (item, id) {
   if (id === 'files') return item.files
   if (id === 'form') return item.form
   if (id === 'state') return itemState(item) || ''
+  if (id === 'note') return item.note || ''
+  if (id === 'label') return labelById(item.label)?.name || ''
   return fieldValue(item, id.slice(2))
 }
 const localDay = time => new Date(time).toLocaleDateString('sv-SE')
 function sortLikeView (rows) {
   const view = settings()
-  const [id, dir] = [view.sort.replace(/:(asc|desc)$/, ''), view.sort.endsWith(':asc') ? 1 : -1]
+  const sort = currentSort(view)
   const compare = (a, b) => typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b), undefined, { sensitivity: 'base' })
   const group = view.group && columnType(view.group)
-  const groupKey = item => view.group === 'created' ? localDay(item.createdAt) : String(sortValue(item, view.group) ?? '').slice(0, 100)
+  const groupKey = item => view.group === 'created' ? localDay(item.createdAt) : String(view.group === 'label' ? item.label || '' : sortValue(item, view.group) ?? '').slice(0, 100)
   return [...rows].sort((a, b) => {
     if (group) {
       const [ga, gb] = [groupKey(a), groupKey(b)]
       if (ga !== gb) return view.group === 'created' ? (ga < gb ? 1 : -1) : (ga === '') - (gb === '') || compare(ga, gb)
     }
-    return dir * compare(sortValue(a, id), sortValue(b, id)) || b.createdAt - a.createdAt
+    for (const [id, dir] of sort) {
+      const order = compare(sortValue(a, id), sortValue(b, id))
+      if (order) return dir === 'asc' ? order : -order
+    }
+    return b.createdAt - a.createdAt || b.id.localeCompare(a.id)
   })
 }
 
@@ -1093,9 +1238,10 @@ function csvText (rows, { oneForm, columns = [] }) {
   for (const name of columns) if (!names.includes(name)) names.push(name)
   for (const item of rows) for (const [name] of item.fields || []) if (!names.includes(name)) names.push(name)
   const stateOf = item => STATES[itemState(item)] || itemState(item) || ''
+  const followUp = item => [labelById(item.label)?.name || '', item.note || '']
   const table = oneForm
-    ? [[T.created, ...names, T.files_, T.state, T.id], ...rows.map(item => [csvDate(item.createdAt), ...names.map(name => fieldValue(item, name)), String(item.files), stateOf(item), item.id])]
-    : [[T.created, T.form, T.page, T.state, T.files_, T.id, ...names], ...rows.map(item => [csvDate(item.createdAt), formId(item.form), item.page, stateOf(item), String(item.files), item.id, ...names.map(name => fieldValue(item, name))])]
+    ? [[T.created, ...names, T.files_, T.state, T.id, T.label, T.note], ...rows.map(item => [csvDate(item.createdAt), ...names.map(name => fieldValue(item, name)), String(item.files), stateOf(item), item.id, ...followUp(item)])]
+    : [[T.created, T.form, T.page, T.state, T.files_, T.id, ...names, T.label, T.note], ...rows.map(item => [csvDate(item.createdAt), formId(item.form), item.page, stateOf(item), String(item.files), item.id, ...names.map(name => fieldValue(item, name)), ...followUp(item)])]
   return '﻿' + table.map(row => row.map(value => csvCell(String(value ?? ''))).join(',')).join('\r\n')
 }
 

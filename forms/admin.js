@@ -1,12 +1,13 @@
 // Admin API of the forms module: the project panel (people, GitHub session of
 // the CMS) and automations (Bearer FORMS_ADMIN_TOKEN) use the same routes.
 import { hasPushAccess } from '../edge/github-access.js'
+import { LABEL_ID, labels, readAnnotation, saveAnnotation, saveLabel } from './annotations.js'
 import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
 import { FormsError, jsonResponse, jsonTextResponse, timingSafeEqual } from './http.js'
 import { connectRef, finishConnect, googleConfigured, listGrants, startConnect } from './grants.js'
 import { safeFileName } from './intake.js'
-import { loadSubmission, replacePlaceholderJob, requireDatabase, resolveHeld } from './store.js'
-import { UNCONFIGURED, resolvePlaceholder } from './delivery.js'
+import { loadSubmission, replaceReleasedJob, requireDatabase, resolveHeld } from './store.js'
+import { UNCONFIGURED, resolveRelease } from './delivery.js'
 import { resolveAccountId } from '../mail/accounts.js'
 
 const DAY_MS = 24 * 3600 * 1000
@@ -110,8 +111,8 @@ async function summary (db, env, manifest, now) {
     reviewCount(db),
     db.prepare("SELECT COUNT(*) AS n FROM forms_jobs WHERE state IN ('pending', 'leased')"),
     db.prepare(
-      `SELECT json_extract(authority, '$.account') AS account, COUNT(*) AS sent FROM forms_jobs
-       WHERE state = 'sent' AND updated_at >= ? GROUP BY account`
+      `SELECT json_extract(authority, '$.account') AS account, json_extract(authority, '$.provider') AS provider, COUNT(*) AS sent FROM forms_jobs
+       WHERE state = 'sent' AND updated_at >= ? GROUP BY account, provider`
     ).bind(time - DAY_MS),
     db.prepare('SELECT COUNT(*) AS files, SUM(CASE WHEN verified_at IS NULL THEN 1 ELSE 0 END) AS pending FROM forms_drive_files'),
     db.prepare("SELECT COUNT(*) AS n FROM forms_jobs WHERE state = 'held' AND last_error = ?").bind(UNCONFIGURED)
@@ -123,7 +124,8 @@ async function summary (db, env, manifest, now) {
     attention: attention[0].n,
     review: review[0].n,
     queued: queued[0].n,
-    sent24h: sent.map(row => ({ account: row.account || null, sent: row.sent })),
+    sent24h: sent.map(row => ({ account: row.account || null, sent: row.sent, ...(row.provider === 'gmail' ? { gmail: true } : {}) })),
+    labels: await labels(db),
     drive: { files: drive[0].files || 0, pending: drive[0].pending || 0 },
     // Owner notices waiting for a mail account (the «Correo» page releases them).
     unconfigured: unconfigured[0].n,
@@ -153,9 +155,12 @@ const STATE_SQL = `(SELECT CASE WHEN j.state = 'held' AND j.last_error = 'review
   FROM forms_jobs j WHERE j.submission_id = s.id ORDER BY j.channel DESC LIMIT 1)`
 // Value of one field (repeated fields joined, as in the panel).
 const FIELD_SQL = "(SELECT group_concat(json_extract(f.value, '$[1]'), ', ') FROM json_each(s.fields) f WHERE json_extract(f.value, '$[0]') = ?)"
+const NOTE_SQL = '(SELECT note FROM forms_annotations WHERE submission_id = s.id)'
+const LABEL_SQL = '(SELECT label_id FROM forms_annotations WHERE submission_id = s.id)'
+const LABEL_NAME_SQL = `(SELECT name FROM forms_labels WHERE id = ${LABEL_SQL})`
 const OPS = {
   text: ['contains', 'not_contains', 'is', 'is_not', 'empty', 'not_empty'],
-  enum: ['is', 'is_not'],
+  enum: ['is', 'is_not', 'empty', 'not_empty'],
   count: ['empty', 'not_empty'],
   date: ['after', 'before']
 }
@@ -168,6 +173,8 @@ function column (id) {
   if (id === 'form') return { sql: 's.form_key', params: [], type: 'enum' }
   if (id === 'state') return { sql: STATE_SQL, params: [], type: 'enum' }
   if (id === 'files') return { sql: 'json_array_length(s.files)', params: [], type: 'count' }
+  if (id === 'note') return { sql: NOTE_SQL, params: [], type: 'text' }
+  if (id === 'label') return { sql: LABEL_SQL, orderSql: LABEL_NAME_SQL, params: [], type: 'enum' }
   if (id.startsWith('f:') && id.length > 2 && id.length <= 202) return { sql: FIELD_SQL, params: [id.slice(2)], type: 'text' }
   return null
 }
@@ -211,12 +218,19 @@ function listQuery (url) {
   if (!Array.isArray(filters) || filters.length > 10) throw new FormsError('invalid_filter')
   for (const filter of filters) where.push(condition(Array.isArray(filter) ? filter : []))
 
-  // "<column>:<asc|desc>"; field names may contain ':' themselves.
+  // Old clients use "column:asc"; multiple priorities use JSON pairs.
   const rawSort = params.get('sort') || 'created:desc'
   const [, sortId, sortDir] = rawSort.match(/^(.+):(asc|desc)$/) || [null, rawSort, 'desc']
-  const sort = column(sortId)
-  if (!sort) throw new FormsError('invalid_sort')
-  const dir = sortDir === 'asc' ? 'ASC' : 'DESC'
+  const sortPairs = rawSort.startsWith('[') ? parseJson(rawSort, []) : [[sortId, sortDir]]
+  if (!Array.isArray(sortPairs) || !sortPairs.length || sortPairs.length > 4) throw new FormsError('invalid_sort')
+  const sort = sortPairs.map(pair => {
+    if (!Array.isArray(pair) || pair.length !== 2) throw new FormsError('invalid_sort')
+    const [id, direction] = pair
+    const col = id !== 'summary' && column(id)
+    if (!col || !['asc', 'desc'].includes(direction)) throw new FormsError('invalid_sort')
+    return { ...col, id, dir: direction.toUpperCase() }
+  })
+  if (new Set(sort.map(col => col.id)).size !== sort.length) throw new FormsError('invalid_sort')
   const groupCol = params.get('group') ? column(params.get('group')) : null
   if (params.get('group') && !groupCol) throw new FormsError('invalid_group')
   let group = null
@@ -233,7 +247,8 @@ function listQuery (url) {
     view,
     form,
     where: { sql: where.map(part => `(${part.sql})`).join(' AND '), params: where.flatMap(part => part.params) },
-    sort: { ...sort, dir, isDefault: sortId === 'created' && dir === 'DESC' },
+    sort,
+    defaultOrder: sort.length === 1 && sort[0].id === 'created' && sort[0].dir === 'DESC',
     group
   }
 }
@@ -256,7 +271,7 @@ async function list (db, url) {
   // Default order pages by keyset ("<time>|<id>", stable while new submissions
   // arrive); any other order or grouping by offset ("+<n>").
   const before = params.get('before') || ''
-  const keyset = query.sort.isDefault && !query.group
+  const keyset = query.defaultOrder && !query.group
   const offset = !keyset && /^\+\d{1,7}$/.test(before) ? Number(before.slice(1)) : 0
   const [beforeTime, beforeId] = keyset ? before.split('|') : []
   const cursor = Number.isSafeInteger(Number(beforeTime)) && Number(beforeTime) > 0 && beforeId ? [Number(beforeTime), beforeId] : null
@@ -267,19 +282,22 @@ async function list (db, url) {
     : query.where
   const withFields = Boolean(query.form) || full
   const columns = `s.id, s.form_key, s.page, s.status, s.created_at, json_array_length(s.files) AS files, ${STATE_SQL} AS state,
+    ${full ? NOTE_SQL : `substr(${NOTE_SQL}, 1, ${CELL_MAX})`} AS note, ${LABEL_SQL} AS label,
     ${PREVIEW_SQL} AS preview${withFields ? `, ${full ? 's.fields' : CELLS_SQL} AS cells` : ''}`
+  const sortSelect = query.sort.map((col, index) => `${col.orderSql || col.sql} AS k${index}`).join(', ')
+  const sortOrder = query.sort.map((col, index) => `k${index}${col.type === 'text' || col.orderSql ? ' COLLATE NOCASE' : ''} ${col.dir}`)
   // Default order: the created_at index stops after one page. Any other order
   // or grouping ranks every match by its keys alone and computes previews,
   // states and cells only for the page (each costs rows read in D1).
   const statements = [keyset
     ? db.prepare(`SELECT ${columns} FROM forms_submissions s WHERE ${where.sql} ORDER BY s.created_at DESC, s.id DESC LIMIT ${size + 1}`).bind(...where.params)
     : db.prepare(
-      `WITH m AS (SELECT s.id AS pid, s.created_at AS c, ${query.group ? query.group.sql : 'NULL'} AS g, ${query.sort.sql} AS k
+      `WITH m AS (SELECT s.id AS pid, s.created_at AS c, ${query.group ? query.group.sql : 'NULL'} AS g, ${sortSelect}
          FROM forms_submissions s WHERE ${where.sql}),
-       p AS (SELECT pid, g, row_number() OVER (ORDER BY ${[query.group?.order, `k${query.sort.type === 'text' ? ' COLLATE NOCASE' : ''} ${query.sort.dir}`, 'c DESC', 'pid DESC'].filter(Boolean).join(', ')}) AS rn
+       p AS (SELECT pid, g, row_number() OVER (ORDER BY ${[query.group?.order, ...sortOrder, 'c DESC', 'pid DESC'].filter(Boolean).join(', ')}) AS rn
          FROM m ORDER BY rn LIMIT ${size + 1} OFFSET ${offset})
        SELECT ${columns}, p.g AS g FROM p JOIN forms_submissions s ON s.id = p.pid ORDER BY p.rn`
-    ).bind(...(query.group?.params || []), ...query.sort.params, ...where.params)
+    ).bind(...(query.group?.params || []), ...query.sort.flatMap(col => col.params), ...where.params)
   ]
   // Counts, groups and the columns of a form come with the first page only.
   if (first) {
@@ -316,6 +334,8 @@ async function list (db, url) {
       state: row.state || null,
       createdAt: row.created_at,
       preview: row.preview || '',
+      note: row.note || '',
+      label: row.label || null,
       ...(query.group ? { group: row.g ?? '' } : {}),
       files: row.files || 0,
       jobs: jobs.filter(job => job.submission_id === row.id).map(publicJob)
@@ -352,6 +372,7 @@ async function detail (db, id) {
     reasons: parse(reasons, []),
     createdAt: submission.created_at,
     fields: submission.fields,
+    ...await readAnnotation(db, id),
     files: submission.files.map(file => ({
       index: file.index,
       field: file.field,
@@ -444,18 +465,19 @@ export async function pruneSubmissions (db, kv, env, now, limit = 20) {
   return ids.length ? (await deleteSubmissions(db, kv, ids)).deleted.length : 0
 }
 
-// Only jobs that never had a mail account can be assigned one at release.
+// Only placeholders and jobs with a definitive provider rejection may use a
+// new account at release. Unknown delivery outcomes retain their authority.
 export async function releaseOrDiscard ({ db, env, mailer, manifest, id, action, now }) {
   if (action === 'release') {
     if (env.FORMS_PROVIDER === 'hold') throw new FormsError('delivery_disabled', 409)
-    const row = await db.prepare("SELECT submission_id, channel, authority FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded'").bind(id).first()
+    const row = await db.prepare("SELECT submission_id, channel, authority, last_error FROM forms_jobs WHERE id = ? AND state IN ('held', 'failed') AND IFNULL(last_error, '') <> 'discarded'").bind(id).first()
     if (!row) return false
     const stored = JSON.parse(row.authority)
-    if (stored.provider === 'pending' || stored.provider === 'hold') {
+    if (stored.provider === 'pending' || stored.provider === 'hold' || (stored.provider === 'brevo' && row.last_error === 'brevo_rejected_400')) {
       const submission = await loadSubmission(db, row.submission_id)
-      const authority = submission && await resolvePlaceholder({ env, mailer, channel: row.channel, stored, submission, manifest })
+      const authority = submission && await resolveRelease({ env, mailer, channel: row.channel, stored, submission, manifest })
       if (!authority) throw new FormsError(UNCONFIGURED, 409)
-      return replacePlaceholderJob(db, id, row, authority, now())
+      return replaceReleasedJob(db, id, row, authority, now())
     }
   }
   return resolveHeld(db, id, action, now())
@@ -475,7 +497,7 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
     if (actor !== 'github') throw new FormsError('forbidden', 403)
     return jsonResponse(await startConnect({ request, env, now, origins: manifest.origins }))
   }
-  const submission = path.match(/^submissions\/([A-Za-z0-9-]{16,64})(?:\/(delete|files\/(\d{1,2})))?$/)
+  const submission = path.match(/^submissions\/([A-Za-z0-9-]{16,64})(?:\/(delete|annotation|files\/(\d{1,2})))?$/)
 
   if (method === 'GET') {
     if (path === 'summary') return jsonResponse({ ...(await summary(db, env, manifest, now)), actor })
@@ -489,6 +511,20 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
     throw new FormsError('not_found', 404)
   }
   if (method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405, { allow: 'GET, POST' })
+
+  if (submission?.[2] === 'annotation' || path === 'labels') {
+    if (Number(request.headers.get('content-length') || 0) > 32768) throw new FormsError('payload_too_large', 413)
+    const body = await request.json().catch(() => null)
+    if (path === 'labels') return jsonResponse({ id: await saveLabel(db, body) })
+    await saveAnnotation(db, submission[1], body)
+    return jsonResponse({ ok: true })
+  }
+  const label = path.match(/^labels\/([^/]+)\/delete$/)?.[1]
+  if (label && LABEL_ID.test(label)) {
+    const deleted = await db.prepare('DELETE FROM forms_labels WHERE id = ?').bind(label).run()
+    if (!deleted.meta.changes) throw new FormsError('not_found', 404)
+    return jsonResponse({ ok: true })
+  }
 
   if (path === 'dispatch') {
     const result = await dispatch({ env, db, kv, providers, now, limit: 3 })

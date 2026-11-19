@@ -32,6 +32,7 @@ function createFakeProviders () {
       const mode = state.brevoMode
       if (mode === 'network') throw new TypeError('fetch failed')
       if (mode === '503') return json({ message: 'down' }, 503)
+      if (mode === '400') return json({ code: 'invalid_parameter' }, 400)
       if (mode === '402') return json({ code: 'not_enough_credits' }, 402)
       if (init.headers['api-key'] !== state.brevoKey) return json({ code: 'unauthorized' }, 401)
       state.brevo.push(JSON.parse(init.body))
@@ -283,6 +284,20 @@ describe('routing', () => {
 })
 
 describe('delivery states', () => {
+  test('a confirmed Brevo rejection can be retried with the current Gmail route', async () => {
+    assert.equal((await call('accounts', { method: 'POST', json: brevoAccount() })).status, 200)
+    await call('routes', { method: 'POST', json: { routes: { default: 'brevo' } } })
+    providers.state.brevoMode = '400'
+    const id = await send([['Nombre', 'Ana'], ['CV', new Blob(['test'], { type: 'application/pdf' }), 'cv.pdf']], { page: '/es/empleo/', form: 'form-cv' })
+    assert.deepEqual([(await owner(id)).state, (await owner(id)).last_error], ['held', 'brevo_rejected_400'])
+    await call('routes', { method: 'POST', json: { routes: { default: 'main' } } })
+    const attempts = await Promise.all([release(id), release(id)])
+    assert.deepEqual(attempts.map(result => result.status).sort(), [200, 409])
+    const delivered = await owner(id)
+    assert.deepEqual([delivered.state, delivered.authority.provider, delivered.authority.ref, delivered.authority.to], ['sent', 'gmail', 'main', ['rrhh@example.test']])
+    assert.equal(google.state.sent.length, 1)
+  })
+
   test('Formularios can release historical holds through the current route of each channel', async () => {
     env.FORMS_PROVIDER = 'hold'
     delete env.FORMS_GMAIL_DEFAULT
@@ -393,6 +408,25 @@ describe('delivery states', () => {
   })
 })
 
+test('presentation names can change on Brevo and Gmail without changing their routing IDs', async () => {
+  const { id: _, ...autoAccount } = brevoAccount({ displayName: 'Public website', label: 'Keep this note' })
+  const created = await call('accounts', { method: 'POST', json: autoAccount })
+  assert.equal(created.status, 200)
+  const id = created.body.id
+  assert.match(id, /^brevo-web-/)
+  assert.equal((await call('accounts', { method: 'POST', json: { ...autoAccount, id, secret: '', displayName: 'Sales website' } })).status, 200)
+  env.FORMS_GOOGLE_CLIENT_ID = 'fake-client-id'
+  env.FORMS_GOOGLE_CLIENT_SECRET = 'fake-client-secret'
+  await bindings.db.prepare('INSERT INTO forms_grants (ref, account, scopes, token_enc, client_fp, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind('gmail-2', 'test@example.test', 'https://www.googleapis.com/auth/drive.file', 'encrypted', 'fingerprint', clock).run()
+  assert.equal((await call('accounts/gmail-2/name', { method: 'POST', json: { displayName: 'Operations' } })).status, 200)
+  assert.equal((await call('accounts/main/name', { method: 'POST', json: { displayName: 'Protected' } })).status, 409)
+  await call('routes', { method: 'POST', json: { routes: { default: id, drive: 'gmail-2' } } })
+  const summary = (await call('summary')).body
+  assert.deepEqual([summary.routes.default, summary.routes.drive], [id, 'gmail-2'])
+  assert.deepEqual(summary.accounts.filter(account => [id, 'gmail-2'].includes(account.id)).map(account => [account.id, account.displayName, account.label]), [[id, 'Sales website', 'Keep this note'], ['gmail-2', 'Operations', '']])
+})
+
 describe('without an account', () => {
   test('the submission is stored, waits and is released once an account exists', async () => {
     delete env.FORMS_PROVIDER
@@ -414,6 +448,16 @@ describe('without an account', () => {
 
 describe('files', () => {
   const big = size => new Blob([new Uint8Array(size).fill(65)], { type: 'application/pdf' })
+
+  test('Brevo sends an admin link for a WebP that cannot be attached', async () => {
+    await call('accounts', { method: 'POST', json: brevoAccount() })
+    await call('routes', { method: 'POST', json: { routes: { 'forms.owner': 'brevo' } } })
+    const id = await send([['Nombre', 'Ana'], ['CV', new Blob(['RIFFdataWEBP'], { type: 'image/webp' }), 'foto.WebP']], { page: '/es/empleo/', form: 'form-cv' })
+    const job = await owner(id)
+    assert.deepEqual([job.state, job.authority.files.mode], ['sent', 'panel'])
+    assert.equal(providers.state.brevo[0].attachment, undefined)
+    assert.match(providers.state.brevo[0].textContent, /example\.test\/admin\/forms\//)
+  })
 
   test('releasing a hold replans a large file using the real delivery account', async () => {
     env.FORMS_PROVIDER = 'hold'

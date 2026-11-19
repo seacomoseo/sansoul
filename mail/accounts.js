@@ -16,6 +16,11 @@ export const MAIL_PROVIDERS = Object.freeze(['brevo', 'smtp2go', 'smtp'])
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const LINE = /^[^\r\n\0]*$/
 
+function displayName (value) {
+  if (typeof value !== 'string' || value.trim().length > 80 || !LINE.test(value)) throw new FormsError('mail_label_invalid', 400)
+  return value.trim()
+}
+
 const parseJson = text => {
   try {
     const value = JSON.parse(text || '{}')
@@ -138,19 +143,19 @@ const publicSettings = settings => settings.host ? { host: settings.host, port: 
 export async function listAccounts (env) {
   const list = new Map()
   for (const account of secretAccounts(env).values()) {
-    list.set(account.id, { id: account.id, provider: account.provider, sender: account.sender, senderName: account.senderName, label: account.label, settings: publicSettings(account.settings), source: 'secret' })
+    list.set(account.id, { id: account.id, provider: account.provider, sender: account.sender, senderName: account.senderName, displayName: account.id, label: account.label, settings: publicSettings(account.settings), source: 'secret' })
   }
   for (const [ref, account] of gmailSecretRefs(env)) {
-    if (!list.has(ref)) list.set(ref, { id: ref, provider: 'gmail', sender: account, senderName: '', label: '', settings: {}, source: 'secret', drive: null })
+    if (!list.has(ref)) list.set(ref, { id: ref, provider: 'gmail', sender: account, senderName: '', displayName: ref, label: '', settings: {}, source: 'secret', drive: null })
   }
-  for (const row of await rows(env, 'SELECT id, provider, label, sender, sender_name, settings, tested_at, test_error, updated_at FROM mail_accounts ORDER BY id')) {
+  for (const row of await rows(env, 'SELECT id, provider, display_name, label, sender, sender_name, settings, tested_at, test_error, updated_at FROM mail_accounts ORDER BY id')) {
     if (list.has(row.id)) continue
-    list.set(row.id, { id: row.id, provider: row.provider, sender: row.sender, senderName: row.sender_name, label: row.label, settings: publicSettings(parseJson(row.settings)), source: 'panel', testedAt: row.tested_at, testError: row.test_error, updatedAt: row.updated_at })
+    list.set(row.id, { id: row.id, provider: row.provider, sender: row.sender, senderName: row.sender_name, displayName: row.display_name, label: row.label, settings: publicSettings(parseJson(row.settings)), source: 'panel', testedAt: row.tested_at, testError: row.test_error, updatedAt: row.updated_at })
   }
   if (googleConfigured(env)) {
     for (const grant of await listGrants(env).catch(() => [])) {
       if (list.has(grant.ref)) continue
-      list.set(grant.ref, { id: grant.ref, provider: 'gmail', sender: grant.account, senderName: '', label: '', settings: {}, source: 'panel', drive: grant.scopes.includes(DRIVE_SCOPE), updatedAt: grant.created_at })
+      list.set(grant.ref, { id: grant.ref, provider: 'gmail', sender: grant.account, senderName: '', displayName: grant.displayName, label: '', settings: {}, source: 'panel', drive: grant.scopes.includes(DRIVE_SCOPE), updatedAt: grant.created_at })
     }
   }
   return [...list.values()]
@@ -171,7 +176,8 @@ export async function saveAccount (env, input, now) {
   if (id && !ACCOUNT_ID.test(id)) throw new FormsError('mail_account_id_invalid', 400)
   const existing = id ? await panelRow(env, id) : null
   const account = normalizeAccount(input, { requireSecret: !existing })
-  const target = id || `${account.provider}-${slug(account.sender.split('@')[0])}`
+  const target = id || `${account.provider}-${slug(account.sender.split('@')[0])}-${crypto.randomUUID().slice(0, 8)}`
+  const name = displayName(input.displayName ?? existing?.display_name ?? '')
   if (secretAccounts(env).has(target) || gmailSecretRefs(env).has(target)) throw new FormsError('account_in_secret', 409)
   if (await grantRow(env, target)) throw new FormsError('account_exists', 409)
   if (!id && await panelRow(env, target)) throw new FormsError('account_exists', 409)
@@ -184,17 +190,24 @@ export async function saveAccount (env, input, now) {
   const encrypted = await encryptSecret(env, secret, context(target, account.provider, account.sender))
   try {
     await db.prepare(
-      `INSERT INTO mail_accounts (id, provider, label, sender, sender_name, settings, secret_enc, fingerprint, created_at, updated_at)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?9)
-       ON CONFLICT (id) DO UPDATE SET provider = excluded.provider, label = excluded.label, sender = excluded.sender,
+      `INSERT INTO mail_accounts (id, provider, label, sender, sender_name, settings, secret_enc, fingerprint, display_name, created_at, updated_at)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?10)
+       ON CONFLICT (id) DO UPDATE SET provider = excluded.provider, label = excluded.label, display_name = excluded.display_name, sender = excluded.sender,
          sender_name = excluded.sender_name, settings = excluded.settings, secret_enc = excluded.secret_enc,
          fingerprint = excluded.fingerprint, updated_at = excluded.updated_at, tested_at = NULL, test_error = NULL`
-    ).bind(target, account.provider, account.label, account.sender, account.senderName, JSON.stringify(account.settings), encrypted, fingerprint, now).run()
+    ).bind(target, account.provider, account.label, account.sender, account.senderName, JSON.stringify(account.settings), encrypted, fingerprint, name, now).run()
   } catch {
     throw new FormsError('mail_tables_missing', 503)
   }
   await adoptDefault(env, target, now)
   return target
+}
+
+export async function renameGmail (env, id, name) {
+  const db = requireDb(env)
+  if (secretAccounts(env).has(id) || gmailSecretRefs(env).has(id)) throw new FormsError('account_in_secret', 409)
+  const result = await db.prepare('UPDATE forms_grants SET display_name = ? WHERE ref = ?').bind(displayName(name), id).run()
+  if (!result.meta.changes) throw new FormsError('mail_account_missing', 404)
 }
 
 // Removes a panel account (a Gmail one disconnects its grant) and its routes.

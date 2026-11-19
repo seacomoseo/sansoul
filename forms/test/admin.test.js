@@ -61,7 +61,7 @@ const jobState = async (id, channel = 'owner') => (await bindings.db.prepare('SE
 before(async () => { bindings = await createBindings() })
 after(async () => { await bindings.dispose() })
 beforeEach(async () => {
-  for (const table of ['forms_drive_files', 'forms_drive_folders', 'forms_uploads', 'forms_jobs', 'forms_submissions', 'forms_rate']) await bindings.db.prepare(`DELETE FROM ${table}`).run()
+  for (const table of ['forms_drive_files', 'forms_drive_folders', 'forms_uploads', 'forms_jobs', 'forms_submissions', 'forms_labels', 'forms_rate']) await bindings.db.prepare(`DELETE FROM ${table}`).run()
   google = createFakeGoogle()
   github = { calls: [], down: false }
   clock += 3_600_000 // a new hour per test: the GitHub cache never leaks between tests
@@ -137,7 +137,7 @@ describe('panel data', () => {
     assert.equal(summary.submissions, 3)
     assert.equal(summary.attention, 1)
     assert.equal(summary.review, 1)
-    assert.deepEqual(summary.sent24h, [{ account: 'sender@example.test', sent: 1 }])
+    assert.deepEqual(summary.sent24h, [{ account: 'sender@example.test', sent: 1, gmail: true }])
     assert.equal(summary.retentionDays, null)
 
     const all = (await call('submissions')).body
@@ -327,6 +327,32 @@ describe('panel tables', () => {
     assert.deepEqual(byDate.items.map(item => item.id), [ids.ana, ids.luis, ids.bea, ids.foot])
     assert.equal(byDate.items[0].state, 'held')
     assert.equal(byDate.items[0].fields, undefined)
+  })
+
+  test('notes and labels stay editable and can filter, group and break sort ties', async () => {
+    const ids = await fixture()
+    const post = (path, json, auth) => call(path, { method: 'POST', json, auth })
+    assert.equal((await post('labels', { name: 'New', color: '#224466' }, `Bearer ${ADMIN_TOKEN}`)).status, 403)
+    assert.equal((await post('labels', { name: 'New', color: 'red' })).status, 400)
+    const created = await post('labels', { name: 'New', color: '#224466' })
+    assert.equal(created.status, 200)
+    const id = created.body.id
+    for (const [submission, note] of [[ids.ana, 'Follow up'], [ids.luis, 'Follow up'], [ids.bea, 'Later']]) {
+      assert.equal((await post(`submissions/${submission}/annotation`, { note, label: id })).status, 200)
+    }
+    assert.equal((await post('labels', { id, name: 'Reviewed', color: '#664422' })).status, 200)
+    const summary = await call('summary')
+    assert.deepEqual(summary.body.labels, [{ id, name: 'Reviewed', color: '#664422' }])
+    const filtered = await q({ filter: JSON.stringify([['label', 'is', id], ['note', 'contains', 'Follow']]), sort: JSON.stringify([['note', 'asc'], ['created', 'asc']]), group: 'label', limit: '1' })
+    assert.deepEqual(filtered.groups, [{ key: id, count: 2 }])
+    assert.deepEqual(filtered.items.map(item => [item.id, item.note, item.label]), [[ids.ana, 'Follow up', id]])
+    const rest = await q({ filter: JSON.stringify([['label', 'is', id], ['note', 'contains', 'Follow']]), sort: JSON.stringify([['note', 'asc'], ['created', 'asc']]), group: 'label', limit: '1', before: filtered.next })
+    assert.deepEqual(rest.items.map(item => item.id), [ids.luis])
+    assert.deepEqual((await q({ group: 'note', filter: JSON.stringify([['label', 'is', id]]) })).groups.map(group => group.key), ['Follow up', 'Later'])
+    assert.equal((await call(`submissions/${ids.ana}`)).body.label, id)
+    assert.equal((await post(`labels/${id}/delete`, {})).status, 200)
+    const detail = (await call(`submissions/${ids.ana}`)).body
+    assert.deepEqual([detail.note, detail.label], ['Follow up', null])
   })
 
   test('filters: text operators, repeated fields, dates, files and search', async () => {

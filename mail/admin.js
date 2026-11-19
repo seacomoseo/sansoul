@@ -8,7 +8,7 @@ import { FormsError, jsonResponse } from '../forms/http.js'
 import { validAddress } from '../forms/mime.js'
 import { connectRef, googleConfigured, grantKeyConfigured, startConnect } from '../forms/grants.js'
 import { hitRate, requireDatabase } from '../forms/store.js'
-import { ACCOUNT_ID, accountProvider, deleteAccount, listAccounts, loadRoutes, recordTest, resolveAccountId, saveAccount, saveRoutes } from './accounts.js'
+import { ACCOUNT_ID, accountProvider, deleteAccount, listAccounts, loadRoutes, recordTest, renameGmail, resolveAccountId, saveAccount, saveRoutes } from './accounts.js'
 import { DRIVE_KIND, mailKinds } from './kinds.js'
 
 const DAY_MS = 24 * 3600 * 1000
@@ -128,12 +128,16 @@ export async function mailAdmin ({ request, env, ctx, path, manifest, mailer, fe
     const id = await saveAccount(env, await body(request), now())
     return jsonResponse({ ok: true, id })
   }
-  const account = path.match(/^accounts\/([^/]{1,64})\/(delete|test)$/)
+  const account = path.match(/^accounts\/([^/]{1,64})\/(delete|test|name)$/)
   if (account) {
     const id = decodeURIComponent(account[1])
     if (!ACCOUNT_ID.test(id)) throw new FormsError('mail_account_id_invalid', 400)
     if (account[2] === 'delete') {
       if (!await deleteAccount(env, id)) throw new FormsError('not_found', 404)
+      return jsonResponse({ ok: true })
+    }
+    if (account[2] === 'name') {
+      await renameGmail(env, id, (await body(request)).displayName)
       return jsonResponse({ ok: true })
     }
     return jsonResponse(await testAccount({ db, env, mailer, manifest, id, input: await body(request), now }))
