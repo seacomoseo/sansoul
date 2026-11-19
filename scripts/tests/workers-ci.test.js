@@ -58,7 +58,7 @@ test('Worker config: assets-only without backends, bindings and cron with forms'
     config = JSON.parse(renderConfig(plan, { account: 'acc', ids: { 'demo-forms': 'db-id', 'demo-files': 'kv-id' } }).replace(/^\/\/.*\n/, ''))
     assert.equal(config.account_id, 'acc')
     assert.equal(config.main, 'entry.generated.js')
-    assert.deepEqual(config.assets.run_worker_first, ['/api/forms/*'])
+    assert.deepEqual(config.assets.run_worker_first, ['/api/forms/*', '/api/mail/*'])
     assert.deepEqual(config.d1_databases, [{ binding: 'FORMS_DB', database_name: 'demo-forms', migrations_dir: '../core/forms/migrations', database_id: 'db-id' }])
     assert.deepEqual(config.kv_namespaces, [{ binding: 'FORMS_FILES', id: 'kv-id' }])
     assert.deepEqual(config.triggers.crons, ['*/15 * * * *'])
@@ -79,6 +79,14 @@ test('Worker config: assets-only without backends, bindings and cron with forms'
     assert.match(both, /commerce\.scheduled\(event, env, ctx\)\n    return forms\.scheduled\(event, env, ctx\)/)
     assert.deepEqual(JSON.parse(renderConfig(plan).replace(/^\/\/.*\n/, '')).triggers.crons, ['*/15 * * * *'])
     assert.match(renderEntry({ core: 'core', forms: false, commerce: true }), /scheduled: commerce\.scheduled/)
+    assert.match(both, /\(forms\|mail\)/)
+
+    // Commerce alone still binds the forms D1/KV: the site mail lives there.
+    fs.writeFileSync(path.join(directory, 'worker/forms.generated.js'), 'export const manifest = {\n  "forms": {}\n}\n')
+    plan = planWorker(directory, { core: 'core' })
+    assert.equal(plan.forms, true)
+    assert.deepEqual(plan.databases.map(db => db.database_name), ['demo-forms', 'demo-commerce'])
+    assert.deepEqual(JSON.parse(renderConfig(plan).replace(/^\/\/.*\n/, '')).assets.run_worker_first, ['/api/forms/*', '/api/mail/*', '/api/commerce/*'])
   } finally {
     fs.rmSync(directory, { recursive: true, force: true })
   }

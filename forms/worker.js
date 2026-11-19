@@ -1,11 +1,14 @@
 /* global FixedLengthStream */
 import { admin, pruneSubmissions } from './admin.js'
 import { WAIT_UNTIL_MS, dispatch } from './dispatch.js'
+import { relayCallback } from './grants.js'
 import { FormsError, errorResponse, isSameOrigin, jsonResponse, sha256Hex } from './http.js'
-import { LIMITS, driveEnabled, fileLimits, parseSubmission, parseUpload, readSubmission } from './intake.js'
+import { LIMITS, fileLimits, parseSubmission, parseUpload, readSubmission } from './intake.js'
 import { validateManifest } from './manifest.js'
 import { clientIp } from '../edge/proxy.js'
-import { createProviders, resolveAuthority } from './providers/index.js'
+import { planJobs } from './delivery.js'
+import { mailAdmin } from '../mail/admin.js'
+import { createMailer } from '../mail/index.js'
 import {
   findSubmission, hitRate, insertSubmission, loadSubmission, requireDatabase, stageUpload, stagedUploads, sweepOrphanUploads, uploadKey
 } from './store.js'
@@ -100,7 +103,6 @@ async function submit ({ request, env, ctx, manifest, providers, enrichers, now 
     parsed.fields = extra.fields
   }
 
-  const authority = await resolveAuthority(env, parsed.spec, providers)
   const kv = env.FORMS_FILES
   const files = parsed.files
   const content = {
@@ -111,22 +113,11 @@ async function submit ({ request, env, ctx, manifest, providers, enrichers, now 
     to: parsed.spec.to,
     replyTo: parsed.email
   }
-  // Small totals ride inside the email; larger ones go to the sender's Drive.
-  const filesBytes = files.reduce((total, file) => total + file.size, 0)
-  const storage = files.length && {
-    files: {
-      mode: driveEnabled(env) && filesBytes > LIMITS.inlineBytes ? 'drive' : 'inline',
-      root: env.FORMS_DRIVE_FOLDER || '',
-      project: manifest.project || manifest.site,
-      label: parsed.spec.id
-    }
-  }
-  const held = parsed.status === 'review' ? 'review' : authority.provider === 'hold' ? 'delivery_disabled' : null
-  const ownerLead = extra?.owner ? { lead: extra.owner, leadHide: extra.hide || [] } : null
-  const jobs = [{ channel: 'owner', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, ...storage, ...ownerLead } }]
-  if (parsed.status === 'accepted' && parsed.spec.confirm && parsed.email && await confirmationAllowed(db, manifest, parsed.email, now())) {
-    jobs.push({ channel: 'confirmation', state: held ? 'held' : 'pending', reason: held, authority: { ...authority, ...content, confirm: parsed.spec.confirm, ...(extra?.visitor ? { lead: extra.visitor } : null) } })
-  }
+  // Without a mail account the submission is still stored: its owner notice
+  // waits (held, mail_unconfigured) and shows in the panel.
+  const confirm = parsed.status === 'accepted' && parsed.spec.confirm && parsed.email && await confirmationAllowed(db, manifest, parsed.email, now())
+  const jobs = await planJobs({ env, mailer: providers, parsed, manifest, content, extra, confirm })
+  const due = jobs.some(job => job.state === 'pending')
 
   const stagedKeys = (await db.prepare('SELECT kv_key FROM forms_uploads WHERE submission_id = ?').bind(parsed.submissionId).all()).results.map(row => row.kv_key)
   try {
@@ -148,7 +139,7 @@ async function submit ({ request, env, ctx, manifest, providers, enrichers, now 
     // waitUntil stops 30 s after the response: Drive gets 25 s here; a send
     // that would not fit in what is left, and anything unfinished, goes to the
     // admin dispatch or the optional cron.
-    held || dispatch({ env, db, kv, providers, now, submissionId: parsed.submissionId, limit: 2, driveTimeoutMs: 25000, deadline: now() + WAIT_UNTIL_MS })
+    due && dispatch({ env, db, kv, providers, now, submissionId: parsed.submissionId, limit: 2, driveTimeoutMs: 25000, deadline: now() + WAIT_UNTIL_MS })
       .catch(error => console.error('forms_dispatch_error', error?.name, String(error?.message).slice(0, 200)))
   ])
   if (ctx?.waitUntil) ctx.waitUntil(work)
@@ -162,13 +153,14 @@ async function confirmationAllowed (db, manifest, email, time) {
   return await hitRate(db, `c:site:${manifest.site}`, time, CONFIRM_RATE.windowMs) <= CONFIRM_RATE.perSite
 }
 
-// Returns { fetch, scheduled }. `fetch` answers only /api/forms/*; compose it in
+// Returns { fetch, scheduled }. `fetch` answers /api/forms/* and /api/mail/*; compose it in
 // the project Worker before commerce/ASSETS. `enrichers` maps a spec's
 // `enrich.type` to a function (commerce/quote-request.js); the rest exist for tests.
-export function createFormsWorker (manifest, { fetch, now = Date.now, enrichers = {} } = {}) {
+// `connect` replaces cloudflare:sockets (SMTP) in tests.
+export function createFormsWorker (manifest, { fetch, connect, now = Date.now, enrichers = {} } = {}) {
   validateManifest(manifest)
   const send = fetch || ((...args) => globalThis.fetch(...args))
-  const providers = createProviders({ fetch: send })
+  const providers = createMailer({ fetch: send, connect })
   return {
     async fetch (request, env, ctx) {
       const path = new URL(request.url).pathname.replace(/\/$/, '')
@@ -176,6 +168,8 @@ export function createFormsWorker (manifest, { fetch, now = Date.now, enrichers 
         if (path === '/api/forms/submit') return await submit({ request, env, ctx, manifest, providers, enrichers, now })
         if (path === '/api/forms/upload') return await upload({ request, env, ctx, manifest, now })
         if (path.startsWith('/api/forms/admin/')) return await admin({ request, env, ctx, path: path.slice('/api/forms/admin/'.length), manifest, providers, fetch: send, now })
+        if (path.startsWith('/api/mail/admin/')) return await mailAdmin({ request, env, ctx, path: path.slice('/api/mail/admin/'.length), manifest, mailer: providers, fetch: send, now })
+        if (path === '/api/forms/google/relay' && request.method === 'GET') return relayCallback({ request, env })
         return jsonResponse({ result: 'error', error: 'not_found' }, 404)
       } catch (error) {
         return errorResponse(error)

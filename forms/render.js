@@ -68,9 +68,11 @@ function footerOf (submission, authority) {
 }
 
 // `links` (Map index → Drive URL) replaces inline attachments for large files.
+// `panel`: files too large to attach without Drive stay in the site's panel.
 // `authority.lead` ({ html, text }, built and escaped by an enricher such as
 // commerce/quote-request.js) goes first; `leadHide` drops the fields it already shows.
-export function renderOwner ({ submission, authority, links = null }) {
+export function renderOwner ({ submission, authority, links = null, panel = false }) {
+  if (panel) links = new Map(submission.files.map(file => [file.index, `https://${authority.site}/admin/forms/`]))
   const hidden = new Set(authority.lead ? authority.leadHide || [] : [])
   const list = rows(submission.fields.filter(([name]) => !hidden.has(name)), submission.files, links)
   const footer = footerOf(submission, authority)

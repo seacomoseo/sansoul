@@ -26,10 +26,12 @@ const WORKER_CRON = '*/15 * * * *'
 
 // `history`: the account already holds <worker>-forms (imported or earlier
 // submissions), so the forms backend and its CMS panel stay on without forms.
+// Commerce also brings it: the site mail (accounts, routes, «Correo» panel)
+// lives in <worker>-forms and serves the order notices.
 export function planWorker (projectDir = process.cwd(), { core = relativeEnginePath(projectDir), history = false } = {}) {
   const project = readProject(projectDir)
-  const forms = hasForms(projectDir) || history
   const commerce = fs.existsSync(path.join(projectDir, 'functions', '_commerce', 'catalog.generated.js'))
+  const forms = hasForms(projectDir) || history || commerce
   const databases = []
   const kv = []
   if (forms) {
@@ -58,7 +60,7 @@ export function renderEntry ({ core, forms, commerce }) {
   else if (forms) lines.push('const forms = createFormsWorker(manifest)')
   if (commerce) lines.push(`const commerce = createCommerceWorker(catalog, { ${commerceRoutes.map(([name]) => name).join(', ')} })`)
   lines.push('', 'export default {', '  fetch (request, env, ctx) {')
-  if (forms) lines.push("    if (new URL(request.url).pathname.startsWith('/api/forms/')) return forms.fetch(request, env, ctx)")
+  if (forms) lines.push('    if (/^\\/api\\/(forms|mail)\\//.test(new URL(request.url).pathname)) return forms.fetch(request, env, ctx)')
   lines.push(commerce ? '    return commerce.fetch(request, env, ctx)' : '    return env.ASSETS.fetch(request)')
   if (forms && commerce) lines.push('  },\n  scheduled (event, env, ctx) {\n    commerce.scheduled(event, env, ctx)\n    return forms.scheduled(event, env, ctx)\n  }\n}')
   else if (forms || commerce) lines.push(`  },\n  scheduled: ${forms ? 'forms' : 'commerce'}.scheduled\n}`)
@@ -76,7 +78,7 @@ const commerceRoutes = [
 
 export function renderConfig (plan, { account = '', ids = {} } = {}) {
   const { project, forms, commerce, databases, kv } = plan
-  const runFirst = [...(forms ? ['/api/forms/*'] : []), ...(commerce ? ['/api/commerce/*'] : [])]
+  const runFirst = [...(forms ? ['/api/forms/*', '/api/mail/*'] : []), ...(commerce ? ['/api/commerce/*'] : [])]
   const config = {
     name: project.worker,
     ...(account ? { account_id: account } : {}),

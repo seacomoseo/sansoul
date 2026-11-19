@@ -54,6 +54,8 @@ const T = {
     gmailConnected: account => `Correo de la web conectado como ${account}.`,
     gmailFailed: 'No se ha podido iniciar la conexión con Google.',
     holdBanner: 'Envío desactivado en este entorno: los envíos se guardan, pero no se manda ningún correo.',
+    unconfiguredBanner: n => `${n} ${n === 1 ? 'aviso espera' : 'avisos esperan'} a que haya una cuenta de correo.`,
+    openMail: 'Configurar el correo',
     attentionBanner: n => `${n} ${n === 1 ? 'envío necesita' : 'envíos necesitan'} una decisión.`,
     sent24h: (n, account) => `${n} ${n === 1 ? 'correo enviado' : 'correos enviados'} en 24 h desde ${account || 'la cuenta de envío'}. La cuota diaria de Gmail se comparte con otras webs que usen esta cuenta.`,
     retention: d => d ? `Los envíos cerrados se borran a los ${d} días.` : 'Sin borrado automático de envíos.',
@@ -148,6 +150,8 @@ const T = {
     gmailConnected: account => `Site mail connected as ${account}.`,
     gmailFailed: 'Could not start the connection with Google.',
     holdBanner: 'Delivery is disabled here: submissions are stored, but no email is sent.',
+    unconfiguredBanner: n => `${n} ${n === 1 ? 'notice is' : 'notices are'} waiting for a mail account.`,
+    openMail: 'Set up mail',
     attentionBanner: n => `${n} ${n === 1 ? 'submission needs' : 'submissions need'} a decision.`,
     sent24h: (n, account) => `${n} ${n === 1 ? 'email' : 'emails'} sent in 24 h from ${account || 'the sender account'}. The daily Gmail quota is shared with other sites using this account.`,
     retention: d => d ? `Closed submissions are deleted after ${d} days.` : 'No automatic deletion of submissions.',
@@ -222,7 +226,11 @@ const REASONS = {
     drive_checksum_mismatch: 'Drive no confirmó el archivo',
     drive_scope_missing: 'La cuenta no tiene permiso de Drive',
     drive_storage_full: 'El Drive de la cuenta está lleno',
-    drive_root_missing: 'La carpeta de Drive configurada no existe'
+    drive_root_missing: 'La carpeta de Drive configurada no existe',
+    mail_unconfigured: 'Espera a que haya una cuenta de correo (página «Correo»)',
+    mail_account_missing: 'La cuenta de correo elegida ya no existe',
+    smtp_send_ambiguous: 'Respuesta dudosa del servidor: comprueba el buzón antes de reenviar',
+    smtp_auth_failed: 'El servidor SMTP rechazó el usuario o la contraseña'
   },
   en: {
     review: 'In review: possible spam or unexpected data',
@@ -240,7 +248,11 @@ const REASONS = {
     drive_checksum_mismatch: 'Drive did not confirm the file',
     drive_scope_missing: 'The account has no Drive permission',
     drive_storage_full: 'The Drive of the account is full',
-    drive_root_missing: 'The configured Drive folder does not exist'
+    drive_root_missing: 'The configured Drive folder does not exist',
+    mail_unconfigured: 'Waiting for a mail account (Mail page)',
+    mail_account_missing: 'The chosen mail account no longer exists',
+    smtp_send_ambiguous: 'Unclear server answer: check the mailbox before resending',
+    smtp_auth_failed: 'The SMTP server refused the username or password'
   }
 }[lang]
 const SPAM = {
@@ -521,8 +533,12 @@ function banners () {
   if (summary.siteMismatch) list.push(h('div', { class: 'alert alert-error', role: 'alert' }, T.siteMismatch(summary.siteMismatch)))
   if (summary.provider === 'hold') list.push(h('div', { class: 'alert alert-info', role: 'status' }, T.holdBanner))
   if (summary.attention) list.push(h('div', { class: 'alert alert-warning', role: 'status' }, T.attentionBanner(summary.attention)))
+  if (summary.unconfigured) {
+    list.push(h('div', { class: 'alert alert-warning alert-dismissible', role: 'status' }, h('span', {}, T.unconfiguredBanner(summary.unconfigured)),
+      h('a', { class: 'button primary', href: '/admin/mail/' }, T.openMail)))
+  }
   const google = summary.google
-  if (google?.configured && google.default) {
+  if (google?.configured && google.default && (!summary.mailOwner || summary.mailOwner === google.default)) {
     const connected = google.grants.some(grant => grant.ref === google.default)
     const grant = google.grants.find(item => item.ref === google.default)
     if (connected && !google.fallback) {

@@ -1,31 +1,19 @@
-import { FormsError, sha256Hex } from '../http.js'
+// Compatibility entry: forms now send through the site mailer (mail/index.js),
+// which owns every provider (hold, gmail, brevo, smtp2go, smtp).
+import { FormsError } from '../http.js'
+import { createMailer } from '../../mail/index.js'
 import { DeliveryError } from './errors.js'
-import { createGmailProvider } from './gmail.js'
 
 export { DeliveryError }
 
-const holdProvider = {
-  name: 'hold',
-  async authority () {
-    return { provider: 'hold' }
-  },
-  async storeFiles () {
-    throw new DeliveryError('delivery_disabled', 'hold')
-  },
-  async send () {
-    throw new DeliveryError('delivery_disabled', 'hold')
-  }
+export function createProviders ({ fetch = globalThis.fetch, connect } = {}) {
+  return createMailer({ fetch, connect })
 }
 
-export function createProviders ({ fetch = globalThis.fetch } = {}) {
-  return { hold: holdProvider, gmail: createGmailProvider({ fetch }) }
-}
-
-// Resolve the project's configured provider for one form. Throws (503) when the
-// project has no usable delivery configuration: intake then fails closed.
-export async function resolveAuthority (env, spec, providers) {
-  const provider = providers[env.FORMS_PROVIDER]
-  if (!provider) throw new FormsError('forms_unavailable', 503)
-  const authority = await provider.authority(env, spec)
-  return { ...authority, fingerprint: authority.fingerprint || await sha256Hex(JSON.stringify(authority)) }
+// Authority of the owner channel for one form spec; throws 503 without one.
+export async function resolveAuthority (env, spec, mailer) {
+  if (env.FORMS_PROVIDER === 'hold') return { provider: 'hold', fingerprint: 'hold' }
+  const authority = await mailer.resolve(env, 'forms.owner', { account: spec.account || '' })
+  if (!authority) throw new FormsError('forms_unavailable', 503)
+  return authority
 }

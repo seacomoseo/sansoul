@@ -75,6 +75,7 @@ provider credentials in the environment and never infer unavailable video facts.
 - `_examples/`: copyable integration fixture plus human/agent parameter references.
 - `commerce/`: opt-in commerce backend (Worker/Pages handlers, D1 migrations, catalog generator and suites). Keep checkout fail-closed; run `pnpm run test:commerce` and, for D1/runtime changes, `pnpm run test:commerce:workers` from this directory.
 - `forms/`: default forms backend of the project Worker (no `action`, or `action: worker`; 14.18.0 pins existing projects to the legacy Apps Script): same-origin intake, D1 record/outbox, KV attachments, delivery providers and the build-time policy manifest. Run `pnpm run test:forms` from this directory after changes.
+- `mail/`: site mail shared by forms, commerce and later features: sending accounts (Gmail grants, Brevo, SMTP2GO, SMTP over `cloudflare:sockets`) in the forms D1, the route of each kind of mail (`mail/kinds.js`, extensible), the «Correo» panel API (`/api/mail/admin/*`) and the OAuth relay. Never resend after an ambiguous outcome; `pnpm run test:forms` covers it.
 
 ## Page builder implementation
 

@@ -31,6 +31,17 @@ async function registerFormsPanel (CMS) {
   } catch {}
 }
 
+// Site mail page («Correo»): wherever the project Worker has the forms backend
+// (forms, imported history or commerce), even with no form or submission yet.
+async function registerMailPanel (CMS) {
+  if (typeof CMS.registerCustomPage !== 'function') return
+  try {
+    const response = await fetch('/api/mail/admin/summary', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(2000) })
+    if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
+    CMS.registerCustomPage({ id: 'mail', label: cmsLanguage() === 'es' ? 'Correo' : 'Mail', icon: 'mail', url: '/admin/mail/' })
+  } catch {}
+}
+
 // Orders panel as a CMS page, only where the project Worker serves the commerce
 // admin with the panel on. The probe carries a malformed GitHub credential: the
 // Worker answers 401 JSON when the panel is on, 404 when it is off or absent.
@@ -53,6 +64,7 @@ async function initializeCMS () {
   const CMS = window.CMS
   registerHelpPage(CMS)
   const formsPanel = registerFormsPanel(CMS)
+  const mailPanel = registerMailPanel(CMS)
   const ordersPanel = registerOrdersPanel(CMS)
   const source = await loadFieldGroupConfig(window.document)
   let groups
@@ -76,6 +88,7 @@ async function initializeCMS () {
     console.error('SanSoul live preview initialization failed.', error)
   }
   await formsPanel
+  await mailPanel
   await ordersPanel
   if (window.__sansoulPreviewManualInit) {
     window.__sansoulPreviewManualInit = false

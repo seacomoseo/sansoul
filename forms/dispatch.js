@@ -1,4 +1,4 @@
-import { resolveAuthority } from './providers/index.js'
+import { UNCONFIGURED } from './delivery.js'
 import { renderConfirmation, renderOwner } from './render.js'
 import {
   claimJob, dueJobs, loadSubmission, markDeferred, markFailed, markFilesPurged, markHeld,
@@ -21,6 +21,26 @@ function sameAuthority (stored, current) {
   return ['provider', 'ref', 'account', 'fingerprint'].every(key => stored[key] === current[key])
 }
 
+// The stored account (and the Drive account, when files go to another Gmail)
+// must still be the same authority: a changed account never takes over history.
+async function checkAuthority (env, mailer, authority) {
+  if (authority.provider === 'hold') return null
+  let current
+  try {
+    current = await mailer.authority(env, authority.ref || '')
+  } catch {
+    return 'authority_unavailable'
+  }
+  if (!sameAuthority(authority, current)) return 'authority_drift'
+  const drive = authority.files?.drive
+  if (drive) {
+    const now = await mailer.authority(env, drive.ref).catch(() => null)
+    if (!now) return 'authority_unavailable'
+    if (!sameAuthority(drive, now)) return 'authority_drift'
+  }
+  return null
+}
+
 async function loadAttachments (kv, submission) {
   if (!submission.files.length) return []
   if (submission.files_purged_at || !kv) return null
@@ -41,30 +61,31 @@ export async function purgeFiles (db, kv, submission, now) {
 
 async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutMs, deadline }) {
   const authority = JSON.parse(job.authority)
-  const provider = providers[authority.provider]
-  if (!provider) return markHeld(db, job.id, token, now(), 'provider_unknown')
-  let current
-  try {
-    current = authority.provider === 'hold' ? authority : await resolveAuthority(env, { account: authority.ref || '' }, providers)
-  } catch {
-    return markHeld(db, job.id, token, now(), 'authority_unavailable')
-  }
-  if (!sameAuthority(authority, current)) return markHeld(db, job.id, token, now(), 'authority_drift')
+  if (authority.provider === 'pending') return markHeld(db, job.id, token, now(), UNCONFIGURED)
+  if (!providers.providers[authority.provider]) return markHeld(db, job.id, token, now(), 'provider_unknown')
+  const drift = await checkAuthority(env, providers, authority)
+  if (drift) return markHeld(db, job.id, token, now(), drift)
 
   const submission = await loadSubmission(db, job.submission_id)
   if (!submission) return markFailed(db, job.id, token, now(), 'submission_missing')
   const isOwner = job.channel === 'owner'
   const toDrive = isOwner && authority.files?.mode === 'drive' && submission.files.length > 0
+  // `panel`: too large to attach without Drive; the files stay in KV (TTL) and
+  // the notice links to the panel.
+  const inPanel = isOwner && authority.files?.mode === 'panel' && submission.files.length > 0
   const young = now() - submission.created_at < FILES_SETTLE_MS
-  const attachments = isOwner && !toDrive ? await loadAttachments(kv, submission) : []
+  const attachments = isOwner && !toDrive && !inPanel ? await loadAttachments(kv, submission) : []
   if (!attachments) return young ? markRetry(db, job.id, token, now(), 'files_missing', job.attempts) : markHeld(db, job.id, token, now(), 'files_missing')
   let sendingMarked = false
   try {
     // Drive writes target reserved IDs, so this step is safe to repeat.
-    const links = toDrive ? await provider.storeFiles({ env, db, kv, authority, submission, signal: AbortSignal.timeout(driveTimeoutMs || DRIVE_TIMEOUT_MS), now }) : null
+    const driveAuthority = authority.files?.drive ? { ...authority.files.drive, files: authority.files } : authority
+    const links = toDrive
+      ? await (authority.provider === 'hold' ? providers.providers.hold : providers.gmail).storeFiles({ env, db, kv, authority: driveAuthority, submission, signal: AbortSignal.timeout(driveTimeoutMs || DRIVE_TIMEOUT_MS), now })
+      : null
     const sendTimeout = deadline ? Math.min(SEND_TIMEOUT_MS, deadline - now() - DEADLINE_MARGIN_MS) : SEND_TIMEOUT_MS
     if (sendTimeout < SEND_MIN_MS) return markDeferred(db, job.id, token, now())
-    const body = isOwner ? renderOwner({ submission, authority, links }) : renderConfirmation({ submission, authority })
+    const body = isOwner ? renderOwner({ submission, authority, links, panel: inPanel }) : renderConfirmation({ submission, authority })
     const message = {
       ...body,
       fromName: authority.senderName,
@@ -74,7 +95,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
         ? { [authority.to.length > 1 ? 'bcc' : 'to']: authority.to, replyTo: authority.replyTo || undefined }
         : { to: [authority.replyTo], replyTo: authority.to[0] })
     }
-    const result = await provider.send({
+    const result = await providers.send({
       env,
       authority,
       message,
@@ -85,7 +106,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
       }
     })
     if (!await markSent(db, job.id, token, now(), result.ref)) console.error('forms_lease_lost_after_send', job.id)
-    if (isOwner) await purgeFiles(db, kv, submission, now)
+    if (isOwner && !inPanel) await purgeFiles(db, kv, submission, now)
     return true
   } catch (error) {
     if (error.kind === 'lost') return false

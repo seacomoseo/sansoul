@@ -1,11 +1,13 @@
-import { createGmailProvider } from '../forms/providers/gmail.js'
+import { createMailer } from '../mail/index.js'
 import { validAddress } from '../forms/mime.js'
 import { sanitizeHtml } from '../forms/render.js'
 import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 import { buyerText, supportedLocale } from './messages.js'
 
-// Merchant order notices through the forms Gmail provider (FORMS_GMAIL_CREDENTIALS,
-// FORMS_GMAIL_DEFAULT or COMMERCE_NOTIFY_ACCOUNT) to COMMERCE_NOTIFY_TO. By default
+// Merchant order notices through the site mail (mail/index.js) to COMMERCE_NOTIFY_TO:
+// kind `commerce.merchant` for the shop and `commerce.buyer` for the buyer, each
+// with its route from the «Correo» panel, else COMMERCE_NOTIFY_ACCOUNT, the default
+// route or FORMS_GMAIL_DEFAULT. Invoice copies go to the `drive` Gmail. By default
 // the body carries order, items, totals and the destination postal code only: buyer
 // contact and street address stay in D1 and in the payment provider's dashboard,
 // so no personal data lands in the sending mailbox. With `order_notices` enabled in
@@ -125,11 +127,19 @@ const MERCHANT = Object.freeze({
   }
 })
 
-const providers = new Map()
+const mailers = new Map()
 
-function provider (fetch) {
-  if (!providers.has(fetch)) providers.set(fetch, createGmailProvider({ fetch }))
-  return providers.get(fetch)
+function mailer (fetch) {
+  if (!mailers.has(fetch)) mailers.set(fetch, createMailer({ fetch }))
+  return mailers.get(fetch)
+}
+
+const coded = code => Object.assign(new Error(code), { code })
+
+async function authorityFor (mail, env, kind) {
+  const authority = await mail.resolve(env, kind, { fallback: env.COMMERCE_NOTIFY_ACCOUNT || '' })
+  if (!authority) throw coded('mail_unconfigured')
+  return authority
 }
 
 export function hasMailNotifier (env) {
@@ -438,14 +448,13 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
   if (!hasMailNotifier(env)) throw new Error('notifier_unavailable')
   const notices = catalog?.notices || null
   const order = await loadOrder(db, item.order_id)
-  const gmail = provider(fetch)
-  const authority = await gmail.authority(env, { account: env.COMMERCE_NOTIFY_ACCOUNT || '' })
+  const mail = mailer(fetch)
   const message = {
     fromName: site,
     to: env.COMMERCE_NOTIFY_TO.split(',').map(value => value.trim()).filter(Boolean),
     messageId: `commerce-${item.event_key}`.replace(/[^A-Za-z0-9.-]/g, '-')
   }
-  const send = extra => gmail.send({ env, authority, signal: AbortSignal.timeout(15000), beforeSend: async () => {}, message: { ...message, ...extra } })
+  const send = async (kind, extra) => mail.send({ env, authority: await authorityFor(mail, env, kind), signal: AbortSignal.timeout(15000), message: { ...message, ...extra } })
 
   if (item.event_type === INVOICE_ARCHIVE) {
     if (!catalog?.invoice?.driveArchive || !order) return
@@ -462,7 +471,10 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     }
     if (await db.prepare('SELECT 1 AS done FROM invoice_archive WHERE invoice_id = ?').bind(row.id).first()) return
     const year = new Date(row.issued_at * 1000).getUTCFullYear()
-    const filed = await gmail.archiveFile({ env, authority, path: [`Facturas web ${site}`.slice(0, 80), String(year)], name: invoiceFilename(row), type: 'application/pdf', bytes: pdf, signal: AbortSignal.timeout(20000) })
+    const merchant = await mail.resolve(env, 'commerce.merchant', { fallback: env.COMMERCE_NOTIFY_ACCOUNT || '' }).catch(() => null)
+    const drive = await mail.driveAuthority(env, merchant)
+    if (!drive) throw coded('drive_unconfigured')
+    const filed = await mail.gmail.archiveFile({ env, authority: drive, path: [`Facturas web ${site}`.slice(0, 80), String(year)], name: invoiceFilename(row), type: 'application/pdf', bytes: pdf, signal: AbortSignal.timeout(20000) })
     await db.prepare('INSERT OR IGNORE INTO invoice_archive (invoice_id, drive_file_id, link, created_at) VALUES (?, ?, ?, ?)').bind(row.id, filed.id, filed.link, Math.floor(Date.now() / 1000)).run()
     return
   }
@@ -473,7 +485,7 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     try {
       tracking = JSON.parse(item.payload_json).tracking || null
     } catch {}
-    await send({ fromName: catalog.invoice?.seller?.name || site, to: [order.buyer_email], replyTo: message.to[0], ...shippedMessage({ order, site, catalog, tracking }) })
+    await send('commerce.buyer', { fromName: catalog.invoice?.seller?.name || site, to: [order.buyer_email], replyTo: message.to[0], ...shippedMessage({ order, site, catalog, tracking }) })
     return
   }
 
@@ -487,7 +499,7 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     if (item.event_type === BUYER_CONFIRMATION) {
       if (notices.buyer !== 'own') return
       const invoice = wantsInvoice ? await invoiceAttachment(db, order, catalog) : { attachment: null }
-      await send({ ...buyer, ...buyerMessage({ order, site, catalog, hasInvoice: Boolean(invoice.attachment) }), attachments: invoice.attachment ? [invoice.attachment] : [] })
+      await send('commerce.buyer', { ...buyer, ...buyerMessage({ order, site, catalog, hasInvoice: Boolean(invoice.attachment) }), attachments: invoice.attachment ? [invoice.attachment] : [] })
       return
     }
     if (notices.buyer !== 'stripe' || !wantsInvoice) return
@@ -495,7 +507,7 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     // notice already reported the reason.
     const invoice = await invoiceAttachment(db, order, catalog)
     if (!invoice.attachment) return
-    await send({ ...buyer, ...invoiceMessage({ order, site, catalog }), attachments: [invoice.attachment] })
+    await send('commerce.buyer', { ...buyer, ...invoiceMessage({ order, site, catalog }), attachments: [invoice.attachment] })
     return
   }
 
@@ -510,7 +522,7 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
   const full = notices?.merchant === 'full'
   const invoice = notices?.merchantInvoice && item.event_type === 'payment.paid' && order ? await invoiceAttachment(db, order, catalog, m) : { attachment: null, note: null }
   const rendered = renderOrderNotice({ item, order, site, merchantDetails: full, invoiceNote: invoice.note, language, catalog })
-  await send({
+  await send('commerce.merchant', {
     ...rendered,
     ...(full && validAddress(order?.buyer_email || '') ? { replyTo: order.buyer_email } : {}),
     attachments: invoice.attachment ? [invoice.attachment] : []

@@ -5,7 +5,9 @@ import { WAIT_UNTIL_MS, dispatch, purgeFiles } from './dispatch.js'
 import { FormsError, jsonResponse, jsonTextResponse, timingSafeEqual } from './http.js'
 import { connectRef, finishConnect, googleConfigured, listGrants, startConnect } from './grants.js'
 import { safeFileName } from './intake.js'
-import { loadSubmission, requireDatabase, resolveHeld } from './store.js'
+import { loadSubmission, replacePendingJob, requireDatabase, resolveHeld } from './store.js'
+import { UNCONFIGURED, resolvePending } from './delivery.js'
+import { resolveAccountId } from '../mail/accounts.js'
 
 const DAY_MS = 24 * 3600 * 1000
 const PAGE_SIZE = 50
@@ -102,7 +104,7 @@ async function fallbackUse (db) {
 
 async function summary (db, env, manifest, now) {
   const time = now()
-  const [submissions, attention, review, queued, sent, drive] = (await db.batch([
+  const [submissions, attention, review, queued, sent, drive, unconfigured] = (await db.batch([
     db.prepare('SELECT COUNT(*) AS total, MIN(created_at) AS oldest FROM forms_submissions'),
     attentionCount(db),
     reviewCount(db),
@@ -111,7 +113,8 @@ async function summary (db, env, manifest, now) {
       `SELECT json_extract(authority, '$.account') AS account, COUNT(*) AS sent FROM forms_jobs
        WHERE state = 'sent' AND updated_at >= ? GROUP BY account`
     ).bind(time - DAY_MS),
-    db.prepare('SELECT COUNT(*) AS files, SUM(CASE WHEN verified_at IS NULL THEN 1 ELSE 0 END) AS pending FROM forms_drive_files')
+    db.prepare('SELECT COUNT(*) AS files, SUM(CASE WHEN verified_at IS NULL THEN 1 ELSE 0 END) AS pending FROM forms_drive_files'),
+    db.prepare("SELECT COUNT(*) AS n FROM forms_jobs WHERE state = 'held' AND last_error = ?").bind(UNCONFIGURED)
   ])).map(result => result.results)
   return {
     provider: env.FORMS_PROVIDER || null,
@@ -122,6 +125,11 @@ async function summary (db, env, manifest, now) {
     queued: queued[0].n,
     sent24h: sent.map(row => ({ account: row.account || null, sent: row.sent })),
     drive: { files: drive[0].files || 0, pending: drive[0].pending || 0 },
+    // Owner notices waiting for a mail account (the «Correo» page releases them).
+    unconfigured: unconfigured[0].n,
+    // Account of the owner notices now (site mail): the Gmail banner only
+    // insists while that account is the Gmail reference to connect.
+    mailOwner: (await resolveAccountId(env, 'forms.owner'))?.id || null,
     retentionDays: retentionDays(env),
     siteMismatch: await siteCheck(db, manifest.site),
     google: { configured: googleConfigured(env), grants: await listGrants(env), default: connectRef(env), fallback: await fallbackUse(db) },
@@ -436,6 +444,22 @@ export async function pruneSubmissions (db, kv, env, now, limit = 20) {
   return ids.length ? (await deleteSubmissions(db, kv, ids)).deleted.length : 0
 }
 
+// Release (send again) or discard one held/failed job. A job that waited for a
+// mail account is resolved now and replaced (409 mail_unconfigured without one).
+export async function releaseOrDiscard ({ db, env, mailer, manifest, id, action, now }) {
+  if (action === 'release') {
+    const row = await db.prepare('SELECT authority FROM forms_jobs WHERE id = ?').bind(id).first()
+    const stored = row ? JSON.parse(row.authority) : null
+    if (stored?.provider === 'pending') {
+      const submission = await loadSubmission(db, id.split(':')[0])
+      const authority = submission && await resolvePending({ env, mailer, stored, submission, manifest })
+      if (!authority) throw new FormsError(UNCONFIGURED, 409)
+      return replacePendingJob(db, id, authority, now())
+    }
+  }
+  return resolveHeld(db, id, action, now())
+}
+
 export async function admin ({ request, env, ctx, path, manifest, providers, fetch, now }) {
   // Google redirects the browser here: the signed state is the credential.
   if (path === 'google/callback' && request.method === 'GET') return finishConnect({ request, env, fetch, now })
@@ -488,8 +512,8 @@ export async function admin ({ request, env, ctx, path, manifest, providers, fet
   }
   const job = path.match(/^jobs\/([A-Za-z0-9-]{16,64}:(?:owner|confirmation))\/(release|discard)$/)
   if (job) {
-    if (!await resolveHeld(db, job[1], job[2], now())) throw new FormsError('job_not_held', 409)
     const submissionId = job[1].split(':')[0]
+    if (!await releaseOrDiscard({ db, env, mailer: providers, manifest, id: job[1], action: job[2], now })) throw new FormsError('job_not_held', 409)
     if (job[2] === 'discard' && job[1].endsWith(':owner')) await purgeFiles(db, kv, await loadSubmission(db, submissionId), now)
     if (job[2] === 'release') {
       // Send right away; the scheduled drain picks up whatever does not finish.

@@ -42,6 +42,33 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.20.0 — 2026-11-19 — Correo del sitio: varias cuentas (Gmail, Brevo, SMTP2GO, SMTP) y reparto por tipo de envío
+
+**Impacto:** compatible. Formularios y comercio envían por una configuración común de correo (`core/mail/`,
+`core/mail/README.md`) que el cliente gestiona en la nueva página «Correo» del CMS (`/admin/mail/`): cuentas de
+envío y la cuenta de cada tipo (avisos de formularios, confirmación al visitante, avisos de pedidos, correos al
+comprador, Drive). Sin tocar nada, los proyectos con `FORMS_PROVIDER`, `FORMS_GMAIL_DEFAULT`/`CONNECT`/`CREDENTIALS`/
+`FALLBACK` y `COMMERCE_NOTIFY_ACCOUNT` siguen enviando igual; lo elegido en el panel gana a esas variables (salvo
+`FORMS_PROVIDER: hold` y `form.account`).
+
+1. Nueva migración D1 `forms/migrations/0006_mail.sql` (`mail_accounts`, `mail_routes`); el CI la aplica con el resto.
+2. Los proyectos con comercio enlazan también `FORMS_DB`/`FORMS_FILES` (`<worker>-forms`, `<worker>-files`): el CI
+   los crea en el siguiente despliegue y aparecen las páginas «Correo» y «Formularios» aunque no haya formularios.
+   El Worker atiende además `/api/mail/*`.
+3. Un formulario del Worker sin cuenta de correo ya no responde 503: guarda el envío y deja el aviso retenido
+   (`mail_unconfigured`) hasta que alguien configure el correo y pulse «Enviar pendientes».
+4. Si el aviso no sale por Gmail y no hay Gmail para Drive, los adjuntos de más de 1 MB se quedan en el panel y el
+   aviso enlaza a `/admin/forms/` (CPU de Workers Free medida en `core/mail/README.md`).
+5. Opcional: relé de retorno OAuth (`FORMS_GOOGLE_REDIRECT` en el sitio, `FORMS_OAUTH_RELAY_HOSTS` en el relé) para
+   conectar Gmail sin registrar cada dominio en Google Cloud.
+
+**Acciones obligatorias:** ninguna. Para guardar cuentas desde el panel hace falta el secreto `FORMS_GRANT_KEY` (el
+mismo de «Conectar Gmail»); para Brevo, SMTP2GO o SMTP, verificar el remitente y el dominio (SPF/DKIM) en el
+proveedor.
+
+**Validación:** tras desplegar, `GET /api/mail/admin/summary` sin credenciales responde 401 JSON y el CMS muestra
+«Correo»; en un proyecto con Gmail conectado, la página lista esa cuenta y «Probar» llega al buzón indicado.
+
 ## 14.19.0 — 2026-11-18 — Defaults de bloque en `styles.yml` (`inputs` pasa a `form`), `if` con igualdad y política del actualizador
 
 **Impacto:** compatible. `data/styles.yml` admite defaults globales para las cajas (`box`, con un subconjunto fijo de

@@ -153,8 +153,10 @@ migración):
   sin esta aprobación el CMS inicia sesión pero dice que no tiene acceso al repositorio. Se hace como owner con el botón
   «Grant» de la aplicación.
 - **Producción**, con aprobación: `--only cloudflare,gsc --production`, y después `--retire` (plan y `--apply`).
-- **Tras el paso a producción**, pedir al cliente que conecte su cuenta de Google en el panel «Formularios» del CMS, para
-  que los avisos salgan de su Gmail y los adjuntos vayan a su Drive.
+- **Tras el paso a producción**, pedir al cliente que conecte su cuenta de Google en la página «Correo» del CMS (o en
+  «Formularios»), para que los avisos salgan de su Gmail y los adjuntos vayan a su Drive. Si prefiere Brevo, SMTP2GO
+  o un SMTP propio, lo añade en esa misma página con su clave y verifica su dominio en el proveedor
+  ([mail/README.md](mail/README.md)).
 - Crear la cuenta de Cloudflare si no existe, y el token de Netlify si el proyecto usa espejo.
 
 Lo que toca producción (zona del dominio, DNS, dominio del Worker, verificación) solo
@@ -677,7 +679,7 @@ notes:
     es: "Otros destinos o más de 2 kg: pide presupuesto."
 ```
 
-El cron del Worker (el mismo de formularios, cada 15 minutos) envía a la tienda un correo por cada evento del outbox (`payment.paid`, reembolsos y excepciones) cuando hay `COMMERCE_NOTIFY_TO` (una o varias direcciones separadas por comas, en `worker_vars`) y credenciales Gmail de formularios (`FORMS_GMAIL_CREDENTIALS` con `FORMS_GMAIL_DEFAULT`, o la referencia de `COMMERCE_NOTIFY_ACCOUNT`). Por defecto el correo lleva pedido, identificador de pago, artículos, totales y código postal de destino; nombre, contacto y dirección se consultan en el panel de Stripe o en `admin/orders`, para no dejar datos personales en el buzón emisor (para recibirlos por correo y con factura, ver «Avisos completos y factura PDF»). Si el envío falla, el evento queda pendiente con reintentos y el código del proveedor en `last_error` (p. ej. `gmail_grant_invalid`). Un binding `COMMERCE_NOTIFIER` tiene prioridad sobre el correo. La conciliación sigue siendo manual (`admin/reconcile`).
+El cron del Worker (el mismo de formularios, cada 15 minutos) envía a la tienda un correo por cada evento del outbox (`payment.paid`, reembolsos y excepciones) cuando hay `COMMERCE_NOTIFY_TO` (una o varias direcciones separadas por comas, en `worker_vars`) y una cuenta de correo del sitio (página «Correo» del CMS: tipos «Avisos de pedidos» y «Correos al comprador»; si no hay ruta, `COMMERCE_NOTIFY_ACCOUNT`, la cuenta por defecto o `FORMS_GMAIL_DEFAULT`; ver [mail/README.md](mail/README.md)). La copia de facturas en Drive usa la cuenta Gmail del tipo «Archivos en Drive». Por defecto el correo lleva pedido, identificador de pago, artículos, totales y código postal de destino; nombre, contacto y dirección se consultan en el panel de Stripe o en `admin/orders`, para no dejar datos personales en el buzón emisor (para recibirlos por correo y con factura, ver «Avisos completos y factura PDF»). Si el envío falla, el evento queda pendiente con reintentos y el código del proveedor en `last_error` (p. ej. `gmail_grant_invalid`). Un binding `COMMERCE_NOTIFIER` tiene prioridad sobre el correo. La conciliación sigue siendo manual (`admin/reconcile`).
 
 ### Avisos completos y factura PDF
 
@@ -1243,7 +1245,8 @@ btn_mt_vl: 2
 
 Desde 14.18.0, un formulario sin `action` (ni en el formulario ni en `form.action` de `data/styles.yml`) envía al
 Worker del propio proyecto: guarda cada envío en su base de datos, lo muestra en el panel «Formularios» del CMS y
-avisa por correo cuando la cuenta de Google está conectada ([forms/README.md](forms/README.md)). Una URL en `action`
+avisa por correo con la cuenta configurada en la página «Correo» del CMS ([forms/README.md](forms/README.md),
+[mail/README.md](mail/README.md)). Sin cuenta, los envíos se guardan y sus avisos esperan en el panel. Una URL en `action`
 mantiene ese proveedor. Al actualizar desde una versión anterior, `sh do update` fija el Apps Script compartido en
 `form.action` (antes `inputs.action`) para no cambiar nada; borrar esa línea pasa el proyecto al Worker.
 

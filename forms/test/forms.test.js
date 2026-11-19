@@ -119,12 +119,20 @@ describe('intake and receipts', () => {
     assert.equal(count.n, 0)
   })
 
-  test('fails closed without a delivery configuration', async () => {
+  test('without a mail account the submission is stored and its notice waits (no confirmation)', async () => {
     delete env.FORMS_PROVIDER
-    const { response, body } = await send(contactFields)
-    assert.equal(response.status, 503)
-    assert.equal(body.error, 'forms_unavailable')
-    assert.equal((await bindings.db.prepare('SELECT COUNT(*) AS n FROM forms_submissions').first()).n, 0)
+    delete env.FORMS_GMAIL_DEFAULT
+    const { id, response, body } = await send(contactFields)
+    assert.equal(response.status, 200)
+    assert.equal(body.status, 'accepted')
+    assert.deepEqual((await jobs(id)).map(row => [row.channel, row.state, row.last_error]), [['owner', 'held', 'mail_unconfigured']])
+    assert.equal(google.state.sent.length, 0)
+  })
+
+  test('the legacy FORMS_GMAIL_DEFAULT keeps sending without FORMS_PROVIDER', async () => {
+    delete env.FORMS_PROVIDER
+    const { id } = await send(contactFields)
+    assert.deepEqual((await jobs(id)).map(row => row.state), ['sent', 'sent'])
   })
 
   test('hold provider stores the submission without effects', async () => {

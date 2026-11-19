@@ -62,6 +62,30 @@ export async function decryptToken (env, stored, ref, account) {
   }
 }
 
+// Any other credential stored in D1 (mail accounts: API keys, SMTP passwords).
+// `context` binds the ciphertext to its row (id, provider, sender).
+export async function encryptSecret (env, secret, context) {
+  const { aes } = await keys(env)
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: encoder.encode(`mail|${context}`) }, aes, encoder.encode(secret))
+  return `${b64(iv)}.${b64(data)}`
+}
+
+export async function decryptSecret (env, stored, context) {
+  const { aes } = await keys(env)
+  const [iv, data] = String(stored).split('.')
+  try {
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(iv), additionalData: encoder.encode(`mail|${context}`) }, aes, unb64(data))
+    return new TextDecoder().decode(plain)
+  } catch {
+    return null
+  }
+}
+
+export function grantKeyConfigured (env) {
+  return Boolean(grantKeyBytes(env))
+}
+
 // Credential for a reference connected from the panel, or null.
 export async function loadGrant (env, ref) {
   if (!env.FORMS_DB || !REF.test(ref) || !googleConfigured(env)) return null
@@ -109,6 +133,51 @@ function redirectUri (request, origins = []) {
   return `${base}/api/forms/admin/google/callback`
 }
 
+// FORMS_GOOGLE_REDIRECT: one fixed return URI registered once in the OAuth client
+// (a SanSoul Worker serving /api/forms/google/relay), so a new domain needs no
+// change in Google Cloud. Google returns there; the relay forwards code and
+// state to this site's callback, which verifies everything as usual.
+function relayUri (env) {
+  try {
+    const url = new URL(String(env.FORMS_GOOGLE_REDIRECT || ''))
+    return url.protocol === 'https:' && url.pathname === '/api/forms/google/relay' && !url.search ? url.href : null
+  } catch {
+    return null
+  }
+}
+
+const RELAY_TARGET = '/api/forms/admin/google/callback'
+
+function relayAllowed (env, host) {
+  return String(env.FORMS_OAUTH_RELAY_HOSTS || '').split(',').map(item => item.trim().toLowerCase()).filter(Boolean)
+    .some(rule => rule.startsWith('*.') ? host.endsWith(rule.slice(1)) && host.length > rule.length - 1 : host === rule)
+}
+
+// GET /api/forms/google/relay: active only where FORMS_OAUTH_RELAY_HOSTS lists
+// the sites it may forward to. Holds no secret and stores nothing: the state's
+// target is read (not trusted); the site still checks the signature, the
+// browser cookie and PKCE, and the code is useless without the client secret.
+export function relayCallback ({ request, env }) {
+  const url = new URL(request.url)
+  const headers = { 'cache-control': 'no-store', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff' }
+  if (!env.FORMS_OAUTH_RELAY_HOSTS) return new Response('Not found', { status: 404, headers })
+  let target
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(unb64(String(url.searchParams.get('state') || '').split('.')[0])))
+    target = new URL(payload.s)
+  } catch {
+    return page('Enlace no válido', 'Vuelve al panel de tu web y pulsa «Conectar Gmail» otra vez.', 400)
+  }
+  if (target.protocol !== 'https:' || target.pathname !== RELAY_TARGET || target.search || target.username || target.port || !relayAllowed(env, target.hostname)) {
+    return page('Enlace no válido', 'Esta web no está autorizada para conectar Gmail por este enlace.', 400)
+  }
+  for (const key of ['code', 'state', 'error', 'scope']) {
+    const value = url.searchParams.get(key)
+    if (value !== null) target.searchParams.set(key, value)
+  }
+  return new Response(null, { status: 302, headers: { ...headers, location: target.href } })
+}
+
 // POST google/connect: returns the Google consent URL for one reference.
 export async function startConnect ({ request, env, now, origins }) {
   if (!googleConfigured(env)) throw new FormsError('google_not_configured', 503)
@@ -122,8 +191,9 @@ export async function startConnect ({ request, env, now, origins }) {
     if (error instanceof FormsError) throw error
   }
   const nonce = b64(crypto.getRandomValues(new Uint8Array(16)))
-  const redirect = redirectUri(request, origins)
-  const state = await signState(env, { r: ref, n: nonce, e: now() + STATE_TTL_MS, u: redirect })
+  const own = redirectUri(request, origins)
+  const redirect = relayUri(env) || own
+  const state = await signState(env, { r: ref, n: nonce, e: now() + STATE_TTL_MS, u: redirect, ...(redirect !== own ? { s: own } : {}) })
   const challenge = b64(await crypto.subtle.digest('SHA-256', encoder.encode(await verifier(env, nonce))))
   const params = new URLSearchParams({
     client_id: env.FORMS_GOOGLE_CLIENT_ID,
@@ -192,5 +262,10 @@ export async function finishConnect ({ request, env, fetch, now }) {
       .bind(payload.r, account, granted.join(' '), encrypted, (await sha256Hex(env.FORMS_GOOGLE_CLIENT_ID)).slice(0, 16), now()),
     env.FORMS_DB.prepare("DELETE FROM forms_meta WHERE key = 'gmail_fallback'")
   ])
+  // The first account a project connects becomes its default (mail/accounts.js
+  // adoptDefault), unless FORMS_GMAIL_DEFAULT or a default route already decide.
+  if (!env.FORMS_GMAIL_DEFAULT) {
+    await env.FORMS_DB.prepare("INSERT INTO mail_routes (kind, account, updated_at) VALUES ('default', ?, ?) ON CONFLICT (kind) DO NOTHING").bind(payload.r, now()).run().catch(() => {})
+  }
   return page('Conectado', `Cuenta conectada: <strong>${escapeHtml(account)}</strong>.`)
 }

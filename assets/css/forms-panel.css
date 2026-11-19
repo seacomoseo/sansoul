@@ -303,3 +303,20 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .table-scroll.compact { flex: none; max-height: 40vh; }
 @media (max-width: 599px) { .editor-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 899px) { .editor .totals { grid-template-columns: 1fr auto; gap: 4px 16px; } .editor .totals dd { margin: 0; } }
+
+/* Site mail panel («Correo», 14.20). */
+.mail-page { flex: 1; overflow: auto; width: 100%; max-width: 960px; padding: 12px 16px 32px; }
+.mail-page section { margin-bottom: 8px; }
+.mail-page .actions { align-items: flex-end; }
+.mail-page .card-head { flex-wrap: wrap; }
+.mail-page .card-head strong { overflow-wrap: anywhere; }
+.mail-page details { margin: 12px 0 0; }
+.mail-page summary { cursor: pointer; color: var(--sui-primary-accent-color-text); }
+.mail-page .data-table { width: 100%; margin-top: 8px; border-collapse: collapse; }
+.mail-page .data-table td { padding: 6px 8px; vertical-align: middle; border-bottom: 1px solid hsl(var(--sui-border-color-3-hsl)); }
+.mail-page .data-table .select { width: 100%; }
+@media (max-width: 640px) {
+  .mail-page .editor-grid { grid-template-columns: minmax(0, 1fr); }
+  .mail-page .data-table tr { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px solid hsl(var(--sui-border-color-3-hsl)); }
+  .mail-page .data-table td { padding: 0; border: 0; }
+}

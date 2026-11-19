@@ -51,19 +51,21 @@ function fileName (name) {
   return encodeWord(name.replace(/["\\]/g, '_'))
 }
 
-export function buildMime ({ from, fromName, to = [], bcc = [], replyTo, subject, text, html, attachments = [], messageId }) {
+// `bccHeader: false` leaves Bcc out of the message (SMTP: the envelope carries it).
+export function buildMime ({ from, fromName, to = [], bcc = [], replyTo, subject, text, html, attachments = [], messageId, bccHeader = true }) {
   const boundary = `sf-${messageId.replace(/[^A-Za-z0-9]/g, '').slice(0, 40)}`
   const headers = [
     `From: ${encodeWord(fromName)} <${from}>`,
     to.length ? addressHeader('To', to) : null,
-    bcc.length ? addressHeader('Bcc', bcc) : null,
+    bcc.length && bccHeader ? addressHeader('Bcc', bcc) : null,
+    !to.length && !bccHeader ? 'To: undisclosed-recipients:;' : null,
     replyTo ? addressHeader('Reply-To', [replyTo]) : null,
     `Subject: ${encodeWord(subject)}`,
     `Message-ID: <${messageId}@sansoul.invalid>`,
     'MIME-Version: 1.0',
     `Content-Type: multipart/mixed; boundary="${boundary}-m"`
   ].filter(Boolean)
-  if (!validAddress(from) || (!to.length && !bcc.length)) throw new Error('mime_address_invalid')
+  if (!validAddress(from) || (!to.length && !bcc.length) || !bcc.every(validAddress)) throw new Error('mime_address_invalid')
   const chunks = [
     `${headers.join('\r\n')}\r\n\r\n--${boundary}-m\r\nContent-Type: multipart/alternative; boundary="${boundary}-a"\r\n\r\n` +
     `--${boundary}-a\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n`,

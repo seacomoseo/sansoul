@@ -100,6 +100,13 @@ tiene formularios y comercio.
 
 ## Proveedores
 
+Desde 14.20.0 los formularios envían por el **correo del sitio** (`mail/`,
+[mail/README.md](../mail/README.md)): el aviso al propietario usa la cuenta del
+tipo `forms.owner` y la confirmación, la de `forms.visitor` (Gmail, Brevo,
+SMTP2GO o SMTP, configurables desde la página «Correo» del CMS). `form.account`
+sigue eligiendo la cuenta de un formulario; sin rutas ni cuentas en el panel,
+todo funciona como antes con las variables de abajo.
+
 - `FORMS_PROVIDER = "hold"`: guarda y no envía (previews TEST).
 - `FORMS_PROVIDER = "gmail"`: secreto `FORMS_GMAIL_CREDENTIALS` con un mapa
   `{ "<ref>": { account, client_id, client_secret, refresh_token } }` y
@@ -109,12 +116,17 @@ tiene formularios y comercio.
   comprueban la cuenta y `gmail.send` del token; si no coinciden, el trabajo
   queda `held` sin enviar. Rotar el refresh token del mismo cliente y cuenta no
   cambia la autoridad; otro cliente OAuth u otra cuenta, sí (`authority_drift`).
-- Sin proveedor válido el endpoint responde `503 forms_unavailable` y no guarda.
+- Sin cuenta de correo (ni rutas, ni `FORMS_GMAIL_DEFAULT`, o la cuenta elegida
+  no existe) el envío **se guarda** y su aviso queda `held` con
+  `mail_unconfigured`, visible en Atención; «Correo» → «Enviar pendientes» lo
+  resuelve con la cuenta configurada después. No se crea confirmación al
+  visitante. (Hasta 14.19 respondía `503 forms_unavailable` sin guardar.)
 
 ## Drive (archivos grandes)
 
 Drive está activo salvo `FORMS_DRIVE = "false"`. Con un grant con `drive.file`, el aviso al propietario
-sube primero los archivos al Drive de la cuenta remitente y los enlaza en el
+sube primero los archivos al Drive de la cuenta remitente (o de la cuenta Gmail del tipo `drive` si el
+aviso sale por otro proveedor; sin ninguna, ver «Archivos» en mail/README) y los enlaza en el
 correo (privados: el propietario del Drive comparte la carpeta con quien deba
 verlos). Ruta: `Forms/<proyecto>/<id del formulario>/`, con el proyecto
 calculado como en el puente GAS (`params.name`; `params.owner` si el nombre es
@@ -160,7 +172,7 @@ escribir el secreto en una terminal. Un `form.account` propio sigue teniendo pri
 La cuota diaria de Gmail de `sansoulsend` la comparten todos los proyectos que
 la usan.
 
-Sheets y otros proveedores (Brevo) no forman parte de este corte.
+Brevo, SMTP2GO y SMTP: ver [mail/README.md](../mail/README.md).
 
 ## Panel del proyecto
 
@@ -202,7 +214,8 @@ de la retención y de una D1 compartida con otra web.
 - **Automatizaciones:** `Authorization: Bearer <FORMS_ADMIN_TOKEN>` (Action de
   dispatch). Mismas rutas.
 - El CMS solo registra la página si `GET /api/forms/admin/summary` sin
-  credenciales responde 401 JSON (Worker de formularios presente). Página con
+  credenciales responde 401 JSON (Worker de formularios presente). La página
+  «Correo» (`/admin/mail/`) se registra igual con `GET /api/mail/admin/summary`. Página con
   CSP estricta (`script-src 'self'`, `connect-src 'self'`), se niega a
   pintarse dentro de otro origen y copia los tokens `--sui-*` del CMS para
   seguir su tema. Respuestas `private, no-store`; descargas como
