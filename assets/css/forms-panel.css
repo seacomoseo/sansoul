@@ -326,6 +326,19 @@ svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
 .mail-page .account-add .actions { align-items: center; margin-top: 6px; }
 .mail-page .account-hint { margin-top: 8px; }
 .mail-page .editor-grid { margin-block: 12px; }
+.mail-page .editor-grid .editor-field { align-content: start; }
+.mail-page .select {
+  appearance: none;
+  padding-inline-end: 28px;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 14px center, right 9px center;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.mail-page .select:dir(rtl) { background-position: left 9px center, left 14px center; }
+@media (forced-colors: active) {
+  .mail-page .select { appearance: auto; padding-inline-end: 8px; background-image: none; }
+}
 .mail-page .card-head { flex-wrap: wrap; }
 .mail-page .card-head strong { overflow-wrap: anywhere; }
 .mail-page details { margin: 12px 0 0; }

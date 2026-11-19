@@ -100,7 +100,9 @@ destino de los adjuntos. Las respuestas ambiguas conservan la cuenta original.
 
 ## Archivos
 
-- Hasta 1 MB en total: adjuntos en el correo (desde KV).
+- Hasta 1 MB en total: adjuntos en el correo (desde KV). Si se elige una cuenta
+  explícita para `drive`, se conserva también una copia en su Drive y el aviso
+  incluye el enlace.
 - Cuando Brevo no admite una extensión, como WebP, el aviso enlaza a Drive
   si está configurado o al panel de Formularios si el archivo sigue en KV.
 - Más de 1 MB con una cuenta Gmail para `drive`: se suben a su Drive y el correo

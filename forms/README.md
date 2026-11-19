@@ -49,10 +49,11 @@ archivos) y `scripts/build-manifest.js` la mueve a `worker/forms.generated.js`,
 fuera de `public/`. Campos desconocidos, honeypot, URLs o palabras de spam y
 emails inválidos dejan el envío en `review`: se guarda y no envía nada hasta
 que un administrador lo libera. Archivos: tipo según `accept`, número según
-`max` (y 10 por envío): 20 MB por archivo y 25 MB por envío; si el total pasa
-de 1 MB, todos van a Drive y si no, viajan adjuntos en el correo (el base64
-cuesta ~2–7 ms de CPU por MB en workerd; las imágenes ya se comprimen en el
-navegador). Con `FORMS_DRIVE = "false"`, sin Drive: 2 MB en total por envío.
+`max` (y 10 por envío): 20 MB por archivo y 25 MB por envío. Hasta 1 MB en
+total pueden viajar adjuntos si el proveedor admite el formato. La cuenta
+explícita de Drive conserva también esos archivos. Los archivos que no se
+adjuntan se enlazan desde Drive o el panel, según la configuración.
+Con `FORMS_DRIVE = "false"`, sin Drive: 2 MB en total por envío.
 Los formularios Worker anuncian 20/25 MB al navegador (`data-file-max`,
 `data-files-max`); si se desactiva Drive, el servidor responde 413 por encima
 de 2 MB.
@@ -122,13 +123,15 @@ todo funciona como antes con las variables de abajo.
   resuelve con la cuenta configurada después. No se crea confirmación al
   visitante. (Hasta 14.19 respondía `503 forms_unavailable` sin guardar.)
 
-## Drive (archivos grandes)
+## Drive (archivos de formularios)
 
-Drive está activo salvo `FORMS_DRIVE = "false"`. Con un grant con `drive.file`, el aviso al propietario
-sube primero los archivos al Drive de la cuenta remitente (o de la cuenta Gmail del tipo `drive` si el
-aviso sale por otro proveedor; sin ninguna, ver «Archivos» en mail/README) y los enlaza en el
-correo (privados: el propietario del Drive comparte la carpeta con quien deba
-verlos). Ruta: `Forms/<proyecto>/<id del formulario>/`, con el proyecto
+Drive está activo salvo `FORMS_DRIVE = "false"`. La cuenta Gmail que se elige
+explícitamente para `drive` guarda los archivos antes de enviar el aviso,
+incluidos los que viajan adjuntos. Sin esa asignación, el aviso usa el Drive
+de su cuenta Gmail para los archivos que no se puedan adjuntar. Los enlaces
+en el aviso son privados: el propietario del Drive comparte la carpeta con
+quien deba verlos. Hace falta un grant con `drive.file`. Ruta:
+`Forms/<proyecto>/<id del formulario>/`, con el proyecto
 calculado como en el puente GAS (`params.name`; `params.owner` si el nombre es
 `site`; si no, `<owner>-<name>`). `FORMS_DRIVE_FOLDER` (ID de una carpeta a la
 que la app tenga acceso) sustituye a `Forms`. Con `drive.file` la app solo ve

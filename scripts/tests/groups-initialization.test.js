@@ -73,12 +73,19 @@ test('the forms panel page is registered before init only where the Worker answe
   const CMS = { registerCustomPage: page => pages.push(page) }
   const worker = await initialize({ CMS, fetch: answer(401, 'application/json; charset=utf-8', '/api/forms/') })
   const help = { id: 'help', label: 'Ayuda', icon: 'help', url: '/admin/help/' }
-  assert.deepEqual(JSON.parse(JSON.stringify(pages)), [help, { id: 'forms', label: 'Formularios', icon: 'inbox', url: '/admin/forms/' }])
+  assert.deepEqual(JSON.parse(JSON.stringify(pages)), [{ id: 'forms', label: 'Formularios', icon: 'inbox', url: '/admin/forms/' }, help])
   assert.equal(worker.order.at(-1), 'init')
   // The orders panel appears only where the commerce admin answers 401 JSON (panel on).
   pages.length = 0
   await initialize({ CMS, fetch: answer(401, 'application/json', '/api/commerce/') })
-  assert.deepEqual(pages.map(page => page.id), ['help', 'orders'])
+  assert.deepEqual(pages.map(page => page.id), ['orders', 'help'])
+  pages.length = 0
+  await initialize({ CMS, fetch: async url => {
+    if (String(url).includes('/api/forms/')) await new Promise(resolve => setTimeout(resolve, 10))
+    return { status: 401, headers: { get: () => 'application/json' } }
+  } })
+  assert.deepEqual(pages.map(page => page.id), ['forms', 'mail', 'orders', 'help'])
+  pages.length = 0
   pages.length = 0
   await initialize({ CMS, fetch: answer(404, 'text/html') })
   await initialize({ CMS, fetch: async () => { throw new TypeError('offline') } })

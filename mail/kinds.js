@@ -2,7 +2,7 @@
 // panel («Correo»); unrouted kinds use the default account. A new feature that
 // sends mail registers its kind here (id stable: it is stored in D1).
 export const DEFAULT_ROUTE = 'default'
-// Gmail account whose Drive receives large form attachments and invoice copies.
+// Explicit Gmail account for form files and invoice copies.
 export const DRIVE_KIND = 'drive'
 
 const kinds = new Map()
@@ -24,4 +24,4 @@ registerMailKind({ id: 'forms.owner', group: 'forms', es: 'Avisos de formularios
 registerMailKind({ id: 'forms.visitor', group: 'forms', es: 'Confirmación a quien envía el formulario', en: 'Confirmation to the visitor' })
 registerMailKind({ id: 'commerce.merchant', group: 'commerce', es: 'Avisos de pedidos (a la tienda)', en: 'Order notices (to the shop)' })
 registerMailKind({ id: 'commerce.buyer', group: 'commerce', es: 'Correos al comprador (confirmación, envío, factura)', en: 'Buyer mail (confirmation, shipping, invoice)' })
-registerMailKind({ id: DRIVE_KIND, group: 'files', gmailOnly: true, es: 'Archivos en Drive (adjuntos grandes y copia de facturas)', en: 'Files in Drive (large attachments and invoice copies)' })
+registerMailKind({ id: DRIVE_KIND, group: 'files', gmailOnly: true, es: 'Archivos en Drive (formularios y copia de facturas)', en: 'Files in Drive (form files and invoice copies)' })

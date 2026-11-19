@@ -17,6 +17,7 @@ const DRIVE_TIMEOUT_MS = 60000
 // KV is eventually consistent across locations: a just-written file may not
 // be visible yet to the dispatcher. Missing files of young submissions retry.
 const FILES_SETTLE_MS = 5 * 60 * 1000
+const usesDrive = files => files?.mode === 'drive' || files?.archive === true
 
 function sameAuthority (stored, current) {
   return ['provider', 'ref', 'account', 'fingerprint'].every(key => stored[key] === current[key])
@@ -72,6 +73,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
   const isOwner = job.channel === 'owner'
   const resend = authority.files?.mode === 'resend'
   const toDrive = isOwner && authority.files?.mode === 'drive' && submission.files.length > 0
+  const storeInDrive = isOwner && usesDrive(authority.files) && submission.files.length > 0
   // `panel`: too large to attach without Drive; the files stay in KV (TTL) and
   // the notice links to the panel.
   const inPanel = isOwner && !resend && submission.files.length > 0 && (authority.files?.mode === 'panel' ||
@@ -83,7 +85,7 @@ async function deliver ({ env, db, kv, providers, now, job, token, driveTimeoutM
   try {
     // Drive writes target reserved IDs, so this step is safe to repeat.
     const driveAuthority = authority.files?.drive ? { ...authority.files.drive, files: authority.files } : authority
-    let links = toDrive
+    let links = storeInDrive
       ? await (authority.provider === 'hold' ? providers.providers.hold : providers.gmail).storeFiles({ env, db, kv, authority: driveAuthority, submission, signal: AbortSignal.timeout(driveTimeoutMs || DRIVE_TIMEOUT_MS), now })
       : null
     if (resend && submission.files.length) {
@@ -145,7 +147,7 @@ export async function dispatch ({ env, db, kv, providers, now = Date.now, submis
     processed++
     await deliver({ env, db, kv, providers, now, job, token, driveTimeoutMs, deadline })
     // A Drive job can use ~40 of the 50 subrequests of a Free invocation.
-    if (job.channel === 'owner' && JSON.parse(job.authority).files?.mode === 'drive') return { processed, hasMore: true }
+    if (job.channel === 'owner' && usesDrive(JSON.parse(job.authority).files)) return { processed, hasMore: true }
   }
   if (!submissionId && Math.random() < 0.1) {
     await pruneRate(db, now())

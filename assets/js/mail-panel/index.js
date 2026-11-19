@@ -64,6 +64,7 @@ const T = {
     gmailPermission: 'Al conectar Gmail, autorizas el envío de avisos y el acceso a los archivos que SanSoul crea en tu Drive.',
     formFiles: 'Adjuntos de formularios',
     fileLimit: limit => `Hasta ${limit} MB en total por aviso pueden ir adjuntos si el proveedor admite el formato.`,
+    filesCopy: account => `Todos los archivos se guardan en Drive (${account}), incluidos los que van adjuntos. El aviso incluye un enlace.`,
     filesDrive: account => `Los archivos que no se puedan adjuntar van a Drive (${account}). El aviso incluye un enlace.`,
     filesPanel: 'Sin una cuenta de Drive para formularios, los archivos que no se puedan adjuntar quedan en Formularios y el aviso enlaza al panel.',
     filesSetup: 'Para usar Drive, conecta Gmail y úsala para avisos de formularios, o elige una cuenta de Drive en el reparto avanzado.',
@@ -137,6 +138,7 @@ const T = {
     gmailPermission: 'Connecting Gmail allows SanSoul to send notices and access files it creates in your Drive.',
     formFiles: 'Form attachments',
     fileLimit: limit => `Up to ${limit} MB in total can be attached per notice if the provider supports the file types.`,
+    filesCopy: account => `All files are saved to Drive (${account}), including those attached to the email. The notice includes a link.`,
     filesDrive: account => `Files that cannot be attached go to Drive (${account}). The notice includes a link.`,
     filesPanel: 'Without a Drive account for forms, files that cannot be attached stay in Forms and the notice links to the panel.',
     filesSetup: 'To use Drive, connect Gmail and use it for form notices, or choose an account for Drive under advanced routing.',
@@ -341,6 +343,9 @@ function routingSection () {
   const owner = s.accounts.find(account => account.id === s.effective['forms.owner']?.id)
   const driveAccount = s.formsDriveEnabled === false ? null : gmail.find(account => account.id === s.effective.drive?.id && account.drive !== false)
   const limit = !driveAccount && owner?.provider === 'gmail' ? 2 : 1
+  const filesDestination = driveAccount
+    ? (s.routes.drive ? T.filesCopy : T.filesDrive)(accountName(driveAccount))
+    : T.filesPanel
   const rows = s.kinds.map(kind => h('tr', {},
     h('td', {}, kind.label[lang] || kind.label.es),
     h('td', {}, h('select', { class: 'select', onchange: event => { routes[kind.id] = event.target.value; render() } },
@@ -354,7 +359,7 @@ function routingSection () {
       h('table', { class: 'data-table' }, h('tbody', {}, rows))),
     h('div', { class: 'actions' }, h('button', { type: 'button', class: 'button primary', disabled: state.busy || !s.accounts.length, onclick: saveRoutes }, T.save)),
     h('div', { class: 'card account-hint' }, h('strong', {}, T.formFiles),
-      h('p', { class: 'muted small' }, `${T.fileLimit(limit)} ${driveAccount ? T.filesDrive(accountName(driveAccount)) : T.filesPanel}`),
+      h('p', { class: 'muted small' }, `${T.fileLimit(limit)} ${filesDestination}`),
       s.formsDriveEnabled !== false && !driveAccount && s.google.configured ? h('p', { class: 'muted small' }, T.filesSetup) : null))
 }
 

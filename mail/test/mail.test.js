@@ -532,6 +532,23 @@ describe('files', () => {
     assert.ok(google.state.driveCalls.some(call => call.startsWith('PATCH /upload/drive')))
     assert.match(providers.state.brevo[0].htmlContent, /drive\.google\.com/)
   })
+
+  test('an explicit Drive account keeps a copy of a small file still attached by Brevo', async () => {
+    await call('accounts', { method: 'POST', json: brevoAccount() })
+    await call('routes', { method: 'POST', json: { routes: { default: 'brevo', drive: 'second' } } })
+    const id = await send([['Nombre', 'Ana'], ['CV', big(24 * 1024), 'cv.pdf']], { page: '/es/empleo/', form: 'form-cv' })
+    const job = await owner(id)
+    assert.deepEqual([job.state, job.authority.files.mode, job.authority.files.archive, job.authority.files.drive.account], ['sent', 'inline', true, 'other@example.test'])
+    const stored = await bindings.db.prepare('SELECT link, verified_at FROM forms_drive_files WHERE submission_id = ?').bind(id).first()
+    assert.ok(stored.verified_at)
+    assert.match(stored.link, /^https:\/\/drive\.google\.com\//)
+    const message = providers.state.brevo[0]
+    assert.equal(message.attachment[0].name, 'cv.pdf')
+    assert.equal(Buffer.from(message.attachment[0].content, 'base64').byteLength, 24 * 1024)
+    assert.ok(message.htmlContent.includes(stored.link))
+    await dispatchNow()
+    assert.equal(providers.state.brevo.length, 1)
+  })
 })
 
 describe('Worker secrets and the OAuth relay', () => {

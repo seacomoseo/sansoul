@@ -5,6 +5,7 @@ import { FormsError, sha256Hex } from './http.js'
 import { LIMITS, driveEnabled } from './intake.js'
 import { findSpec } from './manifest.js'
 import { loadRoutes } from '../mail/accounts.js'
+import { DRIVE_KIND } from '../mail/kinds.js'
 import { brevoAcceptsFiles } from '../mail/providers/http.js'
 
 export const OWNER_KIND = 'forms.owner'
@@ -32,8 +33,8 @@ export async function channelAuthority ({ env, mailer, channel, spec, routes }) 
   return { provider: 'pending', kind, choice: spec.account || '' }
 }
 
-// Small totals ride inside the email; larger ones go to a Gmail account's
-// Drive. Without Drive, larger sets stay in the panel, linked from the notice.
+// Small totals ride inside the email. An explicit Drive route archives them
+// too. Larger sets are linked from Drive, or from the panel without Drive.
 // Measured on Workers Free (14.20, mail/README.md): encoding 1 MB costs 4-9 ms
 // of CPU and 2 MB 8-23 ms, so Brevo, SMTP2GO and SMTP attach up to
 // LIMITS.inlineBytes; Gmail keeps its historical LIMITS.noDriveBytes
@@ -43,12 +44,17 @@ export async function filesPlan ({ env, mailer, authority, files, manifest, spec
   const bytes = files.reduce((total, file) => total + file.size, 0)
   const base = { root: env.FORMS_DRIVE_FOLDER || '', project: manifest.project || manifest.site, label: spec.id }
   const canAttach = authority.provider !== 'brevo' || brevoAcceptsFiles(files)
-  if (canAttach && bytes <= LIMITS.inlineBytes) return { ...base, mode: 'inline' }
+  const small = canAttach && bytes <= LIMITS.inlineBytes
+  if (small && !routes[DRIVE_KIND]) return { ...base, mode: 'inline' }
   if (driveEnabled(env)) {
     // Hold: nothing is sent; keep the historical plan.
-    if (authority.provider === 'hold') return { ...base, mode: 'drive' }
+    if (authority.provider === 'hold') return { ...base, mode: small ? 'inline' : 'drive' }
     const drive = await mailer.driveAuthority(env, authority, routes)
-    if (drive) return { ...base, mode: 'drive', ...(drive.ref !== authority.ref || drive.provider !== authority.provider ? { drive } : {}) }
+    if (drive) return {
+      ...base, mode: small ? 'inline' : 'drive',
+      ...(small ? { archive: true } : {}),
+      ...(drive.ref !== authority.ref || drive.provider !== authority.provider ? { drive } : {})
+    }
   }
   const attachable = authority.provider === 'gmail' ? LIMITS.noDriveBytes : LIMITS.inlineBytes
   return { ...base, mode: canAttach && bytes <= attachable ? 'inline' : 'panel' }

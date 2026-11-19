@@ -16,56 +16,32 @@ function cmsLanguage () {
   return base || 'en'
 }
 
-// Forms panel as a CMS page, only where the project Worker serves the forms
-// admin API (an unauthenticated probe answers 401 JSON; static hosting, 404).
-async function registerFormsPanel (CMS) {
-  if (typeof CMS.registerCustomPage !== 'function') return
+// Optional panels answer an unauthenticated probe with 401 JSON when enabled.
+async function panelAvailable (path, headers) {
   try {
-    const response = await fetch('/api/forms/admin/summary', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(2000) })
-    if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
-    // Pages are registered before Sveltia starts, so its interface language is
-    // not on <html> yet: read the same preference it will use. The label is a
-    // fixed string: a language change in the CMS shows after a reload.
-    const label = cmsLanguage() === 'es' ? 'Formularios' : 'Forms'
-    CMS.registerCustomPage({ id: 'forms', label, icon: 'inbox', url: '/admin/forms/' })
+    const response = await fetch(path, { cache: 'no-store', credentials: 'omit', headers, signal: AbortSignal.timeout(2000) })
+    return response.status === 401 && (response.headers.get('content-type') || '').startsWith('application/json')
   } catch {}
 }
 
-// Site mail page («Correo»): wherever the project Worker has the forms backend
-// (forms, imported history or commerce), even with no form or submission yet.
-async function registerMailPanel (CMS) {
+async function registerPanels (CMS) {
   if (typeof CMS.registerCustomPage !== 'function') return
-  try {
-    const response = await fetch('/api/mail/admin/summary', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(2000) })
-    if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
-    CMS.registerCustomPage({ id: 'mail', label: cmsLanguage() === 'es' ? 'Correo' : 'Mail', icon: 'mail', url: '/admin/mail/' })
-  } catch {}
-}
-
-// Orders panel as a CMS page, only where the project Worker serves the commerce
-// admin with the panel on. The probe carries a malformed GitHub credential: the
-// Worker answers 401 JSON when the panel is on, 404 when it is off or absent.
-async function registerOrdersPanel (CMS) {
-  if (typeof CMS.registerCustomPage !== 'function') return
-  try {
-    const response = await fetch('/api/commerce/admin/orders', { cache: 'no-store', credentials: 'omit', headers: { authorization: 'GitHub probe-probe-probe-probe' }, signal: AbortSignal.timeout(2000) })
-    if (response.status !== 401 || !(response.headers.get('content-type') || '').startsWith('application/json')) return
-    CMS.registerCustomPage({ id: 'orders', label: cmsLanguage() === 'es' ? 'Pedidos' : 'Orders', icon: 'shopping_cart', url: '/admin/orders/' })
-  } catch {}
-}
-
-// Sign-in/publishing help and project links, always available in the CMS.
-function registerHelpPage (CMS) {
-  if (typeof CMS.registerCustomPage !== 'function') return
-  CMS.registerCustomPage({ id: 'help', label: cmsLanguage() === 'es' ? 'Ayuda' : 'Help', icon: 'help', url: '/admin/help/' })
+  const optional = [
+    { id: 'forms', es: 'Formularios', en: 'Forms', icon: 'inbox', path: '/api/forms/admin/summary' },
+    { id: 'mail', es: 'Correo', en: 'Mail', icon: 'mail', path: '/api/mail/admin/summary' },
+    { id: 'orders', es: 'Pedidos', en: 'Orders', icon: 'shopping_cart', path: '/api/commerce/admin/orders', headers: { authorization: 'GitHub probe-probe-probe-probe' } }
+  ]
+  const available = await Promise.all(optional.map(page => panelAvailable(page.path, page.headers)))
+  const pages = optional.filter((_, index) => available[index])
+  pages.push({ id: 'help', es: 'Ayuda', en: 'Help', icon: 'help' })
+  // Await all probes, then register in display order, with Help always last.
+  const lang = cmsLanguage() === 'es' ? 'es' : 'en'
+  for (const page of pages) CMS.registerCustomPage({ id: page.id, label: page[lang], icon: page.icon, url: `/admin/${page.id}/` })
 }
 
 async function initializeCMS () {
   const CMS = window.CMS
-  registerHelpPage(CMS)
-  const formsPanel = registerFormsPanel(CMS)
-  const mailPanel = registerMailPanel(CMS)
-  const ordersPanel = registerOrdersPanel(CMS)
+  const panels = registerPanels(CMS)
   const source = await loadFieldGroupConfig(window.document)
   let groups
   try {
@@ -87,9 +63,7 @@ async function initializeCMS () {
   } catch (error) {
     console.error('SanSoul live preview initialization failed.', error)
   }
-  await formsPanel
-  await mailPanel
-  await ordersPanel
+  await panels
   if (window.__sansoulPreviewManualInit) {
     window.__sansoulPreviewManualInit = false
     await CMS.init({ config: { ...groups.config, load_config_file: false } })
