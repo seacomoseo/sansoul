@@ -36,6 +36,9 @@ ninguna cuenta de Seacomoseo.
 
 ## Tipos de envío y reparto
 
+En Correo, «Configurar una cuenta por tipo de envío» agrupa las rutas de
+Formularios, Pedidos y Drive. Debajo de cada selector aparece la cuenta en uso.
+
 Registro en `mail/kinds.js` (`registerMailKind` para funciones nuevas; el id se
 guarda en D1, no se renombra):
 
@@ -45,7 +48,7 @@ guarda en D1, no se renombra):
 | `forms.visitor` | Confirmación a quien envía el formulario |
 | `commerce.merchant` | Avisos de pedidos a la tienda |
 | `commerce.buyer` | Confirmación, envío y factura al comprador |
-| `drive` | Gmail cuyo Drive guarda adjuntos grandes y copias de facturas |
+| `drive` | Gmail cuyo Drive guarda archivos de formularios y copias de facturas |
 
 `mail_routes` guarda la cuenta de cada tipo (`default` = cuenta por defecto).
 Orden de resolución:

@@ -112,6 +112,7 @@ const T = {
     deleteLabel: 'Eliminar etiqueta',
     deleteLabelConfirm: name => `¿Quitar «${name}» de todos los envíos?`,
     save: 'Guardar',
+    saveFollowUp: 'Guardar seguimiento',
     ops: { contains: 'contiene', not_contains: 'no contiene', is: 'es', is_not: 'no es', empty: 'está vacío', not_empty: 'no está vacío', after: 'desde', before: 'hasta' },
     filesOps: { empty: 'sin archivos', not_empty: 'con archivos' },
     selectAll: 'Seleccionar todos los cargados',
@@ -122,6 +123,7 @@ const T = {
     deleted: (n, busy) => `${n} ${n === 1 ? 'envío borrado' : 'envíos borrados'}.${busy ? ` ${busy} ${busy === 1 ? 'se está enviando y no se ha borrado' : 'se están enviando y no se han borrado'}; prueba en un momento.` : ''}`,
     count: (shown, total) => total == null ? `${shown}` : `${shown} de ${total}`,
     csvView: 'CSV',
+    export: 'Exportar',
     csvZip: 'CSV por formulario (ZIP)',
     csvTitle: 'Descargar los envíos de esta vista (con sus filtros y orden)',
     zipTitle: 'Un CSV por cada formulario de esta vista, en un ZIP',
@@ -233,6 +235,7 @@ const T = {
     deleteLabel: 'Delete label',
     deleteLabelConfirm: name => `Remove “${name}” from all submissions?`,
     save: 'Save',
+    saveFollowUp: 'Save follow-up',
     ops: { contains: 'contains', not_contains: 'does not contain', is: 'is', is_not: 'is not', empty: 'is empty', not_empty: 'is not empty', after: 'from', before: 'until' },
     filesOps: { empty: 'without files', not_empty: 'with files' },
     selectAll: 'Select all loaded',
@@ -243,6 +246,7 @@ const T = {
     deleted: (n, busy) => `${n} ${n === 1 ? 'submission' : 'submissions'} deleted.${busy ? ` ${busy} ${busy === 1 ? 'is' : 'are'} being sent and ${busy === 1 ? 'was' : 'were'} not deleted; try again in a moment.` : ''}`,
     count: (shown, total) => total == null ? `${shown}` : `${shown} of ${total}`,
     csvView: 'CSV',
+    export: 'Export',
     csvZip: 'CSV per form (ZIP)',
     csvTitle: 'Download the submissions of this view (with its filters and order)',
     zipTitle: 'One CSV per form of this view, in a ZIP',
@@ -659,7 +663,7 @@ function toolbar () {
       selectView(views[next], { focus: true })
     }
   }, T[view], (view === 'attention' || view === 'review') && summary[view] ? h('span', { class: 'badge' }, String(summary[view])) : null))
-  return h('header', { class: 'toolbar' },
+  return h('header', { class: 'toolbar forms-toolbar' },
     h('h1', {}, T.title),
     h('div', { class: 'tabs', role: 'tablist' }, tabs),
     h('button', { type: 'button', class: 'button icon-button', title: T.refresh, 'aria-label': T.refresh, onclick: () => refresh(), disabled: state.busy }, icon(ICONS.refresh)))
@@ -690,7 +694,8 @@ function tableBar () {
       state.forms.map(entry => h('option', { value: entry.form, selected: entry.form === state.form }, `${formId(entry.form)} · ${entry.page} (${entry.total})`)))
     : null
   const selected = state.selection.size
-  return h('div', { class: 'table-bar' },
+  const exportDisabled = state.busy || !state.items.length
+  return h('div', { class: 'table-bar forms-table-bar' },
     chooser,
     h('label', { class: 'search' }, icon(ICONS.search),
       h('input', {
@@ -707,8 +712,16 @@ function tableBar () {
     toggle('sort'), toggle('filter'), toggle('group'),
     h('span', { class: 'spacer' }),
     selected ? h('button', { type: 'button', class: 'button danger', disabled: state.busy, onclick: () => deleteMany([...state.selection]) }, icon(ICONS.remove), T.deleteSelected(selected)) : null,
-    h('button', { type: 'button', class: 'button', title: T.csvTitle, 'aria-label': T.csvTitle, disabled: state.busy || !state.items.length, onclick: () => download('csv') }, icon(ICONS.download), h('span', { class: 'label' }, T.csvView)),
-    state.view !== 'table' ? h('button', { type: 'button', class: 'button', title: T.zipTitle, 'aria-label': T.zipTitle, disabled: state.busy || !state.items.length, onclick: () => download('zip') }, icon(ICONS.zip), h('span', { class: 'label' }, T.csvZip)) : null)
+    h('details', { class: 'export-actions', onkeydown: event => {
+      if (event.key !== 'Escape' || !event.currentTarget.open) return
+      event.stopPropagation()
+      event.currentTarget.open = false
+      event.currentTarget.querySelector('summary').focus()
+    } },
+    h('summary', { class: 'button', 'data-focus': 'export' }, T.export),
+    h('div', { class: 'export-menu' },
+      h('button', { type: 'button', class: 'button', title: T.csvTitle, 'aria-label': T.csvTitle, disabled: exportDisabled, onclick: () => download('csv') }, icon(ICONS.download), T.csvView),
+      state.view !== 'table' ? h('button', { type: 'button', class: 'button', title: T.zipTitle, 'aria-label': T.zipTitle, disabled: exportDisabled, onclick: () => download('zip') }, icon(ICONS.zip), T.csvZip) : null)))
 }
 
 function clearDrafts (prefix) {
@@ -775,7 +788,7 @@ function optionsPanel () {
             }
           })
     return h('div', { class: 'filter-row' },
-      columnSelect(id, next => setFilter(index, [next, OPS[columnType(next)][0], ''])),
+      columnSelect(id, next => setFilter(index, [next, OPS[columnType(next)][0], '']), { label: `${T.filter} ${index + 1}` }),
       h('select', { class: 'select', 'aria-label': T.filter, onchange: event => setFilter(index, [id, event.target.value, needsValue(event.target.value) ? value : '']) },
         ops.map(key => h('option', { value: key, selected: key === op },
           id === 'label' && key === 'is' ? T.hasLabel : id === 'label' && key === 'is_not' ? T.lacksLabel : type === 'count' ? T.filesOps[key] : T.ops[key]))),
@@ -959,7 +972,7 @@ function organizationPane (detail) {
           h('input', { type: 'checkbox', name: 'label', value: label.id, checked: detail.labels?.includes(label.id) }),
           labelBadge(label))))) : null,
       h('label', { class: 'editor-field wide' }, T.note, h('textarea', { class: 'input', name: 'note', 'aria-label': T.note, rows: 3, maxlength: 4000 }, detail.note || ''))),
-    h('div', { class: 'actions' }, h('button', { type: 'submit', class: 'button primary', disabled: state.busy }, T.save))),
+    h('div', { class: 'actions' }, h('button', { type: 'submit', class: 'button primary', disabled: state.busy }, T.saveFollowUp))),
     h('details', { open: state.manageLabels, ontoggle: event => { state.manageLabels = event.currentTarget.open } },
       h('summary', {}, T.manageLabels), labels.map(labelEditor), labelEditor()))
 }
@@ -986,9 +999,10 @@ function detailPane () {
       ? h('ul', { class: 'files' }, detail.files.map(file => h('li', {},
         icon(ICONS.file),
         h('span', { class: 'file-name' }, file.name, h('span', { class: 'muted small' }, ` ${sizeText(file.size)}`)),
-        file.drive?.link ? h('a', { class: 'button', href: file.drive.link, target: '_blank', rel: 'noopener noreferrer' }, T.driveOpen) : null,
-        file.drive && !file.drive.verified ? h('span', { class: 'muted small' }, T.drivePending) : null,
-        file.stored ? h('button', { type: 'button', class: 'button', onclick: () => downloadFile(file) }, T.download) : (!file.drive?.link ? h('span', { class: 'muted small' }, T.purged) : null))))
+        h('div', { class: 'file-actions' },
+          file.drive?.link ? h('a', { class: 'button', href: file.drive.link, target: '_blank', rel: 'noopener noreferrer' }, T.driveOpen) : null,
+          file.drive && !file.drive.verified ? h('span', { class: 'muted small' }, T.drivePending) : null,
+          file.stored ? h('button', { type: 'button', class: 'button', onclick: () => downloadFile(file) }, T.download) : (!file.drive?.link ? h('span', { class: 'muted small' }, T.purged) : null)))))
       : null,
     organizationPane(detail),
     h('h3', {}, T.delivery),

@@ -189,8 +189,8 @@ vista en el navegador. En pantalla ancha, tabla y detalle van lado a lado; en
 una columna, la tabla añade el resumen de valores y se desplaza en horizontal.
 Detalle con adjuntos (descarga mientras sigan en KV, enlace de Drive después),
 «Enviar»/«Descartar» por trabajo y borrado por fila o por selección (casillas,
-seleccionar todo y mayúsculas+clic para un rango). Descarga CSV de la vista y,
-en las vistas generales, un ZIP con un CSV por formulario (fórmulas
+seleccionar todo y mayúsculas+clic para un rango). «Exportar» ofrece el CSV de
+la vista y, en las vistas generales, un ZIP con un CSV por formulario (fórmulas
 neutralizadas, BOM UTF-8, hasta 5.000 envíos por descarga). Avisa del envío
 desactivado (`hold`), de los correos enviados en 24 h por cuenta (la cuota de
 Gmail de una cuenta compartida la gastan todas sus webs), del estado de Drive,

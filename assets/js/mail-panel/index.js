@@ -58,11 +58,13 @@ const T = {
     routing: 'Qué cuenta usa cada envío',
     defaultAccount: 'Cuenta por defecto',
     defaultHint: 'La usan todos los envíos que no tengan otra elegida.',
-    advanced: 'Reparto avanzado: una cuenta distinta para algún tipo de envío',
+    advanced: 'Configurar una cuenta por tipo de envío',
+    routeGroups: { forms: 'Formularios', commerce: 'Pedidos', files: 'Archivos en Drive', other: 'Otros envíos' },
+    driveAccount: 'Cuenta que guarda archivos y copias de facturas',
+    saveRoutes: 'Guardar cuentas por tipo de envío',
     useDefault: 'La cuenta por defecto',
     driveDefault: 'La de avisos de formularios, si es Gmail',
     gmailPermission: 'Al conectar Gmail, autorizas el envío de avisos y el acceso a los archivos que SanSoul crea en tu Drive.',
-    formFiles: 'Adjuntos de formularios',
     fileLimit: limit => `Hasta ${limit} MB en total por aviso pueden ir adjuntos si el proveedor admite el formato.`,
     filesCopy: account => `Todos los archivos se guardan en Drive (${account}), incluidos los que van adjuntos. El aviso incluye un enlace.`,
     filesDrive: account => `Los archivos que no se puedan adjuntar van a Drive (${account}). El aviso incluye un enlace.`,
@@ -70,7 +72,7 @@ const T = {
     filesSetup: 'Para usar Drive, conecta Gmail y úsala para avisos de formularios, o elige una cuenta de Drive en el reparto avanzado.',
     none: '— Ninguna —',
     variableDefault: id => `${id} (variable del Worker FORMS_GMAIL_DEFAULT)`,
-    effective: (id, source) => id ? `Ahora: ${id}${source ? ` (${source})` : ''}` : 'Ahora: ninguna',
+    effective: (id, source) => id ? `En uso: ${id}${source ? ` (${source})` : ''}` : 'En uso: ninguna',
     sources: { route: 'elegida aquí', default: 'por defecto', variable: 'variable del Worker', form: 'formulario', 'forms.owner': 'la de avisos de formularios' },
     routesSaved: 'Reparto guardado.',
     hold: 'Envío desactivado en este entorno: los formularios se guardan, pero no se manda ningún correo.',
@@ -132,11 +134,13 @@ const T = {
     routing: 'Which account each kind of mail uses',
     defaultAccount: 'Default account',
     defaultHint: 'Used by every kind of mail without its own choice.',
-    advanced: 'Advanced routing: another account for some kind of mail',
+    advanced: 'Choose an account for each kind of mail',
+    routeGroups: { forms: 'Forms', commerce: 'Orders', files: 'Files in Drive', other: 'Other mail' },
+    driveAccount: 'Account that stores files and invoice copies',
+    saveRoutes: 'Save sending accounts',
     useDefault: 'The default account',
     driveDefault: 'The form notices account, if it is Gmail',
     gmailPermission: 'Connecting Gmail allows SanSoul to send notices and access files it creates in your Drive.',
-    formFiles: 'Form attachments',
     fileLimit: limit => `Up to ${limit} MB in total can be attached per notice if the provider supports the file types.`,
     filesCopy: account => `All files are saved to Drive (${account}), including those attached to the email. The notice includes a link.`,
     filesDrive: account => `Files that cannot be attached go to Drive (${account}). The notice includes a link.`,
@@ -144,7 +148,7 @@ const T = {
     filesSetup: 'To use Drive, connect Gmail and use it for form notices, or choose an account for Drive under advanced routing.',
     none: '— None —',
     variableDefault: id => `${id} (Worker variable FORMS_GMAIL_DEFAULT)`,
-    effective: (id, source) => id ? `Now: ${id}${source ? ` (${source})` : ''}` : 'Now: none',
+    effective: (id, source) => id ? `In use: ${id}${source ? ` (${source})` : ''}` : 'In use: none',
     sources: { route: 'chosen here', default: 'default', variable: 'Worker variable', form: 'form', 'forms.owner': 'the form notices one' },
     routesSaved: 'Routing saved.',
     hold: 'Sending is off in this environment: forms are stored, but no mail is sent.',
@@ -346,21 +350,29 @@ function routingSection () {
   const filesDestination = driveAccount
     ? (s.routes.drive ? T.filesCopy : T.filesDrive)(accountName(driveAccount))
     : T.filesPanel
-  const rows = s.kinds.map(kind => h('tr', {},
-    h('td', {}, kind.label[lang] || kind.label.es),
-    h('td', {}, h('select', { class: 'select', onchange: event => { routes[kind.id] = event.target.value; render() } },
-      ...accountOptions(kind.gmailOnly ? gmail : s.accounts, routes[kind.id] || '', kind.gmailOnly ? T.driveDefault : T.useDefault))),
-    h('td', { class: 'muted small' }, T.effective(routeName(s.effective[kind.id]), sourceText(s.effective[kind.id])))))
+  const kindGroups = new Map(Object.keys(T.routeGroups).map(group => [group, []]))
+  for (const kind of s.kinds) (kindGroups.get(kind.group) || kindGroups.get('other')).push(kind)
+  const sections = Array.from(kindGroups, ([group, kinds]) => kinds.length ? h('section', { class: 'route-group' },
+    h('h4', {}, T.routeGroups[group]),
+    kinds.map(kind => {
+      const id = `route-${kind.id}`
+      const current = s.effective[kind.id]
+      return h('div', { class: 'route-row' },
+        h('label', { for: id }, kind.id === 'drive' ? T.driveAccount : kind.label[lang] || kind.label.es),
+        h('select', { id, class: 'select', 'aria-describedby': `${id}-effective`, onchange: event => { routes[kind.id] = event.target.value } },
+          ...accountOptions(kind.gmailOnly ? gmail : s.accounts, routes[kind.id] || '', kind.gmailOnly ? T.driveDefault : T.useDefault)),
+        h('p', { id: `${id}-effective`, class: 'muted small route-effective' }, T.effective(routeName(current), sourceText(current))))
+    }),
+    group === 'files' ? h('div', { class: 'route-files muted small' },
+      h('p', {}, `${T.fileLimit(limit)} ${filesDestination}`),
+      s.formsDriveEnabled !== false && !driveAccount && s.google.configured ? h('p', {}, T.filesSetup) : null) : null) : null)
   return h('section', {},
     h('h3', {}, T.routing),
-    field(T.defaultAccount, h('select', { class: 'select', onchange: event => { routes.default = event.target.value; render() } }, ...accountOptions(s.accounts, routes.default || '', s.variables.FORMS_GMAIL_DEFAULT ? T.variableDefault(s.variables.FORMS_GMAIL_DEFAULT) : T.none)), { hint: T.defaultHint }),
+    field(T.defaultAccount, h('select', { class: 'select', onchange: event => { routes.default = event.target.value } }, ...accountOptions(s.accounts, routes.default || '', s.variables.FORMS_GMAIL_DEFAULT ? T.variableDefault(s.variables.FORMS_GMAIL_DEFAULT) : T.none)), { hint: T.defaultHint }),
     h('details', { open: state.advanced, ontoggle: event => { state.advanced = event.target.open } },
       h('summary', {}, T.advanced),
-      h('table', { class: 'data-table' }, h('tbody', {}, rows))),
-    h('div', { class: 'actions' }, h('button', { type: 'button', class: 'button primary', disabled: state.busy || !s.accounts.length, onclick: saveRoutes }, T.save)),
-    h('div', { class: 'card account-hint' }, h('strong', {}, T.formFiles),
-      h('p', { class: 'muted small' }, `${T.fileLimit(limit)} ${filesDestination}`),
-      s.formsDriveEnabled !== false && !driveAccount && s.google.configured ? h('p', { class: 'muted small' }, T.filesSetup) : null))
+      h('div', { class: 'route-groups' }, sections)),
+    h('div', { class: 'actions' }, h('button', { type: 'button', class: 'button primary', disabled: state.busy || !s.accounts.length, onclick: saveRoutes }, T.saveRoutes)))
 }
 
 function render () {
