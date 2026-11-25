@@ -42,6 +42,15 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.21.1 — 2026-11-25 — Espejo de Netlify: sin presupuesto de créditos en el plan Free antiguo
+
+**Impacto:** ninguno en los proyectos. El límite de 15 despliegues por equipo en 31 días solo protege los créditos
+del plan Free actual de Netlify. Si la cuenta del espejo está en el plan Free antiguo (`credit_features` desactivado:
+minutos de build y ancho de banda, sin créditos), solo se aplica el límite de un despliegue por hora. Si no se puede
+leer la cuenta, se mantiene el presupuesto.
+
+**Acciones obligatorias:** ninguna.
+
 ## 14.21.0 — 2026-11-25 — Logo y QR en los PDF, medidas de la caja y enlace al panel en las solicitudes de presupuesto
 
 **Impacto:** compatible; todo es opcional y sin configurar nada los PDF y avisos salen como antes.

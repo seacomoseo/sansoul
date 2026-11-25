@@ -5,7 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { SECRET_NAME, TEAM_DEPLOYS, deployDecision, findSite, listDeploys, listTeamDeploys, otherRunsActive, parseRedirects, renderNetlifyToml, syncSecret, workerRunsSha } from '../netlify-mirror.js'
+import { SECRET_NAME, TEAM_DEPLOYS, deployDecision, findSite, listDeploys, listTeamDeploys, otherRunsActive, parseRedirects, renderNetlifyToml, syncSecret, teamUsesCredits, workerRunsSha } from '../netlify-mirror.js'
 
 const engine = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const now = Date.parse('2026-11-20T12:00:00Z')
@@ -46,6 +46,18 @@ test('deploy decision: current commit, hourly throttle and rolling team budget',
   assert.match(deployDecision({ deploys: [deploy(90)], teamDeploys: team, sha: 'new', now }).reason, /team budget reached/)
   const old = team.map(item => ({ ...item, created_at: new Date(now - 32 * 24 * 3600 * 1000).toISOString() }))
   assert.equal(deployDecision({ deploys: [deploy(90)], teamDeploys: [...old, deploy(90, { context: 'deploy-preview' })], sha: 'new', now }).deploy, true)
+  // Legacy Free plan (no credits): no team budget, the hourly throttle stays.
+  assert.equal(deployDecision({ deploys: [deploy(90)], teamDeploys: team, sha: 'new', credits: false, now }).deploy, true)
+  assert.equal(deployDecision({ deploys: [deploy(20)], sha: 'new', credits: false, now }).deploy, false)
+})
+
+test('credits: legacy accounts say credit_features false; anything unknown counts as credits', async () => {
+  const answer = (data, status = 200) => async () => new Response(JSON.stringify(data), { status })
+  const site = { account_id: 'acc1' }
+  assert.equal(await teamUsesCredits(site, { token: 't', fetch: answer([{ id: 'acc1', capabilities: { credit_features: { included: false } } }]) }), false)
+  assert.equal(await teamUsesCredits(site, { token: 't', fetch: answer([{ id: 'acc1', capabilities: { credit_features: { included: true } } }]) }), true)
+  assert.equal(await teamUsesCredits(site, { token: 't', fetch: answer([{ id: 'other', capabilities: { credit_features: { included: false } } }]) }), true)
+  assert.equal(await teamUsesCredits(site, { token: 't', fetch: answer({ message: 'boom' }, 500) }), true)
 })
 
 test('an unreadable old deploy does not break the list (Netlify 500 after unlinking Git)', async () => {
