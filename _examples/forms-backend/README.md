@@ -9,6 +9,9 @@ migraciones y despliega. Las variables no secretas van en `hugo.yml`:
 
 ```yaml
 params:
+  # Solo si estos alias sirven el mismo sitio sin redirigir a baseURL.
+  # forms_origins:
+  #   - https://alias.ejemplo.es
   worker_vars:
     FORMS_PROVIDER: hold          # previews: no envía; en producción, quítalo
     FORMS_SENDER_NAME: Ejemplo

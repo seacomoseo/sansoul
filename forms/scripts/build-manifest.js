@@ -34,6 +34,9 @@ export function buildManifest ({ root = process.cwd(), publicDir = 'public', out
   project ||= identity.project || ''
   repo ||= identity.repo || ''
   if (identity.origin) origins.add(identity.origin)
+  const aliases = identity.origins ?? []
+  if (!Array.isArray(aliases)) throw new Error('forms_manifest_invalid_origins')
+  for (const alias of aliases) origins.add(alias)
   const manifest = validateManifest({ version: MANIFEST_VERSION, site, project, repo, origins: [...origins].sort(), forms, specs })
   const target = resolve(root, out)
   mkdirSync(resolve(target, '..'), { recursive: true })
