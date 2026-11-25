@@ -455,6 +455,7 @@ export function renderProformaPdf ({ row, data, catalog, issuedAt, options }) {
     number: reference,
     headerLines: [`${t.number} ${reference}`, `${t.date}: ${displayDate(date)}`, `${t.validUntil}: ${displayDate(validUntil)}`],
     created: new Date(issuedAt * 1000),
+    branding: invoice,
     notes: [
       data.delivery && `${t.delivery}: ${data.delivery}`,
       options.card && t.card,
@@ -594,7 +595,8 @@ function setup (catalog, env) {
       sku: product.sku,
       name: product.names[language] || product.names.es || Object.values(product.names)[0],
       price_minor: product.quote ? null : product.priceMinor,
-      weight_grams: product.weightGrams ?? null
+      weight_grams: product.weightGrams ?? null,
+      ...(product.dimensionsCm ? { dimensions_cm: product.dimensionsCm } : {})
     }))
   }
 }

@@ -171,3 +171,19 @@ describe('cart quote request', () => {
     assert.equal(body.error, 'forms_unavailable')
   })
 })
+
+test('owner notice: panel link to the request and box sizes, only for the owner', () => {
+  const sized = { ...catalog, adminRepo: 'shop/site', quotes: { validityDays: 15 }, products: catalog.products.map(product => product.id === HEART ? { ...product, dimensionsCm: [31, 22, 15.5] } : product) }
+  const id = '0f0e0d0c-0b0a-4908-8706-050403020100'
+  const result = createQuoteRequestEnricher(sized)({ spec: quoteSpec, fields: fields(cart([{ id: HEART, quantity: 1 }, { id: KIT, quantity: 1 }])), site: 'shop.example.test', submissionId: id })
+  const link = `https://shop.example.test/admin/orders/#quote=${id}`
+  assert.ok(result.owner.html.includes(`href="${link}"`))
+  assert.ok(result.owner.text.startsWith(`Preparar la proforma en el panel: ${link}`))
+  assert.match(result.owner.html, /<th[^>]*>Caja \(cm\)<\/th><th[^>]*>Peso<\/th>/)
+  assert.match(result.owner.html, />31 × 22 × 15,5</)
+  assert.match(result.owner.text, /Caja \(cm\): 31 × 22 × 15,5/)
+  assert.doesNotMatch(result.visitor.html + result.visitor.text, /admin|Caja|31 ×/)
+  // Without the panel or sizes, the notice stays as before.
+  const plain = createQuoteRequestEnricher(catalog)({ spec: quoteSpec, fields: fields(cart([{ id: HEART, quantity: 1 }])), site: 'shop.example.test', submissionId: id })
+  assert.doesNotMatch(plain.owner.html + plain.owner.text, /admin\/orders|Caja/)
+})

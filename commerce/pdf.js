@@ -1,5 +1,6 @@
 // Minimal PDF 1.4 writer for single-purpose documents (invoices): A4 pages, the
-// standard Helvetica fonts (no embedding), text, lines and filled rectangles.
+// standard Helvetica fonts (no embedding), text, lines, filled rectangles and
+// precompiled vector paths (logo, QR code).
 // No dependencies and no compression: a one-page invoice is about 3 KB. Text is
 // limited to WinAnsi (Latin-1 plus the cp1252 punctuation block, including the
 // euro sign); anything else prints as "?". Coordinates are in points from the
@@ -101,6 +102,10 @@ function number (value) {
   return String(Math.round(value * 100) / 100)
 }
 
+function number4 (value) {
+  return String(Math.round(value * 10000) / 10000)
+}
+
 function literal (codes) {
   let out = '('
   for (const code of codes) {
@@ -142,6 +147,13 @@ export function createPdf ({ title = '', author = '', created = new Date(0) } = 
       },
       rect (x, y, width, height, { gray = 0.9 } = {}) {
         ops.push(`${number(gray)} g ${number(x)} ${number(PAGE.height - y - height)} ${number(width)} ${number(height)} re f`)
+      },
+      // Path operators drawn in their own units (y down, origin at the top-left),
+      // scaled into the box at (x, y): logos from commerce/svg-pdf.js and QR codes.
+      vector (content, x, y, width, height, { sourceWidth, sourceHeight }) {
+        const scaleX = width / sourceWidth
+        const scaleY = height / sourceHeight
+        ops.push(`q ${number4(scaleX)} 0 0 ${number4(-scaleY)} ${number(x)} ${number(PAGE.height - y)} cm\n${content}\nQ`)
       },
       content: () => ops.join('\n')
     }

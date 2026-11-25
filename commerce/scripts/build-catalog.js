@@ -8,6 +8,8 @@ import { CHECKOUT_SHIPPING_POLICIES, CHECKOUT_TAX_POLICIES, hasCompleteCommercia
 import { assertTotalsPolicy } from '../totals.js'
 import { compileInvoice, compileNotices, compileQuotes } from '../notices-config.js'
 import { readProject } from '../../scripts/project.js'
+import { encodeQr } from '../qr.js'
+import { SvgError, svgToPdf } from '../svg-pdf.js'
 
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const SKU = /^[A-Z0-9][A-Z0-9_-]{2,63}$/
@@ -85,10 +87,17 @@ function buildProducts (root, currency, minorUnit) {
       }
       if (weightGrams < 1 || weightGrams > 1000000) throw new Error(`${filename}: invalid_commerce_weight_kg`)
     }
+    // Packed box «length × width × height» in cm (14.21): shown to the owner in quote requests.
+    let dimensionsCm = null
+    if (front.commerce_dimensions_cm !== undefined && front.commerce_dimensions_cm !== null && front.commerce_dimensions_cm !== '') {
+      const parts = String(front.commerce_dimensions_cm).trim().split(/\s*[x×*]\s*|\s+/i)
+      dimensionsCm = parts.map(part => Number(part.replace(',', '.')))
+      if (dimensionsCm.length !== 3 || dimensionsCm.some(value => !Number.isFinite(value) || value <= 0 || value > 1000 || Math.round(value * 10) !== value * 10)) throw new Error(`${filename}: invalid_commerce_dimensions_cm`)
+    }
 
     const idKey = id.toLowerCase()
-    const product = byId.get(idKey) || { id, sku, active, quote, priceMinor, weightGrams, names: Object.create(null) }
-    if (product.id !== id || product.sku !== sku || product.active !== active || product.quote !== quote || product.priceMinor !== priceMinor || product.weightGrams !== weightGrams) throw new Error(`${filename}: translated_commerce_fields_mismatch`)
+    const product = byId.get(idKey) || { id, sku, active, quote, priceMinor, weightGrams, ...(dimensionsCm ? { dimensionsCm } : {}), names: Object.create(null) }
+    if (product.id !== id || product.sku !== sku || product.active !== active || product.quote !== quote || product.priceMinor !== priceMinor || product.weightGrams !== weightGrams || String(product.dimensionsCm ?? '') !== String(dimensionsCm ?? '')) throw new Error(`${filename}: translated_commerce_fields_mismatch`)
     const language = languageOf(filename)
     if (product.names[language]) throw new Error(`${filename}: duplicate_product_language`)
     product.names[language] = title.trim()
@@ -249,6 +258,29 @@ function compileAudience (source) {
   return { customers: source.customers === true, version: source.consent_version, ...(source.brevo_list_id ? { brevoListId: source.brevo_list_id } : {}) }
 }
 
+// Logo and QR of the PDFs (14.21) as precompiled vectors: the Worker draws them
+// without reading files or encoding anything at request time.
+function invoiceBranding (root, source, origin) {
+  const result = {}
+  if (source.logo) {
+    const path = source.logo === true ? 'uploads/base/logo.svg' : source.logo
+    const file = resolve(root, path)
+    if (!existsSync(file)) throw new Error(`data/commerce.yml: invoice_logo_not_found (${path})`)
+    try {
+      result.logo = svgToPdf(readFileSync(file, 'utf8'))
+    } catch (error) {
+      if (error instanceof SvgError) throw new Error(`data/commerce.yml: invoice_logo_${error.message} (${path})`)
+      throw error
+    }
+  }
+  if (source.qr) {
+    const text = source.qr === true ? origin : source.qr
+    if (typeof text !== 'string' || !text.startsWith('https://')) throw new Error('data/commerce.yml: invoice_qr_requires_origin')
+    result.qr = { text, modules: encodeQr(text).map(row => row.map(dark => dark ? 1 : 0).join('')) }
+  }
+  return result
+}
+
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
@@ -259,6 +291,7 @@ function makeCatalog (root) {
   if (config.privacy_retention !== undefined && (!plainObject(config.privacy_retention) || Object.entries(config.privacy_retention).some(([key, value]) => !['orders', 'delivery', 'contacts'].includes(key) || typeof value !== 'string' || !value.trim()))) throw new Error('data/commerce.yml: invalid_privacy_retention')
   const functionsEnabled = config.functions_enabled ?? (config.enabled === true)
   const invoice = compileInvoice(config.invoice)
+  if (invoice) Object.assign(invoice, invoiceBranding(root, config.invoice, config.origin))
   const notices = compileNotices(config.order_notices, invoice)
   // Stripe Checkout extras: delivery custom fields and the company tax ID (on by
   // default when the shop invoices). Absent from the catalog when unused.

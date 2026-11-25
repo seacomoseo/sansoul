@@ -128,7 +128,9 @@ const T = {
 }[lang]
 
 const app = document.getElementById('app')
-const state = { tab: 'orders', filter: 'all', orders: [], next: null, detail: null, contacts: null, message: '', busy: false }
+// Quote request notices link to /admin/orders/#quote=<submission id>.
+let wantedQuote = (location.hash.match(/^#quote=([\w-]{1,80})$/) || [])[1] || null
+const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', orders: [], next: null, detail: null, contacts: null, message: '', busy: false }
 
 function h (tag, attrs = {}, ...children) {
   const node = document.createElement(tag)
@@ -241,8 +243,10 @@ async function load () {
   state.message = ''
   try {
     if (state.tab === 'orders') await loadOrders()
-    else if (state.tab === 'quotes') await quotes.load()
-    else state.contacts = (await api('contacts')).contacts
+    else if (state.tab === 'quotes') {
+      await quotes.load(wantedQuote)
+      wantedQuote = null
+    } else state.contacts = (await api('contacts')).contacts
   } catch (error) {
     state.busy = false
     if (state.tab === 'quotes' && error.status !== 401 && error.code !== 'signin') {

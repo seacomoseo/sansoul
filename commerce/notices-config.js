@@ -32,7 +32,7 @@ function only (value, keys, error) {
 export function compileInvoice (source) {
   if (source === undefined || source === null) return null
   const error = 'data/commerce.yml: invalid_invoice'
-  only(source, ['enabled', 'language', 'timezone', 'seller', 'series', 'payment_text', 'exempt_note', 'footer', 'item_label', 'shipping_label', 'simplified', 'drive_archive'], error)
+  only(source, ['enabled', 'language', 'timezone', 'seller', 'series', 'payment_text', 'exempt_note', 'footer', 'item_label', 'shipping_label', 'simplified', 'drive_archive', 'logo', 'qr'], error)
   if (typeof source.enabled !== 'boolean') throw new Error(error)
   if (!source.enabled) return null
   const seller = source.seller
@@ -73,6 +73,10 @@ export function compileInvoice (source) {
   if (source.exempt_note !== undefined) compiled.exemptNote = text(source.exempt_note, 300, error)
   if (source.footer !== undefined) compiled.footer = text(source.footer, 600, error)
   if (source.shipping_label !== undefined) compiled.shippingLabel = text(source.shipping_label, 60, error)
+  // Logo (true = uploads/base/logo.svg, or a project-relative .svg) and QR (true =
+  // the shop origin, or an https URL) for the PDFs; build-catalog compiles them.
+  if (source.logo !== undefined && typeof source.logo !== 'boolean' && !(typeof source.logo === 'string' && /^[\w./-]{1,200}\.svg$/i.test(source.logo) && !source.logo.split('/').includes('..') && !source.logo.startsWith('/'))) throw new Error(`${error}_logo`)
+  if (source.qr !== undefined && typeof source.qr !== 'boolean' && !(typeof source.qr === 'string' && /^https:\/\/[^\s]{1,200}$/.test(source.qr))) throw new Error(`${error}_qr`)
   return compiled
 }
 

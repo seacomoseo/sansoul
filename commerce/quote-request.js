@@ -22,6 +22,8 @@ const TEXT = Object.freeze({
     unit: 'Precio',
     line: 'Importe',
     weight: 'Peso',
+    size: 'Caja (cm)',
+    panel: 'Preparar la proforma en el panel',
     subtotal: 'Subtotal de productos',
     units: 'Unidades',
     totalWeight: 'Peso total',
@@ -47,6 +49,8 @@ const TEXT = Object.freeze({
     unit: 'Price',
     line: 'Amount',
     weight: 'Weight',
+    size: 'Box (cm)',
+    panel: 'Prepare the pro forma in the panel',
     subtotal: 'Products subtotal',
     units: 'Units',
     totalWeight: 'Total weight',
@@ -158,7 +162,7 @@ function linesTable ({ head, rows, right, foot }) {
 
 /**
  * Returns `(context) => result` for createFormsWorker({ enrichers }).
- * context: { spec, fields, site }. spec.enrich.cart names the hidden cart field.
+ * context: { spec, fields, site, submissionId }. spec.enrich.cart names the hidden cart field.
  * result: { error } or { fields, owner, visitor, hide } where `fields` replace the
  * submitted ones (the cart JSON becomes a readable summary plus the reason), `owner`
  * and `visitor` are { html, text } blocks for the notice and the confirmation, and
@@ -170,7 +174,10 @@ export function createQuoteRequestEnricher (catalog) {
   const minorUnit = Number.isInteger(catalog?.minorUnit) ? catalog.minorUnit : 2
   const policy = catalog?.checkout?.totalsPolicy || null
 
-  return ({ spec, fields, site }) => {
+  // With the orders panel and proformas on, the notice links straight to this request.
+  const panel = Boolean(catalog?.adminRepo && catalog?.quotes)
+
+  return ({ spec, fields, site, submissionId }) => {
     if (!catalog?.enabled) return { error: 'commerce_disabled' }
     const cartField = spec?.enrich?.cart
     const raw = fields.find(([name]) => name === cartField)?.[1]
@@ -194,6 +201,7 @@ export function createQuoteRequestEnricher (catalog) {
         unitMinor,
         lineMinor: unitMinor === null ? null : unitMinor * item.quantity,
         weightGrams: usable && Number.isSafeInteger(product.weightGrams) ? product.weightGrams : null,
+        size: usable && Array.isArray(product.dimensionsCm) ? product.dimensionsCm.map(value => String(value).replace('.', language === 'es' ? ',' : '.')).join(' × ') : '',
         url: usable && item.path && site ? `https://${site}${item.path}` : ''
       }
     })
@@ -218,26 +226,31 @@ export function createQuoteRequestEnricher (catalog) {
     const enriched = fields.map(([name, value]) => name === cartField ? [name, summary] : [name, value])
     enriched.push([text.reason, reasonText])
 
+    const sized = lines.some(line => line.size)
+    const panelUrl = panel && site && submissionId ? `https://${site}/admin/orders/#quote=${encodeURIComponent(submissionId)}` : ''
     const ownerRows = lines.map(line => [
       line.url ? { html: `<a href="${escapeHtml(line.url)}">${escapeHtml(line.name)}</a>` } : line.name,
       line.sku || '—',
       String(line.quantity),
       price(line),
       amount(line),
+      ...(sized ? [line.size || '—'] : []),
       line.weightGrams === null ? '—' : formatWeight(line.weightGrams * line.quantity, language)
     ])
-    const ownerHtml = `<p style="${TITLE}"><strong>${escapeHtml(text.cartTitle)}</strong></p>` +
+    const ownerHtml = (panelUrl ? `<p style="margin:0 0 16px"><a href="${escapeHtml(panelUrl)}" style="display:inline-block;padding:10px 16px;background:#111;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold">${escapeHtml(text.panel)}</a></p>` : '') +
+      `<p style="${TITLE}"><strong>${escapeHtml(text.cartTitle)}</strong></p>` +
       linesTable({
-        head: [text.product, text.sku, text.quantity, text.unit, text.line, text.weight],
+        head: [text.product, text.sku, text.quantity, text.unit, text.line, ...(sized ? [text.size] : []), text.weight],
         rows: ownerRows,
-        right: [2, 3, 4, 5],
+        right: [2, 3, 4, 5, 6],
         foot: [[text.subtotal, subtotal], [text.units, String(units)], [text.totalWeight, weightTotal]]
       }) +
       `<p style="${TITLE}"><strong>${escapeHtml(text.reasonsTitle)}</strong></p>` +
       `<ul style="font-family:Arial,sans-serif;font-size:14px;margin:0 0 16px;padding-left:20px">${reasons.map(reason => `<li>${escapeHtml(reason)}</li>`).join('')}</ul>`
     const ownerText = [
+      ...(panelUrl ? [`${text.panel}: ${panelUrl}`, ''] : []),
       `${text.cartTitle}:`,
-      ...lines.map(line => `- ${line.quantity} × ${line.name}${line.sku ? ` (${line.sku})` : ''} · ${price(line)} = ${amount(line)}${line.weightGrams === null ? '' : ` · ${formatWeight(line.weightGrams * line.quantity, language)}`}${line.url ? `\n  ${line.url}` : ''}`),
+      ...lines.map(line => `- ${line.quantity} × ${line.name}${line.sku ? ` (${line.sku})` : ''} · ${price(line)} = ${amount(line)}${line.weightGrams === null ? '' : ` · ${formatWeight(line.weightGrams * line.quantity, language)}`}${line.size ? ` · ${text.size}: ${line.size}` : ''}${line.url ? `\n  ${line.url}` : ''}`),
       `${text.subtotal}: ${subtotal}`,
       `${text.units}: ${units} · ${text.totalWeight}: ${weightTotal}`,
       '',

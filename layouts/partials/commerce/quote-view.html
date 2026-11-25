@@ -21,6 +21,8 @@ Side effects: Publishes one form policy per language, keyed to the cart page (or
       "phone"    (i18n "commerce_quote_phone")
       "country"  (i18n "commerce_quote_country")
       "postal"   (i18n "commerce_quote_postal")
+      "address"  (i18n "commerce_quote_address")
+      "locality" (i18n "commerce_quote_locality")
       "comments" (i18n "commerce_quote_comments")
       "cart"     (i18n "commerce_quote_cart")
     -}}
@@ -30,6 +32,8 @@ Side effects: Publishes one form policy per language, keyed to the cart page (or
       (dict "type" "tel"   "name" $names.phone    "autocomplete" "tel-national"            "fit" 2 "fit_vs" 2)
       (dict "type" "text"  "name" $names.country  "req" true "autocomplete" "country-name" "fit" 1 "fit_vs" 1)
       (dict "type" "text"  "name" $names.postal   "req" true "autocomplete" "postal-code"  "fit" 1 "fit_vs" 1)
+      (dict "type" "text"  "name" $names.address  "label" (i18n "commerce_quote_address_label") "autocomplete" "street-address" "fit" 2 "fit_vs" 2)
+      (dict "type" "text"  "name" $names.locality "label" (i18n "commerce_quote_locality_label") "autocomplete" "address-level2" "fit" 2 "fit_vs" 2)
       (dict "type" "area"  "name" $names.comments "label" (i18n "commerce_quote_comments_label") "fit" 2 "fit_vs" 2)
       (dict "type" "hidden" "name" $names.cart)
     -}}
@@ -41,7 +45,7 @@ Side effects: Publishes one form policy per language, keyed to the cart page (or
       "show"    false
       "cols"    2
       "cols_vs" 2
-      "enrich"  (dict "type" "commerce_quote" "cart" $names.cart "fields" (dict "name" $names.name "email" $names.email "phone" $names.phone "country" $names.country "postal" $names.postal "comments" $names.comments))
+      "enrich"  (dict "type" "commerce_quote" "cart" $names.cart "fields" (dict "name" $names.name "email" $names.email "phone" $names.phone "country" $names.country "postal" $names.postal "address" $names.address "locality" $names.locality "comments" $names.comments))
       "confirm" (dict
         "enabled" true
         "fields"  false

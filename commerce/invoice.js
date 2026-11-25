@@ -331,7 +331,9 @@ const MARGIN = 50
 const RIGHT = 595.28 - MARGIN
 const BOTTOM = 780
 
-export function renderInvoicePdf (row) {
+// `branding` is the compiled invoice config: its optional logo and QR (14.21) are
+// drawn at render time, so they are not part of the stored invoice data.
+export function renderInvoicePdf (row, branding = null) {
   const data = JSON.parse(row.data_json)
   const labels = labelsFor(data.language)
   const number = invoiceNumber(row, data)
@@ -342,6 +344,7 @@ export function renderInvoicePdf (row) {
     number,
     headerLines: [`${labels.number} ${number}`, `${labels.date}: ${displayDate(data.date)}`, data.rectifies && `${labels.rectifies} ${data.rectifies.number} (${displayDate(data.rectifies.date)})`],
     created: new Date(row.issued_at * 1000),
+    branding,
     notes: [
       data.paymentText && `${labels.payment}: ${data.paymentText}`,
       data.pricesIncludeTax === true ? labels.inclusive : data.pricesIncludeTax === false ? labels.exclusive : null,
@@ -351,9 +354,23 @@ export function renderInvoicePdf (row) {
   })
 }
 
+const LOGO_MAX_HEIGHT = 44
+const LOGO_MAX_WIDTH = 170
+const QR_SIZE = 66
+
+// QR rows ('0101…') -> one filled path of horizontal runs, in module units.
+function qrPath (rows) {
+  const rects = []
+  rows.forEach((row, y) => {
+    for (const run of row.matchAll(/1+/g)) rects.push(`${run.index} ${y} ${run[0].length} 1 re`)
+  })
+  return `0 0 0 rg ${rects.join(' ')} f`
+}
+
 // Shared layout of invoices and proformas (14.11): seller and title header,
 // customer block, lines (+ discount + shipping), tax breakdown, total and notes.
-export function renderDocumentPdf ({ data, title, number, headerLines, created, notes }) {
+// With branding (14.21): the logo above the seller and the QR left of the totals.
+export function renderDocumentPdf ({ data, title, number, headerLines, created, notes, branding = null }) {
   const labels = labelsFor(data.language)
   const money = minor => formatMoney(minor, data.currency, data.minorUnit, data.language)
   const pdf = createPdf({
@@ -363,8 +380,15 @@ export function renderDocumentPdf ({ data, title, number, headerLines, created, 
   })
   let page = pdf.addPage()
 
-  // Header: seller on the left, document title and number on the right.
+  // Header: logo and seller on the left, document title and number on the right.
   let y = 62
+  const logo = branding?.logo
+  if (logo) {
+    const height = Math.min(LOGO_MAX_HEIGHT, LOGO_MAX_WIDTH * logo.height / logo.width)
+    const width = height * logo.width / logo.height
+    page.vector(logo.ops, MARGIN, 40, width, height, { sourceWidth: logo.width, sourceHeight: logo.height })
+    y = 40 + height + 22
+  }
   page.text(data.seller.name, MARGIN, y, { size: 14, bold: true })
   const sellerLines = [...data.seller.address, data.seller.taxId && `${labels.taxId}: ${data.seller.taxId}`, data.seller.email, data.seller.phone].filter(Boolean)
   for (const line of sellerLines) {
@@ -434,7 +458,15 @@ export function renderDocumentPdf ({ data, title, number, headerLines, created, 
       totalsRows.push([`${labels.base} (${rate})`, money(group.baseMinor)], [`${labels.vat} ${rate}`, money(group.taxMinor)])
     }
   }
-  if (y + totalsRows.length * 14 + 40 > BOTTOM) newPage()
+  const qr = branding?.qr
+  if (y + Math.max(totalsRows.length * 14 + 40, qr ? QR_SIZE + 16 : 0) > BOTTOM) newPage()
+  if (qr) {
+    // Below the last row line with a quiet zone of at least four modules.
+    const top = y + 2
+    page.vector(qrPath(qr.modules), MARGIN, top, QR_SIZE, QR_SIZE, { sourceWidth: qr.modules.length, sourceHeight: qr.modules.length })
+    page.text(qr.text.replace(/^https:\/\//, '').replace(/\/$/, ''), MARGIN + QR_SIZE / 2, top + QR_SIZE + 10, { size: 7.5, align: 'center', gray: 0.35 })
+  }
+  const totalsTop = y
   for (const [label, value] of totalsRows) {
     page.text(label, columns.price + 20, y, { size: 9.5, align: 'right' })
     page.text(value, columns.amount, y, { size: 9.5, align: 'right' })
@@ -444,7 +476,7 @@ export function renderDocumentPdf ({ data, title, number, headerLines, created, 
   y += 8
   page.text(labels.total, columns.price + 20, y, { size: 12, bold: true, align: 'right' })
   page.text(money(data.totalMinor), columns.amount, y, { size: 12, bold: true, align: 'right' })
-  y += 30
+  y = Math.max(y + 30, qr ? totalsTop + QR_SIZE + 40 : 0)
 
   // Notes.
   for (const note of notes.filter(Boolean)) {

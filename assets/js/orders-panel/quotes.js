@@ -292,11 +292,17 @@ export function createQuotesTab ({ h, api, lang, money, date, saveBlob, githubTo
     return tab.forms
   }
 
-  async function load () {
+  // `wanted`: submission ID from the notice link (#quote=<id>), opened once loaded.
+  async function load (wanted = null) {
     const forms = await quoteForms()
     const form = forms[0]?.form
     tab.data = await api(`quotes${form ? `?form=${encodeURIComponent(form)}` : ''}`)
     tab.data.form = forms[0] || null
+    if (!wanted) return
+    const quote = tab.data.quotes.find(item => item.submission_id === wanted)
+    const request = tab.data.requests.find(item => item.id === wanted)
+    if (quote) tab.editing = { draft: draftFromQuote(quote), quote, request: null }
+    else if (request) tab.editing = { draft: draftFromRequest(request), quote: null, request }
   }
 
   const field = (fields, name) => name ? (fields.find(([key]) => key === name)?.[1] ?? '') : ''
@@ -315,7 +321,7 @@ export function createQuotesTab ({ h, api, lang, money, date, saveBlob, githubTo
     return {
       submission_id: request.id,
       language: setup.language,
-      customer: { name: field(request.fields, names.name), email: field(request.fields, names.email), phone: field(request.fields, names.phone), country, postal_code: postal },
+      customer: { name: field(request.fields, names.name), email: field(request.fields, names.email), phone: field(request.fields, names.phone), country, postal_code: postal, line1: field(request.fields, names.address), locality: field(request.fields, names.locality) },
       lines: lines.length ? lines : [{ product_id: '', description: '', quantity: 1, unit_minor: 0 }],
       shipping_minor: 0,
       discount: null,

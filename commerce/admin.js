@@ -549,7 +549,7 @@ async function invoicePdf (db, catalog, orderId) {
     if (error instanceof InvoiceError) throw new CommerceError(error.code, 409)
     throw error
   }
-  return new Response(renderInvoicePdf(row), {
+  return new Response(renderInvoicePdf(row, catalog.invoice), {
     headers: { 'content-type': 'application/pdf', 'content-disposition': `attachment; filename="${invoiceFilename(row)}"`, 'cache-control': 'no-store' }
   })
 }

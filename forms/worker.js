@@ -98,7 +98,7 @@ async function submit ({ request, env, ctx, manifest, providers, enrichers, now 
   if (parsed.spec.enrich) {
     const enrich = enrichers?.[parsed.spec.enrich.type]
     if (typeof enrich !== 'function') throw new FormsError('forms_unavailable', 503)
-    extra = enrich({ spec: parsed.spec, fields: parsed.fields, site })
+    extra = enrich({ spec: parsed.spec, fields: parsed.fields, site, submissionId: parsed.submissionId })
     if (extra?.error) throw new FormsError(extra.error)
     parsed.fields = extra.fields
   }

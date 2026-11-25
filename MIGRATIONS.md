@@ -42,6 +42,26 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.21.0 — 2026-11-25 — Logo y QR en los PDF, medidas de la caja y enlace al panel en las solicitudes de presupuesto
+
+**Impacto:** compatible; todo es opcional y sin configurar nada los PDF y avisos salen como antes.
+
+1. `invoice.logo` y `invoice.qr` en `data/commerce.yml` añaden el logo (arriba a la izquierda) y un QR (junto a
+   los totales, con la dirección debajo) a facturas, facturas simplificadas, rectificativas y proformas. `logo: true`
+   usa `uploads/base/logo.svg` (o una ruta `.svg` del proyecto); `qr: true` codifica `origin` (o una URL `https://`).
+   Se compilan en el build como vectores del PDF (sin imágenes ni dependencias, unos 3 KB). El SVG admite trazados y
+   formas básicas con relleno/trazo, `transform` y `var(--x, color)`; texto, imágenes, degradados, clases CSS u
+   opacidad hacen fallar el build con el motivo (`invoice_logo_svg_…`). Las facturas ya emitidas también salen con
+   el logo al volver a descargarlas: no forma parte de los datos guardados.
+2. Campo de producto `commerce_dimensions_cm` («Medidas de la caja (cm)» en el CMS, `largo × ancho × alto`): solo lo
+   ve el dueño, como columna del aviso de solicitud de presupuesto.
+3. Con `admin_panel` y `quotes`, el aviso de solicitud de presupuesto lleva un botón al panel
+   (`/admin/orders/#quote=<envío>`) que abre esa solicitud lista para preparar la proforma.
+4. El formulario de presupuesto del carrito pide además «Dirección» y «Localidad» (opcionales), que rellenan la
+   proforma. El teléfono sigue siendo opcional.
+
+**Validación:** con `logo`/`qr`, descargar una factura o proforma desde el panel y comprobar logo y QR legible.
+
 ## 14.20.0 — 2026-11-19 — Correo del sitio: varias cuentas (Gmail, Brevo, SMTP2GO, SMTP) y reparto por tipo de envío
 
 **Impacto:** compatible. Formularios y comercio envían por una configuración común de correo (`core/mail/`,

@@ -321,7 +321,7 @@ export function loadOrder (db, orderId) {
 async function attachInvoice (db, order, catalog) {
   const issuedAt = await paymentTime(db, order)
   const row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt })
-  return { name: invoiceFilename(row), type: 'application/pdf', bytes: renderInvoicePdf(row) }
+  return { name: invoiceFilename(row), type: 'application/pdf', bytes: renderInvoicePdf(row, catalog.invoice) }
 }
 
 // Invoice problems caused by the order data degrade the notice (it still goes out,
@@ -463,7 +463,7 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     try {
       const issuedAt = await paymentTime(db, order)
       row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt })
-      pdf = renderInvoicePdf(row)
+      pdf = renderInvoicePdf(row, catalog.invoice)
     } catch (error) {
       // Data problems were already reported by the merchant notice; nothing to file.
       if (error instanceof InvoiceError) return
