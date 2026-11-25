@@ -32,6 +32,40 @@ test('_redirects rules move into netlify.toml after the /api/* proxy', () => {
   assert.throws(() => parseRedirects('/a /b 301 Country=es\n'), /line 1 is not/)
 })
 
+test('legacy form proxies retain their priority and do not receive the mirror signature', () => {
+  const firstWorker = 'https://landing.example.workers.dev/v1/forms'
+  const otherWorker = 'https://legacy.example.workers.dev/v1/forms'
+  const options = { worker: 'demo', subdomain: 'acme', redirects: '/* / 301\n' }
+  const toml = renderNetlifyToml({
+    ...options,
+    formProxies: [
+      { from: '/api/forms/event', to: firstWorker },
+      { from: '/api/forms', to: firstWorker, route: 'principal:example.com:form-event' },
+      { from: '/api/forms', to: otherWorker }
+    ]
+  })
+  const [, direct, historical, fallback, signed, redirects] = toml.split('[[redirects]]\n')
+  assert.equal(direct.trim(), `from = "/api/forms/event"\nto = "${firstWorker}"\nstatus = 200\nforce = true`)
+  assert.equal(historical.trim(), `from = "/api/forms"\nto = "${firstWorker}"\nstatus = 200\nforce = true\nquery = {route = "principal:example.com:form-event"}`)
+  assert.equal(fallback.trim(), `from = "/api/forms"\nto = "${otherWorker}"\nstatus = 200\nforce = true`)
+  assert.match(signed, /from = "\/api\/\*"\nto = "https:\/\/demo\.acme\.workers\.dev\/api\/:splat"/)
+  assert.match(signed, new RegExp(`^signed = "${SECRET_NAME}"$`, 'm'))
+  assert.match(redirects, /^from = "\/\*"$/m)
+  assert.equal(renderNetlifyToml(options), renderNetlifyToml({ ...options, formProxies: [] }))
+})
+
+test('form proxy configuration rejects patterns, arbitrary destinations and signing overrides', () => {
+  const render = formProxies => renderNetlifyToml({ worker: 'demo', subdomain: 'acme', formProxies })
+  const route = { from: '/api/forms', to: 'https://legacy.example.workers.dev/v1/forms' }
+  assert.throws(() => render(route), /must be a list/)
+  assert.throws(() => render([{ ...route, from: '/api/*' }]), /exact \/api\/forms path/)
+  assert.throws(() => render([{ ...route, from: '/api/forms/:form' }]), /exact \/api\/forms path/)
+  assert.throws(() => render([{ ...route, to: 'https://example.com/api/forms' }]), /exact HTTPS workers.dev URL/)
+  assert.throws(() => render([{ ...route, to: 'https://legacy.example.workers.dev/v1/:splat' }]), /exact HTTPS workers.dev URL/)
+  assert.throws(() => render([{ ...route, signed: SECRET_NAME }]), /accepts only from, to and route/)
+  assert.throws(() => render([{ ...route, route: ':placeholder' }]), /literal query selector/)
+})
+
 test('deploy decision: current commit, hourly throttle and rolling team budget', () => {
   assert.equal(deployDecision({ deploys: [], sha: 'abc', now }).deploy, true)
   assert.equal(deployDecision({ deploys: [deploy(5, { title: 'SanSoul abc1234' })], sha: 'abc1234', now }).deploy, false)

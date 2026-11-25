@@ -958,6 +958,14 @@ Así formularios y comercio siguen viviendo solo en el Worker, que reconoce las 
 firmadas por Netlify y usa la IP real del visitante. `baseURL` debe ser el dominio que sirve
 Netlify (los formularios solo aceptan ese origen).
 
+Al reutilizar un sitio Netlify que ya reenvía formularios a otros Workers,
+`params.netlify_form_proxies` permite conservar esas rutas durante la migración.
+Declara las reescrituras en orden, con `from` exacto bajo `/api/forms`, `to` como
+URL HTTPS fija en `workers.dev` y, opcionalmente, el valor literal del parámetro
+`route`. El espejo aplica esas reglas antes de `/api/*` y reserva la firma de
+Netlify para el Worker del proyecto. Comprueba la validación de peticiones de
+cada receptor existente antes de publicar. [Ejemplo](_examples/forms-backend/README.md).
+
 Límites del plan Free de Netlify, medidos:
 
 - **Créditos**: cada despliegue de producción cuesta 15 de los 300 que tiene cada equipo de

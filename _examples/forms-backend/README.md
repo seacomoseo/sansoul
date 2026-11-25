@@ -42,3 +42,25 @@ pnpm dlx wrangler@4.147.0 dev --config worker/wrangler.jsonc
 ```
 
 Detalle del contrato en `core/forms/README.md` y `core/mail/README.md`.
+
+## Rutas heredadas en un espejo Netlify
+
+Cuando un sitio ya reenvía formularios a Workers separados, declara primero
+las rutas más específicas. El resto de `/api/*` se dirige al Worker del
+proyecto con la firma del espejo.
+
+```yaml
+params:
+  netlify: ejemplo
+  netlify_form_proxies:
+    - from: /api/forms/evento
+      to: https://eventos.ejemplo.workers.dev/v1/forms
+    - from: /api/forms
+      to: https://eventos.ejemplo.workers.dev/v1/forms
+      route: 'principal:ejemplo.es:form-evento'
+    - from: /api/forms
+      to: https://historico.ejemplo.workers.dev/v1/forms
+```
+
+Cada receptor heredado conserva su validación de peticiones. La variable
+`SANSOUL_PROXY_SECRET` del espejo sigue asociada al Worker del proyecto.
