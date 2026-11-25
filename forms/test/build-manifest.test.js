@@ -47,3 +47,13 @@ test('form policies win over the site identity, which is not a form', async () =
     fs.rmSync(root, { recursive: true, force: true })
   }
 })
+
+test('an explicit alias is accepted alongside the canonical origin', async () => {
+  const root = publish({ '_site.json': { ...SITE, origins: ['https://alias.acme.test', SITE.origin, 'https://alias.acme.test'] } })
+  try {
+    buildManifest({ root })
+    assert.deepEqual((await load(root)).origins, ['https://acme.test', 'https://alias.acme.test'])
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true })
+  }
+})

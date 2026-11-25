@@ -37,9 +37,11 @@ el proyecto al Worker.
   `{ result: 'error', error: <código> }` con 4xx/5xx; nunca éxito sin persistir.
 - Mismo ID y mismo contenido devuelve el mismo recibo; mismo ID con otro
   contenido, `409 submission_conflict` (el JS reenvía una vez con ID nuevo).
-- `Origin` debe coincidir con el host (no autentica al visitante; el antispam,
-  los límites y la revisión siguen aplicando). Límite de 6 envíos nuevos por IP
-  y 10 minutos; los reintentos de un envío ya guardado no cuentan.
+- `Origin` debe coincidir con el origen del Worker, el de `baseURL` o un
+  origen adicional declarado en `params.forms_origins` de `hugo.yml`. Añade
+  solo dominios del propio sitio, con esquema y sin ruta. El antispam,
+  los límites y la revisión siguen aplicando. Límite de 6 envíos nuevos por IP
+  y 10 minutos. Los reintentos de un envío ya guardado no cuentan.
 
 ## Política en servidor
 

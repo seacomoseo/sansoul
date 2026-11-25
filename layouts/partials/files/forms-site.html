@@ -12,6 +12,7 @@ Returns: JSON string published at /_forms/_site.json (removed by build-manifest)
 {{- dict
   "site"    $p.domain
   "origin"  (print $base.Scheme "://" $base.Host)
+  "origins" site.Params.forms_origins
   "project" (strings.Trim $project "-")
   "repo"    (or hugo.Data.config.cms_repo (print $p.owner "/" $p.repo))
   | jsonify -}}
