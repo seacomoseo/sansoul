@@ -6,7 +6,8 @@ Side effects: None.
 Contract (flat params, 14.0.0): project (optional, 14.14.0: Vault name used by
   `sh do new` for the Cloudflare account and Drive files), owner, repo, worker (default repo), netlify
   (optional mirror site), domain (optional; default the baseURL host),
-  worker_vars (optional map of Worker environment variables).
+  worker_vars (optional map of Worker environment variables),
+  netlify_form_proxies (optional ordered list of Netlify form rewrites).
 */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -33,6 +34,7 @@ export function readProject (projectDir = process.cwd()) {
     repo,
     worker,
     netlify: text(params.netlify),
+    netlifyFormProxies: params.netlify_form_proxies ?? [],
     domain: text(params.domain) || host,
     workerVars: params.worker_vars || {}
   }
