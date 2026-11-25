@@ -1,18 +1,27 @@
 {{- /* One build serves Workers and the Netlify mirror: rules use the syntax
-  both accept (no Netlify-only `!` force suffix). */ -}}
-/index.php / 301
-/admin/info /admin/ 301
-/admin/info/* /admin/ 301
-/:lang/admin/info/* /admin/ 301
-# ---
-{{- with hugo.Data.redirects -}}
-  {{- range . }}
-{{ .from }} {{ .to }} {{ .type | default "301" }}
+  both accept (no Netlify-only `!` force suffix). Cloudflare counts every rule
+  after the first pattern against the dynamic limit. Put the CMS wildcards
+  after the leading exact rules they cannot match. Leave project order intact
+  and stop at the first pattern or source that might match a CMS wildcard. */ -}}
+{{- $rules := slice "/index.php / 301" "/admin/info /admin/ 301" "# ---" -}}
+{{- $cmsWildcards := slice "/admin/info/* /admin/ 301" "/:lang/admin/info/* /admin/ 301" -}}
+{{- $pendingCMS := true -}}
+{{- range hugo.Data.redirects -}}
+  {{- if $pendingCMS -}}
+    {{- $simplePath := findRE `^/[A-Za-z0-9._~/-]*$` .from -}}
+    {{- $possibleOverlap := findRE `//|(?:^|/)\.{1,2}(?:/|$)|(?i)^/(?:[^/]+/)?admin/info(?:/|$)` .from -}}
+    {{- if or (not $simplePath) $possibleOverlap -}}
+      {{- $rules = $rules | append $cmsWildcards -}}
+      {{- $pendingCMS = false -}}
+    {{- end -}}
   {{- end -}}
-{{- end }}
-# ---
-/index.php/* /:splat 301
-/media/* /m/:splat 301
+  {{- $rules = $rules | append (printf "%s %s %v" .from .to (.type | default "301")) -}}
+{{- end -}}
+{{- if $pendingCMS -}}
+  {{- $rules = $rules | append $cmsWildcards -}}
+{{- end -}}
+{{- $rules = $rules | append "# ---" "/index.php/* /:splat 301" "/media/* /m/:splat 301" -}}
+{{ delimit $rules "\n" }}
 
 {{- if .IsTranslated -}}
   {{- if hugo.IsMultihost }}
