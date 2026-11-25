@@ -252,7 +252,10 @@ del CMS. Consulta el [contrato y mediciones](docs/production-assets.md).
   - `data/defaults.yml`: valores predeterminados aplicados por idioma, tipo o ruta.
   - `data/customs.yml`: campos de contenido personalizados que también se exponen en el CMS.
   - `data/remote.yml`: fuentes remotas que el Content Adapter transforma en páginas virtuales.
-  - `data/redirects.yml`: redirecciones generadas para el despliegue.
+  - `data/redirects.yml`: redirecciones generadas para el despliegue. En
+    Cloudflare, las reglas que siguen al primer comodín o marcador consumen el
+    límite dinámico. Coloca primero las rutas exactas cuando su precedencia lo
+    permita. SanSoul conserva el orden de las reglas del proyecto.
   - `data/resources.yml`: recursos que CSS, JavaScript o datos dinámicos usan sin pasar por los layouts; los usos renderizados se agrupan automáticamente.
 - `dna/`: identidad, criterios y restricciones particulares del proyecto.
   - `dna/_index.md`: resumen obligatorio e índice que indica qué otros documentos consultar según la tarea.
