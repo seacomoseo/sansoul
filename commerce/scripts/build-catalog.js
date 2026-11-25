@@ -284,7 +284,7 @@ function invoiceBranding (root, source, origin) {
 function makeCatalog (root) {
   const theme = JSON.parse(readFileSync(enginePackage(root), 'utf8'))
   const config = readCommerceConfig(root)
-  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'cart_quote', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id', 'checkout_terms', 'checkout_terms_text', 'audience', 'admin_panel', 'quotes'])
+  const allowedConfigKeys = new Set(['enabled', 'functions_enabled', 'origin', 'currency', 'stock_mode', 'checkout_approved', 'checkout_legal_version', 'checkout_destination_countries', 'checkout_tax_policy', 'checkout_shipping_policy', 'totals_policy', 'notes', 'cart_quote', 'privacy_retention', 'delivery_retention_days', 'order_notices', 'invoice', 'checkout_fields', 'checkout_tax_id', 'checkout_terms', 'checkout_terms_text', 'audience', 'admin_panel', 'order_documents', 'quotes'])
   if (Object.keys(config).some(key => !allowedConfigKeys.has(key))) throw new Error('data/commerce.yml: unknown_configuration_key')
   if (config.functions_enabled !== undefined && typeof config.functions_enabled !== 'boolean') throw new Error('data/commerce.yml: functions_enabled_must_be_boolean')
   validateNotes(config.notes)
@@ -307,12 +307,15 @@ function makeCatalog (root) {
   // Orders panel of the CMS (/admin/orders/): people with push access to the site
   // repository (the CMS one: data/config.yml cms_repo, else hugo.yml owner/repo).
   if (config.admin_panel !== undefined && typeof config.admin_panel !== 'boolean') throw new Error('data/commerce.yml: admin_panel_must_be_boolean')
+  if (config.order_documents !== undefined && typeof config.order_documents !== 'boolean') throw new Error('data/commerce.yml: order_documents_must_be_boolean')
+  if (config.order_documents && !config.admin_panel) throw new Error('data/commerce.yml: order_documents_requires_admin_panel')
   if (config.cart_quote !== undefined && typeof config.cart_quote !== 'boolean') throw new Error('data/commerce.yml: cart_quote_must_be_boolean')
   const quotes = compileQuotes(config.quotes, { cartQuote: config.cart_quote === true })
   const adminRepo = config.admin_panel ? panelRepository(root) : ''
   if (config.admin_panel && !adminRepo) throw new Error('data/commerce.yml: admin_panel_requires_repository')
   const optional = {
     ...(adminRepo ? { adminRepo } : {}),
+    ...(config.order_documents ? { orderDocuments: true } : {}),
     ...(config.checkout_terms ? { termsRequired: true } : {}),
     ...(audience ? { audience } : {}),
     ...(quotes ? { quotes } : {}),

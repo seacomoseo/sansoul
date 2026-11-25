@@ -125,7 +125,7 @@ async function unsubscribeContact (request, db, now) {
   return jsonResponse({ unsubscribed: true, already: true })
 }
 
-async function listOrders (db, url, defaultLimit = 50) {
+async function listOrders (db, url, defaultLimit = 50, withDocuments = false) {
   const limitText = url.searchParams.get('limit') || String(defaultLimit)
   const limit = Number(limitText)
   if (!/^\d{1,3}$/.test(limitText) || !Number.isInteger(limit) || limit < 1 || limit > 100) throw new CommerceError('invalid_limit')
@@ -135,6 +135,8 @@ async function listOrders (db, url, defaultLimit = 50) {
   const validFulfillment = ['awaiting_payment', 'ready', 'manufacturing', 'shipped', 'cancelled', 'inventory_exception']
   if (paymentStatus && !validPayments.includes(paymentStatus)) throw new CommerceError('invalid_payment_status')
   if (fulfillmentStatus && !validFulfillment.includes(fulfillmentStatus)) throw new CommerceError('invalid_fulfillment_status')
+  const documents = url.searchParams.get('documents')
+  if (documents && (!withDocuments || !['pending', 'sent'].includes(documents))) throw new CommerceError('invalid_documents')
   const cursorText = url.searchParams.get('cursor')
   let cursor = null
   if (cursorText) {
@@ -147,12 +149,16 @@ async function listOrders (db, url, defaultLimit = 50) {
       o.snapshot_json, o.payment_status, o.fulfillment_status, o.refund_amount_minor, o.created_at, o.updated_at, o.expires_at,
       d.source AS delivery_source, d.buyer_name, d.buyer_email, d.buyer_phone, d.recipient_name,
       d.address_line1, d.address_line2, d.locality, d.administrative_area, d.postal_code, d.country_code,
-      d.buyer_business_name, d.buyer_tax_id, d.buyer_tax_id_type, d.recipient_phone, d.delivery_notes
+      d.buyer_business_name, d.buyer_tax_id, d.buyer_tax_id_type, d.recipient_phone, d.delivery_notes,
+      ${withDocuments ? 's.sent_at' : 'NULL'} AS documents_sent_at
     FROM orders o LEFT JOIN order_delivery_details d ON d.order_id = o.id
+      ${withDocuments ? 'LEFT JOIN order_documents s ON s.order_id = o.id' : ''}
     WHERE (? IS NULL OR o.payment_status = ?) AND (? IS NULL OR o.fulfillment_status = ?)
+      ${withDocuments ? `AND (? IS NULL OR (? = 'sent' AND s.order_id IS NOT NULL)
+        OR (? = 'pending' AND s.order_id IS NULL AND o.payment_status IN ('paid', 'partially_refunded') AND o.fulfillment_status <> 'cancelled'))` : ''}
       AND (? IS NULL OR o.created_at < ? OR (o.created_at = ? AND o.id < ?))
     ORDER BY o.created_at DESC, o.id DESC LIMIT ?
-  `).bind(paymentStatus, paymentStatus, fulfillmentStatus, fulfillmentStatus, cursor?.createdAt ?? null, cursor?.createdAt ?? null, cursor?.createdAt ?? null, cursor?.id ?? null, limit + 1).all()
+  `).bind(paymentStatus, paymentStatus, fulfillmentStatus, fulfillmentStatus, ...(withDocuments ? [documents, documents, documents] : []), cursor?.createdAt ?? null, cursor?.createdAt ?? null, cursor?.createdAt ?? null, cursor?.id ?? null, limit + 1).all()
   const result = rows.results || []
   const hasMore = result.length > limit
   const orders = result.slice(0, limit)
@@ -160,8 +166,9 @@ async function listOrders (db, url, defaultLimit = 50) {
   return { orders, nextCursor: hasMore && last ? `${last.created_at}:${last.id}` : null }
 }
 
-function adminOrder (order) {
+function adminOrder (order, documents = false) {
   const {
+    documents_sent_at: documentsSentAt,
     delivery_source: source,
     buyer_name: name,
     buyer_email: email,
@@ -182,6 +189,7 @@ function adminOrder (order) {
   } = order
   return {
     ...rest,
+    ...(documents ? { documents_sent_at: documentsSentAt ?? null } : {}),
     snapshot: JSON.parse(order.snapshot_json),
     snapshot_json: undefined,
     delivery: source
@@ -217,6 +225,19 @@ async function readTracking (request) {
   if (value.tracking === undefined || value.tracking === null || value.tracking === '') return null
   if (typeof value.tracking !== 'string' || !trackingValid(value.tracking.trim())) throw new CommerceError('invalid_shipment')
   return value.tracking.trim()
+}
+
+// Optional order_documents mark: the owner sends invoice/PDFs by hand and ticks the order.
+async function markDocuments (request, db, orderId, now) {
+  const { value } = await readJsonBody(request, 256)
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length !== 1 || typeof value.sent !== 'boolean') throw new CommerceError('invalid_documents')
+  const order = await db.prepare('SELECT payment_status FROM orders WHERE id = ?').bind(orderId).first()
+  if (!order) throw new CommerceError('order_not_found', 404)
+  if (!['paid', 'partially_refunded', 'refunded'].includes(order.payment_status)) throw new CommerceError('order_not_paid', 409)
+  if (value.sent) await db.prepare('INSERT OR IGNORE INTO order_documents (order_id, sent_at) VALUES (?, ?)').bind(orderId, now).run()
+  else await db.prepare('DELETE FROM order_documents WHERE order_id = ?').bind(orderId).run()
+  const row = await db.prepare('SELECT sent_at FROM order_documents WHERE order_id = ?').bind(orderId).first()
+  return jsonResponse({ order_id: orderId, documents_sent_at: row?.sent_at ?? null })
 }
 
 async function transitionOrder (db, orderId, from, to, now, { catalog, tracking } = {}) {
@@ -589,8 +610,9 @@ export async function handleAdmin (request, env, catalog) {
     const now = Math.floor(Date.now() / 1000)
 
     if (path === '/api/commerce/admin/orders' && request.method === 'GET') {
-      const page = await listOrders(db, url)
-      return jsonResponse({ orders: page.orders.map(adminOrder), next_cursor: page.nextCursor })
+      const documents = Boolean(catalog?.orderDocuments)
+      const page = await listOrders(db, url, 50, documents)
+      return jsonResponse({ orders: page.orders.map(order => adminOrder(order, documents)), next_cursor: page.nextCursor, ...(documents ? { order_documents: true } : {}) })
     }
     if (path === '/api/commerce/admin/export.csv' && request.method === 'GET') {
       const page = await listOrders(db, url, 100)
@@ -617,6 +639,9 @@ export async function handleAdmin (request, env, catalog) {
 
     const invoice = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/invoice\.pdf$/i)
     if (invoice && request.method === 'GET' && ORDER_ID.test(invoice[1])) return await invoicePdf(db, catalog, invoice[1])
+
+    const sent = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/documents$/i)
+    if (sent && catalog?.orderDocuments && request.method === 'POST' && ORDER_ID.test(sent[1])) return await markDocuments(request, db, sent[1], now)
 
     const match = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/(manufacture|ship|cancel-partial)$/i)
     if (match && request.method === 'POST' && ORDER_ID.test(match[1])) {

@@ -30,6 +30,13 @@ const T = {
     ready: 'A fabricar',
     manufacturing: 'En fabricación',
     shipped: 'Enviados',
+    docsPending: 'Sin documentos',
+    colDocs: 'Documentos',
+    docsSent: 'Enviados',
+    docsNotSent: 'Pendientes',
+    docsMark: 'Marcar documentos como enviados',
+    docsUnmark: 'Quitar la marca de enviados',
+    docsSentOn: 'Documentos enviados',
     colDate: 'Fecha',
     colBuyer: 'Comprador',
     colTotal: 'Total',
@@ -85,6 +92,13 @@ const T = {
     ready: 'To make',
     manufacturing: 'In production',
     shipped: 'Shipped',
+    docsPending: 'Documents to send',
+    colDocs: 'Documents',
+    docsSent: 'Sent',
+    docsNotSent: 'Pending',
+    docsMark: 'Mark documents as sent',
+    docsUnmark: 'Remove the sent mark',
+    docsSentOn: 'Documents sent',
     colDate: 'Date',
     colBuyer: 'Buyer',
     colTotal: 'Total',
@@ -130,7 +144,7 @@ const T = {
 const app = document.getElementById('app')
 // Quote request notices link to /admin/orders/#quote=<submission id>.
 let wantedQuote = (location.hash.match(/^#quote=([\w-]{1,80})$/) || [])[1] || null
-const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', orders: [], next: null, detail: null, contacts: null, message: '', busy: false }
+const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', documents: false, orders: [], next: null, detail: null, contacts: null, message: '', busy: false }
 
 function h (tag, attrs = {}, ...children) {
   const node = document.createElement(tag)
@@ -229,11 +243,13 @@ function fail (error) {
 
 async function loadOrders (more = false) {
   const query = new URLSearchParams({ limit: '50' })
-  if (state.filter !== 'all') query.set('fulfillment_status', state.filter)
+  if (state.filter === 'docs_pending') query.set('documents', 'pending')
+  else if (state.filter !== 'all') query.set('fulfillment_status', state.filter)
   if (more && state.next) query.set('cursor', state.next)
   const page = await api(`orders?${query}`)
   state.orders = more ? [...state.orders, ...page.orders] : page.orders
   state.next = page.next_cursor
+  state.documents = page.order_documents === true
 }
 
 const quotes = createQuotesTab({ h, api, lang, money, date, saveBlob, githubToken, render: () => render(), fail: error => fail(error) })
@@ -283,7 +299,7 @@ function detailPane (order) {
   }
   return h('section', { class: 'detail-pane' },
     h('div', { class: 'detail-head' }, h('button', { class: 'button back', type: 'button', onclick: () => { state.detail = null; render() } }, T.back), h('h2', {}, `${buyer.name || ship.recipient || order.id.slice(0, 8)} · ${money(order.amount_total_minor, order.currency)}`)),
-    h('p', { class: 'muted small' }, `${date(order.created_at)} · ${T.payment[order.payment_status] || order.payment_status} · ${T.status[order.fulfillment_status] || order.fulfillment_status}`),
+    h('p', { class: 'muted small' }, `${date(order.created_at)} · ${T.payment[order.payment_status] || order.payment_status} · ${T.status[order.fulfillment_status] || order.fulfillment_status}${state.documents && order.documents_sent_at ? ` · ${T.docsSentOn} ${date(order.documents_sent_at)}` : ''}`),
     h('h3', {}, T.items),
     h('ul', { class: 'files' }, (snapshot.items || []).map(item => h('li', {}, h('span', { class: 'file-name' }, `${item.quantity} × ${item.name || item.sku}`), h('span', {}, money(item.lineTotalMinor, order.currency))))),
     h('h3', {}, T.buyer),
@@ -291,6 +307,7 @@ function detailPane (order) {
     ship.line1 ? [h('h3', {}, T.shipping), h('dl', { class: 'fields' }, ...row(ship.recipient || '', address), ...row(T.phone, ship.phone), ...row(T.notes, ship.notes))] : null,
     h('div', { class: 'actions' },
       order.payment_status !== 'pending' ? h('button', { class: 'button', type: 'button', onclick: () => act(async () => saveBlob(await (await api(`orders/${order.id}/invoice.pdf`, { raw: true })).blob(), `invoice-${order.id.slice(0, 8)}.pdf`)) }, T.invoice) : null,
+      state.documents && ['paid', 'partially_refunded', 'refunded'].includes(order.payment_status) ? h('button', { class: `button${order.documents_sent_at ? '' : ' primary'}`, type: 'button', onclick: () => act(async () => { await api(`orders/${order.id}/documents`, { method: 'POST', body: { sent: !order.documents_sent_at } }); await refreshOrder() }) }, order.documents_sent_at ? T.docsUnmark : T.docsMark) : null,
       order.fulfillment_status === 'ready' ? h('button', { class: 'button primary', type: 'button', onclick: () => act(async () => { await api(`orders/${order.id}/manufacture`, { method: 'POST' }); await refreshOrder() }) }, T.manufacture) : null,
       order.fulfillment_status === 'manufacturing'
         ? [tracking, h('button', { class: 'button primary', type: 'button', onclick: () => { if (confirm(T.shipConfirm)) act(async () => { await api(`orders/${order.id}/ship`, { method: 'POST', body: { tracking: tracking.value.trim() } }); await refreshOrder() }) } }, T.ship)]
@@ -298,12 +315,13 @@ function detailPane (order) {
 }
 
 function ordersView () {
-  const filters = [['all', T.all], ['ready', T.ready], ['manufacturing', T.manufacturing], ['shipped', T.shipped]]
+  const filters = [['all', T.all], ['ready', T.ready], ['manufacturing', T.manufacturing], ['shipped', T.shipped], ...(state.documents ? [['docs_pending', T.docsPending]] : [])]
   const table = h('div', { class: 'table-scroll' }, h('table', { class: 'data-table' },
-    h('thead', {}, h('tr', {}, [T.colDate, T.colBuyer, T.colTotal, T.colPayment, T.colStatus].map(label => h('th', {}, label)))),
+    h('thead', {}, h('tr', {}, [T.colDate, T.colBuyer, T.colTotal, T.colPayment, T.colStatus, ...(state.documents ? [T.colDocs] : [])].map(label => h('th', {}, label)))),
     h('tbody', {}, state.orders.map(order => h('tr', { tabindex: '0', onclick: () => { state.detail = order; render() } },
       h('td', {}, date(order.created_at)), h('td', {}, order.delivery?.buyer?.name || ''), h('td', {}, money(order.amount_total_minor, order.currency)),
-      h('td', {}, T.payment[order.payment_status] || order.payment_status), h('td', {}, T.status[order.fulfillment_status] || order.fulfillment_status))))))
+      h('td', {}, T.payment[order.payment_status] || order.payment_status), h('td', {}, T.status[order.fulfillment_status] || order.fulfillment_status),
+      state.documents ? h('td', {}, order.documents_sent_at ? `✓ ${T.docsSent}` : ['paid', 'partially_refunded'].includes(order.payment_status) && order.fulfillment_status !== 'cancelled' ? T.docsNotSent : '') : null)))))
   return [
     h('div', { class: 'toolbar' }, h('div', { class: 'tabs' }, filters.map(([key, label]) => h('button', { class: `tab${state.filter === key ? ' active' : ''}`, type: 'button', onclick: () => { state.filter = key; state.detail = null; load() } }, label))),
       h('button', { class: 'button', type: 'button', onclick: () => act(async () => saveBlob(await (await api('export.csv?limit=100', { raw: true })).blob(), 'orders.csv')) }, T.csv)),

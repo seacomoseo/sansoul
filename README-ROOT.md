@@ -801,7 +801,10 @@ audience:                    # contactos con permiso para avisos puntuales (nada
     es: "Quiero recibir avisos puntuales de modelos nuevos."
   provider: "Brevo (Sendinblue SAS, Francia)"  # opcional: plataforma que envía los avisos (solo para el texto de privacidad)
 admin_panel: true            # panel «Pedidos» del CMS (/admin/orders/)
+order_documents: true        # opcional (requiere admin_panel): marca «documentos enviados» en cada pedido
 ```
+
+- **Marca «documentos enviados»** (`order_documents: true`, migración D1 `0012_order_documents.sql`, la aplica el CI): cuando la tienda envía a mano la factura u otros PDF, marca el pedido pagado en el panel (botón en el detalle, columna «Documentos» y filtro «Sin documentos», que lista los pagados sin marca y no cancelados). Guarda la fecha del marcado; se puede quitar. API: `POST /api/commerce/admin/orders/<id>/documents` con `{"sent": true|false}` y `GET …/orders?documents=pending|sent`. Sin la opción, la ruta no existe y la API no devuelve el campo.
 
 - **Aviso de envío**: `POST /api/commerce/admin/orders/<id>/ship` acepta `{"tracking": "<enlace https o código>"}` (opcional, 200 caracteres). El correo se encola en la misma transacción del cambio a `shipped`, una vez por pedido; sale en el idioma de la compra, con el seguimiento como enlace si empieza por `https://`. Sin `buyer_shipped` o con `buyer: none` no se envía nada.
 - **Condiciones**: sin la casilla marcada el botón de pago queda desactivado y el servidor responde `terms_required` (400). Exige `checkout_legal_version`.

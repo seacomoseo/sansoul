@@ -42,6 +42,16 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.22.0 — 2026-11-25 — Marca «documentos enviados» en Pedidos
+
+**Impacto:** ninguno si no haces nada. Migración D1 nueva `commerce/0012_order_documents` (el CI la aplica).
+
+1. **Opción `order_documents: true`** en `data/commerce.yml` (requiere `admin_panel: true`): en `/admin/orders/` cada pedido
+   pagado se puede marcar como «documentos enviados» (con fecha), con columna «Documentos» y filtro «Sin documentos»
+   junto a los estados a fabricar / en fabricación / enviado. Pensado para quien manda a mano facturas o PDF tras la compra.
+
+**Acciones obligatorias:** ninguna.
+
 ## 14.21.1 — 2026-11-25 — Espejo de Netlify: sin presupuesto de créditos en el plan Free antiguo
 
 **Impacto:** ninguno en los proyectos. El límite de 15 despliegues por equipo en 31 días solo protege los créditos
