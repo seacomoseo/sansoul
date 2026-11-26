@@ -20,6 +20,8 @@
 {{/*  Site identity for the forms Worker manifest, also without Worker forms
   (imported history): forms/scripts/build-manifest.js reads and removes it.  */}}
 {{ $srcs = $srcs | append (dict "partial" `files/forms-site` "path" "/_forms/_site.json") }}
+{{/*  Policies of forms in static pages not rendered by Hugo (params.static_forms).  */}}
+{{ if not hugo.IsServer }}{{ partial "files/forms-static" . }}{{ end }}
 {{ range $srcs }}
   {{ $str := partial .partial . | string }}
   {{ $src := resources.FromString .path $str }}

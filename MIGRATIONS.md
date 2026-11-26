@@ -42,6 +42,24 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.26.0 — 2026-11-26 — Formularios de páginas estáticas, cuenta de Cloudflare sin ambigüedad y panel de Correo
+
+**Impacto:** compatible. Tres cambios:
+
+1. **`params.static_forms`** (opcional, en `hugo.yml`): declara el formulario de una página estática que Hugo no
+   renderiza (una landing generada aparte) para que el Worker del proyecto lo acepte con destinatarios, asunto y
+   campos del servidor. Ver `layouts/partials/files/forms-static.html`. La página envía a `/api/forms/submit` con
+   `_form` (el `id`), `_page` (la `page`), `_submission_id` y `_gotcha`.
+2. **`sh do new`**: si el nombre del Worker (`site` es habitual) existe en varias cuentas de Cloudflare, ya no elige
+   la primera: se detiene y pide `--cf-account` (o `--project` con el nombre exacto de la cuenta). Antes podía escribir
+   secretos en el Worker de otro cliente.
+3. **Panel «Correo»:** si `FORMS_GMAIL_DEFAULT` nombra una cuenta que ya aparece en la lista, la cuenta por defecto no
+   se ofrece dos veces.
+
+**Acciones obligatorias:** ninguna. **En cada migración de un proyecto con formularios** (criterio de Loren,
+2026-11-26) ejecutar también el paso `forms-history`, que copia el histórico de la hoja central a la D1:
+`sh do new --only cloudflare,forms-history --apply` (repetir es seguro; no envía nada).
+
 ## 14.25.2 — 2026-11-26 — Espejo de Netlify: sin límite horario en el plan Free antiguo
 
 **Impacto:** ninguno en los proyectos. En las cuentas de Netlify con plan Free antiguo (`credit_features` desactivado) el

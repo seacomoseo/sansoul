@@ -1,0 +1,37 @@
+{{- /*
+Partial: files/forms-static
+Purpose: Publish the Worker policy of forms that are NOT rendered by Hugo (a static
+  landing built elsewhere) so the project Worker accepts them like any other form:
+  recipients, subject and fields come from `params.static_forms` in hugo.yml, never
+  from the visitor. Same output as func/form-manifest for a rendered form.
+Context: page.
+Renders: Nothing.
+Config (hugo.yml):
+  params:
+    static_forms:
+      - id: form-landing            # sent by the page as `_form`
+        page: /landing/mi-landing/  # sent by the page as `_page`
+        title: Landing
+        subject: Asunto del aviso
+        mail: aviso@example.com     # string or list
+        account: ""                 # optional Gmail/Brevo account of the site mail
+        fields:                     # submitted names; `type` as in data inputs
+          - { name: Nombre, type: text }
+          - { name: Email, type: email }
+Side effects: Publishes public/_forms/<hash>.json; the post-build script moves it out of public/.
+*/ -}}
+{{- $keys := slice "text" "email" "tel" "number" "date" "time" "range" "area" "select" "radio" "checkbox" "hidden" -}}
+{{- range site.Params.static_forms -}}
+  {{- partial "func/form-manifest" (dict
+    "id"      .id
+    "page"    .page
+    "title"   (.title | default .id)
+    "subject" (.subject | default .id)
+    "mail"    .mail
+    "account" (.account | default "")
+    "confirm" (dict "enabled" false)
+    "inputs"  .fields
+    "keys"    $keys
+  ) -}}
+{{- end -}}
+{{- return "" -}}

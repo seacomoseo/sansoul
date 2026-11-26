@@ -9,7 +9,7 @@ import { projectName } from '../new/lib.js'
 import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
 import { context, identityHint, STEPS } from '../new.js'
-import { renamable, sameName } from '../new/cloudflare.js'
+import { findAccount, renamable, sameName } from '../new/cloudflare.js'
 import { domainTabs, historyPlan, projectFormIds } from '../new/forms-history.js'
 import { callbackUri, grantKey, missingSecrets, SECRETS } from '../new/gmail.js'
 
@@ -322,4 +322,20 @@ test('forms history plan is up to date once every row is imported', () => {
   assert.deepEqual(historyPlan({ ...base, exists: true, schema: false }), { done: false, text: 'aplicar las migraciones de site-forms e importar 56 envío(s) (form-contacto 56)' })
   assert.deepEqual(historyPlan({ ...base, exists: true, schema: true, present: 50 }), { done: false, text: 'importar 6 envío(s) nuevo(s) de 56 (form-contacto 56)' })
   assert.deepEqual(historyPlan({ ...base, exists: true, schema: true, present: 56 }), { done: true, text: 'histórico al día en site-forms: 56 envío(s) ya importado(s) (form-contacto 56)' })
+})
+
+test('cloudflare account: a generic Worker name in several accounts is never guessed', async () => {
+  const accounts = [{ id: 'a1', name: '3DNAU' }, { id: 'a2', name: 'Solvent' }]
+  const fake = holders => async route => {
+    if (route.startsWith('/zones')) return []
+    if (route === '/accounts?per_page=50') return accounts
+    const match = route.match(/^\/accounts\/(\w+)\/workers\/scripts\//)
+    if (match && holders.includes(match[1])) return {}
+    throw new Error('404')
+  }
+  const ctx = project => ({ domain: 'solventie.es', worker: 'site', project })
+  await assert.rejects(findAccount(ctx(undefined), fake(['a1', 'a2'])), /existe en varias cuentas/)
+  assert.equal((await findAccount(ctx('Solvent'), fake(['a1', 'a2']))).id, 'a2')
+  assert.equal((await findAccount(ctx(undefined), fake(['a2']))).id, 'a2')
+  assert.equal(await findAccount(ctx(undefined), fake([])), null)
 })

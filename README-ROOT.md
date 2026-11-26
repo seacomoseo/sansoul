@@ -128,7 +128,8 @@ Pasos, en este orden:
 10. **forms-history**: copia los envíos del proyecto desde la hoja central de formularios (pestañas
     `<dominio>#<formulario>`) a su base de datos de Cloudflare, para verlos en el panel «Formularios» del CMS. Crea la
     base si falta; repetirlo solo añade lo nuevo y no envía nada. Necesita el paso **cloudflare** en la misma
-    ejecución: `sh do new --only cloudflare,forms-history`. Detalle en [forms/README.md](forms/README.md).
+    ejecución: `sh do new --only cloudflare,forms-history`. **Obligatorio en toda migración de un proyecto con
+    formularios** (si no, el panel arranca sin su histórico). Detalle en [forms/README.md](forms/README.md).
 11. **gmail**: deja listo «Conectar Gmail» en los paneles de Correo y Formularios. Guarda en el Worker
     `FORMS_GOOGLE_CLIENT_ID` y `FORMS_GOOGLE_CLIENT_SECRET` (cliente OAuth «SanSoul Web») y `FORMS_GRANT_KEY` (una por
     proyecto, nunca se sustituye: cifra las cuentas ya conectadas). Necesita el Worker (en un proyecto nuevo, repetir

@@ -249,6 +249,8 @@ const accountOptions = (accounts, selected, first) => [
   ...accounts.map(account => h('option', { value: account.id, selected: account.id === selected }, `${accountName(account)} (${PROVIDERS[account.provider] || account.provider})`))
 ]
 
+const variableListed = s => Boolean(s.variables.FORMS_GMAIL_DEFAULT) && s.accounts.some(account => account.id === s.variables.FORMS_GMAIL_DEFAULT)
+
 function banners () {
   const s = state.summary
   const list = []
@@ -368,7 +370,9 @@ function routingSection () {
       s.formsDriveEnabled !== false && !driveAccount && s.google.configured ? h('p', {}, T.filesSetup) : null) : null) : null)
   return h('section', {},
     h('h3', {}, T.routing),
-    field(T.defaultAccount, h('select', { class: 'select', onchange: event => { routes.default = event.target.value } }, ...accountOptions(s.accounts, routes.default || '', s.variables.FORMS_GMAIL_DEFAULT ? T.variableDefault(s.variables.FORMS_GMAIL_DEFAULT) : T.none)), { hint: T.defaultHint }),
+    // The Worker variable often names an account that is already listed (the secret one):
+    // offering it twice (variable and account) only confuses, so the account stands for it.
+    field(T.defaultAccount, h('select', { class: 'select', onchange: event => { routes.default = event.target.value } }, ...accountOptions(s.accounts, routes.default || (variableListed(s) ? s.variables.FORMS_GMAIL_DEFAULT : ''), variableListed(s) ? null : (s.variables.FORMS_GMAIL_DEFAULT ? T.variableDefault(s.variables.FORMS_GMAIL_DEFAULT) : T.none))), { hint: T.defaultHint }),
     h('details', { open: state.advanced, ontoggle: event => { state.advanced = event.target.open } },
       h('summary', {}, T.advanced),
       h('div', { class: 'route-groups' }, sections)),

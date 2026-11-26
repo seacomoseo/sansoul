@@ -51,18 +51,27 @@ export default {
   }
 }
 
-async function findAccount (ctx, cf) {
+export async function findAccount (ctx, cf) {
   if (ctx.cfAccount) return cf(`/accounts/${ctx.cfAccount}`)
   const apex = ctx.domain.replace(/^www\./, '')
   const [zone] = await cf(`/zones?name=${apex}`)
   if (zone) return cf(`/accounts/${zone.account.id}`)
   const accounts = await cf('/accounts?per_page=50')
+  // A Worker name like `site` exists in many client accounts: never take the first hit.
+  const holders = []
   for (const account of accounts) {
     const script = await cf(`/accounts/${account.id}/workers/scripts/${ctx.worker}/settings`).catch(() => null)
-    if (script) return account
+    if (script) holders.push(account)
+  }
+  const byProject = list => (ctx.project ? list.filter(a => sameName(a.name, ctx.project)) : [])
+  if (holders.length === 1) return holders[0]
+  if (holders.length > 1) {
+    const named = byProject(holders)
+    if (named.length === 1) return named[0]
+    throw new Error(`el Worker «${ctx.worker}» existe en varias cuentas de Cloudflare (${holders.map(a => `${a.name} ${a.id}`).join(', ')}): pasa --cf-account ID o --project con el nombre exacto de la cuenta`)
   }
   if (!ctx.project) return null
-  const matches = accounts.filter(a => sameName(a.name, ctx.project))
+  const matches = byProject(accounts)
   if (matches.length > 1) throw new Error(`varias cuentas de Cloudflare se llaman «${ctx.project}»: pasa --cf-account (${matches.map(a => a.id).join(', ')})`)
   return matches[0] || null
 }

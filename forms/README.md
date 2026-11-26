@@ -305,3 +305,24 @@ formularios del Worker: la build publica la identidad del sitio
 `pnpm run test:forms` usa D1 y KV locales de workerd y un Google falso
 (OAuth, Gmail y Drive). No envía correos reales, no escribe en Drive ni
 certifica la CPU de Workers Free en la nube.
+
+## Formularios de páginas estáticas (`params.static_forms`)
+
+Una landing generada fuera de Hugo (HTML en `static/`) no publica la política de su formulario. Se declara en
+`hugo.yml` y el Worker la trata como cualquier otro formulario (panel, D1, correo del sitio, antispam):
+
+```yaml
+params:
+  static_forms:
+    - id: form-landing
+      page: /landing/mi-landing/
+      title: Mi landing
+      subject: Asunto del aviso
+      mail: aviso@example.com
+      fields:
+        - { name: Nombre, type: text }
+        - { name: Email, type: email }
+```
+
+La página envía `POST /api/forms/submit` (`multipart/form-data` o `application/x-www-form-urlencoded`) con `_form`,
+`_page`, `_submission_id`, `_gotcha` y exactamente esos campos: un campo no declarado deja el envío en `review`.
