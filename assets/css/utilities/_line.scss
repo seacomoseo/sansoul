@@ -17,10 +17,28 @@
   &.hide::after {
     content: none;
   }
+  // Título con icono lateral (`icon_pos: side`): la barra no puede compartir la fila
+  // flex con el icono y el texto (sus márgenes en % aplastaban el texto en vertical).
+  &:has(> .box__icon--side) {
+    flex-wrap: wrap;
+    justify-content: center;
+    &::after {
+      flex: 0 0 100%;
+      width: auto;
+      margin-inline: 0;
+      background: linear-gradient(var(--main), var(--main)) center / 2em 100% no-repeat;
+    }
+  }
 }
 .line *,
 .line:not(.aux) {
   background-image: none;
+}
+.align-right .line:has(> .box__icon--side)::after {
+  background-position: right;
+}
+.align-left .line:has(> .box__icon--side)::after {
+  background-position: left;
 }
 .align-right .line::after {
   margin-right: 0;

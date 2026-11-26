@@ -42,6 +42,14 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.25.1 — 2026-11-26 — Títulos con icono lateral y línea: ya no se aplastan en vertical
+
+**Impacto:** ninguno que requiera cambios. Un título con `icon_pos: side` y `line: true` repartía el ancho entre icono,
+texto y la barra decorativa, y el texto quedaba letra a letra en vertical. Ahora la barra va en su propia fila. Si un
+proyecto lo había parcheado en su `assets/_custom.scss`, puede quitar ese parche.
+
+**Acciones obligatorias:** ninguna.
+
 ## 14.25.0 — 2026-11-26 — `sh do new` deja listo «Conectar Gmail»
 
 **Impacto:** ninguno en el sitio. Nuevo paso `gmail` de `sh do new`: guarda en el Worker los secretos del botón
