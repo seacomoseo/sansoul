@@ -64,6 +64,15 @@ const T = {
     ship: 'Marcar como enviado',
     tracking: 'Seguimiento (enlace o código, opcional)',
     shipConfirm: 'El pedido pasará a «Enviado» y, si la tienda lo tiene activado, el comprador recibirá un correo. ¿Seguir?',
+    refund: 'Reembolsar',
+    refundTitle: 'Reembolso',
+    refundAmount: 'Importe',
+    refundReason: 'Motivo (queda en Stripe)',
+    refunded: 'Reembolsado',
+    refundConfirm: 'Se devolverán {amount} a la tarjeta del comprador desde Stripe. No se puede deshacer. ¿Seguir?',
+    refundSent: 'Reembolso de {amount} enviado a Stripe. El pedido cambia de estado cuando Stripe lo confirma (unos segundos); pulsa «Actualizar».',
+    refundInvalid: 'Indica un importe entre 0,01 y lo que queda por reembolsar, y el motivo.',
+    refundErrors: { refund_permission_missing: 'La clave de Stripe de la web no tiene permiso para reembolsar.', refund_balance_insufficient: 'El saldo de Stripe no cubre el reembolso.', refund_already_done: 'Stripe ya había reembolsado este pago.', refund_amount_too_large: 'El importe supera lo que queda por reembolsar.', refund_in_progress: 'Ya hay un reembolso igual en curso.' },
     csv: 'Descargar CSV',
     csvConsented: 'Descargar CSV (con permiso)',
     unsubscribe: 'Dar de baja',
@@ -126,6 +135,15 @@ const T = {
     ship: 'Mark as shipped',
     tracking: 'Tracking (link or code, optional)',
     shipConfirm: 'The order will move to "Shipped" and, if the shop has it on, the buyer gets an email. Continue?',
+    refund: 'Refund',
+    refundTitle: 'Refund',
+    refundAmount: 'Amount',
+    refundReason: 'Reason (kept in Stripe)',
+    refunded: 'Refunded',
+    refundConfirm: '{amount} will go back to the buyer\'s card through Stripe. This cannot be undone. Continue?',
+    refundSent: 'Refund of {amount} sent to Stripe. The order changes once Stripe confirms it (a few seconds); press "Refresh".',
+    refundInvalid: 'Enter an amount between 0.01 and what is left to refund, and a reason.',
+    refundErrors: { refund_permission_missing: 'The Stripe key of the site is not allowed to refund.', refund_balance_insufficient: 'The Stripe balance does not cover the refund.', refund_already_done: 'Stripe had already refunded this payment.', refund_amount_too_large: 'The amount is more than what is left to refund.', refund_in_progress: 'The same refund is already in progress.' },
     csv: 'Download CSV',
     csvConsented: 'Download CSV (with consent)',
     unsubscribe: 'Unsubscribe',
@@ -144,7 +162,7 @@ const T = {
 const app = document.getElementById('app')
 // Quote request notices link to /admin/orders/#quote=<submission id>.
 let wantedQuote = (location.hash.match(/^#quote=([\w-]{1,80})$/) || [])[1] || null
-const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', documents: false, orders: [], next: null, detail: null, contacts: null, message: '', busy: false }
+const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', documents: false, orders: [], next: null, detail: null, contacts: null, message: '', notice: '', busy: false }
 
 function h (tag, attrs = {}, ...children) {
   const node = document.createElement(tag)
@@ -220,6 +238,13 @@ const money = (minor, currency = 'eur') => {
   const digits = new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions().maximumFractionDigits
   return new Intl.NumberFormat(lang, { style: 'currency', currency, maximumFractionDigits: digits }).format(minor / (10 ** digits))
 }
+const minorDigits = currency => new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions().maximumFractionDigits
+// Amount typed by a person ("12,5" or "12.50") to minor units; null when it is not a plain amount.
+const toMinor = (text, currency) => {
+  const digits = minorDigits(currency)
+  const match = String(text).trim().replace(',', '.').match(digits ? new RegExp(`^(\\d{1,9})(?:\\.(\\d{1,${digits}}))?$`) : /^(\d{1,12})$/)
+  return match ? Number(match[1]) * (10 ** digits) + Number((match[2] || '').padEnd(digits, '0') || 0) : null
+}
 const date = seconds => seconds ? new Intl.DateTimeFormat(lang, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(seconds * 1000)) : ''
 
 function saveBlob (blob, name) {
@@ -257,6 +282,7 @@ const quotes = createQuotesTab({ h, api, lang, money, date, saveBlob, githubToke
 async function load () {
   state.busy = true
   state.message = ''
+  state.notice = ''
   try {
     if (state.tab === 'orders') await loadOrders()
     else if (state.tab === 'quotes') {
@@ -277,6 +303,7 @@ async function load () {
 
 async function act (action) {
   state.message = ''
+  state.notice = ''
   try {
     await action()
   } catch (error) {
@@ -297,9 +324,35 @@ function detailPane (order) {
     await loadOrders()
     state.detail = state.orders.find(item => item.id === order.id) || null
   }
+  const refundable = order.amount_total_minor - (order.refund_amount_minor || 0)
+  const canRefund = ['paid', 'partially_refunded'].includes(order.payment_status) && order.payment_intent_id && refundable > 0
+  const refundAmount = h('input', { class: 'input', type: 'text', inputmode: 'decimal', value: new Intl.NumberFormat(lang, { minimumFractionDigits: minorDigits(order.currency), useGrouping: false }).format(refundable / (10 ** minorDigits(order.currency))), 'aria-label': T.refundAmount, title: T.refundAmount })
+  const refundReason = h('input', { class: 'input', type: 'text', maxlength: '200', placeholder: T.refundReason, 'aria-label': T.refundReason })
+  const refund = () => {
+    const amount = toMinor(refundAmount.value, order.currency)
+    const reason = refundReason.value.trim()
+    if (!amount || amount > refundable || !reason) {
+      state.message = T.refundInvalid
+      state.notice = ''
+      return render()
+    }
+    if (!confirm(T.refundConfirm.replace('{amount}', money(amount, order.currency)))) return
+    act(async () => {
+      try {
+        await api(`orders/${order.id}/refund`, { method: 'POST', body: { amount_minor: amount, reason } })
+      } catch (error) {
+        if (!T.refundErrors[error.code]) throw error
+        state.message = T.refundErrors[error.code]
+        return
+      }
+      await refreshOrder()
+      state.notice = T.refundSent.replace('{amount}', money(amount, order.currency))
+    })
+  }
   return h('section', { class: 'detail-pane' },
     h('div', { class: 'detail-head' }, h('button', { class: 'button back', type: 'button', onclick: () => { state.detail = null; render() } }, T.back), h('h2', {}, `${buyer.name || ship.recipient || order.id.slice(0, 8)} · ${money(order.amount_total_minor, order.currency)}`)),
     h('p', { class: 'muted small' }, `${date(order.created_at)} · ${T.payment[order.payment_status] || order.payment_status} · ${T.status[order.fulfillment_status] || order.fulfillment_status}${state.documents && order.documents_sent_at ? ` · ${T.docsSentOn} ${date(order.documents_sent_at)}` : ''}`),
+    order.refund_amount_minor ? h('p', { class: 'muted small' }, `${T.refunded}: ${money(order.refund_amount_minor, order.currency)}`) : null,
     h('h3', {}, T.items),
     h('ul', { class: 'files' }, (snapshot.items || []).map(item => h('li', {}, h('span', { class: 'file-name' }, `${item.quantity} × ${item.name || item.sku}`), h('span', {}, money(item.lineTotalMinor, order.currency))))),
     h('h3', {}, T.buyer),
@@ -311,7 +364,8 @@ function detailPane (order) {
       order.fulfillment_status === 'ready' ? h('button', { class: 'button primary', type: 'button', onclick: () => act(async () => { await api(`orders/${order.id}/manufacture`, { method: 'POST' }); await refreshOrder() }) }, T.manufacture) : null,
       order.fulfillment_status === 'manufacturing'
         ? [tracking, h('button', { class: 'button primary', type: 'button', onclick: () => { if (confirm(T.shipConfirm)) act(async () => { await api(`orders/${order.id}/ship`, { method: 'POST', body: { tracking: tracking.value.trim() } }); await refreshOrder() }) } }, T.ship)]
-        : null))
+        : null),
+    canRefund ? [h('h3', {}, T.refundTitle), h('div', { class: 'actions' }, refundAmount, refundReason, h('button', { class: 'button danger', type: 'button', onclick: refund }, T.refund))] : null)
 }
 
 function ordersView () {
@@ -348,7 +402,7 @@ function render () {
   const tabs = h('div', { class: 'toolbar' }, h('h1', {}, T.title), h('div', { class: 'tabs' },
     [['orders', T.orders], ['quotes', T.quotes], ['contacts', T.contacts]].map(([key, label]) => h('button', { class: `tab${state.tab === key ? ' active' : ''}`, type: 'button', onclick: () => { state.tab = key; state.detail = null; quotes.reset(); load() } }, label))),
   h('button', { class: 'button icon-button', type: 'button', title: T.refresh, 'aria-label': T.refresh, onclick: load }, h('span', { class: 'ms', 'aria-hidden': 'true' }, 'refresh')))
-  app.replaceChildren(...[tabs, state.message ? h('div', { class: 'alert alert-error' }, state.message) : null, ...(state.tab === 'orders' ? ordersView() : state.tab === 'quotes' ? quotes.view() : contactsView())].filter(Boolean))
+  app.replaceChildren(...[tabs, state.message ? h('div', { class: 'alert alert-error' }, state.message) : null, state.notice ? h('div', { class: 'alert', role: 'status' }, state.notice) : null, ...(state.tab === 'orders' ? ordersView() : state.tab === 'quotes' ? quotes.view() : contactsView())].filter(Boolean))
   app.setAttribute('aria-busy', String(state.busy))
 }
 

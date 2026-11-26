@@ -12,6 +12,14 @@ export const CHECKOUT_SHIPPING_POLICIES = Object.freeze(['included', 'flat_rate'
 // of the matching mode. Removing an entry here closes that mode in code.
 const TOTALS_VERIFIED_ENVIRONMENTS = Object.freeze(['test', 'live'])
 const STRIPE_KEY_BY_ENVIRONMENT = Object.freeze({ test: /^(?:sk|rk)_test_/, live: /^(?:sk|rk)_live_/ })
+// GDPR art. 5(1)(e) and 13(2)(a) require a storage period: without
+// `delivery_retention_days`, delivery address and contact are kept six years
+// (with leap days), like the order and invoicing records.
+export const DEFAULT_DELIVERY_RETENTION_DAYS = 2192
+
+export function deliveryRetentionDays (checkout) {
+  return checkout?.deliveryRetentionDays ?? DEFAULT_DELIVERY_RETENTION_DAYS
+}
 
 export function isValidCheckoutLegalVersion (value) {
   return typeof value === 'string' && LEGAL_VERSION.test(value)
@@ -56,8 +64,8 @@ export function isCheckoutAuthorized (catalog, env) {
   if (env.COMMERCE_CHECKOUT_APPROVED !== 'true' || !hasCompleteCommercialApproval(catalog.checkout)) return false
   // Fail before any order exists when the keys do not belong to the configured mode.
   if (!STRIPE_KEY_BY_ENVIRONMENT[env.COMMERCE_ENV].test(env.STRIPE_SECRET_KEY || '') || !env.STRIPE_WEBHOOK_SECRET?.startsWith('whsec_')) return false
-  // Real orders keep buyer addresses: live opens only with a configured erasure deadline.
-  if (env.COMMERCE_ENV === 'live' && catalog.checkout.shippingPolicy !== 'not_applicable' && !Number.isSafeInteger(catalog.checkout.deliveryRetentionDays)) return false
+  // Real orders keep buyer addresses: live opens only with an erasure deadline (the default one when unset).
+  if (env.COMMERCE_ENV === 'live' && catalog.checkout.shippingPolicy !== 'not_applicable' && !Number.isSafeInteger(deliveryRetentionDays(catalog.checkout))) return false
   return TOTALS_VERIFIED_ENVIRONMENTS.includes(env.COMMERCE_ENV)
 }
 

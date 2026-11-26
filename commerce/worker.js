@@ -3,6 +3,7 @@ import { handleBrevoWebhook } from './audience-brevo.js'
 import { handleQuoteLink } from './quotes.js'
 import { dispatchScheduledNotices } from './admin.js'
 import { purgeExpiredDeliveryDetails } from './maintenance.js'
+import { deliveryRetentionDays } from './approval.js'
 
 // Adapt the existing Pages handlers without changing their business or D1 logic.
 // Static Assets normally bypass this module; fallback is also safe in local tests.
@@ -52,8 +53,7 @@ export function createCommerceWorker (catalog, routes) {
     scheduled (_event, env, ctx) {
       if (!catalog?.functionsEnabled || !env.COMMERCE_DB) return
       ctx.waitUntil(dispatchScheduledNotices(env, catalog).catch(() => {}))
-      const retentionDays = catalog.checkout?.deliveryRetentionDays
-      if (retentionDays) ctx.waitUntil(purgeExpiredDeliveryDetails(env.COMMERCE_DB, retentionDays, Math.floor(Date.now() / 1000)).catch(() => {}))
+      ctx.waitUntil(purgeExpiredDeliveryDetails(env.COMMERCE_DB, deliveryRetentionDays(catalog.checkout), Math.floor(Date.now() / 1000)).catch(() => {}))
     }
   }
 }

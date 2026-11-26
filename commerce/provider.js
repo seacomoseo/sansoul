@@ -108,17 +108,60 @@ export function createPaymentProvider (env) {
       const session = parseCheckoutSession(payload)
       if (session.id !== sessionId) throw new CommerceError('payment_provider_invalid_response', 502)
       return session
+    },
+    // Needs `Refunds: Write` on a restricted key. The order changes only when the
+    // signed charge.refunded webhook arrives.
+    async createRefund ({ paymentIntentId, amount, orderId, reason, idempotencyKey }) {
+      const form = new URLSearchParams()
+      form.set('payment_intent', paymentIntentId)
+      form.set('amount', String(amount))
+      form.set('reason', 'requested_by_customer')
+      form.set('metadata[commerce_order_id]', orderId)
+      form.set('metadata[purpose]', 'order_refund')
+      form.set('metadata[note]', reason)
+      let payload
+      try {
+        payload = await stripeRequest(env, '/refunds', {
+          method: 'POST',
+          headers: { 'content-type': 'application/x-www-form-urlencoded', 'idempotency-key': idempotencyKey },
+          body: form
+        })
+      } catch (error) {
+        if ([401, 403].includes(error.providerStatus)) throw new CommerceError('refund_permission_missing', 502)
+        if (error.code === 'checkout_in_progress') throw new CommerceError('refund_in_progress', 409)
+        if (error.providerCode === 'charge_already_refunded') throw new CommerceError('refund_already_done', 409)
+        if (error.providerCode === 'balance_insufficient') throw new CommerceError('refund_balance_insufficient', 409)
+        if (error.providerStatus === 400) throw new CommerceError('refund_rejected', 409)
+        throw error
+      }
+      return parseRefund(payload, { paymentIntentId, amount })
     }
   }
+}
+
+function parseRefund (payload, { paymentIntentId, amount }) {
+  const intent = typeof payload?.payment_intent === 'string' ? payload.payment_intent : payload?.payment_intent?.id
+  if (!/^re_[A-Za-z0-9]+$/.test(payload?.id || '') || intent !== paymentIntentId || payload.amount !== amount || !['pending', 'requires_action', 'succeeded', 'failed', 'canceled'].includes(payload.status)) throw new CommerceError('payment_provider_invalid_response', 502)
+  return { id: payload.id, status: payload.status, amount: payload.amount }
 }
 
 const fakeSessions = new Map()
 const failedFakeCreateKeys = new Set()
 const failedFakeTimeoutKeys = new Set()
 
+const fakeRefunds = new Map()
+
 function createFakeProvider (env) {
   return {
     name: 'fake-test-only',
+    async createRefund ({ paymentIntentId, amount, idempotencyKey }) {
+      let refund = fakeRefunds.get(idempotencyKey)
+      if (!refund) {
+        refund = { id: `re_test_${(await sha256Hex(idempotencyKey)).slice(0, 24)}`, status: 'succeeded', amount, paymentIntentId }
+        fakeRefunds.set(idempotencyKey, refund)
+      }
+      return { id: refund.id, status: refund.status, amount: refund.amount }
+    },
     async createCheckoutSession ({ snapshot, providerIdempotencyKey, catalog, testFailOnce, testTimeoutAfterCreateOnce, testReturnExpired }) {
       if (testFailOnce && !failedFakeCreateKeys.has(providerIdempotencyKey)) {
         failedFakeCreateKeys.add(providerIdempotencyKey)

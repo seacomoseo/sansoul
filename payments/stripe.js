@@ -45,7 +45,13 @@ export async function stripeRequest (env, path, options = {}) {
   // 409: another request with the same idempotency key is still in flight at
   // Stripe. Retrying with the same key replays the stored session.
   if (response.status === 409) throw new PaymentError('checkout_in_progress', 409)
-  if (!response.ok) throw new PaymentError('payment_provider_rejected', 502)
+  if (!response.ok) {
+    const error = new PaymentError('payment_provider_rejected', 502)
+    // Kept for callers that explain a rejection (missing key permission, nothing left to refund).
+    error.providerStatus = response.status
+    error.providerCode = typeof payload?.error?.code === 'string' ? payload.error.code : null
+    throw error
+  }
   return payload
 }
 

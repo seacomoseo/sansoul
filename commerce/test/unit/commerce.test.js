@@ -184,8 +184,9 @@ test('catalog, Functions routing and checkout approval are independent and fail 
   // Live needs every gate the TEST purchase passed plus keys of its own mode; any missing piece keeps it closed.
   assert.equal(isCheckoutAuthorized(completeApproval.catalog, { ...stripeEnv, COMMERCE_CHECKOUT_APPROVED: 'true' }), true)
   const liveEnv = { ...stripeEnv, COMMERCE_ENV: 'live', STRIPE_SECRET_KEY: 'rk_live_unit_fixture', COMMERCE_CHECKOUT_APPROVED: 'true' }
-  // Shipped goods keep buyer addresses: live also needs the erasure deadline.
-  assert.equal(isCheckoutAuthorized(completeApproval.catalog, liveEnv), false)
+  // Shipped goods keep buyer addresses: without a project deadline live uses the default one (6 years).
+  assert.equal(completeApproval.catalog.checkout.deliveryRetentionDays, undefined)
+  assert.equal(isCheckoutAuthorized(completeApproval.catalog, liveEnv), true)
   const retained = buildCatalogFixture(approvalBase + 'delivery_retention_days: 1095\ntotals_policy:\n  version: fixture-v1\n  destinations:\n    ES:\n      tax: { mode: inclusive, rate_percent: 21 }\n      excluded_postal_prefixes: [\'35\', \'38\', \'51\', \'52\']\n      shipping: { amount: 12.05, tax: { mode: inclusive, rate_percent: 21 } }\n')
   assert.equal(retained.catalog.checkout.deliveryRetentionDays, 1095)
   for (const bad of ['0', '29', '3651', '"3 años"', '365.5']) {

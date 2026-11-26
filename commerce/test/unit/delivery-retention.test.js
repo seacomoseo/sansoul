@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { DatabaseSync } from 'node:sqlite'
 import { readFileSync } from 'node:fs'
 import { purgeExpiredDeliveryDetails } from '../../maintenance.js'
+import { DEFAULT_DELIVERY_RETENTION_DAYS, deliveryRetentionDays } from '../../approval.js'
 import { MIGRATIONS } from '../migrations.js'
 
 // Real SQLite with the original migrations; D1-shaped adapter. Synthetic data only.
@@ -61,4 +62,11 @@ test('purge is bounded per call and inert without a retention setting', async ()
   assert.deepEqual(await purgeExpiredDeliveryDetails(db, undefined, NOW), { purged: 0 })
   assert.deepEqual(await purgeExpiredDeliveryDetails(db, 365, NOW, 2), { purged: 2 })
   assert.equal(remaining().length, 1)
+})
+
+test('without a project setting, delivery data is kept six years', () => {
+  assert.equal(DEFAULT_DELIVERY_RETENTION_DAYS, 2192)
+  assert.equal(deliveryRetentionDays(undefined), 2192)
+  assert.equal(deliveryRetentionDays({}), 2192)
+  assert.equal(deliveryRetentionDays({ deliveryRetentionDays: 30 }), 30)
 })

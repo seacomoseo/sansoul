@@ -3,6 +3,7 @@ Shortcode: commerce-privacy
 Purpose: Privacy section for online orders, shown only when data/commerce.yml enables commerce.
 Context: none. Retention comes from data/commerce.yml `privacy_retention` (optional strings):
   orders (order and invoicing data, which includes the stored invoices) and delivery (delivery address and contact).
+  Without delivery text, the sentence follows `delivery_retention_days` (default 2192 days, commerce/approval.js).
   The recipients line follows `order_notices` (merchant notice, buyer confirmation, buyer invoice).
   With `audience.enabled` adds the consent section: `privacy_retention.contacts` (optional) and
   `audience.provider` (optional, e.g. "Brevo (Sendinblue SAS, Francia)") name retention and sender.
@@ -22,11 +23,14 @@ Renders: Markdown section (Spanish) or nothing.
     {{- $merchantMail := and $noticesOn (ne $merchant "none") -}}
     {{- $buyerMail := and $noticesOn (eq $buyer "own") -}}
     {{- $stripeReceipt := and $noticesOn (eq $buyer "stripe") -}}
+    {{- $deliveryDays := .delivery_retention_days | default 2192 -}}
+    {{- $deliveryPeriod := cond (eq $deliveryDays 2192) "6 años" (printf "%d días" $deliveryDays) -}}
+    {{- $deliveryText := index $retention "delivery" | default (printf "%s desde que se cierra el pedido (enviado, cancelado o reembolsado); después se borran automáticamente" $deliveryPeriod) -}}
     {{- $invoiceText := cond (eq $buyerInvoice "always") " con su factura en PDF" (cond (eq $buyerInvoice "on_request") " y, si la solicita, su factura en PDF" "") -}}
 ### Compras en la tienda online
 Si realiza un pedido, tratamos los datos necesarios para cobrarlo, fabricarlo, enviarlo y emitir la factura: artículos e importes, nombre, email, teléfono y dirección de entrega. El pago lo procesa **Stripe Payments Europe, Ltd.**, que recoge los datos de pago y de envío en su página segura; nosotros no vemos ni guardamos el número de su tarjeta.
 - **Base legal:** Art. 6(1)(b) RGPD (ejecución del contrato) y Art. 6(1)(c) (obligaciones contables y fiscales).
-- **Conservación:** datos del pedido y de facturación, {{ index $retention "orders" | default "el plazo que exija la normativa contable y fiscal" }}; dirección y contacto de entrega, {{ index $retention "delivery" | default "mientras sean necesarios para el envío, las devoluciones y la garantía" }}.
+- **Conservación:** datos del pedido y de facturación, {{ index $retention "orders" | default "el plazo que exija la normativa contable y fiscal" }}; dirección y contacto de entrega, {{ $deliveryText }}.
 - **Destinatarios:** Stripe (pago), la empresa de transporte (envío) y nuestro proveedor de alojamiento (Cloudflare).{{ if $noticesOn }} Los correos del pedido se envían a través de Google (Gmail).{{ end }}{{ if $merchantDetails }} El aviso interno de cada pedido incluye sus datos de contacto y de entrega para poder prepararlo y enviarlo.{{ else if or $merchantMail (not $noticesOn) }} El aviso interno de cada pedido no incluye su dirección ni su contacto.{{ end }}{{ if $buyerMail }} Le enviaremos por correo la confirmación del pedido{{ $invoiceText }}.{{ else if $stripeReceipt }} Stripe le enviará por correo el recibo del pago{{ if eq $buyerInvoice "always" }} y nosotros, su factura en PDF{{ else if eq $buyerInvoice "on_request" }} y, si la solicita, le enviaremos su factura en PDF{{ end }}.{{ end }}
     {{- with .audience -}}{{- if eq .enabled true }}
     {{- $consentText := .consent_text -}}

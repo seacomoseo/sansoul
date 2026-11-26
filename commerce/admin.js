@@ -240,6 +240,33 @@ async function markDocuments (request, db, orderId, now) {
   return jsonResponse({ order_id: orderId, documents_sent_at: row?.sent_at ?? null })
 }
 
+// Refund from the panel or the token: Stripe moves the money and the signed
+// charge.refunded webhook moves the order, so nothing is written here. The
+// idempotency key comes from the state the request saw (amount already refunded
+// and amount asked), so a double click or a second stale tab replays one refund.
+async function refundOrder (request, env, db, orderId) {
+  const { value } = await readJsonBody(request, 1024)
+  const valid = value && typeof value === 'object' && !Array.isArray(value) &&
+    Object.keys(value).every(key => ['amount_minor', 'reason'].includes(key)) &&
+    typeof value.reason === 'string' && value.reason.trim() && value.reason.trim().length <= 200 &&
+    (value.amount_minor === undefined || (Number.isSafeInteger(value.amount_minor) && value.amount_minor > 0))
+  if (!valid) throw new CommerceError('invalid_refund')
+  const order = await db.prepare('SELECT payment_status, payment_intent_id, amount_total_minor, refund_amount_minor, currency FROM orders WHERE id = ?').bind(orderId).first()
+  if (!order) throw new CommerceError('order_not_found', 404)
+  if (!['paid', 'partially_refunded'].includes(order.payment_status) || !order.payment_intent_id) throw new CommerceError('order_not_refundable', 409)
+  const refunded = order.refund_amount_minor || 0
+  const amount = value.amount_minor ?? order.amount_total_minor - refunded
+  if (amount > order.amount_total_minor - refunded) throw new CommerceError('refund_amount_too_large', 409)
+  const refund = await createPaymentProvider(env).createRefund({
+    paymentIntentId: order.payment_intent_id,
+    amount,
+    orderId,
+    reason: value.reason.trim(),
+    idempotencyKey: `commerce_refund_${orderId}_${refunded}_${amount}`
+  })
+  return jsonResponse({ order_id: orderId, refund_id: refund.id, refund_status: refund.status, amount_minor: amount, currency: order.currency })
+}
+
 async function transitionOrder (db, orderId, from, to, now, { catalog, tracking } = {}) {
   if (to === 'shipped') {
     const delivery = await db.prepare(`
@@ -618,7 +645,7 @@ export async function handleAdmin (request, env, catalog) {
       const page = await listOrders(db, url, 100)
       return csvResponse(page.orders, page.nextCursor)
     }
-    // Operator routes (reconciliation, notifier pull, stock, partial refunds) stay with the token.
+    // Operator routes (reconciliation, notifier pull, stock, closing partial refunds) stay with the token.
     if (person && /^\/api\/commerce\/admin\/(reconcile|outbox\/|inventory$)|\/cancel-partial$/.test(path)) throw new CommerceError('forbidden', 403)
     if (catalog?.audience && path === '/api/commerce/admin/contacts' && request.method === 'GET') {
       const contacts = await listContacts(db, url.searchParams.get('scope') || 'consented')
@@ -642,6 +669,9 @@ export async function handleAdmin (request, env, catalog) {
 
     const sent = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/documents$/i)
     if (sent && catalog?.orderDocuments && request.method === 'POST' && ORDER_ID.test(sent[1])) return await markDocuments(request, db, sent[1], now)
+
+    const refund = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/refund$/i)
+    if (refund && request.method === 'POST' && ORDER_ID.test(refund[1])) return await refundOrder(request, env, db, refund[1])
 
     const match = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/(manufacture|ship|cancel-partial)$/i)
     if (match && request.method === 'POST' && ORDER_ID.test(match[1])) {

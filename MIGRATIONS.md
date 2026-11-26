@@ -42,6 +42,21 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.23.0 — 2026-11-26 — Reembolsos desde Pedidos y plazo de entrega por defecto
+
+**Impacto:** ninguno si no haces nada.
+
+1. **Reembolsos** en `/admin/orders/` (total o parcial, con motivo y confirmación) vía la API de Stripe. Para usarlos,
+   añade el permiso **Refunds: Write** a la clave restringida de Stripe del proyecto (se edita sin cambiar la clave).
+   Sin ese permiso el botón responde «la clave no tiene permiso» y no cambia nada.
+2. **`delivery_retention_days` por defecto: 2192 días** (6 años, como pedidos y facturas). Antes, sin el valor, la dirección
+   y el contacto de entrega no se borraban nunca y `live` quedaba cerrado; ahora el cron los borra a los 6 años del cierre
+   del pedido y `live` abre con ese plazo. Si `privacy_retention.delivery` no tiene texto, la política de privacidad
+   lo describe sola. Un proyecto que quiera otro plazo lo fija como antes.
+
+**Acciones obligatorias:** ninguna. Si tu proyecto no tenía `delivery_retention_days` y su política de privacidad
+promete otra cosa en `privacy_retention.delivery`, alinea ese texto o fija el valor.
+
 ## 14.22.0 — 2026-11-25 — Marca «documentos enviados» en Pedidos
 
 **Impacto:** ninguno si no haces nada. Migración D1 nueva `commerce/0012_order_documents` (el CI la aplica).

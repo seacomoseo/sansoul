@@ -288,7 +288,9 @@ test('calculator is not a checkout authorization: policy-less catalogs and forei
   }
   const withPolicy = { enabled: true, checkout: { ...checkout, totalsPolicy: policy() } }
   assert.equal(isCheckoutAuthorized(withPolicy, env('test')), true)
-  assert.equal(isCheckoutAuthorized(withPolicy, env('live')), false)
+  // No project deadline: live runs with the default one; a malformed value keeps it closed.
+  assert.equal(isCheckoutAuthorized(withPolicy, env('live')), true)
+  assert.equal(isCheckoutAuthorized({ ...withPolicy, checkout: { ...withPolicy.checkout, deliveryRetentionDays: '6 años' } }, env('live')), false)
   const retained = { ...withPolicy, checkout: { ...withPolicy.checkout, deliveryRetentionDays: 1095 } }
   assert.equal(isCheckoutAuthorized(retained, env('live')), true)
   assert.equal(isCheckoutAuthorized(retained, { ...env('live'), STRIPE_SECRET_KEY: 'rk_test_fixture' }), false)
