@@ -17,8 +17,11 @@
     {{- range . -}}
       {{- $radius    := or .radius "" -}}
       {{- $color     := or .color $geo.color $.icon_color "main" -}}
-      {{- $icon      := or .icon $geo.icon $.il (partial "func/default-icon" "geo") -}}
-      {{- $icon       = cond (ne .type "point") "" $icon -}}
+      {{- $icon      := "" -}}
+      {{- if eq .type "point" -}}
+        {{- $icon     = or .icon $geo.icon $.il (partial "func/default-icon" "geo") -}}
+        {{- $aux     := partial "icon" (dict "icon" $icon) -}}
+      {{- end -}}
       {{- $geo_attrs := dict
         "data-geo"    .geo
         "data-radius" $radius
