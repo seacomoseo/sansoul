@@ -11,6 +11,7 @@ import { fill } from '../new/drive.js'
 import { context, identityHint, STEPS } from '../new.js'
 import { renamable, sameName } from '../new/cloudflare.js'
 import { domainTabs, historyPlan, projectFormIds } from '../new/forms-history.js'
+import { callbackUri, grantKey, missingSecrets, SECRETS } from '../new/gmail.js'
 
 const quiet = fn => {
   const log = console.log
@@ -296,6 +297,17 @@ test('forms history takes only this domain\'s tabs and restores cut form ids', (
   } finally {
     fs.rmSync(dir, { recursive: true, force: true })
   }
+})
+
+test('gmail step: secrets after cloudflare, never replacing the grant key', () => {
+  const ids = STEPS.map(s => s.id)
+  assert.ok(ids.indexOf('cloudflare') < ids.indexOf('gmail'))
+  assert.ok(ids.indexOf('gmail') < ids.indexOf('publish'))
+  assert.deepEqual(missingSecrets([]), SECRETS)
+  assert.deepEqual(missingSecrets(SECRETS), [])
+  assert.deepEqual(missingSecrets(SECRETS, true), ['FORMS_GOOGLE_CLIENT_ID', 'FORMS_GOOGLE_CLIENT_SECRET'])
+  assert.equal(Buffer.from(grantKey(), 'base64url').length, 32)
+  assert.equal(callbackUri('acme.es'), 'https://acme.es/api/forms/admin/google/callback')
 })
 
 test('forms history runs after cloudflare and before publish', () => {

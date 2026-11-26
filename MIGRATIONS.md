@@ -42,6 +42,14 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.25.0 — 2026-11-26 — `sh do new` deja listo «Conectar Gmail»
+
+**Impacto:** ninguno en el sitio. Nuevo paso `gmail` de `sh do new`: guarda en el Worker los secretos del botón
+«Conectar Gmail» (`FORMS_GOOGLE_CLIENT_ID`, `FORMS_GOOGLE_CLIENT_SECRET`, `FORMS_GRANT_KEY`) si faltan, sin sustituir
+nunca una `FORMS_GRANT_KEY` existente, y recuerda la URI de retorno del cliente OAuth.
+
+**Acciones obligatorias:** en cada proyecto con Worker, `sh do new --only cloudflare,gmail --apply` (repetir es seguro).
+
 ## 14.24.0 — 2026-11-26 — Iconos del mapa en producción, alias de formularios y rutas heredadas en el espejo Netlify
 
 **Impacto:** compatible; sin configurar nada todo sigue igual, salvo la corrección del icono del mapa.

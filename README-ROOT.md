@@ -129,8 +129,14 @@ Pasos, en este orden:
     `<dominio>#<formulario>`) a su base de datos de Cloudflare, para verlos en el panel «Formularios» del CMS. Crea la
     base si falta; repetirlo solo añade lo nuevo y no envía nada. Necesita el paso **cloudflare** en la misma
     ejecución: `sh do new --only cloudflare,forms-history`. Detalle en [forms/README.md](forms/README.md).
-11. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
-12. **retire** (solo con `--retire`, con la migración comprobada): borra el Cloudflare Pages antiguo y el repo antiguo
+11. **gmail**: deja listo «Conectar Gmail» en los paneles de Correo y Formularios. Guarda en el Worker
+    `FORMS_GOOGLE_CLIENT_ID` y `FORMS_GOOGLE_CLIENT_SECRET` (cliente OAuth «SanSoul Web») y `FORMS_GRANT_KEY` (una por
+    proyecto, nunca se sustituye: cifra las cuentas ya conectadas). Necesita el Worker (en un proyecto nuevo, repetir
+    tras el primer despliegue) y el paso **cloudflare** en la misma ejecución: `sh do new --only cloudflare,gmail`.
+    Avisa si `params.worker_vars` no tiene `FORMS_PROVIDER: gmail` y `FORMS_GMAIL_DEFAULT`, y recuerda registrar la
+    URI de retorno `https://<dominio>/api/forms/admin/google/callback` en el cliente OAuth.
+12. **publish**: commit y push de lo que hayan cambiado los pasos (en un proyecto nuevo, el primer push).
+13. **retire** (solo con `--retire`, con la migración comprobada): borra el Cloudflare Pages antiguo y el repo antiguo
     `seacomoseo/<dominio>`, con copia previa. No toca nada si el dominio aún apunta a Pages o si el repo antiguo
     tiene cambios posteriores a la migración.
 
