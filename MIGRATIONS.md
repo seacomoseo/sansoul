@@ -47,7 +47,7 @@ Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegram
 **Impacto:** ninguno si no haces nada.
 
 1. **Reembolsos** en `/admin/orders/` (total o parcial, con motivo y confirmación) vía la API de Stripe. Para usarlos,
-   añade el permiso **Refunds: Write** a la clave restringida de Stripe del proyecto (se edita sin cambiar la clave).
+   añade el permiso **Charges and Refunds: Write** a la clave restringida de Stripe del proyecto (se edita sin cambiar la clave).
    Sin ese permiso el botón responde «la clave no tiene permiso» y no cambia nada.
 2. **`delivery_retention_days` por defecto: 2192 días** (6 años, como pedidos y facturas). Antes, sin el valor, la dirección
    y el contacto de entrega no se borraban nunca y `live` quedaba cerrado; ahora el cron los borra a los 6 años del cierre

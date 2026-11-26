@@ -109,7 +109,7 @@ export function createPaymentProvider (env) {
       if (session.id !== sessionId) throw new CommerceError('payment_provider_invalid_response', 502)
       return session
     },
-    // Needs `Refunds: Write` on a restricted key. The order changes only when the
+    // Needs `Charges and Refunds: Write` (dashboard name) on a restricted key. The order changes only when the
     // signed charge.refunded webhook arrives.
     async createRefund ({ paymentIntentId, amount, orderId, reason, idempotencyKey }) {
       const form = new URLSearchParams()
