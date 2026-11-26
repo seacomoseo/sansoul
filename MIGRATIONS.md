@@ -42,6 +42,14 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.25.2 — 2026-11-26 — Espejo de Netlify: sin límite horario en el plan Free antiguo
+
+**Impacto:** ninguno en los proyectos. En las cuentas de Netlify con plan Free antiguo (`credit_features` desactivado) el
+espejo ya no espera una hora entre despliegues: cada commit se publica en su propia ejecución. Los planes con créditos y
+las cuentas cuyo plan no se puede leer mantienen el límite de un despliegue por hora y sitio y el de 15 por equipo.
+
+**Acciones obligatorias:** ninguna.
+
 ## 14.25.1 — 2026-11-26 — Títulos con icono lateral y línea: ya no se aplastan en vertical
 
 **Impacto:** ninguno que requiera cambios. Un título con `icon_pos: side` y `line: true` repartía el ancho entre icono,

@@ -80,9 +80,10 @@ test('deploy decision: current commit, hourly throttle and rolling team budget',
   assert.match(deployDecision({ deploys: [deploy(90)], teamDeploys: team, sha: 'new', now }).reason, /team budget reached/)
   const old = team.map(item => ({ ...item, created_at: new Date(now - 32 * 24 * 3600 * 1000).toISOString() }))
   assert.equal(deployDecision({ deploys: [deploy(90)], teamDeploys: [...old, deploy(90, { context: 'deploy-preview' })], sha: 'new', now }).deploy, true)
-  // Legacy Free plan (no credits): no team budget, the hourly throttle stays.
+  // Legacy Free plan (no credits): no team budget and no hourly throttle.
   assert.equal(deployDecision({ deploys: [deploy(90)], teamDeploys: team, sha: 'new', credits: false, now }).deploy, true)
-  assert.equal(deployDecision({ deploys: [deploy(20)], sha: 'new', credits: false, now }).deploy, false)
+  assert.equal(deployDecision({ deploys: [deploy(20)], sha: 'new', credits: false, now }).deploy, true)
+  assert.equal(deployDecision({ deploys: [deploy(20, { title: 'SanSoul new' })], sha: 'new', credits: false, now }).deploy, false)
 })
 
 test('credits: legacy accounts say credit_features false; anything unknown counts as credits', async () => {

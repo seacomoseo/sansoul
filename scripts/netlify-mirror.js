@@ -20,7 +20,7 @@ Environment: NETLIFY_AUTH_TOKEN, CLOUDFLARE_API_TOKEN (CLOUDFLARE_ACCOUNT_ID),
   other runs).
 Credits (Netlify Free: 300 per team and billing cycle, 15 per production
   deploy): at most one deploy an hour per site and TEAM_DEPLOYS per team in any
-  31 days (teams on the legacy Free plan, without credits, only the hourly limit); a skipped commit is published by the next run or the scheduled
+  31 days (teams on the legacy Free plan, without credits, no limit at all); a skipped commit is published by the next run or the scheduled
   catch-up, which only publishes a commit the Worker already runs.
 Rules: public/_redirects is moved into netlify.toml after the /api/* proxy
   (Netlify applies _redirects first, and a splat there would swallow /api/*).
@@ -104,18 +104,18 @@ export function parseRedirects (text) {
 // deploys: this site's, newest first; teamDeploys: every site of its team.
 // Failed deploys count for the throttle and the budget (they may cost credits);
 // unreadable ones (no created_at, listed last) only for the budget. A team on
-// Netlify's legacy Free plan (`credits: false`) pays nothing per deploy: only
-// the hourly throttle applies.
+// Netlify's legacy Free plan (`credits: false`) pays nothing per deploy: neither
+// the hourly throttle nor the team budget applies.
 export function deployDecision ({ deploys, teamDeploys = deploys, sha, credits = true, now = Date.now(), minInterval = MIN_INTERVAL_MS, budget = TEAM_DEPLOYS, window = BUDGET_WINDOW_MS }) {
   const production = list => list.filter(deploy => deploy.context === 'production')
   const site = production(deploys)
   const served = site.find(deploy => deploy.state === 'ready')
   if (sha && served?.title?.includes(sha)) return { deploy: false, reason: `Netlify already serves ${sha.slice(0, 7)}.` }
+  if (!credits) return { deploy: true, reason: 'Netlify legacy plan: deploys cost no credits.' }
   if (site[0]) {
     const wait = minInterval - (now - Date.parse(site[0].created_at))
     if (wait > 0) return { deploy: false, reason: `Last Netlify deploy was under an hour ago; the next run or the scheduled catch-up publishes this commit (in ${Math.ceil(wait / 60000)} min or later).`, throttled: true }
   }
-  if (!credits) return { deploy: true, reason: 'Netlify legacy plan: deploys cost no credits.' }
   const used = production(teamDeploys).filter(deploy => !deploy.created_at || now - Date.parse(deploy.created_at) < window).length
   if (used >= budget) return { deploy: false, reason: `Netlify team budget reached (${used}/${budget} production deploys in 31 days); the scheduled catch-up retries.`, throttled: true }
   return { deploy: true, reason: `Team deploy ${used + 1}/${budget} in 31 days.` }
