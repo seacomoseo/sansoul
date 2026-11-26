@@ -84,7 +84,7 @@ test('the forms panel page is registered before init only where the Worker answe
     if (String(url).includes('/api/forms/')) await new Promise(resolve => setTimeout(resolve, 10))
     return { status: 401, headers: { get: () => 'application/json' } }
   } })
-  assert.deepEqual(pages.map(page => page.id), ['forms', 'mail', 'orders', 'help'])
+  assert.deepEqual(pages.map(page => page.id), ['mail', 'forms', 'orders', 'help'])
   pages.length = 0
   pages.length = 0
   await initialize({ CMS, fetch: answer(404, 'text/html') })

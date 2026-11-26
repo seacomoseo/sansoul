@@ -42,6 +42,18 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.24.0 — 2026-11-26 — Iconos del mapa en producción, alias de formularios y rutas heredadas en el espejo Netlify
+
+**Impacto:** compatible; sin configurar nada todo sigue igual, salvo la corrección del icono del mapa.
+
+- Los marcadores de los mapas (Leaflet) muestran su icono también en producción: el glifo entra en las fuentes recortadas.
+- `params.forms_origins` (opcional) admite como origen de formularios alias del propio sitio que no redirigen a `baseURL`.
+- `params.netlify_form_proxies` (opcional) conserva, en un espejo Netlify, las rutas de formularios que ya iban a otros Workers.
+- Los paneles del CMS salen en este orden: Correo, Formularios, Pedidos y Ayuda.
+- En Cloudflare Workers las redirecciones exactas no consumen el límite dinámico y se respeta el orden de las reglas del proyecto.
+
+**Acciones obligatorias:** ninguna.
+
 ## 14.23.0 — 2026-11-26 — Reembolsos desde Pedidos y plazo de entrega por defecto
 
 **Impacto:** ninguno si no haces nada.

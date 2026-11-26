@@ -27,8 +27,8 @@ async function panelAvailable (path, headers) {
 async function registerPanels (CMS) {
   if (typeof CMS.registerCustomPage !== 'function') return
   const optional = [
-    { id: 'forms', es: 'Formularios', en: 'Forms', icon: 'inbox', path: '/api/forms/admin/summary' },
     { id: 'mail', es: 'Correo', en: 'Mail', icon: 'mail', path: '/api/mail/admin/summary' },
+    { id: 'forms', es: 'Formularios', en: 'Forms', icon: 'inbox', path: '/api/forms/admin/summary' },
     { id: 'orders', es: 'Pedidos', en: 'Orders', icon: 'shopping_cart', path: '/api/commerce/admin/orders', headers: { authorization: 'GitHub probe-probe-probe-probe' } }
   ]
   const available = await Promise.all(optional.map(page => panelAvailable(page.path, page.headers)))
