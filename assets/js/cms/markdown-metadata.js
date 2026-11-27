@@ -1,7 +1,7 @@
 import { ga4EventList } from '../ga4-event.js'
 
 // Shared Markdown syntax for CMS components and the versioned source migration.
-const LINK_TOKENS = new Set(['main', 'alt', 'cta', 'light', 'dark', 'turn', 'such', 'whatsapp', 'dot', 'sm', 'swap', 'lock', 'nofollow', 'sublock', 'blank', 'ga4'])
+const LINK_TOKENS = new Set(['main', 'alt', 'cta', 'light', 'dark', 'turn', 'such', 'whatsapp', 'dot', 'sm', 'swap', 'lock', 'nofollow', 'noindex', 'sublock', 'blank', 'ga4'])
 export const linkPattern = /(?<!!)\[(?![!])(\[)?(?:::(.+?)::\s*)?([^\]]+?)(\])?\]\(([^)\s]+)(?:\s+"((?:\\.|[^"\\])*)")?\)/
 export const imagePattern = /!\[((?:\\.|[^\]\\])*)\]\(([^)\s]+)(?:\s+"((?:\\.|[^"\\])*)")?\)/
 export const inlineImagePattern = /(?:^|(?<=[^\n]))(?:\[!\[((?:\\.|[^\]\\])*)\]\(([^)\s]+)(?:\s+"((?:\\.|[^"\\])*)")?\)\]\(([^)\s]+)\)|(?<!\[)!\[((?:\\.|[^\]\\])*)\]\(([^)\s]+)(?:\s+"((?:\\.|[^"\\])*)")?\))/
@@ -19,7 +19,7 @@ export function parseLinkTitle (value = '') {
   const match = title.match(/\s*(?:\{([^{}]+)\}|\[([^\[\]]+)\])$/)
   const tokens = match ? (match[1] ?? match[2]).trim().split(/\s+/) : []
   if (!tokens.length || !tokens.every(token => (LINK_TOKENS.has(token) || (token.startsWith('ga4:') && (token.slice(4) === 'none' || ga4EventList(token.slice(4)).length === token.slice(4).split(',').length))))) return { title, tokens: [] }
-  return { title: title.slice(0, match.index), tokens: tokens.map(token => token === 'nofollow' ? 'lock' : token) }
+  return { title: title.slice(0, match.index), tokens: tokens.map(token => ['nofollow', 'noindex'].includes(token) ? 'lock' : token) }
 }
 
 function decodeURL (value = '') {

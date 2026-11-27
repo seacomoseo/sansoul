@@ -29,3 +29,26 @@ test('Markdown links preserve left, inline and right icons in text order', async
   assert.match(html, /data-ga4="download"/)
   assert.doesNotMatch(html, /::|ga4:download|sublock/)
 })
+
+test('legacy noindex token keeps the rest of the link block and locks the link like lock', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sansoul-link-noindex-'))
+  t.after(() => fs.rm(root, { recursive: true, force: true }))
+  await fs.mkdir(path.join(root, 'layouts/partials/func'), { recursive: true })
+  await fs.mkdir(path.join(root, 'layouts/_default/_markup'), { recursive: true })
+  for (const name of ['func/link-icons', 'func/attrs', 'func/is-mail', 'func/ga4-event', 'link']) {
+    await fs.copyFile(path.join(engine, `layouts/partials/${name}.html`), path.join(root, `layouts/partials/${name}.html`))
+  }
+  await fs.copyFile(path.join(engine, 'layouts/_default/_markup/render-link.html'), path.join(root, 'layouts/_default/_markup/render-link.html'))
+  await fs.writeFile(path.join(root, 'layouts/partials/icon.html'), '<i data-icon="{{ .icon | default .def }}"></i>')
+  const md = ['[[Legacy]](https://example.com/a "[noindex light]")', '[[Current]](https://example.com/b "{lock light}")'].join(' ')
+  await fs.writeFile(path.join(root, 'layouts/index.html'), `{{ site.Home.RenderString ${JSON.stringify(md)} }}`)
+  await fs.writeFile(path.join(root, 'hugo.yml'), 'baseURL: https://fixture.example/\ndisableKinds: [taxonomy, term, RSS, sitemap]\n')
+  const result = spawnSync('hugo', ['--source', root], { encoding: 'utf8' })
+  assert.equal(result.status, 0, result.stdout + result.stderr)
+  const html = await fs.readFile(path.join(root, 'public/index.html'), 'utf8')
+  const legacy = html.match(/<(?:a|button)[^>]*>(?:<b>)?Legacy/)[0].replace(/Legacy|example\.com\/a|data-b="[^"]*"/g, '')
+  const current = html.match(/<(?:a|button)[^>]*>(?:<b>)?Current/)[0].replace(/Current|example\.com\/b|data-b="[^"]*"/g, '')
+  assert.equal(legacy, current)
+  assert.match(legacy, /^<button[^>]*class="btn light"/)
+  assert.doesNotMatch(html, /noindex|href="https:\/\/example\.com\/a"/)
+})

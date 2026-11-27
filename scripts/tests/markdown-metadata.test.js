@@ -21,6 +21,10 @@ test('link metadata round trips buttons, icons, flags and quoted titles', () => 
   const old = '[Lock](/target "Heading [nofollow blank]")'
   assert.equal(syntax.parseLinkMatch(old.match(syntax.linkPattern)).follow, 'lock')
   assert.equal(syntax.formatLink(syntax.parseLinkMatch(old.match(syntax.linkPattern))), '[Lock](/target "Heading {lock blank}")')
+  const legacyNoindex = '[[Más en Google]](https://g.page/x "[noindex light]")'
+  assert.equal(syntax.parseLinkMatch(legacyNoindex.match(syntax.linkPattern)).follow, 'lock')
+  assert.equal(syntax.parseLinkMatch(legacyNoindex.match(syntax.linkPattern)).color, 'light')
+  assert.equal(syntax.formatLink(syntax.parseLinkMatch(legacyNoindex.match(syntax.linkPattern))), '[[Más en Google]](https://g.page/x "{light lock}")')
   for (const title of ['A [normal title]', 'A {normal title}', 'An ordinary title']) {
     assert.deepEqual(syntax.parseLinkTitle(title), { title, tokens: [] })
   }
