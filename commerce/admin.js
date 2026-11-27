@@ -9,7 +9,7 @@ const tokenEncoder = new TextEncoder()
 import { isCheckoutAuthorized, isSyntheticTestFixture } from './approval.js'
 import { replayUnmatchedWebhook } from './webhook.js'
 import { AUDIENCE_SYNC, AUDIENCE_UNSUBSCRIBE, enqueueUnsubscribe, syncAudienceEvent } from './audience-brevo.js'
-import { hasMailNotifier, loadOrder, sendOrderNotice } from './notifier.js'
+import { hasMailNotifier, loadOrder, orderCreditNote, sendOrderNotice } from './notifier.js'
 import { handleQuotesAdmin } from './quotes.js'
 import { InvoiceError, countryName, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 
@@ -253,6 +253,8 @@ async function refundOrder (request, env, db, orderId) {
   if (!valid) throw new CommerceError('invalid_refund')
   const order = await db.prepare('SELECT payment_status, payment_intent_id, amount_total_minor, refund_amount_minor, currency FROM orders WHERE id = ?').bind(orderId).first()
   if (!order) throw new CommerceError('order_not_found', 404)
+  // A second click or a stale tab after the webhook already closed the refund.
+  if (order.payment_status === 'refunded') throw new CommerceError('refund_already_done', 409)
   if (!['paid', 'partially_refunded'].includes(order.payment_status) || !order.payment_intent_id) throw new CommerceError('order_not_refundable', 409)
   const refunded = order.refund_amount_minor || 0
   const amount = value.amount_minor ?? order.amount_total_minor - refunded
@@ -315,7 +317,7 @@ async function cancelPartialRefund (db, orderId, now) {
     `).bind(eventKey, JSON.stringify({ eventKey, orderId, eventType: 'fulfillment.partial_refund_cancelled' }), now, now, now, orderId),
     db.prepare(`
       UPDATE stock_reservations SET status = 'released', updated_at = ?
-      WHERE order_id = ? AND status = 'held' AND changes() > 0
+      WHERE order_id = ? AND status IN ('held', 'committed') AND changes() > 0
     `).bind(now, orderId)
   ])
 
@@ -602,6 +604,25 @@ async function invoicePdf (db, catalog, orderId) {
   })
 }
 
+// The credit note (rectificativa) of a refunded order as a PDF (14.29).
+async function creditNotePdf (db, catalog, orderId) {
+  if (!catalog?.invoice) throw new CommerceError('invoice_not_configured', 404)
+  const order = await loadOrder(db, orderId)
+  if (!order) throw new CommerceError('not_found', 404)
+  if (!(order.refund_amount_minor > 0)) throw new CommerceError('order_not_refunded', 409)
+  let row
+  try {
+    row = await orderCreditNote(db, order, catalog)
+  } catch (error) {
+    if (error instanceof InvoiceError) throw new CommerceError(error.code, 409)
+    throw error
+  }
+  if (!row) throw new CommerceError('not_found', 404)
+  return new Response(renderInvoicePdf(row, catalog.invoice), {
+    headers: { 'content-type': 'application/pdf', 'content-disposition': `attachment; filename="${invoiceFilename(row)}"`, 'cache-control': 'no-store' }
+  })
+}
+
 function siteName (catalog) {
   try {
     return new URL(catalog?.origin).host || 'SanSoul'
@@ -666,6 +687,8 @@ export async function handleAdmin (request, env, catalog) {
 
     const invoice = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/invoice\.pdf$/i)
     if (invoice && request.method === 'GET' && ORDER_ID.test(invoice[1])) return await invoicePdf(db, catalog, invoice[1])
+    const creditNote = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/credit-note\.pdf$/i)
+    if (creditNote && request.method === 'GET' && ORDER_ID.test(creditNote[1])) return await creditNotePdf(db, catalog, creditNote[1])
 
     const sent = path.match(/^\/api\/commerce\/admin\/orders\/([0-9a-f-]+)\/documents$/i)
     if (sent && catalog?.orderDocuments && request.method === 'POST' && ORDER_ID.test(sent[1])) return await markDocuments(request, db, sent[1], now)

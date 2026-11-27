@@ -96,7 +96,7 @@ export function paymentStatements (db, order, target, now, eventId = null) {
         ELSE payment_status
       END,
       fulfillment_status = CASE
-        WHEN ? = 'refund' AND MAX(refund_amount_minor, ?) >= amount_total_minor AND fulfillment_status IN ('awaiting_payment', 'ready', 'inventory_exception') THEN 'cancelled'
+        WHEN ? = 'refund' AND MAX(refund_amount_minor, ?) >= amount_total_minor AND fulfillment_status IN ('awaiting_payment', 'ready', 'manufacturing', 'inventory_exception') THEN 'cancelled'
         WHEN payment_status = 'partially_refunded' AND fulfillment_status IN ('awaiting_payment', 'ready') THEN 'inventory_exception'
         WHEN ? = 'refund' AND MAX(refund_amount_minor, ?) < amount_total_minor AND fulfillment_status IN ('awaiting_payment', 'ready') THEN 'inventory_exception'
         WHEN ? = 'paid' AND payment_status NOT IN ('refunded', 'partially_refunded') AND fulfillment_status = 'awaiting_payment' THEN
@@ -226,12 +226,15 @@ export function paymentStatements (db, order, target, now, eventId = null) {
         ), 'pending', 0, ?, ?, ?
       FROM orders WHERE id = ? AND refund_amount_minor = ?${eventGuard}
     `).bind(eventKey, eventKey, now, now, now, order.id, refundAmount, ...eventArgs))
+    // A full refund cancels any order not shipped yet (manufacturing included) and
+    // gives its units back; a shipped order keeps its phase and its committed units.
     statements.push(db.prepare(`
       UPDATE stock_reservations SET status = 'released', updated_at = ?
-      WHERE order_id = ? AND status = 'held'
+      WHERE order_id = ? AND status IN ('held', 'committed')
         AND EXISTS (
           SELECT 1 FROM orders
           WHERE id = ? AND payment_status = 'refunded' AND refund_amount_minor >= amount_total_minor
+            AND fulfillment_status = 'cancelled'
         )
         ${eventGuard}
     `).bind(now, order.id, order.id, ...eventArgs))

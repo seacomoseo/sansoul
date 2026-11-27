@@ -107,11 +107,15 @@ test('refund: invalid bodies and orders that cannot be refunded never reach Stri
       assert.equal(response.status, 400)
       assert.equal((await response.json()).error, 'invalid_refund')
     }
-    for (const state of [{ payment: 'pending' }, { payment: 'refunded', refunded: 1300 }, { payment: 'expired' }, { intent: null }]) {
+    for (const state of [{ payment: 'pending' }, { payment: 'expired' }, { intent: null }]) {
       const response = await call(fixture(state).env, `orders/${ID}/refund`, { reason: 'x' })
       assert.equal(response.status, 409)
       assert.equal((await response.json()).error, 'order_not_refundable')
     }
+    // Already refunded (second click or stale tab after the webhook): its own code.
+    const done = await call(fixture({ payment: 'refunded', refunded: 1300 }).env, `orders/${ID}/refund`, { reason: 'x' })
+    assert.equal(done.status, 409)
+    assert.equal((await done.json()).error, 'refund_already_done')
     assert.equal((await call(env, 'orders/a0000000-0000-4000-8000-0000000000ff/refund', { reason: 'x' })).status, 404)
     assert.equal(calls.length, 0)
   })

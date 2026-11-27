@@ -42,6 +42,22 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+
+## 14.29.0 — 2026-11-27 — Reembolsos: cancelación del pedido y factura rectificativa automática
+
+**Impacto:** ninguno si no haces nada. Migración D1 nueva `commerce/0013_full_refund_cancels` (el CI la aplica). Solo afecta a proyectos con comercio.
+
+1. **Reembolso total = pedido cancelado** si aún no se ha enviado, también en «En fabricación»: sale de las listas de trabajo y
+   devuelve sus unidades (`held` y `committed`). `cancel-partial` también devuelve las `committed`. La migración repara los pedidos
+   reembolsados del todo que se quedaron en fabricación. Un pedido enviado conserva su estado.
+2. **Factura rectificativa automática** por cada reembolso (total o parcial), serie `credit_prefix` (por defecto `R` + `prefix`):
+   adjunta al aviso de la tienda, copia en Drive con `drive_archive` y correo a la compradora si recibe facturas (`buyer_invoice`).
+   Botón «Descargar rectificativa» en Pedidos; también emite la de reembolsos anteriores a esta versión.
+3. **Panel**: tras «Reembolsar» espera la confirmación de Stripe con el formulario oculto (sin segundo clic sobre un pedido aún
+   «Pagado») y un pedido ya reembolsado responde `refund_already_done` con un mensaje claro.
+
+**Acciones obligatorias:** ninguna. Si la tienda emitía rectificativas a mano, deja de hacerlo para no duplicar números.
+
 ## 14.28.1 — 2026-11-27 — Divisores: el grupo de baldosas se pintaba dos veces
 
 **Impacto:** desde la 13.7.0 (sprites por uso), cada divisor pintaba su grupo de baldosas dos veces (en el árbol visible

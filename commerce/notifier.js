@@ -1,7 +1,7 @@
 import { createMailer } from '../mail/index.js'
 import { validAddress } from '../forms/mime.js'
 import { sanitizeHtml } from '../forms/render.js'
-import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
+import { InvoiceError, countryName, formatMoney, getOrIssueInvoice, invoiceFilename, issueRefundCreditNote, paymentTime, regionName, renderInvoicePdf } from './invoice.js'
 import { buyerText, supportedLocale } from './messages.js'
 
 // Merchant order notices through the site mail (mail/index.js) to COMMERCE_NOTIFY_TO:
@@ -69,7 +69,9 @@ const MERCHANT = Object.freeze({
     noDetails: 'Sin datos de entrega guardados (aún no han llegado o ya se borraron). Consúltalos en el panel de pagos.',
     summaryNote: 'Nombre, contacto y dirección del comprador: panel de Stripe → Pagos (busca el identificador de pago).',
     invoiceAttached: 'Factura PDF adjunta.',
-    invoiceFailed: code => `Factura no generada (${code}). Se puede obtener desde el panel de administración cuando se corrija.`
+    invoiceFailed: code => `Factura no generada (${code}). Se puede obtener desde el panel de administración cuando se corrija.`,
+    creditNoteAttached: 'Factura rectificativa PDF adjunta.',
+    creditNoteFailed: code => `Factura rectificativa no generada (${code}). Emítela a mano.`
   },
   en: {
     subjects: {
@@ -123,7 +125,9 @@ const MERCHANT = Object.freeze({
     noDetails: 'No delivery details on file (not arrived yet or already erased). Check them in the payments dashboard.',
     summaryNote: 'Buyer name, contact and address: Stripe dashboard → Payments (search for the payment ID).',
     invoiceAttached: 'Invoice PDF attached.',
-    invoiceFailed: code => `Invoice not issued (${code}). It can be downloaded from the admin panel once fixed.`
+    invoiceFailed: code => `Invoice not issued (${code}). It can be downloaded from the admin panel once fixed.`,
+    creditNoteAttached: 'Credit note PDF attached.',
+    creditNoteFailed: code => `Credit note not issued (${code}). Issue it by hand.`
   }
 })
 
@@ -335,6 +339,55 @@ async function invoiceAttachment (db, order, catalog, m = MERCHANT.es) {
   }
 }
 
+// Refund events (14.29): the credit note for what this refund returned, issued once
+// per cumulative refunded amount. Data problems degrade like the invoice (no note,
+// reason in the merchant notice); anything else is transient and retried.
+export const REFUND_EVENTS = new Set(['payment.refunded', 'payment.partially_refunded'])
+
+// Without automatic invoices (no notice sends one) only an invoice already issued
+// on demand is rectified; the panel download may issue both.
+async function issueCreditNoteFor (db, order, catalog, refundedMinor, issuedAt = Math.floor(Date.now() / 1000), issueMissing = true) {
+  const invoice = issueMissing
+    ? await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt: await paymentTime(db, order) })
+    : await db.prepare("SELECT id, kind, order_id, reference, series, number, issued_at, total_minor, data_json FROM invoices WHERE order_id = ? AND kind = 'invoice' AND reference = 'order'").bind(order.id).first()
+  if (!invoice) return null
+  return issueRefundCreditNote(db, { invoice, config: catalog.invoice, issuedAt, refundedMinor })
+}
+
+// Panel download: the credit note covering what the order has refunded so far,
+// issued now if a refund predates 14.29 (also filed in Drive); the latest one when
+// nothing is left to credit. InvoiceError for data problems; null without refunds.
+export async function orderCreditNote (db, order, catalog) {
+  if (!(order.refund_amount_minor > 0)) return null
+  const row = await issueCreditNoteFor(db, order, catalog, order.refund_amount_minor)
+  if (row) {
+    if (catalog.invoice.driveArchive) await enqueueCreditNoteEvent(db, order.id, CREDIT_NOTE_ARCHIVE, row.id)
+    return row
+  }
+  return db.prepare("SELECT id, kind, order_id, reference, series, number, issued_at, total_minor, data_json FROM invoices WHERE order_id = ? AND kind = 'credit_note' ORDER BY id DESC LIMIT 1").bind(order.id).first()
+}
+
+async function refundCreditNote (db, order, item, catalog, m = MERCHANT.es) {
+  let refundedMinor = null
+  try {
+    refundedMinor = JSON.parse(item.payload_json || '{}').refundAmountMinor
+  } catch {}
+  if (!Number.isSafeInteger(refundedMinor) || refundedMinor <= 0) refundedMinor = order.refund_amount_minor
+  if (!Number.isSafeInteger(refundedMinor) || refundedMinor <= 0) return { row: null, attachment: null, note: null }
+  try {
+    // Dated when the refund was recorded (its outbox event), not when the mail goes out.
+    const event = await db.prepare('SELECT created_at FROM outbox WHERE event_key = ?').bind(item.event_key).first()
+    const notices = catalog.notices
+    const automatic = Boolean(notices && (notices.merchantInvoice || notices.buyerInvoice !== 'never'))
+    const row = await issueCreditNoteFor(db, order, catalog, refundedMinor, event?.created_at || undefined, automatic)
+    if (!row) return { row: null, attachment: null, note: null }
+    return { row, attachment: { name: invoiceFilename(row), type: 'application/pdf', bytes: renderInvoicePdf(row, catalog.invoice) }, note: m.creditNoteAttached }
+  } catch (error) {
+    if (!(error instanceof InvoiceError)) throw error
+    return { row: null, attachment: null, note: m.creditNoteFailed(error.code) }
+  }
+}
+
 // The purchase language when the storefront sent one; otherwise the project's.
 export function buyerLanguage (snapshot, notices) {
   return supportedLocale(snapshot?.locale) || notices?.language || 'es'
@@ -427,10 +480,29 @@ function shippedMessage ({ order, site, catalog, tracking }) {
   return { subject: template(catalog, 'buyer_shipped', 'subject', language, vars) || t.shippedSubject(site), text, html }
 }
 
+// Mail with the credit note of a refund, for buyers who receive invoices.
+function refundMessage ({ order, site, catalog, row }) {
+  const snapshot = JSON.parse(order.snapshot_json)
+  const language = buyerLanguage(snapshot, catalog.notices)
+  const t = buyerText(language)
+  const vars = buyerVars(order, site, language)
+  const name = order.buyer_name || order.recipient_name || ''
+  const data = JSON.parse(row.data_json)
+  const refunded = formatMoney(-row.total_minor, data.currency || order.currency || 'eur', data.minorUnit ?? snapshot.minorUnit ?? 2, language)
+  const intro = paragraphs(template(catalog, 'buyer_refund', 'intro', language, vars), null)
+  const outro = paragraphs(template(catalog, 'buyer_refund', 'outro', language, vars), null)
+  const text = [...(intro ? [intro.text] : [t.greeting(name), '', t.refundIntro(refunded)]), '', outro ? outro.text : t.reply, ''].join('\n')
+  const html = (intro ? intro.html : `<div style="${PARAGRAPH}"><p>${escapeHtml(t.greeting(name))}</p><p>${escapeHtml(t.refundIntro(refunded))}</p></div>`) +
+    (outro ? outro.html : `<div style="${PARAGRAPH}"><p>${escapeHtml(t.reply)}</p></div>`)
+  return { subject: template(catalog, 'buyer_refund', 'subject', language, vars) || t.refundSubject(site), text, html }
+}
+
 const BUYER_CONFIRMATION = 'buyer.confirmation'
 const BUYER_SHIPPED = 'buyer.shipped'
 const BUYER_INVOICE = 'buyer.invoice'
 export const INVOICE_ARCHIVE = 'invoice.archive'
+const BUYER_CREDIT_NOTE = 'buyer.credit_note'
+export const CREDIT_NOTE_ARCHIVE = 'credit_note.archive'
 
 // One buyer mail per paid order and kind, enqueued as its own outbox event so a retry
 // of the merchant notice can never resend it (and vice versa). Idempotent by event key.
@@ -441,6 +513,25 @@ async function enqueueBuyerEvent (db, item, eventType) {
     INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
     VALUES (?, ?, ?, ?, 'pending', 0, 0, ?, ?)
   `).bind(eventKey, item.order_id, eventType, JSON.stringify({ eventKey, orderId: item.order_id, eventType }), now, now).run()
+}
+
+// One event per credit note (several refunds may each have one).
+async function enqueueCreditNoteEvent (db, orderId, eventType, creditNoteId) {
+  const eventKey = `${orderId}:${eventType}:${creditNoteId}`
+  const now = Math.floor(Date.now() / 1000)
+  await db.prepare(`
+    INSERT OR IGNORE INTO outbox (event_key, order_id, event_type, payload_json, status, attempts, next_attempt_at, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'pending', 0, 0, ?, ?)
+  `).bind(eventKey, orderId, eventType, JSON.stringify({ eventKey, orderId, eventType, creditNoteId }), now, now).run()
+}
+
+function creditNoteOf (db, item) {
+  let id = null
+  try {
+    id = JSON.parse(item.payload_json || '{}').creditNoteId
+  } catch {}
+  if (!Number.isSafeInteger(id)) return null
+  return db.prepare("SELECT id, kind, order_id, reference, series, number, issued_at, total_minor, data_json FROM invoices WHERE id = ? AND order_id = ? AND kind = 'credit_note'").bind(id, item.order_id).first()
 }
 
 // Throws on any failure so the outbox reschedules with backoff (at-least-once).
@@ -456,13 +547,14 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
   }
   const send = async (kind, extra) => mail.send({ env, authority: await authorityFor(mail, env, kind), signal: AbortSignal.timeout(15000), message: { ...message, ...extra } })
 
-  if (item.event_type === INVOICE_ARCHIVE) {
+  if (item.event_type === INVOICE_ARCHIVE || item.event_type === CREDIT_NOTE_ARCHIVE) {
     if (!catalog?.invoice?.driveArchive || !order) return
     let row
     let pdf
     try {
-      const issuedAt = await paymentTime(db, order)
-      row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt })
+      if (item.event_type === CREDIT_NOTE_ARCHIVE) row = await creditNoteOf(db, item)
+      else row = await getOrIssueInvoice(db, { order, details: order, config: catalog.invoice, issuedAt: await paymentTime(db, order) })
+      if (!row) return
       pdf = renderInvoicePdf(row, catalog.invoice)
     } catch (error) {
       // Data problems were already reported by the merchant notice; nothing to file.
@@ -486,6 +578,20 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
       tracking = JSON.parse(item.payload_json).tracking || null
     } catch {}
     await send('commerce.buyer', { fromName: catalog.invoice?.seller?.name || site, to: [order.buyer_email], replyTo: message.to[0], ...shippedMessage({ order, site, catalog, tracking }) })
+    return
+  }
+
+  if (item.event_type === BUYER_CREDIT_NOTE) {
+    if (!notices || notices.buyer === 'none' || !order || !validAddress(order.buyer_email || '')) return
+    const row = await creditNoteOf(db, item)
+    if (!row) return
+    await send('commerce.buyer', {
+      fromName: catalog.invoice?.seller?.name || site,
+      to: [order.buyer_email],
+      replyTo: message.to[0],
+      ...refundMessage({ order, site, catalog, row }),
+      attachments: [{ name: invoiceFilename(row), type: 'application/pdf', bytes: renderInvoicePdf(row, catalog.invoice) }]
+    })
     return
   }
 
@@ -516,11 +622,20 @@ export async function sendOrderNotice ({ env, db, item, site, catalog, fetch = (
     if (notices.buyer === 'own') await enqueueBuyerEvent(db, item, BUYER_CONFIRMATION)
     if (notices.buyer === 'stripe' && buyerWantsInvoice(notices, JSON.parse(order.snapshot_json), order)) await enqueueBuyerEvent(db, item, BUYER_INVOICE)
   }
-  if (notices?.merchant === 'none') return
   const language = notices?.merchantLanguage || 'es'
   const m = MERCHANT[language] || MERCHANT.es
+  // A refund issues its credit note whatever the notices say (fiscal record); the
+  // copies (Drive, buyer, merchant attachment) follow the project's options.
+  const credit = REFUND_EVENTS.has(item.event_type) && order && catalog?.invoice ? await refundCreditNote(db, order, item, catalog, m) : { row: null, attachment: null, note: null }
+  if (credit.row) {
+    if (catalog.invoice.driveArchive) await enqueueCreditNoteEvent(db, item.order_id, CREDIT_NOTE_ARCHIVE, credit.row.id)
+    if (notices && notices.buyer !== 'none' && buyerWantsInvoice(notices, JSON.parse(order.snapshot_json), order)) await enqueueCreditNoteEvent(db, item.order_id, BUYER_CREDIT_NOTE, credit.row.id)
+  }
+  if (notices?.merchant === 'none') return
   const full = notices?.merchant === 'full'
-  const invoice = notices?.merchantInvoice && item.event_type === 'payment.paid' && order ? await invoiceAttachment(db, order, catalog, m) : { attachment: null, note: null }
+  const invoice = !notices?.merchantInvoice || !order
+    ? { attachment: null, note: null }
+    : item.event_type === 'payment.paid' ? await invoiceAttachment(db, order, catalog, m) : credit
   const rendered = renderOrderNotice({ item, order, site, merchantDetails: full, invoiceNote: invoice.note, language, catalog })
   await send('commerce.merchant', {
     ...rendered,

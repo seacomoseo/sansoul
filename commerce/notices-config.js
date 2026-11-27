@@ -84,6 +84,7 @@ const TEMPLATE_KINDS = Object.freeze({
   buyer_paid: ['subject', 'intro', 'outro'],
   buyer_invoice: ['subject', 'intro', 'outro'],
   buyer_shipped: ['subject', 'intro', 'outro'],
+  buyer_refund: ['subject', 'intro', 'outro'],
   merchant_paid: ['subject', 'intro']
 })
 

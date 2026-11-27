@@ -34,6 +34,7 @@ const LABELS = Object.freeze({
     inclusive: 'Precios con IVA incluido.',
     exclusive: 'Precios sin IVA.',
     rectifies: 'Rectifica la factura',
+    partialRefund: 'Devolución parcial del pedido',
     shipping: 'Envío',
     discount: 'Descuento',
     paid: 'Pagado con tarjeta',
@@ -60,6 +61,7 @@ const LABELS = Object.freeze({
     inclusive: 'Prices include VAT.',
     exclusive: 'Prices exclude VAT.',
     rectifies: 'Corrects invoice',
+    partialRefund: 'Partial refund of the order',
     shipping: 'Shipping',
     discount: 'Discount',
     paid: 'Paid by card',
@@ -284,8 +286,112 @@ export function buildCreditNoteData (invoiceRow, config, issuedAt) {
     shipping: data.shipping ? negate(data.shipping) : null,
     taxes: data.taxes.map(group => ({ ...group, baseMinor: -group.baseMinor, taxMinor: -group.taxMinor })),
     totalMinor: -data.totalMinor,
+    // «Pagado con tarjeta» would read as a payment on a refund.
+    paymentText: null,
     rectifies: { number: invoiceNumber(invoiceRow, data), date: data.date }
   }
+}
+
+const taxKey = group => `${group.mode}:${group.rateBps}`
+
+// Credit note for part of an issued invoice (`amountMinor` of what is still not
+// credited). Each tax group of the invoice takes a share of the amount in proportion
+// to its gross (largest remainder, so the shares add up exactly) and its VAT in the
+// same ratio as on the invoice. The credit that completes the invoice takes exactly
+// what each group still has, so all credit notes of an order add up to the invoice.
+// `credited` maps a tax group key to { baseMinor, taxMinor } already credited (positive).
+export function buildPartialCreditNoteData (invoiceRow, config, issuedAt, amountMinor, credited = new Map()) {
+  const data = JSON.parse(invoiceRow.data_json)
+  const labels = labelsFor(data.language)
+  const open = data.taxes.map(group => {
+    const done = credited.get(taxKey(group)) || { baseMinor: 0, taxMinor: 0 }
+    return { ...group, baseMinor: group.baseMinor - done.baseMinor, taxMinor: group.taxMinor - done.taxMinor }
+  }).filter(group => group.baseMinor + group.taxMinor > 0)
+  const remaining = open.reduce((total, group) => total + group.baseMinor + group.taxMinor, 0)
+  if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0 || amountMinor > remaining) throw new InvoiceError('credit_note_amount_invalid')
+  let groups
+  if (amountMinor === remaining) groups = open
+  else {
+    const shares = open.map((group, index) => {
+      const exact = amountMinor * (group.baseMinor + group.taxMinor)
+      return { index, minor: Math.floor(exact / remaining), rest: exact % remaining }
+    })
+    let left = amountMinor - shares.reduce((total, share) => total + share.minor, 0)
+    for (const share of [...shares].sort((a, b) => b.rest - a.rest || a.index - b.index)) {
+      if (!left) break
+      share.minor++
+      left--
+    }
+    groups = open.map((group, index) => {
+      const gross = shares[index].minor
+      const taxMinor = Math.round(group.taxMinor * gross / (group.baseMinor + group.taxMinor))
+      return { ...group, baseMinor: gross - taxMinor, taxMinor }
+    }).filter(group => group.baseMinor + group.taxMinor > 0)
+  }
+  const negative = value => value ? -value : 0
+  const many = groups.length > 1
+  const lines = groups.map(group => ({
+    description: many ? `${labels.partialRefund} (${group.mode === 'exempt' ? labels.exemptBase : `${labels.vat} ${String(group.rateBps / 100).replace('.', data.language === 'es' ? ',' : '.')} %`})` : labels.partialRefund,
+    quantity: null,
+    unitMinor: null,
+    totalMinor: negative(group.baseMinor + group.taxMinor),
+    netMinor: negative(group.baseMinor),
+    taxMinor: negative(group.taxMinor),
+    taxMode: group.mode,
+    taxRateBps: group.rateBps
+  }))
+  const { discount, ...rest } = data
+  return {
+    ...rest,
+    numberDigits: config.series.digits,
+    date: localDate(issuedAt, config.timezone),
+    lines,
+    shipping: null,
+    taxes: groups.map(group => ({ ...group, baseMinor: negative(group.baseMinor), taxMinor: negative(group.taxMinor) })),
+    totalMinor: -amountMinor,
+    paymentText: null,
+    rectifies: { number: invoiceNumber(invoiceRow, data), date: data.date }
+  }
+}
+
+const ROW_COLUMNS = 'id, kind, order_id, reference, series, number, issued_at, total_minor, data_json'
+
+// Credit notes that follow the refunds of an order (14.29). `refundedMinor` is the
+// cumulative amount refunded (the order's refund_amount_minor when the event was
+// written); the note covers what the earlier notes did not, under the reference
+// `refund-<cumulative>`, so a retried or stale event never issues a second one. The
+// INSERT only lands while the credited total is still the one the data was built on
+// (a concurrent dispatch loses and retries). Returns the note, or null when nothing
+// is left to credit.
+export async function issueRefundCreditNote (db, { invoice, config, issuedAt, refundedMinor }) {
+  const reference = `refund-${refundedMinor}`
+  const existing = await db.prepare(`SELECT ${ROW_COLUMNS} FROM invoices WHERE order_id = ? AND kind = 'credit_note' AND reference = ?`).bind(invoice.order_id, reference).first()
+  if (existing) return existing
+  const notes = (await db.prepare("SELECT total_minor, data_json FROM invoices WHERE order_id = ? AND kind = 'credit_note'").bind(invoice.order_id).all()).results || []
+  const creditedTotal = notes.reduce((total, note) => total - note.total_minor, 0)
+  const amountMinor = Math.min(refundedMinor, invoice.total_minor) - creditedTotal
+  if (amountMinor <= 0) return null
+  let data
+  if (!notes.length && amountMinor === invoice.total_minor) data = buildCreditNoteData(invoice, config, issuedAt)
+  else {
+    const credited = new Map()
+    for (const note of notes) {
+      for (const group of JSON.parse(note.data_json).taxes) {
+        const sum = credited.get(taxKey(group)) || { baseMinor: 0, taxMinor: 0 }
+        credited.set(taxKey(group), { baseMinor: sum.baseMinor - group.baseMinor, taxMinor: sum.taxMinor - group.taxMinor })
+      }
+    }
+    data = buildPartialCreditNoteData(invoice, config, issuedAt, amountMinor, credited)
+  }
+  const series = seriesKey(config, data.date, 'credit_note')
+  await db.prepare(`
+    INSERT OR IGNORE INTO invoices (kind, order_id, reference, series, number, issued_at, total_minor, data_json)
+    SELECT 'credit_note', ?, ?, ?, COALESCE((SELECT MAX(number) FROM invoices WHERE series = ?), ? - 1) + 1, ?, ?, ?
+    WHERE (SELECT COALESCE(-SUM(total_minor), 0) FROM invoices WHERE order_id = ? AND kind = 'credit_note') = ?
+  `).bind(invoice.order_id, reference, series, series, config.series.start, issuedAt, data.totalMinor, JSON.stringify(data), invoice.order_id, creditedTotal).run()
+  const row = await db.prepare(`SELECT ${ROW_COLUMNS} FROM invoices WHERE order_id = ? AND kind = 'credit_note' AND reference = ?`).bind(invoice.order_id, reference).first()
+  if (!row) throw new Error('credit_note_conflict')
+  return row
 }
 
 function seriesKey (config, date, kind) {

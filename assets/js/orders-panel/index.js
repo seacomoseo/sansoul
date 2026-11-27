@@ -65,14 +65,17 @@ const T = {
     tracking: 'Seguimiento (enlace o código, opcional)',
     shipConfirm: 'El pedido pasará a «Enviado» y, si la tienda lo tiene activado, el comprador recibirá un correo. ¿Seguir?',
     refund: 'Reembolsar',
+    creditNote: 'Descargar rectificativa',
     refundTitle: 'Reembolso',
     refundAmount: 'Importe',
     refundReason: 'Motivo (queda en Stripe)',
     refunded: 'Reembolsado',
     refundConfirm: 'Se devolverán {amount} a la tarjeta del comprador desde Stripe. No se puede deshacer. ¿Seguir?',
     refundSent: 'Reembolso de {amount} enviado a Stripe. El pedido cambia de estado cuando Stripe lo confirma (unos segundos); pulsa «Actualizar».',
+    refundWaiting: 'Reembolso enviado. Esperando la confirmación de Stripe…',
+    refundDone: 'Stripe ha confirmado el reembolso de {amount}.',
     refundInvalid: 'Indica un importe entre 0,01 y lo que queda por reembolsar, y el motivo.',
-    refundErrors: { refund_permission_missing: 'La clave de Stripe de la web no tiene permiso para reembolsar.', refund_balance_insufficient: 'El saldo de Stripe no cubre el reembolso.', refund_already_done: 'Stripe ya había reembolsado este pago.', refund_amount_too_large: 'El importe supera lo que queda por reembolsar.', refund_in_progress: 'Ya hay un reembolso igual en curso.' },
+    refundErrors: { refund_permission_missing: 'La clave de Stripe de la web no tiene permiso para reembolsar.', refund_balance_insufficient: 'El saldo de Stripe no cubre el reembolso.', refund_already_done: 'Stripe ya había reembolsado este pago.', refund_amount_too_large: 'El importe supera lo que queda por reembolsar.', refund_in_progress: 'Ya hay un reembolso igual en curso.', order_not_refundable: 'Este pedido ya no admite reembolsos desde aquí (sin pago con tarjeta o ya cerrado).' },
     csv: 'Descargar CSV',
     csvConsented: 'Descargar CSV (con permiso)',
     unsubscribe: 'Dar de baja',
@@ -136,14 +139,17 @@ const T = {
     tracking: 'Tracking (link or code, optional)',
     shipConfirm: 'The order will move to "Shipped" and, if the shop has it on, the buyer gets an email. Continue?',
     refund: 'Refund',
+    creditNote: 'Download credit note',
     refundTitle: 'Refund',
     refundAmount: 'Amount',
     refundReason: 'Reason (kept in Stripe)',
     refunded: 'Refunded',
     refundConfirm: '{amount} will go back to the buyer\'s card through Stripe. This cannot be undone. Continue?',
     refundSent: 'Refund of {amount} sent to Stripe. The order changes once Stripe confirms it (a few seconds); press "Refresh".',
+    refundWaiting: 'Refund sent. Waiting for Stripe to confirm it…',
+    refundDone: 'Stripe has confirmed the refund of {amount}.',
     refundInvalid: 'Enter an amount between 0.01 and what is left to refund, and a reason.',
-    refundErrors: { refund_permission_missing: 'The Stripe key of the site is not allowed to refund.', refund_balance_insufficient: 'The Stripe balance does not cover the refund.', refund_already_done: 'Stripe had already refunded this payment.', refund_amount_too_large: 'The amount is more than what is left to refund.', refund_in_progress: 'The same refund is already in progress.' },
+    refundErrors: { refund_permission_missing: 'The Stripe key of the site is not allowed to refund.', refund_balance_insufficient: 'The Stripe balance does not cover the refund.', refund_already_done: 'Stripe had already refunded this payment.', refund_amount_too_large: 'The amount is more than what is left to refund.', refund_in_progress: 'The same refund is already in progress.', order_not_refundable: 'This order can no longer be refunded from here (no card payment, or already closed).' },
     csv: 'Download CSV',
     csvConsented: 'Download CSV (with consent)',
     unsubscribe: 'Unsubscribe',
@@ -162,7 +168,8 @@ const T = {
 const app = document.getElementById('app')
 // Quote request notices link to /admin/orders/#quote=<submission id>.
 let wantedQuote = (location.hash.match(/^#quote=([\w-]{1,80})$/) || [])[1] || null
-const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', documents: false, orders: [], next: null, detail: null, contacts: null, message: '', notice: '', busy: false }
+// `refunding`: id of the order whose refund waits for the Stripe webhook (form hidden meanwhile).
+const state = { tab: wantedQuote ? 'quotes' : 'orders', filter: 'all', documents: false, orders: [], next: null, detail: null, contacts: null, message: '', notice: '', busy: false, refunding: null }
 
 function h (tag, attrs = {}, ...children) {
   const node = document.createElement(tag)
@@ -325,7 +332,7 @@ function detailPane (order) {
     state.detail = state.orders.find(item => item.id === order.id) || null
   }
   const refundable = order.amount_total_minor - (order.refund_amount_minor || 0)
-  const canRefund = ['paid', 'partially_refunded'].includes(order.payment_status) && order.payment_intent_id && refundable > 0
+  const canRefund = ['paid', 'partially_refunded'].includes(order.payment_status) && order.payment_intent_id && refundable > 0 && state.refunding !== order.id
   const refundAmount = h('input', { class: 'input', type: 'text', inputmode: 'decimal', value: new Intl.NumberFormat(lang, { minimumFractionDigits: minorDigits(order.currency), useGrouping: false }).format(refundable / (10 ** minorDigits(order.currency))), 'aria-label': T.refundAmount, title: T.refundAmount })
   const refundReason = h('input', { class: 'input', type: 'text', maxlength: '200', placeholder: T.refundReason, 'aria-label': T.refundReason })
   const refund = () => {
@@ -343,16 +350,39 @@ function detailPane (order) {
       } catch (error) {
         if (!T.refundErrors[error.code]) throw error
         state.message = T.refundErrors[error.code]
+        // The pane may be stale (another tab or the webhook moved the order).
+        await refreshOrder()
         return
       }
-      await refreshOrder()
-      state.notice = T.refundSent.replace('{amount}', money(amount, order.currency))
+      // The order moves only with the signed webhook: hide the form and poll briefly,
+      // so a second click on a still-«Pagado» order cannot happen.
+      const target = (order.refund_amount_minor || 0) + amount
+      state.refunding = order.id
+      state.notice = T.refundWaiting
+      render()
+      let confirmed = false
+      try {
+        for (let attempt = 0; attempt < 8 && !confirmed; attempt++) {
+          await new Promise(resolve => setTimeout(resolve, 1500))
+          if (state.tab !== 'orders' || state.detail?.id !== order.id) {
+            state.notice = ''
+            return
+          }
+          await refreshOrder()
+          confirmed = (state.detail?.refund_amount_minor || 0) >= target
+          render()
+        }
+      } finally {
+        state.refunding = null
+      }
+      state.notice = (confirmed ? T.refundDone : T.refundSent).replace('{amount}', money(amount, order.currency))
     })
   }
   return h('section', { class: 'detail-pane' },
     h('div', { class: 'detail-head' }, h('button', { class: 'button back', type: 'button', onclick: () => { state.detail = null; render() } }, T.back), h('h2', {}, `${buyer.name || ship.recipient || order.id.slice(0, 8)} · ${money(order.amount_total_minor, order.currency)}`)),
     h('p', { class: 'muted small' }, `${date(order.created_at)} · ${T.payment[order.payment_status] || order.payment_status} · ${T.status[order.fulfillment_status] || order.fulfillment_status}${state.documents && order.documents_sent_at ? ` · ${T.docsSentOn} ${date(order.documents_sent_at)}` : ''}`),
     order.refund_amount_minor ? h('p', { class: 'muted small' }, `${T.refunded}: ${money(order.refund_amount_minor, order.currency)}`) : null,
+    state.refunding === order.id ? h('p', { class: 'muted small', role: 'status' }, T.refundWaiting) : null,
     h('h3', {}, T.items),
     h('ul', { class: 'files' }, (snapshot.items || []).map(item => h('li', {}, h('span', { class: 'file-name' }, `${item.quantity} × ${item.name || item.sku}`), h('span', {}, money(item.lineTotalMinor, order.currency))))),
     h('h3', {}, T.buyer),
@@ -360,6 +390,7 @@ function detailPane (order) {
     ship.line1 ? [h('h3', {}, T.shipping), h('dl', { class: 'fields' }, ...row(ship.recipient || '', address), ...row(T.phone, ship.phone), ...row(T.notes, ship.notes))] : null,
     h('div', { class: 'actions' },
       order.payment_status !== 'pending' ? h('button', { class: 'button', type: 'button', onclick: () => act(async () => saveBlob(await (await api(`orders/${order.id}/invoice.pdf`, { raw: true })).blob(), `invoice-${order.id.slice(0, 8)}.pdf`)) }, T.invoice) : null,
+      order.refund_amount_minor > 0 ? h('button', { class: 'button', type: 'button', onclick: () => act(async () => saveBlob(await (await api(`orders/${order.id}/credit-note.pdf`, { raw: true })).blob(), `credit-note-${order.id.slice(0, 8)}.pdf`)) }, T.creditNote) : null,
       state.documents && ['paid', 'partially_refunded', 'refunded'].includes(order.payment_status) ? h('button', { class: `button${order.documents_sent_at ? '' : ' primary'}`, type: 'button', onclick: () => act(async () => { await api(`orders/${order.id}/documents`, { method: 'POST', body: { sent: !order.documents_sent_at } }); await refreshOrder() }) }, order.documents_sent_at ? T.docsUnmark : T.docsMark) : null,
       order.fulfillment_status === 'ready' ? h('button', { class: 'button primary', type: 'button', onclick: () => act(async () => { await api(`orders/${order.id}/manufacture`, { method: 'POST' }); await refreshOrder() }) }, T.manufacture) : null,
       order.fulfillment_status === 'manufacturing'

@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { buildCatalog } from '../../scripts/build-catalog.js'
 import { compileInvoice, compileNotices } from '../../notices-config.js'
-import { buildCreditNoteData, buildInvoiceData, formatMoney, getOrIssueInvoice, InvoiceError, invoiceNumber, issueInvoice, localDate, regionName, renderInvoicePdf } from '../../invoice.js'
+import { buildCreditNoteData, buildInvoiceData, buildPartialCreditNoteData, formatMoney, getOrIssueInvoice, InvoiceError, invoiceNumber, issueInvoice, issueRefundCreditNote, localDate, regionName, renderInvoicePdf } from '../../invoice.js'
 import { createPdf, textWidth, toWinAnsi, wrapText } from '../../pdf.js'
 import { calculateOrderTotals } from '../../totals.js'
 import { dispatchScheduledNotices, handleAdmin } from '../../admin.js'
@@ -485,5 +485,136 @@ test('simplified invoice: «FACTURA SIMPLIFICADA» only without buyer tax ID, cr
     const credit = buildCreditNoteData(invoice, config, PAID_AT + 86400)
     assert.equal(credit.simplified, true)
     assert.match(new TextDecoder().decode(renderInvoicePdf({ kind: 'credit_note', series: 'RWEB-2026', number: 1, issued_at: PAID_AT + 86400, data_json: JSON.stringify(credit) })), /FACTURA RECTIFICATIVA SIMPLIFICADA/)
+  } finally { sqlite.close() }
+})
+
+// 14.29: credit notes follow the refunds.
+function refundEvent (sqlite, orderId, cumulative, total = 2100, at = PAID_AT + 86400) {
+  const type = cumulative >= total ? 'payment.refunded' : 'payment.partially_refunded'
+  sqlite.prepare('UPDATE orders SET payment_status = ?, refund_amount_minor = ? WHERE id = ?').run(cumulative >= total ? 'refunded' : 'partially_refunded', cumulative, orderId)
+  const eventKey = `${orderId}:payment.refund:${cumulative}`
+  sqlite.prepare("INSERT OR IGNORE INTO outbox VALUES (?, ?, ?, ?, 'pending', 0, 0, NULL, NULL, ?, ?)")
+    .run(eventKey, orderId, type, JSON.stringify({ eventKey, orderId, eventType: type, refundAmountMinor: cumulative }), at, at)
+}
+
+test('partial credit note: VAT in the invoice ratio, shares add up, the last one closes each group exactly', async () => {
+  const { sqlite, db, order } = fixture()
+  try {
+    const row = await order(ORDER)
+    const invoice = await getOrIssueInvoice(db, { order: row, details: row, config: INVOICE, issuedAt: PAID_AT })
+    const first = buildPartialCreditNoteData(invoice, INVOICE, PAID_AT + 86400, 500)
+    assert.equal(first.totalMinor, -500)
+    assert.deepEqual(first.taxes, [{ mode: 'inclusive', rateBps: 2100, baseMinor: -413, taxMinor: -87 }])
+    assert.deepEqual(first.lines.map(line => [line.description, line.quantity, line.totalMinor]), [['Devolución parcial del pedido', null, -500]])
+    assert.equal(first.shipping, null)
+    assert.deepEqual(first.rectifies, { number: 'WEB-2026-0001', date: '2026-11-12' })
+    const rest = buildPartialCreditNoteData(invoice, INVOICE, PAID_AT + 86400, 1600, new Map([['inclusive:2100', { baseMinor: 413, taxMinor: 87 }]]))
+    assert.deepEqual(rest.taxes, [{ mode: 'inclusive', rateBps: 2100, baseMinor: -1323, taxMinor: -277 }])
+    assert.throws(() => buildPartialCreditNoteData(invoice, INVOICE, PAID_AT, 2101), error => error.code === 'credit_note_amount_invalid')
+    assert.throws(() => buildPartialCreditNoteData(invoice, INVOICE, PAID_AT, 0), error => error.code === 'credit_note_amount_invalid')
+    // Two tax groups: largest remainder keeps the sum, each line names its group.
+    const mixed = { ...invoice, data_json: JSON.stringify({ ...JSON.parse(invoice.data_json), taxes: [{ mode: 'inclusive', rateBps: 2100, baseMinor: 1000, taxMinor: 210 }, { mode: 'exempt', rateBps: 0, baseMinor: 500, taxMinor: 0 }], totalMinor: 1710 }) }
+    const split = buildPartialCreditNoteData(mixed, INVOICE, PAID_AT, 1000)
+    assert.deepEqual(split.taxes, [{ mode: 'inclusive', rateBps: 2100, baseMinor: -585, taxMinor: -123 }, { mode: 'exempt', rateBps: 0, baseMinor: -292, taxMinor: 0 }])
+    assert.deepEqual(split.lines.map(line => line.description), ['Devolución parcial del pedido (IVA 21 %)', 'Devolución parcial del pedido (Base exenta)'])
+    assert.equal(split.lines.reduce((total, line) => total + line.totalMinor, 0), -1000)
+    assert.match(new TextDecoder().decode(renderInvoicePdf({ kind: 'credit_note', series: 'RWEB-2026', number: 1, issued_at: PAID_AT, data_json: JSON.stringify(split) })), /FACTURA RECTIFICATIVA/)
+  } finally { sqlite.close() }
+})
+
+test('refund notices: each refund issues its credit note once, attached for the shop and mailed to the buyer', async () => {
+  const { sqlite, env, catalog } = fixture()
+  try {
+    const { fetch, sent } = gmail()
+    assert.equal((await dispatchScheduledNotices(env, catalog, { fetch, now: () => 100 })).delivered, 2)
+    refundEvent(sqlite, ORDER, 500)
+    // Merchant notice with the credit note, then the buyer mail it enqueued.
+    assert.equal((await dispatchScheduledNotices(env, catalog, { fetch, now: () => 200 })).delivered, 2)
+    const merchant = parse(sent[2])
+    assert.match(sent[2], /filename="RWEB-2026-0001\.pdf"/)
+    assert.ok(merchant.text.includes('Factura rectificativa PDF adjunta'))
+    const buyer = parse(sent[3])
+    assert.match(buyer.headers, /^To: .*comprador@example\.invalid/m)
+    assert.ok(buyer.text.includes('Te hemos devuelto 5,00'), buyer.text)
+    assert.match(sent[3], /filename="RWEB-2026-0001\.pdf"/)
+    assert.ok(buyer.pdf.equals(merchant.pdf))
+    // The rest: a second note for 16,00 that closes the invoice; nothing is filed in Drive.
+    refundEvent(sqlite, ORDER, 2100, 2100, PAID_AT + 86400 * 2)
+    assert.equal((await dispatchScheduledNotices(env, catalog, { fetch, now: () => 300 })).delivered, 2)
+    const notes = sqlite.prepare("SELECT series, number, reference, total_minor, issued_at FROM invoices WHERE kind = 'credit_note' ORDER BY id").all().map(row => ({ ...row }))
+    assert.deepEqual(notes, [
+      { series: 'RWEB-2026', number: 1, reference: 'refund-500', total_minor: -500, issued_at: PAID_AT + 86400 },
+      { series: 'RWEB-2026', number: 2, reference: 'refund-2100', total_minor: -1600, issued_at: PAID_AT + 86400 * 2 }
+    ])
+    assert.ok(parse(sent[5]).text.includes('Te hemos devuelto 16,00'))
+    assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM outbox WHERE event_type = 'credit_note.archive'").get().n, 0)
+    // A redelivered or stale refund event issues nothing more.
+    sqlite.prepare("UPDATE outbox SET status = 'pending' WHERE event_type IN ('payment.partially_refunded', 'payment.refunded')").run()
+    await dispatchScheduledNotices(env, catalog, { fetch, now: () => 400 })
+    await dispatchScheduledNotices(env, catalog, { fetch, now: () => 500 })
+    assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM invoices WHERE kind = 'credit_note'").get().n, 2)
+    assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM outbox WHERE event_type = 'buyer.credit_note'").get().n, 2)
+  } finally { sqlite.close() }
+})
+
+test('refund notices: full refund negates the invoice; buyer mail only for invoice receivers; Drive copy when archived', async () => {
+  const { sqlite, env, catalog } = fixture({ notices: { ...NOTICES, buyerInvoice: 'on_request' }, invoice: { ...INVOICE, driveArchive: true } })
+  try {
+    const { fetch } = gmail()
+    sqlite.prepare("UPDATE outbox SET status = 'delivered'").run()
+    refundEvent(sqlite, ORDER, 2100)
+    await dispatchScheduledNotices(env, { ...catalog, invoice: { ...INVOICE, driveArchive: true } }, { fetch, limit: 1, now: () => 100 })
+    const note = sqlite.prepare("SELECT id, total_minor, data_json FROM invoices WHERE kind = 'credit_note'").get()
+    assert.equal(note.total_minor, -2100)
+    const data = JSON.parse(note.data_json)
+    assert.equal(data.lines[0].description, 'Venta material 3D (Cuaderno ADN)')
+    assert.ok(data.shipping.totalMinor < 0)
+    assert.deepEqual(sqlite.prepare("SELECT event_type FROM outbox WHERE status = 'pending' ORDER BY event_key").all().map(row => row.event_type), ['credit_note.archive'])
+    assert.equal(JSON.parse(sqlite.prepare("SELECT payload_json FROM outbox WHERE event_type = 'credit_note.archive'").get().payload_json).creditNoteId, note.id)
+  } finally { sqlite.close() }
+})
+
+test('refund notices without automatic invoices: no invoice and credit note are started by the refund', async () => {
+  const notices = { ...NOTICES, merchantInvoice: false, buyerInvoice: 'never' }
+  const { sqlite, env, catalog } = fixture({ notices })
+  try {
+    const { fetch } = gmail()
+    sqlite.prepare("UPDATE outbox SET status = 'delivered'").run()
+    refundEvent(sqlite, ORDER, 2100)
+    await dispatchScheduledNotices(env, catalog, { fetch, now: () => 100 })
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM invoices').get().n, 0)
+  } finally { sqlite.close() }
+})
+
+test('credit notes: a concurrent issue for another refund loses and retries instead of double crediting', async () => {
+  const { sqlite, db, order } = fixture()
+  try {
+    const row = await order(ORDER)
+    const invoice = await getOrIssueInvoice(db, { order: row, details: row, config: INVOICE, issuedAt: PAID_AT })
+    const results = await Promise.allSettled([
+      issueRefundCreditNote(db, { invoice, config: INVOICE, issuedAt: PAID_AT, refundedMinor: 500 }),
+      issueRefundCreditNote(db, { invoice, config: INVOICE, issuedAt: PAID_AT, refundedMinor: 2100 })
+    ])
+    assert.deepEqual(results.map(result => result.status), ['fulfilled', 'rejected'])
+    assert.equal(results[1].reason.message, 'credit_note_conflict')
+    const retried = await issueRefundCreditNote(db, { invoice, config: INVOICE, issuedAt: PAID_AT, refundedMinor: 2100 })
+    assert.equal(retried.total_minor, -1600)
+    assert.equal(await issueRefundCreditNote(db, { invoice, config: INVOICE, issuedAt: PAID_AT, refundedMinor: 1000 }), null)
+    assert.equal(sqlite.prepare("SELECT -SUM(total_minor) AS n FROM invoices WHERE kind = 'credit_note'").get().n, 2100)
+  } finally { sqlite.close() }
+})
+
+test('admin: credit note PDF issues the one a pre-14.29 refund lacks, once, and refuses unrefunded orders', async () => {
+  const { sqlite, env, catalog } = fixture()
+  try {
+    const call = path => handleAdmin(new Request(`https://shop.example.invalid${path}`, { headers: { authorization: `Bearer ${'x'.repeat(40)}` } }), env, catalog)
+    const url = `/api/commerce/admin/orders/${ORDER}/credit-note.pdf`
+    assert.equal((await call(url)).status, 409)
+    sqlite.prepare("UPDATE orders SET payment_status = 'refunded', refund_amount_minor = 2100 WHERE id = ?").run(ORDER)
+    const response = await call(url)
+    assert.equal(response.status, 200)
+    assert.match(response.headers.get('content-disposition'), /RWEB-2026-0001\.pdf/)
+    assert.equal((await call(url)).status, 200)
+    assert.deepEqual(sqlite.prepare('SELECT kind, total_minor FROM invoices ORDER BY id').all().map(row => [row.kind, row.total_minor]), [['invoice', 2100], ['credit_note', -2100]])
   } finally { sqlite.close() }
 })

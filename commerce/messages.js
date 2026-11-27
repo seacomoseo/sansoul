@@ -34,7 +34,9 @@ const BUYER = Object.freeze({
     invoiceIntro: 'Adjuntamos la factura de tu pedido en PDF.',
     shippedSubject: site => `Tu pedido está en camino · ${site}`,
     shippedIntro: 'Hemos enviado tu pedido.',
-    tracking: 'Seguimiento'
+    tracking: 'Seguimiento',
+    refundSubject: site => `Hemos tramitado un reembolso de tu pedido · ${site}`,
+    refundIntro: amount => `Te hemos devuelto ${amount}. Llegará al mismo medio de pago en unos días. Adjuntamos la factura rectificativa en PDF.`
   },
   en: {
     subject: site => `We received your order · ${site}`,
@@ -61,7 +63,9 @@ const BUYER = Object.freeze({
     invoiceIntro: 'The invoice for your order is attached as a PDF.',
     shippedSubject: site => `Your order is on its way · ${site}`,
     shippedIntro: 'We have shipped your order.',
-    tracking: 'Tracking'
+    tracking: 'Tracking',
+    refundSubject: site => `We have refunded your order · ${site}`,
+    refundIntro: amount => `We have refunded ${amount}. It will reach the same payment method within a few days. The credit note is attached as a PDF.`
   },
   de: {
     subject: site => `Wir haben deine Bestellung erhalten · ${site}`,
@@ -88,7 +92,9 @@ const BUYER = Object.freeze({
     invoiceIntro: 'Die Rechnung zu deiner Bestellung liegt als PDF bei.',
     shippedSubject: site => `Deine Bestellung ist unterwegs · ${site}`,
     shippedIntro: 'Wir haben deine Bestellung verschickt.',
-    tracking: 'Sendungsverfolgung'
+    tracking: 'Sendungsverfolgung',
+    refundSubject: site => `Wir haben deine Bestellung erstattet · ${site}`,
+    refundIntro: amount => `Wir haben dir ${amount} erstattet. Der Betrag geht in einigen Tagen auf dasselbe Zahlungsmittel zurück. Die Rechnungskorrektur liegt als PDF bei.`
   },
   fr: {
     subject: site => `Nous avons reçu votre commande · ${site}`,
@@ -115,7 +121,9 @@ const BUYER = Object.freeze({
     invoiceIntro: 'La facture de votre commande est jointe en PDF.',
     shippedSubject: site => `Votre commande est en route · ${site}`,
     shippedIntro: 'Nous avons expédié votre commande.',
-    tracking: 'Suivi'
+    tracking: 'Suivi',
+    refundSubject: site => `Nous avons remboursé votre commande · ${site}`,
+    refundIntro: amount => `Nous vous avons remboursé ${amount}. Le montant arrivera sur le même moyen de paiement d'ici quelques jours. La facture rectificative est jointe en PDF.`
   },
   it: {
     subject: site => `Abbiamo ricevuto il tuo ordine · ${site}`,
@@ -142,7 +150,9 @@ const BUYER = Object.freeze({
     invoiceIntro: 'In allegato la fattura del tuo ordine in PDF.',
     shippedSubject: site => `Il tuo ordine è in viaggio · ${site}`,
     shippedIntro: 'Abbiamo spedito il tuo ordine.',
-    tracking: 'Tracciamento'
+    tracking: 'Tracciamento',
+    refundSubject: site => `Abbiamo rimborsato il tuo ordine · ${site}`,
+    refundIntro: amount => `Ti abbiamo rimborsato ${amount}. L'importo arriverà sullo stesso metodo di pagamento entro qualche giorno. In allegato la nota di credito in PDF.`
   },
   pt: {
     subject: site => `Recebemos a tua encomenda · ${site}`,
@@ -169,7 +179,9 @@ const BUYER = Object.freeze({
     invoiceIntro: 'Enviamos em anexo a fatura da tua encomenda em PDF.',
     shippedSubject: site => `A tua encomenda está a caminho · ${site}`,
     shippedIntro: 'Enviámos a tua encomenda.',
-    tracking: 'Seguimento'
+    tracking: 'Seguimento',
+    refundSubject: site => `Reembolsámos a tua encomenda · ${site}`,
+    refundIntro: amount => `Reembolsámos ${amount}. O valor chega ao mesmo meio de pagamento dentro de alguns dias. Enviamos em anexo a fatura retificativa em PDF.`
   }
 })
 
