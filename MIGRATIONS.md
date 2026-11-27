@@ -42,6 +42,17 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.29.2 — 2026-11-27 — Ningún proyecto usa Apps Script por defecto
+
+**Impacto:** ninguno en proyectos ya actualizados. La migración 14.18.0 deja de fijar `inputs.action` al Apps Script
+compartido: un proyecto que se actualice desde una versión anterior a 14.18.0 envía sus formularios al Worker del
+proyecto, como cualquier proyecto nuevo. Apps Script solo se usa si alguien pone su URL a mano en `form.action`
+(o en el `action` de un formulario) de forma voluntaria. Antes de publicar un proyecto que viene de Apps Script,
+configura su Worker y su correo (`sh do new`).
+
+**Acciones obligatorias:** ninguna. Si un proyecto aún tiene la URL del Apps Script compartido en `data/styles.yml`,
+quítala cuando su Worker esté listo.
+
 ## 14.29.1 — 2026-11-27 — Logos SVG en `<img>` deformados
 
 **Impacto:** los SVG que se pintan como `<img>` desde el sprite combinado (`map.*.svg#sansoul-image-view-…`) se
@@ -304,11 +315,11 @@ vuelve a insertar. Si faltan filas, el plan dice cuántas son nuevas.
 ## 14.18.0 — 2026-11-18 — El Worker del proyecto es el envío por defecto de los formularios; histórico de Sheets en el panel
 
 **Impacto:** compatible. Un formulario sin `action` (ni propio ni en `inputs.action` de `data/styles.yml`) deja de
-enviar al Apps Script compartido y pasa al Worker del proyecto (D1 + panel «Formularios» del CMS). La migración fija
-el comportamiento anterior en los proyectos existentes, así que nada cambia sin querer.
+enviar al Apps Script compartido y pasa al Worker del proyecto (D1 + panel «Formularios» del CMS). Hasta 14.29.2 la
+migración fijaba el comportamiento anterior en los proyectos existentes; desde 14.29.2 ya no (ver 14.29.2).
 
-1. `sh do update` ejecuta `core/scripts/migrations/14.18.0-forms-worker-default.js`: si `data/styles.yml` no tiene
-   `inputs.action`, la fija a la URL del Apps Script compartido, con un comentario. Los formularios con su propia
+1. `sh do update` ejecuta `core/scripts/migrations/14.18.0-forms-worker-default.js`: desde 14.29.2 no escribe nada
+   (antes fijaba `inputs.action` a la URL del Apps Script compartido). Los formularios con su propia
    `action` (Apps Script del cliente, FormSubmit, otra URL o `worker`) no se tocan.
 2. Cada build publica la identidad del sitio para el manifiesto del Worker (`public/_forms/_site.json`, que
    `build-manifest.js` retira de `public/`). Con ella, si la cuenta ya tiene la D1 `<worker>-forms` (histórico

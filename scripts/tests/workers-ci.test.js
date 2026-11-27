@@ -209,38 +209,25 @@ test('forms history keeps the forms backend without Worker forms', async () => {
   }
 })
 
-test('14.18.0 migration pins the legacy Apps Script only where no action is set', () => {
+test('14.18.0 migration never pins the shared Apps Script (14.29.2)', () => {
   const read = directory => fs.readFileSync(path.join(directory, 'data/styles.yml'), 'utf8')
   const unset = project({ 'data/styles.yml': '# Design tokens\ncolors:\n  main: red # brand\ninputs:\n  ajax: true\n' })
   const missing = project({})
   const empty = project({ 'data/styles.yml': 'inputs:\n  action: \'\'\n' })
   const own = project({ 'data/styles.yml': 'inputs:\n  action: https://formsubmit.co/x # own\n' })
+  const gas = project({ 'data/styles.yml': `inputs:\n  action: ${LEGACY_GAS_ACTION}\n` })
   const broken = project({ 'data/styles.yml': 'inputs: [\n' })
   try {
-    assert.deepEqual(migrateFormsDefault(unset, { check: true }), { changed: true, action: LEGACY_GAS_ACTION })
-    assert.doesNotMatch(read(unset), /script\.google/)
-
-    assert.deepEqual(migrateFormsDefault(unset), { changed: true, action: LEGACY_GAS_ACTION })
-    const text = read(unset)
-    assert.match(text, /^# Design tokens\n/)
-    assert.match(text, /main: red # brand/)
-    assert.match(text, /# Legacy shared Apps Script \(pinned by SanSoul 14\.18\.0\)/)
-    const styles = parse(text)
-    assert.equal(styles.inputs.action, LEGACY_GAS_ACTION)
-    assert.equal(styles.inputs.ajax, true)
-    // Repeating is a no-op.
-    assert.deepEqual(migrateFormsDefault(unset), { changed: false, action: LEGACY_GAS_ACTION })
-    assert.equal(read(unset), text)
-
-    migrateFormsDefault(missing)
-    assert.equal(parse(read(missing)).inputs.action, LEGACY_GAS_ACTION)
-    migrateFormsDefault(empty)
-    assert.equal(parse(read(empty)).inputs.action, LEGACY_GAS_ACTION)
-
+    const before = read(unset)
+    assert.deepEqual(migrateFormsDefault(unset), { changed: false, action: 'worker' })
+    assert.equal(read(unset), before)
+    assert.deepEqual(migrateFormsDefault(missing), { changed: false, action: 'worker' })
+    assert.equal(fs.existsSync(path.join(missing, 'data/styles.yml')), false)
+    assert.deepEqual(migrateFormsDefault(empty), { changed: false, action: 'worker' })
     assert.deepEqual(migrateFormsDefault(own), { changed: false, action: 'https://formsubmit.co/x' })
-    assert.equal(read(own), 'inputs:\n  action: https://formsubmit.co/x # own\n')
+    assert.deepEqual(migrateFormsDefault(gas), { changed: false, action: LEGACY_GAS_ACTION })
     assert.throws(() => migrateFormsDefault(broken), /data\/styles\.yml/)
   } finally {
-    for (const directory of [unset, missing, empty, own, broken]) fs.rmSync(directory, { recursive: true, force: true })
+    for (const directory of [unset, missing, empty, own, gas, broken]) fs.rmSync(directory, { recursive: true, force: true })
   }
 })
