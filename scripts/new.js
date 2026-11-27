@@ -151,7 +151,9 @@ export function context (values, positionals) {
     let project
     try { project = readProject() } catch (error) { throw new Error(identityHint(error, process.cwd())) }
     const params = parse(fs.readFileSync('hugo.yml', 'utf8'))?.params || {}
-    base = { domain: project.domain, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: project.worker, netlify: project.netlify, mails: params.drive_mails, project: params.project }
+    let canonical = ''
+    try { canonical = new URL(project.baseURL).host } catch {}
+    base = { domain: project.domain, canonical, owner: project.owner, repo: project.repo, dir: process.cwd(), worker: project.worker, netlify: project.netlify, mails: params.drive_mails, project: params.project }
   } else {
     throw new Error(`indica el dominio (o ejecútalo desde la raíz de un proyecto)\n\n${HELP}`)
   }

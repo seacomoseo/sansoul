@@ -9,7 +9,7 @@ import { projectName } from '../new/lib.js'
 import { adapt } from '../new/repo.js'
 import { fill } from '../new/drive.js'
 import { context, identityHint, STEPS } from '../new.js'
-import { findAccount, renamable, sameName } from '../new/cloudflare.js'
+import { findAccount, hosts, production, renamable, sameName } from '../new/cloudflare.js'
 import { domainTabs, historyPlan, projectFormIds } from '../new/forms-history.js'
 import { callbackUri, grantKey, missingSecrets, SECRETS } from '../new/gmail.js'
 
@@ -338,4 +338,105 @@ test('cloudflare account: a generic Worker name in several accounts is never gue
   assert.equal((await findAccount(ctx('Solvent'), fake(['a1', 'a2']))).id, 'a2')
   assert.equal((await findAccount(ctx(undefined), fake(['a2']))).id, 'a2')
   assert.equal(await findAccount(ctx(undefined), fake([])), null)
+})
+
+test('canonical host: baseURL decides www or apex; the other host is the 301 alias', () => {
+  assert.deepEqual(hosts({ domain: 'acme.es', canonical: 'acme.es' }), { zone: 'acme.es', canonical: 'acme.es', alias: 'www.acme.es' })
+  assert.deepEqual(hosts({ domain: 'acme.es' }), { zone: 'acme.es', canonical: 'acme.es', alias: 'www.acme.es' })
+  // moverepilatestraining.es: params.domain is the apex, baseURL has www.
+  assert.deepEqual(hosts({ domain: 'acme.es', canonical: 'www.acme.es' }), { zone: 'acme.es', canonical: 'www.acme.es', alias: 'acme.es' })
+  assert.deepEqual(hosts({ domain: 'www.acme.es', canonical: 'www.acme.es' }), { zone: 'acme.es', canonical: 'www.acme.es', alias: 'acme.es' })
+  assert.deepEqual(hosts({ domain: 'acme.es', canonical: 'site.acme.workers.dev' }), { zone: 'acme.es', canonical: 'acme.es', alias: 'www.acme.es' })
+})
+
+// Fake Cloudflare: one active zone, with the given redirect rules, Worker domains and DNS records.
+function fakeZone ({ rules = null, domains = [], records = [] } = {}) {
+  const calls = []
+  const cf = async (route, { method = 'GET', body } = {}) => {
+    calls.push([method, route.split('?')[0], body])
+    if (route.startsWith('/zones?name=')) return [{ id: 'z1', status: 'active', name_servers: [] }]
+    if (route.endsWith('/entrypoint') && method === 'GET') {
+      if (!rules) throw Object.assign(new Error('HTTP 404 [{"code":10003}]'), { status: 404 })
+      return { id: 'rs1', rules }
+    }
+    if (route.startsWith('/accounts/a1/workers/domains?')) return domains
+    if (route.startsWith('/zones/z1/dns_records?')) return records
+    return {}
+  }
+  const ctx = { domain: 'acme.es', canonical: 'acme.es', worker: 'site', netlify: '', dones: [], todos: [], manuals: [] }
+  ctx.done = item => ctx.dones.push(item)
+  ctx.todo = item => ctx.todos.push(item)
+  ctx.manual = item => ctx.manuals.push(item)
+  return { cf, calls, ctx, writes: () => calls.filter(([m]) => m !== 'GET') }
+}
+
+test('production plan: apex on the Worker, www as 301; nothing written without --apply', async () => {
+  const { cf, ctx, writes } = fakeZone({ domains: [{ id: 'd1', hostname: 'acme.es', service: 'site' }, { id: 'd2', hostname: 'www.acme.es', service: 'site' }] })
+  await production(ctx, cf, { id: 'a1' })
+  assert.deepEqual(writes(), [])
+  assert.match(ctx.todos.join('\n'), /regla 301 www\.acme\.es → https:\/\/acme\.es/)
+  assert.match(ctx.todos.join('\n'), /quitar www\.acme\.es como dominio del Worker site/)
+  assert.match(ctx.todos.join('\n'), /www\.acme\.es AAAA 100:: con proxy/)
+  assert.ok(ctx.dones.includes('acme.es → Worker site'))
+})
+
+test('production apply: creates the rule, keeps only the canonical host on the Worker, proxies the alias', async () => {
+  const { cf, ctx, writes } = fakeZone({ domains: [{ id: 'd2', hostname: 'www.acme.es', service: 'site' }] })
+  ctx.apply = true
+  await production(ctx, cf, { id: 'a1' })
+  const w = writes()
+  assert.deepEqual(w.map(([m, r]) => `${m} ${r}`), [
+    'PUT /zones/z1/rulesets/phases/http_request_dynamic_redirect/entrypoint',
+    'PUT /accounts/a1/workers/domains',
+    'DELETE /accounts/a1/workers/domains/d2',
+    'POST /zones/z1/dns_records'
+  ])
+  const rule = w[0][2].rules[0]
+  assert.equal(rule.expression, '(http.host eq "www.acme.es")')
+  assert.deepEqual(rule.action_parameters.from_value, { status_code: 301, target_url: { expression: 'concat("https://acme.es", http.request.uri.path)' }, preserve_query_string: true })
+  assert.equal(w[1][2].hostname, 'acme.es')
+  assert.deepEqual([w[3][2].type, w[3][2].name, w[3][2].content, w[3][2].proxied], ['AAAA', 'www.acme.es', '100::', true])
+})
+
+test('production apply is idempotent and adopts a hand-made rule for the same host (pilot)', async () => {
+  const manual = { id: 'r9', ref: 'r9', description: 'www → sin www (301)', expression: '(http.host eq "www.acme.es")', action: 'redirect', action_parameters: { from_value: { preserve_query_string: true, status_code: 301, target_url: { expression: 'concat("https://acme.es", http.request.uri.path)' } } }, enabled: true }
+  const { cf, ctx, writes } = fakeZone({ rules: [manual], domains: [{ id: 'd1', hostname: 'acme.es', service: 'site' }], records: [{ type: 'AAAA', content: '100::', proxied: true }] })
+  ctx.apply = true
+  await production(ctx, cf, { id: 'a1' })
+  assert.deepEqual(writes(), [])
+  assert.deepEqual(ctx.todos, [])
+})
+
+test('production with www canonical (moverepilatestraining.es): apex redirects to www; other rules kept', async () => {
+  const other = { id: 'r1', ref: 'other', expression: '(http.request.uri.path eq "/old")', action: 'redirect', action_parameters: { from_value: { status_code: 301, target_url: { value: 'https://www.acme.es/new' } } } }
+  const { cf, ctx, writes } = fakeZone({ rules: [other], records: [{ type: 'A', content: '1.2.3.4', proxied: false }] })
+  Object.assign(ctx, { canonical: 'www.acme.es', apply: true })
+  await production(ctx, cf, { id: 'a1' })
+  const w = writes()
+  assert.equal(`${w[0][0]} ${w[0][1]}`, 'POST /zones/z1/rulesets/rs1/rules')
+  assert.equal(w[0][2].expression, '(http.host eq "acme.es")')
+  assert.equal(w[0][2].action_parameters.from_value.target_url.expression, 'concat("https://www.acme.es", http.request.uri.path)')
+  assert.equal(w[1][2].hostname, 'www.acme.es')
+  assert.equal(w.length, 2) // an unproxied record is never overwritten: it becomes a manual item
+  assert.match(ctx.manuals.join('\n'), /acme\.es tiene A 1\.2\.3\.4 sin proxy/)
+})
+
+test('production with a Netlify mirror leaves hosts and redirects alone', async () => {
+  const { cf, ctx, writes } = fakeZone()
+  Object.assign(ctx, { netlify: 'acme', apply: true })
+  await production(ctx, cf, { id: 'a1' })
+  assert.deepEqual(writes(), [])
+})
+
+test('cloudflare account: a zone present in two accounts (mid-move) is never guessed', async () => {
+  const zones = [{ account: { id: 'old', name: 'Agencia' }, status: 'active' }, { account: { id: 'new', name: 'Cliente' }, status: 'pending' }]
+  const cf = async route => {
+    if (route.startsWith('/zones?name=acme.es')) return zones
+    if (route.startsWith('/accounts/')) return { id: route.split('/')[2] }
+    throw new Error(`unexpected ${route}`)
+  }
+  await assert.rejects(findAccount({ domain: 'www.acme.es', worker: 'site' }, cf), /varias cuentas[\s\S]*Agencia old, active[\s\S]*--cf-account/)
+  assert.equal((await findAccount({ domain: 'acme.es', worker: 'site', cfAccount: 'new' }, cf)).id, 'new')
+  zones.pop()
+  assert.equal((await findAccount({ domain: 'acme.es', worker: 'site' }, cf)).id, 'old')
 })
