@@ -28,13 +28,13 @@
   {{ else }}
   {{- "" -}}     <g id="{{ .id }}-df"><use href="#{{ .id }}-d" transform="{{ $flip_transform }}"/></g>
   {{ end }}
-  {{- "" -}}   </defs>
-  {{- "" -}}   <g id="{{ .id }}-b">
+  {{- "" -}}     <g id="{{ .id }}-b">
   {{- "" -}}     <use href="#{{ .id }}-d"/>
   {{- "" -}}     <use href="#{{ .id }}-df" transform="translate(2048 0)"/>
   {{- "" -}}     <use href="#{{ .id }}-d" transform="translate(4096 128) scale(1 -1)"/>
   {{- "" -}}     <use href="#{{ .id }}-df" transform="translate(6144 128) scale(1 -1)"/>
-  {{- "" -}}   </g>
+  {{- "" -}}     </g>
+  {{- "" -}}   </defs>
   {{- "" -}}   <use href="#{{ .id }}-b" transform="translate(0 {{ $row_y }})"/>
   {{- "" -}}   <mask id="{{ .id }}-mask" mask-type="luminance" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="8192" y="{{ $row_y }}" width="8192" height="128"><rect x="8192" y="{{ $row_y }}" width="8192" height="128" fill="#fff"/><use href="#{{ .id }}-b" transform="{{ $mask_transform }}" fill="#000"/></mask>
   {{- "" -}}   <rect x="8192" y="{{ $row_y }}" width="8192" height="128" mask="url(#{{ .id }}-mask)"/>
