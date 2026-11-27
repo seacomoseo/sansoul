@@ -42,6 +42,16 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.29.1 — 2026-11-27 — Logos SVG en `<img>` deformados
+
+**Impacto:** los SVG que se pintan como `<img>` desde el sprite combinado (`map.*.svg#sansoul-image-view-…`) se
+estiraban: el navegador da a esa imagen una caja por defecto (2:1 en Chrome) y la vista heredaba
+`preserveAspectRatio="none"` de la raíz, así que los logos anchos salían altos (p. ej. Areas y Roencar en dobbox). Cada
+vista pasa a `xMidYMid meet` y las imágenes se colocan en diagonal, de modo que el margen sobrante nunca muestra otro logo.
+
+**Acciones obligatorias:** ninguna.
+
+**Validación:** los logos que salen como `<img>` desde el sprite conservan su proporción y no asoma ningún logo vecino.
 
 ## 14.29.0 — 2026-11-27 — Reembolsos: cancelación del pedido y factura rectificativa automática
 
