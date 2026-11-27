@@ -42,6 +42,17 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.28.1 — 2026-11-27 — Divisores: el grupo de baldosas se pintaba dos veces
+
+**Impacto:** desde la 13.7.0 (sprites por uso), cada divisor pintaba su grupo de baldosas dos veces (en el árbol visible
+y con `<use>`), así que las capas con `opacity` se veían más opacas (0,8 → ≈0,96; 0,5 → 0,75): divisores más oscuros
+que antes. Afecta a los 26 divisores con transparencias (`squares`, `tilt-op-alt`, `waves-op`…). El grupo pasa a
+`<defs>` y se pinta una sola vez, como antes de la 13.7.0.
+
+**Acciones obligatorias:** ninguna.
+
+**Validación:** comparar los divisores con transparencias con la web publicada antes de la migración.
+
 ## 14.28.0 — 2026-11-27 — Color de las flechas del carrusel desde `btn` y token heredado `noindex`
 
 **Impacto:** dos regresiones de los proyectos que vienen de versiones antiguas.
