@@ -11,7 +11,7 @@ Los parámetros se escriben en un bloque `{…}` al final del título Markdown. 
 ![](/u/foto.jpg "{3/2}")
 ```
 
-`lock` reemplaza el antiguo `nofollow`: conserva la ofuscación existente de SanSoul. No es un cambio del atributo HTML `rel`. Se conservan `homefollow`, `blank`, `ga4` y los parámetros de los botones (`main`, `alt`, `cta`, `light`, `dark`, `turn`, `such`, `whatsapp`, `dot`, `sm`, `swap`). Los corchetes del texto de los botones siguen siendo `[[Botón]]`.
+`lock` reemplaza a los antiguos `nofollow` y `noindex` (se siguen leyendo como `lock`): conserva la ofuscación existente de SanSoul. No es un cambio del atributo HTML `rel`. Se conservan `homefollow`, `blank`, `ga4` y los parámetros de los botones (`main`, `alt`, `cta`, `light`, `dark`, `turn`, `such`, `whatsapp`, `dot`, `sm`, `swap`). Los corchetes del texto de los botones siguen siendo `[[Botón]]`.
 
 Solo se interpreta un bloque final formado por parámetros conocidos. Un título normal como `Informe [edición revisada]` o `Informe {edición revisada}` se conserva. El ratio de las imágenes es una fracción, por ejemplo `3/2`, `16/9` o `1/1`; no forma parte de la leyenda publicada. Una imagen con ratio puede mantener un `alt` descriptivo. Los vídeos sin ratio explícito aprovechan los metadatos de su fuente y conservan el valor de respaldo cuando faltan.
 

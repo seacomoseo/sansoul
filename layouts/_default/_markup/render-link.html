@@ -1,10 +1,10 @@
 {{- /* Link metadata is a recognized token block at the end of the title.
-Legacy square blocks and nofollow remain readable; CMS writes braces and lock. */ -}}
+Legacy square blocks, nofollow and noindex (both read as lock) remain readable; CMS writes braces and lock. */ -}}
 {{- $label  := .Text -}}
 {{- $anchor := .Title -}}
 {{- $title  := "" -}}
 {{- $meta   := slice -}}
-{{- $token := `(main|alt|cta|light|dark|turn|such|whatsapp|dot|sm|swap|lock|nofollow|sublock|blank|ga4(:[A-Za-z][A-Za-z0-9_]{0,39}(,[A-Za-z][A-Za-z0-9_]{0,39})*)?)` -}}
+{{- $token := `(main|alt|cta|light|dark|turn|such|whatsapp|dot|sm|swap|lock|nofollow|noindex|sublock|blank|ga4(:[A-Za-z][A-Za-z0-9_]{0,39}(,[A-Za-z][A-Za-z0-9_]{0,39})*)?)` -}}
 {{- $pattern := printf `\s*(\{\s*%s(\s+%s)*\s*\}|\[\s*%s(\s+%s)*\s*\])$` $token $token $token $token -}}
 {{- with findRE $pattern .Title 1 -}}
   {{- $block := index . 0 -}}
@@ -45,7 +45,7 @@ Legacy square blocks and nofollow remain readable; CMS writes braces and lock. *
 {{- $ir      := $outside.ir -}}
 
 {{- /*  lock  */ -}}
-{{- $lock := cond (or (in $meta "lock") (in $meta "nofollow")) true nil -}}
+{{- $lock := cond (or (in $meta "lock") (in $meta "nofollow") (in $meta "noindex")) true nil -}}
 {{- if in $meta "sublock" -}}
   {{- if not page.IsHome -}}
     {{- $lock = true -}}

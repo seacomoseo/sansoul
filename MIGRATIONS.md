@@ -42,6 +42,29 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.28.0 — 2026-11-27 — Color de las flechas del carrusel desde `btn` y token heredado `noindex`
+
+**Impacto:** dos regresiones de los proyectos que vienen de versiones antiguas.
+
+1. Hasta la 13.7.0, las flechas y los puntos de un carrusel tomaban el color del `btn` de su bloque (`box` o `review`);
+   desde entonces las flechas usan `arrows` y `btn` solo colorea los botones de las cajas, así que esos carruseles
+   pasaron a `cta` sin avisar. La migración automática añade `arrows: <color>` justo después de `btn` **solo** en los
+   bloques que tienen su propio `slider: true`, su propio `btn` con un color distinto de `cta` y ningún `arrows`. Los
+   bloques sin carrusel activo no se tocan y `btn` se conserva. No cambia: `data/styles.yml` (sus valores globales
+   llegaron en la 14.19.0 y nunca colorearon flechas), los tipos de bloque con `arrows` global en `data/styles.yml`,
+   los mapas en una línea (`box: { … }`) y `arrows: float` (ahora siempre `cta`); los tres últimos se avisan para
+   revisarlos a mano. Los puntos (`pips`) siguen siempre en `cta`: su color antiguo no se puede recuperar.
+2. El token heredado `noindex` en el título de un enlace (`"[noindex light]"`) no se reconocía y anulaba todo el bloque
+   (color incluido). Ahora se lee como `lock`, igual que `nofollow`, en el render y en el CMS (que al guardar escribe
+   `{light lock}`). No se reescriben archivos.
+
+**Acciones obligatorias:** ninguna.
+
+**Automatización:** `core/scripts/migrations/14.28.0-slider-arrows.js` (idempotente; `--check` solo informa).
+
+**Validación:** revisar el diff (una línea `arrows:` por carrusel) y comparar los carruseles y los botones con
+`noindex` con la web publicada.
+
 ## 14.27.0 — 2026-11-27 — `sh do new --production`: un solo host canónico y 301 desde el otro
 
 **Impacto:** con el Worker sirviendo el dominio, `sh do new --production` ya no pone el dominio y `www` como dominios
