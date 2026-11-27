@@ -42,6 +42,22 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.27.0 — 2026-11-27 — `sh do new --production`: un solo host canónico y 301 desde el otro
+
+**Impacto:** con el Worker sirviendo el dominio, `sh do new --production` ya no pone el dominio y `www` como dominios
+propios del Worker (los dos respondían 200: contenido duplicado). Ahora el host canónico es el de `baseURL` (sin www,
+salvo que `baseURL` lleve `www.`, como moverepilatestraining.es); solo ese va al Worker, y el otro responde 301 al
+canónico conservando ruta y query: registro `AAAA 100::` con proxy y una regla de redirección única de la zona
+(`http_request_dynamic_redirect`). Si el otro host ya era dominio del Worker, se quita. Una regla hecha a mano para el
+mismo host se adopta, no se duplica; las demás reglas de la zona se conservan; un registro sin proxy no se sobrescribe
+(queda como tarea manual). Con espejo de Netlify no cambia nada. Además, si la zona existe en dos cuentas (mudanza en
+curso), el paso `cloudflare` se detiene y pide `--cf-account` en vez de elegir la primera.
+
+**Acciones obligatorias:** ninguna. En los proyectos que ya estén en producción con el Worker sirviendo el dominio,
+repetir `sh do new --only cloudflare --production` (plan) y, si propone cambios, `--apply`; comprobar con
+`curl -sI https://www.<dominio>/` (301 y `location` correcto) y el dominio canónico (200). El token necesita
+«Redirección única · Editar» y «DNS · Editar» en la zona.
+
 ## 14.26.0 — 2026-11-26 — Formularios de páginas estáticas, cuenta de Cloudflare sin ambigüedad y panel de Correo
 
 **Impacto:** compatible. Tres cambios:
