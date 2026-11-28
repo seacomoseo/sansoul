@@ -42,6 +42,16 @@ Si una transformación puede automatizarse con seguridad, colócala en `scripts/
 Desde `5.1.0`, README y AGENTS de la raíz son genéricos y se generan íntegramente desde `templates/root/`. Las particularidades pertenecen exclusivamente a `dna/`.
 
 
+## 14.29.3 — 2026-11-28 — Iconos de la página 404
+
+**Impacto:** los iconos de Material Symbols que solo usa la página 404 (p. ej. `cancel`) no entraban en el subconjunto
+de la fuente, porque `site.Pages` no incluye la 404, y se veía su primera letra («C») en su lugar. El motor suma ahora
+la 404 al juntar iconos y SVG de todas las páginas.
+
+**Acciones obligatorias:** ninguna.
+
+**Validación:** el icono de la cabecera de `/404` se ve como icono, no como letra.
+
 ## 14.29.2 — 2026-11-27 — Ningún proyecto usa Apps Script por defecto
 
 **Impacto:** ninguno en proyectos ya actualizados. La migración 14.18.0 deja de fijar `inputs.action` al Apps Script

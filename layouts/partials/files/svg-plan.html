@@ -15,7 +15,10 @@ rendered. Group membership is derived from the output URLs that use each file.
 {{- $rendered_usage := hugo.Store.Get (print "sansoul.resources.rendered-usage." $format) | default dict -}}
 
 {{- range hugo.Sites -}}
-  {{- range .Pages -}}
+  {{- /* .Pages leaves out the 404 page: add it so its icons and SVGs count too. */ -}}
+  {{- $source_pages := .Pages -}}
+  {{- with .GetPage "/404" -}}{{- $source_pages = $source_pages | append . -}}{{- end -}}
+  {{- range $source_pages -}}
     {{- $source_page := . -}}
     {{- if eq ($source_page.Store.Get "sansoul.output-format" | default "html") $format -}}
       {{- $output := $source_page.RelPermalink -}}

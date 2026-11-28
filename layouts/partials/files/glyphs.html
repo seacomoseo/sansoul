@@ -5,7 +5,9 @@
 
 {{- if not .glyphs -}}
   {{- /* Compatibility fallback for callers outside the site-wide resource planner. */ -}}
-  {{- range site.Pages -}}
+  {{- $source_pages := site.Pages -}}
+  {{- with site.GetPage "/404" -}}{{- $source_pages = $source_pages | append . -}}{{- end -}}
+  {{- range $source_pages -}}
     {{- range .Store.Get $key | default (slice) -}}
       {{- $glyphs = $glyphs | append . -}}
     {{- end -}}
